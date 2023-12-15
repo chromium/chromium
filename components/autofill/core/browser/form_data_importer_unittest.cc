@@ -130,11 +130,10 @@ constexpr char kDefaultPhoneGermany[] = "+49 89 123456";
 constexpr char kDefaultPhoneMexico[] = "+52 55 1234 5678";
 constexpr char kDefaultPhoneArmenia[] = "+374 10 123456";
 
-// For a given ServerFieldType |type| returns a pair of field name and label
+// For a given FieldType |type| returns a pair of field name and label
 // that should be parsed into this type by our field type parsers.
-std::pair<std::string, std::string> GetLabelAndNameForType(
-    ServerFieldType type) {
-  static const std::map<ServerFieldType, std::pair<std::string, std::string>>
+std::pair<std::string, std::string> GetLabelAndNameForType(FieldType type) {
+  static const std::map<FieldType, std::pair<std::string, std::string>>
       name_type_map = {
           {NAME_FULL, {"Full Name:", "full_name"}},
           {NAME_FIRST, {"First Name:", "first_name"}},
@@ -163,7 +162,7 @@ std::pair<std::string, std::string> GetLabelAndNameForType(
   return it->second;
 }
 
-using TypeValuePairs = std::vector<std::pair<ServerFieldType, std::string>>;
+using TypeValuePairs = std::vector<std::pair<FieldType, std::string>>;
 
 // Constructs a FormData instance for |url| from a vector of type value pairs
 // that defines a sequence of fields and the filled values.
@@ -220,7 +219,7 @@ AutofillProfile ConstructProfileFromTypeValuePairs(
   return profile;
 }
 
-// Returns a vector of ServerFieldType and value pairs used to construct the
+// Returns a vector of FieldType and value pairs used to construct the
 // default AutofillProfile, or a FormStructure or FormData instance that carries
 // that corresponding information.
 TypeValuePairs GetDefaultProfileTypeValuePairs() {
@@ -240,7 +239,7 @@ TypeValuePairs GetDefaultProfileTypeValuePairs() {
 // Sets the value of `type` in `pairs` to `value`. If the `value` is empty, the
 // `type` is removed entirely.
 void SetValueForType(TypeValuePairs& pairs,
-                     ServerFieldType type,
+                     FieldType type,
                      const std::string& value) {
   auto it = base::ranges::find(pairs, type,
                                [](const auto& pair) { return pair.first; });
@@ -892,7 +891,7 @@ TEST_F(FormDataImporterTest, ParseI18nPhoneNumberInCityAndNumberField) {
 
   // Replace PHONE_HOME_WHOLE_NUMBER by PHONE_HOME_CITY_AND_NUMBER in field
   // classifications.
-  std::vector<ServerFieldType> types;
+  std::vector<FieldType> types;
   for (const auto& field : form_structure->fields()) {
     if (field->heuristic_type() == PHONE_HOME_WHOLE_NUMBER) {
       types.push_back(PHONE_HOME_CITY_AND_NUMBER);
@@ -4216,7 +4215,7 @@ TEST_F(FormDataImporterTest,
   field.value = u"First";
   const AutofillField* field_ptr = &field;
 
-  base::flat_map<ServerFieldType, std::u16string> observed_field_types =
+  base::flat_map<FieldType, std::u16string> observed_field_types =
       test_api(form_data_importer())
           .GetObservedFieldValues(base::make_span(&field_ptr, 1u));
   EXPECT_EQ(observed_field_types.size(), 1u);

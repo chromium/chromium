@@ -50,7 +50,7 @@ AutofillFillingMethod GetFillingMethodFromTargetedFields(
 // the same granularity as the one previously chosen.
 FieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
     const FieldTypeSet& last_targeted_field_types,
-    ServerFieldType trigger_field_type);
+    FieldType trigger_field_type);
 
 }  // namespace autofill
 

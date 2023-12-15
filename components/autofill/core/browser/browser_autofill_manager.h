@@ -531,7 +531,7 @@ class BrowserAutofillManager : public AutofillManager {
   // server.
   std::vector<Suggestion> GetCreditCardSuggestions(
       const FormFieldData& field,
-      ServerFieldType trigger_field_type,
+      FieldType trigger_field_type,
       bool& should_display_gpay_logo) const;
 
   // Returns a mapping of credit card guid values to virtual card last fours for

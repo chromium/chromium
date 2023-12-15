@@ -46,18 +46,18 @@ const base::FilePath::CharType kFileNamePattern[] = FILE_PATH_LITERAL("*.in");
 const char kFieldSeparator[] = ":";
 const char kProfileSeparator[] = "---";
 
-const ServerFieldType kProfileFieldTypes[] = {NAME_FIRST,
-                                              NAME_MIDDLE,
-                                              NAME_LAST,
-                                              NAME_FULL,
-                                              EMAIL_ADDRESS,
-                                              COMPANY_NAME,
-                                              ADDRESS_HOME_STREET_ADDRESS,
-                                              ADDRESS_HOME_CITY,
-                                              ADDRESS_HOME_STATE,
-                                              ADDRESS_HOME_ZIP,
-                                              ADDRESS_HOME_COUNTRY,
-                                              PHONE_HOME_WHOLE_NUMBER};
+const FieldType kProfileFieldTypes[] = {NAME_FIRST,
+                                        NAME_MIDDLE,
+                                        NAME_LAST,
+                                        NAME_FULL,
+                                        EMAIL_ADDRESS,
+                                        COMPANY_NAME,
+                                        ADDRESS_HOME_STREET_ADDRESS,
+                                        ADDRESS_HOME_CITY,
+                                        ADDRESS_HOME_STATE,
+                                        ADDRESS_HOME_ZIP,
+                                        ADDRESS_HOME_COUNTRY,
+                                        PHONE_HOME_WHOLE_NUMBER};
 
 const base::FilePath& GetTestDataDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
@@ -96,7 +96,7 @@ std::string SerializeProfiles(const std::vector<AutofillProfile*>& profiles) {
   for (auto* profile : profiles) {
     result += kProfileSeparator;
     result += "\n";
-    for (const ServerFieldType& type : kProfileFieldTypes) {
+    for (const FieldType& type : kProfileFieldTypes) {
       std::u16string value = profile->GetRawInfo(type);
       result += FieldTypeToStringView(type);
       result += kFieldSeparator;
@@ -217,8 +217,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
         // into the field's name.
         AutofillField* field =
             const_cast<AutofillField*>(form_structure.field(j));
-        ServerFieldType type =
-            TypeNameToFieldType(base::UTF16ToUTF8(field->name));
+        FieldType type = TypeNameToFieldType(base::UTF16ToUTF8(field->name));
         field->set_heuristic_type(GetActiveHeuristicSource(), type);
       }
 

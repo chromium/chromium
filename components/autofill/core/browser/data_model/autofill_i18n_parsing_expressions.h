@@ -19,7 +19,7 @@
 namespace autofill::i18n_model_definition {
 namespace {
 
-using CountryAndFieldType = std::pair<std::string_view, ServerFieldType>;
+using CountryAndFieldType = std::pair<std::string_view, FieldType>;
 
 // Section for regular expressions.
 constexpr char kRegularExpression_1[] = "(?m)(?i:(?:^|\\s+))"; // nocheck

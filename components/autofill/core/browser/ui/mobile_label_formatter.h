@@ -36,7 +36,7 @@ class MobileLabelFormatter : public LabelFormatter {
  public:
   MobileLabelFormatter(const std::vector<const AutofillProfile*>& profiles,
                        const std::string& app_locale,
-                       ServerFieldType focused_field_type,
+                       FieldType focused_field_type,
                        uint32_t groups,
                        const FieldTypeSet& field_types);
 

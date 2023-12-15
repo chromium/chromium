@@ -79,7 +79,7 @@ AutofillModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   // `output_tensors` is a 3D vector of floats. The first dimension is used
   // for batching, which the ML model declares with size 1. The second and third
-  // dimensions contain the raw predictions for every `ServerFieldType` in
+  // dimensions contain the raw predictions for every `FieldType` in
   // `kSupportedFieldTypes` for the first `kMaxNumberOfFields` fields of the
   // form.
   CHECK_EQ(1u, output_tensors.size());

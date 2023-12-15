@@ -48,7 +48,7 @@ class BetterAuthMetricsTest : public AutofillMetricsBaseTest,
         /*masked_card_is_enrolled_for_virtual_card=*/false);
     FormData form = CreateForm({test::CreateTestFormField(
         "Credit card", "cardnum", "", FormControlType::kInputText)});
-    std::vector<ServerFieldType> field_types = {CREDIT_CARD_NUMBER};
+    std::vector<FieldType> field_types = {CREDIT_CARD_NUMBER};
     autofill_manager().AddSeenForm(form, field_types);
     return form;
   }

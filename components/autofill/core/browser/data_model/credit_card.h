@@ -194,8 +194,8 @@ class CreditCard : public AutofillDataModel {
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
                         FieldTypeSet* matching_types) const override;
-  std::u16string GetRawInfo(ServerFieldType type) const override;
-  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+  std::u16string GetRawInfo(FieldType type) const override;
+  void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
 

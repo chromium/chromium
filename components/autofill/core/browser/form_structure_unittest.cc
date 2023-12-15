@@ -83,7 +83,7 @@ constexpr uint64_t kFieldMaxLength = 10000;
 
 void AddFieldOverrideToForm(
     autofill::FormFieldData field_data,
-    ServerFieldType field_type,
+    FieldType field_type,
     ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion) {
   AddFieldPredictionsToForm(
       field_data,
@@ -106,7 +106,7 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
 struct ManualOverride {
   FormSignature form_signature;
   FieldSignature field_signature;
-  const std::vector<ServerFieldType> field_types;
+  const std::vector<FieldType> field_types;
 };
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -125,7 +125,7 @@ std::string CreateManualOverridePrediction(
     spec_pieces.push_back(
         base::NumberToString(static_cast<uint32_t>(override.field_signature)));
 
-    for (ServerFieldType type : override.field_types) {
+    for (FieldType type : override.field_types) {
       spec_pieces.push_back(base::NumberToString(static_cast<int>(type)));
     }
     override_specs.push_back(base::JoinString(spec_pieces, "_"));
@@ -172,12 +172,12 @@ Matcher<FieldPrediction> EqualsPrediction(const FieldPrediction& prediction) {
       Property("source", &FieldPrediction::source, prediction.source()));
 }
 
-Matcher<FieldPrediction> EqualsPrediction(ServerFieldType type) {
+Matcher<FieldPrediction> EqualsPrediction(FieldType type) {
   return Property("type", &FieldPrediction::type, type);
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-Matcher<FieldPrediction> EqualsPrediction(ServerFieldType type,
+Matcher<FieldPrediction> EqualsPrediction(FieldType type,
                                           FieldPrediction::Source source) {
   return EqualsPrediction(CreateFieldPrediction(type, source));
 }
@@ -262,7 +262,7 @@ INSTANTIATE_TEST_SUITE_P(FormStructureTest,
 TEST_F(FormStructureTestImpl, FieldCount) {
   CheckFormStructureTestData(
       {{{.description_for_logging = "FieldCount",
-         .fields = {{.role = ServerFieldType::USERNAME},
+         .fields = {{.role = FieldType::USERNAME},
                     {.label = u"Password",
                      .name = u"password",
                      .form_control_type = FormControlType::kInputPassword},
@@ -282,13 +282,13 @@ TEST_F(FormStructureTestImpl, FieldCount) {
 TEST_F(FormStructureTestImpl, AutofillCount) {
   CheckFormStructureTestData(
       {{{.description_for_logging = "AutofillCount",
-         .fields = {{.role = ServerFieldType::USERNAME},
+         .fields = {{.role = FieldType::USERNAME},
                     {.label = u"Password",
                      .name = u"password",
                      .form_control_type = FormControlType::kInputPassword},
-                    {.role = ServerFieldType::EMAIL_ADDRESS},
-                    {.role = ServerFieldType::ADDRESS_HOME_CITY},
-                    {.role = ServerFieldType::ADDRESS_HOME_STATE,
+                    {.role = FieldType::EMAIL_ADDRESS},
+                    {.role = FieldType::ADDRESS_HOME_CITY},
+                    {.role = FieldType::ADDRESS_HOME_STATE,
                      .form_control_type = FormControlType::kSelectOne},
                     {.label = u"Submit",
                      .name = u"",
@@ -300,13 +300,13 @@ TEST_F(FormStructureTestImpl, AutofillCount) {
         {}},
 
        {{.description_for_logging = "AutofillCountWithNonFillableField",
-         .fields = {{.role = ServerFieldType::USERNAME},
+         .fields = {{.role = FieldType::USERNAME},
                     {.label = u"Password",
                      .name = u"password",
                      .form_control_type = FormControlType::kInputPassword},
-                    {.role = ServerFieldType::EMAIL_ADDRESS},
-                    {.role = ServerFieldType::ADDRESS_HOME_CITY},
-                    {.role = ServerFieldType::ADDRESS_HOME_STATE,
+                    {.role = FieldType::EMAIL_ADDRESS},
+                    {.role = FieldType::ADDRESS_HOME_CITY},
+                    {.role = FieldType::ADDRESS_HOME_STATE,
                      .form_control_type = FormControlType::kSelectOne},
                     {.label = u"Submit",
                      .name = u"",
@@ -711,10 +711,10 @@ TEST_F(FormStructureTestImpl, DetermineHeuristicTypes_AutocompleteFalse) {
                .name = u"name",
                .autocomplete_attribute = "false",
                .parsed_autocomplete = ParseAutocompleteAttribute("false")},
-              {.role = ServerFieldType::EMAIL_ADDRESS,
+              {.role = FieldType::EMAIL_ADDRESS,
                .autocomplete_attribute = "false",
                .parsed_autocomplete = ParseAutocompleteAttribute("false")},
-              {.role = ServerFieldType::ADDRESS_HOME_STATE,
+              {.role = FieldType::ADDRESS_HOME_STATE,
                .autocomplete_attribute = "false",
                .parsed_autocomplete = ParseAutocompleteAttribute("false"),
                .form_control_type = FormControlType::kSelectOne}}},
@@ -728,20 +728,20 @@ TEST_F(FormStructureTestImpl, DetermineHeuristicTypes_AutocompleteFalse) {
 }
 
 TEST_F(FormStructureTestImpl, HeuristicsContactInfo) {
-  ServerFieldType expected_phone_number =
+  FieldType expected_phone_number =
       base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
           ? PHONE_HOME_CITY_AND_NUMBER
           : PHONE_HOME_WHOLE_NUMBER;
   CheckFormStructureTestData(
       {{{.description_for_logging = "HeuristicsContactInfo",
-         .fields = {{.role = ServerFieldType::NAME_FIRST},
-                    {.role = ServerFieldType::NAME_LAST},
-                    {.role = ServerFieldType::EMAIL_ADDRESS},
-                    {.role = ServerFieldType::PHONE_HOME_NUMBER},
+         .fields = {{.role = FieldType::NAME_FIRST},
+                    {.role = FieldType::NAME_LAST},
+                    {.role = FieldType::EMAIL_ADDRESS},
+                    {.role = FieldType::PHONE_HOME_NUMBER},
                     {.label = u"Ext:", .name = u"phoneextension"},
                     {.label = u"Address", .name = u"address"},
-                    {.role = ServerFieldType::ADDRESS_HOME_CITY},
-                    {.role = ServerFieldType::ADDRESS_HOME_ZIP},
+                    {.role = FieldType::ADDRESS_HOME_CITY},
+                    {.role = FieldType::ADDRESS_HOME_ZIP},
                     {.label = u"Submit",
                      .name = u"",
                      .form_control_type = FormControlType::kInputText}}},
@@ -797,20 +797,20 @@ TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttribute) {
 // All fields share a common prefix which could confuse the heuristics. Test
 // that the common prefix is stripped out before running heuristics.
 TEST_F(FormStructureTestImpl, StripCommonNamePrefix) {
-  ServerFieldType expected_phone_number =
+  FieldType expected_phone_number =
       base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
           ? PHONE_HOME_CITY_AND_NUMBER
           : PHONE_HOME_WHOLE_NUMBER;
   CheckFormStructureTestData(
       {{{.description_for_logging = "StripCommonNamePrefix",
          .fields =
-             {{.role = ServerFieldType::NAME_FIRST,
+             {{.role = FieldType::NAME_FIRST,
                .name = u"ctl01$ctl00$ShippingAddressCreditPhone$firstname"},
-              {.role = ServerFieldType::NAME_LAST,
+              {.role = FieldType::NAME_LAST,
                .name = u"ctl01$ctl00$ShippingAddressCreditPhone$lastname"},
-              {.role = ServerFieldType::EMAIL_ADDRESS,
+              {.role = FieldType::EMAIL_ADDRESS,
                .name = u"ctl01$ctl00$ShippingAddressCreditPhone$email"},
-              {.role = ServerFieldType::PHONE_HOME_NUMBER,
+              {.role = FieldType::PHONE_HOME_NUMBER,
                .name = u"ctl01$ctl00$ShippingAddressCreditPhone$phone"},
               {.label = u"Submit",
                .name = u"ctl01$ctl00$ShippingAddressCreditPhone$submit",
@@ -842,9 +842,9 @@ TEST_F(FormStructureTestImpl, StripCommonNamePrefix_SmallPrefix) {
 TEST_F(FormStructureTestImpl, IsCompleteCreditCardForm_Minimal) {
   CheckFormStructureTestData(
       {{{.description_for_logging = "IsCompleteCreditCardForm_Minimal",
-         .fields = {{.role = ServerFieldType::CREDIT_CARD_NUMBER},
+         .fields = {{.role = FieldType::CREDIT_CARD_NUMBER},
                     {.label = u"Expiration", .name = u"cc_exp"},
-                    {.role = ServerFieldType::ADDRESS_HOME_ZIP}}},
+                    {.role = FieldType::ADDRESS_HOME_ZIP}}},
         {.determine_heuristic_type = true,
          .is_complete_credit_card_form = true},
         {}}});
@@ -854,7 +854,7 @@ TEST_F(FormStructureTestImpl, IsCompleteCreditCardForm_Full) {
   CheckFormStructureTestData(
       {{{.description_for_logging = "IsCompleteCreditCardForm_Full",
          .fields = {{.label = u"Name on Card", .name = u"name_on_card"},
-                    {.role = ServerFieldType::CREDIT_CARD_NUMBER},
+                    {.role = FieldType::CREDIT_CARD_NUMBER},
                     {.label = u"Exp Month", .name = u"ccmonth"},
                     {.label = u"Exp Year", .name = u"ccyear"},
                     {.label = u"Verification", .name = u"verification"},
@@ -870,7 +870,7 @@ TEST_F(FormStructureTestImpl, IsCompleteCreditCardForm_Full) {
 TEST_F(FormStructureTestImpl, IsCompleteCreditCardForm_OnlyCCNumber) {
   CheckFormStructureTestData(
       {{{.description_for_logging = "IsCompleteCreditCardForm_OnlyCCNumber",
-         .fields = {{.role = ServerFieldType::CREDIT_CARD_NUMBER}}},
+         .fields = {{.role = FieldType::CREDIT_CARD_NUMBER}}},
         {.determine_heuristic_type = true,
          .is_complete_credit_card_form = false},
         {}}});
@@ -880,13 +880,13 @@ TEST_F(FormStructureTestImpl, IsCompleteCreditCardForm_OnlyCCNumber) {
 TEST_F(FormStructureTestImpl, IsCompleteCreditCardForm_AddressForm) {
   CheckFormStructureTestData(
       {{{.description_for_logging = "IsCompleteCreditCardForm_AddressForm",
-         .fields = {{.role = ServerFieldType::NAME_FIRST, .name = u""},
-                    {.role = ServerFieldType::NAME_LAST, .name = u""},
-                    {.role = ServerFieldType::EMAIL_ADDRESS, .name = u""},
-                    {.role = ServerFieldType::PHONE_HOME_NUMBER, .name = u""},
+         .fields = {{.role = FieldType::NAME_FIRST, .name = u""},
+                    {.role = FieldType::NAME_LAST, .name = u""},
+                    {.role = FieldType::EMAIL_ADDRESS, .name = u""},
+                    {.role = FieldType::PHONE_HOME_NUMBER, .name = u""},
                     {.label = u"Address", .name = u""},
                     {.label = u"Address", .name = u""},
-                    {.role = ServerFieldType::ADDRESS_HOME_ZIP, .name = u""}}},
+                    {.role = FieldType::ADDRESS_HOME_ZIP, .name = u""}}},
         {.determine_heuristic_type = true,
          .is_complete_credit_card_form = false},
         {}}});
@@ -928,9 +928,9 @@ TEST_F(FormStructureTestImpl,
   CheckFormStructureTestData(
       {{{.description_for_logging =
              "HeuristicsAndServerPredictions_BigForm_NoAutocompleteAttribute",
-         .fields = {{.role = ServerFieldType::NAME_FIRST},
-                    {.role = ServerFieldType::NAME_LAST},
-                    {.role = ServerFieldType::EMAIL_ADDRESS}}},
+         .fields = {{.role = FieldType::NAME_FIRST},
+                    {.role = FieldType::NAME_LAST},
+                    {.role = FieldType::EMAIL_ADDRESS}}},
         {.determine_heuristic_type = true,
          .is_autofillable = true,
          .should_be_queried = true,
@@ -947,12 +947,12 @@ TEST_F(FormStructureTestImpl,
   CheckFormStructureTestData(
       {{{.description_for_logging =
              "HeuristicsAndServerPredictions_ValidAutocompleteAttribute",
-         .fields = {{.role = ServerFieldType::NAME_FIRST,
+         .fields = {{.role = FieldType::NAME_FIRST,
                      .autocomplete_attribute = "given-name",
                      .parsed_autocomplete =
                          ParseAutocompleteAttribute("given-name")},
-                    {.role = ServerFieldType::NAME_LAST},
-                    {.role = ServerFieldType::EMAIL_ADDRESS}}},
+                    {.role = FieldType::NAME_LAST},
+                    {.role = FieldType::EMAIL_ADDRESS}}},
         {.determine_heuristic_type = true,
          .is_autofillable = true,
          .should_be_queried = true,
@@ -971,13 +971,13 @@ TEST_F(FormStructureTestImpl,
       {{{
             .description_for_logging = "HeuristicsAndServerPredictions_"
                                        "UnrecognizedAutocompleteAttribute",
-            .fields = {{.role = ServerFieldType::NAME_FIRST,
+            .fields = {{.role = FieldType::NAME_FIRST,
                         .autocomplete_attribute = "unrecognized",
                         .parsed_autocomplete =
                             ParseAutocompleteAttribute("unrecognized")},
                        {.label = u"Middle Name", .name = u"middlename"},
-                       {.role = ServerFieldType::NAME_LAST},
-                       {.role = ServerFieldType::EMAIL_ADDRESS}},
+                       {.role = FieldType::NAME_LAST},
+                       {.role = FieldType::EMAIL_ADDRESS}},
         },
         {.determine_heuristic_type = true,
          .is_autofillable = true,
@@ -1363,7 +1363,7 @@ TEST_F(FormStructureTestImpl, HeuristicsSample8) {
   // Country.
   EXPECT_EQ(ADDRESS_HOME_COUNTRY, form_structure->field(7)->heuristic_type());
   // Phone.
-  ServerFieldType expected_phone_number =
+  FieldType expected_phone_number =
       base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
           ? PHONE_HOME_CITY_AND_NUMBER
           : PHONE_HOME_WHOLE_NUMBER;
@@ -1506,7 +1506,7 @@ TEST_F(FormStructureTestImpl, HeuristicsLabelsOnly) {
   // Email.
   EXPECT_EQ(EMAIL_ADDRESS, form_structure->field(2)->heuristic_type());
   // Phone.
-  ServerFieldType expected_phone_number =
+  FieldType expected_phone_number =
       base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
           ? PHONE_HOME_CITY_AND_NUMBER
           : PHONE_HOME_WHOLE_NUMBER;
@@ -1953,7 +1953,7 @@ TEST_F(FormStructureTestImpl, HeuristicsWithBilling) {
   EXPECT_EQ(ADDRESS_HOME_STATE, form_structure->field(6)->heuristic_type());
   EXPECT_EQ(ADDRESS_HOME_COUNTRY, form_structure->field(7)->heuristic_type());
   EXPECT_EQ(ADDRESS_HOME_ZIP, form_structure->field(8)->heuristic_type());
-  ServerFieldType expected_phone_number =
+  FieldType expected_phone_number =
       base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
           ? PHONE_HOME_CITY_AND_NUMBER
           : PHONE_HOME_WHOLE_NUMBER;
@@ -4995,8 +4995,8 @@ TEST_F(FormStructureTestImpl,
                  << main_frame_overrides_iframe);
 
     const int host_form_signature = 12345;
-    ServerFieldType main_frame_type = CREDIT_CARD_NAME_FULL;
-    ServerFieldType iframe_type = NAME_FULL;
+    FieldType main_frame_type = CREDIT_CARD_NAME_FULL;
+    FieldType iframe_type = NAME_FULL;
 
     // Create an iframe form with a single field.
     std::vector<FormFieldData> fields;
@@ -5094,7 +5094,7 @@ TEST_F(FormStructureTestImpl,
 // predictions.
 TEST_F(FormStructureTestImpl,
        ParseApiQueryResponse_FallbackToHostFormSignature) {
-  std::vector<ServerFieldType> expected_types;
+  std::vector<FieldType> expected_types;
 
   // Create a form whose fields have FormFieldData::host_form_signature either
   // 12345 or 67890. The first two fields have identical field signatures.

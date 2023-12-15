@@ -55,25 +55,25 @@ class FormFieldTestBase {
   void AddFormFieldData(FormControlType control_type,
                         std::string name,
                         std::string label,
-                        ServerFieldType expected_type);
+                        FieldType expected_type);
 
   // Convenience wrapper for text control elements with a maximal length.
   void AddFormFieldDataWithLength(FormControlType control_type,
                                   std::string name,
                                   std::string label,
                                   int max_length,
-                                  ServerFieldType expected_type);
+                                  FieldType expected_type);
 
   // Convenience wrapper for text control elements.
   void AddTextFormFieldData(std::string name,
                             std::string label,
-                            ServerFieldType expected_type);
+                            FieldType expected_type);
 
   // Convenience wrapper for 'select-one' elements.
   void AddSelectOneFormFieldData(std::string name,
                                  std::string label,
                                  const std::vector<SelectOption>& options,
-                                 ServerFieldType expected_type);
+                                 FieldType expected_type);
 
   // Apply parsing and verify the expected types.
   // |parsed| indicates if at least one field could be parsed successfully.
@@ -103,7 +103,7 @@ class FormFieldTestBase {
   std::vector<std::unique_ptr<AutofillField>> list_;
   std::unique_ptr<FormField> field_;
   FieldCandidatesMap field_candidates_map_;
-  std::map<FieldGlobalId, ServerFieldType> expected_classifications_;
+  std::map<FieldGlobalId, FieldType> expected_classifications_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -79,11 +79,11 @@ bool TypeOfFieldIsPossibleType(const AutofillField& field) {
   return field.possible_types().contains(field.Type().GetStorableType());
 }
 
-bool IsStreetNameOrHouseNumberType(const ServerFieldType type) {
+bool IsStreetNameOrHouseNumberType(const FieldType type) {
   return type == ADDRESS_HOME_STREET_NAME || type == ADDRESS_HOME_HOUSE_NUMBER;
 }
 
-bool IsAddressType(ServerFieldType type) {
+bool IsAddressType(FieldType type) {
   switch (GroupTypeOfServerFieldType(type)) {
     case FieldTypeGroup::kName:
     case FieldTypeGroup::kEmail:
@@ -104,19 +104,18 @@ bool IsAddressType(ServerFieldType type) {
   NOTREACHED_NORETURN();
 }
 
-size_t AddressLineIndex(ServerFieldType type) {
+size_t AddressLineIndex(FieldType type) {
   static constexpr auto kAddressLineIndex =
-      base::MakeFixedFlatMap<ServerFieldType, size_t>(
-          {{ADDRESS_HOME_LINE1, 0},
-           {ADDRESS_HOME_LINE2, 1},
-           {ADDRESS_HOME_LINE3, 2}});
+      base::MakeFixedFlatMap<FieldType, size_t>({{ADDRESS_HOME_LINE1, 0},
+                                                 {ADDRESS_HOME_LINE2, 1},
+                                                 {ADDRESS_HOME_LINE3, 2}});
   if (kAddressLineIndex.contains(type)) {
     return kAddressLineIndex.at(type);
   }
   NOTREACHED_NORETURN();
 }
 
-size_t DetermineExpirationYearLength(ServerFieldType assumed_field_type) {
+size_t DetermineExpirationYearLength(FieldType assumed_field_type) {
   switch (assumed_field_type) {
     case CREDIT_CARD_EXP_2_DIGIT_YEAR:
       return 2;

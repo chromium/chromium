@@ -113,7 +113,7 @@ absl::optional<AutofillProfile> MakeProfile(const base::Value::Dict& dict) {
         return absl::nullopt;
       }
     }
-    const ServerFieldType type = TypeNameToFieldType(key);
+    const FieldType type = TypeNameToFieldType(key);
     if (type == UNKNOWN_TYPE || !IsAddressType(type)) {
       LOG(ERROR) << "Unknown or non-address type " << key << ".";
       return absl::nullopt;
@@ -137,7 +137,7 @@ absl::optional<CreditCard> MakeCard(const base::Value::Dict& dict) {
       card.SetNickname(base::UTF8ToUTF16(value.GetString()));
       continue;
     }
-    const ServerFieldType type = TypeNameToFieldType(key);
+    const FieldType type = TypeNameToFieldType(key);
     if (type == UNKNOWN_TYPE ||
         GroupTypeOfServerFieldType(type) != FieldTypeGroup::kCreditCard) {
       LOG(ERROR) << "Unknown or non-credit card type " << key << ".";

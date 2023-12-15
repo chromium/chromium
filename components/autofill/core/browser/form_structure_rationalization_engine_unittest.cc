@@ -26,7 +26,7 @@ BASE_FEATURE(kTestFeatureForFormStructureRationalizationEngine,
 struct FieldTemplate {
   std::u16string label;
   std::u16string name;
-  ServerFieldType field_type = UNKNOWN_TYPE;
+  FieldType field_type = UNKNOWN_TYPE;
 };
 
 std::vector<std::unique_ptr<AutofillField>> CreateFields(
@@ -44,9 +44,9 @@ std::vector<std::unique_ptr<AutofillField>> CreateFields(
   return result;
 }
 
-std::vector<ServerFieldType> GetTypes(
+std::vector<FieldType> GetTypes(
     const std::vector<std::unique_ptr<AutofillField>>& fields) {
-  std::vector<ServerFieldType> server_types;
+  std::vector<FieldType> server_types;
   base::ranges::transform(
       fields, std::back_inserter(server_types),
       [](const auto& field) { return field->Type().GetStorableType(); });

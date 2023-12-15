@@ -45,18 +45,18 @@ bool TypeOfFieldIsPossibleType(const AutofillField& field);
 // ADDRESS_HOME_HOUSE_NUMBER.
 // TODO(crbug/1410438): Remove when cleaning up feature
 // `kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete`.
-bool IsStreetNameOrHouseNumberType(const ServerFieldType type);
+bool IsStreetNameOrHouseNumberType(const FieldType type);
 
 // Returns true if `type` is address-related.
-bool IsAddressType(ServerFieldType type);
+bool IsAddressType(FieldType type);
 
 // Returns 0-based index of an address line type, which is X-1 for
 // ADDRESS_HOME_LINEX. Expects only ADDRESS_HOME_LINE(1|2|3) types.
-size_t AddressLineIndex(ServerFieldType type);
+size_t AddressLineIndex(FieldType type);
 
 // Returns whether the expiration year should be filled with two or four
 // digits.
-size_t DetermineExpirationYearLength(ServerFieldType assumed_field_type);
+size_t DetermineExpirationYearLength(FieldType assumed_field_type);
 
 }  // namespace autofill
 

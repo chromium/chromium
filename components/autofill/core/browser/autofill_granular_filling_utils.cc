@@ -68,7 +68,7 @@ bool AreFieldsGranularFillingGroup(const FieldTypeSet& field_types) {
 
 FieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
     const FieldTypeSet& last_targeted_field_types,
-    ServerFieldType triggering_field_type) {
+    FieldType triggering_field_type) {
   switch (GetFillingMethodFromTargetedFields(last_targeted_field_types)) {
     case AutofillFillingMethod::kGroupFilling:
       return GetServerFieldsForFieldGroup(

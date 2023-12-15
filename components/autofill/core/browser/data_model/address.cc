@@ -109,13 +109,13 @@ AddressCountryCode Address::GetAddressCountryCode() const {
   return AddressCountryCode(country_code);
 }
 
-std::u16string Address::GetRawInfo(ServerFieldType type) const {
+std::u16string Address::GetRawInfo(FieldType type) const {
   DCHECK_EQ(FieldTypeGroup::kAddress, GroupTypeOfServerFieldType(type));
 
   return structured_address_->GetValueForType(type);
 }
 
-void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
+void Address::SetRawInfoWithVerificationStatus(FieldType type,
                                                const std::u16string& value,
                                                VerificationStatus status) {
   DCHECK_EQ(FieldTypeGroup::kAddress, GroupTypeOfServerFieldType(type));
@@ -195,7 +195,7 @@ std::u16string Address::GetInfoImpl(const AutofillType& type,
     return base::ASCIIToUTF16(country_code);
   }
 
-  ServerFieldType storable_type = type.GetStorableType();
+  FieldType storable_type = type.GetStorableType();
   if (storable_type == ADDRESS_HOME_COUNTRY && !country_code.empty())
     return AutofillCountry(country_code, locale).name();
 
@@ -230,7 +230,7 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
     return !country_code.empty();
   }
 
-  ServerFieldType storable_type = type.GetStorableType();
+  FieldType storable_type = type.GetStorableType();
   if (storable_type == ADDRESS_HOME_COUNTRY && !value.empty()) {
     std::string country_code =
         CountryNames::GetInstance()->GetCountryCodeForLocalizedCountryName(
@@ -254,8 +254,7 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
   return true;
 }
 
-VerificationStatus Address::GetVerificationStatusImpl(
-    ServerFieldType type) const {
+VerificationStatus Address::GetVerificationStatusImpl(FieldType type) const {
   return structured_address_->GetVerificationStatusForType(type);
 }
 
@@ -302,7 +301,7 @@ void Address::SetAddressCountryCode(const std::u16string& country_code,
   structured_address_->GetStorableTypes(&prev_supported_types);
   prev_supported_types.erase(ADDRESS_HOME_COUNTRY);
 
-  for (ServerFieldType type : prev_supported_types) {
+  for (FieldType type : prev_supported_types) {
     updated_structured_address->SetValueForType(
         type, structured_address_->GetValueForType(type),
         structured_address_->GetVerificationStatusForType(type));

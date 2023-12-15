@@ -18,8 +18,8 @@ namespace {
 // Get the comparison between the predictions, without the prediction type being
 // encoded in the returned value.
 ShadowPredictionComparison GetBaseComparison(
-    ServerFieldType current,
-    ServerFieldType next,
+    FieldType current,
+    FieldType next,
     const FieldTypeSet& submitted_types) {
   if (current == NO_SERVER_DATA || next == NO_SERVER_DATA) {
     return ShadowPredictionComparison::kNoPrediction;
@@ -104,8 +104,8 @@ void LogMlShadowPredictions(const AutofillField& field) {
 
 }  // namespace
 
-int GetShadowPrediction(ServerFieldType current,
-                        ServerFieldType next,
+int GetShadowPrediction(FieldType current,
+                        FieldType next,
                         const FieldTypeSet& submitted_types) {
   ShadowPredictionComparison comparison =
       GetBaseComparison(current, next, submitted_types);

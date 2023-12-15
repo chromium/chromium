@@ -96,12 +96,12 @@ TEST(AutofillShadowPredictionComparisonTest,
                                 {NAME_FIRST, EMAIL_ADDRESS}));
 }
 
-// Test that all `ServerFieldType`s have corresponding values in the enum.
+// Test that all `FieldType`s have corresponding values in the enum.
 TEST(AutofillShadowPredictionComparisonTest, ComparisonContainsAllTypes) {
   // If this test fails after adding a type, update
   // `AutofillPredictionsComparisonResult` in tools/metrics/histograms/enums.xml
   // and set `last_known_type` to the last entry in the enum.
-  ServerFieldType last_known_type = MAX_VALID_FIELD_TYPE;
+  FieldType last_known_type = MAX_VALID_FIELD_TYPE;
   for (int type_int = MAX_VALID_FIELD_TYPE - 1; type_int >= NO_SERVER_DATA;
        type_int--) {
     auto type = ToSafeFieldType(type_int, MAX_VALID_FIELD_TYPE);
@@ -152,8 +152,8 @@ TEST_F(AutofillShadowPredictionMetricsTest,
   form.fields[0].value = u"Elvis Aaron Presley";  // A known `NAME_FULL`.
   form.fields[1].value = u"buddy@gmail.com";      // A known `EMAIL_ADDRESS`.
 
-  std::vector<ServerFieldType> heuristic_types = {NAME_FULL, EMAIL_ADDRESS};
-  std::vector<ServerFieldType> server_types = {NAME_FULL, EMAIL_ADDRESS};
+  std::vector<FieldType> heuristic_types = {NAME_FULL, EMAIL_ADDRESS};
+  std::vector<FieldType> server_types = {NAME_FULL, EMAIL_ADDRESS};
 
   // Simulate having seen this form on page load.
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
@@ -187,7 +187,7 @@ TEST_F(AutofillShadowPredictionMetricsTest,
   form.fields[0].value = u"Elvis Aaron Presley";  // A known `NAME_FULL`.
   form.fields[1].value = u"buddy@gmail.com";      // A known `EMAIL_ADDRESS`.
 
-  std::vector<ServerFieldType> server_types = {NAME_FULL, EMAIL_ADDRESS};
+  std::vector<FieldType> server_types = {NAME_FULL, EMAIL_ADDRESS};
 
   // Simulate having seen this form on page load.
   autofill_manager().AddSeenForm(
@@ -237,7 +237,7 @@ TEST_F(AutofillShadowPredictionMetricsTest, CompareHeuristicsAndServer) {
   form.fields[0].value = u"Elvis Aaron Presley";  // A known `NAME_FULL`.
   form.fields[1].value = u"buddy@gmail.com";      // A known `EMAIL_ADDRESS`.
 
-  std::vector<ServerFieldType> server_types = {NAME_FULL, EMAIL_ADDRESS};
+  std::vector<FieldType> server_types = {NAME_FULL, EMAIL_ADDRESS};
 
   // Simulate having seen this form on page load.
   autofill_manager().AddSeenForm(form,

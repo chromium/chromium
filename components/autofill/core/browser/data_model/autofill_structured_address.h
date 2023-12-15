@@ -35,7 +35,7 @@ class AddressComponentWithRewriter : public AddressComponent {
 class FeatureGuardedAddressComponent : public AddressComponent {
  public:
   FeatureGuardedAddressComponent(raw_ptr<const base::Feature> feature,
-                                 ServerFieldType storage_type,
+                                 FieldType storage_type,
                                  SubcomponentsList children,
                                  unsigned int merge_mode);
 
@@ -181,10 +181,10 @@ class StreetAddressNode : public AddressComponentWithRewriter {
  protected:
   // Implements support for getting the value of the individual address lines.
   std::u16string GetValueForOtherSupportedType(
-      ServerFieldType field_type) const override;
+      FieldType field_type) const override;
 
   // Implements support for setting the value of the individual address lines.
-  void SetValueForOtherSupportedType(ServerFieldType field_type,
+  void SetValueForOtherSupportedType(FieldType field_type,
                                      const std::u16string& value,
                                      const VerificationStatus& status) override;
 
@@ -197,7 +197,7 @@ class StreetAddressNode : public AddressComponentWithRewriter {
 
   // Returns the corresponding address line depending on `type`. Assumes that
   // `type` is ADDRESS_HOME_LINE(1|2|3).
-  std::u16string GetAddressLine(ServerFieldType type) const;
+  std::u16string GetAddressLine(FieldType type) const;
 
   // Holds the values of the individual address lines.
   // Must be recalculated if the value of the component changes.

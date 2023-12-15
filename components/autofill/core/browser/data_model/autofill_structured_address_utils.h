@@ -194,14 +194,14 @@ std::string GetPlaceholderToken(std::string_view value);
 // StringPieces in |pattern_span_initializer_list|. The group is named by the
 // string representation of |type| and respects |options|.
 std::string CaptureTypeWithPattern(
-    const ServerFieldType& type,
+    const FieldType& type,
     std::initializer_list<std::string_view> pattern_span_initializer_list,
     const CaptureOptions& options);
 
 // Same as |CaptureTypeWithPattern(type, pattern_span_initializer_list,
 // options)| but uses default options.
 std::string CaptureTypeWithPattern(
-    const ServerFieldType& type,
+    const FieldType& type,
     std::initializer_list<std::string_view> pattern_span_initializer_list);
 
 // A pattern that is used to capture tokens that are not supposed to be
@@ -213,7 +213,7 @@ std::string NoCapturePattern(const std::string& pattern,
 // matches |pattern| with an additional uncaptured |prefix_pattern| and
 // |suffix_pattern|.
 std::string CaptureTypeWithAffixedPattern(
-    const ServerFieldType& type,
+    const FieldType& type,
     const std::string& prefix_pattern,
     const std::string& pattern,
     const std::string& suffix_pattern,
@@ -222,7 +222,7 @@ std::string CaptureTypeWithAffixedPattern(
 // Convenience wrapper for |CaptureTypeWithAffixedPattern()| with an empty
 // |suffix_pattern|.
 std::string CaptureTypeWithPrefixedPattern(
-    const ServerFieldType& type,
+    const FieldType& type,
     const std::string& prefix_pattern,
     const std::string& pattern,
     const CaptureOptions& options = CaptureOptions());
@@ -230,7 +230,7 @@ std::string CaptureTypeWithPrefixedPattern(
 // Convenience wrapper for |CaptureTypeWithAffixedPattern()| with an empty
 // |prefix_pattern|.
 std::string CaptureTypeWithSuffixedPattern(
-    const ServerFieldType& type,
+    const FieldType& type,
     const std::string& pattern,
     const std::string& suffix_pattern,
     const CaptureOptions& options = CaptureOptions());
@@ -238,7 +238,7 @@ std::string CaptureTypeWithSuffixedPattern(
 // Convenience wrapper for |CaptureTypeWithAffixedPattern()| with an empty
 // |prefix_pattern| and |suffix_pattern|.
 std::string CaptureTypeWithPattern(
-    const ServerFieldType& type,
+    const FieldType& type,
     const std::string& pattern,
     const CaptureOptions options = CaptureOptions());
 

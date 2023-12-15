@@ -272,7 +272,7 @@ class FormStructure {
   // empty set if the form doesn't reference the given type or if all inputs
   // are accepted (e.g., <input type="text" autocomplete="region">).
   // All returned values are standardized to upper case.
-  std::set<std::u16string> PossibleValues(ServerFieldType type);
+  std::set<std::u16string> PossibleValues(FieldType type);
 
   // Rationalize phone number fields in a given section, that is only fill
   // the fields that are considered composing a first complete phone number.

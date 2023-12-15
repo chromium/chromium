@@ -96,7 +96,7 @@ constexpr std::string_view kPlusAddressSuggestionMetric =
 // `Suggestion::Guid(guid)`. This method also sets the
 // `Suggestion::field_by_field_filling_type_used` to `fbf_type_used`.
 Suggestion CreateFieldByFieldFillingSuggestion(const std::string& guid,
-                                               ServerFieldType fbf_type_used) {
+                                               FieldType fbf_type_used) {
   Suggestion suggestion = test::CreateAutofillSuggestion(
       GroupTypeOfServerFieldType(fbf_type_used) == FieldTypeGroup::kCreditCard
           ? PopupItemId::kCreditCardFieldByFieldFilling
@@ -1245,7 +1245,7 @@ TEST_P(FillingMethodMetricsUnitTest, RecordFillingMethodForPopupType) {
                                         params.target_metric, 0);
 
     FieldPrediction prediction;
-    prediction.set_type(ServerFieldType::NAME_FIRST);
+    prediction.set_type(FieldType::NAME_FIRST);
     get_triggering_autofill_field()->set_server_predictions({prediction});
 
     // Now the field is classified as an address field and should produce the

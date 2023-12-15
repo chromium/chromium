@@ -30,36 +30,36 @@ std::u16string ConstructMobileLabelLine(
 // Returns true if |type| is associated with an address, but not with a street
 // address. For example, if the given type is ADDRESS_HOME_ZIP, then true is
 // returned. If ADDRESS_BILLING_LINE1 is given then false is returned.
-bool IsNonStreetAddressPart(ServerFieldType type);
+bool IsNonStreetAddressPart(FieldType type);
 
 // Returns true if |type| is associated with a street address.
-bool IsStreetAddressPart(ServerFieldType type);
+bool IsStreetAddressPart(FieldType type);
 
 // Returns true if |types| has a non-street-address-related type.
-bool HasNonStreetAddress(const std::vector<ServerFieldType>& types);
+bool HasNonStreetAddress(const std::vector<FieldType>& types);
 
 // Returns true if |types| has a street-address-related type.
-bool HasStreetAddress(const std::vector<ServerFieldType>& types);
+bool HasStreetAddress(const std::vector<FieldType>& types);
 
 // Returns a vector of only street-address-related field types in |types| if
 // |extract_street_address_types| is true, e.g. ADDRESS_HOME_LINE1.
 //
 // Returns a vector of only non-street-address-related field types in |types|
 // if |extract_street_address_types| is false, e.g. ADDRESS_BILLING_ZIP.
-std::vector<ServerFieldType> ExtractSpecifiedAddressFieldTypes(
+std::vector<FieldType> ExtractSpecifiedAddressFieldTypes(
     bool extract_street_address_types,
-    const std::vector<ServerFieldType>& types);
+    const std::vector<FieldType>& types);
 
 // Returns a collection of the types in |types| without |field_type_to_remove|.
-std::vector<ServerFieldType> TypesWithoutFocusedField(
-    const std::vector<ServerFieldType>& types,
-    ServerFieldType field_type_to_remove);
+std::vector<FieldType> TypesWithoutFocusedField(
+    const std::vector<FieldType>& types,
+    FieldType field_type_to_remove);
 
 // Returns a pared down copy of |profile|. The copy has the same guid, origin,
 // country and language codes, and |field_types| as |profile|.
 AutofillProfile MakeTrimmedProfile(const AutofillProfile& profile,
                                    const std::string& app_locale,
-                                   const std::vector<ServerFieldType>& types);
+                                   const std::vector<FieldType>& types);
 
 // Returns either street-address data or non-street-address data found in
 // |profile|. If |focused_field_type| is a street address field, then returns
@@ -75,12 +75,11 @@ AutofillProfile MakeTrimmedProfile(const AutofillProfile& profile,
 // field and if the state and zip code can be in the label, then MA 01852 is
 // returned. If there are no other non-street-address fields or if the data is
 // not present in |profile|, then an empty string is returned.
-std::u16string GetLabelForFocusedAddress(
-    ServerFieldType focused_field_type,
-    bool form_has_street_address,
-    const AutofillProfile& profile,
-    const std::string& app_locale,
-    const std::vector<ServerFieldType>& types);
+std::u16string GetLabelForFocusedAddress(FieldType focused_field_type,
+                                         bool form_has_street_address,
+                                         const AutofillProfile& profile,
+                                         const std::string& app_locale,
+                                         const std::vector<FieldType>& types);
 
 // If |use_street_address| is true and if |profile| is associated with a street
 // address, then returns the street address, e.g. 24 Beacon St.
@@ -91,17 +90,16 @@ std::u16string GetLabelForFocusedAddress(
 std::u16string GetLabelAddress(bool use_street_address,
                                const AutofillProfile& profile,
                                const std::string& app_locale,
-                               const std::vector<ServerFieldType>& types);
+                               const std::vector<FieldType>& types);
 
 // Returns the national address associated with |profile|, e.g.
 // 24 Beacon St., Boston, MA 02133.
-std::u16string GetLabelNationalAddress(
-    const std::vector<ServerFieldType>& types,
-    const AutofillProfile& profile,
-    const std::string& app_locale);
+std::u16string GetLabelNationalAddress(const std::vector<FieldType>& types,
+                                       const AutofillProfile& profile,
+                                       const std::string& app_locale);
 
 // Returns the street address associated with |profile|, e.g. 24 Beacon St.
-std::u16string GetLabelStreetAddress(const std::vector<ServerFieldType>& types,
+std::u16string GetLabelStreetAddress(const std::vector<FieldType>& types,
                                      const AutofillProfile& profile,
                                      const std::string& app_locale);
 
@@ -112,12 +110,12 @@ std::u16string GetLabelForProfileOnFocusedNonStreetAddress(
     bool form_has_street_address,
     const AutofillProfile& profile,
     const std::string& app_locale,
-    const std::vector<ServerFieldType>& types,
+    const std::vector<FieldType>& types,
     const std::u16string& contact_info);
 
 // Returns a name that is (A) associated with |profile| and (B) found in
 // |types|; otherwise, returns an empty string.
-std::u16string GetLabelName(const std::vector<ServerFieldType>& types,
+std::u16string GetLabelName(const std::vector<FieldType>& types,
                             const AutofillProfile& profile,
                             const std::string& app_locale);
 
@@ -150,13 +148,13 @@ bool HaveSameFirstNames(const std::vector<const AutofillProfile*>& profiles,
 bool HaveSameNonStreetAddresses(
     const std::vector<const AutofillProfile*>& profiles,
     const std::string& app_locale,
-    const std::vector<ServerFieldType>& types);
+    const std::vector<FieldType>& types);
 bool HaveSamePhoneNumbers(const std::vector<const AutofillProfile*>& profiles,
                           const std::string& app_locale);
 bool HaveSameStreetAddresses(
     const std::vector<const AutofillProfile*>& profiles,
     const std::string& app_locale,
-    const std::vector<ServerFieldType>& types);
+    const std::vector<FieldType>& types);
 
 // Each HasUnfocused* function below returns true if the form described by
 // |form_groups| includes a field corresponding to the specified data and if
@@ -164,20 +162,18 @@ bool HaveSameStreetAddresses(
 // is not associated with the |focused_group|.
 bool HasUnfocusedEmailField(FieldTypeGroup focused_group, uint32_t form_groups);
 bool HasUnfocusedNameField(FieldTypeGroup focused_group, uint32_t form_groups);
-bool HasUnfocusedNonStreetAddressField(
-    ServerFieldType focused_field,
-    FieldTypeGroup focused_group,
-    const std::vector<ServerFieldType>& types);
+bool HasUnfocusedNonStreetAddressField(FieldType focused_field,
+                                       FieldTypeGroup focused_group,
+                                       const std::vector<FieldType>& types);
 bool HasUnfocusedPhoneField(FieldTypeGroup focused_group, uint32_t form_groups);
-bool HasUnfocusedStreetAddressField(ServerFieldType focused_field,
+bool HasUnfocusedStreetAddressField(FieldType focused_field,
                                     FieldTypeGroup focused_group,
-                                    const std::vector<ServerFieldType>& types);
+                                    const std::vector<FieldType>& types);
 
 // Returns true if the form has only non-street-address-related fields, such as
 // city, state, and zip code.
-bool FormHasOnlyNonStreetAddressFields(
-    const std::vector<ServerFieldType>& types,
-    uint32_t form_groups);
+bool FormHasOnlyNonStreetAddressFields(const std::vector<FieldType>& types,
+                                       uint32_t form_groups);
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_LABEL_FORMATTER_UTILS_H_

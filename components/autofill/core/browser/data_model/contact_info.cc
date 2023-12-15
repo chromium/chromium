@@ -77,7 +77,7 @@ bool NameInfo::operator==(const NameInfo& other) const {
   return name_->SameAs(*other.name_);
 }
 
-std::u16string NameInfo::GetRawInfo(ServerFieldType type) const {
+std::u16string NameInfo::GetRawInfo(FieldType type) const {
   DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfServerFieldType(type));
 
   // TODO(crbug.com/1141460): Remove once honorific prefixes are launched.
@@ -93,7 +93,7 @@ std::u16string NameInfo::GetRawInfo(ServerFieldType type) const {
     return name_->GetValueForType(type);
 }
 
-void NameInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
+void NameInfo::SetRawInfoWithVerificationStatus(FieldType type,
                                                 const std::u16string& value,
                                                 VerificationStatus status) {
   DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfServerFieldType(type));
@@ -149,8 +149,7 @@ void NameInfo::GetMatchingTypes(const std::u16string& text,
   }
 }
 
-VerificationStatus NameInfo::GetVerificationStatusImpl(
-    ServerFieldType type) const {
+VerificationStatus NameInfo::GetVerificationStatusImpl(FieldType type) const {
   // Without the second generation of the structured name tree, honorific
   // prefixes and the name including the prefix are unsupported types.
   if (!((type == NAME_HONORIFIC_PREFIX ||
@@ -185,14 +184,14 @@ void EmailInfo::GetSupportedTypes(FieldTypeSet* supported_types) const {
   supported_types->insert(EMAIL_ADDRESS);
 }
 
-std::u16string EmailInfo::GetRawInfo(ServerFieldType type) const {
+std::u16string EmailInfo::GetRawInfo(FieldType type) const {
   if (type == EMAIL_ADDRESS)
     return email_;
 
   return std::u16string();
 }
 
-void EmailInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
+void EmailInfo::SetRawInfoWithVerificationStatus(FieldType type,
                                                  const std::u16string& value,
                                                  VerificationStatus status) {
   DCHECK_EQ(EMAIL_ADDRESS, type);
@@ -224,11 +223,11 @@ void CompanyInfo::GetMatchingTypes(const std::u16string& text,
   }
 }
 
-std::u16string CompanyInfo::GetRawInfo(ServerFieldType type) const {
+std::u16string CompanyInfo::GetRawInfo(FieldType type) const {
   return company_name_;
 }
 
-void CompanyInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
+void CompanyInfo::SetRawInfoWithVerificationStatus(FieldType type,
                                                    const std::u16string& value,
                                                    VerificationStatus status) {
   DCHECK_EQ(COMPANY_NAME, type);

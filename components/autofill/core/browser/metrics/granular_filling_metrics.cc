@@ -12,7 +12,7 @@ namespace autofill::autofill_metrics {
 namespace {
 
 AutofillFieldByFieldFillingTypes GetFieldByFieldFillingType(
-    ServerFieldType field_type) {
+    FieldType field_type) {
   switch (field_type) {
     case NAME_FIRST:
       return AutofillFieldByFieldFillingTypes::kNameFirst;
@@ -68,7 +68,7 @@ void LogFillingMethodUsed(AutofillFillingMethodMetric filling_method) {
   base::UmaHistogramEnumeration("Autofill.FillingMethodUsed", filling_method);
 }
 
-void LogFieldByFieldFillingFieldUsed(ServerFieldType field_type) {
+void LogFieldByFieldFillingFieldUsed(FieldType field_type) {
   base::UmaHistogramEnumeration("Autofill.FieldByFieldFilling.FieldTypeUsed",
                                 GetFieldByFieldFillingType(field_type),
                                 AutofillFieldByFieldFillingTypes::kMaxValue);

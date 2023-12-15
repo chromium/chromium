@@ -76,8 +76,8 @@ class Iban : public AutofillDataModel {
   AutofillMetadata GetMetadata() const override;
   bool SetMetadata(const AutofillMetadata& metadata) override;
 
-  std::u16string GetRawInfo(ServerFieldType type) const override;
-  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+  std::u16string GetRawInfo(FieldType type) const override;
+  void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
   void GetSupportedTypes(FieldTypeSet* supported_types) const override;

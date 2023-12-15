@@ -85,7 +85,7 @@ const std::vector<const char*> NotNumericMonthsContentsWithPlaceholder() {
 
 AutofillField CreateTestSelectAutofillField(
     const std::vector<const char*>& values,
-    ServerFieldType heuristic_type) {
+    FieldType heuristic_type) {
   AutofillField field{test::CreateTestSelectField(values)};
   field.set_heuristic_type(GetActiveHeuristicSource(), heuristic_type);
   return field;
@@ -421,7 +421,7 @@ struct FillUtilExpirationDateTestCase {
   std::u16string expected_value;
   bool expected_response;
   const char* opt_label = nullptr;
-  ServerFieldType server_override = UNKNOWN_TYPE;
+  FieldType server_override = UNKNOWN_TYPE;
   // If this is absl::nullopt, a test is valid regardless whether the
   // features::kAutofillEnableExpirationDateImprovements is enabled or not.
   // If it is true, it should only execute if

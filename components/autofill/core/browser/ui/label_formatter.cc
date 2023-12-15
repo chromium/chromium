@@ -35,7 +35,7 @@ using data_util::bit_field_type_groups::kPhone;
 LabelFormatter::LabelFormatter(
     const std::vector<const AutofillProfile*>& profiles,
     const std::string& app_locale,
-    ServerFieldType focused_field_type,
+    FieldType focused_field_type,
     uint32_t groups,
     const FieldTypeSet& field_types)
     : profiles_(profiles),
@@ -59,7 +59,7 @@ LabelFormatter::LabelFormatter(
   // Countries are excluded to prevent them from appearing in labels with
   // national addresses.
   auto can_be_shown_in_label =
-      [&groups_for_labels](ServerFieldType field_type) -> bool {
+      [&groups_for_labels](FieldType field_type) -> bool {
     return groups_for_labels.find(GroupTypeOfServerFieldType(field_type)) !=
                groups_for_labels.end() &&
            field_type != ADDRESS_HOME_COUNTRY;
@@ -85,7 +85,7 @@ std::vector<std::u16string> LabelFormatter::GetLabels() const {
 std::unique_ptr<LabelFormatter> LabelFormatter::Create(
     const std::vector<const AutofillProfile*>& profiles,
     const std::string& app_locale,
-    ServerFieldType focused_field_type,
+    FieldType focused_field_type,
     const FieldTypeSet& field_types) {
   const uint32_t groups = data_util::DetermineGroups(field_types);
   if (!data_util::IsSupportedFormType(groups)) {

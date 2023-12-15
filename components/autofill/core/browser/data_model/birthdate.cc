@@ -15,7 +15,7 @@ bool operator==(const Birthdate& a, const Birthdate& b) {
   return a.day_ == b.day_ && a.month_ == b.month_ && a.year_ == b.year_;
 }
 
-std::u16string Birthdate::GetRawInfo(ServerFieldType type) const {
+std::u16string Birthdate::GetRawInfo(FieldType type) const {
   DCHECK_EQ(GroupTypeOfServerFieldType(type), FieldTypeGroup::kBirthdateField);
 
   switch (type) {
@@ -31,7 +31,7 @@ std::u16string Birthdate::GetRawInfo(ServerFieldType type) const {
   }
 }
 
-int Birthdate::GetRawInfoAsInt(ServerFieldType type) const {
+int Birthdate::GetRawInfoAsInt(FieldType type) const {
   switch (type) {
     case BIRTHDATE_DAY:
       return day_;
@@ -45,7 +45,7 @@ int Birthdate::GetRawInfoAsInt(ServerFieldType type) const {
   }
 }
 
-void Birthdate::SetRawInfoWithVerificationStatus(ServerFieldType type,
+void Birthdate::SetRawInfoWithVerificationStatus(FieldType type,
                                                  const std::u16string& value,
                                                  VerificationStatus status) {
   DCHECK_EQ(GroupTypeOfServerFieldType(type), FieldTypeGroup::kBirthdateField);
@@ -67,7 +67,7 @@ void Birthdate::SetRawInfoWithVerificationStatus(ServerFieldType type,
 }
 
 void Birthdate::SetRawInfoAsIntWithVerificationStatus(
-    ServerFieldType type,
+    FieldType type,
     int value,
     VerificationStatus status) {
   auto ValueIfInRangeOrZero = [value](int lower_bound, int upper_bound) {

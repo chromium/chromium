@@ -751,8 +751,8 @@ class AutofillMetrics {
                       FieldSignature field_signature,
                       QualityMetricPredictionSource prediction_source,
                       QualityMetricType metric_type,
-                      ServerFieldType predicted_type,
-                      ServerFieldType actual_type);
+                      FieldType predicted_type,
+                      FieldType actual_type);
     void LogAutofillFieldInfoAtFormRemove(
         const FormStructure& form,
         const AutofillField& field,
@@ -792,7 +792,7 @@ class AutofillMetrics {
     void LogRepeatedServerTypePredictionRationalized(
         const FormSignature form_signature,
         const AutofillField& field,
-        ServerFieldType old_type);
+        FieldType old_type);
 
     // Logs a hash of the `sectioning_signature` for a specific
     // `form_signature`. This is useful for detecting sites where different
@@ -1329,8 +1329,8 @@ class AutofillMetrics {
   // corresponding to the field's `autocomplete_state`.
   static void LogAutocompletePredictionCollisionTypes(
       AutocompleteState autocomplete_state,
-      ServerFieldType server_type,
-      ServerFieldType heuristic_types);
+      FieldType server_type,
+      FieldType heuristic_types);
 
   // Logs whether a heuristic detection for an NUMERIC_QUANTITY collides with a
   // server prediction.
@@ -1352,7 +1352,7 @@ class AutofillMetrics {
   // Logs the context menu impressions based on the autofill type as well as
   // based on the autocomplete type.
   static void LogContextMenuImpressionsForField(
-      ServerFieldType field_type,
+      FieldType field_type,
       AutocompleteState autocomplete_state);
 
   // Logs the context menu impressions for a submitted form. Mainly logs the
@@ -1382,7 +1382,7 @@ class AutofillMetrics {
 
 #if defined(UNIT_TEST)
 int GetFieldTypeUserEditStatusMetric(
-    ServerFieldType server_type,
+    FieldType server_type,
     AutofillMetrics::AutofilledFieldUserEditingStatusMetric metric);
 #endif
 

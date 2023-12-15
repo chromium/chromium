@@ -35,7 +35,7 @@ namespace {
 
 // Returns true if a field that has |max_length| can fit the data for a field of
 // |type|.
-bool FieldCanFitDataForFieldType(uint64_t max_length, ServerFieldType type) {
+bool FieldCanFitDataForFieldType(uint64_t max_length, FieldType type) {
   if (max_length == 0)
     return true;
 
@@ -497,7 +497,7 @@ void CreditCardField::AddClassifications(
       // We try to derive the expiration date from the max-length and label or
       // placeholder strings. If that's not possible, we fallback to the format
       // determined in `GetExpirationYearType()`.
-      ServerFieldType fallback_type =
+      FieldType fallback_type =
           GetExpirationYearType() == CREDIT_CARD_EXP_2_DIGIT_YEAR
               ? CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
               : CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
@@ -656,11 +656,11 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
 }
 
 // static
-ServerFieldType CreditCardField::DetermineExpirationYearType(
+FieldType CreditCardField::DetermineExpirationYearType(
     const AutofillField& field,
-    ServerFieldType fallback_type,
-    ServerFieldType server_hint,
-    ServerFieldType forced_field_type) {
+    FieldType fallback_type,
+    FieldType server_hint,
+    FieldType forced_field_type) {
   // Forced server classifications always take priority if the field type
   // matches. Otherwise, the server override happens at a different spot.
   if (forced_field_type == CREDIT_CARD_EXP_2_DIGIT_YEAR ||
@@ -740,7 +740,7 @@ ServerFieldType CreditCardField::DetermineExpirationYearType(
   return fallback_type;
 }
 
-ServerFieldType CreditCardField::GetExpirationYearType() const {
+FieldType CreditCardField::GetExpirationYearType() const {
   if (expiration_date_) {
     return exp_year_type_;
   }
@@ -771,11 +771,10 @@ bool CreditCardField::HasExpiration() const {
 
 // static
 CreditCardField::ExpirationDateFormat
-CreditCardField::DetermineExpirationDateFormat(
-    const AutofillField& field,
-    ServerFieldType fallback_type,
-    ServerFieldType server_hint,
-    ServerFieldType forced_field_type) {
+CreditCardField::DetermineExpirationDateFormat(const AutofillField& field,
+                                               FieldType fallback_type,
+                                               FieldType server_hint,
+                                               FieldType forced_field_type) {
   CHECK(fallback_type == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR ||
         fallback_type == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
   static constexpr size_t kMonthLength = 2;  // 2 characters for a MM format.
@@ -840,7 +839,7 @@ CreditCardField::DetermineExpirationDateFormat(
   // We may temporarily add 0 entries in case a specific parameter does not
   // have an indication for the format to use. This simplifies the code.
   constexpr uint8_t kInvalid = 0;
-  auto type_length = [](ServerFieldType type) -> uint8_t {
+  auto type_length = [](FieldType type) -> uint8_t {
     return type == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR   ? 2
            : type == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR ? 4
                                                        : kInvalid;

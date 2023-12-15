@@ -309,7 +309,7 @@ void PhoneField::AddClassifications(
                         field_candidates);
     }
 
-    ServerFieldType field_number_type = PHONE_HOME_NUMBER;
+    FieldType field_number_type = PHONE_HOME_NUMBER;
     // Rationalization will pick the correct trunk-type, so this logic doesn't
     // need to distinguish.
     if (parsed_phone_fields_[FIELD_AREA_CODE]) {

@@ -61,7 +61,7 @@ StructuredAddressesFormatProvider::GetInstance() {
 }
 
 std::u16string StructuredAddressesFormatProvider::GetPattern(
-    ServerFieldType type,
+    FieldType type,
     std::string_view country_code,
     const ContextInfo& info) const {
   switch (type) {

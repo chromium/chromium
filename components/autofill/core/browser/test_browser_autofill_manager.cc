@@ -183,22 +183,23 @@ bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(
 
 void TestBrowserAutofillManager::AddSeenForm(
     const FormData& form,
-    const std::vector<ServerFieldType>& heuristic_types,
-    const std::vector<ServerFieldType>& server_types,
+    const std::vector<FieldType>& heuristic_types,
+    const std::vector<FieldType>& server_types,
     bool preserve_values_in_form_structure) {
-  std::vector<std::vector<std::pair<HeuristicSource, ServerFieldType>>>
+  std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>
       all_heuristic_types;
-  for (ServerFieldType type : heuristic_types)
+  for (FieldType type : heuristic_types) {
     all_heuristic_types.push_back({{GetActiveHeuristicSource(), type}});
+  }
   AddSeenForm(form, all_heuristic_types, server_types,
               preserve_values_in_form_structure);
 }
 
 void TestBrowserAutofillManager::AddSeenForm(
     const FormData& form,
-    const std::vector<std::vector<std::pair<HeuristicSource, ServerFieldType>>>&
+    const std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>&
         heuristic_types,
-    const std::vector<ServerFieldType>& server_types,
+    const std::vector<FieldType>& server_types,
     bool preserve_values_in_form_structure) {
   auto form_structure = std::make_unique<FormStructure>(
       preserve_values_in_form_structure ? form : test::WithoutValues(form));

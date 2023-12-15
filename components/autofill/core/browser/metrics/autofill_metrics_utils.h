@@ -101,7 +101,7 @@ enum class SettingsVisibleFieldTypeForMetrics {
 // Converts a server field type that can be edited in the settings to an enum
 // used for metrics.
 SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
-    ServerFieldType field_type);
+    FieldType field_type);
 
 }  // namespace autofill::autofill_metrics
 

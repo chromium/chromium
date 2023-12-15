@@ -225,8 +225,8 @@ struct Suggestion {
 
   // When `popup_item_id` is
   // `PopupItemId::k(Address|CreditCard)FieldByFieldFilling`, specifies the
-  // `ServerFieldType` used to build the suggestion's `main_text`.
-  std::optional<ServerFieldType> field_by_field_filling_type_used;
+  // `FieldType` used to build the suggestion's `main_text`.
+  std::optional<FieldType> field_by_field_filling_type_used;
 
   // Denotes whether this suggestion was hidden prior to the effects caused by
   // kAutofillUseAddressRewriterInProfileSubsetComparison.

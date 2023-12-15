@@ -67,19 +67,18 @@ class CreditCardField : public FormField {
   // CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR or CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR.
   static ExpirationDateFormat DetermineExpirationDateFormat(
       const AutofillField& field,
-      ServerFieldType fallback_type,
-      ServerFieldType server_hint,
-      ServerFieldType forced_field_type);
+      FieldType fallback_type,
+      FieldType server_hint,
+      FieldType forced_field_type);
 
   // Returns the field type for an expiration year field in the following order
   // of priority: `forced_field_type` > type derived from heuristically
   // determined signals > `server_hint` > `fallback_type`. The server field
   // types can be UNKOWN_TYPE in which case they are ignored.
-  static ServerFieldType DetermineExpirationYearType(
-      const AutofillField& field,
-      ServerFieldType fallback_type,
-      ServerFieldType server_hint,
-      ServerFieldType forced_field_type);
+  static FieldType DetermineExpirationYearType(const AutofillField& field,
+                                               FieldType fallback_type,
+                                               FieldType server_hint,
+                                               FieldType forced_field_type);
 
  protected:
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
@@ -123,7 +122,7 @@ class CreditCardField : public FormField {
   // For the combined expiration field we return |exp_year_type_|; otherwise if
   // |expiration_year_| is having year with |max_length| of 2-digits we return
   // |CREDIT_CARD_EXP_2_DIGIT_YEAR|; otherwise |CREDIT_CARD_EXP_4_DIGIT_YEAR|.
-  ServerFieldType GetExpirationYearType() const;
+  FieldType GetExpirationYearType() const;
 
   // Returns whether the expiration has been set for this credit card field.
   // It can be either a date or both the month and the year.
@@ -157,7 +156,7 @@ class CreditCardField : public FormField {
   // For combined expiration field having year as 2-digits we store here
   // |CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR|; otherwise we store
   // |CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR|.
-  ServerFieldType exp_year_type_;
+  FieldType exp_year_type_;
 };
 
 }  // namespace autofill

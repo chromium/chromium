@@ -43,7 +43,7 @@ namespace {
 // cases, the local heuristics predictions will be used to determine the field
 // overall type.
 static constexpr auto kAutofillHeuristicsVsHtmlOverrides =
-    base::MakeFixedFlatSet<std::pair<ServerFieldType, HtmlFieldType>>(
+    base::MakeFixedFlatSet<std::pair<FieldType, HtmlFieldType>>(
         {{ADDRESS_HOME_ADMIN_LEVEL2, HtmlFieldType::kAddressLevel1},
          {ADDRESS_HOME_ADMIN_LEVEL2, HtmlFieldType::kAddressLevel2},
          {ADDRESS_HOME_APT_NUM, HtmlFieldType::kAddressLine2},
@@ -70,7 +70,7 @@ static constexpr auto kAutofillHeuristicsVsHtmlOverrides =
 // incorrectly. In these cases, the local heuristics predictions will be used to
 // determine the field type.
 static constexpr auto kAutofillHeuristicsVsServerOverrides =
-    base::MakeFixedFlatSet<std::pair<ServerFieldType, ServerFieldType>>(
+    base::MakeFixedFlatSet<std::pair<FieldType, FieldType>>(
         {{ADDRESS_HOME_ADMIN_LEVEL2, ADDRESS_HOME_CITY},
          {ADDRESS_HOME_APT_NUM, ADDRESS_HOME_LINE2},
          {ADDRESS_HOME_APT_NUM, ADDRESS_HOME_LINE3},
@@ -120,7 +120,7 @@ bool AreCollapsibleLogEvents(const AutofillField::FieldLogEventType& event1,
 // Returns whether the `heuristic_type` should be preferred over the
 // `html_type`. For certain field types that have been recently introduced, we
 // want to prioritize local heuristics over the autocomplete type.
-bool PreferHeuristicOverHtml(ServerFieldType heuristic_type,
+bool PreferHeuristicOverHtml(FieldType heuristic_type,
                              HtmlFieldType html_type) {
   return base::FeatureList::IsEnabled(
              features::kAutofillLocalHeuristicsOverrides) &&
@@ -133,8 +133,8 @@ bool PreferHeuristicOverHtml(ServerFieldType heuristic_type,
 // want to prioritize the local heuristics predictions because they are more
 // likely to be accurate. By prioritizing the local heuristics predictions, we
 // can help the server to "learn" the correct classification for these fields.
-bool PreferHeuristicOverServer(ServerFieldType heuristic_type,
-                               ServerFieldType server_type) {
+bool PreferHeuristicOverServer(FieldType heuristic_type,
+                               FieldType server_type) {
   return base::FeatureList::IsEnabled(
              features::kAutofillLocalHeuristicsOverrides) &&
          base::Contains(kAutofillHeuristicsVsServerOverrides,
@@ -144,8 +144,8 @@ bool PreferHeuristicOverServer(ServerFieldType heuristic_type,
 // Util function for `ComputedType`. Returns the values of HtmlFieldType that
 // won't be overridden by heuristics or server predictions, up to a few
 // exceptions. Check function `ComputedType` for more details.
-DenseSet<HtmlFieldType> BelievedHtmlTypes(ServerFieldType heuristic_prediction,
-                                          ServerFieldType server_prediction,
+DenseSet<HtmlFieldType> BelievedHtmlTypes(FieldType heuristic_prediction,
+                                          FieldType server_prediction,
                                           bool is_credit_card_prediction) {
   DenseSet<HtmlFieldType> believed_html_types = {};
   constexpr auto kMin = base::to_underlying(HtmlFieldType::kMinValue);
@@ -237,12 +237,12 @@ std::unique_ptr<AutofillField> AutofillField::CreateForPasswordManagerUpload(
   return field;
 }
 
-ServerFieldType AutofillField::heuristic_type() const {
+FieldType AutofillField::heuristic_type() const {
   return heuristic_type(GetActiveHeuristicSource());
 }
 
-ServerFieldType AutofillField::heuristic_type(HeuristicSource s) const {
-  ServerFieldType type = local_type_predictions_[static_cast<size_t>(s)];
+FieldType AutofillField::heuristic_type(HeuristicSource s) const {
+  FieldType type = local_type_predictions_[static_cast<size_t>(s)];
   // `NO_SERVER_DATA` would mean that there is no heuristic type. Client code
   // presumes there is a prediction, therefore we coalesce to `UNKNOWN_TYPE`.
   // Shadow predictions however are not used and we care whether the type is
@@ -250,7 +250,7 @@ ServerFieldType AutofillField::heuristic_type(HeuristicSource s) const {
   return (type > 0 || s != GetActiveHeuristicSource()) ? type : UNKNOWN_TYPE;
 }
 
-ServerFieldType AutofillField::server_type() const {
+FieldType AutofillField::server_type() const {
   return server_predictions_.empty()
              ? NO_SERVER_DATA
              : ToSafeFieldType(server_predictions_[0].type(), NO_SERVER_DATA);
@@ -261,8 +261,7 @@ bool AutofillField::server_type_prediction_is_override() const {
                                      : server_predictions_[0].override();
 }
 
-void AutofillField::set_heuristic_type(HeuristicSource s,
-                                       ServerFieldType type) {
+void AutofillField::set_heuristic_type(HeuristicSource s, FieldType type) {
   if (type < 0 || type > MAX_VALID_FIELD_TYPE ||
       type == FIELD_WITH_DEFAULT_VALUE) {
     NOTREACHED();
@@ -330,7 +329,7 @@ void AutofillField::set_server_predictions(
 }
 
 std::vector<AutofillDataModel::ValidityState>
-AutofillField::get_validities_for_possible_type(ServerFieldType type) {
+AutofillField::get_validities_for_possible_type(FieldType type) {
   if (possible_types_validities_.find(type) == possible_types_validities_.end())
     return {AutofillDataModel::UNVALIDATED};
   return possible_types_validities_[type];
@@ -473,7 +472,7 @@ std::string AutofillField::FieldSignatureAsStr() const {
 }
 
 bool AutofillField::IsFieldFillable() const {
-  ServerFieldType field_type = Type().GetStorableType();
+  FieldType field_type = Type().GetStorableType();
   return IsFillableFieldType(field_type);
 }
 

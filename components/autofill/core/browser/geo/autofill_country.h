@@ -48,9 +48,9 @@ class AutofillCountry {
   // `large_sized` indicates if the field stretches the entire line (true) or
   // half the line (false).
   struct AddressFormatExtension {
-    ServerFieldType type;
+    FieldType type;
     int label_id;
-    ServerFieldType placed_after;
+    FieldType placed_after;
     // Usually " " or "\n". Should not be empty.
     std::string_view separator_before_label;
     bool large_sized;
@@ -61,12 +61,12 @@ class AutofillCountry {
 
   // Returns true if the given `field_type` is part of Autofill's address
   // format for `country_code()`.
-  bool IsAddressFieldSettingAccessible(ServerFieldType field_type) const;
+  bool IsAddressFieldSettingAccessible(FieldType field_type) const;
 
   // Returns true if the given `field_type` is considered required.
   // Not to be confused with libaddressinput's requirements, it has its
   // own set of required fields.
-  bool IsAddressFieldRequired(ServerFieldType field_type) const;
+  bool IsAddressFieldRequired(FieldType field_type) const;
 
   // Returns the likely country code for |locale|, or "US" as a fallback if no
   // mapping from the locale is available.

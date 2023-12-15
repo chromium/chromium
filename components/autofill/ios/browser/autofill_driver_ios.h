@@ -58,8 +58,7 @@ class AutofillDriverIOS : public AutofillDriver,
       mojom::ActionPersistence action_persistence,
       const FormData& data,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
-      override;
+      const base::flat_map<FieldGlobalId, FieldType>& field_type_map) override;
   void ApplyFieldAction(mojom::ActionPersistence action_persistence,
                         mojom::TextReplacement text_replacement,
                         const FieldGlobalId& field,

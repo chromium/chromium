@@ -129,7 +129,7 @@ AutofillSaveUpdateAddressProfileDelegateIOS::GetOriginalProfile() const {
 }
 
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetProfileInfo(
-    ServerFieldType type) const {
+    FieldType type) const {
   return profile_.GetInfo(type, locale_);
 }
 
@@ -179,7 +179,7 @@ bool AutofillSaveUpdateAddressProfileDelegateIOS::Never() {
 }
 
 void AutofillSaveUpdateAddressProfileDelegateIOS::SetProfileInfo(
-    const ServerFieldType& type,
+    const FieldType& type,
     const std::u16string& value) {
   // Since the countries combobox contains the country names, not the country
   // codes, and hence we should use `SetInfo()` to make sure they get converted

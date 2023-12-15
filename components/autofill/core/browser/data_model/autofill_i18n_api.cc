@@ -31,8 +31,7 @@ using i18n_model_definition::kAutofillParsingRulesMap;
 
 // Adjacency mapping, stores for each field type X the list of field types
 // which are children of X.
-using TreeDefinition =
-    base::flat_map<ServerFieldType, base::span<const ServerFieldType>>;
+using TreeDefinition = base::flat_map<FieldType, base::span<const FieldType>>;
 
 using TreeEdgesList =
     base::span<const autofill::i18n_model_definition::FieldTypeDescription>;
@@ -43,10 +42,10 @@ constexpr FieldTypeSet kAddressComputedTypes = {
     ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_LINE3};
 
 // Returns an instance of the AddressComponent implementation that matches
-// the corresponding ServerFieldType if exists. Otherwise, returns a default
+// the corresponding FieldType if exists. Otherwise, returns a default
 // AddressComponent.
 std::unique_ptr<AddressComponent> BuildTreeNode(
-    autofill::ServerFieldType type,
+    autofill::FieldType type,
     std::vector<std::unique_ptr<AddressComponent>> children) {
   switch (type) {
     case ADDRESS_HOME_ADDRESS:
@@ -176,12 +175,12 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
 }
 
 std::unique_ptr<AddressComponent> BuildSubTree(const TreeDefinition& tree_def,
-                                               ServerFieldType root) {
+                                               FieldType root) {
   std::vector<std::unique_ptr<AddressComponent>> children;
   // Leaf nodes do not have an entry in the tree_def.
   if (tree_def.contains(root)) {
     children.reserve(tree_def.at(root).size());
-    for (ServerFieldType child_type : tree_def.at(root)) {
+    for (FieldType child_type : tree_def.at(root)) {
       children.push_back(BuildSubTree(tree_def, child_type));
     }
   }
@@ -214,7 +213,7 @@ std::unique_ptr<AddressComponent> CreateAddressComponentModel(
   // Convert the list of node properties into an adjacency lookup table.
   // For each field type it stores the list of children of the field type.
   TreeDefinition tree_def =
-      base::MakeFlatMap<ServerFieldType, base::span<const ServerFieldType>>(
+      base::MakeFlatMap<FieldType, base::span<const FieldType>>(
           tree_edges, {}, [](const auto& item) {
             return std::make_pair(item.field_type, item.children);
           });
@@ -230,7 +229,7 @@ std::unique_ptr<AddressComponent> CreateAddressComponentModel(
   return result;
 }
 
-std::u16string GetFormattingExpression(ServerFieldType field_type,
+std::u16string GetFormattingExpression(FieldType field_type,
                                        AddressCountryCode country_code) {
   if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel) &&
       GroupTypeOfServerFieldType(field_type) == FieldTypeGroup::kAddress) {
@@ -261,7 +260,7 @@ std::u16string GetFormattingExpression(ServerFieldType field_type,
 
 i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
     std::string_view value,
-    ServerFieldType field_type,
+    FieldType field_type,
     AddressCountryCode country_code) {
   CHECK(GroupTypeOfServerFieldType(field_type) == FieldTypeGroup::kAddress);
   // If `country_code` is specified, attempt to parse the `value` using a
@@ -279,7 +278,7 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
 }
 
 std::optional<std::u16string_view> GetStopwordsExpression(
-    ServerFieldType field_type,
+    FieldType field_type,
     AddressCountryCode country_code) {
   auto* it = kAutofillModelStopwords.find({country_code.value(), field_type});
   if (it == kAutofillModelStopwords.end()) {
@@ -288,7 +287,7 @@ std::optional<std::u16string_view> GetStopwordsExpression(
   return it->second;
 }
 
-bool IsTypeEnabledForCountry(ServerFieldType field_type,
+bool IsTypeEnabledForCountry(FieldType field_type,
                              AddressCountryCode country_code) {
   auto* it = kAutofillModelRules.find(country_code.value());
   if (it == kAutofillModelRules.end()) {

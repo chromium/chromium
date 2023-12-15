@@ -88,7 +88,7 @@ TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnedModelIsTree) {
     for (const auto& [node_type, children_types] : tree_def) {
       EXPECT_TRUE(root->GetNodeForTypeForTesting(node_type));
 
-      for (ServerFieldType child_type : children_types) {
+      for (FieldType child_type : children_types) {
         EXPECT_TRUE(root->GetNodeForTypeForTesting(child_type));
       }
     }
@@ -199,9 +199,9 @@ TEST_F(AutofillI18nApiTest, IsTypeEnabledForCountry) {
     std::unique_ptr<AddressComponent> address =
         CreateAddressComponentModel(address_country_code);
 
-    for (std::underlying_type_t<ServerFieldType> i = 0;
-         i < MAX_VALID_FIELD_TYPE; ++i) {
-      ServerFieldType field_type = ToSafeFieldType(i, NO_SERVER_DATA);
+    for (std::underlying_type_t<FieldType> i = 0; i < MAX_VALID_FIELD_TYPE;
+         ++i) {
+      FieldType field_type = ToSafeFieldType(i, NO_SERVER_DATA);
       if (field_type == NO_SERVER_DATA) {
         continue;
       }

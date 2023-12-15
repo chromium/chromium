@@ -642,7 +642,7 @@ void ExpectFilledCreditCardFormElvis(const FormData& filled_form,
 void CheckThatOnlyFieldByIndexHasThisPossibleType(
     const FormStructure& form_structure,
     size_t field_index,
-    ServerFieldType type,
+    FieldType type,
     FieldPropertiesMask mask) {
   EXPECT_TRUE(field_index < form_structure.field_count());
 
@@ -658,7 +658,7 @@ void CheckThatOnlyFieldByIndexHasThisPossibleType(
 }
 
 void CheckThatNoFieldHasThisPossibleType(const FormStructure& form_structure,
-                                         ServerFieldType type) {
+                                         FieldType type) {
   for (size_t i = 0; i < form_structure.field_count(); i++) {
     EXPECT_THAT(form_structure.field(i)->possible_types(), Not(Contains(type)));
   }
@@ -683,7 +683,7 @@ class MockAutofillDriver : public TestAutofillDriver {
                mojom::ActionPersistence action_persistence,
                const FormData& data,
                const url::Origin& triggered_origin,
-               (const base::flat_map<FieldGlobalId, ServerFieldType>&)),
+               (const base::flat_map<FieldGlobalId, FieldType>&)),
               (override));
   MOCK_METHOD(void,
               ApplyFieldAction,
@@ -5767,8 +5767,8 @@ class BrowserAutofillManagerWithLogEventsTest
   }
 
   std::vector<AutofillField::FieldLogEventType> ToFieldTypeEvents(
-      ServerFieldType heuristic_type,
-      ServerFieldType overall_type,
+      FieldType heuristic_type,
+      FieldType overall_type,
       size_t field_signature_rank = 1) {
     std::vector<AutofillField::FieldLogEventType> expected_events;
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
@@ -6427,7 +6427,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
-    ServerFieldType overall_type = autofill_field_ptr->heuristic_type();
+    FieldType overall_type = autofill_field_ptr->heuristic_type();
     std::vector<AutofillField::FieldLogEventType> expected_events =
         ToFieldTypeEvents(autofill_field_ptr->heuristic_type(), overall_type);
     if (autofill_field_ptr->parseable_label() != u"Middle name") {
@@ -6509,9 +6509,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   test_api(*browser_autofill_manager_)
       .OnLoadedServerPredictions(encoded_response_string,
                                  test::GetEncodedSignatures(*form_structure));
-  std::vector<ServerFieldType> types{NAME_FIRST, ADDRESS_HOME_LINE1,
-                                     ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
-                                     ADDRESS_HOME_ZIP};
+  std::vector<FieldType> types{NAME_FIRST, ADDRESS_HOME_LINE1,
+                               ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
+                               ADDRESS_HOME_ZIP};
   for (size_t i = 0; i < types.size(); ++i) {
     EXPECT_EQ(types[i], form_structure->field(i)->Type().GetStorableType());
   }
@@ -6525,9 +6525,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
         ToFieldTypeEvents(autofill_field_ptr->heuristic_type(),
                           autofill_field_ptr->heuristic_type());
     // The autofill server applies two predictions on the "Name" field.
-    ServerFieldType server_type2 =
-        autofill_field_ptr->parseable_label() == u"Name" ? USERNAME
-                                                         : NO_SERVER_DATA;
+    FieldType server_type2 = autofill_field_ptr->parseable_label() == u"Name"
+                                 ? USERNAME
+                                 : NO_SERVER_DATA;
     FieldPrediction::Source prediction_source2 =
         autofill_field_ptr->parseable_label() == u"Name"
             ? FieldPrediction::SOURCE_PASSWORDS_DEFAULT
@@ -6593,9 +6593,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   AutofillQueryResponse::FormSuggestion* form_suggestion;
   // Set suggestions for form.
   form_suggestion = response.add_form_suggestions();
-  std::vector<ServerFieldType> server_types{
-      NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_STREET_ADDRESS,
-      ADDRESS_HOME_CITY};
+  std::vector<FieldType> server_types{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
+                                      ADDRESS_HOME_STREET_ADDRESS,
+                                      ADDRESS_HOME_CITY};
   for (size_t i = 0; i < server_types.size(); ++i) {
     autofill::test::AddFieldPredictionToForm(form.fields[i], server_types[i],
                                              form_suggestion);
@@ -6610,8 +6610,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   test_api(*browser_autofill_manager_)
       .OnLoadedServerPredictions(encoded_response_string,
                                  test::GetEncodedSignatures(*form_structure));
-  std::vector<ServerFieldType> overall_types{
-      NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_CITY};
+  std::vector<FieldType> overall_types{NAME_FULL, ADDRESS_HOME_LINE1,
+                                       ADDRESS_HOME_LINE2, ADDRESS_HOME_CITY};
   for (size_t i = 0; i < server_types.size(); ++i) {
     EXPECT_EQ(overall_types[i],
               form_structure->field(i)->Type().GetStorableType());
@@ -7601,9 +7601,9 @@ TEST_F(BrowserAutofillManagerTest, DisambiguateUploadTypes) {
 
   struct TestFieldData {
     std::string input_value;
-    ServerFieldType predicted_type;
+    FieldType predicted_type;
     bool expect_disambiguation;
-    ServerFieldType expected_upload_type;
+    FieldType expected_upload_type;
   };
   using TestCase = std::vector<TestFieldData>;
 
@@ -8313,7 +8313,7 @@ TEST_F(BrowserAutofillManagerTest, DontSaveCvcInAutocompleteHistory) {
     const char* label;
     const char* name;
     const char* value;
-    ServerFieldType expected_field_type;
+    FieldType expected_field_type;
   } test_fields[] = {
       {"Card number", "1", "4234-5678-9012-3456", CREDIT_CARD_NUMBER},
       {"Card verification code", "2", "123", CREDIT_CARD_VERIFICATION_CODE},
@@ -8591,10 +8591,9 @@ TEST_F(BrowserAutofillManagerTest,
   }
 
   // Prepare and set known server fields.
-  const std::vector<ServerFieldType> heuristic_types(form.fields.size(),
-                                                     UNKNOWN_TYPE);
-  const std::vector<ServerFieldType> server_types{NAME_FIRST, NAME_MIDDLE,
-                                                  NAME_LAST};
+  const std::vector<FieldType> heuristic_types(form.fields.size(),
+                                               UNKNOWN_TYPE);
+  const std::vector<FieldType> server_types{NAME_FIRST, NAME_MIDDLE, NAME_LAST};
   test_api(*form_structure).SetFieldTypes(heuristic_types, server_types);
   browser_autofill_manager_->AddSeenFormStructure(std::move(form_structure));
 
@@ -9569,18 +9568,17 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
   // - Both a fillable heuristic type and a fillable server type.
   // NO_SERVER_DATA and UNKNOWN_TYPE are both unfillable types, but
   // NO_SERVER_DATA is ignored in the PredictionCollisionType metric.
-  constexpr ServerFieldType kTypeClasses[][2]{
-      {UNKNOWN_TYPE, NO_SERVER_DATA},
-      {UNKNOWN_TYPE, EMAIL_ADDRESS},
-      {ADDRESS_HOME_COUNTRY, UNKNOWN_TYPE},
-      {ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS}};
+  constexpr FieldType kTypeClasses[][2]{{UNKNOWN_TYPE, NO_SERVER_DATA},
+                                        {UNKNOWN_TYPE, EMAIL_ADDRESS},
+                                        {ADDRESS_HOME_COUNTRY, UNKNOWN_TYPE},
+                                        {ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS}};
 
   // Create a form with one field per kAutofillValue x kTypeClass combination.
   FormData form;
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-  std::vector<ServerFieldType> heuristic_types, server_types;
+  std::vector<FieldType> heuristic_types, server_types;
   for (const char* autocomplete : kAutocompleteValues) {
     for (const auto& types : kTypeClasses) {
       form.fields.push_back(CreateTestFormField(
@@ -9629,13 +9627,13 @@ struct ContextMenuImpressionTestCase {
   // Autocomplete attribute value.
   const char* autocomplete_attribute_value;
   // Heuristic type for the field in the test case.
-  ServerFieldType heuristic_type;
+  FieldType heuristic_type;
   // Server type for the field in the test case.
-  ServerFieldType server_type;
+  FieldType server_type;
   // Expected autocomplete state that would be logged in the metrics.
   AutofillMetrics::AutocompleteState expected_autocomplete_state;
   // Expected autofill type that would be logged in the metrics.
-  ServerFieldType expected_autofill_type;
+  FieldType expected_autofill_type;
 };
 
 class BrowserAutofillManagerContextMenuImpressionsTest
@@ -10823,17 +10821,16 @@ class BrowserAutofillManagerVotingTest : public BrowserAutofillManagerTest {
 // Ensure that a vote is submitted after a regular form submission.
 TEST_F(BrowserAutofillManagerVotingTest, Submission) {
   SimulateTypingFirstNameIntoFirstField();
-  EXPECT_CALL(
-      *crowdsourcing_manager(),
-      StartUploadRequest(
-          FirstElementIs(AllOf(
-              FormSignatureIs(CalculateFormSignature(form_)),
-              FieldsAre(FieldAutofillTypeIs(
-                            {ServerFieldType::NAME_FIRST,
-                             ServerFieldType::CREDIT_CARD_NAME_FIRST}),
-                        FieldAutofillTypeIs({ServerFieldType::EMPTY_TYPE})),
-              ObservedSubmissionIs(true))),
-          _, _, _, _));
+  EXPECT_CALL(*crowdsourcing_manager(),
+              StartUploadRequest(
+                  FirstElementIs(AllOf(
+                      FormSignatureIs(CalculateFormSignature(form_)),
+                      FieldsAre(FieldAutofillTypeIs(
+                                    {FieldType::NAME_FIRST,
+                                     FieldType::CREDIT_CARD_NAME_FIRST}),
+                                FieldAutofillTypeIs({FieldType::EMPTY_TYPE})),
+                      ObservedSubmissionIs(true))),
+                  _, _, _, _));
   FormSubmitted(form_);
 }
 
@@ -10854,19 +10851,19 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
 
   // 4. Simulate removing the focus from the form, which generates a second blur
   // vote which should be sent.
-  EXPECT_CALL(*crowdsourcing_manager(),
-              StartUploadRequest(
-                  FirstElementIs(AllOf(
-                      FormSignatureIs(first_form_signature),
-                      FieldsAre(FieldAutofillTypeIs(
-                                    {ServerFieldType::NAME_FIRST,
-                                     ServerFieldType::CREDIT_CARD_NAME_FIRST}),
-                                FieldAutofillTypeIs(
-                                    {ServerFieldType::NAME_LAST,
-                                     ServerFieldType::CREDIT_CARD_NAME_LAST,
-                                     ServerFieldType::NAME_LAST_SECOND})),
-                      ObservedSubmissionIs(false))),
-                  _, _, _, _));
+  EXPECT_CALL(
+      *crowdsourcing_manager(),
+      StartUploadRequest(
+          FirstElementIs(AllOf(
+              FormSignatureIs(first_form_signature),
+              FieldsAre(
+                  FieldAutofillTypeIs({FieldType::NAME_FIRST,
+                                       FieldType::CREDIT_CARD_NAME_FIRST}),
+                  FieldAutofillTypeIs({FieldType::NAME_LAST,
+                                       FieldType::CREDIT_CARD_NAME_LAST,
+                                       FieldType::NAME_LAST_SECOND})),
+              ObservedSubmissionIs(false))),
+          _, _, _, _));
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
   // 5. Grow the form by one field, which changes the form signature.
@@ -10885,11 +10882,10 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
       StartUploadRequest(
           FirstElementIs(AllOf(
               FormSignatureIs(second_form_signature),
-              FieldsAre(
-                  FieldAutofillTypeIs({ServerFieldType::NAME_FIRST}),
-                  FieldAutofillTypeIs({ServerFieldType::NAME_LAST,
-                                       ServerFieldType::NAME_LAST_SECOND}),
-                  FieldAutofillTypeIs({ServerFieldType::EMPTY_TYPE})),
+              FieldsAre(FieldAutofillTypeIs({FieldType::NAME_FIRST}),
+                        FieldAutofillTypeIs({FieldType::NAME_LAST,
+                                             FieldType::NAME_LAST_SECOND}),
+                        FieldAutofillTypeIs({FieldType::EMPTY_TYPE})),
               ObservedSubmissionIs(true))),
           _, _, _, _));
   FormSubmitted(form_);
@@ -10900,17 +10896,16 @@ TEST_F(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
   SimulateTypingFirstNameIntoFirstField();
 
   // Simulate removing focus from form, which triggers a blur vote.
-  EXPECT_CALL(
-      *crowdsourcing_manager(),
-      StartUploadRequest(
-          FirstElementIs(AllOf(
-              FormSignatureIs(CalculateFormSignature(form_)),
-              FieldsAre(FieldAutofillTypeIs(
-                            {ServerFieldType::NAME_FIRST,
-                             ServerFieldType::CREDIT_CARD_NAME_FIRST}),
-                        FieldAutofillTypeIs({ServerFieldType::EMPTY_TYPE})),
-              ObservedSubmissionIs(false))),
-          _, _, _, _));
+  EXPECT_CALL(*crowdsourcing_manager(),
+              StartUploadRequest(
+                  FirstElementIs(AllOf(
+                      FormSignatureIs(CalculateFormSignature(form_)),
+                      FieldsAre(FieldAutofillTypeIs(
+                                    {FieldType::NAME_FIRST,
+                                     FieldType::CREDIT_CARD_NAME_FIRST}),
+                                FieldAutofillTypeIs({FieldType::EMPTY_TYPE})),
+                      ObservedSubmissionIs(false))),
+                  _, _, _, _));
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
   // Simulate a navigation. This is when the vote is sent.
@@ -10925,17 +10920,16 @@ TEST_F(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
   // Simulate removing focus from form, which enqueues a blur vote. The blur
   // vote will be ignored and only the submission will be sent.
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
-  EXPECT_CALL(
-      *crowdsourcing_manager(),
-      StartUploadRequest(
-          FirstElementIs(AllOf(
-              FormSignatureIs(CalculateFormSignature(form_)),
-              FieldsAre(FieldAutofillTypeIs(
-                            {ServerFieldType::NAME_FIRST,
-                             ServerFieldType::CREDIT_CARD_NAME_FIRST}),
-                        FieldAutofillTypeIs({ServerFieldType::EMPTY_TYPE})),
-              ObservedSubmissionIs(true))),
-          _, _, _, _));
+  EXPECT_CALL(*crowdsourcing_manager(),
+              StartUploadRequest(
+                  FirstElementIs(AllOf(
+                      FormSignatureIs(CalculateFormSignature(form_)),
+                      FieldsAre(FieldAutofillTypeIs(
+                                    {FieldType::NAME_FIRST,
+                                     FieldType::CREDIT_CARD_NAME_FIRST}),
+                                FieldAutofillTypeIs({FieldType::EMPTY_TYPE})),
+                      ObservedSubmissionIs(true))),
+                  _, _, _, _));
   FormSubmitted(form_);
 }
 

@@ -20,7 +20,7 @@ class LabelFormatter {
  public:
   LabelFormatter(const std::vector<const AutofillProfile*>& profiles,
                  const std::string& app_locale,
-                 ServerFieldType focused_field_type,
+                 FieldType focused_field_type,
                  uint32_t groups,
                  const FieldTypeSet& field_types);
   virtual ~LabelFormatter();
@@ -39,7 +39,7 @@ class LabelFormatter {
   static std::unique_ptr<LabelFormatter> Create(
       const std::vector<const AutofillProfile*>& profiles,
       const std::string& app_locale,
-      ServerFieldType focused_field_type,
+      FieldType focused_field_type,
       const FieldTypeSet& field_types);
 
  protected:
@@ -52,9 +52,9 @@ class LabelFormatter {
 
   const std::string& app_locale() const { return app_locale_; }
 
-  ServerFieldType focused_field_type() const { return focused_field_type_; }
+  FieldType focused_field_type() const { return focused_field_type_; }
 
-  const std::vector<ServerFieldType>& field_types_for_labels() const {
+  const std::vector<FieldType>& field_types_for_labels() const {
     return field_types_for_labels_;
   }
 
@@ -74,7 +74,7 @@ class LabelFormatter {
   std::string app_locale_;
 
   // The type of field on which the user is focused, e.g. NAME_FIRST.
-  ServerFieldType focused_field_type_;
+  FieldType focused_field_type_;
 
   // The bitmask indicating which FieldTypeGroups are represented in this
   // formatter's associated form.
@@ -83,7 +83,7 @@ class LabelFormatter {
   // The collection of field types that can be used to make labels. It includes
   // only types related to names, addresses, email addresses, and phone
   // numbers. It excludes types related to countries.
-  std::vector<ServerFieldType> field_types_for_labels_;
+  std::vector<FieldType> field_types_for_labels_;
 };
 
 }  // namespace autofill

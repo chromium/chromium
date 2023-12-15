@@ -56,7 +56,7 @@ using autofill_metrics::FormGroupFillingStats;
 // Translates structured name types into simple names that are used for
 // naming histograms.
 constexpr auto kStructuredNameTypeToNameMap =
-    base::MakeFixedFlatMap<ServerFieldType, std::string_view>(
+    base::MakeFixedFlatMap<FieldType, std::string_view>(
         {{NAME_FULL, "Full"},
          {NAME_FIRST, "First"},
          {NAME_MIDDLE, "Middle"},
@@ -67,7 +67,7 @@ constexpr auto kStructuredNameTypeToNameMap =
 // Translates structured address types into simple names that are used for
 // naming histograms.
 constexpr auto kStructuredAddressTypeToNameMap =
-    base::MakeFixedFlatMap<ServerFieldType, std::string_view>(
+    base::MakeFixedFlatMap<FieldType, std::string_view>(
         {{ADDRESS_HOME_STREET_ADDRESS, "StreetAddress"},
          {ADDRESS_HOME_STREET_NAME, "StreetName"},
          {ADDRESS_HOME_HOUSE_NUMBER, "HouseNumber"},
@@ -153,7 +153,7 @@ enum FieldTypeGroupForMetrics {
 // however, because it is not intended for consumption outside of the metrics
 // implementation.
 int GetFieldTypeGroupPredictionQualityMetric(
-    ServerFieldType field_type,
+    FieldType field_type,
     AutofillMetrics::FieldTypeQualityMetric metric) {
   DCHECK_LT(metric, AutofillMetrics::NUM_FIELD_TYPE_QUALITY_METRICS);
 
@@ -400,14 +400,14 @@ int GetFieldTypeGroupPredictionQualityMetric(
   return (group << 8) | metric;
 }
 
-// This function encodes the integer value of a |ServerFieldType| and the
+// This function encodes the integer value of a |FieldType| and the
 // metric value of an |AutofilledFieldUserEditingStatus| into a 16 bit integer.
 // The lower four bits are used to encode the editing status and the higher
 // 12 bits are used to encode the field type.
 int GetFieldTypeUserEditStatusMetric(
-    ServerFieldType server_type,
+    FieldType server_type,
     AutofillMetrics::AutofilledFieldUserEditingStatusMetric metric) {
-  static_assert(ServerFieldType::MAX_VALID_FIELD_TYPE <= (UINT16_MAX >> 4),
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE <= (UINT16_MAX >> 4),
                 "Autofill::ServerTypes value needs more than 12 bits.");
 
   static_assert(
@@ -458,8 +458,8 @@ const char* GetQualityMetricTypeSuffix(
 // the "actual" field type when calculating metrics. If the |predicted_type| is
 // among the |possible_types] then use that as the best type (i.e., the
 // prediction is deemed to have been correct).
-ServerFieldType GetActualFieldType(const FieldTypeSet& possible_types,
-                                   ServerFieldType predicted_type) {
+FieldType GetActualFieldType(const FieldTypeSet& possible_types,
+                             FieldType predicted_type) {
   DCHECK_NE(possible_types.size(), 0u);
 
   if (possible_types.count(EMPTY_TYPE)) {
@@ -491,7 +491,7 @@ ServerFieldType GetActualFieldType(const FieldTypeSet& possible_types,
   }
 
   // Capture the field's type, if it is unambiguous.
-  ServerFieldType actual_type = AMBIGUOUS_TYPE;
+  FieldType actual_type = AMBIGUOUS_TYPE;
   if (collapsed_field_types.size() == 1)
     actual_type = *collapsed_field_types.begin();
 
@@ -514,8 +514,8 @@ void LogPredictionQualityMetricsForFieldsOnlyFilledWhenFocused(
     const std::string& aggregate_histogram,
     const std::string& type_specific_histogram,
     const std::string& rationalization_quality_histogram,
-    ServerFieldType predicted_type,
-    ServerFieldType actual_type,
+    FieldType predicted_type,
+    FieldType actual_type,
     bool is_empty,
     bool is_ambiguous,
     bool log_rationalization_metrics,
@@ -586,8 +586,8 @@ void LogPredictionQualityMetricsForFieldsOnlyFilledWhenFocused(
 void LogPredictionQualityMetricsForCommonFields(
     const std::string& aggregate_histogram,
     const std::string& type_specific_histogram,
-    ServerFieldType predicted_type,
-    ServerFieldType actual_type,
+    FieldType predicted_type,
+    FieldType actual_type,
     bool is_empty,
     bool is_ambiguous) {
   // If the predicted and actual types match then it's either a true positive
@@ -673,7 +673,7 @@ void LogPredictionQualityMetricsForCommonFields(
 // be appended to the metric name, depending on |metric_type|.
 void LogPredictionQualityMetrics(
     AutofillMetrics::QualityMetricPredictionSource prediction_source,
-    ServerFieldType predicted_type,
+    FieldType predicted_type,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
@@ -697,8 +697,7 @@ void LogPredictionQualityMetrics(
           : field.possible_types();
 
   // Get the best type classification we can for the field.
-  ServerFieldType actual_type =
-      GetActualFieldType(possible_types, predicted_type);
+  FieldType actual_type = GetActualFieldType(possible_types, predicted_type);
 
   DVLOG(2) << "Predicted: " << FieldTypeToStringView(predicted_type) << "; "
            << "Actual: " << FieldTypeToStringView(actual_type);
@@ -1957,7 +1956,7 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
   // <iframe allow="shared-autofill">. Whether it's enabled in the main frame is
   // controller by an HTTP header; by default, it is.
   auto RequiresSharedAutofill = [&](const AutofillField& field) {
-    auto IsSensitiveFieldType = [](ServerFieldType field_type) {
+    auto IsSensitiveFieldType = [](FieldType field_type) {
       switch (field_type) {
         case CREDIT_CARD_TYPE:
         case CREDIT_CARD_NAME_FULL:
@@ -2283,8 +2282,8 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogFieldType(
     FieldSignature field_signature,
     QualityMetricPredictionSource prediction_source,
     QualityMetricType metric_type,
-    ServerFieldType predicted_type,
-    ServerFieldType actual_type) {
+    FieldType predicted_type,
+    FieldType actual_type) {
   if (!CanLog())
     return;
 
@@ -2345,19 +2344,19 @@ void AutofillMetrics::FormInteractionsUkmLogger::
 
   // Field types from local heuristics prediction.
   // The field type from the active local heuristic pattern.
-  ServerFieldType heuristic_type = UNKNOWN_TYPE;
+  FieldType heuristic_type = UNKNOWN_TYPE;
   // The type of the field predicted from patterns whose stability is above
   // suspicion.
-  ServerFieldType heuristic_legacy_type = UNKNOWN_TYPE;
+  FieldType heuristic_legacy_type = UNKNOWN_TYPE;
   // The type of the field predicted from the source of local heuristics on
   // the client, which uses patterns applied for most users.
-  ServerFieldType heuristic_default_type = UNKNOWN_TYPE;
+  FieldType heuristic_default_type = UNKNOWN_TYPE;
   // The type of the field predicted from the heuristics that uses experimental
   // patterns.
-  ServerFieldType heuristic_experimental_type = UNKNOWN_TYPE;
+  FieldType heuristic_experimental_type = UNKNOWN_TYPE;
   // The type of the field predicted from the heuristics that uses patterns
   // only for non-user-visible metrics, one step before experimental.
-  ServerFieldType heuristic_next_gen_type = UNKNOWN_TYPE;
+  FieldType heuristic_next_gen_type = UNKNOWN_TYPE;
 
   // Field types from Autocomplete attribute.
   // Information of the HTML autocomplete attribute, see
@@ -2367,20 +2366,20 @@ void AutofillMetrics::FormInteractionsUkmLogger::
 
   // The field type predicted by the Autofill crowdsourced server from
   // majority voting.
-  ServerFieldType server_type1 = NO_SERVER_DATA;
+  FieldType server_type1 = NO_SERVER_DATA;
   FieldPrediction::Source prediction_source1 =
       FieldPrediction::SOURCE_UNSPECIFIED;
-  ServerFieldType server_type2 = NO_SERVER_DATA;
+  FieldType server_type2 = NO_SERVER_DATA;
   FieldPrediction::Source prediction_source2 =
       FieldPrediction::SOURCE_UNSPECIFIED;
   // This is an annotation for server predicted field types which indicates
   // that a manual override defines the server type.
   bool server_type_is_override = false;
 
-  // The final field type from the list of |autofill::ServerFieldType| that we
+  // The final field type from the list of |autofill::FieldType| that we
   // choose after rationalization, which is used to determine
   // the autofill suggestion when the user triggers autofilling.
-  ServerFieldType overall_type = NO_SERVER_DATA;
+  FieldType overall_type = NO_SERVER_DATA;
   // The sections are mapped to consecutive natural numbers starting at 1,
   // numbered according to the ordering of their first fields.
   size_t section_id = 0;
@@ -2616,7 +2615,7 @@ void AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
     // The possible field submitted types determined by comparing the submitted
     // value in the field with the data stored in the Autofill server. We will
     // have at most three possible field submitted types.
-    ServerFieldType submitted_type1 = UNKNOWN_TYPE;
+    FieldType submitted_type1 = UNKNOWN_TYPE;
 
     ukm::builders::Autofill2_FieldInfoAfterSubmission builder(source_id);
     builder
@@ -2716,7 +2715,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
     LogRepeatedServerTypePredictionRationalized(
         const FormSignature form_signature,
         const AutofillField& field,
-        ServerFieldType old_type) {
+        FieldType old_type) {
   if (!CanLog())
     return;
 
@@ -3059,8 +3058,8 @@ void AutofillMetrics::LogAutocompletePredictionCollisionState(
 // static
 void AutofillMetrics::LogAutocompletePredictionCollisionTypes(
     AutocompleteState autocomplete_state,
-    ServerFieldType server_type,
-    ServerFieldType heuristic_type) {
+    FieldType server_type,
+    FieldType heuristic_type) {
   // Convert `autocomplete_state` to a string for the metric's name.
   std::string autocomplete_suffix;
   switch (autocomplete_state) {
@@ -3089,20 +3088,20 @@ void AutofillMetrics::LogAutocompletePredictionCollisionTypes(
   if (server_type != NO_SERVER_DATA) {
     base::UmaHistogramEnumeration(
         kHistogramName + "Server." + autocomplete_suffix, server_type,
-        ServerFieldType::MAX_VALID_FIELD_TYPE);
+        FieldType::MAX_VALID_FIELD_TYPE);
   }
   base::UmaHistogramEnumeration(
       kHistogramName + "Heuristics." + autocomplete_suffix, heuristic_type,
-      ServerFieldType::MAX_VALID_FIELD_TYPE);
+      FieldType::MAX_VALID_FIELD_TYPE);
   base::UmaHistogramEnumeration(
       kHistogramName + "ServerOrHeuristics." + autocomplete_suffix,
       server_type != NO_SERVER_DATA ? server_type : heuristic_type,
-      ServerFieldType::MAX_VALID_FIELD_TYPE);
+      FieldType::MAX_VALID_FIELD_TYPE);
 }
 
 // static
 void AutofillMetrics::LogContextMenuImpressionsForField(
-    ServerFieldType field_type,
+    FieldType field_type,
     AutocompleteState autocomplete_state) {
   base::UmaHistogramEnumeration(
       "Autofill.FieldContextMenuImpressions.ByAutocomplete",

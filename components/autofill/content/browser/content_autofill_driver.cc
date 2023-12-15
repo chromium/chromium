@@ -230,7 +230,7 @@ std::vector<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
     mojom::ActionPersistence action_persistence,
     const FormData& form,
     const url::Origin& triggered_origin,
-    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
+    const base::flat_map<FieldGlobalId, FieldType>& field_type_map) {
   return router().ApplyFormAction(
       this, action_type, action_persistence, form, triggered_origin,
       field_type_map,

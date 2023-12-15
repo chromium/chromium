@@ -41,7 +41,7 @@ using ServerPredictionOverrides = base::flat_map<
 //
 // Here formsignature is the decimal representation of a `FormSignature`,
 // fieldsignature is a decimal representation of a `FieldSignature` and
-// typeprediction is the decimal representation of a ServerFieldType (see
+// typeprediction is the decimal representation of a FieldType (see
 // components/autofill/core/browser/field_types.h). Any number of type
 // predictions is permitted, including zero. If there are zero type predictions,
 // i.e. the override is formsignature_fieldsignature, then the override acts as

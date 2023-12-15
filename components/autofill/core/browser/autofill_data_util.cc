@@ -272,7 +272,7 @@ bool SplitCJKName(const std::vector<base::StringPiece16>& name_tokens,
   return false;
 }
 
-void AddGroupToBitmask(uint32_t* group_bitmask, ServerFieldType type) {
+void AddGroupToBitmask(uint32_t* group_bitmask, FieldType type) {
   const FieldTypeGroup group = GroupTypeOfServerFieldType(type);
   switch (group) {
     case autofill::FieldTypeGroup::kName:
@@ -313,7 +313,7 @@ bool ContainsPhone(uint32_t groups) {
 uint32_t DetermineGroups(const FormStructure& form) {
   uint32_t group_bitmask = 0;
   for (const auto& field : form) {
-    ServerFieldType type = field->Type().GetStorableType();
+    FieldType type = field->Type().GetStorableType();
     AddGroupToBitmask(&group_bitmask, type);
   }
   return group_bitmask;
@@ -321,7 +321,7 @@ uint32_t DetermineGroups(const FormStructure& form) {
 
 uint32_t DetermineGroups(const FieldTypeSet& types) {
   uint32_t group_bitmask = 0;
-  for (const ServerFieldType type : types) {
+  for (const FieldType type : types) {
     AddGroupToBitmask(&group_bitmask, type);
   }
   return group_bitmask;
@@ -366,7 +366,7 @@ std::string TruncateUTF8(const std::string& data) {
   return trimmed_value;
 }
 
-bool IsCreditCardExpirationType(ServerFieldType type) {
+bool IsCreditCardExpirationType(FieldType type) {
   return type == CREDIT_CARD_EXP_MONTH ||
          type == CREDIT_CARD_EXP_2_DIGIT_YEAR ||
          type == CREDIT_CARD_EXP_4_DIGIT_YEAR ||

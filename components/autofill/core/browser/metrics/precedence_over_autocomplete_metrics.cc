@@ -42,7 +42,7 @@ void LogHtmlTypesForAutofilledFieldWithStreetNameOrHouseNumberPredictions(
               kOtherRecognized;
       break;
   }
-  auto emit_histogram = [&](const ServerFieldType current_field_type,
+  auto emit_histogram = [&](const FieldType current_field_type,
                             const std::string_view current_prediction_type) {
     if (!IsStreetNameOrHouseNumberType(current_field_type)) {
       return;

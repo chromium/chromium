@@ -31,8 +31,7 @@ void VerifyValues(const Birthdate& birthdate,
 
 // Expect that setting |field| to |value| clears the |field|. This is used to
 // test invalid and empty values.
-void SetFieldAndExpectEmpty(ServerFieldType field,
-                            const std::u16string& value) {
+void SetFieldAndExpectEmpty(FieldType field, const std::u16string& value) {
   Birthdate birthdate = CreateBirthdate(u"14", u"3", u"1997");
   VerifyValues(birthdate, u"14", u"3", u"1997");
   birthdate.SetRawInfo(field, value);
@@ -67,7 +66,7 @@ TEST(BirthdateTest, Validation) {
 
 // Tests that empty values clear the corresponding fields.
 TEST(BirthdateTest, Clear) {
-  for (const ServerFieldType component : Birthdate::GetRawComponents()) {
+  for (const FieldType component : Birthdate::GetRawComponents()) {
     SetFieldAndExpectEmpty(component, u"");
   }
 }

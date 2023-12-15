@@ -243,7 +243,7 @@ bool Iban::SetMetadata(const AutofillMetadata& metadata) {
   return metadata.id != guid() && AutofillDataModel::SetMetadata(metadata);
 }
 
-std::u16string Iban::GetRawInfo(ServerFieldType type) const {
+std::u16string Iban::GetRawInfo(FieldType type) const {
   if (type == IBAN_VALUE) {
     return value_;
   }
@@ -252,7 +252,7 @@ std::u16string Iban::GetRawInfo(ServerFieldType type) const {
   return std::u16string();
 }
 
-void Iban::SetRawInfoWithVerificationStatus(ServerFieldType type,
+void Iban::SetRawInfoWithVerificationStatus(FieldType type,
                                             const std::u16string& value,
                                             VerificationStatus status) {
   if (type == IBAN_VALUE) {

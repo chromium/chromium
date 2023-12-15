@@ -108,7 +108,7 @@ struct SetTypeAction {
   FieldLocation target;
 
   // The new field type to assign to the target.
-  ServerFieldType set_overall_type;
+  FieldType set_overall_type;
 };
 
 // A declarative rule with conditions and actions. The actions are executed by

@@ -81,7 +81,7 @@ void PhoneNumber::GetSupportedTypes(FieldTypeSet* supported_types) const {
   }
 }
 
-std::u16string PhoneNumber::GetRawInfo(ServerFieldType type) const {
+std::u16string PhoneNumber::GetRawInfo(FieldType type) const {
   DCHECK_EQ(FieldTypeGroup::kPhone, GroupTypeOfServerFieldType(type));
   if (type == PHONE_HOME_WHOLE_NUMBER)
     return number_;
@@ -92,7 +92,7 @@ std::u16string PhoneNumber::GetRawInfo(ServerFieldType type) const {
   return std::u16string();
 }
 
-void PhoneNumber::SetRawInfoWithVerificationStatus(ServerFieldType type,
+void PhoneNumber::SetRawInfoWithVerificationStatus(FieldType type,
                                                    const std::u16string& value,
                                                    VerificationStatus status) {
   DCHECK_EQ(FieldTypeGroup::kPhone, GroupTypeOfServerFieldType(type));
@@ -176,7 +176,7 @@ void PhoneNumber::GetMatchingTypes(const std::u16string& text,
 // If the phone cannot be normalized, returns the stored value verbatim.
 std::u16string PhoneNumber::GetInfoImpl(const AutofillType& type,
                                         const std::string& app_locale) const {
-  ServerFieldType storable_type = type.GetStorableType();
+  FieldType storable_type = type.GetStorableType();
   UpdateCacheIfNeeded(app_locale);
 
   // When the phone number autofill has stored cannot be normalized, it
@@ -331,7 +331,7 @@ PhoneNumber::PhoneCombineHelper::~PhoneCombineHelper() = default;
 
 bool PhoneNumber::PhoneCombineHelper::SetInfo(const AutofillType& type,
                                               const std::u16string& value) {
-  ServerFieldType storable_type = type.GetStorableType();
+  FieldType storable_type = type.GetStorableType();
   if (storable_type == PHONE_HOME_COUNTRY_CODE) {
     country_ = value;
     return true;

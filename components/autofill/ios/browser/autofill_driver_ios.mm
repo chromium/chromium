@@ -89,7 +89,7 @@ std::vector<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
     mojom::ActionPersistence action_persistence,
     const FormData& data,
     const url::Origin& triggered_origin,
-    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
+    const base::flat_map<FieldGlobalId, FieldType>& field_type_map) {
   switch (action_type) {
     case mojom::ActionType::kUndo:
       // TODO(crbug.com/1441410) Add Undo support on iOS.

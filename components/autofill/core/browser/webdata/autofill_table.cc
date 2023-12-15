@@ -385,7 +385,7 @@ std::u16string Truncate(const std::u16string& data) {
 void AddAutofillProfileDetailsFromStatement(sql::Statement& s,
                                             AutofillProfile* profile) {
   int index = 0;
-  for (ServerFieldType type :
+  for (FieldType type :
        {COMPANY_NAME, ADDRESS_HOME_STREET_ADDRESS,
         ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
         ADDRESS_HOME_ZIP, ADDRESS_HOME_SORTING_CODE, ADDRESS_HOME_COUNTRY}) {
@@ -415,8 +415,8 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
   int index = 0;
   s->BindString(index++, credit_card.guid());
 
-  for (ServerFieldType type : {CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_MONTH,
-                               CREDIT_CARD_EXP_4_DIGIT_YEAR}) {
+  for (FieldType type : {CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_MONTH,
+                         CREDIT_CARD_EXP_4_DIGIT_YEAR}) {
     s->BindString16(index++, Truncate(credit_card.GetRawInfo(type)));
   }
   BindEncryptedValueToColumn(
@@ -543,8 +543,8 @@ std::unique_ptr<CreditCard> CreditCardFromStatement(
   credit_card->set_guid(card_statement.ColumnString(index++));
   DCHECK(base::Uuid::ParseCaseInsensitive(credit_card->guid()).is_valid());
 
-  for (ServerFieldType type : {CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_MONTH,
-                               CREDIT_CARD_EXP_4_DIGIT_YEAR}) {
+  for (FieldType type : {CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_MONTH,
+                         CREDIT_CARD_EXP_4_DIGIT_YEAR}) {
     credit_card->SetRawInfo(type, card_statement.ColumnString16(index++));
   }
   credit_card->SetRawInfo(
@@ -608,7 +608,7 @@ bool AddAutofillProfileNamesToProfile(sql::Database* db,
     DCHECK_EQ(profile->guid(), s.ColumnString(0));
 
     int index = 1;
-    for (ServerFieldType type :
+    for (FieldType type :
          {NAME_HONORIFIC_PREFIX, NAME_FIRST, NAME_MIDDLE, NAME_LAST_FIRST,
           NAME_LAST_CONJUNCTION, NAME_LAST_SECOND, NAME_LAST, NAME_FULL,
           NAME_FULL_WITH_HONORIFIC_PREFIX}) {
@@ -685,7 +685,7 @@ bool AddAutofillProfileAddressesToProfile(sql::Database* db,
         zip_code == zip_code_legacy && sorting_code == sorting_code_legacy &&
         country == country_legacy) {
       int index = 1;
-      for (ServerFieldType type :
+      for (FieldType type :
            {ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_STREET_NAME,
             ADDRESS_HOME_HOUSE_NUMBER, ADDRESS_HOME_SUBPREMISE,
             ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY,
@@ -785,7 +785,7 @@ void BindAutofillProfileToStatement(const AutofillProfile& profile,
 
 // Local and account profiles are stored in different tables with the same
 // layout. One table contains profile-level metadata, while another table
-// contains the values for every relevant ServerFieldType. The following two
+// contains the values for every relevant FieldType. The following two
 // functions are used to map from a profile's `source` to the correct table.
 std::string_view GetProfileMetadataTable(AutofillProfile::Source source) {
   switch (source) {
@@ -817,7 +817,7 @@ bool AddAutofillProfileToTable(sql::Database* db,
   BindAutofillProfileToStatement(profile, s);
   if (!s.Run())
     return false;
-  for (ServerFieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
+  for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
     if (!base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForAddressOverflowAndLandmark) &&
         type == ADDRESS_HOME_OVERFLOW_AND_LANDMARK) {
@@ -886,7 +886,7 @@ bool AddAutofillProfileToTableVersion113(sql::Database* db,
   // Note that `GetDatabaseStoredTypesOfAutofillProfile()` might change in
   // future versions. Due to the flexible layout of the type tokens table, this
   // is not a problem.
-  for (ServerFieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
+  for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
     InsertBuilder(db, s, GetProfileTypeTokensTable(profile.source()),
                   {kGuid, kType, kValue, kVerificationStatus});
     s.BindString(0, profile.guid());
@@ -1084,7 +1084,7 @@ bool AutofillTable::UpdateAutofillProfile(const AutofillProfile& profile) {
     return false;
 
   // Implementing an update as remove + add has multiple advantages:
-  // - Prevents outdated (ServerFieldType, value) pairs from remaining in the
+  // - Prevents outdated (FieldType, value) pairs from remaining in the
   //   `GetProfileTypeTokensTable(profile)`, in case field types are removed.
   // - Simpler code.
   // The possible downside is performance. This is not an issue, as updates
@@ -1147,7 +1147,7 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
 
   struct FieldTypeData {
     // Type corresponding to the data entry.
-    ServerFieldType type;
+    FieldType type;
     // Value corresponding to the entry type.
     std::u16string value;
     // VerificationStatus of the data entry's `value`.
@@ -1160,7 +1160,7 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
   std::string country_code;
   // As `SelectByGuid()` already calls `s.Step()`, do-while is used here.
   do {
-    ServerFieldType type = ToSafeFieldType(s.ColumnInt(0), UNKNOWN_TYPE);
+    FieldType type = ToSafeFieldType(s.ColumnInt(0), UNKNOWN_TYPE);
     if (type == UNKNOWN_TYPE) {
       // This is possible in two cases:
       // - The database was tampered with by external means.

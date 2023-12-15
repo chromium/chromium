@@ -146,9 +146,9 @@ void AppendFieldFillStatusUkm(
 
 void AppendFieldTypeUkm(
     const FormData& form,
-    const std::vector<ServerFieldType>& heuristic_types,
-    const std::vector<ServerFieldType>& server_types,
-    const std::vector<ServerFieldType>& actual_types,
+    const std::vector<FieldType>& heuristic_types,
+    const std::vector<FieldType>& server_types,
+    const std::vector<FieldType>& actual_types,
     std::vector<std::vector<ExpectedUkmMetricsPair>>* expected_metrics) {
   ASSERT_EQ(heuristic_types.size(), form.fields.size());
   ASSERT_EQ(server_types.size(), form.fields.size());

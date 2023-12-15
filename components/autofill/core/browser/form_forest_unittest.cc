@@ -136,7 +136,7 @@ FormData CreateForm() {
 auto CreateFieldTypeMap(const FormData& form) {
   CHECK_EQ(form.fields.size() % 6, 0u);
   CHECK_GT(form.fields.size() / 6, 0u);
-  base::flat_map<FieldGlobalId, ServerFieldType> map;
+  base::flat_map<FieldGlobalId, FieldType> map;
   for (size_t i = 0; i < form.fields.size() / 6; ++i) {
     map[form.fields[6 * i + 0].global_id()] = CREDIT_CARD_NAME_FIRST;
     map[form.fields[6 * i + 1].global_id()] = CREDIT_CARD_NAME_LAST;
@@ -1386,7 +1386,7 @@ class FormForestTestUnflatten : public FormForestTestWithMockedTree {
   std::vector<FormData> GetRendererFormsOfBrowserForm(
       std::string_view form_name,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
+      const base::flat_map<FieldGlobalId, FieldType>& field_type_map) {
     return GetRendererFormsOfBrowserForm(form_name,
                                          {&triggered_origin, &field_type_map});
   }

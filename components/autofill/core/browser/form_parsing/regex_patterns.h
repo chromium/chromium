@@ -110,7 +110,7 @@ base::span<const MatchPatternRef> GetMatchPatterns(
     PatternSource pattern_source);
 
 base::span<const MatchPatternRef> GetMatchPatterns(
-    ServerFieldType type,
+    FieldType type,
     absl::optional<LanguageCode> language_code,
     PatternSource pattern_source);
 

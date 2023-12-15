@@ -215,14 +215,14 @@ std::string GetPlaceholderToken(std::string_view value) {
 }
 
 std::string CaptureTypeWithPattern(
-    const ServerFieldType& type,
+    const FieldType& type,
     std::initializer_list<std::string_view> pattern_span_initializer_list) {
   return CaptureTypeWithPattern(type, pattern_span_initializer_list,
                                 CaptureOptions());
 }
 
 std::string CaptureTypeWithPattern(
-    const ServerFieldType& type,
+    const FieldType& type,
     std::initializer_list<std::string_view> pattern_span_initializer_list,
     const CaptureOptions& options) {
   return CaptureTypeWithPattern(
@@ -253,7 +253,7 @@ std::string NoCapturePattern(const std::string& pattern,
       {"(?i:", pattern, "(?:", options.separator, ")+)", quantifier});
 }
 
-std::string CaptureTypeWithAffixedPattern(const ServerFieldType& type,
+std::string CaptureTypeWithAffixedPattern(const FieldType& type,
                                           const std::string& prefix,
                                           const std::string& pattern,
                                           const std::string& suffix,
@@ -280,7 +280,7 @@ std::string CaptureTypeWithAffixedPattern(const ServerFieldType& type,
                        quantifier});
 }
 
-std::string CaptureTypeWithSuffixedPattern(const ServerFieldType& type,
+std::string CaptureTypeWithSuffixedPattern(const FieldType& type,
                                            const std::string& pattern,
                                            const std::string& suffix_pattern,
                                            const CaptureOptions& options) {
@@ -288,7 +288,7 @@ std::string CaptureTypeWithSuffixedPattern(const ServerFieldType& type,
                                        suffix_pattern, options);
 }
 
-std::string CaptureTypeWithPrefixedPattern(const ServerFieldType& type,
+std::string CaptureTypeWithPrefixedPattern(const FieldType& type,
                                            const std::string& prefix_pattern,
                                            const std::string& pattern,
                                            const CaptureOptions& options) {
@@ -296,7 +296,7 @@ std::string CaptureTypeWithPrefixedPattern(const ServerFieldType& type,
                                        std::string(), options);
 }
 
-std::string CaptureTypeWithPattern(const ServerFieldType& type,
+std::string CaptureTypeWithPattern(const FieldType& type,
                                    const std::string& pattern,
                                    CaptureOptions options) {
   return CaptureTypeWithAffixedPattern(type, std::string(), pattern,

@@ -142,7 +142,7 @@ bool AreCollapsible(const TypingFieldLogEvent& event1,
 
 // Events recorded after local heuristic prediction happened.
 struct HeuristicPredictionFieldLogEvent {
-  ServerFieldType field_type = internal::IsRequired();
+  FieldType field_type = internal::IsRequired();
   PatternSource pattern_source = internal::IsRequired();
   bool is_active_pattern_source = internal::IsRequired();
   size_t rank_in_field_signature_group = internal::IsRequired();
@@ -163,9 +163,9 @@ bool AreCollapsible(const AutocompleteAttributeFieldLogEvent& event1,
 
 // Events recorded after autofill server prediction happened.
 struct ServerPredictionFieldLogEvent {
-  ServerFieldType server_type1 = internal::IsRequired();
+  FieldType server_type1 = internal::IsRequired();
   FieldPrediction::Source prediction_source1 = internal::IsRequired();
-  ServerFieldType server_type2 = internal::IsRequired();
+  FieldType server_type2 = internal::IsRequired();
   FieldPrediction::Source prediction_source2 = internal::IsRequired();
   bool server_type_prediction_is_override = internal::IsRequired();
   size_t rank_in_field_signature_group = internal::IsRequired();
@@ -176,7 +176,7 @@ bool AreCollapsible(const ServerPredictionFieldLogEvent& event1,
 
 // Events recorded after rationalization happened.
 struct RationalizationFieldLogEvent {
-  ServerFieldType field_type = internal::IsRequired();
+  FieldType field_type = internal::IsRequired();
   size_t section_id = internal::IsRequired();
   bool type_changed = internal::IsRequired();
 };

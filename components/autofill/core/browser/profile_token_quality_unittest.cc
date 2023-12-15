@@ -40,9 +40,9 @@ class ProfileTokenQualityTest : public testing::Test {
 
   // Creates a form and registers it with the `bam_` as-if it had the given
   // `types` as predictions.
-  FormData GetFormWithTypes(const std::vector<ServerFieldType>& types) {
+  FormData GetFormWithTypes(const std::vector<FieldType>& types) {
     test::FormDescription form_description;
-    for (ServerFieldType type : types) {
+    for (FieldType type : types) {
       form_description.fields.emplace_back(type);
     }
     FormData form_data = test::GetFormData(form_description);
@@ -282,7 +282,7 @@ TEST_F(ProfileTokenQualityTest,
 // containing fields of the the given `form_types`, the
 // `expected_number_of_observations` are collected.
 struct DropObservationTest {
-  std::vector<ServerFieldType> form_types;
+  std::vector<FieldType> form_types;
   int expected_number_of_observations;
 };
 
@@ -303,7 +303,7 @@ TEST_P(ProfileTokenQualityObservationDroppingTest,
   EXPECT_TRUE(quality.AddObservationsForFilledForm(
       *bam_.FindCachedFormById(form.global_id()), form, pdm_));
   EXPECT_EQ(test.expected_number_of_observations,
-            base::ranges::count_if(test.form_types, [&](ServerFieldType type) {
+            base::ranges::count_if(test.form_types, [&](FieldType type) {
               return !quality.GetObservationTypesForFieldType(type).empty();
             }));
 }

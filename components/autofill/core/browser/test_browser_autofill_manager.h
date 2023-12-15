@@ -82,7 +82,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   // Unique to TestBrowserAutofillManager:
 
   void AddSeenForm(const FormData& form,
-                   const std::vector<ServerFieldType>& field_types,
+                   const std::vector<FieldType>& field_types,
                    bool preserve_values_in_form_structure = false) {
     AddSeenForm(form, /*heuristic_types=*/field_types,
                 /*server_types=*/field_types,
@@ -90,16 +90,15 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   }
 
   void AddSeenForm(const FormData& form,
-                   const std::vector<ServerFieldType>& heuristic_types,
-                   const std::vector<ServerFieldType>& server_types,
+                   const std::vector<FieldType>& heuristic_types,
+                   const std::vector<FieldType>& server_types,
                    bool preserve_values_in_form_structure = false);
 
   void AddSeenForm(
       const FormData& form,
-      const std::vector<
-          std::vector<std::pair<HeuristicSource, ServerFieldType>>>&
+      const std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>&
           heuristic_types,
-      const std::vector<ServerFieldType>& server_types,
+      const std::vector<FieldType>& server_types,
       bool preserve_values_in_form_structure = false);
 
   void AddSeenFormStructure(std::unique_ptr<FormStructure> form_structure);

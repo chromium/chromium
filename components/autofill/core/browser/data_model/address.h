@@ -27,8 +27,8 @@ class Address : public FormGroup {
   bool operator==(const Address& other) const;
 
   // FormGroup:
-  std::u16string GetRawInfo(ServerFieldType type) const override;
-  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+  std::u16string GetRawInfo(FieldType type) const override;
+  void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
   void GetMatchingTypes(const std::u16string& text,
@@ -75,8 +75,7 @@ class Address : public FormGroup {
                                          VerificationStatus status) override;
 
   // Return the verification status of a structured name value.
-  VerificationStatus GetVerificationStatusImpl(
-      ServerFieldType type) const override;
+  VerificationStatus GetVerificationStatusImpl(FieldType type) const override;
 
   // Updates the address' country, builds the hierarchy model corresponding to
   // `country_code` and transfers the content of the old data model into the new

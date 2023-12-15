@@ -245,11 +245,11 @@ class FormForest {
 
     SecurityOptions(
         const url::Origin* triggered_origin,
-        const base::flat_map<FieldGlobalId, ServerFieldType>* field_type_map);
+        const base::flat_map<FieldGlobalId, FieldType>* field_type_map);
 
     bool all_origins_are_trusted() const { return !triggered_origin_; }
     const url::Origin& triggered_origin() const { return *triggered_origin_; }
-    ServerFieldType GetFieldType(const FieldGlobalId& field) const;
+    FieldType GetFieldType(const FieldGlobalId& field) const;
 
    private:
     constexpr SecurityOptions() = default;
@@ -257,7 +257,7 @@ class FormForest {
     // The origin of the field from which Autofill was queried.
     const raw_ptr<const url::Origin> triggered_origin_ = nullptr;
     // Contains the field types of the fields in the browser form.
-    const raw_ptr<const base::flat_map<FieldGlobalId, ServerFieldType>>
+    const raw_ptr<const base::flat_map<FieldGlobalId, FieldType>>
         field_type_map_ = nullptr;
   };
 

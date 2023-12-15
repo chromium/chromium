@@ -16,7 +16,7 @@ namespace autofill::i18n_model_definition {
 
 // A pair of country code and server field type used as keys in the
 // `kAutofillFormattingRulesMap`.
-using CountryAndFieldType = std::pair<std::string_view, ServerFieldType>;
+using CountryAndFieldType = std::pair<std::string_view, FieldType>;
 
 // A lookup map for formatting expressions for countries and field types.
 constexpr auto kAutofillFormattingRulesMap =

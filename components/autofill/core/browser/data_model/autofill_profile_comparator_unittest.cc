@@ -58,9 +58,9 @@ using autofill::AutofillType;
 using autofill::Birthdate;
 using autofill::CompanyInfo;
 using autofill::EmailInfo;
+using autofill::FieldType;
 using autofill::NameInfo;
 using autofill::PhoneNumber;
-using autofill::ServerFieldType;
 using autofill::i18n_model_definition::kLegacyHierarchyCountryCode;
 
 namespace {
@@ -199,7 +199,7 @@ class AutofillProfileComparatorTest : public testing::Test {
 
   AutofillProfile CopyAndModify(
       const AutofillProfile& profile,
-      const std::vector<std::pair<ServerFieldType, const char16_t*>>& updates) {
+      const std::vector<std::pair<FieldType, const char16_t*>>& updates) {
     AutofillProfile new_profile = profile;
     for (const auto& [field_type, value] : updates) {
       new_profile.SetRawInfo(field_type, value);
@@ -1204,7 +1204,7 @@ TEST_F(AutofillProfileComparatorTest, MergeBirthdates) {
 
   Birthdate actual;
   EXPECT_TRUE(comparator_.MergeBirthdates(profile1, profile2, actual));
-  for (ServerFieldType component : Birthdate::GetRawComponents()) {
+  for (FieldType component : Birthdate::GetRawComponents()) {
     EXPECT_EQ(expected.GetRawInfo(component), actual.GetRawInfo(component));
   }
 }
@@ -1275,7 +1275,7 @@ TEST_F(AutofillProfileComparatorTest,
           existing_profile, existing_profile, kLocale));
 
   // Test for most settings visible types that a change is correctly recognized.
-  for (ServerFieldType changed_type :
+  for (FieldType changed_type :
        {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
         ADDRESS_HOME_ZIP, ADDRESS_HOME_ADMIN_LEVEL2, EMAIL_ADDRESS,
         PHONE_HOME_WHOLE_NUMBER}) {
@@ -1349,7 +1349,7 @@ TEST_F(AutofillProfileComparatorTest, GetProfileDifferenceMap) {
           .empty());
 
   // But there should be difference in ADDRESS_HOME_ZIP type.
-  base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
+  base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
       expected_difference;
   expected_difference.insert({ADDRESS_HOME_ZIP, {u"zip", u"another_zip"}});
 
@@ -1408,7 +1408,7 @@ TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifferenceMap) {
 
   // Change the zip code of the second profile and test the difference.
   second_existing_profile.SetRawInfo(ADDRESS_HOME_ZIP, u"another_zip");
-  base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
+  base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
       expected_difference;
   expected_difference.insert({ADDRESS_HOME_ZIP, {u"zip", u"another_zip"}});
   EXPECT_EQ(AutofillProfileComparator::GetSettingsVisibleProfileDifferenceMap(

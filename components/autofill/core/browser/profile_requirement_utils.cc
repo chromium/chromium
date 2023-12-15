@@ -42,10 +42,10 @@ ValidateProfileImportRequirements(const AutofillProfile& profile,
   // of the `types`. If `required` is false, it is considered trivially valid.
   // Logs the profile's validity to UMA and autofill-internals.
   auto ValidateAndLog =
-      [&](bool required, const std::vector<ServerFieldType>& types,
+      [&](bool required, const std::vector<FieldType>& types,
           AddressImportRequirement valid, AddressImportRequirement invalid) {
         const bool is_valid =
-            !required || base::ranges::any_of(types, [&](ServerFieldType type) {
+            !required || base::ranges::any_of(types, [&](FieldType type) {
               return profile.HasRawInfo(type);
             });
         if (is_valid) {
@@ -57,7 +57,7 @@ ValidateProfileImportRequirements(const AutofillProfile& profile,
               << "Missing required " <<
               [&] {
                 std::vector<std::string_view> type_names;
-                for (ServerFieldType type : types) {
+                for (FieldType type : types) {
                   type_names.push_back(FieldTypeToStringView(type));
                 }
                 return base::JoinString(type_names, " or ");
@@ -102,8 +102,7 @@ ValidateProfileImportRequirements(const AutofillProfile& profile,
 bool ValidateNonEmptyValues(const AutofillProfile& profile,
                             LogBuffer* log_buffer) {
   // Returns false if `profile` has invalid information for `type`.
-  auto ValidateAndLog = [&](ServerFieldType type,
-                            AddressImportRequirement valid,
+  auto ValidateAndLog = [&](FieldType type, AddressImportRequirement valid,
                             AddressImportRequirement invalid) {
     if (profile.IsPresentButInvalid(type)) {
       autofill_metrics::LogAddressFormImportRequirementMetric(invalid);

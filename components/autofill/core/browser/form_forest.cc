@@ -504,12 +504,12 @@ const FormData& FormForest::GetBrowserForm(FormGlobalId renderer_form) const {
 
 FormForest::SecurityOptions::SecurityOptions(
     const url::Origin* triggered_origin,
-    const base::flat_map<FieldGlobalId, ServerFieldType>* field_type_map)
+    const base::flat_map<FieldGlobalId, FieldType>* field_type_map)
     : triggered_origin_(triggered_origin), field_type_map_(field_type_map) {
   CHECK(triggered_origin);
 }
 
-ServerFieldType FormForest::SecurityOptions::GetFieldType(
+FieldType FormForest::SecurityOptions::GetFieldType(
     const FieldGlobalId& field) const {
   if (!field_type_map_) {
     return UNKNOWN_TYPE;
@@ -563,7 +563,7 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
       // Non-sensitive values may be filled into fields that belong to the
       // main frame's origin. This is independent of the origin of the
       // field that triggered the autofill, |triggered_origin|.
-      auto IsSensitiveFieldType = [](ServerFieldType field_type) {
+      auto IsSensitiveFieldType = [](FieldType field_type) {
         switch (field_type) {
           case CREDIT_CARD_TYPE:
           case CREDIT_CARD_NAME_FULL:

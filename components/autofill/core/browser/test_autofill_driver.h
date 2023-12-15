@@ -104,8 +104,7 @@ class TestAutofillDriverTemplate : public T {
       mojom::ActionPersistence action_persistence,
       const FormData& form_data,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
-      override {
+      const base::flat_map<FieldGlobalId, FieldType>& field_type_map) override {
     if (action_type == mojom::ActionType::kUndo) {
       return {};
     }
@@ -152,7 +151,7 @@ class TestAutofillDriverTemplate : public T {
   // The filter that determines the return value of FillOrPreviewForm().
   void SetFieldTypeMapFilter(
       base::RepeatingCallback<
-          bool(const url::Origin&, FieldGlobalId, ServerFieldType)> callback) {
+          bool(const url::Origin&, FieldGlobalId, FieldType)> callback) {
     field_type_map_filter_ = callback;
   }
 
@@ -173,8 +172,7 @@ class TestAutofillDriverTemplate : public T {
   bool is_in_any_main_frame_ = true;
   bool shared_autofill_ = false;
   net::IsolationInfo isolation_info_;
-  base::RepeatingCallback<
-      bool(const url::Origin&, FieldGlobalId, ServerFieldType)>
+  base::RepeatingCallback<bool(const url::Origin&, FieldGlobalId, FieldType)>
       field_type_map_filter_;
 
 #if !BUILDFLAG(IS_IOS)

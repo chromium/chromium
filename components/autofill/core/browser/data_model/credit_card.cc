@@ -600,7 +600,7 @@ bool CreditCard::IsDeletable() const {
          IsExpired(AutofillClock::Now() - kDisusedDataModelDeletionTimeDelta);
 }
 
-std::u16string CreditCard::GetRawInfo(ServerFieldType type) const {
+std::u16string CreditCard::GetRawInfo(FieldType type) const {
   switch (type) {
     case CREDIT_CARD_NAME_FULL:
       return name_on_card_;
@@ -651,7 +651,7 @@ std::u16string CreditCard::GetRawInfo(ServerFieldType type) const {
   }
 }
 
-void CreditCard::SetRawInfoWithVerificationStatus(ServerFieldType type,
+void CreditCard::SetRawInfoWithVerificationStatus(FieldType type,
                                                   const std::u16string& value,
                                                   VerificationStatus status) {
   DCHECK_EQ(FieldTypeGroup::kCreditCard, GroupTypeOfServerFieldType(type));
@@ -822,9 +822,9 @@ int CreditCard::Compare(const CreditCard& credit_card) const {
   // The following CreditCard field types are the only types we store in the
   // WebDB so far, so we're only concerned with matching these types in the
   // credit card.
-  const ServerFieldType types[] = {CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_MONTH,
-                                   CREDIT_CARD_EXP_4_DIGIT_YEAR};
-  for (ServerFieldType type : types) {
+  const FieldType types[] = {CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_MONTH,
+                             CREDIT_CARD_EXP_4_DIGIT_YEAR};
+  for (FieldType type : types) {
     int comparison = GetRawInfo(type).compare(credit_card.GetRawInfo(type));
     if (comparison != 0)
       return comparison;
@@ -1253,7 +1253,7 @@ void CreditCard::GetSupportedTypes(FieldTypeSet* supported_types) const {
 
 std::u16string CreditCard::GetInfoImpl(const AutofillType& type,
                                        const std::string& app_locale) const {
-  ServerFieldType storable_type = type.GetStorableType();
+  FieldType storable_type = type.GetStorableType();
   if (storable_type == CREDIT_CARD_NUMBER) {
     // Web pages should never actually be filled by a masked server card,
     // but this function is used at the preview stage.
@@ -1272,7 +1272,7 @@ bool CreditCard::SetInfoWithVerificationStatusImpl(
     const std::u16string& value,
     const std::string& app_locale,
     VerificationStatus status) {
-  ServerFieldType storable_type = type.GetStorableType();
+  FieldType storable_type = type.GetStorableType();
   if (storable_type == CREDIT_CARD_EXP_MONTH)
     return SetExpirationMonthFromString(value, app_locale);
 

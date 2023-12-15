@@ -147,8 +147,8 @@ std::ostream& operator<<(std::ostream& out,
 
 // Returns the first form field type that is not contained in |contained_types|
 // or MAX_VALID_FIELD_TYPE if no such type exists.
-ServerFieldType FirstNonCapturedType(const FormStructure& form,
-                                     const FieldTypeSet& contained_types) {
+FieldType FirstNonCapturedType(const FormStructure& form,
+                               const FieldTypeSet& contained_types) {
   for (const auto& field : form) {
     for (auto type : field->possible_types()) {
       if (type != UNKNOWN_TYPE && type != EMPTY_TYPE &&
@@ -377,7 +377,7 @@ std::string ServerTypesToString(const AutofillField* field) {
     if (buffer.tellp() > 0) {  // Add comma if buffer is not empty.
       buffer << ", ";
     }
-    ServerFieldType server_type =
+    FieldType server_type =
         ToSafeFieldType(field_prediction.type(), NO_SERVER_DATA);
     buffer << FieldTypeToStringView(server_type);
   }
@@ -870,7 +870,7 @@ void FormStructure::ProcessQueryResponse(
       if (!field_suggestion) {
         continue;
       }
-      ServerFieldType heuristic_type = field->heuristic_type();
+      FieldType heuristic_type = field->heuristic_type();
       if (heuristic_type != UNKNOWN_TYPE) {
         heuristics_detected_fillable_field = true;
       }
@@ -910,7 +910,7 @@ void FormStructure::ProcessQueryResponse(
     }
 
     AutofillMetrics::LogServerResponseHasDataForForm(base::ranges::any_of(
-        form->fields_, [](ServerFieldType t) { return t != NO_SERVER_DATA; },
+        form->fields_, [](FieldType t) { return t != NO_SERVER_DATA; },
         &AutofillField::server_type));
 
     form->UpdateAutofillCount();
@@ -1046,7 +1046,7 @@ bool FormStructure::IsCompleteCreditCardForm() const {
   bool found_cc_number = false;
   bool found_cc_expiration = false;
   for (const auto& field : fields_) {
-    ServerFieldType type = field->Type().GetStorableType();
+    FieldType type = field->Type().GetStorableType();
     if (!found_cc_expiration && data_util::IsCreditCardExpirationType(type)) {
       found_cc_expiration = true;
     } else if (!found_cc_number && type == CREDIT_CARD_NUMBER) {
@@ -1190,9 +1190,9 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         // GeoIP, we want to hold on to these values.
         const bool same_value_as_on_page_load =
             field->value == cached_field->value;
-        const bool had_type = cached_field->Type().GetStorableType() >
-                                  ServerFieldType::UNKNOWN_TYPE ||
-                              !cached_field->possible_types().empty();
+        const bool had_type =
+            cached_field->Type().GetStorableType() > FieldType::UNKNOWN_TYPE ||
+            !cached_field->possible_types().empty();
         if (!cached_field->value.empty() &&
             !field->IsSelectOrSelectListElement() && had_type) {
           field->set_initial_value_changed(!same_value_as_on_page_load);
@@ -1619,7 +1619,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
 
   // Keep track of the types we've seen in this section.
   FieldTypeSet seen_types;
-  ServerFieldType previous_type = UNKNOWN_TYPE;
+  FieldType previous_type = UNKNOWN_TYPE;
 
   // Boolean flag that is set to true when a field in the current section
   // has the autocomplete-section attribute defined.
@@ -1628,7 +1628,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
   bool is_hidden_section = false;
   Section last_visible_section;
   for (const auto& field : fields_) {
-    const ServerFieldType current_type = field->Type().GetStorableType();
+    const FieldType current_type = field->Type().GetStorableType();
     // Put credit card fields into one, separate credit card section.
     if (GroupTypeOfServerFieldType(current_type) ==
         FieldTypeGroup::kCreditCard) {
@@ -1790,12 +1790,12 @@ void FormStructure::IdentifySections(bool ignore_autocomplete) {
 
     // Keep track of the types we've seen in this section.
     FieldTypeSet seen_types;
-    ServerFieldType previous_type = UNKNOWN_TYPE;
+    FieldType previous_type = UNKNOWN_TYPE;
 
     bool is_hidden_section = false;
     Section last_visible_section;
     for (const auto& field : fields_) {
-      const ServerFieldType current_type = field->Type().GetStorableType();
+      const FieldType current_type = field->Type().GetStorableType();
       // Credit card fields are already in one, separate credit card section.
       if (GroupTypeOfServerFieldType(current_type) ==
           FieldTypeGroup::kCreditCard) {

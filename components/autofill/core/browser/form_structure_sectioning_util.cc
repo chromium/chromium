@@ -18,7 +18,7 @@ namespace autofill {
 
 namespace {
 
-bool HaveSeenSimilarType(ServerFieldType type, const FieldTypeSet& seen_types) {
+bool HaveSeenSimilarType(FieldType type, const FieldTypeSet& seen_types) {
   // Forms sometimes have a different format of inputting names in
   // different sections. If we believe a new name is being entered, assume
   // it is a new section.
@@ -40,8 +40,8 @@ bool HaveSeenSimilarType(ServerFieldType type, const FieldTypeSet& seen_types) {
 //  * In Japan, forms commonly have separate inputs for phonetic names. In
 //    practice this means consecutive name field types (e.g. first name and last
 //    name).
-bool ConsecutiveSimilarFieldType(ServerFieldType current_type,
-                                 ServerFieldType previous_type) {
+bool ConsecutiveSimilarFieldType(FieldType current_type,
+                                 FieldType previous_type) {
   if (previous_type == current_type)
     return true;
   if (GroupTypeOfServerFieldType(current_type) == FieldTypeGroup::kName &&
@@ -136,7 +136,7 @@ bool BelongsToCurrentSection(const FieldTypeSet& seen_types,
   if (current_field.section)
     return !features::kAutofillSectioningModeCreateGaps.Get();
 
-  const ServerFieldType current_type = current_field.Type().GetStorableType();
+  const FieldType current_type = current_field.Type().GetStorableType();
   if (current_type == UNKNOWN_TYPE)
     return true;
 

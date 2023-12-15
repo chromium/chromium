@@ -372,7 +372,7 @@ std::optional<std::u16string> GetValueForProfileSelectControl(
     const std::u16string& value,
     const std::string& app_locale,
     base::span<const SelectOption> field_options,
-    ServerFieldType field_type,
+    FieldType field_type,
     AddressNormalizer* address_normalizer,
     std::string* failure_to_fill) {
   switch (field_type) {

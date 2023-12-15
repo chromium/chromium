@@ -135,7 +135,7 @@ void AutofillMlPredictionModelHandler::AssignMostLikelyTypes(
   }
 }
 
-ServerFieldType AutofillMlPredictionModelHandler::GetMostLikelyType(
+FieldType AutofillMlPredictionModelHandler::GetMostLikelyType(
     const std::vector<float>& model_output) const {
   CHECK(state_);
   int max_index =

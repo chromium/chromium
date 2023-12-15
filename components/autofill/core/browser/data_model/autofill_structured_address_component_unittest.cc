@@ -45,7 +45,7 @@ class TestAtomicMiddleNameAddressComponent : public AddressComponent {
   }
 
   void SetValueForOtherSupportedType(
-      ServerFieldType field_type,
+      FieldType field_type,
       const std::u16string& value,
       const VerificationStatus& status) override {
     CHECK(IsSupportedType(field_type));
@@ -53,7 +53,7 @@ class TestAtomicMiddleNameAddressComponent : public AddressComponent {
   }
 
   std::u16string GetValueForOtherSupportedType(
-      ServerFieldType field_type) const override {
+      FieldType field_type) const override {
     CHECK(IsSupportedType(field_type));
     return GetValue().substr(0, 1);
   }
@@ -171,7 +171,7 @@ class TestNonProperFirstNameAddressComponent : public AddressComponent {
 // If |is_mergeable| it is expected that the two components are mergeable.
 // If |newer_was_more_recently_used| the newer component was also more recently
 // used which is true by default.
-void TestAtomMerging(ServerFieldType type,
+void TestAtomMerging(FieldType type,
                      AddressComponentTestValues older_values,
                      AddressComponentTestValues newer_values,
                      AddressComponentTestValues merge_expectation,
@@ -603,8 +603,7 @@ TEST(AutofillStructuredAddressAddressComponent, GetSubcomponentTypes) {
   // Get the subcomponent types and verify the expectation.
   auto sub_component_types =
       compound_component.GetSubcomponentTypesForTesting();
-  std::vector<ServerFieldType> expected_types{NAME_FIRST, NAME_MIDDLE,
-                                              NAME_LAST};
+  std::vector<FieldType> expected_types{NAME_FIRST, NAME_MIDDLE, NAME_LAST};
   EXPECT_EQ(sub_component_types, expected_types);
 }
 

@@ -20,7 +20,7 @@ class FieldFillingUtilTest : public testing::Test {
 
   AutofillField CreateTestSelectAutofillField(
       const std::vector<const char*>& values,
-      ServerFieldType heuristic_type) {
+      FieldType heuristic_type) {
     AutofillField field{test::CreateTestSelectField(values)};
     field.set_heuristic_type(GetActiveHeuristicSource(), heuristic_type);
     return field;

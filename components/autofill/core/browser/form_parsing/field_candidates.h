@@ -16,10 +16,10 @@ namespace autofill {
 
 // Represents a possible type for a given field.
 struct FieldCandidate {
-  FieldCandidate(ServerFieldType field_type, float field_score);
+  FieldCandidate(FieldType field_type, float field_score);
 
   // The associated type for this candidate.
-  ServerFieldType type = UNKNOWN_TYPE;
+  FieldType type = UNKNOWN_TYPE;
 
   // A non-negative number indicating how sure the type is for this specific
   // candidate. The higher the more confidence.
@@ -42,10 +42,10 @@ class FieldCandidates {
   // based solely on their numeric values. BestHeuristicType() uses |score| to
   // determine the most likely type for this given field. Please see
   // field_candidates.cc for details on how this type is actually chosen.
-  void AddFieldCandidate(ServerFieldType type, float score);
+  void AddFieldCandidate(FieldType type, float score);
 
   // Determines the best type based on the current possible types.
-  ServerFieldType BestHeuristicType() const;
+  FieldType BestHeuristicType() const;
 
  private:
   // Internal storage for all the possible types for a given field.

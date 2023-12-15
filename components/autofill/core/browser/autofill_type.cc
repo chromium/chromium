@@ -37,7 +37,7 @@ AutofillType::ServerPrediction& AutofillType::ServerPrediction::operator=(
 
 AutofillType::ServerPrediction::~ServerPrediction() = default;
 
-ServerFieldType AutofillType::ServerPrediction::server_type() const {
+FieldType AutofillType::ServerPrediction::server_type() const {
   return server_predictions.empty()
              ? NO_SERVER_DATA
              : ToSafeFieldType(server_predictions[0].type(), NO_SERVER_DATA);
@@ -47,7 +47,7 @@ bool AutofillType::ServerPrediction::is_override() const {
   return server_predictions.empty() ? false : server_predictions[0].override();
 }
 
-AutofillType::AutofillType(ServerFieldType field_type)
+AutofillType::AutofillType(FieldType field_type)
     : server_type_(ToSafeFieldType(field_type, UNKNOWN_TYPE)) {}
 
 AutofillType::AutofillType(HtmlFieldType field_type) : html_type_(field_type) {}
@@ -63,7 +63,7 @@ bool AutofillType::IsUnknown() const {
           html_type_ == HtmlFieldType::kUnrecognized);
 }
 
-ServerFieldType AutofillType::GetStorableType() const {
+FieldType AutofillType::GetStorableType() const {
   return server_type_ != UNKNOWN_TYPE
              ? server_type_
              : HtmlFieldTypeToBestCorrespondingServerFieldType(html_type_);

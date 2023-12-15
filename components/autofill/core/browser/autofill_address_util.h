@@ -29,7 +29,7 @@ struct AutofillAddressUIComponent {
   };
 
   // The server field type for this UI component (e.g. ADDRESS_HOME_COUNTRY).
-  ServerFieldType field = ServerFieldType::UNKNOWN_TYPE;
+  FieldType field = FieldType::UNKNOWN_TYPE;
 
   // The name of the field, for example "City".
   std::string name;
@@ -99,7 +99,7 @@ std::u16string GetProfileDescription(const AutofillProfile& profile,
                                      bool include_address_and_contacts);
 
 // Fields in order they should appear in differences for AutofillProfile update.
-static constexpr ServerFieldType kVisibleTypesForProfileDifferences[] = {
+static constexpr FieldType kVisibleTypesForProfileDifferences[] = {
     NAME_FULL_WITH_HONORIFIC_PREFIX,
     COMPANY_NAME,
     ADDRESS_HOME_STREET_ADDRESS,

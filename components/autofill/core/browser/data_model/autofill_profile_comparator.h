@@ -21,7 +21,7 @@ namespace autofill {
 
 struct ProfileValueDifference {
   // The type of the field that is different.
-  ServerFieldType type;
+  FieldType type;
   // The original value.
   std::u16string first_value;
   // The new value.
@@ -91,8 +91,7 @@ class AutofillProfileComparator {
   // Same as `GetProfileDifference()` but returns a map that maps the type to a
   // pair of strings that contain the corresponding value from the first and
   // second profile.
-  static base::flat_map<ServerFieldType,
-                        std::pair<std::u16string, std::u16string>>
+  static base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
   GetProfileDifferenceMap(const AutofillProfile& first_profile,
                           const AutofillProfile& second_profile,
                           FieldTypeSet types,
@@ -108,8 +107,7 @@ class AutofillProfileComparator {
   // Same as `GetSettingsVisibleProfileDifference()` but returns a map that maps
   // the type to a pair of strings that contain the corresponding value from the
   // first and second profile.
-  static base::flat_map<ServerFieldType,
-                        std::pair<std::u16string, std::u16string>>
+  static base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
   GetSettingsVisibleProfileDifferenceMap(const AutofillProfile& first_profile,
                                          const AutofillProfile& second_profile,
                                          const std::string& app_locale);

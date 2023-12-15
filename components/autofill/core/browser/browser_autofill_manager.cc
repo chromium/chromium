@@ -199,7 +199,7 @@ void SelectRightNameType(AutofillField* field, bool is_credit_card) {
   FieldTypeSet types_to_keep;
   const auto& old_types = field->possible_types();
 
-  for (ServerFieldType type : old_types) {
+  for (FieldType type : old_types) {
     FieldTypeGroup group = GroupTypeOfServerFieldType(type);
     if ((is_credit_card && group == FieldTypeGroup::kCreditCard) ||
         (!is_credit_card && group == FieldTypeGroup::kName)) {
@@ -505,7 +505,7 @@ const char* SubmissionSourceToString(SubmissionSource source) {
 
 // Returns how many fields with type |field_type| may be filled in a form at
 // maximum.
-size_t TypeValueFormFillingLimit(ServerFieldType field_type) {
+size_t TypeValueFormFillingLimit(FieldType field_type) {
   switch (field_type) {
     case CREDIT_CARD_NUMBER:
       return kCreditCardTypeValueFormFillingLimit;
@@ -714,9 +714,9 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
       form, field_data, element_bounds,
       AutofillSuggestionTriggerSource::kShowCardsFromAccount);
   AutofillField* autofill_field = GetAutofillField(form, field_data);
-  ServerFieldType field_type = autofill_field
-                                   ? autofill_field->Type().GetStorableType()
-                                   : CREDIT_CARD_NUMBER;
+  FieldType field_type = autofill_field
+                             ? autofill_field->Type().GetStorableType()
+                             : CREDIT_CARD_NUMBER;
   DCHECK_EQ(FieldTypeGroup::kCreditCard,
             GroupTypeOfServerFieldType(field_type));
 
@@ -1200,7 +1200,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     // re-authenticate the use of a credit card the website has on file) will be
     // handled separately because those have the field type
     // CREDIT_CARD_STANDALONE_VERIFICATION_CODE.
-    ServerFieldType server_type =
+    FieldType server_type =
         context.focused_field ? context.focused_field->Type().GetStorableType()
                               : UNKNOWN_TYPE;
     if (data_util::IsCreditCardExpirationType(server_type) ||
@@ -2180,7 +2180,7 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
     bool is_refill) const {
   // Counts the number of times a type was seen in the section to be filled.
   // This is used to limit the maximum number of fills per value.
-  base::flat_map<ServerFieldType, size_t> type_count;
+  base::flat_map<FieldType, size_t> type_count;
   type_count.reserve(form_structure.field_count());
 
   CHECK_EQ(form.fields.size(), form_structure.field_count());
@@ -2258,7 +2258,7 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
       continue;
     }
 
-    ServerFieldType field_type = autofill_field->Type().GetStorableType();
+    FieldType field_type = autofill_field->Type().GetStorableType();
     // Don't fill expired cards expiration date.
     if (data_util::IsCreditCardExpirationType(field_type) &&
         (optional_credit_card &&
@@ -2515,7 +2515,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   if (autofilled_form_signatures_.size() > kMaxRecentFormSignaturesToRemember)
     autofilled_form_signatures_.pop_back();
 
-  auto field_types = base::MakeFlatMap<FieldGlobalId, ServerFieldType>(
+  auto field_types = base::MakeFlatMap<FieldGlobalId, FieldType>(
       *form_structure, {}, [](const auto& field) {
         return std::make_pair(field->global_id(),
                               field->Type().GetStorableType());
@@ -2781,7 +2781,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     const FormFieldData& field,
-    ServerFieldType trigger_field_type,
+    FieldType trigger_field_type,
     bool& should_display_gpay_logo) const {
   credit_card_form_event_logger_->OnDidPollSuggestions(
       field, signin_state_for_metrics_);
@@ -3496,7 +3496,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
   }
 
   if (context->is_filling_credit_card) {
-    ServerFieldType trigger_field_type =
+    FieldType trigger_field_type =
         context->focused_field
             ? context->focused_field->Type().GetStorableType()
             : UNKNOWN_TYPE;

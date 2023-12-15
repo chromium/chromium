@@ -298,12 +298,12 @@ TEST(PhoneNumberTest, HelperSetsAllPhoneFieldTypes) {
 
   FieldTypeSet types;
   profile.GetSupportedTypes(&types);
-  std::vector<ServerFieldType> fields{types.begin(), types.end()};
-  std::erase_if(fields, [](ServerFieldType type) {
+  std::vector<FieldType> fields{types.begin(), types.end()};
+  std::erase_if(fields, [](FieldType type) {
     return GroupTypeOfServerFieldType(type) != FieldTypeGroup::kPhone;
   });
 
-  base::ranges::for_each(fields, [](ServerFieldType type) {
+  base::ranges::for_each(fields, [](FieldType type) {
     PhoneNumber::PhoneCombineHelper helper;
     EXPECT_TRUE(helper.SetInfo(AutofillType(type), u"123"));
   });

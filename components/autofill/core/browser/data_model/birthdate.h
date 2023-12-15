@@ -26,17 +26,17 @@ class Birthdate : public FormGroup {
   }
 
   // FormGroup:
-  std::u16string GetRawInfo(ServerFieldType type) const override;
+  std::u16string GetRawInfo(FieldType type) const override;
 
   // All |GetRawComponents()| are stored as integers and directly accessible.
-  int GetRawInfoAsInt(ServerFieldType type) const override;
+  int GetRawInfoAsInt(FieldType type) const override;
 
-  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+  void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
 
   void SetRawInfoAsIntWithVerificationStatus(
-      ServerFieldType type,
+      FieldType type,
       int value,
       VerificationStatus status) override;
 

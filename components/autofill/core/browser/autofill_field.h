@@ -26,10 +26,10 @@
 
 namespace autofill {
 
-typedef std::map<ServerFieldType, std::vector<AutofillDataModel::ValidityState>>
+typedef std::map<FieldType, std::vector<AutofillDataModel::ValidityState>>
     ServerFieldTypeValidityStatesMap;
 
-typedef std::map<ServerFieldType, AutofillDataModel::ValidityState>
+typedef std::map<FieldType, AutofillDataModel::ValidityState>
     ServerFieldTypeValidityStateMap;
 
 // Specifies if the Username First Flow vote has intermediate values.
@@ -72,9 +72,9 @@ class AutofillField : public FormFieldData {
   static std::unique_ptr<AutofillField> CreateForPasswordManagerUpload(
       FieldSignature field_signature);
 
-  ServerFieldType heuristic_type() const;
-  ServerFieldType heuristic_type(HeuristicSource s) const;
-  ServerFieldType server_type() const;
+  FieldType heuristic_type() const;
+  FieldType heuristic_type(HeuristicSource s) const;
+  FieldType server_type() const;
   bool server_type_prediction_is_override() const;
   const std::vector<
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>&
@@ -101,7 +101,7 @@ class AutofillField : public FormFieldData {
   bool only_fill_when_focused() const { return only_fill_when_focused_; }
 
   // Setters for the detected types.
-  void set_heuristic_type(HeuristicSource s, ServerFieldType t);
+  void set_heuristic_type(HeuristicSource s, FieldType t);
   void add_possible_types_validities(
       const ServerFieldTypeValidityStateMap& possible_types_validities);
   void set_server_predictions(
@@ -120,7 +120,7 @@ class AutofillField : public FormFieldData {
     possible_types_validities_ = possible_types_validities;
   }
   std::vector<AutofillDataModel::ValidityState>
-      get_validities_for_possible_type(ServerFieldType);
+      get_validities_for_possible_type(FieldType);
 
   void SetHtmlType(HtmlFieldType type, HtmlFieldMode mode);
 
@@ -340,12 +340,10 @@ class AutofillField : public FormFieldData {
     return autofill_source_profile_guid_;
   }
 
-  void set_autofilled_type(std::optional<ServerFieldType> autofilled_type) {
+  void set_autofilled_type(std::optional<FieldType> autofilled_type) {
     autofilled_type_ = std::move(autofilled_type);
   }
-  std::optional<ServerFieldType> autofilled_type() const {
-    return autofilled_type_;
-  }
+  std::optional<FieldType> autofilled_type() const { return autofilled_type_; }
 
   bool WasAutofilledWithFallback() const;
 
@@ -385,8 +383,7 @@ class AutofillField : public FormFieldData {
   // Predictions which where calculated on the client. This is initialized to
   // `NO_SERVER_DATA`, which means "NO_DATA", i.e. no classification was
   // attempted.
-  std::array<ServerFieldType,
-             static_cast<size_t>(HeuristicSource::kMaxValue) + 1>
+  std::array<FieldType, static_cast<size_t>(HeuristicSource::kMaxValue) + 1>
       local_type_predictions_;
 
   // The type of the field. Overrides all other types (html_type_,
@@ -501,7 +498,7 @@ class AutofillField : public FormFieldData {
   // Autofill might fallback to filling a classified field with a different type
   // than the classified one, based on country-specific rules.
   // This is not tracked for fields filled with field by field filling.
-  std::optional<ServerFieldType> autofilled_type_;
+  std::optional<FieldType> autofilled_type_;
 };
 
 }  // namespace autofill

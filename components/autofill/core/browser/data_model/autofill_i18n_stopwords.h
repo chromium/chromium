@@ -16,7 +16,7 @@ namespace autofill::i18n_model_definition {
 
 // A pair of country code and server field type used as keys in the
 // `kAutofillModelStopwords`.
-using CountryAndFieldType = std::pair<std::string_view, ServerFieldType>;
+using CountryAndFieldType = std::pair<std::string_view, FieldType>;
 
 // A lookup map for stopwords for countries and field types.
 constexpr auto kAutofillModelStopwords =

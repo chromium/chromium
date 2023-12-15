@@ -2099,17 +2099,16 @@ TEST(CreditCardTest, GetNonEmptyRawTypes) {
   test::SetCreditCardInfo(&credit_card, "John Dillinger",
                           "4234567890123456" /* Visa */, "01", "2999", "");
 
-  std::vector<ServerFieldType> expected_raw_types{
-      CREDIT_CARD_NAME_FULL,
-      CREDIT_CARD_NAME_FIRST,
-      CREDIT_CARD_NAME_LAST,
-      CREDIT_CARD_NUMBER,
-      CREDIT_CARD_TYPE,
-      CREDIT_CARD_EXP_MONTH,
-      CREDIT_CARD_EXP_2_DIGIT_YEAR,
-      CREDIT_CARD_EXP_4_DIGIT_YEAR,
-      CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
-      CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR};
+  std::vector<FieldType> expected_raw_types{CREDIT_CARD_NAME_FULL,
+                                            CREDIT_CARD_NAME_FIRST,
+                                            CREDIT_CARD_NAME_LAST,
+                                            CREDIT_CARD_NUMBER,
+                                            CREDIT_CARD_TYPE,
+                                            CREDIT_CARD_EXP_MONTH,
+                                            CREDIT_CARD_EXP_2_DIGIT_YEAR,
+                                            CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                                            CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+                                            CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR};
 
   FieldTypeSet non_empty_raw_types;
   credit_card.GetNonEmptyRawTypes(&non_empty_raw_types);

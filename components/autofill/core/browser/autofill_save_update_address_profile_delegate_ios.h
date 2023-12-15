@@ -60,7 +60,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   std::u16string GetMessageActionText() const;
 
   // Returns the data stored in the |profile_| corresponding to |type|.
-  std::u16string GetProfileInfo(ServerFieldType type) const;
+  std::u16string GetProfileInfo(FieldType type) const;
 
   // Returns the profile difference map between |profile_| and
   // |original_profile_|.
@@ -74,7 +74,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   virtual bool Never();
 
   // Updates |profile_| |type| value to |value|.
-  void SetProfileInfo(const ServerFieldType& type, const std::u16string& value);
+  void SetProfileInfo(const FieldType& type, const std::u16string& value);
   void SetProfile(AutofillProfile* profile);
 
   const AutofillProfile* GetProfile() const;

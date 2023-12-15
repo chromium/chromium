@@ -17,7 +17,7 @@ FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(
     std::u16string field_value,
     bool field_is_autofilled,
     std::optional<std::string> field_autofill_source_profile_guid,
-    std::optional<ServerFieldType> field_autofilled_type)
+    std::optional<FieldType> field_autofilled_type)
     : value(field_value),
       is_autofilled(field_is_autofilled),
       autofill_source_profile_guid(

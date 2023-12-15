@@ -55,7 +55,7 @@ const FieldTypeSet NameMiddle::GetAdditionalSupportedFieldTypes() const {
 }
 
 std::u16string NameMiddle::GetValueForOtherSupportedType(
-    ServerFieldType field_type) const {
+    FieldType field_type) const {
   CHECK(IsSupportedType(field_type));
   return HasMiddleNameInitialsCharacteristics(base::UTF16ToUTF8(GetValue()))
              ? GetValue()
@@ -63,7 +63,7 @@ std::u16string NameMiddle::GetValueForOtherSupportedType(
 }
 
 void NameMiddle::SetValueForOtherSupportedType(
-    ServerFieldType field_type,
+    FieldType field_type,
     const std::u16string& value,
     const VerificationStatus& status) {
   CHECK(IsSupportedType(field_type));

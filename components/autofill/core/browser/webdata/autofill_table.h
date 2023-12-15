@@ -495,8 +495,8 @@ struct PaymentInstrumentFields {
 //                      Like contact_info_type_tokens, but for local_addresses.
 //
 //  guid                The guid of the corresponding profile in contact_info.
-//  type                The ServerFieldType, represented by its integer value in
-//                      the ServerFieldType enum.
+//  type                The FieldType, represented by its integer value in
+//                      the FieldType enum.
 //  value               The string value of the type.
 //  verification_status Each token has an additional validation status that
 //                      indicates if Autofill parsed the value out of an

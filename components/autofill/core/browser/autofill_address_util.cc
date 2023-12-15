@@ -104,7 +104,7 @@ std::vector<AutofillAddressUIComponent> ConvertAddressUiComponents(
               .literal = component.literal,
           };
         }
-        autofill::ServerFieldType field = i18n::TypeForField(component.field);
+        autofill::FieldType field = i18n::TypeForField(component.field);
         return AutofillAddressUIComponent{
             .field = field,
             .name = component.name,
@@ -212,7 +212,7 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
     if (!include_recipient && component.field == NAME_FULL) {
       continue;
     }
-    ServerFieldType type = component.field;
+    FieldType type = component.field;
     if (type == NAME_FULL)
       type = NAME_FULL_WITH_HONORIFIC_PREFIX;
     address += base::UTF16ToUTF8(profile.GetInfo(type, ui_language_code));
@@ -240,7 +240,7 @@ std::u16string GetProfileDescription(const AutofillProfile& profile,
                                      const std::string& ui_language_code,
                                      bool include_address_and_contacts) {
   // All user-visible fields.
-  static constexpr ServerFieldType kDetailsFields[] = {
+  static constexpr FieldType kDetailsFields[] = {
       NAME_FULL,
       ADDRESS_HOME_LINE1,
       ADDRESS_HOME_LINE2,
@@ -266,11 +266,11 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
     const std::string& app_locale) {
-  static constexpr ServerFieldType kTypeToCompare[] = {
+  static constexpr FieldType kTypeToCompare[] = {
       NAME_FULL_WITH_HONORIFIC_PREFIX, ADDRESS_HOME_ADDRESS, EMAIL_ADDRESS,
       PHONE_HOME_WHOLE_NUMBER};
 
-  base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
+  base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
       differences = AutofillProfileComparator::GetProfileDifferenceMap(
           first_profile, second_profile,
           FieldTypeSet(std::begin(kTypeToCompare), std::end(kTypeToCompare)),
@@ -284,7 +284,7 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
       /*include_country=*/true);
 
   std::vector<ProfileValueDifference> differences_for_ui;
-  for (ServerFieldType type : kTypeToCompare) {
+  for (FieldType type : kTypeToCompare) {
     // Address is handled seprately.
     if (type == ADDRESS_HOME_ADDRESS) {
       if (first_address != second_address) {
@@ -303,13 +303,12 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
 std::u16string GetProfileSummaryForMigrationPrompt(
     const AutofillProfile& profile,
     const std::string& app_locale) {
-  std::vector<ServerFieldType> fields = {
-      ServerFieldType::NAME_FULL_WITH_HONORIFIC_PREFIX,
-      ServerFieldType::ADDRESS_HOME_LINE1, ServerFieldType::EMAIL_ADDRESS,
-      ServerFieldType::PHONE_HOME_WHOLE_NUMBER};
+  std::vector<FieldType> fields = {
+      FieldType::NAME_FULL_WITH_HONORIFIC_PREFIX, FieldType::ADDRESS_HOME_LINE1,
+      FieldType::EMAIL_ADDRESS, FieldType::PHONE_HOME_WHOLE_NUMBER};
   std::vector<std::u16string> values;
   values.reserve(fields.size());
-  for (ServerFieldType field : fields) {
+  for (FieldType field : fields) {
     std::u16string value = profile.GetInfo(field, app_locale);
     if (!value.empty()) {
       values.push_back(value);

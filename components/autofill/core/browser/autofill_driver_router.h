@@ -258,7 +258,7 @@ class AutofillDriverRouter {
       mojom::ActionPersistence action_persistence,
       const FormData& data,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
+      const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
       void (*callback)(AutofillDriver* target,
                        mojom::ActionType action_type,
                        mojom::ActionPersistence action_persistence,

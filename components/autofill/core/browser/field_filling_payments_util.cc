@@ -300,7 +300,7 @@ std::u16string GetExpirationForMonthControl(const CreditCard& card) {
 // Uses the `field`'s type and the `field`'s max_length attribute to
 // determine if the year needs to be truncated.
 std::u16string GetExpirationYearForInput(const CreditCard& credit_card,
-                                         ServerFieldType field_type,
+                                         FieldType field_type,
                                          uint64_t field_max_length) {
   const size_t year_length = DetermineExpirationYearLength(field_type);
   std::u16string value = year_length == 2
@@ -326,7 +326,7 @@ std::optional<std::u16string> GetExpirationDateForInput(
   std::u16string yy = credit_card.Expiration2DigitYearAsString();
   std::u16string yyyy = credit_card.Expiration4DigitYearAsString();
 
-  ServerFieldType field_type = field.Type().GetStorableType();
+  FieldType field_type = field.Type().GetStorableType();
   // At this point the field type is determined, so we pass it even as
   // `forced_field_type`.
   CreditCardField::ExpirationDateFormat format;
@@ -338,11 +338,11 @@ std::optional<std::u16string> GetExpirationDateForInput(
   } else {
     // Before the experiment, the type was not fully determined yet. That
     // happened at field filling time like in this else-branch.
-    ServerFieldType server_hint = field.server_type();
-    ServerFieldType forced_field_type =
-        field.server_type_prediction_is_override() ? server_hint
-                                                   : NO_SERVER_DATA;
-    ServerFieldType fallback_type = field.Type().GetStorableType();
+    FieldType server_hint = field.server_type();
+    FieldType forced_field_type = field.server_type_prediction_is_override()
+                                      ? server_hint
+                                      : NO_SERVER_DATA;
+    FieldType fallback_type = field.Type().GetStorableType();
     format = CreditCardField::DetermineExpirationDateFormat(
         field, fallback_type, server_hint, forced_field_type);
   }
@@ -373,7 +373,7 @@ std::optional<std::u16string> GetValueForCreditCardForInput(
   if (field.form_control_type == FormControlType::kInputMonth) {
     return GetExpirationForMonthControl(credit_card);
   }
-  switch (ServerFieldType storable_type = field.Type().GetStorableType()) {
+  switch (FieldType storable_type = field.Type().GetStorableType()) {
     case CREDIT_CARD_VERIFICATION_CODE:
     case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       return GetCreditCardVerificationCodeForInput(credit_card,
@@ -417,7 +417,7 @@ std::optional<std::u16string> GetValueForVirtualCardInputPreview(
     const AutofillField& field,
     std::string* failure_to_fill) {
   CHECK_EQ(virtual_card.record_type(), CreditCard::RecordType::kVirtualCard);
-  switch (ServerFieldType storable_type = field.Type().GetStorableType()) {
+  switch (FieldType storable_type = field.Type().GetStorableType()) {
     case CREDIT_CARD_VERIFICATION_CODE:
     case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       // For preview virtual card CVC, return three dots unless for American

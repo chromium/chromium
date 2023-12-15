@@ -23,7 +23,7 @@ namespace autofill {
 
 // Model Handler which asynchronously calls the `AutofillModelExecutor`.
 // It retrieves the model from the server, load it into memory, execute
-// it with FormStructure as input and associate the model ServerFieldType
+// it with FormStructure as input and associate the model FieldType
 // predictions with the FormStructure.
 class AutofillMlPredictionModelHandler
     : public optimization_guide::ModelHandler<
@@ -75,9 +75,8 @@ class AutofillMlPredictionModelHandler
 
   // Given the confidences returned by the ML model, returns the most likely
   // type. This is currently just the argmax of `model_output`, mapped to the
-  // corresponding ServerFieldType.
-  ServerFieldType GetMostLikelyType(
-      const std::vector<float>& model_output) const;
+  // corresponding FieldType.
+  FieldType GetMostLikelyType(const std::vector<float>& model_output) const;
 
   struct ModelState {
     optimization_guide::proto::AutofillFieldClassificationModelMetadata

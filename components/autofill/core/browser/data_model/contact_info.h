@@ -26,13 +26,13 @@ class NameInfo : public FormGroup {
   bool operator==(const NameInfo& other) const;
 
   // FormGroup:
-  std::u16string GetRawInfo(ServerFieldType type) const override;
+  std::u16string GetRawInfo(FieldType type) const override;
 
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
                         FieldTypeSet* matching_types) const override;
 
-  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+  void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
 
@@ -75,8 +75,7 @@ class NameInfo : public FormGroup {
                                          VerificationStatus status) override;
 
   // Return the verification status of a structured name value.
-  VerificationStatus GetVerificationStatusImpl(
-      ServerFieldType type) const override;
+  VerificationStatus GetVerificationStatusImpl(FieldType type) const override;
 
   // This data structure stores the more-structured representation of the name
   // when |features::kAutofillEnableSupportForMoreStructureInNames| is enabled.
@@ -94,8 +93,8 @@ class EmailInfo : public FormGroup {
   bool operator!=(const EmailInfo& other) const { return !operator==(other); }
 
   // FormGroup:
-  std::u16string GetRawInfo(ServerFieldType type) const override;
-  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+  std::u16string GetRawInfo(FieldType type) const override;
+  void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
 
@@ -116,8 +115,8 @@ class CompanyInfo : public FormGroup {
   bool operator!=(const CompanyInfo& other) const { return !operator==(other); }
 
   // FormGroup:
-  std::u16string GetRawInfo(ServerFieldType type) const override;
-  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+  std::u16string GetRawInfo(FieldType type) const override;
+  void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
 

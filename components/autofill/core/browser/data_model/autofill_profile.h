@@ -96,16 +96,16 @@ class AutofillProfile : public AutofillDataModel {
                         const std::string& app_locale,
                         FieldTypeSet* matching_types) const override;
 
-  std::u16string GetRawInfo(ServerFieldType type) const override;
+  std::u16string GetRawInfo(FieldType type) const override;
 
-  int GetRawInfoAsInt(ServerFieldType type) const override;
+  int GetRawInfoAsInt(FieldType type) const override;
 
-  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+  void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
 
   void SetRawInfoAsIntWithVerificationStatus(
-      ServerFieldType type,
+      FieldType type,
       int value,
       VerificationStatus status) override;
 
@@ -115,14 +115,14 @@ class AutofillProfile : public AutofillDataModel {
   // storable type. For example, ADDRESS_HOME_LINE1 corresponds to the storable
   // type ADDRESS_HOME_STREET_ADDRESS.
   // This function returns the storable type of the given `type`.
-  ServerFieldType GetStorableTypeOf(ServerFieldType type) const;
+  FieldType GetStorableTypeOf(FieldType type) const;
 
   // Returns true if there are no values (field types) set.
   bool IsEmpty(const std::string& app_locale) const;
 
   // Returns true if the |type| of data in this profile is present, but invalid.
   // Otherwise returns false.
-  bool IsPresentButInvalid(ServerFieldType type) const;
+  bool IsPresentButInvalid(FieldType type) const;
 
   // Comparison for Sync.  Returns 0 if the profile is the same as |this|,
   // or < 0, or > 0 if it is different.  The implied ordering can be used for
@@ -216,7 +216,7 @@ class AutofillProfile : public AutofillDataModel {
   // Builds inferred label from the first |num_fields_to_include| non-empty
   // fields in |label_fields|. Uses as many fields as possible if there are not
   // enough non-empty fields.
-  std::u16string ConstructInferredLabel(const ServerFieldType* label_fields,
+  std::u16string ConstructInferredLabel(const FieldType* label_fields,
                                         const size_t label_fields_size,
                                         size_t num_fields_to_include,
                                         const std::string& app_locale) const;
@@ -299,7 +299,7 @@ class AutofillProfile : public AutofillDataModel {
                              const std::string& app_locale) const override;
 
   VerificationStatus GetVerificationStatusImpl(
-      const ServerFieldType type) const override;
+      const FieldType type) const override;
 
   bool SetInfoWithVerificationStatusImpl(const AutofillType& type,
                                          const std::u16string& value,
@@ -314,7 +314,7 @@ class AutofillProfile : public AutofillDataModel {
   static void CreateInferredLabelsHelper(
       const std::vector<const AutofillProfile*>& profiles,
       const std::list<size_t>& indices,
-      const std::vector<ServerFieldType>& fields,
+      const std::vector<FieldType>& fields,
       size_t num_fields_to_include,
       const std::string& app_locale,
       std::vector<std::u16string>* labels);

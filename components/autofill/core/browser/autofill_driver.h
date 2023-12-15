@@ -158,7 +158,7 @@ class AutofillDriver {
       mojom::ActionPersistence action_persistence,
       const FormData& form,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) = 0;
+      const base::flat_map<FieldGlobalId, FieldType>& field_type_map) = 0;
 
   // Tells the renderer to set the node text.
   virtual void ApplyFieldAction(mojom::ActionPersistence action_persistence,

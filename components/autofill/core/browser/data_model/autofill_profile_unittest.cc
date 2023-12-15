@@ -1333,7 +1333,7 @@ TEST(AutofillProfileTest, Compare_StructuredTypes) {
     SCOPED_TRACE(testing::Message()
                  << "Testing the Compare method for the country: "
                  << country_code);
-    for (ServerFieldType type : structured_types) {
+    for (FieldType type : structured_types) {
       if (!i18n_model_definition::IsTypeEnabledForCountry(type, country_code)) {
         continue;
       }
@@ -1692,22 +1692,22 @@ TEST(AutofillProfileTest, GetNonEmptyRawTypes) {
                        "johnwayne@me.xyz", nullptr, "123 Zoo St.", nullptr,
                        "Hollywood", "CA", "91601", "US", "14155678910");
 
-  std::vector<ServerFieldType> expected_raw_types{NAME_FIRST,
-                                                  NAME_LAST,
-                                                  NAME_FULL,
-                                                  EMAIL_ADDRESS,
-                                                  PHONE_HOME_WHOLE_NUMBER,
-                                                  ADDRESS_HOME_ADDRESS,
-                                                  ADDRESS_HOME_LINE1,
-                                                  ADDRESS_HOME_CITY,
-                                                  ADDRESS_HOME_STATE,
-                                                  ADDRESS_HOME_ZIP,
-                                                  ADDRESS_HOME_COUNTRY,
-                                                  ADDRESS_HOME_STREET_ADDRESS,
-                                                  ADDRESS_HOME_STREET_NAME,
-                                                  ADDRESS_HOME_STREET_LOCATION,
-                                                  ADDRESS_HOME_HOUSE_NUMBER,
-                                                  NAME_LAST_SECOND};
+  std::vector<FieldType> expected_raw_types{NAME_FIRST,
+                                            NAME_LAST,
+                                            NAME_FULL,
+                                            EMAIL_ADDRESS,
+                                            PHONE_HOME_WHOLE_NUMBER,
+                                            ADDRESS_HOME_ADDRESS,
+                                            ADDRESS_HOME_LINE1,
+                                            ADDRESS_HOME_CITY,
+                                            ADDRESS_HOME_STATE,
+                                            ADDRESS_HOME_ZIP,
+                                            ADDRESS_HOME_COUNTRY,
+                                            ADDRESS_HOME_STREET_ADDRESS,
+                                            ADDRESS_HOME_STREET_NAME,
+                                            ADDRESS_HOME_STREET_LOCATION,
+                                            ADDRESS_HOME_HOUSE_NUMBER,
+                                            NAME_LAST_SECOND};
 
   FieldTypeSet non_empty_raw_types;
   profile.GetNonEmptyRawTypes(&non_empty_raw_types);

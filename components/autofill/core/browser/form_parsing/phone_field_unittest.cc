@@ -70,13 +70,13 @@ class PhoneFieldTest
   }
 
   // Checks if the field with `id` was classified as `expected_type`.
-  void CheckField(const FieldGlobalId id, ServerFieldType expected_type) const;
+  void CheckField(const FieldGlobalId id, FieldType expected_type) const;
 
   struct TestFieldData {
     FormControlType type;
     std::u16string label;
     std::u16string name;
-    ServerFieldType expected_type;
+    FieldType expected_type;
     // Rarely used fields. Placed at the end to simplify common use cases.
     uint64_t max_length = 0;
     // Options of a FormControlType::kSelectOne `type` element.
@@ -110,7 +110,7 @@ class PhoneFieldTest
 };
 
 void PhoneFieldTest::CheckField(const FieldGlobalId id,
-                                ServerFieldType expected_type) const {
+                                FieldType expected_type) const {
   auto it = field_candidates_map_.find(id);
   ASSERT_TRUE(it != field_candidates_map_.end());
   EXPECT_EQ(expected_type, it->second.BestHeuristicType());

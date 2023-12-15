@@ -35,13 +35,13 @@ namespace internal {
 // descriptions.
 template <typename = void>
 struct FieldDescription {
-  ServerFieldType role = ServerFieldType::EMPTY_TYPE;
+  FieldType role = FieldType::EMPTY_TYPE;
   // If the server type is not set explcitly, it is assumed to be given by the
   // role.
-  absl::optional<ServerFieldType> server_type;
+  absl::optional<FieldType> server_type;
   // If the heuristic type is not set explcitly, it is assumed to be given by
   // the role.
-  absl::optional<ServerFieldType> heuristic_type;
+  absl::optional<FieldType> heuristic_type;
   absl::optional<LocalFrameToken> host_frame;
   absl::optional<FieldRendererId> unique_renderer_id;
   bool is_focusable = true;
@@ -100,8 +100,8 @@ struct TestFormFlags {
 template <typename = void>
 struct ExpectedFieldTypeValues {
   std::vector<HtmlFieldType> expected_html_type = {};
-  std::vector<ServerFieldType> expected_heuristic_type = {};
-  std::vector<ServerFieldType> expected_overall_type = {};
+  std::vector<FieldType> expected_heuristic_type = {};
+  std::vector<FieldType> expected_overall_type = {};
 };
 
 // Describes a test case for the parser.
@@ -123,7 +123,7 @@ using FormStructureTestCase = internal::FormStructureTestCase<>;
 testing::Message DescribeFormData(const FormData& form_data);
 
 // Returns the form field relevant to the |role|.
-FormFieldData CreateFieldByRole(ServerFieldType role);
+FormFieldData CreateFieldByRole(FieldType role);
 
 // Creates a FormData to be fed to the parser.
 FormData GetFormData(const FormDescription& test_form_attributes);
@@ -131,13 +131,12 @@ FormData GetFormData(const FormDescription& test_form_attributes);
 // Extracts the heuristic types from the form description. If the heuristic type
 // is not explicitly set for a given field it is extracted from the field's
 // role.
-std::vector<ServerFieldType> GetHeuristicTypes(
+std::vector<FieldType> GetHeuristicTypes(
     const FormDescription& form_description);
 
 // Extracts the server types from the form description. If the server type
 // is not explicitly set for field it is extracted from the fiel's role.
-std::vector<ServerFieldType> GetServerTypes(
-    const FormDescription& form_description);
+std::vector<FieldType> GetServerTypes(const FormDescription& form_description);
 
 class FormStructureTest : public testing::Test {
  protected:

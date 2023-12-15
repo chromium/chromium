@@ -57,7 +57,7 @@ namespace test {
 // A compound data type that contains the type, the value and the verification
 // status for a form group entry (an AutofillProfile).
 struct FormGroupValue {
-  ServerFieldType type;
+  FieldType type;
   std::string value;
   VerificationStatus verification_status = VerificationStatus::kNoStatus;
 };
@@ -292,7 +292,7 @@ void InitializePossibleTypesAndValidities(
     std::vector<FieldTypeSet>& possible_field_types,
     std::vector<ServerFieldTypeValidityStatesMap>&
         possible_field_types_validities,
-    const std::vector<ServerFieldType>& possible_type,
+    const std::vector<FieldType>& possible_type,
     const std::vector<AutofillDataModel::ValidityState>& validity_state = {});
 
 // Fills the upload |field| with the information passed by parameter.
@@ -343,24 +343,24 @@ std::string TenYearsFromNow();
 // Creates a `FieldPrediction` instance.
 ::autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
     FieldPrediction
-    CreateFieldPrediction(ServerFieldType type,
+    CreateFieldPrediction(FieldType type,
                           ::autofill::AutofillQueryResponse::FormSuggestion::
                               FieldSuggestion::FieldPrediction::Source source);
 
 // Creates a `FieldPrediction` instance, with a plausible value for `source()`.
 ::autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
     FieldPrediction
-    CreateFieldPrediction(ServerFieldType type, bool is_override = false);
+    CreateFieldPrediction(FieldType type, bool is_override = false);
 
 void AddFieldPredictionToForm(
     const autofill::FormFieldData& field_data,
-    ServerFieldType field_type,
+    FieldType field_type,
     ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion,
     bool is_override = false);
 
 void AddFieldPredictionsToForm(
     const autofill::FormFieldData& field_data,
-    const std::vector<ServerFieldType>& field_types,
+    const std::vector<FieldType>& field_types,
     ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion);
 
 void AddFieldPredictionsToForm(

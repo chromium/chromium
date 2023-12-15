@@ -19,15 +19,14 @@ class ProfileTokenQualityTestApi {
 
   explicit ProfileTokenQualityTestApi(ProfileTokenQuality* quality);
 
-  void AddObservation(ServerFieldType field_type,
+  void AddObservation(FieldType field_type,
                       ProfileTokenQuality::ObservationType observation_type);
 
-  void AddObservation(ServerFieldType field_type,
+  void AddObservation(FieldType field_type,
                       ProfileTokenQuality::ObservationType observation_type,
                       FormSignatureHash hash);
 
-  std::vector<FormSignatureHash> GetHashesForStoredType(
-      ServerFieldType type) const;
+  std::vector<FormSignatureHash> GetHashesForStoredType(FieldType type) const;
 
  private:
   raw_ref<ProfileTokenQuality> quality_;

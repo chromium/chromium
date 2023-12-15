@@ -167,7 +167,7 @@ void FormField::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
   // Set to count distinct field types.
   FieldTypeSet heuristic_types;
   for (const auto& [field_id, candidates] : field_candidates) {
-    if (ServerFieldType heuristic_type = candidates.BestHeuristicType();
+    if (FieldType heuristic_type = candidates.BestHeuristicType();
         IsFillableFieldType(heuristic_type)) {
       heuristic_types.insert(heuristic_type);
     }
@@ -206,7 +206,7 @@ void FormField::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
   // Returns whether a field type may exist as a stand-alone field.
   auto retainable_field_type =
       [&is_form_tag, &permitted_single_field_types_in_form,
-       &permitted_single_field_types](ServerFieldType heuristic_type) {
+       &permitted_single_field_types](FieldType heuristic_type) {
         return (is_form_tag && permitted_single_field_types_in_form.contains(
                                    heuristic_type)) ||
                permitted_single_field_types.contains(heuristic_type);
@@ -214,12 +214,12 @@ void FormField::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
 
   struct WipedField {
     FieldGlobalId field_id;
-    ServerFieldType best_heuristic_type;
+    FieldType best_heuristic_type;
   };
   std::vector<WipedField> wiped_fields;
   if (IsLoggingActive(log_manager)) {
     for (const auto& [field_id, candidates] : field_candidates) {
-      ServerFieldType heuristic_type = candidates.BestHeuristicType();
+      FieldType heuristic_type = candidates.BestHeuristicType();
       if (!retainable_field_type(heuristic_type)) {
         wiped_fields.emplace_back(WipedField{field_id, heuristic_type});
       }
@@ -509,7 +509,7 @@ bool FormField::ParseEmptyLabel(AutofillScanner* scanner,
 
 // static
 void FormField::AddClassification(const AutofillField* field,
-                                  ServerFieldType type,
+                                  FieldType type,
                                   float score,
                                   FieldCandidatesMap& field_candidates) {
   // Several fields are optional.
@@ -679,7 +679,7 @@ bool FormField::MatchesFormControlType(std::string_view type,
 }
 
 // static
-bool FormField::IsSingleFieldParseableType(ServerFieldType field_type) {
+bool FormField::IsSingleFieldParseableType(FieldType field_type) {
   return field_type == MERCHANT_PROMO_CODE || field_type == IBAN_VALUE ||
          field_type == CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
 }
@@ -691,8 +691,8 @@ void FormField::ParseUsingAutocompleteAttributes(
   for (const AutofillField* field : fields) {
     HtmlFieldType html_type = FieldTypeFromAutocompleteAttributeValue(
         base::UTF16ToUTF8(field->parseable_name()));
-    // The HTML_MODE is irrelevant when converting to a ServerFieldType.
-    ServerFieldType type = AutofillType(html_type).GetStorableType();
+    // The HTML_MODE is irrelevant when converting to a FieldType.
+    FieldType type = AutofillType(html_type).GetStorableType();
     if (type != UNKNOWN_TYPE) {
       AddClassification(field, type, kBaseAutocompleteParserScore,
                         field_candidates);

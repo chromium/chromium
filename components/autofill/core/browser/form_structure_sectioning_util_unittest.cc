@@ -44,7 +44,7 @@ constexpr char kFieldsPerSectionHistogram[] =
 // The key information from which we build the `FormFieldData` objects for a
 // unittest.
 struct FieldTemplate {
-  ServerFieldType field_type = UNKNOWN_TYPE;
+  FieldType field_type = UNKNOWN_TYPE;
   FormControlType form_control_type = FormControlType::kInputText;
   std::string autocomplete_section = "";
   HtmlFieldMode autocomplete_mode = HtmlFieldMode::kNone;

@@ -188,7 +188,7 @@ TEST_P(CreditCardFieldTest, ParseMiniumCreditCardWithMaxLength) {
 
 struct CreditCardFieldYearTestCase {
   bool with_noise;
-  ServerFieldType expected_type;
+  FieldType expected_type;
 };
 
 class CreditCardFieldYearTest
@@ -204,7 +204,7 @@ class CreditCardFieldYearTest
 
   bool ShouldSwapMonthAndYear() const { return std::get<2>(GetParam()); }
 
-  ServerFieldType expected_type() const {
+  FieldType expected_type() const {
     return std::get<1>(GetParam()).expected_type;
   }
 
@@ -297,7 +297,7 @@ struct ParseExpFieldTestCase {
   const FormControlType cc_fields_form_control_type;
   const std::string label;
   const int max_length;
-  const ServerFieldType expected_prediction;
+  const FieldType expected_prediction;
 };
 
 class ParseExpFieldTest
@@ -622,7 +622,7 @@ struct DetermineExpirationDateFormatTestCase {
   const uint8_t expected_year_length;
   const std::string label;
   const int max_length;
-  ServerFieldType server_type_hint = NO_SERVER_DATA;
+  FieldType server_type_hint = NO_SERVER_DATA;
   bool is_server_override = false;
 };
 
@@ -752,7 +752,7 @@ TEST_P(DetermineExpirationDateFormat, TestDetermineFormat) {
   field.max_length = test_case().max_length;
   field.label = base::UTF8ToUTF16(test_case().label);
 
-  ServerFieldType fallback_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
+  FieldType fallback_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
 
   CreditCardField::ExpirationDateFormat result =
       CreditCardField::DetermineExpirationDateFormat(

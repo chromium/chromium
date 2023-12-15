@@ -228,14 +228,13 @@ AutofillProfileComparator::GetProfileDifference(
   return difference;
 }
 
-base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
+base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
 AutofillProfileComparator::GetProfileDifferenceMap(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
     FieldTypeSet types,
     const std::string& app_locale) {
-  std::vector<
-      std::pair<ServerFieldType, std::pair<std::u16string, std::u16string>>>
+  std::vector<std::pair<FieldType, std::pair<std::u16string, std::u16string>>>
       result;
   result.reserve(types.size());
 
@@ -245,8 +244,7 @@ AutofillProfileComparator::GetProfileDifferenceMap(
         {diff.type,
          {std::move(diff.first_value), std::move(diff.second_value)}});
   }
-  return base::flat_map<ServerFieldType,
-                        std::pair<std::u16string, std::u16string>>(
+  return base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>(
       std::move(result));
 }
 
@@ -259,7 +257,7 @@ AutofillProfileComparator::GetSettingsVisibleProfileDifference(
                               GetUserVisibleTypes(), app_locale);
 }
 
-base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
+base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
 AutofillProfileComparator::GetSettingsVisibleProfileDifferenceMap(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
@@ -599,7 +597,7 @@ bool AutofillProfileComparator::MergePhoneNumbers(
     const AutofillProfile& p1,
     const AutofillProfile& p2,
     PhoneNumber& phone_number) const {
-  const ServerFieldType kWholePhoneNumber = PHONE_HOME_WHOLE_NUMBER;
+  const FieldType kWholePhoneNumber = PHONE_HOME_WHOLE_NUMBER;
   const std::u16string& s1 = p1.GetRawInfo(kWholePhoneNumber);
   const std::u16string& s2 = p2.GetRawInfo(kWholePhoneNumber);
 
@@ -725,7 +723,7 @@ bool AutofillProfileComparator::MergeBirthdates(const AutofillProfile& p1,
                                                 Birthdate& birthdate) const {
   DCHECK(HaveMergeableBirthdates(p1, p2));
 
-  for (ServerFieldType component : Birthdate::GetRawComponents()) {
+  for (FieldType component : Birthdate::GetRawComponents()) {
     const std::u16string& component1 = p1.GetInfo(component, app_locale_);
     const std::u16string& component2 = p2.GetInfo(component, app_locale_);
     birthdate.SetInfo(component, component1.empty() ? component2 : component1,
@@ -949,7 +947,7 @@ bool AutofillProfileComparator::HaveMergeableBirthdates(
     const AutofillProfile& p1,
     const AutofillProfile& p2) const {
   return base::ranges::all_of(
-      Birthdate::GetRawComponents(), [&](ServerFieldType component) {
+      Birthdate::GetRawComponents(), [&](FieldType component) {
         const std::u16string& component1 = p1.GetInfo(component, app_locale_);
         const std::u16string& component2 = p2.GetInfo(component, app_locale_);
         return component1.empty() || component2.empty() ||

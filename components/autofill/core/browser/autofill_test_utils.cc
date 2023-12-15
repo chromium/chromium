@@ -167,7 +167,7 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
 
 inline void check_and_set(
     FormGroup* profile,
-    ServerFieldType type,
+    FieldType type,
     const char* value,
     VerificationStatus status = VerificationStatus::kObserved) {
   if (value) {
@@ -748,7 +748,7 @@ void InitializePossibleTypesAndValidities(
     std::vector<FieldTypeSet>& possible_field_types,
     std::vector<ServerFieldTypeValidityStatesMap>&
         possible_field_types_validities,
-    const std::vector<ServerFieldType>& possible_types,
+    const std::vector<FieldType>& possible_types,
     const std::vector<AutofillDataModel::ValidityState>& validity_states) {
   possible_field_types.push_back(FieldTypeSet());
   possible_field_types_validities.push_back(ServerFieldTypeValidityStatesMap());
@@ -766,7 +766,7 @@ void InitializePossibleTypesAndValidities(
   ASSERT_TRUE((possible_types.size() == validity_states.size()) ||
               (possible_types.size() == 1 && validity_states.size() > 1));
 
-  ServerFieldType possible_type = possible_types[0];
+  FieldType possible_type = possible_types[0];
   for (unsigned i = 0; i < validity_states.size(); ++i) {
     if (possible_types.size() == validity_states.size()) {
       possible_type = possible_types[i];
@@ -896,7 +896,7 @@ std::vector<FormSignature> GetEncodedAlternativeSignatures(
   return all_signatures;
 }
 
-FieldPrediction CreateFieldPrediction(ServerFieldType type,
+FieldPrediction CreateFieldPrediction(FieldType type,
                                       FieldPrediction::Source source) {
   FieldPrediction field_prediction;
   field_prediction.set_type(type);
@@ -908,7 +908,7 @@ FieldPrediction CreateFieldPrediction(ServerFieldType type,
   return field_prediction;
 }
 
-FieldPrediction CreateFieldPrediction(ServerFieldType type, bool is_override) {
+FieldPrediction CreateFieldPrediction(FieldType type, bool is_override) {
   if (is_override) {
     return CreateFieldPrediction(type, FieldPrediction::SOURCE_OVERRIDE);
   }
@@ -923,7 +923,7 @@ FieldPrediction CreateFieldPrediction(ServerFieldType type, bool is_override) {
 
 void AddFieldPredictionToForm(
     const FormFieldData& field_data,
-    ServerFieldType field_type,
+    FieldType field_type,
     AutofillQueryResponse_FormSuggestion* form_suggestion,
     bool is_override) {
   auto* field_suggestion = form_suggestion->add_field_suggestions();
@@ -935,14 +935,13 @@ void AddFieldPredictionToForm(
 
 void AddFieldPredictionsToForm(
     const FormFieldData& field_data,
-    const std::vector<ServerFieldType>& field_types,
+    const std::vector<FieldType>& field_types,
     AutofillQueryResponse_FormSuggestion* form_suggestion) {
   std::vector<FieldPrediction> field_predictions;
   field_predictions.reserve(field_types.size());
-  base::ranges::transform(field_types, std::back_inserter(field_predictions),
-                          [](ServerFieldType field_type) {
-                            return CreateFieldPrediction(field_type);
-                          });
+  base::ranges::transform(
+      field_types, std::back_inserter(field_predictions),
+      [](FieldType field_type) { return CreateFieldPrediction(field_type); });
   return AddFieldPredictionsToForm(field_data, field_predictions,
                                    form_suggestion);
 }

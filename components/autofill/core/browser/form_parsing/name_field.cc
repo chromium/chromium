@@ -317,8 +317,7 @@ void FirstTwoLastNamesField::AddClassifications(
                     field_candidates);
   AddClassification(second_last_name_, NAME_LAST_SECOND, kBaseNameParserScore,
                     field_candidates);
-  const ServerFieldType type =
-      middle_initial_ ? NAME_MIDDLE_INITIAL : NAME_MIDDLE;
+  const FieldType type = middle_initial_ ? NAME_MIDDLE_INITIAL : NAME_MIDDLE;
   AddClassification(middle_name_, type, kBaseNameParserScore, field_candidates);
 }
 
@@ -548,8 +547,7 @@ void FirstLastNameField::AddClassifications(
                     field_candidates);
   AddClassification(last_name_, NAME_LAST, kBaseNameParserScore,
                     field_candidates);
-  const ServerFieldType type =
-      middle_initial_ ? NAME_MIDDLE_INITIAL : NAME_MIDDLE;
+  const FieldType type = middle_initial_ ? NAME_MIDDLE_INITIAL : NAME_MIDDLE;
   AddClassification(middle_name_, type, kBaseNameParserScore, field_candidates);
 }
 

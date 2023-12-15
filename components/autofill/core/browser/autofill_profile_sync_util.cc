@@ -636,7 +636,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
 
   // When adding field types, ensure that they don't need to be added here and
   // update the last checked value.
-  static_assert(ServerFieldType::MAX_VALID_FIELD_TYPE == 161,
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 161,
                 "New field type needs to be reviewed for inclusion in sync");
 
   // The profile may be in a legacy state. By calling |FinalizeAfterImport()|

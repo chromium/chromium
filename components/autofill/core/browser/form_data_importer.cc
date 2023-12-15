@@ -65,8 +65,8 @@ using AddressImportRequirement =
 // Return true if the |field_type| and |value| are valid within the context
 // of importing a form.
 bool IsValidFieldTypeAndValue(
-    const base::flat_map<ServerFieldType, std::u16string>& observed_types,
-    ServerFieldType field_type,
+    const base::flat_map<FieldType, std::u16string>& observed_types,
+    FieldType field_type,
     const std::u16string& value,
     LogBuffer* import_log_buffer) {
   // Abandon the import if two fields of the same type are encountered.
@@ -269,7 +269,7 @@ void FormDataImporter::RemoveInaccessibleProfileValues(
   profile.ClearFields(inaccessible_fields);
   autofill_metrics::LogRemovedSettingInaccessibleFields(
       !inaccessible_fields.empty());
-  for (const ServerFieldType inaccessible_field : inaccessible_fields) {
+  for (const FieldType inaccessible_field : inaccessible_fields) {
     autofill_metrics::LogRemovedSettingInaccessibleField(inaccessible_field);
   }
 }
@@ -406,7 +406,7 @@ size_t FormDataImporter::ExtractAddressProfiles(
 }
 
 AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
-    const base::flat_map<ServerFieldType, std::u16string>& observed_values,
+    const base::flat_map<FieldType, std::u16string>& observed_values,
     LogBuffer* import_log_buffer,
     ProfileImportMetadata& import_metadata) {
   AutofillProfile candidate_profile(
@@ -470,7 +470,7 @@ AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
   return candidate_profile;
 }
 
-base::flat_map<ServerFieldType, std::u16string>
+base::flat_map<FieldType, std::u16string>
 FormDataImporter::GetAddressObservedFieldValues(
     base::span<const AutofillField* const> section_fields,
     ProfileImportMetadata& import_metadata,
@@ -480,7 +480,7 @@ FormDataImporter::GetAddressObservedFieldValues(
     bool& has_address_related_fields) const {
   plus_addresses::PlusAddressService* plus_address_service =
       client_->GetPlusAddressService();
-  base::flat_map<ServerFieldType, std::u16string> observed_field_values;
+  base::flat_map<FieldType, std::u16string> observed_field_values;
 
   // Tracks if subsequent phone number fields should be ignored,
   // since they do not belong to the first phone number in the form.
@@ -530,7 +530,7 @@ FormDataImporter::GetAddressObservedFieldValues(
     // There can be multiple email fields (e.g. in the case of 'confirm email'
     // fields) but they must all contain the same value, else the profile is
     // invalid.
-    ServerFieldType field_type = autofill_type.GetStorableType();
+    FieldType field_type = autofill_type.GetStorableType();
     if (field_type == EMAIL_ADDRESS) {
       auto email_it = observed_field_values.find(EMAIL_ADDRESS);
       if (email_it != observed_field_values.end() &&
@@ -602,10 +602,10 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   // Tracks if any of the fields belongs to FormType::kAddressForm.
   bool has_address_related_fields = false;
 
-  // Stores the values collected for each related `ServerFieldType`. Used as
+  // Stores the values collected for each related `FieldType`. Used as
   // well to detect and discard address forms with multiple fields of the same
   // type.
-  base::flat_map<ServerFieldType, std::u16string> observed_field_values =
+  base::flat_map<FieldType, std::u16string> observed_field_values =
       GetAddressObservedFieldValues(section_fields, import_metadata,
                                     import_log_buffer, has_invalid_field_types,
                                     has_multiple_distinct_email_addresses,
@@ -974,14 +974,14 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
       continue;
     }
 
-    ServerFieldType field_type = autofill_type.GetStorableType();
+    FieldType field_type = autofill_type.GetStorableType();
 
     std::u16string value_view = field->value;
     std::u16string_view user_input_view =
         base::TrimWhitespace(field->user_input, base::TRIM_ALL);
     if (base::FeatureList::IsEnabled(
             features::kAutofillUseTypedCreditCardNumber) &&
-        field_type == ServerFieldType::CREDIT_CARD_NUMBER &&
+        field_type == FieldType::CREDIT_CARD_NUMBER &&
         !user_input_view.empty()) {
       value_view = user_input_view;
     }

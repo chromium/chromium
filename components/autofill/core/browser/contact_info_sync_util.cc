@@ -99,8 +99,7 @@ class EntryTokenDeleter {
 // integrators when the data gets synced back.
 // Since the uploaded data contains the raw value too, this is not a privacy
 // concern.
-uint32_t GetProfileValueHash(const AutofillProfile& profile,
-                             ServerFieldType type) {
+uint32_t GetProfileValueHash(const AutofillProfile& profile, FieldType type) {
   return base::PersistentHash(base::UTF16ToUTF8(profile.GetRawInfo(type)));
 }
 
@@ -114,21 +113,19 @@ class ContactInfoEntryDataSetter {
   explicit ContactInfoEntryDataSetter(const AutofillProfile& profile)
       : profile_(profile) {}
 
-  void Set(ContactInfoSpecifics::StringToken* token,
-           ServerFieldType type) const {
+  void Set(ContactInfoSpecifics::StringToken* token, FieldType type) const {
     token->set_value(base::UTF16ToUTF8(profile_->GetRawInfo(type)));
     SetMetadata(token->mutable_metadata(), type);
   }
 
-  void Set(ContactInfoSpecifics::IntegerToken* token,
-           ServerFieldType type) const {
+  void Set(ContactInfoSpecifics::IntegerToken* token, FieldType type) const {
     token->set_value(profile_->GetRawInfoAsInt(type));
     SetMetadata(token->mutable_metadata(), type);
   }
 
  private:
   void SetMetadata(ContactInfoSpecifics::TokenMetadata* metadata,
-                   ServerFieldType type) const {
+                   FieldType type) const {
     metadata->set_status(ConvertProfileToSpecificsVerificationStatus(
         profile_->GetVerificationStatus(type)));
     if (!base::FeatureList::IsEnabled(
@@ -159,16 +156,14 @@ class ContactInfoProfileSetter {
   explicit ContactInfoProfileSetter(AutofillProfile& profile)
       : profile_(profile) {}
 
-  void Set(const ContactInfoSpecifics::StringToken& token,
-           ServerFieldType type) {
+  void Set(const ContactInfoSpecifics::StringToken& token, FieldType type) {
     profile_->SetRawInfoWithVerificationStatus(
         type, base::UTF8ToUTF16(token.value()),
         ConvertSpecificsToProfileVerificationStatus(token.metadata().status()));
     SetObservations(token.metadata(), type);
   }
 
-  void Set(const ContactInfoSpecifics::IntegerToken& token,
-           ServerFieldType type) {
+  void Set(const ContactInfoSpecifics::IntegerToken& token, FieldType type) {
     profile_->SetRawInfoAsIntWithVerificationStatus(
         type, token.value(),
         ConvertSpecificsToProfileVerificationStatus(token.metadata().status()));
@@ -177,7 +172,7 @@ class ContactInfoProfileSetter {
 
  private:
   void SetObservations(const ContactInfoSpecifics::TokenMetadata& metadata,
-                       ServerFieldType type) const {
+                       FieldType type) const {
     if (metadata.observations().empty() ||
         !base::FeatureList::IsEnabled(
             features::kAutofillTrackProfileTokenQuality)) {

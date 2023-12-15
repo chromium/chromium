@@ -70,7 +70,7 @@ std::string GetSuffixForProfileFormType(uint32_t bitmask);
 // the string less than or equal to the specified byte size.
 std::string TruncateUTF8(const std::string& data);
 
-bool IsCreditCardExpirationType(ServerFieldType type);
+bool IsCreditCardExpirationType(FieldType type);
 
 // Used to map Chrome card issuer networks to Payment Request API basic card
 // payment spec issuer networks and icons.

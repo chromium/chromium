@@ -35,7 +35,7 @@ std::u16string AddressComponentWithRewriter::GetValueForComparison(
 
 FeatureGuardedAddressComponent::FeatureGuardedAddressComponent(
     raw_ptr<const base::Feature> feature,
-    ServerFieldType storage_type,
+    FieldType storage_type,
     SubcomponentsList children,
     unsigned int merge_mode)
     : AddressComponent(storage_type, std::move(children), merge_mode),
@@ -221,13 +221,13 @@ bool StreetAddressNode::IsValueValid() const {
 }
 
 std::u16string StreetAddressNode::GetValueForOtherSupportedType(
-    ServerFieldType field_type) const {
+    FieldType field_type) const {
   // It is assumed below that field_type is an address line type.
   CHECK(IsSupportedType(field_type));
   return GetAddressLine(field_type);
 }
 
-std::u16string StreetAddressNode::GetAddressLine(ServerFieldType type) const {
+std::u16string StreetAddressNode::GetAddressLine(FieldType type) const {
   const size_t line_index = AddressLineIndex(type);
   return address_lines_.size() > line_index ? address_lines_.at(line_index)
                                             : std::u16string();
@@ -235,7 +235,7 @@ std::u16string StreetAddressNode::GetAddressLine(ServerFieldType type) const {
 
 // Implements support for setting the value of the individual address lines.
 void StreetAddressNode::SetValueForOtherSupportedType(
-    ServerFieldType field_type,
+    FieldType field_type,
     const std::u16string& value,
     const VerificationStatus& status) {
   CHECK(IsSupportedType(field_type));

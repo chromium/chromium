@@ -68,7 +68,7 @@ CreateAddressDataFromAutofillProfile(const AutofillProfile& profile,
   return address_data;
 }
 
-ServerFieldType TypeForField(AddressField address_field) {
+FieldType TypeForField(AddressField address_field) {
   switch (address_field) {
     case ::i18n::addressinput::COUNTRY:
       return ADDRESS_HOME_COUNTRY;
@@ -93,7 +93,7 @@ ServerFieldType TypeForField(AddressField address_field) {
   return UNKNOWN_TYPE;
 }
 
-bool FieldForType(ServerFieldType server_type, AddressField* field) {
+bool FieldForType(FieldType server_type, AddressField* field) {
   switch (server_type) {
     case ADDRESS_HOME_COUNTRY:
       if (field)
@@ -138,8 +138,7 @@ bool FieldForType(ServerFieldType server_type, AddressField* field) {
   }
 }
 
-bool IsFieldRequired(ServerFieldType server_type,
-                     const std::string& country_code) {
+bool IsFieldRequired(FieldType server_type, const std::string& country_code) {
   ::i18n::addressinput::AddressField field_enum;
   if (FieldForType(server_type, &field_enum)) {
     return ::i18n::addressinput::IsFieldRequired(field_enum, country_code);

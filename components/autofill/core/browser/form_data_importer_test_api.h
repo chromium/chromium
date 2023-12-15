@@ -69,7 +69,7 @@ class FormDataImporterTestApi {
                                         address_profile_import_candidates);
   }
 
-  base::flat_map<ServerFieldType, std::u16string> GetObservedFieldValues(
+  base::flat_map<FieldType, std::u16string> GetObservedFieldValues(
       base::span<const AutofillField* const> section_fields) {
     ProfileImportMetadata import_metadata;
     bool has_invalid_field_types = false;

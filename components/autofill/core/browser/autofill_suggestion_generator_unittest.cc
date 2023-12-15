@@ -82,7 +82,7 @@ Matcher<Suggestion> EqualsSuggestion(PopupItemId id,
 Matcher<Suggestion> EqualsFieldByFieldFillingSuggestion(
     PopupItemId id,
     const std::u16string& main_text,
-    ServerFieldType field_by_field_filling_type_used,
+    FieldType field_by_field_filling_type_used,
     const Suggestion::Payload& payload,
     const std::vector<std::vector<Suggestion::Text>>& labels = {}) {
   return AllOf(
@@ -123,7 +123,7 @@ class TestAutofillSuggestionGenerator : public AutofillSuggestionGenerator {
 
   Suggestion CreateCreditCardSuggestion(
       const CreditCard& credit_card,
-      ServerFieldType trigger_field_type,
+      FieldType trigger_field_type,
       bool virtual_card_option,
       bool card_linked_offer_available) const {
     return AutofillSuggestionGenerator::CreateCreditCardSuggestion(
@@ -1098,7 +1098,7 @@ class AutofillChildrenSuggestionGeneratorTest
   std::vector<Suggestion> CreateSuggestionWithChildrenFromProfile(
       const AutofillProfile& profile,
       absl::optional<FieldTypeSet> last_targeted_fields,
-      ServerFieldType trigger_field_type,
+      FieldType trigger_field_type,
       const FieldTypeSet& field_types) {
     return suggestion_generator()->CreateSuggestionsFromProfiles(
         {&profile}, field_types, last_targeted_fields, trigger_field_type,
@@ -1108,7 +1108,7 @@ class AutofillChildrenSuggestionGeneratorTest
   std::vector<Suggestion> CreateSuggestionWithChildrenFromProfile(
       const AutofillProfile& profile,
       absl::optional<FieldTypeSet> last_targeted_fields,
-      ServerFieldType trigger_field_type) {
+      FieldType trigger_field_type) {
     return CreateSuggestionWithChildrenFromProfile(
         profile, last_targeted_fields, trigger_field_type,
         {trigger_field_type});

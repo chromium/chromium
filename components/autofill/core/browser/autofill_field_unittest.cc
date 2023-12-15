@@ -96,10 +96,10 @@ struct PrecedenceOverAutocompleteParams {
   // These values denote what type the field was viewed by html, server and
   // heuristic prediction.
   const HtmlFieldType html_field_type;
-  const ServerFieldType server_type;
-  const ServerFieldType heuristic_type;
+  const FieldType server_type;
+  const FieldType heuristic_type;
   // This value denotes what `ComputedType` should return as field type.
-  const ServerFieldType expected_result;
+  const FieldType expected_result;
 };
 
 class PrecedenceOverAutocompleteTest
@@ -282,7 +282,7 @@ INSTANTIATE_TEST_SUITE_P(
 // return value of the aforementioned function is.
 struct AutocompleteUnrecognizedTypeTestCase {
   // Either server or heuristic type - this doesn't matter for these tests.
-  ServerFieldType predicted_type;
+  FieldType predicted_type;
   // If the predicted type should be treated as a server overwrite. Server
   // overwrites already take precedence over ac=unrecognized.
   bool is_server_overwrite = false;
@@ -338,10 +338,10 @@ struct AutofillLocalHeuristicsOverridesParams {
   // These values denote what type the field was classified as html, server and
   // heuristic prediction.
   const HtmlFieldType html_field_type;
-  const ServerFieldType server_type;
-  const ServerFieldType heuristic_type;
+  const FieldType server_type;
+  const FieldType heuristic_type;
   // This value denotes what `ComputedType` should return as field type.
-  const ServerFieldType expected_result;
+  const FieldType expected_result;
 };
 
 class AutofillLocalHeuristicsOverridesTest

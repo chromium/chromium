@@ -43,7 +43,7 @@ using ::i18n::addressinput::SORTING_CODE;
 using ::i18n::addressinput::STREET_ADDRESS;
 
 struct FieldTypeMirrorConversionsTestCase {
-  ServerFieldType server_field;
+  FieldType server_field;
   AddressField address_field;
 };
 
@@ -56,7 +56,7 @@ TEST_P(FieldTypeMirrorConversionsTest, FieldTypeMirrorConversions) {
   EXPECT_TRUE(FieldForType(test_data.server_field, &address_field));
   EXPECT_EQ(test_data.address_field, address_field);
 
-  ServerFieldType server_field = TypeForField(test_data.address_field);
+  FieldType server_field = TypeForField(test_data.address_field);
   EXPECT_EQ(test_data.server_field, server_field);
 }
 
@@ -78,7 +78,7 @@ INSTANTIATE_TEST_SUITE_P(
         FieldTypeMirrorConversionsTestCase{NAME_FULL, RECIPIENT}));
 
 struct FieldTypeUnidirectionalConversionsTestCase {
-  ServerFieldType server_field;
+  FieldType server_field;
   AddressField expected_address_field;
 };
 

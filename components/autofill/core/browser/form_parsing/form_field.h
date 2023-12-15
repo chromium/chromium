@@ -207,7 +207,7 @@ class FormField {
   // This association is weighted by |score|, the higher the stronger the
   // association.
   static void AddClassification(const AutofillField* field,
-                                ServerFieldType type,
+                                FieldType type,
                                 float score,
                                 FieldCandidatesMap& field_candidates);
 
@@ -217,7 +217,7 @@ class FormField {
 
  protected:
   // Returns true if |field_type| is a single field parseable type.
-  static bool IsSingleFieldParseableType(ServerFieldType field_type);
+  static bool IsSingleFieldParseableType(FieldType field_type);
 
   // Derived classes must implement this interface to supply field type
   // information.  |ParseFormFields| coordinates the parsing and extraction

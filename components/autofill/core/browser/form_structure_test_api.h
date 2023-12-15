@@ -54,22 +54,22 @@ class FormStructureTestApi {
   // `GetActivePatternSource()` prediction and any number of alternative
   // predictions.
   void SetFieldTypes(
-      const std::vector<std::vector<
-          std::pair<HeuristicSource, ServerFieldType>>>& heuristic_types,
+      const std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>&
+          heuristic_types,
       const std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
                             FieldPrediction>& server_types);
   void SetFieldTypes(
-      const std::vector<std::vector<
-          std::pair<HeuristicSource, ServerFieldType>>>& heuristic_types,
-      const std::vector<ServerFieldType>& server_types);
+      const std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>&
+          heuristic_types,
+      const std::vector<FieldType>& server_types);
 
   // Set the heuristic and server types for each field. The `heuristic_types`
   // and `server_types` vectors must be aligned with the indices of the fields
   // in the form.
-  void SetFieldTypes(const std::vector<ServerFieldType>& heuristic_types,
-                     const std::vector<ServerFieldType>& server_types);
+  void SetFieldTypes(const std::vector<FieldType>& heuristic_types,
+                     const std::vector<FieldType>& server_types);
 
-  void SetFieldTypes(const std::vector<ServerFieldType>& overall_types) {
+  void SetFieldTypes(const std::vector<FieldType>& overall_types) {
     SetFieldTypes(/*heuristic_types=*/overall_types,
                   /*server_types=*/overall_types);
   }
