@@ -95,14 +95,18 @@ AX_TEST_F(
           'pending_pass_through_keyups', keyboardHandler.passThroughState_);
       assertTrue(BackgroundKeyboardHandler.instance.passThroughModeEnabled_);
 
-      keyboardHandler.onKeyUp(searchShift);
+      const searchShiftUp = TestUtils.createMockKeyEvent(
+          KeyCode.SHIFT, {metaKey: true, shiftKey: false});
+      keyboardHandler.onKeyUp(searchShiftUp);
       assertEquals(1, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(0, keyboardHandler.passedThroughKeyDowns_.size);
       assertEquals(
           'pending_pass_through_keyups', keyboardHandler.passThroughState_);
       assertTrue(BackgroundKeyboardHandler.instance.passThroughModeEnabled_);
 
-      keyboardHandler.onKeyUp(search);
+      const searchUp =
+          TestUtils.createMockKeyEvent(KeyCode.SEARCH, {metaKey: false});
+      keyboardHandler.onKeyUp(searchUp);
       assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(0, keyboardHandler.passedThroughKeyDowns_.size);
       assertEquals(

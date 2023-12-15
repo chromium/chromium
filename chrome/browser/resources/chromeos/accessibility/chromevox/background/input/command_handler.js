@@ -100,7 +100,14 @@ export class CommandHandler extends CommandHandlerInterface {
         SmartStickyMode.instance.toggle();
         return false;
       case Command.PASS_THROUGH_MODE:
-        BackgroundKeyboardHandler.enablePassThroughMode();
+        if (ChromeVoxPrefs.isStickyModeOn()) {
+          new Output()
+              .withString(
+                  Msgs.getMsg('pass_through_unavailable_with_sticky_mode'))
+              .go();
+        } else {
+          BackgroundKeyboardHandler.enablePassThroughMode();
+        }
         return true;
       case Command.SHOW_LEARN_MODE_PAGE:
         this.showLearnModePage_();

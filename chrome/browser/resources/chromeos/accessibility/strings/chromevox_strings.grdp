@@ -1960,6 +1960,9 @@
   <message desc="Describes the pass through key command. Shown in options page." name="IDS_CHROMEVOX_PASS_THROUGH_KEY_DESCRIPTION">
     Pass through key
   </message>
+  <message desc="Spoken after pressing the pass through key command while sticky mode is enabled." name="IDS_CHROMEVOX_PASS_THROUGH_UNAVAILABLE_WITH_STICKY_MODE" is_accessibility_with_no_ui="true">
+    Pass through is unavailable with sticky mode on
+  </message>
   <message desc="Describes the show context menu command. Shown in options page." name="IDS_CHROMEVOX_SHOW_CONTEXT_MENU">
     Show context menu
   </message>

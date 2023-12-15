@@ -166,8 +166,12 @@ export class BackgroundKeyboardHandler {
 
     if (this.passThroughModeEnabled_) {
       this.passedThroughKeyDowns_.delete(evt.keyCode);
+
+      // Assuming we have no keys held (detected by held modifiers + keys we've
+      // eaten in key down), we can start pass through for the next keys.
       if (this.passThroughState_ ===
               KeyboardPassThroughState_.PENDING_PASS_THROUGH_SHORTCUT_KEYUPS &&
+          !evt.altKey && !evt.ctrlKey && !evt.metaKey && !evt.shiftKey &&
           this.eatenKeyDowns_.size === 0) {
         // All keys of the pass through shortcut command have been released.
         // Ready to pass through the next shortcut.
