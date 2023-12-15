@@ -449,16 +449,6 @@ PictureInPictureWindowManager::GetOcclusionTracker() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-std::vector<url::Origin>
-PictureInPictureWindowManager::GetActiveSessionOrigins() {
-  std::vector<url::Origin> active_origins;
-  if (pip_window_controller_ &&
-      pip_window_controller_->GetOrigin().has_value()) {
-    active_origins.push_back(pip_window_controller_->GetOrigin().value());
-  }
-  return active_origins;
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 void PictureInPictureWindowManager::CreateAutoPipSettingHelperIfNeeded() {
   // Because we have to defer creating this until after the tab helper finds out
