@@ -794,9 +794,20 @@ void ResourceLoader::DidReceiveResponseInternal(
 
   AtomicString content_encoding =
       response.HttpHeaderField(http_names::kContentEncoding);
+  bool used_zstd = false;
   if (content_encoding.LowerASCII() == "zstd") {
     fetcher_->GetUseCounter().CountUse(WebFeature::kZstdContentEncoding);
+    used_zstd = true;
   }
+  // We need a current default task runner to obtain a UKM recorder, so if there
+  // is not one, do not record UKMs.
+  if (base::SequencedTaskRunner::HasCurrentDefault()) {
+    ukm::builders::SubresourceLoad_ZstdContentEncoding builder(
+        request.GetUkmSourceId());
+    builder.SetUsedZstd(used_zstd);
+    builder.Record(fetcher_->UkmRecorder());
+  }
+
   if (response.DidUseSharedDictionary()) {
     fetcher_->GetUseCounter().CountUse(WebFeature::kSharedDictionaryUsed);
     fetcher_->GetUseCounter().CountUse(

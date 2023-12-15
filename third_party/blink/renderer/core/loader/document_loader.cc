@@ -43,6 +43,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -3126,6 +3127,12 @@ void DocumentLoader::RecordUseCountersForCommit() {
       response_.HttpHeaderField(http_names::kContentEncoding);
   if (content_encoding.LowerASCII() == "zstd") {
     CountUse(WebFeature::kZstdContentEncoding);
+    if (frame_->IsOutermostMainFrame()) {
+      ukm::builders::MainFrameNavigation_ZstdContentEncoding builder(
+          ukm_source_id_);
+      builder.SetUsedZstd(true);
+      builder.Record(frame_->GetDocument()->UkmRecorder());
+    }
   }
   if (response_.DidUseSharedDictionary()) {
     CountUse(WebFeature::kSharedDictionaryUsed);

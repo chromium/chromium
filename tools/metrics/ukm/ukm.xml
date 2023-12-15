@@ -13330,6 +13330,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="MainFrameNavigation.ZstdContentEncoding">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Event recorded on navigation commit when a page load is content-encoded with
+    zstd and is a main frame navigation.
+  </summary>
+  <metric name="UsedZstd" enum="Boolean">
+    <summary>
+      Set to 1 if the main frame served zstd-compressed content.
+    </summary>
+  </metric>
+</event>
+
 <event name="Media.Autoplay.Attempt">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -24370,6 +24384,20 @@ be describing additional metrics about the same event.
       An enum denoting where in the redirect chain there was a URL that matched
       one of the subresource_filter activation lists, and wasn't marked as
       warning. See subresource_filter::RedirectPosition for values.
+    </summary>
+  </metric>
+</event>
+
+<event name="SubresourceLoad.ZstdContentEncoding">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Event recorded when a response is received that is content-encoded with zstd
+    and is a subresource load.
+  </summary>
+  <metric name="UsedZstd" enum="Boolean">
+    <summary>
+      Set to 1 if the subresource served zstd-compressed content.
     </summary>
   </metric>
 </event>
