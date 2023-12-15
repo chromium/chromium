@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/picker/picker_client.h"
@@ -28,6 +29,14 @@ class PickerViewDelegateImpl : public PickerView::Delegate {
   std::unique_ptr<AshWebView> CreateWebView(
       const AshWebView::InitParams& params) override {
     return client_->CreateWebView(params);
+  }
+
+  void StartSearch(const std::u16string& query,
+                   SearchResultsCallback callback) override {
+    // TODO(b/310088338): Do a real search.
+    callback.Run(PickerSearchResults({{
+        PickerSearchResults::Section(u"Matching expressions", {{u"👍", u"😊"}}),
+    }}));
   }
 
  private:

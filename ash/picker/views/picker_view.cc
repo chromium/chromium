@@ -6,11 +6,11 @@
 
 #include <memory>
 
+#include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_contents_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_user_education_view.h"
 #include "ash/picker/views/picker_zero_state_view.h"
-#include "ash/public/cpp/ash_web_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -41,38 +41,28 @@ std::unique_ptr<views::BubbleBorder> CreateBorder() {
   return border;
 }
 
-std::unique_ptr<AshWebView> CreateWebView(PickerView::Delegate& delegate) {
-  std::unique_ptr<AshWebView> view =
-      delegate.CreateWebView(AshWebView::InitParams{
-          .rounded_corners = gfx::RoundedCornersF(
-              /*upper_left=*/0, /*upper_right*/ 0,
-              /*lower_right=*/kBorderRadius, /*lower_left=*/kBorderRadius)});
-  view->Navigate(GURL("chrome://picker"));
-  view->SetLayoutManager(std::make_unique<views::FillLayout>());
-  // Fill up all remaining space with the view.
-  return view;
-}
-
 }  // namespace
 
 PickerView::PickerView(std::unique_ptr<Delegate> delegate,
                        const base::TimeTicks trigger_event_timestamp)
-    : session_metrics_(trigger_event_timestamp) {
+    : session_metrics_(trigger_event_timestamp),
+      delegate_(std::move(delegate)) {
   SetShowCloseButton(false);
   SetBackground(views::CreateThemedSolidBackground(kBackgroundColor));
   SetPreferredSize(kPickerSize);
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
-  // TODO(b/310088250): Perform a search when the search callback is called.
+  // `base::Unretained` is safe here because this class owns
+  // `search_field_view_`.
   search_field_view_ = AddChildView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), &session_metrics_));
+      base::BindRepeating(&PickerView::StartSearch, base::Unretained(this)),
+      &session_metrics_));
   search_field_view_->SetProperty(views::kMarginsKey, kSearchFieldMargins);
 
   // Automatically focus on the search field.
   SetInitiallyFocusedView(search_field_view_);
 
-  zero_state_view_ = AddChildView(std::make_unique<PickerZeroStateView>());
   contents_view_ = AddChildView(std::make_unique<PickerContentsView>());
   contents_view_->SetProperty(
       views::kFlexBehaviorKey,
@@ -80,7 +70,11 @@ PickerView::PickerView(std::unique_ptr<Delegate> delegate,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithWeight(1));
 
-  web_view_ = contents_view_->AddPage(CreateWebView(*delegate));
+  zero_state_view_ =
+      contents_view_->AddPage(std::make_unique<PickerZeroStateView>());
+  search_results_view_ =
+      contents_view_->AddPage(std::make_unique<views::View>());
+  contents_view_->SetActivePage(zero_state_view_);
 
   user_education_view_ =
       AddChildView(std::make_unique<PickerUserEducationView>());
@@ -114,6 +108,22 @@ std::unique_ptr<views::NonClientFrameView> PickerView::CreateNonClientFrameView(
       std::make_unique<views::BubbleFrameView>(gfx::Insets(), gfx::Insets());
   frame->SetBubbleBorder(CreateBorder());
   return frame;
+}
+
+void PickerView::StartSearch(const std::u16string& query) {
+  if (query == u"") {
+    contents_view_->SetActivePage(zero_state_view_);
+  } else {
+    contents_view_->SetActivePage(search_results_view_);
+    // `base::Unretained` is safe here because this class owns `delegate_`.
+    delegate_->StartSearch(
+        query, base::BindRepeating(&PickerView::PublishSearchResults,
+                                   base::Unretained(this)));
+  }
+}
+
+void PickerView::PublishSearchResults(const PickerSearchResults& results) {
+  // TODO(b/310088338): Show results.
 }
 
 BEGIN_METADATA(PickerView, views::View)

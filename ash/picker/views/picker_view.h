@@ -24,6 +24,7 @@ class PickerSearchFieldView;
 class PickerUserEducationView;
 class PickerZeroStateView;
 class PickerContentsView;
+class PickerSearchResults;
 
 // View for the Picker widget.
 class ASH_EXPORT PickerView : public views::WidgetDelegateView {
@@ -32,9 +33,17 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
 
   class Delegate {
    public:
+    using SearchResultsCallback =
+        base::RepeatingCallback<void(const PickerSearchResults& results)>;
+
     virtual ~Delegate() {}
     virtual std::unique_ptr<AshWebView> CreateWebView(
         const AshWebView::InitParams& params) = 0;
+
+    // Starts a search for `query`. Results will be returned via `callback`,
+    // which may be called multiples times to update the results.
+    virtual void StartSearch(const std::u16string& query,
+                             SearchResultsCallback callback) = 0;
   };
 
   explicit PickerView(std::unique_ptr<Delegate> delegate,
@@ -55,14 +64,30 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
 
-  const AshWebView& web_view_for_testing() const { return *web_view_; }
+  PickerSearchFieldView& search_field_view_for_testing() {
+    return *search_field_view_;
+  }
+  PickerZeroStateView& zero_state_view_for_testing() {
+    return *zero_state_view_;
+  }
+  views::View& search_results_view_for_testing() {
+    return *search_results_view_;
+  }
 
  private:
+  // Starts a search with `query`, with search results being returned to
+  // `PublishSearchResults`.
+  void StartSearch(const std::u16string& query);
+
+  // Displays `results` in the view.
+  void PublishSearchResults(const PickerSearchResults& results);
+
   PickerSessionMetrics session_metrics_;
+  std::unique_ptr<Delegate> delegate_;
   raw_ptr<PickerSearchFieldView> search_field_view_ = nullptr;
   raw_ptr<PickerContentsView> contents_view_ = nullptr;
-  raw_ptr<AshWebView> web_view_ = nullptr;
   raw_ptr<PickerZeroStateView> zero_state_view_ = nullptr;
+  raw_ptr<views::View> search_results_view_ = nullptr;
   raw_ptr<PickerUserEducationView> user_education_view_ = nullptr;
 };
 

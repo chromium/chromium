@@ -4,6 +4,10 @@
 
 #include "ash/picker/views/picker_view.h"
 
+#include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/views/picker_search_field_view.h"
+#include "ash/picker/views/picker_user_education_view.h"
+#include "ash/picker/views/picker_zero_state_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view.h"
 #include "ash/test/test_ash_web_view_factory.h"
@@ -17,6 +21,7 @@ namespace ash {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::Property;
 using ::testing::Truly;
 
 using PickerViewTest = AshTestBase;
@@ -27,6 +32,9 @@ class FakePickerViewDelegate : public PickerView::Delegate {
       const AshWebView::InitParams& params) override {
     return ash_web_view_factory_.Create(params);
   }
+
+  void StartSearch(const std::u16string& query,
+                   SearchResultsCallback callback) override {}
 
  private:
   TestAshWebViewFactory ash_web_view_factory_;
@@ -79,14 +87,46 @@ TEST_F(PickerViewTest, SizeIsCorrect) {
   EXPECT_EQ(view->size(), gfx::Size(420, 480));
 }
 
-TEST_F(PickerViewTest, CreatesWebViewToWebUI) {
+TEST_F(PickerViewTest, ShowsZeroStateView) {
   auto widget =
       PickerView::CreateWidget(std::make_unique<FakePickerViewDelegate>());
   PickerView* view = GetPickerViewFromWidget(*widget);
 
-  const auto& web_view =
-      static_cast<const TestAshWebView&>(view->web_view_for_testing());
-  EXPECT_EQ(web_view.current_url(), GURL("chrome://picker"));
+  EXPECT_THAT(view->search_field_view_for_testing(),
+              Property(&views::View::GetVisible, true));
+  EXPECT_THAT(view->zero_state_view_for_testing(),
+              Property(&views::View::GetVisible, true));
+  EXPECT_THAT(view->search_results_view_for_testing(),
+              Property(&views::View::GetVisible, false));
+}
+
+TEST_F(PickerViewTest, NonEmptySearchFieldContentsSwitchesToSearchResultsView) {
+  auto widget =
+      PickerView::CreateWidget(std::make_unique<FakePickerViewDelegate>());
+  widget->Show();
+  PickerView* view = GetPickerViewFromWidget(*widget);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+
+  EXPECT_THAT(view->zero_state_view_for_testing(),
+              Property(&views::View::GetVisible, false));
+  EXPECT_THAT(view->search_results_view_for_testing(),
+              Property(&views::View::GetVisible, true));
+}
+
+TEST_F(PickerViewTest, EmptySearchFieldContentsSwitchesToZeroStateView) {
+  auto widget =
+      PickerView::CreateWidget(std::make_unique<FakePickerViewDelegate>());
+  widget->Show();
+  PickerView* view = GetPickerViewFromWidget(*widget);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
+
+  EXPECT_THAT(view->zero_state_view_for_testing(),
+              Property(&views::View::GetVisible, true));
+  EXPECT_THAT(view->search_results_view_for_testing(),
+              Property(&views::View::GetVisible, false));
 }
 
 }  // namespace
