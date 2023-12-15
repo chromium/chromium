@@ -420,7 +420,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         // TODO(crbug.com/1467623): Replace with a static string once name is finalized.
         String title =
                 ChromeFeatureList.getFieldTrialParamByFeature(
-                        ChromeFeatureList.PLUS_ADDRESSES_ENABLED, "suggestion-label");
+                        ChromeFeatureList.PLUS_ADDRESSES_ENABLED, "settings-label");
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESSES_ENABLED)
                 && !title.isEmpty()) {
             addPreferenceIfAbsent(PREF_PLUS_ADDRESSES);

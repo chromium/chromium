@@ -630,7 +630,7 @@ public class MainSettingsFragmentTest {
     public void testPlusAddressesHiddenWhenLabelIsEmpty() {
         Assert.assertTrue(
                 ChromeFeatureList.getFieldTrialParamByFeature(
-                                ChromeFeatureList.PLUS_ADDRESSES_ENABLED, "suggestion-label")
+                                ChromeFeatureList.PLUS_ADDRESSES_ENABLED, "settings-label")
                         .isEmpty());
         launchSettingsActivity();
         Assert.assertNull(mMainSettings.findPreference(MainSettings.PREF_PLUS_ADDRESSES));
@@ -640,7 +640,7 @@ public class MainSettingsFragmentTest {
     @SmallTest
     @CommandLineFlags.Add({
         "enable-features=PlusAddressesEnabled:"
-                + "suggestion-label/PlusAddressesTestTitle/"
+                + "settings-label/PlusAddressesTestTitle/"
                 + "manage-url/https%3A%2F%2Ftest.plusaddresses.google.com"
     })
     public void testPlusAddressesEnabled() {

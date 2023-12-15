@@ -96,14 +96,14 @@ TEST_F(PlusAddressServiceTest, SupportsPlusAddressNoServer) {
       /*is_off_the_record=*/false));
 }
 
-// Tests for the label overrides. These tests are not in the enabled/disabled
-// fixtures as they vary parameters.
-TEST_F(PlusAddressServiceTest, LabelOverrides) {
+// Tests for the suggestion label overrides. These tests are not in the
+// enabled/disabled fixtures as they vary parameters.
+TEST_F(PlusAddressServiceTest, SuggestionLabelOverride) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Setting the override should result in echoing the override back.
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       plus_addresses::kFeature,
-      {{plus_addresses::kEnterprisePlusAddressLabelOverride.name,
+      {{plus_addresses::kEnterprisePlusAddressSuggestionLabelOverride.name,
         "mattwashere"}});
   PlusAddressService service;
   EXPECT_EQ(service.GetCreateSuggestionLabel(), u"mattwashere");
@@ -114,7 +114,7 @@ TEST_F(PlusAddressServiceTest, LabelOverrideWithSpaces) {
   // Setting the override should result in echoing the override back.
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       plus_addresses::kFeature,
-      {{plus_addresses::kEnterprisePlusAddressLabelOverride.name,
+      {{plus_addresses::kEnterprisePlusAddressSuggestionLabelOverride.name,
         "matt was here"}});
   PlusAddressService service;
   EXPECT_EQ(service.GetCreateSuggestionLabel(), u"matt was here");

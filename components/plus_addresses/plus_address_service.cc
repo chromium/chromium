@@ -179,7 +179,7 @@ std::u16string PlusAddressService::GetCreateSuggestionLabel() {
   // TODO(crbug.com/1467623): once ready, use standard
   // `l10n_util::GetStringUTF16` instead of using feature params.
   return base::UTF8ToUTF16(
-      plus_addresses::kEnterprisePlusAddressLabelOverride.Get());
+      plus_addresses::kEnterprisePlusAddressSuggestionLabelOverride.Get());
 }
 
 absl::optional<std::string> PlusAddressService::GetPrimaryEmail() {

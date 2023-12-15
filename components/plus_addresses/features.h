@@ -18,7 +18,13 @@ BASE_DECLARE_FEATURE(kFeature);
 // label. Defaults to generic Lorem Ipsum as strings are not yet determined.
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 extern const base::FeatureParam<std::string>
-    kEnterprisePlusAddressLabelOverride;
+    kEnterprisePlusAddressSuggestionLabelOverride;
+
+// Used to control the enterprise plus address feature's label in settings.
+// Defaults to generic Lorem Ipsum as strings are not yet determined.
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+extern const base::FeatureParam<std::string>
+    kEnterprisePlusAddressSettingsLabelOverride;
 
 // Used to control the enterprise plus address feature's OAuth scope.
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
