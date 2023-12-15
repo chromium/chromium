@@ -100,4 +100,36 @@ D3D11PictureBuffer::AcquireOutputView() const {
   return output_view_.Get();
 }
 
+D3D11Status::Or<Microsoft::WRL::ComPtr<ID3D12Resource>>
+D3D11PictureBuffer::ToD3D12Resource(ID3D12Device* device) {
+  HRESULT hr;
+  if (!d3d12_resource_) {
+    Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+    CHECK_EQ(texture_.As(&dxgi_resource), S_OK);
+
+    HANDLE handle;
+    hr = dxgi_resource->CreateSharedHandle(nullptr, GENERIC_ALL, nullptr,
+                                           &handle);
+    if (FAILED(hr)) {
+      MEDIA_LOG(ERROR, media_log_) << "Cannot create shared handle";
+      return {D3D11StatusCode::kCreateSharedHandleFailed, hr};
+    }
+    base::win::ScopedHandle handle_holder(handle);
+    hr = device->OpenSharedHandle(handle_holder.get(),
+                                  IID_PPV_ARGS(&d3d12_resource_));
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Open shared handle as D3D12 resource failed.";
+      return {D3D11StatusCode::kCreateSharedHandleFailed, hr};
+    }
+  }
+  Microsoft::WRL::ComPtr<ID3D12Device> used_device;
+  hr = d3d12_resource_->GetDevice(IID_PPV_ARGS(&used_device));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "ID3D12Resource::GetDevice failed.";
+    return {D3D11StatusCode::kGetDeviceFailed, hr};
+  }
+  CHECK_EQ(used_device.Get(), device);
+  return d3d12_resource_;
+}
+
 }  // namespace media

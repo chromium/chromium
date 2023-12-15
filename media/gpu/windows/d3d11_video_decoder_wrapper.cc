@@ -53,6 +53,34 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
     }
   }
 
+  absl::optional<bool> UseSingleTexture() const override {
+    D3D11_VIDEO_DECODER_DESC desc;
+    D3D11_VIDEO_DECODER_CONFIG config;
+    HRESULT hr = video_decoder_->GetCreationParameters(&desc, &config);
+    if (FAILED(hr)) {
+      RecordFailure("D3D11VideoDecoder GetCreationParameters failed",
+                    D3D11StatusCode::kDecoderGetCreationParametersFailed, hr);
+      return absl::nullopt;
+    }
+    // Prefer whatever the config tells us about whether to use one Texture2D
+    // with multiple array slices, or multiple Texture2Ds with one slice each.
+    // If bit 14 is clear, then it's the former, else it's the latter.
+    //
+    // Let the workaround override array texture mode, if enabled.
+    // TODO(crbug.com/971952): Ignore |use_single_video_decoder_texture_| here,
+    // since it might be the case that it's not actually the right fix. Instead,
+    // We use this workaround to force a copy later.  The workaround will be
+    // renamed if this turns out to fix the issue, but we might need to merge
+    // back and smaller changes are better.
+    //
+    // For more information, please see:
+    // https://download.microsoft.com/download/9/2/A/92A4E198-67E0-4ABD-9DB7-635D711C2752/DXVA_VPx.pdf
+    // https://download.microsoft.com/download/5/f/c/5fc4ec5c-bd8c-4624-8034-319c1bab7671/DXVA_H264.pdf
+    // TODO(crbug.com/dawn/1932): Use array textures if preferred with shared
+    // handles once Dawn supports importing those.
+    return config.ConfigDecoderSpecific & (1 << 14);
+  }
+
   void Reset() override {
     if (bitstream_buffer_) {
       CHECK(bitstream_buffer_->Commit());
@@ -291,8 +319,61 @@ std::unique_ptr<D3D11VideoDecoderWrapper> D3D11VideoDecoderWrapper::Create(
     MediaLog* media_log,
     ComD3D11VideoDevice video_device,
     ComD3D11VideoContext video_context,
-    ComD3D11VideoDecoder video_decoder,
-    D3D_FEATURE_LEVEL supported_d3d11_version) {
+    const D3D11DecoderConfigurator* decoder_configurator,
+    D3D_FEATURE_LEVEL supported_d3d11_version,
+    VideoDecoderConfig config) {
+  UINT config_count = 0;
+  HRESULT hr = video_device->GetVideoDecoderConfigCount(
+      decoder_configurator->DecoderDescriptor(), &config_count);
+  if (FAILED(hr) || config_count == 0) {
+    MEDIA_LOG(ERROR, media_log) << "GetVideoDecoderConfigCount failed: "
+                                << logging::SystemErrorCodeToString(hr);
+    return nullptr;
+  }
+
+  D3D11_VIDEO_DECODER_CONFIG dec_config{};
+  bool found = false;
+  for (UINT i = 0; i < config_count; i++) {
+    hr = video_device->GetVideoDecoderConfig(
+        decoder_configurator->DecoderDescriptor(), i, &dec_config);
+    if (FAILED(hr)) {
+      MEDIA_LOG(ERROR, media_log) << "GetVideoDecoderConfig failed: "
+                                  << logging::SystemErrorCodeToString(hr);
+      return nullptr;
+    }
+
+    // DXVA HEVC, VP9, and AV1 specifications say ConfigBitstreamRaw
+    // "shall be 1".
+    if (dec_config.ConfigBitstreamRaw == 1 &&
+        (config.codec() == VideoCodec::kVP9 ||
+         config.codec() == VideoCodec::kAV1 ||
+         config.codec() == VideoCodec::kHEVC)) {
+      found = true;
+      break;
+    }
+
+    // ConfigBitstreamRaw == 2 means the decoder uses DXVA_Slice_H264_Short.
+    if (dec_config.ConfigBitstreamRaw == 2 &&
+        config.codec() == VideoCodec::kH264) {
+      found = true;
+      break;
+    }
+  }
+
+  if (!found) {
+    MEDIA_LOG(ERROR, media_log) << "VideoDecoderConfig is unsupported";
+    return nullptr;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11VideoDecoder> video_decoder;
+  hr = video_device->CreateVideoDecoder(
+      decoder_configurator->DecoderDescriptor(), &dec_config, &video_decoder);
+  if (FAILED(hr)) {
+    MEDIA_LOG(ERROR, media_log) << "CreateVideoDecoder failed: "
+                                << logging::SystemErrorCodeToString(hr);
+    return nullptr;
+  }
+
   // If we got an 11.1 D3D11 Device, we can use a |ID3D11VideoContext1|,
   // otherwise we have to make sure we only use a |ID3D11VideoContext|.
   if (supported_d3d11_version == D3D_FEATURE_LEVEL_11_0) {
@@ -304,8 +385,8 @@ std::unique_ptr<D3D11VideoDecoderWrapper> D3D11VideoDecoderWrapper::Create(
 
   if (supported_d3d11_version == D3D_FEATURE_LEVEL_11_1) {
     ComD3D11VideoContext1 video_context1;
-    HRESULT hr = video_context.As(&video_context1);
-    DCHECK(SUCCEEDED(hr));
+    hr = video_context.As(&video_context1);
+    CHECK_EQ(hr, S_OK);
     return std::make_unique<D3D11VideoDecoderWrapperImpl<
         ID3D11VideoContext1, D3D11_VIDEO_DECODER_BUFFER_DESC1>>(
         media_log, std::move(video_device), std::move(video_context1),

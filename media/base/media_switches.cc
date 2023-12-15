@@ -1644,6 +1644,13 @@ BASE_FEATURE(kCrOSLegacyMediaFormats,
 #endif
 #endif
 
+#if BUILDFLAG(IS_WIN)
+// Controls whether to use D3D12 video decoder instead of D3D11 when supported.
+BASE_FEATURE(kD3D12VideoDecoder,
+             "D3D12VideoDecoder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   return base::FeatureList::IsEnabled(kChromeWideEchoCancellation);

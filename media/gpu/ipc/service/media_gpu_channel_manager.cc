@@ -11,7 +11,12 @@
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "ipc/ipc_message_macros.h"
 #include "ipc/param_traits_macros.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/ipc/service/media_gpu_channel.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "media/gpu/windows/d3d12_helpers.h"
+#endif
 
 namespace media {
 
@@ -23,6 +28,13 @@ MediaGpuChannelManager::MediaGpuChannelManager(
   auto shared_context_state = channel_manager_->GetSharedContextState(&result);
   if (shared_context_state) {
     d3d11_device_ = shared_context_state->GetD3D11Device();
+    if (base::FeatureList::IsEnabled(kD3D12VideoDecoder)) {
+      Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
+      CHECK_EQ(d3d11_device_.As(&dxgi_device), S_OK);
+      Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
+      CHECK_EQ(dxgi_device->GetAdapter(&adapter), S_OK);
+      d3d12_device_ = CreateD3D12Device(adapter.Get());
+    }
   }
 #endif
 }

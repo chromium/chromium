@@ -15,15 +15,6 @@ namespace media {
 
 using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
 
-#define RETURN_ON_HR_FAILURE(expr_name, expr, code) \
-  do {                                              \
-    HRESULT expr_value = (expr);                    \
-    if (FAILED(expr_value)) {                       \
-      RecordFailure(#expr_name, code, expr_value);  \
-      return false;                                 \
-    }                                               \
-  } while (0)
-
 D3D11VP9Accelerator::D3D11VP9Accelerator(D3D11VideoDecoderClient* client,
                                          MediaLog* media_log)
     : D3DAccelerator(client, media_log), status_feedback_(0) {}
