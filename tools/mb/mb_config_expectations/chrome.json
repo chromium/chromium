@@ -157,7 +157,7 @@
     "args_file": "//build/args/chromeos/reven-vmtest.gni",
     "gn_args": {
       "also_build_lacros_chrome_for_architecture": "amd64",
-      "dcheck_always_on": true,
+      "dcheck_always_on": false,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
       "is_chromeos_device": true,
