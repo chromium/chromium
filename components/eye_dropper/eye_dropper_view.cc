@@ -4,6 +4,8 @@
 
 #include "components/eye_dropper/eye_dropper_view.h"
 
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -45,7 +47,8 @@ class EyeDropperView::ViewPositionHandler {
 
   // Timer used for updating the window location.
   base::RepeatingTimer timer_;
-
+  gfx::Point last_cursor_position_ =
+      display::Screen::GetScreen()->GetCursorScreenPoint();
   raw_ptr<EyeDropperView> owner_;
 };
 
@@ -62,13 +65,20 @@ EyeDropperView::ViewPositionHandler::~ViewPositionHandler() {
 }
 
 void EyeDropperView::ViewPositionHandler::UpdateViewPosition() {
-  owner_->UpdatePosition();
+  // The view can be moved by either mouse or touch. Only move it to the cursor
+  // position when cursor changes.
+  gfx::Point cursor_position =
+      display::Screen::GetScreen()->GetCursorScreenPoint();
+  if (std::exchange(last_cursor_position_, cursor_position) !=
+      cursor_position) {
+    owner_->UpdatePosition(cursor_position);
+  }
 }
 
 class EyeDropperView::ScreenCapturer
     : public webrtc::DesktopCapturer::Callback {
  public:
-  ScreenCapturer();
+  explicit ScreenCapturer(EyeDropperView* owner);
   ScreenCapturer(const ScreenCapturer&) = delete;
   ScreenCapturer& operator=(const ScreenCapturer&) = delete;
   ~ScreenCapturer() override = default;
@@ -84,13 +94,15 @@ class EyeDropperView::ScreenCapturer
   int original_offset_y() const;
 
  private:
+  raw_ptr<EyeDropperView> owner_;
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
   SkBitmap frame_;
   int original_offset_x_;
   int original_offset_y_;
 };
 
-EyeDropperView::ScreenCapturer::ScreenCapturer() {
+EyeDropperView::ScreenCapturer::ScreenCapturer(EyeDropperView* owner)
+    : owner_(owner) {
   static bool allow_wgc_screen_capture =
 #if BUILDFLAG(IS_WIN)
       // Allow WGC screen capture if Windows version is greater or equal
@@ -161,6 +173,7 @@ void EyeDropperView::ScreenCapturer::OnCaptureResult(
       original_offset_y_ = scaled_bounds.origin().y();
     }
   }
+  owner_->OnScreenCaptured();
 }
 
 SkBitmap EyeDropperView::ScreenCapturer::GetBitmap() const {
@@ -188,7 +201,7 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
                                content::EyeDropperListener* listener)
     : listener_(listener),
       view_position_handler_(std::make_unique<ViewPositionHandler>(this)),
-      screen_capturer_(std::make_unique<ScreenCapturer>()) {
+      screen_capturer_(std::make_unique<ScreenCapturer>(this)) {
   SetModalType(ui::MODAL_TYPE_WINDOW);
   // This is owned as a unique_ptr<EyeDropper> elsewhere.
   SetOwnedByWidget(false);
@@ -216,12 +229,21 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
   views::Widget* widget = new views::Widget();
   widget->Init(std::move(params));
   widget->SetContentsView(this);
-  MoveViewToFront();
   HideCursor();
   pre_dispatch_handler_ =
       std::make_unique<PreEventDispatchHandler>(this, event_handler);
   widget->Show();
   CaptureInputIfNeeded();
+  auto* screen = display::Screen::GetScreen();
+  gfx::Point initial_position = screen->GetCursorScreenPoint();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (screen->InTabletMode()) {
+    initial_position =
+        screen->GetDisplayForNewWindows().work_area().CenterPoint();
+  }
+#endif
+  UpdatePosition(initial_position);
+
   // The ignore selection time should be long enough to allow the user to see
   // the UI.
   ignore_selection_time_ = base::TimeTicks::Now() + base::Milliseconds(500);
@@ -365,20 +387,14 @@ void EyeDropperView::CaptureScreen(
   screen_capturer_->CaptureScreen(screen);
 }
 
-void EyeDropperView::UpdatePosition() {
-  if (screen_capturer_->GetBitmap().drawsNothing() || !GetWidget()) {
-    return;
-  }
+void EyeDropperView::OnScreenCaptured() {
+  SchedulePaint();
+}
 
-  gfx::Point cursor_position =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
-  if (cursor_position == GetWidget()->GetWindowBoundsInScreen().CenterPoint()) {
-    return;
-  }
-
+void EyeDropperView::UpdatePosition(gfx::Point position) {
   GetWidget()->SetBounds(
-      gfx::Rect(gfx::Point(cursor_position.x() - size().width() / 2,
-                           cursor_position.y() - size().height() / 2),
+      gfx::Rect(gfx::Point(position.x() - size().width() / 2,
+                           position.y() - size().height() / 2),
                 size()));
 }
 

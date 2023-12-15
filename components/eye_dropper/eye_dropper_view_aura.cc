@@ -124,8 +124,15 @@ void EyeDropperView::PreEventDispatchHandler::OnGestureEvent(
   }
 }
 
-void EyeDropperView::MoveViewToFront() {
-  // The view is already topmost when Aura is used.
+void EyeDropperView::PreEventDispatchHandler::OnTouchEvent(
+    ui::TouchEvent* event) {
+  if (event->type() == ui::ET_TOUCH_PRESSED) {
+    touch_offset_ = event->root_location() -
+                    view_->GetWidget()->GetWindowBoundsInScreen().CenterPoint();
+  }
+  if (event->type() == ui::ET_TOUCH_MOVED) {
+    view_->UpdatePosition(event->root_location() - touch_offset_);
+  }
 }
 
 void EyeDropperView::CaptureInputIfNeeded() {
