@@ -42,9 +42,8 @@ GridLayoutAlgorithm::GridLayoutAlgorithm(const LayoutAlgorithmParams& params)
           // and also have something like "min-width: min-content". This is
           // cyclic. Just return the border/scrollbar/padding as our
           // "intrinsic" size.
-          return MinMaxSizesResult(
-              {border_scrollbar_padding, border_scrollbar_padding},
-              /* depends_on_block_constraints */ false);
+          return {{border_scrollbar_padding, border_scrollbar_padding},
+                  /* depends_on_block_constraints */ false};
         });
 
     grid_min_available_size_.inline_size =
@@ -418,21 +417,19 @@ MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(
   // TODO(crbug.com/1272533): This should be |depends_on_block_constraints|
   // (rather than false). However we need more cache slots to handle the
   // performance degradation we currently experience. See bug for more details.
-  return MinMaxSizesResult(
-      sizes, RuntimeEnabledFeatures::LayoutNewMeasureCacheEnabled() &&
-                 depends_on_block_constraints);
+  return {sizes, RuntimeEnabledFeatures::LayoutNewMeasureCacheEnabled() &&
+                     depends_on_block_constraints};
 }
 
 MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(
     const GridSizingSubtree& sizing_subtree) {
   DCHECK(sizing_subtree);
 
-  return MinMaxSizesResult(
-      {ComputeSubgridContributionSize(sizing_subtree, kForColumns,
-                                      SizingConstraint::kMinContent),
-       ComputeSubgridContributionSize(sizing_subtree, kForColumns,
-                                      SizingConstraint::kMaxContent)},
-      /* depends_on_block_constraints */ false);
+  return {{ComputeSubgridContributionSize(sizing_subtree, kForColumns,
+                                          SizingConstraint::kMinContent),
+           ComputeSubgridContributionSize(sizing_subtree, kForColumns,
+                                          SizingConstraint::kMaxContent)},
+          /* depends_on_block_constraints */ false};
 }
 
 namespace {
@@ -1150,11 +1147,17 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
   };
 
   auto MinOrMaxContentSize = [&](bool is_min_content) -> LayoutUnit {
-    if (grid_item->IsSubgrid()) {
-      return SubgridContributionSize(is_min_content);
-    }
-
-    const auto result = ComputeMinAndMaxContentContributionForSelf(node, space);
+    const auto result =
+        grid_item->IsSubgrid()
+            ? ComputeMinAndMaxContentContributionForSelf(
+                  node, space,
+                  [&](MinMaxSizesType) -> MinMaxSizesResult {
+                    const auto& subgrid_sizing_subtree =
+                        sizing_subtree.SubgridSizingSubtree(*grid_item);
+                    return ComputeMinMaxSizesForSubgrid(subgrid_sizing_subtree,
+                                                        *grid_item, space);
+                  })
+            : ComputeMinAndMaxContentContributionForSelf(node, space);
 
     // The min/max contribution may depend on the block-size of the grid-area:
     // <div style="display: inline-grid; grid-template-columns: auto auto;">
