@@ -77,12 +77,10 @@ void BufferQueue::SwapBuffers(const gfx::Rect& damage) {
 void BufferQueue::SwapBuffersComplete() {
   DCHECK(!in_flight_buffers_.empty());
 
-  if (in_flight_buffers_.front()) {
-    if (displayed_buffer_) {
-      available_buffers_.push_back(std::move(displayed_buffer_));
-    }
-    displayed_buffer_ = std::move(in_flight_buffers_.front());
+  if (displayed_buffer_) {
+    available_buffers_.push_back(std::move(displayed_buffer_));
   }
+  displayed_buffer_ = std::move(in_flight_buffers_.front());
 
   in_flight_buffers_.pop_front();
 }
@@ -183,9 +181,9 @@ gpu::Mailbox BufferQueue::GetLastSwappedBuffer() {
     return gpu::Mailbox();
   }
 
-  // The last swapped buffer will generally be in displayed_buffer_, as long as
-  // SwapBuffersComplete() has been called at least once for a non-empty swap
-  // since the last Reshape().
+  // The last swapped buffer will generally be in `displayed_buffer_`, unless
+  // the last completed swap was empty or there haven't been any completed swaps
+  // since Reshape() was last called.
   if (displayed_buffer_) {
     return displayed_buffer_->mailbox;
   }

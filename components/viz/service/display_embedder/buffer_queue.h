@@ -78,6 +78,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // Called when SwapBuffers is skipped this frame. Damages allocated buffers,
   // but does not advance |in_flight_buffers_| or |current_buffer_|. We don't
   // clear the damage on |current_buffer_| because it hasn't been displayed yet.
+  // SwapBuffersComplete() must not be called for skipped swap.
   void SwapBuffersSkipped(const gfx::Rect& damage);
 
   // If |size| or |color_space| correspond to a change of state, frees all
