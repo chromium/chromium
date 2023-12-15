@@ -229,7 +229,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kHideTabOnTabSwitcher,
     &kIncognitoReauthenticationForAndroid,
     &kIncognitoScreenshot,
-    &kInstanceSwitcher,
     &kInstantStart,
     &kLensCameraAssistedSearch,
     &kLensOnQuickActionSearchWidget,
@@ -720,10 +719,6 @@ BASE_FEATURE(kNotificationPermissionVariant,
 BASE_FEATURE(kNotificationPermissionBottomSheet,
              "NotificationPermissionBottomSheet",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kInstanceSwitcher,
-             "InstanceSwitcher",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPageAnnotationsService,
              "PageAnnotationsService",

@@ -4114,11 +4114,6 @@ const char kInfoCardAcknowledgementTrackingName[] =
 const char kInfoCardAcknowledgementTrackingDescription[] =
     "Enable acknowledgement tracking for info cards.";
 
-const char kInstanceSwitcherName[] = "Enable instance switcher";
-const char kInstanceSwitcherDescription[] =
-    "Enable instance switcher dialog UI that helps users manage multiple "
-    "instances of Chrome.";
-
 const char kInstantStartName[] = "Instant start";
 const char kInstantStartDescription[] =
     "Show start surface before native library is loaded.";

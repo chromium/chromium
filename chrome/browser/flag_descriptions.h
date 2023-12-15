@@ -2397,9 +2397,6 @@ extern const char kHideTabOnTabSwitcherDescription[];
 extern const char kInfoCardAcknowledgementTrackingName[];
 extern const char kInfoCardAcknowledgementTrackingDescription[];
 
-extern const char kInstanceSwitcherName[];
-extern const char kInstanceSwitcherDescription[];
-
 extern const char kInstantStartName[];
 extern const char kInstantStartDescription[];
 

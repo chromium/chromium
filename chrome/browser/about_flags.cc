@@ -7360,12 +7360,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersRichCard)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"instance-switcher", flag_descriptions::kInstanceSwitcherName,
-     flag_descriptions::kInstanceSwitcherDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kInstanceSwitcher)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"enable-gamepad-button-axis-events",
      flag_descriptions::kEnableGamepadButtonAxisEventsName,
      flag_descriptions::kEnableGamepadButtonAxisEventsDescription, kOsAll,
