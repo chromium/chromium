@@ -59,10 +59,12 @@ void ReportEvent(GURL url,
     return;
 
   DlpRulesManager::RuleMetadata rule_metadata;
-  const std::string src_url = rules_manager->GetSourceUrlPattern(
+  const std::string src_pattern = rules_manager->GetSourceUrlPattern(
       url, restriction, level, &rule_metadata);
-
-  reporting_manager->ReportEvent(src_url, restriction, level,
+  if (src_pattern.empty()) {
+    LOG(ERROR) << "DlpContentManager failed to get the source URL pattern.";
+  }
+  reporting_manager->ReportEvent(src_pattern, restriction, level,
                                  rule_metadata.name,
                                  rule_metadata.obfuscated_id);
 }
@@ -536,10 +538,14 @@ void DlpContentManager::ReportWarningProceededEvent(
       DlpRulesManagerFactory::GetForPrimaryProfile();
   if (rules_manager) {
     DlpRulesManager::RuleMetadata rule_metadata;
-    const std::string src_url = rules_manager->GetSourceUrlPattern(
+    const std::string src_pattern = rules_manager->GetSourceUrlPattern(
         url, restriction, DlpRulesManager::Level::kWarn, &rule_metadata);
-    reporting_manager->ReportWarningProceededEvent(
-        src_url, restriction, rule_metadata.name, rule_metadata.obfuscated_id);
+    if (src_pattern.empty()) {
+      LOG(ERROR) << "DlpContentManager failed to get the source URL pattern.";
+    }
+    reporting_manager->ReportWarningProceededEvent(src_pattern, restriction,
+                                                   rule_metadata.name,
+                                                   rule_metadata.obfuscated_id);
   }
 }
 
