@@ -7085,3 +7085,7 @@ crbug.com/726075 [ Linux ] virtual/gpu/fast/canvas/canvas-imageSmoothing-disable
 
 # Gardener 2023-12-01
 crbug.com/1506782 fast/dom/HTMLImageElement/image-sizes-1x.html [ Failure Pass ]
+
+# TODO(crbug.com/1511492): Re-enable these tests.
+crbug.com/1511492 [ Linux ] external/wpt/event-timing/first-input-interactionid-tap.html [ Crash Failure Timeout ]
+crbug.com/1511492 [ Linux ] external/wpt/event-timing/external/wpt/event-timing/interactionid-tap.html [ Crash Failure Timeout ]
