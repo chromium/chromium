@@ -3783,6 +3783,7 @@ test("ash_unittests") {
     "wm/desks/desks_unittests.cc",
     "wm/desks/root_window_desk_switch_animator_unittest.cc",
     "wm/desks/templates/admin_template_unittest.cc",
+    "wm/desks/templates/saved_desk_controller_unittest.cc",
     "wm/desks/templates/saved_desk_unittest.cc",
     "wm/drag_window_resizer_unittest.cc",
     "wm/float/float_controller_unittest.cc",

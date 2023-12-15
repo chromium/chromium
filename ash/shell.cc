@@ -245,6 +245,7 @@
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
@@ -1410,7 +1411,8 @@ void Shell::Init(
   desks_controller_ = std::make_unique<DesksController>();
   saved_desk_delegate_ = shell_delegate_->CreateSavedDeskDelegate();
   // Initialized here since it depends on desks.
-  if (base::FeatureList::IsEnabled(features::kAppLaunchAutomation)) {
+  if (base::FeatureList::IsEnabled(features::kAppLaunchAutomation) ||
+      chromeos::features::IsDeskProfilesEnabled()) {
     saved_desk_controller_ = std::make_unique<SavedDeskController>();
   }
 

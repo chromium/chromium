@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/admin_template_launch_tracker.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
+#include "base/containers/cxx20_erase_map.h"
 #include "base/time/time.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/restore_data.h"
@@ -49,6 +50,20 @@ base::TimeDelta GetModelWaitDuration(base::TimeDelta last_wait_duration) {
   return std::min(base::Seconds(1), last_wait_duration * 2);
 }
 
+// Returns true if `saved_desk` contains no windows.
+bool IsEmptySavedDesk(const DeskTemplate& saved_desk) {
+  if (auto* restore_data = saved_desk.desk_restore_data()) {
+    for (const auto& [app_id, launch_list] :
+         restore_data->app_id_to_launch_list()) {
+      if (!launch_list.empty()) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
 // Pointer to the global `SavedDeskController` instance.
 SavedDeskController* g_instance = nullptr;
 
@@ -60,10 +75,71 @@ SavedDeskController::AdminTemplateAutoLaunch::AdminTemplateAutoLaunch() =
 SavedDeskController::AdminTemplateAutoLaunch::~AdminTemplateAutoLaunch() =
     default;
 
+bool ScrubLacrosProfileFromSavedDesk(DeskTemplate& saved_desk,
+                                     uint64_t lacros_profile_id,
+                                     uint64_t primary_user_lacros_profile_id) {
+  // This function should not be called with a default Lacros profile ID.
+  CHECK(lacros_profile_id);
+
+  bool modified = false;
+
+  // Update the desk association, if necessary.
+  if (saved_desk.lacros_profile_id() == lacros_profile_id) {
+    saved_desk.set_lacros_profile_id(primary_user_lacros_profile_id);
+    modified = true;
+  }
+
+  auto* restore_data = saved_desk.mutable_desk_restore_data();
+  if (!restore_data) {
+    return modified;
+  }
+
+  auto& app_id_to_launch_list = restore_data->mutable_app_id_to_launch_list();
+
+  // The restore data model is a two-level tree. The first level maps app IDs to
+  // launch lists. A launch list in turn maps a window id to data for that
+  // window. Here we traverse the entire tree. We find and erase any window with
+  // a matching lacros ID. If this results in an empty launch list, then that
+  // list is erased from the root.
+  base::EraseIf(app_id_to_launch_list, [&](auto& launch_list_entry) {
+    auto& launch_list = launch_list_entry.second;
+
+    base::EraseIf(launch_list, [&](auto& window_entry) {
+      auto& app_restore_data = window_entry.second;
+      if (app_restore_data->lacros_profile_id != lacros_profile_id) {
+        return false;
+      }
+
+      // Erase the window entry if the lacros profile id matches.
+      modified = true;
+      return true;
+    });
+
+    // Erase the launch list entry if the launch list is empty. This also cleans
+    // things up if the launch list happened to be empty to begin with.
+    if (launch_list.empty()) {
+      modified = true;
+      return true;
+    }
+    return false;
+  });
+
+  return modified;
+}
+
 // SavedDeskController
 SavedDeskController::SavedDeskController() {
   CHECK(!g_instance);
   g_instance = this;
+
+  // We want to observe DeskProfilesDelegate, but it won't be available until
+  // later. We first register as a session observer so that we can detect when
+  // the first session has started (which also means the DeskProfilesDelegate
+  // will be available).
+  if (Shell::HasInstance()) {
+    // Note that the shell is not available in some unit tests.
+    session_observer_.Observe(Shell::Get()->session_controller());
+  }
 }
 
 SavedDeskController::~SavedDeskController() {
@@ -179,9 +255,51 @@ void SavedDeskController::AttemptAdminTemplateAutoLaunch() {
   }
 }
 
+void SavedDeskController::OnFirstSessionStarted() {
+  // The DeskProfilesDelegate will be available if lacros and desk profiles are
+  // both enabled.
+  if (auto* delegate = Shell::Get()->GetDeskProfilesDelegate()) {
+    desk_profiles_observer_.Observe(delegate);
+  }
+
+  // We no longer need to observe the session updates.
+  session_observer_.Reset();
+}
+
+void SavedDeskController::OnProfileRemoved(uint64_t profile_id) {
+  desks_storage::DeskModel* model =
+      Shell::Get()->saved_desk_delegate()->GetDeskModel();
+
+  if (!model) {
+    return;
+  }
+
+  uint64_t primary_user_profile_id = 0;
+  if (auto* delegate = Shell::Get()->GetDeskProfilesDelegate()) {
+    primary_user_profile_id = delegate->GetPrimaryProfileId();
+  }
+
+  // Get all the entries in the model. For each entry, scrub data that belongs
+  // to the deleted profile. Modifications are written back to the model.
+  for (const auto* saved_desk_from_model : model->GetAllEntries().entries) {
+    auto saved_desk = saved_desk_from_model->Clone();
+    if (ScrubLacrosProfileFromSavedDesk(*saved_desk, profile_id,
+                                        primary_user_profile_id)) {
+      // The saved desk has been updated. If it is now empty (no windows
+      // remain), then we are going to delete it completely from the
+      // model. Otherwise, we write the updated desk back to the model.
+      if (IsEmptySavedDesk(*saved_desk)) {
+        model->DeleteEntry(saved_desk->uuid(), base::DoNothing());
+      } else {
+        model->AddOrUpdateEntry(std::move(saved_desk), base::DoNothing());
+      }
+    }
+  }
+}
+
 desks_storage::AdminTemplateModel* SavedDeskController::GetAdminModel() const {
   auto* admin_template_service =
-      ash::Shell::Get()->saved_desk_delegate()->GetAdminTemplateService();
+      Shell::Get()->saved_desk_delegate()->GetAdminTemplateService();
 
   if (!admin_template_service || !admin_template_service->IsReady()) {
     return nullptr;
