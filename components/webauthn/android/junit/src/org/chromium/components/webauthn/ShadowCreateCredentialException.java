@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webauth;
+package org.chromium.components.webauthn;
 
-import android.credentials.GetCredentialException;
+import android.credentials.CreateCredentialException;
 
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
-/** Shadow of the Android Credential Manager GetCredentialException exception. */
-@Implements(value = GetCredentialException.class)
-public class ShadowGetCredentialException {
+/** Shadow of the Android Credential Manager CreateCredentialException exception. */
+@Implements(value = CreateCredentialException.class)
+public class ShadowCreateCredentialException {
     private String mType;
-    private String mMessage;
 
     @Implementation
-    protected void __constructor__(String type, String message) {
+    protected void __constructor__() {}
+
+    protected void setType(String type) {
         mType = type;
-        mMessage = message;
     }
 
     @Implementation

@@ -171,28 +171,42 @@ android_resources("java_resources") {
 }
 
 robolectric_library("junit") {
-  sources = [ "junit/src/org/chromium/components/webauthn/AuthenticatorIncognitoConfirmationBottomsheetTest.java" ]
+  sources = [
+    "junit/src/org/chromium/components/webauthn/AuthenticatorIncognitoConfirmationBottomsheetTest.java",
+    "junit/src/org/chromium/components/webauthn/BarrierTest.java",
+    "junit/src/org/chromium/components/webauthn/CredManHelperRobolectricTest.java",
+    "junit/src/org/chromium/components/webauthn/Fido2CredentialRequestRobolectricTest.java",
+    "junit/src/org/chromium/components/webauthn/ShadowCreateCredentialException.java",
+    "junit/src/org/chromium/components/webauthn/ShadowCreateCredentialRequest.java",
+    "junit/src/org/chromium/components/webauthn/ShadowCreateCredentialResponse.java",
+    "junit/src/org/chromium/components/webauthn/ShadowCredential.java",
+    "junit/src/org/chromium/components/webauthn/ShadowCredentialManager.java",
+    "junit/src/org/chromium/components/webauthn/ShadowCredentialOption.java",
+    "junit/src/org/chromium/components/webauthn/ShadowGetCredentialException.java",
+    "junit/src/org/chromium/components/webauthn/ShadowGetCredentialRequest.java",
+    "junit/src/org/chromium/components/webauthn/ShadowGetCredentialResponse.java",
+    "junit/src/org/chromium/components/webauthn/ShadowPrepareGetCredentialResponse.java",
+    "junit/src/org/chromium/components/webauthn/ShadowWebContentStatics.java",
+  ]
   deps = [
+    ":delegate_public_java",
     ":java",
+    ":test_support_java",
+    "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//components/browser_ui/bottomsheet/android:java",
-    "//components/payments/content/android:service_java",
-    "//components/payments/mojom:mojom_java",
-    "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
-    "//mojo/public/java:system_java",
-    "//third_party/android_deps:material_design_java",
-    "//third_party/androidx:androidx_collection_collection_java",
+    "//net/android:net_java",
+    "//services/device/public/java:device_feature_list_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/google-truth:google_truth_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
-    "//url:gurl_junit_test_support",
-    "//url/mojom:url_mojom_gurl_java",
-    "//url/mojom:url_mojom_origin_java",
   ]
 }

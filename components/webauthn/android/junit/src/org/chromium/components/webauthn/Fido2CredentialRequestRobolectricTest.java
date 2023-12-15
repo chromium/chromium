@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webauth;
+package org.chromium.components.webauthn;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -43,14 +43,6 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
-import org.chromium.components.webauthn.Barrier;
-import org.chromium.components.webauthn.CredManHelper;
-import org.chromium.components.webauthn.CredManSupportProvider;
-import org.chromium.components.webauthn.Fido2ApiCallHelper;
-import org.chromium.components.webauthn.Fido2ApiTestHelper;
-import org.chromium.components.webauthn.Fido2CredentialRequest;
-import org.chromium.components.webauthn.WebAuthnBrowserBridge;
-import org.chromium.components.webauthn.WebAuthnCredentialDetails;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
 import org.chromium.device.DeviceFeatureList;
