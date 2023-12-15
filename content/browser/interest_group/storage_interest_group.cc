@@ -5,7 +5,10 @@
 #include "content/browser/interest_group/storage_interest_group.h"
 
 #include "base/ranges/algorithm.h"
+#include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 
 namespace content {
@@ -32,5 +35,16 @@ DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns(
 DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns(
     DebugReportLockoutAndCooldowns&&) = default;
 DebugReportLockoutAndCooldowns::~DebugReportLockoutAndCooldowns() = default;
+
+absl::optional<base::TimeDelta> ConvertDebugReportCooldownTypeToDuration(
+    int type) {
+  switch (type) {
+    case DebugReportCooldownType::kShortCooldown:
+      return blink::features::kFledgeDebugReportShortCooldown.Get();
+    case DebugReportCooldownType::kRestrictedCooldown:
+      return blink::features::kFledgeDebugReportRestrictedCooldown.Get();
+  }
+  return absl::nullopt;
+}
 
 }  // namespace content

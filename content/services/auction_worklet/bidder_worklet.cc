@@ -1339,6 +1339,14 @@ BidderWorklet::V8State::GenerateSingleBid(
       !browser_signals_dict.Set("bidCount",
                                 bidding_browser_signals->bid_count) ||
       (base::FeatureList::IsEnabled(
+           blink::features::kBiddingAndScoringDebugReportingAPI) &&
+       base::FeatureList::IsEnabled(
+           blink::features::kFledgeSampleDebugReports) &&
+       !browser_signals_dict.Set(
+           "forDebuggingOnlyInCooldownOrLockout",
+           bidding_browser_signals
+               ->for_debugging_only_in_cooldown_or_lockout)) ||
+      (base::FeatureList::IsEnabled(
            blink::features::kFledgePassRecencyToGenerateBid) &&
        !browser_signals_dict.Set("recency",
                                  browser_signal_recency.InMilliseconds())) ||

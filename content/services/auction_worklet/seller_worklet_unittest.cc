@@ -244,8 +244,10 @@ class SellerWorkletTest : public testing::Test {
         url::Origin::Create(GURL("https://interest.group.owner.test/"));
     browser_signal_buyer_and_seller_reporting_id_ = absl::nullopt;
     browser_signal_render_url_ = GURL("https://render.url.test/");
+    browser_signal_for_debugging_only_in_cooldown_or_lockout_ = false;
     browser_signal_ad_components_.clear();
     browser_signal_bidding_duration_msecs_ = 0;
+    browser_signal_for_debugging_only_in_cooldown_or_lockout_ = false;
     browser_signal_desireability_ = 1;
     seller_timeout_ = absl::nullopt;
     browser_signal_highest_scoring_other_bid_ = 0;
@@ -376,6 +378,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+        browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
         /*trace_id=*/1,
         TestScoreAdClient::Create(base::BindOnce(
@@ -471,6 +474,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+        browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
         /*trace_id=*/1,
         TestScoreAdClient::Create(
@@ -798,6 +802,7 @@ class SellerWorkletTest : public testing::Test {
   GURL browser_signal_render_url_;
   std::vector<GURL> browser_signal_ad_components_;
   uint32_t browser_signal_bidding_duration_msecs_;
+  bool browser_signal_for_debugging_only_in_cooldown_or_lockout_;
   double browser_signal_desireability_;
   double browser_signal_highest_scoring_other_bid_;
   absl::optional<blink::AdCurrency>
@@ -3325,6 +3330,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
           browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+          browser_signal_for_debugging_only_in_cooldown_or_lockout_,
           seller_timeout_,
           /*trace_id=*/1,
           TestScoreAdClient::Create(base::BindLambdaForTesting(
@@ -3400,6 +3406,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
       browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
       browser_signal_interest_group_owner_, browser_signal_render_url_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+      browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       seller_timeout_,
       /*trace_id=*/1,
       TestScoreAdClient::Create(
@@ -4076,6 +4083,7 @@ TEST_F(SellerWorkletTest, Cancelation) {
       browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
       browser_signal_interest_group_owner_, browser_signal_render_url_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+      browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       seller_timeout_,
       /*trace_id=*/1, client_receiver.BindNewPipeAndPassRemote());
 
@@ -4137,6 +4145,7 @@ TEST_F(SellerWorkletTest, CancelBeforeFetch) {
       browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
       browser_signal_interest_group_owner_, browser_signal_render_url_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+      browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       seller_timeout_,
       /*trace_id=*/1, client_receiver.BindNewPipeAndPassRemote());
   task_environment_.RunUntilIdle();
@@ -4241,6 +4250,14 @@ TEST_F(SellerWorkletTest,
       "1", requested_size_validator,
       /*expected_signals_for_winner=*/"1",
       /*expected_report_url=*/absl::nullopt);
+}
+
+TEST_F(SellerWorkletTest,
+       ScoreAdBrowserSignalForDebuggingOnlyInCooldownOrLockout) {
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.hasOwnProperty('forDebuggingOnlyInCooldownOrLockout') ?
+            3 : 0)",
+      0);
 }
 
 class SellerWorkletSharedStorageAPIDisabledTest : public SellerWorkletTest {
@@ -4811,6 +4828,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+        browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
         /*trace_id=*/1,
         TestScoreAdClient::Create(base::BindLambdaForTesting(
@@ -4841,6 +4859,40 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
             })));
     run_loop.Run();
   }
+}
+
+TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
+       ScoreAdBrowserSignalForDebuggingOnlyInCooldownOrLockout) {
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.hasOwnProperty('forDebuggingOnlyInCooldownOrLockout') ?
+            3 : 0)",
+      0);
+}
+
+class SellerWorkletSampleDebugReportsEnabledTest : public SellerWorkletTest {
+ public:
+  SellerWorkletSampleDebugReportsEnabledTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::
+                                  kBiddingAndScoringDebugReportingAPI,
+                              blink::features::kFledgeSampleDebugReports},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SellerWorkletSampleDebugReportsEnabledTest,
+       ScoreAdBrowserSignalForDebuggingOnlyInCooldownOrLockout) {
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.forDebuggingOnlyInCooldownOrLockout === false ? 3 : 0)",
+      3);
+
+  browser_signal_for_debugging_only_in_cooldown_or_lockout_ = true;
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.forDebuggingOnlyInCooldownOrLockout === true ? 3 : 0)",
+      3);
 }
 
 class SellerWorkletPrivateAggregationEnabledTest : public SellerWorkletTest {

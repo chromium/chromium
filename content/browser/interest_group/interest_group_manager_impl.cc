@@ -27,7 +27,6 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
-#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/renderer_host/frame_tree_node.h"

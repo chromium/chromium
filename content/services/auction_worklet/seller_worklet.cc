@@ -675,6 +675,7 @@ void SellerWorklet::ScoreAd(
     const GURL& browser_signal_render_url,
     const std::vector<GURL>& browser_signal_ad_components,
     uint32_t browser_signal_bidding_duration_msecs,
+    bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
     const absl::optional<base::TimeDelta> seller_timeout,
     uint64_t trace_id,
     mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient>
@@ -703,6 +704,8 @@ void SellerWorklet::ScoreAd(
   }
   score_ad_task->browser_signal_bidding_duration_msecs =
       browser_signal_bidding_duration_msecs;
+  score_ad_task->browser_signal_for_debugging_only_in_cooldown_or_lockout =
+      browser_signal_for_debugging_only_in_cooldown_or_lockout;
   score_ad_task->seller_timeout = seller_timeout;
   score_ad_task->trace_id = trace_id;
   score_ad_task->score_ad_client.Bind(std::move(score_ad_client));
@@ -953,6 +956,7 @@ void SellerWorklet::V8State::ScoreAd(
     const GURL& browser_signal_render_url,
     const std::vector<std::string>& browser_signal_ad_components,
     uint32_t browser_signal_bidding_duration_msecs,
+    bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
     const absl::optional<base::TimeDelta> seller_timeout,
     uint64_t trace_id,
     base::ScopedClosureRunner cleanup_score_ad_task,
@@ -1027,7 +1031,14 @@ void SellerWorklet::V8State::ScoreAd(
                                 blink::PrintableAdCurrency(bid_currency)) ||
       (scoring_signals_data_version.has_value() &&
        !browser_signals_dict.Set("dataVersion",
-                                 scoring_signals_data_version.value()))) {
+                                 scoring_signals_data_version.value())) ||
+      (base::FeatureList::IsEnabled(
+           blink::features::kBiddingAndScoringDebugReportingAPI) &&
+       base::FeatureList::IsEnabled(
+           blink::features::kFledgeSampleDebugReports) &&
+       !browser_signals_dict.Set(
+           "forDebuggingOnlyInCooldownOrLockout",
+           browser_signal_for_debugging_only_in_cooldown_or_lockout))) {
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
@@ -1903,6 +1914,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
           std::move(task->browser_signal_render_url),
           std::move(task->browser_signal_ad_components),
           task->browser_signal_bidding_duration_msecs,
+          task->browser_signal_for_debugging_only_in_cooldown_or_lockout,
           std::move(task->seller_timeout), task->trace_id,
           base::ScopedClosureRunner(std::move(cleanup_score_ad_task)),
           base::BindOnce(&SellerWorklet::DeliverScoreAdCallbackOnUserThread,

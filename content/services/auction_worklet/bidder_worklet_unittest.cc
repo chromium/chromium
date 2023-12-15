@@ -330,6 +330,7 @@ class BidderWorkletTest : public testing::Test {
 
     browser_signal_join_count_ = 2;
     browser_signal_bid_count_ = 3;
+    browser_signal_for_debugging_only_in_cooldown_or_lockout_ = false;
     browser_signal_prev_wins_.clear();
 
     auction_signals_ = "[\"auction_signals\"]";
@@ -631,7 +632,8 @@ class BidderWorkletTest : public testing::Test {
   mojom::BiddingBrowserSignalsPtr CreateBiddingBrowserSignals() {
     return mojom::BiddingBrowserSignals::New(
         browser_signal_join_count_, browser_signal_bid_count_,
-        CloneWinList(browser_signal_prev_wins_));
+        CloneWinList(browser_signal_prev_wins_),
+        browser_signal_for_debugging_only_in_cooldown_or_lockout_);
   }
 
   // Create a BidderWorklet, returning the remote. If `out_bidder_worklet_impl`
@@ -897,6 +899,7 @@ class BidderWorkletTest : public testing::Test {
       interest_group_trusted_bidding_signals_keys_;
   int browser_signal_join_count_;
   int browser_signal_bid_count_;
+  bool browser_signal_for_debugging_only_in_cooldown_or_lockout_;
   base::TimeDelta browser_signal_recency_generate_bid_;
   std::vector<mojo::StructPtr<mojom::PreviousWin>> browser_signal_prev_wins_;
 
@@ -3579,6 +3582,13 @@ TEST_F(BidderWorkletTest, GenerateBidBrowserSignalJoinCountBidCount) {
             /*modeling_signals=*/absl::nullopt, base::TimeDelta()));
     SetDefaultParameters();
   }
+}
+
+TEST_F(BidderWorkletTest,
+       GenerateBidBrowserSignalForDebuggingOnlyInCooldownOrLockout) {
+  RunGenerateBidExpectingExpressionIsTrue(R"(
+    !browserSignals.hasOwnProperty('forDebuggingOnlyInCooldownOrLockout');
+  )");
 }
 
 TEST_F(BidderWorkletTest, GenerateBidAds) {
@@ -6874,6 +6884,16 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       GURL("https://loss.url1"));
 }
 
+// forDebuggingOnlyInCooldownOrLockout is not passed to generateBid's browser
+// signals if feature kBiddingAndScoringDebugReportingAPI is disabled, even if
+// kFledgeSampleDebugReports is enabled.
+TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
+       GenerateBidBrowserSignalForDebuggingOnlyInCooldownOrLockout) {
+  RunGenerateBidExpectingExpressionIsTrue(R"(
+    !browserSignals.hasOwnProperty('forDebuggingOnlyInCooldownOrLockout');
+  )");
+}
+
 TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
   base::flat_map<std::string, GURL> expected_ad_beacon_map = {
       {"click", GURL("https://click.example.com/")},
@@ -9256,6 +9276,32 @@ TEST_F(BidderWorkletAdMacroReportingEnabledTest,
         /*expected_ad_macro_map=*/{},
         /*expected_pa_requests=*/{}, {test_case.expected_error});
   }
+}
+
+class BidderWorkletSampleDebugReportsEnabledTest : public BidderWorkletTest {
+ public:
+  BidderWorkletSampleDebugReportsEnabledTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::
+                                  kBiddingAndScoringDebugReportingAPI,
+                              blink::features::kFledgeSampleDebugReports},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(BidderWorkletSampleDebugReportsEnabledTest,
+       GenerateBidBrowserSignalForDebuggingOnlyInCooldownOrLockout) {
+  RunGenerateBidExpectingExpressionIsTrue(R"(
+    browserSignals.forDebuggingOnlyInCooldownOrLockout === false;
+  )");
+
+  browser_signal_for_debugging_only_in_cooldown_or_lockout_ = true;
+  RunGenerateBidExpectingExpressionIsTrue(R"(
+    browserSignals.forDebuggingOnlyInCooldownOrLockout === true;
+  )");
 }
 
 }  // namespace

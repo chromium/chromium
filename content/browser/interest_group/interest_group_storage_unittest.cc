@@ -23,7 +23,6 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -824,7 +823,8 @@ TEST_F(InterestGroupStorageTest, DeleteExpiredDebugReportCooldown) {
   // expire. Fast-forward extra time to make sure the cooldown expires,
   // because the starting_time is ceiled to its nearest hour.
   task_environment().FastForwardBy(
-      features::kFledgeDebugReportShortCooldown.Get() + expected_time - time);
+      blink::features::kFledgeDebugReportShortCooldown.Get() + expected_time -
+      time);
   // If maintenance has not been triggered yet, the cooldown table will not be
   // updated.
   cooldowns = storage->GetDebugReportLockoutAndCooldowns(origins);

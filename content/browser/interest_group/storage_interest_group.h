@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -100,6 +101,11 @@ struct CONTENT_EXPORT DebugReportLockoutAndCooldowns {
   // forDebuggingOnly reports.
   std::map<url::Origin, DebugReportCooldown> debug_report_cooldown_map = {};
 };
+
+// Converts forDebuggingOnly API's cooldown type to its actual cooldown
+// duration.
+CONTENT_EXPORT absl::optional<base::TimeDelta>
+ConvertDebugReportCooldownTypeToDuration(int type);
 
 }  // namespace content
 

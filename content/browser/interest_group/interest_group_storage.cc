@@ -32,7 +32,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_ad.pb.h"
-#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
@@ -161,16 +160,6 @@ absl::optional<GURL> DeserializeURL(const std::string& serialized_url) {
     return absl::nullopt;
   }
   return result;
-}
-
-absl::optional<base::TimeDelta> ConvertCooldownTypeToDuration(int type) {
-  switch (type) {
-    case DebugReportCooldownType::kShortCooldown:
-      return features::kFledgeDebugReportShortCooldown.Get();
-    case DebugReportCooldownType::kRestrictedCooldown:
-      return features::kFledgeDebugReportRestrictedCooldown.Get();
-  }
-  return absl::nullopt;
 }
 
 blink::InterestGroup::Ad FromInterestGroupAdValue(const base::Value::Dict& dict,
@@ -943,14 +932,14 @@ bool UpgradeV21SchemaToV22(sql::Database& db, sql::MetaTable& meta_table) {
   if (!db.Execute(kDropLockoutTableTableSql)) {
     return false;
   }
-  static const char kLockoutDebuggingOnlyReportTableSql[] =
+  static const char kLockoutDebugReportTableSql[] =
       // clang-format off
       "CREATE TABLE lockout_debugging_only_report("
         "id INTEGER NOT NULL,"
         "last_report_sent_time INTEGER NOT NULL,"
       "PRIMARY KEY(id))";
   // clang-format on
-  if (!db.Execute(kLockoutDebuggingOnlyReportTableSql)) {
+  if (!db.Execute(kLockoutDebugReportTableSql)) {
     return false;
   }
 
@@ -959,7 +948,7 @@ bool UpgradeV21SchemaToV22(sql::Database& db, sql::MetaTable& meta_table) {
   if (!db.Execute(kDropCooldownTableSql)) {
     return false;
   }
-  static const char kCooldownDebuggingOnlyReportTableSql[] =
+  static const char kCooldownDebugReportTableSql[] =
       // clang-format off
       "CREATE TABLE cooldown_debugging_only_report("
         "origin TEXT NOT NULL,"
@@ -967,7 +956,7 @@ bool UpgradeV21SchemaToV22(sql::Database& db, sql::MetaTable& meta_table) {
         "type INTEGER NOT NULL,"
       "PRIMARY KEY(origin))";
   // clang-format on
-  if (!db.Execute(kCooldownDebuggingOnlyReportTableSql)) {
+  if (!db.Execute(kCooldownDebugReportTableSql)) {
     return false;
   }
 
@@ -3872,10 +3861,10 @@ bool DeleteExpiredDebugReportCooldown(sql::Database& db, base::Time now) {
 
   delete_cooldown.Reset(true);
   absl::optional<base::TimeDelta> short_duration =
-      ConvertCooldownTypeToDuration(
+      ConvertDebugReportCooldownTypeToDuration(
           static_cast<int>(DebugReportCooldownType::kShortCooldown));
   absl::optional<base::TimeDelta> restricted_duration =
-      ConvertCooldownTypeToDuration(
+      ConvertDebugReportCooldownTypeToDuration(
           static_cast<int>(DebugReportCooldownType::kRestrictedCooldown));
   CHECK(short_duration.has_value());
   CHECK(restricted_duration.has_value());

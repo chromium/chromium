@@ -95,6 +95,10 @@ struct BiddingBrowserSignals {
 
   // Previous times the group won auctions.
   array<PreviousWin> prev_wins;
+
+  // Whether the browser is under lockout or the buyer's origin is under
+  // cooldown for sending forDebuggingOnly reports.
+  bool for_debugging_only_in_cooldown_or_lockout;
 };
 
 // The results of running a FLEDGE generateBid() script.

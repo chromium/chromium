@@ -18,7 +18,6 @@
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
-#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_context.h"
@@ -520,7 +519,10 @@ void AuctionRunner::OnLoadInterestGroupsComplete(bool success) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kFledgeSampleDebugReports)) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBiddingAndScoringDebugReportingAPI) &&
+      base::FeatureList::IsEnabled(
+          blink::features::kFledgeSampleDebugReports)) {
     // All sellers and buyers in the auction.
     base::flat_set<url::Origin> origins = auction_.GetSellersAndBuyers();
     // Use a weak pointer here so that

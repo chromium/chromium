@@ -466,6 +466,19 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeEnforceKAnonymity);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgePassKAnonStatusToReportWin);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgePassRecencyToGenerateBid);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeSampleDebugReports);
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kFledgeDebugReportLockout;
+// Prevent ad techs who accidentally call the API repeatedly for all users,
+// from locking themselves out of sending any more debug reports for years.
+// This is accomplished by most of the time putting that ad tech in a shorter
+// cooldown period, and only some time (e.g., 10% of the time) putting it in a
+// restricted cooldown period.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kFledgeDebugReportRestrictedCooldown;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kFledgeDebugReportShortCooldown;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceWebContentsDarkMode);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<ForceDarkInversionMethod>
     kForceDarkInversionMethodParam;

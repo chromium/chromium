@@ -16,12 +16,6 @@ namespace features {
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableIFrameAdAuctionHeaders);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kEnableUpdatingExecutionModeToFrozenContext);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeSampleDebugReports);
-CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kFledgeDebugReportShortCooldown;
-CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kFledgeDebugReportRestrictedCooldown;
-
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableUpdatingUserBiddingSignals);
 
 }  // namespace features

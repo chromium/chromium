@@ -45,7 +45,6 @@
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
 #include "content/browser/interest_group/interest_group_auction.h"
-#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
@@ -1033,6 +1032,70 @@ std::string MakeAuctionScriptSupportsTie() {
       kSellerDebugWinReportBaseUrl, kPostAuctionSignalsPlaceholder);
 }
 
+// Report generateBid()'s browserSignals.forDebuggingOnlyInCooldownOrLockout.
+std::string MakeBidScriptWithForDebuggingOnlyInCooldownOrLockout() {
+  constexpr char kBidScript[] = R"(
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      let bid = 1;
+      if (browserSignals.hasOwnProperty(
+              'forDebuggingOnlyInCooldownOrLockout')) {
+        bid = browserSignals.forDebuggingOnlyInCooldownOrLockout === true ? 10 :
+                                                                            11;
+      }
+      return {bid, render: interestGroup.ads[0].renderURL,
+              allowComponentAuction: true};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      let forDebuggingOnlyInCooldownOrLockout = 'null';
+      if (browserSignals.bid == 10) {
+        forDebuggingOnlyInCooldownOrLockout = 'true';
+      } else if (browserSignals.bid == 11) {
+        forDebuggingOnlyInCooldownOrLockout = 'false';
+      }
+      sendReportTo(
+          'https://buyer-reporting.com/?forDebuggingOnlyInCooldownOrLockout=' +
+          forDebuggingOnlyInCooldownOrLockout);
+    }
+  )";
+  return base::StringPrintf(kBidScript);
+}
+
+// Report scoreAd()'s browserSignals.forDebuggingOnlyInCooldownOrLockout.
+std::string MakeAuctionScriptWithForDebuggingOnlyInCooldownOrLockout() {
+  constexpr char kAuctionScript[] = R"(
+    function scoreAd(
+        adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+      let score = 1;
+      if (browserSignals.hasOwnProperty(
+              'forDebuggingOnlyInCooldownOrLockout')) {
+        score = browserSignals.forDebuggingOnlyInCooldownOrLockout === true ?
+            10 : 11;
+      }
+      return {desirability: score, allowComponentAuction: true};
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+      let reportUrl = browserSignals.topLevelSeller !== undefined ?
+          'https://component-seller-reporting.com/' :
+          'https://seller-reporting.com/';
+      let forDebuggingOnlyInCooldownOrLockout = 'null';
+      if (browserSignals.desirability == 10) {
+        forDebuggingOnlyInCooldownOrLockout = 'true';
+      } else if (browserSignals.desirability == 11) {
+        forDebuggingOnlyInCooldownOrLockout = 'false';
+      }
+      sendReportTo(
+          reportUrl + '?forDebuggingOnlyInCooldownOrLockout=' +
+          forDebuggingOnlyInCooldownOrLockout);
+    }
+  )";
+  return base::StringPrintf(kAuctionScript);
+}
+
 // Represents an entry in trusted bidding signal's `perInterestGroupData` field.
 struct BiddingSignalsPerInterestGroupData {
   std::string interest_group_name;
@@ -1763,9 +1826,37 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
     base::Time now = base::Time::Now();
-    interest_group_manager_->RecordDebugReportLockout(now);
-    // Add previous wins and bids to the interest group manager.
+    bool sample_debug_reports =
+        base::FeatureList::IsEnabled(
+            blink::features::kBiddingAndScoringDebugReportingAPI) &&
+        base::FeatureList::IsEnabled(
+            blink::features::kFledgeSampleDebugReports);
+    if (sample_debug_reports) {
+      if (seller_decision_logic_url == kSellerUrlDebugReportLockout) {
+        interest_group_manager_->RecordDebugReportLockout(now);
+      } else if (seller_decision_logic_url == kSellerUrlDebugReportCooldown) {
+        interest_group_manager_->RecordDebugReportCooldown(
+            url::Origin::Create(seller_decision_logic_url), now,
+            DebugReportCooldownType::kShortCooldown);
+      }
+    }
+
+    // Add previous wins, bids, and debug report cooldowns to the interest group
+    // manager.
     for (auto& bidder : bidders) {
+      if (sample_debug_reports) {
+        if (bidder.interest_group.name == kBidderNameDebugReportShortCooldown ||
+            bidder.interest_group.name ==
+                kBidderNameDebugReportRestrictedCooldown) {
+          DebugReportCooldownType type =
+              bidder.interest_group.name == kBidderNameDebugReportShortCooldown
+                  ? DebugReportCooldownType::kShortCooldown
+                  : DebugReportCooldownType::kRestrictedCooldown;
+          interest_group_manager_->RecordDebugReportCooldown(
+              bidder.interest_group.owner, now, type);
+        }
+      }
+
       for (int i = 0; i < bidder.bidding_browser_signals->join_count; i++) {
         interest_group_manager_->JoinInterestGroup(
             bidder.interest_group, bidder.joining_origin.GetURL());
@@ -1785,9 +1876,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
         // match those in `prev_wins`.
         task_environment()->FastForwardBy(base::Seconds(1));
       }
-      interest_group_manager_->RecordDebugReportCooldown(
-          bidder.interest_group.owner, now,
-          DebugReportCooldownType::kShortCooldown);
 
       for (const auto& kanon_data : bidder.bidding_ads_kanon) {
         interest_group_manager_->UpdateKAnonymity(kanon_data);
@@ -2030,7 +2118,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     storage_group.interest_group = std::move(interest_group);
     storage_group.bidding_browser_signals =
         auction_worklet::mojom::BiddingBrowserSignals::New(
-            3, 5, std::move(previous_wins));
+            3, 5, std::move(previous_wins), false);
     storage_group.joining_origin = storage_group.interest_group.owner;
     return storage_group;
   }
@@ -3011,6 +3099,10 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       url::Origin::Create(GURL("https://frame.origin.test"));
   const GURL kSellerUrl{"https://adstuff.publisher1.com/auction.js"};
   const url::Origin kSeller = url::Origin::Create(kSellerUrl);
+  const GURL kSellerUrlDebugReportLockout{
+      "https://lockout.publisher.com/auction.js"};
+  const GURL kSellerUrlDebugReportCooldown{
+      "https://cooldown.publisher.com/auction.js"};
   absl::optional<GURL> trusted_scoring_signals_url_;
 
   const GURL kComponentSeller1Url{"https://component.seller1.test/foo.js"};
@@ -3032,6 +3124,10 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   const std::string kBidder2Name{"Another Ad Thing"};
   const InterestGroupKey kBidder2Key{kBidder2, kBidder2Name};
   const GURL kBidder2TrustedSignalsUrl{"https://anotheradthing.com/signals2"};
+  const std::string kBidderNameDebugReportShortCooldown{
+      "Short Debug Report Cooldown"};
+  const std::string kBidderNameDebugReportRestrictedCooldown{
+      "Restricted Debug Report Cooldown"};
 
   const base::TimeDelta kAllBuyersCumulativeTimeout = base::Milliseconds(23456);
 
@@ -18880,7 +18976,7 @@ class AuctionRunnerSampleDebugReportsEnabledTest : public AuctionRunnerTest {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::
                                   kBiddingAndScoringDebugReportingAPI,
-                              features::kFledgeSampleDebugReports},
+                              blink::features::kFledgeSampleDebugReports},
         /*disabled_features=*/{});
   }
 
@@ -18932,6 +19028,97 @@ TEST_F(AuctionRunnerSampleDebugReportsEnabledTest, ForDebuggingOnlyReporting) {
               testing::UnorderedElementsAre(
                   kBidder2DebugWinReportUrl,
                   "https://seller-debug-win-reporting.com/2"));
+}
+
+TEST_F(AuctionRunnerSampleDebugReportsEnabledTest,
+       BrowserSignalForDebuggingOnlyInCooldownOrLockout) {
+  const struct {
+    const std::string bidder_name;
+    const GURL seller_url;
+    const std::string bidder_in_cooldown_or_lockout;
+    const std::string seller_in_cooldown_or_lockout;
+  } kTestCases[] = {
+      // Not under lockout. Bidder and seller origins are not under cooldown.
+      {kBidder1Name, kSellerUrl, "false", "false"},
+      // Under lockout. Bidder and seller origins are not under cooldown.
+      {kBidder1Name, kSellerUrlDebugReportLockout, "true", "true"},
+      // Under lockout. Bidder origin is under cooldown.
+      {kBidderNameDebugReportShortCooldown, kSellerUrlDebugReportLockout,
+       "true", "true"},
+      // Not under lockout. Bidder and seller origins are under cooldown.
+      {kBidderNameDebugReportShortCooldown, kSellerUrlDebugReportCooldown,
+       "true", "true"},
+      {kBidderNameDebugReportRestrictedCooldown, kSellerUrlDebugReportCooldown,
+       "true", "true"},
+      // Not under lockout. Bidder origin is under cooldown, seller origin not.
+      {kBidderNameDebugReportShortCooldown, kSellerUrl, "true", "false"},
+      // Not under lockout. Seller origin is under cooldown, bidder origin not.
+      {kBidder1Name, kSellerUrlDebugReportCooldown, "false", "true"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.bidder_name);
+    auction_worklet::AddJavascriptResponse(
+        &url_loader_factory_, kBidder1Url,
+        MakeBidScriptWithForDebuggingOnlyInCooldownOrLockout());
+    auction_worklet::AddJavascriptResponse(
+        &url_loader_factory_, test_case.seller_url,
+        MakeAuctionScriptWithForDebuggingOnlyInCooldownOrLockout());
+
+    std::vector<StorageInterestGroup> bidders;
+    bidders.emplace_back(MakeInterestGroup(
+        kBidder1, test_case.bidder_name, kBidder1Url,
+        /*trusted_bidding_signals_url=*/absl::nullopt,
+        /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+
+    RunAuctionAndWait(test_case.seller_url, std::move(bidders));
+    EXPECT_THAT(result_.errors, testing::ElementsAre());
+
+    EXPECT_THAT(result_.report_urls,
+                testing::UnorderedElementsAre(
+                    "https://buyer-reporting.com/"
+                    "?forDebuggingOnlyInCooldownOrLockout=" +
+                        test_case.bidder_in_cooldown_or_lockout,
+                    "https://seller-reporting.com/"
+                    "?forDebuggingOnlyInCooldownOrLockout=" +
+                        test_case.seller_in_cooldown_or_lockout));
+  }
+}
+
+// Sellers are under cooldown, and the bidder is not.
+TEST_F(AuctionRunnerSampleDebugReportsEnabledTest,
+       ComponentAuctionBrowserSignalForDebuggingOnlyInCooldownOrLockout) {
+  interest_group_buyers_.emplace();
+
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kSellerUrlDebugReportCooldown, {{kBidder1}}));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrlDebugReportCooldown,
+      MakeAuctionScriptWithForDebuggingOnlyInCooldownOrLockout());
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScriptWithForDebuggingOnlyInCooldownOrLockout());
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrlDebugReportCooldown,
+      MakeAuctionScriptWithForDebuggingOnlyInCooldownOrLockout());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  RunAuctionAndWait(kSellerUrlDebugReportCooldown, std::move(bidders));
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  "https://buyer-reporting.com/"
+                  "?forDebuggingOnlyInCooldownOrLockout=false",
+                  "https://seller-reporting.com/"
+                  "?forDebuggingOnlyInCooldownOrLockout=true",
+                  "https://component-seller-reporting.com/"
+                  "?forDebuggingOnlyInCooldownOrLockout=true"));
 }
 
 // Disable private aggregation API.

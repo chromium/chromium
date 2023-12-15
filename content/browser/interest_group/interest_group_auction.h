@@ -1184,6 +1184,8 @@ class CONTENT_EXPORT InterestGroupAuction
       std::string ad_slot,
       scoped_refptr<HeaderDirectFromSellerSignals::Result> signals);
 
+  bool IsForDebuggingOnlyInLockoutOrCooldown(const url::Origin& origin);
+
   static data_decoder::DataDecoder* GetDataDecoder(
       base::WeakPtr<InterestGroupAuction> instance);
 

@@ -873,6 +873,19 @@ BASE_FEATURE(kFledgePassRecencyToGenerateBid,
              "FledgePassRecencyToGenerateBid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFledgeSampleDebugReports,
+             "FledgeSampleDebugReports",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta> kFledgeDebugReportLockout{
+    &kFledgeSampleDebugReports, "fledge_debug_report_lockout",
+    base::Days(365 * 3)};
+const base::FeatureParam<base::TimeDelta> kFledgeDebugReportRestrictedCooldown{
+    &kFledgeSampleDebugReports, "fledge_debug_report_restricted_cooldown",
+    base::Days(365)};
+const base::FeatureParam<base::TimeDelta> kFledgeDebugReportShortCooldown{
+    &kFledgeSampleDebugReports, "fledge_debug_report_short_cooldown",
+    base::Days(14)};
+
 BASE_FEATURE(kForceDeferScriptIntervention,
              "ForceDeferScriptIntervention",
              base::FEATURE_DISABLED_BY_DEFAULT);
