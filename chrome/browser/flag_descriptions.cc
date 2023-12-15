@@ -4329,12 +4329,6 @@ const char kRemoveUPMUnenrollmentDescription[] =
     "password saving, no password generation, etc.) until the error "
     "disappears.";
 
-const char kRequestDesktopSiteAdditionsName[] =
-    "Secondary settings for request desktop site on Android.";
-const char kRequestDesktopSiteAdditionsDescription[] =
-    "Secondary options in `Site settings` to request the desktop version of "
-    "websites based on external display or peripheral.";
-
 const char kRequestDesktopSiteDefaultsName[] =
     "Default settings for request desktop site on Android.";
 const char kRequestDesktopSiteDefaultsDescription[] =

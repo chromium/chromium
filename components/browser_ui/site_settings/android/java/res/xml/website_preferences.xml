@@ -45,23 +45,6 @@ found in the LICENSE file.
         android:title="@string/enable_notifications_vibrate_title"
         android:summary="@string/enable_notifications_vibrate_summary"
         android:defaultValue="true" />
-    <!-- A checkbox for enabling request desktop site for accessories,
-         including keyboard, trackpad and mouse.
-         Only shown in the Desktop site category. -->
-    <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
-        android:key="desktop_site_peripheral"
-        android:title="@string/enable_desktop_site_peripheral_title"
-        android:summary="@string/enable_desktop_site_peripheral_summary"
-        android:defaultValue="false"
-        android:persistent="false" />
-    <!-- A checkbox for enabling request desktop site for external display.
-         Only shown in the Desktop site category. -->
-    <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
-        android:key="desktop_site_display"
-        android:title="@string/enable_desktop_site_external_display_title"
-        android:summary="@string/enable_desktop_site_external_display_summary"
-        android:defaultValue="false"
-        android:persistent="false" />
     <!-- A checkbox to request mobile view when the window is narrow.
          Only shown in the Desktop site category. -->
     <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tab;
 
-import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_PERIPHERAL_SETTING_ENABLED;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -54,11 +52,9 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.view.ContentView;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -1871,14 +1867,6 @@ class TabImpl implements Tab {
                                 && !RequestDesktopUtils.shouldApplyWindowSetting(
                                         mProfile, url, getContext()));
 
-        if (!shouldRequestDesktopSite
-                && ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)) {
-            // TODO(shuyng): Make additional setting compatible with site level setting.
-            PrefService prefService = UserPrefs.get(mProfile);
-            boolean peripheralPref =
-                    prefService.getBoolean(DESKTOP_SITE_PERIPHERAL_SETTING_ENABLED);
-            shouldRequestDesktopSite = TabUtils.isHardwareKeyboardAvailable(this) && peripheralPref;
-        }
         if (shouldRequestDesktopSite != currentRequestDesktopSite) {
             // The user is not forcing any mode and we determined that we need to
             // change, therefore we are using TRUE or FALSE option. On Android TRUE mean

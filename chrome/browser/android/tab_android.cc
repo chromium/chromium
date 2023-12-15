@@ -18,7 +18,6 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/slim/layer.h"
 #include "chrome/android/chrome_jni_headers/TabImpl_jni.h"
-#include "chrome/android/chrome_jni_headers/TabUtils_jni.h"
 #include "chrome/browser/android/background_tab_manager.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
@@ -279,12 +278,6 @@ bool TabAndroid::IsCustomTab() {
 bool TabAndroid::IsHidden() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_TabImpl_isHidden(env, weak_java_tab_.get(env));
-}
-
-bool TabAndroid::isHardwareKeyboardAvailable(TabAndroid* tab_android) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_TabUtils_isHardwareKeyboardAvailable(
-      env, tab_android->GetJavaObject());
 }
 
 void TabAndroid::AddObserver(Observer* observer) {

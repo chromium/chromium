@@ -22,8 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.jni_zero.CalledByNative;
-
 import org.chromium.base.BuildInfo;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -224,19 +222,6 @@ public class TabUtils {
         return WebsitePreferenceBridge.getContentSetting(
                         profile, ContentSettingsType.REQUEST_DESKTOP_SITE, url, url)
                 == ContentSettingValues.ALLOW;
-    }
-
-    /**
-     * Return whether hardware keyboard is available, including QWERTY and 12Key keyboards.
-     * @param tab The tab used to retrieve context for keyboard configuration.
-     * TODO(shuyng): Create ConfigurationChangedObserver to update the current value in C++; to
-     * avoid extra JNI request on each navigation.
-     */
-    @CalledByNative
-    public static boolean isHardwareKeyboardAvailable(Tab tab) {
-        int keyboard = tab.getContext().getResources().getConfiguration().keyboard;
-        return keyboard == Configuration.KEYBOARD_QWERTY
-                || keyboard == Configuration.KEYBOARD_12KEY;
     }
 
     /**

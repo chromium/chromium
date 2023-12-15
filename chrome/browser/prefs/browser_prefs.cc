@@ -951,6 +951,13 @@ constexpr char kWebAndAppActivityEnabledForShopping[] =
 const char kTemplatesRandomOrder[] = "content_creation.notes.random_order";
 #endif
 
+// Deprecated 12/2023.
+#if BUILDFLAG(IS_ANDROID)
+const char kDesktopSitePeripheralSettingEnabled[] =
+    "desktop_site.peripheral_setting";
+const char kDesktopSiteDisplaySettingEnabled[] = "desktop_site.display_setting";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1333,6 +1340,12 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 12/2023.
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(kTemplatesRandomOrder);
+#endif
+
+// Deprecated 12/2023.
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(kDesktopSitePeripheralSettingEnabled, false);
+  registry->RegisterBooleanPref(kDesktopSiteDisplaySettingEnabled, false);
 #endif
 }
 
@@ -2545,6 +2558,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if BUILDFLAG(IS_ANDROID)
   // Added 12/2023.
   profile_prefs->ClearPref(kTemplatesRandomOrder);
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // Added 12/2023.
+  profile_prefs->ClearPref(kDesktopSitePeripheralSettingEnabled);
+  profile_prefs->ClearPref(kDesktopSiteDisplaySettingEnabled);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

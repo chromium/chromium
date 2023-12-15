@@ -31,7 +31,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kOptimizeImmHideCalls,
     &features::kProcessSharingWithStrictSiteInstances,
     &features::kReduceGpuPriorityOnBackground,
-    &features::kRequestDesktopSiteAdditions,
     &features::kRequestDesktopSiteWindowSetting,
     &features::kSelectionMenuItemModification,
     &features::kSmartZoom,

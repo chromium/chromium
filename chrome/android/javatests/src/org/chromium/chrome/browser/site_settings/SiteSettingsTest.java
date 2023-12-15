@@ -33,8 +33,6 @@ import static org.mockito.ArgumentMatchers.refEq;
 
 import static org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
-import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_DISPLAY_SETTING_ENABLED;
-import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_PERIPHERAL_SETTING_ENABLED;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_WINDOW_SETTING_ENABLED;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
@@ -1782,23 +1780,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)
-    @DisableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)
-    public void testOnlyExpectedPreferencesRequestDesktopSiteAdditionalSettings() {
-        String[] rdsDisabled = {
-            "binary_toggle", "desktop_site_peripheral", "desktop_site_display", "add_exception"
-        };
-        testExpectedPreferences(
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
-                rdsDisabled,
-                BINARY_TOGGLE_WITH_EXCEPTION);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
     @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)
-    @DisableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)
     public void testOnlyExpectedPreferencesRequestDesktopSiteWindowSettings() {
         String[] rdsEnabled = {"binary_toggle", "desktop_site_window", "add_exception"};
         testExpectedPreferences(
@@ -2593,74 +2575,6 @@ public class SiteSettingsTest {
                 0,
                 true,
                 true);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)
-    public void testDesktopSitePeripherals() {
-        final SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(
-                        SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE);
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SingleCategorySettings preferences =
-                            (SingleCategorySettings) settingsActivity.getMainFragment();
-                    ChromeBaseCheckBoxPreference peripheralPref =
-                            preferences.findPreference(
-                                    SingleCategorySettings.DESKTOP_SITE_PERIPHERAL_TOGGLE_KEY);
-                    PrefService prefService = UserPrefs.get(getBrowserContextHandle());
-                    Assert.assertFalse(
-                            "Peripherals setting should be OFF.",
-                            prefService.getBoolean(DESKTOP_SITE_PERIPHERAL_SETTING_ENABLED));
-
-                    preferences.onPreferenceChange(peripheralPref, true);
-                    Assert.assertTrue(
-                            "Peripherals setting should be ON.",
-                            prefService.getBoolean(DESKTOP_SITE_PERIPHERAL_SETTING_ENABLED));
-
-                    preferences.onPreferenceChange(peripheralPref, false);
-                    Assert.assertFalse(
-                            "Peripherals setting should be OFF.",
-                            prefService.getBoolean(DESKTOP_SITE_PERIPHERAL_SETTING_ENABLED));
-                });
-        settingsActivity.finish();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)
-    public void testDesktopSiteExternalDisplay() {
-        final SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(
-                        SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE);
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SingleCategorySettings preferences =
-                            (SingleCategorySettings) settingsActivity.getMainFragment();
-                    ChromeBaseCheckBoxPreference externalDisplayPref =
-                            preferences.findPreference(
-                                    SingleCategorySettings.DESKTOP_SITE_DISPLAY_TOGGLE_KEY);
-                    PrefService prefService = UserPrefs.get(getBrowserContextHandle());
-                    Assert.assertFalse(
-                            "Display setting should be OFF.",
-                            prefService.getBoolean(DESKTOP_SITE_DISPLAY_SETTING_ENABLED));
-
-                    preferences.onPreferenceChange(externalDisplayPref, true);
-                    Assert.assertTrue(
-                            "Display setting should be ON.",
-                            prefService.getBoolean(DESKTOP_SITE_DISPLAY_SETTING_ENABLED));
-
-                    preferences.onPreferenceChange(externalDisplayPref, false);
-                    Assert.assertFalse(
-                            "Display setting should be OFF.",
-                            prefService.getBoolean(DESKTOP_SITE_DISPLAY_SETTING_ENABLED));
-                });
-        settingsActivity.finish();
     }
 
     @Test

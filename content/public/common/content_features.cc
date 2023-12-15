@@ -1285,12 +1285,6 @@ BASE_FEATURE(kMouseAndTrackpadDropdownMenu,
              "MouseAndTrackpadDropdownMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Request Desktop Site secondary settings for Android; including display
-// setting and peripheral setting.
-BASE_FEATURE(kRequestDesktopSiteAdditions,
-             "RequestDesktopSiteAdditions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Request Desktop Site based on window width for Android.
 BASE_FEATURE(kRequestDesktopSiteWindowSetting,
              "RequestDesktopSiteWindowSetting",
