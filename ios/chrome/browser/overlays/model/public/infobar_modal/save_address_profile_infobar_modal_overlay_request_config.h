@@ -48,7 +48,7 @@ class SaveAddressProfileModalRequestConfig
     return profile_diff_;
   }
 
-  // Prepares and returns a map with key as the autofill::ServerFieldType and
+  // Prepares and returns a map with key as the autofill::FieldType and
   // value is the corresponding profile data(NSString*) fetched from the
   // delegate.
   NSDictionary* GetProfileInfo();

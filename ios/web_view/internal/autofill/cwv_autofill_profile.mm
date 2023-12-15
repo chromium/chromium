@@ -13,9 +13,9 @@
 @interface CWVAutofillProfile ()
 
 // Sets |value| for |type| in |_internalProfile|.
-- (void)setValue:(NSString*)value forType:(autofill::ServerFieldType)type;
+- (void)setValue:(NSString*)value forType:(autofill::FieldType)type;
 // Gets |value| for |type| from |_internalProfile|.
-- (NSString*)valueForType:(autofill::ServerFieldType)type;
+- (NSString*)valueForType:(autofill::FieldType)type;
 
 @end
 
@@ -129,13 +129,13 @@
 
 #pragma mark - Private Methods
 
-- (void)setValue:(NSString*)value forType:(autofill::ServerFieldType)type {
+- (void)setValue:(NSString*)value forType:(autofill::FieldType)type {
   const std::string& locale =
       ios_web_view::ApplicationContext::GetInstance()->GetApplicationLocale();
   _internalProfile->SetInfo(type, base::SysNSStringToUTF16(value), locale);
 }
 
-- (NSString*)valueForType:(autofill::ServerFieldType)type {
+- (NSString*)valueForType:(autofill::FieldType)type {
   const std::string& locale =
       ios_web_view::ApplicationContext::GetInstance()->GetApplicationLocale();
   return base::SysUTF16ToNSString(_internalProfile->GetInfo(type, locale));
