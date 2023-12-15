@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
+#include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -139,17 +140,32 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
         command_line->GetSwitchValuePath(switches::kTestLauncherSummaryOutput);
     base::FilePath test_output_folder =
         output_file_path.DirName().Append(test_name);
-    // Handle retry logic. When a test fail and retry, we need to use a new
-    // folder for user data dir.
+    // Need to create a unique user-data-dir across all test runners.
+    // Using test name as folder name is usually enough. But there are edge
+    // cases it needs to handle:
+    //  * Test retry. On bots, usually we retry 1 time for test failures.
+    //  * Flakiness endorser. It will run new tests 20 times to ensure it's not
+    //    flaky.
+    //  * Developer modified builder config. Developer may modify infra to run
+    //    a test multiple times(e.g. 100) on bot to check flakiness.
+    // To handle those edge cases, we would create the user-data-dir using some
+    // random numbers to ensure it's unique.
     int retry_count = 1;
-    while (base::PathExists(test_output_folder) && retry_count < 5) {
-      test_output_folder = output_file_path.DirName().Append(
-          test_name + ".retry_" + base::NumberToString(retry_count));
+    bool success = false;
+    while (!success && retry_count < 100) {
+      if (base::PathExists(test_output_folder)) {
+        test_output_folder = output_file_path.DirName().Append(
+            (test_name + ".attempt_" +
+             base::NumberToString(base::RandInt(0, 10000))));
+      } else {
+        success = base::CreateDirectory(test_output_folder);
+      }
       ++retry_count;
     }
-    // Unlikely the path still exist. But in case it happens, we would let
+
+    // If we didn't create a unique directory, we would let
     // the browser test framework to create the tmp folder as usual.
-    if (!base::PathExists(test_output_folder)) {
+    if (success) {
       command_line->AppendSwitchPath(switches::kUserDataDir,
                                      test_output_folder);
       ash_user_data_dir_for_cleanup_ = test_output_folder;
