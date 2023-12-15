@@ -744,6 +744,16 @@ bool PinnedToolbarActionsContainer::IsActionPinned(
   return button != nullptr;
 }
 
+bool PinnedToolbarActionsContainer::IsOverflowed(const actions::ActionId& id) {
+  const auto* const pinned_button = GetPinnedButtonFor(id);
+  // TODO(crbug.com/1508656): If this container is not visible treat the
+  // elements inside as overflowed.
+  // TODO(pengchaocai): Support popped out buttons overflow.
+  return static_cast<views::LayoutManagerBase*>(GetLayoutManager())
+             ->CanBeVisible(pinned_button) &&
+         (!GetVisible() || !pinned_button->GetVisible());
+}
+
 void PinnedToolbarActionsContainer::ReorderViews() {
   size_t index = 0;
   // Pinned buttons appear first. Use the model's ordering of pinned ActionIds

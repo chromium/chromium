@@ -41255,6 +41255,18 @@ should be able to be added at any place in this file.
   <suffix name="HomeButton" label="Home button"/>
   <suffix name="MediaButton" label="Media button"/>
   <suffix name="NewTabButton" label="New tab button for thumbnail tab strip"/>
+  <suffix name="PinnedShowBookmarkSidePanelButton"
+      label="Pinned show bookmark side panel button"/>
+  <suffix name="PinnedShowHistorySidePanelButton"
+      label="Pinned show history side panel button"/>
+  <suffix name="PinnedShowReadAnythingSidePanelButton"
+      label="Pinned show read anything side panel button"/>
+  <suffix name="PinnedShowReadingListSidePanelButton"
+      label="Pinned show reading list side panel button"/>
+  <suffix name="PinnedShowSearchCompanionSidePanelButton"
+      label="Pinned show search companion side panel button"/>
+  <suffix name="ShowPerformanceSidePanelButton"
+      label="Show performance side panel button"/>
   <suffix name="SidePanelButton" label="Side Panel button"/>
   <affected-action name="ResponsiveToolbar.OverflowMenuItemActivated"/>
 </action-suffix>

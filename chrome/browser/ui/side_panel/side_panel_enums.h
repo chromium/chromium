@@ -28,7 +28,8 @@ enum class SidePanelOpenTrigger {
   kOpenedInNewTabFromSidePanel = 14,
   kReadAnythingOmniboxIcon = 15,
   kReadAnythingNavigationThrottle = 16,
-  kMaxValue = kReadAnythingNavigationThrottle,
+  kOverflowMenu = 17,
+  kMaxValue = kOverflowMenu,
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENUMS_H_
