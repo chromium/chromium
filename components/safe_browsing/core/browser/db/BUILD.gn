@@ -312,6 +312,7 @@ source_set("unit_tests_shared") {
   sources = [
     "allowlist_checker_client_unittest.cc",
     "database_manager_unittest.cc",
+    "util_unittest.cc",
     "v4_get_hash_protocol_manager_unittest.cc",
     "v4_protocol_manager_util_unittest.cc",
   ]
