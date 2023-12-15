@@ -97,6 +97,8 @@ source_set("grid_ui") {
     "grid_layout.mm",
     "grid_shareable_items_provider.h",
     "grid_theme.h",
+    "group_grid_cell.h",
+    "group_grid_cell.mm",
     "legacy_grid_layout.h",
     "legacy_grid_layout.mm",
   ]
