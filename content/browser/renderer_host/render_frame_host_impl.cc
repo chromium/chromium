@@ -8490,8 +8490,8 @@ void RenderFrameHostImpl::SendPrivateAggregationRequestsForFencedFrameEvent(
         "aggregation events.");
     return;
   }
-  // We only care if the event type starts with "reserved." - We allow event
-  // types like "myevent.reserved.name".
+  // Only check if the event type starts with "reserved." - We allow event types
+  // like "myevent.reserved.name".
   if (base::StartsWith(event_type, blink::kFencedFrameReservedPAEventPrefix)) {
     mojo::ReportBadMessage("Reserved events cannot be triggered manually.");
     return;
@@ -8630,6 +8630,13 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
     mojo::ReportBadMessage(
         "The data provided to SendFencedFrameReportingBeacon() exceeds the "
         "maximum length, which is 64KB.");
+    return;
+  }
+
+  // Only check if the event type starts with "reserved." - We allow event types
+  // like "myevent.reserved.name".
+  if (base::StartsWith(event_type, blink::kFencedFrameReservedPAEventPrefix)) {
+    mojo::ReportBadMessage("Reserved events cannot be triggered manually.");
     return;
   }
 

@@ -7013,6 +7013,19 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon(): invalid "
        "reporting url for key 'view': 'http://view.example.com/'."});
 
+  // Error if invalid "reserved.*" reporting event type
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(registerAdBeacon({
+        'click': "https://click.example.com/",
+        'reserved.bogus': "https://view.example.com/",
+      }))",
+      /*expected_report_url=*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      {"https://url.test/:11 Uncaught TypeError: registerAdBeacon(): Invalid "
+       "reserved type 'reserved.bogus' cannot be used."});
+
   // Special case for error message if the key has mismatched surrogates.
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon({

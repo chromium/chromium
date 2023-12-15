@@ -130,6 +130,11 @@ inline constexpr char kFencedFrameTopNavigationStartBeaconType[] =
 inline constexpr char kFencedFrameTopNavigationCommitBeaconType[] =
     "reserved.top_navigation_commit";
 
+inline constexpr const char* kFencedFrameAutomaticBeaconTypes[] = {
+    kDeprecatedFencedFrameTopNavigationBeaconType,
+    kFencedFrameTopNavigationStartBeaconType,
+    kFencedFrameTopNavigationCommitBeaconType};
+
 // Prefix of reserved event types for private aggregation API
 inline constexpr char kFencedFrameReservedPAEventPrefix[] = "reserved.";
 

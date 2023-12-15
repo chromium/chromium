@@ -95,6 +95,12 @@ void Fence::reportEvent(ScriptState* script_state,
     return;
   }
 
+  if (event->getEventTypeOr("").StartsWith(
+          blink::kFencedFrameReservedPAEventPrefix)) {
+    AddConsoleMessage("Reserved events cannot be triggered manually.");
+    return;
+  }
+
   if (event->hasDestinationURL() &&
       base::FeatureList::IsEnabled(
           blink::features::kAdAuctionReportingWithMacroApi)) {
