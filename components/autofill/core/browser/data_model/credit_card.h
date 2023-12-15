@@ -459,6 +459,11 @@ class CreditCard : public AutofillDataModel {
     product_description_ = product_description;
   }
 
+  const GURL& product_terms_url() const { return product_terms_url_; }
+  void set_product_terms_url(const GURL& product_terms_url) {
+    product_terms_url_ = product_terms_url;
+  }
+
   const std::u16string& cvc() const { return cvc_; }
   void clear_cvc() { cvc_.clear(); }
   void set_cvc(const std::u16string& cvc) { cvc_ = cvc; }
@@ -577,12 +582,16 @@ class CreditCard : public AutofillDataModel {
   VirtualCardEnrollmentType virtual_card_enrollment_type_ =
       VirtualCardEnrollmentType::kTypeUnspecified;
 
-  // The url to fetch the rich card art image.
+  // The URL to fetch the rich card art image.
   GURL card_art_url_;
 
   // The product description for the card to be used in the UI when card is
   // presented.
   std::u16string product_description_;
+
+  // The URL for issuer terms of service to be displayed on the settings
+  // page.
+  GURL product_terms_url_;
 
   // The card verification code of the card. May be empty.
   std::u16string cvc_;

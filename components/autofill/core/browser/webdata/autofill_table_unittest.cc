@@ -1304,6 +1304,7 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   inputs[1].set_virtual_card_enrollment_type(
       CreditCard::VirtualCardEnrollmentType::kNetwork);
   inputs[1].set_card_art_url(GURL("https://www.example.com"));
+  inputs[1].set_product_terms_url(GURL("https://www.example_term.com"));
   inputs[1].set_cvc(u"111");
 
   test::SetServerCreditCards(table_.get(), inputs);
@@ -1350,6 +1351,10 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
 
   EXPECT_EQ(GURL(), outputs[0]->card_art_url());
   EXPECT_EQ(GURL("https://www.example.com"), outputs[1]->card_art_url());
+
+  EXPECT_EQ(GURL(), outputs[0]->product_terms_url());
+  EXPECT_EQ(GURL("https://www.example_term.com"),
+            outputs[1]->product_terms_url());
 
   EXPECT_EQ(u"Fake description", outputs[0]->product_description());
 
@@ -1536,6 +1541,7 @@ TEST_F(AutofillTableTest, SetServerCardsData) {
   inputs[0].set_virtual_card_enrollment_type(
       CreditCard::VirtualCardEnrollmentType::kIssuer);
   inputs[0].set_card_art_url(GURL("https://www.example.com"));
+  inputs[0].set_product_terms_url(GURL("https://www.example_term.com"));
   inputs[0].set_product_description(u"Fake description");
 
   table_->SetServerCardsData(inputs);
@@ -1563,6 +1569,8 @@ TEST_F(AutofillTableTest, SetServerCardsData) {
   EXPECT_EQ("amex", outputs[0]->issuer_id());
 
   EXPECT_EQ(GURL("https://www.example.com"), outputs[0]->card_art_url());
+  EXPECT_EQ(GURL("https://www.example_term.com"),
+            outputs[0]->product_terms_url());
   EXPECT_EQ(u"Fake description", outputs[0]->product_description());
 
   // Make sure no metadata was added.

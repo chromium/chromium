@@ -253,7 +253,12 @@ message CloudTokenData {
   optional string instrument_token = 5;
 }
 
+// Next id: 8
 message CardBenefit {
+  // The unique identifier of the benefit. Generated originally in Chrome Sync
+  // server.
+  optional string benefit_id = 7;
+
   // The benefit description (Engligh only currently) to be shown in the UI.
   optional string benefit_description = 1;
 

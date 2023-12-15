@@ -318,6 +318,9 @@ struct PaymentInstrumentFields {
 //                      of this card. kTypeUnspecified is the default value.
 //                      kIssuer denotes that it is an issuer-level enrollment.
 //                      kNetwork denotes that it is a network-level enrollment.
+//   product_terms_url  Issuer terms of service to be displayed on the settings
+//                      page.
+//
 // unmasked_credit_cards
 //                      When a masked credit credit card is unmasked and the
 //                      full number is downloaded or when the full number is
@@ -604,6 +607,43 @@ struct PaymentInstrumentFields {
 //  account_type        The type of bank account. This is an integer mapping to
 //                      one of the following types: {Checking, Savings, Current,
 //                      Salary, Transacting}
+//
+// masked_credit_card_benefits
+//                       This table contains the multi-valued benefits fields
+//                       associated with a credit card, i.e., credit-card-linked
+//                       benefits that help users save money on online
+//                       purchases.
+//
+//  benefit_id           The unique ID for this benefit data. Generated
+//                       originally in Chrome Sync server.
+//  instrument_id        The instrument id string that identifies the credit
+//                       card to which the benefit belongs to. Identical to
+//                       `instrument_id` field in `masked_credit_cards`.
+//  benefit_type         The type of benefit. Either category, merchant, or
+//                       flat rate.
+//  benefit_category     The category that the benefit applies to. Only set
+//                       when `benefit_type` == category.
+//  benefit_description  A description of what the credit card benefit offers
+//                       the user for purchases. Shown in the Autofill
+//                       suggestion UI.
+//  start_time           Timestamp when the benefit is active and should be
+//                       displayed. Empty if no time range is specific for
+//                       the benefit.
+//  end_time             Timestamp When the benefit is no longer active and
+//                       should no longer be displayed. This field is only
+//                       set for benefits with an expiration date. Empty if
+//                       the benefit will last indefinitely.
+//
+// benefit_merchant_domains
+//                      Contains the mapping of non-personalized credit card
+//                      merchant benefits to eligible merchant domains. A
+//                      benefit may apply to multiple domains (and span
+//                      multiple rows in this table).
+//
+//   benefit_id         Unique ID to identify the relevant benefit. Matches the
+//                      `benefit_id` in the `masked_credit_card_benefits` table.
+//   merchant_domain    Origin for merchant websites on which this benefit
+//                      would apply.
 //
 class AutofillTable : public WebDatabaseTable,
                       public syncer::SyncMetadataStore {
@@ -911,6 +951,9 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion119AddMaskedIbanTablesAndRenameLocalIbanTable();
   bool MigrateToVersion120AddPaymentInstrumentAndBankAccountTables();
   bool MigrateToVersion121DropServerAddressTables();
+  // No MigrateToVersion122. WebDatabase changed, but AutofillTable wasn't
+  // affected.
+  bool MigrateToVersion123AddProductTermsUrlColumnAndAddCardBenefitsTables();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
@@ -1000,6 +1043,8 @@ class AutofillTable : public WebDatabaseTable,
   bool InitPaymentInstrumentsTable();
   bool InitPaymentInstrumentsMetadataTable();
   bool InitPaymentInstrumentSupportedRailsTable();
+  bool InitMaskedCreditCardBenefitsTable();
+  bool InitBenefitMerchantDomainsTable();
 
   std::unique_ptr<AutofillTableEncryptor> autofill_table_encryptor_;
 };

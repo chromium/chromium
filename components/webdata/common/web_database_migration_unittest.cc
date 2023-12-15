@@ -142,7 +142,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 122;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 123;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1323,5 +1323,58 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion121ToCurrent) {
 
     EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
     EXPECT_TRUE(connection.DoesColumnExist("keywords", "featured_by_policy"));
+  }
+}
+
+// Tests that the `product_terms_url` column is added to the
+// `masked_credit_card` table, and the `masked_credit_card_benefits` and the
+// `benefit_merchant_domains` tables are added.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion122ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_122.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(122, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesTableExist("masked_credit_cards"));
+    EXPECT_FALSE(
+        connection.DoesColumnExist("masked_credit_cards", "product_terms_url"));
+    EXPECT_FALSE(connection.DoesTableExist("masked_credit_card_benefits"));
+    EXPECT_FALSE(connection.DoesTableExist("benefit_merchant_domains"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+
+    EXPECT_TRUE(connection.DoesTableExist("masked_credit_cards"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("masked_credit_cards", "product_terms_url"));
+
+    EXPECT_TRUE(connection.DoesTableExist("masked_credit_card_benefits"));
+    EXPECT_TRUE(connection.DoesColumnExist("masked_credit_card_benefits",
+                                           "benefit_id"));
+    EXPECT_TRUE(connection.DoesColumnExist("masked_credit_card_benefits",
+                                           "instrument_id"));
+    EXPECT_TRUE(connection.DoesColumnExist("masked_credit_card_benefits",
+                                           "benefit_type"));
+    EXPECT_TRUE(connection.DoesColumnExist("masked_credit_card_benefits",
+                                           "benefit_category"));
+    EXPECT_TRUE(connection.DoesColumnExist("masked_credit_card_benefits",
+                                           "benefit_description"));
+    EXPECT_TRUE(connection.DoesColumnExist("masked_credit_card_benefits",
+                                           "start_time"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("masked_credit_card_benefits", "end_time"));
+
+    EXPECT_TRUE(connection.DoesTableExist("benefit_merchant_domains"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("benefit_merchant_domains", "benefit_id"));
+    EXPECT_TRUE(connection.DoesColumnExist("benefit_merchant_domains",
+                                           "merchant_domain"));
   }
 }

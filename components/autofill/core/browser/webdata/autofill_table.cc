@@ -193,6 +193,7 @@ constexpr std::string_view kVirtualCardEnrollmentType =
     "virtual_card_enrollment_type";
 constexpr std::string_view kCardArtUrl = "card_art_url";
 constexpr std::string_view kProductDescription = "product_description";
+constexpr std::string_view kProductTermsUrl = "product_terms_url";
 
 constexpr std::string_view kUnmaskedCreditCardsTable = "unmasked_credit_cards";
 // kId = "id"
@@ -365,6 +366,34 @@ constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
         {kBankName, "VARCHAR"},
         {kAccountNumberSuffix, "VARCHAR"},
         {kAccountType, "INTEGER DEFAULT 0"}};
+
+constexpr std::string_view kMaskedCreditCardBenefitsTable =
+    "masked_credit_card_benefits";
+constexpr std::string_view kBenefitId = "benefit_id";
+// kInstrumentId = "instrument_id"
+constexpr std::string_view kBenefitType = "benefit_type";
+constexpr std::string_view kBenefitCategory = "benefit_category";
+constexpr std::string_view kBenefitDescription = "benefit_description";
+constexpr std::string_view kStartTime = "start_time";
+constexpr std::string_view kEndTime = "end_time";
+constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
+    kMaskedCreditCardBenefitsColumnNamesAndTypes = {
+        {kBenefitId, "VARCHAR PRIMARY KEY NOT NULL"},
+        {kInstrumentId, "INTEGER NOT NULL DEFAULT 0"},
+        {kBenefitType, "INTEGER NOT NULL DEFAULT 0"},
+        {kBenefitCategory, "INTEGER NOT NULL DEFAULT 0"},
+        {kBenefitDescription, "VARCHAR NOT NULL"},
+        {kStartTime, "INTEGER"},
+        {kEndTime, "INTEGER"}};
+
+constexpr std::string_view kBenefitMerchantDomainsTable =
+    "benefit_merchant_domains";
+// kBenefitId = "benefit_id"
+// kMerchantDomain = "merchant_domain";
+constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
+    kBenefitMerchantDomainsColumnNamesAndTypes = {
+        {kBenefitId, "VARCHAR NOT NULL"},
+        {kMerchantDomain, "VARCHAR NOT NULL"}};
 
 // Helper struct for AutofillTable::RemoveFormElementsAddedBetween().
 // Contains all the necessary fields to update a row in the 'autofill' table.
@@ -942,7 +971,9 @@ bool AutofillTable::CreateTablesIfNecessary() {
          InitMaskedIbansTable() && InitMaskedIbansMetadataTable() &&
          InitBankAccountsTable() && InitPaymentInstrumentsTable() &&
          InitPaymentInstrumentsMetadataTable() &&
-         InitPaymentInstrumentSupportedRailsTable();
+         InitPaymentInstrumentSupportedRailsTable() &&
+         InitMaskedCreditCardBenefitsTable() &&
+         InitBenefitMerchantDomainsTable();
 }
 
 bool AutofillTable::MigrateToVersion(int version,
@@ -1065,6 +1096,12 @@ bool AutofillTable::MigrateToVersion(int version,
     case 121:
       *update_compatible_version = true;
       return MigrateToVersion121DropServerAddressTables();
+    case 122:  // AutofillTable didn't change in WebDatabase version 122.
+      *update_compatible_version = false;
+      return true;
+    case 123:
+      *update_compatible_version = false;
+      return MigrateToVersion123AddProductTermsUrlColumnAndAddCardBenefitsTables();
   }
   return true;
 }
@@ -1819,17 +1856,29 @@ bool AutofillTable::GetServerCreditCards(
       });
 
   sql::Statement s;
-  SelectBuilder(
-      db_, s, base::StrCat({kMaskedCreditCardsTable, " AS masked"}),
-      {kCardNumberEncrypted, kLastFour, base::StrCat({"masked.", kId}),
-       base::StrCat({"metadata.", kUseCount}),
-       base::StrCat({"metadata.", kUseDate}), kNetwork, kNameOnCard, kExpMonth,
-       kExpYear, base::StrCat({"metadata.", kBillingAddressId}), kBankName,
-       kNickname, kCardIssuer, kCardIssuerId, kInstrumentId,
-       kVirtualCardEnrollmentState, kVirtualCardEnrollmentType, kCardArtUrl,
-       kProductDescription},
-      "LEFT OUTER JOIN unmasked_credit_cards USING (id) "
-      "LEFT OUTER JOIN server_card_metadata AS metadata USING (id)");
+  SelectBuilder(db_, s, base::StrCat({kMaskedCreditCardsTable, " AS masked"}),
+                {kCardNumberEncrypted,
+                 kLastFour,
+                 base::StrCat({"masked.", kId}),
+                 base::StrCat({"metadata.", kUseCount}),
+                 base::StrCat({"metadata.", kUseDate}),
+                 kNetwork,
+                 kNameOnCard,
+                 kExpMonth,
+                 kExpYear,
+                 base::StrCat({"metadata.", kBillingAddressId}),
+                 kBankName,
+                 kNickname,
+                 kCardIssuer,
+                 kCardIssuerId,
+                 kInstrumentId,
+                 kVirtualCardEnrollmentState,
+                 kVirtualCardEnrollmentType,
+                 kCardArtUrl,
+                 kProductDescription,
+                 kProductTermsUrl},
+                "LEFT OUTER JOIN unmasked_credit_cards USING (id) "
+                "LEFT OUTER JOIN server_card_metadata AS metadata USING (id)");
   while (s.Step()) {
     int index = 0;
 
@@ -1881,6 +1930,7 @@ bool AutofillTable::GetServerCreditCards(
             s.ColumnInt(index++)));
     card->set_card_art_url(GURL(s.ColumnString(index++)));
     card->set_product_description(s.ColumnString16(index++));
+    card->set_product_terms_url(GURL(s.ColumnString(index++)));
     card->set_cvc(instrument_to_cvc[card->instrument_id()]);
     credit_cards.push_back(std::move(card));
   }
@@ -2122,11 +2172,12 @@ void AutofillTable::SetServerCardsData(
 
   // Add all the masked cards.
   sql::Statement masked_insert;
-  InsertBuilder(db_, masked_insert, kMaskedCreditCardsTable,
-                {kId, kNetwork, kNameOnCard, kLastFour, kExpMonth, kExpYear,
-                 kBankName, kNickname, kCardIssuer, kCardIssuerId,
-                 kInstrumentId, kVirtualCardEnrollmentState,
-                 kVirtualCardEnrollmentType, kCardArtUrl, kProductDescription});
+  InsertBuilder(
+      db_, masked_insert, kMaskedCreditCardsTable,
+      {kId, kNetwork, kNameOnCard, kLastFour, kExpMonth, kExpYear, kBankName,
+       kNickname, kCardIssuer, kCardIssuerId, kInstrumentId,
+       kVirtualCardEnrollmentState, kVirtualCardEnrollmentType, kCardArtUrl,
+       kProductDescription, kProductTermsUrl});
 
   int index;
   for (const CreditCard& card : credit_cards) {
@@ -2150,6 +2201,7 @@ void AutofillTable::SetServerCardsData(
         index++, static_cast<int>(card.virtual_card_enrollment_type()));
     masked_insert.BindString(index++, card.card_art_url().spec());
     masked_insert.BindString16(index++, card.product_description());
+    masked_insert.BindString(index++, card.product_terms_url().spec());
     masked_insert.Run();
     masked_insert.Reset(/*clear_bound_vars=*/true);
   }
@@ -2523,7 +2575,8 @@ bool AutofillTable::ClearAllServerData() {
         kServerCardMetadataTable, kPaymentsCustomerDataTable,
         kServerCardCloudTokenDataTable, kOfferDataTable,
         kOfferEligibleInstrumentTable, kOfferMerchantDomainTable,
-        kVirtualCardUsageDataTable}) {
+        kVirtualCardUsageDataTable, kMaskedCreditCardBenefitsTable,
+        kBenefitMerchantDomainsTable}) {
     Delete(db_, table_name);
     changed |= db_->GetLastChangeCount() > 0;
   }
@@ -3216,6 +3269,18 @@ bool AutofillTable::MigrateToVersion121DropServerAddressTables() {
          transaction.Commit();
 }
 
+bool AutofillTable::
+    MigrateToVersion123AddProductTermsUrlColumnAndAddCardBenefitsTables() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() && db_->DoesTableExist(kMaskedCreditCardsTable) &&
+         AddColumn(db_, kMaskedCreditCardsTable, kProductTermsUrl, "VARCHAR") &&
+         CreateTable(db_, kMaskedCreditCardBenefitsTable,
+                     kMaskedCreditCardBenefitsColumnNamesAndTypes) &&
+         CreateTable(db_, kBenefitMerchantDomainsTable,
+                     kBenefitMerchantDomainsColumnNamesAndTypes) &&
+         transaction.Commit();
+}
+
 bool AutofillTable::SupportsMetadataForModelType(
     syncer::ModelType model_type) const {
   return (model_type == syncer::AUTOFILL ||
@@ -3281,11 +3346,12 @@ void AutofillTable::AddMaskedCreditCards(
     const std::vector<CreditCard>& credit_cards) {
   DCHECK_GT(db_->transaction_nesting(), 0);
   sql::Statement masked_insert;
-  InsertBuilder(db_, masked_insert, kMaskedCreditCardsTable,
-                {kId, kNetwork, kNameOnCard, kLastFour, kExpMonth, kExpYear,
-                 kBankName, kNickname, kCardIssuer, kCardIssuerId,
-                 kInstrumentId, kVirtualCardEnrollmentState,
-                 kVirtualCardEnrollmentType, kCardArtUrl, kProductDescription});
+  InsertBuilder(
+      db_, masked_insert, kMaskedCreditCardsTable,
+      {kId, kNetwork, kNameOnCard, kLastFour, kExpMonth, kExpYear, kBankName,
+       kNickname, kCardIssuer, kCardIssuerId, kInstrumentId,
+       kVirtualCardEnrollmentState, kVirtualCardEnrollmentType, kCardArtUrl,
+       kProductDescription, kProductTermsUrl});
 
   int index;
   for (const CreditCard& card : credit_cards) {
@@ -3309,6 +3375,7 @@ void AutofillTable::AddMaskedCreditCards(
                                    card.virtual_card_enrollment_type()));
     masked_insert.BindString(index++, card.card_art_url().spec());
     masked_insert.BindString16(index++, card.product_description());
+    masked_insert.BindString(index++, card.product_terms_url().spec());
     masked_insert.Run();
     masked_insert.Reset(/*clear_bound_vars=*/true);
 
@@ -3484,7 +3551,8 @@ bool AutofillTable::InitMaskedCreditCardsTable() {
        {kCardArtUrl, "VARCHAR"},
        {kProductDescription, "VARCHAR"},
        {kCardIssuerId, "VARCHAR"},
-       {kVirtualCardEnrollmentType, "INTEGER DEFAULT 0"}});
+       {kVirtualCardEnrollmentType, "INTEGER DEFAULT 0"},
+       {kProductTermsUrl, "VARCHAR"}});
 }
 
 bool AutofillTable::InitMaskedIbansTable() {
@@ -3639,6 +3707,16 @@ bool AutofillTable::InitPaymentInstrumentSupportedRailsTable() {
       db_, kPaymentInstrumentSupportedRailsTable,
       kPaymentInstrumentSupportedRailsColumnNamesAndTypes,
       kPaymentInstrumentSupportedRailsCompositePrimaryKey);
+}
+
+bool AutofillTable::InitMaskedCreditCardBenefitsTable() {
+  return CreateTableIfNotExists(db_, kMaskedCreditCardBenefitsTable,
+                                kMaskedCreditCardBenefitsColumnNamesAndTypes);
+}
+
+bool AutofillTable::InitBenefitMerchantDomainsTable() {
+  return CreateTableIfNotExists(db_, kBenefitMerchantDomainsTable,
+                                kBenefitMerchantDomainsColumnNamesAndTypes);
 }
 
 }  // namespace autofill
