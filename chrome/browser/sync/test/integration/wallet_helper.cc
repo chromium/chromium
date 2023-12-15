@@ -365,7 +365,7 @@ void ExpectDefaultCreditCardValues(const CreditCard& card) {
   EXPECT_EQ(kDefaultCardExpMonth, card.expiration_month());
   EXPECT_EQ(kDefaultCardExpYear, card.expiration_year());
   EXPECT_EQ(kDefaultCardName16,
-            card.GetRawInfo(autofill::ServerFieldType::CREDIT_CARD_NAME_FULL));
+            card.GetRawInfo(autofill::FieldType::CREDIT_CARD_NAME_FULL));
   EXPECT_EQ(kDefaultBillingAddressID, card.billing_address_id());
 }
 
