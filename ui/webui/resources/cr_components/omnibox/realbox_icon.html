@@ -36,11 +36,9 @@
     width: 24px;
   }
 
-  /* TODO(niharm): Change hex codes to use color tokens when theming is
-  implemented. */
   /* If icon is for a pedal or AiS, and it is not in the search box, apply background. */
   :host([has-icon-container-background]:not([in-searchbox])) #container {
-    background-color: #D3E3FD;
+    background-color: var(--color-realbox-answer-icon-background, #D3E3FD);
   }
 
   :host([is-weather-answer]) #container {
@@ -112,7 +110,7 @@
   }
 
   :host([has-icon-container-background]:not([in-searchbox])) #icon {
-    background-color: #041E49;
+    background-color: var(--color-realbox-answer-icon-foreground, #041E49);
   }
 
 </style>

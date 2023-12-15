@@ -193,6 +193,10 @@ extern const char kNtpHistoryClustersModuleMaxClustersParam[];
 extern const char kNtpRealboxWidthBehaviorParam[];
 extern const char kNtpTabResumptionModuleDataParam[];
 
+// Parameter determining the background color of the expanded state realbox.
+extern const base::FeatureParam<bool>
+    kNtpRealboxCr23ExpandedStateBgMatchesOmnibox;
+
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
 

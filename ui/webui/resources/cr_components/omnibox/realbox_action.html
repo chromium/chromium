@@ -11,10 +11,9 @@
     padding-inline-start: 12px;
   }
 
-  /* TODO(niharm): Theme border color to sys tonal-outline. */
   :host-context([expanded-state-layout-chrome-refresh]) {
     --action-height: 28px;
-    border: solid 1px #A8C7FA;
+    border: solid 1px var(--color-realbox-results-action-chip, #A8C7FA);
     border-radius: 8px;
     padding-inline-end: 8px;
     padding-inline-start: 8px;
@@ -32,12 +31,11 @@
     width: var(--cr-icon-size);
   }
 
-  /* TODO(niharm): Theme background color to sys primary. */
   :host-context([expanded-state-layout-chrome-refresh]) #action-icon {
     -webkit-mask-position: center;
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 15px;
-    background-color: #0B57D0;
+    background-color: var(--color-realbox-results-action-chip-icon, #0B57D0);
     background-position: center center;
     background-repeat: no-repeat;
     height: 16px;
@@ -65,7 +63,7 @@
       .focus-outline-visible):host(:focus) {
     margin: 2px;
     margin-inline-end: 2px;
-    border: solid 1px #a8c7fa;
+    border: solid 1px var(--color-realbox-results-action-chip, #a8c7fa);
     box-shadow: none;
   }
 

@@ -462,6 +462,11 @@ const char kNtpRealboxWidthBehaviorParam[] = "NtpRealboxWidthBehaviorParam";
 const char kNtpTabResumptionModuleDataParam[] =
     "NtpTabResumptionModuleDataParam";
 
+const base::FeatureParam<bool> kNtpRealboxCr23ExpandedStateBgMatchesOmnibox(
+    &ntp_features::kRealboxCr23Theming,
+    "kNtpRealboxCr23ExpandedStateBgMatchesOmnibox",
+    true);
+
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
       kNtpModulesLoadTimeoutMilliseconds,

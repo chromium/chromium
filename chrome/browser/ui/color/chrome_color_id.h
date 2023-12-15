@@ -370,16 +370,22 @@
   E_CPONLY(kColorQuickAnswersReportQueryButtonBackground) \
   E_CPONLY(kColorQuickAnswersReportQueryButtonForeground) \
   /* Realbox colors. */ \
+  E_CPONLY(kColorRealboxAnswerIconBackground) \
+  E_CPONLY(kColorRealboxAnswerIconForeground) \
   E_CPONLY(kColorRealboxBackground) \
   E_CPONLY(kColorRealboxBackgroundHovered) \
   E_CPONLY(kColorRealboxBorder) \
   E_CPONLY(kColorRealboxForeground) \
   E_CPONLY(kColorRealboxLensVoiceIconBackground) \
   E_CPONLY(kColorRealboxPlaceholder) \
+  E_CPONLY(kColorRealboxResultsActionChip) \
+  E_CPONLY(kColorRealboxResultsActionChipIcon) \
+  E_CPONLY(kColorRealboxResultsActionChipFocusOutline) \
   E_CPONLY(kColorRealboxResultsBackground) \
   E_CPONLY(kColorRealboxResultsBackgroundHovered) \
   E_CPONLY(kColorRealboxResultsControlBackgroundHovered) \
   E_CPONLY(kColorRealboxResultsDimSelected) \
+  E_CPONLY(kColorRealboxResultsFocusIndicator) \
   E_CPONLY(kColorRealboxResultsForeground) \
   E_CPONLY(kColorRealboxResultsForegroundDimmed) \
   E_CPONLY(kColorRealboxResultsIcon) \

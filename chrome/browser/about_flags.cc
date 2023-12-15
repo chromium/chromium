@@ -2155,6 +2155,16 @@ const FeatureEntry::FeatureVariation kNtpPhotosModuleOptInArtWorkVariations[] =
      {" - Artwork with Stockpile", kNtpPhotosModuleStockpileArtWork,
       std::size(kNtpPhotosModuleStockpileArtWork), nullptr}};
 
+const FeatureEntry::FeatureParam
+    kNtpRealboxCr23ExpandedStateBgMatchesSteadyState[]{
+        {"kNtpRealboxCr23ExpandedStateBgMatchesOmnibox", "false"},
+    };
+const FeatureEntry::FeatureVariation kNtpRealboxCr23ThemingVariations[] = {
+    {" - Dark mode background color matches steady state",
+     kNtpRealboxCr23ExpandedStateBgMatchesSteadyState,
+     std::size(kNtpRealboxCr23ExpandedStateBgMatchesSteadyState), nullptr},
+};
+
 const FeatureEntry::FeatureParam kNtpRealboxRevertWidthOnBlur[] = {
     {ntp_features::kNtpRealboxWidthBehaviorParam, "revert"}};
 const FeatureEntry::FeatureParam kNtpRealboxAlwaysWide[] = {
@@ -6773,7 +6783,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"ntp-realbox-cr23-theming", flag_descriptions::kNtpRealboxCr23ThemingName,
      flag_descriptions::kNtpRealboxCr23ThemingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kRealboxCr23Theming)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kRealboxCr23Theming,
+                                    kNtpRealboxCr23ThemingVariations,
+                                    "NtpRealboxCr23Theming")},
 
     {"ntp-realbox-match-searchbox-theme",
      flag_descriptions::kNtpRealboxMatchSearchboxThemeName,

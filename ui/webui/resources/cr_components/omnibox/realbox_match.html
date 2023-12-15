@@ -16,9 +16,8 @@
     overflow: hidden;
   }
 
-  /* TODO(niharm): Switch outline color to state-focus-ring */
   #actions-focus-border:focus-within {
-    outline: 2px solid #0B57D0;
+    outline: 2px solid var(--color-realbox-results-action-chip-focus-outline, #0B57D0);
     border-radius: 10px;
     margin-inline-start: -2px;
   }
@@ -100,7 +99,7 @@
   }
 
   #focus-indicator {
-    background-color: var(--google-blue-600);
+    background-color: var(--color-realbox-results-focus-indicator, --google-blue-600);
     border-radius: 3px;
     display: none;
     height: 100%;

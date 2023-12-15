@@ -16,6 +16,10 @@
     width: var(--cr-realbox-width);
   }
 
+  :host([realbox-chrome-refresh-theming][dropdown-is-visible]) {
+    --cr-realbox-shadow: 0 0 12px 6px var(--color-realbox-shadow)
+  }
+
   /**
    * Maintain a larger width if the secondary side can be shown and was at any
    * point available to be shown.
@@ -239,7 +243,7 @@
       default-icon="[[realboxIcon_]]" in-searchbox>
   </cr-realbox-icon>
   <button id="voiceSearchButton" class="realbox-icon-button"
-      on-click="onVoiceSearchClick_" title="$i18n{voiceSearchButtonLabel}">
+        on-click="onVoiceSearchClick_" title="$i18n{voiceSearchButtonLabel}">
   </button>
   <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
     <button id="lensSearchButton" class="realbox-icon-button"
