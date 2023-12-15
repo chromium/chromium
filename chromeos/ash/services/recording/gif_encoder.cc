@@ -32,14 +32,14 @@ constexpr uint8_t kExtensionIntroducer = 0x21;
 // built the color palette, before we build a new one. Since we are dithering
 // the image, we can work with an old color palette for a larger number of
 // frames before we have to rebuild it.
-constexpr uint8_t kMinNumberOfFramesBetweenPaletteRebuilds = 60;
+constexpr uint8_t kMinNumberOfFramesBetweenPaletteRebuilds = 20;
 
 // If the screen doesn't have any damage, video frames may never be generated.
 // As a result, there can be a large time interval between one frame and the
 // next, in which case the existing color palette might be very stale, and needs
 // to be rebuilt.
 constexpr base::TimeDelta kMaxDurationBetweenSuccessiveFrames =
-    base::Seconds(2);
+    base::Seconds(1);
 
 // Calculates and returns the color bit depth based on the size of the given
 // `color_palette`. The color bit depth is the least number of bits needed to be
@@ -193,28 +193,11 @@ class GifEncoderCapabilities : public RecordingEncoder::Capabilities {
     // to something smaller than the initial size.
     return false;
   }
+
+  bool SupportsRgbVideoFrame() const override { return true; }
 };
 
 // -----------------------------------------------------------------------------
-
-// Wraps the given `video_frame` pixels in a bitmap and returns it. Note that
-// this does not copy the pixels bytes from `video_frame` to the returned
-// bitmap, and hence the bitmap is safe to access as long as the `video_frame`
-// is alive.
-SkBitmap WrapVideoFrameInBitmap(const media::VideoFrame& video_frame) {
-  const gfx::Size visible_size = video_frame.visible_rect().size();
-  const SkImageInfo image_info = SkImageInfo::MakeN32(
-      visible_size.width(), visible_size.height(), kPremul_SkAlphaType,
-      video_frame.ColorSpace().ToSkColorSpace());
-
-  SkBitmap bitmap;
-  const uint8_t* pixels =
-      video_frame.visible_data(media::VideoFrame::kARGBPlane);
-  bitmap.installPixels(
-      SkPixmap(image_info, pixels,
-               video_frame.row_bytes(media::VideoFrame::kARGBPlane)));
-  return bitmap;
-}
 
 QuantizerPalettePair CreateQuantizer(const RgbVideoFrame& rgb_video_frame) {
   return QuantizerPalettePair(OctreeColorQuantizer(rgb_video_frame));
@@ -292,33 +275,13 @@ void GifEncoder::InitializeVideoEncoder(
 }
 
 void GifEncoder::EncodeVideo(scoped_refptr<media::VideoFrame> frame) {
+  NOTREACHED();
+}
+
+void GifEncoder::EncodeRgbVideo(RgbVideoFrame rgb_video_frame) {
   ++frame_count_;
 
-  // Extract the frame time first thing in case we need to call
-  // `TimeTicks::Now()`.
-  const auto frame_time =
-      frame->metadata().reference_time.value_or(base::TimeTicks::Now());
-
-  // This bitmap is backed up by the same memory containing the bytes of the
-  // frame. `SkBitmap` makes it more convenient to extract the colors from the
-  // video frame. `RgbVideoFrame` will copy only the RGB pixels out of the
-  // bitmap. This is needed so that we can modify the colors of these pixels
-  // when we implement dithering. The video `frame`'s memory itself cannot be
-  // modified, as it is backed by a read-only shared memory region. Once we copy
-  // the pixel colors into `rgb_video_frame`, we no longer need the video
-  // `frame`.
-  RgbVideoFrame rgb_video_frame(WrapVideoFrameInBitmap(*frame));
-
-  const gfx::Size visible_size = frame->visible_rect().size();
-  DCHECK_EQ(rgb_video_frame.num_pixels(),
-            static_cast<size_t>(visible_size.GetArea()));
-
-  // We're done with the frame, release it immediately before we spend cycles
-  // doing the encoding and writing to the file. This returns it back to the
-  // video frame buffer pool in Viz, which has a maximum number of in-flight
-  // frames. Releasing the frame as soon as we're done with it helps to avoid
-  // reaching that limit often.
-  frame.reset();
+  const auto frame_time = rgb_video_frame.frame_time();
 
   // If this is the very first frame ever, we must build a new color palette
   // synchronously here, and proceed with the rest of encoding.
@@ -327,9 +290,7 @@ void GifEncoder::EncodeVideo(scoped_refptr<media::VideoFrame> frame) {
   // received since the last time we built a color palette. At which point, we
   // send a request to rebuild a new color palette on the
   // `color_palette_task_runner_` sequence, so as not to block the encoding task
-  // sequence. We don't want the in-flight frame pool in
-  // `FrameSinkVideoCapturerImpl` to fill up because we're not returning the
-  // frames quick enough.
+  // sequence.
   // Note that we don't allow the duration between any two successive frames to
   // exceed `kMaxDurationBetweenSuccessiveFrames` without rebuilding the color
   // palette as it may be very stale.

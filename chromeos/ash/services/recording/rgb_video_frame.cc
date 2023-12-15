@@ -11,9 +11,38 @@
 
 namespace recording {
 
-RgbVideoFrame::RgbVideoFrame(const SkBitmap& bitmap)
+namespace {
+
+// Wraps the given `video_frame` pixels in a bitmap and returns it. Note that
+// this does not copy the pixels bytes from `video_frame` to the returned
+// bitmap, and hence the bitmap is safe to access as long as the `video_frame`
+// is alive.
+SkBitmap WrapVideoFrameInBitmap(const media::VideoFrame& video_frame) {
+  const gfx::Size visible_size = video_frame.visible_rect().size();
+  const SkImageInfo image_info = SkImageInfo::MakeN32(
+      visible_size.width(), visible_size.height(), kPremul_SkAlphaType,
+      video_frame.ColorSpace().ToSkColorSpace());
+
+  SkBitmap bitmap;
+  const uint8_t* pixels =
+      video_frame.visible_data(media::VideoFrame::kARGBPlane);
+  bitmap.installPixels(
+      SkPixmap(image_info, pixels,
+               video_frame.row_bytes(media::VideoFrame::kARGBPlane)));
+  return bitmap;
+}
+
+}  // namespace
+
+RgbVideoFrame::RgbVideoFrame(const media::VideoFrame& video_frame)
+    : RgbVideoFrame(WrapVideoFrameInBitmap(video_frame),
+                    video_frame.metadata().reference_time.value_or(
+                        base::TimeTicks::Now())) {}
+
+RgbVideoFrame::RgbVideoFrame(const SkBitmap& bitmap, base::TimeTicks frame_time)
     : width_(bitmap.width()),
       height_(bitmap.height()),
+      frame_time_(frame_time),
       data_(new RgbColor[width_ * height_]) {
   DCHECK_EQ(kN32_SkColorType, bitmap.colorType());
 

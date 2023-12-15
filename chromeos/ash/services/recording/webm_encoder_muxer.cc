@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "chromeos/ash/services/recording/recording_file_io_helper.h"
@@ -58,6 +59,8 @@ class WebmEncoderCapabilities : public RecordingEncoder::Capabilities {
   }
 
   bool SupportsVideoFrameSizeChanges() const override { return true; }
+
+  bool SupportsRgbVideoFrame() const override { return false; }
 };
 
 // -----------------------------------------------------------------------------
@@ -225,6 +228,10 @@ void WebmEncoderMuxer::EncodeVideo(scoped_refptr<media::VideoFrame> frame) {
       NotifyFailure(mojom::RecordingStatus::kVideoEncoderInitializationFailure);
     }
   }
+}
+
+void WebmEncoderMuxer::EncodeRgbVideo(RgbVideoFrame rgb_video_frame) {
+  NOTREACHED();
 }
 
 EncodeAudioCallback WebmEncoderMuxer::GetEncodeAudioCallback() {

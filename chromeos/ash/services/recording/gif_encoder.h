@@ -86,6 +86,7 @@ class GifEncoder : public RecordingEncoder {
   void InitializeVideoEncoder(
       const media::VideoEncoder::Options& video_encoder_options) override;
   void EncodeVideo(scoped_refptr<media::VideoFrame> frame) override;
+  void EncodeRgbVideo(RgbVideoFrame rgb_video_frame) override;
   EncodeAudioCallback GetEncodeAudioCallback() override;
   void FlushAndFinalize(base::OnceClosure on_done) override;
 
