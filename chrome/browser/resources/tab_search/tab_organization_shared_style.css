@@ -7,9 +7,10 @@
  * #css_wrapper_metadata_end */
 
 .tab-organization-body {
-  color: var(--cr-secondary-text-color);
+  color: var(--color-secondary-foreground);
   font-size: 13px;
   font-weight: 400;
+  line-height: 20px;
 }
 
 .tab-organization-container {
