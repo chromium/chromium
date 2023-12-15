@@ -60,9 +60,7 @@ class HardwareDisplayPlaneManagerAtomic : public HardwareDisplayPlaneManager {
   bool SetConnectorProps(drmModeAtomicReq* atomic_request,
                          uint32_t connector_id,
                          uint32_t crtc_id);
-
-  bool CommitColorMatrix(const CrtcProperties& crtc_props) override;
-  bool CommitGammaCorrection(const CrtcProperties& crtc_props) override;
+  bool CommitPendingCrtcState(CrtcState* state) override;
   bool AddOutFencePtrProperties(
       drmModeAtomicReq* property_set,
       const std::vector<uint32_t>& crtcs,

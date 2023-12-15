@@ -137,12 +137,7 @@ class MockHardwareDisplayPlaneManager : public HardwareDisplayPlaneManager {
                     uint32_t crtc_index) const override {
     return false;
   }
-  bool CommitColorMatrix(const CrtcProperties& crtc_props) override {
-    return false;
-  }
-  bool CommitGammaCorrection(const CrtcProperties& crtc_props) override {
-    return false;
-  }
+  bool CommitPendingCrtcState(CrtcState* state) override { return false; }
 };
 
 }  // namespace

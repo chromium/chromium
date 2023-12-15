@@ -102,11 +102,13 @@ class HardwareDisplayPlaneManager {
 
     CrtcProperties properties = {};
 
-    // Cached blobs for the properties since the CRTC properties are applied on
-    // the next page flip and we need to keep the properties valid until then.
-    ScopedDrmPropertyBlob ctm_blob;
-    ScopedDrmPropertyBlob gamma_lut_blob;
-    ScopedDrmPropertyBlob degamma_lut_blob;
+    // Cached blobs for the properties to commit in CommitCrtcProperties.
+    // * If a property is `absl::nullopt`, then it should be left unchanged.
+    // * If a property is `nullptr` then it should be set to 0.
+    // * If a property is a blob, then it should be set to that blob.
+    absl::optional<ScopedDrmPropertyBlob> pending_ctm_blob;
+    absl::optional<ScopedDrmPropertyBlob> pending_gamma_lut_blob;
+    absl::optional<ScopedDrmPropertyBlob> pending_degamma_lut_blob;
   };
 
   explicit HardwareDisplayPlaneManager(DrmDevice* drm);
@@ -272,9 +274,7 @@ class HardwareDisplayPlaneManager {
   // Populates scanout formats supported by all planes.
   void PopulateSupportedFormats();
 
-  virtual bool CommitColorMatrix(const CrtcProperties& crtc_props) = 0;
-
-  virtual bool CommitGammaCorrection(const CrtcProperties& crtc_props) = 0;
+  virtual bool CommitPendingCrtcState(CrtcState* state) = 0;
 
   // Object containing the connection to the graphics device and wraps the API
   // calls to control it. Not owned.

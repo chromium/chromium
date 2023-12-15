@@ -318,10 +318,10 @@ bool HardwareDisplayPlaneManager::SetColorMatrix(
     return false;
   }
 
-  crtc_state->ctm_blob =
+  crtc_state->pending_ctm_blob =
       drm_->CreatePropertyBlob(ctm_blob_data.get(), sizeof(drm_color_ctm));
-  crtc_state->properties.ctm.value = crtc_state->ctm_blob->id();
-  return CommitColorMatrix(crtc_state->properties);
+
+  return CommitPendingCrtcState(crtc_state);
 }
 
 void HardwareDisplayPlaneManager::SetBackgroundColor(
@@ -368,24 +368,22 @@ bool HardwareDisplayPlaneManager::SetGammaCorrection(
       CreateLutBlob(gamma_curve, crtc_props->gamma_lut_size.value);
 
   if (degamma_blob_data) {
-    crtc_state->degamma_lut_blob = drm_->CreatePropertyBlob(
+    crtc_state->pending_degamma_lut_blob = drm_->CreatePropertyBlob(
         degamma_blob_data.get(),
         sizeof(drm_color_lut) * crtc_props->degamma_lut_size.value);
-    crtc_props->degamma_lut.value = crtc_state->degamma_lut_blob->id();
   } else {
-    crtc_props->degamma_lut.value = 0;
+    crtc_state->pending_degamma_lut_blob = nullptr;
   }
 
   if (gamma_blob_data) {
-    crtc_state->gamma_lut_blob = drm_->CreatePropertyBlob(
+    crtc_state->pending_gamma_lut_blob = drm_->CreatePropertyBlob(
         gamma_blob_data.get(),
         sizeof(drm_color_lut) * crtc_props->gamma_lut_size.value);
-    crtc_props->gamma_lut.value = crtc_state->gamma_lut_blob->id();
   } else {
-    crtc_props->gamma_lut.value = 0;
+    crtc_state->pending_gamma_lut_blob = nullptr;
   }
 
-  return CommitGammaCorrection(*crtc_props);
+  return CommitPendingCrtcState(crtc_state);
 }
 
 bool HardwareDisplayPlaneManager::InitializeCrtcState() {
