@@ -12,7 +12,7 @@ import argparse
 import sys
 
 import codegen
-import model
+from sync import model
 
 parser = argparse.ArgumentParser(
     description='Generate structured metrics validator')

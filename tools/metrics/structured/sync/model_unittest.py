@@ -7,7 +7,7 @@
 
 # TODO(crbug.com/1148168): Set up these tests to run on the tryjobs.
 
-import model
+import sync.model
 import unittest
 
 from model import Model

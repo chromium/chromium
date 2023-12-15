@@ -12,7 +12,7 @@ import argparse
 import sys
 
 import codegen
-import model
+from sync import model
 import templates_events as templates
 
 parser = argparse.ArgumentParser(

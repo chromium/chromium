@@ -105,7 +105,7 @@ group("metrics_python_tests") {
     "//tools/metrics/histograms/validate_token_test.py",
 
     "//tools/metrics/structured/codegen_unittest.py",
-    "//tools/metrics/structured/model_unittest.py",
+    "//tools/metrics/structured/sync/model_unittest.py",
 
     "//tools/metrics/ukm/ukm.xml",
     "//tools/metrics/ukm/codegen.py",

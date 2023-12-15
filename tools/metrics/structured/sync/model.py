@@ -11,7 +11,7 @@ formatted version XML.
 
 import xml.etree.ElementTree as ET
 import textwrap as tw
-import model_util as util
+import sync.model_util as util
 import re
 
 # Default key rotation period if not explicitly specified in the XML.

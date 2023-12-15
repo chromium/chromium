@@ -142,8 +142,8 @@ action("gen_structured_events") {
   inputs = [
     "//tools/metrics/structured/codegen.py",
     "//tools/metrics/structured/gen_events.py",
-    "//tools/metrics/structured/model.py",
-    "//tools/metrics/structured/model_util.py",
+    "//tools/metrics/structured/sync/model.py",
+    "//tools/metrics/structured/sync/model_util.py",
     "//tools/metrics/structured/templates_events.py",
   ]
   sources = [ "//tools/metrics/structured/sync/structured.xml" ]
@@ -181,8 +181,8 @@ action("gen_structured_metrics_validator") {
   inputs = [
     "//tools/metrics/structured/codegen.py",
     "//tools/metrics/structured/gen_validator.py",
-    "//tools/metrics/structured/model.py",
-    "//tools/metrics/structured/model_util.py",
+    "//tools/metrics/structured/sync/model.py",
+    "//tools/metrics/structured/sync/model_util.py",
     "//tools/metrics/structured/templates_validator.py",
   ]
   sources = [ "//tools/metrics/structured/sync/structured.xml" ]
