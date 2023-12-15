@@ -414,6 +414,7 @@ source_set("eg2_tests") {
     "//build:branding_buildflags",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/feed/core/v2/public/ios:feed_ios_public",
+    "//components/segmentation_platform/public",
     "//components/signin/internal/identity_manager",
     "//components/strings",
     "//components/sync/base:features",
