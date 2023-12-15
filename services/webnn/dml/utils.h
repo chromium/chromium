@@ -55,6 +55,14 @@ void COMPONENT_EXPORT(WEBNN_SERVICE)
                             ComPtr<ID3D12Resource> src_buffer,
                             size_t buffer_size);
 
+// Helper function to readback data from GPU to CPU, the resource can be created
+// for a single buffer or a big buffer combined from multiple buffers.
+void COMPONENT_EXPORT(WEBNN_SERVICE)
+    ReadbackBufferWithBarrier(CommandRecorder* command_recorder,
+                              ComPtr<ID3D12Resource> readback_buffer,
+                              ComPtr<ID3D12Resource> default_buffer,
+                              size_t buffer_size);
+
 mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
                             std::string error_messages);
 

@@ -85,6 +85,24 @@ class GraphImpl final : public WebNNGraphImpl {
     std::unordered_map<std::string, uint32_t> graph_output_name_to_index_map;
   };
 
+  // Contains the persistent resource for the graph initialization and execution
+  // if the graph needs it. The resource should be kept alive until the GPU has
+  // completed the execution.
+  struct PersistentResource {
+    PersistentResource(uint64_t persistent_buffer_byte_length,
+                       ComPtr<ID3D12Resource> persistent_buffer);
+    ~PersistentResource();
+    PersistentResource(const PersistentResource&) = delete;
+    PersistentResource& operator=(const PersistentResource&) = delete;
+
+    PersistentResource(PersistentResource&&) = delete;
+    PersistentResource& operator=(PersistentResource&&) = delete;
+
+    ComPtr<ID3D12Resource> persistent_buffer;
+    DML_BUFFER_BINDING persistent_buffer_binding;
+    DML_BINDING_DESC persistent_buffer_binding_desc;
+  };
+
   // Contains the GPU resources for a graph execution, including the descriptor
   // heap, upload buffer, input buffer, output buffer, read-back buffer and
   // temporary buffer if the graph needs. These resources should be kept alive
@@ -126,8 +144,26 @@ class GraphImpl final : public WebNNGraphImpl {
       IDMLCompiledOperator* compiled_operator,
       const ComputeResourceInfo& compute_resource_info);
 
+  // This method mainly records the graph execution onto the command list, binds
+  // all required resources and closes the command list.
+  //
+  // This method is called firstly after the graph initialization has been
+  // completed to prepare for the first graph execution. For following graph
+  // executions, the method only needs to be called if we need to record
+  // commands and bind resources again. Thus, it avoids re-calling the
+  // `IDMLCommandRecorder::RecordDispatch` and
+  // `ID3D12GraphicsCommandList::Close` methods which may be time-consuming for
+  // some devices during the first execution and following executions of a graph
+  // if not needed.
+  static HRESULT RecordGraphExecution(
+      IDMLCompiledOperator* compiled_operator,
+      CommandRecorder* command_recorder,
+      const ComputeResources* compute_resources,
+      const PersistentResource* persistent_resource,
+      const GraphBufferBindingInfo& graph_buffer_binding_info);
+
   GraphImpl(std::unique_ptr<CommandRecorder> command_recorder,
-            ComPtr<ID3D12Resource> persistent_buffer,
+            std::unique_ptr<PersistentResource> persistent_resource,
             ComPtr<IDMLCompiledOperator> compiled_operator,
             ComputeResourceInfo compute_resource_info,
             GraphBufferBindingInfo graph_buffer_binding_info,
@@ -171,7 +207,7 @@ class GraphImpl final : public WebNNGraphImpl {
   // required by the graph.
   static void OnInitializationComplete(
       std::unique_ptr<CommandRecorder> command_recorder,
-      ComPtr<ID3D12Resource> persistent_buffer,
+      std::unique_ptr<PersistentResource> persistent_resource,
       ComPtr<IDMLCompiledOperator> compiled_operator,
       ComputeResourceInfo compute_resource_info,
       GraphBufferBindingInfo graph_buffer_binding_info,
@@ -187,6 +223,7 @@ class GraphImpl final : public WebNNGraphImpl {
   void OnComputationComplete(
       mojom::WebNNGraph::ComputeCallback callback,
       std::unique_ptr<ComputeResources> compute_resources,
+      std::unique_ptr<CommandRecorder> command_recorder,
       HRESULT hr);
 
   // If GraphImpl::ComputeImpl fails, report an error and release the command
@@ -212,15 +249,22 @@ class GraphImpl final : public WebNNGraphImpl {
       base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
       mojom::WebNNGraph::ComputeCallback callback) override;
 
-  // The persistent buffer will be initialized after the initialization work on
-  // GPU is completed and will be used for the following graph executions. It
-  // could be nullptr which means it isn't required by the graph and won't need
-  // to be bound for graph executions.
-  ComPtr<ID3D12Resource> persistent_buffer_;
-  absl::optional<DML_BUFFER_BINDING> persistent_buffer_binding_;
-  absl::optional<DML_BINDING_DESC> persistent_buffer_binding_desc_;
+  // The persistent resource is allocated after the compilation work is
+  // completed for the graph initialization and will be used for the following
+  // graph executions. It could be nullptr which means it isn't required by the
+  // graph and won't need to be bound for graph executions.
+  std::unique_ptr<PersistentResource> persistent_resource_;
   scoped_refptr<CommandQueue> command_queue_;
   ComPtr<IDMLDevice> dml_device_;
+
+  // The command_recorder is created for the graph initialization and recycled
+  // after graph execution has completed. It avoids the resource allocation
+  // overhead for the first execution and following executions when it is
+  // available. A graph execution takes its ownership during the execution and
+  // returns the ownership once the GPU has completed the execution. If it is
+  // unavailable, e.g., being taken by previous uncompleted execution, a graph
+  // execution will create a new one and release it after the execution is
+  // done.
   std::unique_ptr<CommandRecorder> command_recorder_;
   // IDMLCompiledOperator represents a compiled and initialized DML graph to be
   // executed on GPU.

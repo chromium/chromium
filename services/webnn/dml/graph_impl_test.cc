@@ -4197,6 +4197,156 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneInputAndOneConstantOperand) {
             std::vector<float>({12, 14, 12, 14}));
 }
 
+// Test building a DML graph with one input and one constant to compute for
+// multiple times.
+TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
+  // Build the mojom graph info.
+  std::vector<float> constant_data = {5, 6, 7, 8};
+  GraphInfoBuilder builder;
+  uint64_t input_a_operand_id =
+      builder.BuildInput("input_a", {2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t input_b_operand_id =
+      builder.BuildConstant({2, 2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_data)));
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", {2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildGemm(input_a_operand_id, input_b_operand_id, output_operand_id,
+                    GemmAttributes());
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+  mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
+  mojo::Remote<mojom::WebNNContext> webnn_context_remote;
+  mojo::Remote<mojom::WebNNGraph> webnn_graph_remote;
+  WebNNContextProviderImpl::Create(
+      webnn_provider_remote.BindNewPipeAndPassReceiver());
+
+  // Create the dml::ContextImpl through context provider.
+  bool was_callback_called = false;
+  base::RunLoop run_loop_create_context;
+  auto options = mojom::CreateContextOptions::New();
+  webnn_provider_remote->CreateWebNNContext(
+      std::move(options),
+      base::BindLambdaForTesting(
+          [&](mojom::CreateContextResultPtr create_context_result) {
+            if (create_context_result->is_context_remote()) {
+              webnn_context_remote.Bind(
+                  std::move(create_context_result->get_context_remote()));
+            }
+            was_callback_called = true;
+            run_loop_create_context.Quit();
+          }));
+  run_loop_create_context.Run();
+  EXPECT_TRUE(was_callback_called);
+  EXPECT_TRUE(webnn_context_remote.is_bound());
+
+  // The dml::GraphImpl should be built successfully.
+  base::RunLoop run_loop_create_graph;
+  was_callback_called = false;
+  webnn_context_remote.set_disconnect_handler(
+      base::BindOnce([](base::RunLoop* run_loop) { run_loop->Quit(); },
+                     &run_loop_create_graph));
+  webnn_context_remote->CreateGraph(
+      builder.CloneGraphInfo(),
+      base::BindLambdaForTesting(
+          [&](mojom::CreateGraphResultPtr create_graph_result) {
+            webnn_graph_remote.Bind(
+                std::move(create_graph_result->get_graph_remote()));
+            was_callback_called = true;
+            run_loop_create_graph.Quit();
+          }));
+  run_loop_create_graph.Run();
+  EXPECT_TRUE(was_callback_called);
+  EXPECT_TRUE(webnn_graph_remote.is_bound());
+  {
+    // Compute for the first time.
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input_a", VectorToBigBuffer<float>({1, 1, 1, 1})});
+
+    // The dml::GraphImpl should compute successfully.
+    base::RunLoop run_loop_graph_compute;
+    was_callback_called = false;
+    webnn_graph_remote->Compute(
+        std::move(named_inputs),
+        base::BindLambdaForTesting(
+            [&](mojom::ComputeResult result,
+                absl::optional<base::flat_map<
+                    std::string, mojo_base::BigBuffer>> named_results) {
+              EXPECT_EQ(result, mojom::ComputeResult::kOk);
+              EXPECT_TRUE(named_results.has_value() &&
+                          !named_results.value().empty());
+              was_callback_called = true;
+              named_outputs = std::move(named_results.value());
+              run_loop_graph_compute.Quit();
+            }));
+    run_loop_graph_compute.Run();
+    EXPECT_TRUE(was_callback_called);
+
+    EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+              std::vector<float>({12, 14, 12, 14}));
+  }
+  {
+    // Compute for the second time.
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input_a", VectorToBigBuffer<float>({1, 1, 1, 1})});
+
+    // The dml::GraphImpl should compute successfully.
+    base::RunLoop run_loop_graph_compute;
+    was_callback_called = false;
+    webnn_graph_remote->Compute(
+        std::move(named_inputs),
+        base::BindLambdaForTesting(
+            [&](mojom::ComputeResult result,
+                absl::optional<base::flat_map<
+                    std::string, mojo_base::BigBuffer>> named_results) {
+              EXPECT_EQ(result, mojom::ComputeResult::kOk);
+              EXPECT_TRUE(named_results.has_value() &&
+                          !named_results.value().empty());
+              was_callback_called = true;
+              named_outputs = std::move(named_results.value());
+              run_loop_graph_compute.Quit();
+            }));
+    run_loop_graph_compute.Run();
+    EXPECT_TRUE(was_callback_called);
+
+    EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+              std::vector<float>({12, 14, 12, 14}));
+  }
+  {
+    // Compute for the third time.
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input_a", VectorToBigBuffer<float>({2, 2, 2, 2})});
+
+    // The dml::GraphImpl should compute successfully.
+    base::RunLoop run_loop_graph_compute;
+    was_callback_called = false;
+    webnn_graph_remote->Compute(
+        std::move(named_inputs),
+        base::BindLambdaForTesting(
+            [&](mojom::ComputeResult result,
+                absl::optional<base::flat_map<
+                    std::string, mojo_base::BigBuffer>> named_results) {
+              EXPECT_EQ(result, mojom::ComputeResult::kOk);
+              EXPECT_TRUE(named_results.has_value() &&
+                          !named_results.value().empty());
+              was_callback_called = true;
+              named_outputs = std::move(named_results.value());
+              run_loop_graph_compute.Quit();
+            }));
+    run_loop_graph_compute.Run();
+    EXPECT_TRUE(was_callback_called);
+
+    EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+              std::vector<float>({24, 28, 24, 28}));
+  }
+  webnn_graph_remote.reset();
+  webnn_context_remote.reset();
+  webnn_provider_remote.reset();
+  base::RunLoop().RunUntilIdle();
+}
+
 template <typename T>
 struct InstanceNormalizationTester {
   OperandInfo<T> input;

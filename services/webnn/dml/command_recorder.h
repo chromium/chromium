@@ -55,6 +55,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
   // delete this command recorder that ensures to release the references of all
   // recorded commands and their resources.
   HRESULT Open();
+
+  // Close the command list.
+  HRESULT Close();
+  // Submit the command list for execution and reference all resources required
+  // by this execution.
+  HRESULT Execute();
+  // This method will call the above `Close()` and `Execute()` methods.
   HRESULT CloseAndExecute();
 
   void ResourceBarrier(base::span<const D3D12_RESOURCE_BARRIER> barriers);
