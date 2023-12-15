@@ -6,6 +6,7 @@ module ax.mojom;
 
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/accessibility/public/mojom/automation.mojom";
+import "services/accessibility/public/mojom/automation_client.mojom";
 
 [EnableIf=supports_os_accessibility_service]
 import "services/accessibility/public/mojom/speech_recognition.mojom";
@@ -73,13 +74,16 @@ interface AccessibilityService {
 // TODO(crbug.com/1355633): Other APIs needed in Chrome OS and Fuchsia should be
 // bound here.
 interface AccessibilityServiceClient {
-  // Binds an Automation implemented in the service process to a client
-  // implemented in the main OS process.
+  // Binds an Automation implemented in the service process, called by
+  // the main OS browser process.
   // In Chrome OS this may be called once per feature to provide
   // automation connections to each V8 isolate.
   BindAutomation(
-    pending_associated_remote<Automation> automation,
-    pending_receiver<AutomationClient> automation_client);
+    pending_associated_remote<Automation> automation);
+
+  // Binds to an AutomatoinClient implemented in the main OS process,
+  // called by the service.
+  BindAutomationClient(pending_receiver<AutomationClient> automation_client);
 
   // Binds to a Autoclick client implemented in the main OS process, and
   // an Autoclick implemented in the service process, called by the service.

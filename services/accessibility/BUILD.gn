@@ -25,6 +25,8 @@ source_set("lib") {
       "assistive_technology_controller_impl.h",
       "features/autoclick_client_interface_binder.cc",
       "features/autoclick_client_interface_binder.h",
+      "features/automation_client_interface_binder.cc",
+      "features/automation_client_interface_binder.h",
       "features/automation_internal_bindings.cc",
       "features/automation_internal_bindings.h",
       "features/bindings_isolate_holder.cc",

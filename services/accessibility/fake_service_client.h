@@ -16,6 +16,8 @@
 #include "services/accessibility/buildflags.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
+#include "services/accessibility/public/mojom/automation_client.mojom.h"
+#include "ui/accessibility/ax_tree_id.h"
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 #include "services/accessibility/public/mojom/autoclick.mojom.h"
@@ -52,9 +54,16 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
 
   // ax::mojom::AccessibilityServiceClient:
   void BindAutomation(
-      mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
-      mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client)
-      override;
+      mojo::PendingAssociatedRemote<ax::mojom::Automation> automation) override;
+  void BindAutomationClient(mojo::PendingReceiver<ax::mojom::AutomationClient>
+                                automation_client) override;
+
+  // ax::mojom::AutomationClient:
+  void Enable(EnableCallback callback) override;
+  void Disable();
+  void EnableTree(const ui::AXTreeID& tree_id);
+  void PerformAction(const ui::AXActionData& data);
+
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   void BindAccessibilityFileLoader(
       mojo::PendingReceiver<ax::mojom::AccessibilityFileLoader>
@@ -149,6 +158,13 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
                                    SkColor color)> callback);
   void SetVirtualKeyboardVisibleCallback(
       base::RepeatingCallback<void(bool is_visible)> callback);
+
+  const ui::AXTreeID& desktop_tree_id() const { return desktop_tree_id_; }
+  void SendAccessibilityEvents(const ui::AXTreeID& tree_id,
+                               const std::vector<ui::AXTreeUpdate>& updates,
+                               const gfx::Point& mouse_location,
+                               const std::vector<ui::AXEvent>& events);
+
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   base::WeakPtr<FakeServiceClient> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -160,6 +176,8 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
 
   mojo::AssociatedRemoteSet<mojom::Automation> automation_remotes_;
   mojo::ReceiverSet<mojom::AutomationClient> automation_client_receivers_;
+
+  ui::AXTreeID desktop_tree_id_;
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   mojo::ReceiverSet<ax::mojom::AutoclickClient> autoclick_client_recievers_;
   mojo::Remote<ax::mojom::Autoclick> autoclick_remote_;

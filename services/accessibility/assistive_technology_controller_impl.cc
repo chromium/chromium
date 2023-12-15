@@ -43,10 +43,14 @@ void AssistiveTechnologyControllerImpl::BindAccessibilityServiceClient(
 }
 
 void AssistiveTechnologyControllerImpl::BindAutomation(
-    mojo::PendingAssociatedRemote<mojom::Automation> automation,
+    mojo::PendingAssociatedRemote<mojom::Automation> automation) {
+  accessibility_service_client_remote_->BindAutomation(std::move(automation));
+}
+
+void AssistiveTechnologyControllerImpl::BindAutomationClient(
     mojo::PendingReceiver<mojom::AutomationClient> automation_client) {
-  accessibility_service_client_remote_->BindAutomation(
-      std::move(automation), std::move(automation_client));
+  accessibility_service_client_remote_->BindAutomationClient(
+      std::move(automation_client));
 }
 
 void AssistiveTechnologyControllerImpl::BindAutoclickClient(
@@ -151,11 +155,8 @@ void AssistiveTechnologyControllerImpl::CreateV8ManagerForTypeIfNoneExists(
   // TODO(b/262637071): Create a easy way to map AT types to APIs needed instead
   // of these large if statements.
   mojo::PendingAssociatedReceiver<mojom::Automation> automation;
-  mojo::PendingRemote<mojom::AutomationClient> automation_client;
-  BindAutomation(automation.InitWithNewEndpointAndPassRemote(),
-                 automation_client.InitWithNewPipeAndPassReceiver());
-  manager.ConfigureAutomation(std::move(automation),
-                              std::move(automation_client));
+  BindAutomation(automation.InitWithNewEndpointAndPassRemote());
+  manager.ConfigureAutomation(this, std::move(automation));
   manager.ConfigureFileLoader(&file_loader_remote_);
   if (type == mojom::AssistiveTechnologyType::kChromeVox ||
       type == mojom::AssistiveTechnologyType::kDictation) {

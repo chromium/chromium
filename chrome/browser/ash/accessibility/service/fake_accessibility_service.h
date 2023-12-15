@@ -17,8 +17,8 @@
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 #include "services/accessibility/public/mojom/autoclick.mojom.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
+#include "services/accessibility/public/mojom/automation_client.mojom.h"
 #include "services/accessibility/public/mojom/file_loader.mojom.h"
-#include "services/accessibility/public/mojom/speech_recognition.mojom-forward.h"
 #include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
 #include "services/accessibility/public/mojom/user_input.mojom.h"
@@ -101,6 +101,7 @@ class FakeAccessibilityService
   // Allows tests to bind APIs multiple times, mimicking multiple
   // V8 instances in the service.
   void BindAnotherAutomation();
+  void BindAnotherAutomationClient();
   void BindAnotherAutoclickClient();
   void BindAnotherSpeechRecognition();
   void BindAnotherTts();
