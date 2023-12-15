@@ -9105,24 +9105,24 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
       <!-- Strings for tab organization -->
       <message name="IDS_TOOLTIP_TAB_ORGANIZE" desc="The tooltip for the Tab Organization button." translateable="false">
-        Organize tabs
+        Organize tabs?
       </message>
       <message name="IDS_TAB_ORGANIZE" desc="The text label of the Tab Organization button." translateable="false">
         Organize tabs?
       </message>
       <message name="IDS_TOOLTIP_TAB_ORGANIZE_CLOSE" desc="The tooltip for the close button within the Tab Organization button." translateable="false">
-        Close
+        Dismiss suggestion
       </message>
       <message name="IDS_TAB_ORGANIZATION_FEEDBACK_PLACEHOLDER" desc="Placeholder text for the Tab Organization feedback dialog." translateable="false">
-        Send feedback for tab organization
+        Send feedback for Suggested Groups
       </message>
       <if expr="use_titlecase">
-        <message name="IDS_TAB_ORGANIZE_MENU" desc="In Title Case: The text label for all tab organization menu items." translateable="false">
+        <message name="IDS_TAB_ORGANIZE_MENU" desc="In Title Case: The text label for the tab organization app menu item." translateable="false">
           Organize Tabs
         </message>
       </if>
       <if expr="not use_titlecase">
-        <message name="IDS_TAB_ORGANIZE_MENU" desc="The text label for all tab organization menu items." translateable="false">
+        <message name="IDS_TAB_ORGANIZE_MENU" desc="The text label for the tab organization app menu item." translateable="false">
           Organize tabs
         </message>
       </if>
@@ -9319,7 +9319,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Search tabs
       </message>
       <message name="IDS_ACCNAME_TAB_ORGANIZE" desc="The accessible name for the Tab Organization button." translateable="false">
-        Organize tabs
+        Group related tabs
       </message>
       <message name="IDS_ACCNAME_TAB_SCROLL_LEADING" desc="The accessible name for the TabStrip leading scroll button.">
         Scroll towards the first tab
@@ -10427,7 +10427,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           New window
         </message>
         <message name="IDS_TAB_CXMENU_ORGANIZE_TABS" desc="The label of the 'Organize tabs' Tab context menu item." translateable="false">
-          Organize tabs
+          Organize similar tabs
         </message>
         <message name="IDS_TAB_CXMENU_FOLLOW_SITE" desc="The label of the tab context menu item
  for following a site.">
@@ -10530,7 +10530,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           New Window
         </message>
         <message name="IDS_TAB_CXMENU_ORGANIZE_TABS" desc="In Title Case: The label of the 'Organize tabs' Tab context menu item." translateable="false">
-          Organize Tabs
+          Organize Similar Tabs
         </message>
         <message name="IDS_TAB_CXMENU_FOLLOW_SITE" desc="In Title Case: The label of the tab context menu item for following a site.">
           Follow Site
@@ -10633,11 +10633,11 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_SEARCH_COLLAPSE_RECENTLY_CLOSED" desc="The tooltip for the RECENTLY CLOSED button when it's expanded">
         Collapse recently closed
       </message>
-      <message name="IDS_TAB_SEARCH_TAB_NAME" desc="The tab title for tab search in the tab search bubble">
-        All Tabs
+      <message name="IDS_TAB_SEARCH_TAB_NAME" desc="The tab title for tab search in the tab search bubble" translateable="false">
+        All tabs
       </message>
       <message name="IDS_TAB_ORGANIZATION_TAB_NAME" desc="The tab title for tab organization in the tab search bubble" translateable="false">
-        Organize Tabs
+        Organize tabs
       </message>
       <message name="IDS_TAB_ORGANIZATION_CREATE_GROUP" desc="The label for the button that creates a tab group in the tab organization UI">
         Create group
@@ -10646,49 +10646,58 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Dismiss
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_TITLE" desc="The header text for the not started state in the tab organization UI" translateable="false">
-        Organize tabs
+        Check if tabs can be organized
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_TITLE_FRE" desc="The header text for the first run experience of the not started state in the tab organization UI" translateable="false">
         Let Chrome organize your tabs
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY" desc="The body text for the not started state in the tab organization UI" translateable="false">
-        You can organize your tabs anytime
+        Tab group suggestions are shown when they're available, but you can check anytime
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE" desc="The body text for the first run experience of the not started state in the tab organization UI" translateable="false">
-        Chrome can help your tabs stay organized and easy to find
+        You'll get tab group suggestions that group similar tabs to help you stay organized
       </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_UNSYNCED" desc="The body text for the not started state in the tab organization UI, when not signed in or signed in but unsynced/sync paused" translateable="false">
-        Turn on sync to let Chrome keep your tabs organized.
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_SIGNED_OUT" desc="The body text for the not started state in the tab organization UI, when not signed in" translateable="false">
+        Sign in and turn on sync to let Chrome suggest tab groups and keep your tabs organized
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_UNSYNCED" desc="The body text for the not started state in the tab organization UI, when signed in but unsynced" translateable="false">
+        Turn on sync to let Chrome suggest tab groups and keep your tabs organized
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_UNSYNCED_HISTORY" desc="The body text for the not started state in the tab organization UI, when history sync is disabled" translateable="false">
-        Turn on History sync in Settings to let Chrome keep your tabs organized.
+        Turn on History sync in Settings to let Chrome suggest tab groups and keep your tabs organized.
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_SYNC_PAUSED" desc="The body text for the not started state in the tab organization UI, sync is paused" translateable="false">
+        Sign in to let Chrome suggest tab groups and keep your tabs organized
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON" desc="The label for the button in the not started state of the tab organization UI, when synced" translateable="false">
-        Organize tabs
+        Check now
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_FRE" desc="The first run experience label for the button in the not started state of the tab organization UI, when synced" translateable="false">
+        Let's go
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED" desc="The label for the button in the not started state of the tab organization UI, when not signed in or signed in but unsynced" translateable="false">
         Turn on sync
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED_HISTORY" desc="The label for the button in the not started state of the tab organization UI, when history sync is disabled" translateable="false">
-        Settings
+        Open settings
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SYNC_PAUSED" desc="The label for the button in the not started state of the tab organization UI, when sync is paused" translateable="false">
         Sign in
       </message>
       <message name="IDS_TAB_ORGANIZATION_IN_PROGRESS_TITLE" desc="The header text for the in progress state in the tab organization UI" translateable="false">
-        Organizing…
+        Organizing into a tab group…
       </message>
       <message name="IDS_TAB_ORGANIZATION_SUCCESS_TITLE" desc="The header text for the success state in the tab organization UI" translateable="false">
-        Tab organization found
+        Tab group suggestion
       </message>
       <message name="IDS_TAB_ORGANIZATION_FAILURE_TITLE_GENERIC" desc="The header text for the generic failure state in the tab organization UI" translateable="false">
         Something went wrong
       </message>
       <message name="IDS_TAB_ORGANIZATION_FAILURE_TITLE_GROUPING" desc="The header text for the grouping failure state in the tab organization UI" translateable="false">
-        No opportunities for tab organization found
+        No groups found
       </message>
       <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_PRE_LINK" desc="The pre-link body text for the generic failure state in the tab organization UI" translateable="false">
-        Tab organization is currently unavailable. You can
+        Tab group suggestions are currently unavailable. You can
       </message>
       <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_LINK" desc="The link body text for the generic failure state in the tab organization UI" translateable="false">
         refresh now
@@ -10709,16 +10718,13 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Tip:
       </message>
       <message name="IDS_TAB_ORGANIZATION_TIP_BODY" desc="The main text of the tip in the tab organization UI" translateable="false">
-        You can organize your own tabs anytime.
+        You can create your own tab group anytime.
       </message>
       <message name="IDS_TAB_ORGANIZATION_TIP_ACTION" desc="The actionable text of the tip in the tab organization UI" translateable="false">
         Show me how
       </message>
       <message name="IDS_TAB_ORGANIZATION_LEARN_MORE" desc="The actionable text in the tab organization UI results state for getting more information" translateable="false">
         Learn more
-      </message>
-      <message name="IDS_TAB_ORGANIZATION_CHECK_NOW" desc="The actionable text in the tab organization UI failure state for trying again" translateable="false">
-        Check now
       </message>
 
       <!-- Strings for Window Titles in Menus -->
