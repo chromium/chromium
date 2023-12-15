@@ -50,10 +50,6 @@ declare global {
 
     appState?: AppState;
 
-    webkitResolveLocalFileSystemURL(
-        url: string, successCallback: FileSystemEntryCallback,
-        errorCallback: ErrorCallback): void;
-
     // Only used for grid.ts
     cvox?: {
       Api?: {
@@ -70,6 +66,10 @@ declare global {
     // For unit test.
     chrome: typeof chrome;
   }
+
+  function webkitResolveLocalFileSystemURL(
+      url: string, successCallback: FileSystemEntryCallback,
+      errorCallback: ErrorCallback): void;
 }
 
 export {};

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {ByteReader} from './byte_reader.js';
+import {ParserMetadata} from './metadata_item.js';
 
 export interface MetadataParserLogger {
   /**
@@ -31,7 +32,7 @@ export interface MetadataParserLogger {
   vlog(...args: Array<Object|string>): void;
 }
 
-export class MetadataParser implements MetadataParserLogger {
+export abstract class MetadataParser implements MetadataParserLogger {
   readonly verbose: boolean;
   mimeType = 'unknown';
 
@@ -98,13 +99,24 @@ export class MetadataParser implements MetadataParserLogger {
     fileReader.readAsArrayBuffer(file.slice(begin, end));
   }
 
-  // TODO(cleanup): Add parse() abstract method which fills in a ParserMetadata.
+  /**
+   * Parses the file and fills out the given metadata object, returning the
+   * result via the passed in callback.
+   * @param file File object to parse.
+   * @param metadata Metadata object of the file.
+   * @param callback Success callback.
+   * @param onError Error callback.
+   */
+  abstract parse(
+      file: File, metadata: ParserMetadata,
+      callback: (metadata: ParserMetadata) => void,
+      onError: (error: Event|string) => void): void;
 }
 
 /**
  * Base class for image metadata parsers.
  */
-export class ImageParser extends MetadataParser {
+export abstract class ImageParser extends MetadataParser {
   /**
    * @param parent Parent object.
    * @param type Image type.

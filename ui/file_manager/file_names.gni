@@ -36,9 +36,6 @@ static_js_files = [
   "file_manager/foreground/js/mock_navigation_list_model.js",
   "file_manager/foreground/js/navigation_list_model.js",
 
-  # Metadata:
-  "file_manager/foreground/js/metadata/metadata_dispatcher.js",
-
   # Files app UI:
   "file_manager/foreground/js/ui/a11y_announce.js",
   "file_manager/foreground/js/ui/context_menu_handler.js",
@@ -356,6 +353,7 @@ ts_files = [
   "file_manager/foreground/js/metadata/image_parsers.ts",
   "file_manager/foreground/js/metadata/metadata_cache_item.ts",
   "file_manager/foreground/js/metadata/metadata_cache_set.ts",
+  "file_manager/foreground/js/metadata/metadata_dispatcher.ts",
   "file_manager/foreground/js/metadata/metadata_item.ts",
   "file_manager/foreground/js/metadata/metadata_model.ts",
   "file_manager/foreground/js/metadata/metadata_parser.ts",

@@ -248,6 +248,7 @@ export class ParserMetadata {
     exif?: Record<ExifTag, ExifEntry>,
     gps?: Record<ExifTag, ExifEntry>,
   };
+  fileSize?: number;
   height?: number;
   width?: number;
   duration?: number;
