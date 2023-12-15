@@ -6,10 +6,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
-#include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_browsertest_utils.h"
-#include "chrome/browser/download/download_core_service.h"
-#include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
@@ -19,13 +16,12 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/download_test_observer.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 
@@ -60,51 +56,12 @@ bool IsExclusiveAccessBubbleVisible(ExclusiveAccessBubbleViews* bubble) {
 }
 #endif
 
-// TODO(chlily): Deduplicate this helper class into a test utils file.
-class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
- public:
-  explicit TestDownloadManagerDelegate(Profile* profile)
-      : ChromeDownloadManagerDelegate(profile) {
-    GetDownloadIdReceiverCallback().Run(download::DownloadItem::kInvalidId + 1);
-  }
-  ~TestDownloadManagerDelegate() override {}
-
-  bool DetermineDownloadTarget(
-      download::DownloadItem* item,
-      content::DownloadTargetCallback* callback) override {
-    content::DownloadTargetCallback dangerous_callback = base::BindOnce(
-        &TestDownloadManagerDelegate::SetDangerous, std::move(*callback));
-    bool run = ChromeDownloadManagerDelegate::DetermineDownloadTarget(
-        item, &dangerous_callback);
-    // ChromeDownloadManagerDelegate::DetermineDownloadTarget() needs to run the
-    // |callback|.
-    DCHECK(run);
-    DCHECK(!dangerous_callback);
-    return true;
-  }
-
-  static void SetDangerous(content::DownloadTargetCallback callback,
-                           const base::FilePath& target_path,
-                           download::DownloadItem::TargetDisposition disp,
-                           download::DownloadDangerType danger_type,
-                           download::DownloadItem::InsecureDownloadStatus ids,
-                           const base::FilePath& intermediate_path,
-                           const base::FilePath& display_name,
-                           const std::string& mime_type,
-                           download::DownloadInterruptReason reason) {
-    std::move(callback).Run(target_path, disp,
-                            download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL, ids,
-                            intermediate_path, display_name, mime_type, reason);
-  }
-};
-
 class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
                                         public InteractiveBrowserTestApi {
  public:
   DownloadBubbleInteractiveUiTest() {
     test_features_.InitAndEnableFeatures(
-        {feature_engagement::kIPHDownloadEsbPromoFeature,
-         feature_engagement::kIPHDownloadToolbarButtonFeature
+        {feature_engagement::kIPHDownloadToolbarButtonFeature
 #if BUILDFLAG(IS_MAC)
          ,
          features::kImmersiveFullscreen
@@ -167,15 +124,17 @@ class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
         download_toolbar_button(), active);
   }
 
-  auto DownloadBubblePromoIsActive(bool active, const base::Feature& feature) {
+  auto DownloadBubblePromoIsActive(bool active) {
     return base::BindOnce(
         [](DownloadToolbarButtonView* download_toolbar_button, Browser* browser,
-           bool active, const base::Feature& feature) {
-          return active == BrowserView::GetBrowserViewForBrowser(browser)
-                               ->GetFeaturePromoController()
-                               ->IsPromoActive(feature);
+           bool active) {
+          return active ==
+                 BrowserView::GetBrowserViewForBrowser(browser)
+                     ->GetFeaturePromoController()
+                     ->IsPromoActive(
+                         feature_engagement::kIPHDownloadToolbarButtonFeature);
         },
-        download_toolbar_button(), browser(), active, std::cref(feature));
+        download_toolbar_button(), browser(), active);
   }
 
   auto ChangeButtonVisibility(bool visible) {
@@ -207,26 +166,6 @@ class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
         base::StrCat({"/", DownloadTestBase::kDownloadTest1Path}));
     return base::BindLambdaForTesting(
         [this, url]() { DownloadAndWait(browser(), url); });
-  }
-
-  auto DownloadDangerousTestFile() {
-    // Set up the fake delegate that forces the download to be malicious.
-    std::unique_ptr<TestDownloadManagerDelegate> test_delegate(
-        new TestDownloadManagerDelegate(browser()->profile()));
-    DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile())
-        ->SetDownloadManagerDelegateForTesting(std::move(test_delegate));
-    GURL url = embedded_test_server()->GetURL(
-        DownloadTestBase::kDangerousMockFilePath);
-
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    return base::BindLambdaForTesting([this]() {
-      std::unique_ptr<content::DownloadTestObserver> waiter{
-          DangerousDownloadWaiter(
-              browser(), /*num_downloads=*/1,
-              content::DownloadTestObserver::DangerousDownloadAction::
-                  ON_DANGEROUS_DOWNLOAD_QUIT)};
-      waiter->WaitForFinished();
-    });
   }
 
 #if !BUILDFLAG(IS_MAC)
@@ -303,23 +242,21 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
                        DownloadBubbleInteractedWith_NoIPHShown) {
-  RunTestSequence(
-      Do(ChangeButtonVisibility(true)),
-      WaitForShow(kToolbarDownloadButtonElementId),
-      Check(DownloadBubbleIsShowingDetails(false)),
-      // Press the button to register an interaction (which should
-      // suppress the IPH) which opens the main view.
-      PressButton(kToolbarDownloadButtonElementId),
-      // Close the main view.
-      Do(ChangeBubbleVisibility(false)),
-      // Now download a file to show the partial view, if enabled.
-      Do(DownloadTestFile()),
-      Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
-      // Hide the partial view, if enabled. No IPH is shown.
-      Do(ChangeBubbleVisibility(false)),
-      Check(DownloadBubbleIsShowingDetails(false)),
-      Check(DownloadBubblePromoIsActive(
-          false, feature_engagement::kIPHDownloadToolbarButtonFeature)));
+  RunTestSequence(Do(ChangeButtonVisibility(true)),
+                  WaitForShow(kToolbarDownloadButtonElementId),
+                  Check(DownloadBubbleIsShowingDetails(false)),
+                  // Press the button to register an interaction (which should
+                  // suppress the IPH) which opens the main view.
+                  PressButton(kToolbarDownloadButtonElementId),
+                  // Close the main view.
+                  Do(ChangeBubbleVisibility(false)),
+                  // Now download a file to show the partial view, if enabled.
+                  Do(DownloadTestFile()),
+                  Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
+                  // Hide the partial view, if enabled. No IPH is shown.
+                  Do(ChangeBubbleVisibility(false)),
+                  Check(DownloadBubbleIsShowingDetails(false)),
+                  Check(DownloadBubblePromoIsActive(false)));
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
@@ -330,40 +267,8 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
                   // Hide the partial view, if enabled. The IPH should be shown.
                   Do(ChangeBubbleVisibility(false)),
                   Check(DownloadBubbleIsShowingDetails(false)),
-                  Check(DownloadBubblePromoIsActive(
-                      IsPartialViewEnabled(),
-                      feature_engagement::kIPHDownloadToolbarButtonFeature)));
+                  Check(DownloadBubblePromoIsActive(IsPartialViewEnabled())));
 }
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
-                       DownloadBubbleEsbShownAfterDownload_IPHShown) {
-  RunTestSequence(Do(DownloadDangerousTestFile()),
-                  WaitForShow(kToolbarDownloadButtonElementId),
-                  Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
-                  // Hide the partial view, if enabled. The IPH should be shown.
-                  Do(ChangeBubbleVisibility(false)),
-                  Check(DownloadBubbleIsShowingDetails(false)),
-                  Check(DownloadBubblePromoIsActive(
-                      IsPartialViewEnabled(),
-                      feature_engagement::kIPHDownloadEsbPromoFeature)));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    DownloadBubbleInteractiveUiTest,
-    DownloadBubbleEsbShownAfterDownloadWithoutSafeBrowsing_NoIPHShown) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
-                                               false);
-  RunTestSequence(Do(DownloadDangerousTestFile()),
-                  WaitForShow(kToolbarDownloadButtonElementId),
-                  Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
-                  // Hide the partial view, if enabled. The IPH should be shown.
-                  Do(ChangeBubbleVisibility(false)),
-                  Check(DownloadBubbleIsShowingDetails(false)),
-                  Check(DownloadBubblePromoIsActive(
-                      false, feature_engagement::kIPHDownloadEsbPromoFeature)));
-}
-#endif
 
 // This test is only for ChromeOS and Mac where we have immersive fullscreen.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)

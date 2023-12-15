@@ -2870,22 +2870,6 @@ are declared in tools/grit/grit_rule.gni.
                desc="Tooltip label for the button to open all downloads">
         Show all downloads in a new tab
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_ESB_PROMO"
-               desc="Text for the in-product-help bubble shown for the esb promo download bubble.">
-        Chrome just blocked a dangerous file from downloading. Get even stronger security with enhanced protection.
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_ESB_PROMO_CUSTOM_ACTION"
-               desc="Text for the custom action within the in-product-help bubble shown for the esb promo download bubble.">
-        Settings
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_ESB_PROMO_DISMISS"
-               desc="Text for the dismiss action within the in-product-help bubble shown for the esb promo download bubble.">
-        No thanks
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_ESB_PROMO_TITLE"
-               desc="Title for the in-product-help bubble shown for the esb promo download bubble.">
-        Improve download protection
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_PROMO"
                desc="Text for the in-product-help bubble shown for the download bubble.">
         Manage files as they download, and open them when they're done

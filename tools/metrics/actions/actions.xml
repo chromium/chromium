@@ -40433,7 +40433,6 @@ should be able to be added at any place in this file.
   <suffix name="DesktopTabGroupsNewGroup" label="For desktop Tab Groups."/>
   <suffix name="DiscoverFeedHeaderMenu"
       label="For DiscoverFeedHeaderMenu feature."/>
-  <suffix name="DownloadEsbPromo" label="For Download Esb Iph feature promo."/>
   <suffix name="DownloadHome" label="For DownloadHome feature."/>
   <suffix name="DownloadIndicator" label="For DownloadIndicator feature."/>
   <suffix name="DownloadInfoBarDownloadContinuing"
