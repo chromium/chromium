@@ -80,7 +80,6 @@ def update_required(
 def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
     """Helper function for running `ffx target flash`."""
     logging.info('Flashing %s to %s', system_image_dir, target_id)
-    product_bundle = os.path.join(system_image_dir, 'product_bundle.json')
     configs = [
         'fastboot.usb.disabled=true',
         'ffx.fastboot.inline_target=true',
@@ -100,7 +99,7 @@ def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
         logging.info(
             'Flash result %s',
             common.run_ffx_command(cmd=('target', 'flash', '-b',
-                                        product_bundle,
+                                        system_image_dir,
                                         '--no-bootloader-reboot'),
                                    target_id=target_id,
                                    capture_output=True,
