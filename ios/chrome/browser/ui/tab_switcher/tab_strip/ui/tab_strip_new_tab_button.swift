@@ -4,13 +4,31 @@
 
 import UIKit
 
-/// An `UIButton` displayed in the tab strip that opens a new tab.
-class TabStripNewTabButton: UIButton {
+/// UIView that contains an `UIButton` that opens a new tab.
+class TabStripNewTabButton: UIView {
+
+  /// Delegate that informs the receiver of actions on the new tab button.
+  public var delegate: TabStripNewTabButtonDelegate?
+
+  private let button: UIButton = UIButton(type: .custom)
 
   override init(frame: CGRect) {
     super.init(frame: frame)
+    translatesAutoresizingMaskIntoConstraints = false
 
     configureButton()
+    addSubview(button)
+
+    NSLayoutConstraint.activate([
+      button.leadingAnchor.constraint(
+        equalTo: self.leadingAnchor, constant: TabStripConstants.NewTabButton.leadingInset),
+      button.trailingAnchor.constraint(
+        equalTo: self.trailingAnchor, constant: -TabStripConstants.NewTabButton.trailingInset),
+      button.topAnchor.constraint(
+        equalTo: self.topAnchor, constant: TabStripConstants.NewTabButton.topInset),
+      button.bottomAnchor.constraint(
+        equalTo: self.bottomAnchor, constant: -TabStripConstants.NewTabButton.bottomInset),
+    ])
   }
 
   required init?(coder: NSCoder) {
@@ -19,16 +37,28 @@ class TabStripNewTabButton: UIButton {
 
   // MARK: - Private
 
+  /// Called when the `button` has been tapped.
+  @objc func buttonTapped() {
+    delegate?.newTabButtonTapped()
+  }
+
   /// Configures the `UIButton`.
   private func configureButton() {
-    var config = UIButton.Configuration.borderless()
-    config.imagePadding = TabStripConstants.NewTabButton.contentInset
-    configuration = config
+    let closeSymbol: UIImage = DefaultSymbolWithPointSize(
+      kPlusSymbol, TabStripConstants.NewTabButton.symbolPointSize)
 
-    let closeSymbol: UIImage = CustomSymbolWithPointSize(
-      kPlusCircleFillSymbol, TabStripConstants.NewTabButton.symbolPointSize)
-    setImage(closeSymbol, for: .normal)
-    tintColor = UIColor.orange
-    translatesAutoresizingMaskIntoConstraints = false
+    var configuration = UIButton.Configuration.borderless()
+    configuration.contentInsets = .zero
+
+    configuration.image = closeSymbol
+    configuration.baseForegroundColor = UIColor(named: kTextSecondaryColor)
+    button.configuration = configuration
+
+    button.imageView?.contentMode = .center
+    button.layer.cornerRadius = TabStripConstants.NewTabButton.cornerRadius
+    button.backgroundColor = UIColor(named: kPrimaryBackgroundColor)
+
+    button.translatesAutoresizingMaskIntoConstraints = false
+    button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
   }
 }

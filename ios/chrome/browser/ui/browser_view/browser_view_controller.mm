@@ -1293,7 +1293,11 @@ enum HeaderBehaviour {
   _fakeStatusBarView = [[UIView alloc] initWithFrame:statusBarFrame];
   [_fakeStatusBarView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    _fakeStatusBarView.backgroundColor = UIColor.blackColor;
+    if (base::FeatureList::IsEnabled(kModernTabStrip)) {
+      _fakeStatusBarView.backgroundColor = [UIColor colorNamed:kGrey200Color];
+    } else {
+      _fakeStatusBarView.backgroundColor = UIColor.blackColor;
+    }
     _fakeStatusBarView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     DCHECK(self.contentArea);
     [self.view insertSubview:_fakeStatusBarView aboveSubview:self.contentArea];
@@ -1384,7 +1388,8 @@ enum HeaderBehaviour {
         constraintEqualToAnchor:self.tabStripView.leadingAnchor],
     [self.view.safeAreaLayoutGuide.trailingAnchor
         constraintEqualToAnchor:self.tabStripView.trailingAnchor],
-    [self.tabStripView.heightAnchor constraintEqualToConstant:kTabStripHeight],
+    [self.tabStripView.heightAnchor
+        constraintEqualToConstant:kModernTabStripHeight],
   ]];
 }
 

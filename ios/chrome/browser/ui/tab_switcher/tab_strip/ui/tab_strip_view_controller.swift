@@ -7,7 +7,7 @@ import UIKit
 /// View Controller displaying the TabStrip.
 @objcMembers
 class TabStripViewController: UIViewController, TabStripCellDelegate,
-  TabStripConsumer
+  TabStripConsumer, TabStripNewTabButtonDelegate
 {
 
   // The enum used by the data source to manage the sections.
@@ -52,20 +52,28 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    view.backgroundColor = UIColor(named: kGrey200Color)
+
     collectionView.translatesAutoresizingMaskIntoConstraints = false
-    self.view.addSubview(collectionView)
-    self.view.addSubview(newTabButton)
-    newTabButton.addTarget(self, action: #selector(newTabButtonTapped), for: .touchUpInside)
+    collectionView.backgroundColor = .clear
+    view.addSubview(collectionView)
+
+    newTabButton.delegate = self
+    view.addSubview(newTabButton)
 
     NSLayoutConstraint.activate([
-      self.view.leadingAnchor.constraint(equalTo: collectionView.leadingAnchor),
-      self.view.topAnchor.constraint(equalTo: collectionView.topAnchor),
-      self.view.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor),
-      self.view.trailingAnchor.constraint(equalTo: newTabButton.trailingAnchor),
+      collectionView.leadingAnchor.constraint(
+        equalTo: view.leadingAnchor, constant: TabStripConstants.CollectionView.inset),
+      collectionView.topAnchor.constraint(
+        equalTo: view.topAnchor, constant: TabStripConstants.CollectionView.inset),
+      collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
-      newTabButton.heightAnchor.constraint(equalTo: collectionView.heightAnchor),
-      newTabButton.widthAnchor.constraint(equalTo: newTabButton.heightAnchor),
-      newTabButton.leadingAnchor.constraint(equalTo: collectionView.trailingAnchor),
+      newTabButton.leadingAnchor.constraint(
+        equalTo: collectionView.trailingAnchor, constant: TabStripConstants.CollectionView.inset),
+      newTabButton.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+      newTabButton.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+      newTabButton.topAnchor.constraint(equalTo: view.topAnchor),
+      newTabButton.widthAnchor.constraint(equalToConstant: TabStripConstants.NewTabButton.width),
     ])
 
   }
@@ -224,7 +232,8 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     return UIMenu(children: [share, closeActions])
   }
 
-  /// Called when the `newTabButton` has been tapped.
+  // MARK: - TabStripNewTabButtonDelegate
+
   @objc func newTabButtonTapped() {
     mutator?.addNewItem()
   }

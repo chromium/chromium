@@ -8,3 +8,5 @@ NSString* const kRegularTabStripId = @"kRegularTabStripId";
 NSString* const kIncognitoTabStripId = @"kIncognitoTabStripId";
 
 const CGFloat kTabStripHeight = 39.0;
+
+const CGFloat kModernTabStripHeight = 44.0;
