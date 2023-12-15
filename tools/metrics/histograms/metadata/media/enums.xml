@@ -2280,11 +2280,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="GpuMemoryBuffer"/>
 </enum>
 
-<enum name="VideoPersistenceControlsType">
-  <int value="0" label="Native controls"/>
-  <int value="1" label="Custom controls"/>
-</enum>
-
 <enum name="VideoPixelFormatUnion">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="I420"/>

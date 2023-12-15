@@ -6102,16 +6102,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Media.VideoPersistence.ControlsType"
-    enum="VideoPersistenceControlsType" expires_after="2021-09-19">
-  <owner>peconn@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Record the type of controls a persisted video is using. This is recorded
-    every time a video enters persistence mode
-  </summary>
-</histogram>
-
 <histogram name="Media.VideoRenderer.CadenceChanges" units="changes"
     expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->

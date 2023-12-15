@@ -72,17 +72,6 @@
 
 namespace blink {
 
-namespace {
-
-// This enum is used to record histograms. Do not reorder.
-enum VideoPersistenceControlsType {
-  kNative = 0,
-  kCustom = 1,
-  kMaxValue = 1,
-};
-
-}  // anonymous namespace
-
 HTMLVideoElement::HTMLVideoElement(Document& document)
     : HTMLMediaElement(html_names::kVideoTag, document),
       remoting_interstitial_(nullptr),
@@ -276,14 +265,6 @@ void HTMLVideoElement::SetPersistentStateInternal(bool persistent) {
   is_auto_picture_in_picture_ = persistent;
 
   if (persistent) {
-    // Record the type of video. If it is already fullscreen, it is a video with
-    // native controls, otherwise it is assumed to be with custom controls.
-    // This is only recorded when entering this mode.
-    base::UmaHistogramEnumeration("Media.VideoPersistence.ControlsType",
-                                  IsFullscreen()
-                                      ? VideoPersistenceControlsType::kNative
-                                      : VideoPersistenceControlsType::kCustom);
-
     Element* fullscreen_element =
         Fullscreen::FullscreenElementFrom(GetDocument());
     // Only set the video in persistent mode if it is not using native controls
