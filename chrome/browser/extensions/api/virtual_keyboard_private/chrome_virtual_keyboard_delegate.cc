@@ -498,9 +498,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag(
       "handwritinggesture",
       base::FeatureList::IsEnabled(features::kHandwritingGesture)));
-  features.Append(GenerateFeatureFlag(
-      "handwritinggestureediting",
-      base::FeatureList::IsEnabled(ash::features::kHandwritingGestureEditing)));
   features.Append(
       GenerateFeatureFlag("handwritinglegacyrecognition",
                           base::FeatureList::IsEnabled(

@@ -1092,9 +1092,6 @@ extern const char kEnableOsIntegrationSubManagersDescription[];
 extern const char kGpuRasterizationName[];
 extern const char kGpuRasterizationDescription[];
 
-extern const char kHandwritingGestureEditingName[];
-extern const char kHandwritingGestureEditingDescription[];
-
 extern const char kHandwritingLegacyRecognitionName[];
 extern const char kHandwritingLegacyRecognitionDescription[];
 

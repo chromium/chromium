@@ -1950,10 +1950,6 @@ const char kEnableOsIntegrationSubManagersDescription[] =
     "integration states to DB or execute on the OS integration states before "
     "writing to the DB";
 
-const char kHandwritingGestureEditingName[] = "Handwriting Gestures Editing";
-const char kHandwritingGestureEditingDescription[] =
-    "Enables editing with handwriting gestures within the virtual keyboard.";
-
 const char kHandwritingLegacyRecognitionName[] =
     "Handwriting Legacy Recognition";
 const char kHandwritingLegacyRecognitionDescription[] =

@@ -1332,11 +1332,6 @@ BASE_FEATURE(kGrowthCampaignsInDemoMode,
              "GrowthCampaignsInDemoMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables editing with handwriting gestures within the virtual keyboard.
-BASE_FEATURE(kHandwritingGestureEditing,
-             "HandwritingGestureEditing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables new on-device recognition for legacy handwriting input.
 BASE_FEATURE(kHandwritingLegacyRecognition,
              "HandwritingLegacyRecognition",
