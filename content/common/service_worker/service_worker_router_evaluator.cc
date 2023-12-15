@@ -4,11 +4,13 @@
 
 #include "content/common/service_worker/service_worker_router_evaluator.h"
 
+#include <limits>
 #include <memory>
 #include <tuple>
 
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "services/network/public/cpp/request_destination.h"
@@ -646,7 +648,9 @@ ServiceWorkerRouterEvaluator::EvaluateWithoutRunningStatus(
 
 base::Value ServiceWorkerRouterEvaluator::ToValue() const {
   base::Value::List out;
-  for (const auto& r : rules_.rules) {
+  CHECK_EQ(rules_.rules.size(), compiled_rules_.size());
+  for (size_t idx = 0; idx < rules_.rules.size(); ++idx) {
+    const auto& r = rules_.rules[idx];
     base::Value::Dict rule;
     base::Value condition = ConditionToValue(r.condition);
     base::Value::List source;
@@ -675,6 +679,7 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
     }
     rule.Set("condition", std::move(condition));
     rule.Set("source", std::move(source));
+    rule.Set("id", base::checked_cast<int>(compiled_rules_[idx]->id()));
     out.Append(std::move(rule));
   }
   return base::Value(std::move(out));

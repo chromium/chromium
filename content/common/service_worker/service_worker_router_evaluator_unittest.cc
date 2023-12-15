@@ -1275,6 +1275,7 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
   {
     base::Value::Dict rule;
     {
+      rule.Set("id", 1);
       {
         base::Value::Dict condition;
         {
@@ -1343,6 +1344,7 @@ TEST(ServiceWorkerRouterEvaluator, ToValueEmptyOrCondition) {
   {
     base::Value::Dict rule;
     {
+      rule.Set("id", 1);
       {
         base::Value::Dict condition;
         condition.Set("or", base::Value::List());
@@ -1396,6 +1398,7 @@ TEST(ServiceWorkerRouterEvaluator, ToValueNestedOrCondition) {
   base::Value::List expected_rules;
   {
     base::Value::Dict rule;
+    rule.Set("id", 1);
     {
       base::Value::Dict outer;
       {
@@ -1505,6 +1508,7 @@ TEST(ServiceWorkerRouterEvaluator, ToValueUrlPatternWithFields) {
   base::Value::List expected_rules;
   {
     base::Value::Dict rule;
+    rule.Set("id", 1);
     {
       base::Value::Dict condition;
       {
@@ -1554,6 +1558,7 @@ TEST(ServiceWorkerRouterEvaluator, ToValueUrlPatternWithoutFields) {
   base::Value::List expected_rules;
   {
     base::Value::Dict rule;
+    rule.Set("id", 1);
     {
       base::Value::Dict condition;
       {
