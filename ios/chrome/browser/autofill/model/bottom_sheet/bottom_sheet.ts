@@ -119,8 +119,11 @@ function detachListeners_(renderer_ids: number[]): void {
 /**
  * Finds the element associated with each provided renderer ID and
  * attaches a listener to each of these elements for the focus event.
+ * "allow_autofocus" specifies whether the bottom sheet can be triggered by an
+ * already focused field.
  */
-function attachListeners(renderer_ids: number[]): void {
+function attachListeners(
+    renderer_ids: number[], allow_autofocus: boolean): void {
   // Build list of elements
   let blurredElement: HTMLElement|null = null;
   let elementsToObserve: Element[] = [];
@@ -138,10 +141,12 @@ function attachListeners(renderer_ids: number[]): void {
           // without attaching listeners.
           return;
         }
-        // Remove the focus on an element if it already has focus and we want to
-        // listen for the focus event on it.
-        element.blur();
-        blurredElement = element;
+        if (allow_autofocus) {
+          // Remove the focus on an element if it already has focus and we want
+          // to show the related bottom sheet immediately.
+          element.blur();
+          blurredElement = element;
+        }
       }
     }
   }

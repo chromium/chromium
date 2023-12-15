@@ -138,6 +138,16 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
   config.features_enabled.push_back(
       password_manager::features::kIOSPasswordBottomSheet);
 
+  if ([self isRunningTest:@selector(testOpenPasswordBottomOnAutofocus)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordBottomSheetAutofocus);
+  }
+
+  if ([self isRunningTest:@selector(testOpenKeyboardOnAutofocus)]) {
+    config.features_disabled.push_back(
+        password_manager::features::kIOSPasswordBottomSheetAutofocus);
+  }
+
   if ([self isRunningTest:@selector
             (testOpenPasswordBottomSheetOpenPasswordDetails)] ||
       [self
@@ -176,6 +186,13 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
   // Loads simple page. It is on localhost so it is considered a secure context.
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL("/simple_login_form_empty.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+}
+
+- (void)loadLoginAutofocusPage {
+  // Loads simple page. It is on localhost so it is considered a secure context.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(
+                              "/simple_login_form_empty_autofocus.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
 }
 
@@ -252,6 +269,39 @@ id<GREYMatcher> OpenKeyboardButton() {
   [self verifyPasswordFieldsHaveBeenFilled:@"user"];
 }
 
+// This test verifies that the bottom sheet opens on autofocus events, when the
+// kIOSPasswordBottomSheetAutofocus feature is enabled.
+- (void)testOpenPasswordBottomOnAutofocus {
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/simple_login_form_empty_autofocus."
+                                      "html"))];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+  [self loadLoginAutofocusPage];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:UsePasswordButton()];
+}
+
+// This test verifies that the keyboard opens on autofocus events, when the
+// kIOSPasswordBottomSheetAutofocus feature is disabled.
+- (void)testOpenKeyboardOnAutofocus {
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/simple_login_form_empty_autofocus."
+                                      "html"))];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+
+  [self loadLoginAutofocusPage];
+
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+}
+
 // This test will allow us to know if we're using a coherent browser state to
 // open the bottom sheet in incognito mode.
 - (void)testOpenPasswordBottomSheetUsePasswordIncognito {
@@ -301,7 +351,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
       performAction:grey_tap()];
 
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 }
 
 - (void)testOpenPasswordBottomSheetOpenPasswordManager {
@@ -810,7 +860,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
       performAction:grey_tap()];
 
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 
   // Dismiss #2.
   [self loadLoginPage];
@@ -824,7 +874,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
       performAction:grey_tap()];
 
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 
   // Dismiss #3.
   [self loadLoginPage];
@@ -838,13 +888,13 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
       performAction:grey_tap()];
 
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 
   // Verify that keyboard is shown.
   [self loadLoginPage];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 }
 
 // TODO(crbug.com/1474949): Fix flaky test & re-enable.
@@ -882,7 +932,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
 
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 }
 
 // Tests that the Password Bottom Sheet appears when tapping on a password

@@ -472,6 +472,11 @@ extern const char kIOSPasswordAuthOnEntryV2Description[];
 extern const char kIOSPasswordBottomSheetName[];
 extern const char kIOSPasswordBottomSheetDescription[];
 
+// Title and description for the flag to enable password bottom sheet triggering
+// on autofocus on IOS.
+extern const char kIOSPasswordBottomSheetAutofocusName[];
+extern const char kIOSPasswordBottomSheetAutofocusDescription[];
+
 // Title and description for the flag to enable bulk uploading local passwords
 // for eligible users on the iOS password settings.
 extern const char kIOSPasswordSettingsBulkUploadLocalPasswordsName[];

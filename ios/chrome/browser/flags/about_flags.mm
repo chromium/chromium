@@ -1101,6 +1101,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSPasswordBottomSheetName,
      flag_descriptions::kIOSPasswordBottomSheetDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordBottomSheet)},
+    {"ios-password-bottom-sheet-autofocus",
+     flag_descriptions::kIOSPasswordBottomSheetAutofocusName,
+     flag_descriptions::kIOSPasswordBottomSheetAutofocusDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kIOSPasswordBottomSheetAutofocus)},
     {"ios-payments-bottom-sheet",
      flag_descriptions::kIOSPaymentsBottomSheetName,
      flag_descriptions::kIOSPaymentsBottomSheetDescription, flags_ui::kOsIos,
