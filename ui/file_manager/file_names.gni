@@ -37,7 +37,6 @@ static_js_files = [
 
   # Files app UI:
   "file_manager/foreground/js/ui/a11y_announce.js",
-  "file_manager/foreground/js/ui/context_menu_handler.js",
   "file_manager/foreground/js/ui/default_task_dialog.js",
   "file_manager/foreground/js/ui/dialog_footer.js",
   "file_manager/foreground/js/ui/directory_tree.js",
@@ -172,6 +171,7 @@ ts_files = [
   "file_manager/foreground/js/ui/commandbutton.ts",
   "file_manager/foreground/js/ui/combobutton.ts",
   "file_manager/foreground/js/ui/command.ts",
+  "file_manager/foreground/js/ui/context_menu_handler.ts",
   "file_manager/foreground/js/ui/file_grid.ts",
   "file_manager/foreground/js/ui/file_list_selection_model.ts",
   "file_manager/foreground/js/ui/file_manager_dialog_base.ts",
@@ -592,7 +592,6 @@ generate_definitions_js_files = [
 
 # d.ts. files that are manually created and checked-in in the repo.
 checked_in_dts_files = [
-  "file_manager/definitions/context_menu_handler_events.d.ts",
   "file_manager/definitions/file_error.d.ts",
   "file_manager/definitions/file_manager.d.ts",
   "file_manager/externs/volume_info.d.ts",

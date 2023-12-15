@@ -5,7 +5,6 @@
 import {getFocusedTreeItem} from '../../common/js/dom_utils.js';
 import {getTreeItemEntry} from '../../common/js/entry_utils.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
-import type {ShowEvent} from '../../definitions/context_menu_handler_events.js';
 import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {XfTree} from '../../widgets/xf_tree.js';
@@ -15,7 +14,7 @@ import {EventType, FileSelectionHandler} from './file_selection.js';
 import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 import {MetadataSetEvent} from './metadata/metadata_cache_set.js';
 import {MetadataModel} from './metadata/metadata_model.js';
-import {contextMenuHandler} from './ui/context_menu_handler.js';
+import {contextMenuHandler, type ShowEvent} from './ui/context_menu_handler.js';
 import {DirectoryTree} from './ui/directory_tree.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 
@@ -53,7 +52,7 @@ export class ActionsController {
     // Attach listeners to events based on user action to show the menu, which
     // updates the DOM.
     contextMenuHandler.addEventListener(
-        'show', this.onContextMenuShow_.bind(this) as EventListener);
+        'show', this.onContextMenuShow_.bind(this));
     this.ui_.selectionMenuButton.addEventListener(
         'menushow', this.onMenuShow_.bind(this));
     this.ui_.gearButton.addEventListener(

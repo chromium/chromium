@@ -6,14 +6,13 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
 import {recordEnum} from '../../common/js/metrics.js';
-import type {HideEvent, ShowEvent} from '../../definitions/context_menu_handler_events.js';
 import type {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 
 import {DEFAULT_BRUSCHETTA_VM, DEFAULT_CROSTINI_VM, PLUGIN_VM} from './constants.js';
 import {BrowserBackCommand, ConfigureCommand, CutCopyCommand, DefaultTaskCommand, DeleteCommand, DlpRestrictionDetailsCommand, DriveBuyMoreSpaceCommand, DriveGoToDriveCommand, DriveSyncSettingsCommand, EmptyTrashCommand, EraseDeviceCommand, ExtractAllCommand, FilesSettingsCommand, FocusActionBarCommand, FormatCommand, GetInfoCommand, GoToFileLocationCommand, GuestOsManagingSharingCommand, GuestOsManagingSharingGearCommand, GuestOsShareCommand, InspectConsoleCommand, InspectElementCommand, InspectNormalCommand, InvokeSharesheetCommand, ManageInDriveCommand, ManageMirrorsyncCommand, NewFolderCommand, NewWindowCommand, OpenGearMenuCommand, OpenWithCommand, PasteCommand, PasteIntoCurrentFolderCommand, PasteIntoFolderCommand, PinFolderCommand, RefreshCommand, RenameCommand, RestoreFromTrashCommand, SearchCommand, SelectAllCommand, SendFeedbackCommand, SetWallpaperCommand, ShareCommand, ShowProvidersSubmenuCommand, SortByDateCommand, SortByNameCommand, SortBySizeCommand, SortByTypeCommand, ToggleHiddenAndroidFoldersCommand, ToggleHiddenFilesCommand, ToggleHoldingSpaceCommand, TogglePinnedCommand, UnmountCommand, UnpinFolderCommand, VolumeHelpCommand, VolumeStorageCommand, VolumeSwitchCommand, ZipSelectionCommand, ZoomInCommand, ZoomOutCommand, ZoomResetCommand} from './file_manager_commands.js';
 import {shouldIgnoreEvents} from './file_manager_commands_util.js';
 import {CanExecuteEvent, Command, CommandEvent} from './ui/command.js';
-import {contextMenuHandler} from './ui/context_menu_handler.js';
+import {contextMenuHandler, type HideEvent, type ShowEvent} from './ui/context_menu_handler.js';
 
 /**
  * Name of a command (for UMA).
@@ -193,9 +192,9 @@ export class CommandHandler {
         'canExecute', this.onCanExecute_.bind(this) as EventListener);
 
     contextMenuHandler.addEventListener(
-        'show', this.onContextMenuShow_.bind(this) as EventListener);
+        'show', this.onContextMenuShow_.bind(this));
     contextMenuHandler.addEventListener(
-        'hide', this.onContextMenuHide_.bind(this) as EventListener);
+        'hide', this.onContextMenuHide_.bind(this));
   }
 
   private onContextMenuShow_(event: ShowEvent) {
