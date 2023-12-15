@@ -125,24 +125,32 @@ class ContextMenuHandler extends EventTarget {
     this.resizeObserver_.observe(menu);
     this.abortController_ = new AbortController();
     doc.addEventListener(
-        'keydown', this, {signal: this.abortController_.signal, capture: true});
-    doc.addEventListener(
-        'mousedown', this,
+        'keydown', this.handleKeyboardEvent_.bind(this),
         {signal: this.abortController_.signal, capture: true});
     doc.addEventListener(
-        'touchstart', this,
+        'mousedown', this.handleMouseEvent_.bind(this),
         {signal: this.abortController_.signal, capture: true});
-    doc.addEventListener('focus', this, {signal: this.abortController_.signal});
+    doc.addEventListener(
+        'touchstart', this.handleTouchEvent_.bind(this),
+        {signal: this.abortController_.signal, capture: true});
+    doc.addEventListener(
+        'focus', this.handleFocusEvent_.bind(this),
+        {signal: this.abortController_.signal});
     doc.defaultView?.addEventListener(
-        'popstate', this, {signal: this.abortController_.signal});
+        'popstate', this.handleHideMenuEvent_.bind(this),
+        {signal: this.abortController_.signal});
     doc.defaultView?.addEventListener(
-        'resize', this, {signal: this.abortController_.signal});
+        'resize', this.handleHideMenuEvent_.bind(this),
+        {signal: this.abortController_.signal});
     doc.defaultView?.addEventListener(
-        'blur', this, {signal: this.abortController_.signal});
+        'blur', this.handleHideMenuEvent_.bind(this),
+        {signal: this.abortController_.signal});
     menu.addEventListener(
-        'contextmenu', this, {signal: this.abortController_.signal});
+        'contextmenu', this.handleContextMenuEvent_.bind(this),
+        {signal: this.abortController_.signal});
     menu.addEventListener(
-        'activate', this, {signal: this.abortController_.signal});
+        'activate', this.handleActivateEvent_.bind(this),
+        {signal: this.abortController_.signal});
 
     const ev =
         new CustomEvent('show', {detail: {element: menu.contextElement, menu}});
@@ -198,108 +206,114 @@ class ContextMenuHandler extends EventTarget {
   }
 
   /**
-   * Handles event callbacks.
-   * @param {!Event} e The event object.
+   * @param {KeyboardEvent} e
+   * @private
    */
-  handleEvent(e) {
+  handleKeyboardEvent_(e) {
     // Keep track of keydown state so that we can use that to determine the
     // reason for the contextmenu event.
     switch (e.type) {
       case 'keydown':
-        // @ts-ignore: error TS2339: Property 'altKey' does not exist on type
-        // 'Event'.
         this.keyIsDown_ = !e.ctrlKey && !e.altKey &&
-            // context menu key or Shift-F10
-            // @ts-ignore: error TS2339: Property 'shiftKey' does not exist on
-            // type 'Event'.
+            // context menu key or Shift-F10.
             (e.keyCode === 93 && !e.shiftKey || e.key === 'F10' && e.shiftKey);
         break;
-
       case 'keyup':
         this.keyIsDown_ = false;
         break;
     }
 
-    // Context menu is handled even when we have no menu.
-    if (e.type !== 'contextmenu' && !this.menu) {
+    if (!this.menu || e.type !== 'keydown') {
       return;
     }
 
-    switch (e.type) {
-      case 'mousedown':
-        // @ts-ignore: error TS2339: Property 'contains' does not exist on type
-        // 'Menu'.
-        if (!this.menu.contains(e.target)) {
-          this.hideMenu();
-        } else {
-          e.preventDefault();
-        }
-        break;
+    if (e.key === 'Escape') {
+      this.hideMenu();
+      e.stopPropagation();
+      e.preventDefault();
 
-      case 'touchstart':
-        // @ts-ignore: error TS2339: Property 'contains' does not exist on type
-        // 'Menu'.
-        if (!this.menu.contains(e.target)) {
-          this.hideMenu();
-        }
-        break;
+      // If the menu is visible we let it handle all the keyboard events
+      // unless Ctrl is held down.
+    } else if (this.menu && !e.ctrlKey) {
+      this.menu.handleKeyDown(e);
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }
 
-      case 'keydown':
-        // @ts-ignore: error TS2339: Property 'key' does not exist on type
-        // 'Event'.
-        if (e.key === 'Escape') {
-          this.hideMenu();
-          e.stopPropagation();
-          e.preventDefault();
+  /**
+   * @param {TouchEvent} e
+   * @private
+   */
+  handleTouchEvent_(e) {
+    if (!this.menu?.contains(/** @type {Node} */ (e.target))) {
+      this.hideMenu();
+    }
+  }
 
-          // If the menu is visible we let it handle all the keyboard events
-          // unless Ctrl is held down.
-          // @ts-ignore: error TS2339: Property 'ctrlKey' does not exist on type
-          // 'Event'.
-        } else if (this.menu && !e.ctrlKey) {
-          // @ts-ignore: error TS2339: Property 'handleKeyDown' does not exist
-          // on type 'Menu'.
-          this.menu.handleKeyDown(e);
-          e.preventDefault();
-          e.stopPropagation();
-        }
-        break;
+  /**
+   * @param {FocusEvent} e
+   * @private
+   */
+  handleFocusEvent_(e) {
+    if (!this.menu?.contains(/** @type {Node} */ (e.target))) {
+      this.hideMenu();
+    }
+  }
 
-      case 'activate':
-        const hideDelayed = e.target instanceof MenuItem && e.target.checkable;
-        this.hideMenu(hideDelayed ? HideType.DELAYED : HideType.INSTANT);
-        break;
+  /**
+   * @param {Event} _e
+   * @private
+   */
+  handleHideMenuEvent_(_e) {
+    if (this.menu) {
+      this.hideMenu();
+    }
+  }
 
-      case 'focus':
-        // @ts-ignore: error TS2339: Property 'contains' does not exist on type
-        // 'Menu'.
-        if (!this.menu.contains(e.target)) {
-          this.hideMenu();
-        }
-        break;
+  /**
+   * @param {Event} e
+   */
+  handleActivateEvent_(e) {
+    if (this.menu) {
+      const hideDelayed = e.target instanceof MenuItem && e.target.checkable;
+      this.hideMenu(hideDelayed ? HideType.DELAYED : HideType.INSTANT);
+    }
+  }
 
-      case 'blur':
-        this.hideMenu();
-        break;
+  /**
+   * @param {Event} e
+   */
+  handleContextMenuEvent_(e) {
+    // @ts-ignore: error TS2339: Property 'contains' does not exist on type
+    // 'Menu'.
+    if ((!this.menu || !this.menu.contains(e.target)) &&
+        (!this.hideTimestamp_ || Date.now() - this.hideTimestamp_ > 50)) {
+      // @ts-ignore: error TS2339: Property 'contextMenu' does not exist on
+      // type 'EventTarget'.
+      this.showMenu(e, e.currentTarget.contextMenu);
+    }
+    e.preventDefault();
+    // Don't allow elements further up in the DOM to show their menus.
+    e.stopPropagation();
+  }
 
-      case 'popstate':
-      case 'resize':
-        this.hideMenu();
-        break;
+  /**
+   * Handles event callbacks.
+   * @param {MouseEvent} e The event object.
+   * @private
+   */
+  handleMouseEvent_(e) {
+    if (!this.menu) {
+      return;
+    }
 
-      case 'contextmenu':
-        // @ts-ignore: error TS2339: Property 'contains' does not exist on type
-        // 'Menu'.
-        if ((!this.menu || !this.menu.contains(e.target)) &&
-            (!this.hideTimestamp_ || Date.now() - this.hideTimestamp_ > 50)) {
-          // @ts-ignore: error TS2339: Property 'contextMenu' does not exist on
-          // type 'EventTarget'.
-          this.showMenu(e, e.currentTarget.contextMenu);
-        }
-        e.preventDefault();
-        // Don't allow elements further up in the DOM to show their menus.
-        e.stopPropagation();
-        break;
+    // @ts-ignore: error TS2339: Property 'contains' does not exist on type
+    // 'Menu'.
+    if (!this.menu.contains(e.target)) {
+      this.hideMenu();
+    } else {
+      e.preventDefault();
     }
   }
 
@@ -330,14 +344,23 @@ class ContextMenuHandler extends EventTarget {
         }
 
         if (oldContextMenu && !menu) {
-          this.removeEventListener('contextmenu', contextMenuHandler);
-          this.removeEventListener('keydown', contextMenuHandler);
-          this.removeEventListener('keyup', contextMenuHandler);
+          this.abortController_?.abort();
         }
         if (menu && !oldContextMenu) {
-          this.addEventListener('contextmenu', contextMenuHandler);
-          this.addEventListener('keydown', contextMenuHandler);
-          this.addEventListener('keyup', contextMenuHandler);
+          this.abortController_ = new AbortController();
+          this.addEventListener(
+              'contextmenu',
+              contextMenuHandler.handleContextMenuEvent_.bind(
+                  contextMenuHandler),
+              {signal: this.abortController_.signal});
+          this.addEventListener(
+              'keydown',
+              contextMenuHandler.handleKeyboardEvent_.bind(contextMenuHandler),
+              {signal: this.abortController_.signal});
+          this.addEventListener(
+              'keyup',
+              contextMenuHandler.handleKeyboardEvent_.bind(contextMenuHandler),
+              {signal: this.abortController_.signal});
         }
 
         this.contextMenu_ = menu;
