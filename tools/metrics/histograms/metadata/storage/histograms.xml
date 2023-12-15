@@ -22,6 +22,37 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="DatabaseTag">
+  <variant name="Activity" summary="Activity"/>
+  <variant name="Affiliation" summary="Affiliation"/>
+  <variant name="AggregationService" summary="AggregationService"/>
+  <variant name="BackgroundRequestQueue" summary="BackgroundRequestQueue"/>
+  <variant name="BrowsingTopics" summary="BrowsingTopics"/>
+  <variant name="Conversions" summary="Conversions"/>
+  <variant name="Cookie" summary="Cookie"/>
+  <variant name="DatabaseTracker" summary="DatabaseTracker"/>
+  <variant name="DIPS" summary="DIPS"/>
+  <variant name="FirstPartySets" summary="FirstPartySets"/>
+  <variant name="History" summary="History"/>
+  <variant name="InterestGroups" summary="InterestGroups"/>
+  <variant name="LocalTraces" summary="LocalTraces"/>
+  <variant name="OptOutBlacklist" summary="OptOutBlacklist"/>
+  <variant name="Passwords" summary="Passwords"/>
+  <variant name="PowerBookmarks" summary="PowerBookmarks"/>
+  <variant name="Predictor" summary="Predictor"/>
+  <variant name="PrivateAggregation" summary="PrivateAggregation"/>
+  <variant name="Quota" summary="Quota"/>
+  <variant name="ReportingAndNEL" summary="ReportingAndNEL"/>
+  <variant name="SharedDictionary" summary="SharedDictionary"/>
+  <variant name="SharedStorage" summary="SharedStorage"/>
+  <variant name="Shortcuts" summary="Shortcuts"/>
+  <variant name="Thumbnail" summary="Thumbnail"/>
+  <variant name="TopSites" summary="TopSites"/>
+  <variant name="TrustTokens" summary="TrustTokens"/>
+  <variant name="UserNotes" summary="UserNotes"/>
+  <variant name="Web" summary="Web"/>
+</variants>
+
 <histogram name="API.StorageAccess.AllowedRequests2" enum="StorageAccessResult"
     expires_after="2024-05-26">
   <owner>mkwst@chromium.org</owner>
@@ -256,6 +287,18 @@ chromium-metrics-reviews@google.com.
     recovery succeeded (see Sql.Recovery.Result for that information), since not
     all recoveries fail due to SQLite errors (e.g. if a version number could not
     be read from the meta table).
+  </summary>
+</histogram>
+
+<histogram name="Sql.Statement.{DatabaseTag}.VMSteps" units="count"
+    expires_after="2024-12-05">
+  <owner>etienneb@chromium.org</owner>
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The number of virtual machine operations executed for {DatabaseTag}
+    database. It is reported once per statement. It can be used as a proxy of
+    total work done by queries executed over the database.
   </summary>
 </histogram>
 

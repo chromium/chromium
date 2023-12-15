@@ -270,6 +270,9 @@ class COMPONENT_EXPORT(SQL) Statement {
   // value from it.
   SqliteResultCode StepInternal();
 
+  // Retrieve and log the count of VM steps required to execute the query.
+  void ReportQueryExecutionMetrics() const;
+
   // The actual sqlite statement. This may be unique to us, or it may be cached
   // by the Database, which is why it's ref-counted. This pointer is
   // guaranteed non-null.

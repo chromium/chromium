@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
@@ -25,6 +26,8 @@ class StatementTest : public testing::Test {
   ~StatementTest() override = default;
 
   void SetUp() override {
+    db_.set_histogram_tag("Test");
+
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(
         db_.Open(temp_dir_.GetPath().AppendASCII("statement_test.sqlite")));
@@ -359,6 +362,25 @@ TEST_F(StatementTest, GetSQLStatementExcludesBoundValues) {
   Statement select(db_.GetUniqueStatement("SELECT t FROM texts ORDER BY id"));
   ASSERT_TRUE(select.Step());
   EXPECT_EQ(select.ColumnString(0), "John Doe");
+}
+
+TEST_F(StatementTest, RunReportsPerformanceMetrics) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(db_.Execute(
+      "CREATE TABLE rows(a INTEGER PRIMARY KEY NOT NULL, b INTEGER NOT NULL)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(a, b) VALUES(12, 42)"));
+
+  histogram_tester.ExpectTotalCount("Sql.Statement.Test.VMSteps", 0);
+
+  {
+    Statement select(db_.GetUniqueStatement("SELECT b FROM rows WHERE a=?"));
+    select.BindInt64(0, 12);
+    ASSERT_TRUE(select.Step());
+    EXPECT_EQ(select.ColumnInt64(0), 42);
+  }
+
+  histogram_tester.ExpectTotalCount("Sql.Statement.Test.VMSteps", 1);
 }
 
 }  // namespace
