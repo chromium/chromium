@@ -393,6 +393,11 @@ bool IsAlphaKeyboardCode(ui::KeyboardCode key_code) {
   return key_code >= ui::VKEY_A && key_code <= ui::VKEY_Z;
 }
 
+// Verify if the keyboard code is a number.
+bool IsNumber(ui::KeyboardCode key_code) {
+  return key_code >= ui::VKEY_0 && key_code <= ui::VKEY_9;
+}
+
 PeripheralCustomizationEventRewriter::DeviceIdButton::DeviceIdButton(
     int device_id,
     mojom::ButtonPtr button)
@@ -515,12 +520,18 @@ bool PeripheralCustomizationEventRewriter::IsButtonCustomizable(
   // key events.
   // 2. If restriction is kAllowAlphabetKeyEventRewrites, mice are allowed to
   // observe only alphabet letters key event.
-  // 3. Mice are not allowed to observe key event in other cases.
+  // 3. If restriction is kAllowAlphabetOrNumberKeyEventRewrites, mice are
+  // allowed to observe alphabet letters or number key event.
+  // 4. Mice are not allowed to observe key event in other cases.
   switch (customization_restriction) {
     case mojom::CustomizationRestriction::kAllowCustomizations:
       return true;
     case mojom::CustomizationRestriction::kAllowAlphabetKeyEventRewrites:
       return IsAlphaKeyboardCode(key_event.key_code());
+    case mojom::CustomizationRestriction::
+        kAllowAlphabetOrNumberKeyEventRewrites:
+      return IsAlphaKeyboardCode(key_event.key_code()) ||
+             IsNumber(key_event.key_code());
     case mojom::CustomizationRestriction::kDisallowCustomizations:
     case mojom::CustomizationRestriction::kDisableKeyEventRewrites:
       return false;
