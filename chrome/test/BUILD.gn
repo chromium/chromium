@@ -2761,7 +2761,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/ui/views/incognito_clear_browsing_data_dialog_browsertest.cc",
       "../browser/ui/views/intent_picker_dialog_browsertest.cc",
       "../browser/ui/views/plus_addresses/plus_address_creation_dialog_browsertest.cc",
-      "../browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_browsertest.cc",
       "../browser/ui/views/reader_mode/reader_mode_icon_view_browsertest.cc",
       "../browser/ui/views/sad_tab_view_browsertest.cc",
       "../browser/ui/views/sharing/remote_copy_browsertest.cc",
