@@ -88,11 +88,6 @@ const char kAndroidAppIntegrationName[] = "Integrate with Android App Search";
 const char kAndroidAppIntegrationDescription[] =
     "If enabled, allows Chrome to integrate with the Android App Search.";
 
-const char kAndroidAppIntegrationSafeSearchName[] =
-    "SafeSearch in Android App Search";
-const char kAndroidAppIntegrationSafeSearchDescription[] =
-    "If enabled, allows Chrome to filter out sensitive urls";
-
 const char kAndroidExtendedKeyboardShortcutsName[] =
     "Android Extended Keyboard Shortcuts";
 const char kAndroidExtendedKeyboardShortcutsDescription[] =

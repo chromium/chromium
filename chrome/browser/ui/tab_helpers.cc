@@ -426,9 +426,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     // android tab
     // TODO(crbug.com/1466970): Consider moving check conditions or the
     // registration logic to sensitivity_persisted_tab_data_android.*
-    if (!profile->IsOffTheRecord() &&
-        base::FeatureList::IsEnabled(
-            chrome::android::kAndroidAppIntegrationSafeSearch)) {
+    if (!profile->IsOffTheRecord()) {
       if (auto* tab = TabAndroid::FromWebContents(web_contents);
           (tab && !tab->IsCustomTab())) {
         SensitivityPersistedTabDataAndroid::From(

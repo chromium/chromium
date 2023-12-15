@@ -162,7 +162,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRedirectExplicitCTAIntentsToExistingActivity,
     &kAllowNewIncognitoTabIntents,
     &kAndroidAppIntegration,
-    &kAndroidAppIntegrationSafeSearch,
     &kAndroidHatsRefactor,
     &kAndroidHub,
     &kAndroidSearchEngineChoiceNotification,
@@ -444,10 +443,6 @@ BASE_FEATURE(kFocusOmniboxInIncognitoTabIntents,
 
 BASE_FEATURE(kAndroidAppIntegration,
              "AndroidAppIntegration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidAppIntegrationSafeSearch,
-             "AndroidAppIntegrationSafeSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidHatsRefactor,

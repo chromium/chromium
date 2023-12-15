@@ -116,8 +116,6 @@ public abstract class ChromeFeatureList {
             "AdvancedPeripheralsSupportTabStrip";
     public static final String ALLOW_NEW_INCOGNITO_TAB_INTENTS = "AllowNewIncognitoTabIntents";
     public static final String ANDROID_APP_INTEGRATION = "AndroidAppIntegration";
-    public static final String ANDROID_APP_INTEGRATION_SAFE_SEARCH =
-            "AndroidAppIntegrationSafeSearch";
     public static final String ANDROID_HATS_REFACTOR = "AndroidHatsRefactor";
     public static final String ANDROID_HUB = "AndroidHub";
     public static final String ANDROID_SEARCH_ENGINE_CHOICE_NOTIFICATION =

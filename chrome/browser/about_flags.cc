@@ -5962,11 +5962,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAppIntegrationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidAppIntegration)},
 
-    {"android-app-integration-safesearch",
-     flag_descriptions::kAndroidAppIntegrationSafeSearchName,
-     flag_descriptions::kAndroidAppIntegrationSafeSearchDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidAppIntegrationSafeSearch)},
-
     {"auxiliary-search-donation",
      flag_descriptions::kAuxiliarySearchDonationName,
      flag_descriptions::kAuxiliarySearchDonationDescription, kOsAndroid,

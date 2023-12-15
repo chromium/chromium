@@ -57,31 +57,6 @@ public class AuxiliarySearchBridge {
     }
 
     /**
-     * This method is for filtering the tabs, which will only return the tabs which are http or
-     * https. This method is called when the AndroidAppIntegrationSafeSearch is not enabled.
-     *
-     * @param tabs A list of {@link Tab}s want to be check if there should be searched by Auxiliary
-     *         Search.
-     * @return tabs which can be searched by Auxiliary Searchh.
-     */
-    public @NonNull List<Tab> getSearchableTabs(@NonNull List<Tab> tabs) {
-        ArrayList<Tab> tabList = new ArrayList<>();
-        if (mNativeBridge != 0) {
-            Object[] tab_objects =
-                    AuxiliarySearchBridgeJni.get()
-                            .getSearchableTabs(mNativeBridge, tabs.toArray(new Tab[0]));
-
-            for (Object o : tab_objects) {
-                if (o instanceof Tab) {
-                    tabList.add((Tab) o);
-                }
-            }
-        }
-
-        return tabList;
-    }
-
-    /**
      * This method will return non sensitive url tabs, and the scheme is http or https.
      * This method is called when the AndroidAppIntegrationSafeSearch not enabled.
      *
@@ -129,7 +104,5 @@ public class AuxiliarySearchBridge {
 
         void getNonSensitiveTabs(
                 long nativeAuxiliarySearchProvider, Tab[] tabs, Callback<Object[]> callback);
-
-        Object[] getSearchableTabs(long nativeAuxiliarySearchProvider, Tab[] tabs);
     }
 }

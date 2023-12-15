@@ -143,23 +143,6 @@ AuxiliarySearchProvider::GetBookmarksSearchableData(JNIEnv* env) const {
   return ToJavaByteArray(env, serialized_group);
 }
 
-base::android::ScopedJavaLocalRef<jobjectArray>
-AuxiliarySearchProvider::GetSearchableTabs(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& j_tabs_android) const {
-  std::vector<TabAndroid*> all_tabs = TabAndroid::GetAllNativeTabs(
-      env, base::android::ScopedJavaLocalRef(j_tabs_android));
-  std::vector<base::WeakPtr<TabAndroid>> filtered_tabs =
-      FilterTabsByScheme(all_tabs);
-
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> j_filtered_tabs;
-  j_filtered_tabs.reserve(filtered_tabs.size());
-  for (base::WeakPtr<TabAndroid> tab : filtered_tabs) {
-    j_filtered_tabs.push_back(tab->GetJavaObject());
-  }
-  return base::android::ToJavaArrayOfObjects(env, j_filtered_tabs);
-}
-
 void AuxiliarySearchProvider::GetNonSensitiveTabs(
     JNIEnv* env,
     const base::android::JavaParamRef<jobjectArray>& j_tabs_android,

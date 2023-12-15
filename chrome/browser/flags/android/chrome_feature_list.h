@@ -23,7 +23,6 @@ BASE_DECLARE_FEATURE(kAdvancedPeripheralsSupport);
 BASE_DECLARE_FEATURE(kAdvancedPeripheralsSupportTabStrip);
 BASE_DECLARE_FEATURE(kAllowNewIncognitoTabIntents);
 BASE_DECLARE_FEATURE(kAndroidAppIntegration);
-BASE_DECLARE_FEATURE(kAndroidAppIntegrationSafeSearch);
 BASE_DECLARE_FEATURE(kAndroidHatsRefactor);
 BASE_DECLARE_FEATURE(kAndroidHub);
 BASE_DECLARE_FEATURE(kAndroidSearchEngineChoiceNotification);

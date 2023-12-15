@@ -82,9 +82,6 @@ extern const char kAllowInsecureLocalhostDescription[];
 extern const char kAndroidAppIntegrationName[];
 extern const char kAndroidAppIntegrationDescription[];
 
-extern const char kAndroidAppIntegrationSafeSearchName[];
-extern const char kAndroidAppIntegrationSafeSearchDescription[];
-
 extern const char kAndroidExtendedKeyboardShortcutsName[];
 extern const char kAndroidExtendedKeyboardShortcutsDescription[];
 

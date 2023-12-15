@@ -34,10 +34,6 @@ class AuxiliarySearchProvider : public KeyedService {
   base::android::ScopedJavaLocalRef<jbyteArray> GetBookmarksSearchableData(
       JNIEnv* env) const;
 
-  base::android::ScopedJavaLocalRef<jobjectArray> GetSearchableTabs(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& j_tabs_android) const;
-
   void GetNonSensitiveTabs(
       JNIEnv* env,
       const base::android::JavaParamRef<jobjectArray>& j_tabs_android,
