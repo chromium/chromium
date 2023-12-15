@@ -62,6 +62,7 @@ class VaapiVideoEncoderDelegate {
 
     VABufferID coded_buffer_id() const;
     const BitstreamBufferMetadata& metadata() const;
+    bool IsFrameDropped() const { return !coded_buffer_; }
 
    private:
     std::unique_ptr<ScopedVABuffer> coded_buffer_;
@@ -106,6 +107,9 @@ class VaapiVideoEncoderDelegate {
 
     // Returns true if this job has been requested to produce a keyframe.
     bool IsKeyframeRequested() const { return keyframe_; }
+
+    void DropFrame() { coded_buffer_.reset(); }
+    bool IsFrameDropped() const { return !coded_buffer_; }
 
     base::TimeDelta timestamp() const;
 
@@ -178,8 +182,9 @@ class VaapiVideoEncoderDelegate {
   friend class VaapiVideoEncodeAcceleratorTest;
 
   enum class PrepareEncodeJobResult {
-    kSuccess,
-    kFail,
+    kSuccess,  // Submit the encode job successfully.
+    kFail,     // Error happens in submitting the encode job.
+    kDrop,     // Encode job is dropped. An returned encoded chunk is empty.
   };
 
   virtual BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,

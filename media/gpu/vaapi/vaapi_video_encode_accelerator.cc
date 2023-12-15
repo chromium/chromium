@@ -467,27 +467,32 @@ void VaapiVideoEncodeAccelerator::ReturnBitstreamBuffer(
     const EncodeResult& encode_result,
     const BitstreamBuffer& buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-  const base::UnsafeSharedMemoryRegion& shm_region = buffer.region();
-  DCHECK(shm_region.IsValid());
-  base::WritableSharedMemoryMapping shm_mapping = shm_region.Map();
-  uint8_t* target_data = shm_mapping.GetMemoryAs<uint8_t>();
-  size_t data_size = 0;
-  // vaSyncSurface() is not necessary because GetEncodedChunkSize() has been
-  // called in VaapiVideoEncoderDelegate::Encode().
-  if (!vaapi_wrapper_->DownloadFromVABuffer(
-          encode_result.coded_buffer_id(), /*sync_surface_id=*/absl::nullopt,
-          target_data, shm_mapping.size(), &data_size)) {
-    NotifyError({EncoderStatus::Codes::kEncoderHardwareDriverError,
-                 "Failed downloading coded buffer"});
-    return;
-  }
 
   auto metadata = encode_result.metadata();
-  DCHECK_NE(metadata.payload_size_bytes, 0u);
 
-  DVLOGF(4) << "Returning bitstream buffer "
-            << (metadata.key_frame ? "(keyframe)" : "")
-            << " id: " << buffer.id() << " size: " << data_size;
+  if (!encode_result.IsFrameDropped()) {
+    const base::UnsafeSharedMemoryRegion& shm_region = buffer.region();
+    DCHECK(shm_region.IsValid());
+    base::WritableSharedMemoryMapping shm_mapping = shm_region.Map();
+    uint8_t* target_data = shm_mapping.GetMemoryAs<uint8_t>();
+    size_t data_size = 0;
+    // vaSyncSurface() is not necessary because GetEncodedChunkSize() has been
+    // called in VaapiVideoEncoderDelegate::Encode().
+    if (!vaapi_wrapper_->DownloadFromVABuffer(
+            encode_result.coded_buffer_id(), /*sync_surface_id=*/absl::nullopt,
+            target_data, shm_mapping.size(), &data_size)) {
+      NotifyError({EncoderStatus::Codes::kEncoderHardwareDriverError,
+                   "Failed downloading coded buffer"});
+      return;
+    }
+    CHECK_EQ(metadata.payload_size_bytes, data_size);
+    DVLOGF(4) << "Returning bitstream buffer "
+              << (metadata.key_frame ? "(keyframe)" : "")
+              << " id: " << buffer.id() << " size: " << data_size;
+  } else {
+    CHECK_EQ(metadata.payload_size_bytes, 0u);
+    DVLOGF(4) << "Drop frame bitstream_buffer_id=" << buffer.id();
+  }
 
   TRACE_EVENT2("media,gpu", "VAVEA::BitstreamBufferReady", "timestamp",
                metadata.timestamp.InMicroseconds(), "bitstream_buffer_id",

@@ -55,6 +55,7 @@ base::TimeDelta VaapiVideoEncoderDelegate::EncodeJob::timestamp() const {
 }
 
 VABufferID VaapiVideoEncoderDelegate::EncodeJob::coded_buffer_id() const {
+  CHECK(coded_buffer_);
   return coded_buffer_->id();
 }
 
@@ -80,6 +81,7 @@ VaapiVideoEncoderDelegate::EncodeResult&
 VaapiVideoEncoderDelegate::EncodeResult::operator=(EncodeResult&&) = default;
 
 VABufferID VaapiVideoEncoderDelegate::EncodeResult::coded_buffer_id() const {
+  CHECK(coded_buffer_);
   return coded_buffer_->id();
 }
 
@@ -125,6 +127,14 @@ bool VaapiVideoEncoderDelegate::Encode(EncodeJob& encode_job) {
     return false;
   }
 
+  if (result == PrepareEncodeJobResult::kDrop) {
+    // An encoder must not drop a keyframe.
+    CHECK(!encode_job.IsKeyframeRequested());
+    DVLOGF(3) << "Drop frame";
+    encode_job.DropFrame();
+    return true;
+  }
+
   if (!vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
           encode_job.input_surface_id())) {
     VLOGF(1) << "Failed to execute encode";
@@ -138,6 +148,11 @@ absl::optional<VaapiVideoEncoderDelegate::EncodeResult>
 VaapiVideoEncoderDelegate::GetEncodeResult(
     std::unique_ptr<EncodeJob> encode_job) {
   TRACE_EVENT0("media,gpu", "VAVEDelegate::GetEncodeResult");
+  if (encode_job->IsFrameDropped()) {
+    return absl::make_optional<EncodeResult>(nullptr,
+                                             GetMetadata(*encode_job, 0u));
+  }
+
   const VASurfaceID va_surface_id = encode_job->input_surface_id();
   const uint64_t encoded_chunk_size = vaapi_wrapper_->GetEncodedChunkSize(
       encode_job->coded_buffer_id(), va_surface_id);
