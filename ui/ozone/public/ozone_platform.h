@@ -315,6 +315,9 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   virtual bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                              gfx::BufferUsage usage) const;
 
+  // Whether the platform supports compositing windows with transparency.
+  virtual bool IsWindowCompositingSupported() const;
+
   // Returns whether a custom frame should be used for windows.
   // The default behaviour is returning what is suggested by the
   // custom_frame_pref_default property of the platform: if the platform
