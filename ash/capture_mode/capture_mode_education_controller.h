@@ -14,8 +14,6 @@ class PrefRegistrySimple;
 
 namespace ash {
 
-// TODO(hewer): Close tutorial when a capture session is started.
-
 // Controller for showing the different forms of user education for Screen
 // Capture entry points. Education is split into three different arms:
 //  - Arm 1: Shortcut Nudge. A simple system nudge appears with text indicating
