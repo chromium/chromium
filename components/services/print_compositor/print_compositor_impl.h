@@ -76,8 +76,10 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       uint64_t frame_guid,
       base::ReadOnlySharedMemoryRegion serialized_content,
       const ContentToFrameMap& subframe_content_map,
+      mojom::PrintCompositor::DocumentType document_type,
       mojom::PrintCompositor::CompositeDocumentCallback callback) override;
   void PrepareToCompositeDocument(
+      mojom::PrintCompositor::DocumentType document_type,
       mojom::PrintCompositor::PrepareToCompositeDocumentCallback callback)
       override;
   void FinishDocumentComposition(
@@ -101,17 +103,21 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       base::OnceCallback<void(PrintCompositor::Status,
                               base::ReadOnlySharedMemoryRegion)>;
 
-  // The core function for content composition and conversion to a pdf file.
+  // The core function for content composition and conversion to a PDF file,
+  // and possibly also into a full document PDF/XPS file.
   // Make this function virtual so tests can override it.
   virtual mojom::PrintCompositor::Status CompositePages(
       base::span<const uint8_t> serialized_content,
       const ContentToFrameMap& subframe_content_map,
-      base::ReadOnlySharedMemoryRegion* region);
+      base::ReadOnlySharedMemoryRegion* region,
+      mojom::PrintCompositor::DocumentType document_type);
 
   // Make these functions virtual so tests can override them.
-  virtual void FulfillRequest(base::span<const uint8_t> serialized_content,
-                              const ContentToFrameMap& subframe_content_map,
-                              CompositePagesCallback callback);
+  virtual void FulfillRequest(
+      base::span<const uint8_t> serialized_content,
+      const ContentToFrameMap& subframe_content_map,
+      mojom::PrintCompositor::DocumentType document_type,
+      CompositePagesCallback callback);
   virtual void FinishDocumentRequest(
       FinishDocumentCompositionCallback callback);
 
@@ -168,6 +174,7 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
     RequestInfo(base::span<const uint8_t> content,
                 const ContentToFrameMap& content_info,
                 const base::flat_set<uint64_t>& pending_subframes,
+                mojom::PrintCompositor::DocumentType document_type,
                 CompositePagesCallback callback);
     ~RequestInfo();
 
@@ -175,17 +182,19 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
     // for composition.
     base::flat_set<uint64_t> pending_subframes;
 
+    mojom::PrintCompositor::DocumentType document_type;
     CompositePagesCallback callback;
     bool is_concurrent_doc_composition = false;
   };
 
   // Stores the concurrent document composition information.
   struct DocumentInfo {
-    DocumentInfo();
+    explicit DocumentInfo(mojom::PrintCompositor::DocumentType document_type);
     ~DocumentInfo();
 
     SkDynamicMemoryWStream compositor_stream;
     sk_sp<SkDocument> doc;
+    mojom::PrintCompositor::DocumentType document_type;
     uint32_t pages_provided = 0;
     uint32_t pages_written = 0;
     uint32_t page_count = 0;
@@ -217,6 +226,7 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       uint64_t frame_guid,
       base::ReadOnlySharedMemoryRegion serialized_content,
       const ContentToFrameMap& subframe_content_ids,
+      mojom::PrintCompositor::DocumentType document_type,
       CompositePagesCallback callback);
   void HandleDocumentCompletionRequest();
 

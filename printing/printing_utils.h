@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/mojom/print.mojom-forward.h"
 
 #if BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/strings/string_piece.h"
@@ -79,6 +80,10 @@ gfx::Rect GetPrintableAreaDeviceUnits(HDC hdc);
 // document. This includes checking a minimal size and magic bytes.
 COMPONENT_EXPORT(PRINTING_BASE)
 bool LooksLikePdf(base::span<const char> maybe_pdf_data);
+
+// Determine the document format type appropriate to generate for printing.
+COMPONENT_EXPORT(PRINTING_BASE)
+mojom::SkiaDocumentType GetPrintDocumentType(bool source_is_pdf);
 
 }  // namespace printing
 

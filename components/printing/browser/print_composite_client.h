@@ -38,6 +38,10 @@ class PrintCompositeClient
   PrintCompositeClient& operator=(const PrintCompositeClient&) = delete;
   ~PrintCompositeClient() override;
 
+  // Determine the document format type to be generated when compositing full
+  // document.
+  static mojom::PrintCompositor::DocumentType GetDocumentType();
+
   // content::WebContentsObserver
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
@@ -60,15 +64,19 @@ class PrintCompositeClient
                      mojom::PrintCompositor::CompositePageCallback callback);
 
   // Notifies compositor to collect individual pages into a document
-  // when processing the individual pages for preview.
+  // when processing the individual pages for preview.  The `document_type`
+  // specified determines the format of the document passed back in the
+  // `callback` from `FinishDocumentComposition()`.
   void PrepareToCompositeDocument(
       int document_cookie,
       content::RenderFrameHost* render_frame_host,
+      mojom::PrintCompositor::DocumentType document_type,
       mojom::PrintCompositor::PrepareToCompositeDocumentCallback callback);
 
   // Notifies compositor of the total number of pages being concurrently
   // collected into the document, allowing for completion of the composition
-  // when all pages have been received.
+  // when all pages have been received.  The format of the provided document
+  // is of the `document_type` specified in `PrepareToCompositeDocument()`.
   void FinishDocumentComposition(
       int document_cookie,
       uint32_t pages_count,
@@ -81,6 +89,7 @@ class PrintCompositeClient
       content::RenderFrameHost* render_frame_host,
       const mojom::DidPrintContentParams& content,
       const ui::AXTreeUpdate& accessibility_tree,
+      mojom::PrintCompositor::DocumentType document_type,
       mojom::PrintCompositor::CompositeDocumentCallback callback);
 
   // Get the concurrent composition status for a document.  Identifies if the

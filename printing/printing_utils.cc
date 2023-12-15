@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "printing/mojom/print.mojom.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "ui/gfx/text_elider.h"
 
@@ -28,6 +29,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
+#include "printing/printing_features.h"
 #endif
 
 namespace printing {
@@ -162,6 +165,16 @@ gfx::Rect GetPrintableAreaDeviceUnits(HDC hdc) {
 bool LooksLikePdf(base::span<const char> maybe_pdf_data) {
   return maybe_pdf_data.size() >= 50u &&
          std::memcmp(maybe_pdf_data.data(), "%PDF-", 5) == 0;
+}
+
+mojom::SkiaDocumentType GetPrintDocumentType(bool source_is_pdf) {
+#if BUILDFLAG(IS_WIN)
+  return printing::features::ShouldPrintUsingXps(source_is_pdf)
+             ? mojom::SkiaDocumentType::kXPS
+             : mojom::SkiaDocumentType::kPDF;
+#else
+  return mojom::SkiaDocumentType::kPDF;
+#endif
 }
 
 }  // namespace printing

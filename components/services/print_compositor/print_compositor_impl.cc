@@ -161,25 +161,30 @@ void PrintCompositorImpl::CompositePage(
   TRACE_EVENT0("print", "PrintCompositorImpl::CompositePage");
   if (docinfo_)
     docinfo_->pages_provided++;
-  HandleCompositionRequest(frame_guid, std::move(serialized_content),
-                           subframe_content_map, std::move(callback));
+  // This function is always called to composite a page to PDF.
+  HandleCompositionRequest(
+      frame_guid, std::move(serialized_content), subframe_content_map,
+      mojom::PrintCompositor::DocumentType::kPDF, std::move(callback));
 }
 
 void PrintCompositorImpl::CompositeDocument(
     uint64_t frame_guid,
     base::ReadOnlySharedMemoryRegion serialized_content,
     const ContentToFrameMap& subframe_content_map,
+    mojom::PrintCompositor::DocumentType document_type,
     mojom::PrintCompositor::CompositeDocumentCallback callback) {
   TRACE_EVENT0("print", "PrintCompositorImpl::CompositeDocument");
   DCHECK(!docinfo_);
   HandleCompositionRequest(frame_guid, std::move(serialized_content),
-                           subframe_content_map, std::move(callback));
+                           subframe_content_map, document_type,
+                           std::move(callback));
 }
 
 void PrintCompositorImpl::PrepareToCompositeDocument(
+    mojom::PrintCompositor::DocumentType document_type,
     mojom::PrintCompositor::PrepareToCompositeDocumentCallback callback) {
   DCHECK(!docinfo_);
-  docinfo_ = std::make_unique<DocumentInfo>();
+  docinfo_ = std::make_unique<DocumentInfo>(document_type);
   std::move(callback).Run(mojom::PrintCompositor::Status::kSuccess);
 }
 
@@ -238,7 +243,7 @@ void PrintCompositorImpl::UpdateRequestsWithSubframeInfo(
 
     // Fulfill the request now.
     FulfillRequest(request->serialized_content, request->subframe_content_map,
-                   std::move(request->callback));
+                   request->document_type, std::move(request->callback));
 
     // Check for a collected print preview document that was waiting on
     // this page to finish.
@@ -287,6 +292,7 @@ void PrintCompositorImpl::HandleCompositionRequest(
     uint64_t frame_guid,
     base::ReadOnlySharedMemoryRegion serialized_content,
     const ContentToFrameMap& subframe_content_map,
+    mojom::PrintCompositor::DocumentType document_type,
     CompositePagesCallback callback) {
   base::ReadOnlySharedMemoryMapping mapping = serialized_content.Map();
   if (!mapping.IsValid()) {
@@ -305,7 +311,7 @@ void PrintCompositorImpl::HandleCompositionRequest(
     // fail by trying to use a typeface which hasn't been deserialized yet.
     if (requests_.empty()) {
       FulfillRequest(mapping.GetMemoryAsSpan<uint8_t>(), subframe_content_map,
-                     std::move(callback));
+                     document_type, std::move(callback));
       return;
     }
   }
@@ -318,7 +324,7 @@ void PrintCompositorImpl::HandleCompositionRequest(
 
   requests_.push_back(std::make_unique<RequestInfo>(
       mapping.GetMemoryAsSpan<uint8_t>(), subframe_content_map,
-      std::move(pending_subframes), std::move(callback)));
+      std::move(pending_subframes), document_type, std::move(callback)));
 }
 
 void PrintCompositorImpl::HandleDocumentCompletionRequest() {
@@ -334,7 +340,8 @@ void PrintCompositorImpl::HandleDocumentCompletionRequest() {
 mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
     base::span<const uint8_t> serialized_content,
     const ContentToFrameMap& subframe_content_map,
-    base::ReadOnlySharedMemoryRegion* region) {
+    base::ReadOnlySharedMemoryRegion* region,
+    mojom::PrintCompositor::DocumentType document_type) {
   TRACE_EVENT0("print", "PrintCompositorImpl::CompositePages");
 
   PictureDeserializationContext subframes =
@@ -371,6 +378,8 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
     if (docinfo_) {
       // Create full document if needed.
       if (!docinfo_->doc) {
+        // TODO(crbug.com/1008222) Make use of `document_type` parameter once
+        // `MakeXpsDocument()` is available.
         docinfo_->doc = MakePdfDocument(creator_, accessibility_tree_,
                                         GeneratePdfDocumentOutline::kNone,
                                         &docinfo_->compositor_stream);
@@ -435,10 +444,11 @@ PrintCompositorImpl::GetPictureDeserializationContext(
 void PrintCompositorImpl::FulfillRequest(
     base::span<const uint8_t> serialized_content,
     const ContentToFrameMap& subframe_content_map,
+    mojom::PrintCompositor::DocumentType document_type,
     CompositePagesCallback callback) {
   base::ReadOnlySharedMemoryRegion region;
-  auto status =
-      CompositePages(serialized_content, subframe_content_map, &region);
+  auto status = CompositePages(serialized_content, subframe_content_map,
+                               &region, document_type);
   std::move(callback).Run(status, std::move(region));
 }
 
@@ -475,7 +485,11 @@ PrintCompositorImpl::FrameContentInfo::FrameContentInfo() = default;
 
 PrintCompositorImpl::FrameContentInfo::~FrameContentInfo() = default;
 
-PrintCompositorImpl::DocumentInfo::DocumentInfo() = default;
+// TODO(crbug.com/1008222) Make use of `document_type` parameter once
+// `MakeXpsDocument()` is available.
+PrintCompositorImpl::DocumentInfo::DocumentInfo(
+    mojom::PrintCompositor::DocumentType document_type)
+    : document_type(document_type) {}
 
 PrintCompositorImpl::DocumentInfo::~DocumentInfo() = default;
 
@@ -483,9 +497,11 @@ PrintCompositorImpl::RequestInfo::RequestInfo(
     base::span<const uint8_t> content,
     const ContentToFrameMap& content_info,
     const base::flat_set<uint64_t>& pending_subframes,
+    mojom::PrintCompositor::DocumentType document_type,
     mojom::PrintCompositor::CompositePageCallback callback)
     : FrameContentInfo(content, content_info),
       pending_subframes(pending_subframes),
+      document_type(document_type),
       callback(std::move(callback)) {}
 
 PrintCompositorImpl::RequestInfo::~RequestInfo() = default;

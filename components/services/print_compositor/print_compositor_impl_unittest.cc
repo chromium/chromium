@@ -36,6 +36,7 @@ class MockPrintCompositorImpl : public PrintCompositorImpl {
  protected:
   void FulfillRequest(base::span<const uint8_t> serialized_content,
                       const ContentToFrameMap& subframe_content_map,
+                      mojom::PrintCompositor::DocumentType document_type,
                       CompositePageCallback callback) override {
     const auto* data =
         reinterpret_cast<const TestRequestData*>(serialized_content.data());
@@ -60,7 +61,8 @@ class MockCompletionPrintCompositorImpl : public PrintCompositorImpl {
   mojom::PrintCompositor::Status CompositePages(
       base::span<const uint8_t> serialized_content,
       const ContentToFrameMap& subframe_content_map,
-      base::ReadOnlySharedMemoryRegion* region) override {
+      base::ReadOnlySharedMemoryRegion* region,
+      mojom::PrintCompositor::DocumentType document_type) override {
     const auto* data =
         reinterpret_cast<const TestRequestData*>(serialized_content.data());
     if (docinfo_)
@@ -285,6 +287,7 @@ TEST_F(PrintCompositorImplTest, MultiRequestsBasic) {
 
   impl.CompositeDocument(
       3, CreateTestData(3, -1), subframe_content_map,
+      mojom::PrintCompositor::DocumentType::kPDF,
       base::BindOnce(&PrintCompositorImplTest::OnCompositePageCallback));
 }
 
@@ -306,6 +309,7 @@ TEST_F(PrintCompositorImplTest, MultiRequestsOrder) {
 
   impl.CompositeDocument(
       3, CreateTestData(3, -1), subframe_content_map,
+      mojom::PrintCompositor::DocumentType::kPDF,
       base::BindOnce(&PrintCompositorImplTest::OnCompositePageCallback));
   testing::Mock::VerifyAndClearExpectations(&impl);
 
@@ -386,8 +390,10 @@ TEST_F(PrintCompositorImplTest, MultiRequestsBasicFinishDocument) {
   // Page 0 with frame 3 has content 1, which refers to frame 8.
   // When the content is not available, the request is not fulfilled.
   const ContentToFrameMap subframe_content_map = {{1, 8}};
-  impl.PrepareToCompositeDocument(base::BindOnce(
-      &PrintCompositorImplTest::OnPrepareToCompositeDocumentCallback));
+  impl.PrepareToCompositeDocument(
+      mojom::PrintCompositor::DocumentType::kPDF,
+      base::BindOnce(
+          &PrintCompositorImplTest::OnPrepareToCompositeDocumentCallback));
   EXPECT_CALL(impl, OnCompositePage(testing::_, testing::_)).Times(0);
   impl.CompositePage(
       3, CreateTestData(3, 0), subframe_content_map,

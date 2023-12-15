@@ -1247,7 +1247,8 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
   client->CompositeDocument(
       kDefaultDocumentCookie, main_frame,
       *TestPrintRenderFrame::GetDefaultDidPrintContentParams(),
-      ui::AXTreeUpdate(), base::DoNothing());
+      ui::AXTreeUpdate(), PrintCompositeClient::GetDocumentType(),
+      base::DoNothing());
   ASSERT_TRUE(client->GetCompositeRequest(kDefaultDocumentCookie));
   // `requested_subframes_` should be empty.
   ASSERT_TRUE(client->requested_subframes_.empty());

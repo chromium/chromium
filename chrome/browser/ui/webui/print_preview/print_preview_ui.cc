@@ -980,6 +980,7 @@ void PrintPreviewUI::DidPrepareDocumentForPreview(int32_t document_cookie,
 
   client->PrepareToCompositeDocument(
       document_cookie, render_frame_host,
+      PrintCompositeClient::GetDocumentType(),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&PrintPreviewUI::OnPrepareForDocumentToPdfDone,
                          weak_ptr_factory_.GetWeakPtr(), request_id),

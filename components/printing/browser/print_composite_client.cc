@@ -20,7 +20,9 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_process_host.h"
 #include "printing/common/metafile_utils.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
+#include "printing/printed_document.h"
 #include "printing/printing_utils.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
@@ -70,6 +72,21 @@ PrintCompositeClient::PrintCompositeClient(content::WebContents* web_contents)
       content::WebContentsObserver(web_contents) {}
 
 PrintCompositeClient::~PrintCompositeClient() {}
+
+// static
+mojom::PrintCompositor::DocumentType PrintCompositeClient::GetDocumentType() {
+  // Using the compositor already means that the source is modifiable (e.g., not
+  // PDF).
+  mojom::SkiaDocumentType skia_document_type =
+      GetPrintDocumentType(/*source_is_pdf=*/false);
+#if BUILDFLAG(IS_WIN)
+  if (skia_document_type == mojom::SkiaDocumentType::kXPS) {
+    return mojom::PrintCompositor::DocumentType::kXPS;
+  }
+#endif
+  CHECK_EQ(skia_document_type, mojom::SkiaDocumentType::kPDF);
+  return mojom::PrintCompositor::DocumentType::kPDF;
+}
 
 void PrintCompositeClient::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
@@ -226,6 +243,7 @@ void PrintCompositeClient::CompositePage(
 void PrintCompositeClient::PrepareToCompositeDocument(
     int document_cookie,
     content::RenderFrameHost* render_frame_host,
+    mojom::PrintCompositor::DocumentType document_type,
     mojom::PrintCompositor::PrepareToCompositeDocumentCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!GetIsDocumentConcurrentlyComposited(document_cookie));
@@ -233,6 +251,7 @@ void PrintCompositeClient::PrepareToCompositeDocument(
   auto* compositor = CreateCompositeRequest(document_cookie, render_frame_host);
   is_doc_concurrently_composited_ = true;
   compositor->PrepareToCompositeDocument(
+      document_type,
       base::BindOnce(&PrintCompositeClient::OnDidPrepareToCompositeDocument,
                      std::move(callback)));
 }
@@ -264,6 +283,7 @@ void PrintCompositeClient::CompositeDocument(
     content::RenderFrameHost* render_frame_host,
     const mojom::DidPrintContentParams& content,
     const ui::AXTreeUpdate& accessibility_tree,
+    mojom::PrintCompositor::DocumentType document_type,
     mojom::PrintCompositor::CompositeDocumentCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!GetIsDocumentConcurrentlyComposited(document_cookie));
@@ -292,6 +312,7 @@ void PrintCompositeClient::CompositeDocument(
   compositor->CompositeDocument(
       GenerateFrameGuid(render_frame_host), std::move(region),
       ConvertContentInfoMap(render_frame_host, content.subframe_content_info),
+      document_type,
       base::BindOnce(&PrintCompositeClient::OnDidCompositeDocument,
                      base::Unretained(this), document_cookie,
                      std::move(callback)));
