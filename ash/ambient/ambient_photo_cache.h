@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 
@@ -47,14 +48,13 @@ ASH_EXPORT void DownloadPhoto(
     AmbientAccessTokenController& access_token_controller,
     base::OnceCallback<void(std::string&&)> callback);
 
-// Saves the photo at |url| to |cache_index| and calls |callback| with a
-// boolean that indicates success.
-ASH_EXPORT void DownloadPhotoToFile(
-    Store store,
+// Saves the photo at |url| to a temporary file and calls |callback| with a
+// its path. If successful, the caller is responsible for deleting the
+// temporary file when done using it. The returned path is empty on failure.
+ASH_EXPORT void DownloadPhotoToTempFile(
     const std::string& url,
     AmbientAccessTokenController& access_token_controller,
-    int cache_index,
-    base::OnceCallback<void(bool)> callback);
+    base::OnceCallback<void(base::FilePath)> callback);
 
 // Write photo cache to disk at |cache_index| and call |callback| when
 // complete.

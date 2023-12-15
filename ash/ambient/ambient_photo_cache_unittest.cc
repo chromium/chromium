@@ -175,12 +175,12 @@ TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadRequest) {
             std::string("Bearer ") + TestAmbientClient::kTestAccessToken);
 }
 
-TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadToFileRequest) {
+TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadToTempFileRequest) {
   std::string fake_url = "https://faketesturl/";
 
-  ambient_photo_cache::DownloadPhotoToFile(
-      ambient_photo_cache::Store::kPrimary, fake_url, access_token_controller(),
-      /*cache_index=*/1, base::BindOnce([](bool) {}));
+  ambient_photo_cache::DownloadPhotoToTempFile(
+      fake_url, access_token_controller(),
+      base::BindOnce([](base::FilePath) {}));
 
   RunUntilIdle();
   EXPECT_TRUE(IsAccessTokenRequestPending());
