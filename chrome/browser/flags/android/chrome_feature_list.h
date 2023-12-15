@@ -42,7 +42,6 @@ BASE_DECLARE_FEATURE(kCacheActivityTaskID);
 BASE_DECLARE_FEATURE(kClearOmniboxFocusAfterNavigation);
 BASE_DECLARE_FEATURE(kCreateNewTabInitializeRenderer);
 BASE_DECLARE_FEATURE(kCastDeviceFilter);
-BASE_DECLARE_FEATURE(kCCTBrandTransparency);
 BASE_DECLARE_FEATURE(kCCTBrandTransparencyMemoryImprovement);
 BASE_DECLARE_FEATURE(kCCTClientDataHeader);
 BASE_DECLARE_FEATURE(kCCTFeatureUsage);

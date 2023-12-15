@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -211,17 +210,6 @@ public class CustomTabToolbarUnitTest {
 
     @Test
     public void testToolbarBrandingDelegateImpl_EmptyToBranding() {
-        mLocationBar.setIconTransitionEnabled(true);
-        doTestToolbarBrandingDelegateImpl_EmptyToBranding(true);
-    }
-
-    @Test
-    public void testToolbarBrandingDelegateImpl_EmptyToBranding_DisableTransition() {
-        mLocationBar.setIconTransitionEnabled(false);
-        doTestToolbarBrandingDelegateImpl_EmptyToBranding(false);
-    }
-
-    private void doTestToolbarBrandingDelegateImpl_EmptyToBranding(boolean animateIconTransition) {
         assertUrlAndTitleVisible(/* titleVisible= */ false, /* urlVisible= */ true);
         mLocationBar.showEmptyLocationBar();
         assertUrlAndTitleVisible(/* titleVisible= */ false, /* urlVisible= */ false);
@@ -233,7 +221,7 @@ public class CustomTabToolbarUnitTest {
 
         mLocationBar.showBrandingLocationBar();
         assertUrlAndTitleVisible(/* titleVisible= */ false, /* urlVisible= */ true);
-        verify(mAnimationDelegate).updateSecurityButton(anyInt(), eq(animateIconTransition));
+        verify(mAnimationDelegate).updateSecurityButton(anyInt());
         assertBrandingTextShowingOnUrlBar();
 
         // Attempt to update title and URL to show Title only - should be ignored during branding.
@@ -520,25 +508,25 @@ public class CustomTabToolbarUnitTest {
 
     @Test
     public void testCookieControlsIcon_animateOnPageStoppedLoadingWithHighBreakageConfidence() {
-        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt(), anyBoolean());
+        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
 
         mLocationBar.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
-        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt(), anyBoolean());
+        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
         verify(mPageInfoIPHController, never()).showCookieControlsIPH(anyInt(), anyInt());
 
         mLocationBar.onPageLoadStopped();
-        verify(mAnimationDelegate, times(1)).updateSecurityButton(R.drawable.ic_eye_crossed, true);
+        verify(mAnimationDelegate, times(1)).updateSecurityButton(R.drawable.ic_eye_crossed);
         verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
 
         mLocationBar.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.LOW);
         mLocationBar.onPageLoadStopped();
-        verify(mAnimationDelegate, times(1)).updateSecurityButton(R.drawable.ic_eye_crossed, true);
+        verify(mAnimationDelegate, times(1)).updateSecurityButton(R.drawable.ic_eye_crossed);
         verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
     }
 
     @Test
     public void testCookieControlsIcon_trackingProtectionsEnabled_cookieBlockingEnabled() {
-        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt(), anyBoolean());
+        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
 
         mLocationBar.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
         mLocationBar.onStatusChanged(
@@ -555,7 +543,7 @@ public class CustomTabToolbarUnitTest {
 
     @Test
     public void testCookieControlsIcon_trackingProtectionsEnabled_cookieBlockingDisabled() {
-        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt(), anyBoolean());
+        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
 
         mLocationBar.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
         mLocationBar.onStatusChanged(
@@ -572,7 +560,7 @@ public class CustomTabToolbarUnitTest {
 
     @Test
     public void testCookieControlsIcon_trackingProtectionDisabled_cookieBlockingEnabled() {
-        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt(), anyBoolean());
+        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
 
         mLocationBar.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
         mLocationBar.onStatusChanged(

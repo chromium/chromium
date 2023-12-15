@@ -586,12 +586,6 @@
                 android:checked = "true"
                 android:text="@string/url_hiding_text" />
         </LinearLayout>
-        <CheckBox
-            android:id="@+id/force_engagement_signals_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked = "false"
-            android:text="@string/force_engagement_signals" />
 
         <CheckBox
             android:id="@+id/background_interact_checkbox"

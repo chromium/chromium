@@ -1064,7 +1064,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 (v, l, t, r, b, ol, ot, or, ob) -> setButtonsVisibility();
         private boolean mCurrentlyShowingBranding;
         private boolean mBrandingStarted;
-        private boolean mAnimateIconTransition = true;
         private CallbackController mCallbackController = new CallbackController();
         // Cached the state before branding start so we can reset to the state when its done.
         private @Nullable Integer mPreBandingState;
@@ -1131,11 +1130,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     TaskTraits.UI_USER_VISIBLE,
                     () -> mBrowserControlsVisibilityDelegate.releasePersistentShowingToken(token),
                     MIN_URL_BAR_VISIBLE_TIME_POST_BRANDING_MS);
-        }
-
-        @Override
-        public void setIconTransitionEnabled(boolean enabled) {
-            mAnimateIconTransition = enabled;
         }
 
         // CookieControlsObserver interface
@@ -1413,7 +1407,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     AppCompatResources.getColorStateList(
                             getContext(), mLocationBarDataProvider.getSecurityIconColorStateList());
             ImageViewCompat.setImageTintList(mSecurityButton, colorStateList);
-            mAnimDelegate.updateSecurityButton(R.drawable.chromelogo16, mAnimateIconTransition);
+            mAnimDelegate.updateSecurityButton(R.drawable.chromelogo16);
 
             mUrlCoordinator.setUrlBarData(
                     UrlBarData.forNonUrlText(
@@ -1451,7 +1445,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                 mLocationBarDataProvider.getSecurityIconColorStateList());
                 ImageViewCompat.setImageTintList(mSecurityButton, colorStateList);
             }
-            mAnimDelegate.updateSecurityButton(securityIconResource, mAnimateIconTransition);
+            mAnimDelegate.updateSecurityButton(securityIconResource);
 
             int contentDescriptionId =
                     mLocationBarDataProvider.getSecurityIconContentDescriptionResourceId();
@@ -1462,7 +1456,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private void animateCookieControlsIcon() {
             mTaskHandler.removeCallbacksAndMessages(null);
             mAnimDelegate.setUseRotationSecurityButtonTransition(true);
-            mAnimDelegate.updateSecurityButton(R.drawable.ic_eye_crossed, true);
+            mAnimDelegate.updateSecurityButton(R.drawable.ic_eye_crossed);
 
             Runnable finishIconAnimation =
                     () -> {

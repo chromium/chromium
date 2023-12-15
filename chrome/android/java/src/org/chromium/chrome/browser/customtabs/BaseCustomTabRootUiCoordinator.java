@@ -98,8 +98,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     private CustomTabHeightStrategy mCustomTabHeightStrategy;
 
-    // Created only when ChromeFeatureList.CctBrandTransparency is enabled.
-    // TODO(https://crbug.com/1343056): Make it part of the ctor.
     private @Nullable BrandingController mBrandingController;
 
     private @Nullable DesktopSiteSettingsIPHController mDesktopSiteSettingsIPHController;

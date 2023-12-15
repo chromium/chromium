@@ -518,15 +518,6 @@ const FeatureEntry::FeatureVariation
         {"Use Denylist", kCCTResizablePolicyParamUseDenylist,
          std::size(kCCTResizablePolicyParamUseDenylist), nullptr}};
 
-const FeatureEntry::FeatureParam kCCTBrandingTestFriendly[] = {
-    {"use_temporary_storage", "true"},
-    {"branding_cadence", "10000"}  // 10 seconds
-};
-
-const FeatureEntry::FeatureVariation kCctBrandTransparencyVariations[] = {
-    {"Test friendly mode", kCCTBrandingTestFriendly,
-     std::size(kCCTBrandingTestFriendly), nullptr}};
-
 const FeatureEntry::FeatureParam
     kCCTRealTimeEngagementSignalsParamRealValues[] = {{"real_values", "true"}};
 const FeatureEntry::FeatureParam
@@ -7236,14 +7227,6 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kCCTRealTimeEngagementSignals,
          kCCTRealTimeEngagementSignalsVariations,
          "CCTRealTimeEngagementSignals")},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-    {"cct-brand-transparency", flag_descriptions::kCCTBrandTransparencyName,
-     flag_descriptions::kCCTBrandTransparencyDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kCCTBrandTransparency,
-                                    kCctBrandTransparencyVariations,
-                                    "CCTBrandTransparency")},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

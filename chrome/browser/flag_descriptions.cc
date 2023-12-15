@@ -3892,12 +3892,6 @@ const char kBackGestureRefactorAndroidDescription[] =
 const char kBoardingPassDetectorName[] = "Boarding Pass Detector";
 const char kBoardingPassDetectorDescription[] = "Enable Boarding Pass Detector";
 
-const char kCCTBrandTransparencyName[] =
-    "Chrome Custom Tabs Brand Transparency";
-const char kCCTBrandTransparencyDescription[] =
-    "When enabled, CCT will show more Chrome branding information when start, "
-    "giving user more transparency that the web page is running in Chrome.";
-
 const char kCCTIncognitoAvailableToThirdPartyName[] =
     "Allow third party to open Custom Tabs Incognito mode";
 const char kCCTIncognitoAvailableToThirdPartyDescription[] =

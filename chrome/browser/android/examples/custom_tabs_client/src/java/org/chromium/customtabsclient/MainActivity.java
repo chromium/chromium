@@ -106,7 +106,6 @@ public class MainActivity extends AppCompatActivity
     private static final String SHARED_PREF_SHOW_TITLE = "ShowTitle";
     private static final String SHARED_PREF_THEME = "Theme";
     private static final String SHARED_PREF_URL_HIDING = "UrlHiding";
-    private static final String SHARED_PREF_FORCE_ENGAGEMENT_SIGNALS = "ForceEngagementSignals";
     private static final String SHARED_PREF_SIDE_SHEET_MAX_BUTTON = "SideSheetMaxButton";
     private static final String SHARED_PREF_SIDE_SHEET_ROUNDED_CORNER = "RoundedCorner";
     private static final String SHARED_PREF_CONTENT_SCROLL = "ContentScrollMayResizeTab";
@@ -158,7 +157,6 @@ public class MainActivity extends AppCompatActivity
     private CheckBox mShowTitleCheckbox;
     private CheckBox mUrlHidingCheckbox;
     private CheckBox mBackgroundInteractCheckbox;
-    private CheckBox mForceEngagementSignalsCheckbox;
     private CheckBox mSideSheetMaxButtonCheckbox;
     private CheckBox mSideSheetRoundedCornerCheckbox;
     private CheckBox mContentScrollCheckbox;
@@ -652,9 +650,6 @@ public class MainActivity extends AppCompatActivity
         mBackgroundInteractCheckbox = findViewById(R.id.background_interact_checkbox);
         mBackgroundInteractCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_BACKGROUND_INTERACT, CHECKED) == CHECKED);
-        mForceEngagementSignalsCheckbox = findViewById(R.id.force_engagement_signals_checkbox);
-        mForceEngagementSignalsCheckbox.setChecked(
-                mSharedPref.getInt(SHARED_PREF_FORCE_ENGAGEMENT_SIGNALS, CHECKED) == CHECKED);
         mSideSheetMaxButtonCheckbox = findViewById(R.id.side_sheet_max_button_checkbox);
         mSideSheetMaxButtonCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SIDE_SHEET_MAX_BUTTON, CHECKED) == CHECKED);
@@ -1016,15 +1011,6 @@ public class MainActivity extends AppCompatActivity
                     mCctType.equals("Incognito CCT"));
             customTabsIntent.intent.putExtra(EXTRA_CLOSE_BUTTON_POSITION, closeButtonPosition);
         }
-        if (mForceEngagementSignalsCheckbox.isChecked()) {
-            // NOTE: this may not work because this app is not a trusted 1st party app,
-            // and CCT requires that for this feature currently.
-            // Set the command-line-flag --cct-client-firstparty-override to fake 1st-party!
-            customTabsIntent.intent.putStringArrayListExtra(
-                    "org.chromium.chrome.browser.customtabs.EXPERIMENTS_ENABLE",
-                    new ArrayList<String>(
-                            List.of("CCTRealTimeEngagementSignals", "CCTBrandTransparency")));
-        }
 
         if (startActivityForResult) {
             customTabsIntent.intent.setData(Uri.parse(url));
@@ -1071,11 +1057,6 @@ public class MainActivity extends AppCompatActivity
             editor.putInt(SHARED_PREF_URL_HIDING, CHECKED);
         } else {
             editor.putInt(SHARED_PREF_URL_HIDING, UNCHECKED);
-        }
-        if (mForceEngagementSignalsCheckbox.isChecked()) {
-            editor.putInt(SHARED_PREF_FORCE_ENGAGEMENT_SIGNALS, CHECKED);
-        } else {
-            editor.putInt(SHARED_PREF_FORCE_ENGAGEMENT_SIGNALS, UNCHECKED);
         }
         boolean backgroundInteract = mBackgroundInteractCheckbox.isChecked();
         if (backgroundInteract) {

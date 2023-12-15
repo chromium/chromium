@@ -176,7 +176,6 @@ public class CustomTabsConnectionUnitTest {
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
         ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS
     })
     public void setEngagementSignalsCallback_Available() {
@@ -192,7 +191,6 @@ public class CustomTabsConnectionUnitTest {
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
         ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS
     })
     public void setEngagementSignalsCallback_NotAvailable() {

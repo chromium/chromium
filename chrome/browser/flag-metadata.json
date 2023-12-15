@@ -1075,11 +1075,6 @@
     "expiry_milestone": 121
   },
   {
-    "name": "cct-brand-transparency",
-    "owners": [ "wenyufu@chromium.org" ],
-    "expiry_milestone": 117
-  },
-  {
     "name": "cct-incognito",
     "owners": [ "chrome-incognito@chromium.org", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
     "expiry_milestone": 140

@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
@@ -82,10 +81,6 @@ public class ChromeCachedFlags {
 
         List<CachedFieldTrialParameter> fieldTrialsToCache =
                 List.of(
-                        BrandingController.BRANDING_CADENCE_MS,
-                        BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS,
-                        BrandingController.USE_TEMPORARY_STORAGE,
-                        BrandingController.ANIMATE_TOOLBAR_ICON_TRANSITION,
                         ChimeFeatures.ALWAYS_REGISTER,
                         FeedPlaceholderLayout.ENABLE_INSTANT_START_ANIMATION,
                         HubFieldTrial.FLOATING_ACTION_BUTTON,
