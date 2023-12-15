@@ -2475,6 +2475,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       newly_filled_field_ids.insert(result.fields[i].global_id());
 
     const bool has_value_after = !result.fields[i].value.empty();
+    const bool is_autofilled_before = form.fields[i].is_autofilled;
     const bool is_autofilled_after = result.fields[i].is_autofilled;
 
     // Log when the suggestion is selected and log on non-checkable fields that
@@ -2493,8 +2494,6 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
                                 : AutofillFillingMethod::kFullForm,
       });
     }
-
-    const bool is_autofilled_before = result.fields[i].is_autofilled;
     LOG_AF(buffer)
         << Tr{}
         << base::StringPrintf(
