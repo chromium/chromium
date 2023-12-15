@@ -1654,9 +1654,6 @@ extern const char kCbdTimeframeRequiredDescription[];
 extern const char kPriceChangeModuleName[];
 extern const char kPriceChangeModuleDescription[];
 
-extern const char kPrivacyGuideAndroidName[];
-extern const char kPrivacyGuideAndroidDescription[];
-
 extern const char kPrivacyGuide3Name[];
 extern const char kPrivacyGuide3Description[];
 

@@ -2880,11 +2880,6 @@ const char kPriceChangeModuleName[] = "Price Change Module";
 const char kPriceChangeModuleDescription[] =
     "Show a module with price drops of open tabs on new tab page.";
 
-const char kPrivacyGuideAndroidName[] = "Privacy Guide on Android";
-const char kPrivacyGuideAndroidDescription[] =
-    "Shows a new subpage in Settings that helps the user to review various "
-    "privacy settings.";
-
 const char kPrivacyGuide3Name[] = "Privacy Guide V3";
 const char kPrivacyGuide3Description[] =
     "Enables updates to the Privacy Guide flow.";

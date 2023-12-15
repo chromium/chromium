@@ -9086,12 +9086,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"privacy-guide-android", flag_descriptions::kPrivacyGuideAndroidName,
-     flag_descriptions::kPrivacyGuideAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kPrivacyGuideAndroid)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
     {"privacy-guide-android-3", flag_descriptions::kPrivacyGuideAndroid3Name,
      flag_descriptions::kPrivacyGuideAndroid3Description, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kPrivacyGuideAndroid3)},

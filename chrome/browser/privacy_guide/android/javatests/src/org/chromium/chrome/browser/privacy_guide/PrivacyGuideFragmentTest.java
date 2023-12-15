@@ -1767,7 +1767,6 @@ public class PrivacyGuideFragmentTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
     @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testExitOnBackInWelcomeCard() {
         launchPrivacySettingsAndOpenPrivacyGuide();
@@ -1779,7 +1778,6 @@ public class PrivacyGuideFragmentTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
     @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testExitOnBackInMSBBCard() {
         launchPrivacySettingsAndOpenPrivacyGuide();
@@ -1792,7 +1790,6 @@ public class PrivacyGuideFragmentTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
     @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testExitOnBackInHistorySyncCard() {
         launchPrivacySettingsAndOpenPrivacyGuide();
@@ -1805,7 +1802,6 @@ public class PrivacyGuideFragmentTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
     @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testExitOnBackInSBCard() {
         launchPrivacySettingsAndOpenPrivacyGuide();
@@ -1818,7 +1814,6 @@ public class PrivacyGuideFragmentTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
     @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testExitOnBackInCookiesCard() {
         launchPrivacySettingsAndOpenPrivacyGuide();
@@ -1831,7 +1826,6 @@ public class PrivacyGuideFragmentTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
     @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testExitOnBackInCompletionCard() {
         launchPrivacySettingsAndOpenPrivacyGuide();

@@ -1105,10 +1105,6 @@ BASE_FEATURE(kLocalPrinterObserving,
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPrivacyGuideAndroid,
-             "PrivacyGuideAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrivacyGuideAndroidPostMVP,
              "PrivacyGuideAndroidPostMVP",
              base::FEATURE_ENABLED_BY_DEFAULT);
