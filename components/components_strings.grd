@@ -344,7 +344,6 @@
       <if expr="is_android">
         <part file="android_system_error_page_strings.grdp" />
         <part file="external_intents_strings.grdp" />
-        <part file="webauthn_strings.grdp" />
       </if>
       <if expr="is_ios">
         <part file="management_ios_strings.grdp" />

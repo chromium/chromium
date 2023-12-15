@@ -368,4 +368,5 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/webapps/WebappDirectoryManagerTest.java",
   "junit/src/org/chromium/chrome/browser/webapps/WebappLauncherActivityTest.java",
   "junit/src/org/chromium/chrome/browser/webapps/WebappRegistryTest.java",
+  "junit/src/org/chromium/chrome/browser/webauthn/AuthenticatorIncognitoConfirmationBottomsheetTest.java",
 ]

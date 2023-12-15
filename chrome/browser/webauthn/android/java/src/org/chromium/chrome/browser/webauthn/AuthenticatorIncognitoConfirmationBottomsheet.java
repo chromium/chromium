@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.webauthn;
+package org.chromium.chrome.browser.webauthn;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -24,12 +24,12 @@ import org.chromium.ui.base.WindowAndroid;
 /**
  * Bottomsheet to confirm credential creation in Incognito mode.
  *
- * This class shows a bottomsheet on Android that warns the user that they are
- * about to create a WebAuthn credential in Incognito mode (because the
- * credential will outlive the Incognito session.)
+ * <p>This class shows a bottomsheet on Android that warns the user that they are about to create a
+ * WebAuthn credential in Incognito mode (because the credential will outlive the Incognito
+ * session.)
  *
- * If the user clicks "Continue" the `positiveCallback` is run. If the user
- * closes the bottomsheet in any other way, the `negativeCallback` is run.
+ * <p>If the user clicks "Continue" the `positiveCallback` is run. If the user closes the
+ * bottomsheet in any other way, the `negativeCallback` is run.
  */
 class AuthenticatorIncognitoConfirmationBottomsheet {
     private final WebContents mWebContents;

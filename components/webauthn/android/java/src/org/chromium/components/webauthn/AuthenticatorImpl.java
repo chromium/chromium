@@ -36,15 +36,6 @@ import java.util.Set;
 
 /** Android implementation of the authenticator.mojom interface. */
 public final class AuthenticatorImpl implements Authenticator {
-    /**
-     * Interface for code that will show the user a confirmation before creating a credential.
-     *
-     * This is intended for use in Incognito mode.
-     **/
-    public interface CreateConfirmationUiDelegate {
-        boolean show(Runnable positiveCallback, Runnable negativeCallback);
-    }
-
     private static final String GMSCORE_PACKAGE_NAME = "com.google.android.gms";
     public static final int GMSCORE_MIN_VERSION = 16890000;
     public static final int GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS = 223300000;
@@ -141,7 +132,7 @@ public final class AuthenticatorImpl implements Authenticator {
 
     /**
      * @param payment The payment information to be added to the "clientDataJson". Should be used
-     * only if the user has confirmed the payment information that was displayed to the user.
+     *     only if the user has confirmed the payment information that was displayed to the user.
      */
     public void setPaymentOptions(PaymentOptions payment) {
         mPayment = payment;
@@ -252,7 +243,7 @@ public final class AuthenticatorImpl implements Authenticator {
      * given input credential IDs. Optionally, may also filter the credentials to only return those
      * that are marked as third-party payment enabled.
      *
-     * Because this functionality does not participate in the normal WebAuthn UI flow and is
+     * <p>Because this functionality does not participate in the normal WebAuthn UI flow and is
      * idempotent at the Fido2 layer, it does not adhere to the 'one call at a time' logic used for
      * the create/get methods.
      */

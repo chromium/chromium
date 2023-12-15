@@ -10,6 +10,7 @@ import org.chromium.blink.mojom.Authenticator;
 import org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsFactoryFactory;
 import org.chromium.chrome.browser.installedapp.InstalledAppProviderFactory;
 import org.chromium.chrome.browser.payments.ChromePaymentRequestFactory;
+import org.chromium.chrome.browser.webauthn.ChromeAuthenticatorConfirmationFactory;
 import org.chromium.chrome.browser.webshare.ShareServiceImplementationFactory;
 import org.chromium.components.webauthn.AuthenticatorFactory;
 import org.chromium.content_public.browser.InterfaceRegistrar;
@@ -49,7 +50,10 @@ class ChromeInterfaceRegistrar {
                     PaymentRequest.MANAGER, new ChromePaymentRequestFactory(renderFrameHost));
             registry.addInterface(
                     InstalledAppProvider.MANAGER, new InstalledAppProviderFactory(renderFrameHost));
-            registry.addInterface(Authenticator.MANAGER, new AuthenticatorFactory(renderFrameHost));
+            registry.addInterface(
+                    Authenticator.MANAGER,
+                    new AuthenticatorFactory(
+                            renderFrameHost, new ChromeAuthenticatorConfirmationFactory()));
             registry.addInterface(
                     DigitalGoodsFactory.MANAGER, new DigitalGoodsFactoryFactory(renderFrameHost));
         }

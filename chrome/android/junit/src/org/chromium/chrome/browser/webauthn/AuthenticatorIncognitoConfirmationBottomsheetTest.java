@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.webauthn;
+package org.chromium.chrome.browser.webauthn;
 
 import android.content.Context;
 import android.widget.Button;

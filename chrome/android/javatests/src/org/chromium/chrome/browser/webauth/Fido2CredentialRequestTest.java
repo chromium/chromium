@@ -66,6 +66,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.webauthn.AuthenticatorImpl;
+import org.chromium.components.webauthn.CreateConfirmationUiDelegate;
 import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.components.webauthn.Fido2ApiCallHelper;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
@@ -782,7 +783,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testAuthenticatorImplMakeCredential_withConfirmationUi_success() {
         boolean[] wasCalled = new boolean[1];
-        AuthenticatorImpl.CreateConfirmationUiDelegate createConfirmationUiDelegate =
+        CreateConfirmationUiDelegate createConfirmationUiDelegate =
                 (accept, reject) -> {
                     wasCalled[0] = true;
                     accept.run();
@@ -812,7 +813,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testAuthenticatorImplMakeCredential_withConfirmationUi_rejected() {
         boolean[] wasCalled = new boolean[1];
-        AuthenticatorImpl.CreateConfirmationUiDelegate createConfirmationUiDelegate =
+        CreateConfirmationUiDelegate createConfirmationUiDelegate =
                 (accept, reject) -> {
                     wasCalled[0] = true;
                     reject.run();

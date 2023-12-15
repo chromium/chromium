@@ -1105,6 +1105,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/version:java",
       "//chrome/browser/wallet/android:junit",
       "//chrome/browser/webapps/android:java",
+      "//chrome/browser/webauthn/android:java",
       "//chrome/browser/xsurface:java",
       "//chrome/browser/xsurface_provider:junit",
       "//chrome/test:sync_integration_test_support_java",

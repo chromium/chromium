@@ -5853,6 +5853,27 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_READALOUD_VOICE_PREVIEW_MESSAGE" desc="String to be read aloud when a voice's preview button is clicked as a demonstration of how that voice sounds. It also explains how to select the voice by clicking the menu item.">
         Here are the voices you can pick for reading out your web pages. If you like this voice and want me to keep using it just tap the voice name.
       </message>
+
+      <!-- WebAuthn -->
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_TITLE" desc="The title of a bottomsheet that appears before the user saves passkey in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'.)" formatter_data="android_java">
+        Save passkey outside Incognito?
+      </message>
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_BODY" desc="The body of a bottomsheet that appears before the user saves passkey in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'.)" formatter_data="android_java">
+        This passkey will be saved to your password manager. Anyone with access to it will be able to use this passkey.
+      </message>
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_CONTINUE" desc="The text of a button that the user will click to continue creating a passkey in Incognito mode" formatter_data="android_java">
+        Continue
+      </message>
+
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_SHEET_DESCRIPTION" desc="Accessibility string that describes a bottomsheet that confirms with the user that they want to create passkey while in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'." formatter_data="android_java">
+        Passkey confirmation sheet
+      </message>
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_SHEET_OPENED" desc="Accessibility string that describes opening a bottomsheet that confirms with the user that they want to create passkey while in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'." formatter_data="android_java">
+        Passkey confirmation sheet opened
+      </message>
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_SHEET_CLOSED" desc="Accessibility string that describes closing a bottomsheet that confirms with the user that they want to create passkey while in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'." formatter_data="android_java">
+        Passkey confirmation sheet closed
+      </message>
     </messages>
   </release>
 </grit>
