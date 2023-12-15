@@ -293,6 +293,7 @@ SharedContextState::~SharedContextState() {
 bool SharedContextState::IsGraphiteDawnVulkan() const {
 #if BUILDFLAG(SKIA_USE_DAWN)
   return gr_context_type_ == GrContextType::kGraphiteDawn &&
+         dawn_context_provider_ &&
          dawn_context_provider_->backend_type() == wgpu::BackendType::Vulkan;
 #else
   return false;
@@ -302,6 +303,7 @@ bool SharedContextState::IsGraphiteDawnVulkan() const {
 bool SharedContextState::IsGraphiteDawnVulkanSwiftShader() const {
 #if BUILDFLAG(SKIA_USE_DAWN)
   return gr_context_type_ == GrContextType::kGraphiteDawn &&
+         dawn_context_provider_ &&
          dawn_context_provider_->is_vulkan_swiftshader_adapter();
 #else
   return false;
