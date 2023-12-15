@@ -237,7 +237,8 @@ void MetricsRenderFrameObserver::DidStartResponse(
     const url::SchemeHostPort& final_response_url,
     int request_id,
     const network::mojom::URLResponseHead& response_head,
-    network::mojom::RequestDestination request_destination) {
+    network::mojom::RequestDestination request_destination,
+    bool is_ad_resource) {
   if (provisional_frame_resource_data_use_ &&
       blink::IsRequestDestinationFrame(request_destination)) {
     // TODO(rajendrant): This frame request might start before the provisional
@@ -245,10 +246,12 @@ void MetricsRenderFrameObserver::DidStartResponse(
     // case. There should be a guarantee that DidStartProvisionalLoad be called
     // before DidStartResponse for the frame request.
     provisional_frame_resource_data_use_->DidStartResponse(
-        final_response_url, request_id, response_head, request_destination);
+        final_response_url, request_id, response_head, request_destination,
+        is_ad_resource);
   } else if (page_timing_metrics_sender_) {
     page_timing_metrics_sender_->DidStartResponse(
-        final_response_url, request_id, response_head, request_destination);
+        final_response_url, request_id, response_head, request_destination,
+        is_ad_resource);
     UpdateResourceMetadata(request_id);
   }
 }
@@ -420,23 +423,6 @@ void MetricsRenderFrameObserver::DidCommitProvisionalLoad(
   OnMetricsSenderCreated();
 }
 
-void MetricsRenderFrameObserver::SetAdResourceTracker(
-    subresource_filter::AdResourceTracker* ad_resource_tracker) {
-  // Remove all sources and set a new source for the observer.
-  scoped_ad_resource_observation_.Reset();
-  scoped_ad_resource_observation_.Observe(ad_resource_tracker);
-}
-
-void MetricsRenderFrameObserver::OnAdResourceTrackerGoingAway() {
-  DCHECK(scoped_ad_resource_observation_.IsObserving());
-
-  scoped_ad_resource_observation_.Reset();
-}
-
-void MetricsRenderFrameObserver::OnAdResourceObserved(int request_id) {
-  ad_request_ids_.insert(request_id);
-}
-
 void MetricsRenderFrameObserver::OnMainFrameIntersectionChanged(
     const gfx::Rect& main_frame_intersection_rect) {
   if (page_timing_metrics_sender_) {
@@ -496,28 +482,16 @@ MetricsRenderFrameObserver::Timing::operator=(Timing&&) = default;
 void MetricsRenderFrameObserver::UpdateResourceMetadata(int request_id) {
   DCHECK(page_timing_metrics_sender_);
 
-  // If the request is an ad, pop it off the list of known ad requests.
-  auto ad_resource_it = ad_request_ids_.find(request_id);
-  bool reported_as_ad_resource =
-      ad_request_ids_.find(request_id) != ad_request_ids_.end();
-  if (reported_as_ad_resource) {
-    ad_request_ids_.erase(ad_resource_it);
-  }
-
   bool is_main_frame_resource = render_frame()->IsMainFrame();
 
   if (provisional_frame_resource_data_use_ &&
       provisional_frame_resource_data_use_->resource_id() == request_id) {
-    if (reported_as_ad_resource) {
-      provisional_frame_resource_data_use_->SetReportedAsAdResource(
-          reported_as_ad_resource);
-    }
     provisional_frame_resource_data_use_->SetIsMainFrameResource(
         is_main_frame_resource);
     // Don't bother with before-fcp metrics for a provisional frame.
   } else {
-    page_timing_metrics_sender_->UpdateResourceMetadata(
-        request_id, reported_as_ad_resource, is_main_frame_resource);
+    page_timing_metrics_sender_->UpdateResourceMetadata(request_id,
+                                                        is_main_frame_resource);
   }
 }
 

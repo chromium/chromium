@@ -45,9 +45,7 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
       bool is_provisional,
       bool is_parent_ad_frame,
       bool is_frame_created_by_ad_script)
-      : SubresourceFilterAgent(nullptr /* RenderFrame */,
-                               ruleset_dealer,
-                               nullptr /* AdResourceTracker */),
+      : SubresourceFilterAgent(nullptr /* RenderFrame */, ruleset_dealer),
         is_subresource_filter_root_(is_subresource_filter_root),
         is_provisional_(is_provisional),
         is_parent_ad_frame_(is_parent_ad_frame),

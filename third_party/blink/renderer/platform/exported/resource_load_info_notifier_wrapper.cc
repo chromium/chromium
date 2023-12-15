@@ -64,7 +64,8 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadInitiated(
     const std::string& http_method,
     const GURL& referrer,
     network::mojom::RequestDestination request_destination,
-    net::RequestPriority request_priority) {
+    net::RequestPriority request_priority,
+    bool is_ad_resource) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(!resource_load_info_);
@@ -77,6 +78,7 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadInitiated(
   resource_load_info_->referrer = referrer;
   resource_load_info_->network_info = mojom::CommonNetworkInfo::New();
   resource_load_info_->request_priority = request_priority;
+  is_ad_resource_ = is_ad_resource;
 }
 
 void ResourceLoadInfoNotifierWrapper::NotifyResourceRedirectReceived(
@@ -133,7 +135,8 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
       weak_wrapper_resource_load_info_notifier_->NotifyResourceResponseReceived(
           resource_load_info_->request_id,
           url::SchemeHostPort(resource_load_info_->final_url),
-          std::move(response_head), resource_load_info_->request_destination);
+          std::move(response_head), resource_load_info_->request_destination,
+          is_ad_resource_);
     }
     return;
   }
@@ -150,7 +153,8 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
           weak_wrapper_resource_load_info_notifier_,
           resource_load_info_->request_id,
           url::SchemeHostPort(resource_load_info_->final_url),
-          std::move(response_head), resource_load_info_->request_destination));
+          std::move(response_head), resource_load_info_->request_destination,
+          is_ad_resource_));
 }
 
 void ResourceLoadInfoNotifierWrapper::NotifyResourceTransferSizeUpdated(

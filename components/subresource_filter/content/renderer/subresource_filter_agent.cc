@@ -48,12 +48,10 @@ namespace subresource_filter {
 
 SubresourceFilterAgent::SubresourceFilterAgent(
     content::RenderFrame* render_frame,
-    UnverifiedRulesetDealer* ruleset_dealer,
-    std::unique_ptr<AdResourceTracker> ad_resource_tracker)
+    UnverifiedRulesetDealer* ruleset_dealer)
     : content::RenderFrameObserver(render_frame),
       content::RenderFrameObserverTracker<SubresourceFilterAgent>(render_frame),
-      ruleset_dealer_(ruleset_dealer),
-      ad_resource_tracker_(std::move(ad_resource_tracker)) {
+      ruleset_dealer_(ruleset_dealer) {
   DCHECK(ruleset_dealer);
 }
 
@@ -122,11 +120,7 @@ void SubresourceFilterAgent::Initialize() {
   }
 }
 
-SubresourceFilterAgent::~SubresourceFilterAgent() {
-  // Filter may outlive us, so reset the ad tracker.
-  if (filter_for_last_created_document_)
-    filter_for_last_created_document_->set_ad_resource_tracker(nullptr);
-}
+SubresourceFilterAgent::~SubresourceFilterAgent() = default;
 
 GURL SubresourceFilterAgent::GetDocumentURL() {
   return render_frame()->GetWebFrame()->GetDocument().Url();
@@ -339,9 +333,6 @@ SubresourceFilterAgent::GetInheritedActivationStateForNewDocument() {
 void SubresourceFilterAgent::ConstructFilter(
     const mojom::ActivationState activation_state,
     const GURL& url) {
-  // Filter may outlive us, so reset the ad tracker.
-  if (filter_for_last_created_document_)
-    filter_for_last_created_document_->set_ad_resource_tracker(nullptr);
   filter_for_last_created_document_.reset();
 
   if (activation_state.activation_level == mojom::ActivationLevel::kDisabled ||
@@ -360,7 +351,6 @@ void SubresourceFilterAgent::ConstructFilter(
   auto filter = std::make_unique<WebDocumentSubresourceFilterImpl>(
       url::Origin::Create(url), activation_state, std::move(ruleset),
       std::move(first_disallowed_load_callback));
-  filter->set_ad_resource_tracker(ad_resource_tracker_.get());
   filter_for_last_created_document_ = filter->AsWeakPtr();
   SetSubresourceFilterForCurrentDocument(std::move(filter));
 }

@@ -83,7 +83,7 @@ class NavigationBodyLoaderTest : public ::testing::Test,
         std::move(endpoints), scheduler::GetSingleThreadTaskRunnerForTesting(),
         std::make_unique<ResourceLoadInfoNotifierWrapper>(
             /*resource_load_info_notifier=*/nullptr),
-        /*is_main_frame=*/true, &navigation_params);
+        /*is_main_frame=*/true, &navigation_params, /*is_ad_frame=*/false);
     loader_ = std::move(navigation_params.body_loader);
   }
 
@@ -458,7 +458,7 @@ TEST_F(NavigationBodyLoaderTest, FillResponseWithSecurityDetails) {
       scheduler::GetSingleThreadTaskRunnerForTesting(),
       std::make_unique<ResourceLoadInfoNotifierWrapper>(
           /*resource_load_info_notifier=*/nullptr),
-      /*is_main_frame=*/true, &navigation_params);
+      /*is_main_frame=*/true, &navigation_params, /*is_ad_frame=*/false);
   EXPECT_TRUE(
       navigation_params.response.ToResourceResponse().GetSSLInfo().has_value());
 }
@@ -507,7 +507,7 @@ TEST_F(NavigationBodyLoaderTest, FillResponseReferrerRedirects) {
       scheduler::GetSingleThreadTaskRunnerForTesting(),
       std::make_unique<ResourceLoadInfoNotifierWrapper>(
           /*resource_load_info_notifier=*/nullptr),
-      /*is_main_frame=*/true, &navigation_params);
+      /*is_main_frame=*/true, &navigation_params, /*is_ad_frame=*/false);
   ASSERT_EQ(navigation_params.redirects.size(), 2u);
   ASSERT_EQ(navigation_params.redirects[0].new_referrer,
             WebString(Referrer::NoReferrer()));

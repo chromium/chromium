@@ -150,12 +150,13 @@ void PageTimingMetricsSender::DidStartResponse(
     const url::SchemeHostPort& final_response_url,
     int resource_id,
     const network::mojom::URLResponseHead& response_head,
-    network::mojom::RequestDestination request_destination) {
+    network::mojom::RequestDestination request_destination,
+    bool is_ad_resource) {
   // There can be multiple `DidStartResponse` for the same resource id
   // (crbug.com/1504430).
   FindOrInsertPageResourceDataUse(resource_id)
       ->DidStartResponse(final_response_url, resource_id, response_head,
-                         request_destination);
+                         request_destination, is_ad_resource);
 }
 
 void PageTimingMetricsSender::DidReceiveTransferSizeUpdate(
@@ -230,16 +231,10 @@ void PageTimingMetricsSender::OnMainFrameImageAdRectangleChanged(
 
 void PageTimingMetricsSender::UpdateResourceMetadata(
     int resource_id,
-    bool reported_as_ad_resource,
     bool is_main_frame_resource) {
   auto it = page_resource_data_use_.find(resource_id);
   if (it == page_resource_data_use_.end())
     return;
-
-  // This can get called multiple times for a resource, and this flag will only
-  // be true once.
-  if (reported_as_ad_resource)
-    it->second->SetReportedAsAdResource(reported_as_ad_resource);
 
   it->second->SetIsMainFrameResource(is_main_frame_resource);
 }

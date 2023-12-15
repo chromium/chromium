@@ -708,21 +708,13 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #endif
 
   // Owned by |render_frame|.
-  page_load_metrics::MetricsRenderFrameObserver* metrics_render_frame_observer =
-      new page_load_metrics::MetricsRenderFrameObserver(render_frame);
+  new page_load_metrics::MetricsRenderFrameObserver(render_frame);
   // There is no render thread, thus no UnverifiedRulesetDealer in
   // ChromeRenderViewTests.
   if (subresource_filter_ruleset_dealer_) {
-    // Create AdResourceTracker to tracker ad resource loads at the chrome
-    // layer.
-    auto ad_resource_tracker =
-        std::make_unique<subresource_filter::AdResourceTracker>();
-    metrics_render_frame_observer->SetAdResourceTracker(
-        ad_resource_tracker.get());
     auto* subresource_filter_agent =
         new subresource_filter::SubresourceFilterAgent(
-            render_frame, subresource_filter_ruleset_dealer_.get(),
-            std::move(ad_resource_tracker));
+            render_frame, subresource_filter_ruleset_dealer_.get());
     subresource_filter_agent->Initialize();
   }
 

@@ -277,7 +277,8 @@ class CONTENT_EXPORT RenderFrameObserver
       const url::SchemeHostPort& final_response_url,
       int request_id,
       const network::mojom::URLResponseHead& response_head,
-      network::mojom::RequestDestination request_destination) {}
+      network::mojom::RequestDestination request_destination,
+      bool is_ad_resource) {}
   virtual void DidCompleteResponse(
       int request_id,
       const network::URLLoaderCompletionStatus& status) {}

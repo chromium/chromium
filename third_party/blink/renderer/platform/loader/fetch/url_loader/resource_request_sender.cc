@@ -521,9 +521,10 @@ int ResourceRequestSender::SendAsync(
       std::move(resource_load_info_notifier_wrapper));
 
   request_info_->resource_load_info_notifier_wrapper
-      ->NotifyResourceLoadInitiated(
-          request_id, request->url, request->method, request->referrer,
-          request_info_->request_destination, request->priority);
+      ->NotifyResourceLoadInitiated(request_id, request->url, request->method,
+                                    request->referrer,
+                                    request_info_->request_destination,
+                                    request->priority, request->is_ad_tagged);
 
   auto url_loader_client = std::make_unique<MojoURLLoaderClient>(
       this, loading_task_runner, url_loader_factory->BypassRedirectChecks(),

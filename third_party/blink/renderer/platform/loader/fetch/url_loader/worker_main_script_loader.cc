@@ -58,11 +58,13 @@ void WorkerMainScriptLoader::Start(
   // TODO(crbug.com/929370): Support CSP check to post violation reports for
   // worker top-level scripts, if off-the-main-thread fetch is enabled.
 
+  // Currently we don't support ad resource check for the worker scripts.
   resource_load_info_notifier_wrapper_->NotifyResourceLoadInitiated(
       request_id_, GURL(initial_request_url_),
       initial_request_.HttpMethod().Latin1(),
       WebStringToGURL(WebString(initial_request_.ReferrerString())),
-      initial_request_.GetRequestDestination(), net::HIGHEST);
+      initial_request_.GetRequestDestination(), net::HIGHEST,
+      /*is_ad_resource=*/false);
 
   if (!worker_main_script_load_params->redirect_responses.empty()) {
     HandleRedirections(worker_main_script_load_params->redirect_infos,

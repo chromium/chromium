@@ -425,7 +425,8 @@ class CONTENT_EXPORT RenderFrameImpl
       int64_t request_id,
       const url::SchemeHostPort& final_response_url,
       network::mojom::URLResponseHeadPtr head,
-      network::mojom::RequestDestination request_destination) override;
+      network::mojom::RequestDestination request_destination,
+      bool is_ad_resource) override;
   void NotifyResourceTransferSizeUpdated(int64_t request_id,
                                          int32_t transfer_size_diff) override;
   void NotifyResourceLoadCompleted(
@@ -774,7 +775,8 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidStartResponse(const url::SchemeHostPort& final_response_url,
                         int request_id,
                         network::mojom::URLResponseHeadPtr response_head,
-                        network::mojom::RequestDestination request_destination);
+                        network::mojom::RequestDestination request_destination,
+                        bool is_ad_resource);
   void DidCompleteResponse(int request_id,
                            const network::URLLoaderCompletionStatus& status);
   void DidCancelResponse(int request_id);

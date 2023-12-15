@@ -125,7 +125,8 @@ class WorkerMainScriptLoaderTest : public testing::Test {
         int64_t request_id,
         const url::SchemeHostPort& final_url,
         network::mojom::URLResponseHeadPtr head,
-        network::mojom::RequestDestination request_destination) override {}
+        network::mojom::RequestDestination request_destination,
+        bool is_ad_resource) override {}
     void NotifyResourceTransferSizeUpdated(
         int64_t request_id,
         int32_t transfer_size_diff) override {}

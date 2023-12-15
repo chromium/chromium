@@ -2472,7 +2472,8 @@ void RenderFrameImpl::NotifyResourceResponseReceived(
     int64_t request_id,
     const url::SchemeHostPort& final_response_url,
     network::mojom::URLResponseHeadPtr response_head,
-    network::mojom::RequestDestination request_destination) {
+    network::mojom::RequestDestination request_destination,
+    bool is_ad_resource) {
   if (!blink::IsRequestDestinationFrame(request_destination)) {
     bool notify = ShouldNotifySubresourceResponseStarted(
         GetWebView()->GetRendererPreferences());
@@ -2484,7 +2485,7 @@ void RenderFrameImpl::NotifyResourceResponseReceived(
     }
   }
   DidStartResponse(final_response_url, request_id, std::move(response_head),
-                   request_destination);
+                   request_destination, is_ad_resource);
 }
 
 void RenderFrameImpl::NotifyResourceTransferSizeUpdated(
@@ -2742,7 +2743,7 @@ void RenderFrameImpl::CommitNavigation(
         std::move(url_loader_client_endpoints),
         GetTaskRunner(blink::TaskType::kInternalLoading),
         CreateResourceLoadInfoNotifierWrapper(), !frame_->Parent(),
-        navigation_params.get());
+        navigation_params.get(), frame_->IsAdFrame());
   }
 
   // The MHTML mime type should be same as the one we check in the browser
@@ -4472,10 +4473,11 @@ void RenderFrameImpl::DidStartResponse(
     const url::SchemeHostPort& final_response_url,
     int request_id,
     network::mojom::URLResponseHeadPtr response_head,
-    network::mojom::RequestDestination request_destination) {
+    network::mojom::RequestDestination request_destination,
+    bool is_ad_resource) {
   for (auto& observer : observers_) {
     observer.DidStartResponse(final_response_url, request_id, *response_head,
-                              request_destination);
+                              request_destination, is_ad_resource);
   }
 }
 
