@@ -16,7 +16,7 @@ import {ActionsModel, CommonActionId, InternalActionId} from './actions_model.js
 import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
-import {ActionModelUI} from './ui/action_model_ui.js';
+import {ActionModelUi} from './ui/action_model_ui.js';
 import {FilesAlertDialog} from './ui/files_alert_dialog.js';
 import {ListContainer} from './ui/list_container.js';
 
@@ -64,7 +64,7 @@ function createFakeFolderShortcutsDataModel(): FolderShortcutsDataModel {
   return model as unknown as FolderShortcutsDataModel;
 }
 
-class MockUi implements ActionModelUI {
+class MockUi implements ActionModelUi {
   listContainer: ListContainer;
   alertDialog: FilesAlertDialog;
 

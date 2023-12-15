@@ -42,7 +42,6 @@ static_js_files = [
 
   # Files app UI:
   "file_manager/foreground/js/ui/a11y_announce.js",
-  "file_manager/foreground/js/ui/action_model_ui.js",
   "file_manager/foreground/js/ui/actions_submenu.js",
   "file_manager/foreground/js/ui/context_menu_handler.js",
   "file_manager/foreground/js/ui/default_task_dialog.js",
@@ -175,6 +174,7 @@ ts_files = [
   # Don't remove this.
   # These lines will be removed at the end of the TS migration.
   # Foreground UI.
+  "file_manager/foreground/js/ui/action_model_ui.ts",
   "file_manager/foreground/js/ui/dialogs.ts",
   "file_manager/foreground/js/ui/commandbutton.ts",
   "file_manager/foreground/js/ui/combobutton.ts",
