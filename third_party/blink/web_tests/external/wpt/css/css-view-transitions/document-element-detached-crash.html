@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html class="test-wait">
 <title>View transitions: documentElement.remove</title>
 <link rel="help" href="https://github.com/WICG/view-transitions">
 <link rel="author" href="mailto:vmpstr@chromium.org">
@@ -10,12 +11,15 @@ html {
 </style>
 
 <script>
-async function runTest() {
+function runTest() {
   document.startViewTransition(() => {
-    requestAnimationFrame(() => document.documentElement.remove());
-  })
-
+    requestAnimationFrame(() => {
+      const html = document.documentElement;
+      html.remove();
+      html.classList.remove('test-wait');
+    });
+  });
 }
 onload = () => requestAnimationFrame(runTest);
 </script>
-
+</html>
