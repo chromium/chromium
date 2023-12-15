@@ -437,7 +437,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         int scrimColorOpaque = scrimColor & 0xFF000000;
         int color =
                 ColorUtils.getColorWithOverlay(
-                        mToolbarColor, scrimColorOpaque, scrimFraction * scrimColorAlpha, false);
+                        mToolbarColor, scrimColorOpaque, scrimFraction * scrimColorAlpha);
 
         // Drag handle view is not part of CoordinatorLayout. As the root UI scrim changes,
         // the handle view color needs updating to match it. This is a better way than running
@@ -450,7 +450,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         if (scrimFraction > 0.f) {
             handle.setColorFilter(
                     ColorUtils.getColorWithOverlay(
-                            handleColor, scrimColorOpaque, scrimFraction * scrimColorAlpha, false));
+                            handleColor, scrimColorOpaque, scrimFraction * scrimColorAlpha));
         } else {
             handle.clearColorFilter();
         }

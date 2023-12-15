@@ -15,6 +15,7 @@ import android.os.Looper;
 import android.text.format.DateUtils;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -749,14 +750,13 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         } else if (ratioOfCompletionFromPeekToExpanded <= 0) {
             colorRatio = 0;
         }
-        int surfaceColor = mContext.getColor(R.color.gm3_baseline_surface);
+        @ColorInt int surfaceColor = mContext.getColor(R.color.gm3_baseline_surface);
+        @ColorInt
         int surfaceContainerColor = mContext.getColor(R.color.gm3_baseline_surface_container);
         mBackgroundDrawable.setColor(
-                ColorUtils.getColorWithOverlay(
-                        surfaceContainerColor, surfaceColor, colorRatio, false));
+                ColorUtils.getColorWithOverlay(surfaceContainerColor, surfaceColor, colorRatio));
         mSheetContent.setPrivacyCardColor(
-                ColorUtils.getColorWithOverlay(
-                        surfaceColor, surfaceContainerColor, colorRatio, false));
+                ColorUtils.getColorWithOverlay(surfaceColor, surfaceContainerColor, colorRatio));
     }
 
     @Override

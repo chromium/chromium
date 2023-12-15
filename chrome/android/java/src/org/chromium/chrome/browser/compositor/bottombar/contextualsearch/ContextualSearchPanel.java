@@ -910,7 +910,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         float scrimColorAlpha = (scrimColor >>> 24) / 255f;
         int scrimColorOpaque = scrimColor & 0xFF000000;
         return ColorUtils.getColorWithOverlay(
-                baseColor, scrimColorOpaque, scrimFraction * scrimColorAlpha, false);
+                baseColor, scrimColorOpaque, scrimFraction * scrimColorAlpha);
     }
 
     // ============================================================================================
