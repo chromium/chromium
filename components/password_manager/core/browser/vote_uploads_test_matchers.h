@@ -5,166 +5,126 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_VOTE_UPLOADS_TEST_MATCHERS_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_VOTE_UPLOADS_TEST_MATCHERS_H_
 
-#include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/form_structure.h"
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/test_utils/vote_uploads_test_matchers.h"
 #include "components/autofill/core/common/signatures.h"
-#include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/votes_uploader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
 
-using ::testing::AllOf;
-using ::testing::ContainerEq;
-using ::testing::Field;
-using ::testing::IsFalse;
-using ::testing::Optional;
-using ::testing::Property;
-using ::testing::ResultOf;
+namespace upload_contents_matchers {
 
-inline auto SignatureIsSameAs(const PasswordForm& form) {
-  return autofill::SignatureIsSameAs(form.form_data);
+// Returns a matcher that checks whether the `AutofillUploadContents` has a
+// `password_length` field that was set.
+inline ::testing::Matcher<autofill::AutofillUploadContents>
+HasPasswordLength() {
+  return ::testing::Property(
+      "has_password_length",
+      &autofill::AutofillUploadContents::has_password_length, true);
 }
 
-MATCHER_P(HasGenerationVote, expect_generation_vote, "") {
-  bool found_generation_vote = false;
-  for (const auto& field : arg) {
-    if (field->generation_type() !=
-        autofill::AutofillUploadContents::Field::NO_GENERATION) {
-      found_generation_vote = true;
-      break;
-    }
+inline ::testing::Matcher<autofill::AutofillUploadContents>
+LoginFormSignatureIs(const std::string& signature) {
+  uint64_t signature_int;
+  if (!base::StringToUint64(signature, &signature_int)) {
+    signature_int = 0;
   }
-  return found_generation_vote == expect_generation_vote;
+  return ::testing::Property(
+      "login_form_signature",
+      &autofill::AutofillUploadContents::login_form_signature, signature_int);
 }
 
-inline auto VoteTypesAre(VoteTypeMap expected) {
-  static constexpr auto kNoInformation =
-      autofill::AutofillUploadContents::Field::NO_INFORMATION;
-  auto get_vote_types = [](const autofill::FormStructure& actual) {
-    VoteTypeMap vote_types;
-    for (const auto& field : actual) {
-      if (field->vote_type() != kNoInformation) {
-        vote_types[field->unique_renderer_id] = field->vote_type();
-      }
-    }
-    return vote_types;
-  };
-  base::EraseIf(expected,
-                [](const auto& p) { return p.second == kNoInformation; });
-  return ResultOf("get_vote_types", get_vote_types, ContainerEq(expected));
+inline ::testing::Matcher<autofill::AutofillUploadContents> PasswordsRevealedIs(
+    bool revealed) {
+  return ::testing::Property(
+      "passwords_revealed",
+      &autofill::AutofillUploadContents::passwords_revealed, revealed);
 }
 
-MATCHER_P(UploadedSingleUsernameVoteTypeIs, expected_type, "") {
-  for (const auto& field : arg) {
-    autofill::ServerFieldType vote = field->possible_types().empty()
-                                         ? autofill::UNKNOWN_TYPE
-                                         : *field->possible_types().begin();
-    if ((vote == autofill::SINGLE_USERNAME || vote == autofill::NOT_USERNAME) &&
-        expected_type != field->single_username_vote_type()) {
-      // Wrong vote type.
-      *result_listener << "Expected vote type for the field " << field->name
-                       << " is " << expected_type << ", but found "
-                       << field->single_username_vote_type().value();
-      return false;
-    }
-  }
-  return true;
+inline ::testing::Matcher<autofill::AutofillUploadContents>
+SingleUsernameDataIs(auto matcher) {
+  return ::testing::Property(
+      "single_username_data",
+      &autofill::AutofillUploadContents::single_username_data, matcher);
 }
 
-MATCHER_P(UploadedSingleUsernameVoteIsMostRecentCandidate,
-          is_most_recent_single_username_candidate,
-          "") {
-  if (is_most_recent_single_username_candidate ==
-      autofill::IsMostRecentSingleUsernameCandidate::
-          kNotPartOfUsernameFirstFlow) {
-    // Variable not set - don't check if the flag is set.
-    return true;
-  }
-  for (const auto& field : arg) {
-    autofill::ServerFieldType vote = field->possible_types().empty()
-                                         ? autofill::UNKNOWN_TYPE
-                                         : *field->possible_types().begin();
-    if (vote == autofill::SINGLE_USERNAME || vote == autofill::NOT_USERNAME) {
-      // `is_most_recent_single_username_candidate` is not set.
-      if (field->is_most_recent_single_username_candidate() ==
-          autofill::IsMostRecentSingleUsernameCandidate::
-              kNotPartOfUsernameFirstFlow) {
-        *result_listener
-            << "Expected vote is_most_recent_single_username_candidate for the "
-               "field "
-            << field->name << " is "
-            << static_cast<int>(is_most_recent_single_username_candidate)
-            << ", but it was not set.";
-        return false;
-      }
-      // `is_most_recent_single_username_candidate` is incorrect.
-      if (field->is_most_recent_single_username_candidate() !=
-          is_most_recent_single_username_candidate) {
-        *result_listener
-            << "Expected vote is_most_recent_single_username_candidate for the "
-               "field "
-            << field->name << " is "
-            << static_cast<int>(is_most_recent_single_username_candidate)
-            << ", but found "
-            << static_cast<int>(
-                   field->is_most_recent_single_username_candidate());
-        return false;
-      }
-    }
-  }
-  return true;
+// Matchers for `AutofillUploadContents::Field`.
+inline ::testing::Matcher<autofill::AutofillUploadContents::Field>
+FieldGenerationTypeIs(
+    autofill::AutofillUploadContents::Field::PasswordGenerationType type) {
+  return ::testing::Property(
+      "generation_type",
+      &autofill::AutofillUploadContents::Field::generation_type, type);
 }
+
+inline ::testing::Matcher<autofill::AutofillUploadContents::Field>
+FieldIsMostRecentSingleUsernameCandidateIs(std::optional<bool> value) {
+  return ::testing::AllOf(
+      ::testing::Property("has_is_most_recent_single_username_candidate",
+                          &autofill::AutofillUploadContents::Field::
+                              has_is_most_recent_single_username_candidate,
+                          value.has_value()),
+      ::testing::Property("is_most_recent_single_username_candidate",
+                          &autofill::AutofillUploadContents::Field::
+                              is_most_recent_single_username_candidate,
+                          value.value_or(false)));
+}
+
+inline ::testing::Matcher<autofill::AutofillUploadContents::Field>
+FieldSingleUsernameVoteTypeIs(
+    autofill::AutofillUploadContents::Field::SingleUsernameVoteType vote_type) {
+  return ::testing::Property(
+      "single_username_vote_type",
+      &autofill::AutofillUploadContents::Field::single_username_vote_type,
+      vote_type);
+}
+
+inline ::testing::Matcher<autofill::AutofillUploadContents::Field>
+FieldVoteTypeIs(autofill::AutofillUploadContents::Field::VoteType vote_type) {
+  return ::testing::Property(
+      "vote_type", &autofill::AutofillUploadContents::Field::vote_type,
+      vote_type);
+}
+
+// Creates a matcher for the type of
+// `std::vector<autofill::AutofillUploadContents>` that is expected from
+// password manager calls to `AutofillCrowdsourceManager::StartUploadRequest`.
+inline ::testing::Matcher<std::vector<autofill::AutofillUploadContents>>
+IsPasswordUpload(auto... matchers) {
+  return FirstElementIs(::testing::AllOf(
+      autofill::upload_contents_matchers::AutofillUsedIs(false),
+      autofill::upload_contents_matchers::ObservedSubmissionIs(true),
+      matchers...));
+}
+
+}  // namespace upload_contents_matchers
 
 inline auto EqualsSingleUsernameDataVector(
     std::vector<autofill::AutofillUploadContents::SingleUsernameData>
         expected_data) {
+  using ::testing::Property;
   using SingleUsernameData =
       autofill::AutofillUploadContents::SingleUsernameData;
   std::vector<testing::Matcher<SingleUsernameData>> matchers;
   for (auto& expected_form : expected_data) {
-    matchers.push_back(
-        AllOf(Property("username_form_signature",
-                       &SingleUsernameData::username_form_signature,
-                       expected_form.username_form_signature()),
-              Property("username_field_signature",
-                       &SingleUsernameData::username_field_signature,
-                       expected_form.username_field_signature()),
-              Property("value_type", &SingleUsernameData::value_type,
-                       expected_form.value_type()),
-              Property("prompt_edit", &SingleUsernameData::prompt_edit,
-                       expected_form.prompt_edit())));
+    matchers.push_back(::testing::AllOf(
+        Property("username_form_signature",
+                 &SingleUsernameData::username_form_signature,
+                 expected_form.username_form_signature()),
+        Property("username_field_signature",
+                 &SingleUsernameData::username_field_signature,
+                 expected_form.username_field_signature()),
+        Property("value_type", &SingleUsernameData::value_type,
+                 expected_form.value_type()),
+        Property("prompt_edit", &SingleUsernameData::prompt_edit,
+                 expected_form.prompt_edit())));
   }
-  return testing::ElementsAreArray(matchers);
-}
-
-inline auto UploadedSingleUsernameDataIs(
-    std::vector<autofill::AutofillUploadContents::SingleUsernameData>
-        expected_data) {
-  return Property("single_username_data",
-                  &autofill::FormStructure::single_username_data,
-                  EqualsSingleUsernameDataVector(expected_data));
-}
-
-inline auto SingleUsernameDataNotUploaded() {
-  return Property("single_username_data",
-                  &autofill::FormStructure::single_username_data,
-                  testing::IsEmpty());
-}
-
-inline auto PasswordsWereRevealed(bool passwords_were_revealed) {
-  return Property("passwords_were_revealed",
-                  &autofill::FormStructure::passwords_were_revealed,
-                  passwords_were_revealed);
-}
-
-MATCHER_P(HasPasswordAttributesVote, is_vote_expected, "") {
-  std::optional<std::pair<autofill::PasswordAttribute, bool>> vote =
-      arg.get_password_attributes_vote();
-  EXPECT_EQ(is_vote_expected, vote.has_value());
-  return true;
+  return ::testing::ElementsAreArray(matchers);
 }
 
 }  // namespace password_manager

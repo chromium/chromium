@@ -34,20 +34,27 @@ using ::autofill::FormData;
 using ::autofill::FormFieldData;
 using ::autofill::FormStructure;
 using ::autofill::PasswordFormFillData;
+using ::autofill::ServerFieldType;
 using ::autofill::mojom::SubmissionIndicatorEvent;
+using ::autofill::upload_contents_matchers::FieldAutofillTypeIs;
+using ::autofill::upload_contents_matchers::FieldsContain;
+using ::autofill::upload_contents_matchers::FieldSignatureIs;
 using ::base::TestMockTimeTaskRunner;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::IsNull;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::UnorderedElementsAre;
+using upload_contents_matchers::IsPasswordUpload;
 
 // Indices of username and password fields in the observed form.
 constexpr int kUsernameFieldIndex = 1;
@@ -59,6 +66,15 @@ MATCHER_P(FormHasUniqueKey, key, "") {
 
 MATCHER_P2(MatchesUsernameAndPassword, username, password, "") {
   return arg.username_value == username && arg.password_value == password;
+}
+
+// Creates a matcher for an `autofill::AutofillUploadContents::Field` that
+// checks that the field's signature matches that of `field` and its predicted
+// type is `type`.
+auto UploadFieldIs(const FormFieldData& field, ServerFieldType type) {
+  return AllOf(
+      FieldSignatureIs(autofill::CalculateFieldSignatureForField(field)),
+      FieldAutofillTypeIs({type}));
 }
 
 const auto kTrigger = metrics_util::MoveToAccountStoreTrigger::
@@ -282,7 +298,7 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     ON_CALL(client_, GetAutofillCrowdsourcingManager())
         .WillByDefault(Return(&mock_autofill_crowdsourcing_manager_));
     ON_CALL(mock_autofill_crowdsourcing_manager_,
-            StartUploadRequest(_, _, _, _, _, _, _))
+            StartUploadRequest(_, _, _, _, _))
         .WillByDefault(Return(true));
     ON_CALL(*client_.GetPasswordFeatureManager(), GetDefaultPasswordStore)
         .WillByDefault(Return(PasswordForm::Store::kProfileStore));
@@ -893,7 +909,7 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordValueEmptyStore) {
   // TODO(https://crbug.com/928690): implement not sending incorrect votes and
   // check that StartUploadRequest is not called.
   EXPECT_CALL(*mock_autofill_crowdsourcing_manager(),
-              StartUploadRequest(_, _, _, _, _, _, _))
+              StartUploadRequest(_, _, _, _, _))
       .Times(1);
   password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form);
 }
@@ -974,12 +990,10 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordValueMultiplePasswordFields) {
 
   // Check that a vote is sent for the field with the value which is chosen by
   // the user.
-  std::map<std::u16string, autofill::ServerFieldType> expected_types;
-  expected_types[expected.password_element] = autofill::PASSWORD;
-
+  auto upload_contents_matcher = IsPasswordUpload(FieldsContain(
+      UploadFieldIs(submitted_form.fields[0], ServerFieldType::PASSWORD)));
   EXPECT_CALL(*mock_autofill_crowdsourcing_manager(),
-              StartUploadRequest(UploadedAutofillTypesAre(expected_types),
-                                 false, _, _, true, nullptr, _));
+              StartUploadRequest(upload_contents_matcher, _, _, _, _));
 
   // Check that the password which was chosen by the user is saved.
   PasswordForm saved_form;
@@ -1279,26 +1293,28 @@ TEST_P(PasswordSaveManagerImplTest, DontIncrementTimesUsedWhenBasicHTTPAuth) {
 TEST_P(PasswordSaveManagerImplTest, UsernameCorrectionVote) {
   // Setup a matched form in the storage for the currently submitted form.
   const std::u16string matched_form_username_field_name = u"new_username_id";
-  FormFieldData field;
-  field.name = matched_form_username_field_name;
-  field.id_attribute = field.name;
-  field.name_attribute = field.name;
-  field.form_control_type = autofill::FormControlType::kInputText;
-  saved_match_.form_data.fields.push_back(field);
+  FormFieldData field1;
+  field1.name = matched_form_username_field_name;
+  field1.id_attribute = field1.name;
+  field1.name_attribute = field1.name;
+  field1.form_control_type = autofill::FormControlType::kInputText;
+  saved_match_.form_data.fields.push_back(field1);
 
-  field.name = u"firstname";
-  field.id_attribute = field.name;
-  field.name_attribute = field.name;
-  field.form_control_type = autofill::FormControlType::kInputText;
-  saved_match_.form_data.fields.push_back(field);
-  saved_match_.username_element = field.name;
+  FormFieldData field2;
+  field2.name = u"firstname";
+  field2.id_attribute = field2.name;
+  field2.name_attribute = field2.name;
+  field2.form_control_type = autofill::FormControlType::kInputText;
+  saved_match_.form_data.fields.push_back(field2);
+  saved_match_.username_element = field2.name;
 
-  field.name = u"password";
-  field.id_attribute = field.name;
-  field.name_attribute = field.name;
-  field.form_control_type = autofill::FormControlType::kInputPassword;
-  saved_match_.form_data.fields.push_back(field);
-  saved_match_.password_element = field.name;
+  FormFieldData field3;
+  field3.name = u"password";
+  field3.id_attribute = field3.name;
+  field3.name_attribute = field3.name;
+  field3.form_control_type = autofill::FormControlType::kInputPassword;
+  saved_match_.form_data.fields.push_back(field3);
+  saved_match_.password_element = field3.name;
 
   const std::u16string username = u"user1";
   saved_match_.all_alternative_usernames.emplace_back(
@@ -1320,25 +1336,17 @@ TEST_P(PasswordSaveManagerImplTest, UsernameCorrectionVote) {
       /*is_credential_api_save=*/false);
 
   // Check that a vote is sent for the password field.
-  std::map<std::u16string, autofill::ServerFieldType> expected_types;
-  expected_types[submitted_form_.fields[kPasswordFieldIndex].name] =
-      autofill::PASSWORD;
-
+  auto upload_contents_matcher = IsPasswordUpload(FieldsContain(UploadFieldIs(
+      submitted_form_.fields[kPasswordFieldIndex], ServerFieldType::PASSWORD)));
   EXPECT_CALL(*mock_autofill_crowdsourcing_manager(),
-              StartUploadRequest(UploadedAutofillTypesAre(expected_types),
-                                 false, _, _, true, nullptr, _));
+              StartUploadRequest(upload_contents_matcher, _, _, _, _));
 
-  // Check that correction vote is sent for the earlier saved form.
-  std::map<std::u16string, autofill::ServerFieldType>
-      correction_upload_expected_types;
-  correction_upload_expected_types[matched_form_username_field_name] =
-      autofill::USERNAME;
-  correction_upload_expected_types[u"password"] =
-      autofill::ACCOUNT_CREATION_PASSWORD;
+  // Check that a correction vote is sent for the earlier saved form.
+  upload_contents_matcher = IsPasswordUpload(FieldsContain(
+      UploadFieldIs(field1, ServerFieldType::USERNAME),
+      UploadFieldIs(field3, ServerFieldType::ACCOUNT_CREATION_PASSWORD)));
   EXPECT_CALL(*mock_autofill_crowdsourcing_manager(),
-              StartUploadRequest(
-                  UploadedAutofillTypesAre(correction_upload_expected_types),
-                  false, _, _, true, nullptr, _));
+              StartUploadRequest(upload_contents_matcher, _, _, _, _));
 
   password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form);
 }

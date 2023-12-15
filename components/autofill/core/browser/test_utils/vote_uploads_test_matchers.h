@@ -5,26 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_VOTE_UPLOADS_TEST_MATCHERS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_VOTE_UPLOADS_TEST_MATCHERS_H_
 
+#include <initializer_list>
 #include <string>
 
-#include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
-#include "base/strings/string_number_conversions.h"
-#include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/signatures.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
-
-using ::testing::ContainerEq;
-using ::testing::Contains;
-using ::testing::Field;
-using ::testing::Property;
-using ::testing::ResultOf;
 
 // Returns a container matcher that applies `matcher` to the first element of
 // the container.
@@ -38,12 +27,19 @@ inline auto FirstElementIs(auto matcher) {
 // make their names briefer.
 namespace upload_contents_matchers {
 
+inline ::testing::Matcher<AutofillUploadContents> AutofillUsedIs(
+    bool autofill_used) {
+  return ::testing::Property(
+      "autofill_used", &AutofillUploadContents::autofill_used, autofill_used);
+}
+
 // Creates a matcher for an `AutofillUploadContents`'s form_signature method
 // against `form_signature`.
 inline ::testing::Matcher<AutofillUploadContents> FormSignatureIs(
     FormSignature form_signature) {
-  return Property("form_signature", &AutofillUploadContents::form_signature,
-                  form_signature.value());
+  return ::testing::Property("form_signature",
+                             &AutofillUploadContents::form_signature,
+                             form_signature.value());
 }
 
 // Creates a matcher that matches `matchers` against the fields of an
@@ -55,10 +51,31 @@ inline ::testing::Matcher<AutofillUploadContents> FieldsAre(
                              ::testing::ElementsAre(matchers...));
 }
 
+// Creates a matcher that matches `matchers` against the fields of an
+// `AutofillUploadContents`. It requires the fields in the proto contain (i.e.
+// are a super set of) the provided `matchers`.
+template <typename... Matchers>
+  requires(sizeof...(Matchers) > 0)
+inline ::testing::Matcher<AutofillUploadContents> FieldsContain(
+    Matchers... matchers) {
+  return ::testing::Property(
+      "field", &AutofillUploadContents::field,
+      ::testing::IsSupersetOf(
+          std::initializer_list<
+              ::testing::Matcher<AutofillUploadContents::Field>>{matchers...}));
+}
+
 inline ::testing::Matcher<AutofillUploadContents> ObservedSubmissionIs(
     bool observed_submission) {
   return ::testing::Property("submission", &AutofillUploadContents::submission,
                              observed_submission);
+}
+
+inline ::testing::Matcher<AutofillUploadContents> SubmissionIndicatorEventIs(
+    mojom::SubmissionIndicatorEvent event) {
+  return ::testing::Property(
+      "submission_event", &AutofillUploadContents::submission_event,
+      static_cast<AutofillUploadContents::SubmissionIndicatorEvent>(event));
 }
 
 // Matchers for `AutofillUploadContents::Field`.
@@ -74,59 +91,14 @@ inline ::testing::Matcher<AutofillUploadContents::Field> FieldAutofillTypeIs(
   return ::testing::ResultOf(extract_types, ::testing::Eq(type_set));
 }
 
+inline ::testing::Matcher<AutofillUploadContents::Field> FieldSignatureIs(
+    FieldSignature signature) {
+  return ::testing::Property("signature",
+                             &AutofillUploadContents::Field::signature,
+                             signature.value());
+}
+
 }  // namespace upload_contents_matchers
-
-inline auto SignatureIsSameAs(const FormData& form) {
-  return Property("form_signature", &FormStructure::form_signature,
-                  CalculateFormSignature(form));
-}
-
-inline auto SignatureIs(FormSignature sig) {
-  return Property("form_signature", &FormStructure::form_signature, sig);
-}
-
-inline auto SubmissionEventIsSameAs(mojom::SubmissionIndicatorEvent exp) {
-  auto get_submission_event = [](const FormStructure& form) {
-    return test_api(const_cast<FormStructure&>(form)).get_submission_event();
-  };
-  return ResultOf("get_submission_event", get_submission_event, exp);
-}
-
-inline auto UsernameVoteTypeIsSameAs(auto expected_type) {
-  auto get_username_vote_type = [](const FormStructure& form) {
-    return test_api(const_cast<FormStructure&>(form)).get_username_vote_type();
-  };
-  return ResultOf("get_username_vote_type", get_username_vote_type,
-                  expected_type);
-}
-
-inline auto UploadedAutofillTypesAre(
-    std::map<std::u16string, FieldTypeSet> expected_types) {
-  // Normalize the actual and expected sets by removing all UNKNOWN_TYPEs.
-  auto get_possible_field_types = [](const FormStructure& actual) {
-    std::map<std::u16string, FieldTypeSet> type_map;
-    for (const auto& field : actual) {
-      FieldTypeSet types = field->possible_types();
-      types.erase(UNKNOWN_TYPE);
-      if (!types.empty())
-        type_map[field->name] = types;
-    }
-    return type_map;
-  };
-  for (auto& [field_name, types] : expected_types)
-    types.erase(UNKNOWN_TYPE);
-  base::EraseIf(expected_types, [](const auto& p) { return p.second.empty(); });
-  return ResultOf("get_possible_field_types", get_possible_field_types,
-                  ContainerEq(expected_types));
-}
-
-inline auto UploadedAutofillTypesAre(
-    const std::map<std::u16string, ServerFieldType>& expected_types) {
-  std::map<std::u16string, FieldTypeSet> map;
-  for (const auto& [field_name, type] : expected_types)
-    map[field_name] = {type};
-  return UploadedAutofillTypesAre(map);
-}
 
 }  // namespace autofill
 

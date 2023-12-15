@@ -900,9 +900,10 @@ bool VotesUploader::StartUploadRequest(
   form_to_upload.set_randomized_encoder(
       RandomizedEncoder::Create(client_->GetPrefs()));
   return crowdsourcing_manager->StartUploadRequest(
-      form_to_upload, /*form_was_autofilled=*/false, available_field_types,
-      /*login_form_signature=*/login_form_signature,
-      /*observed_submission=*/true,
+      form_to_upload.EncodeUploadRequest(
+          available_field_types, /*form_was_autofilled=*/false,
+          login_form_signature, /*observed_submission=*/true),
+      form_to_upload.submission_source(), form_to_upload.active_field_count(),
       /*pref_service=*/nullptr,
       /*observer=*/nullptr);
 }
