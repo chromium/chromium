@@ -9,13 +9,18 @@
 #include "ash/shell.h"
 #include "ash/style/pill_button.h"
 #include "ash/wm/desks/desks_util.h"
+#include "base/barrier_callback.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "pine_contents_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/shadow_value.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -34,6 +39,7 @@ namespace {
 constexpr int kMaxItems = 4;
 
 // Constants for `PineItemView`.
+constexpr gfx::Size kFaviconPreferredSize(16, 16);
 constexpr int kItemChildSpacing = 10;
 constexpr gfx::Size kItemIconBackgroundPreferredSize(40, 40);
 constexpr int kItemIconBackgroundRounding = 10;
@@ -57,18 +63,22 @@ constexpr int kContentsChildSpacing = 20;
 constexpr gfx::Insets kContentsInsets = gfx::Insets::VH(15, 15);
 constexpr int kContentsRounding = 20;
 constexpr int kContentsTitleFontSize = 22;
+constexpr int kContentsDescriptionFontSize = 14;
 constexpr int kLeftContentsChildSpacing = 20;
 constexpr int kSettingsIconSize = 24;
 
 // Represents an app that will be shown in the pine widget. Contains the app
-// title and app icon.
+// title and app icon. Optionally contains a couple favicons depending on the
+// app.
 // TODO(sammiequon): Add ASCII art.
 class PineItemView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(PineItemView);
 
-  explicit PineItemView(const std::string& app_title) {
+  PineItemView(const std::string& app_title,
+               const std::vector<std::string>& favicons) {
     SetBetweenChildSpacing(kItemChildSpacing);
+    SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
     SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 
     AddChildView(views::Builder<views::ImageView>()
@@ -78,15 +88,40 @@ class PineItemView : public views::BoxLayoutView {
                      .SetImageSize(kItemIconPreferredSize)
                      .SetPreferredSize(kItemIconBackgroundPreferredSize)
                      .Build());
+
+    views::Label* app_title_label;
     AddChildView(views::Builder<views::Label>()
+                     .CopyAddressTo(&app_title_label)
                      .SetEnabledColor(SK_ColorBLACK)
                      .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
                                                 kItemTitleFontSize,
-                                                gfx::Font::Weight::NORMAL))
+                                                gfx::Font::Weight::BOLD))
                      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                      .SetText(base::ASCIIToUTF16(app_title))
                      .Build());
+    SetFlexForView(app_title_label, 1);
+
+    if (favicons.empty()) {
+      return;
+    }
+
+    // Use a barrier callback so that we only layout once after all favicons are
+    // added as views.
+    auto barrier = base::BarrierCallback<const gfx::ImageSkia&>(
+        /*num_callbacks=*/favicons.size(),
+        /*done_callback=*/base::BindOnce(&PineItemView::OnAllFaviconsLoaded,
+                                         weak_ptr_factory_.GetWeakPtr()));
+
+    auto* delegate = Shell::Get()->saved_desk_delegate();
+    for (const std::string& url : favicons) {
+      delegate->GetFaviconForUrl(
+          url,
+          base::BindOnce(&PineItemView::OnOneFaviconLoaded, GetWeakPtr(),
+                         barrier),
+          &cancelable_favicon_task_tracker_);
+    }
   }
+
   PineItemView(const PineItemView&) = delete;
   PineItemView& operator=(const PineItemView&) = delete;
   ~PineItemView() override = default;
@@ -98,7 +133,44 @@ class PineItemView : public views::BoxLayoutView {
   }
 
  private:
+  void OnOneFaviconLoaded(
+      base::OnceCallback<void(const gfx::ImageSkia&)> callback,
+      const gfx::ImageSkia& favicon) {
+    std::move(callback).Run(favicon);
+  }
+
+  void OnAllFaviconsLoaded(const std::vector<gfx::ImageSkia>& favicons) {
+    bool needs_layout = false;
+    for (const gfx::ImageSkia& favicon : favicons) {
+      if (favicon.isNull()) {
+        continue;
+      }
+
+      needs_layout = true;
+      AddChildView(views::Builder<views::ImageView>()
+                       // TODO: The border is temporary for more contrast until
+                       // specs are ready.
+                       .SetBorder(views::CreateRoundedRectBorder(
+                           /*thickness=*/1,
+                           /*corner_radius=*/kFaviconPreferredSize.width(),
+                           SK_ColorBLACK))
+                       .SetImageSize(kFaviconPreferredSize)
+                       .SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
+                           favicon, skia::ImageOperations::RESIZE_BEST,
+                           kFaviconPreferredSize))
+                       .Build());
+    }
+
+    // If at least one favicon was added, relayout.
+    if (needs_layout) {
+      Layout();
+    }
+  }
+
+  // Owned by views hierarchy.
   raw_ptr<views::ImageView> image_view_;
+
+  base::CancelableTaskTracker cancelable_favicon_task_tracker_;
 
   base::WeakPtrFactory<PineItemView> weak_ptr_factory_{this};
 };
@@ -113,8 +185,8 @@ class PineItemsContainerView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(PineItemsContainerView);
 
-  explicit PineItemsContainerView(const PineContentsView::AppIds& app_ids) {
-    const int elements = static_cast<int>(app_ids.size());
+  explicit PineItemsContainerView(const PineContentsView::AppsData& apps) {
+    const int elements = static_cast<int>(apps.size());
     CHECK_GT(elements, 0);
     CHECK_LE(elements, kMaxItems);
 
@@ -130,7 +202,7 @@ class PineItemsContainerView : public views::BoxLayoutView {
         apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
             Shell::Get()->session_controller()->GetActiveAccountId());
     auto* delegate = Shell::Get()->saved_desk_delegate();
-    for (const std::string& app_id : app_ids) {
+    for (const auto& [app_id, favicons] : apps) {
       std::string title;
       // `cache` might be null in a test environment. In that case, we will use
       // an empty title.
@@ -141,7 +213,7 @@ class PineItemsContainerView : public views::BoxLayoutView {
       }
 
       PineItemView* item_view =
-          AddChildView(std::make_unique<PineItemView>(title));
+          AddChildView(std::make_unique<PineItemView>(title, favicons));
 
       // The callback may be called synchronously.
       delegate->GetIconForAppId(
@@ -167,7 +239,7 @@ END_METADATA
 
 }  // namespace
 
-PineContentsView::PineContentsView(const AppIds& app_ids) {
+PineContentsView::PineContentsView(const AppsData& apps) {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysBaseElevated, kContentsRounding));
   SetBetweenChildSpacing(kContentsChildSpacing);
@@ -185,11 +257,20 @@ PineContentsView::PineContentsView(const AppIds& app_ids) {
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetPreferredSize(kItemsContainerPreferredSize)
           .AddChildren(
+              // Title.
               views::Builder<views::Label>()
                   .SetEnabledColor(SK_ColorBLACK)
                   .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
                                              kContentsTitleFontSize,
                                              gfx::Font::Weight::BOLD))
+                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                  .SetText(u"Welcome Back"),
+              // Description.
+              views::Builder<views::Label>()
+                  .SetEnabledColor(SK_ColorBLACK)
+                  .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
+                                             kContentsDescriptionFontSize,
+                                             gfx::Font::Weight::NORMAL))
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                   .SetMultiLine(true)
                   .SetText(u"Continue from where you left off?"),
@@ -198,14 +279,15 @@ PineContentsView::PineContentsView(const AppIds& app_ids) {
               views::Builder<views::BoxLayoutView>()
                   .SetBetweenChildSpacing(kButtonContainerChildSpacing)
                   .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-                  .AddChildren(views::Builder<PillButton>()
-                                   .SetText(u"No thanks")
-                                   .SetPillButtonType(
-                                       PillButton::Type::kSecondaryWithoutIcon),
-                               views::Builder<PillButton>()
-                                   .SetText(u"Restore")
-                                   .SetPillButtonType(
-                                       PillButton::Type::kPrimaryWithoutIcon)),
+                  .AddChildren(
+                      views::Builder<PillButton>()
+                          .SetText(u"Restore")
+                          .SetPillButtonType(
+                              PillButton::Type::kPrimaryWithoutIcon),
+                      views::Builder<PillButton>()
+                          .SetText(u"No thanks")
+                          .SetPillButtonType(
+                              PillButton::Type::kSecondaryWithoutIcon)),
               views::Builder<views::View>().CopyAddressTo(&spacer),
               views::Builder<views::ImageButton>(
                   views::CreateVectorImageButtonWithNativeTheme(
@@ -219,7 +301,7 @@ PineContentsView::PineContentsView(const AppIds& app_ids) {
       ->SetFlexForView(spacer, 1);
 
   PineItemsContainerView* container_view =
-      AddChildView(std::make_unique<PineItemsContainerView>(app_ids));
+      AddChildView(std::make_unique<PineItemsContainerView>(apps));
   container_view->SetPreferredSize(kItemsContainerPreferredSize);
 }
 
@@ -228,11 +310,13 @@ PineContentsView::~PineContentsView() = default;
 // static
 std::unique_ptr<views::Widget> PineContentsView::Create(aura::Window* root) {
   // TODO(sammiequon|zxdan): Remove this temporary data used for testing.
-  AppIds kTestingAppsData = {
-      "mgndgikekgjfcpckkfioiadnlibdjbkf",  // Chrome
-      "njfbnohfdkmbmnjapinfcopialeghnmh",  // Camera
-      "odknhmnlageboeamepcngndbggdpaobj",  // Settings
-      "fkiggjmkendpmbegkagpmagjepfkpmeb",  // Files
+  AppsData kTestingAppsData = {
+      {"mgndgikekgjfcpckkfioiadnlibdjbkf",  // Chrome
+       {"https://www.cnn.com/", "https://www.youtube.com/",
+        "https://www.google.com/"}},
+      {"njfbnohfdkmbmnjapinfcopialeghnmh", {}},  // Camera
+      {"odknhmnlageboeamepcngndbggdpaobj", {}},  // Settings
+      {"fkiggjmkendpmbegkagpmagjepfkpmeb", {}},  // Files
   };
 
   auto contents_view = std::make_unique<PineContentsView>(kTestingAppsData);

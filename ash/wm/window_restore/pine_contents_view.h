@@ -19,9 +19,12 @@ class PineContentsView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(PineContentsView);
 
-  using AppIds = std::vector<std::string>;
+  // Temporary typedefs to describe a bunch of apps. An app is described by an
+  // app id and a vector of urls, which can be empty if the app is not Chrome.
+  using AppData = std::pair<std::string, std::vector<std::string>>;
+  using AppsData = std::vector<AppData>;
 
-  explicit PineContentsView(const AppIds& app_ids);
+  explicit PineContentsView(const AppsData& apps);
   PineContentsView(const PineContentsView&) = delete;
   PineContentsView& operator=(const PineContentsView&) = delete;
   ~PineContentsView() override;
