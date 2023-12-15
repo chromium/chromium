@@ -17,9 +17,6 @@
 
 namespace views {
 
-class Label;
-class StyledLabel;
-
 // BubbleDialogModelHost is a views implementation of ui::DialogModelHost which
 // hosts a ui::DialogModel as a BubbleDialogDelegate. This exposes such as
 // SetAnchorView(), SetArrow() and SetHighlightedButton(). For methods that are
@@ -87,31 +84,6 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   void OnFieldChanged(ui::DialogModelField* field) override;
 
  private:
-  // TODO(pbos): Consider externalizing this functionality into a different
-  // format that could feasibly be adopted by LayoutManagers. This is used for
-  // BoxLayouts (but could be others) to agree on columns' preferred width as a
-  // replacement for using GridLayout.
-  class LayoutConsensusView;
-  class LayoutConsensusGroup {
-   public:
-    LayoutConsensusGroup();
-    ~LayoutConsensusGroup();
-
-    void AddView(LayoutConsensusView* view);
-    void RemoveView(LayoutConsensusView* view);
-
-    void InvalidateChildren();
-
-    // Get the union of all preferred sizes within the group.
-    gfx::Size GetMaxPreferredSize() const;
-
-    // Get the union of all minimum sizes within the group.
-    gfx::Size GetMaxMinimumSize() const;
-
-   private:
-    base::flat_set<View*> children_;
-  };
-
   // This class observes the ContentsView theme to make sure that the window
   // icon updates with the theme.
   class ThemeChangedObserver : public ViewObserver {
@@ -137,46 +109,17 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
 
   void OnWindowClosing();
 
-  void AddInitialFields();
-  void AddOrUpdateParagraph(ui::DialogModelParagraph* model_field);
-  void AddOrUpdateCheckbox(ui::DialogModelCheckbox* model_field);
-  void AddOrUpdateCombobox(ui::DialogModelCombobox* model_field);
-  void AddOrUpdateMenuItem(ui::DialogModelMenuItem* model_field);
-  void AddOrUpdateSeparator(ui::DialogModelField* model_field);
-  void AddOrUpdateTextfield(ui::DialogModelTextfield* model_field);
   void UpdateButton(ui::DialogModelButton* model_field);
 
   void UpdateWindowIcon();
   void UpdateSpacingAndMargins();
   void UpdateFieldVisibility(ui::DialogModelField* field);
 
-  void AddViewForLabelAndField(ui::DialogModelField* model_field,
-                               const std::u16string& label_text,
-                               std::unique_ptr<views::View> field,
-                               const gfx::FontList& field_font);
-
-  static bool DialogModelLabelRequiresStyledLabel(
-      const ui::DialogModelLabel& dialog_label);
-  std::unique_ptr<View> CreateViewForLabel(
-      const ui::DialogModelLabel& dialog_label);
-  std::unique_ptr<StyledLabel> CreateStyledLabelForDialogModelLabel(
-      const ui::DialogModelLabel& dialog_label);
-  std::unique_ptr<Label> CreateLabelForDialogModelLabel(
-      const ui::DialogModelLabel& dialog_label);
-  std::unique_ptr<View> CreateViewForParagraphWithHeader(
-      const ui::DialogModelLabel& dialog_label,
-      const std::u16string header);
-
   bool IsModalDialog() const;
 
   std::unique_ptr<ui::DialogModel> model_;
   const raw_ptr<ContentsView> contents_view_;
   ThemeChangedObserver theme_observer_;
-
-  std::vector<base::CallbackListSubscription> property_changed_subscriptions_;
-
-  LayoutConsensusGroup textfield_first_column_group_;
-  LayoutConsensusGroup textfield_second_column_group_;
 };
 
 }  // namespace views
