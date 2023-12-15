@@ -286,6 +286,7 @@ robolectric_library("player_junit_java") {
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/layouts:java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/prefs/android:java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",

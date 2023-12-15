@@ -84,6 +84,7 @@ public class ContactsPickerDialogTest
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.BLINK_CONTACTS)
+                    .setRevision(1)
                     .build();
 
     // The dialog we are testing.

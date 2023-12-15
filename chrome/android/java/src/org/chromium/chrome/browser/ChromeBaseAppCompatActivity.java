@@ -43,7 +43,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.base.ServiceTracingProxyProvider;
 import org.chromium.chrome.browser.base.SplitChromeApplication;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
@@ -310,10 +309,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     /** Apply theme overlay to this activity class. */
     @CallSuper
     protected void applyThemeOverlays() {
-        if (ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()) {
-            getTheme().applyStyle(R.style.SurfaceColorsThemeOverlay, /* force= */ true);
-            mThemeResIds.add(R.style.SurfaceColorsThemeOverlay);
-        }
         DynamicColors.applyToActivityIfAvailable(this);
 
         DeferredStartupHandler.getInstance()

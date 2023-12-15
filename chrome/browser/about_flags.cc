@@ -7116,11 +7116,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabStripStartupRefactoringDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStripStartupRefactoring)},
 
-    {"enable-baseline-gm3-surface-colors",
-     flag_descriptions::kBaselineGM3SurfaceColorsName,
-     flag_descriptions::kBaselineGM3SurfaceColorsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kBaselineGM3SurfaceColors)},
-
     {"enable-delay-temp-strip-removal",
      flag_descriptions::kDelayTempStripRemovalName,
      flag_descriptions::kDelayTempStripRemovalDescription, kOsAndroid,

@@ -178,7 +178,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBackGestureRefactorActivityAndroid,
     &kBackGestureRefactorAndroid,
     &kBackgroundThreadPool,
-    &kBaselineGM3SurfaceColors,
     &kBlockIntentsWhileLocked,
     &kCacheActivityTaskID,
     &kCastDeviceFilter,
@@ -492,10 +491,6 @@ BASE_FEATURE(kAuxiliarySearchDonation,
 BASE_FEATURE(kBackgroundThreadPool,
              "BackgroundThreadPool",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kBaselineGM3SurfaceColors,
-             "BaselineGM3SurfaceColors",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBlockIntentsWhileLocked,
              "BlockIntentsWhileLocked",

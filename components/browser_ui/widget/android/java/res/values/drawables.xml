@@ -9,4 +9,5 @@ found in the LICENSE file.
     <drawable name="ic_more_vert_24dp">@drawable/ic_more_vert_24dp_on_light_bg</drawable>
     <drawable name="dialog_bg_tinted">@drawable/dialog_bg_baseline</drawable>
     <drawable name="menu_bg_tinted">@drawable/menu_bg_baseline</drawable>
+    <drawable name="tile_view_icon_background_modern">@drawable/oval_surface_2</drawable>
 </resources>

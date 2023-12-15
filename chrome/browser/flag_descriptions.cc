@@ -4516,10 +4516,6 @@ const char kTabStripStartupRefactoringDescription[] =
     "tabs before the tab strip is initialized to prevent "
     "jank (tabs seeming to quickly flicker / scroll).";
 
-const char kBaselineGM3SurfaceColorsName[] = "Baseline GM3 Surface Colors";
-const char kBaselineGM3SurfaceColorsDescription[] =
-    "Updates baseline surface colors to match the GM3 formula.";
-
 const char kDelayTempStripRemovalName[] =
     "Delay temp tab strip removal on startup";
 const char kDelayTempStripRemovalDescription[] =

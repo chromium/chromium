@@ -356,11 +356,8 @@ public class NewTabPageLayout extends LinearLayout {
             return;
         }
 
-        final int elevationDimenId =
-                ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
-                        ? R.dimen.default_elevation_4
-                        : R.dimen.toolbar_text_box_elevation;
-        final int searchBoxColor = ChromeColors.getSurfaceColor(getContext(), elevationDimenId);
+        final int searchBoxColor =
+                ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_4);
         final ColorStateList colorStateList = ColorStateList.valueOf(searchBoxColor);
         findViewById(R.id.search_box).setBackgroundTintList(colorStateList);
     }

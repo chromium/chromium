@@ -54,6 +54,7 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_CONTEXT_MENU)
+                    .setRevision(1)
                     .build();
 
     private ModelListAdapter mAdapter;

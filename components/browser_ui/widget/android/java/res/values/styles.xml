@@ -39,7 +39,7 @@ found in the LICENSE file.
 
     <style name="MaterialCardStyle">
         <item name="cornerRadius">@dimen/card_rounded_corner_radius</item>
-        <item name="cardElevation">?attr/cardElevation</item>
+        <item name="cardElevation">@dimen/default_elevation_2</item>
     </style>
 
     <style name="ListActionButton" parent="@style/TextButton">

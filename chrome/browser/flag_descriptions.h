@@ -1934,9 +1934,6 @@ extern const char kTabletToolbarReorderingAndroidDescription[];
 extern const char kTabStripStartupRefactoringName[];
 extern const char kTabStripStartupRefactoringDescription[];
 
-extern const char kBaselineGM3SurfaceColorsName[];
-extern const char kBaselineGM3SurfaceColorsDescription[];
-
 extern const char kDelayTempStripRemovalName[];
 extern const char kDelayTempStripRemovalDescription[];
 

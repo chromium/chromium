@@ -69,6 +69,7 @@ public class PowerBookmarkShoppingItemRowRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
+                    .setRevision(1)
                     .build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
