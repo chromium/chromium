@@ -16,4 +16,6 @@ hidehiko@chromium.org
 
 # For extended-drag.
 per-file extended_drag*=nickdiego@igalia.com
+per-file extended_drag*=tonikitoo@igalia.com
 per-file wayland/zcr_extended_drag*=nickdiego@igalia.com
+per-file wayland/zcr_extended_drag*=tonikitoo@igalia.com
