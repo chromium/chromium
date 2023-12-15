@@ -1177,6 +1177,7 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
       whole_frames.emplace_back(std::make_pair(
           DecoderBuffer::CopyFrom(buffer_pointer, found_nalu_size),
           base::DoNothing()));
+      whole_frames.back().first->set_timestamp(buffer->timestamp());
 
       buffer_pointer += found_nalu_size;
       remaining_buffer_size -= found_nalu_size;
