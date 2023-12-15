@@ -565,6 +565,7 @@ void PaintOpReader::Read(SkGainmapInfo* gainmap_info) {
       SetInvalid(DeserializationError::kSkGainmapInfoDeserializationFailure);
       break;
   }
+  Read(&gainmap_info->fGainmapMathColorSpace);
 }
 
 void PaintOpReader::Read(sk_sp<sktext::gpu::Slug>* slug) {

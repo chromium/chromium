@@ -158,6 +158,7 @@
 ../../web_tests/images/resources/avif/blue-and-magenta-crop-invalid.avif
 ../../web_tests/images/resources/avif/blue-and-magenta-crop.avif
 ../../web_tests/images/resources/avif/dice_444_10b_grid4x3.avif
+../../web_tests/images/resources/avif/gainmap-sdr-srgb-to-hdr-wcg-rec2020.avif
 ../../web_tests/images/resources/avif/gracehopper_422_12b_grid2x4.avif
 ../../web_tests/images/resources/avif/gray1024x704.avif
 ../../web_tests/images/resources/avif/green-no-alpha-ispe.avif
@@ -211,6 +212,8 @@
 ../../web_tests/images/resources/avif/silver.png
 ../../web_tests/images/resources/avif/small-with-gainmap-adobe.avif
 ../../web_tests/images/resources/avif/small-with-gainmap-iso-hdrbase-forward.avif
+../../web_tests/images/resources/avif/small-with-gainmap-iso-usealtcolorspace-differenticc.avif
+../../web_tests/images/resources/avif/small-with-gainmap-iso-usealtcolorspace.avif
 ../../web_tests/images/resources/avif/small-with-gainmap-iso.avif
 ../../web_tests/images/resources/avif/star-animated-10bpc-with-alpha.avif
 ../../web_tests/images/resources/avif/star-animated-10bpc.avif
