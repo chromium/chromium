@@ -3726,7 +3726,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReusedMap) {
 }
 
 // TODO(crbug.com/1503567): Re-enable this test
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 #define MAYBE_ReusedMapMoveImage DISABLED_ReusedMapMoveImage
 #else
 #define MAYBE_ReusedMapMoveImage ReusedMapMoveImage
