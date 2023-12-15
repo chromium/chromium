@@ -27,6 +27,7 @@
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/security_events/security_event_recorder_factory.h"
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
@@ -78,7 +79,6 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -107,12 +107,7 @@ std::unique_ptr<KeyedService> BuildSyncService(
 
   // Incognito, guest, or system profiles aren't relevant for Sync, and
   // no SyncService should be created for those types of profiles.
-  CHECK(profile->IsRegularProfile());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Ash, there are additional non-interesting profile types (sign-in
-  // profile and lockscreen profile).
-  CHECK(ash::ProfileHelper::IsUserProfile(profile));
-#endif
+  CHECK(profiles::IsRegularUserProfile(profile));
 
   init_params.sync_client =
       std::make_unique<browser_sync::ChromeSyncClient>(profile);

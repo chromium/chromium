@@ -48,6 +48,11 @@ void RegisterPrefs(PrefRegistrySimple* registry);
 // System Profile directory, which is an invalid last used profile.
 void SetLastUsedProfile(const base::FilePath& profile_dir);
 
+// Returns true if the profile is a regular profile and specifically not an Ash
+// internal profile. Callers who do not care about checking for Ash internal
+// profiles should use `Profile::IsRegularProfile()` instead.
+bool IsRegularUserProfile(Profile* profile);
+
 #if !BUILDFLAG(IS_ANDROID)
 // Returns the display name of the specified on-the-record profile (or guest),
 // specified by |profile_path|, used in the avatar button or user manager. If

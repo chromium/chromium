@@ -6,9 +6,9 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
@@ -44,12 +44,7 @@ TrackingProtectionSettingsFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  bool should_record_metrics = profile->IsRegularProfile();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  should_record_metrics =
-      should_record_metrics && ash::ProfileHelper::IsUserProfile(profile);
-#endif
-  if (should_record_metrics) {
+  if (profiles::IsRegularUserProfile(profile)) {
     if (profile->GetPrefs()->GetBoolean(
             prefs::kTrackingProtection3pcdEnabled)) {
       base::UmaHistogramBoolean("Settings.TrackingProtection.Enabled", true);

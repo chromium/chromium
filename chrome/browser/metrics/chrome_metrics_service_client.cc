@@ -58,6 +58,7 @@
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/browser/privacy_budget/privacy_budget_ukm_entry_filter.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_metrics_provider.h"
 #include "chrome/browser/safe_browsing/metrics/safe_browsing_metrics_provider.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
@@ -157,7 +158,6 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/printing/printer_metrics_provider.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/keyboard_backlight_color_metrics_provider.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_theme_metrics_provider.h"
@@ -1164,18 +1164,11 @@ bool ChromeMetricsServiceClient::RegisterForProfileEvents(Profile* profile) {
   // observed or checked, therefore they are whitelisted for the UKM
   // validation that checks consent on all profiles.
   // E.g System Profile consent should be always true.
-  if (!profile->IsRegularProfile()) {
+  if (!profiles::IsRegularUserProfile(profile)) {
     return true;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Ignore the signin, lock screen app and lock screen profile for sync
-  // disables / history deletion.
-  if (!ash::ProfileHelper::IsUserProfile(profile)) {
-    // No listeners, but still a success case.
-    return true;
-  }
-
   // Begin initializing the structured metrics system, which is currently
   // only implemented for Chrome OS. Initialization must wait until a
   // profile is added, because it reads keys stored within the user's

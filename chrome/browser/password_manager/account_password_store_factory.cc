@@ -21,9 +21,9 @@
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 #include "chrome/browser/password_manager/password_store_backend_factory.h"
 #include "chrome/browser/password_manager/password_store_utils.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/refcounted_profile_keyed_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -51,10 +51,6 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using password_manager::AffiliatedMatchHelper;
 using password_manager::PasswordStore;
@@ -114,18 +110,6 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
   Profile* profile = Profile::FromBrowserContext(context);
 
   DCHECK(!profile->IsOffTheRecord());
-
-  // Incognito profiles don't have their own password stores. Guest, or system
-  // profiles aren't relevant for Password Manager, and no PasswordStore should
-  // even be created for those types of profiles.
-  if (!profile->IsRegularProfile())
-    return nullptr;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Ash, there are additional non-interesting profile types (sign-in
-  // profile and lockscreen profile).
-  if (!ash::ProfileHelper::IsUserProfile(profile))
-    return nullptr;
-#endif
 
   scoped_refptr<password_manager::PasswordStore> ps =
 #if BUILDFLAG(IS_ANDROID)
@@ -216,9 +200,12 @@ AccountPasswordStoreFactory* AccountPasswordStoreFactory::GetInstance() {
 }
 
 AccountPasswordStoreFactory::AccountPasswordStoreFactory()
-    : RefcountedBrowserContextKeyedServiceFactory(
+    : RefcountedProfileKeyedServiceFactory(
           "AccountPasswordStore",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {
   DependsOn(CredentialsCleanerRunnerFactory::GetInstance());
 }
 
@@ -233,11 +220,6 @@ scoped_refptr<RefcountedKeyedService>
 AccountPasswordStoreFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return BuildPasswordStore(context);
-}
-
-content::BrowserContext* AccountPasswordStoreFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 bool AccountPasswordStoreFactory::ServiceIsNULLWhileTesting() const {

@@ -9,6 +9,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -18,10 +19,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
 using content_settings::CookieControlsMode;
@@ -68,16 +65,7 @@ CookieSettingsFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   PrefService* prefs = profile->GetPrefs();
 
-  bool should_record_metrics = profile->IsRegularProfile();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS creates various irregular profiles (login, lock screen...); they
-  // are of type kRegular (returns true for `Profile::IsRegular()`), that aren't
-  // used to browse the web and users can't configure. Don't collect metrics
-  // about them.
-  should_record_metrics =
-      should_record_metrics && ash::ProfileHelper::IsUserProfile(profile);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  if (should_record_metrics) {
+  if (profiles::IsRegularUserProfile(profile)) {
     // Record cookie setting histograms.
     auto cookie_controls_mode = static_cast<CookieControlsMode>(
         prefs->GetInteger(prefs::kCookieControlsMode));

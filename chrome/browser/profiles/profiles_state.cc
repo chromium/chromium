@@ -24,6 +24,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -104,6 +105,18 @@ void SetLastUsedProfile(const base::FilePath& profile_dir) {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
   local_state->SetFilePath(prefs::kProfileLastUsed, profile_dir);
+}
+
+bool IsRegularUserProfile(Profile* profile) {
+  ProfileSelections selections =
+      ProfileSelections::Builder()
+          .WithRegular(ProfileSelection::kOriginalOnly)  // the default
+          // Filter out ChromeOS irregular profiles (login, lock screen...);
+          // they are of type kRegular (returns true for `Profile::IsRegular()`)
+          // but aren't used to browse the web and users can't configure them.
+          .WithAshInternals(ProfileSelection::kNone)
+          .Build();
+  return selections.ApplyProfileSelection(profile);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

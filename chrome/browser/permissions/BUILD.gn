@@ -60,6 +60,7 @@ source_set("permissions") {
     "//chrome/browser/favicon",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profiles",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/top_level_storage_access_api:permissions",

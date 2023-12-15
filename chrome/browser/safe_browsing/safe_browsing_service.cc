@@ -29,6 +29,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service_factory.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
@@ -444,20 +445,8 @@ void SafeBrowsingService::OnProfileAdded(Profile* profile) {
   UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.Pref.Enhanced",
                         pref_service->GetBoolean(prefs::kSafeBrowsingEnhanced));
 
-  // Record the current pref state for enhanced protection for regular profiles
-  // only.
-  bool should_record_metrics = profile->IsRegularProfile();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS creates various irregular profiles (login, lock screen...); they
-  // are of type kRegular (returns true for `Profile::IsRegular()`), that aren't
-  // used to browse the web and users can't configure. Don't collect metrics
-  // about them.
-  should_record_metrics =
-      should_record_metrics && ash::IsUserBrowserContext(profile);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  if (should_record_metrics) {
+  // Record the current enhanced protection pref state for regular profiles only
+  if (profiles::IsRegularUserProfile(profile)) {
     UMA_HISTOGRAM_BOOLEAN(
         "SafeBrowsing.Pref.Enhanced.RegularProfile",
         pref_service->GetBoolean(prefs::kSafeBrowsingEnhanced));
