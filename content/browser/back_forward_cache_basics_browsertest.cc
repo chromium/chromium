@@ -1251,6 +1251,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheStillLoadingBrowserTest,
 
   // 2) Navigate away.
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  rfh_a->DisableUnloadTimerForTesting();
   shell()->LoadURL(embedded_test_server()->GetURL("b.com", "/title1.html"));
   ASSERT_TRUE(WaitForLoadStop(web_contents()));
 

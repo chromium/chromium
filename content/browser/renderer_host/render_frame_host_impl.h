@@ -3256,6 +3256,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, SetTitleOnPagehide);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            DetachedIframePagehideHandlerABCB);
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheStillLoadingBrowserTest,
+                           DoesNotCacheIfFrameStillLoading);
 
   class SubresourceLoaderFactoriesConfig;
 
