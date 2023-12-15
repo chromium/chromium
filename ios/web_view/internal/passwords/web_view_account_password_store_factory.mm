@@ -12,7 +12,6 @@
 #import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
@@ -21,8 +20,6 @@
 #import "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 #import "components/password_manager/core/browser/password_store_factory_util.h"
 #import "components/prefs/pref_service.h"
-#import "ios/web_view/internal/passwords/web_view_affiliation_service_factory.h"
-#import "ios/web_view/internal/passwords/web_view_affiliations_prefetcher_factory.h"
 
 namespace ios_web_view {
 
@@ -56,10 +53,7 @@ WebViewAccountPasswordStoreFactory::GetInstance() {
 WebViewAccountPasswordStoreFactory::WebViewAccountPasswordStoreFactory()
     : RefcountedBrowserStateKeyedServiceFactory(
           "AccountPasswordStore",
-          BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(WebViewAffiliationServiceFactory::GetInstance());
-  DependsOn(WebViewAffiliationsPrefetcherFactory::GetInstance());
-}
+          BrowserStateDependencyManager::GetInstance()) {}
 
 WebViewAccountPasswordStoreFactory::~WebViewAccountPasswordStoreFactory() {}
 
@@ -82,17 +76,7 @@ WebViewAccountPasswordStoreFactory::BuildServiceInstanceFor(
               std::move(login_db),
               syncer::WipeModelUponSyncDisabledBehavior::kAlways));
 
-  password_manager::AffiliationService* affiliation_service =
-      WebViewAffiliationServiceFactory::GetForBrowserState(context);
-  std::unique_ptr<password_manager::AffiliatedMatchHelper>
-      affiliated_match_helper =
-          std::make_unique<password_manager::AffiliatedMatchHelper>(
-              affiliation_service);
-
-  ps->Init(browser_state->GetPrefs(), std::move(affiliated_match_helper));
-
-  WebViewAffiliationsPrefetcherFactory::GetForBrowserState(context)
-      ->RegisterPasswordStore(ps.get());
+  ps->Init(browser_state->GetPrefs(), /*affiliated_match_helper=*/nullptr);
 
   return ps;
 }
