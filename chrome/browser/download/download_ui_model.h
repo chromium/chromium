@@ -110,6 +110,8 @@ class DownloadUIModel {
   };
 
 #if !BUILDFLAG(IS_ANDROID)
+  // Keep UI logic in this class in sync with DownloadBubbleRowViewInfo.
+  // TODO(crbug.com/1482901): Unify the logic.
   struct BubbleUIInfo {
     struct SubpageButton {
       DownloadCommands::Command command;

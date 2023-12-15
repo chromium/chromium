@@ -1168,17 +1168,21 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete() const {
       } else {
         if (base::FeatureList::IsEnabled(
                 safe_browsing::kImprovedDownloadBubbleWarnings)) {
+          if (WasSafeBrowsingVerdictObtained(GetDownloadItem())) {
+            return DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
+                l10n_util::GetStringUTF16(
+                    IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_DANGEROUS_FILE_TYPE),
+                l10n_util::GetStringUTF16(
+                    IDS_DOWNLOAD_BUBBLE_CONTINUE_SUSPICIOUS_FILE));
+          }
           if (ShouldShowWarningForNoSafeBrowsing(profile())) {
             return GetBubbleUIInfoForFileTypeWarningNoSafeBrowsing();
           }
           return DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
               l10n_util::GetStringUTF16(
                   IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_DANGEROUS_FILE_TYPE),
-              WasSafeBrowsingVerdictObtained(GetDownloadItem())
-                  ? l10n_util::GetStringUTF16(
-                        IDS_DOWNLOAD_BUBBLE_CONTINUE_SUSPICIOUS_FILE)
-                  : l10n_util::GetStringUTF16(
-                        IDS_DOWNLOAD_BUBBLE_CONTINUE_UNVERIFIED_FILE));
+              l10n_util::GetStringUTF16(
+                  IDS_DOWNLOAD_BUBBLE_CONTINUE_UNVERIFIED_FILE));
         }
         return DownloadUIModel::BubbleUIInfo()
             .AddSubpageSummary(
@@ -1705,21 +1709,21 @@ DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
 
   switch (model_->GetDangerType()) {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
+      if (model_->IsExtensionDownload()) {
+        // "Blocked • Unknown source"
+        return get_blocked_warning(IDS_DOWNLOAD_BUBBLE_STATUS_UNKNOWN_SOURCE);
+      }
       if (base::FeatureList::IsEnabled(
               safe_browsing::kImprovedDownloadBubbleWarnings)) {
-        if (ShouldShowWarningForNoSafeBrowsing(model_->profile()) ||
-            !WasSafeBrowsingVerdictObtained(model_->GetDownloadItem())) {
-          // "Unverified download blocked"
+        if (WasSafeBrowsingVerdictObtained(model_->GetDownloadItem())) {
+          // "Suspicious download blocked"
           return l10n_util::GetStringUTF16(
-              IDS_DOWNLOAD_BUBBLE_STATUS_WARNING_UNVERIFIED);
+              IDS_DOWNLOAD_BUBBLE_STATUS_WARNING_SUSPICIOUS);
         }
-        // "Suspicious download blocked"
+        // "Unverified download blocked"
         return l10n_util::GetStringUTF16(
-            IDS_DOWNLOAD_BUBBLE_STATUS_WARNING_SUSPICIOUS);
+            IDS_DOWNLOAD_BUBBLE_STATUS_WARNING_UNVERIFIED);
       }
-      // "Blocked • Unknown source"
-      if (model_->IsExtensionDownload())
-        return get_blocked_warning(IDS_DOWNLOAD_BUBBLE_STATUS_UNKNOWN_SOURCE);
       [[fallthrough]];
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:

@@ -368,11 +368,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       // Mimics logic in download_ui_model.cc for downloads with danger_type
       // DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE.
       case DangerType.kDangerousFile:
-        return this.data.safeBrowsingState ===
-                SafeBrowsingState.kNoSafeBrowsing ?
-            DisplayType.UNVERIFIED :
-            (this.data.hasSafeBrowsingVerdict ? DisplayType.SUSPICIOUS :
-                                                DisplayType.UNVERIFIED);
+        return this.data.hasSafeBrowsingVerdict ? DisplayType.SUSPICIOUS :
+                                                  DisplayType.UNVERIFIED;
 
       case DangerType.kDangerousUrl:
       case DangerType.kDangerousContent:

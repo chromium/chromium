@@ -1069,12 +1069,14 @@ class DownloadItemModelImprovedDownloadBubbleWarningsTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Test file type warning where SB is on and verdict was obtained.
+// Test file type warning where verdict was obtained.
 TEST_F(DownloadItemModelImprovedDownloadBubbleWarningsTest,
-       FileTypeWarning_SafeBrowsingOn_HasVerdict) {
-  for (auto sb_state :
-       {safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
-        safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION}) {
+       FileTypeWarning_HasSafeBrowsingVerdict) {
+  for (auto sb_state : {safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
+                        safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION,
+                        // This can happen if the user subsequently turned off
+                        // SB after verdict was obtained.
+                        safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING}) {
     SetSafeBrowsingState(profile()->GetPrefs(), sb_state);
     EXPECT_CALL(item(), GetDangerType())
         .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));

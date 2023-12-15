@@ -166,6 +166,10 @@ void DownloadBubbleRowViewInfo::PopulateForInProgressOrComplete() {
       } else {
         if (base::FeatureList::IsEnabled(
                 safe_browsing::kImprovedDownloadBubbleWarnings)) {
+          if (WasSafeBrowsingVerdictObtained(model_->GetDownloadItem())) {
+            PopulateSuspiciousUiPattern();
+            return;
+          }
           if (ShouldShowWarningForNoSafeBrowsing(model_->profile())) {
             PopulateForFileTypeWarningNoSafeBrowsing();
             return;
