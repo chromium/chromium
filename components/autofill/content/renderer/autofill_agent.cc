@@ -1689,11 +1689,16 @@ void AutofillAgent::UpdateStateForTextChange(
 std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
   // Checks whether all elements represented by `element_ids` in `document` have
   // disappeared (removed/hidden).
-  // TODO(crbug.com/1427131): Remove document parameter after launching
+  // TODO(crbug.com/1427131): Remove `render_frame` parameter after launching
   // AutofillUseDomNodeIdForRendererId.
   auto all_control_elements_disappeared =
-      [](const blink::WebDocument& document,
+      [](content::RenderFrame* render_frame,
          const std::set<FieldRendererId>& element_ids) {
+        if (!render_frame) {
+          return false;
+        }
+        const blink::WebDocument& document =
+            render_frame->GetWebFrame()->GetDocument();
         std::vector<FieldRendererId> elements(element_ids.begin(),
                                               element_ids.end());
         return base::ranges::none_of(
@@ -1720,14 +1725,17 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
   // - Formless elements were autofilled.
   // - The user has edited formless elements and all those elements disappeared
   //   (removed/hidden).
-  // TODO(crbug.com/1427131): Remove render_frame condition after launching
-  // AutofillUseDomNodeIdForRendererId.
+  // - The user has edited formless elements and the
+  //   kAutofillDontCheckForDisappearingFormlessElementsForSubmission feature is
+  //   enabled.
   if (auto* render_frame = unsafe_render_frame();
       formless_elements_were_autofilled_ ||
-      (render_frame && !formless_elements_user_edited_.empty() &&
-       all_control_elements_disappeared(
-           render_frame->GetWebFrame()->GetDocument(),
-           formless_elements_user_edited_))) {
+      (!formless_elements_user_edited_.empty() &&
+       (all_control_elements_disappeared(render_frame,
+                                         formless_elements_user_edited_) ||
+        base::FeatureList::IsEnabled(
+            features::
+                kAutofillDontCheckForDisappearingFormlessElementsForSubmission)))) {
     // Return the extracted form or `provisionally_saved_form_` as a fallback if
     // extraction fails.
     if (std::optional<FormData> form = CollectFormlessElements()) {

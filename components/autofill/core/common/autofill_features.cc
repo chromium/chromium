@@ -667,6 +667,13 @@ BASE_FEATURE(kAutofillUseTypedCreditCardNumber,
              "AutofillUseTypedCreditCardNumber",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for feature which ignores the visibility of formless elements in
+// determining whether a form was submitted. This changes the behavior when a
+// form submission is inferred as a result of the page navigating.
+BASE_FEATURE(kAutofillDontCheckForDisappearingFormlessElementsForSubmission,
+             "AutofillDontCheckForDisappearingFormlessElementsForSubmission",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls an ablation study in which autofill for addresses and payment data
 // can be suppressed.
 BASE_FEATURE(kAutofillEnableAblationStudy,

@@ -3887,20 +3887,23 @@ class MAYBE_AutofillInteractiveFormSubmissionTest
     ASSERT_TRUE(waiter.Wait(num_modified_textfields));
   }
 
+  struct NameValue {
+    std::u16string name;
+    std::u16string value;
+  };
+
+  [[nodiscard]] static auto HasNameValue(const NameValue& nv) {
+    return AllOf(Field("name", &FormFieldData::name, nv.name),
+                 Field("value", &FormFieldData::value, nv.value));
+  }
+
   [[nodiscard]] static auto HasExpectedValues() {
-    struct NameValue {
-      std::u16string name;
-      std::u16string value;
-    };
     std::vector<NameValue> expected = {{u"name", u"Sarah"},
                                        {u"address", u"123 Main Road"},
                                        {u"city", u""},
                                        {u"zip", u""},
                                        {u"state", u"WA"}};
-    return FieldsAre(Map(expected, [](const NameValue& nv) {
-      return AllOf(Field("name", &FormFieldData::name, nv.name),
-                   Field("value", &FormFieldData::value, nv.value));
-    }));
+    return FieldsAre(Map(expected, HasNameValue));
   }
 
   struct NameValueUserInput {
@@ -4236,6 +4239,91 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionClearFormTest,
       .Times(1)
       .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
   ExecuteScript("document.getElementById('shipping').submit();");
+  run_loop.Run();
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_AutofillInteractiveFormlessFormSubmissionTest \
+  DISABLED_AutofillInteractiveFormlessFormSubmissionTest
+#else
+#define MAYBE_AutofillInteractiveFormlessFormSubmissionTest \
+  AutofillInteractiveFormlessFormSubmissionTest
+#endif
+class MAYBE_AutofillInteractiveFormlessFormSubmissionTest
+    : public MAYBE_AutofillInteractiveFormSubmissionTest {
+ public:
+  MAYBE_AutofillInteractiveFormlessFormSubmissionTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::
+            kAutofillDontCheckForDisappearingFormlessElementsForSubmission);
+  }
+
+  void SetUpOnMainThread() override {
+    AutofillInteractiveTestBase::SetUpOnMainThread();
+
+    SetUpServer();
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+    ASSERT_TRUE(WaitForMatchingForm(
+        autofill_manager(), base::BindRepeating([](const FormStructure& form) {
+          return form.active_field_count() == 3;
+        })));
+  }
+
+  void SetUpServer() {
+    SetTestUrlResponse(R"(
+        <html><body>
+        Name: <input type='text' id='name'><br>
+        Address: <input type='text' id='address'><br>
+        City: <input type='text' id='city'><br>
+    )");
+    SetResponseForUrlPath("/success.html", "<html><body>Happy times!");
+    SetResponseForUrlPath("/xhr", "<foo>Happy times!</foo>");
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that a submission is detected when the following steps are done in
+// sequence:
+// 1) User fills <input>s on page without <form>.
+// 2) The page does an XHR
+// 3) The page navigates
+IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormlessFormSubmissionTest,
+                       NavigationAfterXhr) {
+  const std::vector<FieldValue> kEnteredValues = {
+      {"name", "Sarah"}, {"address", "123 Main Road"}, {"city", "Moonbeam"}};
+
+  EnterValues(kEnteredValues, /*num_modified_textfields=*/3u);
+
+  base::RunLoop run_loop;
+  // Ensure that only expected form submissions are recorded.
+  EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
+  EXPECT_CALL(
+      *autofill_manager(),
+      OnFormSubmittedImpl(FieldsAre(Map(kEnteredValues,
+                                        [](const FieldValue& fv) {
+                                          return HasNameValue(
+                                              {base::UTF8ToUTF16(fv.id),
+                                               base::UTF8ToUTF16(fv.value)});
+                                        })),
+                          /*known_success=*/false,
+                          mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
+      .Times(1)
+      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+
+  // Simulate XHR, then page navigation.
+  ExecuteScript(
+      R"(
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', '/xhr', true);
+      xhr.onload = () => {
+        setTimeout(() => {
+            window.location.href = 'success.html';
+          }, 50);
+      }
+      xhr.send(null);
+      )");
   run_loop.Run();
 }
 

@@ -218,6 +218,9 @@ BASE_DECLARE_FEATURE(kAutofillUseParameterizedSectioning);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillUseTypedCreditCardNumber);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(
+    kAutofillDontCheckForDisappearingFormlessElementsForSubmission);
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool> kAutofillSectioningModeIgnoreAutocomplete;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool> kAutofillSectioningModeCreateGaps;
