@@ -375,7 +375,7 @@ public class BookmarkFolderPickerMediatorTest {
         mModel.get(BookmarkFolderPickerProperties.MOVE_CLICK_LISTENER).run();
         verify(mFinishRunnable).run();
         verify(mBookmarkModel).moveBookmarks(Arrays.asList(mUserBookmarkId), mUserFolderId);
-        assertEquals(mUserFolderId, BookmarkUtils.getLastUsedParent(mActivity, mBookmarkModel));
+        assertEquals(mUserFolderId, BookmarkUtils.getLastUsedParent());
     }
 
     @Test

@@ -248,7 +248,7 @@ class BookmarkFolderPickerMediator {
     private void onMoveClicked() {
         BookmarkUtils.moveBookmarksToParent(
                 mBookmarkModel, mBookmarkIds, mCurrentParentItem.getId());
-        BookmarkUtils.setLastUsedParent(mContext, mCurrentParentItem.getId());
+        BookmarkUtils.setLastUsedParent(mCurrentParentItem.getId());
         mFinishRunnable.run();
     }
 }

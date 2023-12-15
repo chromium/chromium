@@ -372,9 +372,7 @@ public class BookmarkTest {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
 
         assertEquals(BookmarkUiMode.FOLDER, mDelegate.getCurrentUiMode());
-        assertEquals(
-                "chrome-native://bookmarks/folder/3",
-                BookmarkUtils.getLastUsedUrl(mActivityTestRule.getActivity()));
+        assertEquals("chrome-native://bookmarks/folder/3", BookmarkUtils.getLastUsedUrl());
     }
 
     @Test
@@ -774,7 +772,7 @@ public class BookmarkTest {
                 () -> {
                     BookmarkId folderId = mBookmarkModel.getMobileFolderId();
                     String prefUrl = BookmarkUiState.createFolderUrl(folderId).toString();
-                    BookmarkUtils.setLastUsedUrl(mActivityTestRule.getActivity(), prefUrl);
+                    BookmarkUtils.setLastUsedUrl(prefUrl);
                 });
 
         // Prevent loading so we can verify we see the spinner initially.

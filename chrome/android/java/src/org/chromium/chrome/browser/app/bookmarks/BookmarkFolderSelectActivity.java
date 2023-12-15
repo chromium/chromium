@@ -297,7 +297,7 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
 
     private void moveBookmarksAndFinish(List<BookmarkId> bookmarkIds, BookmarkId parentId) {
         BookmarkUtils.moveBookmarksToParent(mModel, bookmarkIds, parentId);
-        BookmarkUtils.setLastUsedParent(this, parentId);
+        BookmarkUtils.setLastUsedParent(parentId);
         finishActivity(bookmarkIds);
     }
 
