@@ -536,7 +536,7 @@
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 टैब}one{# टैब}other{# टैब}}</translation>
 <translation id="3795154175078851242">लिंक के साथ इमेज कॉपी करें</translation>
 <translation id="3810838688059735925">वीडियो</translation>
-<translation id="3810973564298564668">प्रबंधित करें</translation>
+<translation id="3810973564298564668">मैनेज करें</translation>
 <translation id="381861209280417772">पासवर्ड मिटाएं</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड हटाए गए</translation>
 <translation id="3819183753496523827">आप ऑफ़लाइन हैं. अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें.</translation>
@@ -1279,7 +1279,7 @@
 <translation id="749294055653435199">इस डिवाइस पर Google Lens नहीं है</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> अपडेट किया गया)</translation>
 <translation id="7497755084107113646">इस विषय को संभावित विषयों में वापस जोड़ा गया</translation>
-<translation id="7498271377022651285">कृपया प्रतीक्षा करें...</translation>
+<translation id="7498271377022651285">कृपया इंतज़ार करें...</translation>
 <translation id="7502234197872745058">सभी वेबसाइटों पर अपने Google खाते से साइन आउट करने के लिए, <ph name="BEGIN_LINK1" />Chrome से साइन आउट करें<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">कोई अपडेट उपलब्ध नहीं है</translation>
 <translation id="7507207699631365376">इस सेवा देने वाले की <ph name="BEGIN_LINK" />निजता नीति<ph name="END_LINK" /> देखें</translation>
