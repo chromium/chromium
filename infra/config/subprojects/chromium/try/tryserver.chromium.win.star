@@ -124,11 +124,12 @@ try_.orchestrator_builder(
         "chromium.compilator_can_outlive_parent": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
-    use_clang_coverage = True,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
+    siso_enabled = True,
+    tryjob = try_.job(),
+    use_clang_coverage = True,
 )
 
 try_.compilator_builder(

@@ -98,6 +98,7 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
@@ -176,6 +177,7 @@ try_.orchestrator_builder(
         "chromium.compilator_can_outlive_parent": 100,
     },
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
@@ -833,6 +835,7 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed

@@ -316,11 +316,12 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
-    use_clang_coverage = True,
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
+    siso_enabled = True,
+    tryjob = try_.job(),
+    use_clang_coverage = True,
 )
 
 try_.compilator_builder(
@@ -541,6 +542,7 @@ This builder should be removed after migrating linux_chromium_asan_rel_ng from N
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(
         experiment_percentage = 10,
     ),
@@ -787,6 +789,7 @@ This builder should be removed after migrating linux_chromium_tsan_rel_ng from N
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(
         experiment_percentage = 10,
     ),

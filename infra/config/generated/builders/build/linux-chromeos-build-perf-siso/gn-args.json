@@ -16,7 +16,6 @@
         "target_os": "chromeos",
         "use_clang_coverage": true,
         "use_cups": true,
-        "use_goma": false,
         "use_remoteexec": false,
         "use_siso": true
       }
@@ -37,7 +36,8 @@
         "target_os": "chromeos",
         "use_clang_coverage": true,
         "use_cups": true,
-        "use_remoteexec": true
+        "use_remoteexec": true,
+        "use_siso": true
       }
     }
   }

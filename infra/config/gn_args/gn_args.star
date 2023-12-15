@@ -872,6 +872,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "no_siso",
+    args = {
+        "use_siso": False,
+    },
+)
+
+gn_args.config(
     name = "no_symbols",
     args = {
         "symbol_level": 0,

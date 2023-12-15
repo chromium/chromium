@@ -204,6 +204,7 @@ This builder should be removed after migrating mac-rel from Ninja to Siso. b/277
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(
         experiment_percentage = 10,
     ),
@@ -627,6 +628,7 @@ This builder should be removed after migrating ios-simulator from Ninja to Siso.
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(
         experiment_percentage = 10,
     ),

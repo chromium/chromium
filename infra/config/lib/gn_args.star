@@ -90,11 +90,16 @@ def _get_gn_args_resolver():
             # Memoize.
             resolved_gn_args_by_config_node[n] = gn_args
 
-        return {k: v for k, v in resolved_gn_args_by_config_node[gn_config_node].items() if v}
+        config = {k: v for k, v in resolved_gn_args_by_config_node[gn_config_node].items() if v}
+        gn_args = gn_config_node.props.builder_defaults | config.get("gn_args", {})
+        if gn_args:
+            config["gn_args"] = gn_args
+
+        return config
 
     return resolve
 
-def _create_gn_config_node(name, gn_args = {}, configs = [], args_file = "", builder_group = ""):
+def _create_gn_config_node(*, name, gn_args = {}, configs = [], args_file = "", builder_group = "", builder_defaults = {}):
     """Create a node of "gn_config" kind and place it into the graph.
 
     Args:
@@ -103,6 +108,13 @@ def _create_gn_config_node(name, gn_args = {}, configs = [], args_file = "", bui
         configs: ([string]) A list of GN config name strings.
         args_file: (string) The string path of an imported GN file.
         builder_group: (string) The builder group of a builder node.
+        builder_defaults: (dict) A dict of GN arg key-value pairs. In
+            contrast to `gn_args`, arguments specified here are only to
+            the builder that they are specified and not included when
+            the config is referenced by another builder and will be
+            overridden by the expanded configs specified in `configs`.
+            This is used for implementing automatic GN args based on
+            non-gn-arg builder configuration values.
 
     Returns:
         The node key of the created node.
@@ -111,6 +123,7 @@ def _create_gn_config_node(name, gn_args = {}, configs = [], args_file = "", bui
         "gn_args": gn_args,
         "args_file": args_file,
         "builder_group": builder_group,
+        "builder_defaults": builder_defaults,
     })
 
     # Create edges in the graph from the new node to its included nodes.
@@ -143,7 +156,12 @@ def _config(*, name = None, args = {}, configs = [], args_file = ""):
         the "gn_args" field within a builder definition.
     """
     if name:
-        _create_gn_config_node(name, args, configs, args_file)
+        _create_gn_config_node(
+            name = name,
+            gn_args = args,
+            configs = configs,
+            args_file = args_file,
+        )
         return None
     else:
         return struct(
@@ -156,7 +174,7 @@ gn_args = struct(
     config = _config,
 )
 
-def register_gn_args(builder_group, bucket, builder, gn_args):
+def register_gn_args(builder_group, bucket, builder, gn_args, use_siso):
     """Register GN args for a builder.
 
     Internally creates a node of gn_config kind for a builder.
@@ -169,18 +187,26 @@ def register_gn_args(builder_group, bucket, builder, gn_args):
         gn_args: The string name of a GN config, a dict of phased GN config,
             or the return value of a gn_args.config method call without setting
             the "name" parameter.
+        use_siso: (boolean) if True, configs will automatically set the use_siso
+            GN arg to true unless it is set by the config.
 
     Returns:
         A list of generated GN args file paths relative to the per-builder
             output root dir if gn_args is set; None otherwise.
     """
 
+    defaults = {}
+    if use_siso:
+        defaults["use_siso"] = True
+
     # Function for formating GN config for GN config node creation.
     def format_gn_config(config):
         if type(config) == "string":
-            return {"configs": [config]}
+            d = {"configs": [config]}
         else:
-            return {a: getattr(config, a) for a in dir(config)}
+            d = {a: getattr(config, a) for a in dir(config)}
+        d["builder_defaults"] = defaults
+        return d
 
     builder_node_name = "{}/{}".format(bucket, builder)
     if gn_args:
@@ -192,14 +218,15 @@ def register_gn_args(builder_group, bucket, builder, gn_args):
             phase_prefix = "{}/{}".format(bucket, builder)
             for phase_name, config in gn_args.items():
                 phase_node_name = "{}:{}".format(phase_prefix, phase_name)
-                phase_node_key = _create_gn_config_node(phase_node_name, **format_gn_config(config))
+                formatted_config = format_gn_config(config)
+                phase_node_key = _create_gn_config_node(name = phase_node_name, **formatted_config)
                 graph.add_edge(builder_node_key, phase_node_key)
 
         else:
             # Non-phased GN config.
-            config = format_gn_config(gn_args)
-            config["builder_group"] = builder_group
-            builder_node_key = _create_gn_config_node(builder_node_name, **config)
+            formatted_config = format_gn_config(gn_args)
+            formatted_config["builder_group"] = builder_group
+            builder_node_key = _create_gn_config_node(name = builder_node_name, **formatted_config)
 
         graph.add_edge(keys.project(), builder_node_key)
         return ["{}/{}/{}".format(bucket, builder, _GN_ARGS_FILE_NAME)]

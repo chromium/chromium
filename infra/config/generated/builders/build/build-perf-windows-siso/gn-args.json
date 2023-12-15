@@ -13,7 +13,6 @@
         "proprietary_codecs": true,
         "symbol_level": 0,
         "use_clang_coverage": true,
-        "use_goma": false,
         "use_remoteexec": false,
         "use_siso": true
       }
@@ -31,7 +30,8 @@
         "proprietary_codecs": true,
         "symbol_level": 0,
         "use_clang_coverage": true,
-        "use_remoteexec": true
+        "use_remoteexec": true,
+        "use_siso": true
       }
     }
   }
