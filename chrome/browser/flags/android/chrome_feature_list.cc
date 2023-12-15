@@ -244,7 +244,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kShortCircuitUnfocusAnimation,
     &kOmniboxNoopEditUrlSuggestionClicks,
     &kPartnerCustomizationsUma,
-    &kProbabilisticCryptidRenderer,
     &kQuickDeleteForAndroid,
     &kReachedCodeProfiler,
     &kReadAloud,
@@ -764,9 +763,6 @@ BASE_FEATURE(kOmniboxNoopEditUrlSuggestionClicks,
 BASE_FEATURE(kPartnerCustomizationsUma,
              "PartnerCustomizationsUma",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kProbabilisticCryptidRenderer,
-             "ProbabilisticCryptidRenderer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kQuickDeleteForAndroid,
              "QuickDeleteForAndroid",

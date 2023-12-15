@@ -1698,7 +1698,6 @@ class StartSurfaceMediator
                         logoView,
                         true,
                         null,
-                        null,
                         isHomepageShown(),
                         this);
         return mLogoCoordinator;

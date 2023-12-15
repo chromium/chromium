@@ -542,7 +542,6 @@ chrome_java_resources = [
   "java/res/layout/navigation_bubble.xml",
   "java/res/layout/navigation_sheet.xml",
   "java/res/layout/navigation_sheet_toolbar.xml",
-  "java/res/layout/new_tab_page_cryptid_holder.xml",
   "java/res/layout/new_tab_page_incognito.xml",
   "java/res/layout/new_tab_page_layout.xml",
   "java/res/layout/new_tab_page_tile_grid_placeholder.xml",

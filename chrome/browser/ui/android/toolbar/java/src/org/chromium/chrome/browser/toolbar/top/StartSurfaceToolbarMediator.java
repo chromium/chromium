@@ -352,7 +352,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
                         logoView,
                         mShouldFetchDoodle,
                         /* onLogoAvailableCallback= */ null,
-                        /* onCachedLogoRevalidatedRunnable= */ null,
                         isOnHomepage(),
                         null);
 

@@ -10819,19 +10819,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="10" label="Restore Failed"/>
 </enum>
 
-<enum name="CryptidRenderResult">
-  <int value="0" label="Success">
-    The asset was successfully fetched and rendered.
-  </int>
-  <int value="1" label="Failure">
-    Rendering was attempted but the asset could not be fetched.
-  </int>
-  <int value="2" label="Disabled">
-    Rendering was not attempted because the flag was disabled or the
-    probabilistic check failed.
-  </int>
-</enum>
-
 <enum name="CryptohomeRecoveryResult">
   <summary>
     The possible results and failure reasons of a Cryptohome recovery attempt.

@@ -92,10 +92,7 @@ void ObserverOnLogoAvailable(LogoObserver* observer,
     case LogoCallbackReason::DISABLED:
     case LogoCallbackReason::CANCELED:
     case LogoCallbackReason::FAILED:
-      break;
-
     case LogoCallbackReason::REVALIDATED:
-      observer->OnCachedLogoRevalidated();
       break;
 
     case LogoCallbackReason::DETERMINED:

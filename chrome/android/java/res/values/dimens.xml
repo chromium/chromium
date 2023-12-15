@@ -182,8 +182,6 @@ found in the LICENSE file.
     <!-- This is in sp because we want the icon to scale with the TextView it sits alongside. -->
     <dimen name="md_incognito_ntp_line_spacing">6sp</dimen>
     <dimen name="md_incognito_ntp_padding_left">16dp</dimen>
-    <dimen name="cryptid_height_in_logo_wrapper">60dp</dimen>
-    <dimen name="cryptid_width_in_logo_wrapper">90dp</dimen>
 
     <!-- NTP Feed dimensions -->
     <dimen name="feed_header_menu_max_width">225dp</dimen>

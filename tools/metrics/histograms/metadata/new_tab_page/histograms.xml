@@ -454,16 +454,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.CryptidRenderResult" enum="CryptidRenderResult"
-    expires_after="2022-01-23">
-  <owner>tmartino@chromium.org</owner>
-  <owner>chrome-creation@google.com</owner>
-  <summary>
-    Tracks the outcome of Probabilistic Cryptid Rendering (succeeded, failed, or
-    was disabled because preconditions were not met).
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.CustomizeChromeBackgroundAction"
     enum="NTPCustomizeChromeBackgroundAction" expires_after="2024-01-31">
   <owner>tiborg@chromium.org</owner>

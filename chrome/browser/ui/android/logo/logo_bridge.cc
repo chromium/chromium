@@ -98,14 +98,6 @@ class LogoObserverAndroid : public search_provider_logos::LogoObserver {
                                       from_cache);
   }
 
-  void OnCachedLogoRevalidated() override {
-    if (!logo_bridge_)
-      return;
-
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_LogoObserver_onCachedLogoRevalidated(env, j_logo_observer_);
-  }
-
   void OnObserverRemoved() override { delete this; }
 
  private:

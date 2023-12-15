@@ -29,6 +29,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.Assistant.Enabled",
                 "Chrome.AssistantVoiceConsentTapsCounter.ConsentTapsCount",
                 "Chrome.AutofillAssistant.NumberOfLiteScriptsCanceled",
+                "Chrome.Cryptid.LastRenderTimestamp",
                 "Chrome.FirstRun.FieldTrialEnabled",
                 "Chrome.FirstRun.VariationFieldTrialGroup",
                 "Chrome.Flags.PaintPreviewTestEnabled",

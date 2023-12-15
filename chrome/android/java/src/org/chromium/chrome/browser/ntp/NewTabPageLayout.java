@@ -19,8 +19,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
@@ -34,7 +32,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
-import org.chromium.chrome.browser.cryptids.ProbabilisticCryptidRenderer;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -94,7 +91,6 @@ public class NewTabPageLayout extends LinearLayout {
     private LogoCoordinator mLogoCoordinator;
     private SearchBoxCoordinator mSearchBoxCoordinator;
     private QueryTileSection mQueryTileSection;
-    private ImageView mCryptidHolder;
     private ViewGroup mMvTilesContainerLayout;
     private MostVisitedTilesCoordinator mMostVisitedTilesCoordinator;
 
@@ -436,10 +432,7 @@ public class NewTabPageLayout extends LinearLayout {
                         (logo) -> {
                             mSnapshotTileGridChanged = true;
                             mShowingNonStandardLogo = logo != null;
-                            maybeKickOffCryptidRendering();
                         });
-        Runnable onCachedLogoRevalidatedRunnable =
-                mCallbackController.makeCancelable(this::maybeKickOffCryptidRendering);
 
         // If pull up Feed position is enabled, doodle is not supported since there is not enough
         // room, we don't need to fetch logo image.
@@ -463,7 +456,6 @@ public class NewTabPageLayout extends LinearLayout {
                         logoView,
                         shouldFetchDoodle,
                         onLogoAvailableCallback,
-                        onCachedLogoRevalidatedRunnable,
                         /* isParentSurfaceShown= */ true,
                         /* visibilityObserver= */ null);
         mLogoCoordinator.initWithNative();
@@ -1006,30 +998,6 @@ public class NewTabPageLayout extends LinearLayout {
 
     private boolean hasLoadCompleted() {
         return mHasShownView && mTilesLoaded;
-    }
-
-    private void maybeKickOffCryptidRendering() {
-        if (!mSearchProviderIsGoogle || mShowingNonStandardLogo) {
-            // Cryptid rendering is disabled when the logo is not the standard Google logo.
-            return;
-        }
-
-        ProbabilisticCryptidRenderer renderer = ProbabilisticCryptidRenderer.getInstance();
-        renderer.getCryptidForLogo(
-                Profile.getLastUsedRegularProfile(),
-                mCallbackController.makeCancelable(
-                        (drawable) -> {
-                            if (drawable == null || mCryptidHolder != null) {
-                                return;
-                            }
-                            ViewStub stub =
-                                    findViewById(R.id.logo_holder)
-                                            .findViewById(R.id.cryptid_holder);
-                            ImageView view = (ImageView) stub.inflate();
-                            view.setImageDrawable(drawable);
-                            mCryptidHolder = view;
-                            renderer.recordRenderEvent();
-                        }));
     }
 
     private void onDestroy() {

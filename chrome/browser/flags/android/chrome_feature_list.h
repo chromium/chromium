@@ -118,7 +118,6 @@ BASE_DECLARE_FEATURE(kPreconnectOnTabCreation);
 BASE_DECLARE_FEATURE(kPriceChangeModule);
 BASE_DECLARE_FEATURE(kPwaRestoreUi);
 BASE_DECLARE_FEATURE(kPartnerCustomizationsUma);
-BASE_DECLARE_FEATURE(kProbabilisticCryptidRenderer);
 BASE_DECLARE_FEATURE(kQuickDeleteForAndroid);
 BASE_DECLARE_FEATURE(kReachedCodeProfiler);
 BASE_DECLARE_FEATURE(kReadAloud);

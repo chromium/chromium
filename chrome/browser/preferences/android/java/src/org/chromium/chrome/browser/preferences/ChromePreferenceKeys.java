@@ -175,8 +175,6 @@ public final class ChromePreferenceKeys {
     public static final String CRASH_UPLOAD_SUCCESS_OTHER = "other_crash_success_upload";
     public static final String CRASH_UPLOAD_SUCCESS_RENDERER = "renderer_crash_success_upload";
 
-    public static final String CRYPTID_LAST_RENDER_TIMESTAMP = "Chrome.Cryptid.LastRenderTimestamp";
-
     public static final KeyPrefix CUSTOM_TABS_DEX_LAST_UPDATE_TIME_PREF_PREFIX =
             new KeyPrefix("pref_local_custom_tabs_module_dex_last_update_time_*");
 
@@ -956,7 +954,6 @@ public final class ChromePreferenceKeys {
                 CUSTOM_TABS_LAST_CLOSE_TIMESTAMP,
                 CUSTOM_TABS_LAST_REFERRER,
                 CUSTOM_TABS_LAST_TASK_ID,
-                CRYPTID_LAST_RENDER_TIMESTAMP,
                 DEFAULT_BROWSER_PROMO_LAST_DEFAULT_STATE,
                 DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME,
                 DEFAULT_BROWSER_PROMO_PROMOED_BY_SYSTEM_SETTINGS,
