@@ -107,8 +107,8 @@ bool IsValidFieldTypeAndValue(
 // These need to match to offer virtual card enrollment for the
 // `extracted_credit_card`.
 bool ShouldOfferVirtualCardEnrollment(
-    const absl::optional<CreditCard>& extracted_credit_card,
-    absl::optional<int64_t> fetched_card_instrument_id) {
+    const std::optional<CreditCard>& extracted_credit_card,
+    std::optional<int64_t> fetched_card_instrument_id) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableUpdateVirtualCardEnrollment)) {
     return false;
@@ -727,7 +727,7 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
 
 bool FormDataImporter::ProcessExtractedCreditCard(
     const FormStructure& submitted_form,
-    const absl::optional<CreditCard>& extracted_credit_card,
+    const std::optional<CreditCard>& extracted_credit_card,
     bool payment_methods_autofill_enabled,
     bool is_credit_card_upstream_enabled) {
   // If no card was successfully extracted from the form, return.
@@ -791,14 +791,14 @@ bool FormDataImporter::ProcessIbanImportCandidate(
   return iban_save_manager_->AttemptToOfferSave(extracted_iban);
 }
 
-absl::optional<CreditCard> FormDataImporter::ExtractCreditCard(
+std::optional<CreditCard> FormDataImporter::ExtractCreditCard(
     const FormStructure& form) {
   // The candidate for credit card import. There are many ways for the candidate
-  // to be rejected as indicated by the `return absl::nullopt` statements below.
+  // to be rejected as indicated by the `return std::nullopt` statements below.
   auto [candidate, form_has_duplicate_cc_type] =
       ExtractCreditCardFromForm(form);
   if (form_has_duplicate_cc_type)
-    return absl::nullopt;
+    return std::nullopt;
 
   if (candidate.IsValid()) {
     AutofillMetrics::LogSubmittedCardStateMetric(
@@ -818,7 +818,7 @@ absl::optional<CreditCard> FormDataImporter::ExtractCreditCard(
   // the expiration date fix flow. However, cards with invalid card numbers must
   // still be ignored.
   if (!candidate.HasValidCardNumber())
-    return absl::nullopt;
+    return std::nullopt;
 
   // If the extracted card is a known virtual card, return the extracted card.
   if (fetched_virtual_cards_.contains(candidate.LastFourDigits())) {
@@ -855,7 +855,7 @@ absl::optional<CreditCard> FormDataImporter::ExtractCreditCard(
   return TryMatchingExistingServerCard(candidate);
 }
 
-absl::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
+std::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
     const CreditCard& candidate) {
   // Used for logging purposes later if we found a matching masked server card
   // with the same last four digits, but different expiration date as
@@ -872,7 +872,7 @@ absl::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
     // number is found, the imported card is treated as invalid card, abort
     // importing.
     if (!candidate.HasValidExpirationDate()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (server_card->record_type() == CreditCard::RecordType::kFullServerCard) {
@@ -942,10 +942,10 @@ absl::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
   return candidate;
 }
 
-absl::optional<Iban> FormDataImporter::ExtractIban(const FormStructure& form) {
+std::optional<Iban> FormDataImporter::ExtractIban(const FormStructure& form) {
   Iban candidate_iban = ExtractIbanFromForm(form);
   if (candidate_iban.value().empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   // Sets the `kAutofillHasSeenIban` pref to true indicating that the user has
   // submitted a form with an IBAN, which indicates that the user is familiar
@@ -1049,7 +1049,7 @@ Iban FormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
 // credit_card_save_manger and combine all card and CVC save logic to
 // ProceedWithSavingIfApplicable function.
 bool FormDataImporter::ShouldOfferCreditCardSave(
-    const absl::optional<CreditCard>& extracted_credit_card,
+    const std::optional<CreditCard>& extracted_credit_card,
     bool is_credit_card_upstream_enabled) {
   // If we have an invalid card in the form, a duplicate field type, or we have
   // entered a virtual card, `extracted_credit_card` is nullptr and thus we do
@@ -1098,13 +1098,13 @@ void FormDataImporter::OnBrowsingHistoryCleared(
 
 void FormDataImporter::
     SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
-        absl::optional<CreditCard::RecordType>
+        std::optional<CreditCard::RecordType>
             card_record_type_if_non_interactive_authentication_flow_completed) {
   card_record_type_if_non_interactive_authentication_flow_completed_ =
       card_record_type_if_non_interactive_authentication_flow_completed;
 }
 
-absl::optional<CreditCard::RecordType>
+std::optional<CreditCard::RecordType>
 FormDataImporter::GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted()
     const {
   return card_record_type_if_non_interactive_authentication_flow_completed_;

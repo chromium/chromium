@@ -14,7 +14,6 @@
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_parsing_expression_components.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace re2 {
 class RE2;
@@ -188,9 +187,9 @@ class AddressComponent {
   // assigned, an empty string is returned.
   const std::u16string& GetValue() const;
 
-  // Returns a canonicalized version of the value or absl::nullopt if
+  // Returns a canonicalized version of the value or std::nullopt if
   // canonicalization is not possible or not implemented.
-  virtual absl::optional<std::u16string> GetCanonicalizedValue() const;
+  virtual std::optional<std::u16string> GetCanonicalizedValue() const;
 
   // Returns true if the value of this AddressComponent is assigned.
   bool IsValueAssigned() const;
@@ -577,7 +576,7 @@ class AddressComponent {
   bool IsValueCompatibleWithAncestors(const std::u16string& value) const;
 
   // The unstructured value of this component.
-  absl::optional<std::u16string> value_;
+  std::optional<std::u16string> value_;
 
   // The verification status of |value_| indicates the certainty of the value
   // to be correct.
@@ -593,7 +592,7 @@ class AddressComponent {
   // meaning that it was converted to lower case and diacritics have been
   // removed. |value_| is tokenized by splitting the string by white spaces and
   // commas. It is calculated when |value_| is set.
-  absl::optional<std::vector<AddressToken>> sorted_normalized_tokens_;
+  std::optional<std::vector<AddressToken>> sorted_normalized_tokens_;
 
   // A pointer to the parent node. It is set to nullptr if the node is the root
   // node of the AddressComponent tree.

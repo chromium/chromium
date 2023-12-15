@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -102,7 +103,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -544,8 +544,8 @@ void ExpectFilledField(const char* expected_label,
 // are true. |use_month_type| is used for credit card input month type.
 void ExpectFilledForm(
     const FormData& filled_form,
-    const absl::optional<TestAddressFillData>& address_fill_data,
-    const absl::optional<TestCardFillData>& card_fill_data) {
+    const std::optional<TestAddressFillData>& address_fill_data,
+    const std::optional<TestCardFillData>& card_fill_data) {
   // The number of fields in the address and credit card forms created above.
   const size_t kAddressFormSize = 11;
   const size_t kCreditCardFormSizeMonthType = 4;
@@ -622,7 +622,7 @@ void ExpectFilledForm(
 
 void ExpectFilledAddressFormElvis(const FormData& filled_form,
                                   bool has_credit_card_fields) {
-  absl::optional<TestCardFillData> expected_card_fill_data;
+  std::optional<TestCardFillData> expected_card_fill_data;
   if (has_credit_card_fields) {
     expected_card_fill_data = kEmptyCardFillData;
   }
@@ -632,7 +632,7 @@ void ExpectFilledAddressFormElvis(const FormData& filled_form,
 
 void ExpectFilledCreditCardFormElvis(const FormData& filled_form,
                                      bool has_address_fields) {
-  absl::optional<TestAddressFillData> expected_address_fill_data;
+  std::optional<TestAddressFillData> expected_address_fill_data;
   if (has_address_fields) {
     expected_address_fill_data = kEmptyAddressFillData;
   }
@@ -2960,7 +2960,7 @@ TEST_F(BrowserAutofillManagerTest, FillTriggeredSection) {
   section2.fields.erase(section2.fields.begin(), section2.fields.end() - mid);
   // First section should be empty, second should be filled.
   ExpectFilledForm(section1, kEmptyAddressFillData,
-                   /*card_fill_data=*/absl::nullopt);
+                   /*card_fill_data=*/std::nullopt);
   ExpectFilledAddressFormElvis(section2, false);
 }
 
@@ -3826,7 +3826,7 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFillingBehavior) {
                                                            kElvisProfileGuid);
   TestAddressFillData fill_data = GetElvisAddressFillData();
   fill_data.middle = "";
-  ExpectFilledForm(filled_form, fill_data, /*card_fill_data=*/absl::nullopt);
+  ExpectFilledForm(filled_form, fill_data, /*card_fill_data=*/std::nullopt);
 
   // Fill the `form` as-if through manual fallbacks. Expect that every field
   // gets filled.
@@ -3839,7 +3839,7 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFillingBehavior) {
       {.trigger_source = AutofillTriggerSource::kManualFallback});
 
   ExpectFilledForm(filled_form, GetElvisAddressFillData(),
-                   /*card_fill_data=*/absl::nullopt);
+                   /*card_fill_data=*/std::nullopt);
 }
 
 // Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,
@@ -4014,7 +4014,7 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_NoYearNoMonth) {
 
   FormData response_data = FillAutofillFormDataAndGetResults(
       form, *form.fields.begin(), MakeGuid(7));
-  ExpectFilledForm(response_data, /*address_fill_data=*/absl::nullopt,
+  ExpectFilledForm(response_data, /*address_fill_data=*/std::nullopt,
                    card_fill_data);
 }
 
@@ -4036,7 +4036,7 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_NoYearMonth) {
 
   FormData response_data = FillAutofillFormDataAndGetResults(
       form, *form.fields.begin(), MakeGuid(7));
-  ExpectFilledForm(response_data, /*address_fill_data=*/absl::nullopt,
+  ExpectFilledForm(response_data, /*address_fill_data=*/std::nullopt,
                    card_fill_data);
 }
 
@@ -4059,7 +4059,7 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_YearNoMonth) {
 
   FormData response_data = FillAutofillFormDataAndGetResults(
       form, *form.fields.begin(), MakeGuid(7));
-  ExpectFilledForm(response_data, /*address_fill_data=*/absl::nullopt,
+  ExpectFilledForm(response_data, /*address_fill_data=*/std::nullopt,
                    card_fill_data);
 }
 
@@ -4080,7 +4080,7 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_YearMonth) {
 
   FormData response_data = FillAutofillFormDataAndGetResults(
       form, *form.fields.begin(), MakeGuid(7));
-  ExpectFilledForm(response_data, /*address_fill_data=*/absl::nullopt,
+  ExpectFilledForm(response_data, /*address_fill_data=*/std::nullopt,
                    card_fill_data);
 }
 
@@ -5947,7 +5947,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   TestAddressFillData expected_address_fill_data = address_fill_data;
   expected_address_fill_data.last = "Jackson";
   ExpectFilledForm(response_data, expected_address_fill_data,
-                   /*card_fill_data=*/absl::nullopt);
+                   /*card_fill_data=*/std::nullopt);
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
@@ -6134,7 +6134,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
 
   TestAddressFillData expected_address_fill_data = address_fill_data;
   ExpectFilledForm(response_data, expected_address_fill_data,
-                   /*card_fill_data=*/absl::nullopt);
+                   /*card_fill_data=*/std::nullopt);
 
   // Refill the address data with all the field values.
   response_data = FillAutofillFormDataAndGetResults(
@@ -6147,7 +6147,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
       default_to_city_and_number ? "2345678901" : "12345678901";
   expected_address_fill_data.email = "theking@gmail.com";
   ExpectFilledForm(response_data, expected_address_fill_data,
-                   /*card_fill_data=*/absl::nullopt);
+                   /*card_fill_data=*/std::nullopt);
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
@@ -10128,7 +10128,7 @@ TEST_F(BrowserAutofillManagerTest,
       browser_autofill_manager_->FindCachedFormById(form.global_id());
   ASSERT_EQ(form.fields[3].label, u"Email");
   EXPECT_EQ(form_structure->field(3)->autofill_source_profile_guid(),
-            absl::nullopt);
+            std::nullopt);
 
   // Then fill the email field using the second profile
   AutofillProfile profile2 = test::GetFullProfile();
@@ -10198,7 +10198,7 @@ TEST_F(BrowserAutofillManagerTest, TrackFillingOriginWorksOnlyOnFilledField) {
   ASSERT_TRUE(form_structure);
   // Check that the email field has no filling source.
   EXPECT_EQ(form_structure->field(3)->autofill_source_profile_guid(),
-            absl::nullopt);
+            std::nullopt);
 }
 
 // Ensure that the experimental plus_addresses feature is not shown by default.

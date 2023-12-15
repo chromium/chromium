@@ -308,20 +308,20 @@ StateNode::StateNode(SubcomponentsList children)
 
 StateNode::~StateNode() = default;
 
-absl::optional<std::u16string> StateNode::GetCanonicalizedValue() const {
+std::optional<std::u16string> StateNode::GetCanonicalizedValue() const {
   std::string country_code =
       base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY));
 
   if (country_code.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<AlternativeStateNameMap::CanonicalStateName>
+  std::optional<AlternativeStateNameMap::CanonicalStateName>
       canonicalized_state_name = AlternativeStateNameMap::GetCanonicalStateName(
           country_code, GetValue());
 
   if (!canonicalized_state_name.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return canonicalized_state_name.value().value();

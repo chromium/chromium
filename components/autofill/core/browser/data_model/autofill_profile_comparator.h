@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_PROFILE_COMPARATOR_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -15,7 +16,6 @@
 #include "components/autofill/core/browser/data_model/address.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 

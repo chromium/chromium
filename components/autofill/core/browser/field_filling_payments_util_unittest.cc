@@ -429,8 +429,8 @@ struct FillUtilExpirationDateTestCase {
   // applies for false.
   // TODO(crbug.com/1441057): Remove once launched. Delete all tests with a
   // value of false, and remove the attribute from tests with a value of true.
-  absl::optional<bool> for_expiration_date_improvements_experiment =
-      absl::nullopt;
+  std::optional<bool> for_expiration_date_improvements_experiment =
+      std::nullopt;
 };
 
 class ExpirationDateTest

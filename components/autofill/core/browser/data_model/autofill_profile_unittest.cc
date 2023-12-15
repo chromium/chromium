@@ -290,7 +290,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_CH) {
   std::vector<std::u16string> labels;
   for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
     AutofillProfile::CreateInferredLabels(
-        ToRawPointerVector(profiles), absl::nullopt, {}, i, "en-US", &labels);
+        ToRawPointerVector(profiles), std::nullopt, {}, i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
     EXPECT_EQ(UTF8ToUTF16(kExpectedLabels[i]), labels.back());
   }
@@ -324,7 +324,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_FR) {
   std::vector<std::u16string> labels;
   for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
     AutofillProfile::CreateInferredLabels(
-        ToRawPointerVector(profiles), absl::nullopt, {}, i, "en-US", &labels);
+        ToRawPointerVector(profiles), std::nullopt, {}, i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
     EXPECT_EQ(UTF8ToUTF16(kExpectedLabels[i]), labels.back());
   }
@@ -368,7 +368,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_KR) {
   std::vector<std::u16string> labels;
   for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
     AutofillProfile::CreateInferredLabels(
-        ToRawPointerVector(profiles), absl::nullopt, {}, i, "en-US", &labels);
+        ToRawPointerVector(profiles), std::nullopt, {}, i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
     EXPECT_EQ(UTF8ToUTF16(kExpectedLabels[i]), labels.back());
   }
@@ -405,7 +405,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_JP_Latn) {
   std::vector<std::u16string> labels;
   for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
     AutofillProfile::CreateInferredLabels(
-        ToRawPointerVector(profiles), absl::nullopt, {}, i, "en-US", &labels);
+        ToRawPointerVector(profiles), std::nullopt, {}, i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
     EXPECT_EQ(UTF8ToUTF16(kExpectedLabels[i]), labels.back());
   }
@@ -438,7 +438,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_JP_ja) {
   std::vector<std::u16string> labels;
   for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
     AutofillProfile::CreateInferredLabels(
-        ToRawPointerVector(profiles), absl::nullopt, {}, i, "en-US", &labels);
+        ToRawPointerVector(profiles), std::nullopt, {}, i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
     EXPECT_EQ(UTF8ToUTF16(kExpectedLabels[i]), labels.back());
   }
@@ -459,13 +459,13 @@ TEST(AutofillProfileTest, CreateInferredLabels) {
   std::vector<std::u16string> labels;
   // Two fields at least - no filter.
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        absl::nullopt, {}, 2, "en-US", &labels);
+                                        std::nullopt, {}, 2, "en-US", &labels);
   EXPECT_EQ(u"John Doe, 666 Erebus St.", labels[0]);
   EXPECT_EQ(u"Jane Doe, 123 Letha Shore.", labels[1]);
 
   // Three fields at least - no filter.
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        absl::nullopt, {}, 3, "en-US", &labels);
+                                        std::nullopt, {}, 3, "en-US", &labels);
   EXPECT_EQ(u"John Doe, 666 Erebus St., Elysium", labels[0]);
   EXPECT_EQ(u"Jane Doe, 123 Letha Shore., Dis", labels[1]);
 
@@ -527,7 +527,7 @@ TEST(AutofillProfileTest, CreateInferredLabels) {
 
   // No suggested fields, but non-unknown excluded field.
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        absl::nullopt, {NAME_FULL}, 1, "en-US",
+                                        std::nullopt, {NAME_FULL}, 1, "en-US",
                                         &labels);
   EXPECT_EQ(std::u16string(u"666 Erebus St."), labels[0]);
   EXPECT_EQ(std::u16string(u"123 Letha Shore."), labels[1]);
@@ -611,7 +611,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsSkipsEmptyFields) {
 
   std::vector<std::u16string> labels;
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        absl::nullopt, {}, 3, "en-US", &labels);
+                                        std::nullopt, {}, 3, "en-US", &labels);
   ASSERT_EQ(3U, labels.size());
   EXPECT_EQ(u"John Doe, doe@example.com, Gogole", labels[0]);
   EXPECT_EQ(u"John Doe, doe@example.com, Ggoole", labels[1]);
@@ -621,7 +621,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsSkipsEmptyFields) {
   // distinguishing field.
   profiles[1]->SetRawInfo(ADDRESS_HOME_LINE1, u"88 Nowhere Ave.");
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        absl::nullopt, {}, 1, "en-US", &labels);
+                                        std::nullopt, {}, 1, "en-US", &labels);
   ASSERT_EQ(3U, labels.size());
   EXPECT_EQ(u"John Doe, doe@example.com, Gogole", labels[0]);
   EXPECT_EQ(u"John Doe, 88 Nowhere Ave., doe@example.com, Ggoole", labels[1])

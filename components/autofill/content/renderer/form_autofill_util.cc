@@ -1847,7 +1847,7 @@ FormControlType ToAutofillFormControlType(blink::mojom::FormControlType type) {
 }
 
 bool IsWebauthnTaggedElement(const WebFormControlElement& element) {
-  const absl::optional<AutocompleteParsingResult> parsing_result =
+  const std::optional<AutocompleteParsingResult> parsing_result =
       ParseAutocompleteAttribute(GetAutocompleteAttribute(element));
   return parsing_result.has_value() && parsing_result->webauthn;
 }
@@ -2646,7 +2646,7 @@ WebFormElement FindFormByRendererId(const WebDocument& doc,
 WebFormControlElement FindFormControlByRendererId(
     const WebDocument& doc,
     FieldRendererId queried_form_control,
-    absl::optional<FormRendererId> form_to_be_searched /*= absl::nullopt*/) {
+    std::optional<FormRendererId> form_to_be_searched /*= std::nullopt*/) {
   if (base::FeatureList::IsEnabled(
           blink::features::kAutofillUseDomNodeIdForRendererId)) {
     if (!queried_form_control) {

@@ -8,6 +8,7 @@
 #include <iterator>
 #include <limits>
 #include <list>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -22,7 +23,6 @@
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/history/core/browser/history_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -76,7 +76,7 @@ class TimestampedSameOriginQueue {
 
   // Returns the origin shared by the elements in the queue. Or nullopt, if
   // the queue is currently `Empty()`.
-  const absl::optional<url::Origin>& origin() const { return origin_; }
+  const std::optional<url::Origin>& origin() const { return origin_; }
 
   size_t size() const { return items_.size(); }
   bool empty() const { return items_.empty(); }
@@ -100,7 +100,7 @@ class TimestampedSameOriginQueue {
  private:
   std::list<value_type> items_;
   // If the queue is not `empty()`, this represents the origin of all `items_`.
-  absl::optional<url::Origin> origin_;
+  std::optional<url::Origin> origin_;
   // The maximum number of elements stored in `items_`. If adding a new item
   // would exceed the `max_size_`, the oldest existing item is removed.
   const size_t max_size_;
@@ -139,7 +139,7 @@ class MultiStepImportMerger {
                                    const ProfileImportMetadata& import_metadata,
                                    bool is_imported);
 
-  const absl::optional<url::Origin>& origin() const {
+  const std::optional<url::Origin>& origin() const {
     return multistep_candidates_.origin();
   }
 
@@ -220,10 +220,10 @@ class FormAssociator {
   // any. In particular, the two most recent address and the most recent
   // submitted credit card form signatures from the same origin are returned.
   // One of them is the `form_signature` itself.
-  absl::optional<FormStructure::FormAssociations> GetFormAssociations(
+  std::optional<FormStructure::FormAssociations> GetFormAssociations(
       FormSignature form_signature) const;
 
-  const absl::optional<url::Origin>& origin() const;
+  const std::optional<url::Origin>& origin() const;
 
   void Clear();
 

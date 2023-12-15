@@ -889,7 +889,7 @@ void AutofillProfile::CreateDifferentiatingLabels(
     const std::string& app_locale,
     std::vector<std::u16string>* labels) {
   const size_t kMinimalFieldsShown = 2;
-  CreateInferredLabels(profiles, absl::nullopt, {}, kMinimalFieldsShown,
+  CreateInferredLabels(profiles, std::nullopt, {}, kMinimalFieldsShown,
                        app_locale, labels);
   DCHECK_EQ(profiles.size(), labels->size());
 }
@@ -897,7 +897,7 @@ void AutofillProfile::CreateDifferentiatingLabels(
 // static
 void AutofillProfile::CreateInferredLabels(
     const std::vector<const AutofillProfile*>& profiles,
-    const absl::optional<FieldTypeSet>& suggested_fields,
+    const std::optional<FieldTypeSet>& suggested_fields,
     FieldTypeSet excluded_fields,
     size_t minimal_fields_shown,
     const std::string& app_locale,

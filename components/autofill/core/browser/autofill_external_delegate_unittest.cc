@@ -1518,10 +1518,10 @@ TEST_F(AutofillExternalDelegateUnitTest, FieldByFieldFilling_FillCreditCard) {
 // Test parameter data for asserting that the expected set of field types
 // is stored in the delegate.
 struct GetLastServerTypesToFillForSectionTestParams {
-  const absl::optional<FieldTypeSet>
+  const std::optional<FieldTypeSet>
       expected_last_field_types_to_fill_for_section;
   const PopupItemId popup_item_id;
-  const absl::optional<Section> section;
+  const std::optional<Section> section;
   const bool is_preview = false;
   const std::string test_name;
 };
@@ -1545,23 +1545,23 @@ const GetLastServerTypesToFillForSectionTestParams
         // only, this way the next time the user interacts
         // with the form, they are kept at the same filling granularity.
         {.expected_last_field_types_to_fill_for_section =
-             absl::optional<FieldTypeSet>({NAME_FIRST}),
+             std::optional<FieldTypeSet>({NAME_FIRST}),
          .popup_item_id = PopupItemId::kAddressFieldByFieldFilling,
          .test_name = "_SingleField"},
         // Tests that when `GetLastFieldTypesToFillForSection` is called for
-        // a section for which no information was stored, `absl::nullopt` is
+        // a section for which no information was stored, `std::nullopt` is
         // returned.
-        {.expected_last_field_types_to_fill_for_section = absl::nullopt,
+        {.expected_last_field_types_to_fill_for_section = std::nullopt,
          .popup_item_id = PopupItemId::kCreditCardEntry,
          .test_name = "_EmptySet"},
-        {.expected_last_field_types_to_fill_for_section = absl::nullopt,
+        {.expected_last_field_types_to_fill_for_section = std::nullopt,
          .popup_item_id = PopupItemId::kAddressEntry,
          .section = Section::FromAutocomplete({.section = "another-section"}),
          .test_name = "_DoesNotReturnsForNonExistingSection"},
         // Tests that when `PopupItemId::kAddressEntry` is selected
         // (i.e preview mode) we do not store anything as last
         // targeted fields.
-        {.expected_last_field_types_to_fill_for_section = absl::nullopt,
+        {.expected_last_field_types_to_fill_for_section = std::nullopt,
          .popup_item_id = PopupItemId::kAddressEntry,
          .is_preview = true,
          .test_name = "_NotStoredDuringPreview"}};

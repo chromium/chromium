@@ -66,7 +66,7 @@ class AutofillSuggestionGenerator {
       const FieldTypeSet& field_types,
       const FormFieldData& trigger_field,
       FieldType trigger_field_type,
-      absl::optional<FieldTypeSet> last_targeted_fields,
+      std::optional<FieldTypeSet> last_targeted_fields,
       AutofillSuggestionTriggerSource trigger_source);
 
   // Returns a list of profiles that will be displayed as suggestions to the
@@ -90,7 +90,7 @@ class AutofillSuggestionGenerator {
   std::vector<Suggestion> CreateSuggestionsFromProfiles(
       const std::vector<const AutofillProfile*>& profiles,
       const FieldTypeSet& field_types,
-      absl::optional<FieldTypeSet> last_targeted_fields,
+      std::optional<FieldTypeSet> last_targeted_fields,
       FieldType trigger_field_type,
       uint64_t trigger_field_max_length,
       const std::set<std::string>& previously_hidden_profiles_guid = {});
@@ -200,7 +200,7 @@ class AutofillSuggestionGenerator {
   // `last_targeted_fields` specified the last set of fields target by the user.
   // When not present, we default to full form.
   void AddAddressGranularFillingChildSuggestions(
-      absl::optional<FieldTypeSet> last_targeted_fields,
+      std::optional<FieldTypeSet> last_targeted_fields,
       FieldType trigger_field_type,
       const AutofillProfile& profile,
       Suggestion& suggestion) const;

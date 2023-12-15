@@ -323,7 +323,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   }
 }
 
-absl::optional<FieldTypeSet>
+std::optional<FieldTypeSet>
 AutofillExternalDelegate::GetLastFieldTypesToFillForSection(
     const Section& section) const {
   if (auto it =
@@ -331,7 +331,7 @@ AutofillExternalDelegate::GetLastFieldTypesToFillForSection(
       it != last_field_types_to_fill_for_address_form_section_.end()) {
     return it->second;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool AutofillExternalDelegate::HasActiveScreenReader() const {

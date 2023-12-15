@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/form_forest_util_inl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill::internal {
@@ -91,7 +91,7 @@ void FormForest::EraseReferencesTo(
       }
     }
     if (some_frame->parent_form && Match(*some_frame->parent_form)) {
-      some_frame->parent_form = absl::nullopt;
+      some_frame->parent_form = std::nullopt;
     }
   }
 }
@@ -181,11 +181,11 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     for_each_in_set_difference(
         old_form->child_frames, form->child_frames,
         [this, frame](FrameToken removed_child_token) {
-          absl::optional<LocalFrameToken> local_child =
+          std::optional<LocalFrameToken> local_child =
               frame->driver->Resolve(removed_child_token);
           if (FrameData* child_frame = nullptr;
               local_child && (child_frame = GetFrameData(*local_child))) {
-            child_frame->parent_form = absl::nullopt;
+            child_frame->parent_form = std::nullopt;
           }
         },
         &FrameTokenWithPredecessor::token);
@@ -433,14 +433,14 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
         // If visiting |child_frame|'s field ranges would push us over the
         // kMaxVisits limit, we disconnect the |child_frame| from `n.form` by
         // unsetting FrameData::parent_form.
-        absl::optional<LocalFrameToken> local_child =
+        std::optional<LocalFrameToken> local_child =
             n.frame->driver->Resolve(n.form->child_frames[n.next_frame].token);
         if (FrameData* child_frame = nullptr;
             local_child && (child_frame = GetOrCreateFrameData(*local_child))) {
           num_will_visit += NumChildrenOfFrame(*child_frame);
           if (num_will_visit > kMaxVisits) {
             num_will_visit -= NumChildrenOfFrame(*child_frame);
-            child_frame->parent_form = absl::nullopt;
+            child_frame->parent_form = std::nullopt;
           } else {
             child_frame->parent_form = n.form->global_id();
             for (size_t i = child_frame->child_forms.size(); i > 0; --i) {

@@ -22,7 +22,7 @@ TEST(AutofillI18nParsingStructures, Decomposition) {
   EXPECT_THAT(decomposition.Parse("aaa"),
               Optional(ElementsAre(Pair("foo", "aaa"))));
 
-  EXPECT_THAT(decomposition.Parse("aaa aaa"), Eq(absl::nullopt));
+  EXPECT_THAT(decomposition.Parse("aaa aaa"), Eq(std::nullopt));
 }
 
 TEST(AutofillI18nParsingStructures, DecompositionAnchoringDisabled) {
@@ -52,7 +52,7 @@ TEST(AutofillI18nParsingStructures, DecompositionCascade) {
 
   // The condition (a "1" at the beginning is violated), therefore, we don't
   // return anything.
-  EXPECT_THAT(cascade.Parse("bbb"), Eq(absl::nullopt));
+  EXPECT_THAT(cascade.Parse("bbb"), Eq(std::nullopt));
 }
 
 TEST(AutofillI18nParsingStructures, ExtractPart) {

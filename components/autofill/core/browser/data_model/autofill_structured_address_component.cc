@@ -203,8 +203,8 @@ const std::u16string& AddressComponent::GetValue() const {
   return base::EmptyString16();
 }
 
-absl::optional<std::u16string> AddressComponent::GetCanonicalizedValue() const {
-  return absl::nullopt;
+std::optional<std::u16string> AddressComponent::GetCanonicalizedValue() const {
+  return std::nullopt;
 }
 
 bool AddressComponent::IsValueAssigned() const {
@@ -945,9 +945,9 @@ bool AddressComponent::IsMergeableWithComponent(
            std::u16string::npos);
 
   if (merge_mode_ & kMergeBasedOnCanonicalizedValues) {
-    absl::optional<std::u16string> older_canonical_value =
+    std::optional<std::u16string> older_canonical_value =
         GetCanonicalizedValue();
-    absl::optional<std::u16string> newer_canonical_value =
+    std::optional<std::u16string> newer_canonical_value =
         newer_component.GetCanonicalizedValue();
 
     bool older_has_canonical_value = older_canonical_value.has_value();
@@ -1157,8 +1157,8 @@ bool AddressComponent::MergeWithComponent(
        value_newer.find(value) != std::u16string::npos);
 
   if (merge_mode_ & kMergeBasedOnCanonicalizedValues) {
-    absl::optional<std::u16string> canonical_value = GetCanonicalizedValue();
-    absl::optional<std::u16string> other_canonical_value =
+    std::optional<std::u16string> canonical_value = GetCanonicalizedValue();
+    std::optional<std::u16string> other_canonical_value =
         newer_component.GetCanonicalizedValue();
 
     bool this_has_canonical_value = canonical_value.has_value();

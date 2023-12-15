@@ -255,7 +255,7 @@ void FormTracker::DidFinishSameDocumentNavigation() {
 
 void FormTracker::DidStartNavigation(
     const GURL& url,
-    absl::optional<blink::WebNavigationType> navigation_type) {
+    std::optional<blink::WebNavigationType> navigation_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   if (!unsafe_render_frame()) {
     return;

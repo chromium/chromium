@@ -15,7 +15,7 @@ namespace autofill {
 
 namespace {
 
-bool IsOriginPartOfDeletionInfo(const absl::optional<url::Origin>& origin,
+bool IsOriginPartOfDeletionInfo(const std::optional<url::Origin>& origin,
                                 const history::DeletionInfo& deletion_info) {
   if (!origin)
     return false;
@@ -196,7 +196,7 @@ void FormAssociator::TrackFormAssociations(const url::Origin& origin,
   container.Push(form_signature, origin);
 }
 
-absl::optional<FormStructure::FormAssociations>
+std::optional<FormStructure::FormAssociations>
 FormAssociator::GetFormAssociations(FormSignature form_signature) const {
   FormStructure::FormAssociations associations;
   if (!recent_address_forms_.empty())
@@ -207,7 +207,7 @@ FormAssociator::GetFormAssociations(FormSignature form_signature) const {
   }
   if (associations.last_address_form_submitted != form_signature &&
       associations.last_credit_card_form_submitted != form_signature) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (recent_address_forms_.size() > 1) {
     associations.second_last_address_form_submitted =
@@ -216,7 +216,7 @@ FormAssociator::GetFormAssociations(FormSignature form_signature) const {
   return associations;
 }
 
-const absl::optional<url::Origin>& FormAssociator::origin() const {
+const std::optional<url::Origin>& FormAssociator::origin() const {
   DCHECK(
       !recent_address_forms_.origin() || !recent_credit_card_forms_.origin() ||
       *recent_address_forms_.origin() == *recent_credit_card_forms_.origin());

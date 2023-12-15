@@ -235,7 +235,7 @@ class StateNode : public AddressComponentWithRewriter {
 
   // For states we use the AlternativeStateNameMap to offer canonicalized state
   // names.
-  absl::optional<std::u16string> GetCanonicalizedValue() const override;
+  std::optional<std::u16string> GetCanonicalizedValue() const override;
 };
 
 // Stores the postal code of an address.

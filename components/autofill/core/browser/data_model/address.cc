@@ -87,7 +87,7 @@ bool Address::MergeStructuredAddress(const Address& newer,
                                                  newer_was_more_recently_used);
 }
 
-absl::optional<AlternativeStateNameMap::CanonicalStateName>
+std::optional<AlternativeStateNameMap::CanonicalStateName>
 Address::GetCanonicalizedStateName() const {
   return AlternativeStateNameMap::GetCanonicalStateName(
       base::UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY)),

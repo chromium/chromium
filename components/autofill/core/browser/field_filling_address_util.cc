@@ -114,7 +114,7 @@ std::optional<std::u16string> GetStateSelectControlValue(
   std::vector<std::u16string> full_names;
 
   // Fetch the corresponding entry from AlternativeStateNameMap.
-  absl::optional<StateEntry> state_entry =
+  std::optional<StateEntry> state_entry =
       AlternativeStateNameMap::GetInstance()->GetEntry(
           AlternativeStateNameMap::CountryCode(country_code),
           AlternativeStateNameMap::StateName(value));
@@ -276,7 +276,7 @@ std::optional<std::u16string> GetStateTextForInput(
     // Return the state value directly.
     return state_value;
   }
-  absl::optional<StateEntry> state =
+  std::optional<StateEntry> state =
       AlternativeStateNameMap::GetInstance()->GetEntry(
           AlternativeStateNameMap::CountryCode(country_code),
           AlternativeStateNameMap::StateName(state_value));

@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TYPE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TYPE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -53,7 +53,7 @@ class AutofillType {
 
     // Requirements the site imposes on passwords (for password generation)
     // obtained from the Autofill server.
-    absl::optional<PasswordRequirementsSpec> password_requirements;
+    std::optional<PasswordRequirementsSpec> password_requirements;
 
     // The server-side predictions for the field's type.
     std::vector<

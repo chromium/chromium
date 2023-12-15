@@ -16,7 +16,7 @@ namespace autofill::i18n_model_definition {
 // contains the matching results, keyed by the name of the capture group with
 // the captured substrings as the value. Otherwise this is a `nullopt`.
 using ValueParsingResults =
-    absl::optional<base::flat_map<std::string, std::string>>;
+    std::optional<base::flat_map<std::string, std::string>>;
 
 // An AutofillParsingProcess is a structure that represents a parsing process
 // that transforms unstructured data model values into structured information.

@@ -681,11 +681,11 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Returns a plus address suggestion, if eligible, using `client()`'s
   // `GetPlusAddressService`.
-  absl::optional<Suggestion> MaybeGetPlusAddressSuggestion();
+  std::optional<Suggestion> MaybeGetPlusAddressSuggestion();
 
   // Returns a compose suggestion if the compose service is available for
   // `field`.
-  absl::optional<Suggestion> MaybeGetComposeSuggestion(
+  std::optional<Suggestion> MaybeGetComposeSuggestion(
       const FormFieldData& field);
 
   // Delegates to perform external processing (display, selection) on
@@ -743,7 +743,7 @@ class BrowserAutofillManager : public AutofillManager {
   bool has_observed_phone_number_field_ = false;
   // If this is true, we consider the form to be secure. (Only use this for
   // testing purposes).
-  absl::optional<bool> consider_form_as_secure_for_testing_;
+  std::optional<bool> consider_form_as_secure_for_testing_;
 
   // When the user first interacted with a potentially fillable form on this
   // page.
@@ -813,7 +813,7 @@ class BrowserAutofillManager : public AutofillManager {
   base::TimeTicks form_submitted_timestamp_;
 
   // The source that triggered unlocking a server card with the CVC.
-  absl::optional<AutofillTriggerSource> fetched_credit_card_trigger_source_;
+  std::optional<AutofillTriggerSource> fetched_credit_card_trigger_source_;
 
   // Contains a list of four digit combinations that were found in the webpage
   // DOM. Populated after a standalone cvc field is processed on a form. Used to

@@ -23,7 +23,7 @@ AutofillSaveUpdateAddressProfileDelegateIOS::
     AutofillSaveUpdateAddressProfileDelegateIOS(
         const AutofillProfile& profile,
         const AutofillProfile* original_profile,
-        absl::optional<std::u16string> user_email,
+        std::optional<std::u16string> user_email,
         const std::string& locale,
         AutofillClient::SaveAddressProfilePromptOptions options,
         AutofillClient::AddressProfileSavePromptCallback callback)

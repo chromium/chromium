@@ -174,7 +174,7 @@ void MaybeAppendInputAssignedAutocompleteValueToIdOrNameAttributesDevtoolsIssue(
 
   auto ParsedHtmlAttributeValueToAutocompleteHasFieldType =
       [](const std::string& attribute_value) {
-        absl::optional<AutocompleteParsingResult>
+        std::optional<AutocompleteParsingResult>
             parsed_attribute_to_autocomplete =
                 ParseAutocompleteAttribute(attribute_value);
         if (!parsed_attribute_to_autocomplete) {

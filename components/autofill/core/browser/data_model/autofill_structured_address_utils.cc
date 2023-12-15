@@ -136,17 +136,17 @@ bool HasHispanicLatinxNameCharacteristics(const std::string& name) {
   return false;
 }
 
-absl::optional<base::flat_map<std::string, std::string>>
+std::optional<base::flat_map<std::string, std::string>>
 ParseValueByRegularExpression(const std::string& value,
                               const std::string& pattern) {
   const RE2* regex = Re2RegExCache::Instance()->GetRegEx(pattern);
   return ParseValueByRegularExpression(value, regex);
 }
 
-absl::optional<base::flat_map<std::string, std::string>>
+std::optional<base::flat_map<std::string, std::string>>
 ParseValueByRegularExpression(const std::string& value, const RE2* regex) {
   if (!regex || !regex->ok())
-    return absl::nullopt;
+    return std::nullopt;
 
   // Get the number of capturing groups in the expression.
   // Note, the capturing group for the full match is not counted.
@@ -167,7 +167,7 @@ ParseValueByRegularExpression(const std::string& value, const RE2* regex) {
   // One capturing group is not counted since it holds the full match.
   if (!RE2::FullMatchN(value, *regex, match_results_ptr.data(),
                        number_of_capturing_groups - 1))
-    return absl::nullopt;
+    return std::nullopt;
 
   // If successful, write the values into the results map.
   // Note, the capturing group for the full match creates an off-by-one scenario

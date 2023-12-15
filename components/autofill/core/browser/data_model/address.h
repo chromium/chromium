@@ -49,7 +49,7 @@ class Address : public FormGroup {
 
   // Fetches the canonical state name for the current address object if
   // possible.
-  absl::optional<AlternativeStateNameMap::CanonicalStateName>
+  std::optional<AlternativeStateNameMap::CanonicalStateName>
   GetCanonicalizedStateName() const;
 
   // For structured addresses, returns true if |this| is mergeable with |newer|.

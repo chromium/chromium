@@ -64,7 +64,7 @@ TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue_DifferentOrigins) {
   // The TTL or 1 hour is irrelevant here.
   queue.RemoveOutdatedItems(base::Hours(1),
                             url::Origin::Create(GURL("http://bar.com")));
-  EXPECT_EQ(queue.origin(), absl::nullopt);
+  EXPECT_EQ(queue.origin(), std::nullopt);
   EXPECT_TRUE(queue.empty());
 }
 

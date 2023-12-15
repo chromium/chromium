@@ -120,7 +120,6 @@
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/rect.h"
@@ -891,7 +890,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     // forms to `submitted_form`, if it is an address/credit card form itself.
     // This information is attached to the vote.
     if (base::FeatureList::IsEnabled(features::kAutofillAssociateForms)) {
-      if (absl::optional<FormStructure::FormAssociations> associations =
+      if (std::optional<FormStructure::FormAssociations> associations =
               form_data_importer->GetFormAssociations(
                   submitted_form->form_signature())) {
         submitted_form->set_form_associations(*associations);
@@ -1183,7 +1182,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   if (suggestions.empty() &&
       (field.form_control_type == FormControlType::kTextArea ||
        field.form_control_type == FormControlType::kContentEditable)) {
-    if (absl::optional<Suggestion> maybe_compose_suggestion =
+    if (std::optional<Suggestion> maybe_compose_suggestion =
             MaybeGetComposeSuggestion(field)) {
       suggestions.push_back(*std::move(maybe_compose_suggestion));
     }
@@ -2113,7 +2112,7 @@ void BrowserAutofillManager::Reset() {
   credit_card_field_ = FormFieldData();
   last_unlocked_credit_card_cvc_.clear();
   initial_interaction_timestamp_ = TimeTicks();
-  fetched_credit_card_trigger_source_ = absl::nullopt;
+  fetched_credit_card_trigger_source_ = std::nullopt;
   if (touch_to_fill_delegate_) {
     touch_to_fill_delegate_->Reset();
   }
@@ -2369,7 +2368,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   newly_filled_field_ids.reserve(form_structure->field_count());
 
   // Log events on the field which triggers the Autofill suggestion.
-  absl::optional<FillEventId> fill_event_id;
+  std::optional<FillEventId> fill_event_id;
   if (action_persistence == mojom::ActionPersistence::kFill) {
     std::string country_code;
     if (const autofill::AutofillProfile** address =
@@ -2635,7 +2634,7 @@ bool BrowserAutofillManager::ShouldPreventAutofillFromOverridingPrefilledField(
     return false;
   }
 
-  cached_field.set_value_not_autofilled_over_existing_value_hash(absl::nullopt);
+  cached_field.set_value_not_autofilled_over_existing_value_hash(std::nullopt);
 
   // Some sites have empty values in the fields, for example.
   if (std::u16string sanitized_field_value =
@@ -2743,7 +2742,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     AutofillSuggestionTriggerSource trigger_source) const {
   address_form_event_logger_->OnDidPollSuggestions(field,
                                                    signin_state_for_metrics_);
-  absl::optional<FieldTypeSet> last_address_fields_to_fill_for_section =
+  std::optional<FieldTypeSet> last_address_fields_to_fill_for_section =
       external_delegate_->GetLastFieldTypesToFillForSection(
           autofill_field.section);
   // Getting the filling-relevant fields so that suggestions are based only on
@@ -2997,7 +2996,7 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
     // We want to consider the <option>'s content ("+1") to classify this as a
     // PHONE_HOME_COUNTRY_CODE field. It is insufficient to just consider the
     // <option>'s value ("US").
-    absl::optional<std::u16string> select_content;
+    std::optional<std::u16string> select_content;
     // TODO(crbug.com/1395740) Remove the flag check once the feature has
     // settled.
     if (field->IsSelectOrSelectListElement() &&
@@ -3510,7 +3509,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
         GetProfileSuggestions(form, *context->form_structure, field,
                               *context->focused_field, trigger_source);
     if (context->focused_field->Type().group() == FieldTypeGroup::kEmail) {
-      absl::optional<Suggestion> maybe_plus_address_suggestion =
+      std::optional<Suggestion> maybe_plus_address_suggestion =
           MaybeGetPlusAddressSuggestion();
       if (maybe_plus_address_suggestion.has_value()) {
         suggestions->insert(suggestions->cbegin(),
@@ -3605,12 +3604,13 @@ void BrowserAutofillManager::PreProcessStateMatchingTypes(
     const std::vector<AutofillProfile>& profiles,
     FormStructure* form_structure) {
   for (const auto& profile : profiles) {
-    absl::optional<AlternativeStateNameMap::CanonicalStateName>
+    std::optional<AlternativeStateNameMap::CanonicalStateName>
         canonical_state_name_from_profile =
             profile.GetAddress().GetCanonicalizedStateName();
 
-    if (!canonical_state_name_from_profile)
+    if (!canonical_state_name_from_profile) {
       continue;
+    }
 
     const std::u16string& country_code =
         profile.GetInfo(AutofillType(HtmlFieldType::kCountryCode), app_locale_);
@@ -3619,7 +3619,7 @@ void BrowserAutofillManager::PreProcessStateMatchingTypes(
       if (field->state_is_a_matching_type())
         continue;
 
-      absl::optional<AlternativeStateNameMap::CanonicalStateName>
+      std::optional<AlternativeStateNameMap::CanonicalStateName>
           canonical_state_name_from_text =
               AlternativeStateNameMap::GetCanonicalStateName(
                   base::UTF16ToUTF8(country_code), field->value);
@@ -3738,7 +3738,7 @@ bool BrowserAutofillManager::ShouldUploadUkm(
   return true;
 }
 
-absl::optional<Suggestion>
+std::optional<Suggestion>
 BrowserAutofillManager::MaybeGetPlusAddressSuggestion() {
   plus_addresses::PlusAddressService* plus_address_service =
       client().GetPlusAddressService();
@@ -3746,12 +3746,12 @@ BrowserAutofillManager::MaybeGetPlusAddressSuggestion() {
       !plus_address_service->SupportsPlusAddresses(
           client().GetLastCommittedPrimaryMainFrameOrigin(),
           client().IsOffTheRecord())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<std::string> maybe_address =
+  std::optional<std::string> maybe_address =
       plus_address_service->GetPlusAddress(
           client().GetLastCommittedPrimaryMainFrameOrigin());
-  if (maybe_address == absl::nullopt) {
+  if (maybe_address == std::nullopt) {
     Suggestion create_plus_address_suggestion(
         plus_address_service->GetCreateSuggestionLabel());
     create_plus_address_suggestion.popup_item_id =
@@ -3771,11 +3771,11 @@ BrowserAutofillManager::MaybeGetPlusAddressSuggestion() {
   return existing_plus_address_suggestion;
 }
 
-absl::optional<Suggestion> BrowserAutofillManager::MaybeGetComposeSuggestion(
+std::optional<Suggestion> BrowserAutofillManager::MaybeGetComposeSuggestion(
     const FormFieldData& field) {
   AutofillComposeDelegate* compose_delegate = client().GetComposeDelegate();
   if (!compose_delegate || !compose_delegate->ShouldOfferComposePopup(field)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::u16string suggestion_text;
   std::u16string label_text;

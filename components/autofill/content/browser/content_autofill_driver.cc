@@ -157,7 +157,7 @@ AutofillManager& ContentAutofillDriver::GetAutofillManager() {
   return *autofill_manager_;
 }
 
-absl::optional<LocalFrameToken> ContentAutofillDriver::Resolve(
+std::optional<LocalFrameToken> ContentAutofillDriver::Resolve(
     FrameToken query) {
   if (absl::holds_alternative<LocalFrameToken>(query)) {
     return absl::get<LocalFrameToken>(query);
@@ -170,7 +170,7 @@ absl::optional<LocalFrameToken> ContentAutofillDriver::Resolve(
       content::RenderFrameHost::FromPlaceholderToken(rph->GetID(),
                                                      blink_remote_token);
   if (!remote_rfh) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return LocalFrameToken(remote_rfh->GetFrameToken().value());
 }
@@ -307,7 +307,7 @@ void ContentAutofillDriver::ExtractForm(FormGlobalId form_id,
       std::move(final_handler));
 
   using RendererFormHandler =
-      base::OnceCallback<void(const absl::optional<::autofill::FormData>&)>;
+      base::OnceCallback<void(const std::optional<::autofill::FormData>&)>;
   // Called on the autofill driver that hosts the form with `form_id`.
   auto make_request = [](autofill::AutofillDriver* request_target,
                          const FormRendererId& form_id,
@@ -424,7 +424,7 @@ void ContentAutofillDriver::ProbablyFormSubmitted(
 }
 
 void ContentAutofillDriver::SetFormToBeProbablySubmitted(
-    const absl::optional<FormData>& form) {
+    const std::optional<FormData>& form) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
   }

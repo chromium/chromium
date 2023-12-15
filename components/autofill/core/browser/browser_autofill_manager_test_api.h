@@ -129,7 +129,7 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   }
 
   void SetConsiderFormAsSecureForTesting(
-      absl::optional<bool> consider_form_as_secure_for_testing) {
+      std::optional<bool> consider_form_as_secure_for_testing) {
     manager_->consider_form_as_secure_for_testing_ =
         consider_form_as_secure_for_testing;
   }

@@ -56,7 +56,6 @@
 #include "content/public/renderer/render_frame.h"
 #include "net/cert/cert_status_flags.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -160,7 +159,7 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
   }
 
   void SetFormToBeProbablySubmitted(
-      const absl::optional<FormData>& form) override {
+      const std::optional<FormData>& form) override {
     DeferMsg(&mojom::AutofillDriver::SetFormToBeProbablySubmitted, form);
   }
   void FormsSeen(const std::vector<FormData>& updated_forms,

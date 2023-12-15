@@ -685,7 +685,7 @@ TEST_F(FormAutofillUtilsTest, FindFormByUniqueId) {
 // Used in ParameterizedFindFormControlByRendererIdTest.
 struct FindFormControlTestParam {
   std::string queried_field;
-  absl::optional<std::string> form_to_be_searched;
+  std::optional<std::string> form_to_be_searched;
   bool expectation;
 };
 
@@ -706,7 +706,7 @@ TEST_P(ParameterizedFindFormControlByRendererIdTest,
   )");
   WebDocument doc = GetMainFrame()->GetDocument();
 
-  absl::optional<FormRendererId> form_to_be_searched_id;
+  std::optional<FormRendererId> form_to_be_searched_id;
   if (GetParam().form_to_be_searched.has_value()) {
     if (GetParam().form_to_be_searched.value().empty()) {
       // Only the unowned form will be searched.
@@ -735,15 +735,15 @@ TEST_P(ParameterizedFindFormControlByRendererIdTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     ParameterizedFindFormControlByRendererIdTest,
-    Values(FindFormControlTestParam{"nonexistentField", absl::nullopt, false},
+    Values(FindFormControlTestParam{"nonexistentField", std::nullopt, false},
            FindFormControlTestParam{"nonexistentField", std::string(), false},
            FindFormControlTestParam{"nonexistentField", "form1", false},
            FindFormControlTestParam{"nonexistentField", "form2", false},
-           FindFormControlTestParam{"ownedField1", absl::nullopt, true},
+           FindFormControlTestParam{"ownedField1", std::nullopt, true},
            FindFormControlTestParam{"ownedField1", "form1", true},
-           FindFormControlTestParam{"ownedField2", absl::nullopt, true},
+           FindFormControlTestParam{"ownedField2", std::nullopt, true},
            FindFormControlTestParam{"ownedField2", "form2", true},
-           FindFormControlTestParam{"unownedField", absl::nullopt, true},
+           FindFormControlTestParam{"unownedField", std::nullopt, true},
            FindFormControlTestParam{"unownedField", std::string(), true}));
 
 TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueId) {

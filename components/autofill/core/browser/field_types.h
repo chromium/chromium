@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPES_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPES_H_
 
+#include <optional>
 #include <type_traits>
 
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/html_field_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 

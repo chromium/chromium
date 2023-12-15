@@ -58,7 +58,7 @@ class FormDataImporterTestApi {
     return fdi_->iban_save_manager_.get();
   }
 
-  absl::optional<CreditCard> ExtractCreditCard(const FormStructure& form) {
+  std::optional<CreditCard> ExtractCreditCard(const FormStructure& form) {
     return fdi_->ExtractCreditCard(form);
   }
 
@@ -97,7 +97,7 @@ class FormDataImporterTestApi {
 
   bool ProcessExtractedCreditCard(
       const FormStructure& submitted_form,
-      const absl::optional<CreditCard>& credit_card_import_candidate,
+      const std::optional<CreditCard>& credit_card_import_candidate,
       bool payment_methods_autofill_enabled,
       bool is_credit_card_upstream_enabled) {
     return fdi_->ProcessExtractedCreditCard(
@@ -105,7 +105,7 @@ class FormDataImporterTestApi {
         payment_methods_autofill_enabled, is_credit_card_upstream_enabled);
   }
 
-  absl::optional<int64_t> fetched_card_instrument_id() {
+  std::optional<int64_t> fetched_card_instrument_id() {
     return fdi_->fetched_card_instrument_id_;
   }
 

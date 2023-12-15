@@ -442,7 +442,7 @@ blink::WebFormElement FindFormByRendererId(const blink::WebDocument& doc,
 blink::WebFormControlElement FindFormControlByRendererId(
     const blink::WebDocument& doc,
     FieldRendererId queried_form_control,
-    absl::optional<FormRendererId> form_to_be_searched = absl::nullopt);
+    std::optional<FormRendererId> form_to_be_searched = std::nullopt);
 
 // Note: The vector-based API of the following two functions is a tax for
 // limiting the frequency and duration of retrieving a lot of DOM elements.

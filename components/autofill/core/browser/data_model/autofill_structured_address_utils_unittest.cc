@@ -35,7 +35,7 @@ TEST(AutofillStructuredAddressUtils, TestParseValueByRegularExpression) {
   std::string regex = kFirstMiddleLastRe;
   std::string value = "first middle1 middle2 middle3 last";
 
-  absl::optional<base::flat_map<std::string, std::string>> result_map;
+  std::optional<base::flat_map<std::string, std::string>> result_map;
 
   result_map = ParseValueByRegularExpression(value, regex);
 

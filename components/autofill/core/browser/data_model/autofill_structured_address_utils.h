@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_rewriter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace autofill {
@@ -159,11 +159,11 @@ std::u16string ReduceToInitials(const std::u16string& value);
 // If the expression is fully matched, returns the matching results, keyed by
 // the name of the capture group with the captured substrings as the value.
 // Otherwise returns `nullopt`.
-absl::optional<base::flat_map<std::string, std::string>>
+std::optional<base::flat_map<std::string, std::string>>
 ParseValueByRegularExpression(const std::string& value, const RE2* regex);
 
 // Same as above, but accepts pattern instead of a compiled regular expression.
-absl::optional<base::flat_map<std::string, std::string>>
+std::optional<base::flat_map<std::string, std::string>>
 ParseValueByRegularExpression(const std::string& value,
                               const std::string& pattern);
 

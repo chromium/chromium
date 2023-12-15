@@ -478,8 +478,8 @@ class MockVirtualCardEnrollmentManager
       InitVirtualCardEnroll,
       (const CreditCard& credit_card,
        VirtualCardEnrollmentSource virtual_card_enrollment_source,
-       absl::optional<payments::PaymentsNetworkInterface::
-                          GetDetailsForEnrollmentResponseDetails>
+       std::optional<payments::PaymentsNetworkInterface::
+                         GetDetailsForEnrollmentResponseDetails>
            get_details_for_enrollment_response_details,
        PrefService* user_prefs,
        VirtualCardEnrollmentManager::RiskAssessmentFunction
@@ -735,7 +735,7 @@ class FormDataImporterTest : public testing::Test {
     ExtractAddressProfilesAndVerifyExpectation(form, {});
   }
 
-  absl::optional<CreditCard> ExtractCreditCard(const FormStructure& form) {
+  std::optional<CreditCard> ExtractCreditCard(const FormStructure& form) {
     return test_api(form_data_importer()).ExtractCreditCard(form);
   }
 
@@ -747,7 +747,7 @@ class FormDataImporterTest : public testing::Test {
     FormStructure form_structure(form);
     form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                            nullptr);
-    absl::optional<CreditCard> extracted_credit_card =
+    std::optional<CreditCard> extracted_credit_card =
         ExtractCreditCard(form_structure);
     ASSERT_TRUE(extracted_credit_card);
     personal_data_manager_->OnAcceptedLocalCreditCardSave(
@@ -1766,7 +1766,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_Valid) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
   base::HistogramTester histogram_tester;
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(*form_structure);
   EXPECT_TRUE(extracted_credit_card);
   histogram_tester.ExpectUniqueSample(
@@ -1790,7 +1790,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_InvalidCardNumber) {
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
   base::HistogramTester histogram_tester;
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(form_structure);
   EXPECT_FALSE(extracted_credit_card);
   histogram_tester.ExpectUniqueSample("Autofill.SubmittedCardState",
@@ -1823,7 +1823,7 @@ TEST_F(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(form_structure);
   EXPECT_TRUE(extracted_credit_card);
 
@@ -1846,7 +1846,7 @@ TEST_F(FormDataImporterTest,
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
   base::HistogramTester histogram_tester;
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(form_structure);
   EXPECT_TRUE(extracted_credit_card);
   histogram_tester.ExpectUniqueSample("Autofill.SubmittedCardState",
@@ -1864,7 +1864,7 @@ TEST_F(FormDataImporterTest,
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
   base::HistogramTester histogram_tester;
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(form_structure);
   EXPECT_TRUE(extracted_credit_card);
   histogram_tester.ExpectUniqueSample("Autofill.SubmittedCardState",
@@ -1889,7 +1889,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MonthSelectInvalidText) {
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
   base::HistogramTester histogram_tester;
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(form_structure);
   EXPECT_TRUE(extracted_credit_card);
   histogram_tester.ExpectUniqueSample(
@@ -1909,7 +1909,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_TwoValidCards) {
   // Start with a single valid credit card form.
   std::unique_ptr<FormStructure> form_structure1 =
       ConstructDefaultCreditCardFormStructure();
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(*form_structure1);
   EXPECT_TRUE(extracted_credit_card);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(*extracted_credit_card);
@@ -1928,7 +1928,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_TwoValidCards) {
   form_structure2.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                           nullptr);
 
-  absl::optional<CreditCard> extracted_credit_card2 =
+  std::optional<CreditCard> extracted_credit_card2 =
       ExtractCreditCard(form_structure2);
   EXPECT_TRUE(extracted_credit_card2);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(
@@ -2032,7 +2032,7 @@ TEST_F(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(form_structure);
   EXPECT_TRUE(extracted_credit_card);
   ASSERT_TRUE(extracted_credit_card.value().record_type() ==
@@ -2060,7 +2060,7 @@ TEST_F(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(form_structure);
   EXPECT_TRUE(extracted_credit_card);
   EXPECT_EQ(extracted_credit_card.value().record_type(),
@@ -2075,7 +2075,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_SameCreditCardWithConflict) {
   FormStructure form_structure1(form1);
   form_structure1.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                           nullptr);
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(form_structure1);
   EXPECT_TRUE(extracted_credit_card);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(*extracted_credit_card);
@@ -2095,7 +2095,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_SameCreditCardWithConflict) {
   FormStructure form_structure2(form2);
   form_structure2.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                           nullptr);
-  absl::optional<CreditCard> extracted_credit_card2 =
+  std::optional<CreditCard> extracted_credit_card2 =
       ExtractCreditCard(form_structure2);
   EXPECT_TRUE(extracted_credit_card2);
 
@@ -2118,7 +2118,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_ShouldReturnLocalCard) {
   FormStructure form_structure1(form1);
   form_structure1.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                           nullptr);
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(form_structure1);
   EXPECT_TRUE(extracted_credit_card);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(*extracted_credit_card);
@@ -2138,7 +2138,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_ShouldReturnLocalCard) {
   FormStructure form_structure2(form2);
   form_structure2.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                           nullptr);
-  absl::optional<CreditCard> extracted_credit_card2 =
+  std::optional<CreditCard> extracted_credit_card2 =
       ExtractCreditCard(form_structure2);
   // The local card is returned after an update.
   EXPECT_TRUE(extracted_credit_card2);
@@ -2166,7 +2166,7 @@ TEST_F(FormDataImporterTest,
   FormStructure form_structure1(form1);
   form_structure1.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                           nullptr);
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(form_structure1);
   EXPECT_TRUE(extracted_credit_card);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(*extracted_credit_card);
@@ -2187,7 +2187,7 @@ TEST_F(FormDataImporterTest,
   FormStructure form_structure2(form2);
   form_structure2.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                           nullptr);
-  absl::optional<CreditCard> extracted_credit_card2 =
+  std::optional<CreditCard> extracted_credit_card2 =
       ExtractCreditCard(form_structure2);
 
   // The local card is returned after an update.
@@ -2213,7 +2213,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_EmptyCardWithConflict) {
   form_structure1.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                           nullptr);
 
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(form_structure1);
   EXPECT_TRUE(extracted_credit_card);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(*extracted_credit_card);
@@ -2232,7 +2232,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_EmptyCardWithConflict) {
   FormStructure form_structure2(form2);
   form_structure2.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                           nullptr);
-  absl::optional<CreditCard> extracted_credit_card2 =
+  std::optional<CreditCard> extracted_credit_card2 =
       ExtractCreditCard(form_structure2);
   EXPECT_FALSE(extracted_credit_card2);
 
@@ -2253,7 +2253,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
   FormStructure form_structure1(form1);
   form_structure1.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                           nullptr);
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(form_structure1);
   EXPECT_TRUE(extracted_credit_card);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(*extracted_credit_card);
@@ -2271,7 +2271,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
   FormStructure form_structure2(form2);
   form_structure2.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                           nullptr);
-  absl::optional<CreditCard> extracted_credit_card2 =
+  std::optional<CreditCard> extracted_credit_card2 =
       ExtractCreditCard(form_structure2);
   EXPECT_TRUE(extracted_credit_card2);
 
@@ -2292,7 +2292,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
   FormStructure form_structure3(form3);
   form_structure3.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                           nullptr);
-  absl::optional<CreditCard> extracted_credit_card3 =
+  std::optional<CreditCard> extracted_credit_card3 =
       ExtractCreditCard(form_structure3);
   EXPECT_FALSE(extracted_credit_card3);
 
@@ -2328,7 +2328,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInOld) {
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(form_structure);
   EXPECT_TRUE(extracted_credit_card);
 
@@ -2365,7 +2365,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_SameCardWithSeparators) {
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(form_structure);
   EXPECT_TRUE(extracted_credit_card);
 
@@ -2402,7 +2402,7 @@ TEST_F(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
-  absl::optional<CreditCard> extracted_credit_card =
+  std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(form_structure);
   EXPECT_TRUE(extracted_credit_card);
 
@@ -3903,7 +3903,7 @@ TEST_F(FormDataImporterTest, FormAssociator) {
   // associations are tracked in `ExtractFormData()` instead.
   ExtractFormDataAndProcessAddressCandidates(*form_structure);
 
-  absl::optional<FormStructure::FormAssociations> associations =
+  std::optional<FormStructure::FormAssociations> associations =
       form_data_importer().GetFormAssociations(form_signature);
   // Expect the same form signature for the two most recent address form, as
   // `form_structure` consists of two sections.
@@ -4023,7 +4023,7 @@ TEST_F(FormDataImporterTest,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_EmptyCreditCard) {
-  absl::optional<CreditCard> extracted_credit_card;
+  std::optional<CreditCard> extracted_credit_card;
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
 

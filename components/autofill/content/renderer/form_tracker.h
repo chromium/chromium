@@ -140,7 +140,7 @@ class FormTracker : public content::RenderFrameObserver,
   void DidFinishSameDocumentNavigation() override;
   void DidStartNavigation(
       const GURL& url,
-      absl::optional<blink::WebNavigationType> navigation_type) override;
+      std::optional<blink::WebNavigationType> navigation_type) override;
   void WillDetach(blink::DetachReason detach_reason) override;
   void WillSubmitForm(const blink::WebFormElement& form) override;
   void OnDestruct() override;

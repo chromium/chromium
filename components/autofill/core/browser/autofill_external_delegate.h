@@ -105,7 +105,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // will store these fields so that in a next iteration, when the user clicks,
   // say a name field only fields that are of group name are filled, therefore
   // staying at a group filling level.
-  absl::optional<FieldTypeSet> GetLastFieldTypesToFillForSection(
+  std::optional<FieldTypeSet> GetLastFieldTypesToFillForSection(
       const Section& section) const;
 
   // Returns true if there is a screen reader installed on the machine.

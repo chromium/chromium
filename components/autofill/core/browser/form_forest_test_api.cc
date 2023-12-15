@@ -12,7 +12,7 @@ void FormForestTestApi::ExpandForm(base::stack<FrameForm>& frontier,
                                    FrameForm frame_and_form) {
   for (const FrameTokenWithPredecessor& child :
        frame_and_form.form->child_frames) {
-    absl::optional<LocalFrameToken> local_child =
+    std::optional<LocalFrameToken> local_child =
         frame_and_form.frame->driver->Resolve(child.token);
     FrameData* child_frame;
     if (local_child && (child_frame = GetFrameData(*local_child))) {

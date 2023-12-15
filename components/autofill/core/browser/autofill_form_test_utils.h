@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_FORM_TEST_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_FORM_TEST_UTILS_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/strings/string_piece.h"
@@ -14,7 +15,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 namespace test {
@@ -38,24 +38,24 @@ struct FieldDescription {
   FieldType role = FieldType::EMPTY_TYPE;
   // If the server type is not set explcitly, it is assumed to be given by the
   // role.
-  absl::optional<FieldType> server_type;
+  std::optional<FieldType> server_type;
   // If the heuristic type is not set explcitly, it is assumed to be given by
   // the role.
-  absl::optional<FieldType> heuristic_type;
-  absl::optional<LocalFrameToken> host_frame;
-  absl::optional<FieldRendererId> unique_renderer_id;
+  std::optional<FieldType> heuristic_type;
+  std::optional<LocalFrameToken> host_frame;
+  std::optional<FieldRendererId> unique_renderer_id;
   bool is_focusable = true;
   bool is_visible = true;
-  absl::optional<std::u16string> label;
-  absl::optional<std::u16string> name;
-  absl::optional<std::u16string> value;
-  absl::optional<std::u16string> placeholder;
+  std::optional<std::u16string> label;
+  std::optional<std::u16string> name;
+  std::optional<std::u16string> value;
+  std::optional<std::u16string> placeholder;
   const std::string autocomplete_attribute;
-  absl::optional<AutocompleteParsingResult> parsed_autocomplete;
+  std::optional<AutocompleteParsingResult> parsed_autocomplete;
   const FormControlType form_control_type = FormControlType::kInputText;
   bool should_autocomplete = true;
-  absl::optional<bool> is_autofilled;
-  absl::optional<url::Origin> origin;
+  std::optional<bool> is_autofilled;
+  std::optional<url::Origin> origin;
   std::vector<SelectOption> select_options = {};
   FieldPropertiesMask properties_mask = 0;
 };
@@ -65,12 +65,12 @@ template <typename = void>
 struct FormDescription {
   const std::string description_for_logging;
   std::vector<FieldDescription<>> fields;
-  absl::optional<LocalFrameToken> host_frame;
-  absl::optional<FormRendererId> unique_renderer_id;
+  std::optional<LocalFrameToken> host_frame;
+  std::optional<FormRendererId> unique_renderer_id;
   const std::u16string name = u"TestForm";
   const std::string url = kFormUrl;
   const std::string action = kFormActionUrl;
-  absl::optional<url::Origin> main_frame_origin;
+  std::optional<url::Origin> main_frame_origin;
   bool is_form_tag = true;
 };
 
@@ -88,12 +88,12 @@ struct TestFormFlags {
   bool should_be_uploaded = false;
   bool has_author_specified_types = false;
   bool has_author_specified_upi_vpa_hint = false;
-  // The implicit default value `absl::nullopt` means no checking.
-  absl::optional<bool> is_complete_credit_card_form;
-  absl::optional<int> field_count;
-  absl::optional<int> autofill_count;
-  absl::optional<int> section_count;
-  absl::optional<int> response_field_count;
+  // The implicit default value `std::nullopt` means no checking.
+  std::optional<bool> is_complete_credit_card_form;
+  std::optional<int> field_count;
+  std::optional<int> autofill_count;
+  std::optional<int> section_count;
+  std::optional<int> response_field_count;
 };
 
 // Expected field type values to be verified with the test form.

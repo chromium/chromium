@@ -207,7 +207,7 @@ class AutofillProfile : public AutofillDataModel {
   // least `minimal_fields_shown` fields, if possible.
   static void CreateInferredLabels(
       const std::vector<const AutofillProfile*>& profiles,
-      const absl::optional<FieldTypeSet>& suggested_fields,
+      const std::optional<FieldTypeSet>& suggested_fields,
       FieldTypeSet excluded_fields,
       size_t minimal_fields_shown,
       const std::string& app_locale,

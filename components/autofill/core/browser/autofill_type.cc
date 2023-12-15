@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/autofill_type.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 

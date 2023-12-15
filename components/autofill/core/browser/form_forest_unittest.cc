@@ -650,7 +650,7 @@ TEST_F(FormForestTestUpdateTree, SizeLimit) {
   }());
   for (size_t i = kActualFlattened + 1; i <= kDescendants; ++i) {
     GetDriverOfForm(FormName(i)).set_sub_root(true);
-    GetMockedFrame(FormName(i)).parent_form = absl::nullopt;
+    GetMockedFrame(FormName(i)).parent_form = std::nullopt;
   }
 
   MockFlattening([&] {
@@ -959,7 +959,7 @@ TEST_F(FormForestTestUpdateTree, EraseForm_ParentReset) {
       (*frame_datas(mocked_forms_).find(removed_form.frame_token))->child_forms,
       [&](const FormData& form) { return form.global_id() == removed_form; });
   GetDriverOfForm("leaf").set_sub_root(true);
-  GetMockedFrame("leaf").parent_form = absl::nullopt;
+  GetMockedFrame("leaf").parent_form = std::nullopt;
   MockFlattening({{"main"}});
   MockFlattening({{"leaf"}});
   base::ranges::copy(GetFlattenedForm("leaf").fields,
@@ -1026,7 +1026,7 @@ TEST_P(FormForestTestUpdateEraseFrame, EraseFrame_ParentReset) {
         ->child_forms.clear();
   }
   GetDriverOfForm("leaf").set_sub_root(true);
-  GetMockedFrame("leaf").parent_form = absl::nullopt;
+  GetMockedFrame("leaf").parent_form = std::nullopt;
   MockFlattening({{"main"}});
   MockFlattening({{"leaf"}});
   base::ranges::copy(GetFlattenedForm("leaf").fields,
@@ -1314,7 +1314,7 @@ TEST_F(FormForestTestUpdateTree, RemoveFrame) {
   // indirectly "greatgrandchild".
   GetDriverOfForm("grandchild2").set_sub_root(true);
   GetMockedForm("child1").child_frames.pop_back();
-  GetMockedFrame("grandchild2").parent_form = absl::nullopt;
+  GetMockedFrame("grandchild2").parent_form = std::nullopt;
   GetMockedForm("grandchild2").fields.clear();
   GetMockedForm("greatgrandchild").fields.clear();
   MockFlattening({{"main"}, {"child1"}, {"grandchild1"}, {"child2"}},

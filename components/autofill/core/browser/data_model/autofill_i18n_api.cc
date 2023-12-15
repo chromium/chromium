@@ -274,7 +274,7 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
   auto* it = kAutofillParsingRulesMap.find(
       {country_code_for_parsing.value(), field_type});
   return it != kAutofillParsingRulesMap.end() ? it->second->Parse(value)
-                                              : absl::nullopt;
+                                              : std::nullopt;
 }
 
 std::optional<std::u16string_view> GetStopwordsExpression(

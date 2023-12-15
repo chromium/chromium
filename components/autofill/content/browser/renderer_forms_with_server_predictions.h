@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_RENDERER_FORMS_WITH_SERVER_PREDICTIONS_H_
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_RENDERER_FORMS_WITH_SERVER_PREDICTIONS_H_
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/global_routing_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -30,7 +30,7 @@ class AutofillManager;
 // instead of relying on Autofill methods may require it to map between the
 // different concepts of browser (flattened) forms and renderer forms.
 struct RendererFormsWithServerPredictions {
-  static absl::optional<RendererFormsWithServerPredictions> FromBrowserForm(
+  static std::optional<RendererFormsWithServerPredictions> FromBrowserForm(
       AutofillManager& manager,
       FormGlobalId form_id);
 

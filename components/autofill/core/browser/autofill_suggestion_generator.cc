@@ -590,8 +590,8 @@ void AddCreditCardExpiryDateChildSuggestion(const CreditCard& credit_card,
 // When not present, we default to full form.
 // This function is called only for first-level popup.
 PopupItemId GetProfileSuggestionPopupItemId(
-    absl::optional<FieldTypeSet> last_targeted_fields,
-    FieldType trigger_field_type) {
+    std::optional<FieldTypeSet> last_targeted_fields,
+    ServerFieldType trigger_field_type) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillGranularFillingAvailable)) {
     return PopupItemId::kAddressEntry;
@@ -1086,7 +1086,7 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
     base::span<const AutofillProfile> test_addresses,
     const std::string& locale) {
   if (test_addresses.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   Suggestion suggestion(u"Devtools", PopupItemId::kDevtoolsTestAddresses);

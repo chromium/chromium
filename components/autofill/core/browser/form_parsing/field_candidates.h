@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FIELD_CANDIDATES_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FIELD_CANDIDATES_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 

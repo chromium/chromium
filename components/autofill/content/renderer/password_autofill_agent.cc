@@ -465,7 +465,7 @@ void FillNonTypedOrFilledPropertiesMasks(std::vector<FormFieldData>* fields,
       continue;
 
     for (const auto& [field_id, field_data] : manager.field_data_map()) {
-      const absl::optional<std::u16string>& value = field_data.first;
+      const std::optional<std::u16string>& value = field_data.first;
       FieldPropertiesMask properties = field_data.second;
       if ((properties & kFilledOrTyped) && value == field.value) {
         field.properties_mask |= properties & kFilledOrTyped;

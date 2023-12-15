@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 
 #include <algorithm>
+#include <optional>
 #include <vector>
 
 #include "base/i18n/char_iterator.h"
@@ -19,7 +20,6 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
 
 using base::UTF16ToUTF8;
