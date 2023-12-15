@@ -51,14 +51,6 @@ BASE_FEATURE(kBackForwardCacheTimeToLiveControl,
              "BackForwardCacheTimeToLiveControl",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Sets moderate binding to background renderers playing media, when enabled.
-// Else the renderer will have strong binding.
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kBackgroundMediaRendererHasModerateBinding,
-             "BackgroundMediaRendererHasModerateBinding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // When enabled, the browser will schedule before unload tasks that continue
 // navigation network responses in a kHigh priority queue.
 // TODO(b/281094330): Run experiment on ChromeOS. Experiment was not run on
