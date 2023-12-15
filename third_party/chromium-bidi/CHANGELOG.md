@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.2](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.1...chromium-bidi-v0.5.2) (2023-12-15)
+
+
+### Features
+
+* implement dedicated workers ([#1619](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1619)) ([552cece](https://github.com/GoogleChromeLabs/chromium-bidi/commit/552cecedd736db19a477572793258e1994b11df9))
+* implement evaluate for dedicated workers ([#1625](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1625)) ([ca083df](https://github.com/GoogleChromeLabs/chromium-bidi/commit/ca083dfba38a9e5e3bce6d501ecea64fbe0713bc))
+
 ## [0.5.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.0...chromium-bidi-v0.5.1) (2023-11-20)
 
 
