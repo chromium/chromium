@@ -2396,7 +2396,8 @@
     {
       name: "box-sizing",
       property_methods: ["CSSValueFromComputedStyleInternal"],
-      field_group: "box",
+      // NOTE: Naturally fits into field_group: "box", but is so commonly set
+      // that is is better to have it at the root.
       field_template: "keyword",
       keywords: ["content-box", "border-box"],
       typedom_types: ["Keyword"],
