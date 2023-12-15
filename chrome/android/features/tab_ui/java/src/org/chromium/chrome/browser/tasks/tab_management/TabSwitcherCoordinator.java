@@ -72,12 +72,6 @@ public class TabSwitcherCoordinator
                 TabSwitcher.TabListDelegate,
                 TabSwitcherMediator.ResetHandler,
                 TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener {
-    /** Interface to control the IPH dialog. */
-    interface IphController {
-        /** Show the dialog with IPH. */
-        void showIph();
-    }
-
     // TODO(crbug.com/982018): Rename 'COMPONENT_NAME' so as to add different metrics for carousel
     // tab switcher.
     static final String COMPONENT_NAME = "GridTabSwitcher";
