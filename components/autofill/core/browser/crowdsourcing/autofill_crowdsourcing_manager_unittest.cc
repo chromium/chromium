@@ -202,16 +202,13 @@ class AutofillCrowdsourcingManagerTest
     : public AutofillCrowdsourcingManager::Observer,
       public ::testing::Test {
  public:
-  enum ResponseType {
-    QUERY_SUCCESSFULL,
-    UPLOAD_SUCCESSFULL,
-    REQUEST_QUERY_FAILED,
-    REQUEST_UPLOAD_FAILED,
+  enum class ResponseType {
+    kQuerySuccessful,
+    kUploadSuccessful,
   };
 
   struct ResponseData {
-    ResponseType type_of_response = REQUEST_QUERY_FAILED;
-    int error = 0;
+    ResponseType type_of_response = ResponseType::kQuerySuccessful;
     std::string signature;
     std::string response;
   };
@@ -244,26 +241,13 @@ class AutofillCrowdsourcingManagerTest
       const std::vector<FormSignature>& form_signatures) override {
     ResponseData response;
     response.response = std::move(response_xml);
-    response.type_of_response = QUERY_SUCCESSFULL;
+    response.type_of_response = ResponseType::kQuerySuccessful;
     responses().push_back(response);
   }
 
   void OnUploadedPossibleFieldTypes() override {
     ResponseData response;
-    response.type_of_response = UPLOAD_SUCCESSFULL;
-    responses().push_back(response);
-  }
-
-  void OnServerRequestError(FormSignature form_signature,
-                            AutofillCrowdsourcingManager::RequestType request_type,
-                            int http_error) override {
-    ResponseData response;
-    response.signature = base::NumberToString(form_signature.value());
-    response.error = http_error;
-    response.type_of_response =
-        request_type == AutofillCrowdsourcingManager::REQUEST_QUERY
-            ? REQUEST_QUERY_FAILED
-            : REQUEST_UPLOAD_FAILED;
+    response.type_of_response = ResponseType::kUploadSuccessful;
     responses().push_back(response);
   }
 
@@ -398,35 +382,24 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
   request = url_loader_factory().GetPendingRequest(0);
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
       request, response_contents[0]);
-  EXPECT_EQ(3U, responses().size());
+  EXPECT_THAT(responses(), SizeIs(2));
   histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaWasInCache,
                               CACHE_MISS, 1);
   histogram.ExpectBucketCount("Autofill.Query.HttpResponseOrErrorCode",
                               net::HTTP_OK, 1);
 
   // Check Request 1.
-  EXPECT_EQ(AutofillCrowdsourcingManagerTest::UPLOAD_SUCCESSFULL,
+  EXPECT_EQ(ResponseType::kUploadSuccessful,
             responses().front().type_of_response);
-  EXPECT_EQ(0, responses().front().error);
   EXPECT_EQ(std::string(), responses().front().signature);
   // Expected response on non-query request is an empty string.
   EXPECT_EQ(std::string(), responses().front().response);
   responses().pop_front();
 
-  // Check Request 2.
-  EXPECT_EQ(AutofillCrowdsourcingManagerTest::REQUEST_UPLOAD_FAILED,
-            responses().front().type_of_response);
-  EXPECT_EQ(net::HTTP_NOT_FOUND, responses().front().error);
-  EXPECT_EQ(form_structures[1]->FormSignatureAsStr(),
-            responses().front().signature);
-  // Expected response on non-query request is an empty string.
-  EXPECT_EQ(std::string(), responses().front().response);
-  responses().pop_front();
 
   // Check Request 0.
   EXPECT_EQ(responses().front().type_of_response,
-            AutofillCrowdsourcingManagerTest::QUERY_SUCCESSFULL);
-  EXPECT_EQ(0, responses().front().error);
+            ResponseType::kQuerySuccessful);
   EXPECT_EQ(std::string(), responses().front().signature);
   EXPECT_EQ(response_contents[0], responses().front().response);
   responses().pop_front();
@@ -451,14 +424,6 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
   histogram.ExpectBucketCount("Autofill.Query.HttpResponseOrErrorCode",
                               net::HTTP_INTERNAL_SERVER_ERROR, 1);
 
-  // Check Request 4.
-  EXPECT_EQ(AutofillCrowdsourcingManagerTest::REQUEST_QUERY_FAILED,
-            responses().front().type_of_response);
-  EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, responses().front().error);
-  // Expected response on non-query request is an empty string.
-  EXPECT_EQ(std::string(), responses().front().response);
-  responses().pop_front();
-
   // Request with id 5. Let's pretend we hit the cache.
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
       ToRawPointerVector(form_structures), driver().IsolationInfo(),
@@ -477,7 +442,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
 
   // Check Request 5.
   EXPECT_EQ(responses().front().type_of_response,
-            AutofillCrowdsourcingManagerTest::QUERY_SUCCESSFULL);
+            ResponseType::kQuerySuccessful);
   responses().pop_front();
   histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaWasInCache,
                               CACHE_HIT, 1);
@@ -567,7 +532,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITest) {
   // to be called back from the observer and some histograms be incremented.
   EXPECT_EQ(1U, responses().size());
   EXPECT_EQ(responses().front().type_of_response,
-            AutofillCrowdsourcingManagerTest::QUERY_SUCCESSFULL);
+            ResponseType::kQuerySuccessful);
   histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaWasInCache,
                               CACHE_MISS, 1);
   histogram.ExpectBucketCount("Autofill.Query.HttpResponseOrErrorCode",
@@ -654,7 +619,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITestWhenTooLongUrl) {
   // to be called back from the observer and some histograms be incremented.
   EXPECT_EQ(1U, responses().size());
   EXPECT_EQ(responses().front().type_of_response,
-            AutofillCrowdsourcingManagerTest::QUERY_SUCCESSFULL);
+            ResponseType::kQuerySuccessful);
   histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaWasInCache,
                               CACHE_MISS, 1);
   histogram.ExpectBucketCount("Autofill.Query.HttpResponseOrErrorCode",
@@ -728,7 +693,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, UploadToAPITest) {
   // histograms be incremented.
   EXPECT_EQ(1U, responses().size());
   // Request should be upload and successful.
-  EXPECT_EQ(AutofillCrowdsourcingManagerTest::UPLOAD_SUCCESSFULL,
+  EXPECT_EQ(ResponseType::kUploadSuccessful,
             responses().front().type_of_response);
   // We expect the request to be OK and corresponding response code to be
   // counted.
@@ -757,7 +722,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Query) {
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
       request, network::CreateURLResponseHead(net::HTTP_INTERNAL_SERVER_ERROR),
       "", network::URLLoaderCompletionStatus(net::OK));
-  EXPECT_THAT(responses(), SizeIs(1));
+  EXPECT_THAT(responses(), IsEmpty());
 
   // A request error incurs a retry after 1 second (+- 33% fuzzing).
   EXPECT_EQ(url_loader_factory().GetPendingRequest(1), nullptr);
@@ -770,7 +735,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Query) {
       request,
       network::CreateURLResponseHead(net::HTTP_REQUEST_ENTITY_TOO_LARGE),
       "<html></html>", network::URLLoaderCompletionStatus(net::OK));
-  EXPECT_THAT(responses(), SizeIs(2));
+  EXPECT_THAT(responses(), IsEmpty());
 
   // No more retries occur because the error was a client error.
   task_environment().FastForwardBy(base::Milliseconds(3000));
@@ -804,16 +769,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
       request, network::CreateURLResponseHead(net::HTTP_INTERNAL_SERVER_ERROR),
       "", network::URLLoaderCompletionStatus(net::OK));
-  EXPECT_EQ(1U, responses().size());
-
-  // Check that it was a failure.
-  EXPECT_EQ(AutofillCrowdsourcingManagerTest::REQUEST_UPLOAD_FAILED,
-            responses().front().type_of_response);
-  EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, responses().front().error);
-  EXPECT_EQ(form_structure.FormSignatureAsStr(), responses().front().signature);
-  // Expected response on non-query request is an empty string.
-  EXPECT_EQ(std::string(), responses().front().response);
-  responses().pop_front();
+  EXPECT_THAT(responses(), IsEmpty());
 
   // A request error incurs a retry after 1 second (+- 33% fuzzing).
   EXPECT_EQ(url_loader_factory().GetPendingRequest(1), nullptr);
@@ -826,9 +782,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
                                                                       "");
 
   // Check success of response.
-  EXPECT_EQ(AutofillCrowdsourcingManagerTest::UPLOAD_SUCCESSFULL,
+  EXPECT_EQ(ResponseType::kUploadSuccessful,
             responses().front().type_of_response);
-  EXPECT_EQ(0, responses().front().error);
   EXPECT_EQ(std::string(), responses().front().signature);
   // Expected response on non-query request is an empty string.
   EXPECT_EQ(std::string(), responses().front().response);
@@ -882,12 +837,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Query) {
         network::CreateURLResponseHead(net::HTTP_INTERNAL_SERVER_ERROR),
         "<html></html>", network::URLLoaderCompletionStatus(net::OK));
 
-    EXPECT_EQ(1U, responses().size());
-    const auto& response = responses().front();
-    EXPECT_EQ(AutofillCrowdsourcingManagerTest::REQUEST_QUERY_FAILED,
-              response.type_of_response);
-    EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, response.error);
-    responses().pop_front();
+    // There should be no response in case of an error.
+    EXPECT_THAT(responses(), IsEmpty());
 
     task_environment().FastForwardBy(
         test_api(crowdsourcing_manager()).GetCurrentBackoffTime() +
@@ -934,14 +885,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Upload) {
         request,
         network::CreateURLResponseHead(net::HTTP_INTERNAL_SERVER_ERROR), "",
         network::URLLoaderCompletionStatus(net::OK));
-
-    // Check that it was a failure.
-    ASSERT_THAT(responses(), SizeIs(1));
-    const auto& response = responses().front();
-    EXPECT_EQ(AutofillCrowdsourcingManagerTest::REQUEST_UPLOAD_FAILED,
-              response.type_of_response);
-    EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, response.error);
-    responses().pop_front();
+    EXPECT_THAT(responses(), IsEmpty());
 
     task_environment().FastForwardBy(
         test_api(crowdsourcing_manager()).GetCurrentBackoffTime() +
@@ -1054,7 +998,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
   auto* request = url_loader_factory().GetPendingRequest(0);
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
       request, response_contents[0]);
-  ASSERT_EQ(1U, responses().size());
+  ASSERT_THAT(responses(), SizeIs(1));
   EXPECT_EQ(response_contents[0], responses().front().response);
 
   responses().clear();
@@ -1064,7 +1008,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 2);
   // Data is available immediately from cache - no over-the-wire trip.
-  ASSERT_EQ(1U, responses().size());
+  ASSERT_THAT(responses(), SizeIs(1));
   EXPECT_EQ(response_contents[0], responses().front().response);
   responses().clear();
 
@@ -1073,12 +1017,12 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 3);
   // No responses yet
-  EXPECT_EQ(0U, responses().size());
+  EXPECT_THAT(responses(), IsEmpty());
 
   request = url_loader_factory().GetPendingRequest(1);
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
       request, response_contents[1]);
-  ASSERT_EQ(1U, responses().size());
+  ASSERT_THAT(responses(), SizeIs(1));
   EXPECT_EQ(response_contents[1], responses().front().response);
 
   responses().clear();
@@ -1091,7 +1035,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
   request = url_loader_factory().GetPendingRequest(2);
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
       request, response_contents[2]);
-  ASSERT_EQ(1U, responses().size());
+  ASSERT_THAT(responses(), SizeIs(1));
   EXPECT_EQ(response_contents[2], responses().front().response);
 
   responses().clear();
@@ -1105,7 +1049,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 6);
 
-  ASSERT_EQ(2U, responses().size());
+  ASSERT_THAT(responses(), SizeIs(2));
   EXPECT_EQ(response_contents[1], responses().front().response);
   EXPECT_EQ(response_contents[2], responses().back().response);
   responses().clear();
@@ -1116,12 +1060,12 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 7);
   // No responses yet
-  EXPECT_EQ(0U, responses().size());
+  EXPECT_THAT(responses(), IsEmpty());
 
   request = url_loader_factory().GetPendingRequest(3);
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
       request, response_contents[0]);
-  ASSERT_EQ(1U, responses().size());
+  ASSERT_THAT(responses(), SizeIs(1));
   EXPECT_EQ(response_contents[0], responses().front().response);
 }
 

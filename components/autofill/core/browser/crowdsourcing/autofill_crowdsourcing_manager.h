@@ -72,14 +72,6 @@ class AutofillCrowdsourcingManager {
     // not send or uploaded.
     virtual void OnUploadedPossibleFieldTypes() {}
 
-    // Called when there was an error during the request.
-    // |form_signature| - the signature of the requesting form.
-    // |request_type| - type of request that failed.
-    // |http_error| - HTTP error code.
-    virtual void OnServerRequestError(FormSignature form_signature,
-                                      RequestType request_type,
-                                      int http_error) {}
-
    protected:
     virtual ~Observer() = default;
   };

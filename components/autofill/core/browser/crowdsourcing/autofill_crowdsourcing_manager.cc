@@ -974,19 +974,12 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
       GetMetricName(request_data.request_type, "RequestDuration"),
       AutofillTickClock::NowTicks() - request_start);
 
-  // Handle error if there is and return.
   if (!success) {
     std::string error_message =
         (response_body != nullptr) ? *response_body : "";
     base::UmaHistogramCounts100000(
         GetMetricName(request_data.request_type, "FailingPayloadSize"),
         request_data.payload.length());
-
-    if (request_data.observer) {
-      request_data.observer->OnServerRequestError(
-          request_data.form_signatures.front(), request_data.request_type,
-          response_code);
-    }
 
     // If the failure was a client error don't retry.
     if (response_code >= 400 && response_code <= 499) {
