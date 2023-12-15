@@ -1994,15 +1994,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.ShmemDir.AmountOfFreeSpace" units="MB"
-    expires_after="M77">
-  <owner>reveman@chromium.org</owner>
-  <summary>
-    The amount of free space in temporary directory for shared memory files.
-    Recorded each time a new discardable memory manager instance is created.
-  </summary>
-</histogram>
-
 <histogram name="Memory.StackSamplingProfiler.StackSampleSize2" units="KB"
     expires_after="2024-05-12">
   <owner>iby@chromium.org</owner>
