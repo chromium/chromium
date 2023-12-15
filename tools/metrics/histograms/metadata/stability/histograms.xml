@@ -549,7 +549,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.RendererAbnormalTermination.ByHostedContentType"
+<histogram name="Stability.RendererAbnormalTermination.HostedContentType"
     enum="RendererHostedContentType" expires_after="2024-06-30">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
