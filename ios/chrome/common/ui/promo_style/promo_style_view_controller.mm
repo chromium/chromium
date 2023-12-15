@@ -99,6 +99,10 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // Layout constraint for `headerBackgroundImageView` top margin.
   NSLayoutConstraint* _headerBackgroundImageViewTopMargin;
 
+  // Layout constraint for `titleLabel` top margin when there is no banner or
+  // header.
+  NSLayoutConstraint* _titleLabelNoHeaderTopMargin;
+
   // YES if the views can be updated on scroll updates (e.g., change the text
   // label string of the primary button) which corresponds to the moment where
   // the layout reflects the latest updates.
@@ -495,6 +499,10 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
           constraintEqualToConstant:kLearnMoreButtonSide],
     ]];
   }
+
+  if (self.hideHeaderOnTallContent) {
+    [self updateActionButtonsAndPushUpScrollViewIfMandatory];
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -550,6 +558,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   void (^transition)(id<UIViewControllerTransitionCoordinatorContext>) =
       ^(id<UIViewControllerTransitionCoordinatorContext> context) {
         [self updateViewsOnScrollViewUpdate];
+        [self hideHeaderOnTallContentIfNeeded];
       };
   [coordinator animateAlongsideTransition:transition completion:nil];
 }
@@ -581,6 +590,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // right measurements to evaluate the scroll position.
   dispatch_async(dispatch_get_main_queue(), ^{
     [self updateViewsOnScrollViewUpdate];
+    [self hideHeaderOnTallContentIfNeeded];
   });
 }
 
@@ -1132,6 +1142,10 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
   if (self.scrollToEndMandatory) {
     _shouldScrollToBottom = YES;
+  } else if (self.hideHeaderOnTallContent) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self hideHeaderOnTallContentIfNeeded];
+    });
   }
   self.didReachBottom = YES;
 }
@@ -1310,6 +1324,26 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
                 action:@selector(didTapTertiaryActionButton)
       forControlEvents:UIControlEventTouchUpInside];
   return button;
+}
+
+- (void)hideHeaderOnTallContentIfNeeded {
+  if (!self.hideHeaderOnTallContent || !_canUpdateViewsOnScroll) {
+    return;
+  }
+  CHECK(self.headerImageType != PromoStyleImageType::kNone);
+
+  BOOL contentFits = [self isScrolledToBottom];
+
+  _fullHeaderImageView.hidden = !contentFits;
+  _headerBackgroundImageView.hidden = !contentFits;
+  _headerImageView.hidden = !contentFits;
+  if (!_titleLabelNoHeaderTopMargin) {
+    _titleLabelNoHeaderTopMargin = [_titleLabel.topAnchor
+        constraintEqualToAnchor:_scrollContentView.topAnchor
+                       constant:kDefaultMargin];
+  }
+  _titleLabelNoHeaderTopMargin.active = !contentFits;
+  _headerBackgroundImageViewTopMargin.active = contentFits;
 }
 
 #pragma mark - UIScrollViewDelegate

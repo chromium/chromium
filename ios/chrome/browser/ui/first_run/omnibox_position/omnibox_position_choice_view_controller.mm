@@ -58,6 +58,7 @@ const CGFloat kLogoSize = 36;
 
   self.shouldHideBanner = YES;
   self.usePromoStyleBackground = YES;
+  self.hideHeaderOnTallContent = YES;
 
   self.headerImageType = PromoStyleImageType::kImageWithShadow;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)

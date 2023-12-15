@@ -73,6 +73,12 @@ enum class BannerImageSizeType {
 // kNone. before.
 @property(nonatomic, copy) NSString* headerAccessibilityLabel;
 
+// When set to YES, the header will be hidden when the content is taller than
+// the scroll view. This can make the content fully visible or require less
+// scrolling when using a smaller form factor device or a larger font size.
+// Default to NO.
+@property(nonatomic, assign) BOOL hideHeaderOnTallContent;
+
 // The label of the headline below the image. Must be set before the view is
 // loaded. This is declared public so the accessibility can be enabled.
 @property(nonatomic, strong) UILabel* titleLabel;
