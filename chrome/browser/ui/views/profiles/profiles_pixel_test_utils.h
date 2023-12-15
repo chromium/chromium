@@ -73,9 +73,7 @@ void InitPixelTestFeatures(const PixelTestParam& params,
 //   constructor, removing the need to call `SetUpPixelTestCommandLine()` and
 //   `InitPixelTestFeatures()`.
 // - providing helpers to set up the account, see `SignInWithAccount()`.
-template <typename T,
-          typename =
-              std::enable_if_t<std::is_base_of_v<InProcessBrowserTest, T>>>
+template <typename T>
 class ProfilesPixelTestBaseT : public SigninBrowserTestBaseT<T> {
  public:
   template <typename... Args>
