@@ -31243,7 +31243,6 @@ from previous Chrome versions.
   <int value="-891856063" label="MidiManagerAndroid:enabled"/>
   <int value="-889670978" label="AssistantRoutines:disabled"/>
   <int value="-888336510" label="NtpSingleRowShortcuts:enabled"/>
-  <int value="-887101831" label="StoreHoursAndroid:disabled"/>
   <int value="-887094098" label="ForcedColors:enabled"/>
   <int value="-886912558" label="ChromeHomePromo:enabled"/>
   <int value="-886898803" label="CooperativeScheduling:enabled"/>
@@ -33023,7 +33022,6 @@ from previous Chrome versions.
   <int value="-49124128" label="CastEnableStreamingWithHiDPI:enabled"/>
   <int value="-48920737" label="enable-smooth-scrolling"/>
   <int value="-48187847" label="OneTimePermission:enabled"/>
-  <int value="-47034052" label="StoreHoursAndroid:enabled"/>
   <int value="-46847847" label="EstablishGpuChannelAsync:disabled"/>
   <int value="-46622176" label="NtpModulesHeaderIcon:enabled"/>
   <int value="-45849989" label="ModeSpecificPowerButton:disabled"/>

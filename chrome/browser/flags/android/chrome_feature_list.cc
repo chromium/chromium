@@ -277,7 +277,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kShareSheetMigrationAndroid,
     &kSpecialLocaleWrapper,
     &kSuppressToolbarCaptures,
-    &kStoreHoursAndroid,
     &kTabDragDropAndroid,
     &kTabAndLinkDragDropAndroid,
     &kTabEngagementReportingAndroid,
@@ -876,10 +875,6 @@ BASE_FEATURE(kShareSheetMigrationAndroid,
 BASE_FEATURE(kSpecialLocaleWrapper,
              "SpecialLocaleWrapper",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kStoreHoursAndroid,
-             "StoreHoursAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSuppressToolbarCaptures,
              "SuppressToolbarCaptures",
