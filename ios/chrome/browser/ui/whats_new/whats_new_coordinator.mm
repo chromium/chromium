@@ -9,6 +9,9 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -55,6 +58,12 @@ NSString* const kTableViewNavigationDismissButtonId =
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  DCHECK(tracker);
+  tracker->NotifyEvent(feature_engagement::events::kViewedWhatsNew);
+
   self.clicksOnWhatsNewItemsCount = 0;
   base::RecordAction(base::UserMetricsAction("WhatsNew.Started"));
   self.mediator = [[WhatsNewMediator alloc] init];

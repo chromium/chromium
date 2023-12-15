@@ -9,22 +9,9 @@
 #import "base/feature_list.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h"
 
-class PromosManager;
-
 // Returns whether What's New was used in the overflow menu. This is used to
 // decide on the location of the What's New entry point in the overflow menu.
 bool WasWhatsNewUsed();
-
-// Set that What's New was used in the overflow menu.
-void SetWhatsNewUsed(PromosManager* promosManager);
-
-// Set that What's New has been registered in the promo manager.
-void setWhatsNewPromoRegistration();
-
-// Returns whether What's New promo should be registered in the promo manager.
-// This is used to avoid registering the What's New promo in the promo manager
-// more than once.
-bool ShouldRegisterWhatsNewPromo();
 
 // Returns a string version of WhatsNewType.
 const char* WhatsNewTypeToString(WhatsNewType type);

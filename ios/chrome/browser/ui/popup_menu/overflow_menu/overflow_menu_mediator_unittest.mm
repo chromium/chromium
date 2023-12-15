@@ -444,23 +444,22 @@ class OverflowMenuMediatorTest : public PlatformTest {
   UIViewController* baseViewController_;
   translate::LanguageDetectionModel language_detection_model_;
   TestingPrefServiceSimple pref_service_;
+  feature_engagement::test::MockTracker tracker_;
 };
 
 // Tests that the feature engagement tracker get notified when the mediator is
 // disconnected and the tracker wants the notification badge displayed.
 TEST_F(OverflowMenuMediatorTest, TestFeatureEngagementDisconnect) {
   CreateMediator(/*is_incognito=*/NO);
-  feature_engagement::test::MockTracker tracker;
-  EXPECT_CALL(tracker, ShouldTriggerHelpUI(testing::_))
+  EXPECT_CALL(tracker_, ShouldTriggerHelpUI(testing::_))
       .WillRepeatedly(Return(true));
-  mediator_.engagementTracker = &tracker;
+  mediator_.engagementTracker = &tracker_;
 
   // Force model update.
   mediator_.model = model_;
 
   // There may be one or more Tools Menu items that use engagement trackers.
-  EXPECT_CALL(tracker, Dismissed(testing::_)).Times(testing::AtLeast(1));
-  [mediator_ disconnect];
+  EXPECT_CALL(tracker_, Dismissed(testing::_)).Times(testing::AtLeast(1));
 }
 
 // Tests that the mediator is returning the right number of items and sections
@@ -805,11 +804,6 @@ TEST_F(OverflowMenuMediatorTest, TestOpenWhatsNewDoesntCrashWithNoTracker) {
   // Create Mediator and DO NOT set the Tracker on it.
   CreateMediator(/*is_incognito=*/NO);
 
-  std::unique_ptr<MockPromosManager> promos_manager =
-      std::make_unique<MockPromosManager>();
-  EXPECT_CALL(*promos_manager, DeregisterPromo(testing::_));
-  mediator_.promosManager = promos_manager.get();
-
   // Force model update.
   mediator_.model = model_;
 
@@ -928,6 +922,11 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
   web_state_->SetCurrentURL(kUrl);
   CreateBrowserStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
+  // Show the new label badge for What's New.
+  ON_CALL(tracker_, ShouldTriggerHelpUI(testing::Ref(
+                        feature_engagement::kIPHWhatsNewUpdatedFeature)))
+      .WillByDefault(testing::Return(true));
+  mediator_.engagementTracker = &tracker_;
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
   mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
@@ -959,6 +958,11 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
 TEST_F(OverflowMenuMediatorTest,
        TestPromotedDestinationsWhenNoHistoryUsageRanking) {
   CreateMediator(/*is_incognito=*/NO);
+  // Show the new label badge for What's New.
+  ON_CALL(tracker_, ShouldTriggerHelpUI(testing::Ref(
+                        feature_engagement::kIPHWhatsNewUpdatedFeature)))
+      .WillByDefault(testing::Return(true));
+  mediator_.engagementTracker = &tracker_;
   syncer::MockSyncService syncService;
   ON_CALL(syncService, GetUserActionableError())
       .WillByDefault(

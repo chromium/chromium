@@ -20,6 +20,8 @@
 #import "base/time/time.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/history/core/browser/features.h"
 #import "components/ntp_tiles/features.h"
@@ -45,6 +47,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/set_up_list.h"
@@ -674,7 +677,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
         [self.dispatcher showHistory];
         break;
       case NTPCollectionShortcutTypeWhatsNew:
-        SetWhatsNewUsed(self.promosManager);
         [self.dispatcher showWhatsNew];
         break;
       case NTPCollectionShortcutTypeCount:
@@ -1200,6 +1202,18 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (BOOL)shouldShowWhatsNewActionItem {
   if (WasWhatsNewUsed()) {
+    return NO;
+  }
+
+  // TODO(crbug.com/1510484): The FET is not ready upon app launch in the NTP.
+  // Consequently, we must load a URL first and then load the NTP where the FET
+  // becomes ready.
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  DCHECK(tracker);
+  if (!tracker->WouldTriggerHelpUI(
+          feature_engagement::kIPHWhatsNewUpdatedFeature)) {
     return NO;
   }
 

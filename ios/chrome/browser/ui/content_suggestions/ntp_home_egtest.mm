@@ -5,8 +5,10 @@
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
@@ -126,9 +128,7 @@ id<GREYMatcher> mostlyNotVisible() {
 
 + (void)setUpForTestCase {
   [super setUpForTestCase];
-  // Mark What's New as already-seen so it does not override Bookmarks.
-  [ChromeEarlGrey setUserDefaultsObject:@YES forKey:kWhatsNewUsageEntryKey];
-  [ChromeEarlGrey setUserDefaultsObject:@YES forKey:kWhatsNewM116UsageEntryKey];
+
   [NTPHomeTestCase setUpHelper];
 }
 
@@ -143,9 +143,6 @@ id<GREYMatcher> mostlyNotVisible() {
 
 + (void)tearDown {
   [self closeAllTabs];
-  // Clean up What's New already-seen.
-  [ChromeEarlGrey removeUserDefaultsObjectForKey:kWhatsNewUsageEntryKey];
-  [ChromeEarlGrey setUserDefaultsObject:@YES forKey:kWhatsNewM116UsageEntryKey];
 
   [super tearDown];
 }
@@ -170,6 +167,14 @@ id<GREYMatcher> mostlyNotVisible() {
   if ([self isRunningTest:@selector(DISABLED_testMinimumHeight)]) {
     config.features_enabled.push_back(kMagicStack);
   }
+
+  if ([self isRunningTest:@selector(testCollectionShortcuts)]) {
+    // This ensures that the test will not fail when What's New is updated.
+    config.additional_args.push_back(base::StringPrintf(
+        "--disable-features=%s",
+        feature_engagement::kIPHWhatsNewUpdatedFeature.name));
+  }
+
   return config;
 }
 
@@ -203,6 +208,10 @@ id<GREYMatcher> mostlyNotVisible() {
 
 // Tests that the collections shortcut are displayed and working.
 - (void)testCollectionShortcuts {
+  AppLaunchConfiguration config = self.appConfigurationForTestCase;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
   // Close NTP and reopen.
   [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey openNewTab];
@@ -272,9 +281,19 @@ id<GREYMatcher> mostlyNotVisible() {
 - (void)MAYBE_testCollectionShortcutsWithWhatsNew {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [ChromeEarlGrey setUserDefaultsObject:@NO forKey:kWhatsNewM116UsageEntryKey];
-
+  // This ensures that the test will not fail when What's New has already been
+  // opened during testing.
+  config.additional_args.push_back(
+      base::StringPrintf("--enable-features=%s:chosen_feature/%s",
+                         feature_engagement::kIPHDemoMode.name,
+                         feature_engagement::kIPHWhatsNewUpdatedFeature.name));
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Navigate
+  // TODO(crbug.com/1510484): The FET is not ready upon app launch in the NTP.
+  // Consequently, close NTP and reopen the NTP where the FET becomes ready.
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey openNewTab];
 
   // Check the What's New.
   [[EarlGrey

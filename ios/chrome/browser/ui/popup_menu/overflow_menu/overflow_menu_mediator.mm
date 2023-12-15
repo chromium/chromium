@@ -246,6 +246,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
           feature_engagement::kIPHBadgedReadingListFeature);
     }
 
+    if (self.whatsNewDestination.badge != BadgeTypeNone) {
+      _engagementTracker->Dismissed(
+          feature_engagement::kIPHWhatsNewUpdatedFeature);
+    }
+
     _engagementTracker = nullptr;
   }
 
@@ -1711,7 +1716,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       }
       return self.settingsDestination;
     case overflow_menu::Destination::WhatsNew:
-      if (!WasWhatsNewUsed()) {
+      // Set the new label badge.
+      if (!WasWhatsNewUsed() && self.engagementTracker &&
+          self.engagementTracker->ShouldTriggerHelpUI(
+              feature_engagement::kIPHWhatsNewUpdatedFeature)) {
         // Highlight What's New with a badge if it was never used before.
         self.whatsNewDestination.badge = BadgeTypeNew;
       }
@@ -1760,10 +1768,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   if (_engagementTracker) {
     _engagementTracker->NotifyEvent(
         feature_engagement::events::kBlueDotPromoOverflowMenuDismissed);
-  }
-
-  if (!WasWhatsNewUsed()) {
-    SetWhatsNewUsed(self.promosManager);
   }
 }
 
@@ -2149,14 +2153,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Dismisses the menu and opens What's New.
 - (void)openWhatsNew {
-  if (!WasWhatsNewUsed()) {
-    SetWhatsNewUsed(self.promosManager);
-  }
-
-  if (self.engagementTracker) {
-    self.engagementTracker->NotifyEvent(
-        feature_engagement::events::kViewedWhatsNew);
-  }
   [self dismissMenu];
   [self.browserCoordinatorHandler showWhatsNew];
 }

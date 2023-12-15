@@ -14,96 +14,29 @@
 
 namespace {
 
-// Time interval of 6 days. This is used to calculate 6 days after FRE to
-// trigger What's New Promo.
-const NSTimeInterval kSixDays = 6 * 24 * 60 * 60;
-
-// Returns whether today is the 6th and more day after the FRE. This is used to
-// decide to register What's New promo in the promo manager or not.
-bool IsSixDaysAfterFre() {
-  // TODO(crbug.com/1462404): Clean up unused user defaults and find a better
-  // solution to update existing user defaults for future versions of What's
-  // New.
-  NSString* const daysAfterFre = kWhatsNewM116DaysAfterFre;
-  NSDate* startDate =
-      [[NSUserDefaults standardUserDefaults] objectForKey:daysAfterFre];
-  if (!startDate) {
-    [[NSUserDefaults standardUserDefaults] setObject:[NSDate date]
-                                              forKey:daysAfterFre];
-    return false;
-  }
-
-  NSDate* sixDaysAgoDate = [NSDate dateWithTimeIntervalSinceNow:-kSixDays];
-  if ([sixDaysAgoDate compare:startDate] == NSOrderedDescending) {
-    return true;
-  }
-  return false;
-}
-
-// Returns whether this launch is the 6th and more launches after the FRE. This
-// is used to decide to register What's New promo in the promo manager or not.
-bool IsSixLaunchAfterFre() {
-  // TODO(crbug.com/1462404): Clean up unused user defaults and find a better
-  // solution to update existing user defaults for future versions of What's
-  // New.
-  NSString* const launchesAfterFre = kWhatsNewM116LaunchesAfterFre;
-
-  NSInteger num =
-      [[NSUserDefaults standardUserDefaults] integerForKey:launchesAfterFre];
-
-  if (num >= 6) {
-    return true;
-  }
-
-  num++;
-  [[NSUserDefaults standardUserDefaults] setInteger:num
-                                             forKey:launchesAfterFre];
-  return false;
-}
-
-// Returns whether What's New promo has been registered in the promo manager.
-bool IsWhatsNewPromoRegistered() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:kWhatsNewM116PromoRegistrationKey];
-}
-
+// Clean up user defaults.
+// TODO(crbug.com/1462404): Safe to remove in M123+.
 void CleanUpWhatsNewUserDefaults() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
+  [defaults removeObjectForKey:kWhatsNewM116PromoRegistrationKey];
   [defaults removeObjectForKey:kWhatsNewPromoRegistrationKey];
   [defaults removeObjectForKey:kWhatsNewDaysAfterFre];
   [defaults removeObjectForKey:kWhatsNewLaunchesAfterFre];
+  [defaults removeObjectForKey:kWhatsNewM116DaysAfterFre];
+  [defaults removeObjectForKey:kWhatsNewM116LaunchesAfterFre];
 }
 
 }  // namespace
 
+// For users who have already viewed What's New M116, the ensures that the promo
+// is not triggered again until the next version of What's New.
+// Note that we no longer write userDefault.
 bool WasWhatsNewUsed() {
+  CleanUpWhatsNewUserDefaults();
+
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kWhatsNewM116UsageEntryKey];
-}
-
-void SetWhatsNewUsed(PromosManager* promosManager) {
-  if (WasWhatsNewUsed()) {
-    return;
-  }
-
-  // Deregister What's New promo.
-  DCHECK(promosManager);
-  promosManager->DeregisterPromo(promos_manager::Promo::WhatsNew);
-  [[NSUserDefaults standardUserDefaults] setBool:YES
-                                          forKey:kWhatsNewM116UsageEntryKey];
-}
-
-void setWhatsNewPromoRegistration() {
-  [[NSUserDefaults standardUserDefaults]
-      setBool:YES
-       forKey:kWhatsNewM116PromoRegistrationKey];
-}
-
-bool ShouldRegisterWhatsNewPromo() {
-  CleanUpWhatsNewUserDefaults();
-  return !IsWhatsNewPromoRegistered() &&
-         (IsSixLaunchAfterFre() || IsSixDaysAfterFre());
 }
 
 // Please do not modify this method. The content is updated by script. For more

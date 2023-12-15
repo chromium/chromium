@@ -36,9 +36,12 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   switch (level) {
     case SceneActivationLevelForegroundActive: {
-      if (ShouldRegisterWhatsNewPromo()) {
-        [self registerPromoForSingleDisplay];
+      if (WasWhatsNewUsed()) {
+        return;
       }
+      DCHECK(self.promosManager);
+      self.promosManager->RegisterPromoForContinuousDisplay(
+          promos_manager::Promo::WhatsNew);
       break;
     }
     case SceneActivationLevelUnattached:
@@ -57,18 +60,6 @@
       break;
     }
   }
-}
-
-#pragma mark - Private
-
-// Register the What's New promo for a single display in the promo manager.
-- (void)registerPromoForSingleDisplay {
-  DCHECK(self.promosManager);
-
-  self.promosManager->RegisterPromoForSingleDisplay(
-      promos_manager::Promo::WhatsNew);
-
-  setWhatsNewPromoRegistration();
 }
 
 @end
