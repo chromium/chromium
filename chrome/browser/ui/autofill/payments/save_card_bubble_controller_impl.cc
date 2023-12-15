@@ -154,11 +154,6 @@ void SaveCardBubbleControllerImpl::ShowBubbleForManageCardsForTesting(
   ShowBubble();
 }
 
-void SaveCardBubbleControllerImpl::UpdateIconForSaveCardSuccess() {
-  current_bubble_type_ = BubbleType::INACTIVE;
-  UpdatePageActionIcon();
-}
-
 void SaveCardBubbleControllerImpl::ReshowBubble() {
   // Don't show the bubble if it's already visible.
   if (bubble_view())
