@@ -2390,6 +2390,13 @@
       ]
      ],
      "crashtests": {
+      "chrome-bug-1377573.html": [
+       "3419a23ee4321d32ebebd153362462371b9d3863",
+       [
+        null,
+        {}
+       ]
+      ],
       "chrome-counter-in-multicol-details-crash.html": [
        "d992f0a1d96ec24d044c6b03894f4621994cbf88",
        [
@@ -4530,6 +4537,13 @@
      ],
      "get-computed-style-crash.html": [
       "38cd5af7f83d60976f9712e446a55d11fe07160e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "list-style-position-style-change-crash.html": [
+      "5910d5d95a1027646f7228449fd234cff7079a84",
       [
        null,
        {}
@@ -80347,7 +80361,7 @@
       ]
      ],
      "background-image-007.html": [
-      "9bccd2d364a64f20f879d6825fcc60c49f32cd11",
+      "b532dd6397cd49ec3d4e47fe3cda8b972c7bf4a8",
       [
        null,
        [
@@ -141414,6 +141428,19 @@
         {}
        ]
       ],
+      "standalone-axis-size-007.html": [
+       "464200614c717cdf24975ae90f15246eaf0eff86",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "subgrid-baseline-001.html": [
        "95469c0018e0a97786aff086c0cabaf081ced7b4",
        [
@@ -157770,6 +157797,19 @@
         [
          [
           "/css/css-masking/mask-image/reference/mask-image-svg-child-will-change-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "mask-image-svg-foreignobject-zoomed.html": [
+       "85a8b2dbf2799f1356677f4c2d38dd2ed3042d6e",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
           "=="
          ]
         ],
@@ -340709,6 +340749,10 @@
        "a253a71dd4949090bf1a57fd820178f6ea0099e1",
        []
       ],
+      "checkbox-switch-input-computed-style.tentative-expected.txt": [
+       "abf068f0345672218c423c377d6d1af73b67fab9",
+       []
+      ],
       "manual": {
        "support": {
         "form-controls-slr.png": [
@@ -469027,6 +469071,13 @@
         {}
        ]
       ],
+      "checkbox-switch-input-computed-style.tentative.html": [
+       "f8d8d6fca28c8fd1c4c185b6c49ff1370ce562e3",
+       [
+        null,
+        {}
+       ]
+      ],
       "color-input-appearance-native-computed-style.html": [
        "7ab0e0923d3e2af5a62a7c97316032cb718ddcb9",
        [
@@ -512750,7 +512801,7 @@
       ]
      ],
      "mixed-content-fetch.tentative.https.window.js": [
-      "54485dc70474023683f2a9f4f4fba1f0df0032af",
+      "dbae5193b5cb02e3b0eba3531483aac372ba8700",
       [
        "fetch/private-network-access/mixed-content-fetch.tentative.https.window.html",
        {
@@ -512762,8 +512813,13 @@
          [
           "script",
           "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
          ]
-        ]
+        ],
+        "timeout": "long"
        }
       ]
      ],
@@ -512840,7 +512896,7 @@
       ]
      ],
      "service-worker-background-fetch.tentative.https.window.js": [
-      "6369b166e21ef023c17ec5140282990092621990",
+      "8d1028cc5ee85ad24851801caf526d79a0fa3da4",
       [
        "fetch/private-network-access/service-worker-background-fetch.tentative.https.window.html",
        {
@@ -512852,8 +512908,13 @@
          [
           "script",
           "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
          ]
-        ]
+        ],
+        "timeout": "long"
        }
       ]
      ],
