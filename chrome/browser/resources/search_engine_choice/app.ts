@@ -116,6 +116,7 @@ export class SearchEngineChoiceAppElement extends
   private hasUserScrolledToTheBottom_: boolean;
   private withForcedScroll_: boolean;
   private actionButtonText_: string;
+  private scrollBehavior_: ScrollBehavior = 'smooth';
 
   constructor() {
     super();
@@ -183,14 +184,21 @@ export class SearchEngineChoiceAppElement extends
     if (this.needsScrollToTheBottom_()) {
       if (this.isChoiceListScrollable_()) {
         const choiceList = this.$.choiceList;
-        choiceList.scrollTo({top: choiceList.scrollHeight, behavior: 'smooth'});
+        choiceList.scrollTo(
+            {top: choiceList.scrollHeight, behavior: this.scrollBehavior_});
       } else if (this.isPageScrollable_()) {
-        window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+        window.scrollTo(
+            {top: document.body.scrollHeight, behavior: this.scrollBehavior_});
       }
       return;
     }
     this.pageHandler_.handleSearchEngineChoiceSelected(
         parseInt(this.selectedChoice_));
+  }
+
+  // Removes the scrolling animation to inscrease test stability.
+  setInstantScrollBehaviorForTest() {
+    this.scrollBehavior_ = 'instant';
   }
 
   private onInfoDialogButtonClicked_() {
