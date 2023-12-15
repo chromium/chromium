@@ -771,22 +771,16 @@ class AutofillClient : public RiskDataLoader {
   // HasCreditCardScanFeature() returns true.
   virtual void ScanCreditCard(CreditCardScanCallback callback) = 0;
 
-  // Returns true if the Touch To Fill feature is both supported by platform and
-  // enabled. Should be called before |ShowTouchToFillCreditCard| or
-  // |HideTouchToFillCreditCard|.
-  virtual bool IsTouchToFillCreditCardSupported() = 0;
-
   // Shows the Touch To Fill surface for filling credit card information, if
   // possible, and returns |true| on success. |delegate| will be notified of
-  // events. Should be called only if |IsTouchToFillCreditCardSupported|
-  // returns true.
+  // events. Should be called only if the feature is supported by the platform.
   virtual bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest) = 0;
 
   // Hides the Touch To Fill surface for filling credit card information
-  // if one is currently shown. Should be called only if
-  // |IsTouchToFillCreditCardSupported| returns true.
+  // if one is currently shown. Should be called only if the feature is
+  // supported by the platform.
   virtual void HideTouchToFillCreditCard() = 0;
 
   // Shows an Autofill popup with the given |values|, |labels|, |icons|, and

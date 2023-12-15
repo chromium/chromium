@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/global_routing_id.h"
@@ -206,7 +207,7 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
   if (!navigation_handle->IsInPrerenderedMainFrame() &&
       (navigation_handle->IsInMainFrame() ||
        navigation_handle->HasSubframeNavigationEntryCommitted())) {
-    if (client_->IsTouchToFillCreditCardSupported()) {
+    if (IsTouchToFillCreditCardSupported()) {
       client_->HideTouchToFillCreditCard();
     }
   }

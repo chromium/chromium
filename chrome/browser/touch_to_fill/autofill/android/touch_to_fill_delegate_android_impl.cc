@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
+#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -70,7 +71,7 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
                                        FieldGlobalId field_id,
                                        const FormData& received_form) {
   // Trigger only on supported platforms.
-  if (!manager_->client().IsTouchToFillCreditCardSupported()) {
+  if (!IsTouchToFillCreditCardSupported()) {
     return {TriggerOutcome::kUnsupportedFieldType, {}};
   }
   const FormStructure* form = manager_->FindCachedFormById(form_id);

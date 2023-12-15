@@ -443,8 +443,6 @@ class TestAutofillClientTemplate : public T {
   void ScanCreditCard(
       AutofillClient::CreditCardScanCallback callback) override {}
 
-  bool IsTouchToFillCreditCardSupported() override { return false; }
-
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest) override {

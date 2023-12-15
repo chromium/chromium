@@ -61,6 +61,7 @@
 #include "components/autofill/content/browser/autofill_log_router_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
@@ -983,15 +984,6 @@ bool ChromeAutofillClient::HasCreditCardScanFeature() {
 void ChromeAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
   CreditCardScannerController::ScanCreditCard(web_contents(),
                                               std::move(callback));
-}
-
-bool ChromeAutofillClient::IsTouchToFillCreditCardSupported() {
-#if BUILDFLAG(IS_ANDROID)
-  return true;
-#else
-  // Touch To Fill is not supported on Desktop.
-  return false;
-#endif
 }
 
 bool ChromeAutofillClient::ShowTouchToFillCreditCard(

@@ -130,7 +130,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
       AddressProfileDeleteDialogCallback delete_dialog_callback) override;
   bool HasCreditCardScanFeature() override;
   void ScanCreditCard(CreditCardScanCallback callback) override;
-  bool IsTouchToFillCreditCardSupported() override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const CreditCard> cards_to_suggest) override;

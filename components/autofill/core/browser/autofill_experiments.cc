@@ -261,5 +261,13 @@ bool IsDeviceAuthAvailable(
   return false;
 #endif
 }
+bool IsTouchToFillCreditCardSupported() {
+#if BUILDFLAG(IS_ANDROID)
+  // Touch To Fill is only supported on Android.
+  return true;
+#else
+  return false;
+#endif
+}
 
 }  // namespace autofill

@@ -35,8 +35,6 @@ class TouchToFillForCreditCardsTest
     SetUpHelper();
     ON_CALL(*autofill_client_, ShowTouchToFillCreditCard)
         .WillByDefault(testing::Return(true));
-    ON_CALL(*autofill_client_, IsTouchToFillCreditCardSupported)
-        .WillByDefault(testing::Return(true));
     MockFastCheckoutClient* fast_checkout_client =
         static_cast<MockFastCheckoutClient*>(
             autofill_client_->GetFastCheckoutClient());

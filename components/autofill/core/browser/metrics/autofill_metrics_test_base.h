@@ -38,7 +38,6 @@ class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient();
   ~MockAutofillClient() override;
-  MOCK_METHOD(bool, IsTouchToFillCreditCardSupported, (), (override));
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
               (base::WeakPtr<TouchToFillDelegate>,
