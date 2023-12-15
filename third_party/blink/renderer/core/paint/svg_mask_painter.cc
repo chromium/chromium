@@ -463,11 +463,12 @@ void PaintMaskLayer(const FillLayer& layer,
   // should have no effect.
   if (const auto* mask_source = ToMaskSourceIfSVGMask(*style_image)) {
     const ComputedStyle& style = info.object.StyleRef();
-    const gfx::RectF reference_box = SVGResources::ReferenceBoxForEffects(
-        info.object, GeometryBox::kFillBox,
-        SVGResources::ForeignObjectQuirk::kDisabled);
     const float zoom =
         info.object.IsSVGForeignObject() ? style.EffectiveZoom() : 1;
+    gfx::RectF reference_box = SVGResources::ReferenceBoxForEffects(
+        info.object, GeometryBox::kFillBox,
+        SVGResources::ForeignObjectQuirk::kDisabled);
+    reference_box.Scale(zoom);
 
     saver.Save();
     SVGMaskPainter::PaintSVGMaskLayer(
