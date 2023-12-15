@@ -409,79 +409,79 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
     PaymentsBubbleClosedReason closed_reason) {
   set_bubble_view(nullptr);
 
-  // Log save card prompt result according to the closed reason.
-  if (current_bubble_type_ == BubbleType::LOCAL_SAVE ||
-      current_bubble_type_ == BubbleType::UPLOAD_SAVE ||
-      current_bubble_type_ == BubbleType::LOCAL_CVC_SAVE ||
-      current_bubble_type_ == BubbleType::UPLOAD_CVC_SAVE) {
-    autofill_metrics::SaveCardPromptResult metric;
-    switch (closed_reason) {
+  auto get_metric = [](PaymentsBubbleClosedReason reason) {
+    switch (reason) {
       case PaymentsBubbleClosedReason::kAccepted:
-        metric = autofill_metrics::SaveCardPromptResult::kAccepted;
-        break;
+        return autofill_metrics::SaveCardPromptResult::kAccepted;
       case PaymentsBubbleClosedReason::kCancelled:
-        metric = autofill_metrics::SaveCardPromptResult::kCancelled;
-        break;
+        return autofill_metrics::SaveCardPromptResult::kCancelled;
       case PaymentsBubbleClosedReason::kClosed:
-        metric = autofill_metrics::SaveCardPromptResult::kClosed;
-        break;
+        return autofill_metrics::SaveCardPromptResult::kClosed;
       case PaymentsBubbleClosedReason::kNotInteracted:
-        metric = autofill_metrics::SaveCardPromptResult::kNotInteracted;
-        break;
+        return autofill_metrics::SaveCardPromptResult::kNotInteracted;
       case PaymentsBubbleClosedReason::kLostFocus:
-        metric = autofill_metrics::SaveCardPromptResult::kLostFocus;
-        break;
+        return autofill_metrics::SaveCardPromptResult::kLostFocus;
       case PaymentsBubbleClosedReason::kUnknown:
-        metric = autofill_metrics::SaveCardPromptResult::kUnknown;
-        break;
+        return autofill_metrics::SaveCardPromptResult::kUnknown;
     }
+  };
 
-    if (current_bubble_type_ == BubbleType::LOCAL_CVC_SAVE ||
-        current_bubble_type_ == BubbleType::UPLOAD_CVC_SAVE) {
-      autofill_metrics::LogSaveCvcPromptResultMetric(metric, is_upload_save_,
-                                                     is_reshow_);
-    } else {
+  // Log save card prompt result according to the closed reason.
+  switch (current_bubble_type_) {
+    case BubbleType::LOCAL_CVC_SAVE:
+    case BubbleType::UPLOAD_CVC_SAVE:
+      autofill_metrics::LogSaveCvcPromptResultMetric(
+          get_metric(closed_reason), is_upload_save_, is_reshow_);
+      break;
+    case BubbleType::LOCAL_SAVE:
+    case BubbleType::UPLOAD_SAVE:
       autofill_metrics::LogSaveCardPromptResultMetric(
-          metric, is_upload_save_, is_reshow_, options_, GetSecurityLevel(),
+          get_metric(closed_reason), is_upload_save_, is_reshow_, options_,
+          GetSecurityLevel(),
           personal_data_manager_->GetPaymentsSigninStateForMetrics());
-    }
+      break;
+    default:
+      break;
   }
 
   // Handles |current_bubble_type_| change according to its current type and the
   // |closed_reason|.
+  using SaveCardOfferUserDecision = AutofillClient::SaveCardOfferUserDecision;
+  std::optional<SaveCardOfferUserDecision> user_decision;
   if (closed_reason == PaymentsBubbleClosedReason::kAccepted) {
-    if (current_bubble_type_ == BubbleType::LOCAL_SAVE ||
-        current_bubble_type_ == BubbleType::LOCAL_CVC_SAVE) {
-      current_bubble_type_ = BubbleType::MANAGE_CARDS;
-    } else if (current_bubble_type_ == BubbleType::UPLOAD_SAVE ||
-               current_bubble_type_ == BubbleType::UPLOAD_CVC_SAVE) {
-      current_bubble_type_ = BubbleType::INACTIVE;
-    } else {
-      CHECK_EQ(current_bubble_type_, BubbleType::MANAGE_CARDS);
-      current_bubble_type_ = BubbleType::INACTIVE;
+    user_decision = SaveCardOfferUserDecision::kAccepted;
+    switch (current_bubble_type_) {
+      case BubbleType::LOCAL_SAVE:
+      case BubbleType::LOCAL_CVC_SAVE:
+        current_bubble_type_ = BubbleType::MANAGE_CARDS;
+        break;
+      case BubbleType::UPLOAD_SAVE:
+      case BubbleType::UPLOAD_CVC_SAVE:
+      case BubbleType::MANAGE_CARDS:
+        current_bubble_type_ = BubbleType::INACTIVE;
+        break;
+      default:
+        NOTREACHED();
     }
   } else if (closed_reason == PaymentsBubbleClosedReason::kCancelled) {
-    if (current_bubble_type_ == BubbleType::LOCAL_SAVE ||
-        current_bubble_type_ == BubbleType::LOCAL_CVC_SAVE) {
-      std::move(local_save_card_prompt_callback_)
-          .Run(AutofillClient::SaveCardOfferUserDecision::kDeclined);
-    } else if (current_bubble_type_ == BubbleType::UPLOAD_SAVE ||
-               current_bubble_type_ == BubbleType::UPLOAD_CVC_SAVE) {
-      std::move(upload_save_card_prompt_callback_)
-          .Run(AutofillClient::SaveCardOfferUserDecision::kDeclined,
-               /*user_provided_card_details=*/{});
-    }
-    current_bubble_type_ = BubbleType::INACTIVE;
+    user_decision = SaveCardOfferUserDecision::kDeclined;
   } else if (closed_reason == PaymentsBubbleClosedReason::kClosed) {
-    if (current_bubble_type_ == BubbleType::LOCAL_SAVE ||
-        current_bubble_type_ == BubbleType::LOCAL_CVC_SAVE) {
-      std::move(local_save_card_prompt_callback_)
-          .Run(AutofillClient::SaveCardOfferUserDecision::kIgnored);
-    } else if (current_bubble_type_ == BubbleType::UPLOAD_SAVE ||
-               current_bubble_type_ == BubbleType::UPLOAD_CVC_SAVE) {
-      std::move(upload_save_card_prompt_callback_)
-          .Run(AutofillClient::SaveCardOfferUserDecision::kIgnored,
-               /*user_provided_card_details=*/{});
+    user_decision = SaveCardOfferUserDecision::kIgnored;
+  }
+
+  if (user_decision && *user_decision != SaveCardOfferUserDecision::kAccepted) {
+    switch (current_bubble_type_) {
+      case BubbleType::LOCAL_SAVE:
+      case BubbleType::LOCAL_CVC_SAVE:
+        std::move(local_save_card_prompt_callback_).Run(*user_decision);
+        break;
+      case BubbleType::UPLOAD_SAVE:
+      case BubbleType::UPLOAD_CVC_SAVE:
+        std::move(upload_save_card_prompt_callback_)
+            .Run(*user_decision, /*user_provided_card_details=*/{});
+        break;
+      default:
+        break;
     }
     current_bubble_type_ = BubbleType::INACTIVE;
   }
