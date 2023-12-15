@@ -167,7 +167,7 @@ export class FileManagerUI {
   /**
    * The toolbar which contains controls.
    */
-  readonly toolbar: Element;
+  readonly toolbar: HTMLElement;
 
   /**
    * The tooltip element.
@@ -288,7 +288,7 @@ export class FileManagerUI {
    * @param launchParam Launch param.
    */
   constructor(
-      providersModel: ProvidersModel, public element: HTMLDialogElement,
+      providersModel: ProvidersModel, public element: HTMLElement,
       launchParam: LaunchParam) {
     // Initialize the dialog label. This should be done before constructing
     // dialog instances.

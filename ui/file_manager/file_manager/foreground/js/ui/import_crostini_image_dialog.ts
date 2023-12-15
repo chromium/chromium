@@ -16,7 +16,7 @@ export class ImportCrostiniImageDialog extends ConfirmDialog {
   /**
    * @param parentNode Node to be parent for this dialog.
    */
-  constructor(parentNode: HTMLDialogElement) {
+  constructor(parentNode: HTMLElement) {
     super(parentNode);
     super.setOkLabel(str('IMPORT_CROSTINI_IMAGE_DIALOG_OK_LABEL'));
 
@@ -35,4 +35,3 @@ export class ImportCrostiniImageDialog extends ConfirmDialog {
             null, unwrapEntry(entry) as Entry));
   }
 }
-

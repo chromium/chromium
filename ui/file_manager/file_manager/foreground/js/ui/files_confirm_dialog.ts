@@ -31,7 +31,7 @@ export class FilesConfirmDialog extends ConfirmDialog {
 
   /**
    */
-  constructor(parentElement: HTMLDialogElement) {
+  constructor(parentElement: HTMLElement) {
     super(parentElement);
 
     this.container.classList.add('files-ng');
@@ -59,16 +59,22 @@ export class FilesConfirmDialog extends ConfirmDialog {
     super.show_(title, onOk, onCancel, onShow);
 
     if (!this.showModalElement) {
-      this.parentNode_.showModal();
+      this.parentNodeAsDialogTag.showModal();
     }
   }
 
   override hide(onHide?: VoidCallback) {
     if (!this.showModalElement) {
-      this.parentNode_.close();
+      this.parentNodeAsDialogTag.close();
     }
 
     super.hide(onHide);
+  }
+
+  get parentNodeAsDialogTag(): HTMLDialogElement {
+    // Before calling this, it's expected that this.parentNode_ was assigned to
+    // a <dialog> element.
+    return this.parentNode_ as HTMLDialogElement;
   }
 
   override showWithTitle(

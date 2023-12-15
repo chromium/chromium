@@ -65,7 +65,7 @@ export class BaseDialog {
 
   private tabIndexes_: string[]|null = null;
 
-  constructor(protected parentNode_: HTMLDialogElement) {
+  constructor(protected parentNode_: HTMLElement) {
     const doc = this.parentNode_.ownerDocument;
     this.document_ = doc;
     this.container = doc.createElement('div');
@@ -349,7 +349,7 @@ const ANIMATE_STABLE_DURATION = 500;
 
 /** AlertDialog contains just a message and an ok button. */
 export class AlertDialog extends BaseDialog {
-  constructor(parentNode: HTMLDialogElement) {
+  constructor(parentNode: HTMLElement) {
     super(parentNode);
     this.cancelButton.style.display = 'none';
   }

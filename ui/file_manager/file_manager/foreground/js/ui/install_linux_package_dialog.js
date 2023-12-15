@@ -20,7 +20,7 @@ import {FileManagerDialogBase} from './file_manager_dialog_base.js';
 // extends base class 'FileManagerDialogBase'.
 export class InstallLinuxPackageDialog extends FileManagerDialogBase {
   /**
-   * @param {HTMLDialogElement} parentNode Node to be parent for this dialog.
+   * @param {HTMLElement} parentNode Node to be parent for this dialog.
    */
   constructor(parentNode) {
     super(parentNode);

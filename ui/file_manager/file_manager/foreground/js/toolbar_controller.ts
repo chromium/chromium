@@ -58,7 +58,7 @@ export class ToolbarController {
   private readonly cloudButtonIcon_: HTMLElement;
   // Commands
   private readonly deleteCommand_: Command;
-  private readonly moveToTrashCommand: Command;
+  readonly moveToTrashCommand: Command;
   private readonly restoreFromTrashCommand_: Command;
   private readonly refreshCommand_: Command;
   private readonly newFolderCommand_: Command;

@@ -441,7 +441,7 @@ export class NewFolderCommand extends FilesCommand {
         return;
       }
       const directoryModel = fileManager.directoryModel;
-      const directoryEntry = fileManager.getCurrentDirectoryEntry();
+      const directoryEntry = fileManager.getCurrentDirectoryEntry()!;
       event.canExecute = !fileManager.directoryModel.isReadOnly() &&
           !fileManager.namingController.isRenamingInProgress() &&
           !directoryModel.isSearching() &&
@@ -461,12 +461,12 @@ export class NewWindowCommand extends FilesCommand {
   execute(_event: CommandEvent, fileManager: CommandHandlerDeps) {
     fileManager.launchFileManager({
       currentDirectoryURL: fileManager.getCurrentDirectoryEntry() &&
-          fileManager.getCurrentDirectoryEntry().toURL(),
+          fileManager.getCurrentDirectoryEntry()!.toURL(),
     });
   }
 
   override canExecute(event: CanExecuteEvent, fileManager: CommandHandlerDeps) {
-    event.canExecute = fileManager.getCurrentDirectoryEntry() &&
+    event.canExecute = !!fileManager.getCurrentDirectoryEntry() &&
         (fileManager.dialogType === DialogType.FULL_PAGE);
   }
 }
@@ -1104,14 +1104,14 @@ export class CutCopyCommand extends FilesCommand {
         return false;
       }
 
-      return isMove ? fileTransferController.canCutOrDrag() :
-                      fileTransferController.canCopyOrDrag();
+      return isMove ? fileTransferController?.canCutOrDrag() :
+                      fileTransferController?.canCopyOrDrag();
     }
 
     const canDo = fileManager.ui.directoryTree?.contains(target as Node) ?
         canDoDirectoryTree() :
         canDoFileList();
-    event.canExecute = canDo;
+    event.canExecute = !!canDo;
     command.disabled = !canDo;
   }
 }
@@ -1859,7 +1859,7 @@ export class ZipSelectionCommand extends FilesCommand {
                 (metadata, i) => isEncrypted(
                     selection.entries[i]!, metadata.contentMimeType));
 
-    event.canExecute = dirEntry && !fileManager.directoryModel.isReadOnly() &&
+    event.canExecute = !!dirEntry && !fileManager.directoryModel.isReadOnly() &&
         isOnEligibleLocation && selection && selection.totalCount > 0 &&
         !hasEncryptedFile;
   }

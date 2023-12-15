@@ -17,7 +17,7 @@ import {ListSingleSelectionModel} from './list_single_selection_model.js';
  */
 export class DefaultTaskDialog extends FileManagerDialogBase {
   /**
-   * @param {HTMLDialogElement} parentNode Node to be parent for this dialog.
+   * @param {HTMLElement} parentNode Node to be parent for this dialog.
    */
   constructor(parentNode) {
     super(parentNode);

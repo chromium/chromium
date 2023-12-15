@@ -101,8 +101,8 @@ function getFileCategory(
 }
 
 export type DirectoryChangeEvent = CustomEvent<{
-  previousDirEntry: DirectoryEntry | FilesAppDirEntry | FakeEntry,
-  newDirEntry: DirectoryEntry | FilesAppDirEntry | FakeEntry,
+  previousDirEntry: DirectoryEntry | FilesAppDirEntry,
+  newDirEntry: DirectoryEntry | FilesAppDirEntry,
   volumeChanged: boolean,
 }>;
 

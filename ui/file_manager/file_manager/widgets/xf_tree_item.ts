@@ -7,7 +7,7 @@ import './xf_icon.js';
 
 import {css, customElement, html, ifDefined, property, type PropertyValues, query, state, styleMap, XfBase} from './xf_base.js';
 import type {XfTree} from './xf_tree.js';
-import {handleTreeSlotChange, isTree, isTreeItem} from './xf_tree_util.js';
+import {handleTreeSlotChange, isTreeItem, isXfTree} from './xf_tree_util.js';
 
 /**
  * The number of pixels to indent per level.
@@ -142,7 +142,7 @@ export class XfTreeItem extends XfBase {
       if (isTreeItem(p)) {
         return p;
       }
-      if (isTree(p)) {
+      if (isXfTree(p)) {
         return null;
       }
       p = p.parentElement;
@@ -152,7 +152,7 @@ export class XfTreeItem extends XfBase {
 
   get tree(): XfTree|null {
     let t = this.parentElement;
-    while (t && !isTree(t)) {
+    while (t && !isXfTree(t)) {
       t = t.parentElement;
     }
     return t;

@@ -546,6 +546,10 @@ export class NavigationListModel extends EventTarget {
     this.refreshNavigationItems();
   }
 
+  get myFilesModel() {
+    return this.myFilesModel_;
+  }
+
   /**
    * Refresh list of navigation items.
    */

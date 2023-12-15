@@ -12,7 +12,7 @@ import {AlertDialog} from './dialogs.js';
 export class FilesAlertDialog extends AlertDialog {
   /**
    */
-  constructor(parentNode: HTMLDialogElement) {
+  constructor(parentNode: HTMLElement) {
     super(parentNode);
 
     this.container.classList.add('files-ng');
@@ -25,6 +25,11 @@ export class FilesAlertDialog extends AlertDialog {
     this.frame.classList.add('files-alert-dialog');
   }
 
+  get parentNode(): HTMLDialogElement {
+    this.parentNode_ = getFilesAppModalDialogInstance();
+    return this.parentNode_ as HTMLDialogElement;
+  }
+
   protected override show_(
       title: string, onOk?: VoidCallback, onCancel?: VoidCallback,
       onShow?: VoidCallback) {
@@ -32,11 +37,11 @@ export class FilesAlertDialog extends AlertDialog {
 
     super.show_(title, onOk, onCancel, onShow);
 
-    this.parentNode_.showModal();
+    this.parentNode.showModal();
   }
 
   override hide(onHide?: VoidCallback) {
-    this.parentNode_.close();
+    this.parentNode.close();
 
     super.hide(onHide);
   }

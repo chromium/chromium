@@ -6,12 +6,13 @@ import type {XfTree} from './xf_tree.js';
 import type {XfTreeItem} from './xf_tree_item.js';
 
 /** Check if an `Element` is a tree or not. */
-export function isTree(element: Element): element is XfTree {
-  return element.tagName === 'XF-TREE';
+export function isXfTree(element: HTMLElement): element is XfTree {
+  return !!element && element.tagName === 'XF-TREE';
 }
 
 /** Check if an `Element` is a tree item or not. */
-export function isTreeItem(element: Element): element is XfTreeItem {
+export function isTreeItem(element: HTMLElement|
+                           Element): element is XfTreeItem {
   return element.tagName === 'XF-TREE-ITEM';
 }
 

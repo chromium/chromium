@@ -152,7 +152,7 @@ export function setUpFileManagerOnWindow() {
     directoryModel: createFakeDirectoryModel(),
     directoryTreeNamingController: {} as unknown as
         DirectoryTreeNamingController,
-    getLastVisitedURL() {
+    getLastVisitedUrl() {
       return '';
     },
     getTranslatedString(_id: string) {

@@ -19,7 +19,7 @@ export class FileManagerDialogBase extends BaseDialog {
   /**
    * @param parentNode Parent node of the dialog.
    */
-  constructor(parentNode: HTMLDialogElement) {
+  constructor(parentNode: HTMLElement) {
     super(parentNode);
 
     this.container.classList.add('files-ng');
@@ -120,11 +120,16 @@ export class FileManagerDialogBase extends BaseDialog {
 
     super.show_(title, onOk, onCancel, onShow);
 
-    this.parentNode_.showModal();
+    this.parentNode.showModal();
+  }
+
+  get parentNode(): HTMLDialogElement {
+    this.parentNode_ = getFilesAppModalDialogInstance();
+    return this.parentNode_ as HTMLDialogElement;
   }
 
   override hide(onHide?: VoidCallback) {
-    this.parentNode_.close();
+    this.parentNode.close();
 
     FileManagerDialogBase.shown = false;
     super.hide(onHide);

@@ -22,7 +22,7 @@ interface FileManager {
   directoryModel: DirectoryModel;
   directoryTreeNamingController: DirectoryTreeNamingController;
   ui: FileManagerUI;
-  getLastVisitedURL(): string;
+  getLastVisitedUrl(): string;
   getTranslatedString(id: string): string;
   onUnloadForTest(): void;
 }

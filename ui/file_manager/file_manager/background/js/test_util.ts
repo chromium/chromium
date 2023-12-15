@@ -126,7 +126,7 @@ test.util.sync.openFile =
  * @return The URL of the last URL visited.
  */
 test.util.sync.getLastVisitedURL = (contentWindow: Window): string => {
-  return contentWindow.fileManager.getLastVisitedURL();
+  return contentWindow.fileManager.getLastVisitedUrl();
 };
 
 /**

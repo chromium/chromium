@@ -46,7 +46,7 @@ export class CommandHandlerDeps {
     /** @type {FileFilter} */
     this.fileFilter;
 
-    /** @type {FileTransferController} */
+    /** @type {?FileTransferController} */
     this.fileTransferController;
 
     /** @type {FileSelectionHandler} */
@@ -88,7 +88,7 @@ export class CommandHandlerDeps {
 
   // @ts-ignore: error TS2355: A function whose declared type is neither 'void'
   // nor 'any' must return a value.
-  /** @return {DirectoryEntry|FilesAppEntry} */
+  /** @return {DirectoryEntry|FilesAppEntry|null|undefined} */
   getCurrentDirectoryEntry() {}
 
   // @ts-ignore: error TS2355: A function whose declared type is neither 'void'
