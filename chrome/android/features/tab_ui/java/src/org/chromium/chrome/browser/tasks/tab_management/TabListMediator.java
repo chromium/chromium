@@ -74,7 +74,6 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.Pric
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMediator.PriceWelcomeMessageController;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -164,17 +163,21 @@ class TabListMediator {
 
     /** Provides capability to asynchronously acquire {@link ShoppingPersistedTabData} */
     static class ShoppingPersistedTabDataFetcher {
-        protected Tab mTab;
-        protected PriceWelcomeMessageController mPriceWelcomeMessageController;
+        protected final Tab mTab;
+        protected final Supplier<PriceWelcomeMessageController>
+                mPriceWelcomeMessageControllerSupplier;
 
         /**
          * @param tab {@link Tab} {@link ShoppingPersistedTabData} will be acquired for.
-         * @param priceWelcomeMessageController to show the price welcome message.
+         * @param priceWelcomeMessageControllerSupplier to show the price welcome message.
          */
         ShoppingPersistedTabDataFetcher(
-                Tab tab, @Nullable PriceWelcomeMessageController priceWelcomeMessageController) {
+                Tab tab,
+                @NonNull
+                        Supplier<PriceWelcomeMessageController>
+                                priceWelcomeMessageControllerSupplier) {
             mTab = tab;
-            mPriceWelcomeMessageController = priceWelcomeMessageController;
+            mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
         }
 
         /**
@@ -199,15 +202,18 @@ class TabListMediator {
                             () -> {
                                 if (!PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(
                                                 Profile.getLastUsedRegularProfile())
-                                        || (mPriceWelcomeMessageController == null)
+                                        || (mPriceWelcomeMessageControllerSupplier == null)
+                                        || (mPriceWelcomeMessageControllerSupplier.get() == null)
                                         || (shoppingPersistedTabData == null)
                                         || (shoppingPersistedTabData.getPriceDrop() == null)) {
                                     return;
                                 }
-                                mPriceWelcomeMessageController.showPriceWelcomeMessage(
-                                        new PriceTabData(
-                                                mTab.getId(),
-                                                shoppingPersistedTabData.getPriceDrop()));
+                                mPriceWelcomeMessageControllerSupplier
+                                        .get()
+                                        .showPriceWelcomeMessage(
+                                                new PriceTabData(
+                                                        mTab.getId(),
+                                                        shoppingPersistedTabData.getPriceDrop()));
                             });
         }
     }
@@ -329,7 +335,7 @@ class TabListMediator {
     private final GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
     private final TabGridDialogHandler mTabGridDialogHandler;
     private final TabListFaviconProvider mTabListFaviconProvider;
-    private final PriceWelcomeMessageController mPriceWelcomeMessageController;
+    private final Supplier<PriceWelcomeMessageController> mPriceWelcomeMessageControllerSupplier;
 
     private Size mDefaultGridCardSize;
     private String mComponentName;
@@ -756,7 +762,8 @@ class TabListMediator {
      * @param gridCardOnClickListenerProvider Provides the onClickListener for opening dialog when
      *     click on a grid card.
      * @param dialogHandler A handler to handle requests about updating TabGridDialog.
-     * @param priceWelcomeMessageController A controller to show PriceWelcomeMessage.
+     * @param priceWelcomeMessageControllerSupplier A supplier of a controller to show
+     *     PriceWelcomeMessage.
      * @param componentName This is a unique string to identify different components.
      * @param uiType The type of UI this mediator should be building.
      */
@@ -773,7 +780,7 @@ class TabListMediator {
             @Nullable SelectionDelegateProvider selectionDelegateProvider,
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             @Nullable TabGridDialogHandler dialogHandler,
-            @Nullable PriceWelcomeMessageController priceWelcomeMessageController,
+            @NonNull Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
             String componentName,
             @UiType int uiType) {
         mContext = context;
@@ -790,7 +797,7 @@ class TabListMediator {
         mTabGridDialogHandler = dialogHandler;
         mActionsOnAllRelatedTabs = actionOnRelatedTabs;
         mUiType = uiType;
-        mPriceWelcomeMessageController = priceWelcomeMessageController;
+        mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
 
         mTabModelObserver =
                 new TabModelObserver() {
@@ -1905,7 +1912,8 @@ class TabListMediator {
                         .set(
                                 TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
                                 new ShoppingPersistedTabDataFetcher(
-                                        pseudoTab.getTab(), mPriceWelcomeMessageController));
+                                        pseudoTab.getTab(),
+                                        mPriceWelcomeMessageControllerSupplier));
             } else {
                 mModel.get(index)
                         .model

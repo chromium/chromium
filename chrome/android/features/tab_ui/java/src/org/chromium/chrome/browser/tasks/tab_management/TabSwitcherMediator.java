@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -114,8 +113,6 @@ class TabSwitcherMediator
     private final boolean mIsStartSurfaceEnabled;
     private final boolean mIsStartSurfaceRefactorEnabled;
     private final boolean mIsTablet;
-    private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
-    private final MultiWindowModeStateDispatcher.MultiWindowModeObserver mMultiWindowModeObserver;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsDialogVisibleSupplier =
@@ -159,7 +156,6 @@ class TabSwitcherMediator
     private @Nullable TransitiveObservableSupplier<TabListEditorController, Boolean>
             mCurrentTabListEditorControllerBackSupplier;
     private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
-    private PriceMessageService mPriceMessageService;
 
     /**
      * This allows to check if re-auth is pending when tab switcher is shown in Incognito mode.
@@ -231,42 +227,6 @@ class TabSwitcherMediator
         void hardCleanup();
     }
 
-    /** Interface to control message items in grid tab switcher. */
-    interface MessageItemsController {
-        /**
-         * Remove all the message items in the model list. Right now this is used when all tabs are
-         * closed in the grid tab switcher.
-         */
-        void removeAllAppendedMessage();
-
-        /**
-         * Restore all the message items that should show. Right now this is only used to restore
-         * message items when the closure of the last tab in tab switcher is undone.
-         */
-        void restoreAllAppendedMessage();
-    }
-
-    /** An interface to control price welcome message in grid tab switcher. */
-    interface PriceWelcomeMessageController {
-        /**
-         * Remove the price welcome message item in the model list. Right now this is used when
-         * its binding tab is closed in the grid tab switcher.
-         */
-        void removePriceWelcomeMessage();
-
-        /**
-         * Restore the price welcome message item that should show. Right now this is only used
-         * when the closure of the binding tab in tab switcher is undone.
-         */
-        void restorePriceWelcomeMessage();
-
-        /**
-         * Show the price welcome message in tab switcher. This is used when any open tab in tab
-         * switcher has a price drop.
-         */
-        void showPriceWelcomeMessage(PriceMessageService.PriceTabData priceTabData);
-    }
-
     /**
      * Basic constructor for the Mediator.
      *
@@ -278,8 +238,6 @@ class TabSwitcherMediator
      * @param browserControlsStateProvider {@link BrowserControlsStateProvider} to use.
      * @param containerView The container {@link ViewGroup} to use.
      * @param tabContentManager The {@link TabContentManager} for first meaningful paint event.
-     * @param multiWindowModeStateDispatcher The {@link MultiWindowModeStateDispatcher} to observe
-     *     for multi-window related changes.
      * @param handler The {@link Handler} for running cleanup callbacks.
      * @param mode One of the {@link TabListMode}.
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
@@ -300,9 +258,6 @@ class TabSwitcherMediator
             BrowserControlsStateProvider browserControlsStateProvider,
             ViewGroup containerView,
             TabContentManager tabContentManager,
-            MessageItemsController messageItemsController,
-            PriceWelcomeMessageController priceWelcomeMessageController,
-            MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull Handler handler,
             @TabListMode int mode,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
@@ -316,7 +271,6 @@ class TabSwitcherMediator
         mContainerViewModel = containerViewModel;
         mTabModelSelector = tabModelSelector;
         mBrowserControlsStateProvider = browserControlsStateProvider;
-        mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mMode = mode;
         mHandler = handler;
         mContainerViewModel.set(MODE, mode);
@@ -435,25 +389,9 @@ class TabSwitcherMediator
                         setInitialScrollIndexOffset();
                     }
 
-                    @Override
-                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
-                        if (mTabModelSelector.getCurrentModel().getCount() == 1) {
-                            messageItemsController.removeAllAppendedMessage();
-                        } else if (mPriceMessageService != null
-                                && mPriceMessageService.getBindingTabId() == tab.getId()) {
-                            priceWelcomeMessageController.removePriceWelcomeMessage();
-                        }
-                    }
 
                     @Override
                     public void tabClosureUndone(Tab tab) {
-                        if (mTabModelSelector.getCurrentModel().getCount() == 1) {
-                            messageItemsController.restoreAllAppendedMessage();
-                        }
-                        if (mPriceMessageService != null
-                                && mPriceMessageService.getBindingTabId() == tab.getId()) {
-                            priceWelcomeMessageController.restorePriceWelcomeMessage();
-                        }
                         notifyBackPressStateChangedInternal();
                     }
 
@@ -479,15 +417,6 @@ class TabSwitcherMediator
                         notifyBackPressStateChangedInternal();
                     }
 
-                    @Override
-                    public void tabClosureCommitted(Tab tab) {
-                        // TODO(crbug.com/1157578): Auto update the PriceMessageService instead of
-                        // updating it based on the client caller.
-                        if (mPriceMessageService != null
-                                && mPriceMessageService.getBindingTabId() == tab.getId()) {
-                            mPriceMessageService.invalidateMessage();
-                        }
-                    }
                 };
 
         mBrowserControlsObserver =
@@ -576,15 +505,6 @@ class TabSwitcherMediator
                 };
         mTabContentManager = tabContentManager;
 
-        mMultiWindowModeObserver =
-                isInMultiWindowMode -> {
-                    if (isInMultiWindowMode) {
-                        messageItemsController.removeAllAppendedMessage();
-                    } else {
-                        messageItemsController.restoreAllAppendedMessage();
-                    }
-                };
-        mMultiWindowModeStateDispatcher.addObserver(mMultiWindowModeObserver);
         notifyBackPressStateChangedInternal();
     }
 
@@ -1105,16 +1025,12 @@ class TabSwitcherMediator
         mTabModelSelector
                 .getTabModelFilterProvider()
                 .removeTabModelFilterObserver(mTabModelObserver);
-        mMultiWindowModeStateDispatcher.removeObserver(mMultiWindowModeObserver);
     }
 
     void setOnTabSelectingListener(TabSwitcher.OnTabSelectingListener listener) {
         mOnTabSelectingListener = listener;
     }
 
-    void setPriceMessageService(PriceMessageService priceMessageService) {
-        mPriceMessageService = priceMessageService;
-    }
 
     void requestAccessibilityFocusOnCurrentTab() {
         if (!mIsTabSwitcherShowing || !mTabModelSelector.isTabStateInitialized()) {

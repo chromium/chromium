@@ -64,7 +64,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -132,9 +131,6 @@ public class TabSwitcherMediatorUnitTest {
     @Mock private CompositorViewHolder mCompositorViewHolder;
     @Mock private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
     @Mock private TabGridDialogMediator.DialogController mTabGridDialogController;
-    @Mock private TabSwitcherMediator.MessageItemsController mMessageItemsController;
-    @Mock private TabSwitcherMediator.PriceWelcomeMessageController mPriceWelcomeMessageController;
-    @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock private PriceMessageService mPriceMessageService;
     @Mock private IncognitoReauthController mIncognitoReauthController;
     @Mock private View mCustomViewMock;
@@ -147,9 +143,6 @@ public class TabSwitcherMediatorUnitTest {
     private ArgumentCaptor<BrowserControlsStateProvider.Observer>
             mBrowserControlsStateProviderObserverCaptor;
 
-    @Captor
-    private ArgumentCaptor<MultiWindowModeStateDispatcher.MultiWindowModeObserver>
-            mMultiWindowModeObserverCaptor;
 
     @Captor
     private ArgumentCaptor<IncognitoReauthManager.IncognitoReauthCallback>
@@ -217,9 +210,6 @@ public class TabSwitcherMediatorUnitTest {
         doNothing()
                 .when(mBrowserControlsStateProvider)
                 .addObserver(mBrowserControlsStateProviderObserverCaptor.capture());
-        doReturn(true)
-                .when(mMultiWindowModeStateDispatcher)
-                .addObserver(mMultiWindowModeObserverCaptor.capture());
         doReturn(mEditorControllerBackPressChangedSupplier)
                 .when(mEditorController)
                 .getHandleBackPressChangedSupplier();
@@ -242,9 +232,6 @@ public class TabSwitcherMediatorUnitTest {
                         mBrowserControlsStateProvider,
                         mCompositorViewHolder,
                         null,
-                        mMessageItemsController,
-                        mPriceWelcomeMessageController,
-                        mMultiWindowModeStateDispatcher,
                         mHandler,
                         TabListCoordinator.TabListMode.GRID,
                         mIncognitoReauthControllerSupplier,
@@ -568,83 +555,6 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
-    public void removeMessageItemsWhenCloseLastTab() {
-        initAndAssertAllProperties();
-        // Mock that mTab1 is not the only tab in the current tab model and it will be closed.
-        doReturn(2).when(mTabModel).getCount();
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false, true);
-        verify(mMessageItemsController, never()).removeAllAppendedMessage();
-
-        // Mock that mTab1 is the only tab in the current tab model and it will be closed.
-        doReturn(1).when(mTabModel).getCount();
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false, true);
-        verify(mMessageItemsController).removeAllAppendedMessage();
-    }
-
-    @Test
-    public void restoreMessageItemsWhenUndoLastTabClosure() {
-        initAndAssertAllProperties();
-        // Mock that mTab1 was not the only tab in the current tab model and its closure will be
-        // undone.
-        doReturn(2).when(mTabModel).getCount();
-        mTabModelObserverCaptor.getValue().tabClosureUndone(mTab1);
-        verify(mMessageItemsController, never()).restoreAllAppendedMessage();
-
-        // Mock that mTab1 was the only tab in the current tab model and its closure will be undone.
-        doReturn(1).when(mTabModel).getCount();
-        mTabModelObserverCaptor.getValue().tabClosureUndone(mTab1);
-        verify(mMessageItemsController).restoreAllAppendedMessage();
-    }
-
-    @Test
-    public void removePriceWelcomeMessageWhenCloseBindingTab() {
-        mMediator.setPriceMessageService(mPriceMessageService);
-
-        doReturn(1).when(mTabModel).getCount();
-        doReturn(TAB1_ID).when(mPriceMessageService).getBindingTabId();
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false, true);
-        verify(mPriceWelcomeMessageController, times(0)).removePriceWelcomeMessage();
-
-        doReturn(2).when(mTabModel).getCount();
-        doReturn(TAB2_ID).when(mPriceMessageService).getBindingTabId();
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false, true);
-        verify(mPriceWelcomeMessageController, times(0)).removePriceWelcomeMessage();
-
-        doReturn(2).when(mTabModel).getCount();
-        doReturn(TAB1_ID).when(mPriceMessageService).getBindingTabId();
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false, true);
-        verify(mPriceWelcomeMessageController, times(1)).removePriceWelcomeMessage();
-    }
-
-    @Test
-    public void restorePriceWelcomeMessageWhenUndoBindingTabClosure() {
-        mMediator.setPriceMessageService(mPriceMessageService);
-
-        doReturn(1).when(mTabModel).getCount();
-        doReturn(TAB1_ID).when(mPriceMessageService).getBindingTabId();
-        mTabModelObserverCaptor.getValue().tabClosureUndone(mTab1);
-        verify(mPriceWelcomeMessageController, times(1)).restorePriceWelcomeMessage();
-
-        doReturn(2).when(mTabModel).getCount();
-        doReturn(TAB2_ID).when(mPriceMessageService).getBindingTabId();
-        mTabModelObserverCaptor.getValue().tabClosureUndone(mTab1);
-        verify(mPriceWelcomeMessageController, times(1)).restorePriceWelcomeMessage();
-    }
-
-    @Test
-    public void invalidatePriceWelcomeMessageWhenBindingTabClosureCommitted() {
-        mMediator.setPriceMessageService(mPriceMessageService);
-
-        doReturn(TAB2_ID).when(mPriceMessageService).getBindingTabId();
-        mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
-        verify(mPriceMessageService, times(0)).invalidateMessage();
-
-        doReturn(TAB1_ID).when(mPriceMessageService).getBindingTabId();
-        mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
-        verify(mPriceMessageService, times(1)).invalidateMessage();
-    }
-
-    @Test
     public void testScrollToTab() {
         initAndAssertAllProperties();
         mMediator.scrollToTab(0);
@@ -958,9 +868,6 @@ public class TabSwitcherMediatorUnitTest {
                 mBrowserControlsStateProvider,
                 mCompositorViewHolder,
                 null,
-                mMessageItemsController,
-                mPriceWelcomeMessageController,
-                mMultiWindowModeStateDispatcher,
                 mHandler,
                 TabListCoordinator.TabListMode.GRID,
                 mIncognitoReauthControllerSupplier,
@@ -979,9 +886,6 @@ public class TabSwitcherMediatorUnitTest {
                 mBrowserControlsStateProvider,
                 mCompositorViewHolder,
                 null,
-                mMessageItemsController,
-                mPriceWelcomeMessageController,
-                mMultiWindowModeStateDispatcher,
                 mHandler,
                 TabListCoordinator.TabListMode.STRIP,
                 mIncognitoReauthControllerSupplier,
@@ -990,24 +894,6 @@ public class TabSwitcherMediatorUnitTest {
                 mTabSwitcherVisibilityDelegate,
                 null);
         assertEquals(0, mModel.get(TabListContainerProperties.BOTTOM_PADDING));
-    }
-
-    @Test
-    public void enterMultiWindowMode() {
-        initAndAssertAllProperties();
-
-        mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(true);
-
-        verify(mMessageItemsController).removeAllAppendedMessage();
-    }
-
-    @Test
-    public void exitMultiWindowMode() {
-        initAndAssertAllProperties();
-
-        mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(false);
-
-        verify(mMessageItemsController).restoreAllAppendedMessage();
     }
 
     @Test

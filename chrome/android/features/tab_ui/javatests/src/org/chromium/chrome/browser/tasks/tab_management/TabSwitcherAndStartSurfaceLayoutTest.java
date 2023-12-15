@@ -1025,9 +1025,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         enterGTSWithThumbnailChecking();
 
         // TODO(meiliang): Avoid using static variable for tracking state,
-        // TabSwitcherCoordinator::hasAppendedMessagesForTesting. Instead, we can query the number
+        // TabSwitcherMessageManager::hasAppendedMessagesForTesting. Instead, we can query the
+        // number
         // of items that the inner model of the TabSwitcher has.
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         ViewUtils.onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
         onView(allOf(withId(R.id.close_button), withParent(withId(R.id.tab_grid_message_item))))
                 .perform(click());
@@ -1059,7 +1060,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         mayEnterGTSAndLeave(mActivityTestRule.getActivity());
         enterGTSWithThumbnailChecking();
 
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         ViewUtils.onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
         ViewUtils.onViewWaiting(
                         allOf(
@@ -1135,7 +1136,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
         mayEnterGTSAndLeave(mActivityTestRule.getActivity());
         enterGTSWithThumbnailChecking();
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         ViewUtils.onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         closeFirstTabInTabSwitcher(mActivityTestRule.getActivity());
@@ -1178,7 +1179,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
         mayEnterGTSAndLeave(mActivityTestRule.getActivity());
         enterGTSWithThumbnailChecking();
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
 
         // Force portrait mode since the device can be wrongly in landscape. See crbug/1063639.
         ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_PORTRAIT);
@@ -1600,7 +1601,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         // TabObserver#didFirstVisuallyNonEmptyPaint and invalidates the suggestion. Do the
         // thumbnail checking here is to ensure the suggestion is valid when entering tab switcher.
         enterGTSWithThumbnailChecking();
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
         onView(allOf(withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
                 .perform(click());
@@ -2369,14 +2370,14 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
         mayEnterGTSAndLeave(mActivityTestRule.getActivity());
         enterGTSWithThumbnailChecking();
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onView(allOf(withText(suggestionMessage), withParent(withId(R.id.tab_grid_message_item))))
                 .check(matches(isDisplayed()));
         leaveGTSAndVerifyThumbnailsAreReleased();
 
         // With soft or hard clean up depends on the soft-cleanup-delay and cleanup-delay params.
         enterGTSWithThumbnailChecking();
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         // This will fail with error "matched multiple views" when there is more than one suggestion
         // message card.
         onView(allOf(withText(suggestionMessage), withParent(withId(R.id.tab_grid_message_item))))

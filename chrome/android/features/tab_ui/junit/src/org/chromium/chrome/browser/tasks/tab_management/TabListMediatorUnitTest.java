@@ -87,6 +87,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
@@ -253,7 +254,7 @@ public class TabListMediatorUnitTest {
     @Mock OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
     @Mock TabListMediator.TabGridAccessibilityHelper mTabGridAccessibilityHelper;
     @Mock TemplateUrlService mTemplateUrlService;
-    @Mock TabSwitcherMediator.PriceWelcomeMessageController mPriceWelcomeMessageController;
+    @Mock PriceWelcomeMessageController mPriceWelcomeMessageController;
     @Mock ShoppingPersistedTabData mShoppingPersistedTabData;
     @Mock SelectionDelegate<Integer> mSelectionDelegate;
 
@@ -2596,7 +2597,7 @@ public class TabListMediatorUnitTest {
     public void testMaybeShowPriceWelcomeMessage() {
         prepareTestMaybeShowPriceWelcomeMessage();
         ShoppingPersistedTabDataFetcher fetcher =
-                new ShoppingPersistedTabDataFetcher(mTab1, mPriceWelcomeMessageController);
+                new ShoppingPersistedTabDataFetcher(mTab1, () -> mPriceWelcomeMessageController);
         fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
         verify(mPriceWelcomeMessageController, times(1)).showPriceWelcomeMessage(mPriceTabData);
     }
@@ -2605,7 +2606,7 @@ public class TabListMediatorUnitTest {
     public void testMaybeShowPriceWelcomeMessage_MessageDisabled() {
         prepareTestMaybeShowPriceWelcomeMessage();
         ShoppingPersistedTabDataFetcher fetcher =
-                new ShoppingPersistedTabDataFetcher(mTab1, mPriceWelcomeMessageController);
+                new ShoppingPersistedTabDataFetcher(mTab1, () -> mPriceWelcomeMessageController);
 
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, false);
@@ -2618,7 +2619,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void testMaybeShowPriceWelcomeMessage_NullParameter() {
+    public void testMaybeShowPriceWelcomeMessage_SupplierIsNull() {
         prepareTestMaybeShowPriceWelcomeMessage();
 
         new ShoppingPersistedTabDataFetcher(mTab1, null)
@@ -2627,10 +2628,20 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testMaybeShowPriceWelcomeMessage_SupplierContainsNull() {
+        prepareTestMaybeShowPriceWelcomeMessage();
+
+        Supplier<PriceWelcomeMessageController> supplier = () -> null;
+        new ShoppingPersistedTabDataFetcher(mTab1, supplier)
+                .maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
+        verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
+    }
+
+    @Test
     public void testMaybeShowPriceWelcomeMessage_NoPriceDrop() {
         prepareTestMaybeShowPriceWelcomeMessage();
         ShoppingPersistedTabDataFetcher fetcher =
-                new ShoppingPersistedTabDataFetcher(mTab1, mPriceWelcomeMessageController);
+                new ShoppingPersistedTabDataFetcher(mTab1, () -> mPriceWelcomeMessageController);
 
         fetcher.maybeShowPriceWelcomeMessage(null);
         verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);

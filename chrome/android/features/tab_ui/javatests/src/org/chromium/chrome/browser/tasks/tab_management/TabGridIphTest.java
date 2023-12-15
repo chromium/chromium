@@ -137,7 +137,7 @@ public class TabGridIphTest {
     public void tearDown() {
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
         TestThreadUtils.runOnUiThreadBlocking(
-                TabSwitcherCoordinator::resetHasAppendedMessagesForTesting);
+                TabSwitcherMessageManager::resetHasAppendedMessagesForTesting);
     }
 
     @Test
@@ -147,7 +147,7 @@ public class TabGridIphTest {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         enterTabSwitcher(cta);
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         // Check the IPH message card is showing and open the IPH dialog.
         onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
         onView(allOf(withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
@@ -197,7 +197,7 @@ public class TabGridIphTest {
         createTabs(cta, true, 1);
         enterTabSwitcher(cta);
         assertTrue(cta.getTabModelSelector().getCurrentModel().isIncognito());
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
     }
 
@@ -208,7 +208,7 @@ public class TabGridIphTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         enterTabSwitcher(cta);
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         // Restart chrome to verify that IPH message card is still there.
@@ -216,7 +216,7 @@ public class TabGridIphTest {
         mActivityTestRule.startMainActivityFromLauncher();
         cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         // Remove the message card and dismiss the feature by clicking close button.
@@ -240,7 +240,7 @@ public class TabGridIphTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         enterTabSwitcher(cta);
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         ChromeRenderTestRule.sanitize(cta.findViewById(R.id.tab_grid_message_item));
@@ -257,7 +257,7 @@ public class TabGridIphTest {
 
         enterTabSwitcher(cta);
         ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onViewWaiting(
                         allOf(
                                 withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
@@ -278,7 +278,7 @@ public class TabGridIphTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         enterTabSwitcher(cta);
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onViewWaiting(
                         allOf(
                                 withId(R.id.action_button),
@@ -309,7 +309,7 @@ public class TabGridIphTest {
 
         enterTabSwitcher(cta);
         ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         // Scroll to the position of the IPH entrance so that it is completely showing for Espresso
         // click.
         onViewWaiting(
@@ -342,12 +342,13 @@ public class TabGridIphTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         enterTabSwitcher(cta);
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         // Close the last tab in tab switcher and the IPH item should not be showing.
         closeFirstTabInTabSwitcher(cta);
-        CriteriaHelper.pollUiThread(() -> !TabSwitcherCoordinator.hasAppendedMessagesForTesting());
+        CriteriaHelper.pollUiThread(
+                () -> !TabSwitcherMessageManager.hasAppendedMessagesForTesting());
         verifyTabSwitcherCardCount(cta, 0);
         onView(withId(R.id.tab_grid_message_item)).check(doesNotExist());
 
@@ -357,7 +358,8 @@ public class TabGridIphTest {
 
         // Close the last tab in the tab switcher.
         closeFirstTabInTabSwitcher(cta);
-        CriteriaHelper.pollUiThread(() -> !TabSwitcherCoordinator.hasAppendedMessagesForTesting());
+        CriteriaHelper.pollUiThread(
+                () -> !TabSwitcherMessageManager.hasAppendedMessagesForTesting());
         verifyTabSwitcherCardCount(cta, 0);
         onView(withId(R.id.tab_grid_message_item)).check(doesNotExist());
 
@@ -366,7 +368,7 @@ public class TabGridIphTest {
                 InstrumentationRegistry.getInstrumentation(), cta, false, true);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
     }
 

@@ -77,7 +77,7 @@ public class TabGridIncognitoReauthPromoTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(
-                TabSwitcherCoordinator::resetHasAppendedMessagesForTesting);
+                TabSwitcherMessageManager::resetHasAppendedMessagesForTesting);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class TabGridIncognitoReauthPromoTest {
         enterTabSwitcher(cta);
 
         assertTrue(cta.getTabModelSelector().getCurrentModel().isIncognito());
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onViewWaiting(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
     }
 
@@ -104,7 +104,7 @@ public class TabGridIncognitoReauthPromoTest {
         enterTabSwitcher(cta);
 
         assertTrue(cta.getTabModelSelector().getCurrentModel().isIncognito());
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onViewWaiting(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
 
         onView(withText(R.string.incognito_reauth_lock_action_text)).perform(click());
@@ -136,7 +136,7 @@ public class TabGridIncognitoReauthPromoTest {
         enterTabSwitcher(cta);
 
         assertTrue(cta.getTabModelSelector().getCurrentModel().isIncognito());
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onViewWaiting(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
 
         switchTabModel(cta, false);
@@ -154,7 +154,7 @@ public class TabGridIncognitoReauthPromoTest {
         enterTabSwitcher(cta);
 
         assertTrue(cta.getTabModelSelector().getCurrentModel().isIncognito());
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onViewWaiting(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
         onView(withId(R.id.secondary_action_button)).perform(click());
 
