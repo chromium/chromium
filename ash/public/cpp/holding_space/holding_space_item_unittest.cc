@@ -185,6 +185,7 @@ TEST_P(HoldingSpaceItemTest, IsCameraAppType) {
     case HoldingSpaceItem::Type::kLocalSuggestion:
     case HoldingSpaceItem::Type::kNearbyShare:
     case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
+    case HoldingSpaceItem::Type::kPhotoshopWeb:
     case HoldingSpaceItem::Type::kPinnedFile:
     case HoldingSpaceItem::Type::kPrintedPdf:
     case HoldingSpaceItem::Type::kScan:
@@ -218,6 +219,7 @@ TEST_P(HoldingSpaceItemTest, IsScreenCapture) {
     case HoldingSpaceItem::Type::kLocalSuggestion:
     case HoldingSpaceItem::Type::kNearbyShare:
     case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
+    case HoldingSpaceItem::Type::kPhotoshopWeb:
     case HoldingSpaceItem::Type::kPinnedFile:
     case HoldingSpaceItem::Type::kPrintedPdf:
     case HoldingSpaceItem::Type::kScan:

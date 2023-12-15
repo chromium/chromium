@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/functional/function_ref.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
@@ -22,6 +23,16 @@ namespace ash {
 
 enum class HoldingSpaceCommandId;
 class HoldingSpaceModel;
+
+// Matchers --------------------------------------------------------------------
+
+// Matcher which allows a new argument to be the subject of comparison, e.g.
+// EXPECT_THAT(a, AllOf(IsFalse(), And(b, IsTrue())));
+MATCHER_P2(And, value, matcher, "") {
+  return ::testing::Value(value, matcher);
+}
+
+// Methods ---------------------------------------------------------------------
 
 // Returns the suggestion items in `model`.
 std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>

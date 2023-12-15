@@ -63,6 +63,7 @@ chromium-metrics-reviews@google.com.
   <variant name="NearbyShare" summary="Items backed by a nearby shared file."/>
   <variant name="PhoneHubCameraRoll"
       summary="Recent photos and videos taken on connected Android phone."/>
+  <variant name="PhotoshopWeb" summary="Items backed by a Photoshop Web file."/>
   <variant name="PinnedFile" summary="Items pinned explicitly by the user."/>
   <variant name="PrintedPdf" summary="Items backed by a printed PDF file."/>
   <variant name="Scan" summary="Items backed by a scanned file."/>

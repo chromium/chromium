@@ -408,6 +408,13 @@ HoldingSpaceKeyedService::AddItems(
       result.push_back(std::cref(base::EmptyString()));
       continue;
     }
+    // Ignore any `items` that are from Photoshop Web if Photoshop Web
+    // integration is disabled.
+    if (item->type() == HoldingSpaceItem::Type::kPhotoshopWeb &&
+        !features::IsHoldingSpacePhotoshopWebIntegrationEnabled()) {
+      result.push_back(std::cref(base::EmptyString()));
+      continue;
+    }
     // Ignore any `items` that already exist in the `holding_space_model_` if
     // `allow_duplicates` is false.
     if (!allow_duplicates && holding_space_model_.ContainsItem(

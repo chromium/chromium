@@ -1425,6 +1425,11 @@ BASE_FEATURE(kHoldingSpaceCameraAppIntegration,
              "HoldingSpaceCameraAppIntegration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Photoshop Web integration with holding space.
+BASE_FEATURE(kHoldingSpacePhotoshopWebIntegration,
+             "HoldingSpacePhotoshopWeb",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables holding space icon to be permanently displayed with extended file
 // expiration to increase predictability of the feature.
 BASE_FEATURE(kHoldingSpacePredictability,
@@ -3515,6 +3520,10 @@ bool IsHideShelfControlsInTabletModeEnabled() {
 
 bool IsHoldingSpaceCameraAppIntegrationEnabled() {
   return base::FeatureList::IsEnabled(kHoldingSpaceCameraAppIntegration);
+}
+
+bool IsHoldingSpacePhotoshopWebIntegrationEnabled() {
+  return base::FeatureList::IsEnabled(kHoldingSpacePhotoshopWebIntegration);
 }
 
 bool IsHoldingSpacePredictabilityEnabled() {

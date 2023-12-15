@@ -66,6 +66,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/test_file_system_context.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -76,10 +77,20 @@
 #include "ui/gfx/skia_util.h"
 
 namespace ash {
+namespace {
+
+// Aliases ---------------------------------------------------------------------
 
 using holding_space::ScopedTestMountPoint;
+using ::testing::AllOf;
+using ::testing::Eq;
 using ::testing::Field;
-namespace {
+using ::testing::IsFalse;
+using ::testing::IsTrue;
+using ::testing::ResultOf;
+using ::testing::Value;
+
+// Helpers ---------------------------------------------------------------------
 
 // Returns whether the bitmaps backing the specified `gfx::ImageSkia` are equal.
 bool BitmapsAreEqual(const gfx::ImageSkia& a, const gfx::ImageSkia& b) {
@@ -146,6 +157,10 @@ HoldingSpaceItem* AddUninitializedItem(HoldingSpaceModel* model,
 bool ShouldRestoreFromPersistence(HoldingSpaceItem::Type type) {
   if (HoldingSpaceItem::IsCameraAppType(type) &&
       !features::IsHoldingSpaceCameraAppIntegrationEnabled()) {
+    return false;
+  }
+  if (type == HoldingSpaceItem::Type::kPhotoshopWeb &&
+      !features::IsHoldingSpacePhotoshopWebIntegrationEnabled()) {
     return false;
   }
   if (HoldingSpaceItem::IsSuggestionType(type) &&
@@ -2629,18 +2644,23 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 }
 
 // Base class for tests which verify adding and removing items from holding
-// space works as intended, parameterized by holding space item type and
-// whether Camera app integration is enabled.
+// space works as intended, parameterized by:
+// (a) holding space item type,
+// (b) whether Camera app integration is enabled, and
+// (c) whether Photoshop Web integration is enabled.
 class HoldingSpaceKeyedServiceAddAndRemoveItemTest
     : public HoldingSpaceKeyedServiceTest,
       public ::testing::WithParamInterface<
           std::tuple<HoldingSpaceItem::Type,
-                     /*enable_camera_app_integration=*/bool>> {
+                     /*enable_camera_app_integration=*/bool,
+                     /*enable_photoshop_web_integration=*/bool>> {
  public:
   HoldingSpaceKeyedServiceAddAndRemoveItemTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kHoldingSpaceCameraAppIntegration,
-        /*enable_camera_app_integration=*/std::get<1>(GetParam()));
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kHoldingSpaceCameraAppIntegration,
+          /*enable_camera_app_integration=*/std::get<1>(GetParam())},
+         {features::kHoldingSpacePhotoshopWebIntegration,
+          /*enable_photoshop_web_integration=*/std::get<2>(GetParam())}});
   }
 
   // Returns the holding space service associated with the specified `profile`.
@@ -2707,6 +2727,14 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
                                 file_path, HoldingSpaceProgress())
                 .empty());
         break;
+      case HoldingSpaceItem::Type::kPhotoshopWeb: {
+        const auto& id = holding_space_service->AddItemOfType(type, file_path);
+        if (!features::IsHoldingSpacePhotoshopWebIntegrationEnabled()) {
+          EXPECT_TRUE(id.empty());
+          return id;
+        }
+        break;
+      }
       case HoldingSpaceItem::Type::kPrintedPdf:
         holding_space_service->AddPrintedPdf(file_path,
                                              /*from_incognito_profile=*/false);
@@ -2732,7 +2760,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceKeyedServiceAddAndRemoveItemTest,
     testing::Combine(testing::ValuesIn(GetHoldingSpaceItemTypes()),
-                     /*enable_camera_app_integration=*/testing::Bool()));
+                     /*enable_camera_app_integration=*/testing::Bool(),
+                     /*enable_photoshop_web_integration=*/testing::Bool()));
 
 TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
   // Wait for the holding space model to attach.
@@ -2765,12 +2794,20 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
   // Add a holding space item of the type under test.
   const std::string id = AddItem(profile, GetType(), file_path);
 
-  // Insertion into the model should only fail if the item is a Camera app item
-  // and Camera app integration is disabled.
+  // Insertion into the model should only fail if the item is:
+  // (a) a Camera app item and Camera app integration is disabled, or
+  // (b) a Photoshop Web item and Photoshop Web integration is disabled.
   if (id.empty()) {
     EXPECT_EQ(model->items().size(), 0u);
-    EXPECT_TRUE(HoldingSpaceItem::IsCameraAppType(GetType()));
-    EXPECT_FALSE(features::IsHoldingSpaceCameraAppIntegrationEnabled());
+    EXPECT_THAT(
+        GetType(),
+        AnyOf(
+            AllOf(ResultOf(&HoldingSpaceItem::IsCameraAppType, IsTrue()),
+                  And(features::IsHoldingSpaceCameraAppIntegrationEnabled(),
+                      IsFalse())),
+            AllOf(Eq(HoldingSpaceItem::Type::kPhotoshopWeb),
+                  And(features::IsHoldingSpacePhotoshopWebIntegrationEnabled(),
+                      IsFalse()))));
     return;
   }
 
@@ -2858,12 +2895,20 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItemOfType) {
   // Add a holding space item of the type under test.
   const auto& id = GetService(profile)->AddItemOfType(GetType(), file_path);
 
-  // Insertion into the model should only fail if the item is a Camera app item
-  // and Camera app integration is disabled.
+  // Insertion into the model should only fail if the item is:
+  // (a) a Camera app item and Camera app integration is disabled, or
+  // (b) a Photoshop Web item and Photoshop Web integration is disabled.
   if (id.empty()) {
     EXPECT_EQ(model->items().size(), 0u);
-    EXPECT_TRUE(HoldingSpaceItem::IsCameraAppType(GetType()));
-    EXPECT_FALSE(features::IsHoldingSpaceCameraAppIntegrationEnabled());
+    EXPECT_THAT(
+        GetType(),
+        AnyOf(
+            AllOf(ResultOf(&HoldingSpaceItem::IsCameraAppType, IsTrue()),
+                  And(features::IsHoldingSpaceCameraAppIntegrationEnabled(),
+                      IsFalse())),
+            AllOf(Eq(HoldingSpaceItem::Type::kPhotoshopWeb),
+                  And(features::IsHoldingSpacePhotoshopWebIntegrationEnabled(),
+                      IsFalse()))));
     return;
   }
 

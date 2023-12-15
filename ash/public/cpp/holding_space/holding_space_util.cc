@@ -107,6 +107,7 @@ gfx::Size GetMaxImageSizeForType(HoldingSpaceItem::Type type) {
     case HoldingSpaceItem::Type::kLocalSuggestion:
     case HoldingSpaceItem::Type::kNearbyShare:
     case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
+    case HoldingSpaceItem::Type::kPhotoshopWeb:
     case HoldingSpaceItem::Type::kPinnedFile:
     case HoldingSpaceItem::Type::kPrintedPdf:
     case HoldingSpaceItem::Type::kScan:
@@ -186,6 +187,8 @@ std::string ToString(HoldingSpaceItem::Type type) {
       return "NearbyShare";
     case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
       return "PhoneHubCameraRoll";
+    case HoldingSpaceItem::Type::kPhotoshopWeb:
+      return "PhotoshopWeb";
     case HoldingSpaceItem::Type::kPinnedFile:
       return "PinnedFile";
     case HoldingSpaceItem::Type::kPrintedPdf:

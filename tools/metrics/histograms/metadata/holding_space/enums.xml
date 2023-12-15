@@ -192,6 +192,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="kCameraAppScanPdf"/>
   <int value="17" label="kCameraAppVideoGif"/>
   <int value="18" label="kCameraAppVideoMp4"/>
+  <int value="19" label="kPhotoshopWeb"/>
 </enum>
 
 <enum name="HoldingSpacePodAction">

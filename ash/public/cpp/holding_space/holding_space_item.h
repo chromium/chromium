@@ -92,7 +92,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     kCameraAppScanPdf = 16,
     kCameraAppVideoGif = 17,
     kCameraAppVideoMp4 = 18,
-    kMaxValue = kCameraAppVideoMp4,
+    kPhotoshopWeb = 19,
+    kMaxValue = kPhotoshopWeb,
   };
 
   HoldingSpaceItem(const HoldingSpaceItem&) = delete;

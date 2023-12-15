@@ -182,6 +182,9 @@ TEST_F(HoldingSpaceUtilTest, ToString) {
       case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
         expected_string = "PhoneHubCameraRoll";
         break;
+      case HoldingSpaceItem::Type::kPhotoshopWeb:
+        expected_string = "PhotoshopWeb";
+        break;
       case HoldingSpaceItem::Type::kPinnedFile:
         expected_string = "PinnedFile";
         break;
