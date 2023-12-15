@@ -27,7 +27,6 @@ static_js_files = [
   "file_manager/externs/ts/store.js",
 
   # Files app Foreground:
-  "file_manager/foreground/js/metrics_start.js",
   "file_manager/foreground/js/mock_navigation_list_model.js",
   "file_manager/foreground/js/navigation_list_model.js",
 
@@ -291,6 +290,7 @@ ts_files = [
   "file_manager/foreground/js/main_window_component.ts",
   "file_manager/foreground/js/metadata_box_controller.ts",
   "file_manager/foreground/js/metadata_update_controller.ts",
+  "file_manager/foreground/js/metrics_start.ts",
   "file_manager/foreground/js/mock_actions_model.ts",
   "file_manager/foreground/js/mock_directory_model.ts",
   "file_manager/foreground/js/mock_folder_shortcut_data_model.ts",
