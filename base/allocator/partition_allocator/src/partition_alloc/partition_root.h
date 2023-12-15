@@ -1108,15 +1108,6 @@ PartitionAllocGetDirectMapSlotStartInBRPPool(uintptr_t address) {
 // ref-count is in place for this allocation.
 PA_ALWAYS_INLINE uintptr_t
 PartitionAllocGetSlotStartInBRPPool(uintptr_t address) {
-  // Adjust to support pointers right past the end of an allocation, which in
-  // some cases appear to point outside the designated allocation slot.
-  //
-  // If ref-count is present before the allocation, then adjusting a valid
-  // pointer down will not cause us to go down to the previous slot, otherwise
-  // no adjustment is needed (and likely wouldn't be correct as there is
-  // a risk of going down to the previous slot). Either way,
-  // kPartitionPastAllocationAdjustment takes care of that detail.
-  address -= kPartitionPastAllocationAdjustment;
   PA_DCHECK(IsManagedByNormalBucketsOrDirectMap(address));
   DCheckIfManagedByPartitionAllocBRPPool(address);
 

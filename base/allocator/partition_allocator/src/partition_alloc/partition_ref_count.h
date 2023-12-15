@@ -395,10 +395,7 @@ PA_ALWAYS_INLINE PartitionRefCount::PartitionRefCount(
 static_assert(kAlignment % alignof(PartitionRefCount) == 0,
               "kAlignment must be multiples of alignof(PartitionRefCount).");
 
-// Allocate extra space for the reference count to satisfy the alignment
-// requirement.
 static constexpr size_t kInSlotRefCountBufferSize = sizeof(PartitionRefCount);
-constexpr size_t kPartitionPastAllocationAdjustment = 0;
 
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 

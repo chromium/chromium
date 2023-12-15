@@ -68,18 +68,14 @@ void RecordAllocOrFree(uintptr_t addr, size_t size) {
 PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
                                        uintptr_t test_address,
                                        size_t type_size) {
-  // Required for pointers right past an allocation. See
-  // |PartitionAllocGetSlotStartInBRPPool()|.
-  uintptr_t adjusted_address =
-      orig_address - kPartitionPastAllocationAdjustment;
-  PA_DCHECK(IsManagedByNormalBucketsOrDirectMap(adjusted_address));
-  DCheckIfManagedByPartitionAllocBRPPool(adjusted_address);
+  PA_DCHECK(IsManagedByNormalBucketsOrDirectMap(orig_address));
+  DCheckIfManagedByPartitionAllocBRPPool(orig_address);
 
-  uintptr_t slot_start = PartitionAllocGetSlotStartInBRPPool(adjusted_address);
-  // Don't use |adjusted_address| beyond this point at all. It was needed to
+  uintptr_t slot_start = PartitionAllocGetSlotStartInBRPPool(orig_address);
+  // Don't use |orig_address| beyond this point at all. It was needed to
   // pick the right slot, but now we're dealing with very concrete addresses.
   // Zero it just in case, to catch errors.
-  adjusted_address = 0;
+  orig_address = 0;
 
   auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start);
   auto* root = PartitionRoot::FromSlotSpan(slot_span);
