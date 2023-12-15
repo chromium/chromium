@@ -122,7 +122,6 @@
   }
 
   .choice {
-    align-items: center;
     display: flex;
     flex-direction: row;
     gap: 16px;
@@ -131,6 +130,7 @@
   .choice-text {
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
 
   .choice-icon {
@@ -142,6 +142,7 @@
     width: var(--choice-icon-height);
   }
 
+  .omnibox-text,
   .choice-title {
     font-family: Roboto, Arial;
     font-size: 0.875rem;
@@ -150,8 +151,16 @@
     text-align: start;
   }
 
+  .choice-title {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
   cr-radio-button {
+    --cr-radio-button-label-spacing: 12px;
     --cr-radio-button-size: 20px;
+    align-items: start;
     background-color: var(--google-grey-100);
     border-radius: 2px;
     padding: 16px 24px;
@@ -243,7 +252,7 @@
   cr-expand-button {
     --cr-expand-button-size: 24px;
     --cr-section-vertical-padding: 0px;
-    width: fit-content;
+    margin-inline-start: auto;
   }
 
   .cr-icon {
@@ -252,6 +261,12 @@
     --cr-icon-ripple-size: 18px;
     --cr-icon-size: 18px;
     margin: 0;
+  }
+
+  .vertical-separator {
+    border-left: 0.5px solid var(--google-grey-300);
+    height: 24px;
+    margin-inline-start: 12px;
   }
 
   @keyframes fade-in-animation {
@@ -415,7 +430,7 @@
     <div id="searchEngineOmnibox">
       <div class="choice-icon"
           style$="background-image: [[fakeOmniboxIconPath_]];"></div>
-      <div class="choice-title">[[fakeOmniboxText_]]</div>
+      <div class="omnibox-text">[[fakeOmniboxText_]]</div>
     </div>
   </div>
   <p class="subtitle">
@@ -433,10 +448,13 @@
             <div class="choice-icon"
                 style$="background-image: [[item.iconPath]];"></div>
             <div class="choice-text">
-              <cr-expand-button expanded="{{item.showMarketingSnippet}}"
-                  no-hover>
-                <div class="choice-title">[[item.name]]</div>
-              </cr-expand-button>
+              <div class="choice-title">
+                [[item.name]]
+                <cr-expand-button expanded="{{item.showMarketingSnippet}}"
+                    no-hover>
+                </cr-expand-button>
+                <div class="vertical-separator"></div>
+              </div>
               <iron-collapse opened="[[item.showMarketingSnippet]]">
                 [[item.marketingSnippet]]
               </iron-collapse>
