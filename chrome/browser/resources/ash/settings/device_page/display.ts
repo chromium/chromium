@@ -1274,8 +1274,12 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
 
   private onOverscanClick_(e: Event): void {
     e.preventDefault();
-    this.overscanDisplayId = this.selectedDisplay!.id;
+    assert(this.selectedDisplay);
+    this.overscanDisplayId = this.selectedDisplay.id;
     this.showOverscanDialog_(true);
+    this.displaySettingsProvider.recordChangingDisplaySettings(
+        DisplaySettingsType.kOverscan,
+        {isInternalDisplay: this.selectedDisplay.isInternal});
   }
 
   private onCloseOverscanDialog_(): void {

@@ -22,6 +22,9 @@ export function FakeSystemDisplay() {
   this.fakeLayouts = [];
   this.getInfoCalled = new PromiseResolver();
   this.getLayoutCalled = new PromiseResolver();
+  this.overscanCalibrationStartCalled = 0;
+  this.overscanCalibrationResetCalled = 0;
+  this.overscanCalibrationCompleteCalled = 0;
 }
 
 FakeSystemDisplay.prototype = {
@@ -163,5 +166,23 @@ FakeSystemDisplay.prototype = {
         offset: 0,
       });
     }
+  },
+
+  /** @private */
+  overscanCalibrationStart() {
+    this.overscanCalibrationStartCalled++;
+    return Promise.resolve();
+  },
+
+  /** @private */
+  overscanCalibrationReset() {
+    this.overscanCalibrationResetCalled++;
+    return Promise.resolve();
+  },
+
+  /** @private */
+  overscanCalibrationComplete() {
+    this.overscanCalibrationCompleteCalled++;
+    return Promise.resolve();
   },
 };

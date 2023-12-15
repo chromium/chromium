@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {DevicePageBrowserProxyImpl, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsSliderElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, DevicePageBrowserProxyImpl, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsSliderElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -253,6 +253,19 @@ suite('<settings-display>', () => {
         1,
         externalDisplayHistogram.get(
             displaySettingsProviderMojom.DisplaySettingsType.kOrientation));
+
+    // Mock user opening overscan dialog.
+    const displayOverscan =
+        displayPage.shadowRoot!.getElementById('overscan') as CrLinkRowElement;
+    assertTrue(!!displayOverscan);
+    displayOverscan.click();
+    flush();
+
+    // Verify histogram count for overscan setting.
+    assertEquals(
+        1,
+        externalDisplayHistogram.get(
+            displaySettingsProviderMojom.DisplaySettingsType.kOverscan));
   });
 
   test('display tests', async function() {

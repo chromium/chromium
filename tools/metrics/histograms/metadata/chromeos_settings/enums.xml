@@ -31,6 +31,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="RefreshRate"/>
   <int value="2" label="Scaling"/>
   <int value="3" label="Orientation"/>
+  <int value="4" label="Overscan"/>
 </enum>
 
 </enums>
