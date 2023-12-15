@@ -5304,6 +5304,10 @@ const char kImmersiveFullscreenName[] = "Immersive Fullscreen Toolbar";
 const char kImmersiveFullscreenDescription[] =
     "Automatically hide and show the toolbar in fullscreen.";
 
+const char kMacImeLiveConversionFixName[] = "Mac IME Live Conversion";
+const char kMacImeLiveConversionFixDescription[] =
+    "A fix for the Live Conversion feature of Japanese IME.";
+
 const char kMacLoopbackAudioForCastName[] =
     "Mac System Audio Loopback for Cast";
 const char kMacLoopbackAudioForCastDescription[] =

@@ -11078,6 +11078,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(syncer::kPassExplicitSyncPassphraseToGmsCore)},
 #endif
 
+#if BUILDFLAG(IS_MAC)
+    {"enable-mac-ime-live-conversion-fix",
+     flag_descriptions::kMacImeLiveConversionFixName,
+     flag_descriptions::kMacImeLiveConversionFixDescription, kOsMac,
+     FEATURE_VALUE_TYPE(features::kMacImeLiveConversionFix)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

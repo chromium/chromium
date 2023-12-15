@@ -3053,6 +3053,9 @@ extern const char kCupsIppPrintingBackendDescription[];
 extern const char kImmersiveFullscreenName[];
 extern const char kImmersiveFullscreenDescription[];
 
+extern const char kMacImeLiveConversionFixName[];
+extern const char kMacImeLiveConversionFixDescription[];
+
 extern const char kMacLoopbackAudioForCastName[];
 extern const char kMacLoopbackAudioForCastDescription[];
 

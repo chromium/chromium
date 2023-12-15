@@ -3043,6 +3043,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-mac-ime-live-conversion-fix",
+    "owners": [ "tkent@chromium.org" ],
+    "expiry_milestone": 134
+  },
+  {
     "name": "enable-mac-pwas-notification-attribution",
     "owners": [ "mek@chromium.org", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 126

@@ -29,6 +29,7 @@
 #import "content/browser/renderer_host/render_widget_host_view_mac_editcommand_helper.h"
 #include "content/common/features.h"
 #import "content/public/browser/render_widget_host_view_mac_delegate.h"
+#include "content/public/common/content_features.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"

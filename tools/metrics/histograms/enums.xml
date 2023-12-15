@@ -33730,6 +33730,7 @@ from previous Chrome versions.
       label="InterestFeedV2ClickAndViewActionsConditionalUpload:disabled"/>
   <int value="288755982"
       label="AutofillEnableLocalCardMigrationForNonSyncUser:enabled"/>
+  <int value="289408715" label="MacImeLiveConversionFix:enabled"/>
   <int value="289465857" label="ClipboardHistorySimpleRender:disabled"/>
   <int value="290559997" label="LinkCapturingUiUpdate:disabled"/>
   <int value="291389947" label="PercentBasedScrolling:disabled"/>
@@ -37659,6 +37660,7 @@ from previous Chrome versions.
   <int value="2130479056" label="CCTResizableSideSheet:disabled"/>
   <int value="2132018256" label="ThumbnailPlaceholder:disabled"/>
   <int value="2132335798" label="EcheSWA:disabled"/>
+  <int value="2132373345" label="MacImeLiveConversionFix:disabled"/>
   <int value="2132595171" label="OmniboxSearchEngineLogo:enabled"/>
   <int value="2133594095" label="CryptAuthV2DeviceActivityStatus:disabled"/>
   <int value="2133647636" label="ClipboardFilenames:disabled"/>
