@@ -20877,11 +20877,11 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignalsAdSlotParamGrouping) {
                   GURL(kBidder1TrustedSignalsUrl.spec() +
                        "?hostname=publisher1.com&keys=k2,k5"
                        "&interestGroupNames=name2,name5"
-                       "&slot-size=10px,20px"),
+                       "&slotSize=10px,20px"),
                   GURL(kBidder1TrustedSignalsUrl.spec() +
                        "?hostname=publisher1.com&keys=k3,k6"
                        "&interestGroupNames=name3,name6"
-                       "&all-slots-requested-sizes=10px,20px,30px,40px")));
+                       "&allSlotsRequestedSizes=10px,20px,30px,40px")));
 
   // No need to finish the auction.
 }

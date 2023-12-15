@@ -3389,8 +3389,8 @@ std::string InterestGroupAuction::CreateTrustedBiddingSignalsSlotSizeParam(
       if (!config.non_shared_params.requested_size) {
         return std::string();
       }
-      return "slot-size=" + blink::ConvertAdSizeToString(
-                                *config.non_shared_params.requested_size);
+      return "slotSize=" + blink::ConvertAdSizeToString(
+                               *config.non_shared_params.requested_size);
 
     case blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
         kAllSlotsRequestedSizes: {
@@ -3407,7 +3407,7 @@ std::string InterestGroupAuction::CreateTrustedBiddingSignalsSlotSizeParam(
         }
         all_ad_sizes += blink::ConvertAdSizeToString(ad_size);
       }
-      return std::string("all-slots-requested-sizes=" + all_ad_sizes);
+      return std::string("allSlotsRequestedSizes=" + all_ad_sizes);
     }
   }
 }
