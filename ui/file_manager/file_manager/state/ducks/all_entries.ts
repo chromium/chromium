@@ -14,7 +14,7 @@ import {EntryLocation} from '../../externs/entry_location.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {CurrentDirectory, DialogType, EntryType, FileData, State, Volume, VolumeMap} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
-import {constants} from '../../foreground/js/constants.js';
+import {ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES, DLP_METADATA_PREFETCH_PROPERTY_NAMES, FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES, ICON_TYPES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import type {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {Slice} from '../../lib/base_store.js';
@@ -138,10 +138,10 @@ function startClearCache() {
 }
 
 const prefetchPropertyNames = Array.from(new Set([
-  ...constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES,
-  ...constants.ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES,
-  ...constants.FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES,
-  ...constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES,
+  ...LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES,
+  ...ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES,
+  ...FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES,
+  ...DLP_METADATA_PREFETCH_PROPERTY_NAMES,
 ]));
 
 /** Get the icon for an entry. */
@@ -152,9 +152,9 @@ function getEntryIcon(
 
   // Pre-defined icons based on the URL.
   const urlToIconPath: Record<FileKey, string> = {
-    [recentRootKey]: constants.ICON_TYPES.RECENT,
-    [myFilesEntryListKey]: constants.ICON_TYPES.MY_FILES,
-    [driveRootEntryListKey]: constants.ICON_TYPES.SERVICE_DRIVE,
+    [recentRootKey]: ICON_TYPES.RECENT,
+    [myFilesEntryListKey]: ICON_TYPES.MY_FILES,
+    [driveRootEntryListKey]: ICON_TYPES.SERVICE_DRIVE,
   };
 
   if (urlToIconPath[url]) {
@@ -166,9 +166,8 @@ function getEntryIcon(
   // not, because normal directory can also have the same full path. We also
   // need to check if the entry is a direct child of the drive root entry list.
   const grandRootPathToIconMap = {
-    [COMPUTERS_DIRECTORY_PATH]: constants.ICON_TYPES.COMPUTERS_GRAND_ROOT,
-    [SHARED_DRIVES_DIRECTORY_PATH]:
-        constants.ICON_TYPES.SHARED_DRIVES_GRAND_ROOT,
+    [COMPUTERS_DIRECTORY_PATH]: ICON_TYPES.COMPUTERS_GRAND_ROOT,
+    [SHARED_DRIVES_DIRECTORY_PATH]: ICON_TYPES.SHARED_DRIVES_GRAND_ROOT,
   };
   if (volumeType === VolumeType.DRIVE &&
       grandRootPathToIconMap[entry.fullPath]) {
@@ -178,15 +177,15 @@ function getEntryIcon(
   // For grouped removable devices, its parent folder is an entry list, we
   // should use USB icon for it.
   if ('rootType' in entry && entry.rootType === RootType.REMOVABLE) {
-    return constants.ICON_TYPES.USB;
+    return ICON_TYPES.USB;
   }
 
   if (isVolumeEntry(entry) && entry.volumeInfo) {
     switch (entry.volumeInfo.volumeType) {
       case VolumeType.DOWNLOADS:
-        return constants.ICON_TYPES.MY_FILES;
+        return ICON_TYPES.MY_FILES;
       case VolumeType.SMB:
-        return constants.ICON_TYPES.SMB;
+        return ICON_TYPES.SMB;
       case VolumeType.PROVIDED:
       // Fallthrough
       case VolumeType.DOCUMENTS_PROVIDER: {
@@ -202,22 +201,21 @@ function getEntryIcon(
         // If no background is generated from IconSet, set the icon to the
         // generic one for certain volume type.
         if (volumeType && shouldProvideIcons(volumeType)) {
-          return constants.ICON_TYPES.GENERIC;
+          return ICON_TYPES.GENERIC;
         }
         return '';
       }
       case VolumeType.MTP:
-        return constants.ICON_TYPES.MTP;
+        return ICON_TYPES.MTP;
       case VolumeType.ARCHIVE:
-        return constants.ICON_TYPES.ARCHIVE;
+        return ICON_TYPES.ARCHIVE;
       case VolumeType.REMOVABLE:
         // For sub-partition from a removable volume, its children icon should
         // be UNKNOWN_REMOVABLE.
-        return entry.volumeInfo.prefixEntry ?
-            constants.ICON_TYPES.UNKNOWN_REMOVABLE :
-            constants.ICON_TYPES.USB;
+        return entry.volumeInfo.prefixEntry ? ICON_TYPES.UNKNOWN_REMOVABLE :
+                                              ICON_TYPES.USB;
       case VolumeType.DRIVE:
-        return constants.ICON_TYPES.DRIVE;
+        return ICON_TYPES.DRIVE;
     }
   }
 
@@ -548,8 +546,8 @@ export async function*
       });
       if (entriesNeedMetadata.length > 0) {
         window.fileManager.metadataModel.get(entriesNeedMetadata, [
-          ...constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES,
-          ...constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES,
+          ...LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES,
+          ...DLP_METADATA_PREFETCH_PROPERTY_NAMES,
         ]);
       }
     }

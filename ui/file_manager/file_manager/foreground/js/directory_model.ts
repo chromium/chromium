@@ -27,7 +27,7 @@ import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {clearSearch, getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
 import {getFileData, getStore, getVolume} from '../../state/store.js';
 
-import {constants} from './constants.js';
+import {CROSTINI_CONNECT_ERR, DLP_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from './constants.js';
 import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, EmptyContentScanner, FileFilter, FileListContext, GuestOsMounter, MediaViewContentScanner, RecentContentScanner, SearchV2ContentScanner, TrashContentScanner} from './directory_contents.js';
 import {FileListModel} from './file_list_model.js';
 import {FileWatcher, type WatcherDirectoryChangedEvent} from './file_watcher.js';
@@ -840,8 +840,8 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       if (!isFakeEntry(currentEntry)) {
         this.metadataModel_.get(
             [currentEntry],
-            constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES.concat(
-                constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES));
+            LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES.concat(
+                DLP_METADATA_PREFETCH_PROPERTY_NAMES));
       }
     }
 
@@ -989,30 +989,30 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       maybeRunPendingRescan();
     };
 
-    const onFailure =
-        ((event: CustomEvent<{error: DOMError}>) => {
-          onFinished();
+    const onFailure = ((event: CustomEvent<{error: DOMError}>) => {
+                        onFinished();
 
-          this.runningScan_ = null;
-          this.scanFailures_++;
-          failureCallback(event.detail.error);
+                        this.runningScan_ = null;
+                        this.scanFailures_++;
+                        failureCallback(event.detail.error);
 
-          if (maybeRunPendingRescan()) {
-            return;
-          }
+                        if (maybeRunPendingRescan()) {
+                          return;
+                        }
 
-          // Do not rescan for Guest OS (including Crostini) errors.
-          // TODO(crbug/1293229): Guest OS currently reuses the Crostini error
-          // string, but once it gets its own strings this needs to include
-          // both.
-          if (event.detail.error.name === constants.CROSTINI_CONNECT_ERR) {
-            return;
-          }
+                        // Do not rescan for Guest OS (including Crostini)
+                        // errors.
+                        // TODO(crbug/1293229): Guest OS currently reuses the
+                        // Crostini error string, but once it gets its own
+                        // strings this needs to include both.
+                        if (event.detail.error.name === CROSTINI_CONNECT_ERR) {
+                          return;
+                        }
 
-          if (this.scanFailures_ <= 1) {
-            this.rescanLater(refresh);
-          }
-        }) as EventListenerOrEventListenerObject;
+                        if (this.scanFailures_ <= 1) {
+                          this.rescanLater(refresh);
+                        }
+                      }) as EventListenerOrEventListenerObject;
 
     const onCancelled = () => {
       onFinished();

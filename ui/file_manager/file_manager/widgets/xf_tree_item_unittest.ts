@@ -7,7 +7,7 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
-import {constants} from '../foreground/js/constants.js';
+import {ICON_TYPES} from '../foreground/js/constants.js';
 
 import {XfIcon} from './xf_icon.js';
 import {XfTree} from './xf_tree.js';
@@ -457,7 +457,7 @@ export async function testIconSetIgnoreIcon(done: () => void) {
 
   // Set both icon and iconSet.
   const item1 = getTreeItemById('item1');
-  item1.icon = constants.ICON_TYPES.ANDROID_FILES;
+  item1.icon = ICON_TYPES.ANDROID_FILES;
   item1.iconSet = {
     icon16x16Url: undefined,
     icon32x32Url: 'fake-base64-data',

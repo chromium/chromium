@@ -14,7 +14,7 @@ import {str, strf} from '../common/js/translations.js';
 import {RootTypesForUMA, VolumeType} from '../common/js/volume_manager_types.js';
 import {AndroidApp, CurrentDirectory, FileData, FileKey, NavigationKey, NavigationRoot, NavigationType, PropStatus, SearchLocation, State} from '../externs/ts/state.js';
 import type {VolumeManager} from '../externs/volume_manager.js';
-import {constants} from '../foreground/js/constants.js';
+import {ICON_TYPES} from '../foreground/js/constants.js';
 import {DirectoryModel} from '../foreground/js/directory_model.js';
 import {Command} from '../foreground/js/ui/command.js';
 import {contextMenuHandler} from '../foreground/js/ui/context_menu_handler.js';
@@ -489,7 +489,7 @@ export class DirectoryTreeContainer {
       element: XfTreeItem, fileData: FileData,
       navigationRoot?: NavigationRoot) {
     if (navigationRoot?.type === NavigationType.SHORTCUT) {
-      element.icon = constants.ICON_TYPES.SHORTCUT;
+      element.icon = ICON_TYPES.SHORTCUT;
       return;
     }
     // Navigation icon might be chrome.fileManagerPrivate.IconSet type.
@@ -502,13 +502,13 @@ export class DirectoryTreeContainer {
     if (shouldSupportDriveSpecificIcons(fileData) && fileData.metadata) {
       const {shared, isMachineRoot, isExternalMedia} = fileData.metadata;
       if (shared) {
-        element.icon = constants.ICON_TYPES.SHARED_FOLDER;
+        element.icon = ICON_TYPES.SHARED_FOLDER;
       }
       if (isMachineRoot) {
-        element.icon = constants.ICON_TYPES.COMPUTER;
+        element.icon = ICON_TYPES.COMPUTER;
       }
       if (isExternalMedia) {
-        element.icon = constants.ICON_TYPES.USB;
+        element.icon = ICON_TYPES.USB;
       }
     }
   }

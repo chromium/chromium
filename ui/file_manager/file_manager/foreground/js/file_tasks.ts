@@ -24,7 +24,7 @@ import type {VolumeManager} from '../../externs/volume_manager.js';
 import {getStore} from '../../state/store.js';
 import {USER_CANCELLED, XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
 
-import {constants} from './constants.js';
+import {DEFAULT_CROSTINI_VM} from './constants.js';
 import {type DirectoryChangeTracker, DirectoryModel} from './directory_model.js';
 import {FileTransferController, PastePlan} from './file_transfer_controller.js';
 import {MetadataItem} from './metadata/metadata_item.js';
@@ -104,8 +104,7 @@ export class FileTasks {
     if (entries.length !== 1 ||
         !(isCrostiniEntry(entries[0]!, volumeManager) ||
           crostini.canSharePath(
-              constants.DEFAULT_CROSTINI_VM, entries[0]!,
-              false /* persist */))) {
+              DEFAULT_CROSTINI_VM, entries[0]!, false /* persist */))) {
       resultingTasks.tasks = resultingTasks.tasks.filter(
           (task: chrome.fileManagerPrivate.FileTask) => !descriptorEqual(
               task.descriptor, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR));

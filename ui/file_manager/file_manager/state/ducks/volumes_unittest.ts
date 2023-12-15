@@ -14,7 +14,7 @@ import {str} from '../../common/js/translations.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FileData, State, Volume} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
-import {constants} from '../../foreground/js/constants.js';
+import {ICON_TYPES} from '../../foreground/js/constants.js';
 import {convertEntryToFileData} from '../ducks/all_entries.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
 import {getEmptyState, getEntry} from '../store.js';
@@ -294,11 +294,11 @@ async function addVolumeForSinglePartitionRemovable(done: () => void) {
         // When there is a parent wrapper, icon and ejectable values are
         // different.
         ...(hasParentWrapper ? {
-          icon: constants.ICON_TYPES.UNKNOWN_REMOVABLE,
+          icon: ICON_TYPES.UNKNOWN_REMOVABLE,
           isEjectable: false,
         } :
                                {
-                                 icon: constants.ICON_TYPES.USB,
+                                 icon: ICON_TYPES.USB,
                                  isEjectable: true,
                                }),
       },
@@ -401,19 +401,19 @@ async function addVolumeForMultipleUsbPartitionsGrouping(done: () => void) {
       // Partition-1 volume.
       [partition1VolumeEntry.toURL()]: {
         ...convertEntryToFileData(partition1VolumeEntry),
-        icon: constants.ICON_TYPES.UNKNOWN_REMOVABLE,
+        icon: ICON_TYPES.UNKNOWN_REMOVABLE,
         isEjectable: false,
       },
       // Partition-2 volume.
       [partition2VolumeEntry.toURL()]: {
         ...convertEntryToFileData(partition2VolumeEntry),
-        icon: constants.ICON_TYPES.UNKNOWN_REMOVABLE,
+        icon: ICON_TYPES.UNKNOWN_REMOVABLE,
         isEjectable: false,
       },
       // Partition-3 volume.
       [partition3VolumeEntry.toURL()]: {
         ...convertEntryToFileData(partition3VolumeEntry),
-        icon: constants.ICON_TYPES.UNKNOWN_REMOVABLE,
+        icon: ICON_TYPES.UNKNOWN_REMOVABLE,
         isEjectable: false,
       },
       // My Files entry list.

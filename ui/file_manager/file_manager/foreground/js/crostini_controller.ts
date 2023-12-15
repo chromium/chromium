@@ -14,7 +14,7 @@ import {getStore} from '../../state/store.js';
 import {FilesToast} from '../elements/files_toast.js';
 
 import {MenuCommandsForUma, recordMenuItemSelected} from './command_handler.js';
-import {constants} from './constants.js';
+import {DEFAULT_BRUSCHETTA_VM, DEFAULT_CROSTINI_VM, PLUGIN_VM} from './constants.js';
 import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
 import {DirectoryTree} from './ui/directory_tree.js';
 
@@ -38,7 +38,7 @@ export class CrostiniController {
   async redraw() {
     // Setup Linux files fake root.
     let crostiniNavigationModelItem;
-    if (this.crostini_.isEnabled(constants.DEFAULT_CROSTINI_VM)) {
+    if (this.crostini_.isEnabled(DEFAULT_CROSTINI_VM)) {
       const crostiniEntry =
           new FakeEntryImpl(str('LINUX_FILES_ROOT_LABEL'), RootType.CROSTINI);
       crostiniNavigationModelItem = new NavigationModelFakeItem(
@@ -102,9 +102,9 @@ export class CrostiniController {
 
     const [crostiniShareCount, pluginVmShareCount, bruschettaVmShareCount] =
         await Promise.all([
-          getSharedPaths(constants.DEFAULT_CROSTINI_VM),
-          getSharedPaths(constants.PLUGIN_VM),
-          getSharedPaths(constants.DEFAULT_BRUSCHETTA_VM),
+          getSharedPaths(DEFAULT_CROSTINI_VM),
+          getSharedPaths(PLUGIN_VM),
+          getSharedPaths(DEFAULT_BRUSCHETTA_VM),
         ]);
 
     // Toasts are queued and shown one-at-a-time if multiple apply.

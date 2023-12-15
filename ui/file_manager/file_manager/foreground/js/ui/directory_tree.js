@@ -17,7 +17,7 @@ import {getMediaViewRootTypeFromVolumeId, RootType, RootTypesForUMA, shouldProvi
 import {FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {PropStatus, SearchData, SearchLocation, State} from '../../../externs/ts/state.js';
 import {getStore} from '../../../state/store.js';
-import {constants} from '../constants.js';
+import {DLP_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from '../constants.js';
 import {FileFilter} from '../directory_contents.js';
 import {DirectoryModel} from '../directory_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
@@ -624,8 +624,8 @@ export class DirectoryItem extends FilesTreeItem {
           if (this.insideDrive) {
             this.parentTree_.metadataModel_.get(
                 this.entries_,
-                constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES
-                    .concat(constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES));
+                LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES.concat(
+                    DLP_METADATA_PREFETCH_PROPERTY_NAMES));
           }
 
           recordInterval(metricName);

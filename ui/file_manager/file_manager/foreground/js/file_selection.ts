@@ -12,7 +12,7 @@ import type {VolumeManager} from '../../externs/volume_manager.js';
 import {updateSelection} from '../../state/ducks/current_directory.js';
 import {getStore} from '../../state/store.js';
 
-import {constants} from './constants.js';
+import {FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES} from './constants.js';
 import type {DirectoryModel} from './directory_model.js';
 import type {MetadataModel} from './metadata/metadata_model.js';
 import type {ListContainer} from './ui/list_container.js';
@@ -69,8 +69,7 @@ export class FileSelection {
       this.additionalPromise_ =
           metadataModel
               .get(
-                  this.entries,
-                  constants.FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES)
+                  this.entries, FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES)
               .then(props => {
                 this.anyFilesNotInCache = props.some(p => {
                   // If no availableOffline property, then assume it's

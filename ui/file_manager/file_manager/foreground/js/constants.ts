@@ -2,44 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Namespace for common constants used in Files app.
- * @namespace
- */
-export const constants = {};
-
-/**
- * @const @type {!Array<string>}
- */
-constants.ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES = [
+export const ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES = [
   'canPin',
   'hosted',
   'pinned',
 ];
 
 /**
- * The list of executable file extensions.
- *
- * @const
- * @type {Array<string>}
- */
-// @ts-ignore: error TS4104: The type 'readonly string[]' is 'readonly' and
-// cannot be assigned to the mutable type 'string[]'.
-constants.EXECUTABLE_EXTENSIONS = Object.freeze([
-  '.exe',
-  '.lnk',
-  '.deb',
-  '.dmg',
-  '.jar',
-  '.msi',
-]);
-
-/**
  * These metadata is expected to be cached to accelerate computeAdditional.
  * See: crbug.com/458915.
- * @const @type {!Array<string>}
  */
-constants.FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES = [
+export const FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES = [
   'availableOffline',
   'contentMimeType',
   'hosted',
@@ -52,9 +25,8 @@ constants.FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES = [
  * TODO(sashab): Store capabilities as a set of flags to save memory. See
  * https://crbug.com/849997
  *
- * @const @type {!Array<string>}
  */
-constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES = [
+export const LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES = [
   'availableOffline',
   'contentMimeType',
   'customIconUrl',
@@ -78,10 +50,8 @@ constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES = [
 /**
  * Metadata properties used to inform the user about DLP (Data Leak Prevention)
  * Files restrictions. These metadata is expected to be cached.
- *
- * @const @type {!Array<string>}
  */
-constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES = [
+export const DLP_METADATA_PREFETCH_PROPERTY_NAMES = [
   'isDlpRestricted',
   'sourceUrl',
   'isRestrictedForDestination',
@@ -89,54 +59,48 @@ constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES = [
 
 /**
  * Name of the default crostini VM: crostini::kCrostiniDefaultVmName
- * @const
  */
-constants.DEFAULT_CROSTINI_VM = 'termina';
+export const DEFAULT_CROSTINI_VM = 'termina';
 
 /**
  * Name of the Plugin VM: plugin_vm::kPluginVmName.
- * @const
  */
-constants.PLUGIN_VM = 'PvmDefault';
+export const PLUGIN_VM = 'PvmDefault';
 
 /**
  * Name of the default bruschetta VM: bruschetta::kBruschettaVmName
- * @const
  */
-constants.DEFAULT_BRUSCHETTA_VM = 'bru';
+export const DEFAULT_BRUSCHETTA_VM = 'bru';
 
 /**
  * DOMError type for crostini connection failure.
- * @const @type {string}
  */
-constants.CROSTINI_CONNECT_ERR = 'CrostiniConnectErr';
+export const CROSTINI_CONNECT_ERR = 'CrostiniConnectErr';
 
 /**
  * ID of the fake fileSystemProvider custom action containing OneDrive document
  * URLs.
- * @const @type {string}
  */
-constants.FSP_ACTION_HIDDEN_ONEDRIVE_URL = 'HIDDEN_ONEDRIVE_URL';
+export const FSP_ACTION_HIDDEN_ONEDRIVE_URL = 'HIDDEN_ONEDRIVE_URL';
 
 /**
  * ID of the fake fileSystemProvider custom action containing OneDrive document
  * User Emails.
- * @const @type {string}
  */
-constants.FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL = 'HIDDEN_ONEDRIVE_USER_EMAIL';
+export const FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL =
+    'HIDDEN_ONEDRIVE_USER_EMAIL';
 
 /**
  * ID of the fake fileSystemProvider custom action containing OneDrive document
  * Reauthentication Required state.
- * @const @type {string}
  */
-constants.FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED =
+export const FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED =
     'HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED';
 
 /**
  * All icon types.
  */
-constants.ICON_TYPES = {
+export const ICON_TYPES = {
   ANDROID_FILES: 'android_files',
   ARCHIVE: 'archive',
   AUDIO: 'audio',
@@ -213,7 +177,5 @@ constants.ICON_TYPES = {
 
 /**
  * Extension ID for OneDrive FSP, also used as ProviderId.
- * @const
- * @type {string}
  */
-constants.ODFS_EXTENSION_ID = 'gnnndjlaomemikopnjhhnoombakkkkdg';
+export const ODFS_EXTENSION_ID = 'gnnndjlaomemikopnjhhnoombakkkkdg';

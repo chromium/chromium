@@ -12,7 +12,7 @@ import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {EntryType, FileData, State} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
-import {constants} from '../../foreground/js/constants.js';
+import {ICON_TYPES} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
 import {allEntriesSize, assertAllEntriesEqual, cd, changeSelection, createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, updMetadata, waitDeepEquals} from '../for_tests.js';
@@ -346,7 +346,7 @@ export async function testConvertVolumeEntryToFileData(done: () => void) {
   const got = convertEntryToFileData(downloadsEntry);
   const want: FileData = {
     entry: downloadsEntry,
-    icon: constants.ICON_TYPES.MY_FILES,
+    icon: ICON_TYPES.MY_FILES,
     type: EntryType.VOLUME_ROOT,
     isDirectory: true,
     label: 'Downloads',
@@ -386,7 +386,7 @@ export async function testGenericIconInDocumentsProviderFileData(
   const got = convertEntryToFileData(documentsProviderEntry);
   const want: FileData = {
     entry: documentsProviderEntry,
-    icon: constants.ICON_TYPES.GENERIC,
+    icon: ICON_TYPES.GENERIC,
     type: EntryType.VOLUME_ROOT,
     isDirectory: true,
     label: 'Google Photos',
@@ -411,7 +411,7 @@ export async function testConvertEntryListToFileData(done: () => void) {
   const got = convertEntryToFileData(myFilesEntryList);
   const want: FileData = {
     entry: myFilesEntryList,
-    icon: constants.ICON_TYPES.MY_FILES,
+    icon: ICON_TYPES.MY_FILES,
     type: EntryType.ENTRY_LIST,
     isDirectory: true,
     label: 'My files',
@@ -437,7 +437,7 @@ export async function testConvertFakeEntryToFileData(done: () => void) {
   const got = convertEntryToFileData(androidFakeEntry);
   const want: FileData = {
     entry: androidFakeEntry,
-    icon: constants.ICON_TYPES.ANDROID_FILES,
+    icon: ICON_TYPES.ANDROID_FILES,
     type: EntryType.PLACEHOLDER,
     isDirectory: true,
     label: 'Android files',
@@ -488,7 +488,7 @@ export async function testConvertNativeDirectoryEntryToFileData(
   const got = convertEntryToFileData(directoryEntry);
   const want: FileData = {
     entry: directoryEntry,
-    icon: constants.ICON_TYPES.FOLDER,
+    icon: ICON_TYPES.FOLDER,
     type: EntryType.FS_API,
     isDirectory: true,
     label: 'dir-1',

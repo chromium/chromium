@@ -22,7 +22,7 @@ import type {VolumeManager} from '../../externs/volume_manager.js';
 import {getDefaultSearchOptions} from '../../state/ducks/search.js';
 import {getStore} from '../../state/store.js';
 
-import {constants} from './constants.js';
+import {ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES, CROSTINI_CONNECT_ERR, DLP_METADATA_PREFETCH_PROPERTY_NAMES, FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from './constants.js';
 import {FileListModel} from './file_list_model.js';
 import {MetadataItem} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
@@ -764,7 +764,7 @@ export class CrostiniMounter extends ContentScanner {
         console.warn(`Cannot mount Crostini volume: ${
             chrome.runtime.lastError.message}`);
         errorCallback(createDOMError(
-            constants.CROSTINI_CONNECT_ERR, chrome.runtime.lastError.message));
+            CROSTINI_CONNECT_ERR, chrome.runtime.lastError.message));
         return;
       }
       successCallback();
@@ -800,7 +800,7 @@ export class GuestOsMounter extends ContentScanner {
     } catch (error) {
       errorCallback(createDOMError(
           // TODO(crbug/1293229): Strings
-          constants.CROSTINI_CONNECT_ERR, JSON.stringify(error)));
+          CROSTINI_CONNECT_ERR, JSON.stringify(error)));
     }
   }
 }
@@ -1006,10 +1006,10 @@ export class FileListContext {
       readonly volumeManager: VolumeManager) {
     this.fileList = new FileListModel(metadataModel);
     this.prefetchPropertyNames = Array.from(new Set([
-      ...constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES,
-      ...constants.ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES,
-      ...constants.FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES,
-      ...constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES,
+      ...LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES,
+      ...ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES,
+      ...FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES,
+      ...DLP_METADATA_PREFETCH_PROPERTY_NAMES,
     ]));
   }
 }

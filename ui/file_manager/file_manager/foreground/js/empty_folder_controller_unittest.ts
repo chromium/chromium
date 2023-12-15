@@ -14,7 +14,7 @@ import {FileErrorToDomError} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {PropStatus} from '../../externs/ts/state.js';
-import {constants} from '../../foreground/js/constants.js';
+import {FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED, ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
 import {clearSearch, updateSearch} from '../../state/ducks/search.js';
 import {convertVolumeInfoAndMetadataToVolume} from '../../state/ducks/volumes.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore} from '../../state/for_tests.js';
@@ -92,7 +92,7 @@ export function setUp() {
         // This is called for the test when Reauthentication Required state is
         // true.
         const actions = [{
-          id: constants.FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED,
+          id: FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED,
           title: 'true',
         }];
         callback(actions);
@@ -193,7 +193,7 @@ export function testHiddenForODFS() {
   const initialState = getEmptyState();
   const {volumeManager} = window.fileManager;
   const odfsVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeType.PROVIDED, 'odfs', 'odfs', 'odfs', constants.ODFS_EXTENSION_ID);
+      VolumeType.PROVIDED, 'odfs', 'odfs', 'odfs', ODFS_EXTENSION_ID);
   volumeManager.volumeInfoList.add(odfsVolumeInfo);
   const volume = convertVolumeInfoAndMetadataToVolume(
       odfsVolumeInfo, createFakeVolumeMetadata(odfsVolumeInfo));
@@ -237,7 +237,7 @@ export async function testShownForODFS(done: VoidCallback) {
   const initialState = getEmptyState();
   const {volumeManager} = window.fileManager;
   const odfsVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeType.PROVIDED, 'odfs', 'odfs', 'odfs', constants.ODFS_EXTENSION_ID);
+      VolumeType.PROVIDED, 'odfs', 'odfs', 'odfs', ODFS_EXTENSION_ID);
   volumeManager.volumeInfoList.add(odfsVolumeInfo);
   const volume = convertVolumeInfoAndMetadataToVolume(
       odfsVolumeInfo, createFakeVolumeMetadata(odfsVolumeInfo));

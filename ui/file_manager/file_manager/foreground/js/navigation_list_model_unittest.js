@@ -18,7 +18,7 @@ import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {DialogType} from '../../externs/ts/state.js';
 
 import {AndroidAppListModel} from './android_app_list_model.js';
-import {constants} from './constants.js';
+import {ODFS_EXTENSION_ID} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
 import {createFakeAndroidAppListModel} from './fake_android_app_list_model.js';
 import {createFakeDirectoryModel} from './mock_directory_model.js';
@@ -423,8 +423,7 @@ export function testOrderAndNestItems() {
       MockVolumeManager.createMockVolumeInfo(VolumeType.SMB, 'smb:file-share'));
   // Add ODFS.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeType.PROVIDED, 'provided:odfs', '', '',
-      constants.ODFS_EXTENSION_ID));
+      VolumeType.PROVIDED, 'provided:odfs', '', '', ODFS_EXTENSION_ID));
 
   const androidAppListModelWithApps =
       createFakeAndroidAppListModel(['android:app1', 'android:app2']);

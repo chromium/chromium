@@ -7,7 +7,7 @@ import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/fil
 import {CurrentDirectory, EntryType, FileData} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
-import {constants} from '../../foreground/js/constants.js';
+import {ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
 import type {DirectoryItem} from '../../foreground/js/ui/directory_tree.js';
 import type {TreeItem} from '../../foreground/js/ui/tree.js';
 import {driveRootEntryListKey, myFilesEntryListKey} from '../../state/ducks/volumes.js';
@@ -872,7 +872,7 @@ export function isInteractiveVolume(volumeInfo: VolumeInfo) {
 }
 
 export const isOneDriveId = (providerId: string|null|undefined) =>
-    providerId === constants.ODFS_EXTENSION_ID;
+    providerId === ODFS_EXTENSION_ID;
 
 export function isOneDrive(volumeInfo: VolumeInfo) {
   return isOneDriveId(volumeInfo?.providerId);

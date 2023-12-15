@@ -9,7 +9,7 @@ import {recordEnum} from '../../common/js/metrics.js';
 import type {HideEvent, ShowEvent} from '../../definitions/context_menu_handler_events.js';
 import type {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 
-import {constants} from './constants.js';
+import {DEFAULT_BRUSCHETTA_VM, DEFAULT_CROSTINI_VM, PLUGIN_VM} from './constants.js';
 import {BrowserBackCommand, ConfigureCommand, CutCopyCommand, DefaultTaskCommand, DeleteCommand, DlpRestrictionDetailsCommand, DriveBuyMoreSpaceCommand, DriveGoToDriveCommand, DriveSyncSettingsCommand, EmptyTrashCommand, EraseDeviceCommand, ExtractAllCommand, FilesSettingsCommand, FocusActionBarCommand, FormatCommand, GetInfoCommand, GoToFileLocationCommand, GuestOsManagingSharingCommand, GuestOsManagingSharingGearCommand, GuestOsShareCommand, InspectConsoleCommand, InspectElementCommand, InspectNormalCommand, InvokeSharesheetCommand, ManageInDriveCommand, ManageMirrorsyncCommand, NewFolderCommand, NewWindowCommand, OpenGearMenuCommand, OpenWithCommand, PasteCommand, PasteIntoCurrentFolderCommand, PasteIntoFolderCommand, PinFolderCommand, RefreshCommand, RenameCommand, RestoreFromTrashCommand, SearchCommand, SelectAllCommand, SendFeedbackCommand, SetWallpaperCommand, ShareCommand, ShowProvidersSubmenuCommand, SortByDateCommand, SortByNameCommand, SortBySizeCommand, SortByTypeCommand, ToggleHiddenAndroidFoldersCommand, ToggleHiddenFilesCommand, ToggleHoldingSpaceCommand, TogglePinnedCommand, UnmountCommand, UnpinFolderCommand, VolumeHelpCommand, VolumeStorageCommand, VolumeSwitchCommand, ZipSelectionCommand, ZoomInCommand, ZoomOutCommand, ZoomResetCommand} from './file_manager_commands.js';
 import {shouldIgnoreEvents} from './file_manager_commands_util.js';
 import {CanExecuteEvent, Command, CommandEvent} from './ui/command.js';
@@ -128,34 +128,32 @@ const FilesCommands = {
   'volume-switch-8': new VolumeSwitchCommand(8),
   'volume-switch-9': new VolumeSwitchCommand(9),
   'share-with-linux': new GuestOsShareCommand(
-      constants.DEFAULT_CROSTINI_VM, 'CROSTINI', crostiniSettings,
+      DEFAULT_CROSTINI_VM, 'CROSTINI', crostiniSettings,
       MenuCommandsForUma.MANAGE_LINUX_SHARING_TOAST,
       MenuCommandsForUma.SHARE_WITH_LINUX),
   'share-with-plugin-vm': new GuestOsShareCommand(
-      constants.PLUGIN_VM, 'PLUGIN_VM', pluginVmSettings,
+      PLUGIN_VM, 'PLUGIN_VM', pluginVmSettings,
       MenuCommandsForUma.MANAGE_PLUGIN_VM_SHARING_TOAST,
       MenuCommandsForUma.SHARE_WITH_PLUGIN_VM),
   'share-with-bruschetta': new GuestOsShareCommand(
-      constants.DEFAULT_BRUSCHETTA_VM, 'BRUSCHETTA', bruschettaSettings,
+      DEFAULT_BRUSCHETTA_VM, 'BRUSCHETTA', bruschettaSettings,
       MenuCommandsForUma.MANAGE_BRUSCHETTA_SHARING_TOAST,
       MenuCommandsForUma.SHARE_WITH_BRUSCHETTA),
   'manage-linux-sharing-gear': new GuestOsManagingSharingGearCommand(
-      constants.DEFAULT_CROSTINI_VM, crostiniSettings,
+      DEFAULT_CROSTINI_VM, crostiniSettings,
       MenuCommandsForUma.MANAGE_LINUX_SHARING),
   'manage-plugin-vm-sharing-gear': new GuestOsManagingSharingGearCommand(
-      constants.PLUGIN_VM, pluginVmSettings,
-      MenuCommandsForUma.MANAGE_PLUGIN_VM_SHARING),
+      PLUGIN_VM, pluginVmSettings, MenuCommandsForUma.MANAGE_PLUGIN_VM_SHARING),
   'manage-bruschetta-sharing-gear': new GuestOsManagingSharingGearCommand(
-      constants.DEFAULT_BRUSCHETTA_VM, bruschettaSettings,
+      DEFAULT_BRUSCHETTA_VM, bruschettaSettings,
       MenuCommandsForUma.MANAGE_BRUSCHETTA_SHARING),
   'manage-linux-sharing': new GuestOsManagingSharingCommand(
-      constants.DEFAULT_CROSTINI_VM, crostiniSettings,
+      DEFAULT_CROSTINI_VM, crostiniSettings,
       MenuCommandsForUma.MANAGE_LINUX_SHARING),
   'manage-plugin-vm-sharing': new GuestOsManagingSharingCommand(
-      constants.PLUGIN_VM, pluginVmSettings,
-      MenuCommandsForUma.MANAGE_PLUGIN_VM_SHARING),
+      PLUGIN_VM, pluginVmSettings, MenuCommandsForUma.MANAGE_PLUGIN_VM_SHARING),
   'manage-bruschetta-sharing': new GuestOsManagingSharingCommand(
-      constants.DEFAULT_BRUSCHETTA_VM, bruschettaSettings,
+      DEFAULT_BRUSCHETTA_VM, bruschettaSettings,
       MenuCommandsForUma.MANAGE_BRUSCHETTA_SHARING),
 };
 
