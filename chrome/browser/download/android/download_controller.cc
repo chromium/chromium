@@ -22,7 +22,6 @@
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/android/profile_key_util.h"
-#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/download/android/dangerous_download_infobar_delegate.h"
 #include "chrome/browser/download/android/download_manager_service.h"
 #include "chrome/browser/download/android/download_utils.h"
@@ -222,22 +221,7 @@ void DownloadController::CloseTabIfEmpty(content::WebContents* web_contents,
   if (!tab_model || tab_model->GetTabCount() == 1)
     return;
 
-  int tab_index = -1;
-  for (int index = 0; index < tab_model->GetTabCount(); ++index) {
-    if (web_contents == tab_model->GetWebContentsAt(index)) {
-      tab_index = index;
-      break;
-    }
-  }
-
-  if (tab_index == -1)
-    return;
-
-  // Closing an empty page on external app download leaves a bad user experience
-  // as user don't know whether a download is kicked off, or if Chrome just
-  // ignores the URL. Show the download page instead.
-  if (tab_model->GetTabAt(tab_index)->GetLaunchType() ==
-          static_cast<int>(TabModel::TabLaunchType::FROM_EXTERNAL_APP)) {
+  if (download && download->IsFromExternalApp()) {
     DownloadManagerService::GetInstance()->OpenDownloadsPage(
         Profile::FromBrowserContext(web_contents->GetBrowserContext()),
         DownloadOpenSource::kExternalApp);
@@ -248,7 +232,7 @@ void DownloadController::CloseTabIfEmpty(content::WebContents* web_contents,
       return;
     }
   }
-  tab_model->CloseTabAt(tab_index);
+  web_contents->Close();
 }
 
 // static

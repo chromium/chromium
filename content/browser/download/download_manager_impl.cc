@@ -347,6 +347,9 @@ download::DownloadItemImpl* DownloadManagerImpl::CreateActiveItem(
       WebContentsImpl::FromRenderFrameHostID(global_id), global_id);
   if (delegate_) {
     delegate_->AttachExtraInfo(download);
+#if BUILDFLAG(IS_ANDROID)
+    download->set_is_from_external_app(delegate_->IsFromExternalApp(download));
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   return download;

@@ -118,4 +118,10 @@ void DownloadManagerDelegate::CheckSavePackageAllowed(
   std::move(callback).Run(true);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool DownloadManagerDelegate::IsFromExternalApp(download::DownloadItem* item) {
+  return false;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace content
