@@ -64,33 +64,21 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabBId);
 }  // namespace
 
-struct FindResultState {
-  static const int kInitialActiveMatchOrdinalCount = -1;
-  static const int kInitialNumberOfMatches = -1;
-  int active_match_ordinal = kInitialActiveMatchOrdinalCount;
-  int number_of_matches = kInitialNumberOfMatches;
-  FindResultState()
-      : FindResultState(kInitialActiveMatchOrdinalCount,
-                        kInitialNumberOfMatches) {}
-  FindResultState(int active_match_ordinal, int number_of_matches)
-      : active_match_ordinal(active_match_ordinal),
-        number_of_matches(number_of_matches) {}
-
-  bool operator==(const FindResultState& b) const = default;
-};
-
-class FindResulStateObserver : public ui::test::ObservationStateObserver<
-                                   FindResultState,
-                                   find_in_page::FindTabHelper,
-                                   find_in_page::FindResultObserver> {
+class FindResultActiveMatchOrdinalStateObserver
+    : public ui::test::ObservationStateObserver<
+          int,
+          find_in_page::FindTabHelper,
+          find_in_page::FindResultObserver> {
  public:
-  explicit FindResulStateObserver(find_in_page::FindTabHelper* find_tab_helper)
+  static const int kInitialActiveMatchOrdinalCount = -1;
+  FindResultActiveMatchOrdinalStateObserver(
+      find_in_page::FindTabHelper* find_tab_helper)
       : ObservationStateObserver(find_tab_helper) {}
-  ~FindResulStateObserver() override = default;
+  ~FindResultActiveMatchOrdinalStateObserver() override = default;
 
   // ObservationStateObserver:
-  FindResultState GetStateObserverInitialState() const override {
-    return FindResultState();
+  int GetStateObserverInitialState() const override {
+    return kInitialActiveMatchOrdinalCount;
   }
 
   // FindResultObserver:
@@ -103,13 +91,11 @@ class FindResulStateObserver : public ui::test::ObservationStateObserver<
       return;
     }
 
-    FindResultState result = {find_details.active_match_ordinal(),
-                              find_details.number_of_matches()};
-
-    OnStateObserverStateChanged(result);
+    OnStateObserverStateChanged(find_details.active_match_ordinal());
   }
 };
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(FindResulStateObserver, kFindResultState);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(FindResultActiveMatchOrdinalStateObserver,
+                                    kFindResultActiveMatchOrdinalState);
 
 // TODO(crbug.com/1509945): Remaining tests should be migrated to
 // FindInPageTest.
@@ -257,18 +243,16 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, NavigationByKeyEvent) {
   RunTestSequence(
       // Open tab A and show Find bar.
       InstrumentTab(kTabId), NavigateWebContents(kTabId, page_a), ShowFindBar(),
-      ObserveState(kFindResultState,
+      ObserveState(kFindResultActiveMatchOrdinalState,
                    [this]() {
                      return find_in_page::FindTabHelper::FromWebContents(
                          browser()->tab_strip_model()->GetActiveWebContents());
                    }),
       // Search for 'a'.
       EnterText(FindBarView::kTextField, kSearchA),
-      WaitForState(
-          kFindResultState,
-          testing::Field(
-              &FindResultState::active_match_ordinal,
-              testing::Ne(FindResultState::kInitialActiveMatchOrdinalCount))),
+      WaitForState(kFindResultActiveMatchOrdinalState,
+                   testing::Ne(FindResultActiveMatchOrdinalStateObserver::
+                                   kInitialActiveMatchOrdinalCount)),
       // Press the [Tab] key and [Enter], the previous button should still be
       // focused.
       SendKeyPress(ui::VKEY_TAB, false, false),
@@ -841,19 +825,28 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest,
 }
 
 // See http://crbug.com/1142027
-IN_PROC_BROWSER_TEST_F(FindInPageTest, MatchOrdinalStableWhileTyping) {
-  const GURL page_foo =
-      embedded_test_server()->GetURL("/find_in_page/foo.html");
-  RunTestSequence(
-      InstrumentTab(kTabId), NavigateWebContents(kTabId, page_foo),
-      ShowFindBar(),
-      ObserveState(kFindResultState,
-                   [this]() {
-                     return find_in_page::FindTabHelper::FromWebContents(
-                         browser()->tab_strip_model()->GetActiveWebContents());
-                   }),
-      EnterText(FindBarView::kTextField, u"f"),
-      WaitForState(kFindResultState, []() { return FindResultState(1, 3); }),
-      EnterText(FindBarView::kTextField, u"o", TextEntryMode::kAppend),
-      WaitForState(kFindResultState, []() { return FindResultState(1, 3); }));
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, MatchOrdinalStableWhileTyping) {
+  // Make sure Chrome is in the foreground, otherwise sending input
+  // won't do anything and the test will hang.
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("data:text/html,foo foo foo")));
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  browser()->GetFindBarController()->Show();
+  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
+
+  ui_test_utils::FindResultWaiter waiter1(web_contents, 1 /*request_offset*/);
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_F, false, false, false, false));
+  waiter1.Wait();
+  EXPECT_EQ(1, waiter1.active_match_ordinal());
+  EXPECT_EQ(3, waiter1.number_of_matches());
+
+  ui_test_utils::FindResultWaiter waiter2(web_contents, 1 /*request_offset*/);
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_O, false, false, false, false));
+  waiter2.Wait();
+  EXPECT_EQ(1, waiter2.active_match_ordinal());
+  EXPECT_EQ(3, waiter2.number_of_matches());
 }
