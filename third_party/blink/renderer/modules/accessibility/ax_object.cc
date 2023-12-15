@@ -966,8 +966,8 @@ AXObject* AXObject::ComputeParentOrNull() const {
         << "AXInlineTextBox box tried to compute a new parent, but they are "
            "not allowed to exist even temporarily without a parent, as their "
            "existence depends on the parent text object. Parent text = "
-        << (AXObjectCache().SafeGet(GetNode())
-                ? AXObjectCache().SafeGet(GetNode())->ToString(true, true)
+        << (AXObjectCache().Get(GetNode())
+                ? AXObjectCache().Get(GetNode())->ToString(true, true)
                 : "");
   } else if (AXObjectCache().IsAriaOwned(this)) {
     ax_parent = AXObjectCache().ValidatedAriaOwner(this);

@@ -723,7 +723,7 @@ AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
 #if DCHECK_IS_ON()
   if (obj)
     DCHECK(!obj->IsDetached());
-  AXObject* obj_for_node = object_cache_->SafeGet(node);
+  AXObject* obj_for_node = object_cache_->Get(node);
   DCHECK(!obj || obj_for_node == obj)
       << "Object and node did not match:"
       << "\n* node = " << node << "\n* obj = " << obj->ToString(true, true)

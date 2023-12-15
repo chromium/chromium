@@ -378,10 +378,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // its parent, it will be set as the new parent.
   AXObject* Get(const LayoutObject*, AXObject* parent_for_repair = nullptr);
 
-  // Get an AXObject* for a node.
-  // TODO(accessibility) This is the same as Get(Node*), and should be removed.
-  AXObject* SafeGet(const Node* node);
-
   // Return true if the object is still part of the tree, meaning that ancestors
   // exist or can be repaired all the way to the root.
   bool IsStillInTree(AXObject*);

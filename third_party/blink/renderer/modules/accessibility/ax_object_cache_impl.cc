@@ -830,11 +830,12 @@ void AXObjectCacheImpl::EnsureRelationCache() {
 }
 
 AXObject* AXObjectCacheImpl::Root() {
-  if (AXObject* root = SafeGet(document_))
+  if (AXObject* root = Get(document_)) {
     return root;
+  }
 
   ProcessDeferredAccessibilityEvents(GetDocument(), /*force*/ true);
-  return SafeGet(document_.Get());
+  return Get(document_.Get());
 }
 
 AXObject* AXObjectCacheImpl::ObjectFromAXID(AXID id) const {
@@ -977,7 +978,7 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object,
   return result;
 }
 
-AXObject* AXObjectCacheImpl::SafeGet(const Node* node) {
+AXObject* AXObjectCacheImpl::Get(const Node* node) {
   if (!node)
     return nullptr;
 
@@ -1018,11 +1019,6 @@ AXObject* AXObjectCacheImpl::SafeGet(const Node* node) {
   return result;
 }
 
-// TODO(accessibility) Remove SafeGet() and make all calls Get().
-AXObject* AXObjectCacheImpl::Get(const Node* node) {
-  return SafeGet(node);
-}
-
 AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) {
   if (!inline_text_box)
     return nullptr;
@@ -1057,7 +1053,7 @@ AXID AXObjectCacheImpl::GetAXID(Node* node) {
 }
 
 AXID AXObjectCacheImpl::GetExistingAXID(Node* node) {
-  AXObject* ax_object = SafeGet(node);
+  AXObject* ax_object = Get(node);
   if (!ax_object)
     return ui::AXNodeData::kInvalidAXID;
   return ax_object->AXObjectID();
@@ -1074,7 +1070,7 @@ AXObject* AXObjectCacheImpl::Get(AccessibleNode* accessible_node) {
         << accessible_node->element();
     // When the AccessibleNode is attached to an element, return the element's
     // accessible object instead.
-    return SafeGet(accessible_node->element());
+    return Get(accessible_node->element());
   }
 
   auto it_ax = accessible_node_mapping_.find(accessible_node);
@@ -1101,7 +1097,7 @@ AXObject* AXObjectCacheImpl::GetAXImageForMap(HTMLMapElement& map) {
   // parent, which should be a native image.
   Node* child = LayoutTreeBuilderTraversal::FirstChild(map);
   while (child) {
-    if (AXObject* ax_child = SafeGet(child)) {
+    if (AXObject* ax_child = Get(child)) {
       if (AXObject* ax_image = ax_child->CachedParentObject()) {
         if (ax_image->IsDetached()) {
           return nullptr;
@@ -1391,7 +1387,7 @@ AXObject* AXObjectCacheImpl::RepairChildrenOfIncludedParent(Node* child) {
   // These will be used to repair the local included subtree top down.
   HeapDeque<Member<Node>> ancestors_to_repair;
   Node* ancestor = child;
-  AXObject* ax_ancestor = SafeGet(ancestor);
+  AXObject* ax_ancestor = Get(ancestor);
   AXObject* ax_included_ancestor = nullptr;
 
   while (true) {
@@ -1459,7 +1455,7 @@ AXObject* AXObjectCacheImpl::RepairChildrenOfIncludedParent(Node* child) {
 
   // Starting from the highest ancestor, add children.
   for (Node* ancestor_to_repair : ancestors_to_repair) {
-    ax_ancestor = SafeGet(ancestor_to_repair);
+    ax_ancestor = Get(ancestor_to_repair);
     if (!ax_ancestor || ax_ancestor->IsDetached()) {
       RemoveSubtreeWhenSafe(ancestor_to_repair);
       return nullptr;
@@ -1467,7 +1463,7 @@ AXObject* AXObjectCacheImpl::RepairChildrenOfIncludedParent(Node* child) {
     ax_ancestor->UpdateChildrenIfNecessary();
   }
 
-  AXObject* result = SafeGet(child);
+  AXObject* result = Get(child);
   if (!result || result->IsDetached()) {
     RemoveSubtreeWhenSafe(child);
     return nullptr;
@@ -1994,7 +1990,7 @@ void AXObjectCacheImpl::RemoveSubtreeWithFlatTraversal(const Node* node,
   // failed because document had pending slot assignment in
   // external/wpt/dom/nodes/node-appendchild-crash.html.
   DCHECK(!node->GetDocument().IsFlatTreeTraversalForbidden());
-  AXObject* object = SafeGet(node);
+  AXObject* object = Get(node);
   if (!object && !remove_root) {
     // Nothing remaining to do for this subtree. Already removed.
     return;
@@ -2200,7 +2196,7 @@ void AXObjectCacheImpl::DeferTreeUpdate(
       node, 0u, ComputeEventFrom(), active_event_from_action_,
       ActiveEventIntents(), update_reason, event));
 
-  if (AXObject* obj = SafeGet(node)) {
+  if (AXObject* obj = Get(node)) {
     obj->InvalidateCachedValues();
   }
 
@@ -2272,7 +2268,7 @@ void AXObjectCacheImpl::StyleChanged(const LayoutObject* layout_object,
                                      bool visibility_or_inertness_changed) {
   DCHECK(layout_object);
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-  AXObject* ax_object = SafeGet(layout_object->GetNode());
+  AXObject* ax_object = Get(layout_object->GetNode());
   if (!ax_object) {
     // No object exists to mark dirty yet -- there can sometimes be a layout in
     // the initial empty document, or style has changed before the object cache
@@ -2524,7 +2520,7 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
 
   // Handle subtree that was previously display:none gaining layout.
   if (node->GetLayoutObject()) {
-    if (AXObject* obj = SafeGet(node); obj && !IsA<AXLayoutObject>(obj)) {
+    if (AXObject* obj = Get(node); obj && !IsA<AXLayoutObject>(obj)) {
       // Had a previous AXObject, but wasn't an AXLayoutObject, even though
       // there is a layout object available.
       RemoveSubtreeWithFlatTraversal(node);
@@ -2573,7 +2569,7 @@ void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
     if (HTMLMapElement* map = AXObject::GetMapForImage(node)) {
       HTMLImageElement* primary_image_element = map->ImageElement();
       if (node != primary_image_element) {
-        ChildrenChangedWithCleanLayout(SafeGet(primary_image_element));
+        ChildrenChangedWithCleanLayout(Get(primary_image_element));
       } else if (AXObject* ax_previous_parent = GetAXImageForMap(*map)) {
         if (ax_previous_parent->GetNode() != node) {
           ChildrenChangedWithCleanLayout(ax_previous_parent->GetNode(),
@@ -2704,19 +2700,11 @@ AXObject* AXObjectCacheImpl::InvalidateChildren(AXObject* obj) {
 }
 
 void AXObjectCacheImpl::SlotAssignmentWillChange(Node* node) {
-  // Use SafeGet(), because right before slot assignment is a dangerous time to
-  // test whether the slot must be invalidated, because this currently requires
-  // looking at the <slot> children in
-  // IsShadowContentRelevantForAccessibility(), resulting in an infinite loop
-  // as looking at the children causes slot assignment to be recalculated.
-  // TODO(accessibility) In the future this may be simplified.
-  // See crbug.com/1219311.
-  ChildrenChanged(SafeGet(node));
+  ChildrenChanged(node);
 }
 
 void AXObjectCacheImpl::ChildrenChanged(Node* node) {
-  // Use SafeGet() because there is no guarantee that layout is clean right now.
-  ChildrenChanged(SafeGet(node));
+  ChildrenChanged(Get(node));
 }
 
 // ChildrenChanged gets called a lot. For the accessibility tests that
@@ -2769,7 +2757,7 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
 #if DCHECK_IS_ON()
   if (optional_node) {
     DCHECK_EQ(obj->GetNode(), optional_node);
-    DCHECK_EQ(obj, SafeGet(optional_node));
+    DCHECK_EQ(obj, Get(optional_node));
   }
   Document* document = obj->GetDocument();
   DCHECK(document);
@@ -4001,7 +3989,7 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
                attr_name == html_names::kAriaFlowtoAttr) {
       MarkElementDirty(element);
       if (relation_cache_) {
-        if (AXObject* obj = SafeGet(element)) {
+        if (AXObject* obj = Get(element)) {
           relation_cache_->RegisterIncompleteRelation(obj, attr_name);
         }
       }
@@ -4257,7 +4245,7 @@ void AXObjectCacheImpl::HandleEventSubscriptionChanged(
 
   MarkElementDirty(&node);
   // If the ignored state changes, the parent's children may have changed.
-  if (AXObject* obj = SafeGet(&node)) {
+  if (AXObject* obj = Get(&node)) {
     if (!obj->IsDetached()) {
       if (obj->CachedParentObject()) {
         ChildrenChanged(obj->CachedParentObject());
@@ -4745,8 +4733,7 @@ AXObject* AXObjectCacheImpl::GetSerializationTarget(AXObject* obj) {
 // partial subtrees and mid-tree object removal directly when they occur.
 AXObject* AXObjectCacheImpl::RestoreParentOrPrune(AXObject* child) {
   CHECK(child->GetNode()) << "Cannot restore parents of nodeless objects.";
-  AXObject* parent =
-      SafeGet(LayoutTreeBuilderTraversal::Parent(*child->GetNode()));
+  AXObject* parent = Get(LayoutTreeBuilderTraversal::Parent(*child->GetNode()));
   if (parent) {
     child->SetParent(parent);
   } else {
@@ -5194,8 +5181,8 @@ void AXObjectCacheImpl::HandleDeletionOrInsertionInTextField(
   int start_offset = start_pos.ComputeOffsetInContainerNode();
   int end_offset = end_pos.ComputeOffsetInContainerNode();
 
-  AXObject* start_obj = SafeGet(start_pos.ComputeContainerNode());
-  AXObject* end_obj = SafeGet(end_pos.ComputeContainerNode());
+  AXObject* start_obj = Get(start_pos.ComputeContainerNode());
+  AXObject* end_obj = Get(end_pos.ComputeContainerNode());
   if (!start_obj || !end_obj) {
     return;
   }
@@ -5456,7 +5443,7 @@ const AtomicString& AXObjectCacheImpl::ComputedRoleForNode(Node* node) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
   ProcessDeferredAccessibilityEvents(GetDocument(), /*force*/ true);
   ScopedFreezeAXCache scoped_freeze_cache(*this);
-  AXObject* obj = SafeGet(node);
+  AXObject* obj = Get(node);
   return AXObject::ARIARoleName(obj ? obj->RoleValue()
                                     : ax::mojom::blink::Role::kUnknown);
 }
@@ -5466,7 +5453,7 @@ String AXObjectCacheImpl::ComputedNameForNode(Node* node) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
   ProcessDeferredAccessibilityEvents(GetDocument(), /*force*/ true);
   ScopedFreezeAXCache scoped_freeze_cache(*this);
-  AXObject* obj = SafeGet(node);
+  AXObject* obj = Get(node);
   return obj ? obj->ComputedName() : "";
 }
 
