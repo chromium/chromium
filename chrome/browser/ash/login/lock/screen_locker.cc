@@ -653,20 +653,6 @@ void ScreenLocker::ScheduleDeletion() {
   screen_locker_ = nullptr;
 }
 
-void ScreenLocker::SaveSyncPasswordHash(
-    std::unique_ptr<UserContext> user_context) {
-  if (!user_context->GetSyncPasswordData().has_value())
-    return;
-
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->FindUser(user_context->GetAccountId());
-  if (!user || !user->is_active())
-    return;
-  auto* profile = ProfileHelper::Get()->GetProfileByUser(user);
-  if (profile)
-    login::SaveSyncPasswordDataToProfile(*user_context, profile);
-}
-
 bool ScreenLocker::IsAuthTemporarilyDisabledForUser(
     const AccountId& account_id) {
   return base::Contains(users_with_temporarily_disabled_auth_, account_id);
