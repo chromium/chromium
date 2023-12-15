@@ -44,7 +44,9 @@ RendererWebMediaPlayerDelegate::RendererWebMediaPlayerDelegate(
   idle_cleanup_interval_ = base::Seconds(5);
   idle_timeout_ = base::Seconds(15);
 
-  is_low_end_ = base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled();
+  // This imposes drastic limits on the number of media players and is only
+  // appropriate for true low end devices.
+  is_low_end_ = base::SysInfo::IsLowEndDevice();
 
   idle_cleanup_timer_.SetTaskRunner(
       render_frame->GetTaskRunner(blink::TaskType::kInternalMedia));
