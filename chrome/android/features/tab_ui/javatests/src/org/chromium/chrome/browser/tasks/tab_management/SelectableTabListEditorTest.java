@@ -84,6 +84,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
@@ -147,28 +148,44 @@ public class SelectableTabListEditorTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mTabModelSelector = sActivityTestRule.getActivity().getTabModelSelector();
-        mParentView = (ViewGroup) sActivityTestRule.getActivity().findViewById(R.id.coordinator);
-        mSnackbarManager = sActivityTestRule.getActivity().getSnackbarManager();
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        // Eagerly inflate the tab switcher.
+
+        boolean isTabSwitcherReady =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return cta.getTabSwitcherForTesting() != null;
+                        });
+        if (!isTabSwitcherReady) {
+            TabUiTestHelper.enterTabSwitcher(cta);
+            TabUiTestHelper.leaveTabSwitcher(cta);
+        }
+
+        mTabModelSelector = cta.getTabModelSelector();
+        mParentView = (ViewGroup) cta.findViewById(R.id.coordinator);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    ViewGroup compositorViewHolder = cta.getCompositorViewHolderForTesting();
+                    ViewGroup rootView =
+                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(cta)
+                                    ? (ViewGroup) cta.findViewById(R.id.tab_switcher_view_holder)
+                                    : compositorViewHolder;
+                    mSnackbarManager = new SnackbarManager(cta, rootView, null);
                     var currentTabModelFilterSupplier =
                             mTabModelSelector
                                     .getTabModelFilterProvider()
                                     .getCurrentTabModelFilterSupplier();
                     mTabListEditorCoordinator =
                             new TabListEditorCoordinator(
-                                    sActivityTestRule.getActivity(),
+                                    cta,
                                     mParentView,
-                                    sActivityTestRule.getActivity().getBrowserControlsManager(),
+                                    cta.getBrowserControlsManager(),
                                     currentTabModelFilterSupplier,
                                     () -> mTabModelSelector.getModel(false),
-                                    sActivityTestRule.getActivity().getTabContentManager(),
+                                    cta.getTabContentManager(),
                                     mSetRecyclerViewPosition,
                                     getMode(),
-                                    sActivityTestRule
-                                            .getActivity()
-                                            .getCompositorViewHolderForTesting(),
+                                    compositorViewHolder,
                                     /* displayGroups= */ true,
                                     mSnackbarManager,
                                     TabProperties.UiType.SELECTABLE);
@@ -177,7 +194,7 @@ public class SelectableTabListEditorTest {
                     mTabListEditorLayout =
                             mTabListEditorCoordinator.getTabListEditorLayoutForTesting();
                     mRef = new WeakReference<>(mTabListEditorLayout);
-                    mBookmarkModel = sActivityTestRule.getActivity().getBookmarkModelForTesting();
+                    mBookmarkModel = cta.getBookmarkModelForTesting();
                 });
     }
 
@@ -205,6 +222,7 @@ public class SelectableTabListEditorTest {
         }
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    if (mSnackbarManager == null) return;
                     mSnackbarManager.dismissAllSnackbars();
                 });
     }
