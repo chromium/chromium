@@ -40,10 +40,11 @@ const char kSocketNotListeningString[] = "Socket is not listening.";
 
 // Top Popular peripherals and first party devices. These device
 // model names should be kept in sync with the FastPairTrackedModelID
-// enum in src/tools/metrics/histograms/enums.xml. Devices may have multiple
-// Model IDs associated with the same device (for example, each Pixel Bud Pros
-// have different Model IDs for each different color) so we append '_*' to the
-// naming for subsequent Model IDs after the first one.
+// token in //tools/metrics/histograms/metadata/bluetooth/histograms.xml.
+// Devices may have multiple Model IDs associated with the same device
+// (for example, each Pixel Bud Pros have different Model IDs for each different
+// color) so we append '_*' to the naming for subsequent Model IDs after the
+// first one.
 const char kPopularPeripheral_BoatRockerz255Pro_ModelId[] = "CFF121";
 const char kPopularPeripheral_BoatRockerz255Pro_Name[] = "BoatRockerz255Pro";
 
@@ -553,7 +554,7 @@ const std::string GetFastPairTrackedModelId(const std::string& model_id) {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. This enum should be kept in sync
 // with the BluetoothConnectToServiceError enum in
-// src/tools/metrics/histograms/enums.xml.
+// //tools/metrics/histograms/metadata/bluetooth/enums.xml.
 enum class ConnectToServiceError {
   kUnknownError = 0,
   kAcceptFailed = 1,
