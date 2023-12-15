@@ -3206,11 +3206,6 @@ TEST_P(RendererPixelTest, EnlargedRenderPassTextureWithAntiAliasing) {
 // This tests the case where we have a RenderPass with a mask, but the quad
 // for the masked surface does not include the full surface texture.
 TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad) {
-  // TODO(b/238763010): Skia Graphite needs mask filter support.
-  if (is_skia_graphite()) {
-    GTEST_SKIP();
-  }
-
   gfx::Rect viewport_rect(this->device_viewport_size_);
 
   AggregatedRenderPassId root_pass_id{1};
@@ -3309,11 +3304,6 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad) {
 // This tests the case where we have a RenderPass with a mask, but the quad
 // for the masked surface does not include the full surface texture.
 TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad2) {
-  // TODO(b/238763010): Skia Graphite needs mask filter support.
-  if (is_skia_graphite()) {
-    GTEST_SKIP();
-  }
-
   gfx::Rect viewport_rect(this->device_viewport_size_);
 
   AggregatedRenderPassId root_pass_id{1};
@@ -3403,18 +3393,12 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad2) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(child_pass));
   pass_list.push_back(std::move(root_pass));
-
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("mask_middle.png")),
       cc::AlphaDiscardingExactPixelComparator()));
 }
 
 TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCorner) {
-  // TODO(b/238763010): Skia Graphite needs mask filter support.
-  if (is_skia_graphite()) {
-    GTEST_SKIP();
-  }
-
   gfx::Rect viewport_rect(this->device_viewport_size_);
   constexpr int kInset = 20;
   constexpr int kCornerRadius = 20;
@@ -3506,11 +3490,6 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCorner) {
 }
 
 TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCornerMultiRadii) {
-  // TODO(b/238763010): Skia Graphite needs mask filter support.
-  if (is_skia_graphite()) {
-    GTEST_SKIP();
-  }
-
   gfx::Rect viewport_rect(this->device_viewport_size_);
   constexpr int kInset = 20;
   const SkVector kCornerRadii[4] = {
@@ -3826,11 +3805,6 @@ TEST_P(RendererPixelTestWithBackdropFilter, InvertFilter) {
 }
 
 TEST_P(RendererPixelTestWithBackdropFilter, InvertFilterWithMask) {
-  // TODO(b/238763010): Skia Graphite needs mask filter support.
-  if (is_skia_graphite()) {
-    GTEST_SKIP();
-  }
-
   backdrop_filters_.Append(cc::FilterOperation::CreateInvertFilter(1.f));
   include_backdrop_mask_ = true;
   SetUpRenderPassList();
@@ -5342,11 +5316,6 @@ TEST_P(RendererPixelTest, RoundedCornerOnRenderPass) {
 #define MAYBE_LinearGradientOnRenderPass LinearGradientOnRenderPass
 #endif  // BUILDFLAG(IS_IOS)
 TEST_P(GPURendererPixelTest, MAYBE_LinearGradientOnRenderPass) {
-  // TODO(b/238763010): Skia Graphite needs mask filter support.
-  if (is_skia_graphite()) {
-    GTEST_SKIP();
-  }
-
   gfx::Rect viewport_rect(this->device_viewport_size_);
   constexpr int kCornerRadius = 20;
 
@@ -5399,11 +5368,6 @@ TEST_P(GPURendererPixelTest, MAYBE_LinearGradientOnRenderPass) {
 #define MAYBE_MultiLinearGradientOnRenderPass MultiLinearGradientOnRenderPass
 #endif  // BUILDFLAG(IS_IOS)
 TEST_P(GPURendererPixelTest, MAYBE_MultiLinearGradientOnRenderPass) {
-  // TODO(b/238763010): Skia Graphite needs mask filter support.
-  if (is_skia_graphite()) {
-    GTEST_SKIP();
-  }
-
   gfx::Rect viewport_rect(this->device_viewport_size_);
   constexpr int kCornerRadius = 20;
   constexpr int kInset = 20;
