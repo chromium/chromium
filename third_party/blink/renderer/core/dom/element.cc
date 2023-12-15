@@ -179,6 +179,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -2461,6 +2462,11 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     if (new_id != GetElementData()->IdForStyleResolution()) {
       AtomicString old_id = GetElementData()->SetIdForStyleResolution(new_id);
       GetDocument().GetStyleEngine().IdChangedForElement(old_id, new_id, *this);
+    }
+
+    if (auto* manager = GetDocument().GetRenderBlockingResourceManager();
+        manager && IsFinishedParsingChildren()) {
+      manager->RemovePendingParsingElement(new_id);
     }
   } else if (name == html_names::kClassAttr) {
     if (params.old_value == params.new_value &&
@@ -5412,6 +5418,11 @@ void Element::FinishParsingChildren() {
   CheckForEmptyStyleChange(this, this);
   CheckForSiblingStyleChanges(kFinishedParsingChildren, nullptr, lastChild(),
                               nullptr);
+
+  if (auto* manager = GetDocument().GetRenderBlockingResourceManager()) {
+    manager->RemovePendingParsingElement(GetIdAttribute());
+  }
+
   GetDocument()
       .GetStyleEngine()
       .ScheduleInvalidationsForHasPseudoAffectedByInsertion(

@@ -7505,8 +7505,7 @@ void Document::OnLargestContentfulPaintUpdated() {
 
 void Document::OnPrepareToStopParsing() {
   if (render_blocking_resource_manager_) {
-    render_blocking_resource_manager_->SetMainDocumentParsingIsRenderBlocking(
-        false);
+    render_blocking_resource_manager_->ClearPendingParsingElements();
   }
   MaybeExecuteDelayedAsyncScripts(
       MilestoneForDelayedAsyncScript::kFinishedParsing);

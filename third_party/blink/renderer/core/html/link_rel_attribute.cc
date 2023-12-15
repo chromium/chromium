@@ -30,28 +30,9 @@
  */
 
 #include "third_party/blink/renderer/core/html/link_rel_attribute.h"
-
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
-
-LinkRelAttribute::LinkRelAttribute()
-    : icon_type_(mojom::blink::FaviconIconType::kInvalid),
-      is_style_sheet_(false),
-      is_alternate_(false),
-      is_dns_prefetch_(false),
-      is_preconnect_(false),
-      is_link_prefetch_(false),
-      is_link_preload_(false),
-      is_link_prerender_(false),
-      is_link_next_(false),
-      is_manifest_(false),
-      is_module_preload_(false),
-      is_service_worker_(false),
-      is_canonical_(false),
-      is_monetization_(false),
-      is_dictionary_(false),
-      is_privacy_policy_(false),
-      is_terms_of_service_(false) {}
 
 LinkRelAttribute::LinkRelAttribute(const String& rel) : LinkRelAttribute() {
   if (rel.empty())
@@ -102,6 +83,9 @@ LinkRelAttribute::LinkRelAttribute(const String& rel) : LinkRelAttribute() {
       is_privacy_policy_ = true;
     } else if (EqualIgnoringASCIICase(link_type, "terms-of-service")) {
       is_terms_of_service_ = true;
+    } else if (RuntimeEnabledFeatures::DocumentRenderBlockingEnabled() &&
+               EqualIgnoringASCIICase(link_type, "expect")) {
+      is_expect_ = true;
     }
 
     // Adding or removing a value here whose processing model is web-visible

@@ -43,7 +43,7 @@ class CORE_EXPORT LinkRelAttribute {
   DISALLOW_NEW();
 
  public:
-  LinkRelAttribute();
+  LinkRelAttribute() = default;
   explicit LinkRelAttribute(const String&);
 
   bool IsStyleSheet() const { return is_style_sheet_; }
@@ -63,25 +63,28 @@ class CORE_EXPORT LinkRelAttribute {
   bool IsDictionary() const { return is_dictionary_; }
   bool IsPrivacyPolicy() const { return is_privacy_policy_; }
   bool IsTermsOfService() const { return is_terms_of_service_; }
+  bool IsExpect() const { return is_expect_; }
 
  private:
-  mojom::blink::FaviconIconType icon_type_;
-  bool is_style_sheet_ : 1;
-  bool is_alternate_ : 1;
-  bool is_dns_prefetch_ : 1;
-  bool is_preconnect_ : 1;
-  bool is_link_prefetch_ : 1;
-  bool is_link_preload_ : 1;
-  bool is_link_prerender_ : 1;
-  bool is_link_next_ : 1;
-  bool is_manifest_ : 1;
-  bool is_module_preload_ : 1;
-  bool is_service_worker_ : 1;
-  bool is_canonical_ : 1;
-  bool is_monetization_ : 1;
-  bool is_dictionary_ : 1;
-  bool is_privacy_policy_ : 1;
-  bool is_terms_of_service_ : 1;
+  mojom::blink::FaviconIconType icon_type_ =
+      mojom::blink::FaviconIconType::kInvalid;
+  bool is_style_sheet_ : 1 = false;
+  bool is_alternate_ : 1 = false;
+  bool is_dns_prefetch_ : 1 = false;
+  bool is_preconnect_ : 1 = false;
+  bool is_link_prefetch_ : 1 = false;
+  bool is_link_preload_ : 1 = false;
+  bool is_link_prerender_ : 1 = false;
+  bool is_link_next_ : 1 = false;
+  bool is_manifest_ : 1 = false;
+  bool is_module_preload_ : 1 = false;
+  bool is_service_worker_ : 1 = false;
+  bool is_canonical_ : 1 = false;
+  bool is_monetization_ : 1 = false;
+  bool is_dictionary_ : 1 = false;
+  bool is_privacy_policy_ : 1 = false;
+  bool is_terms_of_service_ : 1 = false;
+  bool is_expect_ : 1 = false;
 };
 
 }  // namespace blink
