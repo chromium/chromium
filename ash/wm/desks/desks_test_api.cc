@@ -182,4 +182,10 @@ void DesksTestApi::WaitForDeskBarUiUpdate(DeskBarViewBase* desk_bar_view) {
   run_loop.Run();
 }
 
+// static
+void DesksTestApi::SetDeskBarUiUpdateCallback(DeskBarViewBase* desk_bar_view,
+                                              base::OnceClosure done) {
+  desk_bar_view->on_update_ui_closure_for_testing_ = std::move(done);
+}
+
 }  // namespace ash

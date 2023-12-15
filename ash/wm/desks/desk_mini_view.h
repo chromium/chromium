@@ -58,6 +58,7 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
   aura::Window* root_window() { return root_window_; }
 
+  const Desk* desk() const { return desk_; }
   Desk* desk() { return desk_; }
 
   DeskNameView* desk_name_view() { return desk_name_view_; }
@@ -138,7 +139,6 @@ class ASH_EXPORT DeskMiniView : public views::View,
   void OnPreviewAboutToBeFocusedByReverseTab();
 
   // views::View:
-  const char* GetClassName() const override;
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

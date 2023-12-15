@@ -493,10 +493,6 @@ void DeskMiniView::OnPreviewAboutToBeFocusedByReverseTab() {
   }
 }
 
-const char* DeskMiniView::GetClassName() const {
-  return "DeskMiniView";
-}
-
 void DeskMiniView::Layout() {
   const gfx::Rect preview_bounds = GetDeskPreviewBounds(root_window_);
   desk_preview_->SetBoundsRect(preview_bounds);

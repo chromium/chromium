@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/ash_export.h"
 #include "ash/style/blurred_background_shield.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -19,7 +20,8 @@ class CloseButton;
 
 // A view that holds buttons that act on a single DeskMiniView instance, such as
 // combining two desks or closing a desk and all of its windows.
-class DeskActionView : public views::BoxLayoutView, views::ViewObserver {
+class ASH_EXPORT DeskActionView : public views::BoxLayoutView,
+                                  views::ViewObserver {
  public:
   METADATA_HEADER(DeskActionView);
 

@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -59,7 +60,7 @@
 #include "ui/views/background.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/highlight_border.h"
-#include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/wm/core/window_animations.h"
 
 namespace ash {
@@ -527,6 +528,8 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
               type_ == Type::kDeskButton
                   ? DesksCreationRemovalSource::kDeskButtonDeskBarButton
                   : DesksCreationRemovalSource::kButton)));
+  new_desk_button_->SetProperty(views::kElementIdentifierKey,
+                                kOverviewDeskBarNewDeskButtonElementId);
   new_desk_button_label_ =
       scroll_view_contents_->AddChildView(std::make_unique<views::Label>());
   new_desk_button_label_->SetPaintToLayer();
@@ -1252,7 +1255,9 @@ void DeskBarViewBase::OnDeskAdded(const Desk* desk, bool from_undo) {
 
 void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
   DeskNameView::CommitChanges(GetWidget());
-  auto iter = base::ranges::find(mini_views_, desk, &DeskMiniView::desk);
+  auto iter = base::ranges::find_if(
+      mini_views_,
+      [desk](DeskMiniView* mini_view) { return mini_view->desk() == desk; });
 
   // There are cases where a desk may be removed before the `desk_bar_view`
   // finishes initializing (i.e. removed on a separate root window before the
