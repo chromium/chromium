@@ -82,17 +82,9 @@ void RenderViewContextMenuMac::UpdateTextDirection(
   if (direction == base::i18n::RIGHT_TO_LEFT)
     command_id = IDC_WRITING_DIRECTION_RTL;
 
-  // Note: we get the local render frame host so that the writing mode settings
-  // changes apply to the correct frame. See crbug.com/1129073 for a
-  // description of what happens if we use the outermost frame.
-  content::RenderFrameHost* rfh = GetRenderFrameHost();
-  // It's possible that the frame drops out from under us while the context
-  // menu is open. In this case, we'll not perform the action, but still record
-  // metrics.
-  if (rfh) {
-    rfh->GetRenderWidgetHost()->UpdateTextDirection(direction);
-    rfh->GetRenderWidgetHost()->NotifyTextDirection();
-  }
+  content::RenderViewHost* view_host = GetRenderViewHost();
+  view_host->GetWidget()->UpdateTextDirection(direction);
+  view_host->GetWidget()->NotifyTextDirection();
 
   RenderViewContextMenu::RecordUsedItem(command_id);
 }
@@ -136,7 +128,7 @@ void RenderViewContextMenuMac::InitToolkitMenu() {
 
 void RenderViewContextMenuMac::LookUpInDictionary() {
   content::RenderWidgetHostView* view =
-      GetRenderFrameHost()->GetRenderWidgetHost()->GetView();
+      GetRenderViewHost()->GetWidget()->GetView();
   if (view)
     view->ShowDefinitionForSelection();
 }
