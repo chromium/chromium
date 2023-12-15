@@ -501,6 +501,7 @@ class Profile : public content::BrowserContext {
 
   virtual void RecordPrimaryMainFrameNavigation() = 0;
 
+  base::WeakPtr<const Profile> GetWeakPtr() const;
   base::WeakPtr<Profile> GetWeakPtr();
 
   // Experimental getters/setters to gauge the performance of caching

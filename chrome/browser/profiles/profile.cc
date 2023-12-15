@@ -571,6 +571,10 @@ content::ResourceContext* Profile::GetResourceContext() {
   return resource_context_.get();
 }
 
+base::WeakPtr<const Profile> Profile::GetWeakPtr() const {
+  return weak_factory_.GetWeakPtr();
+}
+
 base::WeakPtr<Profile> Profile::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
