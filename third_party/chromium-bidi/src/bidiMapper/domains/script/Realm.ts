@@ -171,12 +171,18 @@ export class Realm {
 
     if (deepSerializedValue.type === 'node') {
       if (Object.hasOwn(bidiValue, 'backendNodeId')) {
+        let navigableId = this.navigableId;
+        if (Object.hasOwn(bidiValue, 'loaderId')) {
+          // `loaderId` should be always there after ~2024-03-05, when
+          // https://crrev.com/c/5116240 reaches stable.
+          // TODO: remove the check after the date.
+          navigableId = bidiValue.loaderId;
+          delete bidiValue['loaderId'];
+        }
         (deepSerializedValue as unknown as Script.SharedReference).sharedId =
-          // TODO: replace with the loaderId and corresponding frameId from deep
-          //  serialized value after https://crrev.com/c/5116240 is landed.
           SharedIdParser.getSharedId(
-            this.#browsingContextId,
-            this.navigableId,
+            this.#getBrowsingContextId(navigableId),
+            navigableId,
             bidiValue.backendNodeId,
             this.#sharedIdWithFrame
           );
@@ -225,6 +231,13 @@ export class Realm {
     }
 
     return deepSerializedValue as Script.RemoteValue;
+  }
+
+  #getBrowsingContextId(navigableId: string): string {
+    const maybeBrowsingContext = this.#browsingContextStorage
+      .getAllContexts()
+      .find((context) => context.navigableId === navigableId);
+    return maybeBrowsingContext?.id ?? 'UNKNOWN';
   }
 
   get realmId(): Script.Realm {

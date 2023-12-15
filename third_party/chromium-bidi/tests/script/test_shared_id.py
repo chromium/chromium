@@ -17,7 +17,8 @@ import re
 
 import pytest
 from test_helpers import (ANY_LEGACY_SHARED_ID, ANY_NEW_SHARED_ID,
-                          execute_command, goto_url, set_html_content)
+                          execute_command, get_tree, goto_url,
+                          set_html_content)
 
 
 @pytest.mark.asyncio
@@ -325,3 +326,60 @@ async def test_shared_id_old_format(websocket, context_id, html):
         })
     shared_id = result["result"]["sharedId"]
     assert shared_id == ANY_LEGACY_SHARED_ID
+
+
+@pytest.mark.parametrize('websocket', [{
+    'capabilities': {
+        'sharedIdWithFrame': True
+    }
+}],
+                         indirect=['websocket'])
+@pytest.mark.asyncio
+async def test_shared_id_uses_node_frame(websocket, context_id, html):
+    # `iframe_id` does not work in this context, as it is cross-origin.
+    await goto_url(websocket, context_id,
+                   html('data:text/html,<iframe src="about:blank" />'))
+
+    tree = await get_tree(websocket, context_id)
+    iframe_id = tree['contexts'][0]['children'][0]['context']
+
+    # Get top-level element reference from iframe.
+    result = await execute_command(
+        websocket, {
+            'method': 'script.evaluate',
+            'params': {
+                'expression': 'parent.document.getElementsByTagName("iframe")[0]',
+                'target': {
+                    'context': iframe_id
+                },
+                'awaitPromise': True,
+                'serializationOptions': {
+                    'maxDomDepth': 0
+                }
+            }
+        })
+
+    top_level_shared_id = result['result']['sharedId']
+    # Assert top-level element's reference points to top-level browsing context.
+    assert top_level_shared_id.startswith(
+        f'f.{context_id}.d.'
+    ), 'SharedId should point to the top level frame id'
+
+    # Get top-level element reference from top-level frame.
+    result = await execute_command(
+        websocket, {
+            'method': 'script.evaluate',
+            'params': {
+                'expression': 'document.getElementsByTagName("iframe")[0]',
+                'target': {
+                    'context': context_id
+                },
+                'awaitPromise': True,
+                'serializationOptions': {
+                    'maxDomDepth': 0
+                }
+            }
+        })
+    # Assert the top-level element's reference is the same regardless of the
+    # frame it was evaluated from.
+    assert top_level_shared_id == result['result']['sharedId']
