@@ -328,7 +328,7 @@ class X11Window : public PlatformWindow,
 
   void OnWmSynced();
 
-  void OnBoundsChanged(const gfx::Rect& old_bounds_px,
+  void OnBoundsChanged(const absl::optional<gfx::Rect>& old_bounds_px,
                        const gfx::Rect& new_bounds_px);
 
   // Stores current state of this window.

@@ -2624,10 +2624,12 @@ void X11Window::OnWmSynced() {
   OnBoundsChanged(last_set_bounds_px_, GetBoundsInPixels());
 }
 
-void X11Window::OnBoundsChanged(const gfx::Rect& old_bounds_px,
+void X11Window::OnBoundsChanged(const absl::optional<gfx::Rect>& old_bounds_px,
                                 const gfx::Rect& new_bounds_px) {
-  const bool size_changed = old_bounds_px.size() != new_bounds_px.size();
-  const bool origin_changed = old_bounds_px.origin() != new_bounds_px.origin();
+  const bool size_changed = !old_bounds_px.has_value() ||
+                            old_bounds_px->size() != new_bounds_px.size();
+  const bool origin_changed = !old_bounds_px.has_value() ||
+                              old_bounds_px->origin() != new_bounds_px.origin();
 
   if (size_changed) {
     DispatchResize(origin_changed);

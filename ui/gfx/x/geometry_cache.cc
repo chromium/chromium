@@ -63,10 +63,6 @@ void GeometryCache::OnGetGeometryResponse(GetGeometryResponse response) {
 }
 
 void GeometryCache::OnParentChanged(Window parent, const gfx::Point& position) {
-  const bool was_ready = Ready();
-  bool parent_changed = true;
-  const gfx::Rect old_geometry = geometry_;
-
   have_parent_ = true;
   if (parent == Window::None) {
     parent_.reset();
@@ -75,32 +71,18 @@ void GeometryCache::OnParentChanged(Window parent, const gfx::Point& position) {
         connection_, parent,
         base::BindRepeating(&GeometryCache::OnParentGeometryChanged,
                             weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    parent_changed = false;
   }
 
-  const bool position_changed = position != geometry_.origin();
   geometry_.set_origin(position);
 
-  if (Ready() && (!was_ready || parent_changed || position_changed)) {
-    bounds_changed_callback_.Run(old_geometry, geometry_);
-  }
+  NotifyGeometryChanged();
 }
 
 void GeometryCache::OnGeometryChanged(const gfx::Rect& geometry) {
-  const bool was_ready = Ready();
-  const bool geometry_changed = geometry_ != geometry;
-  const gfx::Rect old_geometry = geometry_;
-
   have_geometry_ = true;
   geometry_ = geometry;
 
-  if (Ready() && (!was_ready || geometry_changed)) {
-    auto parent_offset =
-        parent_ ? parent_->GetBoundsPx().OffsetFromOrigin() : gfx::Vector2d();
-    bounds_changed_callback_.Run(old_geometry + parent_offset,
-                                 geometry_ + parent_offset);
-  }
+  NotifyGeometryChanged();
 }
 
 bool GeometryCache::Ready() const {
@@ -108,13 +90,24 @@ bool GeometryCache::Ready() const {
 }
 
 void GeometryCache::OnParentGeometryChanged(
-    const gfx::Rect& old_parent_bounds,
+    const absl::optional<gfx::Rect>& old_parent_bounds,
     const gfx::Rect& new_parent_bounds) {
-  if (have_geometry_) {
-    bounds_changed_callback_.Run(
-        geometry_ + old_parent_bounds.OffsetFromOrigin(),
-        geometry_ + new_parent_bounds.OffsetFromOrigin());
+  NotifyGeometryChanged();
+}
+
+void GeometryCache::NotifyGeometryChanged() {
+  if (!Ready()) {
+    return;
   }
+
+  auto geometry = GetBoundsPx();
+  if (last_notified_geometry_ == geometry) {
+    return;
+  }
+
+  auto old_geometry = last_notified_geometry_;
+  last_notified_geometry_ = geometry;
+  bounds_changed_callback_.Run(old_geometry, geometry);
 }
 
 void GeometryCache::OnEvent(const Event& xevent) {
