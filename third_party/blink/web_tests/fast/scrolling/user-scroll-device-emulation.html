@@ -17,6 +17,8 @@
         internals.setDeviceEmulationScale(scale);
 
         promise_test(async (t) => {
+          await waitForCompositorCommit();
+
           const bottombox = document.getElementById("bottombox");
           const topbox = document.getElementById("topbox");
 
