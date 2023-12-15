@@ -29,7 +29,7 @@ mojom("mojom_ip_address") {
 
     # Used by ash/webui/resources/common/network_health, which is still using
     # Closure Compiler, so generate WebUI bindings in JavaScript.
-    generate_webui_js_bindings = true
+    use_typescript_sources = false
   }
 
   public_deps = [ "//url/mojom:url_mojom_gurl" ]

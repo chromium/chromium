@@ -340,12 +340,24 @@ if (enable_scrambled_message_ids) {
 #
 #   generate_webui_js_bindings (optional)
 #       Generate WebUI bindings in JavaScript rather than TypeScript. Defaults
-#       to false. ChromeOS only parameter.
+#       to false. ChromeOS only parameter. Use instead of
+#       |use_typescript_sources|, which is being removed.
+#
+#   use_typescript_sources (optional)
+#       Generate WebUI bindings in TypeScript. Defaults to "true". When set to
+#       "false", WebUI bindings will be generated in JavaScript instead.
+#       Ignored if |webui_module_path| is not set.
+#
+#       Note: DO NOT USE in new targets. New WebUI code should always be in
+#       TypeScript, so the corresponding WebUI mojo bindings should be in
+#       TypeScript as well. This parameter should only be set to false to
+#       support legacy WebUI code that still uses the Closure Compiler for
+#       typechecking.
 #
 #   generate_legacy_js_bindings (optional)
 #       Generate js_data_deps target containing legacy JavaScript bindings files
 #       for Blink tests and other non-WebUI users when generating TypeScript
-#       bindings for WebUI. Ignored if generate_webui_js_bindings is set to
+#       bindings for WebUI. Ignored if use_typescript_sources is not set to
 #       true.
 #
 #   js_generate_struct_deserializers (optional)
@@ -374,7 +386,7 @@ if (enable_scrambled_message_ids) {
 #       given URL.
 #
 #       Note: WebUI module bindings are generated in TypeScript by default,
-#       unless |generate_webui_js_bindings| is specified as true.
+#       unless |use_typescript_sources| is specified as false.
 #
 # The following parameters are used to support the component build. They are
 # needed so that bindings which are linked with a component can use the same
@@ -808,8 +820,10 @@ template("mojom") {
           "--add-module-metadata",
           "webui_module_path=${invoker.webui_module_path}",
         ]
-        if (defined(invoker.generate_webui_js_bindings) &&
-            invoker.generate_webui_js_bindings) {
+        if ((defined(invoker.use_typescript_sources) &&
+             !invoker.use_typescript_sources) ||
+            (defined(invoker.generate_webui_js_bindings) &&
+             invoker.generate_webui_js_bindings)) {
           args += [
             "--add-module-metadata",
             "generate_webui_js=True",
@@ -1847,7 +1861,19 @@ template("mojom") {
   }
 
   use_typescript_for_target = defined(invoker.webui_module_path) &&
-                              !defined(invoker.generate_webui_js_bindings)
+                              !defined(invoker.generate_webui_js_bindings) &&
+                              (!defined(invoker.use_typescript_sources) ||
+                               (defined(invoker.use_typescript_sources) &&
+                                invoker.use_typescript_sources))
+
+  # Don't allow JavaScript WebUI bindings on non-ChromeOS platforms.
+  # TODO (rbpotter): Remove this check once use_typescript_sources is removed.
+  if (!use_typescript_for_target && defined(invoker.webui_module_path)) {
+    assert(
+        is_chromeos_ash,
+        "WebUI bindings should be in TypeScript on non-ChromeOS platforms. " +
+            "Remove use_typescript_sources = false")
+  }
 
   generate_legacy_js = !use_typescript_for_target ||
                        (defined(invoker.generate_legacy_js_bindings) &&

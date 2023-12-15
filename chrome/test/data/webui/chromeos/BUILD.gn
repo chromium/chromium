@@ -270,7 +270,7 @@ mojom("web_ui_test_bindings") {
   webui_module_path = "/"
 
   # Used by legacy MojoWebUIBrowserTest.
-  generate_legacy_js_bindings = true
+  use_typescript_sources = false
 }
 
 generate_grd("build_web_ui_test_mojo_grdp") {
