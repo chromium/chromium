@@ -7955,16 +7955,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PartnerBookmark.LoadingTime" units="ms"
-    expires_after="2021-07-10">
-  <owner>bttk@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    The time spent on loading partner bookmarks, from kickOffReading() to
-    bookmarkModelLoaded() callback.
-  </summary>
-</histogram>
-
 <histogram name="PendingBeaconHost.Action" enum="PendingBeaconHostAction"
     expires_after="M115">
   <owner>mych@chromium.org</owner>
