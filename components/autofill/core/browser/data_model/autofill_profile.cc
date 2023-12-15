@@ -1249,22 +1249,22 @@ FieldTypeSet AutofillProfile::FindInaccessibleProfileValues() const {
   AutofillCountry country(stored_country.empty() ? "US" : stored_country);
   // Consider only AddressFields which are invisible in the settings for some
   // countries.
-  for (const AddressField& field_type :
+  for (const AddressField& adress_field :
        {AddressField::ADMIN_AREA, AddressField::LOCALITY,
         AddressField::DEPENDENT_LOCALITY, AddressField::POSTAL_CODE,
         AddressField::SORTING_CODE}) {
-    ServerFieldType server_field_type = i18n::TypeForField(field_type);
-    if (HasRawInfo(server_field_type) &&
-        !country.IsAddressFieldSettingAccessible(server_field_type)) {
-      inaccessible_fields.insert(server_field_type);
+    ServerFieldType field_type = i18n::TypeForField(adress_field);
+    if (HasRawInfo(field_type) &&
+        !country.IsAddressFieldSettingAccessible(field_type)) {
+      inaccessible_fields.insert(field_type);
     }
   }
   return inaccessible_fields;
 }
 
 void AutofillProfile::ClearFields(const FieldTypeSet& fields) {
-  for (ServerFieldType server_field_type : fields) {
-    SetRawInfoWithVerificationStatus(server_field_type, u"",
+  for (ServerFieldType field_type : fields) {
+    SetRawInfoWithVerificationStatus(field_type, u"",
                                      VerificationStatus::kNoStatus);
   }
 }

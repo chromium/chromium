@@ -458,9 +458,9 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
 
 FieldTypeSet GetFieldTypesOfGroup(FieldTypeGroup group) {
   FieldTypeSet fields_matching_group;
-  for (FieldType server_field_type : kAllFieldTypes) {
-    if (GroupTypeOfServerFieldType(server_field_type) == group) {
-      fields_matching_group.insert(server_field_type);
+  for (FieldType field_type : kAllFieldTypes) {
+    if (GroupTypeOfServerFieldType(field_type) == group) {
+      fields_matching_group.insert(field_type);
     }
   }
   return fields_matching_group;

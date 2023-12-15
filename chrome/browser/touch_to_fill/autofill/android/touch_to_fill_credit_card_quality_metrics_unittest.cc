@@ -84,16 +84,15 @@ class TouchToFillForCreditCardsTest
   void SetFieldsAutofilledValues(
       FormData& form,
       const std::vector<bool>& fields_have_autofilled_values,
-      const std::vector<ServerFieldType>& server_field_types) {
+      const std::vector<ServerFieldType>& field_types) {
     ASSERT_EQ(form.fields.size(), fields_have_autofilled_values.size());
-    ASSERT_EQ(form.fields.size(), server_field_types.size());
+    ASSERT_EQ(form.fields.size(), field_types.size());
     for (size_t i = 0; i < fields_have_autofilled_values.size(); i++) {
       form.fields[i].is_autofilled = fields_have_autofilled_values[i];
       CreditCard test_card = test::GetCreditCard();
-      form.fields[i].value =
-          server_field_types[i] != CREDIT_CARD_VERIFICATION_CODE
-              ? test_card.GetRawInfo(server_field_types[i])
-              : u"123";
+      form.fields[i].value = field_types[i] != CREDIT_CARD_VERIFICATION_CODE
+                                 ? test_card.GetRawInfo(field_types[i])
+                                 : u"123";
     }
   }
 

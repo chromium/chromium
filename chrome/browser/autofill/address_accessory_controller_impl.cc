@@ -57,8 +57,8 @@ void AddProfileInfoAsSelectableField(UserInfo* info,
 
 UserInfo TranslateProfile(const AutofillProfile* profile) {
   UserInfo info;
-  for (ServerFieldType server_field_type : kTypesToInclude) {
-    AddProfileInfoAsSelectableField(&info, profile, server_field_type);
+  for (ServerFieldType field_type : kTypesToInclude) {
+    AddProfileInfoAsSelectableField(&info, profile, field_type);
   }
   return info;
 }

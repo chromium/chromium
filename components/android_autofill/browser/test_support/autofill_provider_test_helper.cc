@@ -63,8 +63,8 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
   std::vector<std::u16string> field_ids;
   base::android::AppendJavaStringArrayToStringVector(env, jfield_ids,
                                                      &field_ids);
-  std::vector<int> field_types;
-  base::android::JavaIntArrayToIntVector(env, jfield_types, &field_types);
+  std::vector<int> raw_field_types;
+  base::android::JavaIntArrayToIntVector(env, jfield_types, &raw_field_types);
 
   AutofillManager* autofill_manager = ToMainFrameAutofillManager(jweb_contents);
   const std::map<FormGlobalId, std::unique_ptr<FormStructure>>&
@@ -85,7 +85,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
         if (form_field_data.id_attribute == field_ids[i]) {
           autofill::test::AddFieldPredictionToForm(
               form_field_data,
-              static_cast<autofill::ServerFieldType>(field_types[i]),
+              static_cast<autofill::ServerFieldType>(raw_field_types[i]),
               form_suggestion);
           found_fields_count++;
           break;
@@ -117,9 +117,9 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
   std::vector<std::u16string> field_ids;
   base::android::AppendJavaStringArrayToStringVector(env, jfield_ids,
                                                      &field_ids);
-  std::vector<std::vector<int>> field_types;
+  std::vector<std::vector<int>> raw_field_types;
   base::android::JavaArrayOfIntArrayToIntVector(env, jfield_types,
-                                                &field_types);
+                                                &raw_field_types);
 
   AutofillManager* autofill_manager = ToMainFrameAutofillManager(jweb_contents);
   const std::map<FormGlobalId, std::unique_ptr<FormStructure>>&
@@ -138,15 +138,15 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
     for (size_t i = 0; i < field_ids.size(); ++i) {
       for (auto form_field_data : formData.fields) {
         if (form_field_data.id_attribute == field_ids[i]) {
-          std::vector<ServerFieldType> server_field_types;
-          server_field_types.reserve(field_types[i].size());
-          base::ranges::transform(field_types[i],
-                                  std::back_inserter(server_field_types),
+          std::vector<ServerFieldType> field_types;
+          field_types.reserve(raw_field_types[i].size());
+          base::ranges::transform(raw_field_types[i],
+                                  std::back_inserter(field_types),
                                   [](int type) -> ServerFieldType {
                                     return ServerFieldType(type);
                                   });
           autofill::test::AddFieldPredictionsToForm(
-              form_field_data, server_field_types, form_suggestion);
+              form_field_data, field_types, form_suggestion);
           found_fields_count++;
           break;
         }
