@@ -3333,6 +3333,21 @@
             ]
         }
     ],
+    "CellularCarrierLock": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CellularCarrierLock"
+                    ]
+                }
+            ]
+        }
+    ],
     "CertDualVerificationTrial": [
         {
             "platforms": [
