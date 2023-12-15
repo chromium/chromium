@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 
 import org.chromium.base.MathUtils;
@@ -70,7 +71,9 @@ public class ColorUtils {
      * @param overlayAlpha The alpha |overlayColor| should have on the base color.
      */
     public static @ColorInt int getColorWithOverlay(
-            @ColorInt int baseColor, @ColorInt int overlayColor, float overlayAlpha) {
+            @ColorInt int baseColor,
+            @ColorInt int overlayColor,
+            @FloatRange(from = 0f, to = 1f) float overlayAlpha) {
         return getColorWithOverlay(baseColor, overlayColor, overlayAlpha, false);
     }
 
@@ -165,11 +168,14 @@ public class ColorUtils {
      * @param overlayAlpha The alpha |overlayColor| should have on the base color.
      * @param considerOpacity indicates whether to take color opacity into consideration when
      *     calculating the new color.
+     * @deprecated Should not directly call this version, as considerOpacity has surprising
+     *     behavior. If you need to handle opacity, consider {@link #blendColorsMultiply} instead.
      */
+    @Deprecated
     public static @ColorInt int getColorWithOverlay(
             @ColorInt int baseColor,
             @ColorInt int overlayColor,
-            float overlayAlpha,
+            @FloatRange(from = 0f, to = 1f) float overlayAlpha,
             boolean considerOpacity) {
         int red =
                 (int)
@@ -193,6 +199,47 @@ public class ColorUtils {
             return Color.argb(alpha, red, green, blue);
         }
         return Color.rgb(red, green, blue);
+    }
+
+    /**
+     * Interpolates between two colors, using pre-multiplied alpha values. Tries to not allocate any
+     * new objects or lose any precision unnecessarily.
+     *
+     * @param from The color to start at, when fraction is at zero.
+     * @param to The color to end at, when the fraction is at one.
+     * @param fraction The percent through interpolation that's currently being calculated.
+     * @return The interpolated color value.
+     */
+    public static @ColorInt int blendColorsMultiply(
+            @ColorInt int from, @ColorInt int to, @FloatRange(from = 0f, to = 1f) float fraction) {
+        int fromAlpha = Color.alpha(from);
+        int toAlpha = Color.alpha(to);
+        // Alpha can be linearly interpolated. Keep the result as float to increase precision of
+        // the intermediate math. Lastly, this alpha value can be zero, and we're going to divide by
+        // it below. Surprisingly, no special casing is needed. If resultAlpha is zero, this is
+        // because one or both of the from/to alphas are also zero, and the color channel
+        // interpolation is always going to get zero back. Turns out in Java, 0.0f / 0.0f is NaN,
+        // and Math.round special cases this to return 0, which is what we'd want to do anyway.
+        float resultAlpha = MathUtils.interpolate(fromAlpha, toAlpha, fraction);
+
+        // Each rgb channel value is multiplied by source alpha before interpolation. Then it'll be
+        // divided by the result alpha at the end. This is the pre-multiplied alpha approach as
+        // detailed in https://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending.
+        int fromRed = Color.red(from) * fromAlpha;
+        int toRed = Color.red(to) * toAlpha;
+        int resultRed = Math.round(MathUtils.interpolate(fromRed, toRed, fraction) / resultAlpha);
+
+        int fromGreen = Color.green(from) * fromAlpha;
+        int toGreen = Color.green(to) * toAlpha;
+        int resultGreen =
+                Math.round(MathUtils.interpolate(fromGreen, toGreen, fraction) / resultAlpha);
+
+        int fromBlue = Color.blue(from) * fromAlpha;
+        int toBlue = Color.blue(to) * toAlpha;
+        int resultBlue =
+                Math.round(MathUtils.interpolate(fromBlue, toBlue, fraction) / resultAlpha);
+
+        return Color.argb(Math.round(resultAlpha), resultRed, resultGreen, resultBlue);
     }
 
     /**
