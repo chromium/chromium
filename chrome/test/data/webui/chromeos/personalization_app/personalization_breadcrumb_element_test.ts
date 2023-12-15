@@ -8,7 +8,7 @@ import 'chrome://personalization/strings.m.js';
 
 import {GooglePhotosAlbum, Paths, PersonalizationBreadcrumbElement, PersonalizationRouterElement, SeaPenTemplateId, TopicSource} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
@@ -457,5 +457,86 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.SEA_PEN_COLLECTION, path);
     assertDeepEquals({}, queryParams);
+  });
+
+  test('hide dropdown icon for sea pen templates', async () => {
+    loadTimeData.overrideValues({isSeaPenEnabled: true});
+    breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
+      'path': Paths.SEA_PEN_COLLECTION,
+    });
+
+    const dropdownIcon =
+        breadcrumbElement.shadowRoot!.querySelector('#seaPenDropdown');
+
+    assertFalse(!!dropdownIcon);
+  });
+
+  test('show dropdown icon for SeaPen results', async () => {
+    loadTimeData.overrideValues({isSeaPenEnabled: true});
+    breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
+      'path': Paths.SEA_PEN_RESULTS,
+      'seaPenTemplateId': SeaPenTemplateId.kFlower.toString(),
+    });
+
+    const dropdownIcon =
+        breadcrumbElement.shadowRoot!.querySelector('#seaPenDropdown');
+
+    assertTrue(!!dropdownIcon);
+  });
+
+  test('show dropdown menu for SeaPen results', async () => {
+    loadTimeData.overrideValues({isSeaPenEnabled: true});
+    breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
+      'path': Paths.SEA_PEN_RESULTS,
+      'seaPenTemplateId': SeaPenTemplateId.kFlower.toString(),
+    });
+
+    const dropdownIcon = breadcrumbElement.shadowRoot!.querySelector(
+                             '#seaPenDropdown') as HTMLElement;
+    dropdownIcon!.click();
+
+    const dropdownMenu =
+        breadcrumbElement.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!dropdownMenu);
+    const allMenuItems = dropdownMenu.querySelectorAll('button');
+    assertTrue(allMenuItems.length > 1);
+    const selectedElement =
+        dropdownMenu.querySelectorAll('button[aria-selected=\'true\']');
+    assertEquals(1, selectedElement.length);
+    assertEquals('Airbrushed', (selectedElement[0] as HTMLElement)!.innerText);
+  });
+
+  test('navigates with SeaPen dropdown', async () => {
+    loadTimeData.overrideValues({isSeaPenEnabled: true});
+    breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
+      'path': Paths.SEA_PEN_RESULTS,
+      'seaPenTemplateId': SeaPenTemplateId.kFlower.toString(),
+    });
+    const dropdownIcon = breadcrumbElement.shadowRoot!.querySelector(
+                             '#seaPenDropdown') as HTMLElement;
+    dropdownIcon!.click();
+    const dropdownMenu =
+        breadcrumbElement.shadowRoot!.querySelector('cr-action-menu');
+    const template =
+        (dropdownMenu!.querySelectorAll('button[aria-selected=\'false\']')[0] as
+         HTMLElement);
+
+    const original = PersonalizationRouterElement.instance;
+    const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {
+      PersonalizationRouterElement.instance = () => {
+        return {
+          goToRoute(path: Paths, queryParams: Object = {}) {
+            resolve([path, queryParams]);
+            PersonalizationRouterElement.instance = original;
+          },
+        } as PersonalizationRouterElement;
+      };
+    });
+
+    template!.click();
+
+    const [path, queryParams] = await goToRoutePromise;
+    assertEquals(Paths.SEA_PEN_RESULTS, path);
+    assertDeepEquals({'seaPenTemplateId': template.dataset['id']}, queryParams);
   });
 });
