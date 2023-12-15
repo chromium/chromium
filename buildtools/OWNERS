@@ -1,6 +1,11 @@
 set noparent
+jwata@google.com
+philwo@chromium.org
+richardwa@google.com
 thakis@chromium.org
 thomasanderson@chromium.org
+tikuta@chromium.org
+ukai@google.com
 
 # For the libc++ autoroller.
 per-file deps_revisions.gni=*
