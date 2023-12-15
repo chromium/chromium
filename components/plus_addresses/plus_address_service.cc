@@ -11,6 +11,7 @@
 #include "components/plus_addresses/plus_address_client.h"
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -53,8 +54,11 @@ PlusAddressService::PlusAddressService(
       pref_service_(pref_service),
       plus_address_client_(std::move(plus_address_client)),
       excluded_sites_(GetAndParseExcludedSites()) {
-  // Begin PlusAddress periodic actions at construction.
-  CreateAndStartTimer();
+  if (pref_service) {
+    // Clear the pref to always force a poll on service construction.
+    pref_service->ClearPref(prefs::kPlusAddressLastFetchedTime);
+    CreateAndStartTimer();
+  }
   if (identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
   }
