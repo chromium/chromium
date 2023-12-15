@@ -366,7 +366,11 @@ bool UtilityProcessHost::StartProcess() {
 #endif
 #if BUILDFLAG(IS_WIN)
       switches::kDisableHighResTimer,
+      switches::kEnableExclusiveAudio,
+      switches::kForceWaveAudio,
       switches::kRaiseTimerFrequency,
+      switches::kTrySupportedChannelLayouts,
+      switches::kWaveOutBuffers,
       switches::kWebXrForceRuntime,
       sandbox::policy::switches::kAddXrAppContainerCaps,
 #endif

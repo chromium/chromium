@@ -3540,6 +3540,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
 #endif
 #if BUILDFLAG(IS_WIN)
     switches::kDisableHighResTimer,
+    switches::kTrySupportedChannelLayouts,
     switches::kRaiseTimerFrequency,
 #endif
 #if BUILDFLAG(IS_OZONE)
