@@ -194,8 +194,8 @@ TEST(ClientCertStoreNSSTest, SubjectPrintableStringContainingUTF8) {
   std::string cert_der(pem_tokenizer.data());
   ASSERT_FALSE(pem_tokenizer.GetNext());
 
-  ScopedCERTCertificate cert(x509_util::CreateCERTCertificateFromBytes(
-      base::as_bytes(base::make_span(cert_der))));
+  ScopedCERTCertificate cert(
+      x509_util::CreateCERTCertificateFromBytes(base::as_byte_span(cert_der)));
   ASSERT_TRUE(cert);
 
   ASSERT_TRUE(ImportClientCertToSlot(cert.get(), test_db.slot()));

@@ -1017,8 +1017,7 @@ TEST_P(CertVerifyProcBuiltinIterationTest, IterationLimit) {
                               /*issuer=*/&root_ok);
   // Using the old intermediate as a template does not preserve the subject,
   // SKID, or key.
-  intermediate_ok.SetSubjectTLV(
-      base::as_bytes(base::make_span(builders[1]->GetSubject())));
+  intermediate_ok.SetSubjectTLV(base::as_byte_span(builders[1]->GetSubject()));
   intermediate_ok.SetKey(bssl::UpRef(builders[1]->GetKey()));
   intermediate_ok.SetSubjectKeyIdentifier(
       builders[1]->GetSubjectKeyIdentifier());

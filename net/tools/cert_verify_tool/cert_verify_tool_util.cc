@@ -45,7 +45,7 @@ void ExtractCertificatesFromData(const std::string& data_string,
 
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> pkcs7_cert_buffers;
   if (net::x509_util::CreateCertBuffersFromPKCS7Bytes(
-          base::as_bytes(base::make_span(data_string)), &pkcs7_cert_buffers)) {
+          base::as_byte_span(data_string), &pkcs7_cert_buffers)) {
     int n = 0;
     for (const auto& cert_buffer : pkcs7_cert_buffers) {
       CertInput cert;

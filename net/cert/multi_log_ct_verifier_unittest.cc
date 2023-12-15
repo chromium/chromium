@@ -49,8 +49,8 @@ class MultiLogCTVerifierTest : public ::testing::Test {
 
     verifier_ = std::make_unique<MultiLogCTVerifier>(log_verifiers_);
     std::string der_test_cert(ct::GetDerEncodedX509Cert());
-    chain_ = X509Certificate::CreateFromBytes(
-        base::as_bytes(base::make_span(der_test_cert)));
+    chain_ =
+        X509Certificate::CreateFromBytes(base::as_byte_span(der_test_cert));
     ASSERT_TRUE(chain_.get());
 
     embedded_sct_chain_ =

@@ -27,8 +27,7 @@ TEST(ClientCertIdentitySorter, SortClientCertificates) {
   ASSERT_TRUE(x509_util::CreateSelfSignedCert(
       key->key(), x509_util::DIGEST_SHA256, "CN=expired", 1,
       base::Time::UnixEpoch(), base::Time::UnixEpoch(), {}, &der_cert));
-  cert = X509Certificate::CreateFromBytes(
-      base::as_bytes(base::make_span(der_cert)));
+  cert = X509Certificate::CreateFromBytes(base::as_byte_span(der_cert));
   ASSERT_TRUE(cert);
   certs.push_back(std::make_unique<FakeClientCertIdentity>(cert, nullptr));
 
@@ -37,24 +36,21 @@ TEST(ClientCertIdentitySorter, SortClientCertificates) {
   ASSERT_TRUE(x509_util::CreateSelfSignedCert(
       key->key(), x509_util::DIGEST_SHA256, "CN=not yet valid", 2,
       now + base::Days(10), now + base::Days(15), {}, &der_cert));
-  cert = X509Certificate::CreateFromBytes(
-      base::as_bytes(base::make_span(der_cert)));
+  cert = X509Certificate::CreateFromBytes(base::as_byte_span(der_cert));
   ASSERT_TRUE(cert);
   certs.push_back(std::make_unique<FakeClientCertIdentity>(cert, nullptr));
 
   ASSERT_TRUE(x509_util::CreateSelfSignedCert(
       key->key(), x509_util::DIGEST_SHA256, "CN=older cert", 3,
       now - base::Days(5), now + base::Days(5), {}, &der_cert));
-  cert = X509Certificate::CreateFromBytes(
-      base::as_bytes(base::make_span(der_cert)));
+  cert = X509Certificate::CreateFromBytes(base::as_byte_span(der_cert));
   ASSERT_TRUE(cert);
   certs.push_back(std::make_unique<FakeClientCertIdentity>(cert, nullptr));
 
   ASSERT_TRUE(x509_util::CreateSelfSignedCert(
       key->key(), x509_util::DIGEST_SHA256, "CN=newer cert", 2,
       now - base::Days(3), now + base::Days(5), {}, &der_cert));
-  cert = X509Certificate::CreateFromBytes(
-      base::as_bytes(base::make_span(der_cert)));
+  cert = X509Certificate::CreateFromBytes(base::as_byte_span(der_cert));
   ASSERT_TRUE(cert);
   certs.push_back(std::make_unique<FakeClientCertIdentity>(cert, nullptr));
 

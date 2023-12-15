@@ -240,8 +240,8 @@ CertificateList X509Certificate::CreateCertificateListFromBytes(
 
     bssl::UniquePtr<CRYPTO_BUFFER> handle;
     if (format & FORMAT_PEM_CERT_SEQUENCE) {
-      handle = CreateCertBufferFromBytesWithSanityCheck(
-          base::as_bytes(base::make_span(decoded)));
+      handle =
+          CreateCertBufferFromBytesWithSanityCheck(base::as_byte_span(decoded));
     }
     if (handle) {
       // Parsed a DER encoded certificate. All PEM blocks that follow must
@@ -258,9 +258,8 @@ CertificateList X509Certificate::CreateCertificateListFromBytes(
       for (size_t i = 0;
            certificates.empty() && i < std::size(kFormatDecodePriority); ++i) {
         if (format & kFormatDecodePriority[i]) {
-          certificates = CreateCertBuffersFromBytes(
-              base::as_bytes(base::make_span(decoded)),
-              kFormatDecodePriority[i]);
+          certificates = CreateCertBuffersFromBytes(base::as_byte_span(decoded),
+                                                    kFormatDecodePriority[i]);
         }
       }
     }

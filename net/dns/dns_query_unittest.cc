@@ -48,8 +48,7 @@ const char kQNameData[] =
     "example"
     "\x03"
     "com";
-const base::span<const uint8_t> kQName =
-    base::as_bytes(base::make_span(kQNameData));
+const base::span<const uint8_t> kQName = base::as_byte_span(kQNameData);
 
 TEST(DnsQueryTest, Constructor) {
   // This includes \0 at the end.

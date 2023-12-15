@@ -1254,8 +1254,7 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
 
     // NOTE: The signature is NOT recomputed over TBSCertificate -- for these
     // tests it isn't needed.
-    return X509Certificate::CreateFromBytes(
-        base::as_bytes(base::make_span(cert_der)));
+    return X509Certificate::CreateFromBytes(base::as_byte_span(cert_der));
   }
 
   static scoped_refptr<X509Certificate> CreateChain(
