@@ -35,17 +35,6 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
   ButtonOptionsMenuTest() = default;
   ~ButtonOptionsMenuTest() override = default;
 
-  size_t GetActionListItemsSize() {
-    DCHECK(editing_list_);
-
-    views::View* scroll_content = editing_list_->scroll_content_;
-    DCHECK(scroll_content);
-    if (editing_list_->HasControls()) {
-      return scroll_content->children().size();
-    }
-    return 0;
-  }
-
   // Return -1 if there is no list item for `action`. Otherwise, return the
   // index of list item in `EditingList` for `action`.
   int GetIndexInEditingList(Action* action) {

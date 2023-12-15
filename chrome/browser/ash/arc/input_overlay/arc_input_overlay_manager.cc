@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/app_restore/window_properties.h"
@@ -111,8 +112,10 @@ aura::Window* GetGameBubbleDialogAnchorWindow(aura::Window* window) {
     // `window` has `ash::GameDashboardMainMenuView` as contents view.
     anchor_widget = widget->parent();
     DCHECK(anchor_widget);
-  } else if (views::AsViewClass<ash::AnchoredNudge>(contents_view)) {
-    // `window` has `ash::AnchoredNudge` as contents view.
+  } else if (views::AsViewClass<ash::AnchoredNudge>(contents_view) ||
+             views::AsViewClass<DeleteEditShortcut>(contents_view)) {
+    // `window` has `ash::AnchoredNudge` or `DeleteEditShortcut` as contents
+    // view.
     if (auto* nudge_anchor_view = bubble_delegate->GetAnchorView()) {
       anchor_widget = nudge_anchor_view->GetWidget();
       DCHECK(anchor_widget);

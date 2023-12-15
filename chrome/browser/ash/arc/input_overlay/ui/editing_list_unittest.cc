@@ -27,6 +27,7 @@
 #include "ui/events/event.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc::input_overlay {
@@ -35,15 +36,6 @@ class EditingListTest : public OverlayViewTestBase {
  public:
   EditingListTest() = default;
   ~EditingListTest() override = default;
-
-  size_t GetActionListItemsSize() {
-    DCHECK(editing_list_->scroll_content_);
-    DCHECK(editing_list_);
-    if (editing_list_->HasControls()) {
-      return editing_list_->scroll_content_->children().size();
-    }
-    return 0;
-  }
 
   size_t GetTouchInjectorActionSize() {
     DCHECK(touch_injector_);
@@ -75,21 +67,6 @@ class EditingListTest : public OverlayViewTestBase {
     event_generator->MoveMouseTo(view_bounds.x() + view_bounds.width() / 4,
                                  view_bounds.y() + view_bounds.height() / 2);
     event_generator->ClickLeftButton();
-  }
-
-  void HoverAtActionViewListItem(int index) {
-    if (!editing_list_ || editing_list_->is_zero_state_ || index < 0) {
-      return;
-    }
-    views::View* scroll_content = editing_list_->scroll_content_;
-    DCHECK(scroll_content);
-    if (index >= static_cast<int>(scroll_content->children().size())) {
-      return;
-    }
-
-    auto* event_generator = GetEventGenerator();
-    auto view_bounds = scroll_content->children()[index]->GetBoundsInScreen();
-    event_generator->MoveMouseTo(view_bounds.CenterPoint());
   }
 
   void MouseDragEditingListBy(int x, int y) {
@@ -150,20 +127,13 @@ class EditingListTest : public OverlayViewTestBase {
     return controller_->input_mapping_widget_.get();
   }
 
-  bool ButtonOptionsMenuExists() {
-    return !!controller_->button_options_widget_;
-  }
-
-  bool DeleteEditShortcutExists() {
-    return !!controller_->delete_edit_shortcut_widget_;
-  }
-
   bool IsActionHighlightVisible() {
-    if (!controller_->action_highlight_widget_) {
-      return false;
+    DCHECK(controller_);
+    if (const auto* highlight_widget =
+            controller_->action_highlight_widget_.get()) {
+      return highlight_widget->IsVisible();
     }
-    return controller_->action_highlight_widget_->GetContentsView()
-        ->GetVisible();
+    return false;
   }
 
   bool IsButtonOptionsMenuVisible() {
@@ -192,42 +162,6 @@ class EditingListTest : public OverlayViewTestBase {
     DCHECK(editing_list);
     return editing_list->GetKeyEditNudgeForTesting();
   }
-
-  void PressEditButton() {
-    DCHECK(controller_->delete_edit_shortcut_widget_);
-    static_cast<DeleteEditShortcut*>(
-        controller_->delete_edit_shortcut_widget_->GetContentsView())
-        ->OnEditButtonPressed();
-  }
-
-  void PressDeleteButton() {
-    DCHECK(controller_->delete_edit_shortcut_widget_);
-    static_cast<DeleteEditShortcut*>(
-        controller_->delete_edit_shortcut_widget_->GetContentsView())
-        ->OnDeleteButtonPressed();
-  }
-
-  Action* GetButtonOptionsAction() {
-    auto* menu = controller_->GetButtonOptionsMenu();
-    if (!menu) {
-      return nullptr;
-    }
-    return menu->action();
-  }
-
-  Action* GetDeleteEditShortcutAction() {
-    return static_cast<DeleteEditShortcut*>(
-               controller_->delete_edit_shortcut_widget_->GetContentsView())
-        ->anchor_view()
-        ->action();
-  }
-
-  views::Widget* GetEducationNudge(views::Widget* widget) {
-    DCHECK(controller_);
-    auto& widgets_map = controller_->nudge_widgets_;
-    return widgets_map.contains(widget) ? widgets_map.find(widget)->second.get()
-                                        : nullptr;
-  }
 };
 
 TEST_F(EditingListTest, TestAddNewAction) {
@@ -237,7 +171,7 @@ TEST_F(EditingListTest, TestAddNewAction) {
   EXPECT_EQ(3u, GetActionListItemsSize());
   EXPECT_EQ(3u, GetActionViewSize());
   EXPECT_EQ(3u, GetTouchInjectorActionSize());
-  EXPECT_FALSE(ButtonOptionsMenuExists());
+  EXPECT_FALSE(GetButtonOptionsMenu());
   // Press add button and it enters into the button placement mode.
   PressAddButton();
   auto* target_view = GetTargetView();
@@ -252,7 +186,7 @@ TEST_F(EditingListTest, TestAddNewAction) {
   EXPECT_EQ(4u, GetActionListItemsSize());
   EXPECT_EQ(4u, GetActionViewSize());
   EXPECT_EQ(4u, GetTouchInjectorActionSize());
-  EXPECT_TRUE(ButtonOptionsMenuExists());
+  EXPECT_TRUE(GetButtonOptionsMenu());
 
   // Make sure `Action::touch_down_positions_` is not empty for the new action.
   auto* new_action = touch_injector_->actions()[3].get();
@@ -302,7 +236,7 @@ TEST_F(EditingListTest, TestDragAtNewAction) {
                /*expect_ids=*/{0, 1, 2});
   AddNewAction();
   EXPECT_TRUE(IsButtonOptionsMenuVisible());
-  auto* action = GetButtonOptionsAction();
+  auto* action = GetButtonOptionsMenuAction();
   EXPECT_TRUE(action->is_new());
   MouseDraggingActionViewBy(action, /*x=*/10, /*y=*/10);
   EXPECT_FALSE(IsButtonOptionsMenuVisible());
@@ -318,44 +252,39 @@ TEST_F(EditingListTest, TestPressAtActionViewListItem) {
                /*expect_ids=*/{0, 1, 2});
   // Test action view list press.
   AddNewAction();
-  EXPECT_TRUE(ButtonOptionsMenuExists());
-  auto* action_1 = GetButtonOptionsAction();
+  EXPECT_TRUE(GetButtonOptionsMenu());
+  auto* action_1 = GetButtonOptionsMenuAction();
   PressDoneButtonOnButtonOptionsMenu();
   // Scroll back to top to click the first list item.
   ScrollTo(/*top=*/true);
   LeftClickAtActionViewListItem(/*index=*/0);
-  EXPECT_TRUE(ButtonOptionsMenuExists());
-  auto* action_2 = GetButtonOptionsAction();
+  EXPECT_TRUE(GetButtonOptionsMenu());
+  auto* action_2 = GetButtonOptionsMenuAction();
   EXPECT_NE(action_1, action_2);
   PressDoneButtonOnButtonOptionsMenu();
   LeftClickAtActionViewListItem(/*index=*/1);
-  EXPECT_TRUE(ButtonOptionsMenuExists());
-  auto* action_3 = GetButtonOptionsAction();
+  EXPECT_TRUE(GetButtonOptionsMenu());
+  auto* action_3 = GetButtonOptionsMenuAction();
   EXPECT_NE(action_3, action_2);
 }
 
-TEST_F(EditingListTest, TestHoverAtActionViewListItem) {
-  CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
-               {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
-               /*expect_ids=*/{0, 1, 2});
-  HoverAtActionViewListItem(/*index=*/0);
-  EXPECT_TRUE(DeleteEditShortcutExists());
-  EXPECT_TRUE(IsActionHighlightVisible());
-  auto* action = GetDeleteEditShortcutAction();
+TEST_F(EditingListTest, TestHoverAtListItem) {
+  EXPECT_FALSE(IsActionHighlightVisible());
 
-  PressEditButton();
-  EXPECT_TRUE(ButtonOptionsMenuExists());
-  EXPECT_FALSE(DeleteEditShortcutExists());
-  EXPECT_EQ(action, GetButtonOptionsAction());
-  PressDoneButtonOnButtonOptionsMenu();
-
-  HoverAtActionViewListItem(/*index=*/0);
-  EXPECT_TRUE(DeleteEditShortcutExists());
+  HoverAtActionViewListItem(/*index=*/0u);
   EXPECT_TRUE(IsActionHighlightVisible());
-  PressDeleteButton();
-  EXPECT_FALSE(DeleteEditShortcutExists());
-  EXPECT_EQ(2u, GetActionListItemsSize());
-  EXPECT_EQ(2u, GetActionViewSize());
+
+  HoverAtActionViewListItem(/*index=*/1u);
+  EXPECT_TRUE(IsActionHighlightVisible());
+
+  // Hover outside of the list item and the view highlight is also removed.
+  auto* list_item = GetEditingListItem(/*index=*/1u);
+  DCHECK(list_item);
+  auto item_origin = list_item->GetBoundsInScreen().origin();
+  item_origin.Offset(-2, -2);
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(item_origin);
+  EXPECT_FALSE(IsActionHighlightVisible());
 }
 
 TEST_F(EditingListTest, TestReposition) {

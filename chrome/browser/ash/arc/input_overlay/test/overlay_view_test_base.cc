@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
@@ -35,14 +36,6 @@ void OverlayViewTestBase::PressAddButton() {
   LeftClickOn(editing_list_->add_button_);
 }
 
-size_t OverlayViewTestBase::GetActionViewSize() {
-  if (!input_mapping_view_) {
-    return 0;
-  }
-
-  return input_mapping_view_->children().size();
-}
-
 ButtonOptionsMenu* OverlayViewTestBase::ShowButtonOptionsMenu(Action* action) {
   action->action_view()->ShowButtonOptionsMenu();
   DCHECK(controller_->button_options_widget_);
@@ -63,8 +56,73 @@ void OverlayViewTestBase::PressDeleteButtonOnButtonOptionsMenu() {
   }
 }
 
+void OverlayViewTestBase::HoverAtActionViewListItem(size_t index) {
+  if (auto* list_item = GetEditingListItem(index)) {
+    GetEventGenerator()->MoveMouseTo(
+        list_item->GetBoundsInScreen().CenterPoint());
+  }
+}
+
+size_t OverlayViewTestBase::GetActionViewSize() const {
+  if (!input_mapping_view_) {
+    return 0;
+  }
+
+  return input_mapping_view_->children().size();
+}
+
+size_t OverlayViewTestBase::GetActionListItemsSize() const {
+  if (auto* list = GetEditingList()) {
+    return list->scroll_content_->children().size();
+  }
+  return 0;
+}
+
+ButtonOptionsMenu* OverlayViewTestBase::GetButtonOptionsMenu() const {
+  DCHECK(controller_);
+  return controller_->GetButtonOptionsMenu();
+}
+
+DeleteEditShortcut* OverlayViewTestBase::GetDeleteEditShortcut() const {
+  DCHECK(controller_);
+  return controller_->GetDeleteEditShortcut();
+}
+
+EditingList* OverlayViewTestBase::GetEditingList() const {
+  DCHECK(controller_);
+  return controller_->GetEditingList();
+}
+
+views::View* OverlayViewTestBase::GetEditingListItem(size_t index) const {
+  if (auto* list = GetEditingList()) {
+    if (auto& children = list->scroll_content_->children();
+        index < children.size()) {
+      return children[index];
+    }
+  }
+  return nullptr;
+}
+
 TargetView* OverlayViewTestBase::GetTargetView() const {
+  DCHECK(controller_);
   return controller_->GetTargetView();
+}
+
+Action* OverlayViewTestBase::GetButtonOptionsMenuAction() const {
+  if (auto* menu = controller_->GetButtonOptionsMenu()) {
+    return menu->action();
+  }
+  return nullptr;
+}
+
+Action* OverlayViewTestBase::GetEditingListItemAction(size_t index) const {
+  if (auto* list_item_view = GetEditingListItem(index)) {
+    if (auto* list_item =
+            views::AsViewClass<ActionViewListItem>(list_item_view)) {
+      return list_item->action();
+    }
+  }
+  return nullptr;
 }
 
 // Create a GIO enabled window with default actions including two action tap and

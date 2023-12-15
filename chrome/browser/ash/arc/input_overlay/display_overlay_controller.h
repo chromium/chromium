@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "ui/aura/window_observer.h"
@@ -30,6 +29,7 @@ class Action;
 class ActionEditMenu;
 class ActionViewListItem;
 class ButtonOptionsMenu;
+class DeleteEditShortcut;
 class EditFinishView;
 class EditingList;
 class EducationalView;
@@ -257,6 +257,8 @@ class DisplayOverlayController : public ui::EventHandler,
   void RemoveRichNudge();
   RichNudge* GetRichNudge() const;
 
+  DeleteEditShortcut* GetDeleteEditShortcut() const;
+
   // `widget` bounds is in screen coordinate. `bounds_in_root_window` is the
   // window bounds in root window. Convert `bounds_in_root_window` in screen
   // coordinates to set `widget` bounds.
@@ -292,13 +294,10 @@ class DisplayOverlayController : public ui::EventHandler,
   std::unique_ptr<views::Widget> input_mapping_widget_;
   std::unique_ptr<views::Widget> editing_list_widget_;
   std::unique_ptr<views::Widget> button_options_widget_;
-  std::unique_ptr<views::Widget> delete_edit_shortcut_widget_;
   std::unique_ptr<views::Widget> target_widget_;
   std::unique_ptr<views::Widget> action_highlight_widget_;
+  raw_ptr<views::Widget> delete_edit_shortcut_widget_;
   raw_ptr<views::Widget> rich_nudge_widget_;
-
-  // Each widget can associate with one education nudge widget.
-  base::flat_map<views::Widget*, std::unique_ptr<views::Widget>> nudge_widgets_;
 };
 
 }  // namespace arc::input_overlay

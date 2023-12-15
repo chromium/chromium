@@ -31,8 +31,8 @@ void ActionViewListItem::ClickCallback() {
 }
 
 void ActionViewListItem::OnMouseEntered(const ui::MouseEvent& event) {
-  controller_->AddDeleteEditShortcutWidget(this);
   controller_->AddActionHighlightWidget(action_);
+  controller_->AddDeleteEditShortcutWidget(this);
 }
 
 void ActionViewListItem::OnMouseExited(const ui::MouseEvent& event) {

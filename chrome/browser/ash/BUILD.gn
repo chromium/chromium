@@ -5238,6 +5238,7 @@ source_set("unit_tests") {
     "arc/input_overlay/touch_injector_unittest.cc",
     "arc/input_overlay/ui/action_view_unittest.cc",
     "arc/input_overlay/ui/button_options_menu_unittest.cc",
+    "arc/input_overlay/ui/delete_edit_shortcut_unittest.cc",
     "arc/input_overlay/ui/edit_label_unittest.cc",
     "arc/input_overlay/ui/editing_list_unittest.cc",
     "arc/input_overlay/ui/menu_entry_view_unittest.cc",

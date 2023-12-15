@@ -55,7 +55,6 @@ constexpr int kNudgeVerticalAlign = 8;
 constexpr char kButtonOptionsMenu[] = "GameControlsButtonOptionsMenu";
 constexpr char kEditingList[] = "GameControlsEditingList";
 constexpr char kInputMapping[] = "GameControlsInputMapping";
-constexpr char kDeleteEditShortcut[] = "DeleteEditShortcut";
 constexpr char kActionHighlight[] = "ActionHighlight";
 
 std::unique_ptr<views::Widget> CreateTransientWidget(
@@ -234,7 +233,7 @@ gfx::Point DisplayOverlayController::CalculateNudgePosition(int nudge_width) {
 }
 
 bool DisplayOverlayController::IsNudgeEmpty() {
-  return !nudge_view_ && nudge_widgets_.empty();
+  return !nudge_view_;
 }
 
 void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
@@ -484,7 +483,12 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       break;
 
     case DisplayMode::kView: {
+      DCHECK(!rich_nudge_widget_);
+      DCHECK(!target_widget_);
+      DCHECK(!button_options_widget_);
       RemoveActionHighlightWidget();
+      RemoveDeleteEditShortcutWidget();
+      RemoveEditingListWidget();
       if (GetActiveActionsSize() == 0u) {
         // If there is no active action in `kView` mode, it doesn't create
         // `input_mapping_widget_` to save resources. When
@@ -504,8 +508,6 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
         input_mapping_window->SetEventTargetingPolicy(
             aura::EventTargetingPolicy::kNone);
       }
-      RemoveButtonOptionsMenuWidget();
-      RemoveEditingListWidget();
     } break;
 
     case DisplayMode::kEdit: {
@@ -746,30 +748,24 @@ void DisplayOverlayController::SetButtonOptionsMenuWidgetVisibility(
 
 void DisplayOverlayController::AddDeleteEditShortcutWidget(
     ActionViewListItem* anchor_view) {
-  if (delete_edit_shortcut_widget_) {
-    if (auto* shortcut = views::AsViewClass<DeleteEditShortcut>(
-            delete_edit_shortcut_widget_->GetContentsView());
-        shortcut->anchor_view() != anchor_view) {
-      shortcut->UpdateAnchorView(anchor_view);
-    }
-    return;
+  if (!delete_edit_shortcut_widget_) {
+    delete_edit_shortcut_widget_ =
+        views::BubbleDialogDelegateView::CreateBubble(
+            std::make_unique<DeleteEditShortcut>(this, anchor_view));
   }
 
-  delete_edit_shortcut_widget_ = CreateTransientWidget(
-      touch_injector_->window(), /*widget_name=*/kDeleteEditShortcut,
-      /*accept_events=*/true, /*is_floating=*/true);
-  delete_edit_shortcut_widget_->SetContentsView(
-      std::make_unique<DeleteEditShortcut>(this, anchor_view));
+  if (auto* shortcut = GetDeleteEditShortcut();
+      shortcut->GetAnchorView() != anchor_view) {
+    shortcut->UpdateAnchorView(anchor_view);
+  }
 
-  auto* window = delete_edit_shortcut_widget_->GetNativeWindow();
-  window->parent()->StackChildAtTop(window);
-  delete_edit_shortcut_widget_->ShowInactive();
+  delete_edit_shortcut_widget_->Show();
 }
 
 void DisplayOverlayController::RemoveDeleteEditShortcutWidget() {
   if (delete_edit_shortcut_widget_) {
     delete_edit_shortcut_widget_->Close();
-    delete_edit_shortcut_widget_.reset();
+    delete_edit_shortcut_widget_ = nullptr;
   }
 }
 
@@ -1000,16 +996,10 @@ bool DisplayOverlayController::GetTouchInjectorEnable() {
 void DisplayOverlayController::ProcessPressedEvent(
     const ui::LocatedEvent& event) {
   if (IsBeta()) {
-    if (nudge_widgets_.empty()) {
-      return;
-    }
-
-    for (auto it = nudge_widgets_.begin(); it != nudge_widgets_.end();) {
-      auto nudge_bounds = it->second->GetNativeWindow()->bounds();
-      if (!nudge_bounds.Contains(event.root_location())) {
-        nudge_widgets_.erase(it);
-      } else {
-        it++;
+    if (auto* delete_edit_view = GetDeleteEditShortcut()) {
+      if (const auto bounds = delete_edit_view->GetBoundsInScreen();
+          !bounds.Contains(event.root_location())) {
+        RemoveDeleteEditShortcutWidget();
       }
     }
   } else {
@@ -1111,6 +1101,7 @@ void DisplayOverlayController::UpdateForBoundsChanged() {
 
 void DisplayOverlayController::RemoveAllWidgets() {
   RemoveRichNudge();
+  RemoveDeleteEditShortcutWidget();
   RemoveTargetWidget();
   RemoveButtonOptionsMenuWidget();
   RemoveEditingListWidget();
@@ -1279,6 +1270,15 @@ RichNudge* DisplayOverlayController::GetRichNudge() const {
                                       ->AsBubbleDialogDelegate()
                                       ->GetContentsView())
                             : nullptr;
+}
+
+DeleteEditShortcut* DisplayOverlayController::GetDeleteEditShortcut() const {
+  return delete_edit_shortcut_widget_
+             ? views::AsViewClass<DeleteEditShortcut>(
+                   delete_edit_shortcut_widget_->widget_delegate()
+                       ->AsBubbleDialogDelegate()
+                       ->GetContentsView())
+             : nullptr;
 }
 
 void DisplayOverlayController::UpdateEventRewriteCapability() {

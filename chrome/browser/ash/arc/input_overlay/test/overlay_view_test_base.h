@@ -13,6 +13,7 @@ namespace arc::input_overlay {
 class Action;
 class ActionViewListItem;
 class ButtonOptionsMenu;
+class DeleteEditShortcut;
 class EditingList;
 class InputMappingView;
 class TargetView;
@@ -27,13 +28,22 @@ class OverlayViewTestBase : public GameControlsTestBase {
   void EnableEditMode();
   void PressAddButton();
 
-  size_t GetActionViewSize();
-
   ButtonOptionsMenu* ShowButtonOptionsMenu(Action* action);
   void PressDoneButtonOnButtonOptionsMenu();
   void PressDeleteButtonOnButtonOptionsMenu();
+  void HoverAtActionViewListItem(size_t index);
 
+  size_t GetActionViewSize() const;
+  size_t GetActionListItemsSize() const;
+
+  ButtonOptionsMenu* GetButtonOptionsMenu() const;
+  DeleteEditShortcut* GetDeleteEditShortcut() const;
+  EditingList* GetEditingList() const;
+  views::View* GetEditingListItem(size_t index) const;
   TargetView* GetTargetView() const;
+
+  Action* GetButtonOptionsMenuAction() const;
+  Action* GetEditingListItemAction(size_t index) const;
 
   // GameControlsTestBase:
   void SetUp() override;
