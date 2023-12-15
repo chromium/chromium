@@ -950,13 +950,6 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
     return bounds;
   }
 
-  if (!window_for_minimum_size) {
-    // Some clients may request for a null `window_for_minimum_size`, e.g.
-    // overview or backdrop controller. Use `root_window` for the work area.
-    // TODO(sophiewen): Consider moving this to a separate function.
-    window_for_minimum_size = root_window_;
-  }
-
   const int divider_position =
       divider_position_ < 0
           ? CalculateDividerPosition(snap_position, snap_ratio)
@@ -966,8 +959,8 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
           ? kSplitviewDividerShortSideLength
           : 0;
   return CalculateSnappedWindowBoundsInScreen(
-      snap_position, window_for_minimum_size, divider_position, divider_width,
-      IsResizingWithDivider());
+      snap_position, root_window_, window_for_minimum_size, divider_position,
+      divider_width, IsResizingWithDivider());
 }
 
 int SplitViewController::CalculateDividerPosition(SnapPosition snap_position,

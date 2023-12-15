@@ -174,8 +174,6 @@ GetSnapPosition(aura::Window* root_window,
                 int horizontal_edge_inset,
                 int vertical_edge_inset);
 
-bool IsInTabletMode();
-
 // The return values of these two functions together indicate what actual
 // positions correspond to |PRIMARY| and |SECONDARY|:
 // |IsLayoutHorizontal|  |IsLayoutPrimary|    |PRIMARY|           |SECONDARY|
@@ -216,6 +214,7 @@ int GetMinimumWindowLength(aura::Window* window, bool horizontal);
 // bounds based on the window's minimum size.
 gfx::Rect CalculateSnappedWindowBoundsInScreen(
     SnapPosition snap_position,
+    aura::Window* root_window,
     aura::Window* window_for_minimum_size,
     int divider_position,
     int divider_width,

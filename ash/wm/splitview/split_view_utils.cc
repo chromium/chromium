@@ -629,11 +629,11 @@ int GetMinimumWindowLength(aura::Window* window, bool horizontal) {
 
 gfx::Rect CalculateSnappedWindowBoundsInScreen(
     SnapPosition snap_position,
+    aura::Window* root_window,
     aura::Window* window_for_minimum_size,
     int divider_position,
     int divider_width,
     bool is_resizing_with_divider) {
-  aura::Window* root_window = window_for_minimum_size->GetRootWindow();
   const gfx::Rect work_area_bounds_in_screen =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           root_window);

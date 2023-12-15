@@ -260,7 +260,12 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
       dragged_window_->RemoveObserver(this);
   }
 
-  SplitViewHighlightView* left_highlight_view() { return left_highlight_view_; }
+  const SplitViewHighlightView* left_highlight_view() const {
+    return left_highlight_view_;
+  }
+  const SplitViewHighlightView* right_highlight_view() const {
+    return right_highlight_view_;
+  }
 
   // Called by parent widget when the state machine changes. Handles setting the
   // opacity and bounds of the highlights and labels.
@@ -676,14 +681,19 @@ void SplitViewDragIndicators::OnDisplayBoundsChanged() {
   widget_->SetBounds(GetWorkAreaBoundsNoOverlapWithShelf(root_window));
 }
 
+gfx::Rect SplitViewDragIndicators::GetLeftHighlightViewBounds() const {
+  return indicators_view_->left_highlight_view()->bounds();
+}
+
+gfx::Rect SplitViewDragIndicators::GetRightHighlightViewBoundsForTesting()
+    const {
+  return indicators_view_->right_highlight_view()->bounds();
+}
+
 bool SplitViewDragIndicators::GetIndicatorTypeVisibilityForTesting(
     IndicatorType type) const {
   return indicators_view_->GetViewForIndicatorType(type)->layer()->opacity() >
          0.f;
-}
-
-gfx::Rect SplitViewDragIndicators::GetLeftHighlightViewBounds() const {
-  return indicators_view_->left_highlight_view()->bounds();
 }
 
 }  // namespace ash

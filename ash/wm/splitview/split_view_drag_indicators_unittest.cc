@@ -16,9 +16,11 @@
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "split_view_constants.h"
 #include "split_view_drag_indicators.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -555,6 +557,48 @@ TEST_F(ClamshellMultiDisplaySplitViewDragIndicatorsTest,
   EXPECT_EQ(
       left_indicator_bounds.width(),
       portrait_display.work_area().width() - 2 * kHighlightScreenEdgePaddingDp);
+}
+
+// Test that when we drag in overview clamshell to another display, the
+// splitview indicators are the expected size. Regression test for
+// http://b/316043785.
+TEST_F(ClamshellMultiDisplaySplitViewDragIndicatorsTest, IndicatorSize) {
+  // The displays need to be different widths for the bug to repro.
+  UpdateDisplay("800x600,800+0-1000x600");
+
+  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(300, 300));
+
+  ToggleOverview();
+
+  // Start dragging the overview item on the primary display.
+  auto* item = GetOverviewItemForWindow(window.get());
+  gfx::PointF start_location(item->target_bounds().CenterPoint());
+  overview_session_->InitiateDrag(item, start_location,
+                                  /*is_touch_dragging=*/false,
+                                  /*event_source_item=*/item);
+
+  // Drag the overview item to the secondary display right edge, so the right
+  // side preview indicator shows up.
+  // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
+  // without having to call `CursorManager::SetDisplay()`.
+  aura::Window* secondary_root = Shell::GetAllRootWindows()[1];
+  Shell::Get()->cursor_manager()->SetDisplay(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(secondary_root));
+  overview_session_->Drag(item, gfx::PointF(1780.f, 500.f));
+
+  // Verify the size of the right side indicator. It should be roughly half of
+  // the secondary display.
+  auto* secondary_display_indicators =
+      overview_session_->GetGridWithRootWindow(secondary_root)
+          ->split_view_drag_indicators();
+  gfx::Rect expected_bounds_in_parent(500, 0, 500,
+                                      WorkAreaInsets::ForWindow(secondary_root)
+                                          ->user_work_area_bounds()
+                                          .height());
+  expected_bounds_in_parent.Inset(kHighlightScreenEdgePaddingDp);
+  EXPECT_EQ(
+      expected_bounds_in_parent,
+      secondary_display_indicators->GetRightHighlightViewBoundsForTesting());
 }
 
 }  // namespace ash

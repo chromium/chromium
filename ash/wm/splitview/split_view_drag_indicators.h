@@ -120,8 +120,10 @@ class ASH_EXPORT SplitViewDragIndicators {
   void SetDraggedWindow(aura::Window* dragged_window);
   void SetWindowDraggingState(WindowDraggingState window_dragging_state);
   void OnDisplayBoundsChanged();
-  bool GetIndicatorTypeVisibilityForTesting(IndicatorType type) const;
   gfx::Rect GetLeftHighlightViewBounds() const;
+
+  gfx::Rect GetRightHighlightViewBoundsForTesting() const;
+  bool GetIndicatorTypeVisibilityForTesting(IndicatorType type) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SplitViewDragIndicatorsTest,
