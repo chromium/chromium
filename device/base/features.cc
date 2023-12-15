@@ -9,6 +9,7 @@
 namespace device {
 
 #if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1492383): Resolve or mitigate this issue before launching.
 BASE_FEATURE(kNewUsbBackend,
              "NewUsbBackend",
              base::FEATURE_DISABLED_BY_DEFAULT);
