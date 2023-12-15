@@ -182,7 +182,7 @@ This is experimental.
             ],
         ),
         skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "chrome-test-builds",
+            gs_bucket = "chromium-skylab-ci",
             gs_extra = "ash",
         ),
     ),
@@ -235,7 +235,7 @@ This is experimental.
             ],
         ),
         skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "chrome-test-builds",
+            gs_bucket = "chromium-skylab-ci",
             gs_extra = "ash",
         ),
     ),
