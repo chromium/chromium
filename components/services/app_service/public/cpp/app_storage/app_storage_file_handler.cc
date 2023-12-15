@@ -59,6 +59,7 @@ constexpr char kAppSizeInBytesKey[] = "app_size_in_bytes";
 constexpr char kDataSizeInBytesKey[] = "data_size_in_bytes";
 constexpr char kSupportedLocalesKey[] = "supported_locales";
 constexpr char kSelectedLocaleKey[] = "selected_locale";
+constexpr char kExtraKey[] = "extra";
 
 absl::optional<std::string> GetStringValueFromDict(
     const base::Value::Dict& dict,
@@ -106,6 +107,12 @@ template <>
 base::Value GetValue(const AppPtr& app,
                      absl::optional<base::Time> App::*field) {
   return base::TimeToValue((app.get()->*field).value());
+}
+
+template <>
+base::Value GetValue(const AppPtr& app,
+                     absl::optional<base::Value::Dict> App::*field) {
+  return base::Value(std::move((app.get()->*field).value()));
 }
 
 template <>
@@ -297,6 +304,7 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
     SetKey(app, &App::data_size_in_bytes, kDataSizeInBytesKey, dict);
     SetKey(app, &App::supported_locales, kSupportedLocalesKey, dict);
     SetKey(app, &App::selected_locale, kSelectedLocaleKey, dict);
+    SetKey(app, &App::extra, kExtraKey, dict);
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
     app_info_dict.Set(app->app_id, std::move(dict));
@@ -416,6 +424,11 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
 
     GetListFromKey(value, &App::supported_locales, kSupportedLocalesKey, app);
     app->selected_locale = GetStringValueFromDict(*value, kSelectedLocaleKey);
+
+    base::Value::Dict* extra = value->FindDict(kExtraKey);
+    if (extra) {
+      app->extra = std::move(*extra);
+    }
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
     app_info->apps.push_back(std::move(app));

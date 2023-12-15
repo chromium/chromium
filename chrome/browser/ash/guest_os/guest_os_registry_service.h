@@ -117,6 +117,9 @@ class GuestOsRegistryService : public KeyedService {
 
     guest_os::GuestId ToGuestId() const;
 
+    std::string StartupWmClass() const;
+    bool StartupNotify() const;
+
    private:
     std::string GetString(base::StringPiece key) const;
     bool GetBool(base::StringPiece key) const;

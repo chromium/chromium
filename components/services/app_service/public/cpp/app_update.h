@@ -209,6 +209,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   absl::optional<std::string> SelectedLocale() const;
   bool SelectedLocaleChanged() const;
 
+  absl::optional<base::Value::Dict> Extra() const;
+  bool ExtraChanged() const;
+
   const App* State() const { return state_.get(); }
   const App* Delta() const { return delta_.get(); }
 

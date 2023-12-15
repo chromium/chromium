@@ -447,6 +447,14 @@ bool GuestOsRegistryService::Registration::IsScaled() const {
   return GetBool(guest_os::prefs::kAppScaledKey);
 }
 
+std::string GuestOsRegistryService::Registration::StartupWmClass() const {
+  return GetString(guest_os::prefs::kAppStartupWMClassKey);
+}
+
+bool GuestOsRegistryService::Registration::StartupNotify() const {
+  return GetBool(guest_os::prefs::kAppStartupNotifyKey);
+}
+
 std::string GuestOsRegistryService::Registration::GetString(
     base::StringPiece key) const {
   return GetStringKey(pref_, key);

@@ -156,6 +156,10 @@ bool App::operator==(const App& other) const {
     return false;
   }
 
+  if (this->extra != other.extra) {
+    return false;
+  }
+
   return true;
 }
 
@@ -210,6 +214,10 @@ AppPtr App::Clone() const {
 
   app->supported_locales = supported_locales;
   app->selected_locale = selected_locale;
+
+  if (extra.has_value()) {
+    app->extra = extra->Clone();
+  }
 
   return app;
 }

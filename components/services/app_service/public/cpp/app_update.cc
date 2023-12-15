@@ -187,6 +187,10 @@ bool MergeWithoutIconKey(App* state, const App* delta) {
   }
   SET_OPTIONAL_VALUE(selected_locale);
 
+  if (delta->extra.has_value()) {
+    state->extra = delta->extra->Clone();
+  }
+
   // When adding new fields to the App type, this function should also be
   // updated.
 
@@ -247,7 +251,8 @@ bool AppUpdate::IsChanged(const App* state, const App* delta) {
          update.ResizeLockedChanged() || update.WindowModeChanged() ||
          update.RunOnOsLoginChanged() || update.AllowCloseChanged() ||
          update.AppSizeInBytesChanged() || update.DataSizeInBytesChanged() ||
-         update.SupportedLocalesChanged() || update.SelectedLocaleChanged();
+         update.SupportedLocalesChanged() || update.SelectedLocaleChanged() ||
+         update.ExtraChanged();
 }
 
 AppUpdate::AppUpdate(const App* state,
@@ -592,6 +597,20 @@ absl::optional<std::string> AppUpdate::SelectedLocale() const {
 bool AppUpdate::SelectedLocaleChanged() const {
     RETURN_OPTIONAL_VALUE_CHANGED(selected_locale)}
 
+absl::optional<base::Value::Dict> AppUpdate::Extra() const {
+  if (delta_ && delta_->extra.has_value()) {
+    return delta_->extra->Clone();
+  }
+  if (state_ && state_->extra.has_value()) {
+    return state_->extra->Clone();
+  }
+  return absl::nullopt;
+}
+
+bool AppUpdate::ExtraChanged() const {
+  RETURN_OPTIONAL_VALUE_CHANGED(extra);
+}
+
 std::ostream&
 operator<<(std::ostream& out, const AppUpdate& app) {
   out << "AppType: " << EnumToString(app.AppType()) << std::endl;
@@ -661,6 +680,9 @@ operator<<(std::ostream& out, const AppUpdate& app) {
   out << "Selected locale: "
       << (app.SelectedLocale().has_value() ? app.SelectedLocale().value()
                                            : "No selected_locale")
+      << std::endl;
+  out << "Extra: "
+      << (app.Extra().has_value() ? app.Extra()->DebugString() : "No Extra")
       << std::endl;
 
   return out;

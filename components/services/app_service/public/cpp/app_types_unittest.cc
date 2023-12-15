@@ -46,6 +46,15 @@ std::pair<uint64_t, uint64_t> TestValue() {
   return {100, 200};
 }
 
+template <>
+std::pair<base::Value::Dict, base::Value::Dict> TestValue() {
+  base::Value::Dict dict1;
+  dict1.Set("vm_name", "vm_name_value");
+  base::Value::Dict dict2;
+  dict2.Set("container_name", "container_name_value");
+  return {std::move(dict1), std::move(dict2)};
+}
+
 bool IsEqual(AppPtr app1, AppPtr app2) {
   std::vector<AppPtr> apps1;
   apps1.push_back(std::move(app1));
@@ -421,6 +430,10 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForSupportedLocales) {
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForSelectedLocale) {
   VerifyOptionalValue(&App::selected_locale);
+}
+
+TEST_F(AppTypesTest, VerifyAppsIsEqualForExtra) {
+  VerifyOptionalValue(&App::extra);
 }
 
 }  // namespace apps

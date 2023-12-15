@@ -237,8 +237,8 @@ bool AppStorage::IsAppChanged(const AppUpdate& update) {
   }
 
   IS_APP_VALUE_CHANGED(selected_locale);
+  IS_APP_VALUE_CHANGED(extra);
 
-  // TODO(crbug.com/1385932): Add other files in the App structure.
   return false;
 }
 

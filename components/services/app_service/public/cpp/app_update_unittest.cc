@@ -142,6 +142,9 @@ class AppUpdateTest : public testing::Test {
   absl::optional<std::string> expect_selected_locale_;
   bool expect_selected_locale_changed_;
 
+  absl::optional<base::Value::Dict> expect_extra_;
+  bool expect_extra_changed_;
+
   void ExpectNoChange() {
     expect_changed_ = false;
     expect_readiness_changed_ = false;
@@ -1226,6 +1229,34 @@ class AppUpdateTest : public testing::Test {
     if (state) {
       apps::AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_selected_locale_, state->selected_locale);
+      ExpectNoChange();
+      CheckExpects(u);
+    }
+
+    // Extra tests.
+
+    if (state) {
+      base::Value::Dict dict;
+      dict.Set("vm_name", "vm_name_value");
+      state->SetExtraField("vm_name", "vm_name_value");
+      expect_extra_ = std::move(dict);
+      expect_extra_changed_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      base::Value::Dict dict;
+      dict.Set("container_name", "container_name_value");
+      delta->SetExtraField("container_name", "container_name_value");
+      expect_extra_ = std::move(dict);
+      expect_extra_changed_ = true;
+      expect_changed_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_extra_, state->extra);
       ExpectNoChange();
       CheckExpects(u);
     }

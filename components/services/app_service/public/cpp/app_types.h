@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/macros.h"
@@ -137,6 +138,19 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
 
   std::unique_ptr<App> Clone() const;
 
+  // Adds a new field for `extra`. The type `T` can be any type, e.g. int,
+  // double, string, base::Value::Dict, base::Value::List, base::Value, etc. The
+  // value is saved in base::Value::Dict `extra`. If the type `T` can't be
+  // converted to base::Value, an explicit convert function can be added to
+  // convert `value` to base::Value.
+  template <typename T>
+  void SetExtraField(const std::string& field_name, T&& value) {
+    if (!extra.has_value()) {
+      extra = base::Value::Dict();
+    }
+    extra->Set(field_name, value);
+  }
+
   AppType app_type;
   std::string app_id;
 
@@ -237,6 +251,12 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // ARC-specific note: Based on Android implementation, `selected_locale`
   //  is not necessarily part of `supported_locales`.
   absl::optional<std::string> selected_locale;
+
+  // The extra information used by the app platform(e.g. ARC, GuestOS) for an
+  // app. `extra` needs to be modified as a whole, and we can't only modify part
+  // of `extra`. AppService doesn't use the fields saved in `extra`. App
+  // publishers modify the content saved in `extra`.
+  absl::optional<base::Value::Dict> extra;
 
   // When adding new fields to the App type, the `Clone` function, the
   // `operator==` function, and the `AppUpdate` class should also be updated. If
