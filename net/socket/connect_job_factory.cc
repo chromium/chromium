@@ -85,20 +85,20 @@ base::flat_set<std::string> SupportedProtocolsFromSSLConfig(
                                         NextProtoToString);
 }
 
-void MaybeForceHttp11(const ProxyServer& proxy_server,
-                      const CommonConnectJobParams* common_connect_job_params,
-                      const NetworkAnonymizationKey& network_anonymization_key,
-                      SSLConfig* proxy_server_ssl_config) {
-  HttpServerProperties* http_server_properties =
-      common_connect_job_params->http_server_properties;
-  if (http_server_properties) {
-    if (proxy_server.is_https()) {
-      http_server_properties->MaybeForceHTTP11(
-          url::SchemeHostPort(url::kHttpsScheme,
-                              proxy_server.host_port_pair().host(),
-                              proxy_server.host_port_pair().port()),
-          network_anonymization_key, proxy_server_ssl_config);
-    }
+// Populates `ssl_config.alpn_protos` and `ssl_config.application_settings`,
+// copying them from `common_connect_job_params`. If HTTP/1.1 is required, sets
+// `alpn_protos` to only allow HTTP/1.1 negotiation.
+void ConfigureAlpn(
+    const url::SchemeHostPort& server,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
+    const CommonConnectJobParams& common_connect_job_params,
+    SSLConfig& ssl_config) {
+  ssl_config.alpn_protos = *common_connect_job_params.alpn_protos;
+  ssl_config.application_settings =
+      *common_connect_job_params.application_settings;
+  if (common_connect_job_params.http_server_properties) {
+    common_connect_job_params.http_server_properties->MaybeForceHTTP11(
+        server, network_anonymization_key, &ssl_config);
   }
 }
 
@@ -216,8 +216,11 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
         //
         proxy_server_ssl_config.disable_cert_verification_network_fetches =
             true;
-        MaybeForceHttp11(proxy_server, common_connect_job_params,
-                         network_anonymization_key, &proxy_server_ssl_config);
+        ConfigureAlpn(url::SchemeHostPort(url::kHttpsScheme,
+                                          proxy_server.host_port_pair().host(),
+                                          proxy_server.host_port_pair().port()),
+                      network_anonymization_key, *common_connect_job_params,
+                      proxy_server_ssl_config);
       }
 
       scoped_refptr<TransportSocketParams> proxy_tcp_params;

@@ -52,9 +52,17 @@ ProxyResolvingClientSocketFactory::ProxyResolvingClientSocketFactory(
         reference_params->testing_fixed_http_port;
     session_params.testing_fixed_https_port =
         reference_params->testing_fixed_https_port;
-    session_params.enable_http2 = reference_params->enable_http2;
-    session_params.enable_http2_alternative_service =
-        reference_params->enable_http2_alternative_service;
+
+    // Disable H2 negotiation via ALPN.
+    //
+    // TODO(https://crbug.com/1505550): Should this be allowed for proxies, but
+    // not for direct connections?
+    session_params.enable_http2 = false;
+
+    // Disable H2 alternative service as well. It's not supported for proxies,
+    // unlike ALPN, so no concerns with completely disabling it.
+    session_params.enable_http2_alternative_service = false;
+
     // Note that ProxyResolvingClientSocket does not use QUIC, so enabling QUIC
     // won't do anything here.
   }

@@ -789,12 +789,14 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     server_ssl_config_.renego_allowed_for_protos.push_back(kProtoHTTP11);
   }
 
-  SSLConfig base_proxy_ssl_config;
+  // TODO(mmenke): This should be set in ClientSocketFactory. There's a bit of a
+  // problem, though. This is overwritten some ways down with "{kProtoHTTP11}"
+  // in the WebSocket case, and ProxyResolvingClientSocket leaves it empty, so
+  // there are three different values of this we want.
   server_ssl_config_.alpn_protos = session_->GetAlpnProtos();
-  base_proxy_ssl_config.alpn_protos = session_->GetAlpnProtos();
   server_ssl_config_.application_settings = session_->GetApplicationSettings();
-  base_proxy_ssl_config.application_settings =
-      session_->GetApplicationSettings();
+
+  SSLConfig base_proxy_ssl_config;
 
   // TODO(https://crbug.com/964642): Also enable 0-RTT for TLS proxies.
   server_ssl_config_.early_data_enabled = session_->params().enable_early_data;
@@ -870,6 +872,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
         url::SchemeHostPort(request_info_.url),
         request_info_.network_anonymization_key, &server_ssl_config_);
   }
+
   if (job_type_ == PRECONNECT) {
     DCHECK(!is_websocket_);
     DCHECK(request_info_.socket_tag == SocketTag());
