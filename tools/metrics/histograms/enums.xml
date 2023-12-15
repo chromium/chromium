@@ -51121,6 +51121,23 @@ would be helpful to identify which type is being sent.
   <int value="2" label="Good model"/>
 </enum>
 
+<enum name="V8CompileHintsStatus">
+  <int value="0"
+      label="Consume local compile hints, classic script, no streaming"/>
+  <int value="1" label="Consume local compile hints, module, no streaming"/>
+  <int value="2"
+      label="Consume crowdsourced compile hints, classic script, no streaming"/>
+  <int value="3"
+      label="Consume crowdsourced compile hints, module, no streaming"/>
+  <int value="4" label="Produce compile hints, classic script, no streaming"/>
+  <int value="5" label="Produce compile hints, module, no streaming"/>
+  <int value="6" label="Consume code cache, classic script, no streaming"/>
+  <int value="7" label="Consume code cache, module, no streaming"/>
+  <int value="8" label="Consume local compile hints, streaming"/>
+  <int value="9" label="Consume crowdsourced compile hints streaming"/>
+  <int value="10" label="Produce compile hints, streaming"/>
+</enum>
+
 <enum name="VariationsSeedExpiry">
   <int value="0" label="Not Expired"/>
   <int value="1" label="Fetch Time Missing"/>

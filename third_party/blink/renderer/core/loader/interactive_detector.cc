@@ -8,6 +8,7 @@
 #include "base/profiler/sample_metadata.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -526,26 +527,34 @@ void InteractiveDetector::CheckTimeToInteractiveReached() {
   if (!interactive_time_.is_null())
     return;
 
+  const bool ignore_fcp =
+      base::FeatureList::IsEnabled(features::kInteractiveDetectorIgnoreFcp);
   // FCP and DCL have not been detected yet.
-  if (page_event_times_.first_contentful_paint.is_null() ||
-      page_event_times_.dom_content_loaded_end.is_null())
+  if ((page_event_times_.first_contentful_paint.is_null() && !ignore_fcp) ||
+      page_event_times_.dom_content_loaded_end.is_null()) {
     return;
+  }
 
   const base::TimeTicks current_time = clock_->NowTicks();
-  if (current_time - page_event_times_.first_contentful_paint <
-      kTimeToInteractiveWindow) {
+  if (!ignore_fcp && (current_time - page_event_times_.first_contentful_paint <
+                      kTimeToInteractiveWindow)) {
     // Too close to FCP to determine Time to Interactive.
     return;
   }
 
   AddCurrentlyActiveNetworkQuietInterval(current_time);
-  const base::TimeTicks interactive_candidate = FindInteractiveCandidate(
+  base::TimeTicks interactive_candidate = FindInteractiveCandidate(
       page_event_times_.first_contentful_paint, current_time);
   RemoveCurrentlyActiveNetworkQuietInterval();
 
   // No Interactive Candidate found.
-  if (interactive_candidate.is_null())
-    return;
+  if (interactive_candidate.is_null()) {
+    if (ignore_fcp) {
+      interactive_candidate = page_event_times_.dom_content_loaded_end;
+    } else {
+      return;
+    }
+  }
 
   interactive_time_ = std::max(
       {interactive_candidate, page_event_times_.dom_content_loaded_end});

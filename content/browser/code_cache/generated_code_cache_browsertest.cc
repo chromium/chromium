@@ -6,12 +6,17 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "content/browser/code_cache/generated_code_cache.h"
+#include "content/browser/code_cache/generated_code_cache_context.h"
+#include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page/v8_compile_hints_histograms.h"
 
 namespace content {
 
@@ -424,6 +429,203 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,
     histogram_tester.ExpectBucketCount(
         "SiteIsolatedCodeCache.JS.Behaviour",
         GeneratedCodeCache::CacheEntryStatus::kHit, 0);
+  }
+}
+
+class LocalCompileHintsBrowserTest : public ContentBrowserTest {
+ public:
+  LocalCompileHintsBrowserTest() {
+    local_compile_hints_.InitAndEnableFeature(
+        blink::features::kLocalCompileHints);
+    interactive_detector_ignore_fcp_.InitAndEnableFeature(
+        blink::features::kInteractiveDetectorIgnoreFcp);
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&LocalCompileHintsBrowserTest::CachedScriptHandler,
+                            base::Unretained(this)));
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> CachedScriptHandler(
+      const net::test_server::HttpRequest& request) {
+    GURL absolute_url = embedded_test_server()->GetURL(request.relative_url);
+
+    // Returns a JavaScript file that should be cacheable by the
+    // GeneratedCodeCache (>1024 characters).
+    if (absolute_url.path() == "/cacheable.js") {
+      auto http_response =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      http_response->set_code(net::HTTP_OK);
+      http_response->AddCustomHeader("Cache-Control", "max-age=604800");
+
+      // The script has to include a function so that we can test compile hints
+      // with it.
+      std::string content = R"(
+        let variable = 'hello!';
+        function foo() {}
+        foo();
+        )";
+
+      // Make sure the script is long enough to be eligible for caching.
+      for (int i = 0; i < 16; i++) {
+        content += std::string(64, '/') + '\n';
+      }
+
+      http_response->set_content(content);
+      http_response->set_content_type("application/javascript");
+      return http_response;
+    }
+
+    // Returns an HTML file that will load /cacheable.js.
+    if (absolute_url.path() == "/cacheable.html") {
+      auto http_response =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      http_response->set_code(net::HTTP_OK);
+
+      std::string content =
+          "<html><head><title>Title</title></head>"
+          "<script src='/cacheable.js'></script></html>";
+
+      http_response->set_content(content);
+      return http_response;
+    }
+    return nullptr;
+  }
+
+ private:
+  base::test::ScopedFeatureList local_compile_hints_;
+  base::test::ScopedFeatureList interactive_detector_ignore_fcp_;
+};
+
+class CodeCacheSizeChecker {
+ public:
+  CodeCacheSizeChecker(GeneratedCodeCacheContext* cache_context,
+                       const GURL& url,
+                       const GURL& origin,
+                       size_t expected_size)
+      : cache_context_(cache_context),
+        url_(url),
+        origin_(origin),
+        expected_size_(expected_size) {}
+
+  void Wait() {
+    base::test::TestFuture<void> done;
+    done_callback_ = done.GetCallback();
+
+    GeneratedCodeCacheContext::GetTaskRunner(cache_context_)
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&CodeCacheSizeChecker::GetCodeCache,
+                                  base::Unretained(this)));
+    ASSERT_TRUE(done.Wait());
+  }
+
+ private:
+  void GetCodeCache() {
+    net::NetworkIsolationKey nik = net::NetworkIsolationKey(
+        net::SchemefulSite(origin_), net::SchemefulSite(origin_));
+    cache_context_->generated_js_code_cache()->FetchEntry(
+        url_, GURL(), nik,
+        base::BindOnce(&CodeCacheSizeChecker::FetchCallback,
+                       base::Unretained(this)));
+  }
+
+  void FetchCallback(const base::Time&, mojo_base::BigBuffer data) {
+    if (data.size() >= expected_size_) {
+      content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                   std::move(done_callback_));
+    }
+  }
+
+  scoped_refptr<GeneratedCodeCacheContext> cache_context_;
+  GURL url_;
+  GURL origin_;
+  size_t expected_size_;
+  base::OnceClosure done_callback_;
+};
+
+IN_PROC_BROWSER_TEST_F(LocalCompileHintsBrowserTest, LocalCompileHints) {
+  // TODO(chromium:1495723): Migrate this test to use use counters once we no
+  // longer have the histograms.
+
+  // With this, we can query the code cache in a unified way in platforms which
+  // use origin locks differently.
+  CodeCacheHostImpl::SetUseEmptySecondaryKeyForTesting();
+
+  GURL cacheable_page =
+      embedded_test_server()->GetURL("c.com", "/cacheable.html");
+  GURL other_page = embedded_test_server()->GetURL("a.com", "/empty.html");
+
+  {
+    // Navigate to the page which requests a cacheable
+    // javascript resource (/cacheable.js). Once the page is interactive, local
+    // compile hints will be generated.
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(NavigateToURL(shell(), cacheable_page));
+
+    GeneratedCodeCacheContext* cache_context =
+        shell()
+            ->web_contents()
+            ->GetBrowserContext()
+            ->GetDefaultStoragePartition()
+            ->GetGeneratedCodeCacheContext();
+    // Wait until compile hints were written into the cache.
+    const GURL& cacheable_script =
+        embedded_test_server()->GetURL("c.com", "/cacheable.js");
+    constexpr int kCompileHintsCacheSize = 28;  // Tag + actual data.
+    CodeCacheSizeChecker code_cache_size_checker(
+        cache_context, cacheable_script, GURL("http://c.com/"),
+        kCompileHintsCacheSize);
+    code_cache_size_checker.Wait();
+
+    FetchHistogramsFromChildProcesses();
+    EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                     blink::v8_compile_hints::kStatusHistogram,
+                     blink::v8_compile_hints::Status::
+                         kProduceCompileHintsClassicNonStreaming) +
+                     histogram_tester.GetBucketCount(
+                         blink::v8_compile_hints::kStatusHistogram,
+                         blink::v8_compile_hints::Status::
+                             kProduceCompileHintsStreaming));
+  }
+
+  // Navigate away.
+  EXPECT_TRUE(NavigateToURL(shell(), other_page));
+
+  {
+    // Navigate to the same test page again and check for a local compile hints
+    // hit.
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(NavigateToURL(shell(), cacheable_page));
+
+    FetchHistogramsFromChildProcesses();
+
+    EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                     blink::v8_compile_hints::kStatusHistogram,
+                     blink::v8_compile_hints::Status::
+                         kConsumeLocalCompileHintsClassicNonStreaming) +
+                     histogram_tester.GetBucketCount(
+                         blink::v8_compile_hints::kStatusHistogram,
+                         blink::v8_compile_hints::Status::
+                             kConsumeLocalCompileHintsStreaming));
+  }
+
+  // Navigate away.
+  EXPECT_TRUE(NavigateToURL(shell(), other_page));
+
+  {
+    // Navigate to the same test page again and check for a code cache hit.
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(NavigateToURL(shell(), cacheable_page));
+
+    FetchHistogramsFromChildProcesses();
+
+    histogram_tester.ExpectBucketCount(
+        blink::v8_compile_hints::kStatusHistogram,
+        blink::v8_compile_hints::Status::kConsumeCodeCacheClassicNonStreaming,
+        1);
   }
 }
 

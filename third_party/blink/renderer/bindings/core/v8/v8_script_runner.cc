@@ -26,8 +26,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page/v8_compile_hints_histograms.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/buildflags.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
@@ -164,6 +166,10 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
       // not both at the same time.
       // TODO(chromium:1495723): Enable consuming both at the same time.
       if (local_compile_hints) {
+        base::UmaHistogramEnumeration(
+            v8_compile_hints::kStatusHistogram,
+            v8_compile_hints::Status::
+                kConsumeLocalCompileHintsClassicNonStreaming);
         CachedMetadataHandler* cache_handler = classic_script.CacheHandler();
         CHECK(cache_handler);
         scoped_refptr<CachedMetadata> cached_metadata =
@@ -187,6 +193,10 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
         return v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
                                            compile_options, no_cache_reason);
       }
+      base::UmaHistogramEnumeration(
+          v8_compile_hints::kStatusHistogram,
+          v8_compile_hints::Status::
+              kConsumeCrowdsourcedCompileHintsClassicNonStreaming);
       CHECK(consume_crowdsourced_compile_hints);
       // No local compile hints; compile with crowdsourced compile hints.
       // Based on how `can_use_compile_hints` in CompileScript is computed, we
@@ -213,15 +223,22 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
       return v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
                                          compile_options, no_cache_reason);
     }
+    case v8::ScriptCompiler::kProduceCompileHints:
+      base::UmaHistogramEnumeration(
+          v8_compile_hints::kStatusHistogram,
+          v8_compile_hints::Status::kProduceCompileHintsClassicNonStreaming);
+      [[fallthrough]];
     case v8::ScriptCompiler::kNoCompileOptions:
-    case v8::ScriptCompiler::kEagerCompile:
-    case v8::ScriptCompiler::kProduceCompileHints: {
+    case v8::ScriptCompiler::kEagerCompile: {
       v8::ScriptCompiler::Source source(code, origin);
       return v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
                                          compile_options, no_cache_reason);
     }
 
     case v8::ScriptCompiler::kConsumeCodeCache: {
+      base::UmaHistogramEnumeration(
+          v8_compile_hints::kStatusHistogram,
+          v8_compile_hints::Status::kConsumeCodeCacheClassicNonStreaming);
       // Compile a script, and consume a V8 cache that was generated previously.
       CachedMetadataHandler* cache_handler = classic_script.CacheHandler();
       ScriptCacheConsumer* cache_consumer = classic_script.CacheConsumer();
@@ -370,6 +387,9 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
       case v8::ScriptCompiler::kNoCompileOptions:
       case v8::ScriptCompiler::kEagerCompile:
       case v8::ScriptCompiler::kProduceCompileHints: {
+        base::UmaHistogramEnumeration(
+            v8_compile_hints::kStatusHistogram,
+            v8_compile_hints::Status::kProduceCompileHintsModuleNonStreaming);
         v8::ScriptCompiler::Source source(code, origin);
         script = v8::ScriptCompiler::CompileModule(
             isolate, &source, compile_options, no_cache_reason);
@@ -377,6 +397,9 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
       }
 
       case v8::ScriptCompiler::kConsumeCodeCache: {
+        base::UmaHistogramEnumeration(
+            v8_compile_hints::kStatusHistogram,
+            v8_compile_hints::Status::kConsumeCodeCacheModuleNonStreaming);
         // Compile a script, and consume a V8 cache that was generated
         // previously.
         CachedMetadataHandler* cache_handler = params.CacheHandler();

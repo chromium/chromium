@@ -35,14 +35,10 @@ namespace content {
 
 namespace {
 
-enum class Operation {
-  kRead,
-  kWrite,
-};
-
-bool CheckSecurityForAccessingCodeCacheData(const GURL& resource_url,
-                                            int render_process_id,
-                                            Operation operation) {
+bool CheckSecurityForAccessingCodeCacheData(
+    const GURL& resource_url,
+    int render_process_id,
+    CodeCacheHostImpl::Operation operation) {
   ProcessLock process_lock =
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
           render_process_id);
@@ -61,7 +57,7 @@ bool CheckSecurityForAccessingCodeCacheData(const GURL& resource_url,
     }
     if (process_lock.matches_scheme(url::kHttpScheme) ||
         process_lock.matches_scheme(url::kHttpsScheme)) {
-      if (operation == Operation::kWrite) {
+      if (operation == CodeCacheHostImpl::Operation::kWrite) {
         mojo::ReportBadMessage("HTTP(S) pages cannot cache WebUI code");
       }
       return false;
@@ -83,75 +79,10 @@ bool CheckSecurityForAccessingCodeCacheData(const GURL& resource_url,
     return true;
   }
 
-  if (operation == Operation::kWrite) {
+  if (operation == CodeCacheHostImpl::Operation::kWrite) {
     mojo::ReportBadMessage("Invalid URL scheme for code cache.");
   }
   return false;
-}
-
-// Code caches use two keys: the URL of requested resource |resource_url|
-// as the primary key and the origin lock of the renderer that requested this
-// resource as secondary key. This function returns the origin lock of the
-// renderer that will be used as the secondary key for the code cache.
-// The secondary key is:
-// Case 0. absl::nullopt if the resource URL or origin lock have unsupported
-// schemes, or if they represent potentially dangerous combinations such as
-// WebUI code in an open-web page.
-// Case 1. an empty GURL if the render process is not locked to an origin. In
-// this case, code cache uses |resource_url| as the key.
-// Case 2. a absl::nullopt, if the origin lock is opaque (for ex: browser
-// initiated navigation to a data: URL). In these cases, the code should not be
-// cached since the serialized value of opaque origins should not be used as a
-// key.
-// Case 3: origin_lock if the scheme of origin_lock is
-// Http/Https/chrome/chrome-untrusted.
-// Case 4. absl::nullopt otherwise.
-absl::optional<GURL> GetSecondaryKeyForCodeCache(const GURL& resource_url,
-                                                 int render_process_id,
-                                                 Operation operation) {
-  // Case 0: check for invalid schemes.
-  if (!CheckSecurityForAccessingCodeCacheData(resource_url, render_process_id,
-                                              operation)) {
-    return absl::nullopt;
-  }
-  if (!resource_url.is_valid())
-    return absl::nullopt;
-
-  ProcessLock process_lock =
-      ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
-          render_process_id);
-
-  // Case 1: If process is not locked to a site, it is safe to just use the
-  // |resource_url| of the requested resource as the key. Return an empty GURL
-  // as the second key.
-  if (!process_lock.is_locked_to_site())
-    return GURL::EmptyGURL();
-
-  // Case 2: Don't cache the code corresponding to opaque origins. The same
-  // origin checks should always fail for opaque origins but the serialized
-  // value of opaque origins does not ensure this.
-  // NOTE: HasOpaqueOrigin() will return true if the ProcessLock lock url is
-  // invalid, leading to a return value of absl::nullopt.
-  if (process_lock.HasOpaqueOrigin())
-    return absl::nullopt;
-
-  // Case 3: process_lock_url is used to enfore site-isolation in code caches.
-  // Http/https/chrome schemes are safe to be used as a secondary key. Other
-  // schemes could be enabled if they are known to be safe and if it is
-  // required to cache code from those origins.
-  //
-  // file:// URLs will have a "file:" process lock and would thus share a
-  // cache across all file:// URLs. That would likely be ok for security, but
-  // since this case is not performance sensitive we will keep things simple and
-  // limit the cache to http/https/chrome/chrome-untrusted processes.
-  if (process_lock.matches_scheme(url::kHttpScheme) ||
-      process_lock.matches_scheme(url::kHttpsScheme) ||
-      process_lock.matches_scheme(content::kChromeUIScheme) ||
-      process_lock.matches_scheme(content::kChromeUIUntrustedScheme)) {
-    return process_lock.lock_url();
-  }
-
-  return absl::nullopt;
 }
 
 void DidGenerateCacheableMetadataInCacheStorageOnUI(
@@ -238,6 +169,8 @@ void AddCodeCacheReceiver(
 
 }  // namespace
 
+bool CodeCacheHostImpl::use_empty_secondary_key_for_testing_ = false;
+
 CodeCacheHostImpl::ReceiverSet::ReceiverSet(
     scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context)
     : generated_code_cache_context_(generated_code_cache_context),
@@ -314,12 +247,13 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadata(
   if (!code_cache)
     return;
 
-  absl::optional<GURL> origin_lock =
+  std::optional<GURL> secondary_key =
       GetSecondaryKeyForCodeCache(url, render_process_id_, Operation::kWrite);
-  if (!origin_lock)
+  if (!secondary_key) {
     return;
+  }
 
-  code_cache->WriteEntry(url, *origin_lock, network_isolation_key_,
+  code_cache->WriteEntry(url, *secondary_key, network_isolation_key_,
                          expected_response_time, std::move(data));
 }
 
@@ -333,9 +267,9 @@ void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
     return;
   }
 
-  absl::optional<GURL> origin_lock =
+  std::optional<GURL> secondary_key =
       GetSecondaryKeyForCodeCache(url, render_process_id_, Operation::kRead);
-  if (!origin_lock) {
+  if (!secondary_key) {
     std::move(callback).Run(base::Time(), std::vector<uint8_t>());
     return;
   }
@@ -343,7 +277,7 @@ void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
   auto read_callback = base::BindOnce(
       &CodeCacheHostImpl::OnReceiveCachedCode, weak_ptr_factory_.GetWeakPtr(),
       cache_type, base::TimeTicks::Now(), std::move(callback));
-  code_cache->FetchEntry(url, *origin_lock, network_isolation_key_,
+  code_cache->FetchEntry(url, *secondary_key, network_isolation_key_,
                          std::move(read_callback));
 }
 
@@ -355,12 +289,13 @@ void CodeCacheHostImpl::ClearCodeCacheEntry(
   if (!code_cache)
     return;
 
-  absl::optional<GURL> origin_lock =
-      GetSecondaryKeyForCodeCache(url, render_process_id_, Operation::kWrite);
-  if (!origin_lock)
+  std::optional<GURL> secondary_key =
+      GetSecondaryKeyForCodeCache(url, render_process_id_, Operation::kRead);
+  if (!secondary_key) {
     return;
+  }
 
-  code_cache->DeleteEntry(url, *origin_lock, network_isolation_key_);
+  code_cache->DeleteEntry(url, *secondary_key, network_isolation_key_);
 }
 
 void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(
@@ -420,6 +355,78 @@ void CodeCacheHostImpl::OnReceiveCachedCode(
                             base::TimeTicks::Now() - start_time);
   }
   std::move(callback).Run(response_time, std::move(data));
+}
+
+// Code caches use two keys: the URL of requested resource |resource_url|
+// as the primary key and the origin lock of the renderer that requested this
+// resource as secondary key. This function returns the origin lock of the
+// renderer that will be used as the secondary key for the code cache.
+// The secondary key is:
+// Case 0. absl::nullopt if the resource URL or origin lock have unsupported
+// schemes, or if they represent potentially dangerous combinations such as
+// WebUI code in an open-web page.
+// Case 1. an empty GURL if the render process is not locked to an origin. In
+// this case, code cache uses |resource_url| as the key.
+// Case 2. a absl::nullopt, if the origin lock is opaque (for ex: browser
+// initiated navigation to a data: URL). In these cases, the code should not be
+// cached since the serialized value of opaque origins should not be used as a
+// key.
+// Case 3: origin_lock if the scheme of origin_lock is
+// Http/Https/chrome/chrome-untrusted.
+// Case 4. absl::nullopt otherwise.
+std::optional<GURL> CodeCacheHostImpl::GetSecondaryKeyForCodeCache(
+    const GURL& resource_url,
+    int render_process_id,
+    CodeCacheHostImpl::Operation operation) {
+  if (use_empty_secondary_key_for_testing_) {
+    return GURL();
+  }
+  // Case 0: check for invalid schemes.
+  if (!CheckSecurityForAccessingCodeCacheData(resource_url, render_process_id,
+                                              operation)) {
+    return std::nullopt;
+  }
+  if (!resource_url.is_valid()) {
+    return std::nullopt;
+  }
+
+  ProcessLock process_lock =
+      ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
+          render_process_id);
+
+  // Case 1: If process is not locked to a site, it is safe to just use the
+  // |resource_url| of the requested resource as the key. Return an empty GURL
+  // as the second key.
+  if (!process_lock.is_locked_to_site()) {
+    return GURL::EmptyGURL();
+  }
+
+  // Case 2: Don't cache the code corresponding to opaque origins. The same
+  // origin checks should always fail for opaque origins but the serialized
+  // value of opaque origins does not ensure this.
+  // NOTE: HasOpaqueOrigin() will return true if the ProcessLock lock url is
+  // invalid, leading to a return value of absl::nullopt.
+  if (process_lock.HasOpaqueOrigin()) {
+    return absl::nullopt;
+  }
+
+  // Case 3: process_lock_url is used to enfore site-isolation in code caches.
+  // Http/https/chrome schemes are safe to be used as a secondary key. Other
+  // schemes could be enabled if they are known to be safe and if it is
+  // required to cache code from those origins.
+  //
+  // file:// URLs will have a "file:" process lock and would thus share a
+  // cache across all file:// URLs. That would likely be ok for security, but
+  // since this case is not performance sensitive we will keep things simple and
+  // limit the cache to http/https/chrome/chrome-untrusted processes.
+  if (process_lock.matches_scheme(url::kHttpScheme) ||
+      process_lock.matches_scheme(url::kHttpsScheme) ||
+      process_lock.matches_scheme(content::kChromeUIScheme) ||
+      process_lock.matches_scheme(content::kChromeUIUntrustedScheme)) {
+    return process_lock.lock_url();
+  }
+
+  return std::nullopt;
 }
 
 }  // namespace content

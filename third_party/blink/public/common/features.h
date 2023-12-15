@@ -1509,6 +1509,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int> kPixelDistanceToExpand;
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink);
 
+// Don't require FCP for the page to turn interactive. Useful for testing.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInteractiveDetectorIgnoreFcp);
+
 }  // namespace features
 }  // namespace blink
 

@@ -802,6 +802,18 @@ chromium-metrics-reviews@google.com.
   <summary>Whether a parsing blocking script was streamed or not.</summary>
 </histogram>
 
+<histogram name="WebCore.Scripts.V8CompileHintsStatus"
+    enum="V8CompileHintsStatus" expires_after="2024-03-12">
+  <owner>marja@chromium.org</owner>
+  <owner>v8-loading@google.com</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Whether we produced / consumed compile hints (either local or crowdsourced)
+    for a script. Recorded when a script is compiled (either via streaming or
+    otherwise).
+  </summary>
+</histogram>
+
 <histogram name="WebCore.Scripts.V8CrowdsourcedCompileHints.ModelQuality"
     enum="V8CompileHintsModelQuality" expires_after="2024-09-11">
   <owner>marja@chromium.org</owner>
