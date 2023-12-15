@@ -9,7 +9,7 @@
 #include "ash/assistant/ui/main_stage/chip_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 
 namespace ash {
 
@@ -22,7 +22,7 @@ using LauncherSearchIphViewTest = AssistantAshTestBase;
 TEST_F(LauncherSearchIphViewTest,
        ShouldShuffleQueriesWhenShowingAssistantPage) {
   base::test::ScopedFeatureList scoped_feature_list(
-      assistant::features::kEnableAssistantLearnMore);
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   ShowAssistantUi();
   LauncherSearchIphView* iph_view = static_cast<LauncherSearchIphView*>(

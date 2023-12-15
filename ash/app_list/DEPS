@@ -5,6 +5,7 @@ include_rules = [
   "+ash/resources/vector_icons",
   "+ash/strings",
   "+chromeos/utils",
+  "+components/feature_engagement/public/feature_constants.h",
   "+components/keyed_service/core",
   "+components/sync",
   "+mojo/public/cpp",

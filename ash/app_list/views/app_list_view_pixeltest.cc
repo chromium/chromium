@@ -24,8 +24,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
@@ -461,8 +460,8 @@ class AppListViewAssistantZeroStateTest
   }
 
   void SetUp() override {
-    scoped_features_.InitWithFeatureStates(
-        {{assistant::features::kEnableAssistantLearnMore, true}});
+    scoped_feature_list_.InitAndEnableFeature(
+        feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
     AssistantAshTestBase::SetUp();
     SetNumberOfSessionsWhereOnboardingShown(
@@ -475,7 +474,7 @@ class AppListViewAssistantZeroStateTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_features_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(RTL,

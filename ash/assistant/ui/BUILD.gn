@@ -103,6 +103,7 @@ source_set("ui") {
     "//chromeos/ash/services/assistant/public/mojom",
     "//chromeos/ash/services/libassistant/public/cpp:structs",
     "//chromeos/ui/vector_icons",
+    "//components/feature_engagement/public",
     "//components/vector_icons",
     "//ui/aura",
     "//ui/chromeos/styles:cros_styles_views",

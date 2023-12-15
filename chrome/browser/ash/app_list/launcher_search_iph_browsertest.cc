@@ -499,12 +499,13 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
   EXPECT_FALSE(search_box_view()->assistant_button()->GetBackground());
 }
 
-// The bool param indicates if the AssistantLearnMore feature is enabled or not.
+// The bool param indicates if the kIPHLauncherSearchHelpUiFeature feature is
+// enabled or not.
 class AppListIphBrowserTestAssistantZeroState : public AppListIphBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitAndEnableFeature(
-        ash::assistant::features::kEnableAssistantLearnMore);
+        feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
@@ -515,7 +516,7 @@ class AppListIphBrowserTestAssistantZeroState : public AppListIphBrowserTest {
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest, NoAssistantZeroStateIphFlagOff) {
   ASSERT_FALSE(base::FeatureList::IsEnabled(
-      ash::assistant::features::kEnableAssistantLearnMore));
+      feature_engagement::kIPHLauncherSearchHelpUiFeature));
 
   OpenAppList();
 

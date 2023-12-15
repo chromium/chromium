@@ -18,13 +18,13 @@
 #include "ash/assistant/ui/main_stage/ui_element_container_view.h"
 #include "ash/assistant/util/animation_util.h"
 #include "ash/assistant/util/assistant_util.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -120,7 +120,8 @@ AppListAssistantMainStage::AppListAssistantMainStage(
     AssistantViewDelegate* delegate)
     : delegate_(delegate) {
   SetID(AssistantViewID::kMainStage);
-  if (assistant::features::IsAssistantLearnMoreEnabled()) {
+  if (base::FeatureList::IsEnabled(
+          feature_engagement::kIPHLauncherSearchHelpUiFeature)) {
     InitLayoutWithIph();
   } else {
     InitLayout();
@@ -480,7 +481,8 @@ void AppListAssistantMainStage::MaybeHideZeroStateAndShowFooter() {
   assistant::util::FadeOutAndHide(zero_state_view_,
                                   kZeroStateAnimationFadeOutDuration);
 
-  if (assistant::features::IsAssistantLearnMoreEnabled()) {
+  if (base::FeatureList::IsEnabled(
+          feature_engagement::kIPHLauncherSearchHelpUiFeature)) {
     AnimateInFooter();
   }
 }
@@ -499,7 +501,8 @@ void AppListAssistantMainStage::InitializeUIForStartingSession(
   } else {
     AnimateInZeroState();
 
-    if (assistant::features::IsAssistantLearnMoreEnabled()) {
+    if (base::FeatureList::IsEnabled(
+            feature_engagement::kIPHLauncherSearchHelpUiFeature)) {
       footer_->SetVisible(false);
     } else {
       AnimateInFooter();
