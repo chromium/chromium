@@ -114,8 +114,10 @@ void SystemGeolocationSourceMac::TrackGeolocationAttempted() {
 }
 
 void SystemGeolocationSourceMac::OpenSystemPermissionSetting() {
+#if BUILDFLAG(IS_MAC)
   base::mac::OpenSystemSettingsPane(
       base::mac::SystemSettingsPane::kPrivacySecurity_LocationServices);
+#endif
 }
 
 void SystemGeolocationSourceMac::RequestPermission() {
