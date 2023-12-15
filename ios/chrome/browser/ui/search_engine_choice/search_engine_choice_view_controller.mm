@@ -302,51 +302,57 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
 
 - (void)updateFakeOmniboxWithFaviconImage:(UIImage*)icon
                          searchEngineName:(NSString*)name {
-  CGRect startingFrame = _fakeEmptyOmniboxView.frame;
-  startingFrame.origin.y += kTravelDistance;
-  CGRect endFrame = _fakeEmptyOmniboxView.frame;
-  UIView* existingFakeOmniboxView = _fakeOmniboxView;
-  if (existingFakeOmniboxView) {
+  UIView* exitingFakeOmniboxView = _fakeOmniboxView;
+  _fakeOmniboxView = [[FakeOmniboxView alloc] initWithSearchEngineName:name
+                                                          faviconImage:icon];
+  _fakeOmniboxView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_topZoneStackView addSubview:_fakeOmniboxView];
+  AddSameConstraints(_fakeOmniboxView, _fakeEmptyOmniboxView);
+  if (self.traitCollection.verticalSizeClass ==
+      UIUserInterfaceSizeClassCompact) {
+    // If the vertical size is compact, the new fake omnibox should be added but
+    // hidden (just in case the user rotate the device in portrait mode).
+    // And the previous fake omnibox should be removed.
+    [exitingFakeOmniboxView removeFromSuperview];
+    _fakeOmniboxView.hidden = YES;
+    return;
+  }
+  if (exitingFakeOmniboxView) {
+    // Animate the exiting fake omnibox view.
     [UIView animateWithDuration:kExitAnimationDuration
         delay:0
         usingSpringWithDamping:1
         initialSpringVelocity:0
         options:UIViewAnimationCurveEaseIn
         animations:^{
-          existingFakeOmniboxView.alpha = 0;
-          existingFakeOmniboxView.transform =
+          exitingFakeOmniboxView.alpha = 0;
+          CGAffineTransform rotate =
               CGAffineTransformMakeRotation(kRotationAngle);
-          existingFakeOmniboxView.frame = startingFrame;
+          CGAffineTransform translate =
+              CGAffineTransformMakeTranslation(0, kTravelDistance);
+          exitingFakeOmniboxView.transform =
+              CGAffineTransformConcat(rotate, translate);
         }
         completion:^(BOOL finished) {
-          [existingFakeOmniboxView removeFromSuperview];
+          [exitingFakeOmniboxView removeFromSuperview];
         }];
   }
-  // No need to add a new fake omnibox when it is hidden.
-  if (self.traitCollection.verticalSizeClass ==
-      UIUserInterfaceSizeClassCompact) {
-    return;
-  }
-
-  FakeOmniboxView* newFakeOmniboxView =
-      [[FakeOmniboxView alloc] initWithSearchEngineName:name faviconImage:icon];
-  newFakeOmniboxView.translatesAutoresizingMaskIntoConstraints = NO;
-  [_topZoneStackView addSubview:newFakeOmniboxView];
-  newFakeOmniboxView.frame = startingFrame;
-  newFakeOmniboxView.transform = CGAffineTransformMakeRotation(kRotationAngle);
-
+  // Animate the entering fake omnibox view.
+  CGAffineTransform rotate = CGAffineTransformMakeRotation(kRotationAngle);
+  CGAffineTransform translate =
+      CGAffineTransformMakeTranslation(0, kTravelDistance);
+  _fakeOmniboxView.transform = CGAffineTransformConcat(rotate, translate);
+  FakeOmniboxView* enteringFakeOmniboxView = _fakeOmniboxView;
   [UIView animateWithDuration:kEntranceAnimationDuration
-      delay:0
-      usingSpringWithDamping:kSpringDamping
-      initialSpringVelocity:0
-      options:UIViewAnimationCurveEaseOut
-      animations:^{
-        newFakeOmniboxView.transform = CGAffineTransformIdentity;
-        newFakeOmniboxView.frame = endFrame;
-      }
-      completion:^(BOOL finished) {
-        self->_fakeOmniboxView = newFakeOmniboxView;
-      }];
+                        delay:0
+       usingSpringWithDamping:kSpringDamping
+        initialSpringVelocity:0
+                      options:UIViewAnimationCurveEaseOut
+                   animations:^{
+                     enteringFakeOmniboxView.transform =
+                         CGAffineTransformIdentity;
+                   }
+                   completion:nil];
 }
 
 #pragma mark - SearchEngineChoiceFaviconUpdateConsumer
