@@ -17,13 +17,6 @@ class RE2;
 
 namespace autofill {
 
-// Atomic component that represents the honorific prefix of a name.
-class NameHonorific : public AddressComponent {
- public:
-  NameHonorific();
-  ~NameHonorific() override;
-};
-
 // Atomic components that represents the first name.
 class NameFirst : public AddressComponent {
  public:

@@ -39,11 +39,6 @@ std::u16string ReduceToInitials(const std::u16string& value) {
   return base::i18n::ToUpper(result);
 }
 
-NameHonorific::NameHonorific()
-    : AddressComponent(NAME_HONORIFIC_PREFIX, {}, MergeMode::kDefault) {}
-
-NameHonorific::~NameHonorific() = default;
-
 NameFirst::NameFirst()
     : AddressComponent(NAME_FIRST, {}, MergeMode::kDefault) {}
 
