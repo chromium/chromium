@@ -346,31 +346,6 @@ bool HardwareDisplayPlaneManagerAtomic::DisableOverlayPlanes(
   return ret;
 }
 
-bool HardwareDisplayPlaneManagerAtomic::SetColorCorrectionOnAllCrtcPlanes(
-    uint32_t crtc_id,
-    ScopedDrmColorCtmPtr ctm_blob_data) {
-  ScopedDrmAtomicReqPtr property_set(drmModeAtomicAlloc());
-  ScopedDrmPropertyBlob property_blob(
-      drm_->CreatePropertyBlob(ctm_blob_data.get(), sizeof(drm_color_ctm)));
-
-  for (auto& plane : planes_) {
-    HardwareDisplayPlaneAtomic* atomic_plane =
-        static_cast<HardwareDisplayPlaneAtomic*>(plane.get());
-
-    // This assumes planes can only belong to one crtc.
-    if (!atomic_plane->CanUseForCrtcId(crtc_id))
-      continue;
-
-    if (!atomic_plane->SetPlaneCtm(property_set.get(), property_blob->id())) {
-      LOG(ERROR) << "Failed to set PLANE_CTM for plane=" << atomic_plane->id();
-      return false;
-    }
-  }
-
-  return drm_->CommitProperties(property_set.get(), DRM_MODE_ATOMIC_NONBLOCK, 0,
-                                nullptr);
-}
-
 bool HardwareDisplayPlaneManagerAtomic::ValidatePrimarySize(
     const DrmOverlayPlane& primary,
     const drmModeModeInfo& mode) {

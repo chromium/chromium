@@ -130,14 +130,6 @@ bool HardwareDisplayPlaneManagerLegacy::DisableOverlayPlanes(
   return true;
 }
 
-bool HardwareDisplayPlaneManagerLegacy::SetColorCorrectionOnAllCrtcPlanes(
-    uint32_t crtc_id,
-    ScopedDrmColorCtmPtr ctm_blob_data) {
-  NOTREACHED()
-      << "HardwareDisplayPlaneManagerLegacy doesn't support per plane CTM";
-  return false;
-}
-
 bool HardwareDisplayPlaneManagerLegacy::ValidatePrimarySize(
     const DrmOverlayPlane& primary,
     const drmModeModeInfo& mode) {

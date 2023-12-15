@@ -78,7 +78,6 @@ class HardwareDisplayPlane {
     DrmWrapper::Property rotation;
     DrmWrapper::Property in_formats;
     DrmWrapper::Property in_fence_fd;
-    DrmWrapper::Property plane_ctm;
     DrmWrapper::Property plane_color_encoding;
     DrmWrapper::Property plane_color_range;
     DrmWrapper::Property plane_fb_damage_clips;

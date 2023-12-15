@@ -34,10 +34,6 @@ class HardwareDisplayPlaneManagerLegacy : public HardwareDisplayPlaneManager {
               gfx::GpuFenceHandle* release_fence) override;
   bool DisableOverlayPlanes(HardwareDisplayPlaneList* plane_list) override;
 
-  bool SetColorCorrectionOnAllCrtcPlanes(
-      uint32_t crtc_id,
-      ScopedDrmColorCtmPtr ctm_blob_data) override;
-
   bool ValidatePrimarySize(const DrmOverlayPlane& primary,
                            const drmModeModeInfo& mode) override;
 

@@ -1008,48 +1008,6 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, PlanesUnpinnedOnDisable) {
       << "After disabling, the pinned overlay owner should be reset.";
 }
 
-TEST_P(HardwareDisplayPlaneManagerAtomicTest,
-       SetColorCorrectionOnAllCrtcPlanes_Success) {
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
-      /*crtc_count=*/1, /*planes_per_crtc=*/1);
-  drm_state.plane_properties[0].properties.push_back(
-      {.id = kPlaneCtmId, .value = 0});
-  drm_state.plane_properties[1].properties.push_back(
-      {.id = kPlaneCtmId, .value = 0});
-  fake_drm_->InitializeState(drm_state, use_atomic_);
-
-  ScopedDrmColorCtmPtr ctm_blob(CreateCTMBlob(std::vector<float>(9)));
-  EXPECT_TRUE(fake_drm_->plane_manager()->SetColorCorrectionOnAllCrtcPlanes(
-      fake_drm_->crtc_property(0).id, std::move(ctm_blob)));
-  EXPECT_EQ(1, fake_drm_->get_commit_count());
-}
-
-TEST_P(HardwareDisplayPlaneManagerAtomicTest,
-       SetColorCorrectionOnAllCrtcPlanes_NoPlaneCtmProperty) {
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
-      /*crtc_count=*/1, /*planes_per_crtc=*/1);
-  fake_drm_->InitializeState(drm_state, use_atomic_);
-
-  ScopedDrmColorCtmPtr ctm_blob(CreateCTMBlob(std::vector<float>(9)));
-  EXPECT_FALSE(fake_drm_->plane_manager()->SetColorCorrectionOnAllCrtcPlanes(
-      fake_drm_->crtc_property(0).id, std::move(ctm_blob)));
-  EXPECT_EQ(0, fake_drm_->get_commit_count());
-}
-
-TEST_P(HardwareDisplayPlaneManagerAtomicTest,
-       SetColorCorrectionOnAllCrtcPlanes_OnePlaneMissingCtmProperty) {
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
-      /*crtc_count=*/1, /*planes_per_crtc=*/2);
-  drm_state.plane_properties[0].properties.push_back(
-      {.id = kPlaneCtmId, .value = 0});
-  fake_drm_->InitializeState(drm_state, use_atomic_);
-
-  ScopedDrmColorCtmPtr ctm_blob(CreateCTMBlob(std::vector<float>(9)));
-  EXPECT_FALSE(fake_drm_->plane_manager()->SetColorCorrectionOnAllCrtcPlanes(
-      fake_drm_->crtc_property(0).id, std::move(ctm_blob)));
-  EXPECT_EQ(0, fake_drm_->get_commit_count());
-}
-
 TEST_P(HardwareDisplayPlaneManagerTest, SetColorMatrix_Success) {
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);

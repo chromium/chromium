@@ -111,11 +111,6 @@ class MockHardwareDisplayPlaneManager : public HardwareDisplayPlaneManager {
   bool DisableOverlayPlanes(HardwareDisplayPlaneList* plane_list) override {
     return false;
   }
-  bool SetColorCorrectionOnAllCrtcPlanes(
-      uint32_t crtc_id,
-      ScopedDrmColorCtmPtr ctm_blob_data) override {
-    return false;
-  }
   bool ValidatePrimarySize(const DrmOverlayPlane& primary,
                            const drmModeModeInfo& mode) override {
     return false;

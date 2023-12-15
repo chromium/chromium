@@ -313,8 +313,10 @@ bool HardwareDisplayPlaneManager::SetColorMatrix(
   CrtcState* crtc_state = &crtc_state_[*crtc_index];
 
   ScopedDrmColorCtmPtr ctm_blob_data = CreateCTMBlob(color_matrix);
-  if (!crtc_state->properties.ctm.id)
-    return SetColorCorrectionOnAllCrtcPlanes(crtc_id, std::move(ctm_blob_data));
+  if (!crtc_state->properties.ctm.id) {
+    LOG(ERROR) << "No CTM property to set.";
+    return false;
+  }
 
   crtc_state->ctm_blob =
       drm_->CreatePropertyBlob(ctm_blob_data.get(), sizeof(drm_color_ctm));
