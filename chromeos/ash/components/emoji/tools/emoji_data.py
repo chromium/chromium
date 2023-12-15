@@ -9,6 +9,7 @@ import sys
 import argparse
 import json
 import xml.etree.ElementTree
+import enum
 
 _SCRIPT_DIR = os.path.realpath(os.path.dirname(__file__))
 _CHROME_SOURCE = os.path.realpath(
@@ -17,6 +18,42 @@ _CHROME_SOURCE = os.path.realpath(
 sys.path.append(os.path.join(_CHROME_SOURCE, 'build'))
 
 import action_helpers
+
+
+# LINT.IfChange
+
+# `MULTI_TONE` is not defined in ../types.ts because this script removes any
+# multi-tone values before being outputted.
+class Tone(enum.IntEnum):
+  LIGHT = 1
+  MEDIUM_LIGHT = 2
+  MEDIUM = 3
+  MEDIUM_DARK = 4
+  DARK = 5
+  MULTI_TONE = 6
+
+
+class Gender(enum.IntEnum):
+  WOMAN = 1
+  MAN = 2
+
+# LINT.ThenChange(//chrome/browser/resources/chromeos/emoji_picker/types.ts)
+
+
+# Codepoints for the range of skin tone modifiers from lightest to darkest.
+TONE_MODIFIERS = {
+  ord('🏻'): Tone.LIGHT,
+  ord('🏼'): Tone.MEDIUM_LIGHT,
+  ord('🏽'): Tone.MEDIUM,
+  ord('🏾'): Tone.MEDIUM_DARK,
+  ord('🏿'): Tone.DARK,
+}
+
+# Codepoints for the woman and man gender modifiers.
+GENDER_MODIFIERS = {
+  ord('♀'): Gender.WOMAN,
+  ord('♂'): Gender.MAN,
+}
 
 
 def parse_emoji_annotations(keyword_file):
@@ -42,6 +79,29 @@ def parse_emoji_annotations(keyword_file):
 def parse_emoji_metadata(metadata_file):
     with open(metadata_file, 'r') as file:
         return json.load(file)
+
+
+def get_tone(codepoints):
+  tone_matches = [
+    codepoint
+    for codepoint in codepoints
+    if codepoint in TONE_MODIFIERS
+  ]
+
+  if len(tone_matches) == 0:
+    return None
+  elif len(tone_matches) == 1:
+    return TONE_MODIFIERS[tone_matches[0]]
+  else:
+    return Tone.MULTI_TONE
+
+
+def get_gender(codepoints):
+  for codepoint in codepoints:
+    if codepoint in GENDER_MODIFIERS:
+      return GENDER_MODIFIERS[codepoint]
+
+  return None
 
 
 def transform_emoji_data(metadata, names, keywords, first_only):
@@ -88,9 +148,31 @@ def transform_emoji_data(metadata, names, keywords, first_only):
                 ),
             }
             if emoji['alternates']:
-              newobj['alternates'] = [
-                  transform(e, True) for e in emoji['alternates']
-              ]
+              newobj['alternates'] = []
+
+              has_multi_tone = any(
+                get_tone(codepoints) == Tone.MULTI_TONE
+                for codepoints in emoji['alternates']
+              )
+
+              for codepoints in emoji['alternates']:
+                variant = transform(codepoints, True)
+
+                # Multi-tone preferences are individual, so all tones are
+                # ignored if any variant is multi-tone.
+                tone = get_tone(codepoints) if not has_multi_tone else None
+                gender = get_gender(codepoints)
+
+                if tone:
+                  variant['tone'] = tone
+                  newobj['groupedTone'] = True
+
+                if gender:
+                  variant['gender'] = gender
+                  newobj['groupedGender'] = True
+
+                newobj['alternates'].append(variant)
+
             newGroup.append(newobj)
         out.append({'emoji': newGroup})
     return out
