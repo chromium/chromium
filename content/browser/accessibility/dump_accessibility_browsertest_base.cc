@@ -179,8 +179,7 @@ using ui::AXTreeFormatter;
 
 // DumpAccessibilityTestBase
 DumpAccessibilityTestBase::DumpAccessibilityTestBase()
-    : enable_accessibility_after_navigating_(false),
-      test_helper_(GetParam().first) {}
+    : enable_accessibility_after_navigating_(false), test_helper_(GetParam()) {}
 
 DumpAccessibilityTestBase::~DumpAccessibilityTestBase() {}
 
@@ -232,9 +231,6 @@ void DumpAccessibilityTestBase::ChooseFeatures(
   // corresponding code in AXPosition on the browser that collects those
   // markers.
   enabled_features->emplace_back(features::kUseAXPositionForDocumentMarkers);
-
-  auto* vec = GetParam().second ? enabled_features : disabled_features;
-  vec->emplace_back(blink::features::kSerializeAccessibilityPostLifecycle);
 }
 
 std::string DumpAccessibilityTestBase::DumpTreeAsString() const {
@@ -253,16 +249,6 @@ DumpAccessibilityTestBase::DumpUnfilteredAccessibilityTreeAsString() {
   formatter->SetPropertyFilters({{"*", AXPropertyFilter::ALLOW}});
   formatter->set_show_ids(true);
   return formatter->Format(GetRootAccessibilityNode(GetWebContents()));
-}
-
-DumpAccessibilityTestBase::ParamVector DumpAccessibilityTestBase::TestParams(
-    const ApiTypeVector& api_types) {
-  return std::accumulate(api_types.begin(), api_types.end(), ParamVector(),
-                         [](ParamVector&& v, ui::AXApiType::Type api_type) {
-                           v.push_back({api_type, true});
-                           v.push_back({api_type, false});
-                           return v;
-                         });
 }
 
 void DumpAccessibilityTestBase::RunTest(
@@ -597,7 +583,7 @@ WebContentsImpl* DumpAccessibilityTestBase::GetWebContents() const {
 
 std::unique_ptr<AXTreeFormatter> DumpAccessibilityTestBase::CreateFormatter()
     const {
-  return AXInspectFactory::CreateFormatter(GetParam().first);
+  return AXInspectFactory::CreateFormatter(GetParam());
 }
 
 std::pair<EvalJsResult, std::vector<std::string>>
@@ -608,7 +594,7 @@ DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action,
   ui::AXTreeSelector selector(manager->GetBrowserAccessibilityRoot()
                                   ->GetTargetForNativeAccessibilityEvent());
   std::unique_ptr<ui::AXEventRecorder> event_recorder =
-      AXInspectFactory::CreateRecorder(GetParam().first, manager,
+      AXInspectFactory::CreateRecorder(GetParam(), manager,
                                        base::GetCurrentProcId(), selector);
   event_recorder->SetOnlyWebEvents(true);
 

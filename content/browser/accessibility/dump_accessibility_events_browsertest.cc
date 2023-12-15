@@ -174,9 +174,8 @@ class DumpAccessibilityEventsTestExceptUIA
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityEventsTestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<std::pair<ui::AXApiType::Type, bool>>& i)
-      const {
-    return std::string(i.param.first) + (i.param.second ? "1" : "0");
+      const ::testing::TestParamInfo<ui::AXApiType::Type>& i) const {
+    return std::string(i.param);
   }
 };
 

@@ -165,14 +165,6 @@ class MODULES_EXPORT AXObjectCacheImpl
       // Already frozen.
       return;
     }
-    // TODO(crbug.com/1477047): Remove this case once post lifecycle
-    // serialization is the only remaining code path. It's unclear why the
-    // document lifecycle check is necessary but this is short-lived code.
-    if (!serialize_post_lifecycle_ && frozen_count_ == 1 &&
-        GetDocument().Lifecycle().GetState() <
-            DocumentLifecycle::kPrePaintClean) {
-      UpdateAXForAllDocuments();
-    }
     ax_tree_source_->Freeze();
     CHECK(FocusedObject());
   }
@@ -864,7 +856,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   Member<Document> popup_document_;
 
   ui::AXMode ax_mode_;
-  const bool serialize_post_lifecycle_;
 
   HeapHashMap<AXID, Member<AXObject>> objects_;
   HeapHashMap<Member<AccessibleNode>, AXID> accessible_node_mapping_;

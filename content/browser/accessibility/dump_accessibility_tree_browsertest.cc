@@ -56,7 +56,7 @@ using ui::AXTreeFormatter;
 std::vector<ui::AXPropertyFilter> DumpAccessibilityTreeTest::DefaultFilters()
     const {
   std::vector<AXPropertyFilter> property_filters;
-  if (GetParam().first == ui::AXApiType::kMac) {
+  if (GetParam() == ui::AXApiType::kMac) {
     return property_filters;
   }
 
@@ -146,9 +146,8 @@ class DumpAccessibilityTreeTestExceptUIA : public DumpAccessibilityTreeTest {};
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityTreeTestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<std::pair<ui::AXApiType::Type, bool>>& i)
-      const {
-    return std::string(i.param.first) + (i.param.second ? "1" : "0");
+      const ::testing::TestParamInfo<ui::AXApiType::Type>& i) const {
+    return std::string(i.param);
   }
 };
 
@@ -3121,18 +3120,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 // Flaky on Android and Fuchsia - crbug.com/1286650, crbug.com/1491059
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_AccessibilitySelectList DISABLED_AccessibilitySelectList
-#else
-#define MAYBE_AccessibilitySelectList AccessibilitySelectList
-#endif
+// crbug.com/1401767
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilitySelectList) {
-  // Fails when synchronous a11y serialization is enabled - crbug.com/1401767
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSerializeAccessibilityPostLifecycle)) {
-    return;
-  }
+                       DISABLED_AccessibilitySelectList) {
   RunHtmlTest(FILE_PATH_LITERAL("selectlist.html"));
 }
 
@@ -3491,7 +3481,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 #if BUILDFLAG(IS_MAC)
   // The /blink test pass is different on macOS than on other platforms. See
   // https://crbug.com/1314896.
-  if (GetParam().first == ui::AXApiType::kBlink) {
+  if (GetParam() == ui::AXApiType::kBlink) {
     return;
   }
 #endif
@@ -3502,7 +3492,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityVideoControls) {
 #if BUILDFLAG(IS_MAC)
   // The /blink test pass is different on macOS than on other platforms. See
   // https://crbug.com/1314896.
-  if (GetParam().first == ui::AXApiType::kBlink) {
+  if (GetParam() == ui::AXApiType::kBlink) {
     return;
   }
 #endif

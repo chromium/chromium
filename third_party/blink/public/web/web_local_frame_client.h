@@ -677,10 +677,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Notifies the embedder about an accessibility event on a WebAXObject.
   virtual void PostAccessibilityEvent(const ui::AXEvent& event) {}
 
-  // Notifies tests that a WebAXObject is dirty and its state needs
-  // to be serialized again.
-  virtual void NotifyWebAXObjectMarkedDirty(const WebAXObject&) {}
-
   // Called when accessibility is ready to serialize.
   virtual void AXReadyCallback() {}
 

@@ -4655,15 +4655,6 @@ void RenderFrameImpl::PostAccessibilityEvent(const ui::AXEvent& event) {
       event);
 }
 
-void RenderFrameImpl::NotifyWebAXObjectMarkedDirty(
-    const blink::WebAXObject& obj) {
-  if (!IsAccessibilityEnabled())
-    return;
-
-  render_accessibility_manager_->GetRenderAccessibilityImpl()
-      ->NotifyWebAXObjectMarkedDirty(obj);
-}
-
 void RenderFrameImpl::AXReadyCallback() {
   if (!IsAccessibilityEnabled())
     return;

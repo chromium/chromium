@@ -769,8 +769,6 @@ AXObjectCacheImpl::AXObjectCacheImpl(Document& document,
                                      const ui::AXMode& ax_mode)
     : document_(document),
       ax_mode_(ax_mode),
-      serialize_post_lifecycle_(base::FeatureList::IsEnabled(
-          blink::features::kSerializeAccessibilityPostLifecycle)),
       validation_message_axid_(0),
       active_aria_modal_dialog_(nullptr),
       accessibility_event_permission_(mojom::blink::PermissionStatus::ASK),
@@ -3086,35 +3084,33 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     UpdateTreeIfNeeded();
   }
 
-  if (serialize_post_lifecycle_) {
-    if (IsSerializationInFlight()) {
-      // Another serialization is in flight. When it's finished, a new
-      // serialization will be triggered if necessary.
-      return;
-    }
-
-    const auto& now = base::Time::Now();
-    const auto& delay_between_serializations =
-        base::Milliseconds(GetDeferredEventsDelay());
-    const auto& elapsed_since_last_serialization =
-        now - last_serialization_timestamp_;
-    const auto& delay_until_next_serialization =
-        delay_between_serializations - elapsed_since_last_serialization;
-    if (delay_until_next_serialization.is_positive()) {
-      if (!weak_factory_for_serialization_pipeline_.HasWeakPtrs()) {
-        document.GetTaskRunner(blink::TaskType::kInternalDefault)
-            ->PostDelayedTask(
-                FROM_HERE,
-                WTF::BindOnce(
-                    &AXObjectCacheImpl::ScheduleAXUpdate,
-                    weak_factory_for_serialization_pipeline_.GetWeakPtr()),
-                delay_until_next_serialization);
-      }
-      return;  // No serialization needed yet.
-    }
-
-    weak_factory_for_serialization_pipeline_.InvalidateWeakPtrs();
+  if (IsSerializationInFlight()) {
+    // Another serialization is in flight. When it's finished, a new
+    // serialization will be triggered if necessary.
+    return;
   }
+
+  const auto& now = base::Time::Now();
+  const auto& delay_between_serializations =
+      base::Milliseconds(GetDeferredEventsDelay());
+  const auto& elapsed_since_last_serialization =
+      now - last_serialization_timestamp_;
+  const auto& delay_until_next_serialization =
+      delay_between_serializations - elapsed_since_last_serialization;
+  if (delay_until_next_serialization.is_positive()) {
+    if (!weak_factory_for_serialization_pipeline_.HasWeakPtrs()) {
+      document.GetTaskRunner(blink::TaskType::kInternalDefault)
+          ->PostDelayedTask(
+              FROM_HERE,
+              WTF::BindOnce(
+                  &AXObjectCacheImpl::ScheduleAXUpdate,
+                  weak_factory_for_serialization_pipeline_.GetWeakPtr()),
+              delay_until_next_serialization);
+    }
+    return;  // No serialization needed yet.
+  }
+
+  weak_factory_for_serialization_pipeline_.InvalidateWeakPtrs();
 
   // ------------------------ Freeze and serialize ---------------------------
   {
@@ -3126,7 +3122,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     // TODO(accessibility) It's a bit confusing that this can be true when the
     // IsDirty() is false, but this is the case for objects marked dirty from
     // RenderAccessibilityImpl, e.g. for the kEndOfTest event.
-    if (serialize_post_lifecycle_ && HasDirtyObjects()) {
+    if (HasDirtyObjects()) {
       if (auto* client = GetWebLocalFrameClient()) {
         client->AXReadyCallback();
       }
@@ -4365,7 +4361,6 @@ WebLocalFrameClient* AXObjectCacheImpl::GetWebLocalFrameClient() const {
 
 bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
     const ui::AXEvent& event) const {
-  DCHECK(serialize_post_lifecycle_);
   if (last_serialization_timestamp_ == kSerializeAtNextOpportunity) {
     return true;  // Already scheduled for immediate mode.
   }
@@ -4507,8 +4502,6 @@ void AXObjectCacheImpl::OnSerializationReceived() {
 }
 
 void AXObjectCacheImpl::ScheduleImmediateSerialization() {
-  DCHECK(serialize_post_lifecycle_);
-
   // This makes sure that we'll serialize at the next available opportunity.
   last_serialization_timestamp_ = kSerializeAtNextOpportunity;
 
@@ -4545,21 +4538,14 @@ void AXObjectCacheImpl::PostPlatformNotification(
   for (auto agent : agents_)
     agent->AXEventFired(obj, event_type);
 
-  if (serialize_post_lifecycle_) {
-    AddEventToSerializationQueue(event,
-                                 IsImmediateProcessingRequiredForEvent(event));
+  AddEventToSerializationQueue(event,
+                               IsImmediateProcessingRequiredForEvent(event));
 
-    // TODO(aleventhal) This is for web tests only, in order to record MarkDirty
-    // events. Is there a way to avoid these calls for normal browsing?
-    // Maybe we should use dependency injection from AccessibilityController.
-    if (auto* client = GetWebLocalFrameClient()) {
-      client->HandleWebAccessibilityEventForTest(event);
-    }
-  } else {
-    // legacy mode, go through RAI again!
-    if (auto* client = GetWebLocalFrameClient()) {
-      client->PostAccessibilityEvent(event);
-    }
+  // TODO(aleventhal) This is for web tests only, in order to record MarkDirty
+  // events. Is there a way to avoid these calls for normal browsing?
+  // Maybe we should use dependency injection from AccessibilityController.
+  if (auto* client = GetWebLocalFrameClient()) {
+    client->HandleWebAccessibilityEventForTest(event);
   }
 }
 
@@ -4589,23 +4575,17 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
   // events. Is there a way to avoid these calls for normal browsing?
   // Maybe we should use dependency injection from AccessibilityController.
   if (auto* client = GetWebLocalFrameClient()) {
-    if (serialize_post_lifecycle_) {
-      client->HandleWebAccessibilityEventForTest(
-          WebAXObject(obj), "MarkDirty", std::vector<ui::AXEventIntent>());
-    } else {
-      client->NotifyWebAXObjectMarkedDirty(WebAXObject(obj));
-    }
+    client->HandleWebAccessibilityEventForTest(
+        WebAXObject(obj), "MarkDirty", std::vector<ui::AXEventIntent>());
   }
 
-  if (serialize_post_lifecycle_) {
-    // It's important for the user to have access to any changes to the
-    // currently focused object, so schedule serializations immediately if that
-    // object changes. The root is an exception because it often has focus while
-    // the page is loading. In that case the event type is used as the signal
-    // (see IsImmediateProcessingRequiredForEvent()).
-    if (obj != Root() && obj->IsFocused()) {
-      ScheduleImmediateSerialization();
-    }
+  // It's important for the user to have access to any changes to the
+  // currently focused object, so schedule serializations immediately if that
+  // object changes. The root is an exception because it often has focus while
+  // the page is loading. In that case the event type is used as the signal
+  // (see IsImmediateProcessingRequiredForEvent()).
+  if (obj != Root() && obj->IsFocused()) {
+    ScheduleImmediateSerialization();
   }
 
   std::vector<ui::AXEventIntent> event_intents;
@@ -4971,12 +4951,6 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     bool& had_end_of_test_event,
     bool& had_load_complete_messages,
     bool& need_to_send_location_changes) {
-  // TODO(accessibility) Remove this once non-postlifecycle serialization code
-  // is completely removed, as it is redundant with other calls.
-  if (!serialize_post_lifecycle_) {
-    CheckTreeIsUpdated();
-  }
-
   // Make a copy of the events, because it's possible that
   // actions inside this loop will cause more events to be
   // queued up.
