@@ -140,6 +140,10 @@ constexpr char kTabletSplitViewResizeWithOverviewMaxLatencyHistogram[] =
 // for the purpose of metric collection.
 base::Time g_multi_display_split_view_start_time;
 
+bool InTabletMode() {
+  return display::Screen::GetScreen()->InTabletMode();
+}
+
 bool IsExactlyOneRootInSplitView() {
   const aura::Window::Windows all_root_windows = Shell::GetAllRootWindows();
   return 1 ==
@@ -493,9 +497,6 @@ SplitViewController::SplitViewController(aura::Window* root_window)
   if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
     snap_group_controller->AddObserver(this);
   }
-  split_view_type_ = display::Screen::GetScreen()->InTabletMode()
-                         ? SplitViewType::kTabletType
-                         : SplitViewType::kClamshellType;
 }
 
 SplitViewController::~SplitViewController() {
@@ -525,11 +526,11 @@ bool SplitViewController::InSplitViewMode() const {
 }
 
 bool SplitViewController::InClamshellSplitViewMode() const {
-  return InSplitViewMode() && split_view_type_ == SplitViewType::kClamshellType;
+  return InSplitViewMode() && !InTabletMode();
 }
 
 bool SplitViewController::InTabletSplitViewMode() const {
-  return InSplitViewMode() && split_view_type_ == SplitViewType::kTabletType;
+  return InSplitViewMode() && InTabletMode();
 }
 
 bool SplitViewController::CanSnapWindow(aura::Window* window) const {
@@ -614,8 +615,7 @@ bool SplitViewController::WillStartOverview() const {
   // Note that at this point `state_` may not have been updated yet, so check if
   // only one of `primary_window_` or `secondary_window_` are snapped.
   return !IsInOverviewSession() && !DesksController::Get()->animation() &&
-         split_view_type_ == SplitViewType::kTabletType &&
-         !!primary_window_ != !!secondary_window_;
+         InTabletMode() && !!primary_window_ != !!secondary_window_;
 }
 
 void SplitViewController::SnapWindow(aura::Window* window,
@@ -674,7 +674,7 @@ void SplitViewController::OnSnapEvent(
   // `IsSnapGroupEnabledInClamshellMode`, the window should be managed by
   // `SplitViewController`. Otherwise, the window should be snapped normally and
   // should be managed by `WindowState`.
-  if (split_view_type_ == SplitViewType::kClamshellType &&
+  if (!InTabletMode() &&
       !(in_overview || IsSnapGroupEnabledInClamshellMode())) {
     return;
   }
@@ -749,8 +749,7 @@ void SplitViewController::AttachToBeSnappedWindow(
           std::make_unique<AutoSnapController>(root_window_);
     }
 
-    if (!display::Screen::GetScreen()->InTabletMode() &&
-        IsInOverviewSession()) {
+    if (!InTabletMode() && IsInOverviewSession()) {
       if (auto* root_window_controller =
               RootWindowController::ForWindow(window)) {
         // Start the clamshell split overview session. It is too late to create
@@ -823,7 +822,7 @@ void SplitViewController::AttachToBeSnappedWindow(
         ->OnOverviewItemDragEnded(/*snap=*/true);
   }
 
-  if (split_view_type_ == SplitViewType::kTabletType && !split_view_divider_) {
+  if (InTabletMode() && !split_view_divider_) {
     // `split_view_divider_` must be created after we start observing windows.
     split_view_divider_ =
         std::make_unique<SplitViewDivider>(this, divider_position_);
@@ -954,10 +953,9 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
       divider_position_ < 0
           ? CalculateDividerPosition(snap_position, snap_ratio)
           : divider_position_;
-  const int divider_width =
-      display::Screen::GetScreen()->InTabletMode() || split_view_divider_
-          ? kSplitviewDividerShortSideLength
-          : 0;
+  const int divider_width = InTabletMode() || split_view_divider_
+                                ? kSplitviewDividerShortSideLength
+                                : 0;
   return CalculateSnappedWindowBoundsInScreen(
       snap_position, root_window_, window_for_minimum_size, divider_position,
       divider_width, IsResizingWithDivider());
@@ -973,7 +971,7 @@ int SplitViewController::CalculateDividerPosition(SnapPosition snap_position,
   int next_divider_position = snap_position == SnapPosition::kPrimary
                                   ? snap_width
                                   : divider_upper_limit - snap_width;
-  if (split_view_divider_ || split_view_type_ == SplitViewType::kTabletType) {
+  if (split_view_divider_ || InTabletMode()) {
     // The divider may be visible in tablet mode, or between two windows in a
     // snap group in clamshell mode.
     // In tablet mode, we always consider the divider width even if
@@ -1269,8 +1267,7 @@ void SplitViewController::OnPostWindowStateTypeChange(
     // If window|is currently minimized then it will undergo the unminimizing
     // animation instead, therefore skip the divider spawn animation if
     // the window is minimized.
-    if (state_ == State::kNoSnap &&
-        split_view_type_ == SplitViewType::kTabletType &&
+    if (state_ == State::kNoSnap && InTabletMode() &&
         old_type != WindowStateType::kMinimized &&
         !window->transform().IsIdentity()) {
       // For the divider spawn animation, at the end of the delay, the divider
@@ -1305,7 +1302,7 @@ void SplitViewController::OnPostWindowStateTypeChange(
       // the window is not supposed to be minmized in tablet mode. And in
       // clamshell splitview mode, we respect the minimization of the window
       // and end overview instead.
-      if (split_view_type_ == SplitViewType::kTabletType) {
+      if (InTabletMode()) {
         InsertWindowToOverview(window);
       } else {
         Shell::Get()->overview_controller()->EndOverview(
@@ -1356,8 +1353,9 @@ void SplitViewController::OnOverviewModeEnding(
   // If clamshell split view mode is active, bail out. `OnOverviewModeEnded`
   // will end split view. We do not end split view here, because that would mess
   // up histograms of overview exit animation smoothness.
-  if (split_view_type_ == SplitViewType::kClamshellType)
+  if (!InTabletMode()) {
     return;
+  }
 
   // Tablet split view mode is active. If it still only has one snapped window,
   // snap the first snappable window in the overview grid on the other side.
@@ -1424,8 +1422,7 @@ void SplitViewController::OnOverviewModeEnding(
 
 void SplitViewController::OnOverviewModeEnded() {
   DCHECK(InSplitViewMode());
-  if (split_view_type_ == SplitViewType::kClamshellType &&
-      !IsSnapGroupEnabledInClamshellMode()) {
+  if (!InTabletMode() && !IsSnapGroupEnabledInClamshellMode()) {
     EndSplitView();
   }
 }
@@ -1487,8 +1484,9 @@ void SplitViewController::OnDisplayMetricsChanged(
 
   // In clamshell split view mode, the divider position will be adjusted in
   // |OnWindowBoundsChanged|.
-  if (split_view_type_ == SplitViewType::kClamshellType)
+  if (!InTabletMode()) {
     return;
+  }
 
   // Before adjusting the divider position for the new display metrics, if the
   // divider is animating to a snap position, then stop it and shove it there.
@@ -1533,7 +1531,6 @@ void SplitViewController::OnDisplayTabletStateChanged(
       OnTabletModeEnded();
       break;
     case display::TabletState::kEnteringTabletMode:
-      OnTabletModeStarting();
       break;
     case display::TabletState::kInTabletMode:
       OnTabletModeStarted();
@@ -1947,7 +1944,7 @@ void SplitViewController::UpdateSnappedWindowsAndDividerBounds() {
 void SplitViewController::UpdateSnappedBounds(aura::Window* window) {
   DCHECK(IsWindowInSplitView(window));
   WindowState* window_state = WindowState::Get(window);
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (InTabletMode()) {
     if (window->GetProperty(aura::client::kAppType) ==
         static_cast<int>(AppType::ARC_APP)) {
       // TODO(b/264962634): Remove this workaround. Probably, we can rewrite
@@ -2145,8 +2142,7 @@ void SplitViewController::OnWindowSnapped(
   // but instead snap that window to the opposite side.
   if (previous_state &&
       *previous_state == chromeos::WindowStateType::kFloated &&
-      display::Screen::GetScreen()->InTabletMode() &&
-      state_ != State::kBothSnapped) {
+      InTabletMode() && state_ != State::kBothSnapped) {
     for (aura::Window* mru_window :
          Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(
              kActiveDesk)) {
@@ -2241,8 +2237,7 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
                              ? SnapPosition::kSecondary
                              : SnapPosition::kPrimary);
 
-    if (reason == WindowDetachedReason::kWindowFloated &&
-        display::Screen::GetScreen()->InTabletMode()) {
+    if (reason == WindowDetachedReason::kWindowFloated && InTabletMode()) {
       // Maximize the other window, which will end split view.
       WMEvent event(WM_EVENT_MAXIMIZE);
       WindowState::Get(other_window)->OnWMEvent(&event);
@@ -2604,10 +2599,6 @@ void SplitViewController::UpdateTabletResizeMode(
   }
 }
 
-void SplitViewController::OnTabletModeStarting() {
-  split_view_type_ = SplitViewType::kTabletType;
-}
-
 void SplitViewController::OnTabletModeStarted() {
   is_previous_layout_right_side_up_ = IsCurrentScreenOrientationPrimary();
   // If splitview is active when tablet mode is starting, create the split view
@@ -2626,8 +2617,6 @@ void SplitViewController::OnTabletModeStarted() {
 }
 
 void SplitViewController::OnTabletModeEnding() {
-  split_view_type_ = SplitViewType::kClamshellType;
-
   // `OnTabletModeEnding()` can also be called during test teardown.
   const bool is_divider_animating = IsDividerAnimating();
   if (IsResizingWithDivider() || is_divider_animating) {

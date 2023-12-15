@@ -581,7 +581,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                               const gfx::Point& event_location);
 
   // Called when the display tablet state is changed.
-  void OnTabletModeStarting();
   void OnTabletModeStarted();
   void OnTabletModeEnding();
   void OnTabletModeEnded();
@@ -675,10 +674,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Stores the overview start and enter/exit type.
   std::optional<OverviewStartAction> overview_start_action_;
   std::optional<OverviewEnterExitType> enter_exit_overview_type_;
-
-  // The split view type. See SplitViewType for the differences between tablet
-  // split view and clamshell split view.
-  SplitViewType split_view_type_ = SplitViewType::kTabletType;
 
   // The time when splitview starts. Used for metric collection purpose.
   base::Time splitview_start_time_;
