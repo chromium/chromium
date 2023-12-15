@@ -13033,6 +13033,40 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.Omnibox.Promo.PositionDiscarded">
+  <owner>christianxu@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Recorded when the user dismisses the promo by discarding the selected
+    position.
+  </description>
+</action>
+
+<action name="IOS.Omnibox.Promo.PositionValidated">
+  <owner>christianxu@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Recorded when the user dismisses the promo by validating the selected
+    position.
+  </description>
+</action>
+
+<action name="IOS.Omnibox.Promo.Presented" not_user_triggered="true">
+  <owner>christianxu@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Recorded when the omnibox position choice promo is presented.
+  </description>
+</action>
+
+<action name="IOS.Omnibox.Promo.Skipped">
+  <owner>christianxu@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Recorded when the user dismisses the promo by tapping on skip.
+  </description>
+</action>
+
 <action name="IOS.OpenIn">
   <obsolete>Renamed to IOS.OpenIn.Tapped, 08/2020</obsolete>
   <owner>ewannpv@chromium.org</owner>
@@ -41366,6 +41400,15 @@ should be able to be added at any place in this file.
       label="Show user note side panel action"/>
   <affected-action name="Actions.PinnedToolbarButton.Pinned.ByContextMenu"/>
   <affected-action name="Actions.PinnedToolbarButton.Unpinned.ByContextMenu"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="FRE" label="During FRE"/>
+  <suffix name="Startup" label="During startup promo"/>
+  <affected-action name="IOS.Omnibox.Promo.PositionDiscarded"/>
+  <affected-action name="IOS.Omnibox.Promo.PositionValidated"/>
+  <affected-action name="IOS.Omnibox.Promo.Presented"/>
+  <affected-action name="IOS.Omnibox.Promo.Skipped"/>
 </action-suffix>
 
 </actions>

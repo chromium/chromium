@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/ui/first_run/omnibox_position/metrics.h"
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_util.h"
 
 @interface OmniboxPositionChoiceSceneAgent () <BooleanObserver>
@@ -95,6 +96,8 @@
   if (ShouldShowOmniboxPositionChoiceIPHPromo(browserState->GetPrefs())) {
     self.promosManager->RegisterPromoForContinuousDisplay(
         promos_manager::Promo::OmniboxPosition);
+    RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kPromoRegistered,
+                      /*isFirstRun=*/NO);
   } else {
     self.promosManager->DeregisterPromo(promos_manager::Promo::OmniboxPosition);
   }

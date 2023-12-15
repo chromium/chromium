@@ -28,6 +28,8 @@ source_set("omnibox_position") {
 
 source_set("omnibox_position_ui") {
   sources = [
+    "metrics.h",
+    "metrics.mm",
     "omnibox_position_choice_consumer.h",
     "omnibox_position_choice_mutator.h",
     "omnibox_position_choice_util.h",
