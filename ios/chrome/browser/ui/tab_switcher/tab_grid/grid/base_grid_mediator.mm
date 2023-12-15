@@ -227,6 +227,13 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 }
 
 - (void)setCurrentMode:(TabGridMode)mode {
+  if (_currentMode != mode && (_currentMode == TabGridModeSelection ||
+                               _currentMode == TabGridModeSearch)) {
+    // Clear selections.
+    _selectedEditingItemIDs.clear();
+    _selectedSharableEditingItemIDs.clear();
+    [self configureToolbarsButtons];
+  }
   _currentMode = mode;
   [self.toolbarsMutator setToolbarsMode:_currentMode];
   [self.gridConsumer setPageMode:_currentMode];
@@ -1070,7 +1077,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   if (self.currentMode == TabGridModeSelection) {
     if (self.webStateList->empty()) {
       // Exit selection mode if there are no more tabs.
-      [self exitSelectionMode];
+      self.currentMode = TabGridModeNormal;
     } else {
       [self configureSelectionToolbarsButtons];
     }
@@ -1120,18 +1127,14 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   return URL.is_valid() && URL.SchemeIsHTTPOrHTTPS();
 }
 
-// Exits selection mode and clear all related object.
-- (void)exitSelectionMode {
-  _selectedEditingItemIDs.clear();
-  _selectedSharableEditingItemIDs.clear();
-  self.currentMode = TabGridModeNormal;
-  [self configureToolbarsButtons];
-}
-
 #pragma mark - TabGridPageMutator
 
 - (void)currentlySelectedGrid:(BOOL)selected {
   NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+}
+
+- (void)switchToMode:(TabGridMode)mode {
+  self.currentMode = mode;
 }
 
 #pragma mark - TabGridToolbarsButtonsDelegate
@@ -1144,7 +1147,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   // Tapping Done when in selection mode, should only return back to the normal
   // mode.
   if (self.currentMode == TabGridModeSelection) {
-    [self exitSelectionMode];
+    self.currentMode = TabGridModeNormal;
     // Records action when user exit the selection mode.
     base::RecordAction(base::UserMetricsAction("MobileTabGridSelectionDone"));
   } else {
@@ -1190,7 +1193,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 
 - (void)cancelSearchButtonTapped:(id)sender {
   base::RecordAction(base::UserMetricsAction("MobileTabGridCancelSearchTabs"));
-  [self exitSelectionMode];
+  self.currentMode = TabGridModeNormal;
 }
 
 - (void)closeSelectedTabs:(id)sender {

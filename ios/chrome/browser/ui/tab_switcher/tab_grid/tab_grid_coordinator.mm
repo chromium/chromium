@@ -334,7 +334,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion {
   // A modal may be presented on top of the Recent Tabs or tab grid.
   [self.baseViewController dismissModals];
-  self.baseViewController.tabGridMode = TabGridModeNormal;
+  [self setActiveMode:TabGridModeNormal];
 
   [_incognitoGridCoordinator stopChildCoordinators];
   [_regularGridCoordinator stopChildCoordinators];
@@ -362,7 +362,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)setActiveMode:(TabGridMode)mode {
-  self.baseViewController.tabGridMode = mode;
+  [_mediator setModeOnCurrentPage:mode];
 }
 
 - (UIViewController*)activeViewController {
@@ -527,7 +527,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       // In search mode, the tabgrid mode is not reset before the animation so
       // the animation can start from the correct cell. Once the animation is
       // complete, reset the tab grid mode.
-      self.baseViewController.tabGridMode = TabGridModeNormal;
+      [self setActiveMode:TabGridModeNormal];
     }
     Browser* browser = self.bvcContainer.incognito ? self.incognitoBrowser
                                                    : self.regularBrowser;
@@ -1353,7 +1353,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)selectTabs {
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridTabContextMenuSelectTabs"));
-  self.baseViewController.tabGridMode = TabGridModeSelection;
+  [self setActiveMode:TabGridModeSelection];
 }
 
 - (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {

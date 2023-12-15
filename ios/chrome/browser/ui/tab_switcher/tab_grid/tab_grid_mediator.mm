@@ -64,6 +64,10 @@
   [self notifyPageMutatorAboutPage:page];
 }
 
+- (void)setModeOnCurrentPage:(TabGridMode)mode {
+  [_currentPageMutator switchToMode:mode];
+}
+
 - (void)setConsumer:(id<TabGridConsumer>)consumer {
   _consumer = consumer;
   [_consumer updateParentalControlStatus:
