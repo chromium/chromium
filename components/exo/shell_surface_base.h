@@ -28,6 +28,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
@@ -38,6 +39,10 @@
 namespace ash {
 class WindowState;
 }  // namespace ash
+
+namespace views {
+class ClientView;
+}  // namespace views
 
 namespace base {
 namespace trace_event {
@@ -295,6 +300,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool ShouldSaveWindowPlacement() const override;
   bool WidgetHasHitTestMask() const override;
   void GetWidgetHitTestMask(SkPath* mask) const override;
+  views::ClientView* CreateClientView(views::Widget* widget) override;
 
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;

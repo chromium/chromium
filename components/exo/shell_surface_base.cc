@@ -69,6 +69,7 @@
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/client_view.h"
 #include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_animations.h"
@@ -166,7 +167,7 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
         ash::WindowState::Get(GetWidget()->GetNativeWindow());
 
     // When un-pipped (window state changed from pip), we must undo the
-    // rounded corners from the host_window.
+    // rounded corners of the host_window.
     const int pip_corner_radius =
         window_state->IsPip() ? chromeos::kPipRoundedCornerRadius : 0;
     const gfx::RoundedCornersF pip_radii(pip_corner_radius);
@@ -196,17 +197,7 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
       header_view_->SetHeaderCornerRadius(window_radii->upper_left());
     }
 
-    const gfx::RoundedCornersF root_surface_radii = {
-        GetFrameEnabled() ? 0 : window_radii->upper_left(),
-        GetFrameEnabled() ? 0 : window_radii->upper_right(),
-        window_radii->lower_right(), window_radii->lower_left()};
-
-    Surface* root_surface = shell_surface_->root_surface();
-    DCHECK(root_surface);
-
-    shell_surface_->ApplyRoundedCornersToSurfaceTree(
-        gfx::RectF(root_surface->surface_hierarchy_content_bounds()),
-        root_surface_radii);
+    GetWidget()->client_view()->UpdateWindowRoundedCorners();
   }
 
   gfx::Rect GetWindowBoundsForClientBounds(
@@ -264,6 +255,45 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
 
  private:
   const raw_ptr<ShellSurfaceBase, ExperimentalAsh> shell_surface_;
+};
+
+class CustomClientView : public views::ClientView {
+ public:
+  CustomClientView(views::Widget* widget, ShellSurfaceBase* shell_surface)
+      : views::ClientView(widget, shell_surface),
+        shell_surface_(shell_surface) {}
+
+  CustomClientView(const CustomClientView&) = delete;
+  CustomClientView& operator=(const CustomClientView&) = delete;
+
+  ~CustomClientView() override = default;
+
+  // ClientView:
+  void UpdateWindowRoundedCorners() override {
+    absl::optional<gfx::RoundedCornersF> window_radii =
+        shell_surface_->window_corners_radii();
+
+    DCHECK(GetWidget());
+    const bool frame_enabled = static_cast<CustomFrameView*>(
+                                   GetWidget()->non_client_view()->frame_view())
+                                   ->GetFrameEnabled();
+
+    // TODO(crbug.com/1415486): Support variable window radii.
+    DCHECK(IsRadiiUniform(window_radii.value()));
+    const gfx::RoundedCornersF root_surface_radii = {
+        frame_enabled ? 0 : window_radii->upper_left(),
+        frame_enabled ? 0 : window_radii->upper_right(),
+        window_radii->lower_right(), window_radii->lower_left()};
+
+    const Surface* root_surface = shell_surface_->root_surface();
+
+    shell_surface_->ApplyRoundedCornersToSurfaceTree(
+        gfx::RectF(root_surface->surface_hierarchy_content_bounds()),
+        root_surface_radii);
+  }
+
+ private:
+  raw_ptr<ShellSurfaceBase> shell_surface_;
 };
 
 class CustomWindowTargeter : public aura::WindowTargeter {
@@ -1295,6 +1325,10 @@ const views::Widget* ShellSurfaceBase::GetWidget() const {
 
 views::View* ShellSurfaceBase::GetContentsView() {
   return this;
+}
+
+views::ClientView* ShellSurfaceBase::CreateClientView(views::Widget* widget) {
+  return new CustomClientView(widget, this);
 }
 
 std::unique_ptr<views::NonClientFrameView>
