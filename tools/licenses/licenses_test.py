@@ -12,6 +12,8 @@ import pathlib
 import sys
 import unittest
 
+from unittest import mock
+
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'tools', 'licenses'))
@@ -80,8 +82,15 @@ class LicensesTest(unittest.TestCase):
     }
 
   def test_parse_dir(self):
+    # No metadata file found in directory
+    test_path = os.path.join('tools', 'licenses', 'foo')
+    with self.assertRaisesRegex(
+        licenses.LicenseError,
+        "missing third party metadata file or licenses.py SPECIAL_CASES"):
+      licenses.ParseDir(test_path, REPOSITORY_ROOT)
+
     test_path = os.path.join('tools', 'licenses', 'test_dir')
-    dir_metadata = licenses.ParseDir(test_path, REPOSITORY_ROOT)
+    dir_metadata, errors = licenses.ParseDir(test_path, REPOSITORY_ROOT)
     expected = [
         {
             'License File': [
@@ -102,6 +111,7 @@ class LicensesTest(unittest.TestCase):
             'Shipped': 'no',
         },
     ]
+    self.assertListEqual(errors, [])
     self.assertListEqual(dir_metadata, expected)
 
   def test_get_third_party_deps_from_gn_deps_output(self):
