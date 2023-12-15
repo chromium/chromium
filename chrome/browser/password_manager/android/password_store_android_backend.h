@@ -216,9 +216,9 @@ class PasswordStoreAndroidBackend
   // PasswordStoreOperation that invoked this method and |delay| is the amount
   // of time by which the call to this method was delayed. Calls
   // GetAutofillableLogins from the PasswordStoreAndroidBackendDispatcherBridge.
-  void GetAutofillableLoginsAsyncInternal(LoginsOrErrorReply callback,
-                                          PasswordStoreOperation operation,
-                                          base::TimeDelta delay);
+  void GetAutofillableLoginsInternal(LoginsOrErrorReply callback,
+                                     PasswordStoreOperation operation,
+                                     base::TimeDelta delay);
 
   // Internal method used for implementing the methods from the
   // PasswordStoreBackend interface. |operation| is the PasswordStoreOperation
@@ -230,14 +230,25 @@ class PasswordStoreAndroidBackend
                                       PasswordStoreOperation operation,
                                       base::TimeDelta delay);
 
-  // Removes |form| from |account|.
+  // Gets logins matching |form|.
+  void GetLoginsInternal(const PasswordFormDigest& form,
+                         bool include_psl,
+                         LoginsOrErrorReply callback,
+                         PasswordStoreOperation operation);
+
+  // Updates the form in storage with |form|.
+  void UpdateLoginInternal(const PasswordForm& form,
+                           PasswordChangesOrErrorReply callback);
+
+  // Removes |form|.
   // |operation| is the PasswordStoreOperation  that invoked this method and
   // |delay| is the amount of time by which the call to this method was delayed.
-  void RemoveLoginForAccountInternal(const PasswordForm& form,
-                                     std::string account,
-                                     PasswordChangesOrErrorReply callback,
-                                     PasswordStoreOperation operation,
-                                     base::TimeDelta delay);
+  void RemoveLoginInternal(std::string account,
+                           const PasswordForm& form,
+
+                           PasswordChangesOrErrorReply callback,
+                           PasswordStoreOperation operation,
+                           base::TimeDelta delay);
 
   // Implements the retry mechanism for the operations that are safe to retry.
   // The given |delay| comes from the previous attempt to run the operation.
@@ -268,12 +279,6 @@ class PasswordStoreAndroidBackend
                    PasswordStoreOperation operation,
                    base::TimeDelta delay);
   std::optional<JobReturnHandler> GetAndEraseJob(JobId job_id);
-
-  // Gets logins matching |form|.
-  void GetLoginsAsync(const PasswordFormDigest& form,
-                      bool include_psl,
-                      LoginsOrErrorReply callback,
-                      PasswordStoreOperation operation);
 
   // Filters |logins| created between |delete_begin| and |delete_end| time
   // that match |url_filer| and asynchronously removes them.
@@ -309,10 +314,6 @@ class PasswordStoreAndroidBackend
   ReportMetricsAndInvokeCallbackForStoreModifications(
       const MetricInfix& metric_infix,
       PasswordChangesOrErrorReply callback);
-
-  // Returns the complete list of PasswordForms (regardless of their blocklist
-  // status) for |account|.
-  void GetAllLoginsForAccount(std::string account, LoginsOrErrorReply callback);
 
   // Invoked synchronously by `lifecycle_helper_` when Chrome is foregrounded.
   // This should not cover the initial startup since the registration for the
