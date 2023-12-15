@@ -79,10 +79,11 @@ const CGFloat kMagicStackImageContainerWidth = 50;
           constraintEqualToAnchor:_faviconView.heightAnchor],
     ]];
 
-    [self.imageContainerView addSubview:_faviconView];
     if (IsMagicStackEnabled()) {
+      [self addSubview:_faviconView];
       AddSameCenterConstraints(_faviconView, self.imageContainerView);
     } else {
+      [self.imageContainerView addSubview:_faviconView];
       AddSameConstraints(self.imageContainerView, _faviconView);
     }
   }
