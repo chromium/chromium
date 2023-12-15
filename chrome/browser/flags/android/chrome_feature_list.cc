@@ -167,7 +167,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidNoVisibleHintForTablets,
     &kAndroidVisibleUrlTruncation,
     &kAnimatedImageDragShadow,
-    &kAppMenuMobileSiteOption,
     &kArchiveTabService,
     &kAuxiliarySearchDonation,
     &kAvoidSelectedTabFocusOnLayoutDoneShowing,
@@ -463,10 +462,6 @@ BASE_FEATURE(kAndroidVisibleUrlTruncation,
 
 BASE_FEATURE(kAnimatedImageDragShadow,
              "AnimatedImageDragShadow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAppMenuMobileSiteOption,
-             "AppMenuMobileSiteOption",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kArchiveTabService,

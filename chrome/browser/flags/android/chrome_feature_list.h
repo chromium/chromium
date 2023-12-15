@@ -30,7 +30,6 @@ BASE_DECLARE_FEATURE(kAndroidImprovedBookmarks);
 BASE_DECLARE_FEATURE(kAndroidNoVisibleHintForTablets);
 BASE_DECLARE_FEATURE(kAndroidVisibleUrlTruncation);
 BASE_DECLARE_FEATURE(kAnimatedImageDragShadow);
-BASE_DECLARE_FEATURE(kAppMenuMobileSiteOption);
 BASE_DECLARE_FEATURE(kArchiveTabService);
 BASE_DECLARE_FEATURE(kAuxiliarySearchDonation);
 BASE_DECLARE_FEATURE(kAvoidSelectedTabFocusOnLayoutDoneShowing);

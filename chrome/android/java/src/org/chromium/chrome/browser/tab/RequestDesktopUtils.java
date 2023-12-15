@@ -149,16 +149,13 @@ public class RequestDesktopUtils {
     }
 
     /**
-     * Records the metrics associated with changing the user agent by user agent.
+     * Records the metrics associated with changing the user agent by user.
+     *
      * @param isDesktop True if the user agent is the desktop.
      * @param tab The current activity {@link Tab}.
      */
     public static void recordUserChangeUserAgent(boolean isDesktop, @Nullable Tab tab) {
-        if (ChromeFeatureList.sAppMenuMobileSiteOption.isEnabled() && !isDesktop) {
-            RecordUserAction.record("MobileMenuRequestMobileSite");
-        } else {
-            RecordUserAction.record("MobileMenuRequestDesktopSite");
-        }
+        RecordUserAction.record("MobileMenuRequestDesktopSite");
 
         RecordHistogram.recordBooleanHistogram(
                 "Android.RequestDesktopSite.UserSwitchToDesktop", isDesktop);

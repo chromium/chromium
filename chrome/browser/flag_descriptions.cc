@@ -3867,12 +3867,6 @@ const char kAutofillUseMobileLabelDisambiguationDescription[] =
     "When enabled, Autofill suggestions' labels are displayed using a "
     "mobile-friendly format.";
 
-const char kAppMenuMobileSiteOptionName[] =
-    "Show Mobile Site option in app menu";
-const char kAppMenuMobileSiteOptionDescription[] =
-    "When enabled, app menu should show 'Mobile site' when showing desktop "
-    "site, instead of showing 'Desktop Site' with checkbox";
-
 const char kArchiveTabServiceName[] = "Enable archive tab service";
 const char kArchiveTabServiceDescription[] =
     "Archives suggested tabs for the user that haven't been used beyond a "

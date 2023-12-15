@@ -1190,29 +1190,17 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
         boolean isRequestDesktopSite =
                 currentTab.getWebContents().getNavigationController().getUseDesktopUserAgent();
-        if (ChromeFeatureList.sAppMenuMobileSiteOption.isEnabled()) {
-            requestMenuLabel.setTitle(
-                    isRequestDesktopSite
-                            ? R.string.menu_item_request_mobile_site
-                            : R.string.menu_item_request_desktop_site);
-            requestMenuLabel.setIcon(
-                    isRequestDesktopSite
-                            ? R.drawable.smartphone_black_24dp
-                            : R.drawable.ic_desktop_windows);
-            requestMenuCheck.setVisible(false);
-        } else {
-            requestMenuLabel.setTitle(R.string.menu_request_desktop_site);
-            requestMenuCheck.setVisible(true);
-            // Mark the checkbox if RDS is activated on this page.
-            requestMenuCheck.setChecked(isRequestDesktopSite);
+        requestMenuLabel.setTitle(R.string.menu_request_desktop_site);
+        requestMenuCheck.setVisible(true);
+        // Mark the checkbox if RDS is activated on this page.
+        requestMenuCheck.setChecked(isRequestDesktopSite);
 
-            // This title doesn't seem to be displayed by Android, but it is used to set up
-            // accessibility text in {@link AppMenuAdapter#setupMenuButton}.
-            requestMenuLabel.setTitleCondensed(
-                    isRequestDesktopSite
-                            ? mContext.getString(R.string.menu_request_desktop_site_on)
-                            : mContext.getString(R.string.menu_request_desktop_site_off));
-        }
+        // This title doesn't seem to be displayed by Android, but it is used to set up
+        // accessibility text in {@link AppMenuAdapter#setupMenuButton}.
+        requestMenuLabel.setTitleCondensed(
+                isRequestDesktopSite
+                        ? mContext.getString(R.string.menu_request_desktop_site_on)
+                        : mContext.getString(R.string.menu_request_desktop_site_off));
     }
 
     /**

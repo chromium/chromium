@@ -6129,13 +6129,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kCommandLineOnNonRooted)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"app-menu-mobile-site-option",
-     flag_descriptions::kAppMenuMobileSiteOptionName,
-     flag_descriptions::kAppMenuMobileSiteOptionDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAppMenuMobileSiteOption)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"force-color-profile", flag_descriptions::kForceColorProfileName,
      flag_descriptions::kForceColorProfileDescription, kOsAll,
      MULTI_VALUE_TYPE(kForceColorProfileChoices)},

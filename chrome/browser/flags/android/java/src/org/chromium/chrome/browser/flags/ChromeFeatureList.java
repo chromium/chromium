@@ -125,7 +125,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_NO_VISIBLE_HINT_FOR_TABLETS =
             "AndroidNoVisibleHintForTablets";
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
-    public static final String APP_MENU_MOBILE_SITE_OPTION = "AppMenuMobileSiteOption";
     public static final String ARCHIVE_TAB_SERVICE = "ArchiveTabService";
     public static final String AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT =
             "AutofillAddressProfileSavePromptNicknameSupport";
@@ -479,8 +478,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidAppIntegration =
             new CachedFlag(ANDROID_APP_INTEGRATION, false);
     public static final CachedFlag sAndroidHub = new CachedFlag(ANDROID_HUB, false);
-    public static final CachedFlag sAppMenuMobileSiteOption =
-            new CachedFlag(APP_MENU_MOBILE_SITE_OPTION, false);
     public static final CachedFlag sArchiveTabService = new CachedFlag(ARCHIVE_TAB_SERVICE, false);
     public static final CachedFlag sBackGestureActivityTabProvider =
             new CachedFlag(BACK_GESTURE_ACTIVITY_TAB_PROVIDER, false);
@@ -608,7 +605,6 @@ public abstract class ChromeFeatureList {
             List.of(
                     sAndroidAppIntegration,
                     sAndroidHub,
-                    sAppMenuMobileSiteOption,
                     sArchiveTabService,
                     sBackGestureActivityTabProvider,
                     sBackGestureRefactorActivityAndroid,

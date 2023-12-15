@@ -2238,9 +2238,6 @@ extern const char kArchiveTabServiceDescription[];
 extern const char kAutofillUseMobileLabelDisambiguationName[];
 extern const char kAutofillUseMobileLabelDisambiguationDescription[];
 
-extern const char kAppMenuMobileSiteOptionName[];
-extern const char kAppMenuMobileSiteOptionDescription[];
-
 extern const char kBackGestureActivityTabProviderName[];
 extern const char kBackGestureActivityTabProviderDescription[];
 

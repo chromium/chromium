@@ -3634,12 +3634,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_ACCESSIBILITY_FOLLOW_ACCELERATOR_IPH" desc="In-product help that points at the menu icon for the news feed on Chrome's new tab page. This string informs the user about the  following feature.">
         Adds the current web site to the list of web sites that you are following.
       </message>
-      <message name="IDS_MENU_ITEM_REQUEST_DESKTOP_SITE" desc="Menu item allowing users to change the website from the mobile site to desktop site. [CHAR_LIMIT=27]">
-        Request desktop site
-      </message>
-      <message name="IDS_MENU_ITEM_REQUEST_MOBILE_SITE" desc="Menu item allowing users to change the website from the desktop site to mobile site. [CHAR_LIMIT=27]">
-        Request mobile site
-      </message>
       <message name="IDS_MENU_PAINT_PREVIEW_SHOW" desc="Menu item allowing users to capture and show a paint preview of a page. [CHAR_LIMIT=27]" translateable="false">
         Show Paint Preview
       </message>
