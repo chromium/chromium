@@ -162,8 +162,7 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
   ExtensionSidePanelBrowserTest() {
     feature_list_.InitWithFeatures(
         {extensions_features::kExtensionSidePanelIntegration,
-         features::kSidePanelPinning, features::kChromeRefresh2023,
-         features::kResponsiveToolbar},
+         features::kSidePanelPinning},
         {});
   }
 

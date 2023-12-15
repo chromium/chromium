@@ -85,7 +85,7 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
     scoped_service_observation_.Observe(service);
     LoadExtensionIcon();
     if (IsGlobalCoordinator()) {
-      if (features::IsSidePanelPinningEnabled()) {
+      if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
         UpdateActionItemIcon();
       }
       browser_->tab_strip_model()->AddObserver(this);

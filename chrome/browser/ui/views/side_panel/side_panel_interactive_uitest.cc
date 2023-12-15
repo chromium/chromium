@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, ToggleSidePanelVisibility) {
-  if (features::IsSidePanelPinningEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     GTEST_SKIP()
         << "Default sidepanel button is not present with pinning feature.";
   }
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, ToggleSidePanelVisibility) {
 
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
                        SwitchBetweenDifferentEntries) {
-  if (features::IsSidePanelPinningEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     GTEST_SKIP()
         << "Default sidepanel button is not present with pinning feature.";
   }
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
                        StaysOpenOnTabSwitchWithActiveGlobalEntry) {
-  if (features::IsSidePanelPinningEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     GTEST_SKIP()
         << "Default sidepanel button is not present with pinning feature.";
   }
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
   // This test does not make sense with pinned feature the default toolbar
   // sidepanel button is not present to show the last active global entry.
   // A particular sidepanel has to be opened.
-  if (features::IsSidePanelPinningEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     GTEST_SKIP()
         << "Default sidepanel button is not present with pinning feature.";
   }
@@ -244,7 +244,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
     set_open_about_blank_on_browser_launch(true);
     scoped_feature_list_.InitWithFeatures(
         {features::kSidePanelPinning, features::kChromeRefresh2023,
-         features::kReadAnything, features::kResponsiveToolbar},
+         features::kReadAnything},
         {});
     InteractiveBrowserTest::SetUp();
   }

@@ -69,7 +69,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
-#include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/tab_helper.h"
@@ -2385,10 +2384,7 @@ class CompanionSidePanelPinningBrowserTest : public CompanionPageBrowserTest {
 
   void SetUpFeatureList() override {
     CompanionPageBrowserTest::SetUpFeatureList();
-    pinning_feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning, features::kResponsiveToolbar,
-         features::kChromeRefresh2023},
-        {});
+    pinning_feature_list_.InitAndEnableFeature(features::kSidePanelPinning);
   }
 
   ~CompanionSidePanelPinningBrowserTest() override = default;

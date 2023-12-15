@@ -788,7 +788,7 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
 
 void ExtensionContextMenuModel::AddSidePanelEntryIfPresent(
     const Extension& extension) {
-  if (!features::IsSidePanelPinningEnabled() ||
+  if (!base::FeatureList::IsEnabled(features::kSidePanelPinning) ||
       !extension.permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kSidePanel)) {
     return;

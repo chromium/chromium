@@ -61,14 +61,14 @@ BrowserView* LensSidePanelCoordinator::GetBrowserView() {
 }
 
 actions::ActionItem* LensSidePanelCoordinator::GetActionItem() {
-  CHECK(features::IsSidePanelPinningEnabled());
+  CHECK(base::FeatureList::IsEnabled(features::kSidePanelPinning));
   BrowserActions* browser_actions = BrowserActions::FromBrowser(&GetBrowser());
   return actions::ActionManager::Get().FindAction(
       kActionSidePanelShowLens, browser_actions->root_action_item());
 }
 
 void LensSidePanelCoordinator::UpdateActionItem() {
-  if (features::IsSidePanelPinningEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     actions::ActionItem* action_item = GetActionItem();
     action_item->SetText(GetComboboxLabel());
     action_item->SetTooltipText(GetComboboxLabel());
@@ -108,7 +108,7 @@ void LensSidePanelCoordinator::OnSidePanelDidClose() {
 
 void LensSidePanelCoordinator::OnFaviconFetched(const gfx::Image& favicon) {
   // Update the action item with the new favicon.
-  if (features::IsSidePanelPinningEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     GetActionItem()->SetImage(ui::ImageModel::FromImage(favicon));
   }
   auto* registry =

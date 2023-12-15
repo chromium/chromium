@@ -240,7 +240,7 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
     base::RecordAction(
         base::UserMetricsAction("Commerce.PriceTracking.OmniboxChip.Tracked"));
     commerce::MaybeEnableEmailNotifications(profile_->GetPrefs());
-    if (!features::IsSidePanelPinningEnabled()) {
+    if (!base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
       bool should_show_iph = browser_->window()->MaybeShowFeaturePromo(
           feature_engagement::kIPHPriceTrackingInSidePanelFeature);
       if (should_show_iph) {

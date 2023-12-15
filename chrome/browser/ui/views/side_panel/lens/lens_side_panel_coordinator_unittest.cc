@@ -21,7 +21,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 
 namespace {
 
@@ -51,9 +50,7 @@ class LensSidePanelCoordinatorTest
       features.InitWithFeaturesAndParameters(
           {{lens::features::kLensStandalone,
             {{lens::features::kHomepageURLForLens.name, kLensHomepageURL}}},
-           {features::kSidePanelPinning, {}},
-           {features::kChromeRefresh2023, {}},
-           {features::kResponsiveToolbar, {}}},
+           {features::kSidePanelPinning, {}}},
           {});
     } else {
       features.InitWithFeaturesAndParameters(

@@ -389,7 +389,7 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetBubbleArrow(HelpBubbleArrow::kTopRight)));
 
   // kIPHPowerBookmarksSidePanelFeature:
-  if (features::IsSidePanelPinningEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     registry.RegisterFeature(
         std::move(FeaturePromoSpecification::CreateForSnoozePromo(
                       feature_engagement::kIPHPowerBookmarksSidePanelFeature,
@@ -405,7 +405,7 @@ void MaybeRegisterChromeFeaturePromos(
   }
 
   // kIPHCompanionSidePanelFeature:
-  if (features::IsSidePanelPinningEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     registry.RegisterFeature(std::move(
         FeaturePromoSpecification::CreateForToastPromo(
             feature_engagement::kIPHCompanionSidePanelFeature,
@@ -475,7 +475,7 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleTitleText(IDS_3PCD_USER_BYPASS_PROMO_TITLE)));
 
   // kIPHReadingListDiscoveryFeature:
-  if (features::IsSidePanelPinningEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     registry.RegisterFeature(
         std::move(FeaturePromoSpecification::CreateForLegacyPromo(
                       &feature_engagement::kIPHReadingListDiscoveryFeature,
@@ -495,7 +495,7 @@ void MaybeRegisterChromeFeaturePromos(
       kBookmarkStarViewElementId, IDS_READING_LIST_ENTRY_POINT_PROMO));
 
   // kIPHReadingListInSidePanelFeature:
-  if (features::IsSidePanelPinningEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     registry.RegisterFeature(
         std::move(FeaturePromoSpecification::CreateForLegacyPromo(
                       &feature_engagement::kIPHReadingListInSidePanelFeature,
@@ -511,7 +511,7 @@ void MaybeRegisterChromeFeaturePromos(
   }
 
   // kIPHReadingModeSidePanelFeature:
-  if (features::IsSidePanelPinningEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     registry.RegisterFeature(std::move(
         FeaturePromoSpecification::CreateForSnoozePromo(
             feature_engagement::kIPHReadingModeSidePanelFeature,
@@ -524,7 +524,7 @@ void MaybeRegisterChromeFeaturePromos(
         kToolbarSidePanelButtonElementId, IDS_READING_MODE_SIDE_PANEL_PROMO));
   }
 
-  if (features::IsSidePanelPinningEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     // kIPHSidePanelGenericMenuFeature:
     registry.RegisterFeature(std::move(
         FeaturePromoSpecification::CreateForToastPromo(
@@ -678,7 +678,7 @@ void MaybeRegisterChromeFeaturePromos(
           .SetHighlightedMenuItem(ToolsMenuModel::kPerformanceMenuItem)));
 
   // kIPHPriceTrackingInSidePanelFeature;
-  if (!features::IsSidePanelPinningEnabled()) {
+  if (!base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
         &feature_engagement::kIPHPriceTrackingInSidePanelFeature,
         kToolbarSidePanelButtonElementId, IDS_PRICE_TRACKING_SIDE_PANEL_IPH));

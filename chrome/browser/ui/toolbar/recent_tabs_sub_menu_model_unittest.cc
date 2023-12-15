@@ -118,9 +118,7 @@ class RecentTabsSubMenuModelTest : public BrowserWithTestWindowTest,
   RecentTabsSubMenuModelTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/GetParam()
-            ? std::vector<base::test::FeatureRef>{features::kSidePanelPinning,
-                                                  features::kResponsiveToolbar,
-                                                  features::kChromeRefresh2023}
+            ? std::vector<base::test::FeatureRef>{features::kSidePanelPinning}
             : std::vector<base::test::FeatureRef>{},
         /*disabled_features=*/{});
   }
@@ -249,37 +247,21 @@ TEST_P(RecentTabsSubMenuModelTest, NoTabs) {
 
   RecentTabsSubMenuModel model(nullptr, browser());
 
-  std::vector<ModelData> kData;
-  if (!GetParam()) {
-    kData = {
-        {ui::MenuModel::TYPE_COMMAND, true},    // History
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_COMMAND, false},   // No tabs from other devices
-    };
+  // Expected menu items:
+  std::vector<ModelData> kData = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // History
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, false},   // No tabs from other devices
+  };
 
-    VerifyModel(model, kData);
-
-  } else {
-    kData = {
-        {ui::MenuModel::TYPE_COMMAND, true},    // History
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_TITLE, false},     // Your devices
-        {ui::MenuModel::TYPE_COMMAND,
-         true},  // Sign in to see tabs from other devices
-
-    };
-
-    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
-      kData.insert(kData.begin() + 1,
-                   {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
-    }
-
-    VerifyModel(model, kData);
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    kData.insert(kData.begin() + 1,
+                 {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
   }
+
+  VerifyModel(model, kData);
 }
 
 // Test enabled "Recently closed" header with no foreign tabs.
@@ -297,40 +279,23 @@ TEST_P(RecentTabsSubMenuModelTest, RecentlyClosedTabsFromCurrentSession) {
 
   RecentTabsSubMenuModel model(nullptr, browser());
 
-  std::vector<ModelData> kData;
+  // Expected menu items:
+  std::vector<ModelData> kData = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // History
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // Recently closed
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://foo/2>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://foo/1>
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, false},   // No tabs from other devices
+  };
 
-  if (!GetParam()) {
-    kData = {
-        {ui::MenuModel::TYPE_COMMAND, true},    // History
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_TITLE, false},     // Recently closed
-        {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://foo/2>
-        {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://foo/1>
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_COMMAND, false},   // No tabs from other devices
-    };
-
-    VerifyModel(model, kData);
-
-  } else {
-    kData = {
-        {ui::MenuModel::TYPE_COMMAND, true},    // History
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_TITLE, false},     // Recently closed
-        {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://foo/2>
-        {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://foo/1>
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_TITLE, false},     // Your devices
-        {ui::MenuModel::TYPE_COMMAND, true}     // recent tabs login
-    };
-
-    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
-      kData.insert(kData.begin() + 1,
-                   {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
-    }
-
-    VerifyModel(model, kData);
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    kData.insert(kData.begin() + 1,
+                 {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
   }
+
+  VerifyModel(model, kData);
 }
 
 // Test recently closed groups with no foreign tabs.
@@ -355,92 +320,52 @@ TEST_P(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
 
   RecentTabsSubMenuModel model(nullptr, browser());
 
-  std::vector<ModelData> kData;
+  // Expected main menu items:
+  std::vector<ModelData> kData = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // History
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // Recently closed
+      {ui::MenuModel::TYPE_SUBMENU, true},    // <group 1>
+      {ui::MenuModel::TYPE_SUBMENU, true},    // <group 0>
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, false},   // No tabs from other devices
+  };
 
-  if (!GetParam()) {
-    kData = {
-        {ui::MenuModel::TYPE_COMMAND, true},    // History
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_TITLE, false},     // Recently closed
-        {ui::MenuModel::TYPE_SUBMENU, true},    // <group 1>
-        {ui::MenuModel::TYPE_SUBMENU, true},    // <group 0>
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_COMMAND, false},   // No tabs from other devices
-    };
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    kData.insert(kData.begin() + 1,
+                 {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
+  }
 
-    VerifyModel(model, kData);
+  VerifyModel(model, kData);
 
-    // Expected group 1 menu items:
-    constexpr ModelData kGroup1Data[] = {
-        {ui::MenuModel::TYPE_COMMAND, true},  // Restore group
-        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://foo/2>
-        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://foo/3>
-    };
+  // Expected group 1 menu items:
+  constexpr ModelData kGroup1Data[] = {
+      {ui::MenuModel::TYPE_COMMAND, true},  // Restore group
+      {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://foo/2>
+      {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://foo/3>
+  };
 
-    VerifyModel(model.GetSubmenuModelAt(3), kGroup1Data);
-
-    // Expected group 0 menu items:
-    constexpr ModelData kGroup0Data[] = {
-        {ui::MenuModel::TYPE_COMMAND, true},  // Restore group
-        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://foo/1>
-    };
-
-    VerifyModel(model.GetSubmenuModelAt(4), kGroup0Data);
-
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    VerifyModel(model.GetSubmenuModelAt(4), kGroup1Data);
   } else {
-    kData = {
-        {ui::MenuModel::TYPE_COMMAND, true},    // History
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_TITLE, false},     // Recently closed
-        {ui::MenuModel::TYPE_SUBMENU, true},    // <group 1>
-        {ui::MenuModel::TYPE_SUBMENU, true},    // <group 0>
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_TITLE, false},     // Your devices
-        {ui::MenuModel::TYPE_COMMAND, true}     // recent tabs login
-    };
+    VerifyModel(model.GetSubmenuModelAt(3), kGroup1Data);
+  }
 
-    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
-      kData.insert(kData.begin() + 1,
-                   {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
-    }
+  // Expected group 0 menu items:
+  constexpr ModelData kGroup0Data[] = {
+      {ui::MenuModel::TYPE_COMMAND, true},  // Restore group
+      {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://foo/1>
+  };
 
-    VerifyModel(model, kData);
-
-    // Expected group 1 menu items:
-    constexpr ModelData kGroup1Data[] = {
-        {ui::MenuModel::TYPE_COMMAND, true},  // Restore group
-        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://foo/2>
-        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://foo/3>
-    };
-
-    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
-      VerifyModel(model.GetSubmenuModelAt(4), kGroup1Data);
-    } else {
-      VerifyModel(model.GetSubmenuModelAt(3), kGroup1Data);
-    }
-
-    // Expected group 0 menu items:
-    constexpr ModelData kGroup0Data[] = {
-        {ui::MenuModel::TYPE_COMMAND, true},  // Restore group
-        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://foo/1>
-    };
-
-    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
-      VerifyModel(model.GetSubmenuModelAt(5), kGroup0Data);
-    } else {
-      VerifyModel(model.GetSubmenuModelAt(4), kGroup0Data);
-    }
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    VerifyModel(model.GetSubmenuModelAt(5), kGroup0Data);
+  } else {
+    VerifyModel(model.GetSubmenuModelAt(4), kGroup0Data);
   }
 }
 
 TEST_P(RecentTabsSubMenuModelTest,
        RecentlyClosedTabsAndWindowsFromLastSession) {
-  // Create a new test for refresh for this case since an if else would make it
-  // hard to read. After refresh launch they can be reduced to one test.
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
-
   DisableSync();
 
   TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
@@ -507,119 +432,6 @@ TEST_P(RecentTabsSubMenuModelTest,
       {ui::MenuModel::TYPE_COMMAND, false},   // No tabs from other devices
   };
 
-  VerifyModel(model, kDataBeforeLoad);
-
-  // Wait for tabs from last session to be loaded.
-  WaitForLoadFromLastSession();
-  EXPECT_TRUE(delegate.got_changes());
-
-  // Expected menu items after tabs/windows from last session are loaded:
-  std::vector<ModelData> kDataAfterLoad = {
-      {ui::MenuModel::TYPE_COMMAND, true},    // History
-      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-      {ui::MenuModel::TYPE_TITLE, false},     // Recently closed
-      {ui::MenuModel::TYPE_SUBMENU, true},    // <window>
-      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://wnd0/tab1>
-      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://wnd0/tab0>
-      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-      {ui::MenuModel::TYPE_COMMAND, false},   // No tabs from other devices
-  };
-
-  VerifyModel(model, kDataAfterLoad);
-
-  constexpr ModelData kWindowSubmenuData[] = {
-      {ui::MenuModel::TYPE_COMMAND, true},  // Restore window
-      {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://wnd1/tab0>
-      {ui::MenuModel::TYPE_SUBMENU, true},  // <group>
-  };
-  const ui::MenuModel* const window_submenu =
-      base::FeatureList::IsEnabled(features::kSidePanelPinning)
-          ? model.GetSubmenuModelAt(4)
-          : model.GetSubmenuModelAt(3);
-  ASSERT_NO_FATAL_FAILURE(VerifyModel(window_submenu, kWindowSubmenuData));
-
-  constexpr ModelData kGroupSubmenuData[] = {
-      {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://wnd1/tab1>
-  };
-
-  VerifyModel(window_submenu->GetSubmenuModelAt(2), kGroupSubmenuData);
-}
-
-TEST_P(RecentTabsSubMenuModelTest,
-       RecentlyClosedTabsAndWindowsFromLastSessionWithRefresh) {
-  // Non refresh version of this test is
-  // `RecentlyClosedTabsAndWindowsFromLastSession`.
-  if (!GetParam()) {
-    GTEST_SKIP();
-  }
-
-  DisableSync();
-
-  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(&RecentTabsSubMenuModelTest::GetTabRestoreService));
-
-  // Add 2 tabs and close them.
-  AddTab(browser(), GURL("http://wnd/tab0"));
-  AddTab(browser(), GURL("http://wnd/tab1"));
-  browser()->tab_strip_model()->CloseAllTabs();
-
-  // Create a SessionService for the profile (profile owns the service) and add
-  // a window with two tabs to this session.
-  SessionService* session_service = new SessionService(profile());
-  SessionServiceFactory::SetForTestProfile(profile(),
-                                           base::WrapUnique(session_service));
-  const SessionID tab_id_0 = SessionID::FromSerializedValue(1);
-  const SessionID tab_id_1 = SessionID::FromSerializedValue(2);
-  const SessionID window_id = SessionID::FromSerializedValue(3);
-  const tab_groups::TabGroupId tab_group_id =
-      tab_groups::TabGroupId::GenerateNew();
-  session_service->SetWindowType(window_id, Browser::TYPE_NORMAL);
-  session_service->SetTabWindow(window_id, tab_id_0);
-  session_service->SetTabWindow(window_id, tab_id_1);
-  session_service->SetTabIndexInWindow(window_id, tab_id_0, 0);
-  session_service->SetTabIndexInWindow(window_id, tab_id_1, 1);
-  session_service->SetSelectedTabInWindow(window_id, 0);
-  session_service->SetTabGroup(window_id, tab_id_1,
-                               std::make_optional(tab_group_id));
-  session_service->UpdateTabNavigation(
-      window_id, tab_id_0,
-      sessions::ContentTestHelper::CreateNavigation("http://wnd1/tab0",
-                                                    "title"));
-  session_service->UpdateTabNavigation(
-      window_id, tab_id_1,
-      sessions::ContentTestHelper::CreateNavigation("http://wnd1/tab1",
-                                                    "title"));
-  // Set this, otherwise previous session won't be loaded.
-  ExitTypeService::GetInstanceForProfile(profile())
-      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
-  // Move this session to the last so that TabRestoreService will load it as the
-  // last session.
-  SessionServiceFactory::GetForProfile(profile())
-      ->MoveCurrentSessionToLastSession();
-
-  // Create a new TabRestoreService so that it'll load the recently closed tabs
-  // and windows afresh.
-  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(&RecentTabsSubMenuModelTest::GetTabRestoreService));
-  // Let the shutdown of previous TabRestoreService run.
-  content::RunAllTasksUntilIdle();
-
-  RecentTabsSubMenuModel model(nullptr, browser());
-  TestRecentTabsMenuModelDelegate delegate(&model);
-  EXPECT_FALSE(delegate.got_changes());
-
-  // Expected menu items before tabs/windows from last session are loaded:
-  std::vector<ModelData> kDataBeforeLoad = {
-      {ui::MenuModel::TYPE_COMMAND, true},    // History
-      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-      {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
-      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-      {ui::MenuModel::TYPE_TITLE, false},     // Your devices
-      {ui::MenuModel::TYPE_COMMAND, true}     // recent tabs login
-  };
-
   if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     kDataBeforeLoad.insert(
         kDataBeforeLoad.begin() + 1,
@@ -641,8 +453,7 @@ TEST_P(RecentTabsSubMenuModelTest,
       {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://wnd0/tab1>
       {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://wnd0/tab0>
       {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-      {ui::MenuModel::TYPE_TITLE, false},     // Your devices
-      {ui::MenuModel::TYPE_COMMAND, true}     // recent tabs login
+      {ui::MenuModel::TYPE_COMMAND, false},   // No tabs from other devices
   };
 
   if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
@@ -654,10 +465,9 @@ TEST_P(RecentTabsSubMenuModelTest,
   VerifyModel(model, kDataAfterLoad);
 
   constexpr ModelData kWindowSubmenuData[] = {
-      {ui::MenuModel::TYPE_COMMAND, true},    // Restore window
-      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://wnd1/tab0>
-      {ui::MenuModel::TYPE_SUBMENU, true},    // <group>
+      {ui::MenuModel::TYPE_COMMAND, true},  // Restore window
+      {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://wnd1/tab0>
+      {ui::MenuModel::TYPE_SUBMENU, true},  // <group>
   };
   const ui::MenuModel* const window_submenu =
       base::FeatureList::IsEnabled(features::kSidePanelPinning)
@@ -669,7 +479,7 @@ TEST_P(RecentTabsSubMenuModelTest,
       {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://wnd1/tab1>
   };
 
-  VerifyModel(window_submenu->GetSubmenuModelAt(3), kGroupSubmenuData);
+  VerifyModel(window_submenu->GetSubmenuModelAt(2), kGroupSubmenuData);
 }
 
 // Test disabled "Recently closed" header with multiple sessions, multiple
@@ -706,44 +516,29 @@ TEST_P(RecentTabsSubMenuModelTest, OtherDevices) {
 
   RecentTabsSubMenuModel model(nullptr, browser());
 
-  std::vector<ModelData> kData;
+  // Expected menu items:
+  std::vector<ModelData> kData = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // History
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // <section header for session 0>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for session 0>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for session 0>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for session 0>
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // <section header for session 1>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for session 1 window 0>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for session 1 window 1>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for session 1 window 1>
+  };
 
-  if (!GetParam()) {
-    kData = {
-        {ui::MenuModel::TYPE_COMMAND, true},    // History
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_TITLE, false},   // <section header for session 0>
-        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for session 0>
-        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for session 0>
-        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for session 0>
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_TITLE, false},   // <section header for session 1>
-        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for session 1 window 0>
-        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for session 1 window 1>
-        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for session 1 window 1>
-    };
-
-    VerifyModel(model, kData);
-  } else {
-    kData = {
-        {ui::MenuModel::TYPE_COMMAND, true},    // History
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_TITLE, false},     // Your devices
-        {ui::MenuModel::TYPE_SUBMENU, true},    // session 0 submenu
-        {ui::MenuModel::TYPE_SUBMENU, true},    // session 1 submenu
-    };
-
-    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
-      kData.insert(kData.begin() + 1,
-                   {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
-    }
-
-    VerifyModel(model, kData);
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    kData.insert(kData.begin() + 1,
+                 {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
   }
+
+  VerifyModel(model, kData);
 }
 
 TEST_P(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
@@ -761,44 +556,23 @@ TEST_P(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
 
   RecentTabsSubMenuModel model(nullptr, browser());
 
-  std::vector<ModelData> kDataSyncEnabled;
+  // Expected menu items with sync enabled:
+  std::vector<ModelData> kDataSyncEnabled = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // History
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // <section header>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab>
+  };
 
-  if (!GetParam()) {
-    kDataSyncEnabled = {
-        {ui::MenuModel::TYPE_COMMAND, true},    // History
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_TITLE, false},     // <section header>
-        {ui::MenuModel::TYPE_COMMAND, true},    // <tab>
-    };
-
-    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
-      kDataSyncEnabled.insert(
-          kDataSyncEnabled.begin() + 1,
-          {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
-    }
-
-    VerifyModel(model, kDataSyncEnabled);
-
-  } else {
-    kDataSyncEnabled = {
-        {ui::MenuModel::TYPE_COMMAND, true},    // History
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_TITLE, false},     // Your devices
-        {ui::MenuModel::TYPE_SUBMENU, true},    // session 0 submenu
-    };
-
-    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
-      kDataSyncEnabled.insert(
-          kDataSyncEnabled.begin() + 1,
-          {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
-    }
-
-    VerifyModel(model, kDataSyncEnabled);
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    kDataSyncEnabled.insert(
+        kDataSyncEnabled.begin() + 1,
+        {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
   }
+
+  VerifyModel(model, kDataSyncEnabled);
 
   // Make changes dynamically.
   update_timestamp = base::Time::Now() - base::Minutes(5);
@@ -809,38 +583,23 @@ TEST_P(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
   RegisterRecentTabs(&recent_tabs_builder);
 
   // Expected menu items after update:
-  std::vector<ModelData> kDataAfterUpdate;
+  std::vector<ModelData> kDataAfterUpdate = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // History
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // <section header>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab>
+  };
 
-  if (!GetParam()) {
-    kDataAfterUpdate = {
-        {ui::MenuModel::TYPE_COMMAND, true},    // History
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_TITLE, false},     // <section header>
-        {ui::MenuModel::TYPE_COMMAND, true},    // <tab>
-        {ui::MenuModel::TYPE_COMMAND, true},    // <tab>
-    };
-
-    VerifyModel(model, kDataAfterUpdate);
-  } else {
-    kDataAfterUpdate = {
-        {ui::MenuModel::TYPE_COMMAND, true},    // History
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_TITLE, false},     // Your devices
-        {ui::MenuModel::TYPE_SUBMENU, true},    // session 0 submenu
-    };
-
-    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
-      kDataAfterUpdate.insert(
-          kDataAfterUpdate.begin() + 1,
-          {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
-    }
-
-    VerifyModel(model, kDataAfterUpdate);
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    kDataAfterUpdate.insert(
+        kDataAfterUpdate.begin() + 1,
+        {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
   }
+
+  VerifyModel(model, kDataAfterUpdate);
 }
 
 TEST_P(RecentTabsSubMenuModelTest, MaxSessionsAndRecency) {
@@ -859,7 +618,7 @@ TEST_P(RecentTabsSubMenuModelTest, MaxSessionsAndRecency) {
 
   std::vector<ModelData> kData;
   // Once chrome refresh is launched this if condition can be removed.
-  if (!GetParam()) {
+  if (!features::IsChromeRefresh2023()) {
     kData = {
         {ui::MenuModel::TYPE_COMMAND, true},    // History
         {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
@@ -952,63 +711,36 @@ TEST_P(RecentTabsSubMenuModelTest, MaxTabsPerSessionAndRecency) {
 
   RecentTabsSubMenuModel model(nullptr, browser());
 
-  std::vector<ModelData> kData;
-  if (!GetParam()) {
-    // Expected menu items:
+  // Expected menu items:
 
-    kData = {
-        {ui::MenuModel::TYPE_COMMAND, true},    // History
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_TITLE, false},     // <section header for session>
-        {ui::MenuModel::TYPE_COMMAND, true},    // <tab>
-        {ui::MenuModel::TYPE_COMMAND, true},    // <tab>
-        {ui::MenuModel::TYPE_COMMAND, true},    // <tab>
-        {ui::MenuModel::TYPE_COMMAND, true},    // <tab>
-        // max tabs per sessions is 4, so only the 4 most tabs will show,
-        // independent of which window they came from.
-    };
+  std::vector<ModelData> kData = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // History
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // <section header for session>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab>
+      // max tabs per sessions is 4, so only the 4 most tabs will show,
+      // independent of which window they came from.
+  };
 
-    VerifyModel(model, kData);
-
-    EXPECT_THAT(base::span<const std::u16string>(
-                    recent_tabs_builder.GetTabTitlesSortedByRecency())
-                    .subspan(0, 4),
-                ElementsAre(model.GetLabelAt(model.GetItemCount() - 4),
-                            model.GetLabelAt(model.GetItemCount() - 3),
-                            model.GetLabelAt(model.GetItemCount() - 2),
-                            model.GetLabelAt(model.GetItemCount() - 1)));
-
-  } else {
-    // Expected menu items:
-
-    kData = {
-        {ui::MenuModel::TYPE_COMMAND, true},    // History
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
-        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-        {ui::MenuModel::TYPE_TITLE, false},     // Your devices
-        {ui::MenuModel::TYPE_SUBMENU, true}     // session 0 submenu
-    };
-
-    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
-      kData.insert(kData.begin() + 1,
-                   {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
-    }
-
-    VerifyModel(model, kData);
-
-    EXPECT_THAT(
-        base::span<const std::u16string>(
-            recent_tabs_builder.GetTabTitlesSortedByRecency())
-            .subspan(0, 4),
-        ElementsAre(
-            model.GetSubmenuModelAt(model.GetItemCount() - 1)->GetLabelAt(0),
-            model.GetSubmenuModelAt(model.GetItemCount() - 1)->GetLabelAt(1),
-            model.GetSubmenuModelAt(model.GetItemCount() - 1)->GetLabelAt(2),
-            model.GetSubmenuModelAt(model.GetItemCount() - 1)->GetLabelAt(3)));
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    kData.insert(kData.begin() + 1,
+                 {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
   }
+
+  VerifyModel(model, kData);
+
+  EXPECT_THAT(base::span<const std::u16string>(
+                  recent_tabs_builder.GetTabTitlesSortedByRecency())
+                  .subspan(0, 4),
+              ElementsAre(model.GetLabelAt(model.GetItemCount() - 4),
+                          model.GetLabelAt(model.GetItemCount() - 3),
+                          model.GetLabelAt(model.GetItemCount() - 2),
+                          model.GetLabelAt(model.GetItemCount() - 1)));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, RecentTabsSubMenuModelTest, ::testing::Bool());

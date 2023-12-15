@@ -29,7 +29,7 @@ class SidePanelToolbarButtonTest : public TestWithBrowserView {
 
 // Verify correct buttons are shown when side panel alignment is changed.
 TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInLTR) {
-  if (features::IsSidePanelPinningEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     GTEST_SKIP()
         << "Default sidepanel button is not present with pinning feature.";
   }
@@ -69,7 +69,7 @@ TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInLTR) {
 
 // Verify correct buttons are shown in RTL mode.
 TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInRTL) {
-  if (features::IsSidePanelPinningEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     GTEST_SKIP()
         << "Default sidepanel button is not present with pinning feature.";
   }

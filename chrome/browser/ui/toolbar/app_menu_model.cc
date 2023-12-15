@@ -697,7 +697,7 @@ void ToolsMenuModel::Build(Browser* browser) {
     AddItemWithStringId(IDC_TOGGLE_QUICK_COMMANDS, IDS_TOGGLE_QUICK_COMMANDS);
   }
 
-  if (features::IsSidePanelPinningEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     AddItemWithStringId(IDC_SHOW_READING_MODE_SIDE_PANEL,
                         IDS_SHOW_READING_MODE_SIDE_PANEL);
     SetElementIdentifierAt(

@@ -87,8 +87,6 @@ BASE_DECLARE_FEATURE(kSidePanelCompanionDefaultPinned);
 
 BASE_DECLARE_FEATURE(kSidePanelPinning);
 
-bool IsSidePanelPinningEnabled();
-
 BASE_DECLARE_FEATURE(kSidePanelMinimumWidth);
 extern const base::FeatureParam<int> kSidePanelMinimumWidthParameter;
 int GetSidePanelMinimumWidth();

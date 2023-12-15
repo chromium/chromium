@@ -32,9 +32,7 @@ class HelpBubbleHandlerInteractiveUiTest : public InteractiveBrowserTest {
  public:
   HelpBubbleHandlerInteractiveUiTest() {
     feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning, features::kChromeRefresh2023,
-         features::kResponsiveToolbar},
-        {});
+        {features::kSidePanelPinning, features::kChromeRefresh2023}, {});
   }
   ~HelpBubbleHandlerInteractiveUiTest() override = default;
 
