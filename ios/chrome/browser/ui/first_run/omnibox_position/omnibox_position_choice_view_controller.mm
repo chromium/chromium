@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_view_controller.h"
 
+#import "base/ios/ios_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
@@ -18,6 +19,8 @@ namespace {
 
 /// Leading and trailing padding for the `addressBarView`.
 constexpr CGFloat kAddressViewHorizontalPadding = 11;
+/// The size of the logo image.
+const CGFloat kLogoSize = 36;
 
 }  // namespace
 
@@ -50,11 +53,20 @@ constexpr CGFloat kAddressViewHorizontalPadding = 11;
 
 - (void)viewDidLoad {
   CHECK(IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAny));
-  // TODO(crbug.com/1503638): Implement this and remove placeholder text.
   self.view.accessibilityIdentifier =
       first_run::kFirstRunOmniboxPositionChoiceScreenAccessibilityIdentifier;
 
-  self.bannerName = @"default_browser_screen_banner";
+  self.shouldHideBanner = YES;
+  self.usePromoStyleBackground = YES;
+
+  self.headerImageType = PromoStyleImageType::kImageWithShadow;
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  UIImage* logo = MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoSize));
+#else
+  UIImage* logo = CustomSymbolWithPointSize(kChromeProductSymbol, kLogoSize);
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  self.headerImage = logo;
 
   self.titleHorizontalMargin = 0;
   self.titleText = l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_TITLE);

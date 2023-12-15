@@ -52,6 +52,11 @@ enum class BannerImageSizeType {
 // When set to YES, the banner is hidden. Defaults to NO.
 @property(nonatomic, assign) BOOL shouldHideBanner;
 
+// When set to YES, use `PromoStyleBackgroundView` as background. Only available
+// with hidden banner. This value has to be set before the view is loaded.
+// Defaults to NO.
+@property(nonatomic, assign) BOOL usePromoStyleBackground;
+
 // The type of image to display in the header. This value has to be set before
 // the view is loaded. Defaults to kNone.
 // See `headerImage` to set the actual image.

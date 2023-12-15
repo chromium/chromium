@@ -14,7 +14,9 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_background_view.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
@@ -144,6 +146,15 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
   UIView* view = self.view;
   view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+
+  if (self.usePromoStyleBackground) {
+    CHECK(self.shouldHideBanner);
+    UIView* backgroundView = [[PromoStyleBackgroundView alloc] init];
+    backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    backgroundView.layer.zPosition = -1;
+    [view addSubview:backgroundView];
+    AddSameConstraints(view, backgroundView);
+  }
 
   // Create a layout guide for the margin between the subtitle and the screen-
   // specific content. A layout guide is needed because the margin scales with

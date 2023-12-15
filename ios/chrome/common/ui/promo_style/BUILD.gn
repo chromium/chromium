@@ -7,6 +7,8 @@ import("//build/config/ios/ios_sdk.gni")
 
 source_set("promo_style") {
   sources = [
+    "promo_style_background_view.h",
+    "promo_style_background_view.mm",
     "promo_style_view_controller.h",
     "promo_style_view_controller.mm",
     "promo_style_view_controller_delegate.h",
@@ -20,6 +22,8 @@ source_set("promo_style") {
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/promo_style/resources:promo_background_left",
+    "//ios/chrome/common/ui/promo_style/resources:promo_background_right",
     "//ios/chrome/common/ui/promo_style/resources:promo_style_avatar_circle",
     "//ios/chrome/common/ui/resources:help_icon",
     "//ios/chrome/common/ui/util",
