@@ -1230,14 +1230,23 @@
   <message name="IDS_SETTINGS_LARGE_MOUSE_CURSOR_LABEL" desc="Label for checkbox which enables showing a larger mouse cursor than normal.">
     Show large mouse cursor
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACE_TRACKING_LABEL" desc="Label for checkbox which enables controlling the mouse cursor and keyboard with face movements.">
-    Face tracking
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_LABEL" desc="Label for checkbox which enables controlling the mouse cursor and keyboard with face movements." translateable="false">
+    Face control
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACE_TRACKING_DESCRIPTION" desc="The description for the checkbox that enables controlling the mouse cursor and keyboard with face movements.">
-    Control your cursor and keyboard with face movements
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_DESCRIPTION" desc="The description for the checkbox that enables controlling the mouse cursor and keyboard with face movements." translateable="false">
+    Use face and gaze movement to control cursor and keyboard
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACE_TRACKING_SETTINGS" desc="Label for the option to configure the feature that enables controlling the mouse cursor and keyboard with face movements.">
-    Face tracking settings
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_LABEL" desc="Label for the option to configure the feature that enables controlling the mouse cursor and keyboard with face movements." translateable="false">
+    Cursor control
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_DESCRIPTION" desc="Label description for the option to configure the feature that enables controlling the mouse cursor and keyboard with face movements." translateable="false">
+    Cursor calibration and movement settings
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_SETTINGS_LABEL" desc="Label for the option to configure facial expressions for Face Gaze." translateable="false">
+    Facial expressions
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_SETTINGS_DESCRIPTION" desc="Label description for the option to configure facial expressions for Face Gaze." translateable="false">
+    Use facial expressions to click and trigger key presses
   </message>
   <message name="IDS_SETTINGS_LARGE_MOUSE_CURSOR_SIZE_LABEL" desc="Label for a slider which changes the size of large mouse cursor.">
     Cursor size

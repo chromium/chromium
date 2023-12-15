@@ -74,12 +74,20 @@
       sub-label="$i18n{accessibilityFaceGazeDescription}">
   </settings-toggle-button>
   <iron-collapse opened="[[prefs.settings.a11y.face_gaze.enabled.value]]">
-    <div class="sub-item">
-      <!-- TODO(b/299725221): Open the FaceGaze settings app from here -->
-      <cr-link-row id="faceGazeSettingsButton"
-          class="settings-box"
+    <div>
+      <!-- TODO(b/299725221): Open the FaceGaze cursor control settings -->
+      <cr-link-row id="faceGazeCursorControlButton"
+          class="sub-item"
           label="$i18n{accessibilityFaceGazeSettings}"
-          external>
+          sub-label="$i18n{accessibilityFaceGazeSettingsDescription}">
+      </cr-link-row>
+    </div>
+    <div>
+      <!-- TODO(b/299725221): Open the FaceGaze facial expressions settings -->
+      <cr-link-row id="faceGazeFacialExpressionsButton"
+          class="sub-item"
+          label="$i18n{accessibilityFaceGazeFacialExpressionsSettings}"
+          sub-label="$i18n{accessibilityFaceGazeFacialExpressionsSettingsDescription}">
       </cr-link-row>
     </div>
   </iron-collapse>

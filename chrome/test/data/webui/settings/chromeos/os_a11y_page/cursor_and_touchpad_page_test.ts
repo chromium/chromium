@@ -402,10 +402,15 @@ suite('<settings-cursor-and-touchpad-page>', () => {
         assert(faceGazeToggle);
         assertTrue(isVisible(faceGazeToggle));
 
-        const faceGazeSettingsButton =
-            page.shadowRoot!.querySelector('#faceGazeSettingsButton');
-        assert(faceGazeSettingsButton);
-        assertFalse(isVisible(faceGazeSettingsButton));
+        const faceGazeCursorControlButton =
+            page.shadowRoot!.querySelector('#faceGazeCursorControlButton');
+        assert(faceGazeCursorControlButton);
+        assertFalse(isVisible(faceGazeCursorControlButton));
+
+        const faceGazeFacialExpressionsButton =
+            page.shadowRoot!.querySelector('#faceGazeFacialExpressionsButton');
+        assert(faceGazeFacialExpressionsButton);
+        assertFalse(isVisible(faceGazeFacialExpressionsButton));
 
         assertFalse(faceGazeToggle.checked);
         assertFalse(page.prefs.settings.a11y.face_gaze.enabled.value);
@@ -415,6 +420,7 @@ suite('<settings-cursor-and-touchpad-page>', () => {
         flush();
         assertTrue(faceGazeToggle.checked);
         assertTrue(page.prefs.settings.a11y.face_gaze.enabled.value);
-        assertTrue(isVisible(faceGazeSettingsButton));
+        assertTrue(isVisible(faceGazeCursorControlButton));
+        assertTrue(isVisible(faceGazeFacialExpressionsButton));
       });
 });
