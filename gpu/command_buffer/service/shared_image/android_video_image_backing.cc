@@ -36,7 +36,8 @@ AndroidVideoImageBacking::AndroidVideoImageBacking(
           color_space,
           surface_origin,
           alpha_type,
-          (SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_GLES2),
+          (SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_GLES2_READ |
+           SHARED_IMAGE_USAGE_GLES2_WRITE),
           viz::SinglePlaneFormat::kRGBA_8888.EstimatedSizeInBytes(size),
           is_thread_safe,
           base::ScopedFD()) {}

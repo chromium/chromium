@@ -83,13 +83,6 @@ enum SharedImageUsage : uint32_t {
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };
 
-// Constant left in place while we transition the codebase to use GLES2_READ and
-// GLES2_WRITE.
-// TODO(crbug.com/1510440): Transition all usage of this constant and eliminate
-// the constant.
-inline constexpr uint32_t SHARED_IMAGE_USAGE_GLES2 =
-    SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
-
 // Returns true if usage is a valid client usage.
 GPU_EXPORT bool IsValidClientUsage(uint32_t usage);
 

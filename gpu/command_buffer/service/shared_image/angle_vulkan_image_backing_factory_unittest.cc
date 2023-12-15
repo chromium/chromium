@@ -34,9 +34,9 @@ namespace {
 constexpr GrSurfaceOrigin kSurfaceOrigin = kTopLeft_GrSurfaceOrigin;
 constexpr SkAlphaType kAlphaType = kPremul_SkAlphaType;
 constexpr auto kColorSpace = gfx::ColorSpace::CreateSRGB();
-constexpr uint32_t kUsage = SHARED_IMAGE_USAGE_DISPLAY_READ |
-                            SHARED_IMAGE_USAGE_RASTER |
-                            SHARED_IMAGE_USAGE_GLES2;
+constexpr uint32_t kUsage =
+    SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER |
+    SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
 
 base::NoDestructor<base::test::ScopedFeatureList> g_scoped_feature_list;
 

@@ -144,10 +144,11 @@ constexpr viz::SharedImageFormat kSupportedFormats[6]{
 // TODO(vikassoni): In future we will need to expose the set of formats and
 // constraints (e.g. max size) to the clients somehow that are available for
 // certain combinations of SharedImageUsage flags (e.g. when Vulkan is on,
-// SHARED_IMAGE_USAGE_GLES2 + SHARED_IMAGE_USAGE_DISPLAY_READ implies AHB, so
-// those restrictions apply, but that's decided on the service side). For now
-// getting supported format is a static mechanism like this. We probably need
-// something like gpu::Capabilities.texture_target_exception_list.
+// (SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE) +
+// SHARED_IMAGE_USAGE_DISPLAY_READ implies AHB, so those restrictions apply, but
+// that's decided on the service side). For now getting supported format is a
+// static mechanism like this. We probably need something like
+// gpu::Capabilities.texture_target_exception_list.
 bool AHardwareBufferSupportedFormat(viz::SharedImageFormat format) {
   return base::Contains(kSupportedFormats, format);
 }

@@ -132,7 +132,8 @@ class GLES2ExternalFrameBufferTest
     backing_factory_->CreateSharedImage(
         mailbox, format, gfx::Size(64, 64), gfx::ColorSpace::CreateSRGB(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SurfaceHandle(),
-        SHARED_IMAGE_USAGE_GLES2, "TestLabel");
+        SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE,
+        "TestLabel");
     return mailbox;
   }
 

@@ -368,7 +368,9 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_GLES2;
+  uint32_t usage = SHARED_IMAGE_USAGE_DISPLAY_READ |
+                   SHARED_IMAGE_USAGE_GLES2_READ |
+                   SHARED_IMAGE_USAGE_GLES2_WRITE;
 
   bool supported = backing_factory_->CanCreateSharedImage(
       usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
