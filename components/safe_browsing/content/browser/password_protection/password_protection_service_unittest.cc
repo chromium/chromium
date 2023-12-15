@@ -943,16 +943,8 @@ TEST_P(PasswordProtectionServiceBaseTest, TestNoRequestSentForAllowlistedURL) {
       ElementsAre(base::Bucket(4 /* MATCHED_ALLOWLIST */, 1)));
 }
 
-// crbug.com/1010007: crashes on win
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_TestNoRequestSentIfVerdictAlreadyCached \
-  DISABLED_TestNoRequestSentIfVerdictAlreadyCached
-#else
-#define MAYBE_TestNoRequestSentIfVerdictAlreadyCached \
-  TestNoRequestSentIfVerdictAlreadyCached
-#endif
 TEST_P(PasswordProtectionServiceBaseTest,
-       MAYBE_TestNoRequestSentIfVerdictAlreadyCached) {
+       TestNoRequestSentIfVerdictAlreadyCached) {
   histograms_.ExpectTotalCount(kPasswordOnFocusRequestOutcomeHistogram, 0);
   ReusedPasswordAccountType reused_password_account_type;
   reused_password_account_type.set_account_type(
@@ -970,6 +962,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   EXPECT_THAT(
       histograms_.GetAllSamples(kPasswordOnFocusRequestOutcomeHistogram),
       ElementsAre(base::Bucket(5 /* RESPONSE_ALREADY_CACHED */, 1)));
+  ASSERT_TRUE(password_protection_service_->latest_response());
   EXPECT_EQ(LoginReputationClientResponse::LOW_REPUTATION,
             password_protection_service_->latest_response()->verdict_type());
 }
