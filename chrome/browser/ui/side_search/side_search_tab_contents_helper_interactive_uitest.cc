@@ -52,6 +52,11 @@ class SideSearchSideContentsHelperBrowsertest : public InteractiveBrowserTest {
  public:
   // InProcessBrowserTest:
   void SetUp() override {
+    // TODO(crbug/1512129): Delete tests.
+    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+      GTEST_SKIP() << "Side search feature no longer in use";
+    }
+
     scoped_feature_list_.InitWithFeatures({features::kSideSearch}, {});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InProcessBrowserTest::SetUp();

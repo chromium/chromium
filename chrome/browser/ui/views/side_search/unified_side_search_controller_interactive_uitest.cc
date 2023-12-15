@@ -47,6 +47,11 @@
 class SideSearchV2Test : public SideSearchBrowserTest {
  public:
   void SetUp() override {
+    // TODO(crbug/1512129): Delete tests.
+    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+      GTEST_SKIP() << "Side search feature no longer in use";
+    }
+
     scoped_feature_list_.InitWithFeatures(
         {features::kSideSearch, features::kSearchWebInSidePanel}, {});
     SideSearchBrowserTest::SetUp();
@@ -877,6 +882,11 @@ class SideSearchIPHAndTutorialBrowserTest
   }
 
   void SetUp() override {
+    // TODO(crbug/1512129): Delete tests.
+    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+      GTEST_SKIP() << "Side search feature no longer in use";
+    }
+
     set_open_about_blank_on_browser_launch(true);
     InteractiveBrowserTestT::SetUp();
   }
@@ -1064,6 +1074,11 @@ class SideSearchAutoTriggeringBrowserTest
   }
 
   void SetUp() override {
+    // TODO(crbug/1512129): Delete tests.
+    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+      GTEST_SKIP() << "Side search feature no longer in use";
+    }
+
     set_open_about_blank_on_browser_launch(true);
     SideSearchFeatureEngagementTest::SetUp();
   }
@@ -1191,6 +1206,15 @@ class SideSearchPageActionLabelTriggerBrowserTest
         {feature_engagement::kIPHSideSearchPageActionLabelFeature,
          GetFeatureEngagementParams()},
     });
+  }
+
+  void SetUp() override {
+    // TODO(crbug/1512129): Delete tests.
+    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+      GTEST_SKIP() << "Side search feature no longer in use";
+    }
+
+    SideSearchFeatureEngagementTest::SetUp();
   }
 
  private:
