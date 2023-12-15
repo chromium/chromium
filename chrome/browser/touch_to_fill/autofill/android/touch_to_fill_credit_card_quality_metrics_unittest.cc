@@ -21,7 +21,7 @@ using ::testing::NiceMock;
 using ::testing::TestWithParam;
 
 struct TouchToFillForCreditCardsTestCase {
-  std::vector<ServerFieldType> field_types;
+  std::vector<FieldType> field_types;
   std::vector<bool> fields_have_autofilled_values;
   bool is_all_autofilled;
   bool is_all_accepted;
@@ -49,8 +49,7 @@ class TouchToFillForCreditCardsTest
   void TearDown() override { TearDownHelper(); }
 
   // Generates credit card's fields for testing by the fields' types given.
-  std::vector<FormFieldData> GetFields(
-      std::vector<ServerFieldType> field_types) {
+  std::vector<FormFieldData> GetFields(std::vector<FieldType> field_types) {
     std::vector<FormFieldData> fields_to_return;
     fields_to_return.reserve(field_types.size());
     for (const auto& type : field_types) {
@@ -84,7 +83,7 @@ class TouchToFillForCreditCardsTest
   void SetFieldsAutofilledValues(
       FormData& form,
       const std::vector<bool>& fields_have_autofilled_values,
-      const std::vector<ServerFieldType>& field_types) {
+      const std::vector<FieldType>& field_types) {
     ASSERT_EQ(form.fields.size(), fields_have_autofilled_values.size());
     ASSERT_EQ(form.fields.size(), field_types.size());
     for (size_t i = 0; i < fields_have_autofilled_values.size(); i++) {
