@@ -166,16 +166,6 @@ struct PartitionOptions {
   static constexpr auto kDisabled = EnableToggle::kDisabled;
   static constexpr auto kEnabled = EnableToggle::kEnabled;
 
-  // By default all allocations will be aligned to `kAlignment`,
-  // likely to be 8B or 16B depending on platforms and toolchains.
-  // AlignedAlloc() allows to enforce higher alignment.
-  // This option determines whether it is supported for the partition.
-  // Allowing AlignedAlloc() comes at a cost of disallowing extras in front
-  // of the allocation.
-  // TODO(bartekn): Remove. We no longer have a need for partitions that don't
-  // support aligned alloc.
-  AllowToggle aligned_alloc = kDisallowed;
-
   EnableToggle thread_cache = kDisabled;
   AllowToggle star_scan_quarantine = kDisallowed;
   EnableToggle backup_ref_ptr = kDisabled;
@@ -265,7 +255,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
     bool with_thread_cache = false;
 
-    bool allow_aligned_alloc = false;
 #if BUILDFLAG(PA_DCHECK_IS_ON)
     bool use_cookie = false;
 #else
@@ -299,6 +288,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
 #if PA_CONFIG(EXTRAS_REQUIRED)
     uint32_t extras_size = 0;
+    // TODO(bartekn): Remove, as we no longer support non-zero offsets.
     uint32_t extras_offset = 0;
 #else
     // Teach the compiler that code can be optimized in builds that use no
@@ -2319,7 +2309,6 @@ PA_ALWAYS_INLINE void* PartitionRoot::AlignedAllocInline(
   // allocation from the beginning of the slot, thus messing up alignment.
   // Extras after the allocation are acceptable, but they have to be taken into
   // account in the request size calculation to avoid crbug.com/1185484.
-  PA_DCHECK(settings.allow_aligned_alloc);
   PA_DCHECK(!settings.extras_offset);
   // This is mandated by |posix_memalign()|, so should never fire.
   PA_CHECK(std::has_single_bit(alignment));

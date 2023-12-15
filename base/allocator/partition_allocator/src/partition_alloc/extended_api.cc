@@ -40,14 +40,8 @@ void EnablePartitionAllocThreadCacheForRootIfDisabled(PartitionRoot* root) {
 void DisablePartitionAllocThreadCacheForProcess() {
   PA_CHECK(allocator_shim::internal::PartitionAllocMalloc::
                AllocatorConfigurationFinalized());
-  auto* regular_allocator =
-      allocator_shim::internal::PartitionAllocMalloc::Allocator();
-  auto* aligned_allocator =
-      allocator_shim::internal::PartitionAllocMalloc::AlignedAllocator();
-  DisableThreadCacheForRootIfEnabled(regular_allocator);
-  if (aligned_allocator != regular_allocator) {
-    DisableThreadCacheForRootIfEnabled(aligned_allocator);
-  }
+  DisableThreadCacheForRootIfEnabled(
+      allocator_shim::internal::PartitionAllocMalloc::Allocator());
   DisableThreadCacheForRootIfEnabled(
       allocator_shim::internal::PartitionAllocMalloc::OriginalAllocator());
 }

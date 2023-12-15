@@ -398,6 +398,7 @@ static_assert(kAlignment % alignof(PartitionRefCount) == 0,
 // Allocate extra space for the reference count to satisfy the alignment
 // requirement.
 static constexpr size_t kInSlotRefCountBufferSize = sizeof(PartitionRefCount);
+// TODO(bartekn): Remove, as we no longer support non-zero offsets.
 constexpr size_t kPartitionRefCountOffsetAdjustment = 0;
 constexpr size_t kPartitionPastAllocationAdjustment = 0;
 

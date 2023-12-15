@@ -184,9 +184,6 @@ TEST(PartitionAllocAsMalloc, Alignment) {
   EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(
                     PartitionAllocMalloc::OriginalAllocator()) %
                     alignof(partition_alloc::PartitionRoot));
-  EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(
-                    PartitionAllocMalloc::AlignedAllocator()) %
-                    alignof(partition_alloc::PartitionRoot));
 }
 
 #if BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

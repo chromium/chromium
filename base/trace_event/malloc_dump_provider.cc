@@ -133,12 +133,6 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
     original_allocator->DumpStats("original", is_light_dump,
                                   &partition_stats_dumper);
   }
-  auto* aligned_allocator =
-      allocator_shim::internal::PartitionAllocMalloc::AlignedAllocator();
-  if (aligned_allocator != allocator) {
-    aligned_allocator->DumpStats("aligned", is_light_dump,
-                                 &partition_stats_dumper);
-  }
   auto& nonscannable_allocator =
       allocator_shim::NonScannableAllocator::Instance();
   if (auto* root = nonscannable_allocator.root())

@@ -379,7 +379,6 @@ class PartitionAllocTest
     }
 
     PartitionOptions pkey_opts = GetCommonPartitionOptions();
-    pkey_opts.aligned_alloc = PartitionOptions::kAllowed;
     pkey_opts.thread_isolation = ThreadIsolationOption(pkey_);
     // We always want to have a pkey allocator initialized to make sure that the
     // other pools still work. As part of the initializition, we tag some memory
@@ -400,7 +399,6 @@ class PartitionAllocTest
 #endif  // BUILDFLAG(ENABLE_PKEYS)
 
     PartitionOptions opts = GetCommonPartitionOptions();
-    opts.aligned_alloc = PartitionOptions::kAllowed;
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     opts.backup_ref_ptr = enable_backup_ref_ptr;
 #endif
@@ -418,14 +416,6 @@ class PartitionAllocTest
 #endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
     InitializeTestRoot(
         allocator.root(), opts,
-        PartitionTestOptions{.use_memory_reclaimer = true,
-                             .uncap_empty_slot_span_memory = true,
-                             .set_bucket_distribution = true});
-
-    PartitionOptions aligned_opts = GetCommonPartitionOptions();
-    aligned_opts.aligned_alloc = PartitionOptions::kAllowed;
-    InitializeTestRoot(
-        aligned_allocator.root(), aligned_opts,
         PartitionTestOptions{.use_memory_reclaimer = true,
                              .uncap_empty_slot_span_memory = true,
                              .set_bucket_distribution = true});
@@ -635,9 +625,6 @@ class PartitionAllocTest
   bool UseBRPPool() const { return allocator.root()->brp_enabled(); }
 
   partition_alloc::PartitionAllocatorForTesting allocator;
-  // TODO(bartekn): Remove. We no longer have partitions that don't support
-  // aligned alloc, so no need for a special aligned allocator.
-  partition_alloc::PartitionAllocatorForTesting aligned_allocator;
 #if BUILDFLAG(ENABLE_PKEYS)
   partition_alloc::PartitionAllocatorForTesting pkey_allocator;
 #endif
@@ -3852,7 +3839,6 @@ TEST_P(PartitionAllocTest, AlignedAllocations) {
   for (size_t alloc_size : alloc_sizes) {
     for (size_t alignment = 1; alignment <= kMaxSupportedAlignment;
          alignment <<= 1) {
-      VerifyAlignment(aligned_allocator.root(), alloc_size, alignment);
       VerifyAlignment(allocator.root(), alloc_size, alignment);
     }
   }

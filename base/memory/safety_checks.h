@@ -119,11 +119,6 @@ ALWAYS_INLINE partition_alloc::PartitionRoot*
 GetPartitionRootForMemorySafetyCheckedAllocation() {
   return allocator_shim::internal::PartitionAllocMalloc::Allocator();
 }
-
-ALWAYS_INLINE partition_alloc::PartitionRoot*
-GetAlignedPartitionRootForMemorySafetyCheckedAllocation() {
-  return allocator_shim::internal::PartitionAllocMalloc::AlignedAllocator();
-}
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 template <MemorySafetyCheck checks>
@@ -145,7 +140,7 @@ NOINLINE void* HandleMemorySafetyCheckedOperatorNew(
     std::align_val_t alignment) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if constexpr (ShouldUsePartitionAlloc(checks)) {
-    return GetAlignedPartitionRootForMemorySafetyCheckedAllocation()
+    return GetPartitionRootForMemorySafetyCheckedAllocation()
         ->AlignedAlloc<GetAllocFlags(checks)>(static_cast<size_t>(alignment),
                                               count);
   } else
@@ -174,7 +169,7 @@ NOINLINE void HandleMemorySafetyCheckedOperatorDelete(
     std::align_val_t alignment) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if constexpr (ShouldUsePartitionAlloc(checks)) {
-    GetAlignedPartitionRootForMemorySafetyCheckedAllocation()
+    GetPartitionRootForMemorySafetyCheckedAllocation()
         ->Free<GetFreeFlags(checks)>(ptr);
   } else
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

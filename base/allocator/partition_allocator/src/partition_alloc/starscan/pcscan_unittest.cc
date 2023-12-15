@@ -53,7 +53,6 @@ class PartitionAllocPCScanTestBase : public testing::Test {
   PartitionAllocPCScanTestBase()
       : allocator_([]() {
           PartitionOptions opts;
-          opts.aligned_alloc = PartitionOptions::kAllowed;
           opts.star_scan_quarantine = PartitionOptions::kAllowed;
           opts.memory_tagging = {
               .enabled = base::CPU::GetInstanceNoAllocation().has_mte()

@@ -23,8 +23,6 @@ class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) PartitionAllocMalloc {
   static partition_alloc::PartitionRoot* Allocator();
   // May return |nullptr|, will never return the same pointer as |Allocator()|.
   static partition_alloc::PartitionRoot* OriginalAllocator();
-  // May return the same pointer as |Allocator()|.
-  static partition_alloc::PartitionRoot* AlignedAllocator();
 };
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)

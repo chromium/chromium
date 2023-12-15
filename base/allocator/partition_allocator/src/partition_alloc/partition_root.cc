@@ -972,8 +972,6 @@ void PartitionRoot::Init(PartitionOptions opts) {
     ReserveBackupRefPtrGuardRegionIfNeeded();
 #endif
 
-    settings.allow_aligned_alloc =
-        opts.aligned_alloc == PartitionOptions::kAllowed;
 #if BUILDFLAG(PA_DCHECK_IS_ON)
     settings.use_cookie = true;
 #else
@@ -1064,10 +1062,9 @@ void PartitionRoot::Init(PartitionOptions opts) {
     }
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
 
-    // Re-confirm the above PA_CHECKs, by making sure there are no
-    // pre-allocation extras when AlignedAlloc is allowed. Post-allocation
-    // extras are ok.
-    PA_CHECK(!settings.allow_aligned_alloc || !settings.extras_offset);
+    // Make sure there are no pre-allocation extras as they'd interfere with
+    // AlignedAlloc. Post-allocation extras are ok.
+    PA_CHECK(!settings.extras_offset);
 
     settings.quarantine_mode =
 #if BUILDFLAG(USE_STARSCAN)
