@@ -143,6 +143,15 @@ bool ValidateLeakyReluAttributes(const mojom::LeakyReluPtr& leaky_relu) {
   return true;
 }
 
+bool ValidateSoftplusAttributes(const mojom::SoftplusPtr& softplus) {
+  if (std::isnan(softplus->steepness)) {
+    // The value of steepness should not be NAN.
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateActivation(const mojom::ActivationPtr& activation) {
   switch (activation->which()) {
     case mojom::Activation::Tag::kClamp:
@@ -151,6 +160,8 @@ bool ValidateActivation(const mojom::ActivationPtr& activation) {
       return ValidateEluAttributes(activation->get_elu());
     case mojom::Activation::Tag::kLeakyRelu:
       return ValidateLeakyReluAttributes(activation->get_leaky_relu());
+    case mojom::Activation::Tag::kSoftplus:
+      return ValidateSoftplusAttributes(activation->get_softplus());
     case mojom::Activation::Tag::kRelu:
     case mojom::Activation::Tag::kSigmoid:
     case mojom::Activation::Tag::kSoftmax:
@@ -1063,6 +1074,19 @@ bool ValidateSoftmax(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateSoftplus(const IdToOperandMap& id_to_operand_map,
+                      const mojom::SoftplusPtr& softplus) {
+  if (!ValidateUnaryOperation(id_to_operand_map, softplus,
+                              DataTypeConstraint::kFloat)) {
+    return false;
+  }
+  if (!ValidateSoftplusAttributes(softplus)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateSplit(const IdToOperandMap& id_to_operand_map,
                    const mojom::SplitPtr& split) {
   auto* input = GetMojoOperand(id_to_operand_map, split->input_operand_id);
@@ -1261,6 +1285,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
                                     DataTypeConstraint::kFloat);
     case mojom::Operation::Tag::kSoftmax:
       return ValidateSoftmax(id_to_operand_map, operation->get_softmax());
+    case mojom::Operation::Tag::kSoftplus:
+      return ValidateSoftplus(id_to_operand_map, operation->get_softplus());
     case mojom::Operation::Tag::kSplit:
       return ValidateSplit(id_to_operand_map, operation->get_split());
     case mojom::Operation::Tag::kTanh:

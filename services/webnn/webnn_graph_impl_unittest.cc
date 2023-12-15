@@ -414,6 +414,14 @@ TEST_F(WebNNGraphImplTest, ClampTest) {
   }
 }
 
+struct Activation {
+  mojom::Activation::Tag kind;
+  absl::optional<ClampTester::ClampAttributes> clamp_attributes;
+  absl::optional<float> elu_alpha;
+  absl::optional<float> leaky_relu_alpha;
+  absl::optional<float> softplus_steepness;
+};
+
 struct BatchNormalizationTester {
   OperandInfo input;
   OperandInfo mean;
@@ -425,10 +433,7 @@ struct BatchNormalizationTester {
     absl::optional<uint64_t> bias_operand_id;
     uint32_t axis = 1;
     float epsilon = 1e-5;
-    absl::optional<mojom::Activation::Tag> activation;
-    absl::optional<ClampTester::ClampAttributes> clamp_attributes;
-    absl::optional<float> elu_alpha;
-    absl::optional<float> leaky_relu_alpha;
+    absl::optional<Activation> activation;
   };
   BatchNormalizationAttributes attributes;
   OperandInfo output;
@@ -514,10 +519,12 @@ TEST_F(WebNNGraphImplTest, BatchNormalizationTest) {
         .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
         .variance = {.type = mojom::Operand::DataType::kFloat32,
                      .dimensions = {2}},
-        .attributes = {.activation = mojom::Activation::Tag::kClamp,
-                       .clamp_attributes =
-                           ClampTester::ClampAttributes{.min_value = 1.0,
-                                                        .max_value = 6.0}},
+        .attributes = {.activation =
+                           Activation{
+                               .kind = mojom::Activation::Tag::kClamp,
+                               .clamp_attributes =
+                                   ClampTester::ClampAttributes{
+                                       .min_value = 1.0, .max_value = 6.0}}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 3}},
         .expected = true}
@@ -531,8 +538,9 @@ TEST_F(WebNNGraphImplTest, BatchNormalizationTest) {
         .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
         .variance = {.type = mojom::Operand::DataType::kFloat32,
                      .dimensions = {2}},
-        .attributes = {.activation = mojom::Activation::Tag::kElu,
-                       .elu_alpha = 1.0},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kElu,
+                                      .elu_alpha = 1.0}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 3}},
         .expected = true}
@@ -546,8 +554,10 @@ TEST_F(WebNNGraphImplTest, BatchNormalizationTest) {
         .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
         .variance = {.type = mojom::Operand::DataType::kFloat32,
                      .dimensions = {2}},
-        .attributes = {.activation = mojom::Activation::Tag::kLeakyRelu,
-                       .leaky_relu_alpha = 0.01},
+        .attributes = {.activation =
+                           Activation{
+                               .kind = mojom::Activation::Tag::kLeakyRelu,
+                               .leaky_relu_alpha = 0.01}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 3}},
         .expected = true}
@@ -561,7 +571,8 @@ TEST_F(WebNNGraphImplTest, BatchNormalizationTest) {
         .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
         .variance = {.type = mojom::Operand::DataType::kFloat32,
                      .dimensions = {2}},
-        .attributes = {.activation = mojom::Activation::Tag::kRelu},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kRelu}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 3}},
         .expected = true}
@@ -575,7 +586,9 @@ TEST_F(WebNNGraphImplTest, BatchNormalizationTest) {
         .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
         .variance = {.type = mojom::Operand::DataType::kFloat32,
                      .dimensions = {2}},
-        .attributes = {.activation = mojom::Activation::Tag::kSigmoid},
+        .attributes = {.activation =
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSigmoid}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 3}},
         .expected = true}
@@ -589,7 +602,25 @@ TEST_F(WebNNGraphImplTest, BatchNormalizationTest) {
         .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
         .variance = {.type = mojom::Operand::DataType::kFloat32,
                      .dimensions = {2}},
-        .attributes = {.activation = mojom::Activation::Tag::kSoftmax},
+        .attributes = {.activation =
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSoftmax}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test BatchNormalization with softplus activation.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kSoftplus,
+                                      .softplus_steepness = 1.0}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 3}},
         .expected = true}
@@ -603,7 +634,8 @@ TEST_F(WebNNGraphImplTest, BatchNormalizationTest) {
         .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
         .variance = {.type = mojom::Operand::DataType::kFloat32,
                      .dimensions = {2}},
-        .attributes = {.activation = mojom::Activation::Tag::kTanh},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kTanh}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 3}},
         .expected = true}
@@ -617,8 +649,9 @@ TEST_F(WebNNGraphImplTest, BatchNormalizationTest) {
         .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
         .variance = {.type = mojom::Operand::DataType::kFloat32,
                      .dimensions = {2}},
-        .attributes = {.activation = mojom::Activation::Tag::kElu,
-                       .elu_alpha = -1.0},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kElu,
+                                      .elu_alpha = -1.0}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 3}},
         .expected = false}
@@ -1008,10 +1041,7 @@ struct Conv2dTester {
     mojom::InputOperandLayout input_layout =
         mojom::InputOperandLayout::kChannelsFirst;
     absl::optional<OperandInfo> bias;
-    absl::optional<mojom::Activation::Tag> activation;
-    absl::optional<ClampTester::ClampAttributes> clamp_attributes;
-    absl::optional<float> elu_alpha;
-    absl::optional<float> leaky_relu_alpha;
+    absl::optional<Activation> activation;
   };
   Conv2dAttributes attributes;
   OperandInfo output;
@@ -1108,31 +1138,36 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   }
   {
     // Test conv2d with clamp activation.
-    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
-                 .input = {.type = mojom::Operand::DataType::kFloat32,
-                           .dimensions = {1, 1, 5, 5}},
-                 .filter = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .attributes = {.activation = mojom::Activation::Tag::kClamp,
-                                .clamp_attributes =
-                                    ClampTester::ClampAttributes{
-                                        .min_value = 1.0, .max_value = 6.0}},
-                 .output = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .expected = true}
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{
+                               .kind = mojom::Activation::Tag::kClamp,
+                               .clamp_attributes =
+                                   ClampTester::ClampAttributes{
+                                       .min_value = 1.0, .max_value = 6.0}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .expected = true}
         .Test();
   }
   {
     // Test conv2d with elu activation.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
-                           .dimensions = {1, 1, 5, 5}},
-                 .filter = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .attributes = {.activation = mojom::Activation::Tag::kElu,
-                                .elu_alpha = 1.0},
-                 .output = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .expected = true}
+    Conv2dTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kElu,
+                                      .elu_alpha = 1.0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .expected = true}
         .Test();
   }
   {
@@ -1142,8 +1177,10 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
                   .dimensions = {1, 1, 5, 5}},
         .filter = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
-        .attributes = {.activation = mojom::Activation::Tag::kLeakyRelu,
-                       .leaky_relu_alpha = 0.01},
+        .attributes = {.activation =
+                           Activation{
+                               .kind = mojom::Activation::Tag::kLeakyRelu,
+                               .leaky_relu_alpha = 0.01}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .expected = true}
@@ -1151,67 +1188,95 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   }
   {
     // Test conv2d with relu activation.
-    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
-                 .input = {.type = mojom::Operand::DataType::kFloat32,
-                           .dimensions = {1, 1, 5, 5}},
-                 .filter = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .attributes = {.activation = mojom::Activation::Tag::kRelu},
-                 .output = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .expected = true}
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kRelu}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .expected = true}
         .Test();
   }
   {
     // Test conv2d with sigmoid activation.
-    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
-                 .input = {.type = mojom::Operand::DataType::kFloat32,
-                           .dimensions = {1, 1, 5, 5}},
-                 .filter = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .attributes = {.activation = mojom::Activation::Tag::kSigmoid},
-                 .output = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .expected = true}
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSigmoid}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .expected = true}
         .Test();
   }
   {
     // Test conv2d with softmax activation.
-    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
-                 .input = {.type = mojom::Operand::DataType::kFloat32,
-                           .dimensions = {1, 1, 5, 5}},
-                 .filter = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .attributes = {.activation = mojom::Activation::Tag::kSoftmax},
-                 .output = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .expected = true}
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSoftmax}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test conv2d with softplus activation.
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kSoftplus,
+                                      .softplus_steepness = 1.5}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .expected = true}
         .Test();
   }
   {
     // Test conv2d with tanh activation.
-    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
-                 .input = {.type = mojom::Operand::DataType::kFloat32,
-                           .dimensions = {1, 1, 5, 5}},
-                 .filter = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .attributes = {.activation = mojom::Activation::Tag::kTanh},
-                 .output = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .expected = true}
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kTanh}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .expected = true}
         .Test();
   }
   {
     // Test the invalid graph when elu activation has alpha < 0.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
-                           .dimensions = {1, 1, 5, 5}},
-                 .filter = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .attributes = {.activation = mojom::Activation::Tag::kElu,
-                                .elu_alpha = -1.0},
-                 .output = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .expected = false}
+    Conv2dTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kElu,
+                                      .elu_alpha = -1.0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .expected = false}
         .Test();
   }
   {
@@ -1301,18 +1366,21 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   }
   {
     // Test the invalid graph when the max value is less than the min value.
-    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
-                 .input = {.type = mojom::Operand::DataType::kFloat32,
-                           .dimensions = {1, 1, 5, 5}},
-                 .filter = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .attributes = {.activation = mojom::Activation::Tag::kClamp,
-                                .clamp_attributes =
-                                    ClampTester::ClampAttributes{
-                                        .min_value = 6.0, .max_value = 1.0}},
-                 .output = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .expected = false}
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{
+                               .kind = mojom::Activation::Tag::kClamp,
+                               .clamp_attributes =
+                                   ClampTester::ClampAttributes{
+                                       .min_value = 6.0, .max_value = 1.0}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .expected = false}
         .Test();
   }
   {
@@ -1451,70 +1519,99 @@ TEST_F(WebNNGraphImplTest, ConvTranspose2dTest) {
   }
   {
     // Test convTranspose2d with clamp activation.
-    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
-                 .input = {.type = mojom::Operand::DataType::kFloat32,
-                           .dimensions = {1, 1, 3, 3}},
-                 .filter = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .attributes = {.activation = mojom::Activation::Tag::kClamp,
-                                .clamp_attributes =
-                                    ClampTester::ClampAttributes{
-                                        .min_value = 1.0, .max_value = 6.0}},
-                 .output = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 5, 5}},
-                 .expected = true}
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kTransposed,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{
+                               .kind = mojom::Activation::Tag::kClamp,
+                               .clamp_attributes =
+                                   ClampTester::ClampAttributes{
+                                       .min_value = 1.0, .max_value = 6.0}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5}},
+        .expected = true}
         .Test();
   }
   {
     // Test convTranspose2d with relu activation.
-    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
-                 .input = {.type = mojom::Operand::DataType::kFloat32,
-                           .dimensions = {1, 1, 3, 3}},
-                 .filter = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .attributes = {.activation = mojom::Activation::Tag::kRelu},
-                 .output = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 5, 5}},
-                 .expected = true}
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kTransposed,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kRelu}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5}},
+        .expected = true}
         .Test();
   }
   {
     // Test convTranspose2d with sigmoid activation.
-    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
-                 .input = {.type = mojom::Operand::DataType::kFloat32,
-                           .dimensions = {1, 1, 3, 3}},
-                 .filter = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .attributes = {.activation = mojom::Activation::Tag::kSigmoid},
-                 .output = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 5, 5}},
-                 .expected = true}
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kTransposed,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSigmoid}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5}},
+        .expected = true}
         .Test();
   }
   {
     // Test convTranspose2d with softmax activation.
-    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
-                 .input = {.type = mojom::Operand::DataType::kFloat32,
-                           .dimensions = {1, 1, 3, 3}},
-                 .filter = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .attributes = {.activation = mojom::Activation::Tag::kSoftmax},
-                 .output = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 5, 5}},
-                 .expected = true}
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kTransposed,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSoftmax}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test convTranspose2d with softplus activation.
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kTransposed,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kSoftplus,
+                                      .softplus_steepness = 1.5}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5}},
+        .expected = true}
         .Test();
   }
   {
     // Test convTranspose2d with tanh activation.
-    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
-                 .input = {.type = mojom::Operand::DataType::kFloat32,
-                           .dimensions = {1, 1, 3, 3}},
-                 .filter = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .attributes = {.activation = mojom::Activation::Tag::kTanh},
-                 .output = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 5, 5}},
-                 .expected = true}
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kTransposed,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kTanh}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5}},
+        .expected = true}
         .Test();
   }
   {
@@ -1630,18 +1727,21 @@ TEST_F(WebNNGraphImplTest, ConvTranspose2dTest) {
   }
   {
     // Test the invalid graph when the max value is less than the min value.
-    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
-                 .input = {.type = mojom::Operand::DataType::kFloat32,
-                           .dimensions = {1, 1, 3, 3}},
-                 .filter = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
-                 .attributes = {.activation = mojom::Activation::Tag::kClamp,
-                                .clamp_attributes =
-                                    ClampTester::ClampAttributes{
-                                        .min_value = 6.0, .max_value = 1.0}},
-                 .output = {.type = mojom::Operand::DataType::kFloat32,
-                            .dimensions = {1, 1, 5, 5}},
-                 .expected = false}
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kTransposed,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{
+                               .kind = mojom::Activation::Tag::kClamp,
+                               .clamp_attributes =
+                                   ClampTester::ClampAttributes{
+                                       .min_value = 6.0, .max_value = 1.0}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5}},
+        .expected = false}
         .Test();
   }
   {
@@ -4416,6 +4516,84 @@ TEST_F(WebNNGraphImplTest, SoftmaxTest) {
                              .dimensions = {2, 5}},
                   .expected = false}
         .Test();
+  }
+}
+
+struct SoftplusTester {
+  OperandInfo input;
+  OperandInfo output;
+  float steepness = 1.0;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildSoftplus(input_operand_id, output_operand_id, steepness);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, SoftplusTest) {
+  {
+    // Test softplus operator with `steepness` = 1.5.
+    SoftplusTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 2}},
+                   .output = {.type = mojom::Operand::DataType::kFloat32,
+                              .dimensions = {2, 2}},
+                   .steepness = 1.5,
+                   .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph for invalid data type.
+    SoftplusTester{.input = {.type = mojom::Operand::DataType::kInt32,
+                             .dimensions = {4, 2}},
+                   .output = {.type = mojom::Operand::DataType::kInt32,
+                              .dimensions = {4, 2}},
+                   .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for `steepness` is NAN.
+    SoftplusTester{.input = {.type = mojom::Operand::DataType::kFloat16,
+                             .dimensions = {4, 2}},
+                   .output = {.type = mojom::Operand::DataType::kFloat16,
+                              .dimensions = {4, 2}},
+                   .steepness = NAN,
+                   .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the output shapes are not expected.
+    SoftplusTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {4, 2}},
+                   .output = {.type = mojom::Operand::DataType::kFloat32,
+                              .dimensions = {2}},
+                   .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    SoftplusTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 5}},
+                   .output = {.type = mojom::Operand::DataType::kFloat16,
+                              .dimensions = {2, 5}},
+                   .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for input operand == output operand.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {4, 6}, mojom::Operand::DataType::kFloat32);
+
+    builder.BuildSoftplus(input_operand_id, input_operand_id,
+                          /*steepness*/ 1.0);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), false);
   }
 }
 

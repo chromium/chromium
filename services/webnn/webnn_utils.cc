@@ -58,6 +58,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return "slice";
     case mojom::Operation::Tag::kSoftmax:
       return "softmax";
+    case mojom::Operation::Tag::kSoftplus:
+      return "softplus";
     case mojom::Operation::Tag::kSplit:
       return "split";
     case mojom::Operation::Tag::kTanh:

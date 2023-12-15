@@ -401,6 +401,14 @@ struct ClampAttributes {
   float max_value;
 };
 
+struct Activation {
+  mojom::Activation::Tag kind;
+  absl::optional<ClampAttributes> clamp_attributes;
+  absl::optional<float> elu_alpha;
+  absl::optional<float> leaky_relu_alpha;
+  absl::optional<float> softplus_steepness;
+};
+
 template <typename T>
 struct BatchNormalizationTester {
   OperandInfo<T> input;
@@ -413,10 +421,7 @@ struct BatchNormalizationTester {
     absl::optional<uint64_t> bias_operand_id;
     uint32_t axis = 1;
     float epsilon = 1e-5;
-    absl::optional<mojom::Activation::Tag> activation;
-    absl::optional<ClampAttributes> clamp_attributes;
-    absl::optional<float> elu_alpha;
-    absl::optional<float> leaky_relu_alpha;
+    absl::optional<Activation> activation;
   };
   BatchNormalizationAttributes attributes;
   OperandInfo<float> output;
@@ -518,11 +523,40 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
         .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
                                    .dimensions = {2},
                                    .values = {0, 1}},
-        .attributes = {.activation = mojom::Activation::Tag::kRelu},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kRelu}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 1, 3},
                    .values = {0, 0, 0.9999950000374997, 0, 1,
                               2.224740788929097}}}
+        .Test();
+  }
+  {
+    // Test batchNormalization with 4-D input with activation = softplus.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {-1, 0, 1, 2, 3, 4}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {0, 3}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1.0, 1.5}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2},
+                                    .values = {1.0, 1.5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {0, 1}},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kSoftplus,
+                                      .softplus_steepness = 1.2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {0.2194032134850967, 0.5776226504666211,
+                              1.2193982135225965, 0.47280567014419334,
+                              1.219402056115026, 2.2805572041114077}}}
         .Test();
   }
   {
@@ -621,10 +655,7 @@ struct Conv2dTester {
     mojom::InputOperandLayout input_layout =
         mojom::InputOperandLayout::kChannelsFirst;
     absl::optional<OperandInfo<T>> bias;
-    absl::optional<mojom::Activation::Tag> activation;
-    absl::optional<ClampAttributes> clamp_attributes;
-    absl::optional<float> elu_alpha;
-    absl::optional<float> leaky_relu_alpha;
+    absl::optional<Activation> activation;
   };
   Conv2dAttributes attributes;
   OperandInfo<float> output;
@@ -798,8 +829,9 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                                .type = mojom::Operand::DataType::kFloat32,
                                .dimensions = {1},
                                .values = {-5}},
-                       .activation = mojom::Activation::Tag::kElu,
-                       .elu_alpha = 0.8},
+                       .activation =
+                           Activation{.kind = mojom::Activation::Tag::kElu,
+                                      .elu_alpha = 0.8}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 3, 3},
                    .values = {-0.7946096424007316, -0.7853474888890126,
@@ -823,8 +855,10 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                                .type = mojom::Operand::DataType::kFloat32,
                                .dimensions = {1},
                                .values = {-60}},
-                       .activation = mojom::Activation::Tag::kLeakyRelu,
-                       .leaky_relu_alpha = 0.02},
+                       .activation =
+                           Activation{
+                               .kind = mojom::Activation::Tag::kLeakyRelu,
+                               .leaky_relu_alpha = 0.02}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 2, 2},
                    .values = {-0.3, -0.12, 21, 30}}}
@@ -849,7 +883,8 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                                .type = mojom::Operand::DataType::kFloat32,
                                .dimensions = {1},
                                .values = {-100}},
-                       .activation = mojom::Activation::Tag::kRelu},
+                       .activation =
+                           Activation{.kind = mojom::Activation::Tag::kRelu}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 5, 5, 1},
                    .values = {0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
@@ -876,7 +911,8 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                                .type = mojom::Operand::DataType::kFloat16,
                                .dimensions = {1},
                                .values = Float16FromFloat32({-100})},
-                       .activation = mojom::Activation::Tag::kRelu},
+                       .activation =
+                           Activation{.kind = mojom::Activation::Tag::kRelu}},
         .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 5, 5, 1},
                    .values = {0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
@@ -907,7 +943,9 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                               0.9849002194630809, 0.4281076188358701}},
         .attributes = {.input_layout =
                            mojom::InputOperandLayout::kChannelsFirst,
-                       .activation = mojom::Activation::Tag::kSigmoid},
+                       .activation =
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSigmoid}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {2, 3, 2, 2},
                    .values = {0.7077627182006836, 0.6772933602333069,
@@ -924,6 +962,33 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                               0.7747598886489868, 0.7273134589195251}}}
         .Test();
   }
+  // Test conv2d with NCHW layout, float 32 data type, bias and fusing with
+  // softplus activation.
+  {
+    Conv2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3},
+                  .values = {0, 1, 2, 3, 4, 5, 6, 7, 8}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 1, 1},
+                   .values = {1}},
+        .attributes = {.bias =
+                           OperandInfo<float>{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1},
+                               .values = {-2}},
+                       .activation =
+                           Activation{.kind = mojom::Activation::Tag::kSoftplus,
+                                      .softplus_steepness = 1.0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = {0.1269280110429726, 0.31326168751822286,
+                              0.6931471805599453, 1.3132616875182228,
+                              2.1269280110429727, 3.048587351573742,
+                              4.0181499279178094, 5.006715348489118,
+                              6.00247568513773}}}
+        .Test();
+  }
   // Test conv2d with NCHW layout, fusing with tanh activation.
   {
     Conv2dTester<float>{
@@ -937,7 +1002,8 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
         .attributes = {.padding = {1, 1, 1, 1},
                        .input_layout =
                            mojom::InputOperandLayout::kChannelsFirst,
-                       .activation = mojom::Activation::Tag::kTanh},
+                       .activation =
+                           Activation{.kind = mojom::Activation::Tag::kTanh}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 5, 5},
                    .values = {0.5370495669980353, 0.7818063576087741,
@@ -1126,7 +1192,8 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConvTranspose2d) {
                                .type = mojom::Operand::DataType::kFloat16,
                                .dimensions = {1},
                                .values = Float16FromFloat32({-5})},
-                       .activation = mojom::Activation::Tag::kRelu},
+                       .activation =
+                           Activation{.kind = mojom::Activation::Tag::kRelu}},
         .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 1, 3, 3},
                    .values = {0., 0., 0., 0., 0., 1., 0., 7., 4.}}}
@@ -2943,8 +3010,10 @@ struct UnaryOperatorTester {
   absl::optional<float> clamp_max_value;
   absl::optional<float> elu_alpha;
   absl::optional<float> leaky_relu_alpha;
+  absl::optional<float> softplus_steepness;
   OperandInfo<float> output;
-  void Test() {
+  void Test(BuildAndComputeExpectation expectation =
+                BuildAndComputeExpectation::kSuccess) {
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
     uint64_t input_operand_id =
@@ -2977,6 +3046,11 @@ struct UnaryOperatorTester {
       case mojom::Operation::Tag::kSoftmax:
         builder.BuildSoftmax(input_operand_id, output_operand_id);
         break;
+      case mojom::Operation::Tag::kSoftplus:
+        CHECK(softplus_steepness);
+        builder.BuildSoftplus(input_operand_id, output_operand_id,
+                              softplus_steepness.value());
+        break;
       case mojom::Operation::Tag::kTanh:
         builder.BuildTanh(input_operand_id, output_operand_id);
         break;
@@ -2989,9 +3063,11 @@ struct UnaryOperatorTester {
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
     BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
-                    named_outputs);
+                    named_outputs, expectation);
 
-    VerifyIsEqual(std::move(named_outputs["output"]), output);
+    if (expectation == BuildAndComputeExpectation::kSuccess) {
+      VerifyIsEqual(std::move(named_outputs["output"]), output);
+    }
   }
 };
 
@@ -3095,6 +3171,65 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSigmoid) {
                               0.6043738,  0.41807905, 0.38648725, 0.34397328,
                               0.89074916, 0.2311037,  0.8268956,  0.32928467}}}
         .Test();
+  }
+}
+
+// Test building and computing a DML graph with single operator softplus.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSoftplus) {
+  {
+    // Test softplus with steepness = 1.0.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kSoftplus,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 2, 3},
+                  .values = {-2, -1, 0, 1, 2, 3}},
+        .softplus_steepness = 1.0,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 2, 3},
+                   .values = {0.1269280110429726, 0.31326168751822286,
+                              0.6931471805599453, 1.3132616875182228,
+                              2.1269280110429727, 3.048587351573742}}}
+        .Test();
+  }
+  {
+    // Test softplus with steepness = 2.0.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kSoftplus,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {-1, 0, 1, 2}},
+        .softplus_steepness = 2.0,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 2, 1},
+                   .values = {0.0634640055214863, 0.34657359027997264,
+                              1.0634640055214863, 2.0090749639589047}}}
+        .Test();
+  }
+  {
+    // Test softplus with steepness = 10.0.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kSoftplus,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 3, 2, 1},
+                  .values = {-10, -5, 0, 5, 10, 15}},
+        .softplus_steepness = 10.0,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 3, 2, 1},
+                   .values = {0, 0, 0.06931471805599453, 5, 10, 15}}}
+        .Test();
+  }
+  {
+    // Test graph creation failure when steepness < 1.0.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kSoftplus,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 1, 1},
+                  .values = {0}},
+        .softplus_steepness = 0.5,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 1, 1},
+                   .values = {1.38629436111989}}}
+        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
   }
 }
 

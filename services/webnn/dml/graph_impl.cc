@@ -286,6 +286,7 @@ struct ActivationOperatorDesc {
                 DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC,
                 DML_ACTIVATION_RELU_OPERATOR_DESC,
                 DML_ACTIVATION_SIGMOID_OPERATOR_DESC,
+                DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC,
                 DML_ACTIVATION_TANH_OPERATOR_DESC>
       desc;
 
@@ -305,6 +306,10 @@ struct ActivationOperatorDesc {
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_SIGMOID,
               &absl::get<DML_ACTIVATION_SIGMOID_OPERATOR_DESC>(desc)};
+    } else if (absl::holds_alternative<DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC>(
+                   desc)) {
+      return {DML_OPERATOR_ACTIVATION_SOFTPLUS,
+              &absl::get<DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC>(desc)};
     } else if (absl::holds_alternative<DML_ACTIVATION_TANH_OPERATOR_DESC>(
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_TANH,
@@ -335,6 +340,10 @@ CreateActivationOperatorDesc(const mojom::ActivationPtr& activation) {
     case mojom::Activation::Tag::kSigmoid:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_SIGMOID_OPERATOR_DESC{}};
+    case mojom::Activation::Tag::kSoftplus:
+      return ActivationOperatorDesc{
+          .desc = DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC{
+              .Steepness = activation->get_softplus()->steepness}};
     case mojom::Activation::Tag::kTanh:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_TANH_OPERATOR_DESC{}};
@@ -1934,6 +1943,49 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSoftplus(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::SoftplusPtr& softplus,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(id_to_node_output_map,
+                                                    softplus->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  const uint64_t output_id = softplus->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  // The steepness must be greater than or equal to 1.0 when DML_FEATURE_LEVEL
+  // is less than DML_FEATURE_LEVEL_6_3:
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_softplus_operator_desc
+  if (softplus->steepness < 1.0f) {
+    return base::unexpected(CreateError(
+        mojom::Error::Code::kNotSupportedError,
+        "The steepness of softplus should be greater than or equal to 1.0."));
+  }
+
+  DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC softplus_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .Steepness = softplus->steepness};
+
+  std::array<const NodeOutput*, 1> inputs = {input};
+  const OperatorNode* softplus_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ACTIVATION_SOFTPLUS, &softplus_desc, inputs);
+  if (!softplus_node) {
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create softplus operator."));
+  }
+
+  const NodeOutput* node_output = graph_builder.CreateNodeOutput(
+      softplus_node, std::move(output_tensor_desc));
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
+
+  return base::ok();
+}
+
 // Transpose is not a real DirectML operator. As for implementation, the input
 // tensor is remapped for reading elements following the strides after the
 // permutation, and an identity operator is appended to consume the remapped
@@ -2652,6 +2704,12 @@ void GraphImpl::CreateAndBuild(
                                        DML_OPERATOR_ACTIVATION_SOFTMAX>(
                 id_to_operand_map, operation->get_softmax(), graph_builder,
                 id_to_node_output_map);
+        break;
+      }
+      case mojom::Operation::Tag::kSoftplus: {
+        create_operator_result = CreateOperatorNodeForSoftplus(
+            id_to_operand_map, operation->get_softplus(), graph_builder,
+            id_to_node_output_map);
         break;
       }
       case mojom::Operation::Tag::kSplit: {
