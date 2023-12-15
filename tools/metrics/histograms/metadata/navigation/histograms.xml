@@ -994,6 +994,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.MainFrameSchemeDifferentPage2NonUniqueHostname"
+    enum="NavigationScheme" expires_after="2024-09-01">
+  <owner>meacer@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    A subset of MainFrameSchemeDifferentPage2 only recorded for non-unique
+    hostnames. The scheme of the URL for each main-frame navigation that
+    replaces a document object. This is not reported for reference fragment
+    navigations, pushState/replaceState or same page history navigation. This is
+    only recorded for finished navigations and not attempts.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.MainFrameSchemeDifferentPageOTR2"
     enum="NavigationScheme" expires_after="2024-05-19">
   <owner>estark@chromium.org</owner>
