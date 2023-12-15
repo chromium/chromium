@@ -379,7 +379,7 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
         autofill::test::CreateTestCreditCardFormData(true, false, true));
     credit_card_form_structure->field(kCreditCardFieldIndexInForm)
         ->set_heuristic_type(autofill::HeuristicSource::kLegacy,
-                             autofill::ServerFieldType::CREDIT_CARD_NUMBER);
+                             autofill::FieldType::CREDIT_CARD_NUMBER);
     return credit_card_form_structure;
   }
 
@@ -388,7 +388,7 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
         autofill::test::CreateTestAddressFormData());
     address_form_structure->field(kFirstNameFieldIndexInForm)
         ->set_heuristic_type(autofill::HeuristicSource::kLegacy,
-                             autofill::ServerFieldType::NAME_FIRST);
+                             autofill::FieldType::NAME_FIRST);
     return address_form_structure;
   }
 
@@ -1057,8 +1057,7 @@ TEST_F(
   autofill::FormStructure* address_form =
       AddFormToAutofillManagerCache(SetUpAddressForm());
   address_form->field(0)->set_heuristic_type(
-      autofill::HeuristicSource::kLegacy,
-      autofill::ServerFieldType::EMAIL_ADDRESS);
+      autofill::HeuristicSource::kLegacy, autofill::FieldType::EMAIL_ADDRESS);
   StartRunAndSelectOptions({address_form->form_signature()});
   std::u16string announcement_text = u"Email filled.";
 
