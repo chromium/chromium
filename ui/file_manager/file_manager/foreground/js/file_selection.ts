@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
-
 import {isEncrypted} from '../../common/js/file_type.js';
+import {CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 import {isDlpEnabled} from '../../common/js/flags.js';
 import {AllowedPaths} from '../../common/js/volume_manager_types.js';
 import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -95,10 +93,19 @@ export class FileSelection {
   }
 }
 
+export type FileSelectionChangeEvent = CustomEvent<{}>;
+export type FileSelectionChangeThrottledEvent = CustomEvent<{}>;
+
+interface FileSelectionHandlerEventMap extends CustomEventMap {
+  [EventType.CHANGE]: FileSelectionChangeEvent;
+  [EventType.CHANGE_THROTTLED]: FileSelectionChangeThrottledEvent;
+}
+
 /**
  * This object encapsulates everything related to current selection.
  */
-export class FileSelectionHandler extends EventTarget {
+export class FileSelectionHandler extends
+    FilesEventTarget<FileSelectionHandlerEventMap> {
   selection = new FileSelection([], [], this.volumeManager_);
   private selectionUpdateTimer_: number|null = 0;
   private store_: Store = getStore();
@@ -164,7 +171,7 @@ export class FileSelectionHandler extends EventTarget {
       this.updateFileSelectionAsync_(selection);
     }, updateDelay);
 
-    dispatchSimpleEvent(this, EventType.CHANGE);
+    this.dispatchEvent(new CustomEvent(EventType.CHANGE));
   }
 
   /**
@@ -184,7 +191,7 @@ export class FileSelectionHandler extends EventTarget {
       }
 
       this.nextThrottledEventTime_ = Date.now() + UPDATE_DELAY;
-      dispatchSimpleEvent(this, EventType.CHANGE_THROTTLED);
+      this.dispatchEvent(new CustomEvent(EventType.CHANGE_THROTTLED));
     });
   }
 

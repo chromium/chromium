@@ -31,7 +31,6 @@ static_js_files = [
   # Files app Foreground:
   "file_manager/foreground/js/app_state_controller.js",
   "file_manager/foreground/js/constants.js",
-  "file_manager/foreground/js/fake_file_selection_handler.js",
   "file_manager/foreground/js/file_manager.js",
   "file_manager/foreground/js/metrics_start.js",
   "file_manager/foreground/js/mock_navigation_list_model.js",
@@ -507,8 +506,8 @@ ts_test_files = [
   # Don't remove this.
   # These lines will be removed at the end of the TS migration.
   # Foreground:
-  "file_manager/foreground/elements/files_tooltip_unittest.ts",
   "file_manager/foreground/elements/files_toast_unittest.ts",
+  "file_manager/foreground/elements/files_tooltip_unittest.ts",
   "file_manager/foreground/elements/files_xf_elements_unittest.ts",
   "file_manager/foreground/js/actions_model_unittest.ts",
   "file_manager/foreground/js/banner_controller_unittest.ts",
@@ -516,17 +515,18 @@ ts_test_files = [
   "file_manager/foreground/js/directory_contents_unittest.ts",
   "file_manager/foreground/js/directory_model_unittest.ts",
   "file_manager/foreground/js/empty_folder_controller_unittest.ts",
+  "file_manager/foreground/js/fake_file_selection_handler.ts",
   "file_manager/foreground/js/file_list_model_unittest.ts",
   "file_manager/foreground/js/file_manager_commands_unittest.ts",
   "file_manager/foreground/js/file_tasks_unittest.ts",
   "file_manager/foreground/js/file_transfer_controller_unittest.ts",
   "file_manager/foreground/js/file_type_filters_controller_unittest.ts",
   "file_manager/foreground/js/list_thumbnail_loader_unittest.ts",
-  "file_manager/foreground/js/path_component_unittest.ts",
-  "file_manager/foreground/js/task_controller_unittest.ts",
   "file_manager/foreground/js/metadata/dlp_metadata_provider_unittest.ts",
+  "file_manager/foreground/js/path_component_unittest.ts",
   "file_manager/foreground/js/providers_model_unittest.ts",
   "file_manager/foreground/js/spinner_controller_unittest.ts",
+  "file_manager/foreground/js/task_controller_unittest.ts",
   "file_manager/foreground/js/thumbnail_loader_unittest.ts",
 
   # 3-line header to avoid conflict.

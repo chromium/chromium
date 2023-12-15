@@ -59,20 +59,14 @@ export function createFakeDirectoryModel(): DirectoryModel {
       return undefined;
     }
 
-    /**
-     */
     getCurrentVolumeInfo(): VolumeInfo|null {
       return null;
     }
 
-    /**
-     */
     getCurrentRootType(): RootType|null {
       return null;
     }
 
-    /**
-     */
     getFileList(): FileListModel|null {
       return null;
     }
@@ -92,6 +86,10 @@ export function createFakeDirectoryModel(): DirectoryModel {
 
     isReadOnly() {
       return false;
+    }
+
+    getFileListSelection() {
+      return new EventTarget();
     }
   }
 
