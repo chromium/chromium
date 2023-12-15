@@ -352,51 +352,15 @@ void AvatarToolbarButton::ShowSignInText() {
 void AvatarToolbarButton::HideSignInText() {
   delegate_->HideSignInText();
 }
-
-void AvatarToolbarButton::DisabledStateHelper::Init(
-    bool previous_enable_state,
-    SkColor previous_disabled_text_color) {
-  CHECK(!init_);
-
-  previous_enable_state_ = previous_enable_state;
-  previous_disabled_text_color_ = previous_disabled_text_color;
-
-  init_ = true;
-}
-
-bool AvatarToolbarButton::DisabledStateHelper::GetPreviousEnableState() const {
-  CHECK(init_);
-  return previous_enable_state_;
-}
-
-SkColor AvatarToolbarButton::DisabledStateHelper::GetPreviousDisabledTextColor()
-    const {
-  CHECK(init_);
-  return previous_disabled_text_color_;
-}
-
-void AvatarToolbarButton::DisableActionButton() {
-  SkColor active_text_color = GetCurrentTextColor();
-
-  // Disable the button and remember the disabled text color/state.
-  bool previous_enable_state = GetEnabled();
-  SetEnabled(false);
-  disabled_state_helper_.Init(previous_enable_state, GetCurrentTextColor());
-
-  // Override the disable state color with the active text color.
-  SetTextColor(ButtonState::STATE_DISABLED, active_text_color);
-}
-
-void AvatarToolbarButton::ResetActionButton() {
-  SetEnabled(disabled_state_helper_.GetPreviousEnableState());
-  SetTextColor(ButtonState::STATE_DISABLED,
-               disabled_state_helper_.GetPreviousDisabledTextColor());
-
-  // Reset the helper instance.
-  disabled_state_helper_ = {};
-}
-
 #endif
+
+void AvatarToolbarButton::SetButtonActionDisabled(bool disabled) {
+  button_action_disabled_ = disabled;
+}
+
+bool AvatarToolbarButton::IsButtonActionDisabled() const {
+  return button_action_disabled_;
+}
 
 void AvatarToolbarButton::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
@@ -464,6 +428,10 @@ void AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
 }
 
 void AvatarToolbarButton::ButtonPressed() {
+  if (button_action_disabled_) {
+    return;
+  }
+
   browser_->window()->ShowAvatarBubbleFromAvatarButton(
       /*is_source_accelerator=*/false);
 }

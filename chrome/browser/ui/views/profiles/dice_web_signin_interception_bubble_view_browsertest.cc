@@ -169,9 +169,9 @@ const TestParam kTestParams[] = {
 
 // Returns the avatar button, which is the anchor view for the interception
 // bubble.
-views::View* GetAvatarButton(Browser* browser) {
+AvatarToolbarButton* GetAvatarButton(Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  views::View* avatar_button =
+  AvatarToolbarButton* avatar_button =
       browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
   DCHECK(avatar_button);
   return avatar_button;
@@ -313,7 +313,9 @@ class DiceWebSigninInterceptionBubbleBrowserTest : public InProcessBrowserTest {
  public:
   DiceWebSigninInterceptionBubbleBrowserTest() = default;
 
-  views::View* GetAvatarButton() { return ::GetAvatarButton(browser()); }
+  AvatarToolbarButton* GetAvatarButton() {
+    return ::GetAvatarButton(browser());
+  }
 
   // Completion callback for the interception bubble.
   void OnInterceptionComplete(SigninInterceptionResult result) {
@@ -561,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
-  ASSERT_TRUE(GetAvatarButton()->GetEnabled());
+  ASSERT_FALSE(GetAvatarButton()->IsButtonActionDisabled());
   // Creating the bubble through the static function.
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
       DiceWebSigninInterceptionBubbleView::CreateBubble(
@@ -579,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   // Equivalent to `kInterceptionBubbleBaseHeight` default.
   bubble->SetHeightAndShowWidget(/*height=*/500);
   EXPECT_FALSE(callback_result_.has_value());
-  EXPECT_FALSE(GetAvatarButton()->GetEnabled());
+  EXPECT_TRUE(GetAvatarButton()->IsButtonActionDisabled());
 
   // Take a handle on the bubble, to close it later.
   bubble_handle_ = bubble->GetHandle();
@@ -591,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   ASSERT_TRUE(callback_result_.has_value());
   EXPECT_EQ(callback_result_, SigninInterceptionResult::kAccepted);
   EXPECT_TRUE(bubble->GetAccepted());
-  EXPECT_TRUE(GetAvatarButton()->GetEnabled());
+  EXPECT_FALSE(GetAvatarButton()->IsButtonActionDisabled());
 
   // Widget was not closed yet - the delegate then takes care of it through the
   // handle.
@@ -640,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   // Equivalent to `kInterceptionBubbleBaseHeight` default.
   bubble->SetHeightAndShowWidget(/*height=*/500);
   EXPECT_FALSE(callback_result_.has_value());
-  EXPECT_FALSE(GetAvatarButton()->GetEnabled());
+  EXPECT_TRUE(GetAvatarButton()->IsButtonActionDisabled());
 
   views::test::WidgetDestroyedWaiter closing_observer(widget);
   EXPECT_FALSE(bubble->GetAccepted());
@@ -649,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   ASSERT_TRUE(callback_result_.has_value());
   EXPECT_EQ(callback_result_, SigninInterceptionResult::kDeclined);
   EXPECT_FALSE(bubble->GetAccepted());
-  EXPECT_TRUE(GetAvatarButton()->GetEnabled());
+  EXPECT_FALSE(GetAvatarButton()->IsButtonActionDisabled());
 
   EXPECT_TRUE(widget->IsClosed());
   // Widget will close now.
