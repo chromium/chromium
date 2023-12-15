@@ -345,6 +345,9 @@ BOOL AreCredentialsAtIndexesConnected(
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(webState, frame);
   const std::vector<const password_manager::PasswordForm*>* passwordForms =
       passwordManager->GetBestMatches(driver, formId);
+  if (!passwordForms) {
+    return @[];
+  }
 
   NSMutableArray<ManualFillCredential*>* credentials =
       [[NSMutableArray alloc] initWithCapacity:passwordForms->size()];
