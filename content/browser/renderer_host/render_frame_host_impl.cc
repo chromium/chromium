@@ -13726,6 +13726,8 @@ void RenderFrameHostImpl::SendCommitNavigation(
          common_params->url.SchemeIs(url::kDataScheme));
   IncreaseCommitNavigationCounter();
   mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host;
+  mojo::PendingRemote<blink::mojom::CodeCacheHost>
+      code_cache_host_for_background;
   mojom::CookieManagerInfoPtr cookie_manager_info;
   mojom::StorageInfoPtr storage_info;
 
@@ -13739,6 +13741,13 @@ void RenderFrameHostImpl::SendCommitNavigation(
       navigation_request->isolation_info_for_subresources()
           .network_isolation_key(),
       code_cache_storage_key);
+  if (base::FeatureList::IsEnabled(blink::features::kBackgroundResourceFetch)) {
+    CreateCodeCacheHostWithKeys(
+        code_cache_host_for_background.InitWithNewPipeAndPassReceiver(),
+        navigation_request->isolation_info_for_subresources()
+            .network_isolation_key(),
+        code_cache_storage_key);
+  }
 
   url::Origin origin_to_commit =
       navigation_request->GetOriginToCommit().value();
@@ -13854,6 +13863,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
         std::move(fetch_later_loader_factory), document_token,
         devtools_navigation_token, permissions_policy,
         std::move(policy_container), std::move(code_cache_host),
+        std::move(code_cache_host_for_background),
         std::move(resource_cache_remote), std::move(cookie_manager_info),
         std::move(storage_info),
         BuildCommitNavigationCallback(navigation_request));

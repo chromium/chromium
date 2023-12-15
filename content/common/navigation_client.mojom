@@ -302,6 +302,7 @@ interface NavigationClient {
       array<blink.mojom.ParsedPermissionsPolicyDeclaration>? permissions_policy,
       blink.mojom.PolicyContainer policy_container,
       pending_remote<blink.mojom.CodeCacheHost>? code_cache_host,
+      pending_remote<blink.mojom.CodeCacheHost>? code_cache_host_for_background,
       pending_remote<blink.mojom.ResourceCache>? resource_cache,
       CookieManagerInfo? cookie_manager_info,
       StorageInfo? storage_info)

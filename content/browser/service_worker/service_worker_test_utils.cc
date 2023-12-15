@@ -102,6 +102,8 @@ class FakeNavigationClient : public mojom::NavigationClient {
       const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+      mojo::PendingRemote<blink::mojom::CodeCacheHost>
+          code_cache_host_for_background,
       mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
       mojom::CookieManagerInfoPtr cookie_manager_info,
       mojom::StorageInfoPtr storage_info,
@@ -274,6 +276,7 @@ void ServiceWorkerRemoteContainerEndpoint::BindForWindow(
       blink::DocumentToken(), base::UnguessableToken::Create(),
       std::vector<blink::ParsedPermissionsPolicyDeclaration>(),
       CreateStubPolicyContainer(), /*code_cache_host=*/mojo::NullRemote(),
+      /*code_cache_host_for_background=*/mojo::NullRemote(),
       /*resource_cache=*/mojo::NullRemote(), /*cookie_manager_info=*/nullptr,
       /*storage_info=*/nullptr,
       base::BindOnce(

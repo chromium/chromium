@@ -470,6 +470,8 @@ class CONTENT_EXPORT RenderFrameImpl
       const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+      mojo::PendingRemote<blink::mojom::CodeCacheHost>
+          code_cache_host_for_background,
       mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
       mojom::CookieManagerInfoPtr cookie_manager_info,
       mojom::StorageInfoPtr storage_info,
@@ -1021,6 +1023,8 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
           fetch_later_loader_factory,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+      mojo::PendingRemote<blink::mojom::CodeCacheHost>
+          code_cache_host_for_background,
       mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
       mojom::CookieManagerInfoPtr cookie_manager_info,
       mojom::StorageInfoPtr storage_info,
@@ -1468,6 +1472,8 @@ class CONTENT_EXPORT RenderFrameImpl
       background_resource_fetch_task_runner_;
 
   mojo::PendingRemote<blink::mojom::CodeCacheHost> pending_code_cache_host_;
+  mojo::PendingRemote<blink::mojom::CodeCacheHost>
+      pending_code_cache_host_for_background_;
   mojo::PendingRemote<blink::mojom::ResourceCache> pending_resource_cache_;
   mojom::CookieManagerInfoPtr pending_cookie_manager_info_;
   mojom::StorageInfoPtr pending_storage_info_;

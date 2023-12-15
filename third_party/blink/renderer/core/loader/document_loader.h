@@ -99,6 +99,7 @@ class TickClock;
 
 namespace blink {
 
+class BackgroundCodeCacheHost;
 class ContentSecurityPolicy;
 class CodeCacheHost;
 class Document;
@@ -205,7 +206,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   }
   void SetCodeCacheHost(
       CrossVariantMojoRemote<mojom::blink::CodeCacheHostInterfaceBase>
-          code_cache_host) override;
+          code_cache_host,
+      CrossVariantMojoRemote<mojom::blink::CodeCacheHostInterfaceBase>
+          code_cache_host_for_background) override;
   WebString OriginCalculationDebugInfo() const override {
     return origin_calculation_debug_info_;
   }
@@ -404,6 +407,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       const mojom::blink::PrerenderPageActivationParams& params);
 
   CodeCacheHost* GetCodeCacheHost();
+  scoped_refptr<BackgroundCodeCacheHost> CreateBackgroundCodeCacheHost();
   static void DisableCodeCacheForTesting();
 
   mojo::PendingRemote<mojom::blink::CodeCacheHost> CreateWorkerCodeCacheHost();
@@ -808,6 +812,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // This is the interface that handles generated code cache
   // requests to fetch code cache when loading resources.
   std::unique_ptr<CodeCacheHost> code_cache_host_;
+  mojo::PendingRemote<mojom::blink::CodeCacheHost>
+      pending_code_cache_host_for_background_;
 
   HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources_;
 

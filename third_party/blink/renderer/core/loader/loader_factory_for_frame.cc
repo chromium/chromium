@@ -241,15 +241,8 @@ void LoaderFactoryForFrame::IssueKeepAliveHandleIfRequested(
 scoped_refptr<BackgroundCodeCacheHost>
 LoaderFactoryForFrame::GetBackgroundCodeCacheHost() {
   if (!background_code_cache_host_) {
-    // TODO(crbug.com/1379780): Consider passing a pending_remote in the
-    // navigation IPC instead.
-    mojo::PendingRemote<mojom::blink::CodeCacheHost> pending_remote;
-    document_loader_->GetFrame()
-        ->Client()
-        ->GetBrowserInterfaceBroker()
-        .GetInterface(pending_remote.InitWithNewPipeAndPassReceiver());
-    background_code_cache_host_ = base::MakeRefCounted<BackgroundCodeCacheHost>(
-        std::move(pending_remote));
+    background_code_cache_host_ =
+        document_loader_->CreateBackgroundCodeCacheHost();
   }
   return background_code_cache_host_;
 }

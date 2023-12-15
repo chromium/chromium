@@ -2618,6 +2618,8 @@ void RenderFrameImpl::CommitNavigation(
     const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+    mojo::PendingRemote<blink::mojom::CodeCacheHost>
+        code_cache_host_for_background,
     mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
     mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::StorageInfoPtr storage_info,
@@ -2679,8 +2681,9 @@ void RenderFrameImpl::CommitNavigation(
       std::move(subresource_proxying_loader_factory),
       std::move(keep_alive_loader_factory),
       std::move(fetch_later_loader_factory), std::move(code_cache_host),
-      std::move(resource_cache), std::move(cookie_manager_info),
-      std::move(storage_info), std::move(document_state));
+      std::move(code_cache_host_for_background), std::move(resource_cache),
+      std::move(cookie_manager_info), std::move(storage_info),
+      std::move(document_state));
 
   // Handle a navigation that has a non-empty `data_url_as_string`, or perform
   // a "loadDataWithBaseURL" navigation, which is different from a normal data:
@@ -2802,6 +2805,8 @@ void RenderFrameImpl::CommitNavigationWithParams(
     mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
         fetch_later_loader_factory,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+    mojo::PendingRemote<blink::mojom::CodeCacheHost>
+        code_cache_host_for_background,
     mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
     mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::StorageInfoPtr storage_info,
@@ -2910,6 +2915,8 @@ void RenderFrameImpl::CommitNavigationWithParams(
   DCHECK(!pending_loader_factories_);
   pending_loader_factories_ = std::move(new_loader_factories);
   pending_code_cache_host_ = std::move(code_cache_host);
+  pending_code_cache_host_for_background_ =
+      std::move(code_cache_host_for_background);
   pending_resource_cache_ = std::move(resource_cache);
   pending_cookie_manager_info_ = std::move(cookie_manager_info);
   pending_storage_info_ = std::move(storage_info);
@@ -3819,7 +3826,9 @@ void RenderFrameImpl::DidCreateDocumentLoader(
 
   // Set the code cache host earlier to allow fetching the code cache as soon as
   // possible.
-  document_loader->SetCodeCacheHost(std::move(pending_code_cache_host_));
+  document_loader->SetCodeCacheHost(
+      std::move(pending_code_cache_host_),
+      std::move(pending_code_cache_host_for_background_));
 }
 
 void RenderFrameImpl::DidCommitNavigation(
