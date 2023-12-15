@@ -287,7 +287,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
     &kThumbnailPlaceholder,
-    &kToolbarMicIphAndroid,
     &kTrustedWebActivityPostMessage,
     &kStartSurfaceAndroid,
     &kStartSurfaceOnTablet,
@@ -921,10 +920,6 @@ BASE_FEATURE(kTestDefaultEnabled,
 BASE_FEATURE(kThumbnailPlaceholder,
              "ThumbnailPlaceholder",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kToolbarMicIphAndroid,
-             "ToolbarMicIphAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTrustedWebActivityPostMessage,
              "TrustedWebActivityPostMessage",

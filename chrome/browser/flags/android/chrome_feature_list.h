@@ -165,7 +165,6 @@ BASE_DECLARE_FEATURE(kTabToGTSAnimation);
 BASE_DECLARE_FEATURE(kTestDefaultDisabled);
 BASE_DECLARE_FEATURE(kTestDefaultEnabled);
 BASE_DECLARE_FEATURE(kThumbnailPlaceholder);
-BASE_DECLARE_FEATURE(kToolbarMicIphAndroid);
 BASE_DECLARE_FEATURE(kToolbarUseHardwareBitmapDraw);
 BASE_DECLARE_FEATURE(kTrustedWebActivityPostMessage);
 BASE_DECLARE_FEATURE(kStartSurfaceAndroid);
