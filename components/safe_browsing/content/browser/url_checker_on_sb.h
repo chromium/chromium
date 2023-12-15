@@ -58,14 +58,9 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
 
   struct OnCompleteCheckResult {
     OnCompleteCheckResult(
-        bool slow_check,
         bool proceed,
         bool showed_interstitial,
         SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
-    // |slow_check| indicates whether it reports the result of a slow check.
-    // (Please see comments of OnCheckUrlResult() for what slow
-    // check means).
-    bool slow_check;
     bool proceed;
     bool showed_interstitial;
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check;
@@ -73,8 +68,6 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
 
   using OnCompleteCheckCallback =
       base::RepeatingCallback<void(OnCompleteCheckResult)>;
-
-  using OnNotifySlowCheckCallback = base::RepeatingCallback<void()>;
 
   using GetDelegateCallback =
       base::RepeatingCallback<scoped_refptr<UrlCheckerDelegate>()>;
@@ -89,7 +82,6 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
       int frame_tree_node_id,
       base::RepeatingCallback<content::WebContents*()> web_contents_getter,
       OnCompleteCheckCallback complete_callback,
-      OnNotifySlowCheckCallback slow_check_callback,
       bool url_real_time_lookup_enabled,
       bool can_urt_check_subresource_url,
       bool can_check_db,
@@ -128,10 +120,7 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
       bool showed_interstitial,
       SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
 
-  // |slow_check| indicates whether it reports the result of a slow check.
-  // (Please see comments of OnCheckUrlResult() for what slow check means).
   void OnCompleteCheck(
-      bool slow_check,
       bool proceed,
       bool showed_interstitial,
       SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
@@ -146,7 +135,6 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
       mechanism_experimenter_;
   base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
   OnCompleteCheckCallback complete_callback_;
-  OnNotifySlowCheckCallback slow_check_callback_;
   bool url_real_time_lookup_enabled_ = false;
   bool can_urt_check_subresource_url_ = false;
   bool can_check_db_ = true;

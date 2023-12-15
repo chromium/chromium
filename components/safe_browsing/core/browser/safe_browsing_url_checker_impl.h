@@ -167,7 +167,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
     Notifier(Notifier&& other);
     Notifier& operator=(Notifier&& other);
 
-    void OnStartSlowCheck(PerformedCheck performed_check);
     void OnCompleteCheck(bool proceed,
                          bool showed_interstitial,
                          PerformedCheck performed_check);

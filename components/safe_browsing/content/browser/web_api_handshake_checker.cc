@@ -110,11 +110,10 @@ class WebApiHandshakeChecker::CheckerOnSB
 
     *slow_check_notifier =
         base::BindOnce(&WebApiHandshakeChecker::CheckerOnSB::OnCompleteCheck,
-                       base::Unretained(this), /*slow_check=*/true);
+                       base::Unretained(this));
   }
 
   void OnCompleteCheck(
-      bool slow_check,
       bool proceed,
       bool showed_interstitial,
       SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {

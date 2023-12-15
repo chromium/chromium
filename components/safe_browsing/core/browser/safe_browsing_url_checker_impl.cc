@@ -55,20 +55,6 @@ SafeBrowsingUrlCheckerImpl::Notifier::Notifier(Notifier&& other) = default;
 SafeBrowsingUrlCheckerImpl::Notifier&
 SafeBrowsingUrlCheckerImpl::Notifier::operator=(Notifier&& other) = default;
 
-void SafeBrowsingUrlCheckerImpl::Notifier::OnStartSlowCheck(
-    PerformedCheck performed_check) {
-  DCHECK(performed_check == PerformedCheck::kHashDatabaseCheck);
-  if (callback_) {
-    std::move(callback_).Run(slow_check_notifier_.BindNewPipeAndPassReceiver(),
-                             false, false);
-    return;
-  }
-
-  DCHECK(native_callback_);
-  std::move(native_callback_)
-      .Run(&native_slow_check_notifier_, false, false, performed_check);
-}
-
 void SafeBrowsingUrlCheckerImpl::Notifier::OnCompleteCheck(
     bool proceed,
     bool showed_interstitial,

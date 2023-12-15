@@ -188,9 +188,6 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
         /*complete_callback=*/
         base::BindRepeating(&BrowserURLLoaderThrottle::OnCompleteSyncCheck,
                             weak_factory_.GetWeakPtr()),
-        /*slow_check_callback=*/
-        base::BindRepeating(&BrowserURLLoaderThrottle::NotifySyncSlowCheck,
-                            weak_factory_.GetWeakPtr()),
         /*url_real_time_lookup_enabled=*/false,
         /*can_urt_check_subresource_url=*/false, can_check_db,
         /*can_check_high_confidence_allowlist=*/true,
@@ -200,14 +197,11 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
         /*is_mechanism_experiment_allowed=*/false,
         /*hash_realtime_selection=*/
         hash_realtime_utils::HashRealTimeSelection::kNone);
-    // The slow_check_callback is set to DoNothing because we don't pause
-    // reading response body for async check.
     async_sb_checker_ = std::make_unique<UrlCheckerOnSB>(
         delegate_getter, frame_tree_node_id, web_contents_getter,
         /*complete_callback=*/
         base::BindRepeating(&BrowserURLLoaderThrottle::OnCompleteAsyncCheck,
                             weak_factory_.GetWeakPtr()),
-        /*slow_check_callback=*/base::DoNothing(),
         url_real_time_lookup_enabled_, can_urt_check_subresource_url,
         can_check_db, can_check_high_confidence_allowlist,
         url_lookup_service_metric_suffix_, url_lookup_service,
@@ -218,9 +212,6 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
         delegate_getter, frame_tree_node_id, web_contents_getter,
         /*complete_callback=*/
         base::BindRepeating(&BrowserURLLoaderThrottle::OnCompleteSyncCheck,
-                            weak_factory_.GetWeakPtr()),
-        /*slow_check_callback=*/
-        base::BindRepeating(&BrowserURLLoaderThrottle::NotifySyncSlowCheck,
                             weak_factory_.GetWeakPtr()),
         url_real_time_lookup_enabled_, can_urt_check_subresource_url,
         can_check_db, can_check_high_confidence_allowlist,
@@ -514,11 +505,6 @@ void BrowserURLLoaderThrottle::OnCompleteSyncCheck(
   DCHECK_LT(0u, pending_sync_checks_);
   pending_sync_checks_--;
 
-  if (result.slow_check) {
-    DCHECK_LT(0u, pending_sync_slow_checks_);
-    pending_sync_slow_checks_--;
-  }
-
   // If the resource load is going to finish (either being cancelled or
   // resumed), record the total delay.
   if (!result.proceed || pending_sync_checks_ == 0) {
@@ -533,10 +519,6 @@ void BrowserURLLoaderThrottle::OnCompleteSyncCheck(
   }
 
   if (result.proceed) {
-    if (pending_sync_slow_checks_ == 0 && result.slow_check) {
-      delegate_->ResumeReadingBodyFromNet();
-    }
-
     if (pending_sync_checks_ == 0 && deferred_) {
       deferred_ = false;
       TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
@@ -614,26 +596,8 @@ void BrowserURLLoaderThrottle::SkipChecks() {
   }
 }
 
-void BrowserURLLoaderThrottle::NotifySyncSlowCheck() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  pending_sync_slow_checks_++;
-
-  // Pending slow checks indicate that the resource may be unsafe. In that case,
-  // pause reading response body from network to minimize the chance of
-  // processing unsafe contents (e.g., writing unsafe contents into cache),
-  // until we get the results. According to the results, we may resume reading
-  // or cancel the resource load.
-  // For real time Safe Browsing checks, we continue reading the response body
-  // but, similar to hash-based checks, do not process it until we know it is
-  // SAFE.
-  if (pending_sync_slow_checks_ == 1) {
-    delegate_->PauseReadingBodyFromNet();
-  }
-}
-
 void BrowserURLLoaderThrottle::DeleteUrlCheckerOnSB() {
   pending_sync_checks_ = 0;
-  pending_sync_slow_checks_ = 0;
   pending_async_checks_ = 0;
   if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
     sync_sb_checker_.reset();

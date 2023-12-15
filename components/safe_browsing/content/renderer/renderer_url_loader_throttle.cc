@@ -251,7 +251,7 @@ const char* RendererURLLoaderThrottle::NameForLoggingWillProcessResponse() {
 
 void RendererURLLoaderThrottle::OnCompleteCheck(bool proceed,
                                                 bool showed_interstitial) {
-  OnCompleteCheckInternal(true /* slow_check */, proceed, showed_interstitial);
+  OnCompleteCheckInternal(proceed, showed_interstitial);
 }
 
 void RendererURLLoaderThrottle::OnCheckUrlResult(
@@ -265,19 +265,9 @@ void RendererURLLoaderThrottle::OnCheckUrlResult(
     return;
 
   if (!slow_check_notifier.is_valid()) {
-    OnCompleteCheckInternal(false /* slow_check */, proceed,
-                            showed_interstitial);
+    OnCompleteCheckInternal(proceed, showed_interstitial);
     return;
   }
-
-  pending_slow_checks_++;
-  // Pending slow checks indicate that the resource may be unsafe. In that case,
-  // pause reading response body from network to minimize the chance of
-  // processing unsafe contents (e.g., writing unsafe contents into cache),
-  // until we get the results. According to the results, we may resume reading
-  // or cancel the resource load.
-  if (pending_slow_checks_ == 1)
-    delegate_->PauseReadingBodyFromNet();
 
   if (!notifier_receivers_) {
     notifier_receivers_ =
@@ -287,7 +277,6 @@ void RendererURLLoaderThrottle::OnCheckUrlResult(
 }
 
 void RendererURLLoaderThrottle::OnCompleteCheckInternal(
-    bool slow_check,
     bool proceed,
     bool showed_interstitial) {
   DCHECK(!blocked_);
@@ -295,11 +284,6 @@ void RendererURLLoaderThrottle::OnCompleteCheckInternal(
 
   DCHECK_LT(0u, pending_checks_);
   pending_checks_--;
-
-  if (slow_check) {
-    DCHECK_LT(0u, pending_slow_checks_);
-    pending_slow_checks_--;
-  }
 
   // If the resource load is going to finish (either being cancelled or
   // resumed), record the total delay.
@@ -314,9 +298,6 @@ void RendererURLLoaderThrottle::OnCompleteCheckInternal(
   }
 
   if (proceed) {
-    if (pending_slow_checks_ == 0 && slow_check)
-      delegate_->ResumeReadingBodyFromNet();
-
     if (pending_checks_ == 0 && deferred_) {
       deferred_ = false;
       TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
@@ -331,7 +312,6 @@ void RendererURLLoaderThrottle::OnCompleteCheckInternal(
     url_checker_.reset();
     notifier_receivers_.reset();
     pending_checks_ = 0;
-    pending_slow_checks_ = 0;
     // If we didn't show an interstitial, we cancel with ERR_ABORTED to not show
     // an error page either.
     delegate_->CancelWithError(
@@ -348,11 +328,6 @@ void RendererURLLoaderThrottle::OnMojoDisconnect() {
   notifier_receivers_.reset();
 
   pending_checks_ = 0;
-
-  if (pending_slow_checks_ > 0) {
-    pending_slow_checks_ = 0;
-    delegate_->ResumeReadingBodyFromNet();
-  }
 
   if (deferred_) {
     total_delay_ = base::TimeTicks::Now() - defer_start_time_;
