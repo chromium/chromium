@@ -9,7 +9,9 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/search_engine_choice/fake_omnibox/fake_omnibox_view.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_item.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/search_engine_choice_table_view_controller.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -68,9 +70,9 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   UIStackView* _topZoneStackView;
   // A fake empty omnibox illustration, shown before the user has made any
   // selection.
-  UIView* _fakeEmptyOmniboxView;
+  FakeOmniboxView* _fakeEmptyOmniboxView;
   // A fake empty omnibox illustration, with the user's selection.
-  UIView* _fakeOmniboxView;
+  FakeOmniboxView* _fakeOmniboxView;
   // The chrome logo.
   UIImageView* _logoView;
   // The view title.
@@ -150,12 +152,14 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   _titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
-  _fakeEmptyOmniboxView = CreateFakeEmptyOmnibox();
+  _fakeEmptyOmniboxView =
+      [[FakeOmniboxView alloc] initWithSearchEngineName:nil faviconImage:nil];
   [_topZoneStackView addArrangedSubview:_fakeEmptyOmniboxView];
   if (self.traitCollection.verticalSizeClass ==
       UIUserInterfaceSizeClassCompact) {
     _fakeEmptyOmniboxView.hidden = YES;
   }
+  _fakeEmptyOmniboxView.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSMutableAttributedString* subtitleText = [[NSMutableAttributedString alloc]
       initWithString:[l10n_util::GetNSString(
@@ -297,15 +301,15 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
       self.traitCollection.userInterfaceStyle) {
     // Re-draw the fake empty omnibox in order to take color updates into
     // account.
-    _fakeEmptyOmniboxView = CreateFakeEmptyOmnibox();
+    _fakeEmptyOmniboxView = [[FakeOmniboxView alloc] init];
     [_fakeEmptyOmniboxView layoutIfNeeded];
   }
 }
 
 #pragma mark - SearchEngineChoiceConsumer
 
-- (void)updateFakeOmniboxWithFavicon:(UIImageView*)icon
-                    SearchEngineName:(NSString*)name {
+- (void)updateFakeOmniboxWithFaviconImage:(UIImage*)icon
+                         searchEngineName:(NSString*)name {
   CGRect startingFrame = _fakeEmptyOmniboxView.frame;
   startingFrame.origin.y += kTravelDistance;
   CGRect endFrame = _fakeEmptyOmniboxView.frame;
@@ -332,7 +336,9 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
     return;
   }
 
-  UIView* newFakeOmniboxView = CreateFakeOmnibox(icon, name);
+  FakeOmniboxView* newFakeOmniboxView =
+      [[FakeOmniboxView alloc] initWithSearchEngineName:name faviconImage:icon];
+  newFakeOmniboxView.translatesAutoresizingMaskIntoConstraints = NO;
   [_topZoneStackView addSubview:newFakeOmniboxView];
   newFakeOmniboxView.frame = startingFrame;
   newFakeOmniboxView.transform = CGAffineTransformMakeRotation(kRotationAngle);
@@ -349,6 +355,12 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
       completion:^(BOOL finished) {
         self->_fakeOmniboxView = newFakeOmniboxView;
       }];
+}
+
+#pragma mark - SearchEngineChoiceFaviconUpdateConsumer
+
+- (void)updateFaviconImageForItem:(SnippetSearchEngineItem*)item {
+  _fakeOmniboxView.faviconImage = item.faviconImage;
 }
 
 #pragma mark - Private

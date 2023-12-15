@@ -9,13 +9,6 @@
 
 // UI Util containing helper methods for the choice screen UI.
 
-// Creates a fake empty omnibox illustration.
-UIView* CreateFakeEmptyOmnibox();
-
-// Creates a fake omnibox with the given incon and search
-// engine name.
-UIView* CreateFakeOmnibox(UIImageView* icon, NSString* searchEngineName);
-
 // Gets the correct font for the title.
 UIFont* GetTitleFontWithTraitCollection(UITraitCollection* trait_collection);
 

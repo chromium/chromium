@@ -9,13 +9,12 @@ source_set("search_engine_choice") {
     "search_engine_choice_coordinator.mm",
     "search_engine_choice_mediator.h",
     "search_engine_choice_mediator.mm",
-    "search_engine_choice_ui_util.h",
-    "search_engine_choice_ui_util.mm",
     "search_engine_choice_view_controller.h",
     "search_engine_choice_view_controller.mm",
   ]
   deps = [
     ":constants",
+    ":ui_util",
     "//base",
     "//components/search_engines",
     "//components/strings",
@@ -31,6 +30,7 @@ source_set("search_engine_choice") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/ui/search_engine_choice/fake_omnibox",
     "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table",
     "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells",
     "//ios/chrome/browser/ui/search_engine_choice/why_am_i_seeing_this",
@@ -48,6 +48,28 @@ source_set("constants") {
     "search_engine_choice_constants.mm",
   ]
   deps = [ "//base" ]
+}
+
+source_set("ui_util") {
+  sources = [
+    "search_engine_choice_ui_util.h",
+    "search_engine_choice_ui_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/search_engine_choice:constants",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:image_util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("unit_tests") {
