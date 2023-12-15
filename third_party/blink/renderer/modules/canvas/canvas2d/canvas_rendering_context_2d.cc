@@ -141,11 +141,12 @@ bool CanvasRenderingContext2D::IsOriginTopLeft() const {
 bool CanvasRenderingContext2D::IsComposited() const {
   // The following case is necessary for handling the special case of canvases
   // in the dev tools overlay.
-  auto* settings = canvas()->GetDocument().GetSettings();
+  const HTMLCanvasElement* const element = canvas();
+  auto* settings = element->GetDocument().GetSettings();
   if (settings && !settings->GetAcceleratedCompositingEnabled()) {
     return false;
   }
-  return canvas()->IsComposited();
+  return element->IsComposited();
 }
 
 void CanvasRenderingContext2D::Stop() {
@@ -171,11 +172,13 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   PostDeferrableAction(WTF::BindOnce(
       [](BaseRenderingContext2D* context) { context->ResetInternal(); },
       WrapPersistent(this)));
-  if (context_lost_mode_ == kSyntheticLostContext && Host()) {
-    Host()->DiscardResourceProvider();
+  HTMLCanvasElement* const element = canvas();
+  if (LIKELY(element != nullptr) &&
+      context_lost_mode_ == kSyntheticLostContext) {
+    element->DiscardResourceProvider();
   }
 
-  if (canvas() && canvas()->IsPageVisible()) {
+  if (LIKELY(element != nullptr) && element->IsPageVisible()) {
     dispatch_context_lost_event_timer_.StartOneShot(base::TimeDelta(),
                                                     FROM_HERE);
   } else {
@@ -238,8 +241,8 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
     // After 4 tries, we start the final attempt, allocate a brand new image
     // buffer instead of restoring
     try_restore_context_event_timer_.Stop();
-    if (Host()) {
-      Host()->DiscardResourceProvider();
+    if (CanvasRenderingContextHost* host = Host(); LIKELY(host != nullptr)) {
+      host->DiscardResourceProvider();
     }
     if (CanCreateCanvas2dResourceProvider())
       DispatchContextRestoredEvent(nullptr);
@@ -261,14 +264,16 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
 }
 
 void CanvasRenderingContext2D::SkipQueuedDrawCommands() {
-  if (Host() && Host()->ResourceProvider()) {
-    Host()->ResourceProvider()->SkipQueuedDrawCommands();
+  if (CanvasResourceProvider* provider = ResourceProvider();
+      LIKELY(provider != nullptr)) {
+    provider->SkipQueuedDrawCommands();
   }
 }
 
 void CanvasRenderingContext2D::RestartRecording() {
-  if (Host() && Host()->ResourceProvider()) {
-    Host()->ResourceProvider()->RestartRecording();
+  if (CanvasResourceProvider* provider = ResourceProvider();
+      LIKELY(provider != nullptr)) {
+    provider->RestartRecording();
   }
 }
 
@@ -303,16 +308,20 @@ void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
     return;
   }
 
-  canvas()->GetDocument().UpdateStyleAndLayout(
+  HTMLCanvasElement* const element = canvas();
+  element->GetDocument().UpdateStyleAndLayout(
       DocumentUpdateReason::kJavaScript);
 
-  LayoutObject* renderer = canvas()->GetLayoutObject();
-  LayoutBox* layout_box = canvas()->GetLayoutBox();
+  LayoutObject* renderer = element->GetLayoutObject();
+  LayoutBox* layout_box = element->GetLayoutBox();
   if (!renderer || !layout_box)
     return;
 
-  if (Width() == 0 || Height() == 0)
+  const int width = Width();
+  const int height = Height();
+  if (width == 0 || height == 0) {
     return;
+  }
 
   // Apply transformation and get the bounding rect
   Path transformed_path = path;
@@ -326,11 +335,11 @@ void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
   canvas_rect.Move(
       layout_box->LocalToAbsolutePoint(PhysicalOffset(), kIgnoreTransforms));
   path_rect.SetX(
-      (canvas_rect.X() + path_rect.X() * canvas_rect.Width() / Width()));
+      (canvas_rect.X() + path_rect.X() * canvas_rect.Width() / width));
   path_rect.SetY(
-      (canvas_rect.Y() + path_rect.Y() * canvas_rect.Height() / Height()));
-  path_rect.SetWidth((path_rect.Width() * canvas_rect.Width() / Width()));
-  path_rect.SetHeight((path_rect.Height() * canvas_rect.Height() / Height()));
+      (canvas_rect.Y() + path_rect.Y() * canvas_rect.Height() / height));
+  path_rect.SetWidth((path_rect.Width() * canvas_rect.Width() / width));
+  path_rect.SetHeight((path_rect.Height() * canvas_rect.Height() / height));
 
   // Then we clip the bounding box to the canvas visible range.
   path_rect.Intersect(canvas_rect);
@@ -343,10 +352,10 @@ void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
 
   // Vertical text needs be aligned horizontally on the screen
   bool is_horizontal_writing_mode =
-      canvas()->EnsureComputedStyle()->IsHorizontalWritingMode();
+      element->EnsureComputedStyle()->IsHorizontalWritingMode();
   if (!is_horizontal_writing_mode) {
     bool is_right_to_left =
-        canvas()->EnsureComputedStyle()->IsFlippedBlocksWritingMode();
+        element->EnsureComputedStyle()->IsFlippedBlocksWritingMode();
     horizontal_scroll_mode = (is_right_to_left ? ScrollAlignment::RightAlways()
                                                : ScrollAlignment::LeftAlways());
     vertical_scroll_mode = ScrollAlignment::ToEdgeIfNeeded();
@@ -367,24 +376,29 @@ void CanvasRenderingContext2D::clearRect(double x,
 }
 
 sk_sp<PaintFilter> CanvasRenderingContext2D::StateGetFilter() {
-  return GetState().GetFilter(canvas(), canvas()->Size(), this);
+  HTMLCanvasElement* const element = canvas();
+  return GetState().GetFilter(element, element->Size(), this);
 }
 
 cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   if (UNLIKELY(isContextLost()))
     return nullptr;
-  if (LIKELY(canvas()->GetOrCreateCanvas2DLayerBridge())) {
-    if (LIKELY(!layer_count_) && LIKELY(Host()->ResourceProvider())) {
-      // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
-      Host()->ResourceProvider()->FlushIfRecordingLimitExceeded();
-    }
-    return canvas()->GetCanvas2DLayerBridge()->GetPaintCanvas();
+
+  Canvas2DLayerBridge* bridge = canvas()->GetOrCreateCanvas2DLayerBridge();
+  if (UNLIKELY(bridge == nullptr)) {
+    return nullptr;
   }
-  return nullptr;
+
+  CanvasResourceProvider* provider = ResourceProvider();
+  if (LIKELY(provider != nullptr) && LIKELY(layer_count_ == 0)) {
+    // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
+    provider->FlushIfRecordingLimitExceeded();
+  }
+  return bridge->GetPaintCanvas();
 }
 
 cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvas() {
-  if (UNLIKELY(isContextLost() || !Host() || !Host()->ResourceProvider())) {
+  if (UNLIKELY(isContextLost() || !ResourceProvider())) {
     return nullptr;
   }
   return canvas()->GetCanvas2DLayerBridge()->GetPaintCanvas();
@@ -395,29 +409,33 @@ void CanvasRenderingContext2D::WillDraw(
     CanvasPerformanceMonitor::DrawType draw_type) {
   CanvasRenderingContext::DidDraw(dirty_rect, draw_type);
   // Always draw everything during printing.
-  if (!layer_count_) {
+  if (CanvasResourceProvider* provider = ResourceProvider();
+      LIKELY(layer_count_ == 0) && LIKELY(provider != nullptr)) {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
-    Host()->ResourceProvider()->FlushIfRecordingLimitExceeded();
+    provider->FlushIfRecordingLimitExceeded();
   }
 }
 
 absl::optional<cc::PaintRecord> CanvasRenderingContext2D::FlushCanvas(
     FlushReason reason) {
-  if (Host() && Host()->ResourceProvider()) {
-    return Host()->ResourceProvider()->FlushCanvas(reason);
+  CanvasResourceProvider* provider = ResourceProvider();
+  if (UNLIKELY(provider == nullptr)) {
+    return absl::nullopt;
   }
-  return absl::nullopt;
+  return provider->FlushCanvas(reason);
 }
 
 bool CanvasRenderingContext2D::WillSetFont() const {
   // The style resolution required for fonts is not available in frame-less
   // documents.
-  if (!canvas()->GetDocument().GetFrame()) {
+  const HTMLCanvasElement* const element = canvas();
+  Document& document = element->GetDocument();
+  if (!document.GetFrame()) {
     return false;
   }
 
-  canvas()->GetDocument().UpdateStyleAndLayoutTreeForNode(
-      canvas(), DocumentUpdateReason::kCanvas);
+  document.UpdateStyleAndLayoutTreeForNode(element,
+                                           DocumentUpdateReason::kCanvas);
   return true;
 }
 
@@ -437,12 +455,13 @@ void CanvasRenderingContext2D::setFontForTesting(const String& new_font) {
 }
 
 bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
-  CanvasFontCache* canvas_font_cache =
-      canvas()->GetDocument().GetCanvasFontCache();
+  HTMLCanvasElement* const element = canvas();
+  Document& document = element->GetDocument();
+  CanvasFontCache* canvas_font_cache = document.GetCanvasFontCache();
 
   // Map the <canvas> font into the text style. If the font uses keywords like
   // larger/smaller, these will work relative to the canvas.
-  const ComputedStyle* computed_style = canvas()->EnsureComputedStyle();
+  const ComputedStyle* computed_style = element->EnsureComputedStyle();
   if (computed_style) {
     auto i = fonts_resolved_using_current_style_.find(new_font);
     if (i != fonts_resolved_using_current_style_.end()) {
@@ -455,10 +474,7 @@ bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
       if (!parsed_style)
         return false;
       ComputedStyleBuilder font_style_builder =
-          canvas()
-              ->GetDocument()
-              .GetStyleResolver()
-              .CreateComputedStyleBuilder();
+          document.GetStyleResolver().CreateComputedStyleBuilder();
       FontDescription element_font_description(
           computed_style->GetFontDescription());
       // Reset the computed size to avoid inheriting the zoom factor from the
@@ -470,8 +486,8 @@ bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
 
       font_style_builder.SetFontDescription(element_font_description);
       const ComputedStyle* font_style = font_style_builder.TakeStyle();
-      Font font = canvas()->GetDocument().GetStyleEngine().ComputeFont(
-          *canvas(), *font_style, *parsed_style);
+      Font font = document.GetStyleEngine().ComputeFont(*element, *font_style,
+                                                        *parsed_style);
 
       // We need to reset Computed and Adjusted size so we skip zoom and
       // minimum font size.
@@ -488,9 +504,10 @@ bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
     }
   } else {
     Font resolved_font;
-    if (!canvas_font_cache->GetFontUsingDefaultStyle(*canvas(), new_font,
-                                                     resolved_font))
+    if (!canvas_font_cache->GetFontUsingDefaultStyle(*element, new_font,
+                                                     resolved_font)) {
       return false;
+    }
 
     // We need to reset Computed and Adjusted size so we skip zoom and
     // minimum font size for detached canvas.
@@ -512,10 +529,11 @@ void CanvasRenderingContext2D::DidProcessTask(
   // object
   // that is not traced, so didProcessTask() may be called at a time when the
   // canvas has been garbage collected but not the context.
-  if (should_prune_local_font_cache_ && canvas()) {
+  const HTMLCanvasElement* const element = canvas();
+  if (should_prune_local_font_cache_ && LIKELY(element != nullptr)) {
     should_prune_local_font_cache_ = false;
     PruneLocalFontCache(
-        canvas()->GetDocument().GetCanvasFontCache()->MaxFonts());
+        element->GetDocument().GetCanvasFontCache()->MaxFonts());
   }
 }
 
@@ -614,12 +632,13 @@ ExecutionContext* CanvasRenderingContext2D::GetTopExecutionContext() const {
 }
 
 Color CanvasRenderingContext2D::GetCurrentColor() const {
-  if (!canvas() || !canvas()->isConnected() || !canvas()->InlineStyle()) {
+  const HTMLCanvasElement* const element = canvas();
+  if (!element || !element->isConnected() || !element->InlineStyle()) {
     return Color::kBlack;
   }
   Color color = Color::kBlack;
   CSSParser::ParseColor(
-      color, canvas()->InlineStyle()->GetPropertyValue(CSSPropertyID::kColor));
+      color, element->InlineStyle()->GetPropertyValue(CSSPropertyID::kColor));
   return color;
 }
 
@@ -653,10 +672,11 @@ void CanvasRenderingContext2D::drawFormattedText(
 }
 
 void CanvasRenderingContext2D::PageVisibilityChanged() {
+  HTMLCanvasElement* const element = canvas();
   if (IsPaintable()) {
-    canvas()->GetCanvas2DLayerBridge()->PageVisibilityChanged();
+    element->GetCanvas2DLayerBridge()->PageVisibilityChanged();
   }
-  if (!Host()->IsPageVisible()) {
+  if (!element->IsPageVisible()) {
     PruneLocalFontCache(0);
   }
 }
@@ -768,8 +788,9 @@ void CanvasRenderingContext2D::DrawFocusRing(const Path& path,
 
 void CanvasRenderingContext2D::UpdateElementAccessibility(const Path& path,
                                                           Element* element) {
-  LayoutBoxModelObject* lbmo = canvas()->GetLayoutBoxModelObject();
-  LayoutObject* renderer = canvas()->GetLayoutObject();
+  HTMLCanvasElement* const canvas_element = canvas();
+  LayoutBoxModelObject* lbmo = canvas_element->GetLayoutBoxModelObject();
+  LayoutObject* renderer = canvas_element->GetLayoutObject();
   if (!lbmo || !renderer) {
     return;
   }
@@ -792,7 +813,7 @@ void CanvasRenderingContext2D::UpdateElementAccessibility(const Path& path,
                      lbmo->BorderTop() + lbmo->PaddingTop()});
 
   // Update the accessible object.
-  ax_object_cache->SetCanvasObjectBounds(canvas(), element, element_rect);
+  ax_object_cache->SetCanvasObjectBounds(canvas_element, element, element_rect);
 }
 
 // TODO(aaronhk) This is only used for the size heuristic. Delete this function

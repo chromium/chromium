@@ -138,12 +138,13 @@ void OffscreenCanvasRenderingContext2D::commit() {
 }
 
 void OffscreenCanvasRenderingContext2D::FlushRecording(FlushReason reason) {
-  if (!GetCanvasResourceProvider() ||
-      !GetCanvasResourceProvider()->HasRecordedDrawOps())
+  CanvasResourceProvider* provider = GetCanvasResourceProvider();
+  if (UNLIKELY(provider == nullptr) || !provider->HasRecordedDrawOps()) {
     return;
+  }
 
-  GetCanvasResourceProvider()->FlushCanvas(reason);
-  GetCanvasResourceProvider()->ReleaseLockedImages();
+  provider->FlushCanvas(reason);
+  provider->ReleaseLockedImages();
 }
 
 void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
@@ -175,18 +176,22 @@ int OffscreenCanvasRenderingContext2D::Height() const {
 
 bool OffscreenCanvasRenderingContext2D::CanCreateCanvas2dResourceProvider()
     const {
-  if (!Host() || Host()->Size().IsEmpty())
+  const CanvasRenderingContextHost* const host = Host();
+  if (UNLIKELY(host == nullptr) || UNLIKELY(host->Size().IsEmpty())) {
     return false;
+  }
   return !!GetOrCreateCanvasResourceProvider();
 }
 
 CanvasResourceProvider*
 OffscreenCanvasRenderingContext2D::GetOrCreateCanvasResourceProvider() const {
   DCHECK(Host() && Host()->IsOffscreenCanvas());
-  if (HostAsOffscreenCanvas() != nullptr) {
-    HostAsOffscreenCanvas()->CheckForGpuContextLost();
+  OffscreenCanvas* host = HostAsOffscreenCanvas();
+  if (UNLIKELY(host == nullptr)) {
+    return nullptr;
   }
-  return static_cast<OffscreenCanvas*>(Host())->GetOrCreateResourceProvider();
+  host->CheckForGpuContextLost();
+  return host->GetOrCreateResourceProvider();
 }
 
 CanvasResourceProvider*
@@ -206,10 +211,11 @@ void OffscreenCanvasRenderingContext2D::Reset() {
 
 scoped_refptr<CanvasResource>
 OffscreenCanvasRenderingContext2D::ProduceCanvasResource(FlushReason reason) {
-  if (!GetOrCreateCanvasResourceProvider())
+  CanvasResourceProvider* provider = GetOrCreateCanvasResourceProvider();
+  if (!provider) {
     return nullptr;
-  scoped_refptr<CanvasResource> frame =
-      GetCanvasResourceProvider()->ProduceCanvasResource(reason);
+  }
+  scoped_refptr<CanvasResource> frame = provider->ProduceCanvasResource(reason);
   if (!frame)
     return nullptr;
 
@@ -306,11 +312,14 @@ cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetOrCreatePaintCanvas() {
 }
 
 cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas() {
-  if (UNLIKELY(!is_valid_size_ || isContextLost() ||
-               !GetCanvasResourceProvider())) {
+  if (UNLIKELY(!is_valid_size_ || isContextLost())) {
     return nullptr;
   }
-  return GetCanvasResourceProvider()->Canvas();
+  CanvasResourceProvider* const provider = GetCanvasResourceProvider();
+  if (UNLIKELY(provider == nullptr)) {
+    return nullptr;
+  }
+  return provider->Canvas();
 }
 
 void OffscreenCanvasRenderingContext2D::WillDraw(
@@ -336,8 +345,10 @@ void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   if (context_lost_mode_ != kNotLostContext)
     return;
   context_lost_mode_ = lost_mode;
-  if (context_lost_mode_ == kSyntheticLostContext && Host()) {
-    Host()->DiscardResourceProvider();
+  if (CanvasRenderingContextHost* host = Host();
+      UNLIKELY(host != nullptr) &&
+      context_lost_mode_ == kSyntheticLostContext) {
+    host->DiscardResourceProvider();
   }
   uint32_t delay = base::RandInt(1, kMaxIframeContextLoseDelay);
   dispatch_context_lost_event_timer_.StartOneShot(base::Milliseconds(delay),
@@ -381,20 +392,21 @@ void OffscreenCanvasRenderingContext2D::RestartRecording() {
 bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
   OffscreenFontCache& font_cache = GetOffscreenFontCache();
   FontDescription* cached_font = font_cache.GetFont(new_font);
+  CanvasRenderingContextHost* const host = Host();
   if (cached_font) {
-    GetState().SetFont(*cached_font, Host()->GetFontSelector());
+    GetState().SetFont(*cached_font, host->GetFontSelector());
   } else {
     auto* style =
-        CSSParser::ParseFont(new_font, Host()->GetTopExecutionContext());
+        CSSParser::ParseFont(new_font, host->GetTopExecutionContext());
     if (!style) {
       return false;
     }
 
     FontDescription desc =
-        FontStyleResolver::ComputeFont(*style, Host()->GetFontSelector());
+        FontStyleResolver::ComputeFont(*style, host->GetFontSelector());
 
     font_cache.AddFont(new_font, desc);
-    GetState().SetFont(desc, Host()->GetFontSelector());
+    GetState().SetFont(desc, host->GetFontSelector());
   }
   return true;
 }
@@ -424,29 +436,28 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
 
   DCHECK(context_lost_mode_ != kWebGLLoseContextLostContext);
 
-  // If lost mode is |kSyntheticLostContext| and |context_restorable_| is set to
-  // true, it means context is forced to be lost for testing purpose. Restore
-  // the context.
-  if (context_lost_mode_ == kSyntheticLostContext &&
-      GetOrCreateCanvasResourceProvider() &&
-      GetCanvasResourceProvider()->Canvas()) {
-    try_restore_context_event_timer_.Stop();
-    DispatchContextRestoredEvent(nullptr);
-    return;
-  }
-
-  // If lost mode is |kRealLostContext|, it means the context was not lost due
-  // to surface failure but rather due to a an eviction, which means image
-  // buffer exists.
-  if (context_lost_mode_ == kRealLostContext) {
-    CHECK(HostAsOffscreenCanvas() != nullptr);
+  if (context_lost_mode_ == kSyntheticLostContext) {
+    // If lost mode is |kSyntheticLostContext| and |context_restorable_| is set
+    // to true, it means context is forced to be lost for testing purpose.
+    // Restore the context.
+    CanvasResourceProvider* provider = GetOrCreateCanvasResourceProvider();
+    if (provider && provider->Canvas()) {
+      try_restore_context_event_timer_.Stop();
+      DispatchContextRestoredEvent(nullptr);
+      return;
+    }
+  } else if (context_lost_mode_ == kRealLostContext) {
+    // If lost mode is |kRealLostContext|, it means the context was not lost due
+    // to surface failure but rather due to a an eviction, which means image
+    // buffer exists.
+    OffscreenCanvas* const canvas = HostAsOffscreenCanvas();
+    CHECK(canvas != nullptr);
     // Let the OffscreenCanvas know that it should attempt to recreate the
     // resource dispatcher in order to restore the context.
-    HostAsOffscreenCanvas()->SetRestoringGpuContext(true);
-    bool valid_resource_provider =
-        GetOrCreateCanvasResourceProvider() != nullptr;
-    HostAsOffscreenCanvas()->SetRestoringGpuContext(false);
-    if (valid_resource_provider && GetCanvasResourceProvider()->Canvas()) {
+    canvas->SetRestoringGpuContext(true);
+    CanvasResourceProvider* provider = GetOrCreateCanvasResourceProvider();
+    canvas->SetRestoringGpuContext(false);
+    if (provider && provider->Canvas()) {
       try_restore_context_event_timer_.Stop();
       DispatchContextRestoredEvent(nullptr);
       return;
@@ -456,12 +467,12 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
   // It gets here if lost mode is |kRealLostContext| and it fails to create a
   // new PaintCanvas. Discard the old resource and allocating a new one here.
   if (++try_restore_context_attempt_count_ > kMaxTryRestoreContextAttempts) {
-    if (Host()) {
-      Host()->DiscardResourceProvider();
+    if (CanvasRenderingContextHost* host = Host(); LIKELY(host != nullptr)) {
+      host->DiscardResourceProvider();
     }
     try_restore_context_event_timer_.Stop();
-    if (GetOrCreateCanvasResourceProvider() &&
-        GetCanvasResourceProvider()->Canvas()) {
+    if (CanvasResourceProvider* provider = GetOrCreateCanvasResourceProvider();
+        provider && provider->Canvas()) {
       DispatchContextRestoredEvent(nullptr);
     }
   }
@@ -470,7 +481,7 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
 absl::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
     FlushReason reason) {
   if (CanvasResourceProvider* provider = GetCanvasResourceProvider();
-      provider != nullptr) {
+      LIKELY(provider != nullptr)) {
     return provider->FlushCanvas(reason);
   }
   return absl::nullopt;

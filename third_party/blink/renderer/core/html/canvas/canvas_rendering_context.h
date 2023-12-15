@@ -138,9 +138,11 @@ class CORE_EXPORT CanvasRenderingContext
   // offscreencanvas use case.
   bool HasPendingActivity() const override { return false; }
   ExecutionContext* GetExecutionContext() const {
-    if (!Host())
+    const CanvasRenderingContextHost* host = Host();
+    if (UNLIKELY(host == nullptr)) {
       return nullptr;
-    return Host()->GetTopExecutionContext();
+    }
+    return host->GetTopExecutionContext();
   }
 
   void RecordUKMCanvasRenderingAPI();
@@ -152,6 +154,15 @@ class CORE_EXPORT CanvasRenderingContext
   static CanvasRenderingAPI RenderingAPIFromId(const String& id);
 
   CanvasRenderingContextHost* Host() const { return host_.Get(); }
+
+  CanvasResourceProvider* ResourceProvider() {
+    CanvasRenderingContextHost* host = Host();
+    if (UNLIKELY(host == nullptr)) {
+      return nullptr;
+    }
+    return host->ResourceProvider();
+  }
+
   virtual SkColorInfo CanvasRenderingContextSkColorInfo() const;
 
   virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) = 0;
@@ -185,8 +196,9 @@ class CORE_EXPORT CanvasRenderingContext
   }
   virtual bool IsPaintable() const = 0;
   void DidDraw(CanvasPerformanceMonitor::DrawType draw_type) {
-    return DidDraw(Host() ? SkIRect::MakeWH(Host()->width(), Host()->height())
-                          : SkIRect::MakeEmpty(),
+    const CanvasRenderingContextHost* const host = Host();
+    return DidDraw(host ? SkIRect::MakeWH(host->width(), host->height())
+                        : SkIRect::MakeEmpty(),
                    draw_type);
   }
   void DidDraw(const SkIRect& dirty_rect, CanvasPerformanceMonitor::DrawType);
