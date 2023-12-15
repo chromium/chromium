@@ -87,7 +87,7 @@ void ConfigureControlButton(views::ImageButton* button) {
   button->SetMinimumImageSize(
       gfx::Size(minimum_button_size, minimum_button_size));
 
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (features::IsSidePanelPinningEnabled()) {
     button->SetProperty(
         views::kMarginsKey,
         gfx::Insets().set_left(ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -271,7 +271,7 @@ END_METADATA
 
 SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
     : browser_view_(browser_view) {
-  if (!base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (!features::IsSidePanelPinningEnabled()) {
     combobox_model_ = std::make_unique<SidePanelComboboxModel>(browser_view_);
   } else {
     pinned_model_observation_.Observe(
@@ -497,7 +497,7 @@ void SidePanelCoordinator::OpenInNewTab() {
 
 void SidePanelCoordinator::UpdatePinState() {
   Profile* const profile = browser_view_->GetProfile();
-  if (!base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (!features::IsSidePanelPinningEnabled()) {
     PrefService* const pref_service = profile->GetPrefs();
     if (pref_service) {
       const bool current_state = pref_service->GetBoolean(
@@ -1255,7 +1255,7 @@ void SidePanelCoordinator::UpdateHeaderPinButtonState() {
   }
 
   Profile* const profile = browser_view_->GetProfile();
-  if (!base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (!features::IsSidePanelPinningEnabled()) {
     PrefService* pref_service = profile->GetPrefs();
     if (pref_service && companion::IsCompanionFeatureEnabled()) {
       bool pinned = pref_service->GetBoolean(

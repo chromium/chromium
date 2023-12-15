@@ -124,7 +124,7 @@ void ExtensionSidePanelManager::OnExtensionLoaded(
 
 void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
     const Extension* extension) {
-  if (!browser_ || !base::FeatureList::IsEnabled(features::kSidePanelPinning) ||
+  if (!browser_ || !features::IsSidePanelPinningEnabled() ||
       !extension->permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kSidePanel)) {
     return;
@@ -158,7 +158,7 @@ void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
 
 actions::ActionId ExtensionSidePanelManager::GetOrCreateActionIdForExtension(
     const Extension* extension) {
-  CHECK(base::FeatureList::IsEnabled(features::kSidePanelPinning));
+  CHECK(features::IsSidePanelPinningEnabled());
   return actions::ActionIdMap::CreateActionId(
              SidePanelEntry::Key(SidePanelEntry::Id::kExtension,
                                  extension->id())
@@ -168,7 +168,7 @@ actions::ActionId ExtensionSidePanelManager::GetOrCreateActionIdForExtension(
 
 void ExtensionSidePanelManager::MaybeRemoveActionItemForExtension(
     const Extension* extension) {
-  if (browser_ && base::FeatureList::IsEnabled(features::kSidePanelPinning) &&
+  if (browser_ && features::IsSidePanelPinningEnabled() &&
       extension->permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kSidePanel)) {
     BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);

@@ -27,6 +27,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
@@ -34,7 +35,10 @@
 class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kSidePanelPinning);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSidePanelPinning, features::kResponsiveToolbar,
+         features::kChromeRefresh2023},
+        {});
     TestWithBrowserView::SetUp();
     AddTab(browser_view()->browser(), GURL("http://foo1.com"));
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
