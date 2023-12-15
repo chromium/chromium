@@ -17,6 +17,7 @@
 struct CoreAccountInfo;
 class Profile;
 class ProfilePickerSignedInFlowController;
+enum class ReauthUIError;
 
 class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
  public:
@@ -31,8 +32,9 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   void SwitchToDiceSignIn(ProfilePicker::ProfileInfo profile_info,
                           StepSwitchFinishedCallback switch_finished_callback);
 
-  void SwitchToReauth(Profile* profile,
-                      base::OnceCallback<void()> on_error_callback);
+  void SwitchToReauth(
+      Profile* profile,
+      base::OnceCallback<void(ReauthUIError)> on_error_callback);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -55,11 +57,15 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 
  private:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  void OnReauthCompleted(Profile* profile,
-                         base::OnceCallback<void()> on_error_callback,
-                         bool success);
+  void OnReauthCompleted(
+      Profile* profile,
+      base::OnceCallback<void(ReauthUIError)> on_error_callback,
+      bool success,
+      ReauthUIError error);
+
   void OnProfilePickerStepShownReauthError(
-      base::OnceCallback<void()> on_error_callback,
+      base::OnceCallback<void(ReauthUIError)> on_error_callback,
+      ReauthUIError error,
       bool switch_step_success);
 #endif
 

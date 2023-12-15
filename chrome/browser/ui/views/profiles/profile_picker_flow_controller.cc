@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_reauth_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -307,7 +308,7 @@ class ReauthFlowStepController : public ProfileManagementStepController {
 std::unique_ptr<ProfileManagementStepController> CreateReauthtep(
     ProfilePickerWebContentsHost* host,
     Profile* profile,
-    base::OnceCallback<void(bool)> on_reauth_completed) {
+    base::OnceCallback<void(bool, ReauthUIError)> on_reauth_completed) {
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
@@ -369,7 +370,7 @@ void ProfilePickerFlowController::SwitchToDiceSignIn(
 
 void ProfilePickerFlowController::SwitchToReauth(
     Profile* profile,
-    base::OnceCallback<void()> on_error_callback) {
+    base::OnceCallback<void(ReauthUIError)> on_error_callback) {
   DCHECK_EQ(Step::kProfilePicker, current_step());
 
   // if the step was already initialized, unregister to make sure the new
@@ -397,14 +398,17 @@ void ProfilePickerFlowController::SwitchToReauth(
 
 void ProfilePickerFlowController::OnReauthCompleted(
     Profile* profile,
-    base::OnceCallback<void()> on_error_callback,
-    bool success) {
+    base::OnceCallback<void(ReauthUIError)> on_error_callback,
+    bool success,
+    ReauthUIError error) {
   if (!success) {
+    CHECK_NE(error, ReauthUIError::kNone);
+
     SwitchToStep(
         Step::kProfilePicker, /*reset_state=*/true,
         base::BindOnce(
             &ProfilePickerFlowController::OnProfilePickerStepShownReauthError,
-            base::Unretained(this), std::move(on_error_callback)));
+            base::Unretained(this), std::move(on_error_callback), error));
     return;
   }
 
@@ -417,7 +421,8 @@ void ProfilePickerFlowController::OnReauthCompleted(
 }
 
 void ProfilePickerFlowController::OnProfilePickerStepShownReauthError(
-    base::OnceCallback<void()> on_error_callback,
+    base::OnceCallback<void(ReauthUIError)> on_error_callback,
+    ReauthUIError error,
     bool switch_step_success) {
   // If the step switch to the profile picker was not successful, do not proceed
   // with displaying the error dialog.
@@ -425,7 +430,7 @@ void ProfilePickerFlowController::OnProfilePickerStepShownReauthError(
     return;
   }
 
-  std::move(on_error_callback).Run();
+  std::move(on_error_callback).Run(error);
 }
 
 #endif

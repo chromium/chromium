@@ -28,6 +28,7 @@ class WebView;
 }  // namespace views
 
 enum class StartupProfileModeReason;
+enum class ReauthUIError;
 
 class ProfilePicker {
  public:
@@ -243,8 +244,9 @@ class ProfilePicker {
   // the `profile` will be opened. On unsuccessful reauth, the user will be
   // redirected to the profile picker main page, with a popup error dialog
   // displayed through `on_error_callback`.
-  static void SwitchToReauth(Profile* profile,
-                             base::OnceCallback<void()> on_error_callback);
+  static void SwitchToReauth(
+      Profile* profile,
+      base::OnceCallback<void(ReauthUIError)> on_error_callback);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

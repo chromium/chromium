@@ -56,7 +56,7 @@ class ProfilePickerDiceReauthProvider
       Profile* profile,
       const std::string& email_to_reauth,
       const std::string& gaia_id_to_reauth,
-      base::OnceCallback<void(bool)> on_reauth_completed);
+      base::OnceCallback<void(bool, ReauthUIError)> on_reauth_completed);
   ~ProfilePickerDiceReauthProvider() override;
 
   ProfilePickerDiceReauthProvider(const ProfilePickerDiceReauthProvider&) =
@@ -111,7 +111,7 @@ class ProfilePickerDiceReauthProvider
   raw_ref<signin::IdentityManager> identity_manager_;
   const std::string gaia_id_to_reauth_;
   const std::string email_to_reauth_;
-  base::OnceCallback<void(bool)> on_reauth_completed_;
+  base::OnceCallback<void(bool, ReauthUIError)> on_reauth_completed_;
 
   // Prevent `profile_` from being destroyed first.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;

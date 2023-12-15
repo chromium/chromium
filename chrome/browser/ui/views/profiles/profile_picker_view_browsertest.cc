@@ -107,6 +107,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_launcher.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension_id.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -865,16 +866,40 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 class ForceSigninProfilePickerCreationFlowBrowserTest
     : public ProfilePickerCreationFlowBrowserTest {
  public:
+  explicit ForceSigninProfilePickerCreationFlowBrowserTest(
+      bool force_signin_enabled = true)
+      : force_signin_setter_(force_signin_enabled) {}
+
   void SimulateSuccesfulSignin(signin::IdentityManager* identity_manager,
                                const std::string& email) {
     // Simulate a successful reauth by making the account available.
     signin::MakeAccountAvailable(identity_manager, email);
   }
 
+  bool IsForceSigninErrorDialogShown() {
+    // Make sure the profile picker is opened, with the main profile picker view
+    // (where the dialog can be shown), and the page is fully loaded.
+    EXPECT_TRUE(ProfilePicker::IsOpen());
+    const GURL main_profile_picker_url("chrome://profile-picker");
+    EXPECT_EQ(web_contents()->GetURL().GetWithEmptyPath(),
+              main_profile_picker_url);
+    WaitForLoadStop(main_profile_picker_url);
+
+    return content::EvalJs(
+               web_contents(),
+               // Get down to the `forceSigninErrorDialog` cr-dialog node and
+               // check the `open` field.
+               "document.body.getElementsByTagName('profile-picker-app')[0]."
+               "shadowRoot.getElementById('mainView').shadowRoot."
+               "getElementById(\""
+               "forceSigninErrorDialog\").open")
+        .ExtractBool();
+  }
+
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
-  signin_util::ScopedForceSigninSetterForTesting force_signin_setter_{true};
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter_;
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_{
       kForceSigninFlowInProfilePicker};
@@ -1050,6 +1075,7 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
 
   ASSERT_TRUE(entry->IsSigninRequired());
   ASSERT_TRUE(ProfilePicker::IsOpen());
+  ASSERT_FALSE(IsForceSigninErrorDialogShown());
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -1081,6 +1107,7 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   // profile to be still locked.
   WaitForLoadStop(GURL("chrome://profile-picker"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_TRUE(IsForceSigninErrorDialogShown());
   EXPECT_EQ(BrowserList::GetInstance()->size(), initial_browser_count);
   EXPECT_TRUE(entry->IsSigninRequired());
   histogram_tester()->ExpectUniqueSample(
@@ -1194,6 +1221,61 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   // Default profile is now active.
   EXPECT_NE(default_profile_entry->GetActiveTime(), base::Time());
 }
+
+class ForceSigninProfilePickerCreationFlowBrowserTestWithPRE
+    : public ForceSigninProfilePickerCreationFlowBrowserTest {
+ public:
+  ForceSigninProfilePickerCreationFlowBrowserTestWithPRE()
+      : ForceSigninProfilePickerCreationFlowBrowserTest(
+            /*force_signin_enabled=*/!content::IsPreTest()) {}
+};
+
+IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTestWithPRE,
+                       PRE_ProfileThatCannotBeManagedCannotBeOpened) {
+  ASSERT_FALSE(signin_util::IsForceSigninEnabled());
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  // Only default profile exists.
+  ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
+
+  // Activate this profile then close the session.
+  CreateBrowser(profile_manager->GetLoadedProfiles()[0]);
+}
+
+IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTestWithPRE,
+                       ProfileThatCannotBeManagedCannotBeOpened) {
+  ASSERT_TRUE(signin_util::IsForceSigninEnabled());
+
+  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  ASSERT_EQ(0u, initial_browser_count);
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  std::vector<ProfileAttributesEntry*> entries =
+      profile_manager->GetProfileAttributesStorage().GetAllProfilesAttributes();
+  ASSERT_EQ(1u, entries.size());
+  // Use the same (only) profile as in PRE.
+  ProfileAttributesEntry* existing_entry = entries[0];
+
+  // Profile has been used and is now locked.
+  ASSERT_NE(existing_entry->GetActiveTime(), base::Time());
+  ASSERT_TRUE(existing_entry->IsSigninRequired());
+  ASSERT_FALSE(existing_entry->CanBeManaged());
+
+  ASSERT_TRUE(ProfilePicker::IsOpen());
+  ASSERT_FALSE(IsForceSigninErrorDialogShown());
+
+  // Attempting to open this profile, profile was previously active and not
+  // syncing/managed.
+  OpenProfileFromPicker(existing_entry->GetPath(), false);
+
+  // Should not succeed.
+  EXPECT_EQ(initial_browser_count, BrowserList::GetInstance()->size());
+  // Error dialog is shown on top of the ProfilePicker.
+  EXPECT_TRUE(IsForceSigninErrorDialogShown());
+  // Profile is still locked.
+  EXPECT_TRUE(existing_entry->IsSigninRequired());
+}
+
 #endif
 
 // Regression test for crbug.com/1266415.

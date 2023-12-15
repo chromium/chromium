@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/webui/profile_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
@@ -569,7 +570,7 @@ void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
       if (base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
         ProfilePicker::SwitchToReauth(
             profile,
-            base::BindOnce(&ProfilePickerHandler::OnReauthErrorCallback,
+            base::BindOnce(&ProfilePickerHandler::DisplayForceSigninErrorDialog,
                            weak_factory_.GetWeakPtr()));
       } else {
         ProfilePickerForceSigninDialog::ShowReauthDialog(
@@ -582,9 +583,13 @@ void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
       // previously. A pre-existed profile can still be used if it has been
       // signed in with an email address matched RestrictSigninToPattern policy
       // already.
-      LoginUIServiceFactory::GetForProfile(profile)
-          ->SetProfileBlockingErrorMessage();
-      ProfilePicker::ShowDialogAndDisplayErrorMessage(profile);
+      if (base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
+        DisplayForceSigninErrorDialog(ReauthUIError::kNotAllowed);
+      } else {
+        LoginUIServiceFactory::GetForProfile(profile)
+            ->SetProfileBlockingErrorMessage();
+        ProfilePicker::ShowDialogAndDisplayErrorMessage(profile);
+      }
     } else {
       // Fresh sign in via profile picker without existing email address.
       if (base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
@@ -608,9 +613,12 @@ void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
-void ProfilePickerHandler::OnReauthErrorCallback() {
+void ProfilePickerHandler::DisplayForceSigninErrorDialog(ReauthUIError error) {
   AllowJavascript();
-  FireWebUIListener("display-force-signin-error-dialog", base::Value());
+  const auto& [title_id, body_id] = GetReauthUIErrorMessageIDs(error);
+  FireWebUIListener("display-force-signin-error-dialog",
+                    base::Value(l10n_util::GetStringUTF8(title_id)),
+                    base::Value(l10n_util::GetStringUTF8(body_id)));
 }
 
 void ProfilePickerHandler::HandleLaunchGuestProfile(
