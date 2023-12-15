@@ -1217,30 +1217,6 @@ bool ShouldNotifySubresourceResponseStarted(blink::RendererPreferences pref) {
   return pref.send_subresource_notification;
 }
 
-class WebURLLoaderThrottleProviderForFrameImpl
-    : public blink::WebURLLoaderThrottleProviderForFrame {
- public:
-  explicit WebURLLoaderThrottleProviderForFrameImpl(
-      const blink::LocalFrameToken& frame_token)
-      : frame_token_(frame_token) {}
-  ~WebURLLoaderThrottleProviderForFrameImpl() override = default;
-
-  WebVector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
-      const WebURLRequest& request) override {
-    RenderThreadImpl* render_thread = RenderThreadImpl::current();
-    // The RenderThreadImpl or its URLLoaderThrottleProvider member may not be
-    // valid in some tests.
-    if (!render_thread || !render_thread->url_loader_throttle_provider()) {
-      return {};
-    }
-    return render_thread->url_loader_throttle_provider()->CreateThrottles(
-        frame_token_, request);
-  }
-
- private:
-  const blink::LocalFrameToken frame_token_;
-};
-
 // Initialize the WebFrameWidget with compositing. Only local root frames
 // create a widget.
 // `previous_widget` indicates whether the compositor for the frame which
@@ -6247,10 +6223,12 @@ RenderFrameImpl::GetURLLoaderFactory() {
   return GetLoaderFactoryBundle();
 }
 
-std::unique_ptr<blink::WebURLLoaderThrottleProviderForFrame>
-RenderFrameImpl::CreateWebURLLoaderThrottleProviderForFrame() {
-  return std::make_unique<WebURLLoaderThrottleProviderForFrameImpl>(
-      frame_->GetLocalFrameToken());
+blink::URLLoaderThrottleProvider*
+RenderFrameImpl::GetURLLoaderThrottleProvider() {
+  RenderThreadImpl* render_thread = RenderThreadImpl::current();
+  // The RenderThreadImpl may not be valid in some tests.
+  return render_thread ? render_thread->url_loader_throttle_provider()
+                       : nullptr;
 }
 
 scoped_refptr<blink::WebBackgroundResourceFetchAssets>

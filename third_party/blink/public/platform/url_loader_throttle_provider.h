@@ -38,26 +38,12 @@ class BLINK_PLATFORM_EXPORT URLLoaderThrottleProvider {
   // service workers call it on the worker thread. `local_frame_token` will be
   // set to the corresponding frame for frame and dedicated worker requests,
   // otherwise it will be not be set.
-  //
-  // TODO(crbug.com/1379780): The 'local_frame_token' argument is required
-  // because a frame's URLLoaderThrottleProvider is designed to be created only
-  // once per process and shared between multiple frames. But when we have
-  // URLLoaderThrottleProvider for each frames in the background threads, we
-  // don't need the 'local_frame_token' argument.
   virtual WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
       base::optional_ref<const LocalFrameToken> local_frame_token,
       const WebURLRequest& request) = 0;
 
   // Set the network status online state as specified in |is_online|.
   virtual void SetOnline(bool is_online) = 0;
-};
-
-class BLINK_PLATFORM_EXPORT WebURLLoaderThrottleProviderForFrame {
- public:
-  virtual ~WebURLLoaderThrottleProviderForFrame() = default;
-
-  virtual WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
-      const WebURLRequest& request) = 0;
 };
 
 }  // namespace blink

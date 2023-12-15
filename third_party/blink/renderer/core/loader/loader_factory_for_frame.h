@@ -50,12 +50,13 @@ class CORE_EXPORT LoaderFactoryForFrame final
       mojom::blink::LocalFrameHost& local_frame_host,
       mojo::PendingReceiver<mojom::blink::KeepAliveHandle> pending_receiver);
   scoped_refptr<BackgroundCodeCacheHost> GetBackgroundCodeCacheHost();
+  Vector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
+      const WebURLRequest&);
 
   const Member<DocumentLoader> document_loader_;
   const Member<LocalDOMWindow> window_;
   const Member<PrefetchedSignedExchangeManager>
       prefetched_signed_exchange_manager_;
-  std::unique_ptr<WebURLLoaderThrottleProviderForFrame> throttle_provider_;
   HeapMojoRemote<mojom::blink::KeepAliveHandleFactory>
       keep_alive_handle_factory_;
   scoped_refptr<BackgroundCodeCacheHost> background_code_cache_host_;
