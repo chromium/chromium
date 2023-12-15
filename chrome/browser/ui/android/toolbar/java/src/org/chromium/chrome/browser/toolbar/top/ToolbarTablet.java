@@ -387,6 +387,7 @@ public class ToolbarTablet extends ToolbarLayout
     @Override
     public void onClick(View v) {
         if (mHomeButton == v) {
+            recordHomeModuleClickedIfNTPVisible();
             openHomepage();
         } else if (mBackButton == v) {
             boolean isEnabled = mBackButton.isEnabled();

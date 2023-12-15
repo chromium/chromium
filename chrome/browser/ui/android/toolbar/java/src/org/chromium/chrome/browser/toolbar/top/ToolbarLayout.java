@@ -58,6 +58,9 @@ import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColo
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
@@ -876,4 +879,16 @@ public abstract class ToolbarLayout extends FrameLayout
      * {@link LayoutStateProvider.LayoutStateObserver#onFinishedShowing(int)}.
      */
     public void onTransitionEnd() {}
+
+    /**
+     * Called when the home button is pressed. Will record the home button action if the NTP is
+     * visible. Used on both phones and tablets.
+     */
+    protected void recordHomeModuleClickedIfNTPVisible() {
+        if (getToolbarDataProvider().getNewTabPageDelegate().isCurrentlyVisible()) {
+            // Record the clicking action on the home button.
+            BrowserUiUtils.recordModuleClickHistogram(
+                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNtp.HOME_BUTTON);
+        }
+    }
 }

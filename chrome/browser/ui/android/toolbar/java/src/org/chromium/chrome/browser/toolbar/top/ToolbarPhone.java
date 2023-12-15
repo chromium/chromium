@@ -80,9 +80,6 @@ import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColo
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.chrome.browser.util.BrowserUiUtils;
-import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
-import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -600,11 +597,7 @@ public class ToolbarPhone extends ToolbarLayout
             return;
         }
         if (mHomeButton == v) {
-            if (getToolbarDataProvider().getNewTabPageDelegate().isCurrentlyVisible()) {
-                // Record the clicking action on the home button.
-                BrowserUiUtils.recordModuleClickHistogram(
-                        HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNtp.HOME_BUTTON);
-            }
+            recordHomeModuleClickedIfNTPVisible();
             openHomepage();
             if (isNativeLibraryReady() && mPartnerHomepageEnabledSupplier.getAsBoolean()) {
                 Profile profile = getToolbarDataProvider().getProfile();
