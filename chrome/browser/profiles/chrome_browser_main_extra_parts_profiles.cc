@@ -296,6 +296,7 @@
 #include "chrome/browser/ash/system_extensions/api/window_management/cros_window_management_context_factory.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
+#include "chrome/browser/push_notification/push_notification_service_factory.h"
 #include "chromeos/constants/chromeos_features.h"
 #else
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
@@ -914,6 +915,13 @@ void ChromeBrowserMainExtraPartsProfiles::
   PreloadingModelKeyedServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   NearbySharingServiceFactory::GetInstance();
+  if (base::FeatureList::IsEnabled(ash::features::kNearbyPresence)) {
+    // PushNotificationService is only enabled for ash for MVP. As more features
+    // are added to use the PushNotificationService, this can be reevaluated and
+    // expanded to enable building the PushNotificationService for all Chrome
+    // Desktop builds.
+    push_notification::PushNotificationServiceFactory::GetInstance();
+  }
 #endif
   NotificationDisplayServiceFactory::GetInstance();
   NotificationMetricsLoggerFactory::GetInstance();
