@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_manager.h"
 
@@ -26,8 +27,8 @@ class ComposeManagerImpl : public ComposeManager {
       const autofill::FormFieldData& trigger_field) override;
   bool HasSavedState(const autofill::FieldGlobalId& trigger_field_id) override;
   void OpenCompose(autofill::AutofillDriver& driver,
-                   autofill::FormRendererId form_renderer_id,
-                   autofill::FieldRendererId field_renderer_id,
+                   autofill::FormGlobalId form_id,
+                   autofill::FieldGlobalId field_id,
                    UiEntryPoint ui_entry_point) override;
 
   // ComposeManager

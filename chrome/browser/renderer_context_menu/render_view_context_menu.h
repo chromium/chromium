@@ -395,6 +395,9 @@ class RenderViewContextMenu
   void ExecLanguageSettings(int event_flags);
   void ExecProtocolHandlerSettings(int event_flags);
   void ExecPictureInPicture();
+#if BUILDFLAG(ENABLE_COMPOSE)
+  void ExecOpenCompose();
+#endif
   void ExecOpenInReadAnything();
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void ExecRunLayoutExtraction();

@@ -1725,8 +1725,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateOpensComposeAndFills) {
   // Simulate accepting a Compose suggestion.
   EXPECT_CALL(
       compose_delegate,
-      OpenCompose(_, queried_form_.unique_renderer_id,
-                  queried_form_triggering_field_id_.renderer_id,
+      OpenCompose(_, queried_form_.global_id(),
+                  queried_form_triggering_field_id_,
                   AutofillComposeDelegate::UiEntryPoint::kAutofillPopup));
   EXPECT_CALL(client(),
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));

@@ -87,19 +87,14 @@ void ComposeManagerImpl::GetBrowserFormHandler(
                                std::move(compose_callback));
 }
 
-void ComposeManagerImpl::OpenCompose(
-    autofill::AutofillDriver& driver,
-    autofill::FormRendererId form_renderer_id,
-    autofill::FieldRendererId field_renderer_id,
-    UiEntryPoint entry_point) {
-  const autofill::LocalFrameToken frame_token = driver.GetFrameToken();
-  autofill::FormGlobalId form_global_id = {frame_token, form_renderer_id};
-  autofill::FieldGlobalId field_global_id = {frame_token, field_renderer_id};
-
-  driver.ExtractForm(form_global_id,
-                     base::BindOnce(&ComposeManagerImpl::GetBrowserFormHandler,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    field_global_id, entry_point));
+void ComposeManagerImpl::OpenCompose(autofill::AutofillDriver& driver,
+                                     autofill::FormGlobalId form_id,
+                                     autofill::FieldGlobalId field_id,
+                                     UiEntryPoint entry_point) {
+  driver.ExtractForm(
+      form_id,
+      base::BindOnce(&ComposeManagerImpl::GetBrowserFormHandler,
+                     weak_ptr_factory_.GetWeakPtr(), field_id, entry_point));
 }
 
 void ComposeManagerImpl::OpenComposeWithFormFieldData(

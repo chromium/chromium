@@ -3381,23 +3381,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
 #if BUILDFLAG(ENABLE_COMPOSE)
     case IDC_CONTEXT_COMPOSE: {
-      auto* client = GetChromeComposeClient();
-      compose::ComposeManager* compose_manager =
-          client ? &client->GetManager() : nullptr;
-      RenderFrameHost* render_frame_host = GetRenderFrameHost();
-      if (compose_manager && render_frame_host) {
-        auto* content_autofill_driver =
-            autofill::ContentAutofillDriver::GetForRenderFrameHost(
-                render_frame_host);
-        if (content_autofill_driver) {
-          compose_manager->OpenCompose(
-              *content_autofill_driver,
-              autofill::FormRendererId(params_.form_renderer_id),
-              autofill::FieldRendererId(params_.field_renderer_id),
-              compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);
-          new_badge_tracker_.ActionPerformed("compose_menu_item_activated");
-        }
-      }
+      ExecOpenCompose();
       break;
     }
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
@@ -3934,6 +3918,31 @@ void RenderViewContextMenu::ExecOpenLinkInProfile(int profile_index) {
       profile_path, false,
       base::BindRepeating(OnBrowserCreated, params_.link_url));
 }
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+void RenderViewContextMenu::ExecOpenCompose() {
+  ChromeComposeClient* client = GetChromeComposeClient();
+  if (!client) {
+    return;
+  }
+  RenderFrameHost* render_frame_host = GetRenderFrameHost();
+  if (!render_frame_host) {
+    return;
+  }
+  if (auto* driver = autofill::ContentAutofillDriver::GetForRenderFrameHost(
+          render_frame_host)) {
+    autofill::LocalFrameToken frame_token = driver->GetFrameToken();
+    client->GetManager().OpenCompose(
+        *driver,
+        autofill::FormGlobalId(
+            frame_token, autofill::FormRendererId(params_.form_renderer_id)),
+        autofill::FieldGlobalId(
+            frame_token, autofill::FieldRendererId(params_.field_renderer_id)),
+        compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);
+    new_badge_tracker_.ActionPerformed("compose_menu_item_activated");
+  }
+}
+#endif
 
 void RenderViewContextMenu::ExecOpenInReadAnything() {
   Browser* browser = GetBrowser();
