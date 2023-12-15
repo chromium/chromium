@@ -8626,6 +8626,12 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
   if (!IsFencedFrameReportingFromRendererAllowed()) {
     return;
   }
+  if (event_data.length() > blink::kFencedFrameMaxBeaconLength) {
+    mojo::ReportBadMessage(
+        "The data provided to SendFencedFrameReportingBeacon() exceeds the "
+        "maximum length, which is 64KB.");
+    return;
+  }
 
   for (const blink::FencedFrame::ReportingDestination& destination :
        destinations) {
@@ -8872,15 +8878,6 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
     const FencedFrameReporter::DestinationVariant& event_variant,
     blink::FencedFrame::ReportingDestination destination,
     absl::optional<int64_t> navigation_id) {
-  if (absl::holds_alternative<DestinationEnumEvent>(event_variant) &&
-      absl::get<DestinationEnumEvent>(event_variant).data.length() >
-          blink::kFencedFrameMaxBeaconLength) {
-    mojo::ReportBadMessage(
-        "The data provided to SendFencedFrameReportingBeaconInternal() exceeds "
-        "the maximum length, which is 64KB.");
-    return;
-  }
-
   std::string error_message;
   // By default, log w/ error severity. Can be overwritten to lower severity
   // depending on the error.
