@@ -228,18 +228,16 @@ bool AddressComponent::IsSupportedType(ServerFieldType field_type) const {
          GetAdditionalSupportedFieldTypes().contains(field_type);
 }
 
-void AddressComponent::GetSupportedTypes(
-    ServerFieldTypeSet* supported_types) const {
+void AddressComponent::GetSupportedTypes(FieldTypeSet* supported_types) const {
   return AddressComponent::GetTypes(/*storable_only=*/false, supported_types);
 }
 
-void AddressComponent::GetStorableTypes(
-    ServerFieldTypeSet* supported_types) const {
+void AddressComponent::GetStorableTypes(FieldTypeSet* supported_types) const {
   return AddressComponent::GetTypes(/*storable_only=*/true, supported_types);
 }
 
 void AddressComponent::GetTypes(bool storable_only,
-                                ServerFieldTypeSet* supported_types) const {
+                                FieldTypeSet* supported_types) const {
   // A proper AddressComponent tree contains every type only once.
   CHECK(supported_types->find(storage_type_) == supported_types->end())
       << "The AddressComponent already contains a node that supports this "
@@ -268,9 +266,8 @@ std::optional<ServerFieldType> AddressComponent::GetStorableTypeOf(
   return std::nullopt;
 }
 
-const ServerFieldTypeSet AddressComponent::GetAdditionalSupportedFieldTypes()
-    const {
-  constexpr ServerFieldTypeSet additional_supported_field_types;
+const FieldTypeSet AddressComponent::GetAdditionalSupportedFieldTypes() const {
+  constexpr FieldTypeSet additional_supported_field_types;
   return additional_supported_field_types;
 }
 

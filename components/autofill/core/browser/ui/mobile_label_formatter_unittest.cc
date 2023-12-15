@@ -25,12 +25,12 @@ using testing::ElementsAre;
 namespace autofill {
 namespace {
 
-ServerFieldTypeSet GetContactOnlyFieldTypes() {
+FieldTypeSet GetContactOnlyFieldTypes() {
   return {NO_SERVER_DATA, NAME_FIRST, NAME_LAST, EMAIL_ADDRESS,
           PHONE_HOME_WHOLE_NUMBER};
 }
 
-ServerFieldTypeSet GetAddressOnlyFieldTypes() {
+FieldTypeSet GetAddressOnlyFieldTypes() {
   return {NO_SERVER_DATA,     NAME_FIRST,
           NAME_LAST,          ADDRESS_HOME_LINE1,
           ADDRESS_HOME_LINE2, ADDRESS_HOME_DEPENDENT_LOCALITY,
@@ -38,7 +38,7 @@ ServerFieldTypeSet GetAddressOnlyFieldTypes() {
           ADDRESS_HOME_ZIP,   ADDRESS_HOME_COUNTRY};
 }
 
-ServerFieldTypeSet GetAddressPlusEmailFieldTypes() {
+FieldTypeSet GetAddressPlusEmailFieldTypes() {
   return {NO_SERVER_DATA,
           NAME_FIRST,
           NAME_LAST,
@@ -52,7 +52,7 @@ ServerFieldTypeSet GetAddressPlusEmailFieldTypes() {
           ADDRESS_HOME_COUNTRY};
 }
 
-ServerFieldTypeSet GetAddressPlusContactFieldTypes() {
+FieldTypeSet GetAddressPlusContactFieldTypes() {
   return {NO_SERVER_DATA,
           NAME_FIRST,
           NAME_LAST,

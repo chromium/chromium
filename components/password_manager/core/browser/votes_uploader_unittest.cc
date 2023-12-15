@@ -39,6 +39,7 @@ using ::autofill::AutofillCrowdsourcingManager;
 using ::autofill::CONFIRMATION_PASSWORD;
 using ::autofill::FieldRendererId;
 using ::autofill::FieldSignature;
+using ::autofill::FieldTypeSet;
 using ::autofill::FormData;
 using ::autofill::FormFieldData;
 using ::autofill::FormSignature;
@@ -48,7 +49,6 @@ using ::autofill::NOT_USERNAME;
 using ::autofill::PASSWORD;
 using ::autofill::PasswordAttribute;
 using ::autofill::ServerFieldType;
-using ::autofill::ServerFieldTypeSet;
 using ::autofill::SignatureIsSameAs;
 using ::autofill::SINGLE_USERNAME;
 using ::autofill::SubmissionEventIsSameAs;
@@ -155,8 +155,7 @@ TEST_F(VotesUploaderTest, UploadPasswordVoteUpdate) {
   submitted_form_.new_password_value = u"new_password_value";
   submitted_form_.submission_event =
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
-  ServerFieldTypeSet expected_field_types = {NEW_PASSWORD,
-                                             CONFIRMATION_PASSWORD};
+  FieldTypeSet expected_field_types = {NEW_PASSWORD, CONFIRMATION_PASSWORD};
   std::map<std::u16string, ServerFieldType> expected_types = {
       {new_password_element, NEW_PASSWORD},
       {confirmation_element, CONFIRMATION_PASSWORD}};
@@ -185,7 +184,7 @@ TEST_F(VotesUploaderTest, UploadPasswordVoteSave) {
       FieldRendererId(12);
   submitted_form_.submission_event =
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
-  ServerFieldTypeSet expected_field_types = {PASSWORD, CONFIRMATION_PASSWORD};
+  FieldTypeSet expected_field_types = {PASSWORD, CONFIRMATION_PASSWORD};
   SubmissionIndicatorEvent expected_submission_event =
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
 
@@ -212,8 +211,8 @@ TEST_F(VotesUploaderTest, UploadUsernameOverwrittenVote) {
   std::map<std::u16string, ServerFieldType> expected_types = {
       {GetFieldNameByIndex(6), autofill::USERNAME},
       {GetFieldNameByIndex(5), autofill::ACCOUNT_CREATION_PASSWORD}};
-  ServerFieldTypeSet expected_field_types = {
-      autofill::ACCOUNT_CREATION_PASSWORD, autofill::USERNAME};
+  FieldTypeSet expected_field_types = {autofill::ACCOUNT_CREATION_PASSWORD,
+                                       autofill::USERNAME};
 
   EXPECT_CALL(
       mock_autofill_crowdsourcing_manager_,
@@ -252,7 +251,7 @@ TEST_F(VotesUploaderTest, SendVotesOnSaveOverwrittenFlow) {
   }
   std::vector<const PasswordForm*> matches = {&match_form};
 
-  ServerFieldTypeSet expected_field_types = {autofill::USERNAME};
+  FieldTypeSet expected_field_types = {autofill::USERNAME};
 
   EXPECT_TRUE(votes_uploader.FindCorrectedUsernameElement(
       matches, u"correct_username", u"password_value"));
@@ -288,8 +287,8 @@ TEST_F(VotesUploaderTest, UploadCredentialsReusedVote) {
   std::map<std::u16string, ServerFieldType> expected_types = {
       {GetFieldNameByIndex(6), autofill::USERNAME},
       {GetFieldNameByIndex(5), autofill::ACCOUNT_CREATION_PASSWORD}};
-  ServerFieldTypeSet expected_field_types = {
-      autofill::ACCOUNT_CREATION_PASSWORD, autofill::USERNAME};
+  FieldTypeSet expected_field_types = {autofill::ACCOUNT_CREATION_PASSWORD,
+                                       autofill::USERNAME};
 
   EXPECT_CALL(
       mock_autofill_crowdsourcing_manager_,
@@ -323,7 +322,7 @@ TEST_F(VotesUploaderTest, SendVoteOnCredentialsReuseFlow) {
   pending.form_data.fields.push_back(field);
   pending.username_value = u"username_value";
 
-  ServerFieldTypeSet expected_field_types = {autofill::USERNAME};
+  FieldTypeSet expected_field_types = {autofill::USERNAME};
 
   EXPECT_CALL(
       mock_autofill_crowdsourcing_manager_,
@@ -347,8 +346,7 @@ TEST_F(VotesUploaderTest, UploadUsernameEditedVote) {
   std::map<std::u16string, ServerFieldType> expected_types = {
       {GetFieldNameByIndex(6), autofill::USERNAME},
       {GetFieldNameByIndex(5), autofill::PASSWORD}};
-  ServerFieldTypeSet expected_field_types = {autofill::PASSWORD,
-                                             autofill::USERNAME};
+  FieldTypeSet expected_field_types = {autofill::PASSWORD, autofill::USERNAME};
 
   // A user changes the username in a save prompt to the value of
   // another field of the observed form.
@@ -382,8 +380,7 @@ TEST_F(VotesUploaderTest, SendVotesOnSaveEditedFlow) {
   form_to_upload_.password_element_renderer_id = FieldRendererId(5);
   form_to_upload_.username_value = u"new_username_value";
 
-  ServerFieldTypeSet expected_field_types = {autofill::PASSWORD,
-                                             autofill::USERNAME};
+  FieldTypeSet expected_field_types = {autofill::PASSWORD, autofill::USERNAME};
 
   // A user changes the username in a save prompt to the value of
   // another field of the observed form.
@@ -682,7 +679,7 @@ TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
-  ServerFieldTypeSet expected_types = {SINGLE_USERNAME};
+  FieldTypeSet expected_types = {SINGLE_USERNAME};
   EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(
                   AllOf(SignatureIs(kSingleUsernameFormSignature),
@@ -725,7 +722,7 @@ TEST_F(VotesUploaderTest, UploadNotSingleUsernameForWhitespaces) {
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
-  ServerFieldTypeSet expected_types = {NOT_USERNAME};
+  FieldTypeSet expected_types = {NOT_USERNAME};
   EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(
                   AllOf(SignatureIs(kSingleUsernameFormSignature),
@@ -780,7 +777,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSuggestedAndAccepted) {
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
-  ServerFieldTypeSet expected_types = {SINGLE_USERNAME};
+  FieldTypeSet expected_types = {SINGLE_USERNAME};
   EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(
                   AllOf(SignatureIs(kSingleUsernameFormSignature),
@@ -837,7 +834,7 @@ TEST_F(VotesUploaderTest, SingleUsernameOtherValueSuggestedAndAccepted) {
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
-  ServerFieldTypeSet expected_types = {NOT_USERNAME};
+  FieldTypeSet expected_types = {NOT_USERNAME};
   EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(
                   AllOf(SignatureIs(kSingleUsernameFormSignature),
@@ -893,7 +890,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSetInPrompt) {
   votes_uploader.set_should_send_username_first_flow_votes(true);
 
 #if !BUILDFLAG(IS_ANDROID)
-  ServerFieldTypeSet expected_types = {SINGLE_USERNAME};
+  FieldTypeSet expected_types = {SINGLE_USERNAME};
   EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(
                   AllOf(SignatureIs(kSingleUsernameFormSignature),
@@ -948,7 +945,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueDeletedInPrompt) {
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
-  ServerFieldTypeSet expected_types = {NOT_USERNAME};
+  FieldTypeSet expected_types = {NOT_USERNAME};
   EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(
                   AllOf(SignatureIs(kSingleUsernameFormSignature),
@@ -1073,7 +1070,7 @@ TEST_F(VotesUploaderTest, FieldNameCollisionInVotes) {
   submitted_form_.confirmation_password_element = password_element;
   submitted_form_.confirmation_password_element_renderer_id =
       FieldRendererId(11);
-  ServerFieldTypeSet expected_field_types = {PASSWORD, CONFIRMATION_PASSWORD};
+  FieldTypeSet expected_field_types = {PASSWORD, CONFIRMATION_PASSWORD};
 
   EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(_, false, expected_field_types,
@@ -1099,7 +1096,7 @@ TEST_F(VotesUploaderTest, NoFieldNameCollisionInVotes) {
       FieldRendererId(12);
   submitted_form_.confirmation_password_element_renderer_id =
       FieldRendererId(12);
-  ServerFieldTypeSet expected_field_types = {PASSWORD, CONFIRMATION_PASSWORD};
+  FieldTypeSet expected_field_types = {PASSWORD, CONFIRMATION_PASSWORD};
 
   EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(_, false, expected_field_types,
@@ -1128,8 +1125,7 @@ TEST_F(VotesUploaderTest, ForgotPasswordFormVote) {
       /*all_alternative_usernames=*/{});
 
   // Upload on the username form.
-  ServerFieldTypeSet expected_types = {
-      autofill::SINGLE_USERNAME_FORGOT_PASSWORD};
+  FieldTypeSet expected_types = {autofill::SINGLE_USERNAME_FORGOT_PASSWORD};
   EXPECT_CALL(
       mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(AllOf(SignatureIs(kSingleUsernameFormSignature),

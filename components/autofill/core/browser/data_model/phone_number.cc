@@ -66,7 +66,7 @@ bool PhoneNumber::operator==(const PhoneNumber& other) const {
   return number_ == other.number_ && profile_ == other.profile_;
 }
 
-void PhoneNumber::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
+void PhoneNumber::GetSupportedTypes(FieldTypeSet* supported_types) const {
   supported_types->insert(PHONE_HOME_WHOLE_NUMBER);
   supported_types->insert(PHONE_HOME_NUMBER);
   supported_types->insert(PHONE_HOME_NUMBER_PREFIX);
@@ -111,7 +111,7 @@ void PhoneNumber::SetRawInfoWithVerificationStatus(ServerFieldType type,
 
 void PhoneNumber::GetMatchingTypes(const std::u16string& text,
                                    const std::string& app_locale,
-                                   ServerFieldTypeSet* matching_types) const {
+                                   FieldTypeSet* matching_types) const {
   // Strip the common phone number non numerical characters before calling the
   // base matching type function. For example, the |text| "(514) 121-1523"
   // would become the stripped text "5141211523". Since the base matching

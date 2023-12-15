@@ -11,7 +11,7 @@ namespace autofill {
 
 namespace {
 
-ServerFieldTypeSet GetServerFieldsForFieldGroup(FieldTypeGroup group) {
+FieldTypeSet GetServerFieldsForFieldGroup(FieldTypeGroup group) {
   switch (group) {
     case FieldTypeGroup::kName:
       return GetFieldTypesOfGroup(FieldTypeGroup::kName);
@@ -40,7 +40,7 @@ ServerFieldTypeSet GetServerFieldsForFieldGroup(FieldTypeGroup group) {
 }  // namespace
 
 AutofillFillingMethod GetFillingMethodFromTargetedFields(
-    const ServerFieldTypeSet& targeted_field_types) {
+    const FieldTypeSet& targeted_field_types) {
   if (targeted_field_types == kAllFieldTypes) {
     return AutofillFillingMethod::kFullForm;
   }
@@ -53,21 +53,21 @@ AutofillFillingMethod GetFillingMethodFromTargetedFields(
   return AutofillFillingMethod::kNone;
 }
 
-ServerFieldTypeSet GetAddressFieldsForGroupFilling() {
-  ServerFieldTypeSet fields = GetFieldTypesOfGroup(FieldTypeGroup::kAddress);
+FieldTypeSet GetAddressFieldsForGroupFilling() {
+  FieldTypeSet fields = GetFieldTypesOfGroup(FieldTypeGroup::kAddress);
   fields.insert_all(GetFieldTypesOfGroup(FieldTypeGroup::kCompany));
   return fields;
 }
 
-bool AreFieldsGranularFillingGroup(const ServerFieldTypeSet& field_types) {
+bool AreFieldsGranularFillingGroup(const FieldTypeSet& field_types) {
   return field_types == GetAddressFieldsForGroupFilling() ||
          field_types == GetFieldTypesOfGroup(FieldTypeGroup::kName) ||
          field_types == GetFieldTypesOfGroup(FieldTypeGroup::kEmail) ||
          field_types == GetFieldTypesOfGroup(FieldTypeGroup::kPhone);
 }
 
-ServerFieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
-    const ServerFieldTypeSet& last_targeted_field_types,
+FieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
+    const FieldTypeSet& last_targeted_field_types,
     ServerFieldType triggering_field_type) {
   switch (GetFillingMethodFromTargetedFields(last_targeted_field_types)) {
     case AutofillFillingMethod::kGroupFilling:

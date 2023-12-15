@@ -62,13 +62,13 @@ RationalizationRule CreateTestRule() {
               .SetFeature(&kTestFeatureForFormStructureRationalizationEngine)
               .Build())
       .SetTriggerField(FieldCondition{
-          .possible_overall_types = ServerFieldTypeSet{ADDRESS_HOME_LINE2},
+          .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE2},
           .regex_reference_match = "ADDRESS_HOME_DEPENDENT_LOCALITY",
       })
       .SetOtherFieldConditions({
           FieldCondition{
               .location = FieldLocation::kLastClassifiedPredecessor,
-              .possible_overall_types = ServerFieldTypeSet{ADDRESS_HOME_LINE1},
+              .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1},
           },
       })
       .SetActions({
@@ -97,7 +97,7 @@ TEST(FormStructureRationalizationEngine, TestBuilder) {
 
   EXPECT_EQ(rule.trigger_field.location, FieldLocation::kTriggerField);
   EXPECT_EQ(rule.trigger_field.possible_overall_types,
-            ServerFieldTypeSet{ADDRESS_HOME_LINE2});
+            FieldTypeSet{ADDRESS_HOME_LINE2});
   EXPECT_EQ(rule.trigger_field.regex_reference_match,
             "ADDRESS_HOME_DEPENDENT_LOCALITY");
 
@@ -105,7 +105,7 @@ TEST(FormStructureRationalizationEngine, TestBuilder) {
   EXPECT_EQ(rule.other_field_conditions[0].location,
             FieldLocation::kLastClassifiedPredecessor);
   EXPECT_EQ(rule.other_field_conditions[0].possible_overall_types,
-            ServerFieldTypeSet{ADDRESS_HOME_LINE1});
+            FieldTypeSet{ADDRESS_HOME_LINE1});
 
   ASSERT_EQ(rule.actions.size(), 2u);
   EXPECT_EQ(rule.actions[0].target, FieldLocation::kLastClassifiedPredecessor);
@@ -176,7 +176,7 @@ TEST(FormStructureRationalizationEngine,
 
   FieldCondition no_possible_types_required = {};
   FieldCondition requires_address_line1_type = {
-      .possible_overall_types = ServerFieldTypeSet{ADDRESS_HOME_LINE1},
+      .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1},
   };
 
   LanguageCode page_language = LanguageCode("es");

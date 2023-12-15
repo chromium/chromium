@@ -22,7 +22,7 @@ class ContactFormLabelFormatter : public LabelFormatter {
                             const std::string& app_locale,
                             ServerFieldType focused_field_type,
                             uint32_t groups,
-                            const ServerFieldTypeSet& field_types);
+                            const FieldTypeSet& field_types);
 
   ~ContactFormLabelFormatter() override;
 

@@ -469,8 +469,8 @@ TEST(AutofillProfileTest, CreateInferredLabels) {
   EXPECT_EQ(u"John Doe, 666 Erebus St., Elysium", labels[0]);
   EXPECT_EQ(u"Jane Doe, 123 Letha Shore., Dis", labels[1]);
 
-  ServerFieldTypeSet suggested_fields = {ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
-                                         ADDRESS_HOME_ZIP};
+  FieldTypeSet suggested_fields = {ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
+                                   ADDRESS_HOME_ZIP};
 
   // Two fields at least, from suggested fields - no filter.
   AutofillProfile::CreateInferredLabels(
@@ -549,8 +549,8 @@ TEST(AutofillProfileTest, CreateInferredLabelsFallsBackToFullName) {
 
   // If the only name field in the suggested fields is the excluded field, we
   // should not fall back to the full name as a distinguishing field.
-  ServerFieldTypeSet suggested_fields = {NAME_LAST, ADDRESS_HOME_LINE1,
-                                         EMAIL_ADDRESS};
+  FieldTypeSet suggested_fields = {NAME_LAST, ADDRESS_HOME_LINE1,
+                                   EMAIL_ADDRESS};
   std::vector<std::u16string> labels;
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
                                         suggested_fields, {NAME_LAST}, 1,
@@ -583,7 +583,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsNoDuplicatedFields) {
 
   // If the only name field in the suggested fields is the excluded field, we
   // should not fall back to the full name as a distinguishing field.
-  ServerFieldTypeSet suggested_fields = {ADDRESS_HOME_LINE1, EMAIL_ADDRESS};
+  FieldTypeSet suggested_fields = {ADDRESS_HOME_LINE1, EMAIL_ADDRESS};
   std::vector<std::u16string> labels;
   AutofillProfile::CreateInferredLabels(
       ToRawPointerVector(profiles), suggested_fields, {}, 2, "en-US", &labels);
@@ -639,8 +639,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsFlattensMultiLineValues) {
 
   // If the only name field in the suggested fields is the excluded field, we
   // should not fall back to the full name as a distinguishing field.
-  ServerFieldTypeSet suggested_fields = {NAME_FULL,
-                                         ADDRESS_HOME_STREET_ADDRESS};
+  FieldTypeSet suggested_fields = {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS};
   std::vector<std::u16string> labels;
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
                                         suggested_fields, {NAME_FULL}, 1,
@@ -1277,7 +1276,7 @@ TEST(AutofillProfileTest, Compare_StructuredTypes) {
        features::kAutofillEnableSupportForAddressOverflowAndLandmark},
       {});
   // Those types do store a verification status.
-  ServerFieldTypeSet structured_types{
+  FieldTypeSet structured_types{
       NAME_FULL,
       NAME_FIRST,
       NAME_MIDDLE,
@@ -1652,7 +1651,7 @@ TEST(AutofillProfileTest, ConvertToAccountProfile) {
 TEST(AutofillProfileTest, RemoveInaccessibleProfileValues) {
   // Returns true if at least one field was removed.
   auto RemoveInaccessibleProfileValues = [](AutofillProfile& profile) {
-    const ServerFieldTypeSet inaccessible_fields =
+    const FieldTypeSet inaccessible_fields =
         profile.FindInaccessibleProfileValues();
     profile.ClearFields(inaccessible_fields);
     return !inaccessible_fields.empty();
@@ -1710,7 +1709,7 @@ TEST(AutofillProfileTest, GetNonEmptyRawTypes) {
                                                   ADDRESS_HOME_HOUSE_NUMBER,
                                                   NAME_LAST_SECOND};
 
-  ServerFieldTypeSet non_empty_raw_types;
+  FieldTypeSet non_empty_raw_types;
   profile.GetNonEmptyRawTypes(&non_empty_raw_types);
 
   EXPECT_THAT(non_empty_raw_types,

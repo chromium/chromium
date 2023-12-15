@@ -290,7 +290,7 @@ class VotesUploader {
 
   bool StartUploadRequest(
       autofill::FormStructure& form_to_upload,
-      const autofill::ServerFieldTypeSet& available_field_types,
+      const autofill::FieldTypeSet& available_field_types,
       const std::string& login_form_signature = std::string());
 
   // On username first and forgot password flows votes are uploaded both for the
@@ -301,7 +301,7 @@ class VotesUploader {
   bool SetSingleUsernameVoteOnUsernameForm(
       autofill::AutofillField* field,
       const SingleUsernameVoteData& single_username,
-      autofill::ServerFieldTypeSet* available_field_types,
+      autofill::FieldTypeSet* available_field_types,
       autofill::FormSignature form_signature,
       autofill::IsMostRecentSingleUsernameCandidate
           is_most_recent_single_username_candidate,

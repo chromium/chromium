@@ -289,7 +289,7 @@ void SetServerCreditCards(AutofillTable* table,
 // |possible_field_types_validities| given |possible_type| and their
 // corresponding |validity_state|.
 void InitializePossibleTypesAndValidities(
-    std::vector<ServerFieldTypeSet>& possible_field_types,
+    std::vector<FieldTypeSet>& possible_field_types,
     std::vector<ServerFieldTypeValidityStatesMap>&
         possible_field_types_validities,
     const std::vector<ServerFieldType>& possible_type,

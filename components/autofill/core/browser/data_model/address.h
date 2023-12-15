@@ -33,7 +33,7 @@ class Address : public FormGroup {
                                         VerificationStatus status) override;
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& locale,
-                        ServerFieldTypeSet* matching_types) const override;
+                        FieldTypeSet* matching_types) const override;
 
   // Derives all missing tokens in the structured representation of the address
   // either parsing missing tokens from their assigned parent or by formatting
@@ -66,7 +66,7 @@ class Address : public FormGroup {
 
  private:
   // FormGroup:
-  void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
+  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
   std::u16string GetInfoImpl(const AutofillType& type,
                              const std::string& locale) const override;
   bool SetInfoWithVerificationStatusImpl(const AutofillType& type,

@@ -165,7 +165,7 @@ void FormField::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
     const GeoIpCountryCode& client_country,
     LogManager* log_manager) {
   // Set to count distinct field types.
-  ServerFieldTypeSet heuristic_types;
+  FieldTypeSet heuristic_types;
   for (const auto& [field_id, candidates] : field_candidates) {
     if (ServerFieldType heuristic_type = candidates.BestHeuristicType();
         IsFillableFieldType(heuristic_type)) {
@@ -190,7 +190,7 @@ void FormField::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
     return;
   }
 
-  ServerFieldTypeSet permitted_single_field_types{
+  FieldTypeSet permitted_single_field_types{
       MERCHANT_PROMO_CODE, IBAN_VALUE,
       CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
   if (base::FeatureList::IsEnabled(
@@ -201,7 +201,7 @@ void FormField::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
 
   // For historic reasons email addresses are only retained if they appear in
   // a <form> tag. It's unclear whether that's necessary.
-  ServerFieldTypeSet permitted_single_field_types_in_form{EMAIL_ADDRESS};
+  FieldTypeSet permitted_single_field_types_in_form{EMAIL_ADDRESS};
 
   // Returns whether a field type may exist as a stand-alone field.
   auto retainable_field_type =

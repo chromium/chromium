@@ -184,8 +184,8 @@ int32_t NormalizingIterator::GetNextChar() {
 // The values corresponding to those types are visible in the settings.
 // TODO(crbug.com/1441904): Landmark, between-street and admin-level2 are in
 // progress to be included in the settings.
-ServerFieldTypeSet GetUserVisibleTypes() {
-  static const ServerFieldTypeSet user_visible_type = {
+FieldTypeSet GetUserVisibleTypes() {
+  static const FieldTypeSet user_visible_type = {
       NAME_FULL,
       NAME_HONORIFIC_PREFIX,
       ADDRESS_HOME_STREET_ADDRESS,
@@ -211,7 +211,7 @@ std::vector<ProfileValueDifference>
 AutofillProfileComparator::GetProfileDifference(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
-    ServerFieldTypeSet types,
+    FieldTypeSet types,
     const std::string& app_locale) {
   std::vector<ProfileValueDifference> difference;
   difference.reserve(types.size());
@@ -232,7 +232,7 @@ base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
 AutofillProfileComparator::GetProfileDifferenceMap(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
-    ServerFieldTypeSet types,
+    FieldTypeSet types,
     const std::string& app_locale) {
   std::vector<
       std::pair<ServerFieldType, std::pair<std::u16string, std::u16string>>>

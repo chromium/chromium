@@ -485,11 +485,10 @@ void AddContactChildSuggestions(ServerFieldType trigger_field_type,
 }
 
 // Adds footer child suggestions to build autofill popup submenu.
-void AddFooterChildSuggestions(
-    const AutofillProfile& profile,
-    ServerFieldType trigger_field_type,
-    std::optional<ServerFieldTypeSet> last_targeted_fields,
-    Suggestion& suggestion) {
+void AddFooterChildSuggestions(const AutofillProfile& profile,
+                               ServerFieldType trigger_field_type,
+                               std::optional<FieldTypeSet> last_targeted_fields,
+                               Suggestion& suggestion) {
   // If the trigger field is not classified as an address field, then the
   // filling was triggered from the context menu. In this scenario, the user
   // should not be able to fill everything.
@@ -592,7 +591,7 @@ void AddCreditCardExpiryDateChildSuggestion(const CreditCard& credit_card,
 // When not present, we default to full form.
 // This function is called only for first-level popup.
 PopupItemId GetProfileSuggestionPopupItemId(
-    absl::optional<ServerFieldTypeSet> last_targeted_fields,
+    absl::optional<FieldTypeSet> last_targeted_fields,
     ServerFieldType trigger_field_type) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillGranularFillingAvailable)) {
@@ -695,7 +694,7 @@ bool ShouldAddAddressLine1ToGranularFillingLabels(
 // applied for a profile.
 std::vector<std::vector<std::u16string>> GetGranularFillingLabels(
     const std::vector<const AutofillProfile*>& profiles,
-    std::optional<ServerFieldTypeSet> last_targeted_fields,
+    std::optional<FieldTypeSet> last_targeted_fields,
     ServerFieldType triggering_field_type,
     const std::string& app_locale) {
   if (!last_targeted_fields ||
@@ -741,14 +740,14 @@ std::vector<std::vector<std::u16string>> GetGranularFillingLabels(
   return labels;
 }
 
-// Returns a `ServerFieldTypeSet` to be excluded from the differentiating labels
+// Returns a `FieldTypeSet` to be excluded from the differentiating labels
 // generation. The granular filling labels can contain information such
 // `ADDRESS_HOME_LINE1` depending on `triggering_field_type` and
 // `last_targeted_fields`, see `GetGranularFillingLabels()` for
 // details.
-ServerFieldTypeSet GetFieldTypesToExcludeFromDifferentiatingLabelsGeneration(
+FieldTypeSet GetFieldTypesToExcludeFromDifferentiatingLabelsGeneration(
     ServerFieldType triggering_field_type,
-    std::optional<ServerFieldTypeSet> last_targeted_fields) {
+    std::optional<FieldTypeSet> last_targeted_fields) {
   if (!last_targeted_fields ||
       !AreFieldsGranularFillingGroup(*last_targeted_fields)) {
     return {triggering_field_type};
@@ -788,9 +787,9 @@ ServerFieldTypeSet GetFieldTypesToExcludeFromDifferentiatingLabelsGeneration(
 // `field_types` the types of the fields that will be filled by the suggestion.
 std::vector<std::u16string> GetProfileSuggestionLabels(
     const std::vector<const AutofillProfile*>& profiles,
-    const ServerFieldTypeSet& field_types,
+    const FieldTypeSet& field_types,
     ServerFieldType trigger_field_type,
-    std::optional<ServerFieldTypeSet> last_targeted_fields,
+    std::optional<FieldTypeSet> last_targeted_fields,
     const std::string& app_locale) {
   std::unique_ptr<LabelFormatter> formatter;
   bool use_formatter;
@@ -845,8 +844,8 @@ std::vector<std::vector<Suggestion::Text>>
 CreateSuggestionLabelsWithGranularFillingDetails(
     base::span<const Suggestion> suggestions,
     const std::vector<const AutofillProfile*>& profiles,
-    const ServerFieldTypeSet& field_types,
-    std::optional<ServerFieldTypeSet> last_targeted_fields,
+    const FieldTypeSet& field_types,
+    std::optional<FieldTypeSet> last_targeted_fields,
     ServerFieldType trigger_field_type,
     const std::string& app_locale) {
   const std::vector<std::vector<std::u16string>>
@@ -1118,10 +1117,10 @@ AutofillSuggestionGenerator::AutofillSuggestionGenerator(
 AutofillSuggestionGenerator::~AutofillSuggestionGenerator() = default;
 
 std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
-    const ServerFieldTypeSet& field_types,
+    const FieldTypeSet& field_types,
     const FormFieldData& trigger_field,
     ServerFieldType trigger_field_type,
-    std::optional<ServerFieldTypeSet> last_targeted_fields,
+    std::optional<FieldTypeSet> last_targeted_fields,
     AutofillSuggestionTriggerSource trigger_source) {
   // If the user manually triggered suggestions from the context menu, all
   // available profiles should be shown. Selecting a suggestion overwrites the
@@ -1141,10 +1140,10 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   for (const AutofillProfile* profile : profiles_to_suggest) {
     previously_hidden_profiles_guid.insert(profile->guid());
   }
-  constexpr ServerFieldTypeSet street_address_field_types = {
+  constexpr FieldTypeSet street_address_field_types = {
       ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
       ADDRESS_HOME_LINE3};
-  ServerFieldTypeSet field_types_without_address_types = field_types;
+  FieldTypeSet field_types_without_address_types = field_types;
   field_types_without_address_types.erase_all(street_address_field_types);
 
   // Autofill already considers suggestions as different if the suggestion's
@@ -1172,7 +1171,7 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
     ServerFieldType trigger_field_type,
     const std::u16string& field_contents,
     bool field_is_autofilled,
-    const ServerFieldTypeSet& field_types) {
+    const FieldTypeSet& field_types) {
   std::u16string field_contents_canon =
       NormalizeForComparisonForType(field_contents, trigger_field_type);
 
@@ -1206,8 +1205,8 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
 std::vector<Suggestion>
 AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     const std::vector<const AutofillProfile*>& profiles,
-    const ServerFieldTypeSet& field_types,
-    std::optional<ServerFieldTypeSet> last_targeted_fields,
+    const FieldTypeSet& field_types,
+    std::optional<FieldTypeSet> last_targeted_fields,
     ServerFieldType trigger_field_type,
     uint64_t trigger_field_max_length,
     const std::set<std::string>& previously_hidden_profiles_guid) {
@@ -1312,7 +1311,7 @@ std::vector<const AutofillProfile*>
 AutofillSuggestionGenerator::DeduplicatedProfilesForSuggestions(
     const std::vector<const AutofillProfile*>& matched_profiles,
     ServerFieldType trigger_field_type,
-    const ServerFieldTypeSet& field_types,
+    const FieldTypeSet& field_types,
     const AutofillProfileComparator& comparator) {
   // TODO(crbug.com/1417975): Remove when
   // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
@@ -1431,7 +1430,7 @@ void AutofillSuggestionGenerator::RemoveProfilesNotUsedSinceTimestamp(
 }
 
 void AutofillSuggestionGenerator::AddAddressGranularFillingChildSuggestions(
-    std::optional<ServerFieldTypeSet> last_targeted_fields,
+    std::optional<FieldTypeSet> last_targeted_fields,
     ServerFieldType trigger_field_type,
     const AutofillProfile& profile,
     Suggestion& suggestion) const {

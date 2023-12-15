@@ -26,13 +26,12 @@ namespace {
 // `type` are only filled if at least one field of some `GetNecessaryTypesFor()`
 // is present.
 // TODO(crbug.com/1311937) Cleanup when launched.
-ServerFieldTypeSet GetNecessaryTypesFor(ServerFieldType type) {
+FieldTypeSet GetNecessaryTypesFor(ServerFieldType type) {
   switch (type) {
     case PHONE_HOME_COUNTRY_CODE: {
-      return ServerFieldTypeSet{
-          PHONE_HOME_NUMBER, PHONE_HOME_NUMBER_PREFIX,
-          PHONE_HOME_CITY_AND_NUMBER,
-          PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX};
+      return FieldTypeSet{PHONE_HOME_NUMBER, PHONE_HOME_NUMBER_PREFIX,
+                          PHONE_HOME_CITY_AND_NUMBER,
+                          PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX};
     }
     default:
       return {};
@@ -998,14 +997,14 @@ void FormStructureRationalizer::RationalizeFieldTypePredictions(
 void FormStructureRationalizer::RationalizeTypeRelationships(
     LogManager* log_manager) {
   // Create a local set of all the types for faster lookup.
-  ServerFieldTypeSet types;
+  FieldTypeSet types;
   for (const auto& field : *fields_) {
     types.insert(field->Type().GetStorableType());
   }
 
   for (const auto& field : *fields_) {
     ServerFieldType field_type = field->Type().GetStorableType();
-    ServerFieldTypeSet necessary_types = GetNecessaryTypesFor(field_type);
+    FieldTypeSet necessary_types = GetNecessaryTypesFor(field_type);
     if (!necessary_types.empty() && !types.contains_any(necessary_types)) {
       // We have relationship rules for this type, but no `necessary_type` was
       // found. Disabling Autofill for this field.

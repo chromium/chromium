@@ -130,7 +130,7 @@ void TestBrowserAutofillManager::UploadVotesAndLogQuality(
       SCOPED_TRACE(base::StringPrintf(
           "Field %d with value %s", static_cast<int>(i),
           base::UTF16ToUTF8(submitted_form->field(i)->value).c_str()));
-      const ServerFieldTypeSet& possible_types =
+      const FieldTypeSet& possible_types =
           submitted_form->field(i)->possible_types();
       EXPECT_EQ(expected_submitted_field_types_[i].size(),
                 possible_types.size());
@@ -255,7 +255,7 @@ void TestBrowserAutofillManager::SetAutofillPaymentMethodsEnabled(
 }
 
 void TestBrowserAutofillManager::SetExpectedSubmittedFieldTypes(
-    const std::vector<ServerFieldTypeSet>& expected_types) {
+    const std::vector<FieldTypeSet>& expected_types) {
   expected_submitted_field_types_ = expected_types;
 }
 

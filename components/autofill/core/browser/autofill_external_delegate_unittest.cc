@@ -1268,7 +1268,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Test parameter data for asserting that group filling suggestions
 // forward the expected fields to the manager.
 struct GroupFillingTestParams {
-  const ServerFieldTypeSet field_types_to_fill;
+  const FieldTypeSet field_types_to_fill;
   const PopupItemId popup_item_id;
   const std::string test_name;
 };
@@ -1518,7 +1518,7 @@ TEST_F(AutofillExternalDelegateUnitTest, FieldByFieldFilling_FillCreditCard) {
 // Test parameter data for asserting that the expected set of field types
 // is stored in the delegate.
 struct GetLastServerTypesToFillForSectionTestParams {
-  const absl::optional<ServerFieldTypeSet>
+  const absl::optional<FieldTypeSet>
       expected_last_field_types_to_fill_for_section;
   const PopupItemId popup_item_id;
   const absl::optional<Section> section;
@@ -1545,7 +1545,7 @@ const GetLastServerTypesToFillForSectionTestParams
         // only, this way the next time the user interacts
         // with the form, they are kept at the same filling granularity.
         {.expected_last_field_types_to_fill_for_section =
-             absl::optional<ServerFieldTypeSet>({NAME_FIRST}),
+             absl::optional<FieldTypeSet>({NAME_FIRST}),
          .popup_item_id = PopupItemId::kAddressFieldByFieldFilling,
          .test_name = "_SingleField"},
         // Tests that when `GetLastFieldTypesToFillForSection` is called for

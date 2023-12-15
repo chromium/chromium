@@ -21,7 +21,7 @@ class Birthdate : public FormGroup {
   friend bool operator==(const Birthdate& a, const Birthdate& b);
 
   // Convenience accessor to the day, month and 4 digit year components.
-  static ServerFieldTypeSet GetRawComponents() {
+  static FieldTypeSet GetRawComponents() {
     return {BIRTHDATE_DAY, BIRTHDATE_MONTH, BIRTHDATE_4_DIGIT_YEAR};
   }
 
@@ -42,7 +42,7 @@ class Birthdate : public FormGroup {
 
  private:
   // FormGroup:
-  void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
+  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
 
   // Zero represents an unset value.
   int day_ = 0;

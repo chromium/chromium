@@ -45,7 +45,7 @@ class MockAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
               StartUploadRequest,
               (const FormStructure&,
                bool,
-               const ServerFieldTypeSet&,
+               const FieldTypeSet&,
                const std::string&,
                bool,
                PrefService*,

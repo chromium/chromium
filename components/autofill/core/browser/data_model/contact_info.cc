@@ -108,7 +108,7 @@ void NameInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
   DCHECK(success) << FieldTypeToStringView(type);
 }
 
-void NameInfo::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
+void NameInfo::GetSupportedTypes(FieldTypeSet* supported_types) const {
   name_->GetSupportedTypes(supported_types);
 }
 
@@ -138,7 +138,7 @@ bool NameInfo::SetInfoWithVerificationStatusImpl(const AutofillType& type,
 
 void NameInfo::GetMatchingTypes(const std::u16string& text,
                                 const std::string& app_locale,
-                                ServerFieldTypeSet* matching_types) const {
+                                FieldTypeSet* matching_types) const {
   FormGroup::GetMatchingTypes(text, app_locale, matching_types);
   // Replace type matches for |NAME_FULL_WITH_HONORIFIC_PREFIX| with |NAME_FULL|
   // to always vote for a full name field even if the user decides to add an
@@ -181,7 +181,7 @@ bool EmailInfo::operator==(const EmailInfo& other) const {
   return this == &other || email_ == other.email_;
 }
 
-void EmailInfo::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
+void EmailInfo::GetSupportedTypes(FieldTypeSet* supported_types) const {
   supported_types->insert(EMAIL_ADDRESS);
 }
 
@@ -210,13 +210,13 @@ bool CompanyInfo::operator==(const CompanyInfo& other) const {
          GetRawInfo(COMPANY_NAME) == other.GetRawInfo(COMPANY_NAME);
 }
 
-void CompanyInfo::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
+void CompanyInfo::GetSupportedTypes(FieldTypeSet* supported_types) const {
   supported_types->insert(COMPANY_NAME);
 }
 
 void CompanyInfo::GetMatchingTypes(const std::u16string& text,
                                    const std::string& app_locale,
-                                   ServerFieldTypeSet* matching_types) const {
+                                   FieldTypeSet* matching_types) const {
   if (IsValid()) {
     FormGroup::GetMatchingTypes(text, app_locale, matching_types);
   } else if (text.empty()) {

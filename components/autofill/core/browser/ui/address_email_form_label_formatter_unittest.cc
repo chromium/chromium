@@ -22,7 +22,7 @@ using testing::ElementsAre;
 namespace autofill {
 namespace {
 
-ServerFieldTypeSet GetFieldTypes() {
+FieldTypeSet GetFieldTypes() {
   return {NAME_FULL,
           EMAIL_ADDRESS,
           ADDRESS_HOME_LINE1,

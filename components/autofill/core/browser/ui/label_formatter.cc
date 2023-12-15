@@ -37,7 +37,7 @@ LabelFormatter::LabelFormatter(
     const std::string& app_locale,
     ServerFieldType focused_field_type,
     uint32_t groups,
-    const ServerFieldTypeSet& field_types)
+    const FieldTypeSet& field_types)
     : profiles_(profiles),
       app_locale_(app_locale),
       focused_field_type_(focused_field_type),
@@ -86,7 +86,7 @@ std::unique_ptr<LabelFormatter> LabelFormatter::Create(
     const std::vector<const AutofillProfile*>& profiles,
     const std::string& app_locale,
     ServerFieldType focused_field_type,
-    const ServerFieldTypeSet& field_types) {
+    const FieldTypeSet& field_types) {
   const uint32_t groups = data_util::DetermineGroups(field_types);
   if (!data_util::IsSupportedFormType(groups)) {
     return nullptr;

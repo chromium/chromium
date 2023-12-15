@@ -718,7 +718,7 @@ void CreditCard::SetRawInfoWithVerificationStatus(ServerFieldType type,
 
 void CreditCard::GetMatchingTypes(const std::u16string& text,
                                   const std::string& app_locale,
-                                  ServerFieldTypeSet* matching_types) const {
+                                  FieldTypeSet* matching_types) const {
   FormGroup::GetMatchingTypes(text, app_locale, matching_types);
 
   std::u16string card_number =
@@ -981,7 +981,7 @@ bool CreditCard::IsVerified() const {
 }
 
 bool CreditCard::IsEmpty(const std::string& app_locale) const {
-  ServerFieldTypeSet types;
+  FieldTypeSet types;
   GetNonEmptyTypes(app_locale, &types);
   return types.empty();
 }
@@ -1238,7 +1238,7 @@ bool CreditCard::HasRichCardArtImageFromMetadata() const {
          card_art_url().spec() != kCapitalOneCardArtUrl;
 }
 
-void CreditCard::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
+void CreditCard::GetSupportedTypes(FieldTypeSet* supported_types) const {
   supported_types->insert(CREDIT_CARD_NAME_FULL);
   supported_types->insert(CREDIT_CARD_NAME_FIRST);
   supported_types->insert(CREDIT_CARD_NAME_LAST);

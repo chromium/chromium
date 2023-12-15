@@ -37,7 +37,7 @@ class NameMiddle : public AddressComponent {
   NameMiddle();
   ~NameMiddle() override;
 
-  const ServerFieldTypeSet GetAdditionalSupportedFieldTypes() const override;
+  const FieldTypeSet GetAdditionalSupportedFieldTypes() const override;
 
  protected:
   // Implements support for getting the value for the |MIDDLE_NAME_INITIAL|

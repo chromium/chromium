@@ -262,12 +262,12 @@ void Iban::SetRawInfoWithVerificationStatus(ServerFieldType type,
   }
 }
 
-void Iban::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
+void Iban::GetSupportedTypes(FieldTypeSet* supported_types) const {
   supported_types->insert(IBAN_VALUE);
 }
 
 bool Iban::IsEmpty(const std::string& app_locale) const {
-  ServerFieldTypeSet types;
+  FieldTypeSet types;
   GetNonEmptyTypes(app_locale, &types);
   return types.empty();
 }

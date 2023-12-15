@@ -63,9 +63,9 @@ inline ::testing::Matcher<AutofillUploadContents> ObservedSubmissionIs(
 
 // Matchers for `AutofillUploadContents::Field`.
 inline ::testing::Matcher<AutofillUploadContents::Field> FieldAutofillTypeIs(
-    ServerFieldTypeSet type_set) {
+    FieldTypeSet type_set) {
   auto extract_types = [](const AutofillUploadContents::Field& field) {
-    ServerFieldTypeSet s;
+    FieldTypeSet s;
     for (auto type : field.autofill_type()) {
       s.insert(ToSafeFieldType(type, ServerFieldType::NO_SERVER_DATA));
     }
@@ -101,12 +101,12 @@ inline auto UsernameVoteTypeIsSameAs(auto expected_type) {
 }
 
 inline auto UploadedAutofillTypesAre(
-    std::map<std::u16string, ServerFieldTypeSet> expected_types) {
+    std::map<std::u16string, FieldTypeSet> expected_types) {
   // Normalize the actual and expected sets by removing all UNKNOWN_TYPEs.
   auto get_possible_field_types = [](const FormStructure& actual) {
-    std::map<std::u16string, ServerFieldTypeSet> type_map;
+    std::map<std::u16string, FieldTypeSet> type_map;
     for (const auto& field : actual) {
-      ServerFieldTypeSet types = field->possible_types();
+      FieldTypeSet types = field->possible_types();
       types.erase(UNKNOWN_TYPE);
       if (!types.empty())
         type_map[field->name] = types;
@@ -122,7 +122,7 @@ inline auto UploadedAutofillTypesAre(
 
 inline auto UploadedAutofillTypesAre(
     const std::map<std::u16string, ServerFieldType>& expected_types) {
-  std::map<std::u16string, ServerFieldTypeSet> map;
+  std::map<std::u16string, FieldTypeSet> map;
   for (const auto& [field_name, type] : expected_types)
     map[field_name] = {type};
   return UploadedAutofillTypesAre(map);

@@ -26,6 +26,6 @@ void TestAutofillDataModel::SetRawInfoWithVerificationStatus(
     VerificationStatus status) {}
 
 void TestAutofillDataModel::GetSupportedTypes(
-    ServerFieldTypeSet* supported_types) const {}
+    FieldTypeSet* supported_types) const {}
 
 }  // namespace autofill

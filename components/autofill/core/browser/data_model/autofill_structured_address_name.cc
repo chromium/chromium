@@ -54,9 +54,8 @@ NameMiddle::NameMiddle()
 
 NameMiddle::~NameMiddle() = default;
 
-const ServerFieldTypeSet NameMiddle::GetAdditionalSupportedFieldTypes() const {
-  constexpr ServerFieldTypeSet additional_supported_field_types{
-      NAME_MIDDLE_INITIAL};
+const FieldTypeSet NameMiddle::GetAdditionalSupportedFieldTypes() const {
+  constexpr FieldTypeSet additional_supported_field_types{NAME_MIDDLE_INITIAL};
   return additional_supported_field_types;
 }
 

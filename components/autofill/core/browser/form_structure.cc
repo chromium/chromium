@@ -100,7 +100,7 @@ bool HasAllowedScheme(const GURL& url) {
 
 // Helper for |EncodeUploadRequest()| that creates a bit field corresponding to
 // |available_field_types| and returns the hex representation as a string.
-std::string EncodeFieldTypes(const ServerFieldTypeSet& available_field_types) {
+std::string EncodeFieldTypes(const FieldTypeSet& available_field_types) {
   // There are |MAX_VALID_FIELD_TYPE| different field types and 8 bits per byte,
   // so we need ceil(MAX_VALID_FIELD_TYPE / 8) bytes to encode the bit field.
   const size_t kNumBytes = (MAX_VALID_FIELD_TYPE + 0x7) / 8;
@@ -147,9 +147,8 @@ std::ostream& operator<<(std::ostream& out,
 
 // Returns the first form field type that is not contained in |contained_types|
 // or MAX_VALID_FIELD_TYPE if no such type exists.
-ServerFieldType FirstNonCapturedType(
-    const FormStructure& form,
-    const ServerFieldTypeSet& contained_types) {
+ServerFieldType FirstNonCapturedType(const FormStructure& form,
+                                     const FieldTypeSet& contained_types) {
   for (const auto& field : form) {
     for (auto type : field->possible_types()) {
       if (type != UNKNOWN_TYPE && type != EMPTY_TYPE &&
@@ -538,7 +537,7 @@ void FormStructure::DetermineHeuristicTypes(
 }
 
 std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
-    const ServerFieldTypeSet& available_field_types,
+    const FieldTypeSet& available_field_types,
     bool form_was_autofilled,
     const std::string_view& login_form_signature,
     bool observed_submission) const {
@@ -1619,7 +1618,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
   Section credit_card_section;
 
   // Keep track of the types we've seen in this section.
-  ServerFieldTypeSet seen_types;
+  FieldTypeSet seen_types;
   ServerFieldType previous_type = UNKNOWN_TYPE;
 
   // Boolean flag that is set to true when a field in the current section
@@ -1790,7 +1789,7 @@ void FormStructure::IdentifySections(bool ignore_autocomplete) {
     Section current_section;
 
     // Keep track of the types we've seen in this section.
-    ServerFieldTypeSet seen_types;
+    FieldTypeSet seen_types;
     ServerFieldType previous_type = UNKNOWN_TYPE;
 
     bool is_hidden_section = false;

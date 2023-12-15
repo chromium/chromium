@@ -37,7 +37,7 @@ enum class ShadowPredictionComparison {
 // the shadow predictions perform compared to the `current` predictions.
 int GetShadowPrediction(ServerFieldType current,
                         ServerFieldType next,
-                        const ServerFieldTypeSet& submitted_types);
+                        const FieldTypeSet& submitted_types);
 
 // Logs Autofill.ShadowPredictions.* metrics by comparing the submitted
 // values to the actual and hypothetical predictions.

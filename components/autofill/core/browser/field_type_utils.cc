@@ -12,8 +12,8 @@
 
 namespace autofill {
 
-const ServerFieldTypeSet& GetDatabaseStoredTypesOfAutofillProfile() {
-  static constexpr ServerFieldTypeSet stored_types{
+const FieldTypeSet& GetDatabaseStoredTypesOfAutofillProfile() {
+  static constexpr FieldTypeSet stored_types{
       COMPANY_NAME,
       NAME_HONORIFIC_PREFIX,
       NAME_FIRST,

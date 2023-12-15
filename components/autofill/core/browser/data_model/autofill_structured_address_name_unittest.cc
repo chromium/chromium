@@ -347,22 +347,22 @@ TEST(AutofillStructuredName, GetNameMiddleInitial) {
 
 TEST(AutofillStructuredName, TestGetSupportedTypes_FullNameWithPrefix) {
   NameFullWithPrefix full_name_with_prefix;
-  ServerFieldTypeSet supported_types;
+  FieldTypeSet supported_types;
   full_name_with_prefix.GetSupportedTypes(&supported_types);
-  EXPECT_EQ(ServerFieldTypeSet({NAME_FULL_WITH_HONORIFIC_PREFIX, NAME_FULL,
-                                NAME_HONORIFIC_PREFIX, NAME_FIRST, NAME_MIDDLE,
-                                NAME_MIDDLE_INITIAL, NAME_LAST, NAME_LAST_FIRST,
-                                NAME_LAST_CONJUNCTION, NAME_LAST_SECOND}),
+  EXPECT_EQ(FieldTypeSet({NAME_FULL_WITH_HONORIFIC_PREFIX, NAME_FULL,
+                          NAME_HONORIFIC_PREFIX, NAME_FIRST, NAME_MIDDLE,
+                          NAME_MIDDLE_INITIAL, NAME_LAST, NAME_LAST_FIRST,
+                          NAME_LAST_CONJUNCTION, NAME_LAST_SECOND}),
             supported_types);
 }
 
 TEST(AutofillStructuredName, TestGetSupportedTypes_FullName) {
   NameFull full_name;
-  ServerFieldTypeSet supported_types;
+  FieldTypeSet supported_types;
   full_name.GetSupportedTypes(&supported_types);
-  EXPECT_EQ(ServerFieldTypeSet({NAME_FULL, NAME_FIRST, NAME_MIDDLE,
-                                NAME_MIDDLE_INITIAL, NAME_LAST, NAME_LAST_FIRST,
-                                NAME_LAST_CONJUNCTION, NAME_LAST_SECOND}),
+  EXPECT_EQ(FieldTypeSet({NAME_FULL, NAME_FIRST, NAME_MIDDLE,
+                          NAME_MIDDLE_INITIAL, NAME_LAST, NAME_LAST_FIRST,
+                          NAME_LAST_CONJUNCTION, NAME_LAST_SECOND}),
             supported_types);
 }
 

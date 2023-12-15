@@ -196,7 +196,7 @@ void SelectRightNameType(AutofillField* field, bool is_credit_card) {
   // There should be at least two possible field types.
   DCHECK_LE(2U, field->possible_types().size());
 
-  ServerFieldTypeSet types_to_keep;
+  FieldTypeSet types_to_keep;
   const auto& old_types = field->possible_types();
 
   for (ServerFieldType type : old_types) {
@@ -411,7 +411,7 @@ AutofillField* HeuristicallyFindCVCFieldForUpload(
   // The first pass checks the existence of an explicitly marked field for the
   // credit card expiration year.
   for (const auto& field : form_structure) {
-    const ServerFieldTypeSet& type_set = field->possible_types();
+    const FieldTypeSet& type_set = field->possible_types();
     if (type_set.find(CREDIT_CARD_EXP_2_DIGIT_YEAR) != type_set.end() ||
         type_set.find(CREDIT_CARD_EXP_4_DIGIT_YEAR) != type_set.end()) {
       found_explicit_expiration_year_field = true;
@@ -430,7 +430,7 @@ AutofillField* HeuristicallyFindCVCFieldForUpload(
   //   already found;
   // * it is filled with a 3-4 digit number;
   for (const auto& field : form_structure) {
-    const ServerFieldTypeSet& type_set = field->possible_types();
+    const FieldTypeSet& type_set = field->possible_types();
 
     // Checks if the field is of |CREDIT_CARD_NUMBER| type.
     if (type_set.find(CREDIT_CARD_NUMBER) != type_set.end()) {
@@ -2035,7 +2035,7 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
   bool was_autofilled = base::Contains(autofilled_form_signatures_,
                                        submitted_form->FormSignatureAsStr());
 
-  ServerFieldTypeSet non_empty_types;
+  FieldTypeSet non_empty_types;
   client().GetPersonalDataManager()->GetNonEmptyTypes(&non_empty_types);
   // As CVC is not stored, treat it separately.
   if (!last_unlocked_credit_card_cvc_.empty() ||
@@ -2174,7 +2174,7 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
     const FormFieldData& trigger_field,
     const Section& filling_section,
     const CreditCard* optional_credit_card,
-    const ServerFieldTypeSet& field_types_to_fill,
+    const FieldTypeSet& field_types_to_fill,
     const DenseSet<FieldTypeGroup>* optional_type_groups_originally_filled,
     bool skip_unrecognized_autocomplete_fields,
     bool is_refill) const {
@@ -2744,7 +2744,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     AutofillSuggestionTriggerSource trigger_source) const {
   address_form_event_logger_->OnDidPollSuggestions(field,
                                                    signin_state_for_metrics_);
-  absl::optional<ServerFieldTypeSet> last_address_fields_to_fill_for_section =
+  absl::optional<FieldTypeSet> last_address_fields_to_fill_for_section =
       external_delegate_->GetLastFieldTypesToFillForSection(
           autofill_field.section);
   // Getting the filling-relevant fields so that suggestions are based only on
@@ -2769,7 +2769,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
           : std::vector<FieldFillingSkipReason>(
                 form_structure.field_count(),
                 FieldFillingSkipReason::kNotSkipped);
-  ServerFieldTypeSet field_types;
+  FieldTypeSet field_types;
   for (size_t i = 0; i < form_structure.field_count(); ++i) {
     if (skip_reasons[i] == FieldFillingSkipReason::kNotSkipped) {
       field_types.insert(form_structure.field(i)->Type().GetStorableType());
@@ -2988,7 +2988,7 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
       continue;
     }
 
-    ServerFieldTypeSet matching_types;
+    FieldTypeSet matching_types;
     std::u16string value;
     base::TrimWhitespace(field->value, base::TRIM_ALL, &value);
 
@@ -3015,7 +3015,7 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
     for (const AutofillProfile& profile : profiles) {
       profile.GetMatchingTypes(value, app_locale, &matching_types);
       if (select_content) {
-        ServerFieldTypeSet matching_types_backup = matching_types;
+        FieldTypeSet matching_types_backup = matching_types;
         profile.GetMatchingTypes(*select_content, app_locale, &matching_types);
         if (matching_types_backup != matching_types)
           metrics.classified_more_field_types = true;
@@ -3026,7 +3026,7 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
     for (const CreditCard& card : credit_cards) {
       card.GetMatchingTypes(value, app_locale, &matching_types);
       if (select_content) {
-        ServerFieldTypeSet matching_types_backup = matching_types;
+        FieldTypeSet matching_types_backup = matching_types;
         card.GetMatchingTypes(*select_content, app_locale, &matching_types);
         if (matching_types_backup != matching_types)
           metrics.classified_more_field_types = true;
@@ -3066,7 +3066,7 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
   AutofillField* cvc_field =
       GetBestPossibleCVCFieldForUpload(*form, last_unlocked_credit_card_cvc);
   if (cvc_field) {
-    ServerFieldTypeSet possible_types = cvc_field->possible_types();
+    FieldTypeSet possible_types = cvc_field->possible_types();
     possible_types.erase(UNKNOWN_TYPE);
     possible_types.insert(CREDIT_CARD_VERIFICATION_CODE);
     cvc_field->set_possible_types(possible_types);
@@ -3104,7 +3104,7 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
 void BrowserAutofillManager::DisambiguateUploadTypes(FormStructure* form) {
   for (size_t i = 0; i < form->field_count(); ++i) {
     AutofillField* field = form->field(i);
-    const ServerFieldTypeSet& upload_types = field->possible_types();
+    const FieldTypeSet& upload_types = field->possible_types();
 
     // In case for credit cards and names there are many other possibilities
     // because a field can be of type NAME_FULL, NAME_LAST,
@@ -3132,7 +3132,7 @@ void BrowserAutofillManager::DisambiguateUploadTypes(FormStructure* form) {
 void BrowserAutofillManager::DisambiguateNameUploadTypes(
     FormStructure* form,
     size_t current_index,
-    const ServerFieldTypeSet& upload_types) {
+    const FieldTypeSet& upload_types) {
   // This case happens when both a profile and a credit card have the same
   // name, and when we have exactly two possible types.
 

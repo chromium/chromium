@@ -1327,7 +1327,7 @@ CreditCard* PersonalDataManager::GetCreditCardByServerId(
 }
 
 void PersonalDataManager::GetNonEmptyTypes(
-    ServerFieldTypeSet* non_empty_types) const {
+    FieldTypeSet* non_empty_types) const {
   for (AutofillProfile* profile : GetProfiles())
     profile->GetNonEmptyTypes(app_locale_, non_empty_types);
   for (CreditCard* card : GetCreditCards())

@@ -91,7 +91,7 @@ class AutofillField : public FormFieldData {
   }
   HtmlFieldType html_type() const { return html_type_; }
   HtmlFieldMode html_mode() const { return html_mode_; }
-  const ServerFieldTypeSet& possible_types() const { return possible_types_; }
+  const FieldTypeSet& possible_types() const { return possible_types_; }
   const ServerFieldTypeValidityStatesMap& possible_types_validities() const {
     return possible_types_validities_;
   }
@@ -112,7 +112,7 @@ class AutofillField : public FormFieldData {
       std::optional<bool> may_use_prefilled_placeholder) {
     may_use_prefilled_placeholder_ = may_use_prefilled_placeholder;
   }
-  void set_possible_types(const ServerFieldTypeSet& possible_types) {
+  void set_possible_types(const FieldTypeSet& possible_types) {
     possible_types_ = possible_types;
   }
   void set_possible_types_validities(
@@ -407,7 +407,7 @@ class AutofillField : public FormFieldData {
   HtmlFieldMode html_mode_ = HtmlFieldMode::kNone;
 
   // The set of possible types for this field.
-  ServerFieldTypeSet possible_types_;
+  FieldTypeSet possible_types_;
 
   // The set of possible types and their validity for this field.
   ServerFieldTypeValidityStatesMap possible_types_validities_;

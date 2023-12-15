@@ -63,10 +63,10 @@ class AutofillSuggestionGenerator {
   // field filling, group filling or full form (default). `field_types` are the
   // relevant types for the current suggestions.
   std::vector<Suggestion> GetSuggestionsForProfiles(
-      const ServerFieldTypeSet& field_types,
+      const FieldTypeSet& field_types,
       const FormFieldData& trigger_field,
       ServerFieldType trigger_field_type,
-      absl::optional<ServerFieldTypeSet> last_targeted_fields,
+      absl::optional<FieldTypeSet> last_targeted_fields,
       AutofillSuggestionTriggerSource trigger_source);
 
   // Returns a list of profiles that will be displayed as suggestions to the
@@ -77,7 +77,7 @@ class AutofillSuggestionGenerator {
       ServerFieldType trigger_field_type,
       const std::u16string& field_contents,
       bool field_is_autofilled,
-      const ServerFieldTypeSet& field_types);
+      const FieldTypeSet& field_types);
 
   // Returns a list of Suggestion objects, each representing an element in
   // `profiles`.
@@ -89,8 +89,8 @@ class AutofillSuggestionGenerator {
   // kAutofillUseAddressRewriterInProfileSubsetComparison.
   std::vector<Suggestion> CreateSuggestionsFromProfiles(
       const std::vector<const AutofillProfile*>& profiles,
-      const ServerFieldTypeSet& field_types,
-      absl::optional<ServerFieldTypeSet> last_targeted_fields,
+      const FieldTypeSet& field_types,
+      absl::optional<FieldTypeSet> last_targeted_fields,
       ServerFieldType trigger_field_type,
       uint64_t trigger_field_max_length,
       const std::set<std::string>& previously_hidden_profiles_guid = {});
@@ -174,7 +174,7 @@ class AutofillSuggestionGenerator {
   std::vector<const AutofillProfile*> DeduplicatedProfilesForSuggestions(
       const std::vector<const AutofillProfile*>& matched_profiles,
       ServerFieldType trigger_field_type,
-      const ServerFieldTypeSet& field_types,
+      const FieldTypeSet& field_types,
       const AutofillProfileComparator& comparator);
 
   // Matches based on prefix search, and limits number of profiles.
@@ -200,7 +200,7 @@ class AutofillSuggestionGenerator {
   // `last_targeted_fields` specified the last set of fields target by the user.
   // When not present, we default to full form.
   void AddAddressGranularFillingChildSuggestions(
-      absl::optional<ServerFieldTypeSet> last_targeted_fields,
+      absl::optional<FieldTypeSet> last_targeted_fields,
       ServerFieldType trigger_field_type,
       const AutofillProfile& profile,
       Suggestion& suggestion) const;

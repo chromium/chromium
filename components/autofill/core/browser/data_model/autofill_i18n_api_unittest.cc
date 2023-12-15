@@ -26,7 +26,7 @@ namespace autofill::i18n_model_definition {
 namespace {
 
 // Checks that the AddressComponent graph has no cycles.
-bool IsTree(AddressComponent* node, ServerFieldTypeSet* visited_types) {
+bool IsTree(AddressComponent* node, FieldTypeSet* visited_types) {
   if (visited_types->contains(node->GetStorageType()) ||
       visited_types->contains_any(node->GetAdditionalSupportedFieldTypes())) {
     // Repeated types exist in the tree.
@@ -62,7 +62,7 @@ TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnsNonEmptyModel) {
           AddressCountryCode(std::string(country_code)));
 
       ASSERT_TRUE(model);
-      ServerFieldTypeSet field_type_set;
+      FieldTypeSet field_type_set;
       model->GetSupportedTypes(&field_type_set);
       EXPECT_FALSE(field_type_set.empty());
       EXPECT_FALSE(field_type_set.contains_any(
@@ -80,7 +80,7 @@ TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnedModelIsTree) {
     std::unique_ptr<AddressComponent> root = CreateAddressComponentModel(
         AddressCountryCode(std::string(country_code)));
 
-    ServerFieldTypeSet supported_types;
+    FieldTypeSet supported_types;
     EXPECT_TRUE(IsTree(root.get(), &supported_types));
 
     // Test that all field types in the country rules are accessible through the

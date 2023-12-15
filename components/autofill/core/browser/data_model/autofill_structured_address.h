@@ -42,7 +42,7 @@ class FeatureGuardedAddressComponent : public AddressComponent {
   // AddressComponent overrides:
   void SetValue(std::u16string value, VerificationStatus status) override;
   void GetTypes(bool storable_only,
-                ServerFieldTypeSet* supported_types) const override;
+                FieldTypeSet* supported_types) const override;
 
  private:
   // Feature guarding the rollout of this address component.
@@ -156,7 +156,7 @@ class StreetAddressNode : public AddressComponentWithRewriter {
   explicit StreetAddressNode(SubcomponentsList children);
   ~StreetAddressNode() override;
 
-  const ServerFieldTypeSet GetAdditionalSupportedFieldTypes() const override;
+  const FieldTypeSet GetAdditionalSupportedFieldTypes() const override;
 
   void SetValue(std::u16string value, VerificationStatus status) override;
 

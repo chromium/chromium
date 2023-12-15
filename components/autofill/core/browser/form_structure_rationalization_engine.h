@@ -92,7 +92,7 @@ struct FieldCondition {
 
   // If specified, the condition is only true if the overall type of the field
   // before the rule evaluation is in `possible_overall_types`.
-  std::optional<ServerFieldTypeSet> possible_overall_types;
+  std::optional<FieldTypeSet> possible_overall_types;
 
   // If specified, the condition is only true if the field meets the criteria
   // of the references regular expression. See

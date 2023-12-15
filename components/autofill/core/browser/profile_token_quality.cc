@@ -32,8 +32,8 @@ namespace {
 
 using ObservationType = ProfileTokenQuality::ObservationType;
 
-ServerFieldTypeSet GetSupportedTypes(const AutofillProfile& profile) {
-  ServerFieldTypeSet types;
+FieldTypeSet GetSupportedTypes(const AutofillProfile& profile) {
+  FieldTypeSet types;
   profile.GetSupportedTypes(&types);
   return types;
 }
@@ -61,7 +61,7 @@ ObservationType GetObservationTypeForEditedField(
 
   // Returns true if the `current_field_value` case-insensitively equals the
   // value of the `profile` for any of the `types`.
-  auto matches = [&](ServerFieldTypeSet types, const AutofillProfile& profile) {
+  auto matches = [&](FieldTypeSet types, const AutofillProfile& profile) {
     const l10n::CaseInsensitiveCompare compare;
     return base::ranges::any_of(types, [&](ServerFieldType type) {
       return profile.HasInfo(type) &&
@@ -72,7 +72,7 @@ ObservationType GetObservationTypeForEditedField(
 
   // Returns all supported types of the `profile` except for `type`.
   auto other_types = [&](const AutofillProfile& profile) {
-    ServerFieldTypeSet other_types = GetSupportedTypes(profile);
+    FieldTypeSet other_types = GetSupportedTypes(profile);
     other_types.erase(type);
     return other_types;
   };

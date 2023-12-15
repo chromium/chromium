@@ -90,7 +90,7 @@ void Birthdate::SetRawInfoAsIntWithVerificationStatus(
   }
 }
 
-void Birthdate::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
+void Birthdate::GetSupportedTypes(FieldTypeSet* supported_types) const {
   supported_types->insert(BIRTHDATE_DAY);
   supported_types->insert(BIRTHDATE_MONTH);
   supported_types->insert(BIRTHDATE_4_DIGIT_YEAR);

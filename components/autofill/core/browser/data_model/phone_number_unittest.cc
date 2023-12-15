@@ -27,7 +27,7 @@ constexpr char kLocale[] = "en_US";
 
 struct MatchingTypesTestCase {
   std::u16string input;
-  ServerFieldTypeSet expected_types;
+  FieldTypeSet expected_types;
 };
 // Constructs a `PhoneNumber` from `number` and verifies that the matching types
 // on `input` equal `expected_type` on every test case in `tests`.
@@ -50,7 +50,7 @@ void MatchingTypesTest(const std::u16string& number,
   // `kLocale` is irrelevant, because `profile` has country information.
   phone_number.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), number, kLocale);
   for (const MatchingTypesTestCase& test : tests) {
-    ServerFieldTypeSet matching_types;
+    FieldTypeSet matching_types;
     phone_number.GetMatchingTypes(test.input, kLocale, &matching_types);
     EXPECT_EQ(matching_types, test.expected_types);
   }
@@ -296,7 +296,7 @@ TEST(PhoneNumberTest, HelperSetsAllPhoneFieldTypes) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   PhoneNumber phone_number(&profile);
 
-  ServerFieldTypeSet types;
+  FieldTypeSet types;
   profile.GetSupportedTypes(&types);
   std::vector<ServerFieldType> fields{types.begin(), types.end()};
   std::erase_if(fields, [](ServerFieldType type) {
@@ -468,7 +468,7 @@ TEST(PhoneNumberTest, CountryCodeInMatchingTypes) {
   for (size_t i = 0; i < test_cases.size(); i++) {
     SCOPED_TRACE(testing::Message() << "i(US) = " << i);
 
-    ServerFieldTypeSet matching_types;
+    FieldTypeSet matching_types;
     phone_number.GetMatchingTypes(ASCIIToUTF16(test_cases[i]), "US",
                                   &matching_types);
 
@@ -486,7 +486,7 @@ TEST(PhoneNumberTest, CountryCodeInMatchingTypes) {
   for (size_t i = 0; i < test_cases.size(); i++) {
     SCOPED_TRACE(testing::Message() << "i(DE) = " << i);
 
-    ServerFieldTypeSet matching_types;
+    FieldTypeSet matching_types;
     phone_number_de.GetMatchingTypes(ASCIIToUTF16(test_cases[i]), kLocaleDE,
                                      &matching_types);
 
@@ -510,7 +510,7 @@ TEST(PhoneNumberTest, CountryCodeNotInMatchingTypes) {
   for (size_t i = 0; i < test_cases.size(); i++) {
     SCOPED_TRACE(testing::Message() << "i = " << i);
 
-    ServerFieldTypeSet matching_types;
+    FieldTypeSet matching_types;
     phone_number.GetMatchingTypes(ASCIIToUTF16(test_cases[i]), kLocale,
                                   &matching_types);
 

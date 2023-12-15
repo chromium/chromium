@@ -38,6 +38,7 @@ using autofill::AutofillField;
 using autofill::AutofillUploadContents;
 using autofill::FieldRendererId;
 using autofill::FieldSignature;
+using autofill::FieldTypeSet;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::FormSignature;
@@ -45,7 +46,6 @@ using autofill::FormStructure;
 using autofill::IsMostRecentSingleUsernameCandidate;
 using autofill::RandomizedEncoder;
 using autofill::ServerFieldType;
-using autofill::ServerFieldTypeSet;
 using password_manager_util::FindFormByUsername;
 
 using Logger = autofill::SavePasswordProgressLogger;
@@ -132,7 +132,7 @@ void LabelFields(const FieldTypeMap& field_types,
                  const bool field_name_collision,
                  const VoteTypeMap& vote_types,
                  FormStructure* form_structure,
-                 ServerFieldTypeSet* available_field_types) {
+                 FieldTypeSet* available_field_types) {
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.FieldNameCollisionInVotes",
                         field_name_collision);
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
@@ -151,7 +151,7 @@ void LabelFields(const FieldTypeMap& field_types,
     }
     CHECK(type != autofill::USERNAME ||
           field->vote_type() != AutofillUploadContents::Field::NO_INFORMATION);
-    ServerFieldTypeSet types;
+    FieldTypeSet types;
     types.insert(type);
     field->set_possible_types(types);
   }
@@ -451,7 +451,7 @@ bool VotesUploader::UploadPasswordVote(
   FormStructure form_structure(form_to_upload.form_data);
   form_structure.set_submission_event(submitted_form.submission_event);
 
-  ServerFieldTypeSet available_field_types;
+  FieldTypeSet available_field_types;
   // A map from field names to field types.
   FieldTypeMap field_types;
   // Used to detect whether the vote is corrupted because of duplicate field
@@ -583,7 +583,7 @@ void VotesUploader::UploadFirstLoginVotes(
         AutofillUploadContents::Field::FIRST_USE;
   }
 
-  ServerFieldTypeSet available_field_types;
+  FieldTypeSet available_field_types;
   LabelFields(field_types, field_name_collision, vote_types, &form_structure,
               &available_field_types);
   SetKnownValueFlag(pending_credentials, best_matches, &form_structure);
@@ -889,7 +889,7 @@ void VotesUploader::StoreInitialFieldValues(
 
 bool VotesUploader::StartUploadRequest(
     autofill::FormStructure& form_to_upload,
-    const ServerFieldTypeSet& available_field_types,
+    const FieldTypeSet& available_field_types,
     const std::string& login_form_signature) {
   AutofillCrowdsourcingManager* crowdsourcing_manager =
       client_->GetAutofillCrowdsourcingManager();
@@ -910,7 +910,7 @@ bool VotesUploader::StartUploadRequest(
 bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
     AutofillField* field,
     const SingleUsernameVoteData& single_username,
-    ServerFieldTypeSet* available_field_types,
+    FieldTypeSet* available_field_types,
     FormSignature form_signature,
     IsMostRecentSingleUsernameCandidate
         is_most_recent_single_username_candidate,
@@ -1056,7 +1056,7 @@ bool VotesUploader::MaybeSendSingleUsernameVote(
                                                     field_signatures);
 
   // Label the username field with a SINGLE_USERNAME or NOT_USERNAME vote.
-  ServerFieldTypeSet available_field_types;
+  FieldTypeSet available_field_types;
   for (size_t i = 0; i < form_to_upload->field_count(); ++i) {
     AutofillField* field = form_to_upload->field(i);
     FieldRendererId field_renderer_id = predictions.fields[i].renderer_id;

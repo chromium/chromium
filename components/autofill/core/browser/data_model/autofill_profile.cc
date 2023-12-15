@@ -159,7 +159,7 @@ bool CompareSpecificity(ServerFieldType type1, ServerFieldType type2) {
 // decreasing order of importance.
 void GetFieldsForDistinguishingProfiles(
     const std::vector<ServerFieldType>* suggested_fields,
-    ServerFieldTypeSet excluded_fields,
+    FieldTypeSet excluded_fields,
     std::vector<ServerFieldType>* distinguishing_fields) {
   static const ServerFieldType kDefaultDistinguishingFields[] = {
       NAME_FULL,
@@ -190,7 +190,7 @@ void GetFieldsForDistinguishingProfiles(
 
   // Keep track of which fields we've seen so that we avoid duplicate entries.
   // Always ignore fields of unknown type and those part of `excluded_fields`.
-  ServerFieldTypeSet seen_fields;
+  FieldTypeSet seen_fields;
   seen_fields.insert(UNKNOWN_TYPE);
   for (ServerFieldType excluded_field : excluded_fields) {
     seen_fields.insert(GetStorableTypeCollapsingGroups(excluded_field));
@@ -409,11 +409,10 @@ double AutofillProfile::GetRankingScore(base::Time current_time) const {
   return AutofillDataModel::GetRankingScore(current_time);
 }
 
-void AutofillProfile::GetMatchingTypes(
-    const std::u16string& text,
-    const std::string& app_locale,
-    ServerFieldTypeSet* matching_types) const {
-  ServerFieldTypeSet matching_types_in_this_profile;
+void AutofillProfile::GetMatchingTypes(const std::u16string& text,
+                                       const std::string& app_locale,
+                                       FieldTypeSet* matching_types) const {
+  FieldTypeSet matching_types_in_this_profile;
   for (const auto* form_group : FormGroups()) {
     form_group->GetMatchingTypes(text, app_locale,
                                  &matching_types_in_this_profile);
@@ -458,8 +457,7 @@ void AutofillProfile::SetRawInfoAsIntWithVerificationStatus(
   }
 }
 
-void AutofillProfile::GetSupportedTypes(
-    ServerFieldTypeSet* supported_types) const {
+void AutofillProfile::GetSupportedTypes(FieldTypeSet* supported_types) const {
   for (const auto* form_group : FormGroups()) {
     form_group->GetSupportedTypes(supported_types);
   }
@@ -482,7 +480,7 @@ ServerFieldType AutofillProfile::GetStorableTypeOf(ServerFieldType type) const {
 }
 
 bool AutofillProfile::IsEmpty(const std::string& app_locale) const {
-  ServerFieldTypeSet types;
+  FieldTypeSet types;
   GetNonEmptyTypes(app_locale, &types);
   return types.empty();
 }
@@ -615,7 +613,7 @@ bool AutofillProfile::operator!=(const AutofillProfile& profile) const {
 
 bool AutofillProfile::IsSubsetOf(const AutofillProfileComparator& comparator,
                                  const AutofillProfile& profile) const {
-  ServerFieldTypeSet supported_types;
+  FieldTypeSet supported_types;
   GetSupportedTypes(&supported_types);
   return IsSubsetOfForFieldSet(comparator, profile, supported_types);
 }
@@ -623,7 +621,7 @@ bool AutofillProfile::IsSubsetOf(const AutofillProfileComparator& comparator,
 bool AutofillProfile::IsSubsetOfForFieldSet(
     const AutofillProfileComparator& comparator,
     const AutofillProfile& profile,
-    const ServerFieldTypeSet& types) const {
+    const FieldTypeSet& types) const {
   const std::string& app_locale = comparator.app_locale();
   // TODO(crbug.com/1417975): Remove when
   // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
@@ -840,7 +838,7 @@ void AutofillProfile::MergeFormGroupTokenQuality(
           features::kAutofillTrackProfileTokenQuality)) {
     return;
   }
-  ServerFieldTypeSet supported_types;
+  FieldTypeSet supported_types;
   merged_group.GetSupportedTypes(&supported_types);
   for (ServerFieldType type : supported_types) {
     const std::u16string& merged_value = merged_group.GetRawInfo(type);
@@ -900,8 +898,8 @@ void AutofillProfile::CreateDifferentiatingLabels(
 // static
 void AutofillProfile::CreateInferredLabels(
     const std::vector<const AutofillProfile*>& profiles,
-    const absl::optional<ServerFieldTypeSet>& suggested_fields,
-    ServerFieldTypeSet excluded_fields,
+    const absl::optional<FieldTypeSet>& suggested_fields,
+    FieldTypeSet excluded_fields,
     size_t minimal_fields_shown,
     const std::string& app_locale,
     std::vector<std::u16string>* labels) {
@@ -1205,7 +1203,7 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
   };
 
   // Use a helper function to print the values of the stored types.
-  ServerFieldTypeSet field_types_to_print;
+  FieldTypeSet field_types_to_print;
   profile.GetSupportedTypes(&field_types_to_print);
 
   base::ranges::for_each(field_types_to_print, print_values_lambda);
@@ -1244,8 +1242,8 @@ AutofillProfile AutofillProfile::ConvertToAccountProfile() const {
   return account_profile;
 }
 
-ServerFieldTypeSet AutofillProfile::FindInaccessibleProfileValues() const {
-  ServerFieldTypeSet inaccessible_fields;
+FieldTypeSet AutofillProfile::FindInaccessibleProfileValues() const {
+  FieldTypeSet inaccessible_fields;
   const std::string stored_country =
       base::UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY));
   AutofillCountry country(stored_country.empty() ? "US" : stored_country);
@@ -1264,7 +1262,7 @@ ServerFieldTypeSet AutofillProfile::FindInaccessibleProfileValues() const {
   return inaccessible_fields;
 }
 
-void AutofillProfile::ClearFields(const ServerFieldTypeSet& fields) {
+void AutofillProfile::ClearFields(const FieldTypeSet& fields) {
   for (ServerFieldType server_field_type : fields) {
     SetRawInfoWithVerificationStatus(server_field_type, u"",
                                      VerificationStatus::kNoStatus);

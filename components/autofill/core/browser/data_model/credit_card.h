@@ -193,7 +193,7 @@ class CreditCard : public AutofillDataModel {
   // FormGroup:
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
-                        ServerFieldTypeSet* matching_types) const override;
+                        FieldTypeSet* matching_types) const override;
   std::u16string GetRawInfo(ServerFieldType type) const override;
   void SetRawInfoWithVerificationStatus(ServerFieldType type,
                                         const std::u16string& value,
@@ -470,7 +470,7 @@ class CreditCard : public AutofillDataModel {
   FRIEND_TEST_ALL_PREFIXES(CreditCardTest, SetExpirationYearFromString);
 
   // FormGroup:
-  void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
+  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
   std::u16string GetInfoImpl(const AutofillType& type,
                              const std::string& app_locale) const override;
   bool SetInfoWithVerificationStatusImpl(const AutofillType& type,

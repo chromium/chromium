@@ -211,7 +211,7 @@ TEST_F(AddressTest, IsCountry) {
                                        "United states", "us"};
   for (const char* valid_match : kValidMatches) {
     SCOPED_TRACE(valid_match);
-    ServerFieldTypeSet matching_types;
+    FieldTypeSet matching_types;
     address.GetMatchingTypes(ASCIIToUTF16(valid_match), "US", &matching_types);
     ASSERT_EQ(1U, matching_types.size());
     EXPECT_EQ(ADDRESS_HOME_COUNTRY, *matching_types.begin());
@@ -219,7 +219,7 @@ TEST_F(AddressTest, IsCountry) {
 
   const char* const kInvalidMatches[] = {"United", "Garbage"};
   for (const char* invalid_match : kInvalidMatches) {
-    ServerFieldTypeSet matching_types;
+    FieldTypeSet matching_types;
     address.GetMatchingTypes(ASCIIToUTF16(invalid_match), "US",
                              &matching_types);
     EXPECT_EQ(0U, matching_types.size());
@@ -228,7 +228,7 @@ TEST_F(AddressTest, IsCountry) {
   // Make sure that garbage values don't match when the country code is empty.
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, std::u16string());
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
-  ServerFieldTypeSet matching_types;
+  FieldTypeSet matching_types;
   address.GetMatchingTypes(u"Garbage", "US", &matching_types);
   EXPECT_EQ(0U, matching_types.size());
 }

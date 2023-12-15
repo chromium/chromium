@@ -29,7 +29,7 @@ struct ProfileValueDifference {
   bool operator==(const ProfileValueDifference& right) const = default;
 };
 
-ServerFieldTypeSet GetUserVisibleTypes();
+FieldTypeSet GetUserVisibleTypes();
 
 // A utility class to assist in the comparison of AutofillProfile data.
 class AutofillProfileComparator {
@@ -85,7 +85,7 @@ class AutofillProfileComparator {
   static std::vector<ProfileValueDifference> GetProfileDifference(
       const AutofillProfile& first_profile,
       const AutofillProfile& second_profile,
-      ServerFieldTypeSet types,
+      FieldTypeSet types,
       const std::string& app_locale);
 
   // Same as `GetProfileDifference()` but returns a map that maps the type to a
@@ -95,7 +95,7 @@ class AutofillProfileComparator {
                         std::pair<std::u16string, std::u16string>>
   GetProfileDifferenceMap(const AutofillProfile& first_profile,
                           const AutofillProfile& second_profile,
-                          ServerFieldTypeSet types,
+                          FieldTypeSet types,
                           const std::string& app_locale);
 
   // Get the difference of two profiles for settings-visible values.

@@ -113,7 +113,7 @@ class FormStructure {
   // fields. We want to vote for this flattened form as well as for the original
   // form signatures of forms 1 and 2.
   std::vector<AutofillUploadContents> EncodeUploadRequest(
-      const ServerFieldTypeSet& available_field_types,
+      const FieldTypeSet& available_field_types,
       bool form_was_autofilled,
       const std::string_view& login_form_signature,
       bool observed_submission) const;

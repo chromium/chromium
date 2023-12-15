@@ -24,7 +24,7 @@ namespace autofill {
 // - Some supported types (like PHONE_HOME_CITY_CODE) are not stored.
 // - Some non-supported types are stored (usually types that don't have
 //   filling support yet).
-const ServerFieldTypeSet& GetDatabaseStoredTypesOfAutofillProfile();
+const FieldTypeSet& GetDatabaseStoredTypesOfAutofillProfile();
 
 // Return true if the `field` has at least one possible field type. A possible
 // field type is every type that is neither UNKNOWN_TYPE or EMPTY_TYPE. The

@@ -292,8 +292,7 @@ void ApplyRationalizationEngineRules(
              // This is the core field to which the rule applies.
              .SetTriggerField(FieldCondition{
                  // The trigger field needs to be an ADDRESS_HOME_LINE2.
-                 .possible_overall_types =
-                     ServerFieldTypeSet{ADDRESS_HOME_LINE2},
+                 .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE2},
                  // Lookup in legacy_regex_patterns.
                  .regex_reference_match = "ADDRESS_HOME_DEPENDENT_LOCALITY",
              })
@@ -305,8 +304,7 @@ void ApplyRationalizationEngineRules(
              .SetOtherFieldConditions({
                  FieldCondition{
                      .location = FieldLocation::kLastClassifiedPredecessor,
-                     .possible_overall_types =
-                         ServerFieldTypeSet{ADDRESS_HOME_LINE1},
+                     .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1},
                  },
              })
 

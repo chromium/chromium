@@ -458,7 +458,7 @@ const char* GetQualityMetricTypeSuffix(
 // the "actual" field type when calculating metrics. If the |predicted_type| is
 // among the |possible_types] then use that as the best type (i.e., the
 // prediction is deemed to have been correct).
-ServerFieldType GetActualFieldType(const ServerFieldTypeSet& possible_types,
+ServerFieldType GetActualFieldType(const FieldTypeSet& possible_types,
                                    ServerFieldType predicted_type) {
   DCHECK_NE(possible_types.size(), 0u);
 
@@ -477,7 +477,7 @@ ServerFieldType GetActualFieldType(const ServerFieldTypeSet& possible_types,
 
   // Collapse field types that Chrome treats as identical, e.g. home and
   // billing address fields.
-  ServerFieldTypeSet collapsed_field_types;
+  FieldTypeSet collapsed_field_types;
   for (auto type : possible_types) {
     DCHECK_NE(type, EMPTY_TYPE);
     DCHECK_NE(type, UNKNOWN_TYPE);
@@ -691,10 +691,9 @@ void LogPredictionQualityMetrics(
   std::string rationalization_quality_histogram = base::JoinString(
       {"Autofill.RationalizationQuality.PhoneNumber", suffix}, "");
 
-  const ServerFieldTypeSet& possible_types =
+  const FieldTypeSet& possible_types =
       metric_type == AutofillMetrics::TYPE_AUTOCOMPLETE_BASED
-          ? ServerFieldTypeSet{AutofillType(field.html_type())
-                                   .GetStorableType()}
+          ? FieldTypeSet{AutofillType(field.html_type()).GetStorableType()}
           : field.possible_types();
 
   // Get the best type classification we can for the field.
@@ -1774,7 +1773,7 @@ void AutofillMetrics::LogAutofillPerfectFilling(bool is_address,
 }
 
 AutofillMetrics::CreditCardSeamlessness::CreditCardSeamlessness(
-    const ServerFieldTypeSet& filled_types)
+    const FieldTypeSet& filled_types)
     : name_(filled_types.contains(CREDIT_CARD_NAME_FULL) ||
             (filled_types.contains(CREDIT_CARD_NAME_FIRST) &&
              filled_types.contains(CREDIT_CARD_NAME_LAST))),
@@ -1872,7 +1871,7 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
   auto GetSeamlessness = [&p](bool only_newly_filled_fields,
                               bool only_after_security_policy,
                               bool only_visible_fields) {
-    ServerFieldTypeSet autofilled_types;
+    FieldTypeSet autofilled_types;
     for (const auto& field : *p.form) {
       FieldGlobalId id = field->global_id();
       if (only_newly_filled_fields && !p.newly_filled_fields->contains(id))
@@ -2009,7 +2008,7 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
 
 // static
 void AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
-    const ServerFieldTypeSet& autofilled_types) {
+    const FieldTypeSet& autofilled_types) {
   CreditCardSeamlessness seamlessness(autofilled_types);
   if (seamlessness.is_valid()) {
     base::UmaHistogramExactLinear(
@@ -2626,7 +2625,7 @@ void AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
         .SetFieldSessionIdentifier(
             AutofillMetrics::FieldGlobalIdToHash64Bit(field->global_id()));
 
-    const ServerFieldTypeSet& type_set = field->possible_types();
+    const FieldTypeSet& type_set = field->possible_types();
     if (!type_set.empty()) {
       auto type = type_set.begin();
       submitted_type1 = *type;

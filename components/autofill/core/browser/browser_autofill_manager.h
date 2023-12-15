@@ -451,14 +451,14 @@ class BrowserAutofillManager : public AutofillManager {
   // TODO(crbug/1275649): Add the case removed in crrev.com/c/4675831 when the
   // experiment resumes.
   // TODO(crbug.com/1481035): Make `optional_type_groups_originally_filled` also
-  // a ServerFieldTypeSet.
+  // a FieldTypeSet.
   std::vector<FieldFillingSkipReason> GetFieldFillingSkipReasons(
       const FormData& form,
       const FormStructure& form_structure,
       const FormFieldData& trigger_field,
       const Section& filling_section,
       const CreditCard* optional_credit_card,
-      const ServerFieldTypeSet& field_types_to_fill,
+      const FieldTypeSet& field_types_to_fill,
       const DenseSet<FieldTypeGroup>* optional_type_groups_originally_filled,
       bool skip_unrecognized_autocomplete_fields,
       bool is_refill) const;
@@ -569,10 +569,9 @@ class BrowserAutofillManager : public AutofillManager {
   static void DisambiguateUploadTypes(FormStructure* form);
 
   // Disambiguates name field upload types.
-  static void DisambiguateNameUploadTypes(
-      FormStructure* form,
-      size_t current_index,
-      const ServerFieldTypeSet& upload_types);
+  static void DisambiguateNameUploadTypes(FormStructure* form,
+                                          size_t current_index,
+                                          const FieldTypeSet& upload_types);
 
   // Calls FieldFiller::FillFormField().
   //

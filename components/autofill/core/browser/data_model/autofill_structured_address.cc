@@ -51,7 +51,7 @@ void FeatureGuardedAddressComponent::SetValue(std::u16string value,
 
 void FeatureGuardedAddressComponent::GetTypes(
     bool storable_only,
-    ServerFieldTypeSet* supported_types) const {
+    FieldTypeSet* supported_types) const {
   if (!base::FeatureList::IsEnabled(*feature_)) {
     return;
   }
@@ -263,9 +263,8 @@ void StreetAddressNode::PostAssignSanitization() {
   CalculateAddressLines();
 }
 
-const ServerFieldTypeSet StreetAddressNode::GetAdditionalSupportedFieldTypes()
-    const {
-  constexpr ServerFieldTypeSet additional_supported_field_types{
+const FieldTypeSet StreetAddressNode::GetAdditionalSupportedFieldTypes() const {
+  constexpr FieldTypeSet additional_supported_field_types{
       ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_LINE3};
   return additional_supported_field_types;
 }

@@ -32,24 +32,24 @@ enum class AutofillFillingMethod : uint8_t {
 // Autofill groups for addresses (for group filling we consider company fields
 // to be of address type), this method is effectively the union of
 // FieldTypeGroup::kAddress and FieldTypeGroup::kCompany.
-ServerFieldTypeSet GetAddressFieldsForGroupFilling();
+FieldTypeSet GetAddressFieldsForGroupFilling();
 
 // Returns true if `fields` matches one of granular filling groups, i.e.,
 // FieldTypeGroup::kName, FieldTypeGroup::kPhone, FieldTypeGroup::kEmail  or
 // `GetAddressFieldsForGroupFilling()`, see from the method above.
-bool AreFieldsGranularFillingGroup(const ServerFieldTypeSet& field_types);
+bool AreFieldsGranularFillingGroup(const FieldTypeSet& field_types);
 
 // Returns the autofill filling method corresponding to `targeted_fields`.
 AutofillFillingMethod GetFillingMethodFromTargetedFields(
-    const ServerFieldTypeSet& targeted_field_types);
+    const FieldTypeSet& targeted_field_types);
 
 // Returns a set of fields to be filled, given the last targeted fields and
 // the current trigger field type. For example, if the last targeted fields
 // matches one of the group filling sets, we will return the set of fields that
 // matches the triggering field group. This is done so that the user stays at
 // the same granularity as the one previously chosen.
-ServerFieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
-    const ServerFieldTypeSet& last_targeted_field_types,
+FieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
+    const FieldTypeSet& last_targeted_field_types,
     ServerFieldType trigger_field_type);
 
 }  // namespace autofill

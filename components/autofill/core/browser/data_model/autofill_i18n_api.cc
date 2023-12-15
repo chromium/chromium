@@ -37,7 +37,7 @@ using TreeEdgesList =
 
 // Address lines are currently the only computed types. These are are shared by
 // all countries.
-constexpr ServerFieldTypeSet kAddressComputedTypes = {
+constexpr FieldTypeSet kAddressComputedTypes = {
     ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_LINE3};
 
 // Returns an instance of the AddressComponent implementation that matches

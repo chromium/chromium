@@ -40,7 +40,7 @@ TEST(
     GetTargetServerFieldsForTypeAndLastTargetedFields_SingleField_ReturnsTriggeringFieldType) {
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
                 {ADDRESS_HOME_LINE1}, NAME_FIRST),
-            ServerFieldTypeSet({NAME_FIRST}));
+            FieldTypeSet({NAME_FIRST}));
 }
 
 // The test below asserts that when the last targeted fields match

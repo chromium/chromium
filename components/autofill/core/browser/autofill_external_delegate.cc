@@ -323,7 +323,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   }
 }
 
-absl::optional<ServerFieldTypeSet>
+absl::optional<FieldTypeSet>
 AutofillExternalDelegate::GetLastFieldTypesToFillForSection(
     const Section& section) const {
   if (auto it =

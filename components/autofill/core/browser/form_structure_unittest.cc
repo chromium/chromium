@@ -2470,7 +2470,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   // Setup
   ////////////////
   std::unique_ptr<FormStructure> form_structure;
-  std::vector<ServerFieldTypeSet> possible_field_types;
+  std::vector<FieldTypeSet> possible_field_types;
   std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
@@ -2550,7 +2550,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
         possible_field_types_validities[i]);
   }
 
-  ServerFieldTypeSet available_field_types;
+  FieldTypeSet available_field_types;
   available_field_types.insert(NAME_FIRST);
   available_field_types.insert(NAME_LAST);
   available_field_types.insert(ADDRESS_HOME_LINE1);
@@ -2643,7 +2643,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
   // Setup
   ////////////////
   std::unique_ptr<FormStructure> form_structure;
-  std::vector<ServerFieldTypeSet> possible_field_types;
+  std::vector<FieldTypeSet> possible_field_types;
   std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
@@ -2722,7 +2722,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
         possible_field_types_validities[i]);
   }
 
-  ServerFieldTypeSet available_field_types;
+  FieldTypeSet available_field_types;
   available_field_types.insert(NAME_FIRST);
   available_field_types.insert(NAME_LAST);
   available_field_types.insert(ADDRESS_HOME_LINE1);
@@ -2760,7 +2760,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
   // Setup
   ////////////////
   std::unique_ptr<FormStructure> form_structure;
-  std::vector<ServerFieldTypeSet> possible_field_types;
+  std::vector<FieldTypeSet> possible_field_types;
   std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
@@ -2841,7 +2841,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
         possible_field_types_validities[i]);
   }
 
-  ServerFieldTypeSet available_field_types;
+  FieldTypeSet available_field_types;
   available_field_types.insert(NAME_FIRST);
   available_field_types.insert(NAME_LAST);
   available_field_types.insert(ADDRESS_HOME_LINE1);
@@ -2878,7 +2878,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
 
 TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
   std::unique_ptr<FormStructure> form_structure;
-  std::vector<ServerFieldTypeSet> possible_field_types;
+  std::vector<FieldTypeSet> possible_field_types;
   std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
@@ -2957,7 +2957,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
         possible_field_types_validities[i]);
   }
 
-  ServerFieldTypeSet available_field_types;
+  FieldTypeSet available_field_types;
   available_field_types.insert(NAME_FIRST);
   available_field_types.insert(NAME_LAST);
   available_field_types.insert(ADDRESS_HOME_LINE1);
@@ -3073,7 +3073,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
 TEST_F(FormStructureTestImpl,
        EncodeUploadRequestWithAdditionalPasswordFormSignature) {
   std::unique_ptr<FormStructure> form_structure;
-  std::vector<ServerFieldTypeSet> possible_field_types;
+  std::vector<FieldTypeSet> possible_field_types;
   std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
@@ -3126,7 +3126,7 @@ TEST_F(FormStructureTestImpl,
     }
   }
 
-  ServerFieldTypeSet available_field_types;
+  FieldTypeSet available_field_types;
   available_field_types.insert(NAME_FIRST);
   available_field_types.insert(NAME_LAST);
   available_field_types.insert(EMAIL_ADDRESS);
@@ -3180,7 +3180,7 @@ TEST_F(FormStructureTestImpl,
 
 TEST_F(FormStructureTestImpl, EncodeUploadRequestWithPropertiesMask) {
   std::unique_ptr<FormStructure> form_structure;
-  std::vector<ServerFieldTypeSet> possible_field_types;
+  std::vector<FieldTypeSet> possible_field_types;
   std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
@@ -3230,7 +3230,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequestWithPropertiesMask) {
         possible_field_types_validities[i]);
   }
 
-  ServerFieldTypeSet available_field_types;
+  FieldTypeSet available_field_types;
   available_field_types.insert(NAME_FIRST);
   available_field_types.insert(NAME_LAST);
   available_field_types.insert(EMAIL_ADDRESS);
@@ -3264,7 +3264,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequestWithPropertiesMask) {
 
 TEST_F(FormStructureTestImpl, EncodeUploadRequest_ObservedSubmissionFalse) {
   std::unique_ptr<FormStructure> form_structure;
-  std::vector<ServerFieldTypeSet> possible_field_types;
+  std::vector<FieldTypeSet> possible_field_types;
   std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
@@ -3312,7 +3312,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_ObservedSubmissionFalse) {
         possible_field_types_validities[i]);
   }
 
-  ServerFieldTypeSet available_field_types;
+  FieldTypeSet available_field_types;
   available_field_types.insert(NAME_FIRST);
   available_field_types.insert(NAME_LAST);
   available_field_types.insert(EMAIL_ADDRESS);
@@ -3342,7 +3342,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_ObservedSubmissionFalse) {
 
 TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithLabels) {
   std::unique_ptr<FormStructure> form_structure;
-  std::vector<ServerFieldTypeSet> possible_field_types;
+  std::vector<FieldTypeSet> possible_field_types;
   std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
@@ -3383,7 +3383,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithLabels) {
         possible_field_types_validities[i]);
   }
 
-  ServerFieldTypeSet available_field_types;
+  FieldTypeSet available_field_types;
   available_field_types.insert(NAME_FIRST);
   available_field_types.insert(NAME_LAST);
   available_field_types.insert(EMAIL_ADDRESS);
@@ -3415,7 +3415,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithLabels) {
 // one for each of the original forms.
 TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSubForms) {
   std::unique_ptr<FormStructure> form_structure;
-  std::vector<ServerFieldTypeSet> possible_field_types;
+  std::vector<FieldTypeSet> possible_field_types;
   std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.host_frame = test::MakeLocalFrameToken();
@@ -3481,7 +3481,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSubForms) {
         possible_field_types_validities[i]);
   }
 
-  ServerFieldTypeSet available_field_types;
+  FieldTypeSet available_field_types;
   available_field_types.insert(CREDIT_CARD_NAME_FULL);
   available_field_types.insert(CREDIT_CARD_NUMBER);
   available_field_types.insert(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
@@ -3580,7 +3580,7 @@ TEST_F(FormStructureTestImpl, CheckDataPresence) {
   for (auto& fs_field : form_structure)
     fs_field->host_form_signature = form_structure.form_signature();
 
-  std::vector<ServerFieldTypeSet> possible_field_types;
+  std::vector<FieldTypeSet> possible_field_types;
   std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
 
   for (size_t i = 0; i < form_structure.field_count(); ++i) {
@@ -3594,7 +3594,7 @@ TEST_F(FormStructureTestImpl, CheckDataPresence) {
   // No available types.
   // datapresent should be "" == trimmed(0x0000000000000000) ==
   //     0b0000000000000000000000000000000000000000000000000000000000000000
-  ServerFieldTypeSet available_field_types;
+  FieldTypeSet available_field_types;
 
   // Prepare the expected proto string.
   AutofillUploadContents upload;
@@ -3791,7 +3791,7 @@ TEST_F(FormStructureTestImpl, CheckMultipleTypes) {
   // 33 == ADDRESS_HOME_CITY
   // 34 == ADDRESS_HOME_STATE
   // 60 == COMPANY_NAME
-  ServerFieldTypeSet available_field_types;
+  FieldTypeSet available_field_types;
   available_field_types.insert(NAME_FIRST);
   available_field_types.insert(NAME_LAST);
   available_field_types.insert(EMAIL_ADDRESS);
@@ -3802,7 +3802,7 @@ TEST_F(FormStructureTestImpl, CheckMultipleTypes) {
   available_field_types.insert(COMPANY_NAME);
 
   // Check that multiple types for the field are processed correctly.
-  std::vector<ServerFieldTypeSet> possible_field_types;
+  std::vector<FieldTypeSet> possible_field_types;
   std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");

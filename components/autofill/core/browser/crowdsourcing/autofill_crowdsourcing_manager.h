@@ -118,14 +118,13 @@ class AutofillCrowdsourcingManager {
   // submitted form's signature.
   // |observed_submission| indicates whether the upload request is the result of
   // an observed submission event.
-  virtual bool StartUploadRequest(
-      const FormStructure& form,
-      bool form_was_autofilled,
-      const ServerFieldTypeSet& available_field_types,
-      const std::string& login_form_signature,
-      bool observed_submission,
-      PrefService* pref_service,
-      base::WeakPtr<Observer> observer);
+  virtual bool StartUploadRequest(const FormStructure& form,
+                                  bool form_was_autofilled,
+                                  const FieldTypeSet& available_field_types,
+                                  const std::string& login_form_signature,
+                                  bool observed_submission,
+                                  PrefService* pref_service,
+                                  base::WeakPtr<Observer> observer);
 
   // Returns true if the autofill server communication is enabled.
   bool IsEnabled() const;

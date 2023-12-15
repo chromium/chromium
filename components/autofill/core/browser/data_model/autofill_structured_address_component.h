@@ -263,11 +263,11 @@ class AddressComponent {
 
   // Recursively adds the supported types to the set. Calls
   // |GetAdditionalSupportedFieldTypes()| to add field types.
-  void GetSupportedTypes(ServerFieldTypeSet* supported_types) const;
+  void GetSupportedTypes(FieldTypeSet* supported_types) const;
 
   // Recursively adds only the storable types to the set. No computed type is
   // ever added (e.g. GetAdditionalSupportedFieldTypes).
-  void GetStorableTypes(ServerFieldTypeSet* supported_types) const;
+  void GetStorableTypes(FieldTypeSet* supported_types) const;
 
   // Recursively finds the storable type of `type`:
   // - If `type` is a `storable_type_` of any node, this is simply `type`.
@@ -278,7 +278,7 @@ class AddressComponent {
 
   // Adds the additional supported field types to |supported_types|.
   // The method should DCHECK that the added types are not part of the set yet.
-  virtual const ServerFieldTypeSet GetAdditionalSupportedFieldTypes() const;
+  virtual const FieldTypeSet GetAdditionalSupportedFieldTypes() const;
 
   // Unassigns all nodes with parsed or formatted values.
   void UnsetParsedAndFormattedValuesInEntireTree();
@@ -505,7 +505,7 @@ class AddressComponent {
   // Recursively adds the supported types to the set. If `!storable_only`, calls
   // |GetAdditionalSupportedFieldTypes()| to add computed field types.
   virtual void GetTypes(bool storable_only,
-                        ServerFieldTypeSet* supported_types) const;
+                        FieldTypeSet* supported_types) const;
 
  private:
   // Unsets the node and all of its children.

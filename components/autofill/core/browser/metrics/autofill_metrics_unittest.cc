@@ -7919,7 +7919,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
   // Since this test suite doesn't use mocks, we can't intercept the autofilled
   // form. Therefore, after each manual fill or autofill, we shall call
   // SetFormValues()
-  void SetFormValues(const ServerFieldTypeSet& fill_field_types,
+  void SetFormValues(const FieldTypeSet& fill_field_types,
                      bool is_autofilled,
                      bool is_user_typed) {
     auto type_to_index = base::MakeFixedFlatMap<ServerFieldType, size_t>(

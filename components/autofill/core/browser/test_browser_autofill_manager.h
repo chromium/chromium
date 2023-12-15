@@ -124,7 +124,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
                                         bool credit_card_enabled);
 
   void SetExpectedSubmittedFieldTypes(
-      const std::vector<ServerFieldTypeSet>& expected_types);
+      const std::vector<FieldTypeSet>& expected_types);
 
   void SetExpectedObservedSubmission(bool expected);
 
@@ -137,7 +137,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   std::unique_ptr<base::RunLoop> run_loop_;
 
   std::string submitted_form_signature_;
-  std::vector<ServerFieldTypeSet> expected_submitted_field_types_;
+  std::vector<FieldTypeSet> expected_submitted_field_types_;
 };
 
 }  // namespace autofill

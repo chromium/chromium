@@ -629,10 +629,10 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileLabels(
     bool include_organization_in_label,
     bool include_country_in_label,
     std::vector<AutofillProfile*> profiles) {
-  ServerFieldTypeSet suggested_fields;
+  FieldTypeSet suggested_fields;
   size_t minimal_fields_shown = 2;
   if (address_only) {
-    suggested_fields = ServerFieldTypeSet();
+    suggested_fields = FieldTypeSet();
     if (include_name_in_label)
       suggested_fields.insert(NAME_FULL);
     if (include_organization_in_label)

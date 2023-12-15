@@ -273,8 +273,7 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
   base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
       differences = AutofillProfileComparator::GetProfileDifferenceMap(
           first_profile, second_profile,
-          ServerFieldTypeSet(std::begin(kTypeToCompare),
-                             std::end(kTypeToCompare)),
+          FieldTypeSet(std::begin(kTypeToCompare), std::end(kTypeToCompare)),
           app_locale);
 
   std::u16string first_address = GetEnvelopeStyleAddress(

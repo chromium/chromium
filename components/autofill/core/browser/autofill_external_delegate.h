@@ -105,7 +105,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // will store these fields so that in a next iteration, when the user clicks,
   // say a name field only fields that are of group name are filled, therefore
   // staying at a group filling level.
-  absl::optional<ServerFieldTypeSet> GetLastFieldTypesToFillForSection(
+  absl::optional<FieldTypeSet> GetLastFieldTypesToFillForSection(
       const Section& section) const;
 
   // Returns true if there is a screen reader installed on the machine.
@@ -242,7 +242,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // Stores the last `AutofillTriggerDetails::field_types_to_fill`.
   // We key this information by form section to guarantee granular filling
   // side effects are specific are not "leaked" to other forms.
-  base::flat_map<Section, ServerFieldTypeSet>
+  base::flat_map<Section, FieldTypeSet>
       last_field_types_to_fill_for_address_form_section_;
 
   bool should_show_scan_credit_card_ = false;

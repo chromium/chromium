@@ -80,7 +80,7 @@ class Iban : public AutofillDataModel {
   void SetRawInfoWithVerificationStatus(ServerFieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
-  void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
+  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
 
   // Returns true if there are no values (field types) set.
   bool IsEmpty(const std::string& app_locale) const;

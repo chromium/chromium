@@ -1570,7 +1570,7 @@ TEST_F(BrowserAutofillManagerTest,
            {.role = NAME_LAST, .autocomplete_attribute = "family-name"}}});
   FormsSeen({form});
   // Only `NAME_FIRST` fields should be filled.
-  ServerFieldTypeSet target_fields = ServerFieldTypeSet({NAME_FIRST});
+  FieldTypeSet target_fields = FieldTypeSet({NAME_FIRST});
   FormData response_data = FillAutofillFormDataAndGetResults(
       form, form.fields[0], MakeGuid(1),
       {.trigger_source = AutofillTriggerSource::kPopup,
@@ -7267,7 +7267,7 @@ TEST_F(BrowserAutofillManagerTest,
 
 struct ProfileMatchingTypesTestCase {
   const char* input_value;         // The value to input in the field.
-  ServerFieldTypeSet field_types;  // The expected field types to be determined.
+  FieldTypeSet field_types;        // The expected field types to be determined.
 };
 
 class ProfileMatchingTypesTest
@@ -7381,7 +7381,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 
   // Take the field types depending on the state of the structured names
   // feature.
-  const ServerFieldTypeSet& expected_possible_types = test_case.field_types;
+  const FieldTypeSet& expected_possible_types = test_case.field_types;
 
   // Set up the test profiles.
   std::vector<AutofillProfile> profiles(
@@ -7426,7 +7426,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 
   ASSERT_EQ(1U, form_structure.field_count());
 
-  ServerFieldTypeSet possible_types = form_structure.field(0)->possible_types();
+  FieldTypeSet possible_types = form_structure.field(0)->possible_types();
   EXPECT_EQ(possible_types, expected_possible_types);
 }
 
@@ -7488,14 +7488,14 @@ void DoTestDeterminePossibleFieldTypesForUploadOfSelect(
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillVoteForSelectOptionValues)) {
     EXPECT_EQ(form_structure.field(0)->possible_types(),
-              ServerFieldTypeSet({ADDRESS_HOME_CITY}));
+              FieldTypeSet({ADDRESS_HOME_CITY}));
     EXPECT_EQ(form_structure.field(1)->possible_types(),
-              ServerFieldTypeSet({PHONE_HOME_COUNTRY_CODE}));
+              FieldTypeSet({PHONE_HOME_COUNTRY_CODE}));
   } else {
     EXPECT_EQ(form_structure.field(0)->possible_types(),
-              ServerFieldTypeSet({UNKNOWN_TYPE}));
+              FieldTypeSet({UNKNOWN_TYPE}));
     EXPECT_EQ(form_structure.field(1)->possible_types(),
-              ServerFieldTypeSet({ADDRESS_HOME_COUNTRY}));
+              FieldTypeSet({ADDRESS_HOME_COUNTRY}));
   }
 }
 
@@ -7538,11 +7538,11 @@ TEST_F(BrowserAutofillManagerTest,
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
-  std::vector<ServerFieldTypeSet> expected_types;
+  std::vector<FieldTypeSet> expected_types;
   std::vector<std::u16string> expected_values;
 
   // These fields should all match.
-  ServerFieldTypeSet types;
+  FieldTypeSet types;
 
   expected_values.push_back(u"Elvis");
   types.clear();
@@ -7728,7 +7728,7 @@ TEST_F(BrowserAutofillManagerTest, DisambiguateUploadTypes) {
     ASSERT_EQ(test_fields.size(), form_structure.field_count());
 
     // Make sure the disambiguation method selects the expected upload type.
-    ServerFieldTypeSet possible_types;
+    FieldTypeSet possible_types;
     for (size_t i = 0; i < test_fields.size(); ++i) {
       possible_types = form_structure.field(i)->possible_types();
       if (test_fields[i].expect_disambiguation) {
@@ -8081,8 +8081,8 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndUnfocus_Upload) {
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
-  std::vector<ServerFieldTypeSet> expected_types;
-  ServerFieldTypeSet types;
+  std::vector<FieldTypeSet> expected_types;
+  FieldTypeSet types;
 
   form.fields.push_back(CreateTestFormField("First Name", "firstname", "",
                                             FormControlType::kInputText));
@@ -8131,8 +8131,8 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndNavigation_Upload) {
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
-  std::vector<ServerFieldTypeSet> expected_types;
-  ServerFieldTypeSet types;
+  std::vector<FieldTypeSet> expected_types;
+  FieldTypeSet types;
 
   form.fields.push_back(CreateTestFormField("First Name", "firstname", "",
                                             FormControlType::kInputText));
@@ -8181,10 +8181,10 @@ TEST_F(BrowserAutofillManagerTest, OnDidFillAutofillFormDataAndUnfocus_Upload) {
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
-  std::vector<ServerFieldTypeSet> expected_types;
+  std::vector<FieldTypeSet> expected_types;
 
   // These fields should all match.
-  ServerFieldTypeSet types;
+  FieldTypeSet types;
   form.fields.push_back(CreateTestFormField("First Name", "firstname", "",
                                             FormControlType::kInputText));
   types.insert(NAME_FIRST);

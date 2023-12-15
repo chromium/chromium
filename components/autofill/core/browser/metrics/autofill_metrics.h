@@ -676,7 +676,7 @@ class AutofillMetrics {
       kMaxValue = kPartialFill,
     };
 
-    explicit CreditCardSeamlessness(const ServerFieldTypeSet& filled_types);
+    explicit CreditCardSeamlessness(const FieldTypeSet& filled_types);
 
     explicit operator bool() const { return is_valid(); }
     bool is_valid() const { return name_ || number_ || exp_ || cvc_; }
@@ -1186,7 +1186,7 @@ class AutofillMetrics {
 
   // Logs Autofill.CreditCard.SeamlessFills.AtSubmissionTime.
   static void LogCreditCardSeamlessnessAtSubmissionTime(
-      const ServerFieldTypeSet& autofilled_types);
+      const FieldTypeSet& autofilled_types);
 
   // This should be called when parsing each form.
   static void LogParseFormTiming(const base::TimeDelta& duration);

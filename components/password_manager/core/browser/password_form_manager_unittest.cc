@@ -80,6 +80,7 @@ using ::autofill::AutofillUploadContents;
 using ::autofill::FieldPropertiesFlags;
 using ::autofill::FieldRendererId;
 using ::autofill::FieldSignature;
+using ::autofill::FieldTypeSet;
 using ::autofill::FormData;
 using ::autofill::FormFieldData;
 using ::autofill::FormRendererId;
@@ -90,7 +91,6 @@ using ::autofill::NOT_USERNAME;
 using ::autofill::PasswordFormFillData;
 using ::autofill::PasswordFormGenerationData;
 using ::autofill::ServerFieldType;
-using ::autofill::ServerFieldTypeSet;
 using ::autofill::SINGLE_USERNAME;
 using ::autofill::SINGLE_USERNAME_FORGOT_PASSWORD;
 using ::autofill::UNKNOWN_TYPE;
@@ -572,7 +572,7 @@ class PasswordFormManagerTest : public testing::Test,
                           UploadedSingleUsernameVoteTypeIs(vote_type),
                           UploadedSingleUsernameVoteIsMostRecentCandidate(
                               is_most_recent_single_username_candidate)),
-                    _, ServerFieldTypeSet{field_type}, _, _, _, _));
+                    _, FieldTypeSet{field_type}, _, _, _, _));
   }
 
   // Creates LRU cache simulating user modifying non-password field outside of
@@ -1521,7 +1521,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueToUnknownValueFromPrompt) {
   // Since the user has modified the password value, the password field was
   // likely picked wrong. Make sure votes for password field and password
   // generation attributes are not uploaded.
-  ServerFieldTypeSet expected_types = {autofill::USERNAME};
+  FieldTypeSet expected_types = {autofill::USERNAME};
   EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(HasPasswordAttributesVote(false), _,
                                  expected_types, _, _, _, _));
@@ -2695,7 +2695,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowUsernameInThePasswordForm) {
                                                &possible_usernames));
 
   // Check that no SINGLE_USERNAME vote is sent (PASSWORD != SINGLE_USERNAME).
-  auto expected_votes = ServerFieldTypeSet{autofill::PASSWORD};
+  auto expected_votes = FieldTypeSet{autofill::PASSWORD};
   EXPECT_CALL(
       mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(SignatureIs(CalculateFormSignature(submitted_form)), _,
@@ -2754,8 +2754,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
 #if !BUILDFLAG(IS_ANDROID)
     EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
                 StartUploadRequest(SignatureIs(kSingleUsernameFormSignature),
-                                   false, ServerFieldTypeSet{SINGLE_USERNAME},
-                                   _, true, nullptr, /*observer=*/IsNull()));
+                                   false, FieldTypeSet{SINGLE_USERNAME}, _,
+                                   true, nullptr, /*observer=*/IsNull()));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     // Upload username first flow votes on the password form.
@@ -2837,8 +2837,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(SignatureIs(kSingleUsernameFormSignature),
-                                 false, ServerFieldTypeSet{SINGLE_USERNAME}, _,
-                                 true, nullptr, /*observer=*/IsNull()));
+                                 false, FieldTypeSet{SINGLE_USERNAME}, _, true,
+                                 nullptr, /*observer=*/IsNull()));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Upload username first flow vote on the sign-up form.
@@ -3099,8 +3099,8 @@ TEST_P(PasswordFormManagerTest,
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(SignatureIs(kSingleUsernameFormSignature),
-                                 false, ServerFieldTypeSet{SINGLE_USERNAME}, _,
-                                 true, nullptr, /*observer=*/IsNull()));
+                                 false, FieldTypeSet{SINGLE_USERNAME}, _, true,
+                                 nullptr, /*observer=*/IsNull()));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Upload username first flow vote on the sign-up form.
@@ -3343,8 +3343,8 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(SignatureIs(kUsernameFormSignature), false,
-                                 ServerFieldTypeSet{NOT_USERNAME}, _, true,
-                                 nullptr, /*observer=*/IsNull()));
+                                 FieldTypeSet{NOT_USERNAME}, _, true, nullptr,
+                                 /*observer=*/IsNull()));
 #else
   EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(_, _, _, _, _, _, _))

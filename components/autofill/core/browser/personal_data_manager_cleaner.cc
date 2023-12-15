@@ -147,7 +147,7 @@ void PersonalDataManagerCleaner::RemoveInaccessibleProfileValues() {
   for (const AutofillProfile* profile :
        personal_data_manager_->GetProfilesFromSource(
            AutofillProfile::Source::kLocalOrSyncable)) {
-    const ServerFieldTypeSet inaccessible_fields =
+    const FieldTypeSet inaccessible_fields =
         profile->FindInaccessibleProfileValues();
     if (!inaccessible_fields.empty()) {
       // We need to create a copy, because otherwise the internally stored

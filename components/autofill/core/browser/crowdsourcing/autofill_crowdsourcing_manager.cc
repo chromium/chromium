@@ -755,7 +755,7 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
 bool AutofillCrowdsourcingManager::StartUploadRequest(
     const FormStructure& form,
     bool form_was_autofilled,
-    const ServerFieldTypeSet& available_field_types,
+    const FieldTypeSet& available_field_types,
     const std::string& login_form_signature,
     bool observed_submission,
     PrefService* prefs,

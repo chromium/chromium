@@ -1613,7 +1613,7 @@ struct CreditCardMatchingTypesCase {
                               const char* card_exp_month,
                               const char* card_exp_year,
                               CreditCard::RecordType record_type,
-                              ServerFieldTypeSet expected_matched_types,
+                              FieldTypeSet expected_matched_types,
                               const char* locale = "US")
       : value(value),
         card_exp_month(card_exp_month),
@@ -1630,7 +1630,7 @@ struct CreditCardMatchingTypesCase {
   const char* card_exp_year;
   const CreditCard::RecordType record_type;
   // The types that are expected to match.
-  const ServerFieldTypeSet expected_matched_types;
+  const FieldTypeSet expected_matched_types;
 
   const char* locale = "US";
 };
@@ -1649,7 +1649,7 @@ TEST_P(CreditCardMatchingTypesTest, Cases) {
   card.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR,
                   ASCIIToUTF16(test_case.card_exp_year));
 
-  ServerFieldTypeSet matching_types;
+  FieldTypeSet matching_types;
   card.GetMatchingTypes(UTF8ToUTF16(test_case.value), test_case.locale,
                         &matching_types);
   EXPECT_EQ(test_case.expected_matched_types, matching_types);
@@ -1664,22 +1664,21 @@ const CreditCardMatchingTypesCase kCreditCardMatchingTypesTestCases[] = {
      MASKED_SERVER_CARD,
      {CREDIT_CARD_NUMBER}},
     {"4111111111111111", "01", "2020",
-     CreditCard::RecordType::kMaskedServerCard, ServerFieldTypeSet()},
+     CreditCard::RecordType::kMaskedServerCard, FieldTypeSet()},
     // Same value will not match a local card or full server card since we
     // have the full number for those. However the full number will.
-    {"1881", "01", "2020", LOCAL_CARD, ServerFieldTypeSet()},
-    {"1881", "01", "2020", FULL_SERVER_CARD, ServerFieldTypeSet()},
+    {"1881", "01", "2020", LOCAL_CARD, FieldTypeSet()},
+    {"1881", "01", "2020", FULL_SERVER_CARD, FieldTypeSet()},
     {"4012888888881881", "01", "2020", LOCAL_CARD, {CREDIT_CARD_NUMBER}},
     {"4012888888881881", "01", "2020", FULL_SERVER_CARD, {CREDIT_CARD_NUMBER}},
 
     // Wrong last four digits.
-    {"1111", "01", "2020", MASKED_SERVER_CARD, ServerFieldTypeSet()},
-    {"1111", "01", "2020", LOCAL_CARD, ServerFieldTypeSet()},
-    {"1111", "01", "2020", FULL_SERVER_CARD, ServerFieldTypeSet()},
-    {"4111111111111111", "01", "2020", MASKED_SERVER_CARD,
-     ServerFieldTypeSet()},
-    {"4111111111111111", "01", "2020", LOCAL_CARD, ServerFieldTypeSet()},
-    {"4111111111111111", "01", "2020", FULL_SERVER_CARD, ServerFieldTypeSet()},
+    {"1111", "01", "2020", MASKED_SERVER_CARD, FieldTypeSet()},
+    {"1111", "01", "2020", LOCAL_CARD, FieldTypeSet()},
+    {"1111", "01", "2020", FULL_SERVER_CARD, FieldTypeSet()},
+    {"4111111111111111", "01", "2020", MASKED_SERVER_CARD, FieldTypeSet()},
+    {"4111111111111111", "01", "2020", LOCAL_CARD, FieldTypeSet()},
+    {"4111111111111111", "01", "2020", FULL_SERVER_CARD, FieldTypeSet()},
 
     // Matching the expiration month.
     {"01", "01", "2020", LOCAL_CARD, {CREDIT_CARD_EXP_MONTH}},
@@ -1690,7 +1689,7 @@ const CreditCardMatchingTypesCase kCreditCardMatchingTypesTestCases[] = {
     {"janv.", "01", "2020", LOCAL_CARD, {CREDIT_CARD_EXP_MONTH}, "FR"},
     {"janvier", "01", "2020", LOCAL_CARD, {CREDIT_CARD_EXP_MONTH}, "FR"},
     {"février", "02", "2020", LOCAL_CARD, {CREDIT_CARD_EXP_MONTH}, "FR"},
-    {"mars", "01", "2020", LOCAL_CARD, ServerFieldTypeSet(), "FR"},
+    {"mars", "01", "2020", LOCAL_CARD, FieldTypeSet(), "FR"},
 
     // Matching the expiration year.
     {"2019", "01", "2019", LOCAL_CARD, {CREDIT_CARD_EXP_4_DIGIT_YEAR}},
@@ -1700,9 +1699,9 @@ const CreditCardMatchingTypesCase kCreditCardMatchingTypesTestCases[] = {
     {"01/19", "01", "2019", LOCAL_CARD, {CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}},
     {"01-19", "01", "2019", LOCAL_CARD, {CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}},
     {"01 / 19", "01", "2019", LOCAL_CARD, {CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}},
-    {"01/2020", "01", "2019", LOCAL_CARD, ServerFieldTypeSet()},
-    {"20", "01", "2019", LOCAL_CARD, ServerFieldTypeSet()},
-    {"2021", "01", "2019", LOCAL_CARD, ServerFieldTypeSet()},
+    {"01/2020", "01", "2019", LOCAL_CARD, FieldTypeSet()},
+    {"20", "01", "2019", LOCAL_CARD, FieldTypeSet()},
+    {"2021", "01", "2019", LOCAL_CARD, FieldTypeSet()},
 };
 
 INSTANTIATE_TEST_SUITE_P(CreditCardTest,
@@ -2112,7 +2111,7 @@ TEST(CreditCardTest, GetNonEmptyRawTypes) {
       CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
       CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR};
 
-  ServerFieldTypeSet non_empty_raw_types;
+  FieldTypeSet non_empty_raw_types;
   credit_card.GetNonEmptyRawTypes(&non_empty_raw_types);
 
   EXPECT_THAT(non_empty_raw_types,

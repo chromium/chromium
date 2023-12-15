@@ -146,7 +146,7 @@ void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
 
 void Address::GetMatchingTypes(const std::u16string& text,
                                const std::string& app_locale,
-                               ServerFieldTypeSet* matching_types) const {
+                               FieldTypeSet* matching_types) const {
   FormGroup::GetMatchingTypes(text, app_locale, matching_types);
 
   std::string country_code = base::UTF16ToUTF8(
@@ -182,7 +182,7 @@ void Address::GetMatchingTypes(const std::u16string& text,
   }
 }
 
-void Address::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
+void Address::GetSupportedTypes(FieldTypeSet* supported_types) const {
   structured_address_->GetSupportedTypes(supported_types);
 }
 
@@ -298,7 +298,7 @@ void Address::SetAddressCountryCode(const std::u16string& country_code,
   // Transfer the content from the old model into the new one. Note that it
   // is possible that some nodes are not present in the updated model. Those
   // will be ignored.
-  ServerFieldTypeSet prev_supported_types;
+  FieldTypeSet prev_supported_types;
   structured_address_->GetStorableTypes(&prev_supported_types);
   prev_supported_types.erase(ADDRESS_HOME_COUNTRY);
 

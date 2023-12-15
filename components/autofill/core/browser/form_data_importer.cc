@@ -264,7 +264,7 @@ bool FormDataImporter::SetPhoneNumber(
 
 void FormDataImporter::RemoveInaccessibleProfileValues(
     AutofillProfile& profile) {
-  const ServerFieldTypeSet inaccessible_fields =
+  const FieldTypeSet inaccessible_fields =
       profile.FindInaccessibleProfileValues();
   profile.ClearFields(inaccessible_fields);
   autofill_metrics::LogRemovedSettingInaccessibleFields(
@@ -960,7 +960,7 @@ FormDataImporter::ExtractCreditCardFromFormResult
 FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
   ExtractCreditCardFromFormResult result;
 
-  ServerFieldTypeSet types_seen;
+  FieldTypeSet types_seen;
   for (const auto& field : form) {
     // If we don't know the type of the field, then skip it.
     if (!field->IsFieldFillable()) {

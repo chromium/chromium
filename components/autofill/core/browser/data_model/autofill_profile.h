@@ -94,7 +94,7 @@ class AutofillProfile : public AutofillDataModel {
   // FormGroup:
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
-                        ServerFieldTypeSet* matching_types) const override;
+                        FieldTypeSet* matching_types) const override;
 
   std::u16string GetRawInfo(ServerFieldType type) const override;
 
@@ -109,7 +109,7 @@ class AutofillProfile : public AutofillDataModel {
       int value,
       VerificationStatus status) override;
 
-  void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
+  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
 
   // Every `GetSupportedType()` is either a storable type or has a corresponding
   // storable type. For example, ADDRESS_HOME_LINE1 corresponds to the storable
@@ -164,7 +164,7 @@ class AutofillProfile : public AutofillDataModel {
   // Like `IsSubsetOf()`, but considers only the given `types`.
   bool IsSubsetOfForFieldSet(const AutofillProfileComparator& comparator,
                              const AutofillProfile& profile,
-                             const ServerFieldTypeSet& types) const;
+                             const FieldTypeSet& types) const;
 
   // Like `IsSubsetOf()`, but for strict superset instead of subset.
   bool IsStrictSupersetOf(const AutofillProfileComparator& comparator,
@@ -207,8 +207,8 @@ class AutofillProfile : public AutofillDataModel {
   // least `minimal_fields_shown` fields, if possible.
   static void CreateInferredLabels(
       const std::vector<const AutofillProfile*>& profiles,
-      const absl::optional<ServerFieldTypeSet>& suggested_fields,
-      ServerFieldTypeSet excluded_fields,
+      const absl::optional<FieldTypeSet>& suggested_fields,
+      FieldTypeSet excluded_fields,
       size_t minimal_fields_shown,
       const std::string& app_locale,
       std::vector<std::u16string>* labels);
@@ -285,10 +285,10 @@ class AutofillProfile : public AutofillDataModel {
 
   // Checks for non-empty setting-inaccessible fields and returns all that were
   // found.
-  ServerFieldTypeSet FindInaccessibleProfileValues() const;
+  FieldTypeSet FindInaccessibleProfileValues() const;
 
   // Clears all specified |fields| from the profile.
-  void ClearFields(const ServerFieldTypeSet& fields);
+  void ClearFields(const FieldTypeSet& fields);
 
   const ProfileTokenQuality& token_quality() const { return token_quality_; }
   ProfileTokenQuality& token_quality() { return token_quality_; }

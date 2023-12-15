@@ -533,8 +533,8 @@ class PredictionQualityMetricsTest
     return (predicted_type << 16) | actual_type;
   }
 
-  const ServerFieldTypeSet unknown_equivalent_types_{UNKNOWN_TYPE, EMPTY_TYPE,
-                                                     AMBIGUOUS_TYPE};
+  const FieldTypeSet unknown_equivalent_types_{UNKNOWN_TYPE, EMPTY_TYPE,
+                                               AMBIGUOUS_TYPE};
 };
 
 TEST_P(PredictionQualityMetricsTest, Classification) {

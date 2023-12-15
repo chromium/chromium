@@ -295,7 +295,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_HideSubsets) {
   personal_data()->AddProfile(profile3);
 
   // Simulate a form with street address, city and state.
-  ServerFieldTypeSet types = {ADDRESS_HOME_CITY, ADDRESS_HOME_STATE};
+  FieldTypeSet types = {ADDRESS_HOME_CITY, ADDRESS_HOME_STATE};
   std::vector<const AutofillProfile*> profiles =
       suggestion_generator()->GetProfilesToSuggest(ADDRESS_HOME_STREET_ADDRESS,
                                                    u"123", false, types);
@@ -1097,9 +1097,9 @@ class AutofillChildrenSuggestionGeneratorTest
  public:
   std::vector<Suggestion> CreateSuggestionWithChildrenFromProfile(
       const AutofillProfile& profile,
-      absl::optional<ServerFieldTypeSet> last_targeted_fields,
+      absl::optional<FieldTypeSet> last_targeted_fields,
       ServerFieldType trigger_field_type,
-      const ServerFieldTypeSet& field_types) {
+      const FieldTypeSet& field_types) {
     return suggestion_generator()->CreateSuggestionsFromProfiles(
         {&profile}, field_types, last_targeted_fields, trigger_field_type,
         /*trigger_field_max_length=*/0);
@@ -1107,7 +1107,7 @@ class AutofillChildrenSuggestionGeneratorTest
 
   std::vector<Suggestion> CreateSuggestionWithChildrenFromProfile(
       const AutofillProfile& profile,
-      absl::optional<ServerFieldTypeSet> last_targeted_fields,
+      absl::optional<FieldTypeSet> last_targeted_fields,
       ServerFieldType trigger_field_type) {
     return CreateSuggestionWithChildrenFromProfile(
         profile, last_targeted_fields, trigger_field_type,
@@ -1361,7 +1361,7 @@ TEST_F(
     AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_LastTargetedFieldsIsSingleField_FieldByFieldFilling) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), absl::optional<ServerFieldTypeSet>({NAME_LAST}), NAME_FIRST);
+      profile(), absl::optional<FieldTypeSet>({NAME_LAST}), NAME_FIRST);
 
   ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_THAT(suggestions[0],
@@ -1375,7 +1375,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_LastTargetedFieldsIsGroup_GroupFilling) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(),
-      absl::optional<ServerFieldTypeSet>(GetAddressFieldsForGroupFilling()),
+      absl::optional<FieldTypeSet>(GetAddressFieldsForGroupFilling()),
       NAME_FIRST, {NAME_FIRST, NAME_LAST});
 
   ASSERT_EQ(1U, suggestions.size());
@@ -1593,7 +1593,7 @@ TEST_F(
   // We set only a name field as `last_targeted_fields` to denote that the user
   // chose field by field filling.
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), absl::optional<ServerFieldTypeSet>({NAME_FIRST}),
+      profile(), absl::optional<FieldTypeSet>({NAME_FIRST}),
       ADDRESS_HOME_LINE1);
 
   ASSERT_EQ(1U, suggestions.size());
