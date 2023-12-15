@@ -491,7 +491,6 @@ void ChromeAutofillClient::ShowAutofillSettings(PopupType popup_type) {
 #if BUILDFLAG(IS_ANDROID)
   switch (popup_type) {
     case PopupType::kAddresses:
-    case PopupType::kPersonalInformation:
       ShowAutofillProfileSettings(web_contents());
       return;
     case PopupType::kCreditCards:
@@ -508,7 +507,6 @@ void ChromeAutofillClient::ShowAutofillSettings(PopupType popup_type) {
   if (browser) {
     switch (popup_type) {
       case PopupType::kAddresses:
-      case PopupType::kPersonalInformation:
         chrome::ShowSettingsSubPage(browser, chrome::kAddressesSubPage);
         return;
       case PopupType::kCreditCards:

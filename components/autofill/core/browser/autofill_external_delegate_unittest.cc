@@ -394,19 +394,6 @@ TEST_F(AutofillExternalDelegateUnitTest, GetPopupTypeForAddressForm) {
 }
 
 TEST_F(AutofillExternalDelegateUnitTest,
-       GetPopupTypeForPersonalInformationForm) {
-  FormData form = CreateTestPersonalInformationFormData();
-  manager().OnFormsSeen({form}, {});
-
-  for (const FormFieldData& field : form.fields) {
-    external_delegate().OnQuery(form, field, gfx::RectF(),
-                                kDefaultTriggerSource);
-    EXPECT_EQ(PopupType::kPersonalInformation,
-              external_delegate().GetPopupType());
-  }
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
        GetPopupTypeForAddressManualFallback_AddressForm) {
   FormData form = CreateTestAddressFormData();
   manager().OnFormsSeen({form}, {});
@@ -2053,7 +2040,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ShouldUseNewSettingName) {
 #if !BUILDFLAG(IS_ANDROID)
       Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(false)),
 #endif
-      Suggestion::Text(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE),
+      Suggestion::Text(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
                        Suggestion::Text::IsPrimary(true)));
   EXPECT_CALL(client(),
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
@@ -2165,7 +2152,11 @@ TEST_P(AutofillExternalDelegate_RemoveSuggestionTest, RemoveSuggestion) {
 // row in the footer.
 TEST_F(AutofillExternalDelegateCardsFromAccountTest,
        ShouldShowCardsFromAccountOptionWithCards) {
-  IssueOnQuery();
+  FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
+                                                     /*use_month_type=*/false);
+  manager().OnFormsSeen({form}, {});
+  external_delegate().OnQuery(form, form.fields[0], gfx::RectF(),
+                              kDefaultTriggerSource);
 
   const auto kExpectedSuggestions = SuggestionVectorMainTextsAre(
       Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(true)),
@@ -2175,14 +2166,15 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
 #if !BUILDFLAG(IS_ANDROID)
       Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(false)),
 #endif
-      Suggestion::Text(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE),
-                       Suggestion::Text::IsPrimary(true)));
+      Suggestion::Text(
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
+          Suggestion::Text::IsPrimary(true)));
   EXPECT_CALL(client(),
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
   std::vector<Suggestion> autofill_item;
-  autofill_item.emplace_back(/*main_text=*/u"", PopupItemId::kAddressEntry);
+  autofill_item.emplace_back(/*main_text=*/u"", PopupItemId::kCreditCardEntry);
   autofill_item[0].main_text.is_primary = Suggestion::Text::IsPrimary(true);
-  external_delegate().OnSuggestionsReturned(queried_form_triggering_field_id_,
+  external_delegate().OnSuggestionsReturned(form.fields[0].global_id(),
                                             autofill_item);
 }
 

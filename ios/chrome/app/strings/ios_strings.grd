@@ -395,11 +395,6 @@
       <message name="IDS_IOS_AUTOFILL_PHONE" desc="Title of the field of a profile address representing the phone number of the addressee. [Length: 15em] [iOS only]">
         Phone
       </message>
-      <message name="IDS_IOS_AUTOFILL_PROFILE_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of profile suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that has profile suggestions available for autofill purposes. According to the number of available profiles, the string goes from singular to plural. [iOS only]">
-        {count, plural,
-           =1 {{count} saved profile available above your keyboard.}
-           other {{count} saved profiles available above your keyboard.}}
-      </message>
       <message name="IDS_IOS_AUTOFILL_REAUTH_REASON" desc="Message explaining that the reason why we are requiring the user to re-authenticate is to be able to use the password. This is shown by iOS in the Touch ID reauthentication system dialogue, right under the OS string 'Touch ID for $BROWSER_NAME'. [CHAR_LIMIT=22]">
         Use password
       </message>

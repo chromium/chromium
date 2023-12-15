@@ -493,7 +493,6 @@ void FormatLabel(views::Label& label,
       break;
     case PopupType::kIbans:
     case PopupType::kPasswords:
-    case PopupType::kPersonalInformation:
     case PopupType::kUnspecified:
       break;
   }

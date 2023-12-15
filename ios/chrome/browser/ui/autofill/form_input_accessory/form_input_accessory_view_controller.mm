@@ -248,11 +248,6 @@
             IDS_IOS_AUTOFILL_PAYMENT_METHOD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
-      case autofill::PopupType::kPersonalInformation:
-        suggestionTypeString = l10n_util::GetPluralStringFUTF16(
-            IDS_IOS_AUTOFILL_PROFILE_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
-            suggestionCount);
-        break;
       case autofill::PopupType::kAutocomplete:
         suggestionTypeString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_AUTOCOMPLETE_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,

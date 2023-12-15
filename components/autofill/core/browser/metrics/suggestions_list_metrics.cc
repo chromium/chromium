@@ -14,8 +14,6 @@ namespace {
 
 ManageSuggestionType ToManageSuggestionType(PopupType popup_type) {
   switch (popup_type) {
-    case PopupType::kPersonalInformation:
-      return ManageSuggestionType::kPersonalInformation;
     case PopupType::kAddresses:
       return ManageSuggestionType::kAddresses;
     case PopupType::kCreditCards:
@@ -44,7 +42,6 @@ void LogAutofillSuggestionAcceptedIndex(int index,
                                uma_index);
       break;
     case PopupType::kAddresses:
-    case PopupType::kPersonalInformation:
       base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.Profile",
                                uma_index);
       break;

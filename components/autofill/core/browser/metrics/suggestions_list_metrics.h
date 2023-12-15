@@ -17,7 +17,7 @@ namespace autofill_metrics {
 // Used by LogAutofillSelectedManageEntry().
 enum class ManageSuggestionType {
   kOther = 0,
-  kPersonalInformation = 1,
+  // kPersonalInformation 1 is deprecated, see b/316345315.
   kAddresses = 2,
   kPaymentMethodsCreditCards = 3,
   kPaymentMethodsIbans = 4,

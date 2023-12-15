@@ -149,13 +149,7 @@ PopupType GetPopupTypeForQuery(BrowserAutofillManager& manager,
     case FieldTypeGroup::kCompany:
     case FieldTypeGroup::kPhone:
     case FieldTypeGroup::kBirthdateField:
-      const bool has_address_field =
-          base::ranges::any_of(form.fields, [&](const FormFieldData& f) {
-            const AutofillField* const af = manager.GetAutofillField(form, f);
-            return af && af->Type().group() == FieldTypeGroup::kAddress;
-          });
-      return has_address_field ? PopupType::kAddresses
-                               : PopupType::kPersonalInformation;
+      return PopupType::kAddresses;
   }
 }
 
@@ -1171,11 +1165,9 @@ std::u16string AutofillExternalDelegate::GetSettingsSuggestionValue() const {
     case PopupType::kIbans:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS);
 
-    case PopupType::kPersonalInformation:
-    case PopupType::kUnspecified:
-      return l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE);
     case PopupType::kAutocomplete:
     case PopupType::kPasswords:
+    case PopupType::kUnspecified:
       NOTREACHED();
       return std::u16string();
   }

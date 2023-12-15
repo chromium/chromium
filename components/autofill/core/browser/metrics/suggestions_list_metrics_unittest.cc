@@ -42,17 +42,14 @@ TEST(SuggestionsListMetricsTest, LogSuggestionAcceptedIndex_Profile) {
 
   base::HistogramTester histogram_tester;
   LogAutofillSuggestionAcceptedIndex(selected_suggestion_index,
-                                     PopupType::kPersonalInformation,
-                                     /*off_the_record=*/false);
-  LogAutofillSuggestionAcceptedIndex(selected_suggestion_index,
                                      PopupType::kAddresses,
                                      /*off_the_record=*/false);
 
-  EXPECT_EQ(2u, GetTotalCountForPrefix(histogram_tester,
+  EXPECT_EQ(1u, GetTotalCountForPrefix(histogram_tester,
                                        "Autofill.SuggestionAcceptedIndex."));
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.SuggestionAcceptedIndex.Profile"),
-              BucketsAre(base::Bucket(selected_suggestion_index, 2)));
+              BucketsAre(base::Bucket(selected_suggestion_index, 1)));
 }
 
 TEST(SuggestionsListMetricsTest, LogSuggestionAcceptedIndex_Other) {
@@ -70,15 +67,6 @@ TEST(SuggestionsListMetricsTest, LogSuggestionAcceptedIndex_Other) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.SuggestionAcceptedIndex.Other"),
       BucketsAre(base::Bucket(selected_suggestion_index, 2)));
-}
-
-TEST(SuggestionsListMetricsTest,
-     LogAutofillSelectedManageEntry_PersonalInformation) {
-  base::HistogramTester histogram_tester;
-  LogAutofillSelectedManageEntry(PopupType::kPersonalInformation);
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
-      BucketsAre(base::Bucket(ManageSuggestionType::kPersonalInformation, 1)));
 }
 
 TEST(SuggestionsListMetricsTest, LogAutofillSelectedManageEntry_Addresses) {

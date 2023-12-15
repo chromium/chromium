@@ -15,9 +15,6 @@ enum class PopupType {
   kCreditCards,
   kIbans,
   kPasswords,
-  // Address form, but no address-related field is present. For example, it's
-  // a sign-up page in which the user only enters the name and the email.
-  kPersonalInformation,
   kUnspecified,
 };
 
