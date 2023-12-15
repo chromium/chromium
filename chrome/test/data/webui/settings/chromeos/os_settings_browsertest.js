@@ -1177,6 +1177,7 @@ TEST_F(
  [
    'OsSettingsUiScrollRestoration',
    'os_settings_ui/scroll_restoration_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [
    'OsSettingsUiToolbar',
