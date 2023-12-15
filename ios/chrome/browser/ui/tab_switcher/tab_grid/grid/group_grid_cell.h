@@ -8,8 +8,8 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_info.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_to_tab_transition_view.h"
 
 @class GroupGridCell;
 
@@ -40,6 +40,9 @@ typedef NS_ENUM(NSUInteger, GroupGridCellState) {
 @property(nonatomic, assign) CGFloat opacity;
 // The current state which the cell should display.
 @property(nonatomic, assign) GroupGridCellState state;
+
+// Configures every tab of the group with a given snapshot/favicon pairs.
+- (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos;
 
 // Starts the activity indicator animation.
 - (void)showActivityIndicator;

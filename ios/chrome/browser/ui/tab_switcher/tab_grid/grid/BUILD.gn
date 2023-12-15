@@ -99,6 +99,8 @@ source_set("grid_ui") {
     "grid_theme.h",
     "group_grid_cell.h",
     "group_grid_cell.mm",
+    "group_tab_info.h",
+    "group_tab_info.mm",
     "legacy_grid_layout.h",
     "legacy_grid_layout.mm",
   ]

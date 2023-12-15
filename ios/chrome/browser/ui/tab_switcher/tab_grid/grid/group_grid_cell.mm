@@ -11,6 +11,7 @@
 #import "base/check_op.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
@@ -27,6 +28,14 @@ NSInteger kIconSymbolPointSize = 13;
 
 // Size of activity indicator replacing fav icon when active.
 const CGFloat kIndicatorSize = 16.0;
+
+// Offsets and dimension ratio constraints of the top and bottom snapshot views.
+const CGFloat kSnapshotDimensionRatio = 0.5;
+const CGFloat kSnapshotViewWidthOffset = 6;
+const CGFloat kSnapshotViewHeightOffset = 4;
+const CGFloat kSnapshotViewLeadingOffset = 4;
+const CGFloat kSnapshotViewTrailingOffset = 4;
+const CGFloat kSnapShotViewBottomOffset = 4;
 
 }  // namespace
 
@@ -47,7 +56,12 @@ const CGFloat kIndicatorSize = 16.0;
 // Visual components of the cell.
 @property(nonatomic, weak) UIView* topBar;
 @property(nonatomic, weak) UIImageView* iconView;
-@property(nonatomic, weak) UIView* snapshotView;
+@property(nonatomic, weak) UIView* groupSnapshotsView;
+@property(nonatomic, weak) TopAlignedImageView* topLeadingSnapshotView;
+@property(nonatomic, weak) TopAlignedImageView* topTrailingSnapshotView;
+@property(nonatomic, weak) TopAlignedImageView* bottomLeadingSnapshotView;
+// TODO(crbug.com/1501837): Add the bottom right snapshot view.
+// TODO(crbug.com/1501837): Add the favicon views.
 @property(nonatomic, weak) UILabel* titleLabel;
 @property(nonatomic, weak) UIImageView* closeIconView;
 @property(nonatomic, weak) UIImageView* selectIconView;
@@ -81,9 +95,17 @@ const CGFloat kIndicatorSize = 16.0;
     contentView.layer.cornerRadius = kGridCellCornerRadius;
     contentView.layer.masksToBounds = YES;
     UIView* topBar = [self setupTopBar];
-    UIView* snapshotView = [[UIView alloc] init];
-    snapshotView.translatesAutoresizingMaskIntoConstraints = NO;
-
+    UIView* groupSnapshotsView = [[UIView alloc] init];
+    TopAlignedImageView* topLeadingSnapshotView =
+        [[TopAlignedImageView alloc] init];
+    TopAlignedImageView* topTrailingSnapshotView =
+        [[TopAlignedImageView alloc] init];
+    TopAlignedImageView* bottomLeadingSnapshotView =
+        [[TopAlignedImageView alloc] init];
+    groupSnapshotsView.translatesAutoresizingMaskIntoConstraints = NO;
+    topLeadingSnapshotView.translatesAutoresizingMaskIntoConstraints = NO;
+    topTrailingSnapshotView.translatesAutoresizingMaskIntoConstraints = NO;
+    bottomLeadingSnapshotView.translatesAutoresizingMaskIntoConstraints = NO;
     UIButton* closeTapTargetButton =
         [UIButton buttonWithType:UIButtonTypeCustom];
     closeTapTargetButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -92,16 +114,37 @@ const CGFloat kIndicatorSize = 16.0;
                    forControlEvents:UIControlEventTouchUpInside];
     closeTapTargetButton.accessibilityIdentifier =
         kGridCellCloseButtonIdentifier;
+    [groupSnapshotsView addSubview:topLeadingSnapshotView];
+    [groupSnapshotsView addSubview:topTrailingSnapshotView];
+    [groupSnapshotsView addSubview:bottomLeadingSnapshotView];
+
     [contentView addSubview:topBar];
-    [contentView addSubview:snapshotView];
+    [contentView addSubview:groupSnapshotsView];
     [contentView addSubview:closeTapTargetButton];
     _topBar = topBar;
-    _snapshotView = snapshotView;
+    _topLeadingSnapshotView = topLeadingSnapshotView;
+    _topTrailingSnapshotView = topTrailingSnapshotView;
+    _bottomLeadingSnapshotView = bottomLeadingSnapshotView;
+    _groupSnapshotsView = groupSnapshotsView;
     _closeTapTargetButton = closeTapTargetButton;
     _opacity = 1.0;
 
     self.contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-    self.snapshotView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    self.topLeadingSnapshotView.backgroundColor =
+        [UIColor colorNamed:kBackgroundColor];
+    self.topTrailingSnapshotView.backgroundColor =
+        [UIColor colorNamed:kBackgroundColor];
+    self.bottomLeadingSnapshotView.backgroundColor =
+        [UIColor colorNamed:kBackgroundColor];
+    // TODO(crbug.com/1501837): Apply different corner radius to each view.
+    self.bottomLeadingSnapshotView.layer.cornerRadius = kGridCellCornerRadius;
+    self.topLeadingSnapshotView.layer.cornerRadius = kGridCellCornerRadius;
+    self.topTrailingSnapshotView.layer.cornerRadius = kGridCellCornerRadius;
+    self.topLeadingSnapshotView.hidden = YES;
+    self.topTrailingSnapshotView.hidden = YES;
+    self.bottomLeadingSnapshotView.hidden = YES;
+    self.groupSnapshotsView.backgroundColor =
+        [UIColor colorNamed:kBackgroundColor];
     self.topBar.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     self.closeIconView.tintColor = [UIColor colorNamed:kCloseButtonColor];
@@ -117,12 +160,13 @@ const CGFloat kIndicatorSize = 16.0;
       [topBar.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor],
       [topBar.trailingAnchor
           constraintEqualToAnchor:contentView.trailingAnchor],
-      [snapshotView.topAnchor constraintEqualToAnchor:topBar.bottomAnchor],
-      [snapshotView.leadingAnchor
+      [groupSnapshotsView.topAnchor
+          constraintEqualToAnchor:topBar.bottomAnchor],
+      [groupSnapshotsView.leadingAnchor
           constraintEqualToAnchor:contentView.leadingAnchor],
-      [snapshotView.trailingAnchor
+      [groupSnapshotsView.trailingAnchor
           constraintEqualToAnchor:contentView.trailingAnchor],
-      [snapshotView.bottomAnchor
+      [groupSnapshotsView.bottomAnchor
           constraintEqualToAnchor:contentView.bottomAnchor],
       [closeTapTargetButton.topAnchor
           constraintEqualToAnchor:contentView.topAnchor],
@@ -132,6 +176,48 @@ const CGFloat kIndicatorSize = 16.0;
           constraintEqualToConstant:kGridCellCloseTapTargetWidthHeight],
       [closeTapTargetButton.heightAnchor
           constraintEqualToConstant:kGridCellCloseTapTargetWidthHeight],
+
+      [topLeadingSnapshotView.heightAnchor
+          constraintEqualToAnchor:groupSnapshotsView.heightAnchor
+                       multiplier:kSnapshotDimensionRatio
+                         constant:-kSnapshotViewHeightOffset],
+      [topLeadingSnapshotView.widthAnchor
+          constraintEqualToAnchor:groupSnapshotsView.widthAnchor
+                       multiplier:kSnapshotDimensionRatio
+                         constant:-kSnapshotViewWidthOffset],
+      [topLeadingSnapshotView.leadingAnchor
+          constraintEqualToAnchor:groupSnapshotsView.leadingAnchor
+                         constant:kSnapshotViewLeadingOffset],
+      [topLeadingSnapshotView.topAnchor
+          constraintEqualToAnchor:groupSnapshotsView.topAnchor],
+
+      [topTrailingSnapshotView.heightAnchor
+          constraintEqualToAnchor:groupSnapshotsView.heightAnchor
+                       multiplier:kSnapshotDimensionRatio
+                         constant:-kSnapshotViewHeightOffset],
+      [topTrailingSnapshotView.widthAnchor
+          constraintEqualToAnchor:groupSnapshotsView.widthAnchor
+                       multiplier:kSnapshotDimensionRatio
+                         constant:-kSnapshotViewWidthOffset],
+      [topTrailingSnapshotView.trailingAnchor
+          constraintEqualToAnchor:groupSnapshotsView.trailingAnchor
+                         constant:-kSnapshotViewTrailingOffset],
+      [topTrailingSnapshotView.topAnchor
+          constraintEqualToAnchor:groupSnapshotsView.topAnchor],
+      [bottomLeadingSnapshotView.heightAnchor
+          constraintEqualToAnchor:groupSnapshotsView.heightAnchor
+                       multiplier:kSnapshotDimensionRatio
+                         constant:-kSnapshotViewHeightOffset],
+      [bottomLeadingSnapshotView.widthAnchor
+          constraintEqualToAnchor:groupSnapshotsView.widthAnchor
+                       multiplier:kSnapshotDimensionRatio
+                         constant:-kSnapshotViewWidthOffset],
+      [bottomLeadingSnapshotView.leadingAnchor
+          constraintEqualToAnchor:groupSnapshotsView.leadingAnchor
+                         constant:kSnapshotViewLeadingOffset],
+      [bottomLeadingSnapshotView.bottomAnchor
+          constraintEqualToAnchor:groupSnapshotsView.bottomAnchor
+                         constant:-kSnapShotViewBottomOffset],
     ];
     [NSLayoutConstraint activateConstraints:constraints];
   }
@@ -164,6 +250,7 @@ const CGFloat kIndicatorSize = 16.0;
   self.title = nil;
   self.titleHidden = NO;
   self.icon = nil;
+  [self configureWithGroupTabInfos:nil];
   self.selected = NO;
   self.opacity = 1.0;
   [self hideActivityIndicator];
@@ -222,6 +309,30 @@ const CGFloat kIndicatorSize = 16.0;
   [self.activityIndicator stopAnimating];
   [self.activityIndicator setHidden:YES];
   [self.iconView setHidden:NO];
+}
+
+- (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos {
+  // Hide all the views when the cell is reconfigured and clear their images.
+  self.topLeadingSnapshotView.image = nil;
+  self.topTrailingSnapshotView.image = nil;
+  self.bottomLeadingSnapshotView.image = nil;
+  self.topLeadingSnapshotView.hidden = YES;
+  self.topTrailingSnapshotView.hidden = YES;
+  self.bottomLeadingSnapshotView.hidden = YES;
+
+  int groupTabInfosLength = [groupTabInfos count];
+  if (groupTabInfosLength > 0) {
+    self.topLeadingSnapshotView.image = groupTabInfos[0].snapshot;
+    self.topLeadingSnapshotView.hidden = NO;
+  }
+  if (groupTabInfosLength > 1) {
+    self.topTrailingSnapshotView.image = groupTabInfos[1].snapshot;
+    self.topTrailingSnapshotView.hidden = NO;
+  }
+  if (groupTabInfosLength > 2) {
+    self.bottomLeadingSnapshotView.image = groupTabInfos[2].snapshot;
+    self.bottomLeadingSnapshotView.hidden = NO;
+  }
 }
 
 - (void)setTitle:(NSString*)title {
