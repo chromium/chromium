@@ -16518,6 +16518,7 @@ Called by update_extension_histograms.py.-->
   <int value="1858" label="DOCUMENTSCAN_CANCELSCAN"/>
   <int value="1859" label="DOCUMENTSCAN_READSCANDATA"/>
   <int value="1860" label="DOCUMENTSCAN_SETOPTIONS"/>
+  <int value="1861" label="DOCUMENTSCAN_GETOPTIONGROUPS"/>
 </enum>
 
 <enum name="ExtensionInProgressRequestState">

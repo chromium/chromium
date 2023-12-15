@@ -519,6 +519,14 @@ namespace documentScan {
     [nodoc, supportsPromises] static void openScanner(
         DOMString scannerId, OpenScannerCallback callback);
 
+    // Gets the group names and member options from a scanner handle previously
+    // opened by <code>openScanner</code>.
+    // |scannerHandle| : Open scanner handle previously returned from
+    // <code>openScanner</code>.
+    // |callback| : Called with the result.
+    [nodoc, supportsPromises] static void getOptionGroups(
+        DOMString scannerHandle, GetOptionGroupsCallback callback);
+
     // Closes a previously opened scanner handle.  A response indicating the
     // outcome will be sent to the callback.  Even if the response is not a
     // success, the supplied handle will become invalid and should not be used

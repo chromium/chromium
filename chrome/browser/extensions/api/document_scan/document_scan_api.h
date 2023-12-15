@@ -72,6 +72,26 @@ class DocumentScanOpenScannerFunction : public ExtensionFunction {
                              DOCUMENTSCAN_OPENSCANNER)
 };
 
+class DocumentScanGetOptionGroupsFunction : public ExtensionFunction {
+ public:
+  DocumentScanGetOptionGroupsFunction();
+  DocumentScanGetOptionGroupsFunction(
+      const DocumentScanGetOptionGroupsFunction&) = delete;
+  DocumentScanGetOptionGroupsFunction& operator=(
+      const DocumentScanGetOptionGroupsFunction&) = delete;
+
+ protected:
+  ~DocumentScanGetOptionGroupsFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnResponseReceived(api::document_scan::GetOptionGroupsResponse response);
+  DECLARE_EXTENSION_FUNCTION("documentScan.getOptionGroups",
+                             DOCUMENTSCAN_GETOPTIONGROUPS)
+};
+
 class DocumentScanCloseScannerFunction : public ExtensionFunction {
  public:
   DocumentScanCloseScannerFunction();

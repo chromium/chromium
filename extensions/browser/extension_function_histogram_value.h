@@ -1920,6 +1920,7 @@ enum HistogramValue {
   DOCUMENTSCAN_CANCELSCAN = 1858,
   DOCUMENTSCAN_READSCANDATA = 1859,
   DOCUMENTSCAN_SETOPTIONS = 1860,
+  DOCUMENTSCAN_GETOPTIONGROUPS = 1861,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

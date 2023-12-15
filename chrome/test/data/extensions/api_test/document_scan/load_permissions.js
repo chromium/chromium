@@ -8,6 +8,7 @@ chrome.test.runTests([
     chrome.test.assertTrue(!!chrome.documentScan.scan);
     chrome.test.assertTrue(!!chrome.documentScan.getScannerList);
     chrome.test.assertTrue(!!chrome.documentScan.openScanner);
+    chrome.test.assertTrue(!!chrome.documentScan.getOptionGroups);
     chrome.test.assertTrue(!!chrome.documentScan.closeScanner);
     chrome.test.assertTrue(!!chrome.documentScan.setOptions);
     chrome.test.assertTrue(!!chrome.documentScan.startScan);

@@ -41,6 +41,31 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function getOptionGroupsInvalidHandleFails() {
+    const response = await getOptionGroups('invalid-handle');
+    chrome.test.assertEq(chrome.documentScan.OperationResult.INVALID,
+                         response.result);
+    chrome.test.assertEq('invalid-handle', response.scannerHandle);
+    chrome.test.assertEq(null, response.groups);
+    chrome.test.succeed();
+  },
+
+  async function getOptionGroupsSuccess() {
+    const scannerHandle = await getScannerHandle();
+    chrome.test.assertNe(null, scannerHandle);
+    const response = await getOptionGroups(scannerHandle);
+    chrome.test.assertEq(chrome.documentScan.OperationResult.SUCCESS,
+                         response.result);
+    chrome.test.assertEq(scannerHandle, response.scannerHandle);
+    chrome.test.assertNe(null, response.groups);
+    chrome.test.assertEq(1, response.groups.length);
+    chrome.test.assertEq('title', response.groups[0].title);
+    chrome.test.assertEq(2, response.groups[0].members.length);
+    chrome.test.assertEq('item1', response.groups[0].members[0]);
+    chrome.test.assertEq('item2', response.groups[0].members[1]);
+    chrome.test.succeed();
+  },
+
   async function closeBeforeOpenFails() {
     let response = await closeScanner('scanner');
     chrome.test.assertEq('scanner', response.scannerHandle);

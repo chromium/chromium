@@ -17,6 +17,12 @@ async function openScanner(scannerId) {
   });
 }
 
+async function getOptionGroups(scannerHandle) {
+ return new Promise(resolve => {
+    chrome.documentScan.getOptionGroups(scannerHandle, resolve);
+  });
+}
+
 async function closeScanner(scannerHandle) {
   return new Promise(resolve => {
     chrome.documentScan.closeScanner(scannerHandle, resolve);

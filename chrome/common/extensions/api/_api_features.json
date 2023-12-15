@@ -365,6 +365,9 @@
   "documentScan.openScanner": {
     "channel": "dev"
   },
+  "documentScan.getOptionGroups": {
+    "channel": "dev"
+  },
   "documentScan.closeScanner": {
     "channel": "dev"
   },
