@@ -32,7 +32,7 @@ def ios_builder(*, name, **kwargs):
     kwargs.setdefault("builderless", False)
     kwargs.setdefault("os", os.MAC_DEFAULT)
     kwargs.setdefault("ssd", None)
-    kwargs.setdefault("xcode", xcode.x15main)
+    kwargs.setdefault("xcode", xcode.xcode_default)
     return try_.builder(name = name, **kwargs)
 
 consoles.list_view(
@@ -602,7 +602,7 @@ try_.compilator_builder(
     cpu = cpu.ARM64,
     ssd = None,
     main_list_view = "try",
-    xcode = xcode.x15main,
+    xcode = xcode.xcode_default,
 )
 
 # TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
@@ -639,7 +639,7 @@ try_.compilator_builder(
     contact_team_email = "chrome-build-team@google.com",
     main_list_view = "try",
     siso_enabled = True,
-    xcode = xcode.x15main,
+    xcode = xcode.xcode_default,
 )
 
 ios_builder(

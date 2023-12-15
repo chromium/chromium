@@ -430,7 +430,7 @@ fyi_reclient_test_builder(
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
     },
-    xcode = xcode.x14main,
+    xcode = xcode.xcode_default,
 )
 
 fyi_reclient_staging_builder(
@@ -467,7 +467,7 @@ fyi_reclient_staging_builder(
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
     },
-    xcode = xcode.x14main,
+    xcode = xcode.xcode_default,
 )
 
 fyi_reclient_staging_builder(

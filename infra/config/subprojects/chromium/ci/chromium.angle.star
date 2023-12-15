@@ -385,7 +385,7 @@ ci.gpu.mac_builder(
         short_name = "x64",
     ),
     contact_team_email = "angle-team@google.com",
-    xcode = xcode.x14main,
+    xcode = xcode.xcode_default,
 )
 
 ci.thin_tester(

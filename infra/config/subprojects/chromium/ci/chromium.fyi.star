@@ -80,7 +80,7 @@ def fyi_ios_builder(*, name, **kwargs):
     if kwargs.get("builderless", False):
         kwargs.setdefault("os", os.MAC_DEFAULT)
     kwargs.setdefault("reclient_scandeps_server", True)
-    kwargs.setdefault("xcode", xcode.x15main)
+    kwargs.setdefault("xcode", xcode.xcode_default)
     return ci.builder(name = name, **kwargs)
 
 def mac_builder_defaults(**kwargs):
@@ -1482,7 +1482,7 @@ fyi_mac_reclient_comparison_builder(
     reclient_cache_silo = "Comparison ios - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
     shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
-    xcode = xcode.x15main,
+    xcode = xcode.xcode_default,
 )
 
 fyi_reclient_comparison_builder(
@@ -1594,7 +1594,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
     reclient_jobs = 150,
     shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
-    xcode = xcode.x15main,
+    xcode = xcode.xcode_default,
 )
 
 ci.builder(

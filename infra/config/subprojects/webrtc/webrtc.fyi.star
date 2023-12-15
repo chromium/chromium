@@ -348,7 +348,7 @@ builder(
     os = os.WINDOWS_DEFAULT,
 )
 
-# Builders run on the default Win OS version offered
+# Builders run on the default Mac OS version offered
 # in the Chrome infra however the tasks will be sharded
 # to swarming bots with appropriate OS using swarming
 # dimensions.
@@ -368,8 +368,8 @@ builder(
         ),
         build_gs_bucket = "chromium-webrtc",
     ),
-    os = os.MAC_ANY,
-    xcode = xcode.x15main,
+    os = os.MAC_DEFAULT,
+    xcode = xcode.xcode_default,
 )
 
 builder(
@@ -388,6 +388,6 @@ builder(
         ),
         build_gs_bucket = "chromium-webrtc",
     ),
-    os = os.MAC_ANY,
-    xcode = xcode.x15main,
+    os = os.MAC_DEFAULT,
+    xcode = xcode.xcode_default,
 )

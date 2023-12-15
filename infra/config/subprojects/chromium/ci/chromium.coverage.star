@@ -293,7 +293,7 @@ coverage_builder(
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
     use_clang_coverage = True,
-    xcode = xcode.x15main,
+    xcode = xcode.xcode_default,
 )
 
 coverage_builder(
