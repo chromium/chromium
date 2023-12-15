@@ -104,7 +104,7 @@ public class ExpandedPlayerSheetContentUnitTest {
         assertEquals("1x", mSpeedView.getText());
         assertEquals("1x increase/decrease speed.", mSpeedView.getContentDescription());
         assertEquals("Go back 10 seconds", mBackButton.getContentDescription());
-        assertEquals("Fast forward 30 seconds", mForwardButton.getContentDescription());
+        assertEquals("Fast forward 10 seconds", mForwardButton.getContentDescription());
     }
 
     @Test

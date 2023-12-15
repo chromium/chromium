@@ -26,7 +26,7 @@ import java.util.Map;
 /** Mediator class in charge of updating player UI property model. */
 class PlayerMediator implements InteractionHandler {
     private static final long SEEK_BACK_NANOS = -10 * 1_000_000_000L;
-    private static final long SEEK_FORWARD_NANOS = 30 * 1_000_000_000L;
+    private static final long SEEK_FORWARD_NANOS = 10 * 1_000_000_000L;
     private final PlayerCoordinator mCoordinator;
     private final PlayerCoordinator.Delegate mDelegate;
     private final PropertyModel mModel;

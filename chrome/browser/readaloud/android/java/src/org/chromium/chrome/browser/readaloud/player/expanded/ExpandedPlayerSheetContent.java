@@ -29,10 +29,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private static final String TAG = "RAPlayerSheet";
-    // Note: if these times need to change, the "back 10" and "forward 30" icons
+    // Note: if these times need to change, the "back 10" and "forward 10" icons
     // should also be changed.
     private static final int BACK_SECONDS = 10;
-    private static final int FORWARD_SECONDS = 30;
+    private static final int FORWARD_SECONDS = 10;
 
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;

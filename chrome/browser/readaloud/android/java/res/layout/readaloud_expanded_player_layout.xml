@@ -204,7 +204,7 @@ found in the LICENSE file.
                 android:id="@+id/readaloud_seek_forward_button"
                 android:layout_width="@dimen/readaloud_control_button_diameter"
                 android:layout_height="@dimen/readaloud_control_button_diameter"
-                android:src="@drawable/forward_30_button"
+                android:src="@drawable/forward_10_button"
                 android:contentDescription="@string/readaloud_forward"/>
         </LinearLayout>
 
