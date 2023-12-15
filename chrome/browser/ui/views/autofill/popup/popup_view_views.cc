@@ -930,7 +930,7 @@ base::WeakPtr<AutofillPopupView> PopupViewViews::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-BEGIN_METADATA(PopupViewViews, PopupBaseView)
+BEGIN_METADATA(PopupViewViews)
 END_METADATA
 
 // static

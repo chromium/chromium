@@ -46,8 +46,7 @@ AppInfoFooterPanel::AppInfoFooterPanel(Profile* profile,
   CreateButtons();
 }
 
-AppInfoFooterPanel::~AppInfoFooterPanel() {
-}
+AppInfoFooterPanel::~AppInfoFooterPanel() {}
 
 // static
 std::unique_ptr<AppInfoFooterPanel> AppInfoFooterPanel::CreateFooterPanel(
@@ -186,5 +185,5 @@ bool AppInfoFooterPanel::CanUninstallApp(Profile* profile,
          !policy->MustRemainInstalled(app, nullptr);
 }
 
-BEGIN_METADATA(AppInfoFooterPanel, AppInfoPanel)
+BEGIN_METADATA(AppInfoFooterPanel)
 END_METADATA

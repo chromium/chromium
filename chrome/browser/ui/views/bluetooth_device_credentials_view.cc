@@ -192,5 +192,5 @@ void BluetoothDeviceCredentialsView::ContentsChanged(
   DialogModelChanged();
 }
 
-BEGIN_METADATA(BluetoothDeviceCredentialsView, views::DialogDelegateView)
+BEGIN_METADATA(BluetoothDeviceCredentialsView)
 END_METADATA

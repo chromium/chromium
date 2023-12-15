@@ -211,7 +211,7 @@ void MigratableCardView::CheckboxPressed() {
   parent_dialog_->UpdateLayout();
 }
 
-BEGIN_METADATA(MigratableCardView, views::View)
+BEGIN_METADATA(MigratableCardView)
 ADD_READONLY_PROPERTY_METADATA(bool, Selected)
 ADD_READONLY_PROPERTY_METADATA(std::string, Guid)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, CardIdentifierString)

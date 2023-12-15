@@ -31,16 +31,16 @@ class FontList;
 namespace views {
 class AXVirtualView;
 class ImageView;
-}
+}  // namespace views
 
 // View used to draw a bubble, containing an icon and a label. We use this as a
 // base for the classes that handle the location icon (including the EV bubble),
 // tab-to-search UI, and content settings.
 class IconLabelBubbleView : public views::InkDropObserver,
                             public views::LabelButton {
- public:
-  METADATA_HEADER(IconLabelBubbleView);
+  METADATA_HEADER(IconLabelBubbleView, views::LabelButton)
 
+ public:
   static constexpr int kTrailingPaddingPreMd = 2;
 
   class Delegate {

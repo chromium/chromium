@@ -52,8 +52,9 @@ SavePaymentIconView::~SavePaymentIconView() = default;
 
 views::BubbleDialogDelegate* SavePaymentIconView::GetBubble() const {
   SavePaymentIconController* controller = GetController();
-  if (!controller)
+  if (!controller) {
     return nullptr;
+  }
 
   switch (controller->GetPaymentBubbleType()) {
     case SavePaymentIconController::PaymentBubbleType::kUnknown:
@@ -71,8 +72,9 @@ views::BubbleDialogDelegate* SavePaymentIconView::GetBubble() const {
 }
 
 void SavePaymentIconView::UpdateImpl() {
-  if (!GetWebContents())
+  if (!GetWebContents()) {
     return;
+  }
 
   // |controller| may be nullptr due to lazy initialization.
   SavePaymentIconController* controller = GetController();
@@ -110,8 +112,9 @@ std::u16string SavePaymentIconView::GetTextForTooltipAndAccessibleName() const {
   std::u16string text;
 
   SavePaymentIconController* const controller = GetController();
-  if (controller)
+  if (controller) {
     text = controller->GetSavePaymentIconTooltipText();
+  }
 
   // Because the payment icon is in an animated container, it is still briefly
   // visible as it's disappearing. Since our test infrastructure does not allow
@@ -130,11 +133,12 @@ void SavePaymentIconView::AnimationEnded(const gfx::Animation* animation) {
 
   // |controller| may be nullptr due to lazy initialization.
   SavePaymentIconController* controller = GetController();
-  if (controller)
+  if (controller) {
     controller->OnAnimationEnded();
+  }
 }
 
-BEGIN_METADATA(SavePaymentIconView, PageActionIconView)
+BEGIN_METADATA(SavePaymentIconView)
 END_METADATA
 
 }  // namespace autofill

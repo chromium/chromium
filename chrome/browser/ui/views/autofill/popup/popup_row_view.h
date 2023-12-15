@@ -158,8 +158,9 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // provide a control for the sub-popup. It implements visualization and event
   // handling only, `PopupViewViews` controls the logic of opening/closing.
   class ExpandChildSuggestionsView : public views::View {
+    METADATA_HEADER(ExpandChildSuggestionsView, views::View)
+
    public:
-    METADATA_HEADER(ExpandChildSuggestionsView);
     ExpandChildSuggestionsView();
     ExpandChildSuggestionsView(const ExpandChildSuggestionsView&) = delete;
     ExpandChildSuggestionsView& operator=(const ExpandChildSuggestionsView&) =

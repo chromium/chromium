@@ -41,7 +41,7 @@ void PopupWarningView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetNameChecked(text_value_);
 }
 
-BEGIN_METADATA(PopupWarningView, views::View)
+BEGIN_METADATA(PopupWarningView)
 END_METADATA
 
 }  // namespace autofill

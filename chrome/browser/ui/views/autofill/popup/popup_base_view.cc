@@ -555,7 +555,7 @@ gfx::NativeView PopupBaseView::container_view() {
   return delegate_->container_view();
 }
 
-BEGIN_METADATA(PopupBaseView, views::WidgetDelegateView)
+BEGIN_METADATA(PopupBaseView)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, ContentAreaBounds)
 END_METADATA
 

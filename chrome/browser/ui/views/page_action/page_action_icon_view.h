@@ -53,9 +53,9 @@ enum class PageActionPageEvent {
 // Represents an inbuilt (as opposed to an extension) page action icon that
 // shows a bubble when clicked.
 class PageActionIconView : public IconLabelBubbleView {
- public:
-  METADATA_HEADER(PageActionIconView);
+  METADATA_HEADER(PageActionIconView, IconLabelBubbleView)
 
+ public:
   class Delegate {
    public:
     // Gets the opacity to use for the ink highlight.

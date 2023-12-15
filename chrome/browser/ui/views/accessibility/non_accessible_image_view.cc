@@ -16,5 +16,5 @@ void NonAccessibleImageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddState(ax::mojom::State::kInvisible);
 }
 
-BEGIN_METADATA(NonAccessibleImageView, views::ImageView)
+BEGIN_METADATA(NonAccessibleImageView)
 END_METADATA

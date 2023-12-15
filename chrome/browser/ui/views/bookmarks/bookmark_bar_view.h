@@ -72,10 +72,11 @@ class BookmarkBarView : public views::AccessiblePaneView,
                         public views::DragController,
                         public views::AnimationDelegateViews,
                         public BookmarkMenuControllerObserver {
+  METADATA_HEADER(BookmarkBarView, views::AccessiblePaneView)
+
  public:
   class ButtonSeparatorView;
 
-  METADATA_HEADER(BookmarkBarView);
   // |browser_view| can be NULL during tests.
   BookmarkBarView(Browser* browser, BrowserView* browser_view);
   BookmarkBarView(const BookmarkBarView&) = delete;

@@ -288,7 +288,7 @@ bool PopupRowWithButtonView::ShouldButtonBeVisible() const {
   }
 }
 
-BEGIN_METADATA(PopupRowWithButtonView, autofill::PopupRowView)
+BEGIN_METADATA(PopupRowWithButtonView)
 END_METADATA
 
 }  // namespace autofill

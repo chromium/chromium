@@ -261,21 +261,19 @@ enum class ViewLayer {
 //   "script".
 //
 //   For each View class in their respective header declaration, place the macro
-//   METADATA_HEADER(<classname>) in the public section.
+//   METADATA_HEADER(<classname>, <view ancestor class>) in the public section.
 //
 //   In the implementing .cc file, add the following macros to the same
 //   namespace in which the class resides.
 //
-//   BEGIN_METADATA(View, ParentView)
+//   BEGIN_METADATA(View)
 //   ADD_PROPERTY_METADATA(bool, Frobble)
 //   END_METADATA
 //
 //   For each property, add a definition using ADD_PROPERTY_METADATA() between
 //   the begin and end macros.
 //
-//   Descendant classes must specify the parent class as a macro parameter.
-//
-//   BEGIN_METADATA(MyView, views::View)
+//   BEGIN_METADATA(MyView)
 //   ADD_PROPERTY_METADATA(int, Bobble)
 //   END_METADATA
 /////////////////////////////////////////////////////////////////////////////

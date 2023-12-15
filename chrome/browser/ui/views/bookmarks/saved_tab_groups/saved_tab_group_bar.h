@@ -36,8 +36,9 @@ class Widget;
 class SavedTabGroupBar : public views::AccessiblePaneView,
                          public SavedTabGroupModelObserver,
                          public views::WidgetObserver {
+  METADATA_HEADER(SavedTabGroupBar, views::AccessiblePaneView)
+
  public:
-  METADATA_HEADER(SavedTabGroupBar);
   SavedTabGroupBar(Browser* browser, bool animations_enabled);
   SavedTabGroupBar(Browser* browser,
                    SavedTabGroupModel* saved_tab_group_model,

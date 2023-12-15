@@ -16,8 +16,9 @@ class SaveUpdateAddressProfileIconController;
 
 // The location bar icon to show the Save Address Profile bubble.
 class SaveUpdateAddressProfileIconView : public PageActionIconView {
+  METADATA_HEADER(SaveUpdateAddressProfileIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(SaveUpdateAddressProfileIconView);
   SaveUpdateAddressProfileIconView(
       CommandUpdater* command_updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,

@@ -13,8 +13,9 @@
 
 namespace autofill {
 class PromoCodeLabelView : public views::FlexLayoutView {
+  METADATA_HEADER(PromoCodeLabelView, views::FlexLayoutView)
+
  public:
-  METADATA_HEADER(PromoCodeLabelView);
   PromoCodeLabelView(
       gfx::Size& preferred_size,
       const std::u16string& promo_code_text,

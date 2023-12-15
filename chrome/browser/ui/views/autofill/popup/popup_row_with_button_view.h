@@ -38,9 +38,9 @@ class ButtonPlaceholder;
 
 // A class for a single selectable popup cell that also has a button.
 class PopupRowWithButtonView : public PopupRowView, public ButtonDelegate {
- public:
-  METADATA_HEADER(PopupRowWithButtonView);
+  METADATA_HEADER(PopupRowWithButtonView, PopupRowView)
 
+ public:
   // Determines under which conditions the button (if there is one) is visible.
   enum class ButtonBehavior {
     // The button is only visible if the cell or the button are selected or

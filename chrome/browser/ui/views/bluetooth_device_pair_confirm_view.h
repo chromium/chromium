@@ -15,8 +15,9 @@
 // A dialog allowing the user to confirm Bluetooth device pairing with or
 // without PIN being displayed.
 class BluetoothDevicePairConfirmView : public views::DialogDelegateView {
+  METADATA_HEADER(BluetoothDevicePairConfirmView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(BluetoothDevicePairConfirmView);
   BluetoothDevicePairConfirmView(
       const std::u16string& device_identifier,
       const std::optional<std::u16string>& pin,

@@ -25,8 +25,9 @@ class MigratableCreditCard;
 // network image, card network, last four digits of card number and card
 // expiration date. Used by LocalCardMigrationDialogView.
 class MigratableCardView : public views::View {
+  METADATA_HEADER(MigratableCardView, views::View)
+
  public:
-  METADATA_HEADER(MigratableCardView);
   MigratableCardView(const MigratableCreditCard& migratable_credit_card,
                      LocalCardMigrationDialogView* parent_dialog,
                      bool should_show_checkbox);

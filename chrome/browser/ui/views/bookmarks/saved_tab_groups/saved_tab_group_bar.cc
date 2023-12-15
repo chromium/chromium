@@ -75,8 +75,9 @@ SavedTabGroupModel* GetSavedTabGroupModelFromBrowser(Browser* browser) {
 // overflow menu or vice versa, the state for tracking it in the bar will be
 // destroyed and recreated.
 class SavedTabGroupBar::OverflowMenu : public views::View {
+  METADATA_HEADER(OverflowMenu, views::View)
+
  public:
-  METADATA_HEADER(OverflowMenu);
   explicit OverflowMenu(SavedTabGroupBar& parent_bar)
       : parent_bar_(parent_bar) {}
 
@@ -851,5 +852,5 @@ SavedTabGroupBar::CalculateDropIndicatorIndexInCombinedSpace() const {
   return insertion_index;
 }
 
-BEGIN_METADATA(SavedTabGroupBar, views::AccessiblePaneView)
+BEGIN_METADATA(SavedTabGroupBar)
 END_METADATA

@@ -216,8 +216,9 @@ const base::FeatureParam<bool> kPrerenderBookmarkBarOnMouseHoverTrigger{
 // Base class for non-menu hosting buttons used on the bookmark bar.
 
 class BookmarkButtonBase : public views::LabelButton {
+  METADATA_HEADER(BookmarkButtonBase, views::LabelButton)
+
  public:
-  METADATA_HEADER(BookmarkButtonBase);
   BookmarkButtonBase(PressedCallback callback, const std::u16string& title)
       : LabelButton(std::move(callback), title) {
     ConfigureInkDropForToolbar(this);
@@ -276,7 +277,7 @@ class BookmarkButtonBase : public views::LabelButton {
   std::unique_ptr<gfx::SlideAnimation> show_animation_;
 };
 
-BEGIN_METADATA(BookmarkButtonBase, views::LabelButton)
+BEGIN_METADATA(BookmarkButtonBase)
 END_METADATA
 
 // BookmarkButton -------------------------------------------------------------
@@ -284,8 +285,9 @@ END_METADATA
 // Buttons used for the bookmarks on the bookmark bar.
 
 class BookmarkButton : public BookmarkButtonBase {
+  METADATA_HEADER(BookmarkButton, BookmarkButtonBase)
+
  public:
-  METADATA_HEADER(BookmarkButton);
   BookmarkButton(PressedCallback callback,
                  const GURL& url,
                  const std::u16string& title,
@@ -534,7 +536,7 @@ class BookmarkButton : public BookmarkButtonBase {
   bool mouse_has_been_pressed_ = false;
 };
 
-BEGIN_METADATA(BookmarkButton, BookmarkButtonBase)
+BEGIN_METADATA(BookmarkButton)
 END_METADATA
 
 // ShortcutButton -------------------------------------------------------------
@@ -542,15 +544,16 @@ END_METADATA
 // Buttons used for the shortcuts on the bookmark bar.
 
 class ShortcutButton : public BookmarkButtonBase {
+  METADATA_HEADER(ShortcutButton, BookmarkButtonBase)
+
  public:
-  METADATA_HEADER(ShortcutButton);
   ShortcutButton(PressedCallback callback, const std::u16string& title)
       : BookmarkButtonBase(std::move(callback), title) {}
   ShortcutButton(const ShortcutButton&) = delete;
   ShortcutButton& operator=(const ShortcutButton&) = delete;
 };
 
-BEGIN_METADATA(ShortcutButton, BookmarkButtonBase)
+BEGIN_METADATA(ShortcutButton)
 END_METADATA
 
 // BookmarkFolderButton -------------------------------------------------------
@@ -558,8 +561,9 @@ END_METADATA
 // Buttons used for folders on the bookmark bar, including the 'other folders'
 // button.
 class BookmarkFolderButton : public BookmarkMenuButtonBase {
+  METADATA_HEADER(BookmarkFolderButton, BookmarkMenuButtonBase)
+
  public:
-  METADATA_HEADER(BookmarkFolderButton);
   explicit BookmarkFolderButton(PressedCallback callback,
                                 const std::u16string& title = std::u16string())
       : BookmarkMenuButtonBase(std::move(callback), title) {
@@ -629,7 +633,7 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
   std::unique_ptr<gfx::SlideAnimation> show_animation_;
 };
 
-BEGIN_METADATA(BookmarkFolderButton, BookmarkMenuButtonBase)
+BEGIN_METADATA(BookmarkFolderButton)
 END_METADATA
 
 // BookmarkTabGroupButton
@@ -695,8 +699,9 @@ struct BookmarkBarView::DropInfo {
 // ButtonSeparatorView  --------------------------------------------------------
 
 class BookmarkBarView::ButtonSeparatorView : public views::Separator {
+  METADATA_HEADER(ButtonSeparatorView, views::Separator)
+
  public:
-  METADATA_HEADER(ButtonSeparatorView);
   ButtonSeparatorView() {
     const int leading_padding = features::IsChromeRefresh2023() ? 8 : 4;
     const int trailing_padding = features::IsChromeRefresh2023() ? 8 : 3;
@@ -739,9 +744,8 @@ class BookmarkBarView::ButtonSeparatorView : public views::Separator {
  private:
   int separator_thickness_;
 };
-using ButtonSeparatorView = BookmarkBarView::ButtonSeparatorView;
 
-BEGIN_METADATA(ButtonSeparatorView, views::Separator)
+BEGIN_METADATA(BookmarkBarView, ButtonSeparatorView, views::Separator)
 END_METADATA
 
 // BookmarkBarView ------------------------------------------------------------
@@ -2415,7 +2419,7 @@ int BookmarkBarView::GetDropLocationModelIndexForTesting() const {
              : -1;
 }
 
-BEGIN_METADATA(BookmarkBarView, views::AccessiblePaneView)
+BEGIN_METADATA(BookmarkBarView)
 ADD_PROPERTY_METADATA(bool, InfoBarVisible)
 ADD_READONLY_PROPERTY_METADATA(size_t, FirstHiddenNodeIndex)
 END_METADATA

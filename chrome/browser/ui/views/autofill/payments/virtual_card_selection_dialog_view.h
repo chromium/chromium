@@ -17,8 +17,9 @@ class VirtualCardSelectionDialogController;
 // The View implementation of VirtualCardSelectionDialog.
 class VirtualCardSelectionDialogView : public VirtualCardSelectionDialog,
                                        public views::DialogDelegateView {
+  METADATA_HEADER(VirtualCardSelectionDialogView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(VirtualCardSelectionDialogView);
   VirtualCardSelectionDialogView(
       VirtualCardSelectionDialogController* controller);
   VirtualCardSelectionDialogView(const VirtualCardSelectionDialogView&) =

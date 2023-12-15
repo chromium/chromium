@@ -142,7 +142,7 @@ void WebauthnDialogView::RefreshContent() {
   }
 }
 
-BEGIN_METADATA(WebauthnDialogView, views::DialogDelegateView)
+BEGIN_METADATA(WebauthnDialogView)
 END_METADATA
 
 }  // namespace autofill

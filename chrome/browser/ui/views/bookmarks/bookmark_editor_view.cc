@@ -610,6 +610,6 @@ void BookmarkEditorView::EditorTreeModel::SetTitle(
     ui::TreeNodeModel<EditorNode>::SetTitle(node, title);
 }
 
-BEGIN_METADATA(BookmarkEditorView, views::DialogDelegateView)
+BEGIN_METADATA(BookmarkEditorView)
 ADD_READONLY_PROPERTY_METADATA(GURL, InputURL)
 END_METADATA

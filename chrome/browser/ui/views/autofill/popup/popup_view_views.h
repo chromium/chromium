@@ -56,9 +56,9 @@ class PopupViewViews : public PopupBaseView,
                        public AutofillPopupView,
                        public PopupRowView::SelectionDelegate,
                        public ExpandablePopupParentView {
- public:
-  METADATA_HEADER(PopupViewViews);
+  METADATA_HEADER(PopupViewViews, PopupBaseView)
 
+ public:
   using RowPointer =
       absl::variant<PopupRowView*, PopupSeparatorView*, PopupWarningView*>;
 

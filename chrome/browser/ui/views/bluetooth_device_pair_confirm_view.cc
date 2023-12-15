@@ -161,5 +161,5 @@ void BluetoothDevicePairConfirmView::OnDialogAccepted() {
   std::move(close_callback_).Run(prompt_result);
 }
 
-BEGIN_METADATA(BluetoothDevicePairConfirmView, views::DialogDelegateView)
+BEGIN_METADATA(BluetoothDevicePairConfirmView)
 END_METADATA

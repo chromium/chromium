@@ -14,9 +14,9 @@
 // and have each line read.
 // TODO(dfried): merge functionality into views::Label.
 class AppInfoLabel : public views::Label {
- public:
-  METADATA_HEADER(AppInfoLabel);
+  METADATA_HEADER(AppInfoLabel, views::Label)
 
+ public:
   explicit AppInfoLabel(const std::u16string& text);
   ~AppInfoLabel() override;
 

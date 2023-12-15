@@ -143,8 +143,9 @@ views::View* AddressEditorView::CreateInputField(const EditorField& field) {
       text_field->SetText(initial_value);
       text_field->SetAccessibleName(field.label);
 
-      if (field.control_type == EditorField::ControlType::TEXTFIELD_NUMBER)
+      if (field.control_type == EditorField::ControlType::TEXTFIELD_NUMBER) {
         text_field->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_NUMBER);
+      }
 
       // Using autofill field type as a view ID (for testing).
       text_field->SetID(GetInputFieldViewId(field.type));
@@ -265,7 +266,7 @@ void AddressEditorView::Validate() {
   validation_error_->SetText(validation_error);
 }
 
-BEGIN_METADATA(AddressEditorView, views::View)
+BEGIN_METADATA(AddressEditorView)
 END_METADATA
 
 }  // namespace autofill

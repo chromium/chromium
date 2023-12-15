@@ -30,8 +30,9 @@ class AppInfoDialogTestApi;
 // that is displayed at the top of the app info dialog.
 class AppInfoHeaderPanel : public AppInfoPanel,
                            public extensions::ChromeAppIconDelegate {
+  METADATA_HEADER(AppInfoHeaderPanel, AppInfoPanel)
+
  public:
-  METADATA_HEADER(AppInfoHeaderPanel);
   AppInfoHeaderPanel(Profile* profile, const extensions::Extension* app);
   AppInfoHeaderPanel(const AppInfoHeaderPanel&) = delete;
   AppInfoHeaderPanel& operator=(const AppInfoHeaderPanel&) = delete;

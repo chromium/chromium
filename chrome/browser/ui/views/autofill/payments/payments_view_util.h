@@ -35,9 +35,9 @@ ui::ImageModel GetProfileAvatar(const AccountInfo& account_info);
 // by dialogs that need to present the Google or Google Pay logo with a
 // separator and custom horizontal padding.
 class TitleWithIconAndSeparatorView : public views::TableLayoutView {
- public:
-  METADATA_HEADER(TitleWithIconAndSeparatorView);
+  METADATA_HEADER(TitleWithIconAndSeparatorView, views::TableLayoutView)
 
+ public:
   // TODO(crbug.com/1433075): This enum is also used by
   // TitleWithIconAfterLabelView, and should be refactored to be outside of
   // TitleWithIconAndSeparatorView.
@@ -64,9 +64,9 @@ class TitleWithIconAndSeparatorView : public views::TableLayoutView {
 // Unlike TitleWithIconAndSeparatorView, this view has no separator and places
 // the icon after the title rather than before.
 class TitleWithIconAfterLabelView : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(TitleWithIconAfterLabelView);
+  METADATA_HEADER(TitleWithIconAfterLabelView, views::BoxLayoutView)
 
+ public:
   TitleWithIconAfterLabelView(const std::u16string& window_title,
                               TitleWithIconAndSeparatorView::Icon icon_to_show);
   ~TitleWithIconAfterLabelView() override;
@@ -88,9 +88,9 @@ std::unique_ptr<views::View> CreateTitleView(
 // Defines a view with legal message. This class handles the legal message
 // parsing and the links clicking events.
 class LegalMessageView : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(LegalMessageView);
+  METADATA_HEADER(LegalMessageView, views::BoxLayoutView)
 
+ public:
   using LinkClickedCallback = base::RepeatingCallback<void(const GURL&)>;
 
   // Along with the legal message lines and link callbacks, user email and
@@ -109,9 +109,9 @@ PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidget(
 // TODO(crbug.com/1249665): Replace all payments' progress bar usages with this.
 // Creates a progress bar with an explanatory text below.
 class ProgressBarWithTextView : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(ProgressBarWithTextView);
+  METADATA_HEADER(ProgressBarWithTextView, views::BoxLayoutView)
 
+ public:
   explicit ProgressBarWithTextView(const std::u16string& progress_bar_text);
   ~ProgressBarWithTextView() override;
 

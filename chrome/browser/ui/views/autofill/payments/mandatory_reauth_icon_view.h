@@ -15,8 +15,9 @@ namespace autofill {
 class MandatoryReauthBubbleController;
 
 class MandatoryReauthIconView : public PageActionIconView {
+  METADATA_HEADER(MandatoryReauthIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(MandatoryReauthIconView);
   MandatoryReauthIconView(
       CommandUpdater* command_updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,

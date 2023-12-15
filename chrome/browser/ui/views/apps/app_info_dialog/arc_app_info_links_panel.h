@@ -29,8 +29,9 @@ class Link;
 // Shows a link to get to managing supported links activity on ARC side.
 class ArcAppInfoLinksPanel : public AppInfoPanel,
                              public ArcAppListPrefs::Observer {
+  METADATA_HEADER(ArcAppInfoLinksPanel, AppInfoPanel)
+
  public:
-  METADATA_HEADER(ArcAppInfoLinksPanel);
   ArcAppInfoLinksPanel(Profile* profile, const extensions::Extension* app);
   ArcAppInfoLinksPanel(const ArcAppInfoLinksPanel&) = delete;
   ArcAppInfoLinksPanel& operator=(const ArcAppInfoLinksPanel&) = delete;
