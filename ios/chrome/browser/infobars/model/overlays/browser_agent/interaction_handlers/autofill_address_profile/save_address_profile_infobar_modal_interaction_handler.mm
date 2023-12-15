@@ -35,7 +35,7 @@ void SaveAddressProfileInfobarModalInteractionHandler::SaveEditedProfile(
     InfoBarIOS* infobar,
     NSDictionary* profileData) {
   for (NSNumber* key in profileData) {
-    autofill::ServerFieldType type =
+    autofill::FieldType type =
         AutofillTypeFromAutofillUIType((AutofillUIType)[key intValue]);
     std::u16string data = base::SysNSStringToUTF16(profileData[key]);
     GetInfoBarDelegate(infobar)->SetProfileInfo(type, data);
