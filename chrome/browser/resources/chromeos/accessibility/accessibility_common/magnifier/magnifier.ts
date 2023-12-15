@@ -8,87 +8,78 @@ import {EventHandler} from '../../common/event_handler.js';
 import {FlagName, Flags} from '../../common/flags.js';
 import {RectUtil} from '../../common/rect_util.js';
 
-const EventType = chrome.automation.EventType;
-const RoleType = chrome.automation.RoleType;
+import AutomationEvent = chrome.automation.AutomationEvent;
+import EventType = chrome.automation.EventType;
+import PrefObject = chrome.settingsPrivate.PrefObject;
+import RoleType = chrome.automation.RoleType;
+import ScreenRect = chrome.accessibilityPrivate.ScreenRect;
 
-/**
- * Main class for the Chrome OS magnifier.
- */
+/** Main class for the Chrome OS magnifier. */
 export class Magnifier {
+  type: Magnifier.Type;
   /**
-   * @param {!Magnifier.Type} type The type of magnifier in use.
+   * Whether focus following is enabled or not, based on
+   * settings.a11y.screen_magnifier_focus_following preference.
    */
-  constructor(type) {
-    /** @const {!Magnifier.Type} */
+  private screenMagnifierFocusFollowing_: boolean|undefined;
+  /**
+   * Whether magnifier is current initializing, and so should ignore
+   * focus updates.
+   */
+  private isInitializing_ = true;
+  /** Last time mouse has moved (from last onMouseMovedOrDragged). */
+  private lastMouseMovedTime_: Date|undefined;
+  private focusHandler_: EventHandler;
+  private activeDescendantHandler_: EventHandler;
+  private selectionHandler_: EventHandler;
+  private onCaretBoundsChangedHandler: EventHandler;
+  private onMagnifierBoundsChangedHandler_:
+      ChromeEventHandler<[bounds: ScreenRect]>;
+  private updateFromPrefsHandler_: ChromeEventHandler<[prefs: PrefObject[]]>;
+  private onMouseMovedHandler_: EventHandler;
+  private onMouseDraggedHandler_: EventHandler;
+  private onLoadDesktopCallbackForTest_: (() => void)|null;
+
+  constructor(type: Magnifier.Type) {
     this.type = type;
-
-    /**
-     * Whether focus following is enabled or not, based on
-     * settings.a11y.screen_magnifier_focus_following preference.
-     * @private {boolean}
-     */
-    this.screenMagnifierFocusFollowing_;
-
-    /**
-     * Whether magnifier is current initializing, and so should ignore
-     * focus updates.
-     * @private {boolean}
-     */
-    this.isInitializing_ = true;
-
-    /**
-     * Last time mouse has moved (from last onMouseMovedOrDragged).
-     * @private {Date}
-     */
-    this.lastMouseMovedTime_;
-
-    /** @private {!EventHandler} */
     this.focusHandler_ = new EventHandler(
         [], EventType.FOCUS, event => this.onFocusOrSelectionChanged_(event));
 
-    /** @private {!EventHandler} */
     this.activeDescendantHandler_ = new EventHandler(
         [], EventType.ACTIVE_DESCENDANT_CHANGED,
         event => this.onActiveDescendantChanged_(event));
 
-    /** @private {!EventHandler} */
     this.selectionHandler_ = new EventHandler(
         [], EventType.SELECTION,
         event => this.onFocusOrSelectionChanged_(event));
 
-    /** @private {!EventHandler} */
     this.onCaretBoundsChangedHandler = new EventHandler(
         [], EventType.CARET_BOUNDS_CHANGED,
         event => this.onCaretBoundsChanged(event));
 
-    /** @private {!ChromeEventHandler} */
     this.onMagnifierBoundsChangedHandler_ = new ChromeEventHandler(
         chrome.accessibilityPrivate.onMagnifierBoundsChanged,
         bounds => this.onMagnifierBoundsChanged_(bounds));
 
-    /** @private {ChromeEventHandler} */
     this.updateFromPrefsHandler_ = new ChromeEventHandler(
         chrome.settingsPrivate.onPrefsChanged,
         prefs => this.updateFromPrefs_(prefs));
 
-    /** @private {!EventHandler} */
     this.onMouseMovedHandler_ = new EventHandler(
         [], chrome.automation.EventType.MOUSE_MOVED,
-        event => this.onMouseMovedOrDragged_(event));
+        () => this.onMouseMovedOrDragged_());
 
-    /** @private {!EventHandler} */
     this.onMouseDraggedHandler_ = new EventHandler(
         [], chrome.automation.EventType.MOUSE_DRAGGED,
-        event => this.onMouseMovedOrDragged_(event));
+        () => this.onMouseMovedOrDragged_());
 
-    /** @private {?function()} */
     this.onLoadDesktopCallbackForTest_ = null;
 
     this.init_();
   }
 
   /** Destructor to remove listener. */
-  onMagnifierDisabled() {
+  onMagnifierDisabled(): void {
     this.focusHandler_.stop();
     this.activeDescendantHandler_.stop();
     this.selectionHandler_.stop();
@@ -99,11 +90,8 @@ export class Magnifier {
     this.onMouseDraggedHandler_.stop();
   }
 
-  /**
-   * Initializes Magnifier.
-   * @private
-   */
-  init_() {
+  /** Initializes Magnifier. */
+  private init_(): void {
     chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));
     this.updateFromPrefsHandler_.start();
 
@@ -137,19 +125,11 @@ export class Magnifier {
     }, Magnifier.IGNORE_FOCUS_UPDATES_INITIALIZATION_MS);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  drawDebugRect_() {
-    return Flags.isEnabled(FlagName.MAGNIFIER_DEBUG_DRAW_RECT);
+  private drawDebugRect_(): boolean {
+    return Boolean(Flags.isEnabled(FlagName.MAGNIFIER_DEBUG_DRAW_RECT));
   }
 
-  /**
-   * @param {!chrome.accessibilityPrivate.ScreenRect} bounds
-   * @private
-   */
-  onMagnifierBoundsChanged_(bounds) {
+  private onMagnifierBoundsChanged_(bounds: ScreenRect): void {
     if (this.drawDebugRect_()) {
       chrome.accessibilityPrivate.setFocusRings(
           [{
@@ -164,15 +144,11 @@ export class Magnifier {
   /**
    * Sets |isInitializing_| inside tests to skip ignoring initial focus updates.
    */
-  setIsInitializingForTest(isInitializing) {
+  setIsInitializingForTest(isInitializing: boolean): void {
     this.isInitializing_ = isInitializing;
   }
 
-  /**
-   * @param {!Array<!chrome.settingsPrivate.PrefObject>} prefs
-   * @private
-   */
-  updateFromPrefs_(prefs) {
+  private updateFromPrefs_(prefs: PrefObject[]): void {
     prefs.forEach(pref => {
       switch (pref.key) {
         case Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING:
@@ -191,11 +167,12 @@ export class Magnifier {
    * TODO(crbug.com/1146595): Add Chrome OS preference to allow disabling focus
    * following for docked magnifier.
    */
-  shouldFollowFocus() {
-    return !this.isInitializing_ &&
+  shouldFollowFocus(): boolean {
+    return Boolean(
+        !this.isInitializing_ &&
         (this.type === Magnifier.Type.DOCKED ||
          this.type === Magnifier.Type.FULL_SCREEN &&
-             this.screenMagnifierFocusFollowing_);
+             this.screenMagnifierFocusFollowing_));
   }
 
   /**
@@ -208,17 +185,16 @@ export class Magnifier {
    * shake screen.
    * TODO(accessibility): On page load, sometimes viewport moves to center of
    * webpage instead of spotlighting first focusable page element.
-   *
-   * @param {!chrome.automation.AutomationEvent} event
-   * @private
    */
-  onFocusOrSelectionChanged_(event) {
+  private onFocusOrSelectionChanged_(event: AutomationEvent): void {
     const node = event.target;
     if (!node.location || !this.shouldFollowFocus()) {
       return;
     }
 
-    if (new Date() - this.lastMouseMovedTime_ <
+    // TODO(b/267329383): Clean this up, since Number(undefined) is NaN, and
+    // NaN should be avoided if possible.
+    if (Number(new Date()) - Number(this.lastMouseMovedTime_) <
         Magnifier.IGNORE_FOCUS_UPDATES_AFTER_MOUSE_MOVE_MS) {
       return;
     }
@@ -237,10 +213,8 @@ export class Magnifier {
   /**
    * Listener for when active descendant is changed. Moves magnifier to include
    * active descendant in viewport.
-   * @param {!chrome.automation.AutomationEvent} event
-   * @private
    */
-  onActiveDescendantChanged_(event) {
+  private onActiveDescendantChanged_(event: AutomationEvent): void {
     const {activeDescendant} = event.target;
     if (!activeDescendant || !this.shouldFollowFocus()) {
       return;
@@ -257,16 +231,16 @@ export class Magnifier {
   /**
    * Listener for when caret bounds have changed. Moves magnifier to include
    * caret in viewport.
-   * @param {!chrome.automation.AutomationEvent} event
-   * @private
    */
-  onCaretBoundsChanged(event) {
+  private onCaretBoundsChanged(event: AutomationEvent): void {
     const {target} = event;
     if (!target || !target.caretBounds) {
       return;
     }
 
-    if (new Date() - this.lastMouseMovedTime_ <
+    // TODO(b/267329383): Clean this up, since Number(undefined) is NaN, and
+    // NaN should be avoided if possible.
+    if (Number(new Date()) - Number(this.lastMouseMovedTime_) <
         Magnifier.IGNORE_FOCUS_UPDATES_AFTER_MOUSE_MOVE_MS) {
       return;
     }
@@ -284,21 +258,16 @@ export class Magnifier {
     chrome.accessibilityPrivate.magnifierCenterOnPoint(caretBoundsCenter);
   }
 
-  /**
-   * Listener for when mouse moves or drags.
-   * @param {!chrome.automation.AutomationEvent} event
-   * @private
-   */
-  onMouseMovedOrDragged_(event) {
+  /** Listener for when mouse moves or drags. */
+  private onMouseMovedOrDragged_(): void {
     this.lastMouseMovedTime_ = new Date();
   }
 
   /**
    * Used by C++ tests to ensure Magnifier load is competed.
-   * @param {!function()} callback Callback for when desktop is loaded from
-   * automation.
+   * @param callback Callback for when desktop is loaded from automation.
    */
-  setOnLoadDesktopCallbackForTest(callback) {
+  setOnLoadDesktopCallbackForTest(callback: () => void): void {
     if (!this.focusHandler_.listening()) {
       this.onLoadDesktopCallbackForTest_ = callback;
       return;
@@ -308,36 +277,28 @@ export class Magnifier {
   }
 }
 
-/**
- * Magnifier types.
- * @enum {string}
- * @const
- */
-Magnifier.Type = {
-  FULL_SCREEN: 'fullScreen',
-  DOCKED: 'docked',
-};
+export namespace Magnifier {
+  /** Magnifier types. */
+  export enum Type {
+    FULL_SCREEN = 'fullScreen',
+    DOCKED = 'docked',
+  }
 
-/**
- * Preferences that are configurable for Magnifier.
- * @enum {string}
- * @const
- */
-Magnifier.Prefs = {
-  SCREEN_MAGNIFIER_FOCUS_FOLLOWING:
-      'settings.a11y.screen_magnifier_focus_following',
-};
+  /** Preferences that are configurable for Magnifier. */
+  export enum Prefs {
+    SCREEN_MAGNIFIER_FOCUS_FOLLOWING =
+        'settings.a11y.screen_magnifier_focus_following'
+  }
 
-/**
- * Duration of time directly after startup of magnifier to ignore focus updates,
- * to prevent the magnified region from jumping.
- * @const {number}
- */
-Magnifier.IGNORE_FOCUS_UPDATES_INITIALIZATION_MS = 500;
+  /**
+   * Duration of time directly after startup of magnifier to ignore focus
+   * updates, to prevent the magnified region from jumping.
+   */
+  export const IGNORE_FOCUS_UPDATES_INITIALIZATION_MS = 500;
 
-/**
- * Duration of time directly after a mouse move or drag to ignore focus updates,
- * to prevent the magnified region from jumping.
- * @const {number}
- */
-Magnifier.IGNORE_FOCUS_UPDATES_AFTER_MOUSE_MOVE_MS = 250;
+  /**
+   * Duration of time directly after a mouse move or drag to ignore focus
+   * updates, to prevent the magnified region from jumping.
+   */
+  export const IGNORE_FOCUS_UPDATES_AFTER_MOUSE_MOVE_MS = 250;
+}

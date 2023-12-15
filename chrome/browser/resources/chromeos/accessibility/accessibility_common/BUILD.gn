@@ -50,6 +50,7 @@ ts_modules = [
   "dictation/macros/stop_listening_macro.ts",
   "facegaze/facegaze.ts",
   "facegaze/camera_stream.ts",
+  "magnifier/magnifier.ts",
 ]
 
 # JS files needed by the TS compiler.
@@ -121,7 +122,6 @@ run_jsbundler("accessibility_common_copied_files") {
     "dictation/parse/simple_parse_strategy.js",
     "dictation/parse/speech_parser.js",
     "facegaze/camera_stream.html",
-    "magnifier/magnifier.js",
   ]
 
   foreach(_ts_file, ts_modules) {
