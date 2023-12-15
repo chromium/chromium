@@ -780,9 +780,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     protected boolean shouldShowTabOnActivityShown() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREFETCH_DELAY_SHOW_ON_START)) {
-            return true;
-        }
         // Hidden tabs from speculation will be shown and added to the tab model in
         // CustomTabActivityTabController#finalizeCreatingTab.
         return didFinishNativeInitialization()

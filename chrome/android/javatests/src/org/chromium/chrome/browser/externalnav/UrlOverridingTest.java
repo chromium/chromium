@@ -1710,7 +1710,6 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({ChromeFeatureList.CCT_PREFETCH_DELAY_SHOW_ON_START})
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testRedirectFromCCTSpeculation() throws Exception {
         final String url = mTestServer.getURL(NAVIGATION_FROM_PAGE_SHOW);

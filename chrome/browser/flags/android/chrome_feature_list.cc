@@ -188,7 +188,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTIntentFeatureOverrides,
     &kCCTMinimized,
     &kCCTPageInsightsHub,
-    &kCCTPrefetchDelayShowOnStart,
     &kCCTRealTimeEngagementSignals,
     &kCCTReportParallelRequestStatus,
     &kCCTResizableForThirdParties,
@@ -532,10 +531,6 @@ BASE_FEATURE(kCCTMinimized, "CCTMinimized", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTPageInsightsHub,
              "CCTPageInsightsHub",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTPrefetchDelayShowOnStart,
-             "CCTPrefetchDelayShowOnStart",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTRealTimeEngagementSignals,
              "CCTRealTimeEngagementSignals",

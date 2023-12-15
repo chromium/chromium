@@ -181,7 +181,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_MINIMIZED = "CCTMinimized";
     public static final String CCT_INTENT_FEATURE_OVERRIDES = "CCTIntentFeatureOverrides";
     public static final String CCT_PAGE_INSIGHTS_HUB = "CCTPageInsightsHub";
-    public static final String CCT_PREFETCH_DELAY_SHOW_ON_START = "CCTPrefetchDelayShowOnStart";
     public static final String CCT_REAL_TIME_ENGAGEMENT_SIGNALS = "CCTRealTimeEngagementSignals";
     public static final String CCT_REPORT_PARALLEL_REQUEST_STATUS =
             "CCTReportParallelRequestStatus";
