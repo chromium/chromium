@@ -6511,6 +6511,7 @@ external/wpt/https-upgrades/tentative/upgrade.https.sub.html [ Timeout ]
 external/wpt/https-upgrades/tentative/http-redirecting-to-http.https.sub.html [ Timeout ]
 external/wpt/https-upgrades/tentative/http-redirecting-to-http-redirecting-to-http.https.sub.html [ Timeout ]
 external/wpt/https-upgrades/tentative/http-redirecting-to-https.https.sub.html [ Timeout ]
+external/wpt/https-upgrades/tentative/referrer.https.sub.html [ Timeout ]
 
 # Sherrif 2023-06-09
 crbug.com/1358175 [ Mac12 ] media/controls/closed-captions-single-track.html [ Failure Pass ]
