@@ -7713,11 +7713,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityFaceGazeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityFaceGaze)},
 
-    {"enable-only-show-new-shortcut-app",
-     flag_descriptions::kOnlyShowNewShortcutsAppName,
-     flag_descriptions::kOnlyShowNewShortcutsAppDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kOnlyShowNewShortcutsApp)},
-
     {"enable-pip-double-tap-to-resize",
      flag_descriptions::kPipDoubleTapToResizeName,
      flag_descriptions::kPipDoubleTapToResizeDescription, kOsCrOS,

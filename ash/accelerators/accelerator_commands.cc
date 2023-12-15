@@ -1112,11 +1112,7 @@ void ShowEmojiPicker(const base::TimeTicks accelerator_timestamp) {
 }
 
 void ShowKeyboardShortcutViewer() {
-  if (features::ShouldOnlyShowNewShortcutApp()) {
-    ShowShortcutCustomizationApp();
-    return;
-  }
-  NewWindowDelegate::GetInstance()->ShowKeyboardShortcutViewer();
+  ShowShortcutCustomizationApp();
 }
 
 void ShowShortcutCustomizationApp() {

@@ -3161,11 +3161,6 @@
     "expiry_milestone": 118
   },
   {
-    "name": "enable-only-show-new-shortcut-app",
-    "owners": [ "jimmyxgong@chromium.org", "michaelcheco@chromium.org", "cros-peripherals@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-oop-print-drivers",
     "owners": [ "awscreen@chromium.org", "thestig@chromium.org" ],
     "expiry_milestone": 126

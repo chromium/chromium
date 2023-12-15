@@ -112,12 +112,8 @@ void KeyboardHandler::HandleInitialize(const base::Value::List& args) {
 
 void KeyboardHandler::HandleShowKeyboardShortcutViewer(
     const base::Value::List& args) const {
-  if (ash::features::ShouldOnlyShowNewShortcutApp()) {
-    ash::LaunchSystemWebAppAsync(ProfileManager::GetActiveUserProfile(),
-                                 ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION);
-    return;
-  }
-  ToggleKeyboardShortcutViewer();
+  ash::LaunchSystemWebAppAsync(ProfileManager::GetActiveUserProfile(),
+                               ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION);
 }
 
 void KeyboardHandler::HandleKeyboardChange(const base::Value::List& args) {

@@ -1960,10 +1960,6 @@ BASE_FEATURE(kOobeQuickStart,
              "OobeQuickStart",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOnlyShowNewShortcutsApp,
-             "OnlyShowNewShortcutsApp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables search customizable shortcuts in launcher.
 BASE_FEATURE(kSearchCustomizableShortcutsInLauncher,
              "SearchCustomizableShortcutsInLauncher",
@@ -4379,10 +4375,6 @@ bool IsWmModeEnabled() {
 
 bool ShouldArcFileTasksUseAppService() {
   return base::FeatureList::IsEnabled(kArcFileTasksUseAppService);
-}
-
-bool ShouldOnlyShowNewShortcutApp() {
-  return base::FeatureList::IsEnabled(kOnlyShowNewShortcutsApp);
 }
 
 bool isSearchCustomizableShortcutsInLauncherEnabled() {

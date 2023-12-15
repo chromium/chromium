@@ -55,7 +55,6 @@ constexpr char kGmailExtensionName[] = "Gmail Ext";
 constexpr char kGmailArcPackage[] = "com.google.android.gm";
 constexpr char kGmailArcActivity[] =
     "com.google.android.gm.ConversationListActivityGmail";
-constexpr char kKeyboardShortcutHelperInternalName[] = "Shortcuts";
 
 constexpr char kRankingAppQuery[] = "testRankingApp";
 
@@ -96,10 +95,6 @@ class AppSearchProviderTest : public AppSearchProviderTestBase {
  public:
   AppSearchProviderTest()
       : AppSearchProviderTestBase(/*zero_state_provider=*/false) {
-    // TODO(jimmyxgong): Remove tests related to the old keyboard shortcut app
-    // after it has been deprecated.
-    feature_list_.InitAndDisableFeature(
-        {ash::features::kOnlyShowNewShortcutsApp});
   }
   AppSearchProviderTest(const AppSearchProviderTest&) = delete;
   AppSearchProviderTest& operator=(const AppSearchProviderTest&) = delete;
@@ -327,15 +322,6 @@ TEST_F(AppSearchProviderTest, FilterDuplicate) {
   arc_test().TearDown();
 }
 
-TEST_F(AppSearchProviderTest, FetchInternalApp) {
-  InitializeSearchProvider();
-
-  // Search Keyboard Shortcut Helper.
-  EXPECT_EQ(kKeyboardShortcutHelperInternalName, RunQuery("Keyboard"));
-  EXPECT_EQ(kKeyboardShortcutHelperInternalName, RunQuery("Shortcut"));
-  EXPECT_EQ(kKeyboardShortcutHelperInternalName, RunQuery("Helper"));
-}
-
 TEST_F(AppSearchProviderTest, WebApp) {
   const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       testing_profile(), kWebAppName, GURL(kWebAppUrl));
@@ -345,24 +331,6 @@ TEST_F(AppSearchProviderTest, WebApp) {
 
   InitializeSearchProvider();
   EXPECT_EQ("WebApp1", RunQuery("WebA"));
-}
-
-TEST_F(AppSearchProviderTest, BasicAppServiceAppResult) {
-  InitializeSearchProvider();
-  RunQuery("Keyboard");
-  std::vector<ChromeSearchResult*> keyboard_results = GetLastResults();
-  EXPECT_EQ(keyboard_results.size(), 1u);
-  EXPECT_EQ(base::UTF16ToUTF8(keyboard_results[0]->title()),
-            kKeyboardShortcutHelperInternalName);
-  EXPECT_EQ(keyboard_results[0]->display_type(),
-            ash::SearchResultDisplayType::kList);
-  EXPECT_EQ(keyboard_results[0]->result_type(),
-            ash::AppListSearchResultType::kInternalApp);
-  EXPECT_EQ(keyboard_results[0]->metrics_type(), ash::INTERNAL_APP);
-  EXPECT_EQ(keyboard_results[0]->is_recommendation(), false);
-  EXPECT_EQ(keyboard_results[0]->category(), Category::kApps);
-  EXPECT_EQ(keyboard_results[0]->id(),
-            ash::kInternalAppIdKeyboardShortcutViewer);
 }
 
 class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
@@ -504,7 +472,6 @@ TEST_F(AppSearchProviderTest, FuzzyAppSearchTest) {
   std::string result = RunQuery("ackaged");
   EXPECT_TRUE(result == "Packaged App 1,Packaged App 2" ||
               result == "Packaged App 2,Packaged App 1");
-  EXPECT_EQ(kKeyboardShortcutHelperInternalName, RunQuery("Helper"));
 }
 
 class AppSearchProviderOemAppTest

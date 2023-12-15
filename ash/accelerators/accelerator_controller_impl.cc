@@ -1265,11 +1265,7 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::ToggleProjectorMarker();
       break;
     case AcceleratorAction::kShowShortcutViewer:
-      if (features::ShouldOnlyShowNewShortcutApp()) {
-        accelerators::ShowShortcutCustomizationApp();
-      } else {
-        accelerators::ShowKeyboardShortcutViewer();
-      }
+      accelerators::ShowShortcutCustomizationApp();
       break;
     case AcceleratorAction::kToggleStylusTools:
       base::RecordAction(UserMetricsAction("Accel_Show_Stylus_Tools"));

@@ -2297,9 +2297,7 @@ class ShortcutsAppSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
  public:
   ShortcutsAppSpokenFeedbackTest() {
     scoped_feature_list_.InitWithFeatures(
-        {::features::kShortcutCustomizationApp,
-         features::kOnlyShowNewShortcutsApp},
-        {});
+        {::features::kShortcutCustomizationApp}, {});
   }
   ShortcutsAppSpokenFeedbackTest(const ShortcutsAppSpokenFeedbackTest&) =
       delete;
