@@ -65,8 +65,6 @@ void SetCommonButtonAttributes(views::ImageButton* button) {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kTextField);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kPreviousButtonElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kNextButtonElementId);
 
 class FindBarMatchCountLabel : public views::Label {
  public:
@@ -226,8 +224,6 @@ FindBarView::FindBarView(FindBarHost* host) {
               .SetAccessibleName(
                   l10n_util::GetStringUTF16(IDS_ACCNAME_PREVIOUS))
               .SetID(VIEW_ID_FIND_IN_PAGE_PREVIOUS_BUTTON)
-              .SetProperty(views::kElementIdentifierKey,
-                           kPreviousButtonElementId)
               .SetTooltipText(
                   l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_PREVIOUS_TOOLTIP))
               .SetCallback(base::BindRepeating(&FindBarView::FindNext,
@@ -237,7 +233,6 @@ FindBarView::FindBarView(FindBarHost* host) {
               .CopyAddressTo(&find_next_button_)
               .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_NEXT))
               .SetID(VIEW_ID_FIND_IN_PAGE_NEXT_BUTTON)
-              .SetProperty(views::kElementIdentifierKey, kNextButtonElementId)
               .SetTooltipText(
                   l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_NEXT_TOOLTIP))
               .SetCallback(base::BindRepeating(&FindBarView::FindNext,

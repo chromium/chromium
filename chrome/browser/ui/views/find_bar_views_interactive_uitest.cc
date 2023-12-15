@@ -64,39 +64,6 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabBId);
 }  // namespace
 
-class FindResultActiveMatchOrdinalStateObserver
-    : public ui::test::ObservationStateObserver<
-          int,
-          find_in_page::FindTabHelper,
-          find_in_page::FindResultObserver> {
- public:
-  static const int kInitialActiveMatchOrdinalCount = -1;
-  FindResultActiveMatchOrdinalStateObserver(
-      find_in_page::FindTabHelper* find_tab_helper)
-      : ObservationStateObserver(find_tab_helper) {}
-  ~FindResultActiveMatchOrdinalStateObserver() override = default;
-
-  // ObservationStateObserver:
-  int GetStateObserverInitialState() const override {
-    return kInitialActiveMatchOrdinalCount;
-  }
-
-  // FindResultObserver:
-  void OnFindResultAvailable(content::WebContents* web_contents) override {
-    const find_in_page::FindNotificationDetails& find_details =
-        find_in_page::FindTabHelper::FromWebContents(web_contents)
-            ->find_result();
-
-    if (!find_details.final_update()) {
-      return;
-    }
-
-    OnStateObserverStateChanged(find_details.active_match_ordinal());
-  }
-};
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(FindResultActiveMatchOrdinalStateObserver,
-                                    kFindResultActiveMatchOrdinalState);
-
 // TODO(crbug.com/1509945): Remaining tests should be migrated to
 // FindInPageTest.
 class LegacyFindInPageTest : public InProcessBrowserTest {
@@ -234,37 +201,37 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, CrashEscHandlers) {
       SendKeyPress(ui::VKEY_ESCAPE, false, false));
 }
 
-IN_PROC_BROWSER_TEST_F(FindInPageTest, NavigationByKeyEvent) {
-  constexpr char16_t kSearchA[] = u"a";
-  const GURL page_a = embedded_test_server()->GetURL("/a.html");
-  const GURL expected_navigation_url =
-      embedded_test_server()->GetURL("/B.html");
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, NavigationByKeyEvent) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Make sure Chrome is in the foreground, otherwise sending input
+  // won't do anything and the test will hang.
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  // First we navigate to any page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kSimplePage)));
+  // Show the Find bar.
+  browser()->GetFindBarController()->Show();
+  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
+  ui_test_utils::FindInPage(
+      browser()->tab_strip_model()->GetActiveWebContents(), u"a", true, false,
+      nullptr, nullptr);
 
-  RunTestSequence(
-      // Open tab A and show Find bar.
-      InstrumentTab(kTabId), NavigateWebContents(kTabId, page_a), ShowFindBar(),
-      ObserveState(kFindResultActiveMatchOrdinalState,
-                   [this]() {
-                     return find_in_page::FindTabHelper::FromWebContents(
-                         browser()->tab_strip_model()->GetActiveWebContents());
-                   }),
-      // Search for 'a'.
-      EnterText(FindBarView::kTextField, kSearchA),
-      WaitForState(kFindResultActiveMatchOrdinalState,
-                   testing::Ne(FindResultActiveMatchOrdinalStateObserver::
-                                   kInitialActiveMatchOrdinalCount)),
-      // Press the [Tab] key and [Enter], the previous button should still be
-      // focused.
-      SendKeyPress(ui::VKEY_TAB, false, false),
-      SendKeyPress(ui::VKEY_RETURN, false, false),
-      CheckViewProperty(FindBarView::kPreviousButtonElementId,
-                        &views::View::HasFocus, true),
-      // Press the [Tab] key and [Enter], the next button should still be
-      // focused.
-      SendKeyPress(ui::VKEY_TAB, false, false),
-      SendKeyPress(ui::VKEY_RETURN, false, false),
-      CheckViewProperty(FindBarView::kNextButtonElementId,
-                        &views::View::HasFocus, true));
+  // The previous button should still be focused after pressing [Enter] on it.
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
+                                              false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN, false,
+                                              false, false, false));
+  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_PREVIOUS_BUTTON));
+
+  // The next button should still be focused after pressing [Enter] on it.
+  ui_test_utils::FindInPage(
+      browser()->tab_strip_model()->GetActiveWebContents(), u"b", true, false,
+      nullptr, nullptr);
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
+                                              false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN, false,
+                                              false, false, false));
+  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_NEXT_BUTTON));
 }
 
 IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, ButtonsDoNotAlterFocus) {
