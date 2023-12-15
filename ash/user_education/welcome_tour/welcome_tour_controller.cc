@@ -44,6 +44,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -322,11 +323,12 @@ void WelcomeTourController::OnShellDestroying() {
   MaybeAbortWelcomeTour(welcome_tour_metrics::AbortedReason::kShutdown);
 }
 
-void WelcomeTourController::OnTabletControllerDestroyed() {
-  MaybeAbortWelcomeTour(welcome_tour_metrics::AbortedReason::kShutdown);
-}
+void WelcomeTourController::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (state != display::TabletState::kEnteringTabletMode) {
+    return;
+  }
 
-void WelcomeTourController::OnTabletModeStarting() {
   MaybeAbortWelcomeTour(
       welcome_tour_metrics::AbortedReason::kTabletModeEnabled);
 }
@@ -470,7 +472,7 @@ void WelcomeTourController::OnWelcomeTourStarted() {
   nudge_pause_ = SystemNudgePauseManager::Get()->CreateScopedPause();
   scrim_ = std::make_unique<WelcomeTourScrim>();
   shell_observation_.Observe(Shell::Get());
-  tablet_mode_observation_.Observe(TabletMode::Get());
+  display_observation_.Observe(display::Screen::GetScreen());
   toast_pause_ = ToastManager::Get()->CreateScopedPause();
   window_minimizer_ = std::make_unique<WelcomeTourWindowMinimizer>();
 
@@ -506,7 +508,7 @@ void WelcomeTourController::OnWelcomeTourEnded(
   nudge_pause_.reset();
   scrim_.reset();
   shell_observation_.Reset();
-  tablet_mode_observation_.Reset();
+  display_observation_.Reset();
   toast_pause_.reset();
   window_minimizer_.reset();
 

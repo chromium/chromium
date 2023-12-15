@@ -27,6 +27,8 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/display/display_observer.h"
+#include "ui/display/tablet_state.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
@@ -57,7 +59,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(NonClientFrameViewAsh*,
 // instantiated for windows that have no WindowStateDelegate provided.
 class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
                                              public aura::WindowObserver,
-                                             public TabletModeObserver {
+                                             public display::DisplayObserver {
  public:
   NonClientFrameViewAshImmersiveHelper(views::Widget* widget,
                                        NonClientFrameViewAsh* custom_frame_view)
@@ -65,8 +67,6 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
         window_state_(WindowState::Get(widget->GetNativeWindow())) {
     window_state_->window()->AddObserver(this);
     window_state_->AddObserver(this);
-
-    Shell::Get()->tablet_mode_controller()->AddObserver(this);
 
     immersive_fullscreen_controller_ =
         std::make_unique<ImmersiveFullscreenController>();
@@ -79,31 +79,33 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
       const NonClientFrameViewAshImmersiveHelper&) = delete;
 
   ~NonClientFrameViewAshImmersiveHelper() override {
-    if (Shell::Get()->tablet_mode_controller())
-      Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
-
     if (window_state_) {
       window_state_->RemoveObserver(this);
       window_state_->window()->RemoveObserver(this);
     }
   }
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override {
-    if (window_state_->IsFullscreen())
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override {
+    if (window_state_->IsFullscreen()) {
       return;
-    if (Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
-            widget_) &&
-        !window_state_->IsFloated()) {
-      ImmersiveFullscreenController::EnableForWidget(widget_, true);
     }
-  }
 
-  void OnTabletModeEnded() override {
-    if (window_state_->IsFullscreen())
-      return;
-
-    ImmersiveFullscreenController::EnableForWidget(widget_, false);
+    switch (state) {
+      case display::TabletState::kEnteringTabletMode:
+      case display::TabletState::kExitingTabletMode:
+        break;
+      case display::TabletState::kInTabletMode:
+        if (Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
+                widget_) &&
+            !window_state_->IsFloated()) {
+          ImmersiveFullscreenController::EnableForWidget(widget_, true);
+        }
+        break;
+      case display::TabletState::kInClamshellMode:
+        ImmersiveFullscreenController::EnableForWidget(widget_, false);
+        break;
+    }
   }
 
  private:
@@ -143,6 +145,7 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
   raw_ptr<WindowState, ExperimentalAsh> window_state_;
   std::unique_ptr<ImmersiveFullscreenController>
       immersive_fullscreen_controller_;
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
