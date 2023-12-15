@@ -11,64 +11,46 @@
  * to let it be handled by mouse event handlers.
  */
 export class FileTapHandler {
-  constructor() {
-    /**
-     * Whether the pointer is currently down and at the same place as the
-     * initial position.
-     * @private @type {boolean}
-     */
-    this.tapStarted_ = false;
+  /**
+   * Whether the pointer is currently down and at the same place as the
+   * initial position.
+   */
+  private tapStarted_ = false;
+  private isLongTap_ = false;
+  private isTwoFingerTap_ = false;
+  private hasLongPressProcessed_ = false;
+  private longTapDetectorTimerId_ = -1;
+  /**
+   * If defined, the identifier of the active touch. Note that 0 is a valid
+   * touch identifier.
+   */
+  private activeTouchId_: number|undefined = undefined;
 
-    /** @private @type {boolean} */
-    this.isLongTap_ = false;
+  /**
+   * The index of the item which is being touched by the active touch. Valid
+   * only when |activeTouchId_| is defined.
+   */
+  private activeItemIndex_ = -1;
 
-    /** @private @type {boolean} */
-    this.isTwoFingerTap_ = false;
+  /**
+   * Last touch X position in client co-ords.
+   */
+  private lastTouchX_ = 0;
 
-    /** @private @type {boolean} */
-    this.hasLongPressProcessed_ = false;
+  /**
+   * Last touch Y position in client co-ords.
+   */
+  private lastTouchY_ = 0;
 
-    /** @private @type {number} */
-    this.longTapDetectorTimerId_ = -1;
+  /**
+   * The absolute sum of all touch X deltas.
+   */
+  private totalMoveX_ = 0;
 
-    /**
-     * If defined, the identifier of the active touch. Note that 0 is a valid
-     * touch identifier.
-     * @private @type {number|undefined}
-     */
-    this.activeTouchId_ = undefined;
-
-    /**
-     * The index of the item which is being touched by the active touch. Valid
-     * only when |activeTouchId_| is defined.
-     * @private @type {number}
-     */
-    this.activeItemIndex_ = -1;
-
-    /**
-     * Last touch X position in client co-ords.
-     * @private @type {number}
-     */
-    this.lastTouchX_ = 0;
-
-    /**
-     * Last touch Y position in client co-ords.
-     * @private @type {number}
-     */
-    this.lastTouchY_ = 0;
-
-    /**
-     * The absolute sum of all touch X deltas.
-     * @private @type {number}
-     */
-    this.totalMoveX_ = 0;
-
-    /**
-     * The absolute sum of all touch Y deltas.
-     * @private @type {number}
-     */
-    this.totalMoveY_ = 0;
-  }
+  /**
+   * The absolute sum of all touch Y deltas.
+   */
+  private totalMoveY_ = 0;
 
   /**
    * Handles touch events. Calls touchend.preventDefault() if the |callback|
@@ -79,15 +61,17 @@ export class FileTapHandler {
    *    ... if touchend.preventDefault() not called ...
    *      browser events: mouseover > mousedown > [mousemove] > mouseup
    *
-   * @param {!TouchEvent} event Touch event.
-   * @param {number} index Index of the target item in the file list.
-   * @param {function(!TouchEvent, number, !FileTapHandler.TapEvent):boolean}
-   *     callback Called when a tap event is detected. Should return true if it
-   *     has taken any action, and false if it ignores the event.
-   * @return {boolean} True if a tap event was detected and the |callback|
-   *     processed the event. False otherwise.
+   * @param event Touch event.
+   * @param index Index of the target item in the file list.
+   * @param callback Called when a tap event is detected. Should return true if
+   *     it has taken any action, and false if it ignores the event.
+   * @return True if a tap event was detected and the |callback| processed the
+   *     event. False otherwise.
    */
-  handleTouchEvents(event, index, callback) {
+  handleTouchEvents(
+      event: TouchEvent, index: number,
+      callback:
+          (event: TouchEvent, index: number, eventType: TapEvent) => boolean) {
     // If the event is not cancelable, touch scrolling is active. Reset the
     // touch tracking to disable tap event detection during scrolling.
     if (event.cancelable === false) {
@@ -127,10 +111,10 @@ export class FileTapHandler {
             return;
           }
           this.isLongTap_ = true;
-          if (callback(event, index, FileTapHandler.TapEvent.LONG_PRESS)) {
+          if (callback(event, index, TapEvent.LONG_PRESS)) {
             this.hasLongPressProcessed_ = true;
           }
-        }, FileTapHandler.LONG_PRESS_THRESHOLD_MILLISECONDS);
+        }, LONG_PRESS_THRESHOLD_MILLISECONDS);
 
         this.lastTouchX_ = touch?.clientX ?? 0;
         this.lastTouchY_ = touch?.clientY ?? 0;
@@ -139,8 +123,6 @@ export class FileTapHandler {
       } break;
 
       case 'touchmove': {
-        // @ts-ignore: error TS2339: Property 'changedTouches' does not exist on
-        // type 'Event'.
         const touch = this.findActiveTouch_(event.changedTouches);
         if (touch === undefined) {
           break;
@@ -156,7 +138,7 @@ export class FileTapHandler {
         // Allow some movement for two-finger taps, and none otherwise.
         let moveLimit = 0;
         if (this.isTwoFingerTap_) {
-          moveLimit = FileTapHandler.MAX_TRACKING_FOR_TAP_;
+          moveLimit = MAX_TRACKING_FOR_TAP_;
         }
 
         // If the touch has moved outside limits, it's no longer a tap.
@@ -183,9 +165,7 @@ export class FileTapHandler {
           // rather than the one at the touch end position. Note that |index| is
           // the latter.
           if (this.hasLongPressProcessed_ ||
-              callback(
-                  event, this.activeItemIndex_,
-                  FileTapHandler.TapEvent.LONG_TAP)) {
+              callback(event, this.activeItemIndex_, TapEvent.LONG_TAP)) {
             event.preventDefault();
             return true;
           }
@@ -195,9 +175,8 @@ export class FileTapHandler {
           // point points to the target.
           if (callback(
                   event, this.activeItemIndex_,
-                  this.isTwoFingerTap_ ?
-                      FileTapHandler.TapEvent.TWO_FINGER_TAP :
-                      FileTapHandler.TapEvent.TAP)) {
+                  this.isTwoFingerTap_ ? TapEvent.TWO_FINGER_TAP :
+                                         TapEvent.TAP)) {
             event.preventDefault();
             return true;
           }
@@ -212,11 +191,10 @@ export class FileTapHandler {
    * Resets the touch tracking state variables. Saves the |this.tapStarted_|
    * state first, then resets all tracking state variables.
    *
-   * @return {boolean} The saved |this.tapStarted_| state or false if there
-   *    is no active touch Id.
-   * @private
+   * @return The saved |this.tapStarted_| state or false if there is no active
+   *     touch Id.
    */
-  resetTouchTracking_() {
+  private resetTouchTracking_(): boolean {
     const tapStarted = this.tapStarted_;
     this.tapStarted_ = false;
 
@@ -240,17 +218,15 @@ export class FileTapHandler {
    * Chrome currently always uses 0 as the Id, so we end up always choosing
    * the first element in the list.
    *
-   * @param {TouchList} touches List of Touch objects to search.
-   * @return {!Touch|undefined} Touch matching the active touch Id, or
-   *     undefined if there is no active touch Id or no match was found.
-   * @private
+   * @param touches List of Touch objects to search.
+   * @return Touch matching the active touch Id, or undefined if there is no
+   *     active touch Id or no match was found.
    */
-  findActiveTouch_(touches) {
+  private findActiveTouch_(touches: TouchList): Touch|undefined {
     if (this.activeTouchId_ !== undefined) {
-      for (let i = 0; i < touches.length; i++) {
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-        if (touches[i].identifier === this.activeTouchId_) {
-          return touches[i];
+      for (const touch of touches) {
+        if (touch.identifier === this.activeTouchId_) {
+          return touch;
         }
       }
     }
@@ -264,27 +240,17 @@ export class FileTapHandler {
  * https://android.googlesource.com/platform/frameworks/base/+/HEAD/core/java/android/view/ViewConfiguration.java
  * Also this should also be consistent with Chrome's behavior for issuing
  * drag-and-drop events by touchscreen.
- * @type {number}
- * @const
  */
-FileTapHandler.LONG_PRESS_THRESHOLD_MILLISECONDS = 500;
+const LONG_PRESS_THRESHOLD_MILLISECONDS = 500;
 
 /**
  * Maximum movement of touch required to be considered a tap.
- * @type {number}
- * @private
  */
-// @ts-ignore: error TS2341: Property 'MAX_TRACKING_FOR_TAP_' is private and
-// only accessible within class 'FileTapHandler'.
-FileTapHandler.MAX_TRACKING_FOR_TAP_ = 8;
+const MAX_TRACKING_FOR_TAP_ = 8;
 
-/**
- * @enum {string}
- * @const
- */
-FileTapHandler.TapEvent = {
-  TAP: 'tap',
-  LONG_PRESS: 'longpress',
-  LONG_TAP: 'longtap',
-  TWO_FINGER_TAP: 'twofingertap',
-};
+export enum TapEvent {
+  TAP = 'tap',
+  LONG_PRESS = 'longpress',
+  LONG_TAP = 'longtap',
+  TWO_FINGER_TAP = 'twofingertap',
+}

@@ -4,7 +4,7 @@
 
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {FileTapHandler} from './file_tap_handler.js';
+import {FileTapHandler, TapEvent} from './file_tap_handler.js';
 
 /** @type {!FileTapHandler} handler the handler. */
 let handler;
@@ -20,7 +20,7 @@ let dummyTarget;
 let events;
 
 /**
- * @type {function(!Event, number, !FileTapHandler.TapEvent):boolean}
+ * @type {function(!Event, number, !TapEvent):boolean}
  */
 // @ts-ignore: error TS6133: 'e' is declared but its value is never read.
 const handleTap = (e, index, eventType) => {
@@ -72,7 +72,7 @@ export function testTap() {
   assertEquals(1, events.length);
   // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
   // 'Object'.
-  assertEquals(FileTapHandler.TapEvent.TAP, events[0].eventType);
+  assertEquals(TapEvent.TAP, events[0].eventType);
   // @ts-ignore: error TS2339: Property 'index' does not exist on type 'Object'.
   assertEquals(0, events[0].index);
 }
@@ -131,7 +131,7 @@ export async function testLongTap() {
   assertEquals(1, events.length);
   // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
   // 'Object'.
-  assertEquals(FileTapHandler.TapEvent.LONG_PRESS, events[0].eventType);
+  assertEquals(TapEvent.LONG_PRESS, events[0].eventType);
   // @ts-ignore: error TS2339: Property 'index' does not exist on type
   // 'Object'.
   assertEquals(0, events[0].index);
@@ -147,7 +147,7 @@ export async function testLongTap() {
   assertEquals(2, events.length);
   // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
   // 'Object'.
-  assertEquals(FileTapHandler.TapEvent.LONG_TAP, events[1].eventType);
+  assertEquals(TapEvent.LONG_TAP, events[1].eventType);
   // @ts-ignore: error TS2339: Property 'index' does not exist on type
   // 'Object'.
   assertEquals(0, events[1].index);
@@ -246,7 +246,7 @@ export function testTwoFingerTap() {
   assertEquals(1, events.length);
   // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
   // 'Object'.
-  assertEquals(FileTapHandler.TapEvent.TWO_FINGER_TAP, events[0].eventType);
+  assertEquals(TapEvent.TWO_FINGER_TAP, events[0].eventType);
   // @ts-ignore: error TS2339: Property 'index' does not exist on type 'Object'.
   assertEquals(0, events[0].index);
 
@@ -288,7 +288,7 @@ export function testTwoFingerTap() {
   assertEquals(2, events.length);
   // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
   // 'Object'.
-  assertEquals(FileTapHandler.TapEvent.TWO_FINGER_TAP, events[1].eventType);
+  assertEquals(TapEvent.TWO_FINGER_TAP, events[1].eventType);
   // @ts-ignore: error TS2339: Property 'index' does not exist on type 'Object'.
   assertEquals(10, events[1].index);
 }

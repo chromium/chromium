@@ -21,7 +21,7 @@ import {DragSelector} from './drag_selector.js';
 import {FileGridSelectionController} from './file_grid.js';
 import {FileListSelectionModel} from './file_list_selection_model.js';
 import {FileTable} from './file_table.js';
-import {FileTapHandler} from './file_tap_handler.js';
+import {FileTapHandler, TapEvent} from './file_tap_handler.js';
 import {List} from './list.js';
 import {ListItem} from './list_item.js';
 import {ListSelectionController} from './list_selection_controller.js';
@@ -505,11 +505,11 @@ export function updateListItemExternalProps(
  */
 export function handleTap(
     this: FileListSelectionController|FileGridSelectionController,
-    e: TouchEvent, index: number, eventType: FileTapHandler.TapEvent) {
+    e: TouchEvent, index: number, eventType: TapEvent) {
   const sm = this.selectionModel as FileListSelectionModel;
   const a11y = this.filesView.a11y!;
 
-  if (eventType === FileTapHandler.TapEvent.TWO_FINGER_TAP) {
+  if (eventType === TapEvent.TWO_FINGER_TAP) {
     // Prepare to open the context menu in the same manner as the right
     // click. If the target is any of the selected files, open a one for
     // those files. If the target is a non-selected file, cancel current
@@ -547,15 +547,14 @@ export function handleTap(
 
   const target = e.target as HTMLElement;
   // Single finger tap.
-  const isTap = eventType === FileTapHandler.TapEvent.TAP ||
-      eventType === FileTapHandler.TapEvent.LONG_TAP;
+  const isTap = eventType === TapEvent.TAP || eventType === TapEvent.LONG_TAP;
   // Revert to click handling for single tap on the checkmark or rename
   // input. Single tap on the item checkmark should toggle select the item.
   // Single tap on rename input should focus on input.
   const isCheckmark = target.classList.contains('detail-checkmark') ||
       target.classList.contains('detail-icon');
   const isRename = target.localName === 'input';
-  if (eventType === FileTapHandler.TapEvent.TAP && (isCheckmark || isRename)) {
+  if (eventType === TapEvent.TAP && (isCheckmark || isRename)) {
     return false;
   }
 
@@ -574,8 +573,7 @@ export function handleTap(
     sm.anchorIndex = index;
     sm.endChange();
     return true;
-  } else if (
-      sm.multiple && (eventType === FileTapHandler.TapEvent.LONG_PRESS)) {
+  } else if (sm.multiple && (eventType === TapEvent.LONG_PRESS)) {
     sm.beginChange();
     if (!sm.getCheckSelectMode()) {
       // Make sure to unselect the leading item that was not the touch
@@ -589,8 +587,7 @@ export function handleTap(
     sm.endChange();
     return true;
     // Do not toggle selection yet, so as to avoid unselecting before drag.
-  } else if (
-      eventType === FileTapHandler.TapEvent.TAP && !sm.getCheckSelectMode()) {
+  } else if (eventType === TapEvent.TAP && !sm.getCheckSelectMode()) {
     // Single tap should open the item with default action.
     // Select the item, so that MainWindowComponent will execute action of
     // it.
