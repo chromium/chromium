@@ -200,14 +200,12 @@ report::MarketSegment ReportControllerInitializer::GetMarketSegmentForTesting(
 void ReportControllerInitializer::OwnershipStatusChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ != State::kWaitingForOwnership) {
-    LOG(ERROR) << "Invalid state - expected to be waiting for ownership.";
     return;
   }
 
   // Device should only get ownership taken at most once on a browser start up.
   if (ash::DeviceSettingsService::Get()->GetOwnershipStatus() !=
       ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken) {
-    LOG(ERROR) << "Ownership status is not taken yet, returning early.";
     return;
   }
 
@@ -349,7 +347,6 @@ void ReportControllerInitializer::CheckTrustedStatus() {
     // until browser restarts. Client does not proceed without signature
     // verification, so retry is not attempted. This status may be caused
     // if the policy proto blob fails the signature check.
-    LOG(ERROR) << "CrosSettings status is not trusted yet.";
     return;
   }
 
