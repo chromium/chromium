@@ -978,7 +978,7 @@ void PrintPreviewUI::DidPrepareDocumentForPreview(int32_t document_cookie,
   if (!render_frame_host)
     return;
 
-  client->DoPrepareForDocumentToPdf(
+  client->PrepareToCompositeDocument(
       document_cookie, render_frame_host,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&PrintPreviewUI::OnPrepareForDocumentToPdfDone,
@@ -1019,8 +1019,8 @@ void PrintPreviewUI::DidPreviewPage(mojom::DidPreviewPageParamsPtr params,
     if (!render_frame_host)
       return;
 
-    // Use utility process to convert skia metafile to pdf.
-    client->DoCompositePageToPdf(
+    // Use utility process to convert Skia metafile to PDF or XPS.
+    client->CompositePage(
         params->document_cookie, render_frame_host, content,
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             base::BindOnce(&PrintPreviewUI::OnCompositePdfPageDone,
@@ -1075,7 +1075,7 @@ void PrintPreviewUI::MetafileReadyForPrinting(
     // Need to provide particulars of how many pages are required before
     // document will be completed.
     auto* client = PrintCompositeClient::FromWebContents(web_contents);
-    client->DoCompleteDocumentToPdf(
+    client->FinishDocumentComposition(
         params->document_cookie, params->expected_pages_count,
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             std::move(callback),

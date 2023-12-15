@@ -574,7 +574,7 @@ bool PrintViewManagerBase::OnComposePdfDoneImpl(
   return true;
 }
 
-void PrintViewManagerBase::OnComposePdfDone(
+void PrintViewManagerBase::OnComposeDocumentDone(
     int document_cookie,
     const gfx::Size& page_size,
     const gfx::Rect& content_area,
@@ -616,10 +616,10 @@ void PrintViewManagerBase::DidPrintDocument(
 
   if (IsOopifEnabled() && print_job_->document()->settings().is_modifiable()) {
     auto* client = PrintCompositeClient::FromWebContents(web_contents());
-    client->DoCompositeDocumentToPdf(
+    client->CompositeDocument(
         params->document_cookie, GetCurrentTargetFrame(), content,
         ui::AXTreeUpdate(),
-        base::BindOnce(&PrintViewManagerBase::OnComposePdfDone,
+        base::BindOnce(&PrintViewManagerBase::OnComposeDocumentDone,
                        weak_ptr_factory_.GetWeakPtr(), params->document_cookie,
                        params->page_size, params->content_area,
                        params->physical_offsets, std::move(callback)));

@@ -1244,7 +1244,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
   ASSERT_EQ(test_frame->GetGlobalId(), subframe_in_queue->rfh_id_);
 
   // Creates mojom::PrintCompositor.
-  client->DoCompositeDocumentToPdf(
+  client->CompositeDocument(
       kDefaultDocumentCookie, main_frame,
       *TestPrintRenderFrame::GetDefaultDidPrintContentParams(),
       ui::AXTreeUpdate(), base::DoNothing());

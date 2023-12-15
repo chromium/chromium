@@ -153,39 +153,39 @@ void PrintCompositorImpl::SetAccessibilityTree(
   accessibility_tree_ = accessibility_tree;
 }
 
-void PrintCompositorImpl::CompositePageToPdf(
+void PrintCompositorImpl::CompositePage(
     uint64_t frame_guid,
     base::ReadOnlySharedMemoryRegion serialized_content,
     const ContentToFrameMap& subframe_content_map,
-    mojom::PrintCompositor::CompositePageToPdfCallback callback) {
-  TRACE_EVENT0("print", "PrintCompositorImpl::CompositePageToPdf");
+    mojom::PrintCompositor::CompositePageCallback callback) {
+  TRACE_EVENT0("print", "PrintCompositorImpl::CompositePage");
   if (docinfo_)
     docinfo_->pages_provided++;
   HandleCompositionRequest(frame_guid, std::move(serialized_content),
                            subframe_content_map, std::move(callback));
 }
 
-void PrintCompositorImpl::CompositeDocumentToPdf(
+void PrintCompositorImpl::CompositeDocument(
     uint64_t frame_guid,
     base::ReadOnlySharedMemoryRegion serialized_content,
     const ContentToFrameMap& subframe_content_map,
-    mojom::PrintCompositor::CompositeDocumentToPdfCallback callback) {
-  TRACE_EVENT0("print", "PrintCompositorImpl::CompositeDocumentToPdf");
+    mojom::PrintCompositor::CompositeDocumentCallback callback) {
+  TRACE_EVENT0("print", "PrintCompositorImpl::CompositeDocument");
   DCHECK(!docinfo_);
   HandleCompositionRequest(frame_guid, std::move(serialized_content),
                            subframe_content_map, std::move(callback));
 }
 
-void PrintCompositorImpl::PrepareForDocumentToPdf(
-    mojom::PrintCompositor::PrepareForDocumentToPdfCallback callback) {
+void PrintCompositorImpl::PrepareToCompositeDocument(
+    mojom::PrintCompositor::PrepareToCompositeDocumentCallback callback) {
   DCHECK(!docinfo_);
   docinfo_ = std::make_unique<DocumentInfo>();
   std::move(callback).Run(mojom::PrintCompositor::Status::kSuccess);
 }
 
-void PrintCompositorImpl::CompleteDocumentToPdf(
+void PrintCompositorImpl::FinishDocumentComposition(
     uint32_t page_count,
-    mojom::PrintCompositor::CompleteDocumentToPdfCallback callback) {
+    mojom::PrintCompositor::FinishDocumentCompositionCallback callback) {
   DCHECK(docinfo_);
   DCHECK_GT(page_count, 0U);
   docinfo_->page_count = page_count;
@@ -245,7 +245,7 @@ void PrintCompositorImpl::UpdateRequestsWithSubframeInfo(
     if (docinfo_) {
       if (docinfo_->page_count &&
           (docinfo_->pages_written == docinfo_->page_count)) {
-        CompleteDocumentRequest(std::move(docinfo_->callback));
+        FinishDocumentRequest(std::move(docinfo_->callback));
       }
     }
     it = requests_.erase(it);
@@ -287,7 +287,7 @@ void PrintCompositorImpl::HandleCompositionRequest(
     uint64_t frame_guid,
     base::ReadOnlySharedMemoryRegion serialized_content,
     const ContentToFrameMap& subframe_content_map,
-    CompositeToPdfCallback callback) {
+    CompositePagesCallback callback) {
   base::ReadOnlySharedMemoryMapping mapping = serialized_content.Map();
   if (!mapping.IsValid()) {
     DLOG(ERROR) << "HandleCompositionRequest: Cannot map input.";
@@ -323,7 +323,7 @@ void PrintCompositorImpl::HandleCompositionRequest(
 
 void PrintCompositorImpl::HandleDocumentCompletionRequest() {
   if (docinfo_->pages_written == docinfo_->page_count) {
-    CompleteDocumentRequest(std::move(docinfo_->callback));
+    FinishDocumentRequest(std::move(docinfo_->callback));
     return;
   }
   // Just need to wait on pages to percolate through processing, callback will
@@ -331,11 +331,11 @@ void PrintCompositorImpl::HandleDocumentCompletionRequest() {
   // have finished.
 }
 
-mojom::PrintCompositor::Status PrintCompositorImpl::CompositeToPdf(
+mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
     base::span<const uint8_t> serialized_content,
     const ContentToFrameMap& subframe_content_map,
     base::ReadOnlySharedMemoryRegion* region) {
-  TRACE_EVENT0("print", "PrintCompositorImpl::CompositeToPdf");
+  TRACE_EVENT0("print", "PrintCompositorImpl::CompositePages");
 
   PictureDeserializationContext subframes =
       GetPictureDeserializationContext(subframe_content_map);
@@ -344,14 +344,14 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositeToPdf(
   SkMemoryStream stream(serialized_content.data(), serialized_content.size());
   int page_count = SkMultiPictureDocumentReadPageCount(&stream);
   if (!page_count) {
-    DLOG(ERROR) << "CompositeToPdf: No page is read.";
+    DLOG(ERROR) << "CompositePages: No page is read.";
     return mojom::PrintCompositor::Status::kContentFormatError;
   }
 
   std::vector<SkDocumentPage> pages(page_count);
   SkDeserialProcs procs = DeserializationProcs(&subframes, &typefaces_);
   if (!SkMultiPictureDocumentRead(&stream, pages.data(), page_count, &procs)) {
-    DLOG(ERROR) << "CompositeToPdf: Page reading failed.";
+    DLOG(ERROR) << "CompositePages: Page reading failed.";
     return mojom::PrintCompositor::Status::kContentFormatError;
   }
 
@@ -364,19 +364,19 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositeToPdf(
       GeneratePdfDocumentOutline::kNone, &wstream);
 
   for (const auto& page : pages) {
-    TRACE_EVENT0("print", "PrintCompositorImpl::CompositeToPdf draw page");
+    TRACE_EVENT0("print", "PrintCompositorImpl::CompositePages draw page");
     SkCanvas* canvas = doc->beginPage(page.fSize.width(), page.fSize.height());
     canvas->drawPicture(page.fPicture);
     doc->endPage();
     if (docinfo_) {
-      // Create document PDF if needed.
+      // Create full document if needed.
       if (!docinfo_->doc) {
         docinfo_->doc = MakePdfDocument(creator_, accessibility_tree_,
                                         GeneratePdfDocumentOutline::kNone,
                                         &docinfo_->compositor_stream);
       }
 
-      // Collect this page into document PDF.
+      // Collect this page into full document.
       SkCanvas* canvas_doc =
           docinfo_->doc->beginPage(page.fSize.width(), page.fSize.height());
       canvas_doc->drawPicture(page.fPicture);
@@ -389,7 +389,7 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositeToPdf(
   base::MappedReadOnlyRegion region_mapping =
       base::ReadOnlySharedMemoryRegion::Create(wstream.bytesWritten());
   if (!region_mapping.IsValid()) {
-    DLOG(ERROR) << "CompositeToPdf: Cannot create new shared memory region.";
+    DLOG(ERROR) << "CompositePages: Cannot create new shared memory region.";
     return mojom::PrintCompositor::Status::kHandleMapError;
   }
 
@@ -435,15 +435,15 @@ PrintCompositorImpl::GetPictureDeserializationContext(
 void PrintCompositorImpl::FulfillRequest(
     base::span<const uint8_t> serialized_content,
     const ContentToFrameMap& subframe_content_map,
-    CompositeToPdfCallback callback) {
+    CompositePagesCallback callback) {
   base::ReadOnlySharedMemoryRegion region;
   auto status =
-      CompositeToPdf(serialized_content, subframe_content_map, &region);
+      CompositePages(serialized_content, subframe_content_map, &region);
   std::move(callback).Run(status, std::move(region));
 }
 
-void PrintCompositorImpl::CompleteDocumentRequest(
-    CompleteDocumentToPdfCallback callback) {
+void PrintCompositorImpl::FinishDocumentRequest(
+    FinishDocumentCompositionCallback callback) {
   mojom::PrintCompositor::Status status;
   base::ReadOnlySharedMemoryRegion region;
 
@@ -457,7 +457,7 @@ void PrintCompositorImpl::CompleteDocumentRequest(
     region = std::move(region_mapping.region);
     status = mojom::PrintCompositor::Status::kSuccess;
   } else {
-    DLOG(ERROR) << "CompleteDocumentRequest: "
+    DLOG(ERROR) << "FinishDocumentRequest: "
                 << "Cannot create new shared memory region.";
     status = mojom::PrintCompositor::Status::kHandleMapError;
   }
@@ -483,7 +483,7 @@ PrintCompositorImpl::RequestInfo::RequestInfo(
     base::span<const uint8_t> content,
     const ContentToFrameMap& content_info,
     const base::flat_set<uint64_t>& pending_subframes,
-    mojom::PrintCompositor::CompositePageToPdfCallback callback)
+    mojom::PrintCompositor::CompositePageCallback callback)
     : FrameContentInfo(content, content_info),
       pending_subframes(pending_subframes),
       callback(std::move(callback)) {}

@@ -241,13 +241,13 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
                             base::ReadOnlySharedMemoryRegion region);
 
   // IPC message handlers for service.
-  void OnComposePdfDone(int document_cookie,
-                        const gfx::Size& page_size,
-                        const gfx::Rect& content_area,
-                        const gfx::Point& physical_offsets,
-                        DidPrintDocumentCallback callback,
-                        mojom::PrintCompositor::Status status,
-                        base::ReadOnlySharedMemoryRegion region);
+  void OnComposeDocumentDone(int document_cookie,
+                             const gfx::Size& page_size,
+                             const gfx::Rect& content_area,
+                             const gfx::Point& physical_offsets,
+                             DidPrintDocumentCallback callback,
+                             mojom::PrintCompositor::Status status,
+                             base::ReadOnlySharedMemoryRegion region);
 
   // Helper for mojom::PrintManagerHost handling.
   void OnDidPrintDocument(PrintManager::DidPrintDocumentCallback callback,
