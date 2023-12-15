@@ -4,6 +4,7 @@
 
 
 from pylib.gtest import gtest_test_instance
+from pylib.hostside import hostside_test_instance
 from pylib.instrumentation import instrumentation_test_instance
 from pylib.junit import junit_test_instance
 from pylib.monkey import monkey_test_instance
@@ -15,6 +16,9 @@ def CreateTestInstance(args, error_func):
   if args.command == 'gtest':
     return gtest_test_instance.GtestTestInstance(
         args, device_dependencies.GetDataDependencies, error_func)
+  if args.command == 'hostside':
+    return hostside_test_instance.HostsideTestInstance(
+        args, error_func)
   if args.command == 'instrumentation':
     return instrumentation_test_instance.InstrumentationTestInstance(
         args, device_dependencies.GetDataDependencies, error_func)

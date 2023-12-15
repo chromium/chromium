@@ -168,6 +168,8 @@ pylib/constants/__init__.py
 pylib/constants/host_paths.py
 pylib/gtest/__init__.py
 pylib/gtest/gtest_test_instance.py
+pylib/hostside/__init__.py
+pylib/hostside/hostside_test_instance.py
 pylib/instrumentation/__init__.py
 pylib/instrumentation/instrumentation_parser.py
 pylib/instrumentation/instrumentation_test_instance.py
@@ -190,6 +192,7 @@ pylib/local/emulator/proto/avd_pb2.py
 pylib/local/local_test_server_spawner.py
 pylib/local/machine/__init__.py
 pylib/local/machine/local_machine_environment.py
+pylib/local/machine/local_machine_hostside_test_run.py
 pylib/local/machine/local_machine_junit_test_run.py
 pylib/monkey/__init__.py
 pylib/monkey/monkey_test_instance.py

@@ -737,6 +737,61 @@ def AddSkiaGoldTestOptions(parser):
       'used in case a Gold outage occurs and cannot be fixed quickly.')
 
 
+def AddHostsideTestOptions(parser):
+  """Adds hostside test options to |parser|."""
+
+  parser = parser.add_argument_group('hostside arguments')
+
+  parser.add_argument(
+      '-s', '--test-suite', required=True,
+      help='Hostside test suite to run.')
+  parser.add_argument(
+      '--test-apk-as-instant',
+      action='store_true',
+      help='Install the test apk as an instant app. '
+      'Instant apps run in a more restrictive execution environment.')
+  parser.add_argument(
+      '--additional-apk',
+      action='append',
+      dest='additional_apks',
+      default=[],
+      type=_RealPath,
+      help='Additional apk that must be installed on '
+           'the device when the tests are run')
+  parser.add_argument(
+      '--use-webview-provider',
+      type=_RealPath, default=None,
+      help='Use this apk as the webview provider during test. '
+           'The original provider will be restored if possible, '
+           "on Nougat the provider can't be determined and so "
+           'the system will choose the default provider.')
+  parser.add_argument(
+      '--tradefed-executable',
+      type=_RealPath, default=None,
+      help='Location of the cts-tradefed script')
+  parser.add_argument(
+      '--tradefed-aapt-path',
+      type=_RealPath, default=None,
+      help='Location of the directory containing aapt binary')
+  parser.add_argument(
+      '--tradefed-adb-path',
+      type=_RealPath, default=None,
+      help='Location of the directory containing adb binary')
+  # The below arguments are not used, but allow us to pass the same arguments
+  # from run_cts.py regardless of type of run (instrumentation/hostside)
+  parser.add_argument(
+      '--apk-under-test',
+      help=argparse.SUPPRESS)
+  parser.add_argument(
+      '--use-apk-under-test-flags-file',
+      action='store_true',
+      help=argparse.SUPPRESS)
+  parser.add_argument(
+      '-E', '--exclude-annotation',
+      dest='exclude_annotation_str',
+      help=argparse.SUPPRESS)
+
+
 def AddJUnitTestOptions(parser):
   """Adds junit test options to |parser|."""
 
@@ -885,7 +940,7 @@ def _RunPythonTests(args):
 
 
 _DEFAULT_PLATFORM_MODE_TESTS = [
-    'gtest', 'instrumentation', 'junit', 'linker', 'monkey'
+    'gtest', 'hostside', 'instrumentation', 'junit', 'linker', 'monkey'
 ]
 
 
@@ -955,6 +1010,7 @@ def _SinkTestResult(test_result, test_file_name, result_sink_client):
 _SUPPORTED_IN_PLATFORM_MODE = [
   # TODO(jbudorick): Add support for more test types.
   'gtest',
+  'hostside',
   'instrumentation',
   'junit',
   'linker',
@@ -1307,6 +1363,14 @@ def main():
   AddGTestOptions(subp)
   AddTracingOptions(subp)
   AddCommandLineOptions(subp)
+
+  subp = command_parsers.add_parser(
+      'hostside',
+      help='Webview CTS host-side tests')
+  AddCommonOptions(subp)
+  AddDeviceOptions(subp)
+  AddEmulatorOptions(subp)
+  AddHostsideTestOptions(subp)
 
   subp = command_parsers.add_parser(
       'instrumentation',
