@@ -14,6 +14,7 @@
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/test/ash_test_base.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -294,27 +295,38 @@ TEST_F(ArcUtilTest, IsArcVmDevConfIgnored) {
   EXPECT_TRUE(IsArcVmDevConfIgnored());
 }
 
-TEST_F(ArcUtilTest, GetArcVmUreadaheadMode) {
+TEST_F(ArcUtilTest, GetArcUreadaheadModeVmSwitch) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
+  const char* mode = ash::switches::kArcVmUreadaheadMode;
 
   command_line->InitFromArgv({""});
-  EXPECT_EQ(ArcVmUreadaheadMode::READAHEAD, GetArcVmUreadaheadMode());
-
-  command_line->InitFromArgv({"", "--arc-disable-ureadahead"});
-  EXPECT_EQ(ArcVmUreadaheadMode::DISABLED, GetArcVmUreadaheadMode());
-
-  command_line->InitFromArgv(
-      {"", "--arc-disable-ureadahead", "--arcvm-ureadahead-mode=readahead"});
-  EXPECT_EQ(ArcVmUreadaheadMode::READAHEAD, GetArcVmUreadaheadMode());
+  EXPECT_EQ(ArcUreadaheadMode::READAHEAD, GetArcUreadaheadMode(mode));
 
   command_line->InitFromArgv({"", "--arcvm-ureadahead-mode=readahead"});
-  EXPECT_EQ(ArcVmUreadaheadMode::READAHEAD, GetArcVmUreadaheadMode());
+  EXPECT_EQ(ArcUreadaheadMode::READAHEAD, GetArcUreadaheadMode(mode));
 
   command_line->InitFromArgv({"", "--arcvm-ureadahead-mode=generate"});
-  EXPECT_EQ(ArcVmUreadaheadMode::GENERATE, GetArcVmUreadaheadMode());
+  EXPECT_EQ(ArcUreadaheadMode::GENERATE, GetArcUreadaheadMode(mode));
 
   command_line->InitFromArgv({"", "--arcvm-ureadahead-mode=disabled"});
-  EXPECT_EQ(ArcVmUreadaheadMode::DISABLED, GetArcVmUreadaheadMode());
+  EXPECT_EQ(ArcUreadaheadMode::DISABLED, GetArcUreadaheadMode(mode));
+}
+
+TEST_F(ArcUtilTest, GetArcUreadaheadModeContainerSwitch) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  const char* mode = ash::switches::kArcHostUreadaheadMode;
+
+  command_line->InitFromArgv({""});
+  EXPECT_EQ(ArcUreadaheadMode::READAHEAD, GetArcUreadaheadMode(mode));
+
+  command_line->InitFromArgv({"", "--arc-host-ureadahead-mode=readahead"});
+  EXPECT_EQ(ArcUreadaheadMode::READAHEAD, GetArcUreadaheadMode(mode));
+
+  command_line->InitFromArgv({"", "--arc-host-ureadahead-mode=generate"});
+  EXPECT_EQ(ArcUreadaheadMode::GENERATE, GetArcUreadaheadMode(mode));
+
+  command_line->InitFromArgv({"", "--arc-host-ureadahead-mode=disabled"});
+  EXPECT_EQ(ArcUreadaheadMode::DISABLED, GetArcUreadaheadMode(mode));
 }
 
 TEST_F(ArcUtilTest, UreadaheadDefault) {

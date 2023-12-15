@@ -95,10 +95,10 @@ const char kArcDisableDownloadProvider[] = "arc-disable-download-provider";
 // Used in autotest to disable GMS-core caches which is on by default.
 const char kArcDisableGmsCoreCache[] = "arc-disable-gms-core-cache";
 
-// Flag that disables ARC locale sync with Android container. Used in autotest
+// Flag that disables ARC locale sync with Android Container. Used in autotest
 // to prevent conditions when certain apps, including Play Store may get
 // restarted. Restarting Play Store may cause random test failures. Enabling
-// this flag would also forces ARC container to use 'en-US' as a locale and
+// this flag would also forces ARC Container to use 'en-US' as a locale and
 // 'en-US,en' as preferred languages.
 const char kArcDisableLocaleSync[] = "arc-disable-locale-sync";
 
@@ -185,12 +185,21 @@ const char kPrivacyPolicyHostForTests[] = "privacy-policy-host-for-tests";
 // readahead (default) - used during production and is equivalent to no switch
 //                       being set. This is used in tast test to explicitly turn
 //                       on guest ureadahead (see |kArcDisableUreadahead|).
-// generate - used during Android PFQ data collector to pre-generate pack file
+// generate - used during Android Uprev data collector to pre-generate pack file
 //            and upload to Google Cloud as build artifact for CrOS build image.
 // disabled - used for test purpose to disable ureadahead during ARCVM boot.
 //            note, |kArcDisableUreadahead| also disables both, guest and host
 //            parts of ureadahead.
 const char kArcVmUreadaheadMode[] = "arcvm-ureadahead-mode";
+
+// Sets the mode of operation for ureadahead during ARC Container boot.
+// readahead (default) - used during production and is equivalent to no switch
+//                       being set.
+// generate - used during Android Uprev data collector to pre-generate pack file
+//            and upload to Google Cloud as build artifact for CrOS build image.
+// disabled - used for test purpose to disable ureadahead during ARC Container
+// boot.
+const char kArcHostUreadaheadMode[] = "arc-host-ureadahead-mode";
 
 // Madvises the kernel to use Huge Pages for guest memory.
 const char kArcVmUseHugePages[] = "arcvm-use-hugepages";

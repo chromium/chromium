@@ -62,6 +62,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcTosHostForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPrivacyPolicyHostForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcVmMountDebugFs[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcVmUreadaheadMode[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcHostUreadaheadMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcVmUseHugePages[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshClearFastInkBuffer[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshBypassGlanceablesPref[];

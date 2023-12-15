@@ -490,20 +490,22 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       break;
   }
 
-  const ArcVmUreadaheadMode mode = GetArcVmUreadaheadMode();
+  const ArcUreadaheadMode mode =
+      GetArcUreadaheadMode(ash::switches::kArcVmUreadaheadMode);
   switch (mode) {
     using StartArcVmRequest = vm_tools::concierge::StartArcVmRequest;
-    case ArcVmUreadaheadMode::READAHEAD:
+    case ArcUreadaheadMode::READAHEAD:
       request.set_ureadahead_mode(StartArcVmRequest::UREADAHEAD_MODE_READAHEAD);
       break;
-    case ArcVmUreadaheadMode::GENERATE:
+    case ArcUreadaheadMode::GENERATE:
       request.set_ureadahead_mode(StartArcVmRequest::UREADAHEAD_MODE_GENERATE);
       break;
-    case ArcVmUreadaheadMode::DISABLED:
+    case ArcUreadaheadMode::DISABLED:
       request.set_ureadahead_mode(StartArcVmRequest::UREADAHEAD_MODE_DISABLED);
       break;
+    default:
+      NOTREACHED_NORETURN();
   }
-
   return request;
 }
 

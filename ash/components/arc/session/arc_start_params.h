@@ -31,6 +31,15 @@ struct StartParams {
     M16G,
   };
 
+  enum HostUreadaheadMode {
+    // By default, ureadahead is in readahead mode.
+    MODE_READAHEAD = 0,
+    // Ureadahead is in generate mode.
+    MODE_GENERATE = 1,
+    // Ureadahead is in disabled mode.
+    MODE_DISABLED = 2,
+  };
+
   StartParams();
 
   StartParams(const StartParams&) = delete;
@@ -52,6 +61,8 @@ struct StartParams {
       PlayStoreAutoUpdate::AUTO_UPDATE_DEFAULT;
 
   DalvikMemoryProfile dalvik_memory_profile = DalvikMemoryProfile::DEFAULT;
+
+  HostUreadaheadMode host_ureadahead_mode = HostUreadaheadMode::MODE_READAHEAD;
 
   // Experiment flag for ARC Custom Tabs.
   bool arc_custom_tabs_experiment = false;

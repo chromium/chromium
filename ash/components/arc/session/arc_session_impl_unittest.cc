@@ -1024,5 +1024,41 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ArcSessionImplDalvikMemoryProfileTest,
                          ::testing::ValuesIn(kDalvikMemoryProfileVariant));
 
+struct HostUreadaheadModeState {
+  const char* mode_switch;
+  const StartParams::HostUreadaheadMode expected_mode;
+};
+
+constexpr HostUreadaheadModeState kHostUreadaheadMode[] = {
+    {"readahead", StartParams::HostUreadaheadMode::MODE_READAHEAD},
+    {"generate", StartParams::HostUreadaheadMode::MODE_GENERATE},
+    {"disabled", StartParams::HostUreadaheadMode::MODE_DISABLED},
+};
+
+class ArcSessionImplHostUreadaheadModeTest
+    : public ArcSessionImplTest,
+      public ::testing::WithParamInterface<HostUreadaheadModeState> {};
+
+TEST_P(ArcSessionImplHostUreadaheadModeTest, HostUreadaheadModes) {
+  auto arc_session = CreateArcSession();
+  const HostUreadaheadModeState state = GetParam();
+
+  if (state.mode_switch) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitchASCII(ash::switches::kArcHostUreadaheadMode,
+                                    state.mode_switch);
+  }
+
+  arc_session->StartMiniInstance();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      state.expected_mode,
+      GetClient(arc_session.get())->last_start_params().host_ureadahead_mode);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ArcSessionImplHostUreadaheadModeTest,
+                         ::testing::ValuesIn(kHostUreadaheadMode));
+
 }  // namespace
 }  // namespace arc
