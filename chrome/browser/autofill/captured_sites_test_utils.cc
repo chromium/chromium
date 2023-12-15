@@ -132,11 +132,10 @@ and then write commands into it:
                                   command_file_path.AsUTF8Unsafe().c_str());
 }
 
-absl::optional<autofill::ServerFieldType> StringToFieldType(
-    const std::string& str) {
+absl::optional<autofill::FieldType> StringToFieldType(const std::string& str) {
   static auto map = []() {
-    std::map<std::string, autofill::ServerFieldType> map;
-    for (autofill::ServerFieldType field_type : autofill::kAllFieldTypes) {
+    std::map<std::string, autofill::FieldType> map;
+    for (autofill::FieldType field_type : autofill::kAllFieldTypes) {
       map[autofill::AutofillType(field_type).ToString()] = field_type;
     }
     for (autofill::HtmlFieldType html_field_type :
@@ -825,8 +824,7 @@ ProfileDataController::~ProfileDataController() = default;
 bool ProfileDataController::AddAutofillProfileInfo(
     const std::string& field_type,
     const std::string& field_value) {
-  absl::optional<autofill::ServerFieldType> type =
-      StringToFieldType(field_type);
+  absl::optional<autofill::FieldType> type = StringToFieldType(field_type);
   if (!type.has_value()) {
     ADD_FAILURE() << "Unable to recognize autofill field type '" << field_type
                   << "'!";
@@ -2387,7 +2385,7 @@ bool TestRecipeReplayChromeFeatureActionExecutor::AutofillForm(
     const std::vector<std::string>& iframe_path,
     const int attempts,
     content::RenderFrameHost* frame,
-    absl::optional<autofill::ServerFieldType> triggered_field_type) {
+    absl::optional<autofill::FieldType> triggered_field_type) {
   ADD_FAILURE() << "TestRecipeReplayChromeFeatureActionExecutor::AutofillForm "
                    "is not implemented!";
   return false;

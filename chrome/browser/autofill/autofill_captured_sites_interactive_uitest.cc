@@ -159,12 +159,11 @@ class AutofillCapturedSitesInteractiveTest
       public ::testing::WithParamInterface<CapturedSiteParams> {
  public:
   // TestRecipeReplayChromeFeatureActionExecutor
-  bool AutofillForm(
-      const std::string& focus_element_css_selector,
-      const std::vector<std::string>& iframe_path,
-      const int attempts,
-      content::RenderFrameHost* frame,
-      absl::optional<ServerFieldType> triggered_field_type) override {
+  bool AutofillForm(const std::string& focus_element_css_selector,
+                    const std::vector<std::string>& iframe_path,
+                    const int attempts,
+                    content::RenderFrameHost* frame,
+                    absl::optional<FieldType> triggered_field_type) override {
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(frame);
     auto& autofill_manager = static_cast<BrowserAutofillManager&>(

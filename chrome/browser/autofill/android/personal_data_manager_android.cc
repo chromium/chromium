@@ -302,7 +302,7 @@ PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest(
     bool include_country_in_label) {
   // The full name is not included in the label for shipping address. It is
   // added separately instead.
-  static constexpr ServerFieldType kLabelFields[] = {
+  static constexpr FieldType kLabelFields[] = {
       COMPANY_NAME,         ADDRESS_HOME_LINE1,
       ADDRESS_HOME_LINE2,   ADDRESS_HOME_DEPENDENT_LOCALITY,
       ADDRESS_HOME_CITY,    ADDRESS_HOME_STATE,
@@ -649,8 +649,7 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileLabels(
     minimal_fields_shown = suggested_fields.size();
   }
 
-  ServerFieldType excluded_field =
-      include_name_in_label ? UNKNOWN_TYPE : NAME_FULL;
+  FieldType excluded_field = include_name_in_label ? UNKNOWN_TYPE : NAME_FULL;
 
   std::vector<std::u16string> labels;
   // TODO(crbug.com/1487119): Replace by `profiles` when `GetProfilesToSuggest`

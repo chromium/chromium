@@ -29,25 +29,25 @@ namespace {
 
 // Defines which types to load from the Personal data manager and add as field
 // to the address sheet. Order matters.
-constexpr ServerFieldType kTypesToInclude[] = {
-    ServerFieldType::NAME_FULL,
-    ServerFieldType::COMPANY_NAME,
-    ServerFieldType::ADDRESS_HOME_LINE1,
-    ServerFieldType::ADDRESS_HOME_LINE2,
-    ServerFieldType::ADDRESS_HOME_ZIP,
-    ServerFieldType::ADDRESS_HOME_CITY,
-    ServerFieldType::ADDRESS_HOME_STATE,
-    ServerFieldType::ADDRESS_HOME_COUNTRY,
-    ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
-    ServerFieldType::EMAIL_ADDRESS,
+constexpr FieldType kTypesToInclude[] = {
+    FieldType::NAME_FULL,
+    FieldType::COMPANY_NAME,
+    FieldType::ADDRESS_HOME_LINE1,
+    FieldType::ADDRESS_HOME_LINE2,
+    FieldType::ADDRESS_HOME_ZIP,
+    FieldType::ADDRESS_HOME_CITY,
+    FieldType::ADDRESS_HOME_STATE,
+    FieldType::ADDRESS_HOME_COUNTRY,
+    FieldType::PHONE_HOME_WHOLE_NUMBER,
+    FieldType::EMAIL_ADDRESS,
 };
 
 void AddProfileInfoAsSelectableField(UserInfo* info,
                                      const AutofillProfile* profile,
-                                     ServerFieldType type) {
+                                     FieldType type) {
   std::u16string field = profile->GetRawInfo(type);
-  if (type == ServerFieldType::NAME_MIDDLE && field.empty()) {
-    field = profile->GetRawInfo(ServerFieldType::NAME_MIDDLE_INITIAL);
+  if (type == FieldType::NAME_MIDDLE && field.empty()) {
+    field = profile->GetRawInfo(FieldType::NAME_MIDDLE_INITIAL);
   }
   info->add_field(AccessorySheetField(
       /*display_text=*/field, /*text_to_fill=*/field,
@@ -57,7 +57,7 @@ void AddProfileInfoAsSelectableField(UserInfo* info,
 
 UserInfo TranslateProfile(const AutofillProfile* profile) {
   UserInfo info;
-  for (ServerFieldType field_type : kTypesToInclude) {
+  for (FieldType field_type : kTypesToInclude) {
     AddProfileInfoAsSelectableField(&info, profile, field_type);
   }
   return info;

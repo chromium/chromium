@@ -221,7 +221,7 @@ class TestRecipeReplayChromeFeatureActionExecutor {
       const std::vector<std::string>& iframe_path,
       const int attempts,
       content::RenderFrameHost* frame,
-      absl::optional<autofill::ServerFieldType> triggered_field_type);
+      absl::optional<autofill::FieldType> triggered_field_type);
   virtual bool AddAutofillProfileInfo(const std::string& field_type,
                                       const std::string& field_value);
   virtual bool SetupAutofillProfile();
