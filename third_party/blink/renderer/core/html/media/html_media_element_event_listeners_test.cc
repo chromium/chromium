@@ -370,6 +370,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, OneTimeupdatePerSeek) {
 
   auto* timeupdate_handler = MakeGarbageCollected<MockEventListener>();
   Video()->addEventListener(event_type_names::kTimeupdate, timeupdate_handler);
+  testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 
   // Simulate conditions where playback is possible.
   SimulateNetworkState(HTMLMediaElement::kNetworkIdle);

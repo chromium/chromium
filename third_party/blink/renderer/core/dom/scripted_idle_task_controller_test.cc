@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/scoped_scheduler_overrider.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -188,6 +189,7 @@ class MockIdleTask : public IdleTask {
 }  // namespace
 
 TEST(ScriptedIdleTaskControllerTest, RunCallback) {
+  test::TaskEnvironment task_environment;
   MockScriptedIdleTaskControllerScheduler scheduler(ShouldYield(false));
   ScopedSchedulerOverrider scheduler_overrider(&scheduler,
                                                scheduler.TaskRunner());
@@ -210,6 +212,7 @@ TEST(ScriptedIdleTaskControllerTest, RunCallback) {
 }
 
 TEST(ScriptedIdleTaskControllerTest, DontRunCallbackWhenAskedToYield) {
+  test::TaskEnvironment task_environment;
   MockScriptedIdleTaskControllerScheduler scheduler(ShouldYield(true));
   ScopedSchedulerOverrider scheduler_overrider(&scheduler,
                                                scheduler.TaskRunner());
@@ -232,6 +235,7 @@ TEST(ScriptedIdleTaskControllerTest, DontRunCallbackWhenAskedToYield) {
 }
 
 TEST(ScriptedIdleTaskControllerTest, RunCallbacksAsyncWhenUnpaused) {
+  test::TaskEnvironment task_environment;
   MockScriptedIdleTaskControllerScheduler scheduler(ShouldYield(true));
   ScopedSchedulerOverrider scheduler_overrider(&scheduler,
                                                scheduler.TaskRunner());

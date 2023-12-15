@@ -5,10 +5,12 @@
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(SpaceSplitStringTest, Set) {
+  test::TaskEnvironment task_environment;
   SpaceSplitString tokens;
 
   tokens.Set(AtomicString("foo"));
@@ -34,6 +36,7 @@ TEST(SpaceSplitStringTest, Set) {
 }
 
 TEST(SpaceSplitStringTest, SerializeToString) {
+  test::TaskEnvironment task_environment;
   SpaceSplitString tokens;
 
   EXPECT_EQ("", tokens.SerializeToString());

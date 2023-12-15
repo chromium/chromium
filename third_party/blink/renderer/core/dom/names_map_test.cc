@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/names_map.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
 namespace blink {
@@ -26,6 +27,7 @@ void ExpectEqMap(const ExpectedMap& exp, NamesMap& map) {
 }
 
 TEST(NamesMapTest, Set) {
+  test::TaskEnvironment task_environment;
   // This is vector of pairs where first is an expected output and second is a
   // vector of inputs, all of which should produce that output.
   Vector<std::pair<ExpectedMap, Vector<String>>> test_cases({
@@ -127,6 +129,7 @@ TEST(NamesMapTest, Set) {
 }
 
 TEST(NamesMapTest, SetNull) {
+  test::TaskEnvironment task_environment;
   NamesMap map;
   map.Set(AtomicString("foo bar"));
   map.Set(g_null_atom);
