@@ -43,24 +43,6 @@ namespace offline_pages {
 
 namespace {
 
-std::string AddHistogramSuffix(const ClientId& client_id,
-                               const char* histogram_name) {
-  if (client_id.name_space.empty()) {
-    NOTREACHED();
-    return histogram_name;
-  }
-  std::string adjusted_histogram_name(histogram_name);
-  adjusted_histogram_name += "." + client_id.name_space;
-  return adjusted_histogram_name;
-}
-
-void RecordErrorCauseUMA(const ClientId& client_id, int error_code) {
-  base::UmaHistogramSparse(
-      AddHistogramSuffix(client_id,
-                         "OfflinePages.Background.LoadingErrorStatusCode"),
-      error_code);
-}
-
 void HandleLoadTerminationCancel(
     Offliner::CompletionCallback completion_callback,
     const SavePageRequest& canceled_request) {
@@ -294,8 +276,6 @@ void BackgroundLoaderOffliner::DidFinishNavigation(
   // If there was an error of any kind (certificate, client, DNS, etc),
   // Mark as error page. Resetting here causes RecordNavigationMetrics to crash.
   if (navigation_handle->IsErrorPage()) {
-    RecordErrorCauseUMA(pending_request_->client_id(),
-                        static_cast<int>(navigation_handle->GetNetErrorCode()));
     page_load_state_ = RETRIABLE_NET_ERROR;
   } else {
     int status_code = 200;  // Default to OK.
@@ -308,7 +288,6 @@ void BackgroundLoaderOffliner::DidFinishNavigation(
     // 400+ codes are client and server errors.
     // We skip 418 because it's a teapot.
     if (status_code == 301 || (status_code >= 400 && status_code != 418)) {
-      RecordErrorCauseUMA(pending_request_->client_id(), status_code);
       page_load_state_ = RETRIABLE_HTTP_ERROR;
     }
   }

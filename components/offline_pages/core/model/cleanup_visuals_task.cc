@@ -55,8 +55,6 @@ void CleanupVisualsTask::Run() {
 
 void CleanupVisualsTask::Complete(Result result) {
   TaskComplete();
-  UMA_HISTOGRAM_COUNTS_1000("OfflinePages.CleanupThumbnails.Count",
-                            result.removed_rows);
   std::move(complete_callback_).Run(result.success);
 }
 

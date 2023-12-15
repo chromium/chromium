@@ -90,15 +90,6 @@ SavePageResult AddPageResultToSavePageResult(AddPageResult add_page_result) {
   return SavePageResult::STORE_FAILURE;
 }
 
-void ReportPageHistogramAfterSuccessfulSaving(
-    const OfflinePageItem& offline_page,
-    base::Time save_time) {
-  base::UmaHistogramCustomCounts(
-      model_utils::AddHistogramSuffix(offline_page.client_id.name_space,
-                                      "OfflinePages.PageSize"),
-      offline_page.file_size / 1024, 1, 10000, 50);
-}
-
 void ReportSavedPagesCount(MultipleOfflinePageItemCallback callback,
                            const MultipleOfflinePageItemResult& all_items) {
   std::move(callback).Run(all_items);
@@ -472,9 +463,6 @@ void OfflinePageModelTaskified::OnAddPageForSavePageDone(
   InformSavePageDone(std::move(callback), save_page_result,
                      page_attempted.client_id, offline_id);
   if (save_page_result == SavePageResult::SUCCESS) {
-    base::Time successful_finish_time = OfflineTimeNow();
-    ReportPageHistogramAfterSuccessfulSaving(page_attempted,
-                                             successful_finish_time);
     // TODO(romax): Just keep the same with logic in OPMImpl (which was wrong).
     // This should be fixed once we have the new strategy for clearing pages.
     if (GetPolicy(page_attempted.client_id.name_space).pages_allowed_per_url !=
