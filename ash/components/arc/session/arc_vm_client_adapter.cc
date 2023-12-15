@@ -58,6 +58,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
@@ -458,6 +459,12 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   request.set_enable_vmm_swap(
       base::FeatureList::IsEnabled(kVmmSwapPolicy) ||
       base::FeatureList::IsEnabled(kVmmSwapKeyboardShortcut));
+
+#if defined(ARCH_CPU_X86_64)
+  if (base::FeatureList::IsEnabled(kEnableArcS2Idle)) {
+    request.set_enable_s2idle(true);
+  }
+#endif  // defined(ARCH_CPU_X86_64)
 
   auto orientation = display::PanelOrientation::kNormal;
   if (auto* screen = display::Screen::GetScreen()) {
