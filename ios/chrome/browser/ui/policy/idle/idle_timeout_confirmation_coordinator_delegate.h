@@ -7,9 +7,9 @@
 
 @protocol IdleTimeoutConfirmationCoordinatorDelegate <NSObject>
 
-// Called when the presentation did complete. Usually called when the action the
-// user did on the prompt is completed (e.g. after tapping on Continue). Will
-// load enterprise learn more page if `showLearnMoreAfterward` is YES.
+// Called when the presentation did complete and should be dismissed. Usually
+// called when the user clicks the  `Continue Using Chrome` button or when the
+// dialog expires.
 - (void)stopPresentingAndRunActionsAfterwards:(BOOL)doRunActions;
 
 @end

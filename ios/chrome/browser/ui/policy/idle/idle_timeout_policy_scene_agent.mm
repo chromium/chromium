@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 #import <UIKit/UIKit.h>
 
+#import "base/time/time.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -17,7 +18,11 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/ui/policy/idle/idle_timeout_confirmation_coordinator.h"
 #import "ios/chrome/browser/ui/policy/idle/idle_timeout_confirmation_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/policy/idle/idle_timeout_policy_utils.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -61,6 +66,12 @@
   // This is used to show the snackbar on the same scene that shows the timeout
   // confirmation dialog.
   BOOL _pendingDisplayingSnackbar;
+
+  // Coordinator for the idle timeout confirmation dialog.
+  IdleTimeoutConfirmationCoordinator* _idleTimeoutConfirmationCoordinator;
+
+  // The actions that will run on idle timeout.
+  enterprise_idle::ActionSet _actions;
 }
 
 - (instancetype)
@@ -121,6 +132,8 @@
 
 - (void)onIdleTimeoutInForeground {
   _idleTriggerTime = base::Time::Now();
+  _actions =
+      enterprise_idle::GetActionSet([self prefService], [self authService]);
   [self maybeShowIdleTimeoutConfirmationDialog];
 }
 
@@ -129,6 +142,8 @@
   // reforeground. The differentiating factor in this case will be which scene
   // enters foreground first.
   _pendingDisplayingSnackbar = YES;
+  _actions =
+      enterprise_idle::GetActionSet([self prefService], [self authService]);
   // TODO(b/301676922): Show loading window if data will be cleared.
 }
 
@@ -145,9 +160,11 @@
 - (void)stopPresentingAndRunActionsAfterwards:(BOOL)doRunActions {
   _idleService->OnIdleTimeoutDialogPresented();
   [self stopIdleTimeoutConfirmationCoordinator];
-  _pendingDisplayingSnackbar = doRunActions;
   if (doRunActions) {
+    _pendingDisplayingSnackbar = YES;
     _idleService->RunActions();
+  } else {
+    _pendingDisplayingSnackbar = NO;
   }
 }
 
@@ -164,6 +181,15 @@
   [self.sceneState.appState removeObserver:self];
 }
 
+- (AuthenticationService*)authService {
+  return AuthenticationServiceFactory::GetForBrowserState(
+      _mainBrowser->GetBrowserState());
+}
+
+- (PrefService*)prefService {
+  return _mainBrowser->GetBrowserState()->GetPrefs();
+}
+
 // Returns whether the scene and app states allow for the idle timeout snackbar
 // to show if idle actions have run.
 - (BOOL)isUIAvailableToShowSnackbar {
@@ -172,14 +198,10 @@
     return NO;
   }
 
-  if (!_pendingDisplayingSnackbar) {
-    // Return NO if scene if this is not the agent that should display the
-    // snackbar. If there was a timeout dialog, only one agent would have this
-    // state.
-    return NO;
-  }
-
-  return YES;
+  // Return whether this is the agent that should display the
+  // snackbar. If there was a timeout dialog, only one agent would have this
+  // state set.
+  return _pendingDisplayingSnackbar;
 }
 
 // Shows the actions ran snackbar using the snackbar command.
@@ -197,13 +219,14 @@
     return;
   }
 
-  // TODO(b/301676922): Set the string based on the actions running.
-  NSString* messageText = @"Actions Ran!";
+  std::optional<int> messageId =
+      enterprise_idle::GetIdleTimeoutActionsSnackbarMessageId(_actions);
+  CHECK(messageId) << "There is no snackbar message for the set of actions";
+  NSString* messageText = l10n_util::GetNSString(*messageId);
   MDCSnackbarMessage* message =
       [MDCSnackbarMessage messageWithText:messageText];
   [_snackbarHandler showSnackbarMessage:message];
 
-  _pendingDisplayingSnackbar = NO;
   _idleService->OnIdleTimeoutSnackbarPresented();
 }
 
@@ -262,15 +285,24 @@
   }];
 }
 
-// Shows the notification dialog on the active view controller.
+// Shows the notification dialog for the account on the `viewController`
 - (void)showIdleTimeoutConfirmation {
-  // TODO: Init and start idleTimeoutConfirmationCoordinator.
+  _idleTimeoutConfirmationCoordinator =
+      [[IdleTimeoutConfirmationCoordinator alloc]
+          initWithBaseViewController:[_sceneUIProvider activeViewController]
+                             browser:_mainBrowser];
+  _idleTimeoutConfirmationCoordinator.delegate = self;
+  _idleTimeoutConfirmationCoordinator.triggerTime = _idleTriggerTime;
+  [_idleTimeoutConfirmationCoordinator start];
 }
 
 // Dismisses the idle timeout confirmation dialog.
 - (void)stopIdleTimeoutConfirmationCoordinator {
   _UIBlocker.reset();
-  // TODO: Stop and reset idleTimeoutConfirmationCoordinator.
+  if (_idleTimeoutConfirmationCoordinator) {
+    [_idleTimeoutConfirmationCoordinator stop];
+    _idleTimeoutConfirmationCoordinator = nil;
+  }
 }
 
 @end

@@ -23,7 +23,7 @@ class Browser;
 // 2. To show a snackbar after IdleTimeoutActions have run.
 // 3. To show a loading window on start-up if data is being cleared.
 // 4. To dismiss the timeout confirmation dialog when the app is backgrounded
-// with no scenes left in the foreground.
+// with no scenes left in foreground.
 @interface IdleTimeoutPolicySceneAgent : ObservingSceneAgent
 
 - (instancetype)

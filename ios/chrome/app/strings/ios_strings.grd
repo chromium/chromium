@@ -5576,6 +5576,54 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_UNITS_MEASUREMENTS_VOLUME" desc="Title of the button that allows the user to use and convert volume type units" meaning="Button menu entry that allows the user to change the unit category to Volume.">
         Volume
       </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_SIGNOUT_TITLE" desc="Title of the idle timeout policy dialog when the user is about to be signed out.">
+          You will be signed out
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_TITLE" desc="Title of the idle timeout policy dialog when tabs are about to be closed.">
+          Your tabs will be closed
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_CLEAR_DATA_TITLE" desc="Title of the idle timeout policy dialog when browsing data is about to be cleared.">
+          Your browsing data will be deleted
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_SIGNOUT_TITLE" desc="Title of the idle timeout policy dialog when tabs are about to be closed and the user to be signed out.">
+          You will be signed out and tabs will be closed
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_CLEAR_DATA_TITLE" desc="Title of the idle timeout policy dialog when tabs are about to be closed and browsing data about to be deleted.">
+          Your tabs will be closed and browsing data deleted
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_CLEAR_DATA_AND_SIGNOUT_TITLE" desc="Title of the idle timeout policy dialog when browsing data is about to be cleared and the user will be signed out.">
+          You will be signed out and browsing data will be deleted
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_ALL_ACTIONS_TITLE" desc="Title of the idle timeout policy dialog when browsing data is about to be cleared, tabs will be closed and the user will be signed out.">
+          You will be signed out, tabs will be closed, browsing data deleted
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_CONFIRMATION_DIALOG_REMAINING_TIME_LABEL" desc="Time remaining until the idle timeout confirmation dialog disappears">
+          {TIME, plural,
+                  =0 {Time Remaining: {TIME} seconds}
+                  =1 {Time Remaining: {TIME} second}
+                  other {Time Remaining: {TIME} seconds}}
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_SIGNOUT_SNACKBAR_MESSAGE" desc="Title of the idle timeout policy dialog when the user is about to be signed out.">
+          You were signed out
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_SNACKBAR_MESSAGE" desc="Title of the idle timeout policy dialog when tabs are about to be closed.">
+          Tabs were closed
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_CLEAR_DATA_SNACKBAR_MESSAGE" desc="Title of the idle timeout policy dialog when browsing data is about to be cleared.">
+          Browsing data was deleted
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_SIGNOUT_SNACKBAR_MESSAGE" desc="Title of the idle timeout policy dialog when tabs are about to be closed and the user to be signed out.">
+          Tabs were closed; you were signed out
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_CLEAR_DATA_SNACKBAR_MESSAGE" desc="Title of the idle timeout policy dialog when tabs are about to be closed and browsing data about to be deleted.">
+          Tabs were closed and browsing data deleted
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_CLEAR_DATA_AND_SIGNOUT_SNACKBAR_MESSAGE" desc="Title of the idle timeout policy dialog when browsing data is about to be cleared and the user will be signed out.">
+          You were signed out; browsing data was deleted
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_ALL_ACTIONS_SNACKBAR_MESSAGE" desc="Title of the idle timeout policy dialog when browsing data is about to be cleared, tabs will be closed and the user will be signed out.">
+          Tabs were closed and browsing data was deleted. You were signed out
+      </message>
     </messages>
   </release>
 </grit>

@@ -1034,7 +1034,7 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_WIDGET_PROMO_INSTRUCTIONS_STEP_3" desc="Third step of the instructions for the Password Manager widget's installation.">
         In the Search Widgets box, enter Chrome
       </message>
-    <message name="IDS_IOS_WINDOW_COUNT_CHANGE" is_accessibility_with_no_ui="true" desc="VoiceOver text spoken when the count of visible windows changes -- note: this text is only spoken, never displayed on screen">
+      <message name="IDS_IOS_WINDOW_COUNT_CHANGE" is_accessibility_with_no_ui="true" desc="VoiceOver text spoken when the count of visible windows changes -- note: this text is only spoken, never displayed on screen">
         {count, plural,
           =1 {Now showing 1 Chrome window}
           other {Now showing {count} Chrome windows}}
@@ -1045,6 +1045,19 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL" desc="Text when a signed out user attempts to use send-tab-to-self, then sees a sign-in promo.">
         To send this tab to another device, sign in to Chrome on both devices.
       </message>
-      </messages>
+      <message name="IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA" desc="Subtitle of the idle timeout policy dialog explaining when the idle action usually happens.">
+          {THRESHOLD, plural,
+          =1 {This happens when Chrome isn't used for {THRESHOLD} minute}
+          other {This happens when Chrome isn't used for {THRESHOLD} minutes}}
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA" desc="Subtitle of the idle timeout policy dialog explaining when the idle action usually happens.">
+          {THRESHOLD, plural,
+            =1 {This happens when Chrome isn't used for {THRESHOLD} minute. This could include history and autofill.}
+            other {This happens when Chrome isn't used for {THRESHOLD} minutes. This could include history and autofill.}}
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_CONTINUE_USING_CHROME" desc="Button label to indicate browser activity and stop the browser from running idle timeout actions.">
+         Continue using Chrome
+      </message>
+    </messages>
   </release>
 </grit>
