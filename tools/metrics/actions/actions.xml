@@ -33514,6 +33514,84 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_AuthenticationFlowPerformer_ErrorDialog_Confirmed">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    This user action is triggered when the error dialog from
+    AuthenticationFlowPerformer is confirmed by the user.
+  </description>
+</action>
+
+<action name="Signin_AuthenticationFlowPerformer_ErrorDialog_Presented">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    This user action is triggered when the error dialog is presented. This user
+    action will help to understand crbug.com/1482623 using breadcrumbs.
+    TODO(crbug.com/1482623): Remove once the bug will be closed.
+  </description>
+</action>
+
+<action
+    name="Signin_AuthenticationFlowPerformer_ManagedConfirmationDialog_Canceled">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    This user action is triggered when the managed confirmation dialog from
+    AuthenticationFlowPerformer is canceled by the user.
+  </description>
+</action>
+
+<action
+    name="Signin_AuthenticationFlowPerformer_ManagedConfirmationDialog_Confirmed">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    This user action is triggered when the managed confirmation dialog from
+    AuthenticationFlowPerformer is confirmed by the user.
+  </description>
+</action>
+
+<action
+    name="Signin_AuthenticationFlowPerformer_ManagedConfirmationDialog_Presented">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    This user action is triggered when the managed confirmation dialog is
+    presented. This user action will help to understand crbug.com/1482623 using
+    breadcrumbs. TODO(crbug.com/1482623): Remove once the bug will be closed.
+  </description>
+</action>
+
+<action name="Signin_AuthenticationFlowPerformer_SwitchDialog_Canceled">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    This user action is triggered when the switch account dialog from
+    AuthenticationFlowPerformer is canceled by the user.
+  </description>
+</action>
+
+<action name="Signin_AuthenticationFlowPerformer_SwitchDialog_Confirmed">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    This user action is triggered when the switch account dialog from
+    AuthenticationFlowPerformer is confirmed by the user.
+  </description>
+</action>
+
+<action name="Signin_AuthenticationFlowPerformer_SwitchDialog_Presented">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    This user action is triggered when the switch account dialog is presented.
+    This user action will help to understand crbug.com/1482623 using
+    breadcrumbs. TODO(crbug.com/1482623): Remove once the bug will be closed.
+  </description>
+</action>
+
 <action name="Signin_BottomSheet_ClosedByCancel">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

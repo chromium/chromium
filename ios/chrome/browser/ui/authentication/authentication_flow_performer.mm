@@ -388,6 +388,9 @@ NSString* const kAuthenticationSnackbarCategory =
       [self managedConfirmationDialogContentForHostedDomain:hostedDomain
                                                 syncConsent:syncConsent];
 
+  base::RecordAction(
+      base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
+                              "ManagedConfirmationDialog_Presented"));
   _managedConfirmationAlertCoordinator =
       [[AlertCoordinator alloc] initWithBaseViewController:viewController
                                                    browser:browser
@@ -398,6 +401,10 @@ NSString* const kAuthenticationSnackbarCategory =
   __weak AlertCoordinator* weakAlert = _managedConfirmationAlertCoordinator;
 
   ProceduralBlock acceptBlock = ^{
+    base::RecordAction(
+        base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
+                                "ManagedConfirmationDialog_Confirmed"));
+
     AuthenticationFlowPerformer* strongSelf = weakSelf;
     if (!strongSelf)
       return;
@@ -419,6 +426,9 @@ NSString* const kAuthenticationSnackbarCategory =
     [[strongSelf delegate] didAcceptManagedConfirmation];
   };
   ProceduralBlock cancelBlock = ^{
+    base::RecordAction(
+        base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
+                                "ManagedConfirmationDialog_Canceled"));
     AuthenticationFlowPerformer* strongSelf = weakSelf;
     if (!strongSelf)
       return;
@@ -484,12 +494,16 @@ NSString* const kAuthenticationSnackbarCategory =
   DCHECK(!_errorAlertCoordinator);
   DCHECK(!_promptSwitchAlertCoordinator);
 
+  base::RecordAction(base::UserMetricsAction(
+      "Signin_AuthenticationFlowPerformer_ErrorDialog_Presented"));
   _errorAlertCoordinator =
       ErrorCoordinatorNoItem(error, viewController, browser);
 
   __weak AuthenticationFlowPerformer* weakSelf = self;
   __weak AlertCoordinator* weakAlert = _errorAlertCoordinator;
   ProceduralBlock dismissAction = ^{
+    base::RecordAction(base::UserMetricsAction(
+        "Signin_AuthenticationFlowPerformer_ErrorDialog_Confirmed"));
     [weakSelf alertControllerDidDisappear:weakAlert];
     if (callback) {
       callback();
@@ -743,6 +757,8 @@ NSString* const kAuthenticationSnackbarCategory =
       l10n_util::GetNSString(IDS_IOS_MANAGED_SWITCH_ACCEPT_BUTTON);
   NSString* cancelLabel = l10n_util::GetNSString(IDS_CANCEL);
 
+  base::RecordAction(base::UserMetricsAction(
+      "Signin_AuthenticationFlowPerformer_SwitchDialog_Presented"));
   _promptSwitchAlertCoordinator =
       [[AlertCoordinator alloc] initWithBaseViewController:viewController
                                                    browser:browser
@@ -752,6 +768,8 @@ NSString* const kAuthenticationSnackbarCategory =
   __weak AuthenticationFlowPerformer* weakSelf = self;
   __weak AlertCoordinator* weakAlert = _promptSwitchAlertCoordinator;
   ProceduralBlock acceptBlock = ^{
+    base::RecordAction(base::UserMetricsAction(
+        "Signin_AuthenticationFlowPerformer_SwitchDialog_Confirmed"));
     AuthenticationFlowPerformer* strongSelf = weakSelf;
     if (!strongSelf)
       return;
@@ -760,6 +778,8 @@ NSString* const kAuthenticationSnackbarCategory =
         didChooseClearDataPolicy:SHOULD_CLEAR_DATA_CLEAR_DATA];
   };
   ProceduralBlock cancelBlock = ^{
+    base::RecordAction(base::UserMetricsAction(
+        "Signin_AuthenticationFlowPerformer_SwitchDialog_Canceled"));
     AuthenticationFlowPerformer* strongSelf = weakSelf;
     if (!strongSelf)
       return;
