@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
+#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_data.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -43,6 +44,26 @@ void DeleteWallpaperSearchImage(const std::string& id,
       base::GetDeleteFileCallback(path));
 }
 
+absl::optional<HistoryEntry> GetHistoryEntryFromPrefValue(
+    const base::Value& pref_value) {
+  if (pref_value.is_dict()) {
+    const std::string* id_string =
+        pref_value.GetDict().FindString(kWallpaperSearchHistoryId);
+    if (id_string) {
+      absl::optional<base::Token> id = base::Token::FromString(*id_string);
+      if (id.has_value()) {
+        return HistoryEntry(*id);
+      }
+    }
+  }
+  return absl::nullopt;
+}
+
+base::Value::Dict GetHistoryEntryDict(const HistoryEntry& history_entry) {
+  return base::Value::Dict().Set(kWallpaperSearchHistoryId,
+                                 history_entry.id.ToString());
+}
+
 }  // namespace
 
 // static
@@ -65,13 +86,11 @@ void WallpaperSearchBackgroundManager::RemoveWallpaperSearchBackground(
     // the file there for history to use.
     bool found = false;
     for (const base::Value& entry : history) {
-      if (entry.is_dict()) {
-        const std::string* id_string =
-            entry.GetDict().FindString(kWallpaperSearchHistoryId);
-        if (id_string && *id_string == local_background_id) {
-          found = true;
-          break;
-        }
+      const auto entry_obj = GetHistoryEntryFromPrefValue(entry);
+      if (entry_obj.has_value() &&
+          entry_obj->id.ToString() == local_background_id) {
+        found = true;
+        break;
       }
     }
     if (!found) {
@@ -85,11 +104,9 @@ void WallpaperSearchBackgroundManager::ResetProfilePrefs(Profile* profile) {
   auto* pref_service = profile->GetPrefs();
   for (const auto& entry :
        pref_service->GetList(prefs::kNtpWallpaperSearchHistory)) {
-    if (entry.is_dict()) {
-      const base::Value* id = entry.GetDict().Find(kWallpaperSearchHistoryId);
-      if (id->is_string()) {
-        DeleteWallpaperSearchImage(id->GetString(), profile->GetPath());
-      }
+    const auto entry_obj = GetHistoryEntryFromPrefValue(entry);
+    if (entry_obj.has_value()) {
+      DeleteWallpaperSearchImage(entry_obj->id.ToString(), profile->GetPath());
     }
   }
   pref_service->ClearPref(prefs::kNtpWallpaperSearchHistory);
@@ -111,14 +128,9 @@ std::vector<base::Token> WallpaperSearchBackgroundManager::GetHistory() {
       pref_service_->GetList(prefs::kNtpWallpaperSearchHistory);
   std::vector<base::Token> history;
   for (auto& entry : history_list) {
-    if (entry.is_dict()) {
-      const base::Value* id = entry.GetDict().Find(kWallpaperSearchHistoryId);
-      if (id->is_string()) {
-        auto token = base::Token::FromString(id->GetString());
-        if (token.has_value()) {
-          history.push_back(token.value());
-        }
-      }
+    const auto entry_obj = GetHistoryEntryFromPrefValue(entry);
+    if (entry_obj) {
+      history.push_back(entry_obj->id);
     }
   }
   return history;
@@ -184,26 +196,27 @@ WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory() {
       ntp_custom_background_service_->GetCustomBackground();
   if (current_theme.has_value() &&
       current_theme->local_background_id.has_value()) {
+    HistoryEntry background_history_obj =
+        HistoryEntry(*current_theme->local_background_id);
+    std::string background_id_str = background_history_obj.id.ToString();
     const base::Value::List& current_history =
         pref_service_->GetList(prefs::kNtpWallpaperSearchHistory);
-    std::string background_id_str =
-        current_theme->local_background_id.value().ToString();
-    base::Value::List new_history = base::Value::List().Append(
-        base::Value::Dict().Set(kWallpaperSearchHistoryId, background_id_str));
+    base::Value::List new_history =
+        base::Value::List().Append(GetHistoryEntryDict(background_history_obj));
     // Add each value in |current_history| to |new_history| until
     // |new_history| reaches the max size of 6. Do not append the
     // value if it is the same as the id of |current_theme|.
     for (const auto& value : current_history) {
-      if (value.is_dict()) {
-        const base::Value* id = value.GetDict().Find(kWallpaperSearchHistoryId);
-        const std::string* value_str = id ? id->GetIfString() : nullptr;
-        if (value_str && *value_str != background_id_str) {
+      const auto value_obj = GetHistoryEntryFromPrefValue(value);
+      if (value_obj) {
+        const std::string id_str = value_obj->id.ToString();
+        if (id_str != background_id_str) {
           if (new_history.size() >= 6) {
             // Delete values that will no longer be in the history.
-            DeleteWallpaperSearchImage(*value_str, profile_->GetPath());
+            DeleteWallpaperSearchImage(id_str, profile_->GetPath());
           } else {
             new_history.Append(
-                base::Value::Dict().Set(kWallpaperSearchHistoryId, *value_str));
+                base::Value::Dict().Set(kWallpaperSearchHistoryId, id_str));
           }
         }
       }
