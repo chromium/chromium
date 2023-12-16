@@ -152,7 +152,6 @@ bool BrowserFeaturePromoController::CanShowPromoForElement(
 
   // Turn off IPH while a required search engine choice dialog is visible or
   // pending.
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   if (search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kDialog)) {
     Browser& browser = *browser_view_->browser();
@@ -163,7 +162,6 @@ bool BrowserFeaturePromoController::CanShowPromoForElement(
       return false;
     }
   }
-#endif
 
   // Don't show IPH if the toolbar is collapsed in Responsive Mode/the overflow
   // button is visible.

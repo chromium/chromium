@@ -26,7 +26,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
-#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/synthetic_trial_registry.h"
@@ -35,10 +34,6 @@
 #include "components/variations/variations_crash_keys.h"
 #include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if !BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-#error "Unsupported platform"
-#endif
 
 namespace {
 
@@ -183,7 +178,7 @@ TEST_P(SearchEngineChoiceClientSideTrialTest, SetUpIfNeeded) {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive("WaffleStudy"));
-  
+
   std::string expected_group_name =
       GetParam().expect_study_enabled
           ? GetParam().expect_feature_enabled

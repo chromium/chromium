@@ -20,7 +20,6 @@
 #include "components/search_engines/template_url_service.h"
 
 class Browser;
-class BrowserListObserver;
 
 namespace search_engines {
 

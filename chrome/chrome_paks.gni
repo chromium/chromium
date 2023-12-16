@@ -9,7 +9,6 @@ import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/compose/features.gni")
-import("//components/signin/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//headless/headless.gni")
 import("//pdf/features.gni")
@@ -172,6 +171,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/password_manager_resources.pak",
         "$root_gen_dir/chrome/privacy_sandbox_resources.pak",
         "$root_gen_dir/chrome/profile_internals_resources.pak",
+        "$root_gen_dir/chrome/search_engine_choice_resources.pak",
         "$root_gen_dir/chrome/settings_resources.pak",
         "$root_gen_dir/chrome/side_panel_bookmarks_resources.pak",
         "$root_gen_dir/chrome/side_panel_commerce_resources.pak",
@@ -197,6 +197,7 @@ template("chrome_extra_paks") {
       deps += [
         "//chrome/browser/resources:component_extension_resources",
         "//chrome/browser/resources:dev_ui_paks",
+        "//chrome/browser/resources/search_engine_choice:resources",
         "//content/browser/devtools:devtools_resources",
         "//content/browser/tracing:resources",
       ]
@@ -395,11 +396,6 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/signin/profile_picker:resources",
         "//chrome/browser/resources/welcome:resources",
       ]
-    }
-
-    if (enable_search_engine_choice) {
-      sources += [ "$root_gen_dir/chrome/search_engine_choice_resources.pak" ]
-      deps += [ "//chrome/browser/resources/search_engine_choice:resources" ]
     }
 
     if (is_win || is_mac || is_linux || is_fuchsia) {

@@ -22,7 +22,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/persistent_histograms.h"
-#include "components/signin/public/base/signin_buildflags.h"
 #include "components/version_info/version_info.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -32,6 +31,8 @@
 #include "chrome/browser/android/flags/chrome_cached_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/chrome_features.h"
+#else
+#include "chrome/browser/search_engine_choice/search_engine_choice_client_side_trial.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -43,10 +44,6 @@
 // GN doesn't understand conditional includes, so we need nogncheck here.
 // See crbug.com/1125897.
 #include "chromeos/startup/startup.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-#include "chrome/browser/search_engine_choice/search_engine_choice_client_side_trial.h"
 #endif
 
 ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
@@ -100,10 +97,10 @@ void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::multidevice_setup::CreateFirstRunFieldTrial(feature_list);
 #endif
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+#if !BUILDFLAG(IS_ANDROID)
     SearchEngineChoiceClientSideTrial::SetUpIfNeeded(
         entropy_providers.default_entropy(), feature_list, local_state_);
-#endif  // BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+#endif
   }
 }
 
@@ -157,8 +154,7 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         kBackgroundThreadPoolTrial, group_name);
   }
-#endif  // BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+#else
   SearchEngineChoiceClientSideTrial::RegisterSyntheticTrials();
-#endif  // BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+#endif  // BUILDFLAG(IS_ANDROID)
 }

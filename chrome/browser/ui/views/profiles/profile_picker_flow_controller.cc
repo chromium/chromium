@@ -548,7 +548,6 @@ ProfilePickerFlowController::RegisterPostIdentitySteps() {
   CHECK(created_profile_);
   base::queue<ProfileManagementFlowController::Step> post_identity_steps;
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   if (weak_signed_in_flow_controller_) {
     auto search_engine_choice_step_completed = base::BindOnce(
         &ProfilePickerFlowController::AdvanceToNextPostIdentityStep,
@@ -566,7 +565,6 @@ ProfilePickerFlowController::RegisterPostIdentitySteps() {
     post_identity_steps.emplace(
         ProfileManagementFlowController::Step::kSearchEngineChoice);
   }
-#endif
 
   RegisterStep(
       Step::kFinishFlow,

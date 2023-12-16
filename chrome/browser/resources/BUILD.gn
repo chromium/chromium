@@ -7,7 +7,6 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/compose/features.gni")
-import("//components/signin/features.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//third_party/closure_compiler/compile_js.gni")
@@ -44,6 +43,7 @@ group("resources") {
       "password_manager:resources",
       "privacy_sandbox:resources",
       "profile_internals:resources",
+      "search_engine_choice:resources",
       "settings:resources",
       "settings_shared:resources",
       "side_panel/bookmarks:resources",
@@ -121,10 +121,6 @@ group("resources") {
       "signin/profile_picker:resources",
       "welcome:resources",
     ]
-  }
-
-  if (enable_search_engine_choice) {
-    public_deps += [ "search_engine_choice:resources" ]
   }
 
   if (enable_webui_tab_strip) {

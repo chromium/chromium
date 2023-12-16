@@ -22,7 +22,6 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_handle.h"
@@ -33,10 +32,6 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/any_widget_observer.h"
-
-#if !BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-#error Platform not supported
-#endif
 
 // Tests for the chrome://search-engine-choice WebUI page.
 namespace {

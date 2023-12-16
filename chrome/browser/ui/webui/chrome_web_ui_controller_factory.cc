@@ -96,7 +96,6 @@
 #include "components/security_interstitials/content/connection_help_ui.h"
 #include "components/security_interstitials/content/known_interception_disclosure_ui.h"
 #include "components/security_interstitials/content/urls.h"
-#include "components/signin/public/base/signin_buildflags.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/web_contents.h"
@@ -157,6 +156,7 @@
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_ui.h"
 #include "chrome/browser/ui/webui/profile_internals/profile_internals_ui.h"
+#include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
@@ -297,10 +297,6 @@
 #if BUILDFLAG(PLATFORM_CFM)
 #include "chrome/browser/ui/webui/ash/chromebox_for_meetings/network_settings_dialog.h"
 #endif  // BUILDFLAG(PLATFORM_CFM)
-
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-#include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
-#endif
 
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/ui/webui/compose/compose_ui.h"
@@ -717,14 +713,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<SigninEmailConfirmationUI>;
 #endif
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-  if (url.host_piece() == chrome::kChromeUISearchEngineChoiceHost &&
-      search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    return &NewWebUI<SearchEngineChoiceUI>;
-  }
-#endif
-
 #if BUILDFLAG(ENABLE_NACL)
   if (url.host_piece() == chrome::kChromeUINaClHost)
     return &NewWebUI<NaClUI>;
@@ -877,6 +865,12 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #if !BUILDFLAG(IS_ANDROID)
   if (url.host_piece() == chrome::kChromeUIPrivacySandboxDialogHost)
     return &NewWebUI<PrivacySandboxDialogUI>;
+
+  if (url.host_piece() == chrome::kChromeUISearchEngineChoiceHost &&
+      search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny)) {
+    return &NewWebUI<SearchEngineChoiceUI>;
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)

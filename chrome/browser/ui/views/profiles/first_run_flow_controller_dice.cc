@@ -41,9 +41,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
-#endif
 
 namespace {
 
@@ -509,7 +507,6 @@ FirstRunFlowControllerDice::CreateSignedInFlowController(
 base::queue<ProfileManagementFlowController::Step>
 FirstRunFlowControllerDice::RegisterPostIdentitySteps() {
   base::queue<ProfileManagementFlowController::Step> post_identity_steps;
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   auto search_engine_choice_step_completed =
       base::BindOnce(&FirstRunFlowControllerDice::AdvanceToNextPostIdentityStep,
                      base::Unretained(this));
@@ -523,7 +520,6 @@ FirstRunFlowControllerDice::RegisterPostIdentitySteps() {
           std::move(search_engine_choice_step_completed)));
   post_identity_steps.emplace(
       ProfileManagementFlowController::Step::kSearchEngineChoice);
-#endif
 
   auto default_browser_promo_step_completed =
       base::BindOnce(&FirstRunFlowControllerDice::AdvanceToNextPostIdentityStep,

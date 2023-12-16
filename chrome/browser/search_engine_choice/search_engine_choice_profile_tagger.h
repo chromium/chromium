@@ -7,11 +7,6 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
-#include "components/signin/public/base/signin_buildflags.h"
-
-#if !BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-#error Not supported for this platform.
-#endif
 
 class ProfileManager;
 

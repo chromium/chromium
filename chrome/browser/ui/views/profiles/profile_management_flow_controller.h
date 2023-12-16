@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
-#include "components/signin/public/base/signin_buildflags.h"
 
 class Profile;
 class ProfileManagementStepController;
@@ -58,10 +57,8 @@ class ProfileManagementFlowController {
     // Renders a default browser promo.
     kDefaultBrowser,
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
     // Renders the search engine choice screen.
     kSearchEngineChoice,
-#endif
 
     kFinishFlow,
   };

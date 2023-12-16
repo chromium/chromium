@@ -20,7 +20,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/search_engines/search_engines_switches.h"
-#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/common/url_constants.h"
@@ -658,9 +657,6 @@ INSTANTIATE_TEST_SUITE_P(
                     PrivacySandboxService::PromptType::kM1NoticeROW,
                     PrivacySandboxService::PromptType::kM1NoticeRestricted));
 
-// Checking the  `ENABLE_SEARCH_ENGINE_CHOICE` build flag is needed because the
-// test runs on Fuchsia while the search engine choice code doesn't.
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
 class PrivacySandboxPromptHelperTestWithSearchEngineChoiceEnabled
     : public PrivacySandboxPromptHelperTestWithParam {
  public:
@@ -730,4 +726,3 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(PrivacySandboxService::PromptType::kM1Consent,
                     PrivacySandboxService::PromptType::kM1NoticeEEA,
                     PrivacySandboxService::PromptType::kM1NoticeROW));
-#endif  // BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)

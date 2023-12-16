@@ -7,7 +7,6 @@ import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//components/compose/features.gni")
-import("//components/signin/features.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
@@ -54,6 +53,7 @@ source_set("browser_tests") {
     "password_manager_internals/password_manager_internals_browsertest.cc",
     "privacy_sandbox/privacy_sandbox_dialog_browsertest.cc",
     "sandbox/sandbox_browsertest.cc",
+    "search_engine_choice/search_engine_choice_js_browsertest.cc",
     "settings/settings_browsertest.cc",
     "side_panel/bookmarks/sp_bookmarks_browsertest.cc",
     "side_panel/commerce/commerce_browsertest.cc",
@@ -81,10 +81,6 @@ source_set("browser_tests") {
 
   if (enable_webui_tab_strip) {
     sources += [ "tab_strip/tab_strip_browsertest.cc" ]
-  }
-
-  if (enable_search_engine_choice) {
-    sources += [ "search_engine_choice/search_engine_choice_js_browsertest.cc" ]
   }
 
   if (enable_print_preview) {
@@ -366,6 +362,7 @@ generate_grd("build_grd") {
     "password_manager_internals:build_grdp",
     "privacy_sandbox:build_grdp",
     "sandbox:build_grdp",
+    "search_engine_choice:build_grdp",
     "settings:build_grdp",
     "side_panel:build_grdp",
     "side_panel/customize_chrome:build_grdp",
@@ -394,6 +391,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/histograms/resources.grdp",
     "$target_gen_dir/history/resources.grdp",
     "$target_gen_dir/history_clusters_internals/resources.grdp",
+    "$target_gen_dir/search_engine_choice/resources.grdp",
     "$target_gen_dir/identity_internals/resources.grdp",
     "$target_gen_dir/inspect/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
@@ -446,11 +444,6 @@ generate_grd("build_grd") {
     # chrome://webui-test, even though they reside in chrome/test/data/pdf/.
     deps += [ "../pdf:build_grdp" ]
     grdp_files += [ "$target_gen_dir/../pdf/resources.grdp" ]
-  }
-
-  if (enable_search_engine_choice) {
-    deps += [ "search_engine_choice:build_grdp" ]
-    grdp_files += [ "$target_gen_dir/search_engine_choice/resources.grdp" ]
   }
 
   if (is_chrome_branded) {

@@ -84,7 +84,6 @@
 #include "components/security_state/content/content_utils.h"
 #include "components/security_state/core/security_state.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
-#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "components/translate/content/common/translate.mojom.h"
@@ -184,6 +183,8 @@
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
+#include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom.h"  // nogncheck crbug.com/1125897
+#include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
@@ -464,11 +465,6 @@ void ash::SystemExtensionsInternalsUI::BindInterface(
   page_handler_ = std::make_unique<SystemExtensionsInternalsPageHandler>(
       Profile::FromWebUI(web_ui()), std::move(receiver));
 }
-#endif
-
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-#include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom.h"
-#include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1105,15 +1101,6 @@ void PopulateChromeWebUIFrameBinders(
                                          policy::DlpInternalsUI>(map);
 #endif
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-  if (search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    RegisterWebUIControllerInterfaceBinder<
-        search_engine_choice::mojom::PageHandlerFactory, SearchEngineChoiceUI>(
-        map);
-  }
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
   RegisterWebUIControllerInterfaceBinder<
@@ -1121,6 +1108,13 @@ void PopulateChromeWebUIFrameBinders(
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+  if (search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny)) {
+    RegisterWebUIControllerInterfaceBinder<
+        search_engine_choice::mojom::PageHandlerFactory, SearchEngineChoiceUI>(
+        map);
+  }
+
   RegisterWebUIControllerInterfaceBinder<downloads::mojom::PageHandlerFactory,
                                          DownloadsUI>(map);
 

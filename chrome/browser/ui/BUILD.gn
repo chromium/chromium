@@ -20,7 +20,6 @@ import("//components/lens/features.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/services/screen_ai/buildflags/features.gni")
-import("//components/signin/features.gni")
 import("//crypto/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -741,20 +740,6 @@ static_library("ui") {
     deps += [ "//chrome/browser/enterprise/data_controls" ]
   }
 
-  if (enable_search_engine_choice) {
-    deps += [ "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings" ]
-    sources += [
-      "search_engine_choice/search_engine_choice_tab_helper.cc",
-      "search_engine_choice/search_engine_choice_tab_helper.h",
-      "views/search_engine_choice/search_engine_choice_dialog_view.cc",
-      "views/search_engine_choice/search_engine_choice_dialog_view.h",
-      "webui/search_engine_choice/search_engine_choice_handler.cc",
-      "webui/search_engine_choice/search_engine_choice_handler.h",
-      "webui/search_engine_choice/search_engine_choice_ui.cc",
-      "webui/search_engine_choice/search_engine_choice_ui.h",
-    ]
-  }
-
   if (is_chromeos) {
     sources += [
       "webui/dlp_internals/dlp_internals_page_handler.cc",
@@ -1414,6 +1399,8 @@ static_library("ui") {
       "search/search_ipc_router_policy_impl.h",
       "search/search_tab_helper.cc",
       "search/search_tab_helper.h",
+      "search_engine_choice/search_engine_choice_tab_helper.cc",
+      "search_engine_choice/search_engine_choice_tab_helper.h",
       "serial/serial_chooser.cc",
       "serial/serial_chooser.h",
       "serial/serial_chooser_controller.cc",
@@ -1619,6 +1606,8 @@ static_library("ui") {
       "views/eye_dropper/eye_dropper.h",
       "views/file_system_access/file_system_access_scroll_panel.cc",
       "views/file_system_access/file_system_access_scroll_panel.h",
+      "views/search_engine_choice/search_engine_choice_dialog_view.cc",
+      "views/search_engine_choice/search_engine_choice_dialog_view.h",
       "webui/access_code_cast/access_code_cast_dialog.cc",
       "webui/access_code_cast/access_code_cast_dialog.h",
       "webui/access_code_cast/access_code_cast_handler.cc",
@@ -1792,6 +1781,10 @@ static_library("ui") {
       "webui/search_engine_choice/generated_icon_utils.cc",
       "webui/search_engine_choice/icon_utils.cc",
       "webui/search_engine_choice/icon_utils.h",
+      "webui/search_engine_choice/search_engine_choice_handler.cc",
+      "webui/search_engine_choice/search_engine_choice_handler.h",
+      "webui/search_engine_choice/search_engine_choice_ui.cc",
+      "webui/search_engine_choice/search_engine_choice_ui.h",
       "webui/settings/about_handler.cc",
       "webui/settings/about_handler.h",
       "webui/settings/accessibility_main_handler.cc",
@@ -2030,6 +2023,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",
       "//chrome/browser/ui/webui/on_device_internals:mojom",
+      "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings",
       "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings",
       "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
       "//chrome/browser/ui/webui/side_panel/performance_controls:mojo_bindings",

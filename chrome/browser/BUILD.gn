@@ -26,7 +26,6 @@ import("//components/offline_pages/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/os_crypt/sync/features.gni")
 import("//components/services/screen_ai/buildflags/features.gni")
-import("//components/signin/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//crypto/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -1902,6 +1901,14 @@ static_library("browser") {
       "privacy_sandbox/tracking_protection_notice_factory.h",
       "privacy_sandbox/tracking_protection_notice_service.cc",
       "privacy_sandbox/tracking_protection_notice_service.h",
+      "search_engine_choice/search_engine_choice_client_side_trial.cc",
+      "search_engine_choice/search_engine_choice_client_side_trial.h",
+      "search_engine_choice/search_engine_choice_profile_tagger.cc",
+      "search_engine_choice/search_engine_choice_profile_tagger.h",
+      "search_engine_choice/search_engine_choice_service.cc",
+      "search_engine_choice/search_engine_choice_service.h",
+      "search_engine_choice/search_engine_choice_service_factory.cc",
+      "search_engine_choice/search_engine_choice_service_factory.h",
       "user_education/browser_feature_promo_storage_service.cc",
       "user_education/browser_feature_promo_storage_service.h",
       "user_education/browser_tutorial_service.cc",
@@ -2566,6 +2573,7 @@ static_library("browser") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings",
       "//components/manta",
       "//components/manta/proto",
       "//components/user_education/common",
@@ -2619,20 +2627,6 @@ static_library("browser") {
         "//components/reporting/storage:storage_module",
       ]
     }
-  }
-
-  if (enable_search_engine_choice) {
-    sources += [
-      "search_engine_choice/search_engine_choice_client_side_trial.cc",
-      "search_engine_choice/search_engine_choice_client_side_trial.h",
-      "search_engine_choice/search_engine_choice_profile_tagger.cc",
-      "search_engine_choice/search_engine_choice_profile_tagger.h",
-      "search_engine_choice/search_engine_choice_service.cc",
-      "search_engine_choice/search_engine_choice_service.h",
-      "search_engine_choice/search_engine_choice_service_factory.cc",
-      "search_engine_choice/search_engine_choice_service_factory.h",
-    ]
-    deps += [ "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings" ]
   }
 
   if (is_linux || is_chromeos) {

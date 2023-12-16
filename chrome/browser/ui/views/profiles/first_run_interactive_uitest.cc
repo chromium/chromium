@@ -48,11 +48,9 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_switches.h"
-#endif
 
 #if !BUILDFLAG(ENABLE_DICE_SUPPORT)
 #error "Unsupported platform"
@@ -96,7 +94,6 @@ const TestParam kTestParams[] = {
     {.test_suffix = "Default"},
     {.test_suffix = "WithDefaultBrowserStep",
      .with_default_browser_step = true},
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
     {.test_suffix = "WithSearchEngineChoiceStep",
      .with_search_engine_choice_step = true},
     {.test_suffix = "WithDefaultBrowserAndSearchEngineChoiceSteps",
@@ -105,7 +102,6 @@ const TestParam kTestParams[] = {
     {.test_suffix = "WithSearchEngineChoiceAndPrivacySandboxEnabled",
      .with_search_engine_choice_step = true,
      .with_privacy_sandbox_enabled = true},
-#endif
 };
 
 }  // namespace
@@ -266,7 +262,6 @@ class FirstRunParameterizedInteractiveUiTest
            WithDefaultBrowserStep() ? "forced" : "no"}}});
 
     if (WithSearchEngineChoiceStep()) {
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
       scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
           SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
               /*force_chrome_build=*/true));
@@ -278,9 +273,6 @@ class FirstRunParameterizedInteractiveUiTest
              { switches::kWithForcedScrollEnabled.name,
                "true" }
            }});
-#else
-      NOTREACHED_NORETURN();
-#endif
     } else {
       disabled_features.push_back(switches::kSearchEngineChoice);
       disabled_features.push_back(switches::kSearchEngineChoiceFre);
@@ -329,12 +321,10 @@ class FirstRunParameterizedInteractiveUiTest
       embedded_test_server()->StartAcceptingConnections();
     }
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
     if (WithSearchEngineChoiceStep()) {
       SearchEngineChoiceService::SetDialogDisabledForTests(
           /*dialog_disabled=*/false);
     }
-#endif
   }
 
   bool WithDefaultBrowserStep() const {
@@ -349,7 +339,6 @@ class FirstRunParameterizedInteractiveUiTest
     return GetParam().with_privacy_sandbox_enabled;
   }
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   auto CompleteSearchEngineChoiceStep() {
     const DeepQuery first_search_engine = {"search-engine-choice-app",
                                            "cr-radio-button"};
@@ -366,7 +355,6 @@ class FirstRunParameterizedInteractiveUiTest
         WaitForButtonEnabled(kWebContentsId, kSearchEngineChoiceActionButton),
         PressJsButton(kWebContentsId, kSearchEngineChoiceActionButton));
   }
-#endif
 
   auto CompleteDefaultBrowserStep() {
     return Steps(
@@ -519,10 +507,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       PressJsButton(kWebContentsId, kOptInSyncButton)
           .SetMustRemainVisible(false),
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
       If([&] { return WithSearchEngineChoiceStep(); },
          CompleteSearchEngineChoiceStep()),
-#endif
 
       If([&] { return WithDefaultBrowserStep(); },
          CompleteDefaultBrowserStep()));
@@ -551,13 +537,11 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
         DefaultBrowserChoice::kClickSetAsDefault, 1);
   }
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   if (WithSearchEngineChoiceStep()) {
     histogram_tester.ExpectBucketCount(
         search_engines::kSearchEngineChoiceScreenEventsHistogram,
         search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet, 1);
   }
-#endif
 
   EXPECT_TRUE(proceed_future.Get());
 
@@ -620,10 +604,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
       EnsurePresent(kWebContentsId, kDontSyncButton),
       PressJsButton(kWebContentsId, kDontSyncButton),
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
       If([&] { return WithSearchEngineChoiceStep(); },
          CompleteSearchEngineChoiceStep()),
-#endif
       If([&] { return WithDefaultBrowserStep(); },
          CompleteDefaultBrowserStep()));
 
@@ -692,13 +674,11 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kSyncSetupSubPage));
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   if (WithSearchEngineChoiceStep()) {
     SearchEngineChoiceService* search_engine_choice_service =
         SearchEngineChoiceServiceFactory::GetForProfile(profile());
     EXPECT_FALSE(search_engine_choice_service->IsShowingDialog(browser()));
   }
-#endif
 
   EXPECT_TRUE(proceed_future.Get());
   EXPECT_EQ(base::ASCIIToUTF16(kTestGivenName), GetProfileName());
@@ -754,10 +734,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       CheckJsResultAt(kWebContentsId, kDontSignInButton, "(e) => !e.disabled"),
       PressJsButton(kWebContentsId, kDontSignInButton),
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
       If([&] { return WithSearchEngineChoiceStep(); },
          CompleteSearchEngineChoiceStep()),
-#endif
       If([&] { return WithDefaultBrowserStep(); },
          CompleteDefaultBrowserStep()));
 
@@ -827,10 +805,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       EnsurePresent(kWebContentsId, kDeclineManagementButton),
       PressJsButton(kWebContentsId, kDeclineManagementButton),
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
       If([&] { return WithSearchEngineChoiceStep(); },
          CompleteSearchEngineChoiceStep()),
-#endif
       If([&] { return WithDefaultBrowserStep(); },
          CompleteDefaultBrowserStep()));
 

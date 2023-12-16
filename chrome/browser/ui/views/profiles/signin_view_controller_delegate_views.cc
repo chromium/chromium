@@ -34,7 +34,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -86,14 +85,14 @@ void CloseModalSigninInBrowser(
     return;
 
   browser->signin_view_controller()->CloseModalSignin();
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+
   SearchEngineChoiceService* search_engine_choice_service =
       SearchEngineChoiceServiceFactory::GetForProfile(browser->profile());
   if (search_engine_choice_service &&
       search_engine_choice_service->CanShowDialog(CHECK_DEREF(browser.get()))) {
     ShowSearchEngineChoiceDialog(*browser);
   }
-#endif
+
   if (show_profile_switch_iph) {
     browser->window()->MaybeShowProfileSwitchIPH();
   }

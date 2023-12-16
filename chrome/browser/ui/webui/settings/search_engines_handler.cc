@@ -292,7 +292,6 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
 
   list_controller_.MakeDefaultTemplateURL(index);
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   Profile& profile = CHECK_DEREF(Profile::FromWebUI(web_ui()));
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(&profile);
@@ -307,7 +306,6 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
   // search engine.
   search_engines::RecordChoiceMade(profile.GetPrefs(), choice_made_location,
                                    template_url_service);
-#endif
 
   base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
 }

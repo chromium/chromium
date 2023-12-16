@@ -169,6 +169,7 @@
 #include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_profile_tagger.h"
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -233,10 +234,6 @@
 #include "chrome/browser/screen_ai/screen_ai_downloader_non_chromeos.h"
 #include "chrome/browser/usb/usb_status_icon.h"
 #endif
-
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-#include "chrome/browser/search_engine_choice/search_engine_choice_profile_tagger.h"
-#endif  // BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
 
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 // How often to check if the persistent instance of Chrome needs to restart
@@ -1163,10 +1160,10 @@ void BrowserProcessImpl::CreateProfileManager() {
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
   profile_manager_ = std::make_unique<ProfileManager>(user_data_dir);
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+#if !BUILDFLAG(IS_ANDROID)
   search_engine_choice_profile_tagger_ =
       SearchEngineChoiceProfileTagger::Create(*profile_manager_.get());
-#endif  // BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+#endif
 }
 
 void BrowserProcessImpl::PreCreateThreads() {
