@@ -209,6 +209,15 @@ class FindInPageTest : public InteractiveBrowserTest {
                  WaitForShow(FindBarView::kTextField));
   }
 
+  auto HideFindBar() {
+    return Steps(Do([this]() {
+                   browser()->GetFindBarController()->EndFindSession(
+                       find_in_page::SelectionAction::kKeep,
+                       find_in_page::ResultAction::kKeep);
+                 }),
+                 WaitForHide(FindBarView::kTextField));
+  }
+
   // NB: Prefer using SendAccelerator() when possible.
   auto SendKeyPress(ui::KeyboardCode key, bool control, bool shift) {
     return Check([this, key, control, shift]() {
@@ -248,37 +257,38 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, CrashEscHandlers) {
       SendKeyPress(ui::VKEY_ESCAPE, false, false));
 }
 
-IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, NavigationByKeyEvent) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  // Make sure Chrome is in the foreground, otherwise sending input
-  // won't do anything and the test will hang.
-  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
-  // First we navigate to any page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(kSimplePage)));
-  // Show the Find bar.
-  browser()->GetFindBarController()->Show();
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-  ui_test_utils::FindInPage(
-      browser()->tab_strip_model()->GetActiveWebContents(), u"a", true, false,
-      nullptr, nullptr);
+IN_PROC_BROWSER_TEST_F(FindInPageTest, NavigationByKeyEvent) {
+  constexpr char16_t kSearchThis[] = u"a";
+  const GURL page_a = embedded_test_server()->GetURL("/a.html");
 
-  // The previous button should still be focused after pressing [Enter] on it.
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
-                                              false, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN, false,
-                                              false, false, false));
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_PREVIOUS_BUTTON));
-
-  // The next button should still be focused after pressing [Enter] on it.
-  ui_test_utils::FindInPage(
-      browser()->tab_strip_model()->GetActiveWebContents(), u"b", true, false,
-      nullptr, nullptr);
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
-                                              false, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN, false,
-                                              false, false, false));
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_NEXT_BUTTON));
+  RunTestSequence(
+      // Open tab A and show Find bar.
+      InstrumentTab(kTabId), NavigateWebContents(kTabId, page_a), ShowFindBar(),
+      ObserveState(kFindResultState,
+                   [this]() {
+                     return find_in_page::FindTabHelper::FromWebContents(
+                         browser()->tab_strip_model()->GetActiveWebContents());
+                   }),
+      // Search for 'a'.
+      EnterText(FindBarView::kTextField, kSearchThis),
+      WaitForState(
+          kFindResultState,
+          testing::Field(
+              &FindResultState::active_match_ordinal,
+              testing::Ne(FindResultState::kInitialActiveMatchOrdinalCount))),
+      // Press the [Tab] key and [Enter], the previous button should still be
+      // focused.
+      SendKeyPress(ui::VKEY_TAB, false, false),
+      SendKeyPress(ui::VKEY_RETURN, false, false),
+      CheckViewProperty(FindBarView::kPreviousButtonElementId,
+                        &views::View::HasFocus, true),
+      // Press the [Tab] key and [Enter], the next button should still be
+      // focused.
+      SendKeyPress(ui::VKEY_TAB, false, false),
+      SendKeyPress(ui::VKEY_RETURN, false, false),
+      CheckViewProperty(FindBarView::kNextButtonElementId,
+                        &views::View::HasFocus, true),
+      StopObservingState(kFindResultState));
 }
 
 IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, ButtonsDoNotAlterFocus) {
@@ -356,45 +366,57 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, ButtonsDisabledWithoutText) {
                                     &views::View::HasFocus, true));
 }
 
-IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, FocusRestore) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestore) {
+  const GURL page_a = embedded_test_server()->GetURL("/a.html");
+  constexpr char16_t kSearchA[] = u"a";
 
-  GURL url = embedded_test_server()->GetURL("/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  RunTestSequence(
+      InstrumentTab(kTabId), NavigateWebContents(kTabId, page_a),
+      // Set focus to the omnibox.
+      WithView(kOmniboxElementId,
+               [](views::View* view) { view->RequestFocus(); }),
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true),
+      // Show the Find bar.
+      ShowFindBar(), EnsurePresent(FindBarView::kElementId),
+      CheckViewProperty(FindBarView::kTextField, &views::View::HasFocus, true),
+      // Dismiss the Find bar, the omnibox view should get focus.
+      HideFindBar(), EnsureNotPresent(FindBarView::kElementId),
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true),
 
-  // Focus the location bar, open and close the find-in-page, focus should
-  // return to the location bar.
-  chrome::FocusLocationBar(browser());
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-  // Ensure the creation of the find bar controller.
-  browser()->GetFindBarController()->Show();
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-  browser()->GetFindBarController()->EndFindSession(
-      find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+      // Show the Find bar and search for "a".
+      WithView(kOmniboxElementId,
+               [](views::View* view) { view->RequestFocus(); }),
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true),
+      ShowFindBar(), EnsurePresent(FindBarView::kElementId),
+      ObserveState(kFindResultState,
+                   [this]() {
+                     return find_in_page::FindTabHelper::FromWebContents(
+                         browser()->tab_strip_model()->GetActiveWebContents());
+                   }),
+      EnterText(FindBarView::kTextField, kSearchA),
+      CheckViewProperty(FindBarView::kTextField, &views::View::HasFocus, true),
+      WaitForState(
+          kFindResultState,
+          testing::Field(
+              &FindResultState::active_match_ordinal,
+              testing::Ne(FindResultState::kInitialActiveMatchOrdinalCount))),
+      // Dismiss the Find bar, the content view should get focus.
+      HideFindBar(), EnsureNotPresent(FindBarView::kElementId),
+      CheckViewProperty(ContentsWebView::kContentsWebViewElementId,
+                        &views::View::HasFocus, true),
 
-  // Focus the location bar, find something on the page, close the find box,
-  // focus should go to the page.
-  chrome::FocusLocationBar(browser());
-  chrome::Find(browser());
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-  ui_test_utils::FindInPage(
-      browser()->tab_strip_model()->GetActiveWebContents(), u"a", true, false,
-      nullptr, nullptr);
-  browser()->GetFindBarController()->EndFindSession(
-      find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
-
-  // Focus the location bar, open and close the find box, focus should return to
-  // the location bar (same as before, just checking that http://crbug.com/23599
-  // is fixed).
-  chrome::FocusLocationBar(browser());
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-  browser()->GetFindBarController()->Show();
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-  browser()->GetFindBarController()->EndFindSession(
-      find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+      // Focus the location bar, open and close the find box, focus should
+      // return to the location bar (same as before, just checking that
+      // http://crbug.com/23599 is fixed).
+      WithView(kOmniboxElementId,
+               [](views::View* view) { view->RequestFocus(); }),
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true),
+      // Show the Find bar.
+      ShowFindBar(), EnsurePresent(FindBarView::kElementId),
+      CheckViewProperty(FindBarView::kTextField, &views::View::HasFocus, true),
+      // Dismiss the Find bar, the omnibox view should get focus.
+      HideFindBar(), EnsureNotPresent(FindBarView::kElementId),
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true));
 }
 
 IN_PROC_BROWSER_TEST_F(FindInPageTest, SelectionRestoreOnTabSwitch) {
