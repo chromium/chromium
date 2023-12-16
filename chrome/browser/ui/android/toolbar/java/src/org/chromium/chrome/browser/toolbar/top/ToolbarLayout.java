@@ -99,8 +99,11 @@ public abstract class ToolbarLayout extends FrameLayout
 
     private TopToolbarOverlayCoordinator mOverlayCoordinator;
 
-    protected BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
-    protected int mShowBrowserControlsToken = TokenHolder.INVALID_TOKEN;
+    private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
+    private int mShowBrowserControlsToken = TokenHolder.INVALID_TOKEN;
+
+    private TabStripTransitionCoordinator mTabStripTransitionCoordinator;
+    private int mTabStripTransitionToken = TokenHolder.INVALID_TOKEN;
 
     protected final DestroyChecker mDestroyChecker;
 
@@ -829,13 +832,21 @@ public abstract class ToolbarLayout extends FrameLayout
         mBrowserControlsVisibilityDelegate = controlsVisibilityDelegate;
     }
 
+    // TODO(crbug.com/1512232): Rework the API if this method is called by multiple clients.
     protected void keepControlsShownForAnimation() {
         // isShown() being false implies that the toolbar isn't visible. We don't want to force it
         // back into visibility just so that we can show an animation.
-        if (isShown() && mBrowserControlsVisibilityDelegate != null) {
+        if (!isShown()) return;
+
+        if (mBrowserControlsVisibilityDelegate != null) {
             mShowBrowserControlsToken =
                     mBrowserControlsVisibilityDelegate.showControlsPersistentAndClearOldToken(
                             mShowBrowserControlsToken);
+        }
+        if (mTabStripTransitionCoordinator != null
+                && mTabStripTransitionToken == TokenHolder.INVALID_TOKEN) {
+            mTabStripTransitionToken =
+                    mTabStripTransitionCoordinator.requestDeferTabStripTransitionToken();
         }
     }
 
@@ -845,6 +856,15 @@ public abstract class ToolbarLayout extends FrameLayout
                     mShowBrowserControlsToken);
             mShowBrowserControlsToken = TokenHolder.INVALID_TOKEN;
         }
+        if (mTabStripTransitionCoordinator != null) {
+            mTabStripTransitionCoordinator.releaseTabStripToken(mTabStripTransitionToken);
+            mTabStripTransitionToken = TokenHolder.INVALID_TOKEN;
+        }
+    }
+
+    /** Set the {@link TabStripTransitionCoordinator} that manages interactions around tab strip. */
+    public void setTabStripTransitionCoordinator(TabStripTransitionCoordinator coordinator) {
+        mTabStripTransitionCoordinator = coordinator;
     }
 
     /**

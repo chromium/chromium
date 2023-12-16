@@ -52,6 +52,7 @@ import java.util.concurrent.TimeUnit;
 public class TabStripTransitionCoordinatorUnitTest {
     private static final int TEST_TAB_STRIP_HEIGHT = 40;
     private static final int TEST_TOOLBAR_HEIGHT = 56;
+    private static final int NOTHING_OBSERVED = -1;
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -66,8 +67,8 @@ public class TabStripTransitionCoordinatorUnitTest {
     private TestActivity mActivity;
     private TestControlContainer mSpyControlContainer;
 
-    private int mObservedOnHeightRequested = -1;
-    private int mObservedOnHeightChanged = -1;
+    private int mObservedOnHeightRequested = NOTHING_OBSERVED;
+    private int mObservedOnHeightChanged = NOTHING_OBSERVED;
 
     @Before
     public void setup() {
@@ -137,7 +138,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         setDeviceWidthDp(480);
 
         // Simulate top controls size change from browser. Input values doesn't matter in this call.
-        mBrowserControlsObserver.getValue().onControlsOffsetChanged(0, 0, 0, 0, false);
+        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false);
         assertTabStripHeightForMargins(0);
         assertObservedHeight(0);
     }
@@ -148,7 +149,7 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Simulate top controls size change from browser.
         doReturn(true).when(mBrowserControlsVisibilityManager).offsetOverridden();
-        mBrowserControlsObserver.getValue().onTopControlsHeightChanged(TEST_TOOLBAR_HEIGHT, 0);
+        getBrowserControlsObserver().onTopControlsHeightChanged(TEST_TOOLBAR_HEIGHT, 0);
         assertTabStripHeightForMargins(0);
         assertObservedHeight(0);
     }
@@ -159,7 +160,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         setDeviceWidthDp(600);
 
         // Simulate top controls size change from browser. Input values doesn't matter in this call.
-        mBrowserControlsObserver.getValue().onControlsOffsetChanged(0, 0, 0, 0, false);
+        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false);
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
         assertObservedHeight(TEST_TAB_STRIP_HEIGHT);
     }
@@ -170,9 +171,65 @@ public class TabStripTransitionCoordinatorUnitTest {
         setDeviceWidthDp(600);
         // Simulate top controls size change from browser.
         doReturn(true).when(mBrowserControlsVisibilityManager).offsetOverridden();
-        mBrowserControlsObserver.getValue().onTopControlsHeightChanged(TEST_TOOLBAR_HEIGHT, 0);
+        getBrowserControlsObserver().onTopControlsHeightChanged(TEST_TOOLBAR_HEIGHT, 0);
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
         assertObservedHeight(TEST_TAB_STRIP_HEIGHT);
+    }
+
+    @Test
+    @Config(qualifiers = "w480dp")
+    public void showTabStrip_TokenBeforeLayout() {
+        int token = mCoordinator.requestDeferTabStripTransitionToken();
+        setDeviceWidthDp(600);
+        Assert.assertEquals(
+                "Height request should be blocked by the token.", 0, mObservedOnHeightRequested);
+
+        mCoordinator.releaseTabStripToken(token);
+        Assert.assertEquals(
+                "Height request should go through after the token released.",
+                TEST_TAB_STRIP_HEIGHT,
+                mObservedOnHeightRequested);
+    }
+
+    @Test
+    @Config(qualifiers = "w480dp")
+    public void showTabStrip_TokenDuringLayout() {
+        setConfigurationWithNewWidth(600);
+
+        // Layout pass will trigger the delayed task for layout transition.
+        simulateLayoutChange(600);
+        ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
+        int token = mCoordinator.requestDeferTabStripTransitionToken();
+        Assert.assertEquals(
+                "Height request should be blocked by the token.", 0, mObservedOnHeightRequested);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Assert.assertEquals(
+                "Height request should be blocked by the token.", 0, mObservedOnHeightRequested);
+
+        mCoordinator.releaseTabStripToken(token);
+        Assert.assertEquals(
+                "Height request should go through after the token released.",
+                TEST_TAB_STRIP_HEIGHT,
+                mObservedOnHeightRequested);
+    }
+
+    @Test
+    @Config(qualifiers = "w480dp")
+    public void showTabStrip_TokenReleaseEarly() {
+        int token = mCoordinator.requestDeferTabStripTransitionToken();
+        setConfigurationWithNewWidth(600);
+        simulateLayoutChange(600);
+        ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
+        mCoordinator.releaseTabStripToken(token);
+        Assert.assertEquals(
+                "Height request should be blocked by the token.", 0, mObservedOnHeightRequested);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Assert.assertEquals(
+                "Height request should go through after the token released.",
+                TEST_TAB_STRIP_HEIGHT,
+                mObservedOnHeightRequested);
     }
 
     @Test
@@ -246,6 +303,12 @@ public class TabStripTransitionCoordinatorUnitTest {
                 mObservedOnHeightChanged);
     }
 
+    private BrowserControlsStateProvider.Observer getBrowserControlsObserver() {
+        var observer = mBrowserControlsObserver.getValue();
+        Assert.assertNotNull("Browser controls observer not attached.", observer);
+        return observer;
+    }
+
     private void simulateLayoutChange(int width) {
         Assert.assertNotNull(mSpyControlContainer.onLayoutChangeListener);
         mSpyControlContainer.onLayoutChangeListener.onLayoutChange(
@@ -286,7 +349,7 @@ public class TabStripTransitionCoordinatorUnitTest {
             doReturn(controlContainer.findToolbar)
                     .when(controlContainer)
                     .findViewById(R.id.find_toolbar);
-            doReturn(context.getResources().getDisplayMetrics().widthPixels)
+            doAnswer(args -> context.getResources().getDisplayMetrics().widthPixels)
                     .when(controlContainer)
                     .getWidth();
             doAnswer(

@@ -51,7 +51,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -379,12 +378,6 @@ public class ToolbarPhone extends ToolbarLayout
         mLocationBar = locationBarCoordinator;
         mLocationBar.setIsSurfacePolishOmniboxColorEnabled(mIsSurfacePolishOmniboxColorEnabled);
         initLocationBarBackground();
-    }
-
-    @Override
-    public void setBrowserControlsVisibilityDelegate(
-            BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate) {
-        mBrowserControlsVisibilityDelegate = controlsVisibilityDelegate;
     }
 
     @Override

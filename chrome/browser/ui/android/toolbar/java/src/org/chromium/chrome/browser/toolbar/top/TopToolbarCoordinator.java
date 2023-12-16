@@ -371,6 +371,7 @@ public class TopToolbarCoordinator implements Toolbar {
                             mToolbarLayout,
                             tabStripHeightResource);
             mToolbarLayout.getContext().registerComponentCallbacks(mTabStripTransitionCoordinator);
+            mToolbarLayout.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
             addTabStripHeightObserver(
                     new TabStripHeightObserver() {
                         @Override
