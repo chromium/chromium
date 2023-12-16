@@ -5577,6 +5577,11 @@ TEST_P(PaintPropertyTreeBuilderTest, ElementCaptureEffectNode) {
   // This test makes sure that an ElementCaptureEffect node is properly added
   // when an element has a restriction ID.
   SetBodyInnerHTML(R"HTML(
+     <style>
+      .stacking {
+        opacity: 0.9;
+      }
+    </style>
     <body id="body1">
       <div id="div1" width="640" height="480"/>
     </body>
@@ -5592,15 +5597,19 @@ TEST_P(PaintPropertyTreeBuilderTest, ElementCaptureEffectNode) {
       std::make_unique<RestrictionTargetId>(base::Token::CreateRandom()));
   UpdateAllLifecyclePhasesForTest();
 
-  // The element should now have a proper stacking context.
-  EXPECT_TRUE(element->GetLayoutObject()->HasLayer());
-  EXPECT_TRUE(element->GetLayoutObject()->IsStackingContext());
+  // The element should still not have a proper stacking context.
+  EXPECT_FALSE(element->GetLayoutObject()->HasLayer());
+  EXPECT_FALSE(element->GetLayoutObject()->IsStackingContext());
 
-  // Now that the div has a restriction ID, it should have an element capture
-  // effect node.
+  // Now that the div has a restriction ID and a stacking context, it should
+  // have an element capture effect node.
+  element->setAttribute(html_names::kClassAttr, AtomicString("stacking"));
+  UpdateAllLifecyclePhasesForTest();
   const ObjectPaintProperties* paint_properties =
       element->GetLayoutObject()->FirstFragment().PaintProperties();
   EXPECT_TRUE(paint_properties && paint_properties->ElementCaptureEffect());
+  EXPECT_TRUE(element->GetLayoutObject()->HasLayer());
+  EXPECT_TRUE(element->GetLayoutObject()->IsStackingContext());
 
   // NOTE: we don't currently have a teardown path for element capture. Once an
   // element is marked for capture it is marked for the rest of its lifetime.

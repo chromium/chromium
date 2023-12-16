@@ -4999,14 +4999,13 @@ void Element::SetRestrictionTargetId(std::unique_ptr<RestrictionTargetId> id) {
   // into its own stacking context during rendering.
   rare_data.SetRestrictionTargetId(std::move(id));
 
-  // By forcing reattachment, we ensure that the element would now be
-  // picked up as in its own stacking context.
-  // There is no corresponding style change.
-  SetForceReattachLayoutTree();
-
   // If a LayoutObject does not yet exist, this full paint invalidation
   // will occur automatically after it is created.
   if (LayoutObject* layout_object = GetLayoutObject()) {
+    // The paint properties need to updated, even though the style hasn't
+    // changed.
+    layout_object->SetNeedsPaintPropertyUpdate();
+
     // The SubCaptureTarget ID needs to be propagated to the paint system.
     layout_object->SetShouldDoFullPaintInvalidation();
   }

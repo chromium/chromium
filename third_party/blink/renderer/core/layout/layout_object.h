@@ -720,13 +720,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsStackingContext(StyleRef());
   }
-  inline bool IsElementCaptureParticipant() const {
-    NOT_DESTROYED();
-    if (Element* element = DynamicTo<Element>(GetNode())) {
-      return element->GetRestrictionTargetId();
-    }
-    return false;
-  }
   inline bool IsStackingContext(const ComputedStyle& style) const {
     NOT_DESTROYED();
     // This is an inlined version of the following:
@@ -739,8 +732,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
            ((style.ContainsLayout() || style.ContainsPaint()) &&
             (!IsInline() || IsAtomicInlineLevel()) && !IsRubyText() &&
             (!IsTablePart() || IsLayoutBlockFlow())) ||
-           ViewTransitionUtils::IsViewTransitionParticipant(*this) ||
-           IsElementCaptureParticipant();
+           ViewTransitionUtils::IsViewTransitionParticipant(*this);
   }
 
   inline bool IsStacked() const {

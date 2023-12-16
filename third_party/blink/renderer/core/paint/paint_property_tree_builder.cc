@@ -1716,7 +1716,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateElementCaptureEffect() {
 
   if (!(full_context_.direct_compositing_reasons &
         CompositingReason::kElementCapture)) {
-    OnClearEffect(properties_->ElementCaptureEffect());
+    OnClearEffect(properties_->ClearElementCaptureEffect());
     return;
   }
 
