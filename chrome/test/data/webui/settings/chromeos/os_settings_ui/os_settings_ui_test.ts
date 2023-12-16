@@ -100,7 +100,7 @@ suite('OSSettingsUi', () => {
     await eventToPromise('cr-drawer-opened', drawer);
 
     // Clicking the drawer icon closes the drawer.
-    ui.shadowRoot!.querySelector<HTMLElement>('#iconButton')!.click();
+    ui.shadowRoot!.querySelector<HTMLElement>('#drawerIcon')!.click();
     await eventToPromise('close', drawer);
     assertFalse(drawer.open);
     assertTrue(drawer.wasCanceled());

@@ -79,7 +79,10 @@
 
   :host-context(body.revamp-wayfinding-enabled) #drawer {
     --cr-drawer-border-start-end-radius: 20px;
-    --cr-drawer-header-padding: 28px;
+    --cr-drawer-border-end-end-radius: 20px;
+    --cr-drawer-header-color: var(--cros-sys-primary);
+    --cr-drawer-header-font: var(--cros-title-1-font);
+    --cr-drawer-header-padding: 22px;
     --cr-drawer-width: var(--settings-menu-width);
   }
 
@@ -104,15 +107,16 @@
     }
   }
 
-  #iconButton {
+  #drawerIcon {
     cursor: pointer;
     margin-inline-end: 14px;
     margin-inline-start: 0;
     outline: none;
   }
 
-  :host-context(body.revamp-wayfinding-enabled) #iconButton {
-    margin-inline-end: 12px;
+  :host-context(body.revamp-wayfinding-enabled) #drawerIcon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
+    margin-inline-end: 6px;
   }
 </style>
 <settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>
@@ -135,10 +139,12 @@
       <!-- Hidden from a11y because this icon is decorative. Clicking closes
           the dialog, but screen reader users can do this by pressing ESC,
           so aria-hidden is OK here. -->
-      <iron-icon id="iconButton" icon="cr20:menu"
-          on-click="onDrawerIconClick_" title="$i18n{close}"
+      <cr-icon-button id="drawerIcon"
+          iron-icon="cr20:menu"
+          on-click="onDrawerIconClick_"
+          title="$i18n{close}"
           aria-hidden="true">
-      </iron-icon>
+      </cr-icon-button>
     </div>
     <div slot="body">
       <template is="dom-if" id="drawerTemplate">
