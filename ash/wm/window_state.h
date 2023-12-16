@@ -199,7 +199,6 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   // Whether or not the window's position or size was changed by a user.
   bool bounds_changed_by_user() const { return bounds_changed_by_user_; }
-  void set_bounds_changed_by_user(bool bounds_changed_by_user);
 
   // True if the window should not adjust the window's bounds when
   // virtual keyboard bounds changes.
@@ -400,6 +399,10 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // the top portion of the window through a touch / mouse gesture. It might
   // also allow the shelf to be shown in some situations.
   bool IsInImmersiveFullscreen() const;
+
+  // Sets `bounds_changed_by_user_` to the given value and resets the
+  // corresponding variables.
+  void SetBoundsChangedByUser(bool bounds_changed_by_user);
 
   // Creates and takes ownership of a pointer to DragDetails when resizing is
   // active. This should be done before a resizer gets created.

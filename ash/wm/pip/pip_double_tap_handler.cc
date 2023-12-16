@@ -104,7 +104,7 @@ bool PipDoubleTapHandler::ProcessDoubleTapEventImpl(const ui::Event& event,
 
   gfx::Rect bounds = window_state->window()->bounds();
 
-  window_state->set_bounds_changed_by_user(true);
+  window_state->SetBoundsChangedByUser(true);
 
   gfx::Size calculated_max_size = GetMaxSize(window_state);
   // If the window is not at max size, we will expand it.

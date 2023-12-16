@@ -215,7 +215,7 @@ void BaseState::HandleWindowSnapping(
          event_type == WM_EVENT_SNAP_SECONDARY);
   DCHECK(window_state->CanSnap());
 
-  window_state->set_bounds_changed_by_user(true);
+  window_state->SetBoundsChangedByUser(true);
   aura::Window* window = window_state->window();
   // `SplitViewController` will decide if the window needs to be snapped in
   // split view.

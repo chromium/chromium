@@ -706,7 +706,7 @@ bool WindowState::IsInImmersiveFullscreen() const {
   return window_->GetProperty(kImmersiveIsActive);
 }
 
-void WindowState::set_bounds_changed_by_user(bool bounds_changed_by_user) {
+void WindowState::SetBoundsChangedByUser(bool bounds_changed_by_user) {
   bounds_changed_by_user_ = bounds_changed_by_user;
   if (bounds_changed_by_user) {
     pre_auto_manage_window_bounds_.reset();

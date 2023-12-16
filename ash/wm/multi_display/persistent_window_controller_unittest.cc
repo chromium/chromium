@@ -102,7 +102,7 @@ TEST_F(PersistentWindowControllerTest, DisconnectDisplay) {
 
   // Sets |w2|'s bounds changed by user and then reconnects secondary display.
   WindowState* w2_state = WindowState::Get(w2);
-  w2_state->set_bounds_changed_by_user(true);
+  w2_state->SetBoundsChangedByUser(true);
   display_info_list.push_back(secondary_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
@@ -764,7 +764,7 @@ TEST_F(PersistentWindowControllerTest, RestoreBoundsOnScreenRotation) {
   w1->SetBounds(gfx::Rect(
       gfx::Point(bounds_in_portrait.x() - 100, bounds_in_portrait.y() - 100),
       bounds_in_portrait.size()));
-  window_state->set_bounds_changed_by_user(true);
+  window_state->SetBoundsChangedByUser(true);
   bounds_in_portrait = w1->GetBoundsInScreen();
   EXPECT_FALSE(window_state->persistent_window_info_of_screen_rotation());
 

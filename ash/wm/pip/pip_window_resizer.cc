@@ -324,7 +324,7 @@ void PipWindowResizer::CompleteDrag() {
       last_location_in_screen_.value_or(gfx::PointF()));
 
   window_state()->ClearRestoreBounds();
-  window_state()->set_bounds_changed_by_user(moved_or_resized_);
+  window_state()->SetBoundsChangedByUser(moved_or_resized_);
 
   int fling_amount = fling_velocity_x_ * fling_velocity_x_ +
                      fling_velocity_y_ * fling_velocity_y_;

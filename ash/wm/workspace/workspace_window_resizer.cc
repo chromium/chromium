@@ -836,7 +836,7 @@ void WorkspaceWindowResizer::CompleteDrag() {
   }
 
   ResetFrameRestoreLookKey(window_state());
-  window_state()->set_bounds_changed_by_user(true);
+  window_state()->SetBoundsChangedByUser(true);
   snap_phantom_window_controller_.reset();
 
   // If the window's state type changed over the course of the drag do not snap
@@ -965,7 +965,7 @@ void WorkspaceWindowResizer::RevertDrag() {
 
   window_state()->OnRevertDrag(last_location_in_screen_);
   EndDragForAttachedWindows(/*revert_drag=*/true);
-  window_state()->set_bounds_changed_by_user(initial_bounds_changed_by_user_);
+  window_state()->SetBoundsChangedByUser(initial_bounds_changed_by_user_);
   snap_phantom_window_controller_.reset();
 
   if (!did_move_or_resize_) {

@@ -632,7 +632,7 @@ void TabletModeWindowState::DoTabletSnap(
     return;
   }
 
-  window_state->set_bounds_changed_by_user(true);
+  window_state->SetBoundsChangedByUser(true);
   chromeos::WindowStateType new_state_type =
       snap_event_type == WM_EVENT_SNAP_PRIMARY
           ? WindowStateType::kPrimarySnapped

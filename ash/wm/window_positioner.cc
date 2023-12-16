@@ -324,9 +324,9 @@ void RearrangeVisibleWindowOnShow(aura::Window* added_window) {
   if (single_window) {
     // When going from one to two windows both windows loose their
     // "positioned by user" flags.
-    added_window_state->set_bounds_changed_by_user(false);
+    added_window_state->SetBoundsChangedByUser(false);
     WindowState* other_window_state = WindowState::Get(other_shown_window);
-    other_window_state->set_bounds_changed_by_user(false);
+    other_window_state->SetBoundsChangedByUser(false);
 
     if (WindowPositionCanBeManaged(other_shown_window)) {
       // Don't override pre auto managed bounds as the current bounds

@@ -271,7 +271,7 @@ TEST_F(DisplayMoveWindowUtilTest, KeepWindowBoundsIfNotChangedByUser) {
   // Move window to display [p] and set that its bounds is changed by user.
   WindowState* window_state = WindowState::Get(window);
   PerformMoveWindowAccel();
-  window_state->set_bounds_changed_by_user(true);
+  window_state->SetBoundsChangedByUser(true);
   // Move window back to display [1], but its bounds has been changed by user.
   // Then window bounds should be kept the same as that in display [p].
   PerformMoveWindowAccel();
