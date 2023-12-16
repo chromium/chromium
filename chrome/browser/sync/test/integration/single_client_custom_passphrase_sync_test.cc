@@ -59,8 +59,7 @@ class CommittedBookmarkEntityNameObserver : public FakeServer::Observer {
     fake_server_->RemoveObserver(this);
   }
 
-  void OnCommit(const std::string& committer_invalidator_client_id,
-                ModelTypeSet committed_model_types) override {
+  void OnCommit(ModelTypeSet committed_model_types) override {
     sync_pb::ClientToServerMessage message;
     fake_server_->GetLastCommitMessage(&message);
     for (const sync_pb::SyncEntity& entity : message.commit().entries()) {

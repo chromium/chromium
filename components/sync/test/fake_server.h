@@ -73,8 +73,7 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
 
     // Called after FakeServer has processed a successful commit. The types
     // updated as part of the commit are passed in |committed_model_types|.
-    virtual void OnCommit(const std::string& committer_invalidator_client_id,
-                          syncer::ModelTypeSet committed_model_types) {}
+    virtual void OnCommit(syncer::ModelTypeSet committed_model_types) {}
 
     // Called after FakeServer has processed a successful get updates request.
     virtual void OnSuccessfulGetUpdates() {}
@@ -248,8 +247,7 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   void TriggerMigrationDoneError(syncer::ModelTypeSet types);
 
   // Implement LoopbackServer::ObserverForTests:
-  void OnCommit(const std::string& committer_invalidator_client_id,
-                syncer::ModelTypeSet committed_model_types) override;
+  void OnCommit(syncer::ModelTypeSet committed_model_types) override;
   void OnHistoryCommit(const std::string& url) override;
 
   // Returns all URLs that were committed to server-side history through the
