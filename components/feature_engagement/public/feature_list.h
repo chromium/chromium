@@ -298,6 +298,7 @@ DEFINE_VARIATION_PARAM(kIPHDesktopNewTabPageModulesCustomizeFeature,
                        "IPH_DesktopNewTabPageModulesCustomize");
 DEFINE_VARIATION_PARAM(kIPHDesktopTabGroupsNewGroupFeature,
                        "IPH_DesktopTabGroupsNewGroup");
+DEFINE_VARIATION_PARAM(kIPHDownloadEsbPromoFeature, "IPH_DownloadEsbPromo");
 DEFINE_VARIATION_PARAM(kIPHDownloadToolbarButtonFeature,
                        "IPH_DownloadToolbarButton");
 #if BUILDFLAG(ENABLE_EXTENSIONS)

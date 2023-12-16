@@ -4578,13 +4578,6 @@ class DisableSafeBrowsingOnInProgressDownload
   bool final_state_seen_;
 };
 
-#if BUILDFLAG(IS_WIN)
-const char kDangerousMockFilePath[] = "/downloads/dangerous/dangerous.exe";
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1264058): Find an actually "dangerous" extension for Fuchsia.
-const char kDangerousMockFilePath[] = "/downloads/dangerous/dangerous.sh";
-#endif
-
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(DownloadTest,
@@ -4593,7 +4586,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
                                                true);
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL download_url = embedded_test_server()->GetURL(kDangerousMockFilePath);
+  GURL download_url =
+      embedded_test_server()->GetURL(DownloadTestBase::kDangerousMockFilePath);
 
   std::unique_ptr<content::DownloadTestObserver> dangerous_observer(
       DangerousDownloadWaiter(
@@ -4629,7 +4623,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DangerousFileWithSBDisabledBeforeStart) {
                                                false);
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL download_url = embedded_test_server()->GetURL(kDangerousMockFilePath);
+  GURL download_url =
+      embedded_test_server()->GetURL(DownloadTestBase::kDangerousMockFilePath);
 
   std::unique_ptr<content::DownloadTestObserver> dangerous_observer(
       DangerousDownloadWaiter(
@@ -4804,7 +4799,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,
   // Make a dangerous file.
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL download_url = embedded_test_server()->GetURL(kDangerousMockFilePath);
+  GURL download_url =
+      embedded_test_server()->GetURL(DownloadTestBase::kDangerousMockFilePath);
 
   std::unique_ptr<content::DownloadTestObserver> dangerous_observer(
       DangerousDownloadWaiter(
@@ -4842,7 +4838,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,
   // Make a dangerous file.
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL download_url = embedded_test_server()->GetURL(kDangerousMockFilePath);
+  GURL download_url =
+      embedded_test_server()->GetURL(DownloadTestBase::kDangerousMockFilePath);
   auto* download_protection_service =
       static_cast<FakeDownloadProtectionService*>(
           g_browser_process->safe_browsing_service()
@@ -4892,7 +4889,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,
   // Make a dangerous file.
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL download_url = embedded_test_server()->GetURL(kDangerousMockFilePath);
+  GURL download_url =
+      embedded_test_server()->GetURL(DownloadTestBase::kDangerousMockFilePath);
   std::unique_ptr<content::DownloadTestObserver> dangerous_observer(
       DangerousDownloadWaiter(
           browser(), 1,
@@ -4929,7 +4927,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,
   // Make a dangerous file.
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL download_url = embedded_test_server()->GetURL(kDangerousMockFilePath);
+  GURL download_url =
+      embedded_test_server()->GetURL(DownloadTestBase::kDangerousMockFilePath);
 
   std::unique_ptr<content::DownloadTestObserver> dangerous_observer(
       DangerousDownloadWaiter(
