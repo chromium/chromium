@@ -1168,7 +1168,7 @@
 <translation id="3399952811970034796">Adresă de livrare</translation>
 <translation id="3402261774528610252">Conexiunea folosită pentru a încărca acest site a utilizat TLS 1.0 sau TLS 1.1, care sunt învechite și vor fi dezactivate în viitor. După dezactivare, utilizatorii nu vor mai putea să încarce site-ul. Serverul ar trebui să activeze TLS 1.2 sau o versiune ulterioară.</translation>
 <translation id="3405664148539009465">Personalizați fonturile</translation>
-<translation id="3407789382767355356">conectarea prin terți</translation>
+<translation id="3407789382767355356">conectarea prin terță parte</translation>
 <translation id="3409896703495473338">Gestionează setările de securitate</translation>
 <translation id="3414952576877147120">Dimensiune:</translation>
 <translation id="341513675006332771">Butonul Joacă Chrome Dino din Chrome, activează pentru a juca Dino Run în Chrome</translation>
@@ -1385,7 +1385,7 @@
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Browserul este gestionat de <ph name="BROWSER_DOMAIN" />, iar profilul este gestionat de <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Dacă utilizați un server proxy...</translation>
-<translation id="3826050100957962900">Conectarea prin terți</translation>
+<translation id="3826050100957962900">Conectarea prin terță parte</translation>
 <translation id="3827112369919217609">Absolută</translation>
 <translation id="3827666161959873541">Filme pentru toată familia</translation>
 <translation id="3828924085048779000">Trebuie să fie introdusă expresia de acces.</translation>
