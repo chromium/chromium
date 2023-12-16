@@ -23,7 +23,7 @@
 #include <mach/vm_page_size.h>
 #endif
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 #include "partition_alloc/tagging.h"
 #endif
 
@@ -335,7 +335,7 @@ static_assert(kThreadIsolatedPoolHandle == kNumPools,
 // of large areas which are less likely to benefit from MTE protection.
 constexpr size_t kMaxMemoryTaggingSize = 1024;
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 // Returns whether the tag of |object| overflowed, meaning the containing slot
 // needs to be moved to quarantine.
 PA_ALWAYS_INLINE bool HasOverflowTag(void* object) {
@@ -345,7 +345,7 @@ PA_ALWAYS_INLINE bool HasOverflowTag(void* object) {
                 "Overflow tag must be in tag bits");
   return (reinterpret_cast<uintptr_t>(object) & kPtrTagMask) == kOverflowTag;
 }
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 NumPartitionPagesPerSuperPage() {

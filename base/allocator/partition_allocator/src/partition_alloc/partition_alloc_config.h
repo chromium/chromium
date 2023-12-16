@@ -159,15 +159,7 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_CONFIG_HAS_FREELIST_SHADOW_ENTRY() 0
 #endif
 
-#if defined(ARCH_CPU_ARM64) && defined(__clang__) && \
-    !defined(ADDRESS_SANITIZER) &&                   \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
-#define PA_CONFIG_HAS_MEMORY_TAGGING() 1
-#else
-#define PA_CONFIG_HAS_MEMORY_TAGGING() 0
-#endif
-
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 static_assert(sizeof(void*) == 8);
 #endif
 
@@ -175,13 +167,13 @@ static_assert(sizeof(void*) == 8);
 // count will cause a race (crbug.com/1445816). To prevent this, the
 // ref_count_size is increased to the MTE granule size and the ref count is not
 // tagged.
-#if PA_CONFIG(HAS_MEMORY_TAGGING) &&            \
+#if BUILDFLAG(HAS_MEMORY_TAGGING) &&            \
     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
     BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 #define PA_CONFIG_INCREASE_REF_COUNT_SIZE_FOR_MTE() 1
 #else
 #define PA_CONFIG_INCREASE_REF_COUNT_SIZE_FOR_MTE() 0
-#endif
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
 // Specifies whether allocation extras need to be added.
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -335,7 +327,7 @@ constexpr bool kUseLazyCommit = false;
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 #error "Dynamically selected pool size is currently not supported"
 #endif
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 // TODO(1376980): Address MTE once it's enabled.
 #error "Compressed pointers don't support tag in the upper bits"
 #endif

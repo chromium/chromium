@@ -12,6 +12,7 @@
 
 #include <algorithm>
 
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
 #include "base/android/build_info.h"
 #include "base/android/java_exception_reporter.h"
@@ -709,12 +710,12 @@ bool PlatformCrashpadInitialization(
   if (browser_process) {
     HandlerStarter* starter = HandlerStarter::Get();
     *database_path = starter->Initialize(dump_at_crash);
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
     // Handler gets called in SignalHandler::HandleOrReraiseSignal() after
     // reporting the crash.
     crashpad::CrashpadClient::SetLastChanceExceptionHandler(
         partition_alloc::PermissiveMte::HandleCrash);
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
     return true;
   }
 
@@ -722,10 +723,10 @@ bool PlatformCrashpadInitialization(
   bool result = handler->Initialize(dump_at_crash);
   DCHECK(result);
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
   handler->SetLastChanceExceptionHandler(
       partition_alloc::PermissiveMte::HandleCrash);
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
   *database_path = base::FilePath();
   return true;

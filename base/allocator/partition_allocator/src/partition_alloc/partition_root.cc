@@ -1001,7 +1001,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
       PA_CHECK(!scheduler_loop_quarantine.has_value());
     }
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
     settings.memory_tagging_enabled_ =
         opts.memory_tagging.enabled == PartitionOptions::kEnabled;
     // Memory tagging is not supported in the configurable pool because MTE
@@ -1014,7 +1014,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
     settings.memory_tagging_reporting_mode_ =
         opts.memory_tagging.reporting_mode;
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
     // brp_enabled() is not supported in the configurable pool because
     // BRP requires objects to be in a different Pool.

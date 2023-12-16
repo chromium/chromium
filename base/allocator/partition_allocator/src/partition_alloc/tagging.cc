@@ -7,10 +7,11 @@
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/cpu.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 #include <arm_acle.h>
 #include <asm/hwcap.h>
 #include <sys/auxv.h>
@@ -48,7 +49,7 @@
 
 namespace partition_alloc {
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 namespace {
 void ChangeMemoryTaggingModeInternal(unsigned prctl_mask) {
   if (internal::base::CPU::GetInstanceNoAllocation().has_mte()) {
@@ -57,10 +58,10 @@ void ChangeMemoryTaggingModeInternal(unsigned prctl_mask) {
   }
 }
 }  // namespace
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
 void ChangeMemoryTaggingModeForCurrentThread(TagViolationReportingMode m) {
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
   if (m == TagViolationReportingMode::kSynchronous) {
     ChangeMemoryTaggingModeInternal(PR_TAGGED_ADDR_ENABLE | PR_MTE_TCF_SYNC |
                                     (0xfffe << PR_MTE_TAG_SHIFT));
@@ -70,7 +71,7 @@ void ChangeMemoryTaggingModeForCurrentThread(TagViolationReportingMode m) {
   } else {
     ChangeMemoryTaggingModeInternal(PR_TAGGED_ADDR_ENABLE | PR_MTE_TCF_NONE);
   }
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 }
 
 namespace internal {
@@ -78,7 +79,7 @@ namespace internal {
 #if BUILDFLAG(IS_ANDROID)
 void ChangeMemoryTaggingModeForAllThreadsPerProcess(
     TagViolationReportingMode m) {
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
   // In order to support Android NDK API level below 26, we need to call
   // mallopt via dynamic linker.
   // int mallopt(int param, int value);
@@ -109,7 +110,7 @@ void ChangeMemoryTaggingModeForAllThreadsPerProcess(
                            M_HEAP_TAGGING_LEVEL_NONE);
   }
   PA_CHECK(status);
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -122,7 +123,7 @@ namespace {
   return ret;
 }
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 void* TagRegionRandomlyForMTE(void* ptr, size_t sz, uint64_t mask) {
   // Randomly tag a region (MTE-enabled systems only). The first 16-byte
   // granule is randomly tagged, all other granules in the region are
@@ -179,11 +180,11 @@ void* TagRegionRandomlyNoOp(void* ptr, size_t sz, uint64_t mask) {
 void* RemaskVoidPtrNoOp(void* ptr) {
   return ptr;
 }
-#endif
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
 }  // namespace
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 using RemaskPtrInternalFn = void*(void* ptr);
 using TagMemoryRangeIncrementInternalFn = void*(void* ptr, size_t size);
 
@@ -221,10 +222,10 @@ void* TagMemoryRangeRandomlyInternal(void* ptr, size_t size, uint64_t mask)
     __attribute__((ifunc("ResolveTagMemoryRandomly")));
 void* RemaskPointerInternal(void* ptr)
     __attribute__((ifunc("ResolveRemaskPointer")));
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
 TagViolationReportingMode GetMemoryTaggingModeForCurrentThread() {
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
   base::CPU cpu;
   if (!cpu.has_mte()) {
     return TagViolationReportingMode::kUndefined;
@@ -242,12 +243,12 @@ TagViolationReportingMode GetMemoryTaggingModeForCurrentThread() {
   return TagViolationReportingMode::kDisabled;
 #else
   return TagViolationReportingMode::kUndefined;
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 }
 
 }  // namespace internal
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING) && BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(HAS_MEMORY_TAGGING) && BUILDFLAG(IS_ANDROID)
 bool PermissiveMte::enabled_ = false;
 
 // static
@@ -271,6 +272,6 @@ bool PermissiveMte::HandleCrash(int signo,
   }
   return false;
 }
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING) && BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING) && BUILDFLAG(IS_ANDROID)
 
 }  // namespace partition_alloc

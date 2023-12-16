@@ -322,7 +322,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   trials.emplace(base::features::kRendererLiveBRPSyntheticTrialName, "Control");
 #endif
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocMemoryTagging)) {
     if (base::CPU::GetInstanceNoAllocation().has_mte()) {
@@ -331,7 +331,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
       trials.emplace("MemoryTaggingDogfood", "Disabled");
     }
   }
-#endif
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
   return trials;
 }
@@ -1092,7 +1092,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode =
       partition_alloc::TagViolationReportingMode::kUndefined;
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
   // ShouldEnableMemoryTagging() checks kKillPartitionAllocMemoryTagging but
   // check here too to wrap the GetMemoryTaggingModeForCurrentThread() call.
   if (!base::FeatureList::IsEnabled(
@@ -1139,7 +1139,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 #endif  // BUILDFLAG(IS_ANDROID)
     }
   }
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
   if (enable_memory_tagging) {
     CHECK((memory_tagging_reporting_mode ==

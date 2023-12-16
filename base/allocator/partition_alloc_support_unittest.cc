@@ -266,7 +266,7 @@ TEST(PartitionAllocSupportTest,
 #endif
 }
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 TEST(PartitionAllocSupportTest,
      ProposeSyntheticFinchTrials_MemoryTaggingDogfood) {
   {
@@ -295,6 +295,6 @@ TEST(PartitionAllocSupportTest,
     EXPECT_EQ(group_iter->second, expectation);
   }
 }
-#endif
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
 }  // namespace base::allocator

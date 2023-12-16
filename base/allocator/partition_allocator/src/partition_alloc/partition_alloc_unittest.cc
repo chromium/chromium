@@ -404,7 +404,7 @@ class PartitionAllocTest
 #if BUILDFLAG(ENABLE_PKEYS)
     opts.thread_isolation = thread_isolation_opt;
 #endif
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
     opts.memory_tagging = {
         .enabled =
             partition_alloc::internal::base::CPU::GetInstanceNoAllocation()
@@ -412,7 +412,7 @@ class PartitionAllocTest
                 ? PartitionOptions::kEnabled
                 : PartitionOptions::kDisabled,
     };
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
     InitializeTestRoot(
         allocator.root(), opts,
         PartitionTestOptions{.use_memory_reclaimer = true,
@@ -1416,7 +1416,7 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(requested_size, predicted_capacity);
 }
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
   // This test checks that Arm's memory tagging extension (MTE) is correctly
   // protecting freed pointers.
@@ -1455,7 +1455,7 @@ TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
   // We don't check anything about ptr3, but we do clean it up to avoid DCHECKs.
   allocator.root()->Free(ptr3);
 }
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 TEST_P(PartitionAllocTest, IsPtrWithinSameAlloc) {
@@ -2462,7 +2462,7 @@ TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedReallocReturnNull) {
                "Passed DoReturnNullTest");
 }
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 // Check that Arm's memory tagging extension (MTE) is correctly protecting
 // freed pointers. Writes to a free pointer should result in a crash.
 TEST_P(PartitionAllocDeathTest, MTEProtectsFreedPtr) {
@@ -2495,7 +2495,7 @@ TEST_P(PartitionAllocDeathTest, MTEProtectsFreedPtr) {
       },
       testing::KilledBySignal(SIGSEGV), "");
 }
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
 // Make sure that malloc(-1) dies.
 // In the past, we had an integer overflow that would alias malloc(-1) to

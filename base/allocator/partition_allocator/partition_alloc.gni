@@ -29,6 +29,9 @@ if (is_nacl) {
   assert(false, "Unknown CPU: $current_cpu")
 }
 
+has_memory_tagging =
+    current_cpu == "arm64" && is_clang && !is_asan && (is_linux || is_android)
+
 declare_args() {
   # Causes all the allocations to be routed via allocator_shim.cc. Usually,
   # the allocator shim will, in turn, route them to Partition Alloc, but
@@ -231,6 +234,10 @@ pcscan_stack_supported =
 # args, but there is no point in having them fire if we're not building
 # PartitionAlloc at all. If `use_partition_alloc` is false, we jam all
 # related args to `false`.
+#
+# Do not clear the following, as they can function outside of PartitionAlloc
+# - has_64_bit_pointers
+# - has_memory_tagging
 if (!use_partition_alloc) {
   use_partition_alloc_as_malloc = false
   enable_backup_ref_ptr_support = false

@@ -574,7 +574,7 @@ uint8_t ComputeSystemPagesPerSlotSpanInternal(size_t slot_size) {
   return static_cast<uint8_t>(best_pages);
 }
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 // Returns size that should be tagged. Avoiding the previous slot ref count if
 // it exists to avoid a race (crbug.com/1445816).
 PA_ALWAYS_INLINE size_t TagSizeForSlot(PartitionRoot* root, size_t slot_size) {
@@ -584,7 +584,7 @@ PA_ALWAYS_INLINE size_t TagSizeForSlot(PartitionRoot* root, size_t slot_size) {
   return slot_size;
 #endif
 }
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
 }  // namespace
 
@@ -969,21 +969,21 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
                 slot_span->num_unprovisioned_slots <=
             get_slots_per_span());
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
   const bool use_tagging =
       root->IsMemoryTaggingEnabled() && slot_size <= kMaxMemoryTaggingSize;
   if (PA_LIKELY(use_tagging)) {
     // Ensure the MTE-tag of the memory pointed by |return_slot| is unguessable.
     TagMemoryRangeRandomly(return_slot, TagSizeForSlot(root, slot_size));
   }
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
   // Add all slots that fit within so far committed pages to the free list.
   PartitionFreelistEntry* prev_entry = nullptr;
   uintptr_t next_slot_end = next_slot + slot_size;
   size_t free_list_entries_added = 0;
   while (next_slot_end <= commit_end) {
     void* next_slot_ptr;
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
     if (PA_LIKELY(use_tagging)) {
       // Ensure the MTE-tag of the memory pointed by other provisioned slot is
       // unguessable. They will be returned to the app as is, and the MTE-tag
@@ -994,7 +994,7 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
       // No MTE-tagging for larger slots, just cast.
       next_slot_ptr = reinterpret_cast<void*>(next_slot);
     }
-#else  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#else  // BUILDFLAG(HAS_MEMORY_TAGGING)
     next_slot_ptr = reinterpret_cast<void*>(next_slot);
 #endif
     auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(next_slot_ptr);

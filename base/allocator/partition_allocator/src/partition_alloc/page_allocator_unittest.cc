@@ -18,6 +18,7 @@
 #include "partition_alloc/partition_alloc_base/cpu.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/tagging.h"
 
@@ -36,12 +37,12 @@
 
 #include "partition_alloc/arm_bti_test_functions.h"
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 #include <arm_acle.h>
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 #define MTE_KILLED_BY_SIGNAL_AVAILABLE
 #endif
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
