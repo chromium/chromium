@@ -30187,6 +30187,7 @@ from previous Chrome versions.
       label="PolicyBlocklistThrottleRequiresPoliciesLoaded:enabled"/>
   <int value="-1392627070" label="AppShimNotificationAttribution:disabled"/>
   <int value="-1392562498" label="disable-origin-chip"/>
+  <int value="-1392231827" label="kTearOffWebAppTabOpensWebAppWindow:enabled"/>
   <int value="-1391728260" label="ContextualSearchDefinitions:enabled"/>
   <int value="-1391693054"
       label="ContentSuggestionsFaviconsFromNewServer:disabled"/>
@@ -31899,6 +31900,7 @@ from previous Chrome versions.
   <int value="-579192400" label="disable-input-view"/>
   <int value="-577982497" label="CupsPrintersUiOverhaul:enabled"/>
   <int value="-577503348" label="GridTabSwitcherForTablets:disabled"/>
+  <int value="-577443556" label="kTearOffWebAppTabOpensWebAppWindow:disabled"/>
   <int value="-576759065" label="HoldingSpaceInProgressAnimationV2:disabled"/>
   <int value="-576656013" label="WebAppSystemMediaControlsWin:enabled"/>
   <int value="-576475188" label="BorealisForceDoubleScale:disabled"/>
@@ -32140,6 +32142,7 @@ from previous Chrome versions.
   <int value="-466047052" label="EnableRuntimeCountersTelemetry:disabled"/>
   <int value="-465429170" label="BackGestureRefactorActivityAndroid:enabled"/>
   <int value="-465381408" label="Sharesheet:disabled"/>
+  <int value="-463161052" label="TearOffWebAppTabOpensWebAppWindow:enabled"/>
   <int value="-462554210"
       label="OminboxUIExperimentUseGenericSearchEngineIcon:enabled"/>
   <int value="-462404204" label="CryptAuthV2DeviceSync:disabled"/>
@@ -33498,6 +33501,7 @@ from previous Chrome versions.
   <int value="180414503"
       label="JourneysOmniboxHistoryClusterProvider:disabled"/>
   <int value="181150000" label="CrosVmCupsProxy:enabled"/>
+  <int value="181908345" label="TearOffWebAppTabOpensWebAppWindow:disabled"/>
   <int value="182358203" label="AddToHomescreenIPH:enabled"/>
   <int value="182788555" label="DecoupleSyncFromAndroidMasterSync:disabled"/>
   <int value="182986882" label="TerminalSSH:disabled"/>

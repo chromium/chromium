@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_session.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/webapps/common/web_app_id.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/geometry/rect.h"
@@ -559,6 +560,11 @@ class TabDragController : public views::WidgetObserver,
                                         const gfx::Point& point_in_screen,
                                         gfx::Vector2d* drag_offset,
                                         std::vector<gfx::Rect>* drag_bounds);
+
+  // If the user is dragging a single tab that is controlled by one web app,
+  // and features::kTearOffWebAppTabOpensWebAppWindow is enabled,
+  // returns the app id of that web app, nullopt otherwise.
+  std::optional<webapps::AppId> GetControllingAppForDrag(Browser* browser);
 
   // Creates and returns a new Browser to handle the drag.
   Browser* CreateBrowserForDrag(TabDragContext* source,

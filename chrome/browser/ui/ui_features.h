@@ -213,6 +213,8 @@ extern const base::FeatureParam<int> kTabSearchRecentlyClosedTabCountThreshold;
 
 BASE_DECLARE_FEATURE(kTabSearchUseMetricsReporter);
 
+BASE_DECLARE_FEATURE(kTearOffWebAppTabOpensWebAppWindow);
+
 // Determines how screenshots of the toolbar uses Software or Hardware drawing.
 // Works on Android 10+.
 BASE_DECLARE_FEATURE(kToolbarUseHardwareBitmapDraw);

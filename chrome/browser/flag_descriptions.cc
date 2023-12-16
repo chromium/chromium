@@ -3322,6 +3322,11 @@ const char kTabSearchFuzzySearchName[] = "Fuzzy search for Tab Search";
 const char kTabSearchFuzzySearchDescription[] =
     "Enable fuzzy search for Tab Search.";
 
+const char kTearOffWebAppAppTabOpensWebAppWindowName[] = "Tear Off Web App Tab";
+const char kTearOffWebAppAppTabOpensWebAppWindowDescription[] =
+    "Open Web App window when tearing off a tab that's displaying a url "
+    "handled by an installed Web App.";
+
 const char kTextInShelfName[] = "Internal test: text in shelf";
 const char kTextInShelfDescription[] =
     "Extend text in shelf timeout to learn about user education";

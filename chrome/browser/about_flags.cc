@@ -11045,6 +11045,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kMacImeLiveConversionFix)},
 #endif
 
+    {"tear-off-web-app-tab-opens-web-app-window",
+     flag_descriptions::kTearOffWebAppAppTabOpensWebAppWindowName,
+     flag_descriptions::kTearOffWebAppAppTabOpensWebAppWindowDescription,
+     kOsAll, FEATURE_VALUE_TYPE(features::kTearOffWebAppTabOpensWebAppWindow)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

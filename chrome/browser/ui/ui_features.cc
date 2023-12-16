@@ -335,6 +335,12 @@ BASE_FEATURE(kTabSearchUseMetricsReporter,
              "TabSearchUseMetricsReporter",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables creating a web app window when tearing off a tab with a url
+// controlled by a web app.
+BASE_FEATURE(kTearOffWebAppTabOpensWebAppWindow,
+             "TearOffWebAppTabOpensWebAppWindow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kToolbarUseHardwareBitmapDraw,
              "ToolbarUseHardwareBitmapDraw",
              base::FEATURE_DISABLED_BY_DEFAULT);
