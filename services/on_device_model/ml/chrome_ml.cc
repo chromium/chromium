@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/native_library.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -37,6 +38,20 @@ constexpr std::string_view kChromeMLLibraryName = "optimization_guide_internal";
 const base::FeatureParam<std::string> kGpuBlockList{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_model_gpu_block_list", ""};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GpuBlockedReason {
+  kGpuConfigError = 0,
+  kBlocklisted = 1,
+  kBlocklistedForCpuAdapter = 2,
+  kNotBlocked = 3,
+  kMaxValue = kNotBlocked,
+};
+
+void LogGpuBlocked(GpuBlockedReason reason) {
+  base::UmaHistogramEnumeration("OnDeviceModel.GpuBlockedReason", reason);
+}
 
 }  // namespace
 
@@ -106,6 +121,7 @@ DISABLE_CFI_DLSYM
 bool ChromeML::IsGpuBlocked() const {
   GpuConfig gpu_config;
   if (!api().GetGpuConfig(gpu_config)) {
+    LogGpuBlocked(GpuBlockedReason::kGpuConfigError);
     LOG(ERROR) << "Unable to get gpu config";
     return true;
   }
@@ -118,9 +134,15 @@ bool ChromeML::IsGpuBlocked() const {
   wgpu_adapter_properties.backendType = gpu_config.backend_type;
   if (gpu::IsWebGPUAdapterBlocklisted(wgpu_adapter_properties,
                                       kGpuBlockList.Get())) {
+    if (gpu_config.adapter_type == WGPUAdapterType_CPU) {
+      LogGpuBlocked(GpuBlockedReason::kBlocklistedForCpuAdapter);
+    } else {
+      LogGpuBlocked(GpuBlockedReason::kBlocklisted);
+    }
     LOG(ERROR) << "WebGPU blocked on this device";
     return true;
   }
+  LogGpuBlocked(GpuBlockedReason::kNotBlocked);
   return false;
 }
 
