@@ -118,8 +118,25 @@ CaretDisplayItemClient::ComputeCaretRectAndPainterBlock(
 
   // Get the layoutObject that will be responsible for painting the caret
   // (which is either the layoutObject we just found, or one of its containers).
-  LayoutBlock* caret_block =
-      CaretLayoutBlock(caret_position.AnchorNode(), caret_rect.layout_object);
+  LayoutBlock* caret_block;
+  if (caret_rect.root_box_fragment) {
+    caret_block =
+        To<LayoutBlock>(caret_rect.root_box_fragment->GetMutableLayoutObject());
+    // The root box fragment's layout object should always match the one we'd
+    // get from CaretLayoutBlock, except for atomic inline-level LayoutBlocks
+    // (i.e. display: inline-block). In those cases, the layout object should be
+    // either the caret rect's layout block, or its containing block.
+    if (!caret_rect.layout_object->IsLayoutBlock() &&
+        !caret_rect.layout_object->IsAtomicInlineLevel()) {
+      DCHECK_EQ(caret_block, CaretLayoutBlock(caret_position.AnchorNode(),
+                                              caret_rect.layout_object));
+    } else if (caret_block != caret_rect.layout_object) {
+      DCHECK_EQ(caret_block, caret_rect.layout_object->ContainingBlock());
+    }
+  } else {
+    caret_block =
+        CaretLayoutBlock(caret_position.AnchorNode(), caret_rect.layout_object);
+  }
   return {MapCaretRectToCaretPainter(caret_block, caret_rect), caret_block,
           caret_rect.root_box_fragment};
 }
