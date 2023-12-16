@@ -92,20 +92,20 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionAutomaticLanguageDownloadTest,
       frame_host, "de-de", media::mojom::ConfidenceLevel::kHighlyConfident,
       media::mojom::AsrSwitchResult::kDefaultNoSwitch);
   OnLanguageIdentificationEvent(
-      frame_host, "es-es", media::mojom::ConfidenceLevel::kHighlyConfident,
+      frame_host, "fr-fr", media::mojom::ConfidenceLevel::kHighlyConfident,
       media::mojom::AsrSwitchResult::kDefaultNoSwitch);
   OnLanguageIdentificationEvent(
-      frame_host, "es-es", media::mojom::ConfidenceLevel::kHighlyConfident,
+      frame_host, "fr-fr", media::mojom::ConfidenceLevel::kHighlyConfident,
       media::mojom::AsrSwitchResult::kDefaultNoSwitch);
 
   OnLanguageIdentificationEvent(
-      frame_host, "fr-fr", media::mojom::ConfidenceLevel::kHighlyConfident,
+      frame_host, "es-us", media::mojom::ConfidenceLevel::kHighlyConfident,
       media::mojom::AsrSwitchResult::kDefaultNoSwitch);
   OnLanguageIdentificationEvent(
-      frame_host, "fr-fr", media::mojom::ConfidenceLevel::kHighlyConfident,
+      frame_host, "es-us", media::mojom::ConfidenceLevel::kHighlyConfident,
       media::mojom::AsrSwitchResult::kDefaultNoSwitch);
   OnLanguageIdentificationEvent(
-      frame_host, "fr-fr", media::mojom::ConfidenceLevel::kHighlyConfident,
+      frame_host, "es-us", media::mojom::ConfidenceLevel::kHighlyConfident,
       media::mojom::AsrSwitchResult::kDefaultNoSwitch);
 
   size_t expected_language_pack_count = 2u;
@@ -113,10 +113,10 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionAutomaticLanguageDownloadTest,
   std::set<speech::LanguageCode> installed_languages = GetInstalledLanguages();
   ASSERT_EQ(expected_language_pack_count, installed_languages.size());
 
-  // The en-US language pack is downloaded by default. Only the fr-FR language
+  // The en-US language pack is downloaded by default. Only the es-ES language
   // pack should be automatically downloaded.
   ASSERT_TRUE(base::Contains(installed_languages, speech::LanguageCode::kEnUs));
-  ASSERT_TRUE(base::Contains(installed_languages, speech::LanguageCode::kFrFr));
+  ASSERT_TRUE(base::Contains(installed_languages, speech::LanguageCode::kEsEs));
 }
 
 }  // namespace captions
