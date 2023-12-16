@@ -32,7 +32,9 @@
 #include "base/time/time.h"
 #include "base/traits_bag.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -255,6 +257,9 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
     CreatePrimaryProfile();
 
     InitExtensionSystem(primary_profile_);
+
+    apps::WaitForAppServiceProxyReady(
+        apps::AppServiceProxyFactory::GetForProfile(primary_profile_));
 
     // Needed by note taking helper.
     arc_session_manager_ = arc::CreateTestArcSessionManager(

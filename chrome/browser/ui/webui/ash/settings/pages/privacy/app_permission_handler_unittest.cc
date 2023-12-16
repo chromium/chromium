@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/mojom/app_permission_handler.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -112,7 +114,8 @@ class AppPermissionHandlerTest : public testing::Test {
 
   void SetUp() override {
     app_service_proxy_ =
-        std::make_unique<apps::AppServiceProxy>(profile_.get());
+        apps::AppServiceProxyFactory::GetForProfile(profile_.get());
+    apps::WaitForAppServiceProxyReady(app_service_proxy_.get());
     handler_ = std::make_unique<AppPermissionHandler>(app_service_proxy_.get());
 
     observer_ = std::make_unique<AppPermissionHandlerTestObserver>();
@@ -121,7 +124,6 @@ class AppPermissionHandlerTest : public testing::Test {
 
   void TearDown() override {
     handler_.reset();
-    app_service_proxy_.reset();
   }
 
  protected:
@@ -181,10 +183,10 @@ class AppPermissionHandlerTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<AppPermissionHandler> handler_;
   std::unique_ptr<AppPermissionHandlerTestObserver> observer_;
-  std::unique_ptr<apps::AppServiceProxy> app_service_proxy_;
-  std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<apps::AppServiceProxy> app_service_proxy_;
 };
 
 TEST_F(AppPermissionHandlerTest, InstallApp) {

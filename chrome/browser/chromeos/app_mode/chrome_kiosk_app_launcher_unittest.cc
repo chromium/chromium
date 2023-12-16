@@ -12,6 +12,9 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -129,6 +132,9 @@ class ChromeKioskAppLauncherTest : public extensions::ExtensionServiceTestBase,
 
     extensions::ExtensionServiceTestBase::SetUp();
     InitializeEmptyExtensionService();
+
+    apps::WaitForAppServiceProxyReady(
+        apps::AppServiceProxyFactory::GetForProfile(profile()));
 
     extensions::TestEventRouter* event_router =
         extensions::CreateAndUseTestEventRouter(browser_context());
