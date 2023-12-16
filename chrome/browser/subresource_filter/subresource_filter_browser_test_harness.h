@@ -94,8 +94,6 @@ class SubresourceFilterBrowserTest : public PlatformBrowserTest {
   ~SubresourceFilterBrowserTest() override;
 
   // Names of DocumentLoad histograms.
-  static constexpr const char kDocumentLoadActivationLevel[] =
-      "SubresourceFilter.DocumentLoad.ActivationState";
 
   static constexpr const char kSubresourceLoadsTotalForPage[] =
       "SubresourceFilter.PageLoad.NumSubresourceLoads.Total";

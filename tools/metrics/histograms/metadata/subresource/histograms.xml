@@ -63,15 +63,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SubresourceFilter.DocumentLoad.ActivationState"
-    enum="SubresourceFilterActivationState" expires_after="2020-10-04">
-  <owner>engedy@chromium.org</owner>
-  <summary>
-    Whenever a document load is committed in any frame, records whether
-    subresource filtering should be activated for that load.
-  </summary>
-</histogram>
-
 <histogram name="SubresourceFilter.DocumentLoad.RulesetIsAvailable"
     enum="BooleanAvailable" expires_after="2024-07-10">
   <owner>alexmt@chromium.org</owner>

@@ -229,8 +229,6 @@ void SubresourceFilterAgent::RecordHistogramsOnFilterCreation(
   // Note: mojom::ActivationLevel used to be called mojom::ActivationState, the
   // legacy name is kept for the histogram.
   mojom::ActivationLevel activation_level = activation_state.activation_level;
-  UMA_HISTOGRAM_ENUMERATION("SubresourceFilter.DocumentLoad.ActivationState",
-                            activation_level);
 
   if (!IsSubresourceFilterChild()) {
     UMA_HISTOGRAM_BOOLEAN(
