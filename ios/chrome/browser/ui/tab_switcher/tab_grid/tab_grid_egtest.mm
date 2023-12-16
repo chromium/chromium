@@ -917,6 +917,14 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
         selectElementWithMatcher:chrome_test_util::TabGridEditSelectAllButton()]
         assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
+    if (error == nil) {
+      // Bypass egtest bug on iOS 15 in which the grid cell element briefly
+      // unselectable.
+      [[EarlGrey
+          selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+          assertWithMatcher:grey_sufficientlyVisible()
+                      error:&error];
+    }
     return (error == nil);
   };
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
