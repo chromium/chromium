@@ -744,11 +744,6 @@ extern const char kOmniboxSuggestionsRTLImprovementsName[] =
 extern const char kOmniboxSuggestionsRTLImprovementsDescription[] =
     "Improved layout for suggestions in right-to-left contexts";
 
-const char kOmniboxTailSuggestName[] = "Omnibox Tail suggestions";
-const char kOmniboxTailSuggestDescription[] =
-    "Enables tail search suggestions. Search suggestions only matching the end "
-    "of users input text.";
-
 const char kOmniboxZeroSuggestInMemoryCachingName[] =
     "Omnibox Zero Prefix Suggestion in-memory caching";
 const char kOmniboxZeroSuggestInMemoryCachingDescription[] =

@@ -647,10 +647,6 @@ extern const char kOmniboxPopulateShortcutsDatabaseDescription[];
 extern const char kOmniboxSuggestionsRTLImprovementsName[];
 extern const char kOmniboxSuggestionsRTLImprovementsDescription[];
 
-// Title and description for tail suggestions in the omnibox.
-extern const char kOmniboxTailSuggestName[];
-extern const char kOmniboxTailSuggestDescription[];
-
 // Title and description for the flag to change the max number of autocomplete
 // matches in the omnibox popup.
 extern const char kOmniboxUIMaxAutocompleteMatchesName[];

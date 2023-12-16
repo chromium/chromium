@@ -12151,22 +12151,17 @@
             ]
         }
     ],
-    "OmniboxTailSuggestIOS": [
+    "OmniboxTextAndAnimationOptimizations": [
         {
             "platforms": [
-                "ios"
+                "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20230811",
                     "enable_features": [
-                        "OmniboxTailSuggest"
-                    ]
-                },
-                {
-                    "name": "Enabled_WithSuggestEmbed",
-                    "enable_features": [
-                        "OmniboxTailSuggest"
+                        "AvoidRelayoutDuringFocusAnimation",
+                        "ScrollToTLDOptimization"
                     ]
                 }
             ]

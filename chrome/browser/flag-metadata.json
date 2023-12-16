@@ -6016,11 +6016,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-tail-suggest",
-    "owners": [ "christianxu@chromium.org", "stkhapugin@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "omnibox-ui-max-autocomplete-matches",
     "owners": [ "jdonnelly@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120
