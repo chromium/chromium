@@ -285,21 +285,29 @@ function initMessages() {
 
 let gNextMessageId = 1;
 
-let gCurrentMessageId;
+class CdpRequest {
+  messageId;
+  /**
+   * CDP can send three possible types of results:
+   *
+   * 1. ProtocolError (id?, error: (code, message), data?)
+   * @see https://github.com/replayio/chromium-v8/blob/c5e451943a6d87b44374e7a08d44fa92b9a2c93b/third_party/inspector_protocol/crdtp/dispatch.cc#L275
+   *
+   * 2. Response (id, result) - The response contains the return values defined by CDP.
+   * @see https://github.com/replayio/chromium-v8/blob/c5e451943a6d87b44374e7a08d44fa92b9a2c93b/third_party/inspector_protocol/crdtp/dispatch.cc#L348
+   *
+   * 3. Notification (method, params) - TODO: we are not handling this yet.
+   * @see https://github.com/replayio/chromium-v8/blob/c5e451943a6d87b44374e7a08d44fa92b9a2c93b/third_party/inspector_protocol/crdtp/dispatch.cc#L370
+   */
+  result;
 
-/**
- * `gCurrentMessageResult` can be of 3 possible types:
- *
- * 1. ProtocolError (id?, error: (code, message), data?)
- * @see https://github.com/replayio/chromium-v8/blob/c5e451943a6d87b44374e7a08d44fa92b9a2c93b/third_party/inspector_protocol/crdtp/dispatch.cc#L275
- *
- * 2. Response (id, result) - The response contains the return values defined by CDP.
- * @see https://github.com/replayio/chromium-v8/blob/c5e451943a6d87b44374e7a08d44fa92b9a2c93b/third_party/inspector_protocol/crdtp/dispatch.cc#L348
- *
- * 3. Notification (method, params) - TODO: we are not handling this yet.
- * @see https://github.com/replayio/chromium-v8/blob/c5e451943a6d87b44374e7a08d44fa92b9a2c93b/third_party/inspector_protocol/crdtp/dispatch.cc#L370
- */
-let gCurrentMessageResult;
+  constructor(messageId) {
+    this.messageId = messageId;
+  }
+}
+
+const gCdpRequestStack = [];
+
 
 class CDPMessageError extends Error {
   constructor(message, code) {
@@ -311,31 +319,34 @@ class CDPMessageError extends Error {
 
 function sendMessage(method, params) {
   const id = gNextMessageId++;
-  gCurrentMessageId = id;
-  gCurrentMessageResult = undefined;
+  const cdpRequest = new CdpRequest(id);
+  gCdpRequestStack.push(cdpRequest);
   const cdpArgs = JSON_stringify({ method, params, id });
   try {
     sendCDPMessage(cdpArgs);
   } catch (err) {
-    if (!gCurrentMessageResult) {
+    if (!cdpRequest.result) {
       throw err;
     } else {
-      // Work around "ghostly" cross-origin (and maybe other?) errors:
+      // The CDP request was serviced, followed by a "ghostly" cross-origin
+      // (and maybe other?) error:
       // Generally speaking, CDP commands should not throw.
-      // If they do, there is a chance that the error was triggered by previous
-      // user JS and only happens to still be pending when Replay commands were
-      // triggered.
+      // If they do, we saw those errors being thrown by previous
+      // user JS which happen to still be pending and then get thrown upon CDP
+      // result return.
       // E.g.: https://linear.app/replay/issue/RUN-1680#comment-1dfa142b
       log(`[RuntimeError][RUN-1680] sendCDPMessage(${method}) failed: ${err?.message}`);
     }
+  } finally {
+    const req = gCdpRequestStack.pop();
+    assert(req === cdpRequest, "CDP request stack corrupted");
   }
-  gCurrentMessageId = undefined;
 
-  if (gCurrentMessageResult?.result) {
-    return gCurrentMessageResult.result;
+  if (cdpRequest.result?.result) {
+    return cdpRequest.result.result;
   }
-  if (gCurrentMessageResult?.error) {
-    throw new CDPMessageError(gCurrentMessageResult.error.message, gCurrentMessageResult.error.code);
+  if (cdpRequest.result?.error) {
+    throw new CDPMessageError(cdpRequest.result.error.message, cdpRequest.result.error.code);
   }
   return undefined;
 }
@@ -350,10 +361,10 @@ function addEventListener(method, callback) {
 function messageCallback(message) {
   try {
     message = JSON_parse(message);
-
     if (message.id) {
-      assert(message.id == gCurrentMessageId);
-      gCurrentMessageResult = message;
+      const request = gCdpRequestStack[gCdpRequestStack.length - 1];
+      assert(message.id === request.messageId, "CDP request stack corrupted");
+      request.result = message;
     } else {
       const listener = gEventListeners.get(message.method);
       if (listener) {
@@ -458,6 +469,7 @@ function commandCallback(method, params) {
     };
   }
 }
+const executeCommand = commandCallback;
 
 function Target_evaluatePrivileged({ expression }) {
   const result = eval(expression);
@@ -661,26 +673,46 @@ function handleEvalError(err) {
   };
 }
 
-function Pause_evaluateInFrame({ frameId, expression }) {
+let gCurrentEvaluateFrame;
+
+/**
+ * This queries all frames and returns the frame of given index.
+ * @param {number} frameIndex
+ */
+function getFrameByIndex(frameIndex) {
   const frames = getStackFrames();
-  const index = +frameId;
-  assert(index < frames.length);
-  const frame = frames[index];
+  assert(frameIndex >= 0 && frameIndex < frames.length, `Invalid frame index: ${frameIndex}`);
+  return frames[frameIndex];
+}
 
-  if (expression === '[...arguments]') {
-    // Short-circuit hackfix: Get array of arguments, no matter where we are.
-    const argsArray = getFrameArgumentsArray(frameId);
-    const argsCdp = makeDebuggeeValue(argsArray);
-    return buildRrpObjectResult({ result: argsCdp });
-  }
+function getFrameByLocation(cdpLocation) {
+  const frames = getStackFrames();
+  return frames.find(
+    f => JSON_stringify(f.location) == JSON_stringify(cdpLocation)
+  );
+}
 
+/**
+ * Returns the frame that `Pause.evaluateInFrame` was called on or undefined,
+ * if not in the context of a `Pause.evaluateInFrame` call.
+ */
+function getCurrentEvaluateFrame() {
+  return gCurrentEvaluateFrame;
+}
+
+function Pause_evaluateInFrame({ frameId: frameIndexStr, expression }) {
+  const frameIndex = +frameIndexStr;
+  const frame = getFrameByIndex(frameIndex);
+  gCurrentEvaluateFrame = frame;
   let rv;
   try {
     rv = doEvaluation();
+    return buildRrpObjectResult(rv);
   } catch (err) {
     return handleEvalError(err);
+  } finally {
+    gCurrentEvaluateFrame = undefined;
   }
-  return buildRrpObjectResult(rv);
 
   function doEvaluation() {
     // In order to do the evaluation in the right frame, the same number of
@@ -999,7 +1031,7 @@ function registerCdpObject(cdpObject) {
 function getCdpObjectByRrpId(rrpId) {
   const cdpObject = gCdpObjectsByRrpId.get(rrpId);
   if (!cdpObject) {
-    throw new Error(`getCdpObjectByRrpId failed - rrpId not found: "${rrpId}"`);
+    throw new Error(`getCdpObjectByRrpId failed - rrpId not found: ${JSON.stringify(rrpId)}`);
   }
   return cdpObject;
 }
@@ -1063,15 +1095,38 @@ function registerRrpCpdId(rrpId, cdpId, cdpObject = null) {
   }
 }
 
-function getFrameArgumentsArray(frameId) {
-  // "Universal `arguments`" for any frame: This
-  // serves to allow the `MAPPER` used by the `devtools` event analysis
-  // to get all arguments for any JS event callback. `arguments` are available
-  // by default in many function frames. However, arrow functions do not
-  // support them. This "solution" makes sure, `[...arguments]` are
-  // always available.
-  // See: https://linear.app/replay/issue/RUN-1061#comment-fc1c3ee4
-  const args = fromJsGetArgumentsInFrame(frame.callFrameId);
+/**
+ * "Universal `arguments`" for any frame:
+ * `arguments` are available by default in many function frames. However,
+ * arrow functions do not have `arguments` available.
+ * This function provides `arguments` for any type of frame.
+ * @param {number | object | undefined} [frameOrFrameIndex] Optional frame argument. If none provided, pick the frame that the current Pause.evaluateInFrame call was requested for.
+ * @see https://linear.app/replay/issue/RUN-1061#comment-fc1c3ee4
+ * @see https://linear.app/replay/issue/RUN-2969/arrow-functions-the-arguments-keyword-and-chromium-vs-gecko#comment-989283b0
+ */
+function getFrameArgumentsArray(frameOrFrameIndex) {
+  let frame;
+  if (!frameOrFrameIndex) {
+    if (!gCurrentEvaluateFrame) {
+      throw new Error(`getFrameArgumentsArray must be called with a frame` +
+        `object, frameIndex, or, if none provided, must be called from within ` +
+        `the context of a Pause.evaluateInFrame call.`);
+    }
+    // Get new frame instance, since the stack might have changed and V8 uses
+    // frame index for look up.
+    frame = getFrameByLocation(gCurrentEvaluateFrame.location) 
+    if (!frame) {
+      throw new Error(
+        `getFrameArgumentsArray was called from within Pause.evaluateInFrame ` +
+        `but the frame is not on stack anymore: ${JSON_stringify(frames.map(f => f.location))}`);
+    }
+  } else if (typeof frameOrFrameIndex === "number") {
+    frame = getFrameByIndex(frameIndex);
+  } else if (isObject(frameOrFrameIndex) && frameOrFrameIndex.callFrameId) {
+    frame = frameOrFrameIndex;
+  }
+  const frameId = frame.callFrameId;
+  const args = fromJsGetArgumentsInFrame(frameId);
   return args && [...args] || [];
 }
 
@@ -1129,6 +1184,7 @@ function buildRrpObjectFromCdpObject(cdpObject) {
     case "symbol":
       return { symbol: cdpObject.description };
     default:
+      log(`[RuntimeError] invalid CDP type: ${JSON_stringify(cdpObject)}`);
       return { unavailable: true };
   }
 }
@@ -1173,6 +1229,7 @@ function isCdpObjectProxy(cdpObj) {
  * @see https://static.replay.io/protocol/tot/Pause/#type-Object
  */
 function createPauseObject(rrpId, level) {
+  rrpId = rrpId + ""; // Must be a string.
   const existingPreview = gObjectPreviewByRrpId.get(rrpId);
   if (existingPreview) {
     return existingPreview;
@@ -3027,9 +3084,8 @@ Object.assign(__RECORD_REPLAY__, {
   getObjectFromProtocolId(rrpId) {
     return getPlainObjectByRrpId(rrpId);
   },
-  getFrameArgumentsArray(frameId) {
-    return getFrameArgumentsArray(frameId);
-  }
+  getFrameArgumentsArray,
+  getCurrentEvaluateFrame
 });
 
 } catch (e) {
