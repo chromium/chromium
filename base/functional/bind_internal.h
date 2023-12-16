@@ -1391,27 +1391,26 @@ struct BindArgument {
     template <typename FunctorParamType>
     struct ToParamWithType {
       static constexpr bool kRawPtr = IsRawPtrV<FunctorParamType>;
-
+      static constexpr bool kRawPtrMayBeDangling =
+          IsRawPtrMayDangleV<FunctorParamType>;
       static constexpr bool kCanBeForwardedToBoundFunctor =
           std::is_convertible_v<ForwardingType, FunctorParamType>;
 
       // If the bound type can't be forwarded then test if `FunctorParamType` is
       // a non-const lvalue reference and a reference to the unwrapped type
       // *could* have been successfully forwarded.
-      static constexpr bool kNonConstRefParamMustBeWrapped =
-          kCanBeForwardedToBoundFunctor ||
-          !(std::is_lvalue_reference_v<FunctorParamType> &&
-            !std::is_const_v<std::remove_reference_t<FunctorParamType>> &&
-            std::is_convertible_v<std::decay_t<ForwardingType>&,
-                                  FunctorParamType>);
+      static constexpr bool kIsUnwrappedForwardableNonConstReference =
+          std::is_lvalue_reference_v<FunctorParamType> &&
+          !std::is_const_v<std::remove_reference_t<FunctorParamType>> &&
+          std::is_convertible_v<std::decay_t<ForwardingType>&,
+                                FunctorParamType>;
 
       // Note that this intentionally drops the const qualifier from
       // `ForwardingType`, to test if it *could* have been successfully
       // forwarded if `Passed()` had been used.
-      static constexpr bool kMoveOnlyTypeMustUseBasePassed =
-          kCanBeForwardedToBoundFunctor ||
-          !std::is_convertible_v<std::decay_t<ForwardingType>&&,
-                                 FunctorParamType>;
+      static constexpr bool kWouldBeForwardableWithPassed =
+          std::is_convertible_v<std::decay_t<ForwardingType>&&,
+                                FunctorParamType>;
     };
   };
 
@@ -1421,12 +1420,12 @@ struct BindArgument {
     struct StoredAs {
       static constexpr bool kBindArgumentCanBeCaptured =
           std::is_constructible_v<StorageType, BoundAsType>;
+
       // Note that this intentionally drops the const qualifier from
       // `BoundAsType`, to test if it *could* have been successfully bound if
       // `std::move()` had been used.
-      static constexpr bool kMoveOnlyTypeMustUseStdMove =
-          kBindArgumentCanBeCaptured ||
-          !std::is_constructible_v<StorageType, std::decay_t<BoundAsType>&&>;
+      static constexpr bool kWouldBeCapturableWithStdMove =
+          std::constructible_from<StorageType, std::decay_t<BoundAsType>&&>;
     };
   };
 
@@ -1434,42 +1433,12 @@ struct BindArgument {
   struct ToParamWithType {
     template <typename StorageType>
     struct StoredAs {
-      template <bool is_method>
-      // true if we are handling `this` parameter.
-      static constexpr bool kParamIsThisPointer = is_method && i == 0;
-      // true if the current parameter is of type `raw_ptr<T>` with
-      // `RawPtrTraits::kMayDangle` trait (e.g. `MayBeDangling<T>`).
-      static constexpr bool kParamIsDanglingRawPtr =
-          IsRawPtrMayDangleV<FunctionParamType>;
-      // true if the bound parameter is of type
-      // `UnretainedWrapper<T, unretained_traits::MayDangle, PtrTraits>`.
       static constexpr bool kBoundPtrMayDangle =
           IsUnretainedMayDangle<StorageType>;
-      // true if bound parameter of type `UnretainedWrapper` and parameter of
-      // type `raw_ptr` have compatible `RawPtrTraits`.
-      static constexpr bool kMayBeDanglingTraitsCorrectness =
+
+      static constexpr bool kMayDangleAndMayBeDanglingHaveMatchingTraits =
           UnretainedAndRawPtrHaveCompatibleTraits<StorageType,
                                                   FunctionParamType>;
-      // true if the receiver argument **must** be of type `MayBeDangling<T>`.
-      static constexpr bool kMayBeDanglingMustBeUsed =
-          kBoundPtrMayDangle && kParamIsDanglingRawPtr;
-
-      // true iff:
-      // - bound parameter is of type
-      //   `UnretainedWrapper<T, unretained_traits::MayDangle, PtrTraits>`
-      // - the receiving argument is of type `MayBeDangling<T>`
-      template <bool is_method>
-      static constexpr bool kMayBeDanglingPtrPassedCorrectly =
-          kParamIsThisPointer<is_method> ||
-          kBoundPtrMayDangle == kParamIsDanglingRawPtr;
-
-      // true if:
-      // - MayBeDangling<T> must not be used as receiver parameter.
-      // OR
-      // - MayBeDangling<T> must be used as receiver parameter and its traits
-      // are matching Unretained traits.
-      static constexpr bool kUnsafeDanglingAndMayBeDanglingHaveMatchingTraits =
-          !kMayBeDanglingMustBeUsed || kMayBeDanglingTraitsCorrectness;
     };
   };
 };
@@ -1492,11 +1461,8 @@ struct ParamCanBeBound {
   using BoundStorage =
       BindArgument<i>::template BoundAs<Arg>::template StoredAs<Storage>;
 
-  // We forbid callbacks from using raw_ptr as a parameter. However, we allow
-  // `MayBeDangling<T>` iff the callback argument was created using
-  // `base::UnsafeDangling`.
   template <bool v = !UnwrappedParam::kRawPtr ||
-                     ParamStorage::kMayBeDanglingMustBeUsed>
+                     UnwrappedParam::kRawPtrMayBeDangling>
   struct NotRawPtr {
     static constexpr bool value = [] {
       static_assert(
@@ -1506,13 +1472,11 @@ struct ParamCanBeBound {
     }();
   };
 
-  // A bound functor must take a dangling pointer argument (e.g. bound using the
-  // `UnsafeDangling` helper) as a `MayBeDangling<T>`, to make it clear that the
-  // pointee's lifetime must be externally validated before using it. For
-  // methods, exempt a bound receiver (i.e. the this pointer) as it is not
-  // passed as a regular function argument.
-  template <bool v = ParamStorage::template kMayBeDanglingPtrPassedCorrectly<
-                is_method>>
+  template <bool v = !ParamStorage::kBoundPtrMayDangle ||
+                     UnwrappedParam::kRawPtrMayBeDangling ||
+                     // Exempt `this` pointer as it is not passed as a regular
+                     // function argument.
+                     (is_method && i == 0)>
   struct MayBeDanglingPtrPassedCorrectly {
     static constexpr bool value = [] {
       static_assert(v, "base::UnsafeDangling() pointers should only be passed "
@@ -1522,8 +1486,10 @@ struct ParamCanBeBound {
   };
 
   template <bool v =
-                ParamStorage::kUnsafeDanglingAndMayBeDanglingHaveMatchingTraits>
-  struct UnsafeDanglingAndMayBeDanglingHaveMatchingTraits {
+                !UnwrappedParam::kRawPtrMayBeDangling ||
+                (ParamStorage::kBoundPtrMayDangle &&
+                 ParamStorage::kMayDangleAndMayBeDanglingHaveMatchingTraits)>
+  struct MayDangleAndMayBeDanglingHaveMatchingTraits {
     static constexpr bool value = [] {
       static_assert(
           v, "Pointers passed to MayBeDangling<T> parameters must be created "
@@ -1558,7 +1524,8 @@ struct ParamCanBeBound {
   // callbacks were the only callback type. A `RepeatingCallback` with a
   // `Passed()` argument is really a `OnceCallback` and should eventually be
   // migrated.
-  template <bool v = UnwrappedParam::kMoveOnlyTypeMustUseBasePassed>
+  template <bool v = UnwrappedParam::kCanBeForwardedToBoundFunctor ||
+                     !UnwrappedParam::kWouldBeForwardableWithPassed>
   struct MoveOnlyTypeMustUseBasePassed {
     static constexpr bool value = [] {
       static_assert(v,
@@ -1569,7 +1536,8 @@ struct ParamCanBeBound {
     }();
   };
 
-  template <bool v = UnwrappedParam::kNonConstRefParamMustBeWrapped>
+  template <bool v = UnwrappedParam::kCanBeForwardedToBoundFunctor ||
+                     !UnwrappedParam::kIsUnwrappedForwardableNonConstReference>
   struct NonConstRefParamMustBeWrapped {
     static constexpr bool value = [] {
       static_assert(v,
@@ -1589,7 +1557,8 @@ struct ParamCanBeBound {
     }();
   };
 
-  template <bool v = BoundStorage::kMoveOnlyTypeMustUseStdMove>
+  template <bool v = BoundStorage::kBindArgumentCanBeCaptured ||
+                     !BoundStorage::kWouldBeCapturableWithStdMove>
   struct MoveOnlyTypeMustUseStdMove {
     static constexpr bool value = [] {
       static_assert(v,
@@ -1615,7 +1584,7 @@ struct ParamCanBeBound {
   static constexpr bool value =
       std::conjunction_v<NotRawPtr<>,
                          MayBeDanglingPtrPassedCorrectly<>,
-                         UnsafeDanglingAndMayBeDanglingHaveMatchingTraits<>,
+                         MayDangleAndMayBeDanglingHaveMatchingTraits<>,
                          MoveOnlyTypeMustUseBasePassed<>,
                          NonConstRefParamMustBeWrapped<>,
                          CanBeForwardedToBoundFunctor<>,
