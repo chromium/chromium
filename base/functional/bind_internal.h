@@ -651,6 +651,10 @@ struct FunctorTraits<R(__stdcall*)(Args...)> {
   }
 };
 
+template <typename R, typename... Args>
+struct FunctorTraits<R(__stdcall*)(Args...) noexcept>
+    : FunctorTraits<R (*)(Args...)> {};
+
 // For functions.
 template <typename R, typename... Args>
 struct FunctorTraits<R(__fastcall*)(Args...)> {
@@ -665,6 +669,10 @@ struct FunctorTraits<R(__fastcall*)(Args...)> {
     return function(std::forward<RunArgs>(args)...);
   }
 };
+
+template <typename R, typename... Args>
+struct FunctorTraits<R(__fastcall*)(Args...) noexcept>
+    : FunctorTraits<R (*)(Args...)> {};
 
 #endif  // BUILDFLAG(IS_WIN) && !defined(ARCH_CPU_64_BITS)
 
@@ -748,9 +756,16 @@ template <typename R, typename Receiver, typename... Args>
 struct FunctorTraits<R (__stdcall Receiver::*)(Args...)>
     : public FunctorTraits<R (Receiver::*)(Args...)> {};
 
-// For __stdcall const methods.
+template <typename R, typename Receiver, typename... Args>
+struct FunctorTraits<R (__stdcall Receiver::*)(Args...) noexcept>
+    : public FunctorTraits<R (Receiver::*)(Args...)> {};
+
 template <typename R, typename Receiver, typename... Args>
 struct FunctorTraits<R (__stdcall Receiver::*)(Args...) const>
+    : public FunctorTraits<R (Receiver::*)(Args...) const> {};
+
+template <typename R, typename Receiver, typename... Args>
+struct FunctorTraits<R (__stdcall Receiver::*)(Args...) const noexcept>
     : public FunctorTraits<R (Receiver::*)(Args...) const> {};
 
 #endif  // BUILDFLAG(IS_WIN) && !defined(ARCH_CPU_64_BITS)
