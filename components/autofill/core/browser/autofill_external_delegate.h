@@ -249,6 +249,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   PopupType popup_type_ = PopupType::kUnspecified;
 
   bool should_show_cards_from_account_option_ = false;
+  bool show_cards_from_account_suggestion_added_ = false;
 
   std::vector<PopupItemId> shown_suggestion_types_;
 

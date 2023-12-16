@@ -48653,6 +48653,12 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="Extension Renderer"/>
 </enum>
 
+<enum name="ShowCardsFromGoogleAccountButtonEvent">
+  <int value="0" label="Button shown"/>
+  <int value="1" label="Button shown (once)"/>
+  <int value="2" label="Button clicked"/>
+</enum>
+
 <enum name="ShutdownReason">
   <summary>
     The reason that the Chrome OS power manager shut down or rebooted the

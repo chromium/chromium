@@ -24,6 +24,20 @@ enum class ManageSuggestionType {
   kMaxValue = kPaymentMethodsIbans,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Used by LogAutofillShowCardsFromGoogleAccountButtonEventMetric().
+enum class ShowCardsFromGoogleAccountButtonEvent {
+  // 'Show Cards from Google Account' button appeared.
+  kButtonAppeared = 0,
+  // 'Show Cards from Google Account' button appeared. Logged once per page
+  // load.
+  kButtonAppearedOnce = 1,
+  // 'Show Cards from Google Account' button clicked.
+  kButtonClicked = 2,
+  kMaxValue = kButtonClicked,
+};
+
 // Log the index of the selected Autofill suggestion in the popup.
 void LogAutofillSuggestionAcceptedIndex(int index,
                                         autofill::PopupType popup_type,
@@ -31,6 +45,10 @@ void LogAutofillSuggestionAcceptedIndex(int index,
 
 // Logs that the user selected 'Manage...' settings entry in the popup.
 void LogAutofillSelectedManageEntry(autofill::PopupType popup_type);
+
+// Logs the 'Show cards from your Google Account" button events.
+void LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
+    ShowCardsFromGoogleAccountButtonEvent event);
 
 }  // namespace autofill_metrics
 }  // namespace autofill

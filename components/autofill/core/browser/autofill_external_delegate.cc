@@ -282,6 +282,15 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   if (should_show_cards_from_account_option_) {
     suggestions.emplace_back(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS));
+    autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
+        autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
+            kButtonAppeared);
+    if (!show_cards_from_account_suggestion_added_) {
+      show_cards_from_account_suggestion_added_ = true;
+      autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
+          autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
+              kButtonAppearedOnce);
+    }
     suggestions.back().popup_item_id = PopupItemId::kShowAccountCards;
     suggestions.back().icon = Suggestion::Icon::kGoogle;
   }
@@ -605,6 +614,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           AutofillTriggerSource::kKeyboardAccessory));
       break;
     case PopupItemId::kShowAccountCards:
+      autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
+          autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
+              kButtonClicked);
       manager_->OnUserAcceptedCardsFromAccountOption();
       break;
     case PopupItemId::kVirtualCreditCardEntry:

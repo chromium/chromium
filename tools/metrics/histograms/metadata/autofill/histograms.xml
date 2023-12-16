@@ -1138,6 +1138,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents"
+    enum="ShowCardsFromGoogleAccountButtonEvent" expires_after="2024-07-01">
+  <owner>averina@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs events for the 'Show cards from your Google Account' button, i.e.,
+    button shown, button shown (logged once per page), or clicked. Logged at the
+    time of the event happening.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CardholderNameFixFlowPrompt.Events"
     enum="AutofillCardholderNameFixFlowPromptEvent" expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>

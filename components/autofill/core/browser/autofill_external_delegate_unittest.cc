@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/mock_autofill_compose_delegate.h"
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -2194,6 +2195,71 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
   external_delegate().OnSuggestionsReturned(queried_form_triggering_field_id_,
                                             std::vector<Suggestion>());
 }
+
+TEST_F(AutofillExternalDelegateCardsFromAccountTest,
+       LogShowCardsFromGoogleAccountButtonMetrics) {
+  FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
+                                                     /*use_month_type=*/false);
+  manager().OnFormsSeen({form}, {});
+  external_delegate().OnQuery(form, form.fields[0], gfx::RectF(),
+                              kDefaultTriggerSource);
+  base::HistogramTester histogram_tester;
+  const auto kExpectedSuggestions = SuggestionVectorMainTextsAre(
+      Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(true)),
+      Suggestion::Text(
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS),
+          Suggestion::Text::IsPrimary(true)),
+#if !BUILDFLAG(IS_ANDROID)
+      Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(false)),
+#endif
+      Suggestion::Text(
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
+          Suggestion::Text::IsPrimary(true)));
+  EXPECT_CALL(client(),
+              ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
+  std::vector<Suggestion> autofill_item;
+  autofill_item.emplace_back(/*main_text=*/u"", PopupItemId::kCreditCardEntry);
+  autofill_item[0].main_text.is_primary = Suggestion::Text::IsPrimary(true);
+
+  external_delegate().OnSuggestionsReturned(form.fields[0].global_id(),
+                                            autofill_item);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents"),
+      BucketsAre(
+          base::Bucket(autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
+                           kButtonAppeared,
+                       1),
+          base::Bucket(autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
+                           kButtonAppearedOnce,
+                       1)));
+
+  // Simulate suggestions returned again.
+  EXPECT_CALL(client(),
+              ShowAutofillPopup(PopupOpenArgsAre(SuggestionVectorIdsAre(
+                                    PopupItemId::kShowAccountCards)),
+                                _));
+  autofill_item.clear();
+
+  external_delegate().OnSuggestionsReturned(form.fields[0].global_id(),
+                                            autofill_item);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents"),
+      BucketsAre(
+          base::Bucket(autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
+                           kButtonAppeared,
+                       2),
+          base::Bucket(autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
+                           kButtonAppearedOnce,
+                       1)));
+}
+
+// TODO(crbug.com/1510618): Add test case where 'Show cards from your Google
+// account' button is clicked. Encountered issues with test sync setup when
+// attempting to make it.
 
 #if BUILDFLAG(IS_IOS)
 // Tests that outdated returned suggestions are discarded.

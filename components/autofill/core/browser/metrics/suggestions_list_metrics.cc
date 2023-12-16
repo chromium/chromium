@@ -70,4 +70,11 @@ void LogAutofillSelectedManageEntry(PopupType popup_type) {
                                 uma_type);
 }
 
+void LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
+    ShowCardsFromGoogleAccountButtonEvent event) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents",
+      event);
+}
+
 }  // namespace autofill::autofill_metrics
