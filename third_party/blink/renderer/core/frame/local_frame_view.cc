@@ -3102,9 +3102,8 @@ void LocalFrameView::UpdateStyleAndLayout() {
     return;
   }
 
-  VisualViewport& visual_viewport = frame_->GetPage()->GetVisualViewport();
-  gfx::SizeF visual_viewport_size(visual_viewport.VisibleWidthCSSPx(),
-                                  visual_viewport.VisibleHeightCSSPx());
+  gfx::Size visual_viewport_size =
+      GetScrollableArea()->VisibleContentRect().size();
 
   bool did_layout = false;
   {
@@ -3145,16 +3144,10 @@ void LocalFrameView::UpdateStyleAndLayout() {
   frame_->GetDocument()->ClearFocusedElementIfNeeded();
 
   if (did_layout) {
-    bool visual_viewport_size_changed = false;
-    if (frame_->IsMainFrame()) {
-      // Scrollbars changing state can cause a visual viewport size change.
-      gfx::SizeF new_viewport_size(visual_viewport.VisibleWidthCSSPx(),
-                                   visual_viewport.VisibleHeightCSSPx());
-      visual_viewport_size_changed =
-          (new_viewport_size != visual_viewport_size);
-      DCHECK(!visual_viewport_size_changed ||
-             visual_viewport.IsActiveViewport());
-    }
+    gfx::Size new_visual_viewport_size =
+        GetScrollableArea()->VisibleContentRect().size();
+    bool visual_viewport_size_changed =
+        (new_visual_viewport_size != visual_viewport_size);
     SetNeedsUpdateGeometries();
     PerformPostLayoutTasks(visual_viewport_size_changed);
     GetFrame().GetDocument()->LayoutUpdated();
