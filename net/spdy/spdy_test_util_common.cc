@@ -20,6 +20,7 @@
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
+#include "net/base/proxy_delegate.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
@@ -383,6 +384,7 @@ HttpNetworkSessionContext SpdySessionDependencies::CreateSessionContext(
   context.cert_verifier = session_deps->cert_verifier.get();
   context.transport_security_state =
       session_deps->transport_security_state.get();
+  context.proxy_delegate = session_deps->proxy_delegate.get();
   context.proxy_resolution_service =
       session_deps->proxy_resolution_service.get();
   context.http_user_agent_settings =

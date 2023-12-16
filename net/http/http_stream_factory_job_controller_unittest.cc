@@ -250,22 +250,22 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
   }
 
   void SetPreconnect() {
-    ASSERT_FALSE(test_proxy_delegate_);
+    ASSERT_FALSE(session_deps_.proxy_delegate);
     is_preconnect_ = true;
   }
 
   void DisableIPBasedPooling() {
-    ASSERT_FALSE(test_proxy_delegate_);
+    ASSERT_FALSE(session_deps_.proxy_delegate);
     enable_ip_based_pooling_ = false;
   }
 
   void SetNotDelayMainJobWithAvailableSpdySession() {
-    ASSERT_FALSE(test_proxy_delegate_);
+    ASSERT_FALSE(session_deps_.proxy_delegate);
     delay_main_job_with_available_spdy_session_ = false;
   }
 
   void DisableAlternativeServices() {
-    ASSERT_FALSE(test_proxy_delegate_);
+    ASSERT_FALSE(session_deps_.proxy_delegate);
     enable_alternative_services_ = false;
   }
 
@@ -275,8 +275,8 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
   }
 
   void Initialize(const HttpRequestInfo& request_info) {
-    ASSERT_FALSE(test_proxy_delegate_);
-    test_proxy_delegate_ = std::make_unique<TestProxyDelegate>();
+    ASSERT_FALSE(session_deps_.proxy_delegate);
+    session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
 
     if (quic_data_)
       quic_data_->AddSocketDataToFactory(session_deps_.socket_factory.get());
@@ -288,7 +288,7 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
       session_deps_.socket_factory->AddSocketDataProvider(tcp_data2_.get());
 
     session_deps_.proxy_resolution_service->SetProxyDelegate(
-        test_proxy_delegate_.get());
+        session_deps_.proxy_delegate.get());
 
     session_deps_.net_log = NetLog::Get();
     HttpNetworkSessionParams params =
@@ -311,10 +311,6 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
       HttpStreamFactoryPeer::AddJobController(factory_,
                                               std::move(job_controller));
     }
-  }
-
-  TestProxyDelegate* test_proxy_delegate() const {
-    return test_proxy_delegate_.get();
   }
 
   HttpStreamFactoryJobControllerTestBase(
@@ -460,7 +456,6 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
 
  private:
   bool dns_https_alpn_enabled_;
-  std::unique_ptr<TestProxyDelegate> test_proxy_delegate_;
   bool create_job_controller_ = true;
 
   base::test::ScopedFeatureList feature_list_;
@@ -589,9 +584,13 @@ class JobControllerReconsiderProxyAfterErrorTest
   JobControllerReconsiderProxyAfterErrorTest()
       : HttpStreamFactoryJobControllerTestBase(false) {}
   void Initialize(
-      std::unique_ptr<ProxyResolutionService> proxy_resolution_service) {
+      std::unique_ptr<ProxyResolutionService> proxy_resolution_service,
+      std::unique_ptr<ProxyDelegate> proxy_delegate = nullptr) {
+    session_deps_.proxy_delegate = std::move(proxy_delegate);
     session_deps_.proxy_resolution_service =
         std::move(proxy_resolution_service);
+    session_deps_.proxy_resolution_service->SetProxyDelegate(
+        session_deps_.proxy_delegate.get());
     session_ = std::make_unique<HttpNetworkSession>(
         SpdySessionDependencies::CreateSessionParams(&session_deps_),
         SpdySessionDependencies::CreateSessionContext(&session_deps_));
@@ -675,11 +674,20 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       // bad.
       ASSERT_TRUE(proxy_resolution_service->proxy_retry_info().empty());
 
-      constexpr char kTunnelRequest[] =
+      constexpr char kBadProxyTunnelRequest[] =
           "CONNECT www.example.com:443 HTTP/1.1\r\n"
           "Host: www.example.com:443\r\n"
-          "Proxy-Connection: keep-alive\r\n\r\n";
-      const MockWrite kTunnelWrites[] = {{ASYNC, kTunnelRequest}};
+          "Proxy-Connection: keep-alive\r\n"
+          "Foo: badproxy:99\r\n\r\n";
+      constexpr char kBadFallbackProxyTunnelRequest[] =
+          "CONNECT www.example.com:443 HTTP/1.1\r\n"
+          "Host: www.example.com:443\r\n"
+          "Proxy-Connection: keep-alive\r\n"
+          "Foo: badfallbackproxy:98\r\n\r\n";
+      const MockWrite kBadProxyTunnelWrites[] = {
+          {ASYNC, kBadProxyTunnelRequest}};
+      const MockWrite kBadFallbackProxyTunnelWrites[] = {
+          {ASYNC, kBadFallbackProxyTunnelRequest}};
       std::vector<MockRead> reads;
 
       // Generate identical errors for both the main proxy and the fallback
@@ -712,9 +720,11 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
             continue;
           reads.emplace_back(ASYNC, mock_error.error);
           socket_data_proxy_main_job =
-              std::make_unique<StaticSocketDataProvider>(reads, kTunnelWrites);
+              std::make_unique<StaticSocketDataProvider>(reads,
+                                                         kBadProxyTunnelWrites);
           socket_data_proxy_main_job2 =
-              std::make_unique<StaticSocketDataProvider>(reads, kTunnelWrites);
+              std::make_unique<StaticSocketDataProvider>(
+                  reads, kBadFallbackProxyTunnelWrites);
           break;
       }
 
@@ -753,8 +763,8 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       HttpRequestInfo request_info;
       request_info.method = "GET";
       request_info.url = dest_url;
-      proxy_resolution_service->SetProxyDelegate(test_proxy_delegate.get());
-      Initialize(std::move(proxy_resolution_service));
+      Initialize(std::move(proxy_resolution_service),
+                 std::move(test_proxy_delegate));
 
       // Start two requests. The first request should consume data from
       // |socket_data_proxy_main_job| and |socket_data_direct_first_request|.
@@ -868,11 +878,20 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       // bad.
       ASSERT_TRUE(proxy_resolution_service->proxy_retry_info().empty());
 
-      constexpr char kTunnelRequest[] =
+      constexpr char kBadProxyTunnelRequest[] =
           "CONNECT www.example.com:443 HTTP/1.1\r\n"
           "Host: www.example.com:443\r\n"
-          "Proxy-Connection: keep-alive\r\n\r\n";
-      const MockWrite kTunnelWrites[] = {{ASYNC, kTunnelRequest}};
+          "Proxy-Connection: keep-alive\r\n"
+          "Foo: https://badproxy:99\r\n\r\n";
+      constexpr char kBadFallbackProxyTunnelRequest[] =
+          "CONNECT www.example.com:443 HTTP/1.1\r\n"
+          "Host: www.example.com:443\r\n"
+          "Proxy-Connection: keep-alive\r\n"
+          "Foo: https://badfallbackproxy:98\r\n\r\n";
+      const MockWrite kBadProxyTunnelWrites[] = {
+          {ASYNC, kBadProxyTunnelRequest}};
+      const MockWrite kBadFallbackProxyTunnelWrites[] = {
+          {ASYNC, kBadFallbackProxyTunnelRequest}};
       std::vector<MockRead> reads;
 
       // Generate identical errors for both the main proxy and the fallback
@@ -917,11 +936,15 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
             continue;
           reads.emplace_back(ASYNC, mock_error.error);
           socket_data_proxy_main_job =
-              std::make_unique<StaticSocketDataProvider>(reads, kTunnelWrites);
+              std::make_unique<StaticSocketDataProvider>(reads,
+                                                         kBadProxyTunnelWrites);
           ssl_data_proxy_main_job =
               std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
           socket_data_proxy_main_job2 =
-              std::make_unique<StaticSocketDataProvider>(reads, kTunnelWrites);
+              std::make_unique<StaticSocketDataProvider>(
+                  reads, mock_error.triggers_ssl_connect_job_retry_logic
+                             ? kBadProxyTunnelWrites
+                             : kBadFallbackProxyTunnelWrites);
           ssl_data_proxy_main_job2 =
               std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
           break;
@@ -969,8 +992,8 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       request_info.method = "GET";
       request_info.url = dest_url;
 
-      proxy_resolution_service->SetProxyDelegate(test_proxy_delegate.get());
-      Initialize(std::move(proxy_resolution_service));
+      Initialize(std::move(proxy_resolution_service),
+                 std::move(test_proxy_delegate));
 
       // Start two requests. The first request should consume data from
       // |socket_data_proxy_main_job| and |socket_data_direct_first_request|.
@@ -1515,7 +1538,8 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
   constexpr char kTunnelRequest[] =
       "CONNECT www.example.com:443 HTTP/1.1\r\n"
       "Host: www.example.com:443\r\n"
-      "Proxy-Connection: keep-alive\r\n\r\n";
+      "Proxy-Connection: keep-alive\r\n"
+      "Foo: https://ip-pro:443\r\n\r\n";
   const MockWrite kTunnelWrites[] = {{ASYNC, kTunnelRequest}};
   std::vector<MockRead> reads;
 
@@ -1546,8 +1570,8 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
   request_info.method = "GET";
   request_info.url = dest_url;
 
-  proxy_resolution_service->SetProxyDelegate(test_proxy_delegate.get());
-  Initialize(std::move(proxy_resolution_service));
+  Initialize(std::move(proxy_resolution_service),
+             std::move(test_proxy_delegate));
 
   ProxyInfo used_proxy_info;
   EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _, _))
@@ -1668,8 +1692,8 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
     request_info.method = "GET";
     request_info.url = kDestUrl;
 
-    proxy_resolution_service->SetProxyDelegate(test_proxy_delegate.get());
-    Initialize(std::move(proxy_resolution_service));
+    Initialize(std::move(proxy_resolution_service),
+               std::move(test_proxy_delegate));
 
     // Start two requests. The first request should consume data from
     // |socket_data_proxy_main_job| and |socket_data_direct_first_request|. The
