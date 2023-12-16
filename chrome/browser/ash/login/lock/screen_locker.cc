@@ -221,12 +221,13 @@ void ScreenLocker::Init() {
 
   // Create ViewScreenLocker that calls into the views-based lock screen via
   // mojo.
-  views_screen_locker_ = std::make_unique<ViewsScreenLocker>(this);
+  views_screen_locker_ = std::make_unique<ViewsScreenLocker>();
 
   // Create and display lock screen.
   CHECK(LoginScreenClientImpl::HasInstance());
   LoginScreen::Get()->ShowLockScreen();
-  views_screen_locker_->Init();
+  views_screen_locker_->Init(GetUsersToShow());
+  ScreenLockReady();
 
   session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
 

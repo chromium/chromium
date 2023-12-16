@@ -113,7 +113,6 @@ class ScreenLocker
 
  private:
   friend class base::DeleteHelper<ScreenLocker>;
-  friend class ViewsScreenLocker;
   friend class ScreenLockerTester;
 
   // Track the type of the authentication that the user used to unlock the lock
