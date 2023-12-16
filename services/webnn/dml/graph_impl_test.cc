@@ -640,6 +640,48 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
                        }}}
         .Test();
   }
+  {
+    // Test throws error when scale operand is missing.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2},
+                  .values = {-1, 1}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {-1, 1}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1.0, 1.5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {0, 1}},
+        .attributes = {.axis = 0},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2},
+                   .values = {0, 1}}}
+        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+  }
+  {
+    // Test throws error when bias operand is missing.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2},
+                  .values = {-1, 1}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {-1, 1}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1.0, 1.5}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2},
+                                    .values = {0.5, 1, 0}},
+        .attributes = {.axis = 0},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2},
+                   .values = {0, 1}}}
+        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+  }
 }
 
 template <typename T>
