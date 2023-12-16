@@ -229,8 +229,8 @@ class TabbedNavigationBarColorController {
     private @ColorInt int applyCurrentScrimToColor(@ColorInt int color) {
         // Apply a color overlay.
         float scrimColorAlpha = (mDefaultScrimColor >>> 24) / 255f;
-        int scrimColorOpaque = mDefaultScrimColor & 0xFF000000;
+        int scrimColorOpaque = mDefaultScrimColor | 0xFF000000;
         return ColorUtils.getColorWithOverlay(
-                color, scrimColorOpaque, mNavigationBarScrimFraction * scrimColorAlpha, true);
+                color, scrimColorOpaque, mNavigationBarScrimFraction * scrimColorAlpha);
     }
 }
