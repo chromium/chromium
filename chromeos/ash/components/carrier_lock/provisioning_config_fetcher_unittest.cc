@@ -23,7 +23,6 @@ const char kProvisioningUrl[] =
     "https://afwprovisioning-pa.googleapis.com"
     "/v1/get_device_provisioning_record";
 
-const char kAndroidId[] = "123";
 const char kManufacturer[] = "Google";
 const char kModel[] = "Pixel 20";
 const char kSerial[] = "5CD203JBP8";
@@ -81,8 +80,8 @@ TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestConfigSuccess) {
 
   // Send configuration request
   base::test::TestFuture<Result> future;
-  config_->RequestConfig(kSerial, kImei, kAndroidId, kManufacturer, kModel,
-                         kFcmToken, future.GetCallback());
+  config_->RequestConfig(kSerial, kImei, kManufacturer, kModel, kFcmToken,
+                         future.GetCallback());
 
   // Send fake response
   base::Base64Decode(kConfigResponse, &response);
@@ -100,10 +99,10 @@ TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestConfigTwice) {
 
   // Send configuration request twice
   base::test::TestFuture<Result> future;
-  config_->RequestConfig(kSerial, kImei, kAndroidId, kManufacturer, kModel,
-                         kFcmToken, future.GetCallback());
-  config_->RequestConfig(kSerial, kImei, kAndroidId, kManufacturer, kModel,
-                         kFcmToken, future.GetCallback());
+  config_->RequestConfig(kSerial, kImei, kManufacturer, kModel, kFcmToken,
+                         future.GetCallback());
+  config_->RequestConfig(kSerial, kImei, kManufacturer, kModel, kFcmToken,
+                         future.GetCallback());
 
   // Wait for callback
   EXPECT_EQ(Result::kHandlerBusy, future.Get());
@@ -114,8 +113,8 @@ TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestConfigInvalidResponse) {
   base::test::TestFuture<Result> future;
 
   // Send configuration request
-  config_->RequestConfig(kSerial, kImei, kAndroidId, kManufacturer, kModel,
-                         kFcmToken, future.GetCallback());
+  config_->RequestConfig(kSerial, kImei, kManufacturer, kModel, kFcmToken,
+                         future.GetCallback());
 
   // Send empty response
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -132,8 +131,8 @@ TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestConfigNoConfig) {
 
   // Send configuration request
   base::test::TestFuture<Result> future;
-  config_->RequestConfig(kSerial, kImei, kAndroidId, kManufacturer, kModel,
-                         kFcmToken, future.GetCallback());
+  config_->RequestConfig(kSerial, kImei, kManufacturer, kModel, kFcmToken,
+                         future.GetCallback());
 
   // Send response without configuration
   base::Base64Decode(kConfigResponseEmpty, &response);
@@ -151,8 +150,8 @@ TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestConfigInvalidConfig) {
 
   // Send configuration request
   base::test::TestFuture<Result> future;
-  config_->RequestConfig(kSerial, kImei, kAndroidId, kManufacturer, kModel,
-                         kFcmToken, future.GetCallback());
+  config_->RequestConfig(kSerial, kImei, kManufacturer, kModel, kFcmToken,
+                         future.GetCallback());
 
   // Send response with invalid configuration
   base::Base64Decode(kConfigResponseInvalid, &response);

@@ -9,7 +9,6 @@ namespace ash::carrier_lock {
 void FakeProvisioningConfigFetcher::RequestConfig(
     const std::string& serial,
     const std::string& imei,
-    const std::string& android_id,
     const std::string& manufacturer,
     const std::string& model,
     const std::string& fcm_token,
@@ -32,6 +31,11 @@ FakeProvisioningConfigFetcher::GetRestrictionMode() {
 
 RestrictedNetworks FakeProvisioningConfigFetcher::GetNumberOfNetworks() {
   RestrictedNetworks result = {0, 0};
+
+  if (mode_ == ::carrier_lock::DEFAULT_DISALLOW) {
+    result.allowed = 1;
+  }
+
   return result;
 }
 
