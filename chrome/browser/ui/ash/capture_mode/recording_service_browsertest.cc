@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_tags.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -387,6 +388,9 @@ class GifRecordingBrowserTest : public InProcessBrowserTest {
 // Records a GIF image of a region that fills the entire screen, then attempts
 // to decode the resulting file to verify the GIF encoding was successful.
 IN_PROC_BROWSER_TEST_F(GifRecordingBrowserTest, SuccessfulEncodeDecode) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-9c11ed80-9e97-482c-9562-450bd891732b");
+
   aura::Window* browser_window = browser()->window()->GetNativeWindow();
   ash::CaptureModeTestApi test_api;
   test_api.SetRecordingType(ash::RecordingType::kGif);
