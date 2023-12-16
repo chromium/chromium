@@ -7059,6 +7059,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OnDeviceModel.BenchmarkVeryLowReason"
+    enum="VeryLowPerformanceReason" expires_after="2024-06-13">
+  <owner>cduvall@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the reason the benchmark returned kVeryLow performance class. Logged
+    whenever kVeryLow performance class is returned from running the benchmark.
+  </summary>
+</histogram>
+
 <histogram name="OnDeviceModel.DeviceHeapSize.{GpuType}" units="MB"
     expires_after="2024-05-27">
   <owner>cduvall@chromium.org</owner>

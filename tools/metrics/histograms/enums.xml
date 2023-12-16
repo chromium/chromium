@@ -53029,6 +53029,12 @@ would be helpful to identify which type is being sent.
   </int>
 </enum>
 
+<enum name="VeryLowPerformanceReason">
+  <int value="0" label="Low RAM"/>
+  <int value="1" label="Slow output"/>
+  <int value="2" label="Slow input"/>
+</enum>
+
 <enum name="VideoCodec">
   <int value="0" label="kUnknownVideoCodec"/>
   <int value="1" label="kCodecH264"/>
