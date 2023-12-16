@@ -1,4 +1,4 @@
-<style include="cr-hidden-style">
+<style>
   :host {
     display: flex;
     flex-direction: column;
@@ -130,6 +130,17 @@
 
   cr-icon-button {
     margin: 0;
+  }
+
+  /**
+   * cr-hidden-style stamps an !important on [hidden] elements, which prevents
+   * any animations/transitions from applying. Instead of using cr-hidden-style,
+   * list all the [hidden] elements below. Not all elements need this, just
+   * the ones that override the default 'display' property.
+   */
+  #readonlyContainer[hidden],
+  #editButtonContainer[hidden] {
+    display: none;
   }
 </style>
 

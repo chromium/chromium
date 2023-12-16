@@ -6,7 +6,6 @@ import './icons.html.js';
 import './strings.m.js';
 import './textarea.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';

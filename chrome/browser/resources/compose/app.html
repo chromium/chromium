@@ -1,4 +1,4 @@
-<style include="cr-hidden-style md-select">
+<style include="md-select">
   :host {
     --gap-between-sections_: 16px;
     --padding_: 20px;
@@ -309,6 +309,19 @@
   #editContainer .footer {
     padding: 0;
     visibility: visible;
+  }
+
+  /**
+   * cr-hidden-style stamps an !important on [hidden] elements, which prevents
+   * any animations/transitions from applying. Instead of using cr-hidden-style,
+   * list all the [hidden] elements below. Not all elements need this, just
+   * the ones that override the default 'display' property.
+   */
+  .dialog[hidden],
+  .footer[hidden],
+  #loading[hidden],
+  #editContainer[hidden] {
+    display: none;
   }
 </style>
 
