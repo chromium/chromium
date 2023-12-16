@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">Moet nooit hierdie werf vertaal nie</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" />-toestemmings sal teruggestel word na af wanneer jy hierdie werf verlaat.</translation>
 <translation id="1295289763199166823">Pasmaak kieslys</translation>
+<translation id="1296581780163690620">Laai lêer af? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Verifieer dis jy om seker te maak dat jy altyd die wagwoorde in jou Google-rekening kan gebruik</translation>
 <translation id="1312721752506309252">Verbeterde Beskerming is aan</translation>
 <translation id="1321993286294231467">Kon nie prent stoor nie.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">Maak “Instellings” oop.</translation>
 <translation id="2059166748188874810">Munisipaliteit</translation>
 <translation id="2062410130322589403">’n Gids tot jou privaatheidkeuses</translation>
+<translation id="20638360198452347">Eenheidtipekieser</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> dae gelede aktief</translation>
 <translation id="2074131957428911366">Jy kan altyd in <ph name="BEGIN_LINK" />instellings<ph name="END_LINK" /> kies wat om te sinkroniseer.</translation>
 <translation id="2079545284768500474">Ontdoen</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Wysig draaiband</translation>
 <translation id="2316709634732130529">Gebruik voorgestelde wagwoord</translation>
 <translation id="2320166752086256636">Versteek sleutelbord</translation>
+<translation id="2326302612031521902">Eenheidkieser</translation>
 <translation id="2348630484974447747">Pakkie</translation>
 <translation id="2351097562818989364">Jou vertaalinstellings is teruggestel.</translation>
 <translation id="235789365079050412">Google-privaatheidsbeleid</translation>
@@ -267,6 +270,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2459155039684421202">Voer ’n taak, soos “vee my geskiedenis uit” of “wysig wagwoorde”, op die adresbalk in.</translation>
 <translation id="2461070143328828326">Wagwoordinstellings</translation>
 <translation id="2462736546165239215">Jy kan al jou blaaigeskiedenis hier vind.</translation>
+<translation id="2468132863574325555">Drive</translation>
 <translation id="2469960372084740698">Skakel Veiligblaai af?</translation>
 <translation id="2473876017985765807">Jy het reeds 'n wagwoord gestoor vir <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Nie gekies nie</translation>
@@ -939,6 +943,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6149061208933997199">Gebruik wagwoord</translation>
 <translation id="6152406514676263192">Sinkroniseer vir die mees relevante inhoud gegrond op jou belangstellings.</translation>
 <translation id="6159839020698489198">opsioneel</translation>
+<translation id="6160780110287872296">Laai lêer af?</translation>
 <translation id="6170450281939467187">Kon nie vertaal nie</translation>
 <translation id="6173499589275053515">Wagwoord is in jou Google-rekening <ph name="EMAIL" /> gestoor</translation>
 <translation id="6184086493125982861">Wys oortjies</translation>
@@ -1006,6 +1011,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6447842834002726250">Webkoekies</translation>
 <translation id="6453018583485750254">Kontrole is nooit uitgevoer nie.</translation>
 <translation id="6459307836338400162">Raadpleeg <ph name="BEGIN_LINK" />Sinkronisering<ph name="END_LINK" /> én <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer instellings wat met privaatheid, sekuriteit en data-insameling verband hou.</translation>
+<translation id="646394917185284261">Lêers</translation>
 <translation id="6464071786529933911">Maak in nuwe incognito-oortjie oop</translation>
 <translation id="6464397691496239022">Werwe kan webkoekies gebruik om jou blaai-ervaring beter te maak, byvoorbeeld, om jou aangemeld te hou of om items in jou inkopiemandjie te onthou.
 
@@ -1418,7 +1424,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8730621377337864115">Gedoen</translation>
 <translation id="8731958888085671579">Versteek Vind in bladsy</translation>
 <translation id="87371078663613140">Verken die opsies op die kieslysbalk</translation>
-<translation id="8737620822084008350">{count,plural, =1{{count} gestoorde portefeulje is bo jou sleutelbord beskikbaar.}other{{count} gestoorde portefeuljes is bo jou sleutelbord beskikbaar.}}</translation>
 <translation id="8741995161408053644">Jou Google-rekening kan dalk ander vorme van blaaigeskiedenis hê by <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Jy sal jou oortjies hier kry</translation>
 <translation id="8756969031206844760">Dateer wagwoord op?</translation>

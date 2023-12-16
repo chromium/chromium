@@ -250,6 +250,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8328903609881776074">Opens a New Chrome Incognito Tab.</translation>
 <translation id="8357607116237445042">Choose whether to clear your Chrome data from this device or keep it</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
+<translation id="8387459386171870978">Continue using Chrome</translation>
 <translation id="840168496893712993">Some add-ons cause Chrome to crash. Please try uninstalling them.</translation>
 <translation id="8413795581997394485">Protects against sites, downloads and extensions that are known to be dangerous. When you visit a site, Chrome sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site does something suspicious, full URLs and bits of page content are also sent.</translation>
 <translation id="8414886616817913619">Your organisation requires you to sign in to use Chrome. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>

@@ -1424,7 +1424,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731958888085671579">Сакриј опцију Пронађи на страници</translation>
 <translation id="87371078663613140">Истражите опције на траци менија</translation>
-<translation id="8737620822084008350">{count,plural, =1{{count} сачувани профил је доступан изнад тастатуре.}one{{count} сачувани профил је доступан изнад тастатуре.}few{{count} сачувана профила су доступна изнад тастатуре.}other{{count} сачуваних профила је доступно изнад тастатуре.}}</translation>
 <translation id="8741995161408053644">Google налог има друге облике историје прегледања на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Овде ћете пронаћи картице</translation>
 <translation id="8756969031206844760">Желите ли да ажурирате лозинку?</translation>

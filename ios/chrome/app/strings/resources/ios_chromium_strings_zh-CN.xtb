@@ -47,6 +47,7 @@
 <translation id="2478931088402984578">选择 <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2574528844022712255">查看 Chromium 书签</translation>
 <translation id="2590893390871230428">同步 Chromium 数据</translation>
+<translation id="2592940277904433508">继续使用 Chromium</translation>
 <translation id="2618596336309823556">从设备的“设置”中打开“<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />”，然后选择“Chromium”</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium 将帮助您在“新标签页”页面中跟踪此包裹。}other{Chromium 将帮助您在“新标签页”页面中跟踪这些包裹。}}</translation>
 <translation id="2650312721222849884">要查看您在其他设备上用 Chromium 打开的标签页，请开启同步功能</translation>

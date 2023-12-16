@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">Älä käännä tätä sivustoa</translation>
 <translation id="1291506870746876680">Luvat (<ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />) nollataan, kun poistut sivustolta.</translation>
 <translation id="1295289763199166823">Muokkaa valikkoa</translation>
+<translation id="1296581780163690620">Ladataanko tiedosto? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Vahvista henkilöllisyytesi, jotta voit aina käyttää Google-tilisi salasanoja.</translation>
 <translation id="1312721752506309252">Parannettu suojaus on päällä</translation>
 <translation id="1321993286294231467">Virhe tallennettaessa kuvaa</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">Avaa Asetukset.</translation>
 <translation id="2059166748188874810">Paikkakunta</translation>
 <translation id="2062410130322589403">Ohje yksityisyysvalintoihin</translation>
+<translation id="20638360198452347">Yksikkötyypin valitsin</translation>
 <translation id="2073572773299281212">Aktiivinen <ph name="DAYS" /> päivää sitten</translation>
 <translation id="2074131957428911366">Voit valita synkronoitavan sisällön <ph name="BEGIN_LINK" />asetuksissa<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Kumoa</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Muokkaa karusellia</translation>
 <translation id="2316709634732130529">Käytä salasanaehdotusta</translation>
 <translation id="2320166752086256636">Piilota näppäimistö</translation>
+<translation id="2326302612031521902">Yksikön valitsin</translation>
 <translation id="2348630484974447747">Paketti</translation>
 <translation id="2351097562818989364">Käännösasetukset on nollattu.</translation>
 <translation id="235789365079050412">Googlen tietosuojakäytäntö</translation>
@@ -267,6 +270,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2459155039684421202">Kirjoita osoitepalkkiin esimerkiksi "tyhjennä historia" tai "muokkaa salasanoja".</translation>
 <translation id="2461070143328828326">Salasana-asetukset</translation>
 <translation id="2462736546165239215">Täältä löydät koko selaushistoriasi.</translation>
+<translation id="2468132863574325555">Drive</translation>
 <translation id="2469960372084740698">Laitetaanko Selaussuoja pois päältä?</translation>
 <translation id="2473876017985765807">Olet jo tallentanut salasanan täällä: <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Ei valittu</translation>
@@ -939,6 +943,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6149061208933997199">Käytä salasanaa</translation>
 <translation id="6152406514676263192">Synkronoi osuvin sisältö kiinnostuksen kohteidesi mukaan.</translation>
 <translation id="6159839020698489198">valinnainen</translation>
+<translation id="6160780110287872296">Ladataanko tiedosto?</translation>
 <translation id="6170450281939467187">Kääntäminen epäonnistui</translation>
 <translation id="6173499589275053515">Salasana tallennettu Google-tilillesi, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Näytä välilehdet</translation>
@@ -1006,6 +1011,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6447842834002726250">Evästeet</translation>
 <translation id="6453018583485750254">Tarkistusta ei tehty.</translation>
 <translation id="6459307836338400162">Näet lisää yksityisyyteen, tietoturvaan ja datankeruuseen liittyviä asetuksia kohdista <ph name="BEGIN_LINK" />Synkronointi<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />Googlen palvelut<ph name="END_LINK" />.</translation>
+<translation id="646394917185284261">Tiedostot</translation>
 <translation id="6464071786529933911">Avaa incognito-tilassa</translation>
 <translation id="6464397691496239022">Sivustot voivat käyttää evästeitä selauskokemuksesi parantamiseen, esimerkiksi pitää sinut kirjautuneena tai muistaa ostoskorisi sisällön.
 
@@ -1418,7 +1424,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8731958888085671579">Piilota Haku sivulta</translation>
 <translation id="87371078663613140">Tutustu valikkopalkkiin</translation>
-<translation id="8737620822084008350">{count,plural, =1{Näppäimistön yläpuolella on saatavilla {count} tallennettu profiili.}other{Näppäimistön yläpuolella on saatavilla {count} tallennettua profiilia.}}</translation>
 <translation id="8741995161408053644">Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Näet välilehtesi täällä</translation>
 <translation id="8756969031206844760">Päivitetäänkö salasana?</translation>

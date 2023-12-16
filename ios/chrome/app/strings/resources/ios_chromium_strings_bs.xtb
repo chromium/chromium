@@ -47,6 +47,7 @@
 <translation id="2478931088402984578">Odaberite <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2574528844022712255">Prikazivanje oznaka u Chromiumu</translation>
 <translation id="2590893390871230428">Sinhroniziraj Chromium podatke</translation>
+<translation id="2592940277904433508">Nastavi koristiti Chromium</translation>
 <translation id="2618596336309823556">U Postavkama uređaja otvorite "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" i odaberite "Chromium"</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium će vam pomoći da pratite ovaj paket na stranici na novoj kartici.}one{Chromium će vam pomoći da pratite ove pakete na stranici na novoj kartici.}few{Chromium će vam pomoći da pratite ove pakete na stranici na novoj kartici.}other{Chromium će vam pomoći da pratite ove pakete na stranici na novoj kartici.}}</translation>
 <translation id="2650312721222849884">Da vidite kartice s bilo kojeg uređaja na kojem koristite Chromium, uključite sinhronizaciju</translation>

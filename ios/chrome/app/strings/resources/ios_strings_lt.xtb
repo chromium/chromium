@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">Niekada neversti šios svetainės</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> leidimai bus iš naujo nustatyti kaip išjungti, kai išeisite iš šios svetainės.</translation>
 <translation id="1295289763199166823">Tinkinti meniu</translation>
+<translation id="1296581780163690620">Atsisiųsti failą? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Kad užtikrintumėte, jog visada galėsite naudoti slaptažodžius „Google“ paskyroje, patvirtinkite savo tapatybę.</translation>
 <translation id="1312721752506309252">Sustiprinta apsauga įjungta</translation>
 <translation id="1321993286294231467">Klaida išsaugant vaizdą.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">Atidarykite skiltį „Nustatymai“.</translation>
 <translation id="2059166748188874810">Savivaldybė</translation>
 <translation id="2062410130322589403">Privatumo pasirinkimų vadovas</translation>
+<translation id="20638360198452347">Matavimo vieneto tipo parinkiklis</translation>
 <translation id="2073572773299281212">Aktyvus prieš <ph name="DAYS" /> d.</translation>
 <translation id="2074131957428911366">Bet kada galite pasirinkti, ką norite sinchronizuoti, skiltyje <ph name="BEGIN_LINK" />„Nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Karuselės redagavimas</translation>
 <translation id="2316709634732130529">Naudoti siūl. slapt.</translation>
 <translation id="2320166752086256636">Slėpti klaviatūrą</translation>
+<translation id="2326302612031521902">Matavimo vieneto parinkiklis</translation>
 <translation id="2348630484974447747">Siuntinys</translation>
 <translation id="2351097562818989364">Vertimo nustatymai buvo nustatyti iš naujo.</translation>
 <translation id="235789365079050412">„Google“ privatumo politika</translation>
@@ -267,6 +270,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2459155039684421202">Adreso juostoje įveskite užduotį, pvz., „išvalyti istoriją“ arba „redaguoti slaptažodžius“.</translation>
 <translation id="2461070143328828326">Slaptažodžio nustatymai</translation>
 <translation id="2462736546165239215">Visą naršymo istoriją galite rasti čia.</translation>
+<translation id="2468132863574325555">Diskas</translation>
 <translation id="2469960372084740698">Išjungti Saugaus naršymo funkciją?</translation>
 <translation id="2473876017985765807">Jau išsaugojote svetainės <ph name="WEBSITE" /> slaptažodį</translation>
 <translation id="2476359652512522418">Nepasirinkta</translation>
@@ -939,6 +943,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6149061208933997199">Naudoti slaptažodį</translation>
 <translation id="6152406514676263192">Sinchronizuokite, kad būtų pateikiamas labiausiai su jūsų pomėgiais susijęs turinys.</translation>
 <translation id="6159839020698489198">nebūtinas</translation>
+<translation id="6160780110287872296">Atsisiųsti failą?</translation>
 <translation id="6170450281939467187">Išversti nepavyko</translation>
 <translation id="6173499589275053515">Slaptažodis išsaugotas „Google“ paskyroje <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Rodyti skirtukus</translation>
@@ -1006,6 +1011,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6447842834002726250">Slapukai</translation>
 <translation id="6453018583485750254">Niekada netikrinti.</translation>
 <translation id="6459307836338400162">Daugiau nustatymų, susijusių su privatumu, sauga ir duomenų rinkimu, žr. skiltyse <ph name="BEGIN_LINK" />„Sinchronizavimas“<ph name="END_LINK" /> ir <ph name="BEGIN_LINK" />„Google“ paslaugos“<ph name="END_LINK" />.</translation>
+<translation id="646394917185284261">Failai</translation>
 <translation id="6464071786529933911">Atid. nauj. ink. skirtuk.</translation>
 <translation id="6464397691496239022">Svetainės gali naudoti slapukus, kad pagerintų naršymo kokybę, pvz., kad liktumėte prisijungę ar būtų įsimintos pirkinių krepšelyje esančios prekės.
 
@@ -1418,7 +1424,6 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8730621377337864115">Atlikta</translation>
 <translation id="8731958888085671579">Slėpti paiešką puslapyje</translation>
 <translation id="87371078663613140">Naršykite parinktis meniu juostoje</translation>
-<translation id="8737620822084008350">{count,plural, =1{Virš klaviatūros pasiekiamas {count} išsaugotas profilis.}one{Virš klaviatūros pasiekiamas {count} išsaugotas profilis.}few{Virš klaviatūros pasiekiami {count} išsaugoti profiliai.}many{Virš klaviatūros pasiekiama {count} išsaugoto profilio.}other{Virš klaviatūros pasiekiama {count} išsaugotų profilių.}}</translation>
 <translation id="8741995161408053644">Adresu <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> gali būti pateikta kitų formų jūsų „Google“ paskyros istorija.</translation>
 <translation id="8750037785291841318">Čia rasite skirtukus</translation>
 <translation id="8756969031206844760">Atnaujinti slaptažodį?</translation>

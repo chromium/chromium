@@ -14,7 +14,7 @@
 <translation id="1472013873724362412">‏لا يعمل حسابك على Chromium. يُرجى الاتصال بمشرف النطاق أو استخدام حساب Google عادي لتسجيل الدخول.</translation>
 <translation id="1507010443238049608">‏المساعدة على تحسين ميزات Chromium وأدائه</translation>
 <translation id="1513122820609681462">‏ضبط Chromium كمتصفِّح تلقائي</translation>
-<translation id="1531155317299575425">‏عرض رسائل مطالبة تسجيل الدخول إلى Chromium</translation>
+<translation id="1531155317299575425">‏عرض طلبات تسجيل الدخول إلى Chromium</translation>
 <translation id="159029779861043703">‏يحمي Chromium بياناتك الحسّاسة باستخدام ميزة "التعرُّف على الوجه".</translation>
 <translation id="1591119736686995611">‏فتح شبكة علامات تبويب Chromium</translation>
 <translation id="1611584326765829247">‏السماح لمتصفّح Chromium بمساعدتك في تتبُّع الطرود</translation>
@@ -47,6 +47,7 @@
 <translation id="2478931088402984578">‏اختيار <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2574528844022712255">‏الاطّلاع على الإشارات المرجعية في Chromium</translation>
 <translation id="2590893390871230428">‏مزامنة بيانات Chromium</translation>
+<translation id="2592940277904433508">‏مواصلة استخدام Chromium</translation>
 <translation id="2618596336309823556">‏في إعدادات جهازك، افتح "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" واختَر "Chromium"</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{‏سيساعدك متصفِّح Chromium في تتبُّع هذه الحزمة في صفحة "علامة تبويب جديدة".}zero{‏سيساعدك متصفِّح Chromium في تتبُّع هذه الحِزم في صفحة "علامة تبويب جديدة".}two{‏سيساعدك متصفِّح Chromium في تتبُّع هاتين الحزمتَين في صفحة "علامة تبويب جديدة".}few{‏سيساعدك متصفِّح Chromium في تتبُّع هذه الحِزم في صفحة "علامة تبويب جديدة".}many{‏سيساعدك متصفِّح Chromium في تتبُّع هذه الحِزم في صفحة "علامة تبويب جديدة".}other{‏سيساعدك متصفِّح Chromium في تتبُّع هذه الحِزم في صفحة "علامة تبويب جديدة".}}</translation>
 <translation id="2650312721222849884">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chromium، فعِّل المزامنة.</translation>

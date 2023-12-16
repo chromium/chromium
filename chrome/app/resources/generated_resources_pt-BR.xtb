@@ -1658,6 +1658,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2249111429176737533">Abrir como janela com guias</translation>
 <translation id="2249605167705922988">por exemplo, 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Personalize as informações usadas pelos sites para mostrar anúncios</translation>
+<translation id="2250624716625396929">Esta guia está usando sua câmera e seu microfone</translation>
 <translation id="2251218783371366160">Abrir com o Visualizador do sistema</translation>
 <translation id="225163402930830576">Atualizar redes</translation>
 <translation id="2251809247798634662">Nova janela anônima</translation>
@@ -2358,7 +2359,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2765606672116865966">Quando você clica ou digita na barra de endereço ou na caixa de pesquisa, aparecem sugestões do seu mecanismo de pesquisa padrão. Essa opção fica desativada na navegação anônima.</translation>
 <translation id="2766006623206032690">Co&amp;lar e ir</translation>
 <translation id="2766161002040448006">Pedir para um familiar responsável</translation>
-<translation id="2766787642751986950">Rastreamento de rostos</translation>
 <translation id="2767077837043621282">Não foi possível atualizar o Chromebook. Tente novamente mais tarde.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> poderá editar <ph name="FILENAME" /> até que você feche todas as guias desse site</translation>
 <translation id="2769174155451290427">Imagem enviada</translation>
@@ -6636,6 +6636,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6202304368170870640">Use seu PIN para fazer login ou desbloquear seu dispositivo.</translation>
 <translation id="6203247599828309566">Você salvou uma observação para uma senha neste site. Para conferir, clique no ícone de chave.</translation>
 <translation id="6205314730813004066">Privacidade de anúncios</translation>
+<translation id="6205993460077903908"><ph name="WINDOW_TITLE" />: gravação de microfone</translation>
 <translation id="6206199626856438589">Sua conta será desconectada dos sites mostrados, inclusive nas guias abertas</translation>
 <translation id="6206311232642889873">&amp;Copiar imagem</translation>
 <translation id="6207200176136643843">Redefinir para o nível de zoom padrão</translation>
@@ -7189,6 +7190,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6657585470893396449">Senha</translation>
 <translation id="6659213950629089752">Esta página foi ampliada pela extensão "<ph name="NAME" />"</translation>
 <translation id="6659594942844771486">Guia</translation>
+<translation id="6660099350750552197"><ph name="WINDOW_TITLE" />: gravação da câmera</translation>
 <translation id="6660819301598582123">Jane quer LP, fax, CD, giz, TV e bom whisky.</translation>
 <translation id="666099631117081440">Servidores de impressão</translation>
 <translation id="6662931079349804328">A política da empresa mudou. O botão "Experimentos" foi removido da barra de ferramentas.</translation>
@@ -8895,7 +8897,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7978412674231730200">Chave privada</translation>
 <translation id="7978450511781612192">Isso desconectará você das suas Contas do Google. Seus favoritos, histórico, senhas e outras configurações não serão mais sincronizados.</translation>
 <translation id="7980084013673500153">Código do recurso: <ph name="ASSET_ID" /></translation>
-<translation id="7980257515763116014">Controle o cursor e o teclado com movimentos do rosto</translation>
 <translation id="7981662863948574132">Mostre o EID do dispositivo e o pop-up do QR code</translation>
 <translation id="7981670705071137488">A partir de agora, as atualizações de software vão acontecer em segundo plano. Você pode revisar as preferências de atualização nas configurações.</translation>
 <translation id="7982083145464587921">Reinicie seu dispositivo para corrigir este erro.</translation>
@@ -9002,6 +9003,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8059417245945632445">&amp;Inspecionar dispositivos</translation>
 <translation id="8059456211585183827">Não há impressoras disponíveis para salvar.</translation>
 <translation id="8061091456562007989">Mudar para configuração anterior</translation>
+<translation id="8061244502316511332">Esta guia está usando seu microfone</translation>
 <translation id="8061970399284390013">Verificação ortográfica e gramatical</translation>
 <translation id="8061991877177392872">Parece que você já configurou o Voice Match com o Google Assistente em outro dispositivo. As gravações anteriores foram usadas para criar um modelo de voz aqui.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 folha de papel}one{{COUNT} folha de papel}other{{COUNT} folhas de papel}}</translation>
@@ -9483,6 +9485,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="844063558976952706">Sempre neste site</translation>
 <translation id="8441313165929432954">Ativar/desativar o tethering</translation>
 <translation id="8443986842926457191">O URL tem mais de 2.048 caracteres</translation>
+<translation id="8445281870900174108">Esta guia está usando sua câmera</translation>
 <translation id="8446884382197647889">Saiba mais</translation>
 <translation id="8447409163267621480">Incluir a tecla Ctrl ou Alt</translation>
 <translation id="844850004779619592">Nenhum comando encontrado</translation>
@@ -10545,7 +10548,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="969096075394517431">Alterar idiomas</translation>
 <translation id="969574218206797926">A Economia de memória libera memória de guias inativas para que possa ser usada por guias ativas e outros apps</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 guia}one{# guias}other{# guias}}</translation>
-<translation id="970431600907534323">Configurações de rastreamento de rostos</translation>
 <translation id="971774202801778802">URL do favorito</translation>
 <translation id="973473557718930265">Sair</translation>
 <translation id="973558314812359997">Tamanho do mouse</translation>
@@ -10558,6 +10560,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="981121421437150478">Off-line</translation>
 <translation id="983192555821071799">Fechar todas as guias</translation>
 <translation id="983511809958454316">Esse recurso não é compatível com RV</translation>
+<translation id="983531994960412650"><ph name="WINDOW_TITLE" />: gravação de câmera e microfone</translation>
 <translation id="984275831282074731">Formas de pagamento</translation>
 <translation id="984705303330760860">Adicionar idiomas para verificação ortográfica</translation>
 <translation id="98515147261107953">Paisagem</translation>

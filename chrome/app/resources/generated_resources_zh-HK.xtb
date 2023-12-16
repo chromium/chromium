@@ -2358,7 +2358,6 @@
 <translation id="2765606672116865966">點擊或在網址列或搜尋框中輸入文字時，系統將會顯示預設搜尋引擎提供的建議。此功能不會在無痕模式下啟用。</translation>
 <translation id="2766006623206032690">貼上及前往(&amp;S)</translation>
 <translation id="2766161002040448006">詢問家長</translation>
-<translation id="2766787642751986950">面孔追蹤</translation>
 <translation id="2767077837043621282">無法更新 Chromebook。請稍後再試。</translation>
 <translation id="2767127727915954024">在您關閉此網站的所有分頁前，<ph name="ORIGIN" /> 都能編輯「<ph name="FILENAME" />」</translation>
 <translation id="2769174155451290427">已上載的圖片</translation>
@@ -8887,7 +8886,6 @@
 <translation id="7978412674231730200">私密金鑰</translation>
 <translation id="7978450511781612192">此操作會將您登出 Google 帳戶。系統將不會繼續將書籤、記錄、密碼和其他同步至您的 Google 帳戶。</translation>
 <translation id="7980084013673500153">資產識別碼：<ph name="ASSET_ID" /></translation>
-<translation id="7980257515763116014">透過面孔移動控制遊標和鍵盤</translation>
 <translation id="7981662863948574132">顯示裝置 EID 同 QR 碼彈出式視窗</translation>
 <translation id="7981670705071137488">軟件日後會在背景中更新。您可在「設定」中查看更新偏好設定。</translation>
 <translation id="7982083145464587921">請重新啟動裝置以修正這個錯誤。</translation>
@@ -10538,7 +10536,6 @@
 <translation id="969096075394517431">變更語言</translation>
 <translation id="969574218206797926">「節省記憶體」模式會從閒置分頁釋出記憶體給使用中的分頁和其他應用程式</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 個分頁}other{# 個分頁}}</translation>
-<translation id="970431600907534323">面孔追蹤設定</translation>
 <translation id="971774202801778802">書籤網址</translation>
 <translation id="973473557718930265">離開</translation>
 <translation id="973558314812359997">滑鼠大小</translation>

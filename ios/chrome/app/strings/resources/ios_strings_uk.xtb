@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">Ніколи не перекладати цей сайт</translation>
 <translation id="1291506870746876680">Коли ви закриєте сайт <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />, усі дозволи для нього буде скинуто.</translation>
 <translation id="1295289763199166823">Налаштувати меню</translation>
+<translation id="1296581780163690620">Завантажити файл? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Щоб завжди мати змогу використовувати паролі в обліковому записі Google, підтвердьте свою особу.</translation>
 <translation id="1312721752506309252">Покращений захист увімкнено</translation>
 <translation id="1321993286294231467">Не вдалося зберегти зображення.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">Відкрийте "Налаштування".</translation>
 <translation id="2059166748188874810">Муніципалітет</translation>
 <translation id="2062410130322589403">Посібник щодо конфіденційності</translation>
+<translation id="20638360198452347">Засіб вибору типу одиниць</translation>
 <translation id="2073572773299281212">У мережі <ph name="DAYS" /> дн. тому</translation>
 <translation id="2074131957428911366">Ви можете будь-коли вибрати дані для синхронізації в <ph name="BEGIN_LINK" />налаштуваннях<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Відмінити</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Змінити карусель</translation>
 <translation id="2316709634732130529">Використати запропонований пароль</translation>
 <translation id="2320166752086256636">Сховати клавіатуру</translation>
+<translation id="2326302612031521902">Засіб вибору одиниць</translation>
 <translation id="2348630484974447747">Відправлення</translation>
 <translation id="2351097562818989364">Налаштування перекладу скинуто.</translation>
 <translation id="235789365079050412">Політика конфіденційності Google</translation>
@@ -267,6 +270,7 @@
 <translation id="2459155039684421202">В адресному рядку введіть завдання, наприклад, "очистити історію" або "змінити паролі".</translation>
 <translation id="2461070143328828326">Налаштування паролю</translation>
 <translation id="2462736546165239215">Тут ви можете переглянути всю історію веб-перегляду.</translation>
+<translation id="2468132863574325555">Диск</translation>
 <translation id="2469960372084740698">Вимкнути Безпечний перегляд?</translation>
 <translation id="2473876017985765807">Ви вже зберегли пароль для сайту <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Не вибрано</translation>
@@ -939,6 +943,7 @@
 <translation id="6149061208933997199">Прийняти пароль</translation>
 <translation id="6152406514676263192">Увімкніть синхронізацію, щоб отримувати найактуальніший контент на основі ваших інтересів.</translation>
 <translation id="6159839020698489198">необов’язково</translation>
+<translation id="6160780110287872296">Завантажити файл?</translation>
 <translation id="6170450281939467187">Не вдалося перекласти</translation>
 <translation id="6173499589275053515">Пароль збережено у вашому обліковому записі Google (<ph name="EMAIL" />)</translation>
 <translation id="6184086493125982861">Показати вкладки</translation>
@@ -1006,6 +1011,7 @@
 <translation id="6447842834002726250">Файли cookie</translation>
 <translation id="6453018583485750254">Паролі ніколи не перевірялися.</translation>
 <translation id="6459307836338400162">Інші налаштування конфіденційності, безпеки й збору даних доступні в розділах <ph name="BEGIN_LINK" />Синхронізація<ph name="END_LINK" /> та <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" />.</translation>
+<translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">Відкрити в анонімній вкладці</translation>
 <translation id="6464397691496239022">Сайти можуть використовувати файли cookie, щоб покращувати веб-перегляд, наприклад не виходити з облікового запису чи запам'ятовувати товари в кошику для покупок.
 
@@ -1418,7 +1424,6 @@
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731958888085671579">Сховати опцію "Знайти на сторінці"</translation>
 <translation id="87371078663613140">Перегляньте варіанти на панелі меню</translation>
-<translation id="8737620822084008350">{count,plural, =1{Над клавіатурою показується {count} збережений профіль.}one{Над клавіатурою показується {count} збережений профіль.}few{Над клавіатурою показуються {count} збережені профілі.}many{Над клавіатурою показуються {count} збережених профілів.}other{Над клавіатурою показуються {count} збереженого профілю.}}</translation>
 <translation id="8741995161408053644">Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Тут відображатимуться ваші вкладки</translation>
 <translation id="8756969031206844760">Оновити пароль?</translation>

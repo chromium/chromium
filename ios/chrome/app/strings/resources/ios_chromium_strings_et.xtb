@@ -47,6 +47,7 @@
 <translation id="2478931088402984578">Valige <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2574528844022712255">Kuva Chromiumi järjehoidjad</translation>
 <translation id="2590893390871230428">Chromiumi andmete sünkroonimine</translation>
+<translation id="2592940277904433508">Jätkan Chromiumi kasutamist</translation>
 <translation id="2618596336309823556">Tehke seadme seadetes valik „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“, seejärel valik „Chromium“</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium aitab seda saadetist uuel vahelehel jälgida.}other{Chromium aitab neid saadetisi uuel vahelehel jälgida.}}</translation>
 <translation id="2650312721222849884">Selleks et näha vahelehti kõikjalt, kus Chromiumi kasutate, lülitage sisse sünkroonimine</translation>

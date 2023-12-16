@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">Bu saytı heç vaxt tərcümə etməyin</translation>
 <translation id="1291506870746876680">Bu saytdan çıxdığınız zaman <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> icazələri sıfırlanaraq deaktiv olacaq.</translation>
 <translation id="1295289763199166823">Menyunu fərdiləşdirin</translation>
+<translation id="1296581780163690620">Fayl endirilsin? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Google Hesabında parollardan hər zaman istifadə etmək üçün kimliyinizi təsdiq edin.</translation>
 <translation id="1312721752506309252">Qabaqcıl qoruma aktivdir</translation>
 <translation id="1321993286294231467">Şəkil yadda saxlanılarkən xəta.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">"Ayarlar"ı açın.</translation>
 <translation id="2059166748188874810">Bələdiyyə</translation>
 <translation id="2062410130322589403">Məxfilik seçimləri üçün bələdçi</translation>
+<translation id="20638360198452347">Vahid növü seçicisi</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> Gün Əvvəl Aktiv Olub</translation>
 <translation id="2074131957428911366">Sinxronizasiya seçimlərini <ph name="BEGIN_LINK" />ayarlarda<ph name="END_LINK" /> edə bilərsiniz.</translation>
 <translation id="2079545284768500474">Geri qaytarın</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Karuselə düzəliş edin</translation>
 <translation id="2316709634732130529">Təklif Edilmiş Paroldan İstifadə Edin</translation>
 <translation id="2320166752086256636">Klaviaturanı gizlədin.</translation>
+<translation id="2326302612031521902">Vahid seçicisi</translation>
 <translation id="2348630484974447747">Bağlama</translation>
 <translation id="2351097562818989364">Tərcümə ayarlarınız sıfırlanmışdır.</translation>
 <translation id="235789365079050412">Google Məxfilik Siyasəti</translation>
@@ -267,6 +270,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2459155039684421202">Ünvan panelində "tarixçəni silin", yaxud "parolları redaktə edin" kimi tapşırıq daxil edin.</translation>
 <translation id="2461070143328828326">Parol Ayarları</translation>
 <translation id="2462736546165239215">Bütün brauzer tarixçəsi buradadır.</translation>
+<translation id="2468132863574325555">Disk</translation>
 <translation id="2469960372084740698">Təhlükəsiz Baxış Deaktiv edilsin?</translation>
 <translation id="2473876017985765807">Artıq <ph name="WEBSITE" /> üçün parolu yadda saxlamısınız</translation>
 <translation id="2476359652512522418">Seçilməyib</translation>
@@ -939,6 +943,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6149061208933997199">Parol istifadə edin</translation>
 <translation id="6152406514676263192">Maraqlarınıza əsaslanan ən uyğun məzmun üçün sinxronizasiya edin.</translation>
 <translation id="6159839020698489198">istəyə görə</translation>
+<translation id="6160780110287872296">Fayl endirilsin?</translation>
 <translation id="6170450281939467187">Tərcümə uğursuz oldu</translation>
 <translation id="6173499589275053515">Parol Google Hesabınızda (<ph name="EMAIL" />) yadda saxlanıldı</translation>
 <translation id="6184086493125982861">Panelləri Göstərin</translation>
@@ -1006,6 +1011,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6447842834002726250">Kukilər</translation>
 <translation id="6453018583485750254">Yoxlama heç vaxt aparılmayıb.</translation>
 <translation id="6459307836338400162">Məxfilik, təhlükəsizlik və datanın toplanması ilə bağlı daha çox ayarlar üçün <ph name="BEGIN_LINK" />Sinxronizasiya<ph name="END_LINK" /> və <ph name="BEGIN_LINK" />Google Xidmətləri<ph name="END_LINK" /> səhifəsinə daxil olun.</translation>
+<translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">Yeni Gizli Paneldə açın</translation>
 <translation id="6464397691496239022">Saytlar baxış təcrübənizi yaxşılaşdırmaq üçün, məsələn, sizi daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətinizdəki elementləri yadda saxlamaq üçün kukilərdən istifadə edə bilər.
 
@@ -1418,7 +1424,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8730621377337864115">Tamamdır</translation>
 <translation id="8731958888085671579">"Səhifədə axtarın" seçimini gizlədin</translation>
 <translation id="87371078663613140">Menyu panelində seçimləri araşdırın</translation>
-<translation id="8737620822084008350">{count,plural, =1{{count} yaddaşda saxlanılmış profil klaviaturanızın yuxarısında əlçatandır.}other{{count} yaddaşda saxlanılmış profil klaviaturanızın yuxarısında əlçatandır.}}</translation>
 <translation id="8741995161408053644"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> bölməsində Google Hesabının axtarış tarixçəsinin digər formaları ola bilər.</translation>
 <translation id="8750037785291841318">Tabları burada tapa bilərsiniz</translation>
 <translation id="8756969031206844760">Parol yenilənsin?</translation>

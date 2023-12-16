@@ -1424,7 +1424,6 @@
 <translation id="8730621377337864115">完了</translation>
 <translation id="8731958888085671579">[ページ内を検索] を非表示にする</translation>
 <translation id="87371078663613140">メニューバーのオプションを確認します</translation>
-<translation id="8737620822084008350">{count,plural, =1{キーボードの上部に保存済みのプロフィールが {count} 件表示されています。}other{キーボードの上部に保存済みのプロフィールが {count} 件表示されています。}}</translation>
 <translation id="8741995161408053644">Google アカウントでの他の形式の閲覧履歴が <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> に残ることがあります。</translation>
 <translation id="8750037785291841318">タブはここに表示されます</translation>
 <translation id="8756969031206844760">パスワードを更新しますか？</translation>

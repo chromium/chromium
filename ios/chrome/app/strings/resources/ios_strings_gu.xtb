@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">આ સાઇટનો ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="1291506870746876680">જ્યારે તમે સાઇટમાંથી બહાર નીકળી જશો, ત્યારે <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> સંબંધિત પરવાનગીઓ બંધ પર રીસેટ કરવામાં આવશે.</translation>
 <translation id="1295289763199166823">મેનૂ કસ્ટમાઇઝ કરો</translation>
+<translation id="1296581780163690620">ફાઇલ ડાઉનલોડ કરીએ? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">તમે હંમેશાં તમારા Google એકાઉન્ટમાં પાસવર્ડનો ઉપયોગ કરી શકો તેની ખાતરી કરવા માટે આ તમે જ છો તેની ચકાસણી કરો.</translation>
 <translation id="1312721752506309252">વિગતવાર સુરક્ષા ચાલુ છે</translation>
 <translation id="1321993286294231467">છબી સાચવવામાં ભૂલ.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">"સેટિંગ" ખોલો.</translation>
 <translation id="2059166748188874810">નગરપાલિકા</translation>
 <translation id="2062410130322589403">પ્રાઇવસી સંબંધિત તમારી પસંદગીઓની માર્ગદર્શિકા</translation>
+<translation id="20638360198452347">એકમના પ્રકારનું પસંદગીકર્તા</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> દિવસ પહેલાં સક્રિય હતું</translation>
 <translation id="2074131957428911366">શું સિંક કરવું તે હંમેશાં તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં પસંદ કરી શકો છો.</translation>
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">કરાઉઝલમાં ફેરફાર કરો</translation>
 <translation id="2316709634732130529">સૂચવેલ પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="2320166752086256636">કીબોર્ડ છુપાવો</translation>
+<translation id="2326302612031521902">એકમ પસંદગીકર્તા</translation>
 <translation id="2348630484974447747">પૅકેજ</translation>
 <translation id="2351097562818989364">તમારા અનુવાદ સેટિંગ રીસેટ કરવામાં આવ્યા છે.</translation>
 <translation id="235789365079050412">Google પ્રાઇવસી પૉલિસી</translation>
@@ -267,6 +270,7 @@
 <translation id="2459155039684421202">ઍડ્રેસ બારમાં, “મારો ઇતિહાસ સાફ કરો” અથવા “પાસવર્ડમાં ફેરફાર કરો” જેવું કોઈ કાર્ય દાખલ કરો.</translation>
 <translation id="2461070143328828326">પાસવર્ડ સેટિંગ</translation>
 <translation id="2462736546165239215">તમે તમારો તમામ બ્રાઉઝિંગ ઇતિહાસ અહીં મેળવી શકો છો.</translation>
+<translation id="2468132863574325555">Drive</translation>
 <translation id="2469960372084740698">Safe Browsing બંધ કરીએ?</translation>
 <translation id="2473876017985765807">તમે <ph name="WEBSITE" /> માટેનો પાસવર્ડ પહેલેથી સાચવ્યો છે</translation>
 <translation id="2476359652512522418">પસંદ કરેલું નથી</translation>
@@ -939,6 +943,7 @@
 <translation id="6149061208933997199">પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="6152406514676263192">તમારી રુચિઓના આધારે સૌથી વધુ સંબંધિત કન્ટેન્ટ જોવા માટે સિંક કરો.</translation>
 <translation id="6159839020698489198">વૈકલ્પિક</translation>
+<translation id="6160780110287872296">ફાઇલ ડાઉનલોડ કરીએ?</translation>
 <translation id="6170450281939467187">અનુવાદ નિષ્ફળ થયો</translation>
 <translation id="6173499589275053515">પાસવર્ડને તમારા Google એકાઉન્ટમાં સાચવ્યો, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">ટૅબ્સ બતાવો</translation>
@@ -1006,6 +1011,7 @@
 <translation id="6447842834002726250">કૂકીઝ</translation>
 <translation id="6453018583485750254">ચેક ક્યારેય ચાલ્યું નથી.</translation>
 <translation id="6459307836338400162">પ્રાઇવસી, સુરક્ષા અને ડેટા સંગ્રહથી સંબંધિત વધુ સેટિંગ માટે, <ph name="BEGIN_LINK" />સિંક<ph name="END_LINK" /> અને <ph name="BEGIN_LINK" />Googleની સેવાઓ<ph name="END_LINK" /> બન્નેને જુઓ.</translation>
+<translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">નવા છુપા ટૅબમાં ખોલો</translation>
 <translation id="6464397691496239022">સાઇટ તમને વધુ સારો બ્રાઉઝિંગ અનુભવ આપવા, ઉદાહરણ તરીકે, તમને સાઇન ઇન કરીને રાખવા અથવા તમારા શૉપિંગ કાર્ટની આઇટમ યાદ રાખવા માટે, કુકીનો ઉપયોગ કરી શકે છે.
 
@@ -1418,7 +1424,6 @@
 <translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="8731958888085671579">'પેજમાં શોધો' છુપાવો</translation>
 <translation id="87371078663613140">મેનૂ બારના વિકલ્પો વિશે શોધખોળ કરો</translation>
-<translation id="8737620822084008350">{count,plural, =1{તમારા કીબોર્ડ પર {count} સાચવેલી પ્રોફાઇલ ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર {count} સાચવેલી પ્રોફાઇલ ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર {count} સાચવેલી પ્રોફાઇલ ઉપલબ્ધ છે.}}</translation>
 <translation id="8741995161408053644">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
 <translation id="8750037785291841318">તમને તમારી ટૅબ અહીં મળશે</translation>
 <translation id="8756969031206844760">પાસવર્ડ અપડેટ કરીએ?</translation>

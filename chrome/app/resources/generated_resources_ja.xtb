@@ -2337,7 +2337,6 @@
 <translation id="2765606672116865966">アドレスバーまたは検索ボックス内をクリックするか、文字を入力すると、デフォルトの検索エンジンから候補が表示されます。シークレット モードの場合、この設定はオフになっています。</translation>
 <translation id="2766006623206032690">貼り付けて移動(&amp;S)</translation>
 <translation id="2766161002040448006">保護者に聞く</translation>
-<translation id="2766787642751986950">顔追跡</translation>
 <translation id="2767077837043621282">Chromebook を更新できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="2767127727915954024">このサイトのタブをすべて閉じるまでの間、<ph name="ORIGIN" /> は「<ph name="FILENAME" />」を編集できるようになります</translation>
 <translation id="2769174155451290427">アップロードされた画像</translation>
@@ -8864,7 +8863,6 @@
 <translation id="7978412674231730200">秘密鍵</translation>
 <translation id="7978450511781612192">この操作を行うと Google アカウントからログアウトし、ブックマーク、履歴、パスワードなどの設定は同期されなくなります。</translation>
 <translation id="7980084013673500153">アセット ID: <ph name="ASSET_ID" /></translation>
-<translation id="7980257515763116014">顔の動きでカーソルとキーボードを操作します</translation>
 <translation id="7981662863948574132">デバイスの EID と QR コードのポップアップを表示します</translation>
 <translation id="7981670705071137488">今後、ソフトウェアの更新はバックグラウンドで行われます。更新の設定は [設定] で確認できます。</translation>
 <translation id="7982083145464587921">このエラーを修正するには、デバイスを再起動してください。</translation>
@@ -10515,7 +10513,6 @@
 <translation id="969096075394517431">言語を変更</translation>
 <translation id="969574218206797926">メモリセーバーは、アクティブでないタブのメモリを解放し、アクティブなタブやその他のアプリが使用できるようにします。</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 個のタブ}other{# 個のタブ}}</translation>
-<translation id="970431600907534323">顔追跡の設定</translation>
 <translation id="971774202801778802">ブックマーク URL</translation>
 <translation id="973473557718930265">終了</translation>
 <translation id="973558314812359997">マウスのサイズ</translation>

@@ -47,6 +47,7 @@
 <translation id="2478931088402984578">Selecciona <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
 <translation id="2574528844022712255">Ver los favoritos de Chromium</translation>
 <translation id="2590893390871230428">Sincronizar tus datos de Chromium</translation>
+<translation id="2592940277904433508">Seguir usando Chromium</translation>
 <translation id="2618596336309823556">En la configuración de tu dispositivo, abre "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" y selecciona "Chromium"</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium te ayudará a realizar el seguimiento de este paquete en la página Nueva pestaña.}other{Chromium te ayudará a realizar el seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="2650312721222849884">Para ver tus pestañas donde sea que uses Chromium, activa la sincronización</translation>

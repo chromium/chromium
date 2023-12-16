@@ -40,6 +40,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1153356358378277386">Dispositivi accoppiati</translation>
 <translation id="1155734730463845512">Livello attuale della batteria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">attiva e in uso</translation>
+<translation id="1163437384438183174">Rimuovi Phone Hub dalla barra delle app</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Il cavo USB-C potrebbe non collegarsi correttamente ai display</translation>
 <translation id="1175572348579024023">Scorri</translation>
@@ -70,6 +71,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1239161794459865856">La funzionalità <ph name="FEATURE_NAME" /> è connessa.</translation>
 <translation id="1240638468526743569">Un'app</translation>
 <translation id="1242883863226959074">dispositivo</translation>
+<translation id="1245644940275736236">Vai all'Assistente</translation>
 <translation id="124678866338384709">Chiudi scheda corrente</translation>
 <translation id="1246890715821376239">App non supportate</translation>
 <translation id="1247372569136754018">Microfono (interno)</translation>
@@ -689,6 +691,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="383629559565718788">Mostra impostazioni tastiera</translation>
 <translation id="384082539148746321">Vuoi eliminare il modello?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> poi <ph name="KEY_ONE" /> o <ph name="KEY_TWO" /> o <ph name="KEY_THREE" /> o <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Nessuna informazione di rete disponibile</translation>
 <translation id="385051799172605136">Indietro</translation>
 <translation id="385300504083504382">Inizio</translation>
@@ -923,6 +926,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4759238208242260848">Download</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + Freccia su</translation>
 <translation id="4762573482154983647">Nascondi le app</translation>
+<translation id="4762802395013012237">5 piedi in metri</translation>
 <translation id="4763885921995354846">Consente l'accesso alla fotocamera per tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera. Potresti dover aggiornare la pagina web o riavviare l'app.</translation>
 <translation id="4774338217796918551">Puoi riprendere domani alle ore <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Ancora impossibile verificare la password. Riprova.</translation>
@@ -965,6 +969,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="491504982845934899">Attiva <ph name="NETWORK_NAME" /> dopo la configurazione del dispositivo</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Accetto</translation>
+<translation id="491907188205944472">Cerca ciò che ti serve direttamente in Avvio app</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> sta usando la fotocamera</translation>
 <translation id="492453977506755176">Tasto modalità di acquisizione</translation>
 <translation id="4925542575807923399">L'amministratore di questo account richiede che questo account sia il primo account registrato in una sessione con accesso simultaneo.</translation>
@@ -1115,6 +1120,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5518068085000130971">Queste erano le informazioni di base. Continua in Esplora, la nostra app integrata di guida e suggerimenti. Troverai suggerimenti per iniziare, app consigliate, offerte speciali e le ultime funzionalità di Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">L'amministratore ha rimosso tutti i profili eSIM. Per ulteriori informazioni al riguardo rivolgiti all’amministratore.</translation>
+<translation id="5520909879404821039">Ciao in francese</translation>
 <translation id="5523434445161341166">La funzionalità <ph name="FEATURE_NAME" /> sta cercando di connettersi.</translation>
 <translation id="5529587891732734495">Metti in pausa la trasmissione</translation>
 <translation id="5532994612895037630">Tocca un punto qualsiasi per registrare l'intera schermata</translation>
@@ -1692,6 +1698,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7886277072580235377">La sessione Internet verrà cancellata al momento dell'uscita dall'account. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Invia un'email</translation>
 <translation id="7893503627044934815">Non voglio che venga mostrato questo file</translation>
+<translation id="7893547474469215105">Definisci zenit</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Hai premuto la scorciatoia da tastiera per la rotazione dello schermo. Vuoi ruotare lo schermo?</translation>
 <translation id="7897626842031123113">Barra di stato, ora <ph name="TIME" />,
@@ -1707,6 +1714,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7904094684485781019">L'amministratore di questo account ha bloccato l'accesso simultaneo.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivi connessi</translation>
+<translation id="7923534281713082605">Meteo</translation>
 <translation id="7926080067315048321">Visualizza tutte le attività di Google Tasks sul web</translation>
 <translation id="7930731167419639574">Ciò che dici ora viene elaborato localmente e la dettatura funziona offline.</translation>
 <translation id="7932451802722951285">Apri in Google Calendar</translation>
@@ -1853,6 +1861,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8555757996376137129">Rimuovi la scrivania corrente</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> ti consiglia di aggiornare <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Impostazioni di notifica</translation>
+<translation id="8569751806372591456">Ecco alcuni suggerimenti da provare</translation>
 <translation id="857201607579416096">Menu spostato nell'angolo in basso a destra dello schermo.</translation>
 <translation id="8581946341807941670">Premi <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> e fai clic su un link</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1895,6 +1904,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="875593634123171288">Mostra impostazioni VPN</translation>
 <translation id="8759408218731716181">Impossibile impostare l'accesso simultaneo</translation>
 <translation id="8763883995157866248">Attiva la modalità di sospensione sul dispositivo</translation>
+<translation id="877404052021108314">90 °F in °C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, app installata, bloccata</translation>
 <translation id="8785070478575117577">Connetti a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1903,6 +1913,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8806053966018712535">Cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Guida"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">Premi la scorciatoia per gli screenshot, Ctrl più Maiusc più il tasto modalità Panoramica</translation>
 <translation id="881757059229893486">Impostazioni metodi di immissione</translation>
 <translation id="8819728065740986820">Ricarica adattiva attiva</translation>
 <translation id="8825863694328519386">Scorri da sinistra per tornare indietro</translation>

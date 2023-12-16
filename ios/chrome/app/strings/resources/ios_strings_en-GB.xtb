@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">Never translate this site</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />'<ph name="SITE_NAME" />'<ph name="END_BOLD" /> permissions will reset to off when you leave this site.</translation>
 <translation id="1295289763199166823">Customise menu</translation>
+<translation id="1296581780163690620">Download file? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">To make sure that you can always use the passwords in your Google Account, verify that it's you.</translation>
 <translation id="1312721752506309252">Enhanced protection is on</translation>
 <translation id="1321993286294231467">Error saving image.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">Open "Settings."</translation>
 <translation id="2059166748188874810">Municipality</translation>
 <translation id="2062410130322589403">A guide of your privacy choices</translation>
+<translation id="20638360198452347">Unit type selector</translation>
 <translation id="2073572773299281212">Active <ph name="DAYS" /> days ago</translation>
 <translation id="2074131957428911366">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Undo</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Edit carousel</translation>
 <translation id="2316709634732130529">Use suggested password</translation>
 <translation id="2320166752086256636">Hide keyboard</translation>
+<translation id="2326302612031521902">Unit selector</translation>
 <translation id="2348630484974447747">Parcel</translation>
 <translation id="2351097562818989364">Your translate settings have been reset.</translation>
 <translation id="235789365079050412">Google Privacy Policy</translation>
@@ -267,6 +270,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2459155039684421202">In the address bar, enter a task like 'clear my history' or 'edit passwords'.</translation>
 <translation id="2461070143328828326">Password settings</translation>
 <translation id="2462736546165239215">You can find all your browsing history here.</translation>
+<translation id="2468132863574325555">Drive</translation>
 <translation id="2469960372084740698">Turn off Safe Browsing?</translation>
 <translation id="2473876017985765807">You already saved a password for <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Not selected</translation>
@@ -939,6 +943,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6149061208933997199">Use Password</translation>
 <translation id="6152406514676263192">Sync for the most relevant content based on your interests.</translation>
 <translation id="6159839020698489198">optional</translation>
+<translation id="6160780110287872296">Download file?</translation>
 <translation id="6170450281939467187">Translation failed</translation>
 <translation id="6173499589275053515">Password saved in your Google Account, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Show Tabs</translation>
@@ -1006,6 +1011,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">Check never run.</translation>
 <translation id="6459307836338400162">For more settings that relate to privacy, security and data collection, see both <ph name="BEGIN_LINK" />Sync<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />Google Services<ph name="END_LINK" />.</translation>
+<translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">Open in New Incognito Tab</translation>
 <translation id="6464397691496239022">Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping basket.
 
@@ -1418,7 +1424,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8730621377337864115">Done</translation>
 <translation id="8731958888085671579">Hide Find in page</translation>
 <translation id="87371078663613140">Explore the options in the menu bar</translation>
-<translation id="8737620822084008350">{count,plural, =1{{count} saved profile available above your keyboard.}other{{count} saved profiles available above your keyboard.}}</translation>
 <translation id="8741995161408053644">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">You'll find your tabs here</translation>
 <translation id="8756969031206844760">Update password?</translation>

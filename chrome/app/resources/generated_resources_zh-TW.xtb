@@ -2343,7 +2343,6 @@
 <translation id="2765606672116865966">當你點選網址列/搜尋框，或在其中輸入內容時，系統會顯示預設搜尋引擎提供的建議。這項功能在無痕模式中為關閉狀態。</translation>
 <translation id="2766006623206032690">貼上及前往(&amp;S)</translation>
 <translation id="2766161002040448006">詢問家長</translation>
-<translation id="2766787642751986950">臉部追蹤</translation>
 <translation id="2767077837043621282">無法更新 Chromebook。請稍後再試。</translation>
 <translation id="2767127727915954024">在你關閉這個網站的所有分頁前，<ph name="ORIGIN" /> 都可以編輯「<ph name="FILENAME" />」</translation>
 <translation id="2769174155451290427">已上傳的圖片</translation>
@@ -8873,7 +8872,6 @@
 <translation id="7978412674231730200">秘密金鑰</translation>
 <translation id="7978450511781612192">你將登出自己的 Google 帳戶。你的書籤、歷史記錄、密碼和其他設定將不再保持同步。</translation>
 <translation id="7980084013673500153">資產 ID：<ph name="ASSET_ID" /></translation>
-<translation id="7980257515763116014">透過臉部移動控制游標和鍵盤</translation>
 <translation id="7981662863948574132">顯示裝置 EID 和 QR 圖碼彈出式視窗</translation>
 <translation id="7981670705071137488">日後，系統會在背景進行軟體更新作業。你可以前往「設定」查看更新偏好設定。</translation>
 <translation id="7982083145464587921">請重新啟動裝置以修復這個錯誤。</translation>
@@ -10524,7 +10522,6 @@
 <translation id="969096075394517431">變更語言</translation>
 <translation id="969574218206797926">Chromium 會將閒置分頁占用的記憶體釋出給使用中的分頁和其他應用程式</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 個分頁}other{# 個分頁}}</translation>
-<translation id="970431600907534323">臉部追蹤設定</translation>
 <translation id="971774202801778802">書籤網址</translation>
 <translation id="973473557718930265">結束</translation>
 <translation id="973558314812359997">游標大小</translation>

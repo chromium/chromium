@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">Никогда не переводить этот сайт</translation>
 <translation id="1291506870746876680">Когда вы покинете сайт <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />, все разрешения для него будут отключены.</translation>
 <translation id="1295289763199166823">Настройка меню</translation>
+<translation id="1296581780163690620">Скачать файл? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Чтобы всегда иметь доступ к паролям, сохраненным в аккаунте Google, подтвердите свою личность.</translation>
 <translation id="1312721752506309252">Улучшенная защита включена</translation>
 <translation id="1321993286294231467">При сохранении изображения возникла ошибка.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">Откройте приложение "Настройки".</translation>
 <translation id="2059166748188874810">Муниципалитет</translation>
 <translation id="2062410130322589403">Руководство по настройкам конфиденциальности</translation>
+<translation id="20638360198452347">Список выбора типов единиц измерения</translation>
 <translation id="2073572773299281212">Последние действия: <ph name="DAYS" /> дн. назад</translation>
 <translation id="2074131957428911366">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Отмена</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Изменить карусель</translation>
 <translation id="2316709634732130529">Использовать предложенный пароль</translation>
 <translation id="2320166752086256636">Скрыть клавиатуру</translation>
+<translation id="2326302612031521902">Список выбора единиц измерения</translation>
 <translation id="2348630484974447747">Посылка</translation>
 <translation id="2351097562818989364">Настройки перевода сброшены</translation>
 <translation id="235789365079050412">Политика конфиденциальности Google</translation>
@@ -267,6 +270,7 @@
 <translation id="2459155039684421202">Введите задачу в адресную строку, например "очистить историю" или "изменить пароли".</translation>
 <translation id="2461070143328828326">Настройки паролей</translation>
 <translation id="2462736546165239215">Здесь можно найти всю вашу историю браузера.</translation>
+<translation id="2468132863574325555">Диск</translation>
 <translation id="2469960372084740698">Отключить Безопасный просмотр?</translation>
 <translation id="2473876017985765807">Вы уже сохранили пароль для сайта <ph name="WEBSITE" />.</translation>
 <translation id="2476359652512522418">Не выбрано</translation>
@@ -438,7 +442,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Закладка сохранена в папке "{title}" в вашем аккаунте ({email}).}one{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}few{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}many{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}other{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}}</translation>
 <translation id="3348387552617855658">На этой карточке вы можете отслеживать заказы и получать важную информацию о доставке</translation>
 <translation id="3349676726073650389">Сайты и поисковые запросы, на которые вы подписаны, сохраняются в вашем аккаунте Google. Управлять своими подписками можно в настройках.</translation>
-<translation id="3365529507898144230">Сохранить в Google Фото</translation>
+<translation id="3365529507898144230">Сохранить в Фото</translation>
 <translation id="3371831930909698441">Доступен перевод. Параметры указаны в нижней части экрана.</translation>
 <translation id="3377063233124932127">Теперь ваши сохраненные закладки, пароли и другие данные будут отображаться наверху.</translation>
 <translation id="3393920035788932672">Вспл. окна разрешены</translation>
@@ -939,6 +943,7 @@
 <translation id="6149061208933997199">Использовать пароль</translation>
 <translation id="6152406514676263192">Чтобы получать контент на основе своих интересов, включите синхронизацию.</translation>
 <translation id="6159839020698489198">(необязательно)</translation>
+<translation id="6160780110287872296">Скачать файл?</translation>
 <translation id="6170450281939467187">Не удалось перевести</translation>
 <translation id="6173499589275053515">Пароль сохранен в аккаунте <ph name="EMAIL" />.</translation>
 <translation id="6184086493125982861">Показать вкладки</translation>
@@ -1006,6 +1011,7 @@
 <translation id="6447842834002726250">Файлы сookie</translation>
 <translation id="6453018583485750254">Пароли не проверялись.</translation>
 <translation id="6459307836338400162">Другие настройки, связанные с конфиденциальностью, безопасностью и сбором данных, можно найти в разделах <ph name="BEGIN_LINK" />Синхронизация<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Сервисы Google<ph name="END_LINK" />.</translation>
+<translation id="646394917185284261">Файлы</translation>
 <translation id="6464071786529933911">Откр. в режиме инкогнито</translation>
 <translation id="6464397691496239022">Сайты могут использовать файлы cookie для вашего удобства, например сохранять информацию о товарах в корзине или о том, что вы вошли в аккаунт.
 
@@ -1418,7 +1424,6 @@
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731958888085671579">Скрыть действие "Найти на странице"</translation>
 <translation id="87371078663613140">Изучите параметры в строке меню.</translation>
-<translation id="8737620822084008350">{count,plural, =1{{count} сохраненный профиль показан над клавиатурой.}one{{count} сохраненный профиль показан над клавиатурой.}few{{count} сохраненных профиля показаны над клавиатурой.}many{{count} сохраненных профилей показаны над клавиатурой.}other{{count} сохраненного профиля показаны над клавиатурой.}}</translation>
 <translation id="8741995161408053644">История просмотра также может храниться в вашем аккаунте Google: <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Здесь вы найдете свои вкладки</translation>
 <translation id="8756969031206844760">Обновить пароль?</translation>

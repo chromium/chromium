@@ -1424,7 +1424,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8731958888085671579">Skryť položku Vyhľadanie na stránke</translation>
 <translation id="87371078663613140">Preskúmajte možnosti na paneli s ponukami</translation>
-<translation id="8737620822084008350">{count,plural, =1{Nad klávesnicou je k dispozícii {count} uložený profil.}few{Nad klávesnicou sú k dispozícii {count} uložené profily.}many{{count} saved profiles available above your keyboard.}other{Nad klávesnicou je k dispozícii {count} uložených profilov.}}</translation>
 <translation id="8741995161408053644">Váš účet Google môže mať ďalšie formy histórie prehliadania na adrese <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Tu nájdete svoje karty</translation>
 <translation id="8756969031206844760">Aktualizovať heslo?</translation>

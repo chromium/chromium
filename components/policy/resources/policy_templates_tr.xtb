@@ -1524,6 +1524,7 @@ Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLI
       Doğru değerine ayarlanır veya ayarlanmadan bırakılırsa cihazınızın ağ durumu raporlanır.</translation>
 <translation id="2223393221350938149">Hiçbir sitenin JavaScript JIT çalıştırmasına izin verme</translation>
 <translation id="2223598546285729819">Varsayılan bildirim ayarı</translation>
+<translation id="2224706708550115831">Tam kilitlemenin etkinleştirildiği yüksek düzey modunda Her zaman açık VPN etkinken ve VPN bağlı değilken kullanıcı tarayıcısının listedeki URL'lere erişmesine izin ver</translation>
 <translation id="222673035924187991">TLS Encrypted ClientHello'yu etkinleştir</translation>
 <translation id="2231817271680715693">İlk çalıştırmada tarama geçmişini varsayılan tarayıcıdan içe aktar</translation>
 <translation id="2231962946025538735">Bu politika kullanımdan kaldırılmıştır. Lütfen Flash eklentisinin kullanılabilirliğini kontrol etmek için <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> politikasını, PDF dosyaları açılırken entegre PDF görüntüleyicisinin kullanılıp kullanılmayacağını kontrol etmek için de <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> politikasını kullanın.
@@ -1662,6 +1663,8 @@ Politika, Devre Dışı değerine ayarlanırsa kullanıcılar Şifre Yöneticisi
 
       Bu politika, yalnızca WebUSB API üzerinden USB cihazlarına erişimi etkiler. Web Serial API üzerinden USB cihazlarına erişim izni vermek için <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" /> politikasını inceleyin.</translation>
 <translation id="2318583605563438459">Anne veya babaların gözetilen hesap eklemesine izin ver</translation>
+<translation id="2319139030891093109"><ph name="PRODUCT_NAME" /> tarafından güvenilmesi gereken TLS sertifikalarının listesi.
+Sertifikalar, base64 kodlu olmalıdır.</translation>
 <translation id="2326031114717677574">Ağ verilerinin örneklenme ve toplanma hızı. İzin verilen minimum sıklık 1 dakikadır.
 
       Ayarlamazsa 15 dakikalık varsayılan süre geçerli olur.</translation>
@@ -2914,6 +2917,15 @@ Bu politika, Devre Dışı değerine ayarlanırsa fiziksel klavyede tahmine daya
 <translation id="3398051852031115795">Varsayılan sistem davranışı (ekran boyutuna bağlıdır)</translation>
 <translation id="3399859571630358395">Hızlı Eşleme'yi (hızlı Bluetooth eşleme) devre dışı bırakmaya zorla.</translation>
 <translation id="3404681701763345449"><ph name="GOOGLE_CALENDAR_NAME" /> entegrasyonunu etkinleştir</translation>
+<translation id="3405361833556012520">Bu politika yalnızca tarayıcı trafiği için geçerlidir. Play Store, Android uygulamaları web'de gezinme ve yazdırma işleri ya da Linux sanal makine trafiği gibi diğer kullanıcı trafiği, Her zaman açık VPN kısıtlamalarına uymaya devam eder. Bu politika yalnızca VPN bağlı değilken ve yalnızca kullanıcı tarayıcısı trafiği için uygulanır. Bu politika uygulanırken sistem trafiği, politika getirme ve sistem saatini senkronize etme gibi görevleri yerine getirmek için Her zaman açık VPN'i de atlayabilir.
+
+Bu politikayı, https://support.google.com/chrome/a?p=url_blocklist_filter_format adresinde belirtilen biçimi kullanarak belirli şemalar, diğer alan adlarının alt alan adları, bağlantı noktaları veya belirli yollara ilişkin istisnaları açmak için kullanın. Bir URL'nin engellenip engellenmediğini en spesifik filtre belirler.
+
+<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> ayarlanır, Her zaman açık VPN yapılandırılır ve Her zaman açık VPN bağlanmazsa <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> politikası tarafından izin verilenler dışında tüm ana makinelerde gezinme engellenir. Bu cihaz durumunda <ph name="URL_BLOCKLIST_POLICY_NAME" /> ve <ph name="URL_ALLOWLIST_POLICY_NAME" /> yoksayılır. Her zaman açık VPN bağlandığında <ph name="URL_BLOCKLIST_POLICY_NAME" /> ve <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikaları uygulanır, <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> politikası ise yoksayılır.
+
+Bu politika 1.000 giriş ile sınırlıdır.
+
+Politikanın ayarlanmadan bırakılması, yüksek düzey modunda Her zaman açık VPN etkinken ve VPN bağlı değilken tarayıcıda gezinmeyi engeller.</translation>
 <translation id="3405997282295704902">Kullanıcıların <ph name="PRODUCT_NAME" /> kullanmasına izin verme</translation>
 <translation id="3406122462682235653">Kullanıcıya sorma (indirme işlemleri hemen başlar)</translation>
 <translation id="3408078762098350617"><ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> içindeki devre dışı bırakılan özelliklerle ilgili kullanıcı deneyimini kontrol eder.
@@ -4636,6 +4648,7 @@ Bu politika geçici olup sistem ses yankısı giderme özelliği kullanıma sunu
 <translation id="4802905909524200151"><ph name="TPM_FIRMWARE_UPDATE_TPM" /> donanım yazılımını güncelleme davranışını yapılandır</translation>
 <translation id="4804828344300125154">Kullanıcı oturumu kapatıldığında her zaman cihazı yeniden başlat.</translation>
 <translation id="4807950475297505572">Yeterli boş alan sağlanıncaya kadar en seyrek kullanılan kullanıcılar kaldırılır</translation>
+<translation id="4808396444416188826"><ph name="PRODUCT_NAME" /> tarafından güvenilmesi gereken TLS sunucusu sertifikaları</translation>
 <translation id="4812270373673968774">Politikayı Always (Her zaman) değerine ayarlamak, <ph name="PRODUCT_OS_NAME" /> rafını otomatik gizler. Politikayı Never (Hiçbir zaman) değerine ayarlamak, rafın otomatik gizlenmesine hiçbir zaman izin vermez.
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Ayarlanmazsa rafın otomatik gizlenip gizlenmeyeceğine kullanıcı karar verir.</translation>

@@ -110,7 +110,6 @@
 <translation id="1195073053842921378">Адресът ще бъде изтрит от това устройство</translation>
 <translation id="1195558154361252544">Известията се блокират автоматично за всички сайтове освен за онези, за които ги разрешите</translation>
 <translation id="1197088940767939838">оранжево</translation>
-<translation id="1197761954713363183">Листът за потвърждение за ключа за достъп е затворен</translation>
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1201895884277373915">Още от този сайт</translation>
 <translation id="1202892408424955784">Проследявани продукти</translation>
@@ -402,7 +401,6 @@
 <translation id="1725591448053514783">Плик You 6</translation>
 <translation id="1727613060316725209">Сертификатът е валиден</translation>
 <translation id="1728677426644403582">Преглеждате изходния код на уеб страница</translation>
-<translation id="1728803206919861584">Ключът за достъп да се запази ли извън режим „инкогнито“?</translation>
 <translation id="173080396488393970">Този тип карта не се поддържа</translation>
 <translation id="1732445923934584865">Вместо това попитайте лично</translation>
 <translation id="1733064249834771892">шрифтове</translation>
@@ -1734,7 +1732,6 @@
 <translation id="4415156962929755728">Пластмаса (силно гланцирана)</translation>
 <translation id="4415426530740016218">Адрес за вземане</translation>
 <translation id="4424024547088906515">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; Chrome няма доверие на сертификата му за сигурност. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
-<translation id="4425173294238317796">Лист за потвърждение за ключа за достъп</translation>
 <translation id="4425750422187370446">Спортно облекло</translation>
 <translation id="443121186588148776">Сериен порт</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> не прие сертификата ви за вход или е възможно да не е предоставен такъв.</translation>
@@ -2096,7 +2093,6 @@
 <translation id="5157504274688344097">Търговци на едро и универсални магазини</translation>
 <translation id="5158275234811857234">Корица</translation>
 <translation id="5159010409087891077">Отворете страницата в нов прозорец в режим „инкогнито“ (⇧⌘N).</translation>
-<translation id="5161262286013276579">Листът за потвърждение за ключа за достъп е отворен</translation>
 <translation id="5161334686036120870">Тема:</translation>
 <translation id="5161506081086828129">Стакер 9</translation>
 <translation id="5164798890604758545">Въвеждане на текст</translation>
@@ -2359,7 +2355,6 @@
 <translation id="5699628521141772782">Млечни изделия и яйца</translation>
 <translation id="5700761515355162635">„Бисквитките“ на трети страни са разрешени</translation>
 <translation id="5701381305118179107">Центриране</translation>
-<translation id="570530837424789914">Управление...</translation>
 <translation id="5707154300732650394">Възобновяване на пътешествието</translation>
 <translation id="57094364128775171">Предложение за надеждна парола…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -3011,7 +3006,6 @@
 <translation id="7004583254764674281">Използвайте Windows Hello, за да потвърждавате картите по-бързо</translation>
 <translation id="7006930604109697472">Изпращане въпреки това</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
-<translation id="7013762323294215682">Този ключ за достъп ще бъде запазен в мениджъра на пароли. Всеки, който има достъп до мениджъра, ще може да използва ключа.</translation>
 <translation id="7014042602717177828">Автомобилни аудиосистеми</translation>
 <translation id="7014741021609395734">Увеличение</translation>
 <translation id="7016992613359344582">Тези таксувания може да са еднократни или повтарящи се и е възможно да не са явни.</translation>

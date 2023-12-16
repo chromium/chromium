@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">Non traducir nunca este sitio</translation>
 <translation id="1291506870746876680">Os permisos de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> volverán desactivarse cando saias deste sitio.</translation>
 <translation id="1295289763199166823">Personalizar menú</translation>
+<translation id="1296581780163690620">Queres descargar o ficheiro? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Para asegurarte de poder usar sempre os contrasinais na túa Conta de Google, verifica a túa identidade.</translation>
 <translation id="1312721752506309252">A protección mellorada está activada</translation>
 <translation id="1321993286294231467">Produciuse un erro ao gardar a imaxe.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">Abre Configuración.</translation>
 <translation id="2059166748188874810">Concello</translation>
 <translation id="2062410130322589403">Unha guía das túas opcións de privacidade</translation>
+<translation id="20638360198452347">Selector do tipo de unidade</translation>
 <translation id="2073572773299281212">Dispositivo activo hai <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar.</translation>
 <translation id="2079545284768500474">Desfacer</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Editar carrusel</translation>
 <translation id="2316709634732130529">Utilizar contrasinal suxerido</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
+<translation id="2326302612031521902">Selector de unidades</translation>
 <translation id="2348630484974447747">Paquete</translation>
 <translation id="2351097562818989364">Restableceuse a túa configuración de tradución.</translation>
 <translation id="235789365079050412">Política de privacidade de Google</translation>
@@ -267,6 +270,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2459155039684421202">Na barra de enderezos, indica unha tarefa como, por exemplo, "borrar o meu historial" ou "editar contrasinais".</translation>
 <translation id="2461070143328828326">Configuración dos contrasinais</translation>
 <translation id="2462736546165239215">Aquí podes atopar o historial de navegación.</translation>
+<translation id="2468132863574325555">Google Drive</translation>
 <translation id="2469960372084740698">Queres desactivar a función Navegación segura?</translation>
 <translation id="2473876017985765807">Xa gardaches un contrasinal para <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Non seleccionada</translation>
@@ -939,6 +943,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6149061208933997199">Usar contrasinal</translation>
 <translation id="6152406514676263192">Activa a sincronización para gozar do contido máis relevante baseado nos teus intereses.</translation>
 <translation id="6159839020698489198">opcional</translation>
+<translation id="6160780110287872296">Queres descargar o ficheiro?</translation>
 <translation id="6170450281939467187">Produciuse un erro ao realizar a tradución</translation>
 <translation id="6173499589275053515">O contrasinal gardouse na túa Conta de Google, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Amosar pestanas</translation>
@@ -1006,6 +1011,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">Aínda non se realizou ningunha comprobación.</translation>
 <translation id="6459307836338400162">Para ver máis opcións de configuración relacionadas coa privacidade, a seguranza e a recompilación de datos, consulta <ph name="BEGIN_LINK" />Sincronización<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" />.</translation>
+<translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">Abrir en pestana incógn.</translation>
 <translation id="6464397691496239022">Os sitios poden utilizar cookies para mellorar a túa experiencia de navegación a través de funcións como manter a sesión iniciada ou lembrar artigos da túa cesta da compra.
 
@@ -1418,7 +1424,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8730621377337864115">Feito</translation>
 <translation id="8731958888085671579">Ocultar Buscar na páxina</translation>
 <translation id="87371078663613140">Explora as opcións da barra de menú</translation>
-<translation id="8737620822084008350">{count,plural, =1{Hai {count} perfil gardado dispoñible sobre o teclado.}other{Hai {count} perfís gardados dispoñibles sobre o teclado.}}</translation>
 <translation id="8741995161408053644">É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Aquí atoparás as túas pestanas</translation>
 <translation id="8756969031206844760">Queres actualizar o contrasinal?</translation>

@@ -2335,7 +2335,6 @@
 <translation id="2765606672116865966">当您在地址栏或搜索框中点击或输入字词时，系统会通过默认搜索引擎为您提供相关建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="2766006623206032690">粘贴并转到(&amp;S)</translation>
 <translation id="2766161002040448006">询问家长的意见</translation>
-<translation id="2766787642751986950">面部跟踪</translation>
 <translation id="2767077837043621282">无法更新您的 Chromebook。请稍后再试。</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> 将能够修改“<ph name="FILENAME" />”中的内容，除非您关闭此网站的所有标签页</translation>
 <translation id="2769174155451290427">上传的图片</translation>
@@ -8866,7 +8865,6 @@
 <translation id="7978412674231730200">私有密钥</translation>
 <translation id="7978450511781612192">执行此操作会使您退出 Google 账号。您的书签、历史记录、密码及其他设置将不再保持同步。</translation>
 <translation id="7980084013673500153">资源 ID：<ph name="ASSET_ID" /></translation>
-<translation id="7980257515763116014">通过面部动作来控制光标和键盘</translation>
 <translation id="7981662863948574132">显示包含设备 EID 和二维码的弹出式窗口</translation>
 <translation id="7981670705071137488">之后，软件更新将在后台进行。您可在“设置”中查看更新偏好设置。</translation>
 <translation id="7982083145464587921">请重新启动您的设备以修复此错误。</translation>
@@ -10517,7 +10515,6 @@
 <translation id="969096075394517431">更改语言</translation>
 <translation id="969574218206797926">省内存模式会释放闲置标签页占用的内存，以供使用中的标签页和其他应用使用</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 个标签页}other{# 个标签页}}</translation>
-<translation id="970431600907534323">面部跟踪设置</translation>
 <translation id="971774202801778802">书签网址</translation>
 <translation id="973473557718930265">退出</translation>
 <translation id="973558314812359997">鼠标光标大小</translation>

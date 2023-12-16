@@ -47,6 +47,7 @@
 <translation id="2478931088402984578">Vælg <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2574528844022712255">Se Chromium-bogmærker</translation>
 <translation id="2590893390871230428">Synkroniser dine Chromium-data</translation>
+<translation id="2592940277904433508">Fortsæt med at bruge Chromium</translation>
 <translation id="2618596336309823556">Åbn "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" via indstillingerne på din enhed, og vælg "Chromium"</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium hjælper med at spore denne pakke på siden Ny fane.}one{Chromium hjælper med at spore denne pakke på siden Ny fane.}other{Chromium hjælper med at spore disse pakker på siden Ny fane.}}</translation>
 <translation id="2650312721222849884">Aktivér synkronisering for at se dine faner på alle de enheder, hvor du bruger Chromium</translation>

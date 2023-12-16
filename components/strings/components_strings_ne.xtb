@@ -110,7 +110,6 @@
 <translation id="1195073053842921378">यो डिभाइसबाट यो ठेगाना मेटाइने छ</translation>
 <translation id="1195558154361252544">तपाईंले अनुमति दिएका साइटबाहेक अन्य सबै साइटका सूचनाहरूलाई स्वतः रोक लगाइएको छ</translation>
 <translation id="1197088940767939838">सुन्तला रङ्ग</translation>
-<translation id="1197761954713363183">पासकी पुष्टि गर्ने पाना बन्द गरिएको छ</translation>
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1201895884277373915">यस साइटबाट थप</translation>
 <translation id="1202892408424955784">ट्र्याक गरिएका उत्पादनहरू</translation>
@@ -402,7 +401,6 @@
 <translation id="1725591448053514783">Envelope You 6</translation>
 <translation id="1727613060316725209">प्रमाणपत्र वैध छ</translation>
 <translation id="1728677426644403582">तपाईं एउटा वेब पृष्ठको स्रोत हेर्दै हुनुहुन्छ</translation>
-<translation id="1728803206919861584">इन्कोग्निटो मोडबाट बाहिरिएर पासकी सेभ गर्ने हो?</translation>
 <translation id="173080396488393970">यस प्रकारको कार्डलाई समर्थन छैन</translation>
 <translation id="1732445923934584865">यसको साटो व्यक्तिगत रूपमा अनुमति माग्नुहोस्</translation>
 <translation id="1733064249834771892">फन्टहरू</translation>
@@ -1732,7 +1730,6 @@
 <translation id="4415156962929755728">प्लास्टिक (हाई ग्लस)</translation>
 <translation id="4415426530740016218">पिकअप गर्ने ठेगाना</translation>
 <translation id="4424024547088906515">यो सर्भरले यो <ph name="DOMAIN" /> को भनि प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रलाई Chrome ले विश्वास गर्दैन। यो कुनै एउटा मिसकन्फिगरेसन वा कुनै आक्रमणकारीले तपाईंको जडानमा गरेको हस्तक्षेपको कारणले गर्दा भएको हुन सक्छ।</translation>
-<translation id="4425173294238317796">पासकी पुष्टि गर्ने पाना</translation>
 <translation id="4425750422187370446">एथलेटिक वस्त्र</translation>
 <translation id="443121186588148776">क्रमिक पोर्ट</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> ले तपाईँको लग इन सम्बन्धी प्रमाणपत्र स्वीकार गरेन वा कुनै प्रमाणपत्र प्रदान गरिएकै थिएन।</translation>
@@ -2094,7 +2091,6 @@
 <translation id="5157504274688344097">थोक व्यापारी र डिपार्टमेन्ट स्टोरहरू</translation>
 <translation id="5158275234811857234">आवरण</translation>
 <translation id="5159010409087891077">पृष्ठलाई नयाँ इन्कोग्निटो विन्डोमा खोल्नुहोस् (⇧⌘N)</translation>
-<translation id="5161262286013276579">पासकी पुष्टि गर्ने पाना खोलिएको छ</translation>
 <translation id="5161334686036120870">विषय:</translation>
 <translation id="5161506081086828129">स्ट्याकर ९</translation>
 <translation id="5164798890604758545">पाठ प्रविष्टि गरिँदा</translation>
@@ -2357,7 +2353,6 @@
 <translation id="5699628521141772782">डेरी र अण्डा</translation>
 <translation id="5700761515355162635">तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="5701381305118179107">केन्द्र</translation>
-<translation id="570530837424789914">व्यवस्थित गर्नुहोस्...</translation>
 <translation id="5707154300732650394">खोज्ने क्रम सुचारु गर्नुहोस्</translation>
 <translation id="57094364128775171">भरपर्दो पासवर्ड सिफारिस गर्नुहोस्…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -3009,7 +3004,6 @@
 <translation id="7004583254764674281">कार्डहरू अझ छिटो पुष्टि गर्न Windows Hello प्रयोग गर्नुहोस्</translation>
 <translation id="7006930604109697472">जे भए पनि पठाउनुहोस्</translation>
 <translation id="7012363358306927923">चीन UnionPay</translation>
-<translation id="7013762323294215682">यो पासकी पासवर्ड म्यानेजरमा सेभ गरिने छ। यो पासकी प्रयोग गर्ने अनुमति भएका जोकोहीले यो पासकी प्रयोग गर्न सक्ने छन्।</translation>
 <translation id="7014042602717177828">कार अडियो</translation>
 <translation id="7014741021609395734">जुमको स्तर</translation>
 <translation id="7016992613359344582">यी शुल्कहरू एक पटक तिरे पुग्ने वा बारम्बार तिर्नु पर्ने हुन सक्छन् र यस सम्बन्धमा स्पष्टता नहुन पनि सक्छ।</translation>

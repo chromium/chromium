@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">No traducir nunca este sitio</translation>
 <translation id="1291506870746876680">Los permisos de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> se desactivarán cuando salgas de este sitio.</translation>
 <translation id="1295289763199166823">Personalizar menú</translation>
+<translation id="1296581780163690620">¿Descargar archivo? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Para asegurarte de que siempre puedas usar las contraseñas en tu cuenta de Google, debes verificar que eres tú.</translation>
 <translation id="1312721752506309252">La protección mejorada está activada</translation>
 <translation id="1321993286294231467">No se ha podido guardar la imagen.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">Abre Configuración.</translation>
 <translation id="2059166748188874810">Municipio</translation>
 <translation id="2062410130322589403">Una guía de tus opciones de privacidad</translation>
+<translation id="20638360198452347">Selector de tipo de unidad</translation>
 <translation id="2073572773299281212">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK" />ajustes<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Editar carrusel</translation>
 <translation id="2316709634732130529">Usar contraseña sugerida</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
+<translation id="2326302612031521902">Selector de unidades</translation>
 <translation id="2348630484974447747">Paquete</translation>
 <translation id="2351097562818989364">Se han restablecido tus ajustes de traducción.</translation>
 <translation id="235789365079050412">Política de Privacidad de Google</translation>
@@ -267,6 +270,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2459155039684421202">En la barra de direcciones, introduce una tarea como "borrar mi historial" o "editar contraseñas".</translation>
 <translation id="2461070143328828326">Ajustes de contraseña</translation>
 <translation id="2462736546165239215">Aquí puedes encontrar todo tu historial de navegación.</translation>
+<translation id="2468132863574325555">Drive</translation>
 <translation id="2469960372084740698">¿Desactivar Navegación segura?</translation>
 <translation id="2473876017985765807">Ya has guardado una contraseña para <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">No seleccionada</translation>
@@ -939,6 +943,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6149061208933997199">Utilizar contraseña</translation>
 <translation id="6152406514676263192">Habilita la sincronización para ver contenido más relevante según tus intereses.</translation>
 <translation id="6159839020698489198">opcional</translation>
+<translation id="6160780110287872296">¿Descargar archivo?</translation>
 <translation id="6170450281939467187">No se ha podido traducir</translation>
 <translation id="6173499589275053515">Contraseña guardada en tu cuenta de Google (<ph name="EMAIL" />)</translation>
 <translation id="6184086493125982861">Mostrar pestañas</translation>
@@ -1006,6 +1011,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">Comprobación no ejecutada.</translation>
 <translation id="6459307836338400162">Para ver más ajustes relacionados con la privacidad, la seguridad y la recogida de datos, consulta <ph name="BEGIN_LINK" />Sincronización<ph name="END_LINK" /> y <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
+<translation id="646394917185284261">Archivos</translation>
 <translation id="6464071786529933911">Abrir en pestaña de Incógnito</translation>
 <translation id="6464397691496239022">Los sitios pueden usar cookies para mejorar tu experiencia de navegación; por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra.
 
@@ -1418,7 +1424,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8730621377337864115">Hecho</translation>
 <translation id="8731958888085671579">Ocultar Buscar en la página</translation>
 <translation id="87371078663613140">Explora las opciones en la barra de menú</translation>
-<translation id="8737620822084008350">{count,plural, =1{{count} perfil guardado disponible encima del teclado.}other{{count} perfiles guardados disponibles encima del teclado.}}</translation>
 <translation id="8741995161408053644">Es posible que tu cuenta de Google tenga otras formas del historial de navegación en la página <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Aquí verás tus pestañas</translation>
 <translation id="8756969031206844760">¿Quieres actualizar la contraseña?</translation>

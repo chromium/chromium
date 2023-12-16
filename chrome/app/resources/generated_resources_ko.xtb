@@ -1658,6 +1658,7 @@
 <translation id="2249111429176737533">탭 창으로 열기</translation>
 <translation id="2249605167705922988">예: 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">사이트에서 광고를 표시하는 데 사용하는 정보를 맞춤설정합니다.</translation>
+<translation id="2250624716625396929">이 탭에서 카메라 및 마이크를 사용 중입니다.</translation>
 <translation id="2251218783371366160">시스템 뷰어로 열기</translation>
 <translation id="225163402930830576">네트워크 새로고침</translation>
 <translation id="2251809247798634662">새 시크릿 창</translation>
@@ -2359,7 +2360,6 @@
 <translation id="2765606672116865966">주소 표시줄이나 검색창을 클릭하거나 입력하면 기본 검색엔진에서 추천 검색어가 표시됩니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
 <translation id="2766006623206032690">붙여넣어 바로가기(&amp;S)</translation>
 <translation id="2766161002040448006">부모님에게 묻기</translation>
-<translation id="2766787642751986950">얼굴 추적</translation>
 <translation id="2767077837043621282">Chromebook을 업데이트할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="2767127727915954024">이 사이트의 탭을 모두 닫을 때까지 <ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 수정할 수 있게 됩니다.</translation>
 <translation id="2769174155451290427">업로드된 이미지</translation>
@@ -6634,6 +6634,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6202304368170870640">PIN을 사용하여 로그인하거나 기기를 잠금 해제할 수 있습니다.</translation>
 <translation id="6203247599828309566">이 사이트에 비밀번호 메모를 저장했습니다. 확인하려면 열쇠 아이콘을 클릭하세요.</translation>
 <translation id="6205314730813004066">광고 개인 정보 보호</translation>
+<translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> - 마이크 녹음 중</translation>
 <translation id="6206199626856438589">열려 있는 탭을 포함하여 표시된 사이트에서 로그아웃됩니다.</translation>
 <translation id="6206311232642889873">이미지 복사(&amp;Y)</translation>
 <translation id="6207200176136643843">기본 확대/축소 수준으로 재설정</translation>
@@ -7185,6 +7186,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6657585470893396449">비밀번호</translation>
 <translation id="6659213950629089752">이 페이지는 '<ph name="NAME" />' 확장 프로그램으로 확대/축소되었습니다.</translation>
 <translation id="6659594942844771486">탭</translation>
+<translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - 카메라 녹화 중</translation>
 <translation id="6660819301598582123">재빠른 갈색 여우가 게으른 개를 뛰어넘었습니다.</translation>
 <translation id="666099631117081440">인쇄 서버</translation>
 <translation id="6662931079349804328">기업 정책이 변경되었습니다. 툴바에서 실험 버튼이 삭제되었습니다.</translation>
@@ -8891,7 +8893,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7978412674231730200">비공개 키</translation>
 <translation id="7978450511781612192">Google 계정에서 로그아웃됩니다. 북마크, 방문 기록, 비밀번호 등이 더 이상 동기화되지 않습니다.</translation>
 <translation id="7980084013673500153">애셋 ID: <ph name="ASSET_ID" /></translation>
-<translation id="7980257515763116014">얼굴 움직임으로 커서와 키보드 제어</translation>
 <translation id="7981662863948574132">기기 EID 및 QR 코드 팝업 표시</translation>
 <translation id="7981670705071137488">이후로 소프트웨어 업데이트는 백그라운드에서 실행됩니다. 설정에서 업데이트 환경설정을 확인할 수 있습니다.</translation>
 <translation id="7982083145464587921">오류를 해결하려면 기기를 다시 시작하세요.</translation>
@@ -8998,6 +8999,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8059417245945632445">기기 검사(&amp;I)</translation>
 <translation id="8059456211585183827">저장할 수 있는 프린터가 없습니다.</translation>
 <translation id="8061091456562007989">이전 설정으로 되돌리기</translation>
+<translation id="8061244502316511332">이 탭에서 마이크를 사용 중입니다.</translation>
 <translation id="8061970399284390013">맞춤법 및 문법 검사</translation>
 <translation id="8061991877177392872">다른 기기의 어시스턴트에서 이미 Voice Match를 설정한 것 같습니다. 이전에 녹음된 음성을 사용하여 이 기기에서 음성 모델을 만들었습니다.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{용지 1장}other{용지 {COUNT}장}}</translation>
@@ -9479,6 +9481,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="844063558976952706">항상 이 사이트에서</translation>
 <translation id="8441313165929432954">테더링 사용/사용 중지</translation>
 <translation id="8443986842926457191">URL이 2,048자(영문 기준)를 초과합니다.</translation>
+<translation id="8445281870900174108">이 탭에서 카메라를 사용 중입니다.</translation>
 <translation id="8446884382197647889">자세히 알아보기</translation>
 <translation id="8447409163267621480">Ctrl 또는 Alt 중 하나를 포함해야 합니다</translation>
 <translation id="844850004779619592">검색된 명령어 없음</translation>
@@ -10540,7 +10543,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="969096075394517431">언어 변경</translation>
 <translation id="969574218206797926">메모리 절약 모드는 활성 탭과 기타 앱에 사용할 수 있도록 비활성 탭에서 메모리를 확보합니다.</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{탭 1개}other{탭 #개}}</translation>
-<translation id="970431600907534323">얼굴 추적 설정</translation>
 <translation id="971774202801778802">북마크 URL</translation>
 <translation id="973473557718930265">종료</translation>
 <translation id="973558314812359997">마우스 커서 크기</translation>
@@ -10553,6 +10555,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="981121421437150478">오프라인</translation>
 <translation id="983192555821071799">탭 모두 닫기</translation>
 <translation id="983511809958454316">이 기능은 VR에서 지원되지 않습니다</translation>
+<translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - 카메라 녹화 및 마이크 녹음 중</translation>
 <translation id="984275831282074731">결제 수단</translation>
 <translation id="984705303330760860">맞춤법 검사 언어 추가</translation>
 <translation id="98515147261107953">가로 방향</translation>

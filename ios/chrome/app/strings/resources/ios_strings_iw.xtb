@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">איני רוצה לקבל תרגום של אתר זה</translation>
 <translation id="1291506870746876680">ההרשאות לאתר <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> יאופסו לאחר היציאה ממנו.</translation>
 <translation id="1295289763199166823">התאמה אישית של התפריט</translation>
+<translation id="1296581780163690620">להוריד את הקובץ? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">‏כדי לוודא שתמיד תהיה לך אפשרות להשתמש בסיסמאות בחשבון Google שלך, עליך לאמת את הזהות שלך.</translation>
 <translation id="1312721752506309252">מופעלת הגנה משופרת</translation>
 <translation id="1321993286294231467">קרתה שגיאה בשמירת התמונה.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">פותחים את הקטע 'הגדרות'.</translation>
 <translation id="2059166748188874810">מחוז</translation>
 <translation id="2062410130322589403">מדריך לבחירות שלך בנושא פרטיות</translation>
+<translation id="20638360198452347">בורר סוגי היחידות</translation>
 <translation id="2073572773299281212">פעילות אחרונה: לפני <ph name="DAYS" /> ימים</translation>
 <translation id="2074131957428911366">אפשר לבחור מה לסנכרן בכל שלב דרך <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">עריכת הקרוסלה</translation>
 <translation id="2316709634732130529">שימוש בסיסמה המוצעת</translation>
 <translation id="2320166752086256636">הסתרת מקלדת</translation>
+<translation id="2326302612031521902">בורר היחידות</translation>
 <translation id="2348630484974447747">חבילה</translation>
 <translation id="2351097562818989364">הגדרות התרגום שלך אופסו.</translation>
 <translation id="235789365079050412">‏מדיניות הפרטיות של Google</translation>
@@ -267,6 +270,7 @@
 <translation id="2459155039684421202">בסרגל הכתובות, מזינים משימה כמו 'ניקוי ההיסטוריה שלי' או 'עריכת סיסמאות'.</translation>
 <translation id="2461070143328828326">הגדרות סיסמה</translation>
 <translation id="2462736546165239215">כאן אפשר למצוא את כל היסטוריית הגלישה.</translation>
+<translation id="2468132863574325555">Drive</translation>
 <translation id="2469960372084740698">להשבית את 'גלישה בטוחה'?</translation>
 <translation id="2473876017985765807">כבר שמרת סיסמה לאתר <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">לא נבחר</translation>
@@ -939,6 +943,7 @@
 <translation id="6149061208933997199">השתמש בסיסמה</translation>
 <translation id="6152406514676263192">סנכרון התוכן הרלוונטי ביותר על סמך תחומי העניין שלך.</translation>
 <translation id="6159839020698489198">אופציונלי</translation>
+<translation id="6160780110287872296">להוריד את הקובץ?</translation>
 <translation id="6170450281939467187">התרגום נכשל</translation>
 <translation id="6173499589275053515">‏הסיסמה נשמרה בחשבון Google שלך, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">הצגת כרטיסיות</translation>
@@ -1006,6 +1011,7 @@
 <translation id="6447842834002726250">‏קובצי Cookie</translation>
 <translation id="6453018583485750254">מעולם לא נעשתה בדיקה.</translation>
 <translation id="6459307836338400162">‏אפשר למצוא הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים בדפים <ph name="BEGIN_LINK" />סנכרון<ph name="END_LINK" /> ו<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
+<translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">פתיחה בכרטיסייה אנונימית חדשה</translation>
 <translation id="6464397691496239022">‏אתרים יכולים להשתמש בקובצי cookie כדי לשפר את חוויית הגלישה – למשל כדי למנוע את ניתוקך מהחשבון או כדי לזכור את הפריטים שהוספת לעגלת הקניות.
 
@@ -1418,7 +1424,6 @@
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="8731958888085671579">הסתרה של 'חיפוש בדף'</translation>
 <translation id="87371078663613140">בודקים את האפשרויות בסרגל התפריטים</translation>
-<translation id="8737620822084008350">{count,plural, =1{פרופיל שמור אחד ({count}) זמין מעל המקלדת.}one{{count} פרופילים שמורים זמינים מעל המקלדת.}two{{count} פרופילים שמורים זמינים מעל המקלדת.}other{{count} פרופילים שמורים זמינים מעל המקלדת.}}</translation>
 <translation id="8741995161408053644">‏ייתכן שיהיה אפשר לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">הכרטיסיות זמינות כאן</translation>
 <translation id="8756969031206844760">לעדכן את הסיסמה?</translation>

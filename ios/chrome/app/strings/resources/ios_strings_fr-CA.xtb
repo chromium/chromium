@@ -1424,7 +1424,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8730621377337864115">Terminé</translation>
 <translation id="8731958888085671579">Masquer Rechercher dans la page</translation>
 <translation id="87371078663613140">Explorer les options dans la barre de menu</translation>
-<translation id="8737620822084008350">{count,plural, =1{{count} profil enregistré proposé en haut du clavier.}one{{count} profil enregistré proposé en haut du clavier.}other{{count} profils enregistrés proposés en haut du clavier.}}</translation>
 <translation id="8741995161408053644">D'autres formes d'historique de navigation peuvent exister sur votre compte Google : <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Vous trouverez vos onglets ici</translation>
 <translation id="8756969031206844760">Mettre à jour le mot de passe?</translation>

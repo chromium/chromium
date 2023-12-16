@@ -47,6 +47,7 @@
 <translation id="2478931088402984578">Valitse <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2574528844022712255">Näytä Chromium-kirjanmerkit</translation>
 <translation id="2590893390871230428">Synkronoi Chromium-datasi</translation>
+<translation id="2592940277904433508">Jatka Chromiumin käyttöä</translation>
 <translation id="2618596336309823556">Avaa laitteen asetuksista <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> ja valitse Chromium.</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium auttaa paketin seuraamisessa Uusi välilehti ‑sivulla.}other{Chromium auttaa pakettien seuraamisessa Uusi välilehti ‑sivulla.}}</translation>
 <translation id="2650312721222849884">Laita synkronointi päälle, niin voit nähdä Chromium-välilehtesi missä tahansa</translation>

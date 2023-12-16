@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">Να μην γίνεται ποτέ μετάφραση αυτού του ιστότοπου</translation>
 <translation id="1291506870746876680">Οι άδειες για τον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> θα απενεργοποιηθούν μόλις αποχωρήσετε από τον ιστότοπο.</translation>
 <translation id="1295289763199166823">Προσαρμογή μενού</translation>
+<translation id="1296581780163690620">Λήψη αρχείου; (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Για να βεβαιωθείτε ότι θα μπορείτε να χρησιμοποιείτε πάντα τους κωδικούς πρόσβασης στον Λογαριασμό σας Google, επαληθεύστε την ταυτότητά σας.</translation>
 <translation id="1312721752506309252">Η Βελτιωμένη προστασία είναι ενεργή</translation>
 <translation id="1321993286294231467">Σφάλμα κατά την αποθήκευση εικόνας.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">Ανοίξτε τις Ρυθμίσεις.</translation>
 <translation id="2059166748188874810">Δήμος</translation>
 <translation id="2062410130322589403">Ένας οδηγός για τις επιλογές σας σχετικά με το απόρρητο</translation>
+<translation id="20638360198452347">Επιλογέας τύπου μονάδας</translation>
 <translation id="2073572773299281212">Ενεργή <ph name="DAYS" /> ημέρες πριν</translation>
 <translation id="2074131957428911366">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Επεξεργασία καρουζέλ</translation>
 <translation id="2316709634732130529">Χρ. προτ. κωδ. πρόσ.</translation>
 <translation id="2320166752086256636">Απόκρυψη πληκτρολογίου</translation>
+<translation id="2326302612031521902">Επιλογέας μονάδας</translation>
 <translation id="2348630484974447747">Πακέτο</translation>
 <translation id="2351097562818989364">Έγινε επαναφορά ρυθμίσεων μετάφρασης.</translation>
 <translation id="235789365079050412">Πολιτική απορρήτου της Google</translation>
@@ -267,6 +270,7 @@
 <translation id="2459155039684421202">Στη γραμμή διευθύνσεων, καταχωρίστε μια εργασία όπως "διαγραφή ιστορικού" ή "επεξεργασία κωδικών πρόσβασης".</translation>
 <translation id="2461070143328828326">Ρυθμίσεις κωδικού πρόσβασης</translation>
 <translation id="2462736546165239215">Εδώ μπορείτε να βρείτε όλο το ιστορικό περιήγησής σας.</translation>
+<translation id="2468132863574325555">Drive</translation>
 <translation id="2469960372084740698">Να απενεργοποιηθεί η Ασφαλής περιήγηση;</translation>
 <translation id="2473876017985765807">Έχετε ήδη αποθηκεύσει έναν κωδικό πρόσβασης για τον ιστότοπο <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Δεν έχει επιλεγεί</translation>
@@ -939,6 +943,7 @@
 <translation id="6149061208933997199">Χρήση κωδικού πρόσβ.</translation>
 <translation id="6152406514676263192">Συγχρονίστε για να βλέπετε το πιο σχετικό περιεχόμενο με βάση τα ενδιαφέροντά σας.</translation>
 <translation id="6159839020698489198">προαιρετικό</translation>
+<translation id="6160780110287872296">Λήψη αρχείου;</translation>
 <translation id="6170450281939467187">Αποτυχία μετάφρασης</translation>
 <translation id="6173499589275053515">Ο κωδικός πρόσβασης αποθηκεύτηκε στον Λογαριασμό σας Google, <ph name="EMAIL" />.</translation>
 <translation id="6184086493125982861">Εμφάνιση καρτελών</translation>
@@ -1007,6 +1012,7 @@
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6453018583485750254">Δεν εκτελέστηκε ποτέ έλεγχος.</translation>
 <translation id="6459307836338400162">Για περισσότερες ρυθμίσεις που σχετίζονται με το απόρρητο, την ασφάλεια και τη συλλογή δεδομένων, ανατρέξτε στην ενότητα <ph name="BEGIN_LINK" />Συγχρονισμός<ph name="END_LINK" /> και <ph name="BEGIN_LINK" />Υπηρεσίες Google<ph name="END_LINK" />.</translation>
+<translation id="646394917185284261">Αρχεία</translation>
 <translation id="6464071786529933911">Άνοιγ. σε καρτ. αν. περ.</translation>
 <translation id="6464397691496239022">Οι ιστότοποι μπορούν να χρησιμοποιούν cookie για να βελτιώσουν την εμπειρία περιήγησής σας, για παράδειγμα, για να παραμείνετε συνδεδεμένοι ή να διατηρηθούν τα προϊόντα στο καλάθι αγορών σας.
 
@@ -1419,7 +1425,6 @@
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
 <translation id="8731958888085671579">Απόκρυψη της επιλογής Εύρεση στη σελίδα</translation>
 <translation id="87371078663613140">Εξερευνήστε τις επιλογές στη γραμμή μενού</translation>
-<translation id="8737620822084008350">{count,plural, =1{Διατίθεται {count} αποθηκευμένο προφίλ πάνω από το πληκτρολόγιο.}other{Διατίθενται {count} αποθηκευμένα προφίλ πάνω από το πληκτρολόγιο.}}</translation>
 <translation id="8741995161408053644">Ο Λογαριασμός σας Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Εδώ θα βρείτε τις καρτέλες σας</translation>
 <translation id="8756969031206844760">Ενημέρωση κωδικού πρόσβασης;</translation>
