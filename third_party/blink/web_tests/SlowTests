@@ -44,7 +44,12 @@ crbug.com/24182 [ Mac13 ] fast/dom/SelectorAPI/resig-SelectorsAPI-test.xhtml [ S
 crbug.com/24182 [ Release Win10.20h2 ] fast/dom/SelectorAPI/resig-SelectorsAPI-test.xhtml [ Slow ]
 crbug.com/24182 [ Release Win11 ] fast/dom/SelectorAPI/resig-SelectorsAPI-test.xhtml [ Slow ]
 crbug.com/24182 fast/frames/cached-frame-counter.html [ Slow ]
-crbug.com/24182 fast/overflow/lots-of-sibling-inline-boxes.html [ Slow ] # Particularly slow in Debug: >12x slower!
+crbug.com/24182 [ Debug Mac ] fast/overflow/lots-of-sibling-inline-boxes.html [ Slow ]
+crbug.com/24182 [ Linux ] fast/overflow/lots-of-sibling-inline-boxes.html [ Slow ]
+crbug.com/24182 [ Mac11 Release ] fast/overflow/lots-of-sibling-inline-boxes.html [ Slow ]
+crbug.com/24182 [ Mac12 Release ] fast/overflow/lots-of-sibling-inline-boxes.html [ Slow ]
+crbug.com/24182 [ Mac13 Release ] fast/overflow/lots-of-sibling-inline-boxes.html [ Slow ]
+crbug.com/24182 [ Release Win ] fast/overflow/lots-of-sibling-inline-boxes.html [ Slow ]
 crbug.com/24182 http/tests/accessibility/slow-document-load.html [ Slow ]
 crbug.com/24182 [ Debug Linux ] http/tests/cache/subresource-expiration-1.html [ Slow ]
 crbug.com/24182 [ Release ] http/tests/cache/subresource-expiration-1.html [ Slow ]
@@ -737,7 +742,8 @@ crbug.com/871139 virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gestur
 crbug.com/871139 [ Linux ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html [ Slow ]
 crbug.com/871139 [ Mac ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html [ Slow ]
 crbug.com/871139 [ Release Win ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html [ Slow ]
-crbug.com/871139 virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-out-slow.html [ Slow ]
+crbug.com/871139 [ Debug Linux ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-out-slow.html [ Slow ]
+crbug.com/871139 [ Release ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-out-slow.html [ Slow ]
 
 crbug.com/868956 virtual/gpu/fast/canvas/canvas-composite-video-shadow.html [ Slow ]
 
@@ -1374,7 +1380,8 @@ crbug.com/1488860 virtual/threaded/external/wpt/scroll-animations/css/view-timel
 crbug.com/1488860 virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Slow ]
 crbug.com/1493194 external/wpt/css/cssom/insert-dir-rule-in-iframe-crash.html [ Slow ]
 
-crbug.com/1465046 [ Mac ] virtual/threaded/external/wpt/css/css-scroll-snap/input/keyboard.html [ Slow ]
+crbug.com/1465046 [ Debug Mac13 ] virtual/threaded/external/wpt/css/css-scroll-snap/input/keyboard.html [ Slow ]
+crbug.com/1465046 [ Mac Release ] virtual/threaded/external/wpt/css/css-scroll-snap/input/keyboard.html [ Slow ]
 
 # Slow Private Network Access tests
 crbug.com/626703 [ Mac12 ] external/wpt/fetch/private-network-access/mixed-content-fetch.tentative.https.window.html [ Slow ]
