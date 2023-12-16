@@ -4528,8 +4528,8 @@
      ]
     },
     "css-view-transitions": {
-     "document-element-detatched-crash.html": [
-      "3c5419a8102c2160ac82e69bf046408b2c542e41",
+     "document-element-detached-crash.html": [
+      "cfdf769695dc11864229d0f4fe5d1dfc3712aec7",
       [
        null,
        {}
@@ -80072,7 +80072,7 @@
       ]
      ],
      "background-clip-padding-box-with-border-radius.html": [
-      "8595caec7bb2d751dd87aebc777be84de6233af7",
+      "22d7bd9d297d25206834f93c78b27d9bc3b28039",
       [
        null,
        [
@@ -80081,7 +80081,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            29
+           ],
+           [
+            0,
+            80
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-clip_padding-box.html": [
@@ -106536,6 +106552,19 @@
        {}
       ]
      ],
+     "contain-inline-size-grid-stretches-auto-rows.html": [
+      "c168950929d58c2c7b0b4c4228f2185f8a7b4e88",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "contain-inline-size-grid.html": [
       "5cd8bfc96e34e36ff1a340e9e09963df9b22ec89",
       [
@@ -108876,6 +108905,19 @@
        [
         [
          "/css/css-contain/reference/contain-size-grid-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "contain-size-grid-stretches-auto-rows.html": [
+      "10b84665aa91edc2245fae08c9ee259c8bc1863a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
          "=="
         ]
        ],
@@ -141441,6 +141483,32 @@
         {}
        ]
       ],
+      "standalone-axis-size-008.html": [
+       "6ee4e77405b47c3de23c6fc19a25cec3d576511f",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "standalone-axis-size-009.html": [
+       "bbf585efd1ad7ca4aba112be57cd4e964ace94b6",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "subgrid-baseline-001.html": [
        "95469c0018e0a97786aff086c0cabaf081ced7b4",
        [
@@ -156376,6 +156444,45 @@
       ],
       "clip-path-on-svg-002.svg": [
        "94067d4ba32c1da540fed3c5ccf5d77d9b26d3d5",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path-svg-content/reference/clip-path-square-002-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-on-svg-003.svg": [
+       "01c4a2610e8cde9e8400fbc2a023ab936babd3ad",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path-svg-content/reference/clip-path-square-002-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-on-svg-004.svg": [
+       "62a020e558676f533add52c8de80518eb54e6041",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path-svg-content/reference/clip-path-square-002-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-on-svg-005.svg": [
+       "c39d2660280826b6ec2f579d011df3cc2a7f5572",
        [
         null,
         [
@@ -353630,7 +353737,7 @@
        []
       ],
       "trusted-bidding-signals.py": [
-       "a3c50f6ae9b41db2ef5e6cbdf1d04d4d5b165ca4",
+       "5ec487fcc904e876ebdf130b511f4c4780863395",
        []
       ],
       "trusted-scoring-signals.py": [
@@ -394135,10 +394242,34 @@
         ]
        },
        "conftest.py": [
-        "f7420c11a9355beddef50dfd2524c908656717a2",
+        "fb6dcc45dd779a1cc790a95607781b01254fa3b3",
         []
        ],
+       "continue_request": {
+        "__init__.py": [
+         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+         []
+        ]
+       },
+       "continue_response": {
+        "__init__.py": [
+         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+         []
+        ]
+       },
+       "continue_with_auth": {
+        "__init__.py": [
+         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+         []
+        ]
+       },
        "fail_request": {
+        "__init__.py": [
+         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+         []
+        ]
+       },
+       "provide_response": {
         "__init__.py": [
          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
          []
@@ -394827,7 +394958,7 @@
         []
        ],
        "headers.py": [
-        "71c4901c44522847ec93d5fc5b57c4720fadbce9",
+        "cb8d18d964416a5db9f98bcc273762e47bc10c81",
         []
        ],
        "must-revalidate.py": [
@@ -471477,7 +471608,7 @@
       ]
      ],
      "scroll-behavior-subframe-root.html": [
-      "27f9d2f408ff8cfbd11f2f452fc9e8f92b7b269c",
+      "2687d6eb5cadfbe8c3d47073fd5ae89eff7ac318",
       [
        null,
        {
@@ -471486,7 +471617,7 @@
       ]
      ],
      "scroll-behavior-subframe-window.html": [
-      "74c6fe7510a8169a9e6427e83f0f304921d4046d",
+      "3113cbc88e3a2213de0f85803d16ee6a2c30bdf2",
       [
        null,
        {
@@ -499797,6 +499928,13 @@
       {}
      ]
     ],
+    "report-event-reserved-event.https.html": [
+     "0a541bb0c5c8f3e19c609b7e2411c89fea103764",
+     [
+      null,
+      {}
+     ]
+    ],
     "resize-lock-input.https.html": [
      "261c9a737eff4b85723214b7f4735b8fe9423a65",
      [
@@ -518283,7 +518421,7 @@
       ]
      ],
      "trusted-bidding-signals.https.window.js": [
-      "3a3283ac18e552ae8086ad9e0a32c9ee5ac50756",
+      "9799af6ac1fbe1a3f7db8ce4230137d272cc8307",
       [
        "fledge/tentative/trusted-bidding-signals.https.window.html?1-5",
        {
@@ -701855,7 +701993,7 @@
        },
        "before_request_sent": {
         "before_request_sent.py": [
-         "bf94d58f1b1fede1698f9759649ba0a0c42428e6",
+         "c92337e5075bf0b4eb6fff85dcc550d181f6588e",
          [
           null,
           {}
@@ -701864,7 +702002,34 @@
        },
        "combined": {
         "network_events.py": [
-         "d3f0f7ddd3349d81306e8b3d3c9fa0244f8c4a92",
+         "7b6d99727ae116587737abd0c02fd908a6690de9",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
+       "continue_request": {
+        "invalid.py": [
+         "cdc66cfaabb20dde4bd3e3caa0c8c8d948fe87f6",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
+       "continue_response": {
+        "invalid.py": [
+         "b8e1c08e0125fd16d405a9d07848db8a25adc47a",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
+       "continue_with_auth": {
+        "invalid.py": [
+         "ea188cbde88d1874bf3401a6507ef641144045fc",
          [
           null,
           {}
@@ -701873,7 +702038,16 @@
        },
        "fail_request": {
         "invalid.py": [
-         "60371d58ed3f36fbea051a1ae47764c326e369f2",
+         "ead87c1a376ec403c24ca8cd6b4b04bf2a1de0fa",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
+       "provide_response": {
+        "invalid.py": [
+         "eec118a692df3a27d89236d7e2862dd2aca9f35d",
          [
           null,
           {}
@@ -701900,7 +702074,7 @@
        },
        "response_completed": {
         "response_completed.py": [
-         "b54b9699099eec2466666c4360b5a9e90571f87b",
+         "b9b4ae727e56d5505c3221eaa7800584371f1123",
          [
           null,
           {}
@@ -701923,7 +702097,7 @@
        },
        "response_started": {
         "response_started.py": [
-         "c4e9c653a7867f2f0e1061cd940607665aae6320",
+         "dec743e175559b7068a44f043bce4951a17efcaa",
          [
           null,
           {}

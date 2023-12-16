@@ -89,6 +89,39 @@ async def test_subscribe_status(bidi_session, subscribe_events, top_context, wai
 
 
 @pytest.mark.asyncio
+async def test_iframe_load(
+    bidi_session,
+    top_context,
+    setup_network_test,
+    test_page,
+    test_page_same_origin_frame,
+):
+    network_events = await setup_network_test(events=[RESPONSE_COMPLETED_EVENT])
+    events = network_events[RESPONSE_COMPLETED_EVENT]
+
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"],
+        url=test_page_same_origin_frame,
+        wait="complete",
+    )
+
+    contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
+    frame_context = contexts[0]["children"][0]
+
+    assert len(events) == 2
+    assert_response_event(
+        events[0],
+        expected_request={"url": test_page_same_origin_frame},
+        context=top_context["context"],
+    )
+    assert_response_event(
+        events[1],
+        expected_request={"url": test_page},
+        context=frame_context["context"],
+    )
+
+
+@pytest.mark.asyncio
 async def test_load_page_twice(
     bidi_session, top_context, wait_for_event, wait_for_future_safe, url, setup_network_test
 ):

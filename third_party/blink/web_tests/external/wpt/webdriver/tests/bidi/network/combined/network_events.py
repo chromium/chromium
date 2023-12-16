@@ -14,6 +14,109 @@ from .. import (
 
 
 @pytest.mark.asyncio
+async def test_iframe_navigation_request(
+    bidi_session,
+    top_context,
+    subscribe_events,
+    setup_network_test,
+    inline,
+    test_page,
+    test_page_cross_origin,
+    test_page_same_origin_frame,
+):
+    network_events = await setup_network_test(
+        events=[
+            BEFORE_REQUEST_SENT_EVENT,
+            RESPONSE_STARTED_EVENT,
+            RESPONSE_COMPLETED_EVENT,
+        ],
+        contexts=[top_context["context"]],
+    )
+
+    navigation_events = []
+
+    async def on_event(method, data):
+        navigation_events.append(data)
+
+    remove_listener = bidi_session.add_event_listener(
+        "browsingContext.navigationStarted", on_event
+    )
+    await subscribe_events(events=["browsingContext.navigationStarted"])
+
+    result = await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=test_page_same_origin_frame, wait="complete"
+    )
+
+    # Get the frame_context loaded in top_context
+    contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
+    assert len(contexts[0]["children"]) == 1
+    frame_context = contexts[0]["children"][0]
+
+    assert len(navigation_events) == 2
+    assert len(network_events[BEFORE_REQUEST_SENT_EVENT]) == 2
+    assert len(network_events[RESPONSE_STARTED_EVENT]) == 2
+    assert len(network_events[RESPONSE_COMPLETED_EVENT]) == 2
+
+    # Check that 2 distinct navigations were captured, for the expected contexts
+    assert navigation_events[0]["navigation"] == result["navigation"]
+    assert navigation_events[0]["context"] == top_context["context"]
+    assert navigation_events[1]["navigation"] != result["navigation"]
+    assert navigation_events[1]["context"] == frame_context["context"]
+
+    # Helper to assert the 3 main network events for this test
+    def assert_events(event_index, url, context, navigation):
+        expected_request = {"method": "GET", "url": url}
+        expected_response = {"url": url}
+        assert_before_request_sent_event(
+            network_events[BEFORE_REQUEST_SENT_EVENT][event_index],
+            expected_request=expected_request,
+            context=context,
+            navigation=navigation,
+        )
+        assert_response_event(
+            network_events[RESPONSE_STARTED_EVENT][event_index],
+            expected_response=expected_response,
+            context=context,
+            navigation=navigation,
+        )
+        assert_response_event(
+            network_events[RESPONSE_COMPLETED_EVENT][event_index],
+            expected_response=expected_response,
+            context=context,
+            navigation=navigation,
+        )
+
+    assert_events(
+        0,
+        url=test_page_same_origin_frame,
+        context=top_context["context"],
+        navigation=navigation_events[0]["navigation"],
+    )
+    assert_events(
+        1,
+        url=test_page,
+        context=frame_context["context"],
+        navigation=navigation_events[1]["navigation"],
+    )
+
+    # Navigate the iframe to another url
+    result = await bidi_session.browsing_context.navigate(
+        context=frame_context["context"], url=test_page_cross_origin, wait="complete"
+    )
+
+    assert len(navigation_events) == 3
+    assert len(network_events[BEFORE_REQUEST_SENT_EVENT]) == 3
+    assert len(network_events[RESPONSE_STARTED_EVENT]) == 3
+    assert len(network_events[RESPONSE_COMPLETED_EVENT]) == 3
+    assert_events(
+        2,
+        url=test_page_cross_origin,
+        context=frame_context["context"],
+        navigation=navigation_events[2]["navigation"],
+    )
+
+
+@pytest.mark.asyncio
 async def test_same_navigation_id(
     bidi_session, top_context, wait_for_event, wait_for_future_safe, url, setup_network_test
 ):
