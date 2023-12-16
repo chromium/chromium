@@ -178,6 +178,10 @@ BASE_DECLARE_FEATURE(kWebAuthnChromeImplementedInvariant);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kAllowExtensionsToSetWebAuthnRpIds);
 
+// Send and receive JSON from Play Services.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnAndroidFidoJson);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

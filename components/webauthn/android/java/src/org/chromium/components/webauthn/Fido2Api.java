@@ -34,8 +34,11 @@ import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.blink.mojom.UserVerificationRequirement;
 import org.chromium.blink.mojom.UvmEntry;
+import org.chromium.device.DeviceFeatureList;
+import org.chromium.device.DeviceFeatureMap;
 import org.chromium.mojo_base.mojom.TimeDelta;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -176,6 +179,18 @@ public final class Fido2Api {
             PublicKeyCredentialCreationOptions options, Parcel parcel)
             throws NoSuchAlgorithmException {
         final int a = writeHeader(OBJECT_MAGIC, parcel);
+
+        if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_FIDO_JSON)) {
+            // 13: JSON serialisation of the request.
+            //
+            // Recent versions of Play Services will use this field and ignore the
+            // others. In time, we should be able to skip serialising anything else
+            // in this function.
+            int b = writeHeader(13, parcel);
+            parcel.writeString(
+                    Fido2CredentialRequestJni.get().createOptionsToJson(options.serialize()));
+            writeLength(b, parcel);
+        }
 
         // 2: PublicKeyCredentialRpEntity
 
@@ -413,6 +428,18 @@ public final class Fido2Api {
     public static void appendGetAssertionOptionsToParcel(
             PublicKeyCredentialRequestOptions options, byte[] tunnelId, Parcel parcel) {
         final int a = writeHeader(OBJECT_MAGIC, parcel);
+
+        if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_FIDO_JSON)) {
+            // 11: JSON serialisation of the request.
+            //
+            // Recent versions of Play Services will use this field and ignore the
+            // others. In time, we should be able to skip serialising anything else
+            // in this function.
+            int z = writeHeader(11, parcel);
+            parcel.writeString(
+                    Fido2CredentialRequestJni.get().getOptionsToJson(options.serialize()));
+            writeLength(z, parcel);
+        }
 
         // 2: challenge
         int z = writeHeader(2, parcel);
@@ -816,6 +843,7 @@ public final class Fido2Api {
         GetAssertionAuthenticatorResponse assertionResponse = null;
         Extensions extensions = null;
         int attachment = AuthenticatorAttachment.MIN_VALUE - 1;
+        String jsonString = null;
 
         while (parcel.dataPosition() < endPosition) {
             header = readHeader(parcel);
@@ -857,6 +885,10 @@ public final class Fido2Api {
                     attachment = stringToAttachment(parcel.readString());
                     break;
 
+                case 9:
+                    jsonString = parcel.readString();
+                    break;
+
                 default:
                     // unknown tag. Skip over it.
                     parcel.setDataPosition(addLengthToParcelPosition(header.second, parcel));
@@ -864,6 +896,31 @@ public final class Fido2Api {
         }
 
         if (creationResponse != null) {
+            if (jsonString != null
+                    && DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_FIDO_JSON)) {
+                // If the JSON form was provided then we use that and ignore the
+                // rest.
+                byte[] responseSerialized =
+                        Fido2CredentialRequestJni.get().makeCredentialResponseFromJson(jsonString);
+                if (responseSerialized == null) {
+                    Log.e(
+                            TAG,
+                            "Failed to convert response from JSON to Mojo object: %s",
+                            jsonString);
+                    throw new IllegalArgumentException();
+                }
+                MakeCredentialAuthenticatorResponse response;
+                try {
+                    response =
+                            MakeCredentialAuthenticatorResponse.deserialize(
+                                    ByteBuffer.wrap(responseSerialized));
+                } catch (org.chromium.mojo.bindings.DeserializationException e) {
+                    throw new IllegalArgumentException(e);
+                }
+
+                return response;
+            }
+
             if (attachment >= AuthenticatorAttachment.MIN_VALUE) {
                 creationResponse.authenticatorAttachment = attachment;
             }
@@ -882,6 +939,31 @@ public final class Fido2Api {
         }
 
         if (assertionResponse != null) {
+            if (jsonString != null
+                    && DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_FIDO_JSON)) {
+                // If the JSON form was provided then we use that and ignore the
+                // rest.
+                byte[] responseSerialized =
+                        Fido2CredentialRequestJni.get().getCredentialResponseFromJson(jsonString);
+                if (responseSerialized == null) {
+                    Log.e(
+                            TAG,
+                            "Failed to convert response from JSON to Mojo object: %s",
+                            jsonString);
+                    throw new IllegalArgumentException();
+                }
+                GetAssertionAuthenticatorResponse response;
+                try {
+                    response =
+                            GetAssertionAuthenticatorResponse.deserialize(
+                                    ByteBuffer.wrap(responseSerialized));
+                } catch (org.chromium.mojo.bindings.DeserializationException e) {
+                    throw new IllegalArgumentException(e);
+                }
+
+                return response;
+            }
+
             if (extensions != null && extensions.userVerificationMethods != null) {
                 assertionResponse.extensions.echoUserVerificationMethods = true;
                 assertionResponse.extensions.userVerificationMethods = new UvmEntry[0];
