@@ -72,7 +72,7 @@ const blink::InterestGroup::Ad& ChosenAd(
     const GURL& winning_ad_url) {
   auto chosen_ad = base::ranges::find(
       *storage_interest_group->interest_group.ads, winning_ad_url,
-      [](const blink::InterestGroup::Ad& ad) { return ad.render_url; });
+      [](const blink::InterestGroup::Ad& ad) { return ad.render_url(); });
   CHECK(chosen_ad != storage_interest_group->interest_group.ads->end());
   return *chosen_ad;
 }

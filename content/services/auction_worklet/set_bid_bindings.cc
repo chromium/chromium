@@ -43,7 +43,7 @@ bool IsAllowedAdUrl(
     const GURL& url,
     std::string& error_prefix,
     const char* argument_name,
-    const base::RepeatingCallback<bool(const GURL&)>& is_excluded,
+    const base::RepeatingCallback<bool(const std::string&)>& is_excluded,
     const std::vector<blink::InterestGroup::Ad>& ads,
     std::string& out_error) {
   if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
@@ -54,11 +54,12 @@ bool IsAllowedAdUrl(
   }
 
   for (const auto& ad : ads) {
-    if (is_excluded.Run(ad.render_url)) {
+    if (is_excluded.Run(ad.render_url())) {
       continue;
     }
-    if (url == ad.render_url)
+    if (url.spec() == ad.render_url()) {
       return true;
+    }
   }
   out_error = base::StrCat({error_prefix, "bid ", argument_name, " URL '",
                             url.possibly_invalid_spec(),
@@ -170,8 +171,9 @@ void SetBidBindings::ReInitialize(
     bool has_top_level_seller_origin,
     const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
     const absl::optional<blink::AdCurrency>& per_buyer_currency,
-    base::RepeatingCallback<bool(const GURL&)> is_ad_excluded,
-    base::RepeatingCallback<bool(const GURL&)> is_component_ad_excluded) {
+    base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
+    base::RepeatingCallback<bool(const std::string&)>
+        is_component_ad_excluded) {
   DCHECK(bidder_worklet_non_shared_params->ads.has_value());
   start_ = start;
   has_top_level_seller_origin_ = has_top_level_seller_origin;

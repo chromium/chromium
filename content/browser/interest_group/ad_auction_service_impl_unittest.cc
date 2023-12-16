@@ -1563,7 +1563,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
                          kOriginStringA));
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group.ads.value()[0].render_url(),
             base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
   EXPECT_EQ(group.ads.value()[0].size_group, "group_new");
   EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
@@ -1576,7 +1576,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
               ::testing::UnorderedElementsAre(kOriginF, kOriginG));
   ASSERT_TRUE(group.ad_components.has_value());
   ASSERT_EQ(group.ad_components->size(), 1u);
-  EXPECT_EQ(group.ad_components.value()[0].render_url.spec(),
+  EXPECT_EQ(group.ad_components.value()[0].render_url(),
             "https://example.com/component_url");
   EXPECT_EQ(group.ad_components.value()[0].size_group, "group_new");
   EXPECT_EQ(group.ad_components.value()[0].metadata, "{\"new_c\":\"d\"}");
@@ -1817,7 +1817,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatePartialPerformsMerge) {
                 kAllSlotsRequestedSizes);
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group.ads.value()[0].render_url(),
             base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
   EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
 }
@@ -1862,7 +1862,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeExpiration) {
   EXPECT_EQ(group.expiry, kExpirationTime);
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 }
 
@@ -1963,7 +1963,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
   EXPECT_EQ(group.trusted_bidding_signals_keys.value()[0], "key1");
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group.ads.value()[0].render_url(),
             base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
 }
 
@@ -2034,10 +2034,10 @@ TEST_F(AdAuctionServiceImplTest, UpdateIgnoresUnknownFields) {
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group.ads.value()[0].render_url(),
             "https://example.com/new_render");
   ASSERT_EQ(group.ad_components->size(), 1u);
-  EXPECT_EQ(group.ad_components.value()[0].render_url.spec(),
+  EXPECT_EQ(group.ad_components.value()[0].render_url(),
             "https://example.com/new_component");
 }
 
@@ -2075,8 +2075,7 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalNameDoesntMatch) {
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 }
 
 // Try to set the owner -- for security, name and owner shouldn't be
@@ -2115,8 +2114,7 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalOwnerDoesntMatch) {
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 }
 
 TEST_F(AdAuctionServiceImplTest, UpdatePriorityVector) {
@@ -2312,13 +2310,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
   EXPECT_EQ(first_group.name, kGroupName1);
   ASSERT_TRUE(first_group.ads.has_value());
   ASSERT_EQ(first_group.ads->size(), 1u);
-  EXPECT_EQ(first_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(first_group.ads.value()[0].render_url(),
             "https://example.com/new_render1");
 
   EXPECT_EQ(second_group.name, kGroupName2);
   ASSERT_TRUE(second_group.ads.has_value());
   ASSERT_EQ(second_group.ads->size(), 1u);
-  EXPECT_EQ(second_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(second_group.ads.value()[0].render_url(),
             "https://example.com/new_render2");
 }
 
@@ -3473,7 +3471,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   EXPECT_EQ(origin_b_group.name, kInterestGroupName);
   ASSERT_TRUE(origin_b_group.ads.has_value());
   ASSERT_EQ(origin_b_group.ads->size(), 1u);
-  EXPECT_EQ(origin_b_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(origin_b_group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 
   // ...but the `kOriginA` interest group shouldn't change.
@@ -3484,7 +3482,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
       origin_a_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(origin_a_group.ads.has_value());
   ASSERT_EQ(origin_a_group.ads->size(), 1u);
-  EXPECT_EQ(origin_a_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(origin_a_group.ads.value()[0].render_url(),
             "https://example.com/render");
 }
 
@@ -3571,7 +3569,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   EXPECT_EQ(origin_c_group.name, kInterestGroupName);
   ASSERT_TRUE(origin_c_group.ads.has_value());
   ASSERT_EQ(origin_c_group.ads->size(), 1u);
-  EXPECT_EQ(origin_c_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(origin_c_group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 
   // ...but the `kOriginA` interest group shouldn't change.
@@ -3582,7 +3580,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
       origin_a_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(origin_a_group.ads.has_value());
   ASSERT_EQ(origin_a_group.ads->size(), 1u);
-  EXPECT_EQ(origin_a_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(origin_a_group.ads.value()[0].render_url(),
             "https://example.com/render");
 
   // Now try on disallowed subframe from originB.
@@ -3602,7 +3600,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
       origin_b_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(origin_b_group.ads.has_value());
   ASSERT_EQ(origin_b_group.ads->size(), 1u);
-  EXPECT_EQ(origin_b_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(origin_b_group.ads.value()[0].render_url(),
             "https://example.com/render");
 }
 
@@ -3657,8 +3655,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidFieldCancelsAllUpdates) {
     const auto& group = groups->GetInterestGroups()[0]->interest_group;
     ASSERT_TRUE(group.ads.has_value());
     ASSERT_EQ(group.ads->size(), 1u);
-    EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-              "https://example.com/render");
+    EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
     EXPECT_EQ(group.ads.value()[0].metadata,
               "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
     EXPECT_EQ(group.bidding_url, kBiddingLogicUrlA);
@@ -3704,8 +3701,7 @@ TEST_F(AdAuctionServiceImplTest,
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
   EXPECT_EQ(group.ads.value()[0].metadata,
             "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   EXPECT_FALSE(group.ads.value()[0].allowed_reporting_origins.has_value());
@@ -3823,8 +3819,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 }
 
 // UpdateJSONParserCrash fails on Android or with the Rust parser because in
@@ -3872,8 +3867,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
   auto group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Try another IG update, this time with no crash. It should succceed.
   // (We need to advance time since this next attempt is rate-limited).
@@ -3890,7 +3884,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
   group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 }
 
@@ -3925,8 +3919,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateBlockedByContentBrowserClient) {
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 
   // There shouldn't have even been an attempt to update.
   EXPECT_EQ(network_responder_->UpdateCount(), 0u);
@@ -3958,8 +3951,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNetworkFailure) {
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 }
 
 // The network request for updating interest groups times out, so the update
@@ -3991,8 +3983,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateTimeout) {
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 }
 
 // Start an update, and delay the server response so that the interest group
@@ -4178,8 +4169,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNeverFinishesBeforeDestruction) {
   const auto& a_group = a_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
-  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(a_group.ads.value()[0].render_url(), "https://example.com/render");
 
   // The test ends while the update is in progress. Nothing should crash as we
   // run destructors.
@@ -4216,8 +4206,7 @@ TEST_F(AdAuctionServiceImplTest, DoesntChangeGroupsWithNoUpdateUrl) {
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 }
 
 // Register a bid and a win, then perform a successful update. The bid and win
@@ -4274,7 +4263,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
   EXPECT_EQ(group.name, kInterestGroupName);
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 }
 
@@ -4313,7 +4302,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 
   // Change the update response and try updating again.
@@ -4331,7 +4320,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   const auto& group2 = groups2->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group2.ads.has_value());
   ASSERT_EQ(group2.ads->size(), 1u);
-  EXPECT_EQ(group2.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group2.ads.value()[0].render_url(),
             "https://example.com/new_render");
 
   // Advance time to just before end of rate limit period. Update should still
@@ -4349,7 +4338,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   const auto& group3 = groups3->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group3.ads.has_value());
   ASSERT_EQ(group3.ads->size(), 1u);
-  EXPECT_EQ(group3.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group3.ads.value()[0].render_url(),
             "https://example.com/new_render");
 
   // Advance time to just after end of rate limit period. Update should now
@@ -4366,7 +4355,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   const auto& group4 = groups4->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group4.ads.has_value());
   ASSERT_EQ(group4.ads->size(), 1u);
-  EXPECT_EQ(group4.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group4.ads.value()[0].render_url(),
             "https://example.com/new_render");
 }
 
@@ -4405,8 +4394,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Change the update response and try updating again.
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
@@ -4423,8 +4411,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   const auto& group2 = groups2->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group2.ads.has_value());
   ASSERT_EQ(group2.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Advance time to just before end of rate limit period. Update should still
   // do nothing due to rate limiting. Invalid responses use the longer
@@ -4442,8 +4429,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   const auto& group3 = groups3->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group3.ads.has_value());
   ASSERT_EQ(group3.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Advance time to just after end of rate limit period. Update should now
   // succeed.
@@ -4459,7 +4445,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   const auto& group4 = groups4->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group4.ads.has_value());
   ASSERT_EQ(group4.ads->size(), 1u);
-  EXPECT_EQ(group4.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group4.ads.value()[0].render_url(),
             "https://example.com/new_render");
 }
 
@@ -4508,8 +4494,7 @@ TEST_F(AdAuctionServiceImplTest,
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
   EXPECT_FALSE(group.ads.value()[0].allowed_reporting_origins.has_value());
 
   // Change the allowedReportingOrigins to attested origins and try updating
@@ -4529,8 +4514,7 @@ TEST_F(AdAuctionServiceImplTest,
   const auto& group2 = groups2->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group2.ads.has_value());
   ASSERT_EQ(group2.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
   EXPECT_FALSE(group.ads.value()[0].allowed_reporting_origins.has_value());
 
   // Advance time to just before end of rate limit period. Update should still
@@ -4549,8 +4533,7 @@ TEST_F(AdAuctionServiceImplTest,
   const auto& group3 = groups3->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group3.ads.has_value());
   ASSERT_EQ(group3.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
   EXPECT_FALSE(group.ads.value()[0].allowed_reporting_origins.has_value());
 
   // Advance time to just after end of rate limit period. Update should now
@@ -4567,7 +4550,7 @@ TEST_F(AdAuctionServiceImplTest,
   const auto& group4 = groups4->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group4.ads.has_value());
   ASSERT_EQ(group4.ads->size(), 1u);
-  EXPECT_EQ(group4.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group4.ads.value()[0].render_url(),
             "https://example.com/new_render");
   std::vector<url::Origin> allowed_reporting_origins = {kOriginB};
   EXPECT_EQ(group4.ads.value()[0].allowed_reporting_origins,
@@ -4607,8 +4590,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Change the update response and try updating again.
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
@@ -4625,8 +4607,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   const auto& group2 = groups2->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group2.ads.has_value());
   ASSERT_EQ(group2.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Advance time to just before end of rate limit period. Update should still
   // do nothing due to rate limiting.
@@ -4643,8 +4624,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   const auto& group3 = groups3->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group3.ads.has_value());
   ASSERT_EQ(group3.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Advance time to just after end of rate limit period. Update should now
   // succeed.
@@ -4660,7 +4640,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   const auto& group4 = groups4->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group4.ads.has_value());
   ASSERT_EQ(group4.ads->size(), 1u);
-  EXPECT_EQ(group4.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group4.ads.value()[0].render_url(),
             "https://example.com/new_render");
 }
 
@@ -4698,8 +4678,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Change the update response and try updating again.
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
@@ -4716,7 +4695,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
   const auto& group2 = groups2->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group2.ads.has_value());
   ASSERT_EQ(group2.ads->size(), 1u);
-  EXPECT_EQ(group2.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group2.ads.value()[0].render_url(),
             "https://example.com/new_render");
 }
 
@@ -4792,8 +4771,7 @@ TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
           : groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group_2.ads.has_value());
   ASSERT_EQ(group_2.ads->size(), 1u);
-  EXPECT_EQ(group_2.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(group_2.ads.value()[0].render_url(), "https://example.com/render");
 
   // Now, try to update both interest groups. Both should now succeed.
   const std::string kServerResponse2 = R"({
@@ -4819,12 +4797,12 @@ TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
 
   ASSERT_TRUE(group_1.ads.has_value());
   ASSERT_EQ(group_1.ads->size(), 1u);
-  EXPECT_EQ(group_1.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group_1.ads.value()[0].render_url(),
             "https://example.com/new_render");
 
   ASSERT_TRUE(group_2.ads.has_value());
   ASSERT_EQ(group_2.ads->size(), 1u);
-  EXPECT_EQ(group_2.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group_2.ads.value()[0].render_url(),
             "https://example.com/new_render2");
 }
 
@@ -4864,7 +4842,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedTightLoop) {
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 }
 
@@ -4949,8 +4927,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   auto a_group = a_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
-  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(a_group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Now, try to update kOriginB's interest groups. The update shouldn't happen
   // yet, because we're still updating kOriginA's interest groups.
@@ -4963,8 +4940,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   auto b_group = b_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
-  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(b_group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Now, try to update kOriginC's interest groups. The update shouldn't happen
   // yet, because we're still updating kOriginA's interest groups.
@@ -4977,8 +4953,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   auto c_group = c_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(c_group.ads.has_value());
   ASSERT_EQ(c_group.ads->size(), 1u);
-  EXPECT_EQ(c_group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(c_group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Only one network request should have been made (for the kOriginA update).
   EXPECT_EQ(network_responder_->UpdateCount(), 1u);
@@ -4997,7 +4972,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   a_group = a_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
-  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(a_group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 
   // kOriginB's groups have updated.
@@ -5006,7 +4981,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   b_group = b_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
-  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(b_group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 
   // kOriginC's groups have updated.
@@ -5015,7 +4990,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   b_group = b_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
-  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(b_group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 }
 
@@ -5085,7 +5060,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatches) {
   for (const SingleStorageInterestGroup& group : groups->GetInterestGroups()) {
     ASSERT_TRUE(group->interest_group.ads.has_value());
     ASSERT_EQ(group->interest_group.ads->size(), 1u);
-    EXPECT_EQ(group->interest_group.ads.value()[0].render_url.spec(),
+    EXPECT_EQ(group->interest_group.ads.value()[0].render_url(),
               "https://example.com/new_render");
   }
 }
@@ -5177,10 +5152,9 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatchesWithFailuresAndTimeouts) {
     ASSERT_EQ(ads->size(), 1u);
 
     if (group->interest_group.update_url == kUpdateUrlA) {
-      EXPECT_EQ(ads.value()[0].render_url.spec(),
-                "https://example.com/new_render");
+      EXPECT_EQ(ads.value()[0].render_url(), "https://example.com/new_render");
     } else {
-      EXPECT_EQ(ads.value()[0].render_url.spec(), "https://example.com/render");
+      EXPECT_EQ(ads.value()[0].render_url(), "https://example.com/render");
     }
   }
 }
@@ -5261,8 +5235,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   auto a_group = a_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
-  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(a_group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Now, try to update kOriginB's interest groups. The update shouldn't happen
   // yet, because we're still updating kOriginA's interest groups.
@@ -5275,8 +5248,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   auto b_group = b_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
-  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(b_group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Only one network request should have been made (for the kOriginA update).
   EXPECT_EQ(network_responder_->UpdateCount(), 1u);
@@ -5301,7 +5273,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   a_group = a_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
-  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(a_group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 
   // But kOriginB's groups have not updated, because they got cancelled.
@@ -5310,8 +5282,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   b_group = b_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
-  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(b_group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Now, try updating kOriginB. The update should complete successfully.
   network_responder_->RegisterUpdateResponse(kUpdateUrlPathB, R"({
@@ -5329,7 +5300,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   b_group = b_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
-  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(b_group.ads.value()[0].render_url(),
             "https://example.com/newer_render");
 }
 
@@ -5405,8 +5376,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   auto a_group = a_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
-  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(a_group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Now, try to update kOriginB's interest groups. The update shouldn't happen
   // yet, because we're still updating kOriginA's interest groups.
@@ -5419,8 +5389,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   auto b_group = b_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
-  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(b_group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Only one network request should have been made (for the kOriginA update).
   EXPECT_EQ(network_responder_->UpdateCount(), 1u);
@@ -5445,7 +5414,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   a_group = a_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
-  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(a_group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 
   // But kOriginB's groups have not updated, because they got cancelled.
@@ -5454,8 +5423,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   b_group = b_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
-  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(b_group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Now, try updating a new origin, kOriginC. The update should complete
   // successfully.
@@ -5488,7 +5456,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   auto c_group = c_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(c_group.ads.has_value());
   ASSERT_EQ(c_group.ads->size(), 1u);
-  EXPECT_EQ(c_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(c_group.ads.value()[0].render_url(),
             "https://example.com/newer_render");
 
   // But kOriginB's groups have not updated.
@@ -5497,8 +5465,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   b_group = b_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
-  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(b_group.ads.value()[0].render_url(), "https://example.com/render");
 }
 
 // After a round of updates completes, the round cancellation timer should reset
@@ -5566,7 +5533,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateCancellationTimerClearedOnCompletion) {
   auto a_group = a_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
-  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(a_group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 
   // Only one network request should have been made (for the kOriginA update).
@@ -5587,7 +5554,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateCancellationTimerClearedOnCompletion) {
   auto b_group = b_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
-  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(b_group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 
   // Two network requests should have been made (for the kOriginA and kOriginB
@@ -5691,7 +5658,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
     ASSERT_TRUE(group.ads.has_value());
     ASSERT_EQ(group.ads->size(), 1u);
     if (group.name == kUpdateUrlA.path()) {
-      EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+      EXPECT_EQ(group.ads.value()[0].render_url(),
                 "https://example.com/render2");
       seen_succeeded = true;
       continue;
@@ -5699,8 +5666,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
       seen_failed = true;
     }
     // Failed and deferred interest groups shouldn't have updated.
-    EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-              "https://example.com/render");
+    EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
   }
   EXPECT_TRUE(seen_succeeded);
   EXPECT_TRUE(seen_failed);
@@ -5716,8 +5682,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
   auto b_group = b_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
-  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(b_group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Only 4 network requests should have been made (for the kOriginA updates).
   EXPECT_EQ(network_responder_->UpdateCount(), 4u);
@@ -5737,7 +5702,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
     ASSERT_TRUE(group.ads.has_value());
     ASSERT_EQ(group.ads->size(), 1u);
     if (group.name == kUpdateUrlA3.path()) {
-      EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+      EXPECT_EQ(group.ads.value()[0].render_url(),
                 "https://example.com/render2");
       break;
     }
@@ -5764,7 +5729,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
     ASSERT_TRUE(group.ads.has_value());
     ASSERT_EQ(group.ads->size(), 1u);
     if (group.name == kUpdateUrlA4.path()) {
-      EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+      EXPECT_EQ(group.ads.value()[0].render_url(),
                 "https://example.com/render2");
       break;
     }
@@ -5777,8 +5742,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
   b_group = b_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
-  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
+  EXPECT_EQ(b_group.ads.value()[0].render_url(), "https://example.com/render");
 
   // Now, try updating kOriginB. The update should complete successfully.
   network_responder_->RegisterUpdateResponse(kUpdateUrlPathB, R"({
@@ -5796,8 +5760,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
   b_group = b_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
-  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
-            "https://example.com/render3");
+  EXPECT_EQ(b_group.ads.value()[0].render_url(), "https://example.com/render3");
 }
 
 TEST_F(AdAuctionServiceImplTest, CreateAuctionNonce) {
@@ -5967,7 +5930,7 @@ function scoreAd(
   EXPECT_THAT(GetKAnonJoinedIds(),
               ::testing::UnorderedElementsAre(
                   KAnonKeyForAdBid(interest_group,
-                                   interest_group.ads.value()[0].render_url),
+                                   interest_group.ads.value()[0].render_url()),
                   KAnonKeyForAdNameReporting(interest_group,
                                              interest_group.ads.value()[0])));
 }
@@ -6138,7 +6101,7 @@ function scoreAd(
   auto a_group = a_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
-  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(a_group.ads.value()[0].render_url(),
             "https://example.com/new_render");
   ASSERT_TRUE(a_group.ads.value()[0].allowed_reporting_origins.has_value());
   EXPECT_THAT(a_group.ads.value()[0].allowed_reporting_origins.value(),
@@ -6198,7 +6161,7 @@ function scoreAd(
   auto a_group = a_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
-  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(a_group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 }
 
@@ -6250,7 +6213,7 @@ function generateBid(
   auto a_group = a_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
-  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(a_group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 }
 
@@ -6313,7 +6276,7 @@ function scoreAd(
       no_update_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(no_update_group.ads.has_value());
   ASSERT_EQ(no_update_group.ads->size(), 1u);
-  EXPECT_EQ(no_update_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(no_update_group.ads.value()[0].render_url(),
             "https://example.com/render");
 
   // There shouldn't have even been an attempt to update.
@@ -6427,7 +6390,7 @@ function scoreAd(
   auto a_group = a_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
-  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(a_group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 
   auto c_groups = GetInterestGroupsForOwner(kOriginC);
@@ -6435,7 +6398,7 @@ function scoreAd(
   auto c_group = c_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(c_group.ads.has_value());
   ASSERT_EQ(c_group.ads->size(), 1u);
-  EXPECT_EQ(c_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(c_group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 }
 
@@ -6539,7 +6502,7 @@ function scoreAd(
   auto a_group = a_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
-  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(a_group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 
   auto c_groups = GetInterestGroupsForOwner(kOriginC);
@@ -6547,7 +6510,7 @@ function scoreAd(
   auto c_group = c_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(c_group.ads.has_value());
   ASSERT_EQ(c_group.ads->size(), 1u);
-  EXPECT_EQ(c_group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(c_group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 }
 
@@ -6624,7 +6587,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateSupportsDeprecatedNames) {
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group.ads.value()[0].render_url(),
             "https://example.com/new_render");
   EXPECT_EQ(group.all_sellers_capabilities,
             blink::SellerCapabilitiesType(
@@ -6667,7 +6630,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateIgnoresUnknownEnumFields) {
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group.ads.value()[0].render_url(),
             "https://example.com/new_render");
 }
 
@@ -9844,10 +9807,10 @@ TEST_F(AdAuctionServiceImplUpdateUserBiddingSignalsDisabledTest,
   const auto& group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+  EXPECT_EQ(group.ads.value()[0].render_url(),
             "https://example.com/new_render");
   ASSERT_EQ(group.ad_components->size(), 1u);
-  EXPECT_EQ(group.ad_components.value()[0].render_url.spec(),
+  EXPECT_EQ(group.ad_components.value()[0].render_url(),
             "https://example.com/new_component");
   EXPECT_EQ(group.user_bidding_signals.value(), "{\"old\":4}");
 }
@@ -9965,7 +9928,7 @@ function scoreAd(
           GetKAnonJoinedIds(),
           ::testing::UnorderedElementsAre(
               KAnonKeyForAdBid(interest_group,
-                               interest_group.ads.value()[0].render_url),
+                               interest_group.ads.value()[0].render_url()),
               KAnonKeyForAdNameReporting(interest_group,
                                          interest_group.ads.value()[0])));
       break;
@@ -9979,7 +9942,7 @@ function scoreAd(
           GetKAnonJoinedIds(),
           ::testing::UnorderedElementsAre(
               KAnonKeyForAdBid(interest_group,
-                               interest_group.ads.value()[0].render_url),
+                               interest_group.ads.value()[0].render_url()),
               KAnonKeyForAdNameReporting(interest_group,
                                          interest_group.ads.value()[0])));
       break;

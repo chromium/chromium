@@ -161,7 +161,7 @@ class InterestGroupAuctionReporterTest
         losing_interest_group,
         /*joining_url=*/kLosingBidderOrigin.GetURL());
 
-    winning_bid_info_.render_url = (*interest_group.ads)[0].render_url;
+    winning_bid_info_.render_url = GURL((*interest_group.ads)[0].render_url());
     winning_bid_info_.ad_metadata = kWinningAdMetadata;
 
     // The actual value doesn't matter for tests, but need to set some value as
@@ -175,7 +175,7 @@ class InterestGroupAuctionReporterTest
     // actually use any strings for the sake of these tests, but seems best to
     // use accurate ones.
     std::vector<std::string> k_anon_keys_to_join{
-        KAnonKeyForAdBid(interest_group, (*interest_group.ads)[0].render_url),
+        KAnonKeyForAdBid(interest_group, (*interest_group.ads)[0].render_url()),
         KAnonKeyForAdNameReporting(interest_group, (*interest_group.ads)[0]),
     };
     k_anon_keys_to_join_ =

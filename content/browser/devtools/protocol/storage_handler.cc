@@ -1079,7 +1079,7 @@ void SendGetInterestGroup(
   if (group.ads) {
     for (const auto& ad : *group.ads) {
       auto protocol_ad = protocol::Storage::InterestGroupAd::Create()
-                             .SetRenderURL(ad.render_url.spec())
+                             .SetRenderURL(ad.render_url())
                              .Build();
       if (ad.metadata) {
         protocol_ad->SetMetadata(*ad.metadata);
@@ -1092,7 +1092,7 @@ void SendGetInterestGroup(
   if (group.ad_components) {
     for (const auto& ad : *group.ad_components) {
       auto protocol_ad = protocol::Storage::InterestGroupAd::Create()
-                             .SetRenderURL(ad.render_url.spec())
+                             .SetRenderURL(ad.render_url())
                              .Build();
       if (ad.metadata) {
         protocol_ad->SetMetadata(*ad.metadata);

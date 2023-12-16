@@ -311,11 +311,12 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddSetBidBindings();
   }
-
-  base::RepeatingCallback<bool(const GURL&)> matches_ad1 = base::BindRepeating(
-      [](const GURL& url) { return url == GURL("https://example.com/ad1"); });
-  base::RepeatingCallback<bool(const GURL&)> ignore_arg_return_false =
-      base::BindRepeating([](const GURL& ignored) { return false; });
+  base::RepeatingCallback<bool(const std::string&)> matches_ad1 =
+      base::BindRepeating([](const std::string& url) {
+        return url == "https://example.com/ad1";
+      });
+  base::RepeatingCallback<bool(const std::string&)> ignore_arg_return_false =
+      base::BindRepeating([](const std::string& ignored) { return false; });
 
   {
     mojom::BidderWorkletNonSharedParamsPtr params =

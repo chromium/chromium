@@ -42,6 +42,7 @@ namespace {
 
 using blink::InterestGroup;
 using testing::Field;
+using testing::Property;
 using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
 using SellerCapabilities = blink::SellerCapabilities;
@@ -1960,9 +1961,9 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                             &absl::optional<
                                 std::vector<blink::InterestGroup::Ad>>::value,
                             testing::ElementsAre(testing::AllOf(
-                                Field("render_url",
-                                      &InterestGroup::Ad::render_url,
-                                      GURL("https://ads.example.com/1")),
+                                Property("render_url",
+                                         &InterestGroup::Ad::render_url,
+                                         GURL("https://ads.example.com/1")),
                                 Field("metadata", &InterestGroup::Ad::metadata,
                                       "[\"4\",\"5\",null,\"6\"]"))))),
                   Field("ad_components", &InterestGroup::ad_components,
@@ -2044,9 +2045,9 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                             &absl::optional<
                                 std::vector<blink::InterestGroup::Ad>>::value,
                             testing::ElementsAre(testing::AllOf(
-                                Field("render_url",
-                                      &InterestGroup::Ad::render_url,
-                                      GURL("https://ads.example.com/1")),
+                                Property("render_url",
+                                         &InterestGroup::Ad::render_url,
+                                         GURL("https://ads.example.com/1")),
                                 Field("metadata", &InterestGroup::Ad::metadata,
                                       "[\"4\",\"5\",null,\"6\"]"))))),
                   Field("ad_components", &InterestGroup::ad_components,
@@ -2128,9 +2129,9 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                             &absl::optional<
                                 std::vector<blink::InterestGroup::Ad>>::value,
                             testing::ElementsAre(testing::AllOf(
-                                Field("render_url",
-                                      &InterestGroup::Ad::render_url,
-                                      GURL("https://ads.example.com/1")),
+                                Property("render_url",
+                                         &InterestGroup::Ad::render_url,
+                                         GURL("https://ads.example.com/1")),
                                 Field("metadata", &InterestGroup::Ad::metadata,
                                       "[\"4\",\"5\",null,\"6\"]"))))),
                   Field("ad_components", &InterestGroup::ad_components,
@@ -2212,9 +2213,9 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                             &absl::optional<
                                 std::vector<blink::InterestGroup::Ad>>::value,
                             testing::ElementsAre(testing::AllOf(
-                                Field("render_url",
-                                      &InterestGroup::Ad::render_url,
-                                      GURL("https://ads.example.com/1")),
+                                Property("render_url",
+                                         &InterestGroup::Ad::render_url,
+                                         GURL("https://ads.example.com/1")),
                                 Field("metadata", &InterestGroup::Ad::metadata,
                                       "[\"4\",\"5\",null,\"6\"]"))))),
                   Field("ad_components", &InterestGroup::ad_components,

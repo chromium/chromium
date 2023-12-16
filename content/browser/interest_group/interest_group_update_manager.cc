@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -378,8 +379,11 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     if (!maybe_render_url) {
       return absl::nullopt;
     }
-    blink::InterestGroup::Ad ad;
-    ad.render_url = GURL(*maybe_render_url);
+    GURL render_gurl = GURL(*maybe_render_url);
+    if (!render_gurl.is_valid()) {
+      return absl::nullopt;
+    }
+    blink::InterestGroup::Ad ad(render_gurl, /*metadata=*/std::nullopt);
     const std::string* maybe_size_group = ads_dict->FindString("sizeGroup");
     if (maybe_size_group) {
       ad.size_group = *maybe_size_group;

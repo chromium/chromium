@@ -14,7 +14,6 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {

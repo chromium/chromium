@@ -96,7 +96,7 @@ size_t EstimateBlinkInterestGroupSize(
 
   if (group.ads) {
     for (const auto& ad : group.ads.value()) {
-      size += ad->render_url.GetString().length();
+      size += ad->render_url.length();
       size += ad->size_group.length();
       size += ad->buyer_reporting_id.length();
       size += ad->buyer_and_seller_reporting_id.length();
@@ -112,7 +112,7 @@ size_t EstimateBlinkInterestGroupSize(
 
   if (group.ad_components) {
     for (const auto& ad : group.ad_components.value()) {
-      size += ad->render_url.GetString().length();
+      size += ad->render_url.length();
       size += ad->size_group.length();
       size += ad->metadata.length();
       size += ad->ad_render_id.length();
@@ -267,7 +267,7 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
 
   if (group.ads) {
     for (WTF::wtf_size_t i = 0; i < group.ads.value().size(); ++i) {
-      const KURL& render_url = group.ads.value()[i]->render_url;
+      const KURL& render_url = KURL(group.ads.value()[i]->render_url);
       if (!IsUrlAllowedForRenderUrls(render_url)) {
         error_field_name = String::Format("ads[%u].renderURL", i);
         error_field_value = render_url.GetString();
@@ -326,7 +326,7 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
 
   if (group.ad_components) {
     for (WTF::wtf_size_t i = 0; i < group.ad_components.value().size(); ++i) {
-      const KURL& render_url = group.ad_components.value()[i]->render_url;
+      const KURL& render_url = KURL(group.ad_components.value()[i]->render_url);
       if (!IsUrlAllowedForRenderUrls(render_url)) {
         error_field_name = String::Format("adComponents[%u].renderURL", i);
         error_field_value = render_url.GetString();

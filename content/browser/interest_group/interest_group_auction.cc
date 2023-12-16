@@ -195,7 +195,7 @@ const blink::InterestGroup::Ad* FindMatchingAd(
   }
 
   for (const auto& ad : ads) {
-    if (ad.render_url != ad_descriptor.url) {
+    if (ad.render_url() != ad_descriptor.url) {
       continue;
     }
     if (!ad.size_group && !ad_descriptor.size) {
@@ -3276,7 +3276,7 @@ base::flat_set<std::string> InterestGroupAuction::GetKAnonKeysToJoin() const {
     const blink::InterestGroup& interest_group =
         *scored_bid->bid->interest_group;
     k_anon_keys_to_join.push_back(blink::KAnonKeyForAdBid(
-        interest_group, scored_bid->bid->bid_ad->render_url));
+        interest_group, scored_bid->bid->bid_ad->render_url()));
     k_anon_keys_to_join.push_back(blink::KAnonKeyForAdNameReporting(
         interest_group, *scored_bid->bid->bid_ad));
     for (const blink::AdDescriptor& ad_component_descriptor :

@@ -40,7 +40,7 @@ cbor::Value SerializeAds(const std::vector<blink::InterestGroup::Ad>& ads,
   for (const auto& ad : ads) {
     if (include_full_ads) {
       cbor::Value::MapValue obj;
-      obj[cbor::Value("renderURL")] = cbor::Value(ad.render_url.spec());
+      obj[cbor::Value("renderURL")] = cbor::Value(ad.render_url());
       if (ad.metadata) {
         obj[cbor::Value("metadata")] = cbor::Value(ad.metadata.value());
       }

@@ -208,7 +208,7 @@ base::Value::List MakeAdsValue(
   base::Value::List list;
   for (const auto& ad : ads) {
     base::Value::Dict entry;
-    entry.Set("renderURL", ad.render_url.spec());
+    entry.Set("renderURL", ad.render_url());
     if (ad.size_group) {
       entry.Set("sizeGroup", std::move(ad.size_group.value()));
     }
@@ -3524,12 +3524,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url,
+  EXPECT_EQ(group.ads.value()[0].render_url(),
             GURL("https://example.com/render"));
   ASSERT_TRUE(group.ads.value()[0].size_group.has_value());
   EXPECT_EQ(group.ads.value()[0].size_group, "group_1");
   ASSERT_EQ(group.ad_components->size(), 1u);
-  EXPECT_EQ(group.ad_components.value()[0].render_url,
+  EXPECT_EQ(group.ad_components.value()[0].render_url(),
             GURL("https://example.com/component"));
   ASSERT_TRUE(group.ad_components.value()[0].size_group.has_value());
   EXPECT_EQ(group.ad_components.value()[0].size_group, "group_1");
@@ -3599,12 +3599,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 2u);
-  EXPECT_EQ(group.ads.value()[0].render_url,
+  EXPECT_EQ(group.ads.value()[0].render_url(),
             GURL("https://example.com/render"));
   EXPECT_EQ(group.ads.value()[0].buyer_reporting_id, "brid1");
   EXPECT_EQ(group.ads.value()[0].buyer_and_seller_reporting_id, "sh1");
 
-  EXPECT_EQ(group.ads.value()[1].render_url,
+  EXPECT_EQ(group.ads.value()[1].render_url(),
             GURL("https://example.com/render2"));
   EXPECT_FALSE(group.ads.value()[1].buyer_reporting_id.has_value());
   EXPECT_EQ(group.ads.value()[1].buyer_and_seller_reporting_id, "sh2");
@@ -3643,11 +3643,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url,
+  EXPECT_EQ(group.ads.value()[0].render_url(),
             GURL("https://example.com/render"));
   EXPECT_EQ(group.ads.value()[0].ad_render_id, "123abc");
   ASSERT_EQ(group.ad_components->size(), 1u);
-  EXPECT_EQ(group.ad_components.value()[0].render_url,
+  EXPECT_EQ(group.ad_components.value()[0].render_url(),
             GURL("https://example.com/component"));
   EXPECT_EQ(group.ad_components.value()[0].ad_render_id, "456def");
 }
@@ -3685,7 +3685,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url,
+  EXPECT_EQ(group.ads.value()[0].render_url(),
             GURL("https://example.com/render"));
   EXPECT_EQ(group.ads.value()[0].ad_render_id, "123abc");
   EXPECT_EQ(group.ads.value()[0].allowed_reporting_origins,
@@ -3737,7 +3737,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   ASSERT_TRUE(group.ad_components.has_value());
   ASSERT_EQ(group.ad_components->size(), 1u);
   const auto& ad_component = group.ad_components.value()[0];
-  EXPECT_EQ(ad_component.render_url, GURL("https://ad-components.com/render"));
+  EXPECT_EQ(ad_component.render_url(),
+            GURL("https://ad-components.com/render"));
   EXPECT_EQ(ad_component.ad_render_id, "123abc");
   EXPECT_FALSE(ad_component.buyer_reporting_id.has_value());
   EXPECT_FALSE(ad_component.buyer_and_seller_reporting_id.has_value());
@@ -11247,8 +11248,8 @@ interestGroupBuyers: [$1]
   // first and last ad component URLs, skpping the second.
   RenderFrameHostImpl* ad_frame = GetFencedFrameRenderFrameHost(shell());
   CheckAdComponents(
-      /*expected_ad_component_urls=*/{ad_components[0].render_url,
-                                      ad_components[2].render_url},
+      /*expected_ad_component_urls=*/{GURL(ad_components[0].render_url()),
+                                      GURL(ad_components[2].render_url())},
       ad_frame);
 
   // Get first three URLs from the fenced frame.
@@ -11259,10 +11260,10 @@ interestGroupBuyers: [$1]
 
   // Load each of the ad components in the nested fenced frame, validating the
   // URLs they're mapped to.
-  NavigateFencedFrameAndWait((*components)[0], ad_components[0].render_url,
-                             ad_frame);
-  NavigateFencedFrameAndWait((*components)[1], ad_components[2].render_url,
-                             ad_frame);
+  NavigateFencedFrameAndWait((*components)[0],
+                             GURL(ad_components[0].render_url()), ad_frame);
+  NavigateFencedFrameAndWait((*components)[1],
+                             GURL(ad_components[2].render_url()), ad_frame);
   NavigateFencedFrameAndWait((*components)[2], GURL(url::kAboutBlankURL),
                              ad_frame);
 }
@@ -13313,7 +13314,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Update) {
                group.trusted_bidding_signals_keys->size() == 1 &&
                group.trusted_bidding_signals_keys.value()[0] == "new_key" &&
                group.ads.has_value() && group.ads->size() == 1 &&
-               group.ads.value()[0].render_url.path() == "/new_ad_render_url" &&
+               GURL(group.ads.value()[0].render_url()).path() ==
+                   "/new_ad_render_url" &&
                group.ads.value()[0].metadata == "{\"new_a\":\"b\"}";
       }));
 }
@@ -13390,7 +13392,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedDailyUpdateUrl) {
                group.trusted_bidding_signals_keys->size() == 1 &&
                group.trusted_bidding_signals_keys.value()[0] == "new_key" &&
                group.ads.has_value() && group.ads->size() == 1 &&
-               group.ads.value()[0].render_url.path() == "/new_ad_render_url" &&
+               GURL(group.ads.value()[0].render_url()).path() ==
+                   "/new_ad_render_url" &&
                group.ads.value()[0].metadata == "{\"new_a\":\"b\"}";
       }));
 }
@@ -13470,7 +13473,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                group.trusted_bidding_signals_keys->size() == 1 &&
                group.trusted_bidding_signals_keys.value()[0] == "new_key" &&
                group.ads.has_value() && group.ads->size() == 1 &&
-               group.ads.value()[0].render_url.path() == "/new_ad_render_url" &&
+               GURL(group.ads.value()[0].render_url()).path() ==
+                   "/new_ad_render_url" &&
                group.ads.value()[0].metadata == "{\"new_a\":\"b\"}";
       }));
 }
@@ -13538,7 +13542,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                    group.trusted_bidding_signals_keys->size() == 1 &&
                    group.trusted_bidding_signals_keys.value()[0] == "key1" &&
                    group.ads.has_value() && group.ads->size() == 1 &&
-                   group.ads.value()[0].render_url.path() ==
+                   GURL(group.ads.value()[0].render_url()).path() ==
                        "/new_ad_render_url" &&
                    group.ads.value()[0].metadata == "{\"new_a\":\"b\"}";
           }));
@@ -14513,10 +14517,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
             storage_groups->GetInterestGroups()[0]->interest_group;
         EXPECT_TRUE(group.ads.has_value());
         EXPECT_EQ(group.ads->size(), 1u);
-        if (group.ads.value()[0].render_url == new_ad_url) {
+        if (group.ads.value()[0].render_url() == new_ad_url) {
           return true;
         }
-        EXPECT_EQ(initial_ad_url, group.ads.value()[0].render_url);
+        EXPECT_EQ(initial_ad_url, group.ads.value()[0].render_url());
         return false;
       });
 
@@ -14530,7 +14534,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       storage_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(initial_ad_url, group.ads.value()[0].render_url);
+  EXPECT_EQ(initial_ad_url, group.ads.value()[0].render_url());
 }
 
 // Interest group APIs succeeded (i.e., feature join-ad-interest-group is

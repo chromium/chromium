@@ -231,23 +231,24 @@ bool SetRequestedAdSize(v8::Isolate* isolate,
 }
 
 // Converts a vector of blink::InterestGroup::Ads into a v8 object.
-bool CreateAdVector(AuctionV8Helper* v8_helper,
-                    v8::Local<v8::Context> context,
-                    base::RepeatingCallback<bool(const GURL&)> is_ad_excluded,
-                    const std::vector<blink::InterestGroup::Ad>& ads,
-                    v8::Local<v8::Value>& out_value) {
+bool CreateAdVector(
+    AuctionV8Helper* v8_helper,
+    v8::Local<v8::Context> context,
+    base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
+    const std::vector<blink::InterestGroup::Ad>& ads,
+    v8::Local<v8::Value>& out_value) {
   v8::Isolate* isolate = v8_helper->isolate();
 
   v8::LocalVector<v8::Value> ads_vector(isolate);
   for (const auto& ad : ads) {
-    if (is_ad_excluded.Run(ad.render_url)) {
+    if (is_ad_excluded.Run(ad.render_url())) {
       continue;
     }
     v8::Local<v8::Object> ad_object = v8::Object::New(isolate);
     gin::Dictionary ad_dict(isolate, ad_object);
     if (
         // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.
-        !SetRenderUrl(isolate, ad_object, ad.render_url.spec()) ||
+        !SetRenderUrl(isolate, ad_object, ad.render_url()) ||
         (ad.metadata && !v8_helper->InsertJsonValue(context, "metadata",
                                                     *ad.metadata, ad_object))) {
       return false;
@@ -1212,28 +1213,29 @@ BidderWorklet::V8State::GenerateSingleBid(
     }
   }
 
-  base::RepeatingCallback<bool(const GURL&)> should_exclude_ad_due_to_kanon =
-      base::BindRepeating(
+  base::RepeatingCallback<bool(const std::string&)>
+      should_exclude_ad_due_to_kanon = base::BindRepeating(
           [](bool restrict_to_kanon_ads,
              const mojom::BidderWorkletNonSharedParams* params,
              const url::Origin* owner, const GURL* bidding_url,
-             const GURL& ad_url) {
+             const std::string& ad_url_from_gurl_spec) {
             return restrict_to_kanon_ads &&
                    !BidderWorklet::IsKAnon(
-                       params,
-                       blink::KAnonKeyForAdBid(*owner, *bidding_url, ad_url));
+                       params, blink::KAnonKeyForAdBid(*owner, *bidding_url,
+                                                       ad_url_from_gurl_spec));
           },
           restrict_to_kanon_ads, &bidder_worklet_non_shared_params, &owner_,
           &script_source_url_);
 
-  base::RepeatingCallback<bool(const GURL&)>
+  base::RepeatingCallback<bool(const std::string&)>
       should_exclude_component_ad_due_to_kanon = base::BindRepeating(
           [](bool restrict_to_kanon_ads,
              const mojom::BidderWorkletNonSharedParams* params,
-             const GURL& ad_url) {
+             const std::string& ad_url_from_gurl_spec) {
             return restrict_to_kanon_ads &&
                    !BidderWorklet::IsKAnon(
-                       params, blink::KAnonKeyForAdComponentBid(ad_url));
+                       params,
+                       blink::KAnonKeyForAdComponentBid(ad_url_from_gurl_spec));
           },
           restrict_to_kanon_ads, &bidder_worklet_non_shared_params);
 

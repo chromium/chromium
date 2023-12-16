@@ -1272,10 +1272,10 @@ BuildPrivateAggregationForBaseValue(
 void AuthorizeKAnonAd(const blink::InterestGroup::Ad& ad,
                       const char* url,
                       StorageInterestGroup& group) {
-  DCHECK_EQ(url, ad.render_url.spec());
+  DCHECK_EQ(url, ad.render_url());
   group.bidding_ads_kanon.emplace_back();
   group.bidding_ads_kanon.back().key =
-      blink::KAnonKeyForAdBid(group.interest_group, ad.render_url);
+      blink::KAnonKeyForAdBid(group.interest_group, ad.render_url());
   group.bidding_ads_kanon.back().is_k_anonymous = true;
   group.bidding_ads_kanon.back().last_updated = base::Time::Now();
 }
@@ -1283,7 +1283,7 @@ void AuthorizeKAnonAd(const blink::InterestGroup::Ad& ad,
 void AuthorizeKAnonReporting(const blink::InterestGroup::Ad& ad,
                              const char* url,
                              StorageInterestGroup& group) {
-  DCHECK_EQ(url, ad.render_url.spec());
+  DCHECK_EQ(url, ad.render_url());
   group.reporting_ads_kanon.emplace_back();
   group.reporting_ads_kanon.back().key =
       blink::KAnonKeyForAdNameReporting(group.interest_group, ad);
@@ -1294,10 +1294,10 @@ void AuthorizeKAnonReporting(const blink::InterestGroup::Ad& ad,
 void AuthorizeKAnonAdComponent(const blink::InterestGroup::Ad& ad,
                                const char* url,
                                StorageInterestGroup& group) {
-  DCHECK_EQ(url, ad.render_url.spec());
+  DCHECK_EQ(url, ad.render_url());
   group.component_ads_kanon.emplace_back();
   group.component_ads_kanon.back().key =
-      blink::KAnonKeyForAdComponentBid(ad.render_url);
+      blink::KAnonKeyForAdComponentBid(ad.render_url());
   group.component_ads_kanon.back().is_k_anonymous = true;
   group.component_ads_kanon.back().last_updated = base::Time::Now();
 }
@@ -19216,7 +19216,7 @@ TEST_P(AuctionRunnerKAnonTest, SingleNonKAnon) {
               testing::UnorderedElementsAre(
                   blink::KAnonKeyForAdBid(
                       bidders[0].interest_group,
-                      bidders[0].interest_group.ads.value()[0].render_url),
+                      bidders[0].interest_group.ads.value()[0].render_url()),
                   blink::KAnonKeyForAdNameReporting(
                       bidders[0].interest_group,
                       bidders[0].interest_group.ads.value()[0])));
@@ -19313,7 +19313,7 @@ TEST_P(AuctionRunnerKAnonTest, SingleKAnon) {
               testing::UnorderedElementsAre(
                   blink::KAnonKeyForAdBid(
                       bidders[0].interest_group,
-                      bidders[0].interest_group.ads.value()[0].render_url),
+                      bidders[0].interest_group.ads.value()[0].render_url()),
                   blink::KAnonKeyForAdNameReporting(
                       bidders[0].interest_group,
                       bidders[0].interest_group.ads.value()[0])));
@@ -19386,25 +19386,25 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
   std::vector<std::string> ad1_k_anon_keys = {
       blink::KAnonKeyForAdBid(
           bidders[0].interest_group,
-          bidders[0].interest_group.ads.value()[0].render_url),
+          bidders[0].interest_group.ads.value()[0].render_url()),
       blink::KAnonKeyForAdNameReporting(
           bidders[0].interest_group, bidders[0].interest_group.ads.value()[0]),
       blink::KAnonKeyForAdComponentBid(
-          bidders[0].interest_group.ad_components.value()[0].render_url),
+          bidders[0].interest_group.ad_components.value()[0].render_url()),
       blink::KAnonKeyForAdComponentBid(
-          bidders[0].interest_group.ad_components.value()[1].render_url),
+          bidders[0].interest_group.ad_components.value()[1].render_url()),
   };
 
   std::vector<std::string> ad2_k_anon_keys = {
       blink::KAnonKeyForAdBid(
           bidders[1].interest_group,
-          bidders[1].interest_group.ads.value()[0].render_url),
+          bidders[1].interest_group.ads.value()[0].render_url()),
       blink::KAnonKeyForAdNameReporting(
           bidders[1].interest_group, bidders[1].interest_group.ads.value()[0]),
       blink::KAnonKeyForAdComponentBid(
-          bidders[1].interest_group.ad_components.value()[0].render_url),
+          bidders[1].interest_group.ad_components.value()[0].render_url()),
       blink::KAnonKeyForAdComponentBid(
-          bidders[1].interest_group.ad_components.value()[1].render_url),
+          bidders[1].interest_group.ad_components.value()[1].render_url()),
   };
 
   for (bool run_as_component : {false, true}) {
@@ -19668,14 +19668,14 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
   std::vector<std::string> ad1_k_anon_keys = {
       blink::KAnonKeyForAdBid(
           bidders[0].interest_group,
-          bidders[0].interest_group.ads.value()[0].render_url),
+          bidders[0].interest_group.ads.value()[0].render_url()),
       blink::KAnonKeyForAdNameReporting(
           bidders[0].interest_group, bidders[0].interest_group.ads.value()[0]),
   };
   std::vector<std::string> ad2_k_anon_keys = {
       blink::KAnonKeyForAdBid(
           bidders[1].interest_group,
-          bidders[1].interest_group.ads.value()[0].render_url),
+          bidders[1].interest_group.ads.value()[0].render_url()),
       blink::KAnonKeyForAdNameReporting(
           bidders[1].interest_group, bidders[1].interest_group.ads.value()[0]),
   };
@@ -19917,7 +19917,7 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
   std::vector<std::string> ad1_k_anon_keys = {
       blink::KAnonKeyForAdBid(
           bidders[0].interest_group,
-          bidders[0].interest_group.ads.value()[0].render_url),
+          bidders[0].interest_group.ads.value()[0].render_url()),
       blink::KAnonKeyForAdNameReporting(
           bidders[0].interest_group, bidders[0].interest_group.ads.value()[0]),
   };
@@ -20067,14 +20067,14 @@ TEST_P(AuctionRunnerKAnonTest, DifferentBids) {
   std::vector<std::string> ad1_k_anon_keys = {
       blink::KAnonKeyForAdBid(
           bidders[0].interest_group,
-          bidders[0].interest_group.ads.value()[0].render_url),
+          bidders[0].interest_group.ads.value()[0].render_url()),
       blink::KAnonKeyForAdNameReporting(
           bidders[0].interest_group, bidders[0].interest_group.ads.value()[0]),
   };
   std::vector<std::string> ad2_k_anon_keys = {
       blink::KAnonKeyForAdBid(
           bidders[0].interest_group,
-          bidders[0].interest_group.ads.value()[1].render_url),
+          bidders[0].interest_group.ads.value()[1].render_url()),
       blink::KAnonKeyForAdNameReporting(
           bidders[0].interest_group, bidders[0].interest_group.ads.value()[1]),
   };
@@ -20588,7 +20588,7 @@ TEST_P(AuctionRunnerKAnonTest, CookieDeprecationFacilitatedTestingExcluded) {
               testing::UnorderedElementsAre(
                   blink::KAnonKeyForAdBid(
                       bidders[0].interest_group,
-                      bidders[0].interest_group.ads.value()[0].render_url),
+                      bidders[0].interest_group.ads.value()[0].render_url()),
                   blink::KAnonKeyForAdNameReporting(
                       bidders[0].interest_group,
                       bidders[0].interest_group.ads.value()[0])));

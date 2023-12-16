@@ -31,6 +31,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "content/browser/interest_group/interest_group_ad.pb.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_update.h"
@@ -55,6 +56,7 @@ namespace content {
 
 namespace {
 
+using PassKey = base::PassKey<InterestGroupStorage>;
 using auction_worklet::mojom::BiddingBrowserSignalsPtr;
 using auction_worklet::mojom::PreviousWinPtr;
 using SellerCapabilitiesType = blink::SellerCapabilitiesType;
@@ -162,13 +164,14 @@ absl::optional<GURL> DeserializeURL(const std::string& serialized_url) {
   return result;
 }
 
-blink::InterestGroup::Ad FromInterestGroupAdValue(const base::Value::Dict& dict,
+blink::InterestGroup::Ad FromInterestGroupAdValue(const PassKey& passkey,
+                                                  const base::Value::Dict& dict,
                                                   bool for_components) {
-  blink::InterestGroup::Ad result;
   const std::string* maybe_url = dict.FindString("url");
-  if (maybe_url) {
-    result.render_url = GURL(*maybe_url);
+  if (!maybe_url) {
+    return blink::InterestGroup::Ad();
   }
+  blink::InterestGroup::Ad result(passkey, *maybe_url);
   const std::string* maybe_size_group = dict.FindString("size_group");
   if (maybe_size_group) {
     result.size_group = *maybe_size_group;
@@ -246,7 +249,7 @@ AdProtos GetAdProtosFromAds(std::vector<blink::InterestGroup::Ad> ads) {
   AdProtos ad_protos;
   for (blink::InterestGroup::Ad ad : ads) {
     AdProtos_AdProto* ad_proto = ad_protos.add_ads();
-    ad_proto->set_render_url(ad.render_url.spec());
+    ad_proto->set_render_url(ad.render_url());
     if (ad.size_group.has_value()) {
       ad_proto->set_size_group(*ad.size_group);
     }
@@ -284,7 +287,8 @@ std::string Serialize(
 }
 
 absl::optional<std::vector<blink::InterestGroup::Ad>>
-DeserializeInterestGroupAdVectorJson(const std::string& serialized_ads,
+DeserializeInterestGroupAdVectorJson(const PassKey& passkey,
+                                     const std::string& serialized_ads,
                                      bool for_components) {
   std::unique_ptr<base::Value> ads_value = DeserializeValue(serialized_ads);
   if (!ads_value || !ads_value->is_list()) {
@@ -294,14 +298,16 @@ DeserializeInterestGroupAdVectorJson(const std::string& serialized_ads,
   for (const auto& ad_value : ads_value->GetList()) {
     const base::Value::Dict* dict = ad_value.GetIfDict();
     if (dict) {
-      result.emplace_back(FromInterestGroupAdValue(*dict, for_components));
+      result.emplace_back(
+          FromInterestGroupAdValue(passkey, *dict, for_components));
     }
   }
   return result;
 }
 
 absl::optional<std::vector<blink::InterestGroup::Ad>>
-DeserializeInterestGroupAdVectorProto(const std::string& serialized_ads) {
+DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
+                                      const std::string& serialized_ads) {
   AdProtos ad_protos;
 
   bool success = ad_protos.ParseFromString(serialized_ads);
@@ -311,8 +317,7 @@ DeserializeInterestGroupAdVectorProto(const std::string& serialized_ads) {
   }
   std::vector<blink::InterestGroup::Ad> out;
   for (const auto& ad_proto : ad_protos.ads()) {
-    blink::InterestGroup::Ad ad;
-    ad.render_url = GURL(ad_proto.render_url());
+    blink::InterestGroup::Ad ad(passkey, ad_proto.render_url());
     if (ad_proto.has_size_group()) {
       ad.size_group = ad_proto.size_group();
     }
@@ -747,7 +752,7 @@ bool InsertKAnonForJoinedInterestGroup(sql::Database& db,
         return false;
       }
       if (!MaybeCreateKAnonEntry(db, interest_group_key,
-                                 blink::KAnonKeyForAdBid(data, ad.render_url),
+                                 blink::KAnonKeyForAdBid(data, ad.render_url()),
                                  exact_join_time, for_database_update)) {
         return false;
       }
@@ -757,8 +762,8 @@ bool InsertKAnonForJoinedInterestGroup(sql::Database& db,
     for (auto& ad : *data.ad_components) {
       if (!MaybeCreateKAnonEntry(
               db, interest_group_key,
-              blink::KAnonKeyForAdComponentBid(ad.render_url), exact_join_time,
-              for_database_update)) {
+              blink::KAnonKeyForAdComponentBid(ad.render_url()),
+              exact_join_time, for_database_update)) {
         return false;
       }
     }
@@ -1208,7 +1213,9 @@ bool UpgradeV17SchemaToV18(sql::Database& db, sql::MetaTable& meta_table) {
   return true;
 }
 
-bool UpgradeV16SchemaToV17(sql::Database& db, sql::MetaTable& meta_table) {
+bool UpgradeV16SchemaToV17(sql::Database& db,
+                           sql::MetaTable& meta_table,
+                           const PassKey& passkey) {
   static const char kCreateKAnonTableSql[] =
       "CREATE TABLE k_anon_new("
       "last_referenced_time INTEGER NOT NULL,"
@@ -1258,9 +1265,9 @@ bool UpgradeV16SchemaToV17(sql::Database& db, sql::MetaTable& meta_table) {
         DeserializeOrigin(select_igs_with_ads_and_bidding_url.ColumnString(0));
     ig.name = select_igs_with_ads_and_bidding_url.ColumnString(1);
     ig.ads = DeserializeInterestGroupAdVectorProto(
-        select_igs_with_ads_and_bidding_url.ColumnString(2));
+        passkey, select_igs_with_ads_and_bidding_url.ColumnString(2));
     ig.ad_components = DeserializeInterestGroupAdVectorProto(
-        select_igs_with_ads_and_bidding_url.ColumnString(3));
+        passkey, select_igs_with_ads_and_bidding_url.ColumnString(3));
     ig.bidding_url =
         DeserializeURL(select_igs_with_ads_and_bidding_url.ColumnString(4));
 
@@ -1285,7 +1292,9 @@ bool UpgradeV16SchemaToV17(sql::Database& db, sql::MetaTable& meta_table) {
   return CreateKAnonIndices(db);
 }
 
-bool UpgradeV15SchemaToV16(sql::Database& db, sql::MetaTable& meta_table) {
+bool UpgradeV15SchemaToV16(sql::Database& db,
+                           sql::MetaTable& meta_table,
+                           const PassKey& passkey) {
   static const char kInterestGroupTableSql[] =
       // clang-format off
       "CREATE TABLE new_interest_groups("
@@ -1372,10 +1381,12 @@ bool UpgradeV15SchemaToV16(sql::Database& db, sql::MetaTable& meta_table) {
     std::string owner = kSelectIGsWithAds.ColumnString(0);
     std::string name = kSelectIGsWithAds.ColumnString(1);
     absl::optional<std::vector<blink::InterestGroup::Ad>> ads =
-        DeserializeInterestGroupAdVectorJson(kSelectIGsWithAds.ColumnString(2),
+        DeserializeInterestGroupAdVectorJson(passkey,
+                                             kSelectIGsWithAds.ColumnString(2),
                                              /*for_components=*/false);
     absl::optional<std::vector<blink::InterestGroup::Ad>> ad_components =
-        DeserializeInterestGroupAdVectorJson(kSelectIGsWithAds.ColumnString(3),
+        DeserializeInterestGroupAdVectorJson(passkey,
+                                             kSelectIGsWithAds.ColumnString(3),
                                              /*for_components=*/true);
 
     std::string serialized_ads = Serialize(ads);
@@ -2180,6 +2191,7 @@ absl::optional<std::vector<std::string>> DoClearOriginJoinedInterestGroups(
 }
 
 bool DoLoadInterestGroup(sql::Database& db,
+                         const PassKey& passkey,
                          const blink::InterestGroupKey& group_key,
                          blink::InterestGroup& group,
                          url::Origin* joining_origin = nullptr,
@@ -2264,9 +2276,10 @@ bool DoLoadInterestGroup(sql::Database& db,
   if (load.GetColumnType(17) != sql::ColumnType::kNull) {
     group.user_bidding_signals = load.ColumnString(17);
   }
-  group.ads = DeserializeInterestGroupAdVectorProto(load.ColumnString(18));
+  group.ads =
+      DeserializeInterestGroupAdVectorProto(passkey, load.ColumnString(18));
   group.ad_components =
-      DeserializeInterestGroupAdVectorProto(load.ColumnString(19));
+      DeserializeInterestGroupAdVectorProto(passkey, load.ColumnString(19));
   group.ad_sizes = DeserializeStringSizeMap(load.ColumnString(20));
   group.size_groups = DeserializeStringStringVectorMap(load.ColumnString(21));
   group.auction_server_request_flags =
@@ -2335,6 +2348,7 @@ bool DoRecordInterestGroupJoin(sql::Database& db,
 }
 
 bool DoJoinInterestGroup(sql::Database& db,
+                         const PassKey& passkey,
                          const blink::InterestGroup& data,
                          const GURL& joining_url,
                          base::Time exact_join_time,
@@ -2350,7 +2364,7 @@ bool DoJoinInterestGroup(sql::Database& db,
   blink::InterestGroup old_group;
   url::Origin old_joining_origin;
   blink::InterestGroupKey interest_group_key(data.owner, data.name);
-  if (DoLoadInterestGroup(db, interest_group_key, old_group,
+  if (DoLoadInterestGroup(db, passkey, interest_group_key, old_group,
                           &old_joining_origin,
                           /*exact_join_time=*/nullptr,
                           /*last_updated=*/nullptr)) {
@@ -2551,6 +2565,7 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
 }
 
 bool DoUpdateInterestGroup(sql::Database& db,
+                           const PassKey& passkey,
                            const blink::InterestGroupKey& group_key,
                            InterestGroupUpdate update,
                            base::Time now) {
@@ -2569,7 +2584,7 @@ bool DoUpdateInterestGroup(sql::Database& db,
   // verify the interest group is valid before writing it to the database.
 
   blink::InterestGroup stored_group;
-  if (!DoLoadInterestGroup(db, group_key, stored_group,
+  if (!DoLoadInterestGroup(db, passkey, group_key, stored_group,
                            /*joining_origin=*/nullptr,
                            /*exact_join_time=*/nullptr,
                            /*last_updated=*/nullptr)) {
@@ -3342,13 +3357,14 @@ DoGetKAnonymityData(sql::Database& db,
 
 absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
     sql::Database& db,
+    const PassKey& passkey,
     const blink::InterestGroupKey& group_key,
     base::Time now) {
   StorageInterestGroup db_interest_group;
-  if (!DoLoadInterestGroup(db, group_key, db_interest_group.interest_group,
-                           &db_interest_group.joining_origin,
-                           &db_interest_group.join_time,
-                           &db_interest_group.last_updated)) {
+  if (!DoLoadInterestGroup(
+          db, passkey, group_key, db_interest_group.interest_group,
+          &db_interest_group.joining_origin, &db_interest_group.join_time,
+          &db_interest_group.last_updated)) {
     return absl::nullopt;
   }
 
@@ -3447,6 +3463,7 @@ DoGetInterestGroupsForUpdate(sql::Database& db,
 
 absl::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
     sql::Database& db,
+    const PassKey& passkey,
     const url::Origin& owner,
     base::Time now) {
   sql::Transaction transaction(&db);
@@ -3465,7 +3482,8 @@ absl::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
   std::vector<StorageInterestGroup> result;
   for (const std::string& name : *group_names) {
     absl::optional<StorageInterestGroup> db_interest_group =
-        DoGetStoredInterestGroup(db, blink::InterestGroupKey(owner, name), now);
+        DoGetStoredInterestGroup(db, passkey,
+                                 blink::InterestGroupKey(owner, name), now);
     if (!db_interest_group) {
       return absl::nullopt;
     }
@@ -4122,12 +4140,12 @@ bool InterestGroupStorage::InitializeSchema() {
         }
         ABSL_FALLTHROUGH_INTENDED;
       case 15:
-        if (!UpgradeV15SchemaToV16(*db_, meta_table)) {
+        if (!UpgradeV15SchemaToV16(*db_, meta_table, PassKey())) {
           return false;
         }
         ABSL_FALLTHROUGH_INTENDED;
       case 16:
-        if (!UpgradeV16SchemaToV17(*db_, meta_table)) {
+        if (!UpgradeV16SchemaToV17(*db_, meta_table, PassKey())) {
           return false;
         }
         ABSL_FALLTHROUGH_INTENDED;
@@ -4175,7 +4193,7 @@ void InterestGroupStorage::JoinInterestGroup(
     return;
   }
   base::Time now = base::Time::Now();
-  if (!DoJoinInterestGroup(*db_, group, main_frame_joining_url,
+  if (!DoJoinInterestGroup(*db_, PassKey(), group, main_frame_joining_url,
                            /*exact_join_time=*/now,
                            /*last_updated=*/now,
                            /*next_update_after=*/base::Time::Min())) {
@@ -4193,7 +4211,8 @@ void InterestGroupStorage::LeaveInterestGroup(
 
   blink::InterestGroup old_group;
   url::Origin old_joining_origin;
-  if (DoLoadInterestGroup(*db_, group_key, old_group, &old_joining_origin,
+  if (DoLoadInterestGroup(*db_, PassKey(), group_key, old_group,
+                          &old_joining_origin,
                           /*exact_join_time=*/nullptr,
                           /*last_updated=*/nullptr) &&
       old_group.execution_mode ==
@@ -4255,8 +4274,8 @@ bool InterestGroupStorage::UpdateInterestGroup(
     return false;
   }
 
-  bool success =
-      DoUpdateInterestGroup(*db_, group_key, update, base::Time::Now());
+  bool success = DoUpdateInterestGroup(*db_, PassKey(), group_key, update,
+                                       base::Time::Now());
   if (!success) {
     DLOG(ERROR) << "Could not update interest group: "
                 << db_->GetErrorMessage();
@@ -4374,7 +4393,8 @@ absl::optional<StorageInterestGroup> InterestGroupStorage::GetInterestGroup(
     return absl::nullopt;
   }
 
-  return DoGetStoredInterestGroup(*db_, group_key, base::Time::Now());
+  return DoGetStoredInterestGroup(*db_, PassKey(), group_key,
+                                  base::Time::Now());
 }
 
 std::vector<url::Origin> InterestGroupStorage::GetAllInterestGroupOwners() {
@@ -4399,7 +4419,7 @@ InterestGroupStorage::GetInterestGroupsForOwner(const url::Origin& owner) {
   }
 
   absl::optional<std::vector<StorageInterestGroup>> maybe_result =
-      DoGetInterestGroupsForOwner(*db_, owner, base::Time::Now());
+      DoGetInterestGroupsForOwner(*db_, PassKey(), owner, base::Time::Now());
   if (!maybe_result) {
     return {};
   }
@@ -4536,7 +4556,7 @@ void InterestGroupStorage::UpdateInterestGroupPriorityOverrides(
   }
 
   blink::InterestGroup group;
-  if (!DoLoadInterestGroup(*db_, group_key, group)) {
+  if (!DoLoadInterestGroup(*db_, PassKey(), group_key, group)) {
     return;
   }
 
@@ -4588,7 +4608,7 @@ InterestGroupStorage::GetAllInterestGroupsUnfilteredForTesting() {
   }
   for (const auto& owner : *maybe_owners) {
     absl::optional<std::vector<StorageInterestGroup>> maybe_owner_results =
-        DoGetInterestGroupsForOwner(*db_, owner, distant_past);
+        DoGetInterestGroupsForOwner(*db_, PassKey(), owner, distant_past);
     DCHECK(maybe_owner_results) << owner;
     std::move(maybe_owner_results->begin(), maybe_owner_results->end(),
               std::back_inserter(result));
