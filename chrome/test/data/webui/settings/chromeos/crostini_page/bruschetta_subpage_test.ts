@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {BruschettaSubpageElement, CrostiniBrowserProxyImpl, CrostiniPortSetting, SettingsCrostiniPageElement} from 'chrome://os-settings/lazy_load.js';
+import {BruschettaSubpageElement, CrostiniBrowserProxyImpl, CrostiniPortSetting} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -15,7 +15,6 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
-let crostiniPage: SettingsCrostiniPageElement;
 let subpage: BruschettaSubpageElement;
 let crostiniBrowserProxy: TestCrostiniBrowserProxy;
 
@@ -34,7 +33,7 @@ function setCrostiniPrefs(enabled: boolean, {
   arcEnabled = false,
   bruschettaInstalled = false,
 }: PrefParams = {}): void {
-  crostiniPage.prefs = {
+  subpage.prefs = {
     arc: {
       enabled: {value: arcEnabled},
     },
@@ -56,49 +55,35 @@ function setCrostiniPrefs(enabled: boolean, {
 }
 
 suite('<settings-bruschetta-subpage>', () => {
+  suiteSetup(() => {
+    disableAnimationsAndTransitions();
+  });
+
   setup(async () => {
     loadTimeData.overrideValues({
       isCrostiniAllowed: true,
       isCrostiniSupported: true,
+      showBruschetta: true,
     });
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
     CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
 
-    crostiniPage = document.createElement('settings-crostini-page');
-    document.body.appendChild(crostiniPage);
-    flush();
+    Router.getInstance().navigateTo(routes.BRUSCHETTA_DETAILS);
 
-    disableAnimationsAndTransitions();
-
-    Router.getInstance().navigateTo(routes.CROSTINI);
+    subpage = document.createElement('settings-bruschetta-subpage');
+    document.body.appendChild(subpage);
     setCrostiniPrefs(false, {bruschettaInstalled: true});
-    flush();
-
-    const crostiniSettingsCard =
-        crostiniPage.shadowRoot!.querySelector('crostini-settings-card');
-    assertTrue(!!crostiniSettingsCard);
-    crostiniSettingsCard.set('showBruschetta_', true);
-    await flushTasks();
-    const button =
-        crostiniSettingsCard.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#bruschetta');
-    assertTrue(!!button);
-    button.click();
-
-    await flushTasks();
-    const subpageElement =
-        crostiniPage.shadowRoot!.querySelector('settings-bruschetta-subpage');
-    assertTrue(!!subpageElement);
-    subpage = subpageElement;
+    flushTasks();
   });
 
   teardown(() => {
-    crostiniPage.remove();
+    subpage.remove();
     Router.getInstance().resetRouteForTesting();
+    crostiniBrowserProxy.reset();
   });
 
   test('Navigate to shared USB devices', async () => {
-    const link = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
+    const link = subpage.shadowRoot!.querySelector<HTMLElement>(
         '#bruschettaSharedUsbDevicesRow');
     assertTrue(!!link);
     link.click();
@@ -107,10 +92,6 @@ suite('<settings-bruschetta-subpage>', () => {
     assertEquals(
         routes.BRUSCHETTA_SHARED_USB_DEVICES,
         Router.getInstance().currentRoute);
-
-    assertTrue(!!crostiniPage.shadowRoot!.querySelector(
-        'settings-guest-os-shared-usb-devices[guest-os-type="bruschetta"]'));
-    // Functionality is tested in guest_os_shared_usb_devices_test.js
 
     // Navigate back
     const popStateEventPromise = eventToPromise('popstate', window);
@@ -132,10 +113,6 @@ suite('<settings-bruschetta-subpage>', () => {
     assertEquals(
         routes.BRUSCHETTA_SHARED_PATHS, Router.getInstance().currentRoute);
 
-    assertTrue(!!crostiniPage.shadowRoot!.querySelector(
-        'settings-guest-os-shared-paths[guest-os-type="bruschetta"]'));
-    // Functionality is tested in guest_os_shared_paths_test.js
-
     // Navigate back
     const popStateEventPromise = eventToPromise('popstate', window);
     Router.getInstance().navigateToPreviousRoute();
@@ -146,9 +123,9 @@ suite('<settings-bruschetta-subpage>', () => {
         link, subpage.shadowRoot!.activeElement, `${link} should be focused.`);
   });
 
-  test('Remove bruschetta', async () => {
+  test('Removing bruschetta navigates to the previous route', async () => {
     const button = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
-        '#remove cr-button');
+        '#remove > cr-button');
     assertTrue(!!button);
     assertFalse(button.disabled);
     button.click();
@@ -158,15 +135,6 @@ suite('<settings-bruschetta-subpage>', () => {
         1,
         crostiniBrowserProxy.getCallCount('requestBruschettaUninstallerView'));
     setCrostiniPrefs(false, {bruschettaInstalled: false});
-
     await eventToPromise('popstate', window);
-
-    assertEquals(routes.CROSTINI, Router.getInstance().currentRoute);
-
-    const crostiniSettingsCard =
-        crostiniPage.shadowRoot!.querySelector('crostini-settings-card');
-    assertTrue(!!crostiniSettingsCard);
-    assertTrue(!!crostiniSettingsCard.shadowRoot!.querySelector(
-        '#enableBruschettaButton'));
   });
 });

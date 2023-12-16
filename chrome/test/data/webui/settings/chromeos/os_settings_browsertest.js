@@ -170,6 +170,23 @@ TEST_F('OSSettingsCrostiniPageBruschettaSubpageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
+var OSSettingsCrostiniPageBruschettaSubpageRevampTest =
+    class extends OSSettingsCrostiniPageBruschettaSubpageTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled.concat([
+        'ash::features::kOsSettingsRevampWayfinding',
+      ]),
+    };
+  }
+};
+
+TEST_F(
+    'OSSettingsCrostiniPageBruschettaSubpageRevampTest', 'AllJsTests', () => {
+      mocha.run();
+    });
+
 var OSSettingsCrostiniPageCrostiniArcAdbTest =
     class extends OSSettingsBrowserTest {
   /** @override */
