@@ -316,7 +316,7 @@ ComposeEnabling::PageLevelChecks(Profile* profile,
     return base::unexpected(compose::ComposeShowStatus::kUnsupportedLanguage);
   }
 
-  // TODO(b/301609046): Check that we have enough space in the browser window to
+  // TODO(b/316628813): Check that we have enough space in the browser window to
   // show the dialog.
 
   return base::ok();
