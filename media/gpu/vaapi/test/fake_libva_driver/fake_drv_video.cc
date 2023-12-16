@@ -591,6 +591,14 @@ VAStatus FakeGetImage(VADriverContextP ctx,
 
   const media::internal::FakeSurface& fake_surface = fdrv->GetSurface(surface);
 
+  CHECK(fdrv->ImageExists(image));
+
+  // TODO(b/316609501): Look into replacing this and making this function
+  // operate the same for both testing and non-testing environments.
+  if (!fake_surface.GetMappedBO().IsValid()) {
+    return VA_STATUS_SUCCESS;
+  }
+
   // Chrome should only request images starting at (0, 0).
   CHECK_EQ(x, 0);
   CHECK_EQ(y, 0);
@@ -603,8 +611,6 @@ VAStatus FakeGetImage(VADriverContextP ctx,
 
   const media::internal::ScopedBOMapping::ScopedAccess mapped_bo =
       fake_surface.GetMappedBO().BeginAccess();
-
-  CHECK(fdrv->ImageExists(image));
 
   const media::internal::FakeImage& fake_image = fdrv->GetImage(image);
 
