@@ -19,6 +19,7 @@ import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from '../personaliz
 import {isAmbientModeAllowed} from './load_time_booleans.js';
 import {logPersonalizationPathUMA} from './personalization_metrics_logger.js';
 import {getTemplate} from './personalization_router_element.html.js';
+import {WallpaperObserver} from './wallpaper/wallpaper_observer.js';
 
 export enum Paths {
   AMBIENT = '/ambient',
@@ -117,6 +118,7 @@ export class PersonalizationRouterElement extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    WallpaperObserver.initWallpaperObserverIfNeeded();
   }
 
   get collectionId() {

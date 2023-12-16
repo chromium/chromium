@@ -5,6 +5,7 @@
 import {CurrentAttribution, CurrentWallpaper, WallpaperObserverInterface, WallpaperObserverReceiver, WallpaperProviderInterface, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
+import {setSelectedRecentSeaPenImageAction} from './sea_pen/sea_pen_actions.js';
 import {setAttributionAction, setFullscreenEnabledAction, setSelectedImageAction, setUpdatedDailyRefreshImageAction} from './wallpaper_actions.js';
 import {getDailyRefreshState} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
@@ -75,6 +76,13 @@ export class WallpaperObserver implements WallpaperObserverInterface {
       initialLoadTimeout = null;
     }
     store.dispatch(setSelectedImageAction(currentWallpaper));
+
+    if (currentWallpaper && currentWallpaper.type == WallpaperType.kSeaPen) {
+      store.dispatch(setSelectedRecentSeaPenImageAction(currentWallpaper.key));
+    } else {
+      store.dispatch(setSelectedRecentSeaPenImageAction(null));
+    }
+
     if (currentWallpaper &&
         (currentWallpaper.type == WallpaperType.kDailyGooglePhotos ||
          currentWallpaper.type == WallpaperType.kDaily ||

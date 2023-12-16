@@ -60,6 +60,10 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
         type: Number,
         value: null,
       },
+
+      currentSelected_: Object,
+
+      pendingSelected_: Object,
     };
   }
 
@@ -68,6 +72,8 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   private recentImageDataLoading_: Record<FilePath['path'], boolean>;
   private recentImagesToDisplay_: FilePath[];
   private currentShowWallpaperInfoDialog_: number|null;
+  private currentSelected_: string|null;
+  private pendingSelected_: FilePath|null;
 
   static get observers() {
     return ['onRecentImageLoaded_(recentImageData_, recentImageDataLoading_)'];
@@ -81,6 +87,10 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
         'recentImageData_', state => state.recentImageData);
     this.watch<SeaPenRecentWallpapersElement['recentImageDataLoading_']>(
         'recentImageDataLoading_', state => state.loading.recentImageData);
+    this.watch<SeaPenRecentWallpapersElement['currentSelected_']>(
+        'currentSelected_', state => state.currentSelected);
+    this.watch<SeaPenRecentWallpapersElement['pendingSelected_']>(
+        'pendingSelected_', state => state.pendingSelected);
     this.updateFromStore();
     // TODO(b/304576846): also refetch sea pen data when adding and deleting
     // image.
@@ -171,16 +181,24 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     return isNonEmptyArray(recentImages);
   }
 
-  private isRecentImageSelected_(_: FilePath) {
-    // TODO(b/314342868) show real checked state.
-    return false;
+  private isRecentImageSelected_(
+      image: FilePath, currentSelected: string|null,
+      pendingSelected: FilePath|null) {
+    if (!isFilePath(image)) {
+      return false;
+    }
+
+    return (isFilePath(pendingSelected) &&
+            image.path === pendingSelected.path) ||
+        (!pendingSelected && image.path === currentSelected);
   }
 
   private onRecentImageSelected_(event: WallpaperGridItemSelectedEvent&
                                  {model: {image: FilePath}}) {
     assert(
         isFilePath(event.model.image), 'recent Sea Pen image is a file path');
-    selectRecentSeaPenImage(event.model.image, getSeaPenProvider());
+    selectRecentSeaPenImage(
+        event.model.image, getSeaPenProvider(), this.getStore());
   }
 
   private onClickMenuIcon_(e: Event) {

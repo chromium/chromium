@@ -22,7 +22,6 @@ import {Paths, PersonalizationRouterElement} from '../personalization_router_ele
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getWallpaperAriaLabel, getWallpaperSrc} from './utils.js';
-import {WallpaperObserver} from './wallpaper_observer.js';
 import {getTemplate} from './wallpaper_preview_element.html.js';
 
 export class WallpaperPreviewElement extends WithPersonalizationStore {
@@ -71,7 +70,6 @@ export class WallpaperPreviewElement extends WithPersonalizationStore {
 
   override connectedCallback() {
     super.connectedCallback();
-    WallpaperObserver.initWallpaperObserverIfNeeded();
     this.watch('attribution_', state => state.wallpaper.attribution);
     this.watch('image_', state => state.wallpaper.currentSelected);
     this.watch(

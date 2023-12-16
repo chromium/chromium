@@ -28,7 +28,6 @@ import {getCheckmarkIcon, isNonEmptyArray} from '../utils.js';
 import {getLocalStorageAttribution, getWallpaperAriaLabel, getWallpaperLayoutEnum, getWallpaperSrc} from './utils.js';
 import {getDailyRefreshState, selectGooglePhotosAlbum, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
-import {WallpaperObserver} from './wallpaper_observer.js';
 import {getTemplate} from './wallpaper_selected_element.html.js';
 import {DailyRefreshState} from './wallpaper_state.js';
 
@@ -200,7 +199,6 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
 
   override connectedCallback() {
     super.connectedCallback();
-    WallpaperObserver.initWallpaperObserverIfNeeded();
     this.watch('error_', state => state.error);
     this.watch('attribution_', state => state.wallpaper.attribution);
     this.watch('image_', state => state.wallpaper.currentSelected);

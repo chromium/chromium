@@ -220,6 +220,8 @@ suite('WallpaperSubpageTopElementTest', function() {
         recentImageData: {},
         recentImages: false,
         thumbnails: false,
+        currentSelected: false,
+        setImage: 0,
       },
       recentImageData: {},
       recentImages: null,
@@ -241,6 +243,8 @@ suite('WallpaperSubpageTopElementTest', function() {
           image: {url: 'https://sea-pen-images.googleusercontent.com/4'},
         },
       ],
+      pendingSelected: null,
+      currentSelected: null,
     };
     assertDeepEquals(
         expectedState,

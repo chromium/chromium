@@ -6,16 +6,33 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 
 import {SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
 import {isNonEmptyArray} from '../../utils.js';
+import {isFilePath} from '../utils.js';
 
 import * as seaPenAction from './sea_pen_actions.js';
 import {SeaPenStoreInterface} from './sea_pen_store.js';
 
 export async function selectRecentSeaPenImage(
-    image: FilePath, provider: SeaPenProviderInterface): Promise<void> {
-  const {success} = await provider.selectRecentSeaPenImage(image);
-  if (!success) {
-    console.warn('failed to set recent sea pen image');
+    image: FilePath, provider: SeaPenProviderInterface,
+    store: SeaPenStoreInterface): Promise<void> {
+  // Returns if the selected image is the current wallpaper.
+  if (isFilePath(image) && image.path === store.data.currentSelected) {
+    return;
   }
+  // Batch these changes together to reduce polymer churn as multiple state
+  // fields change quickly.
+  store.beginBatchUpdate();
+  store.dispatch(seaPenAction.beginSelectRecentSeaPenImageAction(image));
+  store.dispatch(seaPenAction.beginLoadSelectedRecentSeaPenImageAction());
+  store.endBatchUpdate();
+
+  const {success} = await provider.selectRecentSeaPenImage(image);
+
+  store.beginBatchUpdate();
+  store.dispatch(seaPenAction.endSelectRecentSeaPenImageAction(image, success));
+  if (!success) {
+    console.warn('Error setting wallpaper');
+  }
+  store.endBatchUpdate();
 }
 
 export async function searchSeaPenThumbnails(

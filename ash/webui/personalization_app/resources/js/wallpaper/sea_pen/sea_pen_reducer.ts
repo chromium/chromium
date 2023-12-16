@@ -63,6 +63,74 @@ function loadingReducer(
           [action.id]: false,
         },
       };
+    case SeaPenActionName.BEGIN_SELECT_RECENT_SEA_PEN_IMAGE:
+      return {...state, setImage: state.setImage + 1};
+    case SeaPenActionName.END_SELECT_RECENT_SEA_PEN_IMAGE:
+      if (state.setImage <= 0) {
+        console.error('Impossible state for loading.setImage');
+        // Reset to 0.
+        return {...state, setImage: 0};
+      }
+      return {...state, setImage: state.setImage - 1};
+    case SeaPenActionName.BEGIN_LOAD_SELECTED_RECENT_SEA_PEN_IMAGE:
+      return {
+        ...state,
+        currentSelected: true,
+      };
+    case SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE:
+      return {
+        ...state,
+        currentSelected: false,
+      };
+    default:
+      return state;
+  }
+}
+
+function currentSelectedReducer(
+    state: string|null, action: SeaPenActions): string|null {
+  switch (action.name) {
+    case SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE:
+      return action.key;
+    default:
+      return state;
+  }
+}
+
+/**
+ * Reducer for the pending selected image. The pendingSelected state is set when
+ * a user clicks on an image and before the client code is reached.
+ *
+ * Note: We allow multiple concurrent requests of selecting images while only
+ * keeping the latest pending image and failing others occurred in between.
+ * The pendingSelected state should not be cleared in this scenario (of multiple
+ * concurrent requests). Otherwise, it results in a unwanted jumpy motion of
+ * selected state.
+ */
+function pendingSelectedReducer(
+    state: FilePath|null, action: SeaPenActions,
+    globalState: SeaPenState): FilePath|null {
+  switch (action.name) {
+    case SeaPenActionName.BEGIN_SELECT_RECENT_SEA_PEN_IMAGE:
+      return action.image;
+    case SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE:
+      const {key} = action;
+      if (!key) {
+        console.warn('pendingSelectedReducer: Failed to get selected image.');
+        return null;
+      } else if (globalState.loading.setImage == 0) {
+        // Clear the pending state when there are no more requests.
+        return null;
+      }
+      return state;
+    case SeaPenActionName.END_SELECT_RECENT_SEA_PEN_IMAGE:
+      const {success} = action;
+      if (!success && globalState.loading.setImage <= 1) {
+        // Clear the pending selected state if an error occurs and
+        // there are no multiple concurrent requests of selecting images.
+        return null;
+      }
+      return state;
     default:
       return state;
   }
@@ -118,6 +186,9 @@ export function seaPenReducer(
     recentImageData: recentImageDataReducer(state.recentImageData, action),
     recentImages: recentImagesReducer(state.recentImages, action),
     thumbnails: thumbnailsReducer(state.thumbnails, action),
+    currentSelected: currentSelectedReducer(state.currentSelected, action),
+    pendingSelected:
+        pendingSelectedReducer(state.pendingSelected, action, state),
   };
   return newState;
 }
