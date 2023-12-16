@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/device_log_ui.h"
+#include "chrome/browser/ui/webui/device_log/device_log_ui.h"
 
 #include <memory>
 #include <string>
@@ -12,7 +12,8 @@
 #include "base/values.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/dev_ui_browser_resources.h"
+#include "chrome/grit/device_log_resources.h"
+#include "chrome/grit/device_log_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/web_contents.h"
@@ -150,9 +151,9 @@ DeviceLogUI::DeviceLogUI(content::WebUI* web_ui)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   html->UseStringsJs();
-  html->AddResourcePath("device_log_ui.css", IDR_DEVICE_LOG_UI_CSS);
-  html->AddResourcePath("device_log_ui.js", IDR_DEVICE_LOG_UI_JS);
-  html->SetDefaultResource(IDR_DEVICE_LOG_UI_HTML);
+  html->AddResourcePaths(base::make_span(kDeviceLogResources,
+                                         kDeviceLogResourcesSize));
+  html->SetDefaultResource(IDR_DEVICE_LOG_DEVICE_LOG_UI_HTML);
 }
 
 DeviceLogUI::~DeviceLogUI() {
