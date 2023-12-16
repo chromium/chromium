@@ -53,14 +53,15 @@ class FirstPartySetsComponentInstallerTest : public ::testing::Test {
 };
 
 TEST_F(FirstPartySetsComponentInstallerTest, NonexistentFile_OnComponentReady) {
-  ASSERT_TRUE(
-      base::DeleteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
+  ASSERT_TRUE(base::DeleteFile(
+      FirstPartySetsComponentInstallerPolicy::GetInstalledPathForTesting(
           component_install_dir_.GetPath())));
 
   base::test::TestFuture<base::Version, base::File> future;
   FirstPartySetsComponentInstallerPolicy(future.GetCallback())
-      .ComponentReady(base::Version(), component_install_dir_.GetPath(),
-                      base::Value::Dict());
+      .ComponentReadyForTesting(base::Version(),
+                                component_install_dir_.GetPath(),
+                                base::Value::Dict());
 
   std::tuple<base::Version, base::File> got = future.Take();
   EXPECT_FALSE(std::get<0>(got).IsValid());
@@ -69,8 +70,8 @@ TEST_F(FirstPartySetsComponentInstallerTest, NonexistentFile_OnComponentReady) {
 
 TEST_F(FirstPartySetsComponentInstallerTest,
        NonexistentFile_OnRegistrationComplete) {
-  ASSERT_TRUE(
-      base::DeleteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
+  ASSERT_TRUE(base::DeleteFile(
+      FirstPartySetsComponentInstallerPolicy::GetInstalledPathForTesting(
           component_install_dir_.GetPath())));
 
   base::test::TestFuture<base::Version, base::File> future;
@@ -93,13 +94,13 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnComponentReady) {
   auto policy = std::make_unique<FirstPartySetsComponentInstallerPolicy>(
       future.GetCallback());
 
-  ASSERT_TRUE(
-      base::WriteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
-                          component_install_dir_.GetPath()),
-                      expectation));
+  ASSERT_TRUE(base::WriteFile(
+      FirstPartySetsComponentInstallerPolicy::GetInstalledPathForTesting(
+          component_install_dir_.GetPath()),
+      expectation));
 
-  policy->ComponentReady(version, component_install_dir_.GetPath(),
-                         base::Value::Dict());
+  policy->ComponentReadyForTesting(version, component_install_dir_.GetPath(),
+                                   base::Value::Dict());
 
   std::tuple<base::Version, base::File> got = future.Take();
   EXPECT_TRUE(std::get<0>(got).IsValid());
@@ -124,12 +125,12 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_NoInitialComponent) {
   base::ScopedTempDir install_dir;
   ASSERT_TRUE(install_dir.CreateUniqueTempDirUnderPath(
       component_install_dir_.GetPath()));
-  ASSERT_TRUE(
-      base::WriteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
-                          install_dir.GetPath()),
-                      "first party sets content"));
-  policy.ComponentReady(base::Version("0.0.1"), install_dir.GetPath(),
-                        base::Value::Dict());
+  ASSERT_TRUE(base::WriteFile(
+      FirstPartySetsComponentInstallerPolicy::GetInstalledPathForTesting(
+          install_dir.GetPath()),
+      "first party sets content"));
+  policy.ComponentReadyForTesting(base::Version("0.0.1"), install_dir.GetPath(),
+                                  base::Value::Dict());
 
   env_.RunUntilIdle();
 }
@@ -145,11 +146,12 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnComponentReady) {
   base::ScopedTempDir dir_v1;
   ASSERT_TRUE(
       dir_v1.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
-  ASSERT_TRUE(
-      base::WriteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
-                          dir_v1.GetPath()),
-                      sets_v1));
-  policy.ComponentReady(version, dir_v1.GetPath(), base::Value::Dict());
+  ASSERT_TRUE(base::WriteFile(
+      FirstPartySetsComponentInstallerPolicy::GetInstalledPathForTesting(
+          dir_v1.GetPath()),
+      sets_v1));
+  policy.ComponentReadyForTesting(version, dir_v1.GetPath(),
+                                  base::Value::Dict());
 
   std::tuple<base::Version, base::File> got = future.Take();
   EXPECT_TRUE(std::get<0>(got).IsValid());
@@ -163,12 +165,12 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnComponentReady) {
   base::ScopedTempDir dir_v2;
   ASSERT_TRUE(
       dir_v2.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
-  ASSERT_TRUE(
-      base::WriteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
-                          dir_v2.GetPath()),
-                      sets_v2));
-  policy.ComponentReady(base::Version("0.0.1"), dir_v2.GetPath(),
-                        base::Value::Dict());
+  ASSERT_TRUE(base::WriteFile(
+      FirstPartySetsComponentInstallerPolicy::GetInstalledPathForTesting(
+          dir_v2.GetPath()),
+      sets_v2));
+  policy.ComponentReadyForTesting(base::Version("0.0.1"), dir_v2.GetPath(),
+                                  base::Value::Dict());
 
   env_.RunUntilIdle();
 }
@@ -176,7 +178,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnComponentReady) {
 TEST_F(FirstPartySetsComponentInstallerTest, GetInstallerAttributes) {
   FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
 
-  EXPECT_THAT(policy.GetInstallerAttributes(), IsEmpty());
+  EXPECT_THAT(policy.GetInstallerAttributesForTesting(), IsEmpty());
 }
 
 }  // namespace component_updater

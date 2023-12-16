@@ -54,22 +54,21 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
                                        const base::FilePath& install_dir,
                                        base::StringPiece contents);
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
-                           NonexistentFile_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
-                           NonexistentFile_OnRegistrationComplete);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
-                           LoadsSets_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
-                           IgnoreNewSets_NoInitialComponent);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
-                           IgnoreNewSets_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
-                           IgnoreNewSets_OnNetworkRestart);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
-                           GetInstallerAttributes);
+  static base::FilePath GetInstalledPathForTesting(const base::FilePath& base) {
+    return GetInstalledPath(base);
+  }
 
+  void ComponentReadyForTesting(const base::Version& version,
+                                const base::FilePath& install_dir,
+                                base::Value::Dict manifest) {
+    ComponentReady(version, install_dir, std::move(manifest));
+  }
+
+  update_client::InstallerAttributes GetInstallerAttributesForTesting() const {
+    return GetInstallerAttributes();
+  }
+
+ private:
   // The following methods override ComponentInstallerPolicy.
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
