@@ -1470,8 +1470,8 @@ void XMLHttpRequest::setPrivateToken(const PrivateToken* trust_token,
 
   auto params = network::mojom::blink::TrustTokenParams::New();
   if (!ConvertTrustTokenToMojomAndCheckPermissions(
-          *trust_token, GetExecutionContext(), &exception_state,
-          params.get())) {
+          *trust_token, GetPSTFeatures(*GetExecutionContext()),
+          &exception_state, params.get())) {
     DCHECK(exception_state.HadException());
     return;
   }

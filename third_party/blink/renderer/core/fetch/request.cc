@@ -624,8 +624,8 @@ Request* Request::CreateRequestWithRequestOrString(
 
     network::mojom::blink::TrustTokenParams params;
     if (!ConvertTrustTokenToMojomAndCheckPermissions(
-            *init->privateToken(), execution_context, &exception_state,
-            &params)) {
+            *init->privateToken(), GetPSTFeatures(*execution_context),
+            &exception_state, &params)) {
       // Whenever parsing the trustToken argument fails, we expect a suitable
       // exception to be thrown.
       DCHECK(exception_state.HadException());

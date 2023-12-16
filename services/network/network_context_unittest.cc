@@ -7257,8 +7257,6 @@ TEST_F(NetworkContextExpectBadMessageTest,
   ResourceRequest my_request;
   my_request.trust_token_params =
       OptionalTrustTokenParams(mojom::TrustTokenParams::New());
-  my_request.trust_token_params->version =
-      mojom::TrustTokenMajorVersion::kPrivateStateTokenV1;
   my_request.trust_token_params->operation =
       mojom::TrustTokenOperationType::kRedemption;
 
@@ -7319,8 +7317,6 @@ TEST_F(NetworkContextExpectBadMessageTest,
   ResourceRequest my_request;
   my_request.trust_token_params =
       OptionalTrustTokenParams(mojom::TrustTokenParams::New());
-  my_request.trust_token_params->version =
-      mojom::TrustTokenMajorVersion::kPrivateStateTokenV1;
   my_request.trust_token_params->operation =
       mojom::TrustTokenOperationType::kIssuance;
 
@@ -7747,8 +7743,6 @@ TEST_F(NetworkContextTest,
   my_request.url = test_server.GetURL("a.test", "/empty.html");
   my_request.trust_token_params =
       OptionalTrustTokenParams(mojom::TrustTokenParams::New());
-  my_request.trust_token_params->version =
-      mojom::TrustTokenMajorVersion::kPrivateStateTokenV1;
   my_request.trust_token_params->operation =
       mojom::TrustTokenOperationType::kIssuance;
 
@@ -7827,8 +7821,6 @@ TEST_F(NetworkContextTest,
   my_request.url = test_server.GetURL("a.test", "/empty.html");
   my_request.trust_token_params =
       OptionalTrustTokenParams(mojom::TrustTokenParams::New());
-  my_request.trust_token_params->version =
-      mojom::TrustTokenMajorVersion::kPrivateStateTokenV1;
   my_request.trust_token_params->operation =
       mojom::TrustTokenOperationType::kIssuance;
 
