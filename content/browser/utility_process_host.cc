@@ -427,17 +427,23 @@ bool UtilityProcessHost::StartProcess() {
     }
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
     // Pass `kVideoCaptureUseGpuMemoryBuffer` flag to video capture service only
-    // when the video capture use GPU memory buffer enabled and NV12 GPU memory
-    // buffer supported.
+    // when the video capture use GPU memory buffer enabled.
     if (metrics_name_ == video_capture::mojom::VideoCaptureService::Name_) {
-      if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled() &&
-          GpuDataManagerImpl::GetInstance()->IsGpuMemoryBufferNV12Supported()) {
+      bool pass_gpu_buffer_flag =
+          switches::IsVideoCaptureUseGpuMemoryBufferEnabled();
+#if BUILDFLAG(IS_LINUX)
+      // Check if NV12 GPU memory buffer supported at the same time.
+      pass_gpu_buffer_flag =
+          pass_gpu_buffer_flag &&
+          GpuDataManagerImpl::GetInstance()->IsGpuMemoryBufferNV12Supported();
+#endif  // BUILDFLAG(IS_LINUX)
+      if (pass_gpu_buffer_flag) {
         cmd_line->AppendSwitch(switches::kVideoCaptureUseGpuMemoryBuffer);
       }
     }
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 
     std::unique_ptr<UtilitySandboxedProcessLauncherDelegate> delegate =
         std::make_unique<UtilitySandboxedProcessLauncherDelegate>(
