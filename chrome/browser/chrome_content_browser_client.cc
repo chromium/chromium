@@ -157,7 +157,6 @@
 #include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/ssl/ssl_client_auth_metrics.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
@@ -3791,7 +3790,6 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
         base::BindOnce(
             &content::ClientCertificateDelegate::ContinueWithCertificate,
             std::move(delegate), std::move(cert)));
-    LogClientAuthResult(ClientCertSelectionResult::kAutoSelect);
     return base::OnceClosure();
   }
 
@@ -3812,7 +3810,6 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
       !CanPromptWithNonmatchingCertificates(profile)) {
     LOG(WARNING) << "No client cert matched by policy and user selection is "
                     "not allowed.";
-    LogClientAuthResult(ClientCertSelectionResult::kNoSelectionAllowed);
     // Continue without client certificate. We do this to mimic the case of no
     // client certificate being present in the profile's certificate store.
     delegate->ContinueWithCertificate(nullptr, nullptr);

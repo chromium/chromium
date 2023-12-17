@@ -22,22 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Security.ClientAuth.CertificateSelectionSource"
-    enum="ClientCertSelectionResult" expires_after="2020-08-16">
-  <owner>jdeblasio@chromium.org</owner>
-  <summary>
-    When TLS client authentication is requested by the server, Chrome must
-    choose whether to return a certificate or to abort the handshake. This
-    histogram records how this determination was made, either as a result of
-    user action, or as chosen automatically due to content settings. It only
-    records when a fresh certificate selection would be attempted (and thus
-    ignores cache hits). This histogram is recorded in SSLClientAuthObserver for
-    user-selected outcomes and in ChromeContentBrowserClient for policy
-    outcomes. This histogram does not cover mobile, as certificate handling is
-    not handled by Chrome on Android nor iOS.
-  </summary>
-</histogram>
-
 <histogram name="Security.DataDecoder.Image.DecodingTime" units="ms"
     expires_after="2024-04-28">
   <owner>lukasza@chromium.org</owner>

@@ -1685,8 +1685,6 @@ static_library("browser") {
     "ssl/secure_origin_prefs_observer.h",
     "ssl/security_state_tab_helper.cc",
     "ssl/security_state_tab_helper.h",
-    "ssl/ssl_client_auth_metrics.cc",
-    "ssl/ssl_client_auth_metrics.h",
     "ssl/ssl_client_certificate_selector.h",
     "ssl/ssl_config_service_manager.cc",
     "ssl/ssl_config_service_manager.h",
