@@ -92,6 +92,11 @@ static const char REPLAY_CDT_PAUSE_OBJECT_GROUP[] =
     "REPLAY_CDT_PAUSE_OBJECT_GROUP";
 
 
+static bool IsGReplayScriptEnabled() {
+  return recordreplay::IsReplaying() ||
+         !recordreplay::FeatureEnabled("replay-only-gReplayScript");
+}
+
 static LocalFrame* GetLocalFrameRoot(v8::Isolate* isolate) {
   LocalDOMWindow* currentWindow = CurrentDOMWindow(isolate);
 
@@ -3074,6 +3079,36 @@ __RECORD_REPLAY_ARGUMENTS__.internal = {
 };
 
 /** ###########################################################################
+ * {@link replayEval}
+ * ##########################################################################*/
+
+/**
+ * Execute a function but only when replaying and with events disallowed.
+ */
+function replayEval(fn) {
+  const {
+    beginReplayCode,
+    endReplayCode
+  } = __RECORD_REPLAY_ARGUMENTS__;
+  beginReplayCode("replayEval");
+  try {
+    // We cannot currently avoid a user-supplied function from getting
+    // instrumented. Stringifying and evaling it with events disallowed
+    // fixes that problem.
+    let fnExpr = fn.toString().trim();
+    eval(`(${fnExpr})()`);
+  } catch (err) {
+    // Note: We MUST NOT let this error escape, or it will cause a mismatch in
+    // `Runtime_UnwindAndFindExceptionHandler`.
+    // TODO: We should just crash here, since its the responsibility of the
+    // caller of replayEval to make sure the cb won't throw.
+    warning(`replayEval ERROR: ${err?.stack || err}`);
+  } finally {
+    endReplayCode();
+  }
+}
+
+/** ###########################################################################
  * Export JS API methods via `__RECORD_REPLAY__`.
  * This is officially available for scripts in `eval*` commands to use.
  * ##########################################################################*/
@@ -3084,8 +3119,12 @@ Object.assign(__RECORD_REPLAY__, {
   getObjectFromProtocolId(rrpId) {
     return getPlainObjectByRrpId(rrpId);
   },
+  executeCommand,
+  log,
+  warning,
   getFrameArgumentsArray,
-  getCurrentEvaluateFrame
+  getCurrentEvaluateFrame,
+  replayEval
 });
 
 } catch (e) {
@@ -3873,7 +3912,7 @@ InspectorData* getInspectorFor(v8::Isolate* isolate, int contextGroupId) {
  */
 v8_inspector::V8InspectorSession* getInspectorSession(v8::Isolate* isolate, int currentContextId) {
   CHECK(v8::IsMainThread());
-  CHECK(recordreplay::IsReplaying());
+  CHECK(IsGReplayScriptEnabled());
   CHECK(gV8Inspectors);
 
   v8_inspector::V8Inspector* inspector = (*gV8Inspectors)[isolate];
@@ -3894,7 +3933,7 @@ v8_inspector::V8InspectorSession* getInspectorSession(v8::Isolate* isolate, int 
 void
 RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector,
                                 v8::Isolate* isolate) {
-  if (v8::IsMainThread() && recordreplay::IsReplaying()) {
+  if (v8::IsMainThread() && IsGReplayScriptEnabled()) {
     if (!gV8Inspectors) {
       gV8Inspectors = new std::unordered_map<v8::Isolate*,v8_inspector::V8Inspector*>();
       gInspectorData = new std::unordered_map<v8::Isolate*, ContextGroupIdInspectorMap*>();
@@ -5224,6 +5263,22 @@ static void fromJsGetFunctionBytecode(
   args.GetReturnValue().Set(rv);
 }
 
+static void fromJsBeginReplayCode(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsString() &&
+        "[RuntimeError] must be called with a single string");
+
+  v8::String::Utf8Value label(args.GetIsolate(), args[0]);
+  recordreplay::BeginDisallowEventsWithLabel(*label);
+  recordreplay::EnterReplayCode();
+}
+
+static void fromJsEndReplayCode(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  recordreplay::EndDisallowEvents();
+  recordreplay::ExitReplayCode();
+}
+
 /** ###########################################################################
  * misc
  * ##########################################################################*/
@@ -5345,12 +5400,13 @@ static void RunScript(v8::Isolate* isolate, v8::Local<v8::Context> context, cons
 
   v8::Local<v8::Script> script;
   if (!maybe_script.ToLocal(&script)) {
-    CHECK(false && "Replay RunScript COMPILE failed") << GetStackTrace(isolate, try_catch);
+    recordreplay::Crash("Replay RunScript COMPILE failed: %s",
+      GetStackTrace(isolate, try_catch).c_str());
   }
   v8::Local<v8::Value> rv;
   if (!script->Run(context).ToLocal(&rv)) {
-    CHECK(false && "Replay RunScript INIT failed")
-        << GetStackTrace(isolate, try_catch);
+    recordreplay::Crash("Replay RunScript INIT failed: %s",
+      GetStackTrace(isolate, try_catch).c_str());
   }
 }
 
@@ -5430,7 +5486,15 @@ void OnNewWindow1(v8::Isolate* isolate, LocalFrame* localFrame) {
   SetFunctionProperty(isolate, args, "getFunctionBytecode",
                       fromJsGetFunctionBytecode);
 
-  // unsorted RR stuff
+  // Replay meta.
+  DefineProperty(isolate, args, "IsReplaying",
+                 v8::Boolean::New(isolate, recordreplay::IsReplaying()));
+  SetFunctionProperty(isolate, args, "beginReplayCode",
+                      fromJsBeginReplayCode);
+  SetFunctionProperty(isolate, args, "endReplayCode",
+                      fromJsEndReplayCode);
+
+  // unsorted Replay stuff
   SetFunctionProperty(
       isolate, args, "setClearPauseDataCallback",
       v8::FunctionCallbackRecordReplaySetClearPauseDataCallback);
@@ -5483,8 +5547,7 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame, v8:
     // https://linear.app/replay/issue/RUN-2195#comment-e0b6c75b
     localFrame->GetSettings()->SetForceMainWorldInitialization(true);
   }
-
-  if (recordreplay::IsReplaying()) {
+  if (IsGReplayScriptEnabled()) {
     recordreplay::AutoMarkReplayCode amrc;
     recordreplay::AutoDisallowEvents disallow("SetupRecordReplayCommands");
     RunScript(isolate, context, gReplayScript, InternalScriptURL);

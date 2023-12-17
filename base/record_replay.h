@@ -76,6 +76,9 @@ void BeginDisallowEventsWithLabel(const char* label);
 void EndDisallowEvents();
 bool AreEventsDisallowed(const char* why = nullptr);
 
+void EnterReplayCode();
+void ExitReplayCode();
+
 bool FeatureEnabled(const char* feature, const char* subfeature = nullptr);
 bool HasDisabledFeatures();
 
