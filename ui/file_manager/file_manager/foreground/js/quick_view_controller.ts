@@ -12,14 +12,13 @@ import {parseActionId} from '../../common/js/file_tasks.js';
 import {getType} from '../../common/js/file_type.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
-import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {DialogType} from '../../externs/ts/state.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
-import {FilesQuickView} from '../elements/files_quick_view.js';
+import {type FilePreviewContent, FilesQuickView} from '../elements/files_quick_view.js';
 import type {FilesTooltip} from '../elements/files_tooltip.js';
 
-import {CommandHandler} from './command_handler.js';
+import {CommandHandler, type CommandHandlerDeps} from './command_handler.js';
 import {EventType, FileSelectionHandler} from './file_selection.js';
 import {FileTasks} from './file_tasks.js';
 import {MetadataItem} from './metadata/metadata_item.js';
@@ -35,6 +34,21 @@ import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 import {ListContainer} from './ui/list_container.js';
 import {MultiMenuButton} from './ui/multi_menu_button.js';
 
+/**
+ * Parameters gathered to set the Quick View dialog properties.
+ */
+interface QuickViewParams {
+  type: string;
+  subtype: string;
+  filePath: string;
+  hasTask: boolean;
+  canDelete: boolean;
+  sourceContent?: FilePreviewContent|null|undefined;
+  videoPoster?: FilePreviewContent|null|undefined;
+  audioArtwork?: FilePreviewContent|null|undefined;
+  autoplay?: boolean|null|undefined;
+  browsable?: boolean|null|undefined;
+}
 
 /**
  * Controller for QuickView.

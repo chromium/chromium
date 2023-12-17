@@ -21,7 +21,6 @@ import type {TrashEntry} from '../../common/js/trash.js';
 import {deleteIsForever, RestoreFailedType, RestoreFailedTypesUMA, RestoreFailedUMA, shouldMoveToTrash} from '../../common/js/trash.js';
 import {isNullOrUndefined, visitURL} from '../../common/js/util.js';
 import {FileSystemType, isRecentArcEntry, RootType, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
-import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {DialogType} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
@@ -34,7 +33,7 @@ import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
 import type {FilesTooltip} from '../elements/files_tooltip.js';
 
 import {type ActionsModel, CommonActionId, InternalActionId} from './actions_model.js';
-import {MenuCommandsForUma, recordMenuItemSelected} from './command_handler.js';
+import {type CommandHandlerDeps, MenuCommandsForUma, recordMenuItemSelected} from './command_handler.js';
 import {canExecuteVisibleOnDriveInNormalAppModeOnly, containsNonInteractiveEntry, currentVolumeIsInteractive, getCommandEntries, getCommandEntry, getElementVolumeInfo, getEventEntry, getOnlyOneSelectedDirectory, getParentEntry, getSharesheetLaunchSource, hasCapability, isDriveEntries, isFromSelectionMenu, isOnlyMyDriveEntries, isOnTrashRoot, isRootEntry, shouldIgnoreEvents, shouldShowMenuItemsForEntry} from './file_manager_commands_util.js';
 import {PasteWithDestDirectoryEvent} from './file_transfer_controller.js';
 import {getAllowedVolumeTypes, maybeStoreTimeOfFirstPin} from './holding_space_util.js';

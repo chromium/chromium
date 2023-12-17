@@ -16,6 +16,20 @@ import type {FilesMetadataBox} from './files_metadata_box.js';
 import {getTemplate} from './files_quick_view.html.js';
 import type {FilesSafeMedia} from './files_safe_media.js';
 
+
+/**
+ * File preview content. Sent from <files-quick-view> to a sandboxed page, as
+ * part of UntrustedPreviewData.
+ */
+export interface FilePreviewContent {
+  // Holds a Blob/File, or a content  URL.
+  data?: Blob|string|undefined|null;
+
+  // Specifies 'blob' or 'url' accordingly (other values are interpreted as no
+  // preview data).
+  dataType: string;
+}
+
 export interface FilesQuickView {
   $: {
     contentPanel: HTMLDivElement,

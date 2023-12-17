@@ -6,7 +6,18 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {toSandboxedURL} from '../../common/js/url_constants.js';
 
+import type {FilePreviewContent} from './files_quick_view.js';
 import {getTemplate} from './files_safe_media.html.js';
+
+/**
+ * Preview data that we send from the trusted context (Files app) to
+ * the untrusted context.
+ */
+interface UntrustedPreviewData {
+  // Specifies the type of file to preview ('audio', 'image', etc...).
+  type: string;
+  sourceContent: FilePreviewContent;
+}
 
 export interface FilesSafeMedia {
   $: {content: HTMLDivElement};

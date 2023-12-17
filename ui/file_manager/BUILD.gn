@@ -164,7 +164,6 @@ ts_library("build_ts") {
     ":copy_definitions_to_gen",
     ":copy_definitions_to_preprocess",
     ":copy_fmp",
-    ":generate_definitions",
     ":preprocess_generated",
     "//ash/webui/common/resources:generate_definitions",
   ]
@@ -201,10 +200,6 @@ ts_library("build_ts") {
   manifest_excludes = [ "file_manager/externs/file_manager_private.js" ]
 
   definitions = other_dts_files
-  foreach(_file, generate_definitions_js_files) {
-    definitions +=
-        [ "$target_gen_dir/" + string_replace(_file, ".js", ".d.ts") ]
-  }
   foreach(_file, checked_in_dts_files) {
     definitions += [ "$preprocess_folder/$_file" ]
   }
@@ -253,10 +248,6 @@ ts_library("test_build_ts") {
       ]
 
   definitions = other_dts_files
-  foreach(_file, generate_definitions_js_files) {
-    definitions +=
-        [ "$target_gen_dir/" + string_replace(_file, ".js", ".d.ts") ]
-  }
   foreach(_file, checked_in_dts_files) {
     definitions += [ "$preprocess_folder/$_file" ]
   }
@@ -278,7 +269,6 @@ ts_library("test_build_ts") {
     ":copy_definitions_to_gen",
     ":copy_definitions_to_preprocess",
     ":copy_fmp_test",
-    ":generate_definitions",
   ]
   if (enable_webui_inline_sourcemaps) {
     extra_deps += [
@@ -291,15 +281,6 @@ ts_library("test_build_ts") {
       ":preprocess_static",
     ]
   }
-}
-
-ts_definitions("generate_definitions") {
-  root_dir = "."
-  out_dir = target_gen_dir
-
-  extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
-
-  js_files = generate_definitions_js_files
 }
 
 # Copy definition files to GEN folder, so they can import relatively the
@@ -371,20 +352,6 @@ copy("for_image_loader") {
   } else {
     deps = [ ":build_ts" ]
   }
-}
-
-js_library("js_from_ts") {
-  sources = []
-  foreach(_t, ts_files) {
-    sources += [ "$target_gen_dir/tsc/" + string_replace(_t, ".ts", ".js") ]
-  }
-  if (enable_webui_inline_sourcemaps) {
-    extra_deps = [ ":merge_source_maps" ]
-  } else {
-    extra_deps = [ ":build_ts" ]
-  }
-  externs_list =
-      [ "//ui/file_manager/file_manager/externs/app_window_common.js" ]
 }
 
 grd_prefix = "file_manager_gen"

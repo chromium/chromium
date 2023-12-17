@@ -5,14 +5,60 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
+import type {FilesAppState} from '../../common/js/files_app_state.js';
 import {recordEnum} from '../../common/js/metrics.js';
-import type {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
+import type {Crostini} from '../../externs/background/crostini.js';
+import type {ProgressCenter} from '../../externs/background/progress_center.js';
+import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import type {DialogType} from '../../externs/ts/state.js';
+import type {VolumeManager} from '../../externs/volume_manager.js';
 
+import type {ActionsController} from './actions_controller.js';
 import {DEFAULT_BRUSCHETTA_VM, DEFAULT_CROSTINI_VM, PLUGIN_VM} from './constants.js';
+import type {FileFilter} from './directory_contents.js';
+import type {DirectoryModel} from './directory_model.js';
+import type {DirectoryTreeNamingController} from './directory_tree_naming_controller.js';
 import {BrowserBackCommand, ConfigureCommand, CutCopyCommand, DefaultTaskCommand, DeleteCommand, DlpRestrictionDetailsCommand, DriveBuyMoreSpaceCommand, DriveGoToDriveCommand, DriveSyncSettingsCommand, EmptyTrashCommand, EraseDeviceCommand, ExtractAllCommand, FilesSettingsCommand, FocusActionBarCommand, FormatCommand, GetInfoCommand, GoToFileLocationCommand, GuestOsManagingSharingCommand, GuestOsManagingSharingGearCommand, GuestOsShareCommand, InspectConsoleCommand, InspectElementCommand, InspectNormalCommand, InvokeSharesheetCommand, ManageInDriveCommand, ManageMirrorsyncCommand, NewFolderCommand, NewWindowCommand, OpenGearMenuCommand, OpenWithCommand, PasteCommand, PasteIntoCurrentFolderCommand, PasteIntoFolderCommand, PinFolderCommand, RefreshCommand, RenameCommand, RestoreFromTrashCommand, SearchCommand, SelectAllCommand, SendFeedbackCommand, SetWallpaperCommand, ShareCommand, ShowProvidersSubmenuCommand, SortByDateCommand, SortByNameCommand, SortBySizeCommand, SortByTypeCommand, ToggleHiddenAndroidFoldersCommand, ToggleHiddenFilesCommand, ToggleHoldingSpaceCommand, TogglePinnedCommand, UnmountCommand, UnpinFolderCommand, VolumeHelpCommand, VolumeStorageCommand, VolumeSwitchCommand, ZipSelectionCommand, ZoomInCommand, ZoomOutCommand, ZoomResetCommand} from './file_manager_commands.js';
 import {shouldIgnoreEvents} from './file_manager_commands_util.js';
+import type {FileSelection, FileSelectionHandler} from './file_selection.js';
+import type {FileTransferController} from './file_transfer_controller.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
+import type {NamingController} from './naming_controller.js';
+import type {ProvidersModel} from './providers_model.js';
+import type {SpinnerController} from './spinner_controller.js';
+import type {TaskController} from './task_controller.js';
 import {CanExecuteEvent, Command, CommandEvent} from './ui/command.js';
 import {contextMenuHandler, type HideEvent, type ShowEvent} from './ui/context_menu_handler.js';
+import type {FileManagerUI} from './ui/file_manager_ui.js';
+
+/**
+ * Interface on which `CommandHandler` depends.
+ */
+export interface CommandHandlerDeps {
+  actionsController: ActionsController;
+  dialogType: DialogType;
+  directoryModel: DirectoryModel;
+  directoryTreeNamingController: DirectoryTreeNamingController;
+  document: Document;
+  fileFilter: FileFilter;
+  fileTransferController: FileTransferController|null;
+  selectionHandler: FileSelectionHandler;
+  namingController: NamingController;
+  progressCenter: ProgressCenter;
+  providersModel: ProvidersModel;
+  spinnerController: SpinnerController;
+  taskController: TaskController;
+  ui: FileManagerUI;
+  volumeManager: VolumeManager;
+  metadataModel: MetadataModel;
+  crostini: Crostini;
+  guestMode: boolean;
+  trashEnabled: boolean;
+
+  getCurrentDirectoryEntry(): DirectoryEntry|FilesAppEntry|null|undefined;
+  getSelection(): FileSelection;
+  launchFileManager(appState?: FilesAppState): void;
+}
 
 /**
  * Name of a command (for UMA).

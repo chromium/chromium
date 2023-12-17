@@ -16,15 +16,11 @@ image_loader_ts = [ "image_loader/background.ts" ]
 static_js_files = [
   # Externs:
   "file_manager/externs/background/crostini.js",
-  "file_manager/externs/background/drive_sync_handler.js",
   "file_manager/externs/background/progress_center.js",
-  "file_manager/externs/command_handler_deps.js",
   "file_manager/externs/entry_location.js",
-  "file_manager/externs/exif_entry.js",
   "file_manager/externs/metadata_model.js",
   "file_manager/externs/progress_center_panel.js",
   "file_manager/externs/ts/state.js",
-  "file_manager/externs/ts/store.js",
 
   # Files app Foreground:
   "file_manager/foreground/js/mock_navigation_list_model.js",
@@ -581,12 +577,6 @@ ts_generated_templates += [
   "file_manager/foreground/elements/files_safe_media.html.ts",
   "file_manager/foreground/elements/files_toast.html.ts",
   "file_manager/foreground/elements/files_tooltip.html.ts",
-]
-
-# d.ts. files that are automatically generated from the JS file.
-generate_definitions_js_files = [
-  "file_manager/externs/search_item.js",
-  "file_manager/externs/quick_view.js",
 ]
 
 # d.ts. files that are manually created and checked-in in the repo.

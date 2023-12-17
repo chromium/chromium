@@ -19,13 +19,7 @@ let FilePreviewContent;
  * @typedef {{
  *   type: string,
  *   subtype: string,
- *   filePath: string,
- *   hasTask: boolean,
- *   canDelete: boolean,
  *   sourceContent: (?FilePreviewContent|undefined),
- *   videoPoster: (?FilePreviewContent|undefined),
- *   audioArtwork: (?FilePreviewContent|undefined),
- *   autoplay: (?boolean|undefined),
  *   browsable: (?boolean|undefined),
  * }}
  */
