@@ -66,6 +66,7 @@
         ກະລຸນາລໍຖ້າສອງສາມນາທີກ່ອນອອກຈາກລະບົບ. ຫາກທ່ານອອກຈາກລະບົບຕອນນີ້, ຂໍ້ມູນນີ້ຈະຖືກລຶບ.</translation>
 <translation id="3256316712990552818">ອັດ​ສຳ​ເນົາ​ໄປ​ໃສ່ Chromium ແລ້ວ</translation>
 <translation id="3344973607274501920">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້. ລອງກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{ສິ່ງນີ້ເກີດຂຶ້ນເມື່ອບໍ່ໄດ້ນຳໃຊ້ Chromium ເປັນເວລາ {THRESHOLD} ນາທີ. ສິ່ງນີ້ສາມາດຮວມເອົາປະຫວັດ ແລະ ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ.}other{ສິ່ງນີ້ເກີດຂຶ້ນເມື່ອບໍ່ໄດ້ນຳໃຊ້ Chromium ເປັນເວລາ {THRESHOLD} ນາທີ. ສິ່ງນີ້ສາມາດຮວມເອົາປະຫວັດ ແລະ ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ.}}</translation>
 <translation id="3472200483164753384">ບໍ່ຮອງຮັບໃນ Chromium Canary</translation>
 <translation id="3478750326643748149">ເຊື່ອງ “ໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chromium”</translation>
 <translation id="3554027294407525061">ລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບໃນ Chromium.</translation>
@@ -230,6 +231,7 @@
 <translation id="88376265765385899">ເປີິດບຸກມາກ Chromium.</translation>
 <translation id="8924617840944134898">ເປີດແຖບບໍ່ເປີດເຜີຍຕົວຕົນ Chromium</translation>
 <translation id="894437814105052438">ເມື່ອທ່ານອອກຈາກລະບົບ, Chromium ຈະບໍ່ຊິ້ງຂໍ້ມູນໃໝ່ໃດໆກັບບັນຊີ Google ຂອງທ່ານ. ຂໍ້ມູນທີ່ຊິ້ງໄວ້ກ່ອນໜ້າຈະຍັງຢູ່ໃນບັນຊີ.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{ສິ່ງນີ້ເກີດຂຶ້ນເມື່ອບໍ່ໄດ້ນຳໃຊ້ Chromium ເປັນເວລາ {THRESHOLD} ນາທີ}other{ສິ່ງນີ້ເກີດຂຶ້ນເມື່ອບໍ່ໄດ້ນຳໃຊ້ Chromium ເປັນເວລາ {THRESHOLD} ນາທີ}}</translation>
 <translation id="8963279154877372067">ອະນຸຍາດການແຈ້ງເຕືອນ Chromium ເພື່ອຮັບການແຈ້ງເຕືອນການຫຼຸດລາຄາ</translation>
 <translation id="9022552996538154597">ລົງຊື່ເຂົ້າ​ໃຊ້ Chromium</translation>
 <translation id="9050790730841755540">ໃຊ້ Chromium ໄດ້ທຸກເວລາທີ່ທ່ານແຕະລິ້ງໃນແອັບອື່ນໆ.</translation>

@@ -920,6 +920,7 @@
 <translation id="1695510246756136088">အင်တာနက်သို့ ချိတ်ဆက်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> တွင် ရှေ့ဆက်ရန် အခြားနည်းလမ်းများ စမ်းကြည့်နိုင်သည်။</translation>
 <translation id="169675691788639886">စက်တွင် SSH ဆာဗာကို စီစဉ်သတ်မှတ်ထားသည်။ သတိထားရသော အကောင့်များနှင့် လက်မှတ်ထိုးမဝင်ပါနှင့်။</translation>
+<translation id="1697122132646041614">‘လက်မအောက်စိုက်’ ပါက ဤရလဒ်များကို ဘာကြောင့် သင်မနှစ်သက်ကြောင်း အသေးစိတ်တုံ့ပြန်မှု ပေးပို့ရန် ဖောင်ပွင့်လာသည်။</translation>
 <translation id="1697150536837697295">အနုပညာ</translation>
 <translation id="1697686431566694143">ဖိုင်တည်းဖြတ်ရန်</translation>
 <translation id="1698796500103229697">&amp;ငွေပေးချေနည်းလမ်းများ</translation>
@@ -2309,6 +2310,7 @@
 <translation id="2731700343119398978">ကျေးဇူးပြုပြီး စောင့်ပါ…</translation>
 <translation id="2731971182069536520">နောက်တစ်ကြိမ် သင့်ကိရိယာ ပြန်စတင်သည့်အခါတွင် စီမံခန့်ခွဲသူက သင်၏စက်အတွင်း ဒေတာများကို ဖျက်ပစ်မည့် တစ်ကြိမ်သုံးအပ်ဒိတ်ကို ပြုလုပ်ပါမည်။</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" /> ခုအနက် အကြောင်းအရာအပို <ph name="CURRENT_ELEMENT" /></translation>
+<translation id="2733248615007838252">‘လက်မထောင်’ ပေးပို့ပြီး ဤရလဒ်များကို သင်နှစ်သက်ကြောင်း တုံ့ပြန်နိုင်သည်။</translation>
 <translation id="2733992589856193783">ဤဝဘ်ဆိုက်အတွက် လျှို့ဝှက်ကီး ပြုလုပ်လိုက်သည်။ လက်မှတ်ထိုးဝင်ရန် သင့်မိုဘိုင်းစက်ကိရိယာ လိုအပ်သည်။</translation>
 <translation id="27349076983469322">လင်းသည့်နောက်ခံ</translation>
 <translation id="2735712963799620190">အချိန်ဇယား</translation>
@@ -5673,6 +5675,7 @@
 <translation id="5431318178759467895">အရောင်</translation>
 <translation id="5432145523462851548"><ph name="FILE_NAME" /> ကို ဖိုင်တွဲတွင်ပြရန်</translation>
 <translation id="5432223177001837288">အသံမျှဝေရန် တဘ်ကို မျှဝေပါ</translation>
+<translation id="5432872710261597882">‘လက်မထောင်’ ပေးပို့ပြီး ၎င်းကို သင်နှစ်သက်ကြောင်း တုံ့ပြန်နိုင်သည်။</translation>
 <translation id="543338862236136125">စကားဝှက်ကို တည်းဖြတ်ခြင်း</translation>
 <translation id="5434065355175441495">PKCS #1 RSA လျှို့ဝှက်ကုဒ်သွင်းမှု</translation>
 <translation id="5435274640623994081">အသံသင်္ကေတ မှတ်တမ်းကို ဖွင့်ပါ</translation>
@@ -5708,6 +5711,7 @@
 <translation id="5458214261780477893">ဒီဗိုရ</translation>
 <translation id="5458998536542739734">လော့ခ်ချထားချိန် မျက်နှာပြင် မှတ်စုများ</translation>
 <translation id="5459864179070366255">ဆက်လက်ထည့်သွင်းရန်</translation>
+<translation id="5460861858595506978">ဉာဏ်ကွန့်မြူးမှု</translation>
 <translation id="5461050611724244538">သင့်ဖုန်းနှင့် ချိတ်ဆက်မှု ပြတ်သွားသည်</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" />၏ ညွှန်ကိန်း</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> အီးမေးလ်များအတွက် စာရင်းသွင်းရန်</translation>
@@ -6820,6 +6824,7 @@
 <translation id="6347010704471250799">အကြောင်းကြားချက်ပြခြင်း</translation>
 <translation id="6348805481186204412">အော့ဖ်လိုင်း သိုလှောင်ခန်း</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ထည့်သွင်းရန်</translation>
+<translation id="6350821834561350243">ပြဿနာနှင့် (ဖြစ်နိုင်ပါက) ယင်းကို ပုံတူလုပ်ရန် အဆင့်များအကြောင်း ရှင်းလင်းသောဖော်ပြချက် ပေးပါ</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Google Account အချက်အလက် ရယူနေသည်...</translation>
 <translation id="635609604405270300">ကိရိယာကို ဆက်ဖွင့်ထားပါ</translation>
@@ -8877,6 +8882,7 @@
 <translation id="7969046989155602842">ကွန်မန်း</translation>
 <translation id="7970673414865679092">အီသာနက် အသေးစိတ်</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA လျှို့ဝှက်ကုဒ် သွင်းမှုဖြင့်</translation>
+<translation id="7973149423217802477">‘လက်မအောက်စိုက်’ ပေးပို့ပြီး ၎င်းကို သင်မနှစ်သက်ကြောင်း တုံ့ပြန်နိုင်သည်။</translation>
 <translation id="7973776233567882054">အောက်ပါတို့အနက် မည်သည့်တစ်ခုက သင့်ကွန်ရက်ကို အကောင်းဆုံးဖော်ပြနိုင်သလဲ။</translation>
 <translation id="797394244396603170">ဖိုင်များမျှဝေလိုသော စက်ကို ရွေးပါ</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> သုံး၍ ပြန်ကြိုးစားကြည့်ပါ</translation>

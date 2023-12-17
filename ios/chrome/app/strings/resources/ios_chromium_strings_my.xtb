@@ -66,6 +66,7 @@
         မထွက်မီ အချိန်အနည်းငယ် စောင့်ကြည့်ပါ။ ယခု ထွက်သွားပါက ဤဒေတာကို ဖျက်လိုက်ပါမည်။</translation>
 <translation id="3256316712990552818">Chromium သို့ကူးယူ၏</translation>
 <translation id="3344973607274501920">Chromium က သင့်စကားဝှက်များကို စစ်ဆေး၍မရပါ။ သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ။</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium ကို {THRESHOLD} မိနစ်ကြာ မသုံးပါက ဤသို့ဖြစ်ပါသည်။ ၎င်းတွင် မှတ်တမ်းနှင့် အော်တိုဖြည့် ပါဝင်နိုင်သည်။}other{Chromium ကို {THRESHOLD} မိနစ်ကြာ မသုံးပါက ဤသို့ဖြစ်ပါသည်။ ၎င်းတွင် မှတ်တမ်းနှင့် အော်တိုဖြည့် ပါဝင်နိုင်သည်။}}</translation>
 <translation id="3472200483164753384">Chromium Canary တွင် ပံ့ပိုးမထားပါ</translation>
 <translation id="3478750326643748149">“Chromium ကို အကောင်းဆုံးအသုံးချခြင်း” ဖျောက်ရန်</translation>
 <translation id="3554027294407525061">Chromium ၌ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ရှင်းရန်။</translation>
@@ -231,6 +232,7 @@
 <translation id="88376265765385899">Chromium လိပ်စာများကို ဖွင့်ရန်။</translation>
 <translation id="8924617840944134898">Chromium ရုပ်ဖျက်တဘ် ဖွင့်ရန်</translation>
 <translation id="894437814105052438">သင်အကောင့်မှထွက်သောအခါ Chromium သည် သင့် Google Account သို့ ဒေတာအသစ်များကို စင့်ခ်လုပ်မည်မဟုတ်ပါ။ ယခင်က စင့်ခ်လုပ်ထားသောဒေတာများ အကောင့်တွင် ဆက်ရှိနေပါမည်။</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium ကို {THRESHOLD} မိနစ်ကြာ မသုံးပါက ဤသို့ဖြစ်ပါသည်}other{Chromium ကို {THRESHOLD} မိနစ်ကြာ မသုံးပါက ဤသို့ဖြစ်ပါသည်}}</translation>
 <translation id="8963279154877372067">လျှော့ဈေးသတိပေးချက်များ ရယူရန်အတွက် Chromium အကြောင်းကြားချက်များ ခွင့်ပြုရန်</translation>
 <translation id="9022552996538154597">Chromium ကို လက်မှတ်ထိုး ဝင်ရန်</translation>
 <translation id="9050790730841755540">အခြားအက်ပ်များရှိ လင့်ခ်ကို တို့တိုင်း Chromium ကို သုံးနိုင်သည်။</translation>
