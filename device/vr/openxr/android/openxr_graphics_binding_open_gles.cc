@@ -206,13 +206,13 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
   }
 
   // Unbind previous image (if any).
-  if (!swap_chain_info.mailbox_holder.mailbox.IsZero()) {
+  if (swap_chain_info.shared_image) {
     DVLOG(2) << ": DestroySharedImage, mailbox="
-             << swap_chain_info.mailbox_holder.mailbox.ToDebugString();
+             << swap_chain_info.shared_image->mailbox().ToDebugString();
     // Note: the sync token in mailbox_holder may not be accurate. See comment
     // in TransferFrame below.
-    sii->DestroySharedImage(swap_chain_info.mailbox_holder.sync_token,
-                            swap_chain_info.mailbox_holder.mailbox);
+    sii->DestroySharedImage(swap_chain_info.sync_token,
+                            std::move(swap_chain_info.shared_image));
   }
 
   // Remove reference to previous image (if any).
@@ -238,20 +238,17 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
   gmb_handle.android_hardware_buffer =
       swap_chain_info.scoped_ahb_handle.Clone();
 
-  auto client_shared_image = sii->CreateSharedImage(
+  swap_chain_info.shared_image = sii->CreateSharedImage(
       viz::SinglePlaneFormat::kRGBA_8888, transfer_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
       "OpenXrGraphicsBinding", std::move(gmb_handle));
-  CHECK(client_shared_image);
-  swap_chain_info.mailbox_holder.mailbox = client_shared_image->mailbox();
-  swap_chain_info.mailbox_holder.sync_token = sii->GenVerifiedSyncToken();
+  CHECK(swap_chain_info.shared_image);
+  swap_chain_info.sync_token = sii->GenVerifiedSyncToken();
   DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(format));
-  swap_chain_info.mailbox_holder.texture_target = GL_TEXTURE_2D;
 
   DVLOG(2) << ": CreateSharedImage, mailbox="
-           << swap_chain_info.mailbox_holder.mailbox.ToDebugString()
-           << ", SyncToken="
-           << swap_chain_info.mailbox_holder.sync_token.ToDebugString();
+           << swap_chain_info.shared_image->mailbox().ToDebugString()
+           << ", SyncToken=" << swap_chain_info.sync_token.ToDebugString();
 
   // Create an EGLImage for the buffer.
   auto egl_image = gpu::CreateEGLImageFromAHardwareBuffer(

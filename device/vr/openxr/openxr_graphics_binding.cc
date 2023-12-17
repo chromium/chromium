@@ -9,6 +9,7 @@
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
+#include "ui/gl/gl_bindings.h"
 
 namespace device {
 
@@ -24,20 +25,25 @@ SwapChainInfo::~SwapChainInfo() {
   // cleared before destruction, either due to the context provider being lost
   // or from normal session ending. If shared images are not being used, these
   // should not have been initialized in the first place.
-  DCHECK(mailbox_holder.mailbox.IsZero());
-  DCHECK(!mailbox_holder.sync_token.HasData());
+  DCHECK(!shared_image);
+  DCHECK(!sync_token.HasData());
 }
 SwapChainInfo::SwapChainInfo(SwapChainInfo&&) = default;
 SwapChainInfo& SwapChainInfo::operator=(SwapChainInfo&&) = default;
 
 void SwapChainInfo::Clear() {
-  mailbox_holder.mailbox.SetZero();
-  mailbox_holder.sync_token.Clear();
+  shared_image.reset();
+  sync_token.Clear();
 #if BUILDFLAG(IS_ANDROID)
   // Resetting the SharedBufferSize ensures that we will re-create the Shared
   // Buffer if it is needed.
   shared_buffer_size = {0, 0};
 #endif
+}
+
+gpu::MailboxHolder SwapChainInfo::GetMailboxHolder() const {
+  CHECK(shared_image);
+  return gpu::MailboxHolder(shared_image->mailbox(), sync_token, GL_TEXTURE_2D);
 }
 
 bool OpenXrGraphicsBinding::Render() {
@@ -94,8 +100,7 @@ void OpenXrGraphicsBinding::PrepareViewConfigForRender(
 
 bool OpenXrGraphicsBinding::IsUsingSharedImages() {
   const auto swapchain_info = GetSwapChainImages();
-  return ((swapchain_info.size() > 1) &&
-          !swapchain_info[0].mailbox_holder.mailbox.IsZero());
+  return ((swapchain_info.size() > 1) && swapchain_info[0].shared_image);
 }
 
 gfx::Size OpenXrGraphicsBinding::GetSwapchainImageSize() {
@@ -131,10 +136,10 @@ void OpenXrGraphicsBinding::DestroySwapchainImages(
     gpu::SharedImageInterface* shared_image_interface =
         context_provider->SharedImageInterface();
     for (SwapChainInfo& info : GetSwapChainImages()) {
-      if (shared_image_interface && !info.mailbox_holder.mailbox.IsZero() &&
-          info.mailbox_holder.sync_token.HasData()) {
+      if (shared_image_interface && info.shared_image &&
+          info.sync_token.HasData()) {
         shared_image_interface->DestroySharedImage(
-            info.mailbox_holder.sync_token, info.mailbox_holder.mailbox);
+            info.sync_token, std::move(info.shared_image));
       }
       info.Clear();
     }

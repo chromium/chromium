@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/geometry/size.h"
@@ -54,8 +55,10 @@ struct SwapChainInfo {
   SwapChainInfo& operator=(SwapChainInfo&&);
 
   void Clear();
+  gpu::MailboxHolder GetMailboxHolder() const;
 
-  gpu::MailboxHolder mailbox_holder;
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
+  gpu::SyncToken sync_token;
 
 #if BUILDFLAG(IS_WIN)
   // When shared images are being used, there is a corresponding MailboxHolder
