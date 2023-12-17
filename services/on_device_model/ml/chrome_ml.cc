@@ -9,6 +9,7 @@
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/debug/crash_logging.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -57,6 +58,7 @@ void LogGpuBlocked(GpuBlockedReason reason) {
 }
 
 void FatalErrorFn(const char* msg) {
+  SCOPED_CRASH_KEY_STRING256("ChromeML", "error_msg", msg);
   CHECK(false) << "ChromeML Error: " << msg;
 }
 
