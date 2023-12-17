@@ -44,6 +44,10 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
     // which may be called multiples times to update the results.
     virtual void StartSearch(const std::u16string& query,
                              SearchResultsCallback callback) = 0;
+
+    // Whether the view should paint. Certain test scenarios do not need
+    // painting, so it is better to skip painting.
+    virtual bool ShouldPaint() = 0;
   };
 
   explicit PickerView(std::unique_ptr<Delegate> delegate,
@@ -61,6 +65,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
       base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 
   // views::WidgetDelegateView:
+  void PaintChildren(const views::PaintInfo& paint_info) override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
 

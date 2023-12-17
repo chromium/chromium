@@ -36,6 +36,8 @@ class FakePickerViewDelegate : public PickerView::Delegate {
   void StartSearch(const std::u16string& query,
                    SearchResultsCallback callback) override {}
 
+  bool ShouldPaint() override { return true; }
+
  private:
   TestAshWebViewFactory ash_web_view_factory_;
 };
