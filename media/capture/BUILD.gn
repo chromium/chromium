@@ -252,7 +252,7 @@ component("capture_lib") {
   }
 
   # Establish GPU Channel
-  if (is_linux || is_win) {
+  if (is_linux || is_win || is_chromeos_ash) {
     sources += [
       "video/video_capture_gpu_channel_host.cc",
       "video/video_capture_gpu_channel_host.h",
