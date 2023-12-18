@@ -2139,18 +2139,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.MediaCache.Response.EnabledOrDisabled"
-    enum="MediaResponseCacheType" expires_after="2020-12-31">
-  <owner>morlovich@chromium.org</owner>
-  <owner>wicarr@microsoft.com</owner>
-  <owner>webmedia@microsoft.com</owner>
-  <summary>
-    Records decision points on whether response-side media content will be
-    cached or not. This is determined after receiving the HTTP response headers
-    and before attempting to write the the cache.
-  </summary>
-</histogram>
-
 <histogram name="Net.NeedsHWCAP2Workaround" enum="BooleanBroken"
     expires_after="2024-04-28">
   <owner>davidben@chromium.org</owner>

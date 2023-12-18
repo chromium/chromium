@@ -35,7 +35,6 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/values.h"
 #include "net/base/auth.h"
-#include "net/base/cache_metrics.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
@@ -4009,11 +4008,6 @@ bool HttpCache::Transaction::ShouldDisableCaching(
         (base::StartsWith(mime_type, "video", insensitive_ascii) ||
          base::StartsWith(mime_type, "audio", insensitive_ascii))) {
       disable_caching = true;
-      MediaCacheStatusResponseHistogram(
-          MediaResponseCacheType::kMediaResponseTransactionCacheDisabled);
-    } else {
-      MediaCacheStatusResponseHistogram(
-          MediaResponseCacheType::kMediaResponseTransactionCacheEnabled);
     }
   }
   return disable_caching;

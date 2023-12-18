@@ -501,11 +501,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="CryptoConnectFailedAsync"/>
 </enum>
 
-<enum name="MediaResponseCacheType">
-  <int value="0" label="Transaction Cache Enabled"/>
-  <int value="1" label="Transaction Cache Disabled"/>
-</enum>
-
 <enum name="MultiPortStatusOnMigration">
   <int value="0" label="Not validated"/>
   <int value="1" label="Pending refresh validation"/>

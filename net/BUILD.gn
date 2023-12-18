@@ -149,8 +149,6 @@ component("net") {
     "base/backoff_entry.h",
     "base/backoff_entry_serializer.cc",
     "base/backoff_entry_serializer.h",
-    "base/cache_metrics.cc",
-    "base/cache_metrics.h",
     "base/cache_type.h",
     "base/chunked_upload_data_stream.cc",
     "base/chunked_upload_data_stream.h",
