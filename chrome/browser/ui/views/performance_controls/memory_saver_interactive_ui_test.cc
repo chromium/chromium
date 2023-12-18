@@ -517,16 +517,8 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest, CloseBubbleOnTabSwitch) {
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId));
 }
 
-// TODO(crbug.com/1416372): Re-enable this test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_BubbleCorrectlyReportingMemorySaved \
-  DISABLED_BubbleCorrectlyReportingMemorySaved
-#else
-#define MAYBE_BubbleCorrectlyReportingMemorySaved \
-  BubbleCorrectlyReportingMemorySaved
-#endif
 IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
-                       MAYBE_BubbleCorrectlyReportingMemorySaved) {
+                       BubbleCorrectlyReportingMemorySaved) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
