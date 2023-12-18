@@ -112,6 +112,7 @@ source_set("v4l2") {
   deps = [
     ":v4l2_status",
     "//base",
+    "//build/config/linux/libdrm",
     "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/common",
     "//gpu/ipc/service",
