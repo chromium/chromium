@@ -256,7 +256,7 @@ base::expected<OperationPtr, String> CreateArgMinMaxOperation(
       static_cast<const blink::MLArgMinMaxOptions*>(arg_min_max->Options());
   CHECK(options);
   const auto input_rank = arg_min_max->Inputs()[0]->Dimensions().size();
-  const auto axes = options->axes();
+  const auto axes = options->getAxesOr(CreateAllAxes(input_rank));
   CHECK_LE(axes.size(), input_rank);
   arg_min_max_mojo->axes = axes;
   arg_min_max_mojo->keep_dimensions = options->keepDimensions();

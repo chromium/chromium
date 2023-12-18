@@ -5059,6 +5059,192 @@ TEST_P(MLGraphTestMojo, CastTester) {
   }
 }
 
+struct ArgMinMaxTester {
+  OperandInfoBlink input;
+  absl::optional<Vector<uint32_t>> axes;
+  absl::optional<bool> keep_dimensions;
+  absl::optional<bool> select_last_index;
+  OperandInfoMojo expected_input;
+  OperandInfoMojo expected_output;
+  Vector<uint32_t> expected_axes;
+  bool expected_keep_dimensions;
+  bool expected_select_last_index;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    Test(helper, scope, builder, ArgMinMaxKind::kArgMin);
+    Test(helper, scope, builder, ArgMinMaxKind::kArgMax);
+  }
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder,
+            ArgMinMaxKind kind) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    auto* options = MLArgMinMaxOptions::Create();
+    if (axes.has_value()) {
+      options->setAxes(axes.value());
+    }
+    if (keep_dimensions.has_value()) {
+      options->setKeepDimensions(keep_dimensions.value());
+    }
+    if (select_last_index.has_value()) {
+      options->setSelectLastIndex(select_last_index.value());
+    }
+    auto* output_operand =
+        BuildArgMinMax(scope, builder, kind, input_operand, options);
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    ASSERT_TRUE(operation->is_arg_min_max());
+    auto& argminmax = operation->get_arg_min_max();
+
+    blink_mojom::ArgMinMax::Kind mojom_kind;
+    switch (kind) {
+      case ArgMinMaxKind::kArgMin:
+        mojom_kind = blink_mojom::ArgMinMax::Kind::kMin;
+        break;
+      case ArgMinMaxKind::kArgMax:
+        mojom_kind = blink_mojom::ArgMinMax::Kind::kMax;
+        break;
+    }
+    EXPECT_EQ(argminmax->kind, mojom_kind);
+    // Validate the axes of ArgMinMax operation.
+    EXPECT_EQ(argminmax->axes, expected_axes);
+    // Validate the keep_dimensions of ArgMinMax operation.
+    EXPECT_EQ(argminmax->keep_dimensions, expected_keep_dimensions);
+    // Validate the select_last_index of ArgMinMax operation.
+    EXPECT_EQ(argminmax->select_last_index, expected_select_last_index);
+
+    // Validate the input operand.
+    EXPECT_EQ(graph_info->input_operands.size(), 1u);
+    auto input_operand_id = graph_info->input_operands[0];
+    EXPECT_EQ(argminmax->input_operand_id, input_operand_id);
+    auto input_operand_iter =
+        graph_info->id_to_operand_map.find(input_operand_id);
+    ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(input_operand_iter->value->data_type, expected_input.data_type);
+    EXPECT_EQ(input_operand_iter->value->dimensions, expected_input.dimensions);
+
+    // Validate the output operand.
+    EXPECT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    EXPECT_EQ(argminmax->output_operand_id, output_operand_id);
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->data_type, expected_output.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_output.dimensions);
+  }
+};
+
+TEST_P(MLGraphTestMojo, ArgMinMaxTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kWebMachineLearningNeuralNetwork);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test argMinMax with default options.
+    ArgMinMaxTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 3, 4}},
+        .expected_input = {.data_type =
+                               blink_mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 2, 3, 4}},
+        .expected_output = {.data_type = blink_mojom::Operand::DataType::kInt64,
+                            .dimensions = {}},
+        .expected_axes = {0, 1, 2, 3},
+        .expected_keep_dimensions = false,
+        .expected_select_last_index = false}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test argMinMax with axes = {}.
+    ArgMinMaxTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 3, 4}},
+        .axes = Vector<uint32_t>{},
+        .expected_input = {.data_type =
+                               blink_mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 2, 3, 4}},
+        .expected_output = {.data_type = blink_mojom::Operand::DataType::kInt64,
+                            .dimensions = {1, 2, 3, 4}},
+        .expected_axes = {},
+        .expected_keep_dimensions = false,
+        .expected_select_last_index = false}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test argMinMax with axes = {1}.
+    ArgMinMaxTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 3, 4}},
+        .axes = Vector<uint32_t>{1},
+        .expected_input = {.data_type =
+                               blink_mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 2, 3, 4}},
+        .expected_output = {.data_type = blink_mojom::Operand::DataType::kInt64,
+                            .dimensions = {1, 3, 4}},
+        .expected_axes = {1},
+        .expected_keep_dimensions = false,
+        .expected_select_last_index = false}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test argMinMax with axes = {1, 3} and keepDimensions = true.
+    ArgMinMaxTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 3, 4}},
+        .axes = Vector<uint32_t>{1, 3},
+        .keep_dimensions = true,
+        .expected_input = {.data_type =
+                               blink_mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 2, 3, 4}},
+        .expected_output = {.data_type = blink_mojom::Operand::DataType::kInt64,
+                            .dimensions = {1, 1, 3, 1}},
+        .expected_axes = {1, 3},
+        .expected_keep_dimensions = true,
+        .expected_select_last_index = false}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test argMinMax with axes = {1, 3}, keepDimensions = true and and
+    // selectLastIndex = true.
+    ArgMinMaxTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 3, 4}},
+        .axes = Vector<uint32_t>{1, 3},
+        .keep_dimensions = true,
+        .select_last_index = true,
+        .expected_input = {.data_type =
+                               blink_mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 2, 3, 4}},
+        .expected_output = {.data_type = blink_mojom::Operand::DataType::kInt64,
+                            .dimensions = {1, 1, 3, 1}},
+        .expected_axes = {1, 3},
+        .expected_keep_dimensions = true,
+        .expected_select_last_index = true}
+        .Test(*this, scope, builder);
+  }
+}
+
 TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.

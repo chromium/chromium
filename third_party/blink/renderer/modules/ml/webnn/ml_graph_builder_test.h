@@ -45,6 +45,7 @@ enum class ArgMinMaxKind { kArgMin, kArgMax };
 MLOperand* BuildArgMinMax(
     V8TestingScope& scope,
     MLGraphBuilder* builder,
+    ArgMinMaxKind kind,
     const MLOperand* input,
     const MLArgMinMaxOptions* options = MLArgMinMaxOptions::Create());
 
