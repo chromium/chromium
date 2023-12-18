@@ -268,20 +268,6 @@ public class NQETest {
 
         UmaRecorderHolder.onLibraryLoaded(); // Hackish workaround to crbug.com/1338919
         for (int i = 0; i <= 1; ++i) {
-            // Stored network quality in the pref should be read in the second iteration.
-            HistogramWatcher readPrefsSizeHistogram;
-            if (i == 0) {
-                readPrefsSizeHistogram =
-                        HistogramWatcher.newBuilder()
-                                .expectIntRecord("NQE.Prefs.ReadSize", 0)
-                                .build();
-            } else {
-                readPrefsSizeHistogram =
-                        HistogramWatcher.newBuilder()
-                                .expectIntRecord("NQE.Prefs.ReadSize", 1)
-                                .allowExtraRecordsForHistogramsAbove()
-                                .build();
-            }
 
             // NETWORK_QUALITY_OBSERVATION_SOURCE_HTTP_CACHED_ESTIMATE: 3
             HistogramWatcher cachedRttHistogram =
@@ -347,7 +333,6 @@ public class NQETest {
                 assertThat(prefsFileContainsString("network_qualities")).isTrue();
             }
 
-            readPrefsSizeHistogram.assertExpected();
             if (i > 0) {
                 cachedRttHistogram.assertExpected();
             }
