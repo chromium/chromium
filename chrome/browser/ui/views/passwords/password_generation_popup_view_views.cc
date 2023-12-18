@@ -314,10 +314,23 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
     node_data->SetNameChecked(base::JoinString(
         {controller_->SuggestedText(), controller_->password()}, u" "));
     const std::u16string help_text = l10n_util::GetStringFUTF16(
-        IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER,
+        GetHelpTextMessageId(),
         l10n_util::GetStringUTF16(
             IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT),
         controller_->GetPrimaryAccountEmail());
+
+    if (password_manager::features::kPasswordGenerationExperimentVariationParam
+            .Get() == PasswordGenerationVariation::kCrossDevice) {
+      const std::u16string description = base::JoinString(
+          {l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_BENEFITS),
+           l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_CROSS_DEVICE),
+           l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SECURITY),
+           l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_PROACTIVE_CHECK),
+           help_text},
+          u", ");
+      node_data->SetDescription(description);
+      return;
+    }
 
     node_data->SetDescription(help_text);
   }
