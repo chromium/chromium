@@ -111,6 +111,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
           l10n_util::GetStringFUTF16(
               IDS_PERMISSIONS_BUBBLE_PROMPT_ACCESSIBLE_TITLE_ONE_PERM, u"",
               l10n_util::GetStringUTF16(IDS_MIDI_PERMISSION_FRAGMENT))));
+  // TODO(b/315345075): Add a check for the strings displayed in the prompt.
 }
 
 // Display MIDI permission state in page info when denied.
@@ -142,6 +143,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
             EXPECT_TRUE(includes_midi);
             EXPECT_FALSE(includes_midi_sysex);
           })));
+  // TODO(b/315345075): Add a check for the state of MIDI toggle.
 }
 
 // Display MIDI permission state in page info when allowed.
@@ -173,4 +175,34 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
             EXPECT_TRUE(includes_midi);
             EXPECT_FALSE(includes_midi_sysex);
           })));
+  // TODO(b/315345075): Add a check for the state of MIDI toggle.
+}
+
+// TODO(b/315345075): Add a test for the behavior of the MIDI toggle in page
+// info.
+
+// Display in-use indicator of MIDI when blocked.
+IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
+                       BlockedMidiPermissionIndicator) {
+  RunTestSequenceInContext(
+      context(), NavigateAndRequestMidi(),
+      PressButton(PermissionPromptBubbleBaseView::kBlockButtonElementId),
+      WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
+      WaitForShow(ContentSettingImageView::kMidiActivityIndicatorElementId));
+  // TODO(b/315345075): Add a check to ensure the off MIDI icon is displayed.
+  // TODO(b/315345075): Add a check for the strings displayed in the bubble.
+  // TODO(b/315345075): Add a check to ensure only one MIDI icon is displayed.
+}
+
+// Display in-use indicator of MIDI when allowed.
+IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
+                       AllowedMidiPermissionIndicator) {
+  RunTestSequenceInContext(
+      context(), NavigateAndRequestMidi(),
+      PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
+      WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
+      WaitForShow(ContentSettingImageView::kMidiActivityIndicatorElementId));
+  // TODO(b/315345075): Add a check to ensure the on MIDI icon is displayed.
+  // TODO(b/315345075): Add a check for the strings displayed in the bubble.
+  // TODO(b/315345075): Add a check to ensure only one MIDI icon is displayed.
 }

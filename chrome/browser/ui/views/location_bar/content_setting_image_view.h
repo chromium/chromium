@@ -40,6 +40,8 @@ class ContentSettingImageView : public IconLabelBubbleView,
  public:
   METADATA_HEADER(ContentSettingImageView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMediaActivityIndicatorElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMidiActivityIndicatorElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMidiSysexActivityIndicatorElementId);
   class Delegate {
    public:
     // Delegate should return true if the content setting icon should be hidden.
