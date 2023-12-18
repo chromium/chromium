@@ -78,8 +78,9 @@
   }
 
   :host-context(body.revamp-wayfinding-enabled) #drawer {
-    --cr-drawer-border-start-end-radius: 20px;
-    --cr-drawer-border-end-end-radius: 20px;
+    /* TODO(b/316088424) Use window border radius token if available */
+    --cr-drawer-border-start-end-radius: 12px;
+    --cr-drawer-border-end-end-radius: 12px;
     --cr-drawer-header-color: var(--cros-sys-primary);
     --cr-drawer-header-font: var(--cros-title-1-font);
     --cr-drawer-header-padding: 22px;
