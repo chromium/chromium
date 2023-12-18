@@ -118,7 +118,10 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   // Returns the current muting state for the microphone.
   bool IsInputMuted(AudioDeviceID device_id) override;
 
-  static int HardwareSampleRateForDevice(AudioDeviceID device_id);
+  // Retrieves the current hardware sample rate associated with a specified
+  // device.
+  int HardwareSampleRateForDevice(AudioDeviceID device_id) override;
+
   static bool GetDefaultInputDevice(AudioDeviceID* input_device);
   static bool GetDefaultOutputDevice(AudioDeviceID* output_device);
   static AudioDeviceID GetAudioDeviceIdByUId(bool is_input,

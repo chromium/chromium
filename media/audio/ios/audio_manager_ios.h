@@ -98,11 +98,14 @@ class MEDIA_EXPORT AudioManagerIOS : public AudioManagerApple {
   // Returns the current muting state for the microphone.
   bool IsInputMuted(AudioDeviceID device_id) override;
 
+  // Retrieves the current hardware sample rate associated with a specified
+  // device.
+  int HardwareSampleRateForDevice(AudioDeviceID device_id) override;
+
   // Check if delayed start for stream is needed.
   bool ShouldDeferStreamStart() const override;
 
   // Hardware information
-  double HardwareSampleRate();
   double HardwareIOBufferDuration();
   double HardwareLatency(bool is_input);
   long GetDeviceChannels(bool is_input);

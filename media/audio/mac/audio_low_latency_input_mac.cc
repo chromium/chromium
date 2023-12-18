@@ -213,7 +213,7 @@ AudioInputStream::OpenOutcome AUAudioInputStream::Open() {
 
   // The requested sample-rate must match the hardware sample-rate.
   const int sample_rate =
-      AudioManagerMac::HardwareSampleRateForDevice(input_device_id_);
+      manager_->HardwareSampleRateForDevice(input_device_id_);
   DCHECK_EQ(sample_rate, format_.mSampleRate);
 
   log_callback_.Run(base::StrCat(
@@ -983,14 +983,6 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
   }
 
   return noErr;
-}
-
-int AUAudioInputStream::HardwareSampleRate() {
-  // Determine the default input device's sample-rate.
-  AudioDeviceID input_device_id = kAudioObjectUnknown;
-  AudioManagerMac::GetDefaultInputDevice(&input_device_id);
-  return static_cast<int>(
-      AudioManagerMac::HardwareSampleRateForDevice(input_device_id));
 }
 
 base::TimeTicks AUAudioInputStream::GetCaptureTime(

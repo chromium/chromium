@@ -172,10 +172,6 @@ bool AudioManagerIOS::ShouldDeferStreamStart() const {
 }
 
 // static
-double AudioManagerIOS::HardwareSampleRate() {
-  return AudioSessionManagerIOS::GetInstance().HardwareSampleRate();
-}
-
 double AudioManagerIOS::HardwareIOBufferDuration() {
   return AudioSessionManagerIOS::GetInstance().HardwareIOBufferDuration();
 }
@@ -200,6 +196,11 @@ void AudioManagerIOS::SetInputVolume(AudioDeviceID device_id, double volume) {
 
 bool AudioManagerIOS::IsInputMuted(AudioDeviceID device_id) {
   return AudioSessionManagerIOS::GetInstance().IsInputMuted();
+}
+
+int AudioManagerIOS::HardwareSampleRateForDevice(AudioDeviceID device_id) {
+  return static_cast<int>(
+      AudioSessionManagerIOS::GetInstance().HardwareSampleRate());
 }
 
 bool AudioManagerIOS::IsInputGainSettable() {

@@ -652,27 +652,6 @@ bool AudioManagerMac::HasAudioInputDevices() {
 }
 
 // static
-int AudioManagerMac::HardwareSampleRateForDevice(AudioDeviceID device_id) {
-  DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
-  Float64 nominal_sample_rate;
-  UInt32 info_size = sizeof(nominal_sample_rate);
-
-  static const AudioObjectPropertyAddress kNominalSampleRateAddress = {
-      kAudioDevicePropertyNominalSampleRate, kAudioObjectPropertyScopeGlobal,
-      kAudioObjectPropertyElementMain};
-  OSStatus result =
-      AudioObjectGetPropertyData(device_id, &kNominalSampleRateAddress, 0, 0,
-                                 &info_size, &nominal_sample_rate);
-  if (result != noErr) {
-    OSSTATUS_DLOG(WARNING, result)
-        << "Could not get default sample rate for device: " << device_id
-        << ", returing fallback sample rate " << kFallbackSampleRate;
-    return kFallbackSampleRate;
-  }
-
-  return static_cast<int>(nominal_sample_rate);
-}
-
 void AudioManagerMac::GetAudioInputDeviceNames(
     media::AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
@@ -1462,6 +1441,27 @@ bool AudioManagerMac::IsInputMuted(AudioDeviceID device_id) {
                                                nullptr, &size, &muted);
   DLOG_IF(WARNING, result != noErr) << "Failed to get mute state";
   return result == noErr && muted != 0;
+}
+
+int AudioManagerMac::HardwareSampleRateForDevice(AudioDeviceID device_id) {
+  DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
+  Float64 nominal_sample_rate;
+  UInt32 info_size = sizeof(nominal_sample_rate);
+
+  static const AudioObjectPropertyAddress kNominalSampleRateAddress = {
+      kAudioDevicePropertyNominalSampleRate, kAudioObjectPropertyScopeGlobal,
+      kAudioObjectPropertyElementMain};
+  OSStatus result =
+      AudioObjectGetPropertyData(device_id, &kNominalSampleRateAddress, 0, 0,
+                                 &info_size, &nominal_sample_rate);
+  if (result != noErr) {
+    OSSTATUS_DLOG(WARNING, result)
+        << "Could not get default sample rate for device: " << device_id
+        << ", returing fallback sample rate " << kFallbackSampleRate;
+    return kFallbackSampleRate;
+  }
+
+  return static_cast<int>(nominal_sample_rate);
 }
 
 // static

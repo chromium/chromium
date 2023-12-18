@@ -25,7 +25,6 @@
 //
 // - It is recommended to first acquire the native sample rate of the default
 //   input device and then use the same rate when creating this object.
-//   Use AUAudioInputStream::HardwareSampleRate() to retrieve the sample rate.
 // - Calling Close() also leads to self destruction.
 // - The latency consists of two parts:
 //   1) Hardware latency, which includes Audio Unit latency, audio device
@@ -88,9 +87,6 @@ class MEDIA_EXPORT AUAudioInputStream
   double GetVolume() override;
   bool IsMuted() override;
   void SetOutputDeviceForAec(const std::string& output_device_id) override;
-
-  // Returns the current hardware sample rate for the default input device.
-  static int HardwareSampleRate();
 
   // Returns true if the audio unit is active/running.
   // The result is based on the kAudioOutputUnitProperty_IsRunning property

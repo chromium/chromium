@@ -41,6 +41,10 @@ class AudioManagerApple : public AudioManagerBase, public AudioIOStreamClient {
   // Refer main:media/audio/mac/audio_manager_mac.h for more details.
   virtual bool ShouldDeferStreamStart() const = 0;
 
+  // Retrieves the current hardware sample rate associated with a specified
+  // device.
+  virtual int HardwareSampleRateForDevice(AudioDeviceID device_id) = 0;
+
  protected:
   AudioManagerApple(std::unique_ptr<AudioThread> audio_thread,
                     AudioLogFactory* audio_log_factory);
