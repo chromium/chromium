@@ -276,7 +276,7 @@ void AutofillField::set_heuristic_type(HeuristicSource s, FieldType type) {
 }
 
 void AutofillField::add_possible_types_validities(
-    const ServerFieldTypeValidityStateMap& possible_types_validities) {
+    const FieldTypeValidityStateMap& possible_types_validities) {
   for (const auto& possible_type_validity : possible_types_validities) {
     possible_types_validities_[possible_type_validity.first].push_back(
         possible_type_validity.second);

@@ -30,7 +30,7 @@ typedef std::map<FieldType, std::vector<AutofillDataModel::ValidityState>>
     FieldTypeValidityStatesMap;
 
 typedef std::map<FieldType, AutofillDataModel::ValidityState>
-    ServerFieldTypeValidityStateMap;
+    FieldTypeValidityStateMap;
 
 // Specifies if the Username First Flow vote has intermediate values.
 enum class IsMostRecentSingleUsernameCandidate {
@@ -103,7 +103,7 @@ class AutofillField : public FormFieldData {
   // Setters for the detected types.
   void set_heuristic_type(HeuristicSource s, FieldType t);
   void add_possible_types_validities(
-      const ServerFieldTypeValidityStateMap& possible_types_validities);
+      const FieldTypeValidityStateMap& possible_types_validities);
   void set_server_predictions(
       std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
                       FieldPrediction> predictions);
