@@ -217,6 +217,10 @@ void DefaultSearchManager::SetUserSelectedDefaultSearchEngine(
 
   pref_service_->SetDict(kDefaultSearchProviderDataPrefName,
                          TemplateURLDataToDictionary(data));
+#if BUILDFLAG(IS_ANDROID)
+  // Commit the pref immediately so it isn't lost if the app is killed.
+  pref_service_->CommitPendingWrite();
+#endif
 }
 
 void DefaultSearchManager::ClearUserSelectedDefaultSearchEngine() {
