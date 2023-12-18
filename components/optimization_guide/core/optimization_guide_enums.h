@@ -266,6 +266,23 @@ enum class OnDeviceModelEligibilityReason {
   kMaxValue = kTooManyRecentTimeouts,
 };
 
+// Status of a model quality logs upload request.
+enum class ModelQualityLogsUploadStatus {
+  kUnknown = 0,
+  // Logs upload was successful.
+  kUploadSuccessful = 1,
+  // Upload is disabled due to logging feature not enabled.
+  kLoggingNotEnabled = 2,
+  // Upload was not successful because of network error.
+  kNetError = 3,
+
+  // Insert new values before this line.
+  // This enum must remain synchronized with the enum
+  // |OptimizationGuideModelQualityLogsUploadStatus| in
+  // tools/metrics/histograms/enums.xml.
+  kMaxValue = kNetError,
+};
+
 // Performance class of this device.
 //
 // These values are persisted to logs and prefs. Entries should not be

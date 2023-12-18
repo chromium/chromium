@@ -10,6 +10,7 @@
 #include "components/optimization_guide/core/access_token_helper.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -27,6 +28,15 @@
 namespace optimization_guide {
 
 namespace {
+
+void RecordUploadStatusHistogram(proto::ModelExecutionFeature feature,
+                                 ModelQualityLogsUploadStatus status) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.",
+           GetStringNameForModelExecutionFeature(feature)}),
+      status);
+}
 
 // Returns the URL endpoint for the model quality service along with the needed
 // API key.
@@ -62,6 +72,7 @@ proto::ModelExecutionFeature GetModelExecutionFeature(
 // URL load completion callback.
 void OnURLLoadComplete(
     std::unique_ptr<network::SimpleURLLoader> active_url_loader,
+    proto::ModelExecutionFeature feature,
     std::unique_ptr<std::string> response_body) {
   CHECK(active_url_loader) << "loader shouldn't be null\n";
   auto net_error = active_url_loader->NetError();
@@ -81,6 +92,14 @@ void OnURLLoadComplete(
   base::UmaHistogramSparse(
       "OptimizationGuide.ModelQualityLogsUploaderService.NetErrorCode",
       -net_error);
+
+  if (net_error != net::OK || response_code != net::HTTP_OK) {
+    RecordUploadStatusHistogram(feature,
+                                ModelQualityLogsUploadStatus::kNetError);
+    return;
+  }
+  RecordUploadStatusHistogram(feature,
+                              ModelQualityLogsUploadStatus::kUploadSuccessful);
 }
 
 }  // namespace
@@ -120,6 +139,8 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
   // Don't do anything if logging is disabled for the feature. Nothing to
   // upload.
   if (!features::IsModelQualityLoggingEnabledForFeature(feature)) {
+    RecordUploadStatusHistogram(
+        feature, ModelQualityLogsUploadStatus::kLoggingNotEnabled);
     return;
   }
 
@@ -158,7 +179,8 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
   auto* active_url_loader_ptr = active_url_loader.get();
   active_url_loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&OnURLLoadComplete, std::move(active_url_loader)));
+      base::BindOnce(&OnURLLoadComplete, std::move(active_url_loader),
+                     feature));
 }
 
 }  // namespace optimization_guide
