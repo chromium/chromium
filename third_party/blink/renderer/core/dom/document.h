@@ -722,8 +722,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // does its own ancestor tree walk).
   void UpdateStyleAndLayoutTreeForThisDocument();
 
-  void UpdateStyleAndLayoutTreeForNode(const Node*, DocumentUpdateReason);
-  void UpdateStyleAndLayoutTreeForSubtree(const Node*, DocumentUpdateReason);
+  void UpdateStyleAndLayoutTreeForElement(const Element*, DocumentUpdateReason);
+  void UpdateStyleAndLayoutTreeForSubtree(const Element*, DocumentUpdateReason);
 
   void UpdateStyleAndLayout(DocumentUpdateReason);
   void LayoutUpdated();

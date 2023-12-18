@@ -74,6 +74,9 @@ class CORE_EXPORT FlatTreeTraversal {
 
   static ContainerNode* Parent(const Node&);
   static Element* ParentElement(const Node&);
+  // Return the passed in Node if it is an Element, otherwise return the
+  // ParentElement()
+  static const Element* InclusiveParentElement(const Node&);
 
   static Node* NextSibling(const Node&);
   static Node* PreviousSibling(const Node&);

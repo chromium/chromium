@@ -6545,6 +6545,18 @@ PhysicalRect AXObject::GetBoundsInFrameCoordinates() const {
   return PhysicalRect::FastAndLossyFromRectF(computed_bounds);
 }
 
+void AXObject::UpdateStyleAndLayoutTreeForNode(Node& node) {
+  // In most cases, UpdateAllLifecyclePhasesExceptPaint() is enough, but if
+  // the action is part of a display locked node, that will not update the node
+  // because it's not part of the layout update cycle yet. In that case, calling
+  // UpdateStyleAndLayoutTreeForElement() is also necessary.
+  if (const Element* element =
+          FlatTreeTraversal::InclusiveParentElement(node)) {
+    element->GetDocument().UpdateStyleAndLayoutTreeForElement(
+        element, DocumentUpdateReason::kAccessibility);
+  }
+}
+
 //
 // Modify or take an action on an object.
 //
@@ -6563,12 +6575,7 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
     }
   }
 
-  // In most cases, UpdateAllLifecyclePhasesExceptPaint() is enough, but if
-  // the action is part of a display locked node, that will not update the node
-  // because it's not part of the layout update cycle yet. In that case, calling
-  // UpdateStyleAndLayoutTreeForNode() is also necessary.
-  document->UpdateStyleAndLayoutTreeForNode(
-      node, DocumentUpdateReason::kAccessibility);
+  UpdateStyleAndLayoutTreeForNode(*node);
   cache.UpdateAXForAllDocuments();
 
   // Updating style and layout for the node can cause it to gain layout,
@@ -6766,12 +6773,8 @@ bool AXObject::RequestScrollToMakeVisibleWithSubFocusAction(
     }
   }
 
-  // In most cases, UpdateAllLifecyclePhasesExceptPaint() is enough, but if
-  // focus is is moving to a display locked node, that will not update the node
-  // because it's not part of the layout update cycle yet. In that case, calling
-  // UpdateStyleAndLayoutTreeForNode() is also necessary.
-  document->UpdateStyleAndLayoutTreeForNode(
-      node, DocumentUpdateReason::kAccessibility);
+  UpdateStyleAndLayoutTreeForNode(*node);
+
   document->View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kAccessibility);
 

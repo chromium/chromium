@@ -4559,9 +4559,10 @@ TEST_F(StyleEngineContainerQueryTest,
   // do a layout upgrade for elements that are 1) in display:none, and 2)
   // inside a container query container.
   //
-  // See implementation of `NodeLayoutUpgrade::ShouldUpgrade` for more
+  // See implementation of `ElementLayoutUpgrade::ShouldUpgrade` for more
   // information.
-  GetDocument().UpdateStyleAndLayoutTreeForNode(a, DocumentUpdateReason::kTest);
+  GetDocument().UpdateStyleAndLayoutTreeForElement(a,
+                                                   DocumentUpdateReason::kTest);
   EXPECT_FALSE(GetStyleEngine().StyleAffectedByLayout());
   EXPECT_FALSE(GetDocument().View()->NeedsLayout());
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdateForNode(*a));

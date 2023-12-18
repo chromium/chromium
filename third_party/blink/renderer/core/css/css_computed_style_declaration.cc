@@ -297,7 +297,7 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
     return;
   }
 
-  document.UpdateStyleAndLayoutTreeForNode(
+  document.UpdateStyleAndLayoutTreeForElement(
       styled_element, DocumentUpdateReason::kComputedStyle);
 }
 

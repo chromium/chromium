@@ -2705,7 +2705,7 @@ String BaseRenderingContext2D::direction() const {
   if (state.GetDirection() ==
           CanvasRenderingContext2DState::kDirectionInherit &&
       canvas) {
-    canvas->GetDocument().UpdateStyleAndLayoutTreeForNode(
+    canvas->GetDocument().UpdateStyleAndLayoutTreeForElement(
         canvas, DocumentUpdateReason::kCanvas);
   }
   return ToTextDirection(state.GetDirection(), canvas) == TextDirection::kRtl
@@ -2821,7 +2821,7 @@ void BaseRenderingContext2D::DrawTextInternal(
     // accessFont needs the style to be up to date, but updating style can cause
     // script to run, (e.g. due to autofocus) which can free the canvas (set
     // size to 0, for example), so update style before grabbing the PaintCanvas.
-    canvas->GetDocument().UpdateStyleAndLayoutTreeForNode(
+    canvas->GetDocument().UpdateStyleAndLayoutTreeForElement(
         canvas, DocumentUpdateReason::kCanvas);
   }
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
@@ -2947,7 +2947,7 @@ TextMetrics* BaseRenderingContext2D::measureText(const String& text) {
       return MakeGarbageCollected<TextMetrics>();
     }
 
-    canvas->GetDocument().UpdateStyleAndLayoutTreeForNode(
+    canvas->GetDocument().UpdateStyleAndLayoutTreeForElement(
         canvas, DocumentUpdateReason::kCanvas);
   }
   const Font& font = AccessFont(canvas);

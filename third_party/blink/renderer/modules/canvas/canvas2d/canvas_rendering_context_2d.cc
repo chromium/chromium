@@ -434,8 +434,8 @@ bool CanvasRenderingContext2D::WillSetFont() const {
     return false;
   }
 
-  document.UpdateStyleAndLayoutTreeForNode(element,
-                                           DocumentUpdateReason::kCanvas);
+  document.UpdateStyleAndLayoutTreeForElement(element,
+                                              DocumentUpdateReason::kCanvas);
   return true;
 }
 

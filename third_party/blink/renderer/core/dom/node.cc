@@ -1613,11 +1613,15 @@ bool Node::NeedsLayoutSubtreeUpdate() const {
 // questions about HTML in the core DOM class is obviously misplaced.
 bool Node::CanStartSelection() const {
   if (DisplayLockUtilities::LockedAncestorPreventingPaint(*this)) {
-    GetDocument().UpdateStyleAndLayoutTreeForNode(
-        this, DocumentUpdateReason::kSelection);
+    if (const Element* element =
+            FlatTreeTraversal::InclusiveParentElement(*this)) {
+      GetDocument().UpdateStyleAndLayoutTreeForElement(
+          element, DocumentUpdateReason::kSelection);
+    }
   }
-  if (IsEditable(*this))
+  if (IsEditable(*this)) {
     return true;
+  }
 
   if (GetLayoutObject()) {
     const ComputedStyle& style = GetLayoutObject()->StyleRef();

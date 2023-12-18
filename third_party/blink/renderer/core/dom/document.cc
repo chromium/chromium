@@ -2430,40 +2430,42 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
   }
 }
 
-void Document::UpdateStyleAndLayoutTreeForNode(const Node* node,
-                                               DocumentUpdateReason) {
-  DCHECK(node);
-  if (!node->InActiveDocument()) {
+void Document::UpdateStyleAndLayoutTreeForElement(const Element* element,
+                                                  DocumentUpdateReason) {
+  DCHECK(element);
+  if (!element->InActiveDocument()) {
     // If |node| is not in the active document, we can't update its style or
     // layout tree.
-    DCHECK_EQ(node->ownerDocument(), this);
+    DCHECK_EQ(element->ownerDocument(), this);
     return;
   }
   DCHECK(!InStyleRecalc())
-      << "UpdateStyleAndLayoutTreeForNode called from within style recalc";
-  if (!NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*node))
+      << "UpdateStyleAndLayoutTreeForElement called from within style recalc";
+  if (!NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*element)) {
     return;
+  }
 
   DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
-      node, DisplayLockContext::ForcedPhase::kStyleAndLayoutTree);
-  NodeLayoutUpgrade upgrade(*node);
+      element, DisplayLockContext::ForcedPhase::kStyleAndLayoutTree);
+  ElementLayoutUpgrade upgrade(*element);
   UpdateStyleAndLayoutTree(upgrade);
 }
 
-void Document::UpdateStyleAndLayoutTreeForSubtree(const Node* node,
+void Document::UpdateStyleAndLayoutTreeForSubtree(const Element* element,
                                                   DocumentUpdateReason) {
-  DCHECK(node);
-  if (!node->InActiveDocument()) {
-    DCHECK_EQ(node->ownerDocument(), this);
+  DCHECK(element);
+  if (!element->InActiveDocument()) {
+    DCHECK_EQ(element->ownerDocument(), this);
     return;
   }
   DCHECK(!InStyleRecalc())
       << "UpdateStyleAndLayoutTreeForSubtree called from within style recalc";
 
-  if (NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*node) ||
-      node->ChildNeedsStyleRecalc() || node->ChildNeedsStyleInvalidation()) {
+  if (NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*element) ||
+      element->ChildNeedsStyleRecalc() ||
+      element->ChildNeedsStyleInvalidation()) {
     DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
-        node, DisplayLockContext::ForcedPhase::kStyleAndLayoutTree);
+        element, DisplayLockContext::ForcedPhase::kStyleAndLayoutTree);
     UpdateStyleAndLayoutTree();
   }
 }
@@ -5282,8 +5284,8 @@ bool Document::SetFocusedElement(Element* new_focused_element,
     return true;
 
   if (new_focused_element) {
-    UpdateStyleAndLayoutTreeForNode(new_focused_element,
-                                    DocumentUpdateReason::kFocus);
+    UpdateStyleAndLayoutTreeForElement(new_focused_element,
+                                       DocumentUpdateReason::kFocus);
   }
 
   if (new_focused_element && new_focused_element->IsFocusable()) {

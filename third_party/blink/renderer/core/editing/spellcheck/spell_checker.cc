@@ -392,7 +392,7 @@ void SpellChecker::RemoveSpellingAndGrammarMarkers(const HTMLElement& element,
   // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
   // needs to be audited.  See http://crbug.com/590369 for more details.
   if (elements_type == ElementsType::kOnlyNonEditable) {
-    GetFrame().GetDocument()->UpdateStyleAndLayoutTreeForNode(
+    GetFrame().GetDocument()->UpdateStyleAndLayoutTreeForElement(
         &element, DocumentUpdateReason::kSpellCheck);
   }
 

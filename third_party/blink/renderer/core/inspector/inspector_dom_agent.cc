@@ -1664,7 +1664,7 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
     }
   }
 
-  element->GetDocument().UpdateStyleAndLayoutTreeForNode(
+  element->GetDocument().UpdateStyleAndLayoutTreeForElement(
       element, DocumentUpdateReason::kInspector);
   StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
   // Container rule origin no longer known at this point, match name from all

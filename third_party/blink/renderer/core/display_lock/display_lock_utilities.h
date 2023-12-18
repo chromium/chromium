@@ -53,11 +53,11 @@ class CORE_EXPORT DisplayLockUtilities {
     friend void Document::UpdateStyleAndLayoutForRange(
         const Range* range,
         DocumentUpdateReason reason);
-    friend void Document::UpdateStyleAndLayoutTreeForNode(
-        const Node* node,
+    friend void Document::UpdateStyleAndLayoutTreeForElement(
+        const Element* node,
         DocumentUpdateReason reason);
     friend void Document::UpdateStyleAndLayoutTreeForSubtree(
-        const Node* node,
+        const Element* node,
         DocumentUpdateReason reason);
     friend void Document::EnsurePaintLocationDataValidForNode(
         const Node* node,
