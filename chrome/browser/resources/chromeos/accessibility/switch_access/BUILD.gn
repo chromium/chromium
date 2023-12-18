@@ -27,7 +27,6 @@ js_deps = []
 ts_library("ts_build") {
   root_dir = "../"
   out_dir = tsc_out_dir
-  deps = [ "../common:ts_build" ]
   definitions = []
 
   in_files = []
