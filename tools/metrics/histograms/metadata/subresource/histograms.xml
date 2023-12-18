@@ -217,13 +217,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.IndexRuleset.WallDuration" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2024-12-16">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The total time it took to read and index all rules. Includes I/O time for
     reading the unindexed rules, but not for writing the indexed ruleset.
     Recorded every time the RulesetService kicks off a ruleset indexing process.
+
+    Warning: Data is incomplete. This histogram expired in 08/2023 and was
+    unexpired in 12/2023.
   </summary>
 </histogram>
 
@@ -480,13 +483,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.WriteRuleset.Result"
-    enum="SubresourceFilterWriteRulesetResult" expires_after="2023-08-08">
+    enum="SubresourceFilterWriteRulesetResult" expires_after="2024-12-16">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Whether indexing a version of the ruleset and writing it to disk succeeded,
     or failed at a particular step. Recorded every time the RulesetService kicks
     off a ruleset indexing process.
+
+    Warning: Data is incomplete. This metric expired in 08/2023 and was
+    unexpired in 12/2023.
   </summary>
 </histogram>
 
