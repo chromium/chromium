@@ -29,11 +29,6 @@ void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source);
 // elements.
 void AddSharedSyncPageStrings(content::WebUIDataSource* html_source);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Adds load time data used by the <settings-nearby-share-subpage>.
-void AddNearbyShareData(content::WebUIDataSource* html_source);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Adds strings used by the <settings-secure-dns> element.
 void AddSecureDnsStrings(content::WebUIDataSource* html_source);
 }  // namespace settings

@@ -132,6 +132,11 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
                                IDR_NEARBY_SHARE_INTERNAL_ICONS_M_JS);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+  // To use lottie, the worker-src CSP needs to be updated for the web ui that
+  // is using it. Since as of now there are only a couple of webuis using
+  // lottie animations, this update has to be performed manually. As the usage
+  // increases, set this as the default so manual override is no longer
+  // required.
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,
       "worker-src blob: chrome://resources 'self';");

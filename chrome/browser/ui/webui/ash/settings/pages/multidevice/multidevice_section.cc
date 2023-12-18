@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
@@ -322,6 +323,86 @@ const std::vector<SearchConcept>& GetNearbyShareOffSearchConcepts() {
 bool IsOptedIn(HostStatus host_status) {
   return host_status == HostStatus::kHostSetButNotYetVerified ||
          host_status == HostStatus::kHostVerified;
+}
+
+void AddNearbyShareStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"nearbyShareSetUpButtonTitle",
+       IDS_SETTINGS_NEARBY_SHARE_SET_UP_BUTTON_TITLE},
+      {"nearbyShareDeviceNameRowTitle",
+       IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ROW_TITLE},
+      {"nearbyShareDeviceNameDialogTitle",
+       IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_DIALOG_TITLE},
+      {"nearbyShareDeviceNameFieldLabel",
+       IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_FIELD_LABEL},
+      {"nearbyShareEditDeviceName", IDS_SETTINGS_NEARBY_SHARE_EDIT_DEVICE_NAME},
+      {"fastInitiationNotificationToggleTitle",
+       IDS_SETTINGS_NEARBY_SHARE_FAST_INITIATION_NOTIFICATION_TOGGLE_TITLE},
+      {"fastInitiationNotificationToggleDescription",
+       IDS_SETTINGS_NEARBY_SHARE_FAST_INITIATION_NOTIFICATION_TOGGLE_DESCRIPTION},
+      {"fastInitiationNotificationToggleAriaLabel",
+       IDS_SETTINGS_NEARBY_SHARE_FAST_INITIATION_NOTIFICATION_TOGGLE_ARIA_LABEL},
+      {"nearbyShareDeviceNameAriaDescription",
+       IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ARIA_DESCRIPTION},
+      {"nearbyShareConfirmDeviceName",
+       IDS_SETTINGS_NEARBY_SHARE_CONFIRM_DEVICE_NAME},
+      {"nearbyShareManageContactsLabel",
+       IDS_SETTINGS_NEARBY_SHARE_MANAGE_CONTACTS_LABEL},
+      {"nearbyShareManageContactsRowTitle",
+       IDS_SETTINGS_NEARBY_SHARE_MANAGE_CONTACTS_ROW_TITLE},
+      {"nearbyShareEditDataUsage", IDS_SETTINGS_NEARBY_SHARE_EDIT_DATA_USAGE},
+      {"nearbyShareUpdateDataUsage",
+       IDS_SETTINGS_NEARBY_SHARE_UPDATE_DATA_USAGE},
+      {"nearbyShareDataUsageDialogTitle",
+       IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_DIALOG_TITLE},
+      {"nearbyShareDataUsageWifiOnlyLabel",
+       IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_WIFI_ONLY_LABEL},
+      {"nearbyShareDataUsageWifiOnlyDescription",
+       IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_WIFI_ONLY_DESCRIPTION},
+      {"nearbyShareDataUsageDataLabel",
+       IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_LABEL},
+      {"nearbyShareDataUsageDataDescription",
+       IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_DESCRIPTION},
+      {"nearbyShareDataUsageDataTooltip",
+       IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_TOOLTIP},
+      {"nearbyShareDataUsageOfflineLabel",
+       IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_OFFLINE_LABEL},
+      {"nearbyShareDataUsageOfflineDescription",
+       IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_OFFLINE_DESCRIPTION},
+      {"nearbyShareDataUsageDataEditButtonDescription",
+       IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_EDIT_BUTTON_DATA_DESCRIPTION},
+      {"nearbyShareDataUsageWifiOnlyEditButtonDescription",
+       IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_EDIT_BUTTON_WIFI_ONLY_DESCRIPTION},
+      {"nearbyShareDataUsageOfflineEditButtonDescription",
+       IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_EDIT_BUTTON_OFFLINE_DESCRIPTION},
+      {"nearbyShareContactVisibilityRowTitle",
+       IDS_SETTINGS_NEARBY_SHARE_CONTACT_VISIBILITY_ROW_TITLE},
+      {"nearbyShareEditVisibility", IDS_SETTINGS_NEARBY_SHARE_EDIT_VISIBILITY},
+      {"nearbyShareVisibilityDialogTitle",
+       IDS_SETTINGS_NEARBY_SHARE_VISIBILITY_DIALOG_TITLE},
+      {"nearbyShareDescription", IDS_SETTINGS_NEARBY_SHARE_DESCRIPTION},
+      {"nearbyShareHighVisibilityTitle",
+       IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_TITLE},
+      {"nearbyShareHighVisibilityOn",
+       IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_ON},
+      {"nearbyShareHighVisibilityOff",
+       IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_OFF},
+      {"nearbyShareVisibilityDialogSave",
+       IDS_SETTINGS_NEARBY_SHARE_VISIBILITY_DIALOG_SAVE}};
+
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  const char localized_title_string[] = "nearbyShareTitle";
+
+  if (::features::IsNameEnabled()) {
+    html_source->AddString(
+        localized_title_string,
+        NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
+            IDS_SETTINGS_NEARBY_SHARE_TITLE_PH));
+  } else {
+    html_source->AddLocalizedString(localized_title_string,
+                                    IDS_SETTINGS_NEARBY_SHARE_TITLE);
+  }
 }
 
 }  // namespace
@@ -671,7 +752,7 @@ void MultiDeviceSection::AddLoadTimeData(
   // We still need to register strings even if Nearby Share is not supported.
   // For example, the HTML is always built but only displayed if Nearby Share is
   // supported.
-  ::settings::AddNearbyShareData(html_source);
+  AddNearbyShareStrings(html_source);
   RegisterNearbySharedStrings(html_source);
   html_source->AddBoolean(
       "isNearbyShareSupported",
