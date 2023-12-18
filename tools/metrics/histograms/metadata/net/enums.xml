@@ -124,6 +124,19 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="HTTP_NETWORK_TRANSACTION"/>
 </enum>
 
+<enum name="CacheAccessStatus">
+  <int value="0" label="Hit">
+    Recorded when cache entry was found and produced a classification.
+  </int>
+  <int value="1" label="Not found">
+    Recorded when cache entry was not found.
+  </int>
+  <int value="2" label="Outdated">
+    Recorded when cache entry was found but did not produce a classification,
+    because it was outdated.
+  </int>
+</enum>
+
 <enum name="CertificateChangeNotificationType">
   <int value="0" label="Trust"/>
   <int value="1" label="Client Cert"/>

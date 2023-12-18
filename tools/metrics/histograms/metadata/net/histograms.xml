@@ -4699,6 +4699,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SafeSearch.CacheHit" enum="CacheAccessStatus"
+    expires_after="2024-04-28">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records if a URL classification in safe_search_api::URLChecker was provided
+    from the cache or not. In the latter case, it distinguishes between true
+    cache misses and cache hits which were unfit for classification.
+  </summary>
+</histogram>
+
 <histogram name="Net.SharedDictionaryManagerOnDisk.DictionarySizeKB" units="KB"
     expires_after="2024-03-03">
   <owner>horo@chromium.org</owner>
