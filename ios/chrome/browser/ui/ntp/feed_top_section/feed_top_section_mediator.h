@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_view_controller_delegate.h"
 
 class AuthenticationService;
+@protocol NotificationsAlertPresenter;
 @protocol FeedTopSectionConsumer;
 @protocol NewTabPageDelegate;
 class PrefService;
@@ -43,6 +44,10 @@ class IdentityManager;
 
 // Returns `YES` if the signin promo exists on the current NTP.
 @property(nonatomic, assign) BOOL isSignInPromoEnabled;
+
+// Handler for displaying notification related alerts.
+@property(nonatomic, weak) id<NotificationsAlertPresenter>
+    notificationsPresenter;
 
 // Initializes the mediator.
 - (void)setUp;

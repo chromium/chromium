@@ -245,6 +245,7 @@ constexpr CGSize kMainImageSize = {56.0, 56.0};
 
 // Handles the primary button action.
 - (void)onPrimaryButtonAction:(id)unused {
+  [self.mutator notificationsPromoViewMainButtonWasTapped];
 }
 
 // Handles the secondary button action.

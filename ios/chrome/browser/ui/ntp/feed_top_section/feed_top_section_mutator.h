@@ -7,7 +7,10 @@
 
 @protocol FeedTopSectionMutator
 
+// Handles a tap on the Close/secondary button of the notifications promo.
 - (void)notificationsPromoViewCloseButtonWasTapped;
+// Handles a tap on the main button of the notifications promo.
+- (void)notificationsPromoViewMainButtonWasTapped;
 
 @end
 

@@ -10,10 +10,15 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/push_notification/model/notifications_alert_presenter.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
@@ -136,6 +141,31 @@
     self.prefService->SetInteger(prefs::kNotificationsPromoTimesDismissed,
                                  notificationsPromoTimesDismissed + 1);
   }
+}
+
+- (void)notificationsPromoViewMainButtonWasTapped {
+  // Show the Notifications promo alert.
+  PushNotificationService* service =
+      GetApplicationContext()->GetPushNotificationService();
+  id<SystemIdentity> identity = self.authenticationService->GetPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
+  service->SetPreference(identity.gaiaID, PushNotificationClientId::kContent,
+                         true);
+  __weak FeedTopSectionMediator* weakSelf = self;
+  [PushNotificationUtil requestPushNotificationPermission:^(
+                            BOOL granted, BOOL promptShown, NSError* error) {
+    if (!error && !promptShown && !granted) {
+      // This callback can be executed on a background thread, make sure
+      // the UI is displayed on the main thread.
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf
+                .notificationsPresenter presentPushNotificationPermissionAlert];
+      });
+    }
+    if (error) {
+      [self updateFeedTopSectionWhenClosed];
+    }
+  }];
 }
 
 #pragma mark - Private
