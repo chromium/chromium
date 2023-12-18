@@ -200,6 +200,20 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
   CORE_EXPORT Vector<DebugDiff> DebugDiffFields(const ComputedStyleBase& o) const;
 #endif // DCHECK_IS_ON()
 
+  // Find a list of which subgroups listed have changed between this and the
+  // other ComputedStyle(Base); output a list of the changed groups and their
+  // sizes in bytes. This is meant for more precise memory tracking than just
+  // looking at the Oilpan statistics, or for finding out (empirically)
+  // which groups are affected by setting a specific property. It is used
+  // only in the style perftest, not in the normal rendering engine.
+  //
+  // Note that if you change something deep in a subgroup like e.g. a->b->c,
+  // both a->b and a will also be recorded, as they must be modified to get
+  // the pointer in place. The fixed 4- or 8-byte Oilpan header overhead
+  // is not included.
+  Vector<std::pair<String, size_t>>
+  FindChangedGroups(const ComputedStyleBase &other_style) const;
+
   CORE_EXPORT void Trace(Visitor* visitor) const;
   void TraceAfterDispatch(Visitor* visitor) const {
     {% for subgroup in computed_style.subgroups %}
