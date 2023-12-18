@@ -698,6 +698,15 @@ void DemoSession::OnSessionStateChanged() {
       if (ash::features::IsDemoModeGMSCoreWindowCloserEnabled()) {
         window_closer_ = std::make_unique<DemoModeWindowCloser>();
       }
+
+      // TODO(b/292454543): Remove this after issue is resolved.
+      if (InstallAttributes::IsInitialized()) {
+        LOG(WARNING) << "Demo Mode DeviceMode: "
+                     << InstallAttributes::Get()->GetMode();
+        LOG(WARNING) << "Demo Mode domain: "
+                     << InstallAttributes::Get()->GetDomain();
+      }
+
       break;
     default:
       break;
