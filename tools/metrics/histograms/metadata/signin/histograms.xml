@@ -1498,6 +1498,24 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
+<histogram
+    name="Signin.ShowSigninCoordinatorWhenAlreadyPresent.{View}AccessPoint"
+    enum="SigninAccessPoint" expires_after="2024-12-01">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
+  <summary>
+    This histogram is recorded when two sign-in views are being opened at the
+    same time. This indicates the access point which triggered the {View} to be
+    opened.
+  </summary>
+  <token key="View">
+    <variant name="New" summary="second"/>
+    <variant name="Old" summary="first"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.SignIn.Completed" enum="SigninAccessPoint"
     expires_after="2024-04-28">
   <owner>bsazonov@chromium.org</owner>

@@ -1673,12 +1673,30 @@ void InjectNTP(Browser* browser) {
 // TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController {
+  // Calling this method when there is a signinCoordinator alive is incorrect
+  // as there should not be 2 signinCoordinators alive at the same time (note
+  // that allocating the second one will dealloc the first and this crashes in
+  // various ways).
   if (command.skipIfUINotAvaible &&
       (baseViewController.presentedViewController ||
        ![self isTabAvailableToPresentViewController])) {
     // Make sure the UI is available to present the sign-in view.
     return;
   }
+  if (self.signinCoordinator) {
+    // As of M121, the CHECK above is known to fire in various cases. The goal
+    // of the histograms below is to detect the number of incorrect cases and
+    // for which of the access points they are triggered.
+    base::UmaHistogramEnumeration(
+        "Signin.ShowSigninCoordinatorWhenAlreadyPresent.NewAccessPoint",
+        command.accessPoint, signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+    base::UmaHistogramEnumeration(
+        "Signin.ShowSigninCoordinatorWhenAlreadyPresent.OldAccessPoint",
+        self.signinCoordinator.accessPoint,
+        signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+  }
+  // TODO(crbug.com/1479861): Change this to a CHECK once this invariant is
+  // correct.
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
