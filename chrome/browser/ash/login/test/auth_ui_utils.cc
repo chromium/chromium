@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_window_visibility_waiter.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
+#include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_password_changed_screen_handler.h"
 
 namespace ash::test {
@@ -29,6 +30,12 @@ const UIPath kForgotCancel = {"gaia-password-changed", "cancelForgot"};
 
 const UIPath kTryAgainRecovery = {"gaia-password-changed", "backButton"};
 const UIPath kProceedAnyway = {"gaia-password-changed", "proceedAnyway"};
+
+const test::UIPath kRecoverySuccessStep = {"cryptohome-recovery",
+                                           "successDialog"};
+const test::UIPath kRecoveryDoneButton = {"cryptohome-recovery", "doneButton"};
+const test::UIPath kRecoveryErrorStep = {"cryptohome-recovery", "errorDialog"};
+
 }  // namespace
 
 // Password change scenario
@@ -83,6 +90,26 @@ void LocalDataLossWarningPageExpectGoBack() {
 
 void LocalDataLossWarningPageExpectProceed() {
   test::OobeJS().ExpectVisiblePath(kProceedAnyway);
+}
+
+std::unique_ptr<test::TestConditionWaiter> RecoveryPasswordUpdatedPageWaiter() {
+  return std::make_unique<CompositeWaiter>(
+      std::make_unique<OobeWindowVisibilityWaiter>(true),
+      std::make_unique<OobeScreenWaiter>(
+          CryptohomeRecoveryScreenView::kScreenId),
+      OobeJS().CreateVisibilityWaiter(true, kRecoverySuccessStep));
+}
+
+void RecoveryPasswordUpdatedProceedAction() {
+  test::OobeJS().ClickOnPath(kRecoveryDoneButton);
+}
+
+std::unique_ptr<test::TestConditionWaiter> RecoveryErrorPageWaiter() {
+  return std::make_unique<CompositeWaiter>(
+      std::make_unique<OobeWindowVisibilityWaiter>(true),
+      std::make_unique<OobeScreenWaiter>(
+          CryptohomeRecoveryScreenView::kScreenId),
+      OobeJS().CreateVisibilityWaiter(true, kRecoveryErrorStep));
 }
 
 }  // namespace ash::test

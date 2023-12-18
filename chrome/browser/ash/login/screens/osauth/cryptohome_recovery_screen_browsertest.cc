@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ash/login/screens/osauth/cryptohome_recovery_setup_screen.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/login/test/auth_ui_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/fake_recovery_service_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -30,11 +32,8 @@ namespace ash {
 
 namespace {
 
-const test::UIPath kSuccessStep = {"cryptohome-recovery", "successDialog"};
-const test::UIPath kErrorStep = {"cryptohome-recovery", "errorDialog"};
 const test::UIPath kReauthNotificationStep = {"cryptohome-recovery",
                                               "reauthNotificationDialog"};
-const test::UIPath kDoneButton = {"cryptohome-recovery", "doneButton"};
 const test::UIPath kManualRecoveryButton = {"cryptohome-recovery",
                                             "manualRecoveryButton"};
 const test::UIPath kRetryButton = {"cryptohome-recovery", "retryButton"};
@@ -202,9 +201,8 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, SuccessfulRecovery) {
   SetUpExitCallback();
   SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
-  OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
-  test::OobeJS().CreateVisibilityWaiter(true, kSuccessStep)->Wait();
-  test::OobeJS().ClickOnPath(kDoneButton);
+  test::RecoveryPasswordUpdatedPageWaiter()->Wait();
+  test::RecoveryPasswordUpdatedProceedAction();
 
   WaitForScreenExit();
   EXPECT_EQ(result_.value(),
@@ -250,8 +248,8 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, ManualRecoveryAfterError) {
   SetUpExitCallback();
   SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
-  OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
-  test::OobeJS().CreateVisibilityWaiter(true, kErrorStep)->Wait();
+  test::RecoveryErrorPageWaiter()->Wait();
+
   test::OobeJS().ClickOnPath(kManualRecoveryButton);
 
   WaitForScreenExit();
@@ -271,8 +269,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, RetryAfterError) {
   SetUpExitCallback();
   SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
-  OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
-  test::OobeJS().CreateVisibilityWaiter(true, kErrorStep)->Wait();
+  test::RecoveryErrorPageWaiter()->Wait();
   test::OobeJS().ClickOnPath(kRetryButton);
 
   WaitForScreenExit();
@@ -283,9 +280,8 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, RetryAfterError) {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
-  OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
-  test::OobeJS().CreateVisibilityWaiter(true, kSuccessStep)->Wait();
-  test::OobeJS().ClickOnPath(kDoneButton);
+  test::RecoveryPasswordUpdatedPageWaiter()->Wait();
+  test::RecoveryPasswordUpdatedProceedAction();
 
   WaitForScreenExit();
   EXPECT_EQ(result_.value(),
@@ -322,9 +318,8 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest,
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
-  OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
-  test::OobeJS().CreateVisibilityWaiter(true, kSuccessStep)->Wait();
-  test::OobeJS().ClickOnPath(kDoneButton);
+  test::RecoveryPasswordUpdatedPageWaiter()->Wait();
+  test::RecoveryPasswordUpdatedProceedAction();
 
   WaitForScreenExit();
   EXPECT_EQ(result_.value(),
@@ -347,8 +342,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, CancelledOnTimeout) {
   SetUpExitCallback();
   SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
-  OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
-  test::OobeJS().CreateVisibilityWaiter(true, kSuccessStep)->Wait();
+  test::RecoveryPasswordUpdatedPageWaiter()->Wait();
   ASSERT_TRUE(FireExpirationTimer());
 
   WaitForScreenExit();
@@ -408,9 +402,8 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenChildTest, SuccessfulRecovery) {
   SetUpExitCallback();
   SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
-  OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
-  test::OobeJS().CreateVisibilityWaiter(true, kSuccessStep)->Wait();
-  test::OobeJS().ClickOnPath(kDoneButton);
+  test::RecoveryPasswordUpdatedPageWaiter()->Wait();
+  test::RecoveryPasswordUpdatedProceedAction();
 
   WaitForScreenExit();
   EXPECT_EQ(result_.value(),

@@ -30,6 +30,11 @@ void LocalDataLossWarningPageProceedAction();
 void LocalDataLossWarningPageExpectGoBack();
 void LocalDataLossWarningPageExpectProceed();
 
+std::unique_ptr<test::TestConditionWaiter> RecoveryPasswordUpdatedPageWaiter();
+void RecoveryPasswordUpdatedProceedAction();
+
+std::unique_ptr<test::TestConditionWaiter> RecoveryErrorPageWaiter();
+
 }  // namespace ash::test
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_AUTH_UI_UTILS_H_
