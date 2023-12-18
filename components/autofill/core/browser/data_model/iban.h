@@ -125,6 +125,10 @@ class Iban : public AutofillDataModel {
   // server-based IBANs because server-based IBANs don't store the full `value`.
   bool IsValid();
 
+  // Logs the number of days since this IBAN was last used, increments its use
+  // count, and updates its last used date to today.
+  void RecordAndLogUse();
+
   // Construct an IBAN identifier from `prefix_`, `suffix_`, `length_` (and
   // `value_` if it's a local-based IBAN) by the following rules:
   // 1. Always reveal the first and the last four characters.

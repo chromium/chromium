@@ -228,6 +228,13 @@ void AutofillWebDataService::RemoveLocalIban(const std::string& guid) {
                                 autofill_backend_, guid));
 }
 
+void AutofillWebDataService::UpdateServerIbanMetadata(const Iban& iban) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::UpdateServerIbanMetadata,
+                     autofill_backend_, iban));
+}
+
 void AutofillWebDataService::AddServerCvc(int64_t instrument_id,
                                           const std::u16string& cvc) {
   wdbs_->ScheduleDBTask(

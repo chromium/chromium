@@ -11,6 +11,8 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
+#include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
+#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 
 namespace autofill {
@@ -384,6 +386,12 @@ void Iban::set_length(int length) {
 bool Iban::IsValid() {
   CHECK_NE(record_type_, RecordType::kUnknown);
   return record_type_ == kServerIban || IsValid(value_);
+}
+
+void Iban::RecordAndLogUse() {
+  autofill_metrics::LogDaysSinceLastIbanUse(*this);
+  set_use_date(AutofillClock::Now());
+  set_use_count(use_count() + 1);
 }
 
 std::u16string Iban::GetIdentifierStringForAutofillDisplay(

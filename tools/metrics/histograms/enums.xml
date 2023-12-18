@@ -5405,6 +5405,8 @@ Called by update_autofill_enums.py.-->
   <int value="271" label="UpdateCreditCardCvc: Failure"/>
   <int value="272" label="ClearLocalCvcs: Success"/>
   <int value="273" label="ClearLocalCvcs: Failure"/>
+  <int value="274" label="UpdateServerIbanMetadata: Success"/>
+  <int value="275" label="UpdateServerIbanMetadata: Failure"/>
 </enum>
 
 <enum name="AutomaticLazyFrameLoadReason">

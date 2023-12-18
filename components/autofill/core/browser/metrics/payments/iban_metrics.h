@@ -96,6 +96,9 @@ enum class IbanUploadEnabledStatus {
 void LogStoredIbanMetrics(const std::vector<std::unique_ptr<Iban>>& local_ibans,
                           const base::TimeDelta& disused_data_threshold);
 
+// Logs the number of days since the given IBAN was last used.
+void LogDaysSinceLastIbanUse(const Iban& iban);
+
 // Logs the number of strikes that an IBAN had when save was accepted.
 void LogStrikesPresentWhenIbanSaved(const int num_strikes, bool is_upload_save);
 

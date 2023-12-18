@@ -443,6 +443,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".WithOnlyServerData" summary="only server autofill data"/>
 </variants>
 
+<variants name="IbanRecordType">
+  <variant name="Local" summary="Local IBAN"/>
+  <variant name="Server" summary="Server IBAN"/>
+</variants>
+
 <variants name="IbanTypeToBeSaved">
   <variant name=".Local" summary="Local IBAN save"/>
   <variant name=".Upload" summary="Server IBAN save"/>
@@ -1580,7 +1585,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.DaysSinceLastUse.StoredIban{IbanTypeToBeSaved}"
+<histogram name="Autofill.DaysSinceLastUse.StoredIban.{IbanRecordType}"
     units="days" expires_after="2024-07-01">
   <owner>qihuizhao@google.com</owner>
   <owner>jsaul@google.com</owner>
@@ -1590,7 +1595,7 @@ chromium-metrics-reviews@google.com.
     given Chrome Profile was last used. This is logged for each Autofill IBAN
     once per Chrome User Profile load.
   </summary>
-  <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
+  <token key="IbanRecordType" variants="IbanRecordType"/>
 </histogram>
 
 <histogram name="Autofill.DaysSinceLastUse.StoredProfile.{Category}"

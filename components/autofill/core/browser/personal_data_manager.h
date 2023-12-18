@@ -249,6 +249,10 @@ class PersonalDataManager : public KeyedService,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card);
 
+  // Called to indicate `iban` was used (to fill in a form). Updates the
+  // database accordingly.
+  void RecordUseOfIban(Iban& iban);
+
   // Called when the user accepts the prompt to save the credit card locally.
   // Records some metrics and attempts to save the imported card. Returns the
   // guid of the new or updated card, or the empty string if no card was saved.

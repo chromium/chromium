@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -109,7 +110,9 @@ enum class Result {
   kUpdateCreditCardCvc_Failure = 271,
   kClearLocalCvcs_Success = 272,
   kClearLocalCvcs_Failure = 273,
-  kMaxValue = kClearLocalCvcs_Failure,
+  kUpdateServerIbanMetadata_Success = 274,
+  kUpdateServerIbanMetadata_Failure = 275,
+  kMaxValue = kUpdateServerIbanMetadata_Failure,
 };
 
 // Reports the success or failure of various operations on the database via UMA.
@@ -703,6 +706,26 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveLocalIban(
     db_observer.IbanChanged(IbanChange(IbanChange::REMOVE, guid, *iban));
   }
   ReportResult(Result::kRemoveIban_Success);
+  return WebDatabase::COMMIT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::UpdateServerIbanMetadata(
+    const Iban& iban,
+    WebDatabase* db) {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  CHECK_EQ(Iban::RecordType::kServerIban, iban.record_type());
+  if (!AutofillTable::FromWebDatabase(db)->AddOrUpdateServerIbanMetadata(
+          iban.GetMetadata())) {
+    ReportResult(Result::kUpdateServerIbanMetadata_Failure);
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+
+  for (auto& db_observer : db_observer_list_) {
+    db_observer.IbanChanged(
+        IbanChange(IbanChange::UPDATE, iban.instrument_id(), iban));
+  }
+
+  ReportResult(Result::kUpdateServerIbanMetadata_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 

@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill::autofill_metrics {
@@ -35,6 +36,17 @@ void LogStoredIbanMetrics(const std::vector<std::unique_ptr<Iban>>& local_ibans,
 
   base::UmaHistogramCounts100("Autofill.StoredIbanDisusedCount.Local",
                               num_disused_local_ibans);
+}
+
+void LogDaysSinceLastIbanUse(const Iban& iban) {
+  CHECK(iban.record_type() == Iban::RecordType::kLocalIban ||
+        iban.record_type() == Iban::RecordType::kServerIban);
+  base::UmaHistogramCounts1000(
+      base::StrCat({"Autofill.DaysSinceLastUse.StoredIban.",
+                    (iban.record_type() == Iban::RecordType::kServerIban)
+                        ? "Server"
+                        : "Local"}),
+      (AutofillClock::Now() - iban.use_date()).InDays());
 }
 
 void LogStrikesPresentWhenIbanSaved(const int num_strikes,

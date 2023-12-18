@@ -820,6 +820,22 @@ void PersonalDataManager::RecordUseOf(
   }
 }
 
+void PersonalDataManager::RecordUseOfIban(Iban& iban) {
+  iban.RecordAndLogUse();
+
+  if (iban.record_type() == Iban::RecordType::kServerIban) {
+    CHECK(database_helper_->GetServerDatabase())
+        << "Recording use of server IBAN metadata without server storage.";
+    database_helper_->GetServerDatabase()->UpdateServerIbanMetadata(iban);
+  } else {
+    if (database_helper_->GetLocalDatabase()) {
+      database_helper_->GetLocalDatabase()->UpdateLocalIban(iban);
+    }
+  }
+
+  Refresh();
+}
+
 void PersonalDataManager::AddProfile(const AutofillProfile& profile) {
   if (!IsAutofillProfileEnabled() || !database_helper_->GetLocalDatabase()) {
     return;
