@@ -26,7 +26,6 @@ import org.chromium.android_webview.WebMessageListener;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedTitleHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
@@ -64,8 +63,6 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
             RESOURCE_PATH + "/post_message_array_buffer_reply.html";
     private static final String POST_MESSAGE_ARRAYBUFFER_TITLE_HTML =
             RESOURCE_PATH + "/post_message_array_buffer_title.html";
-    private static final String POST_MESSAGE_ARRAYBUFFER_TRANSFER_HTML =
-            RESOURCE_PATH + "/post_message_array_buffer_transfer.html";
     private static final String FILE_URI = "file:///android_asset/asset_file.html";
     private static final String HELLO_WORLD_HTML = RESOURCE_PATH + "/hello_world.html";
 
@@ -764,21 +761,6 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
     }
 
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView", "JsJavaInteraction"})
-    @CommandLineFlags.Add({"disable-features=JsInjectionArrayBufferJsToBrowser"})
-    public void testPostArrayBufferFeatureDisabled() throws Throwable {
-        final byte[] content = (HELLO + "FromJava").getBytes(StandardCharsets.UTF_8);
-        addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
-        final String url = loadUrlFromPath(POST_MESSAGE_ARRAYBUFFER_REPLY_HTML);
-        TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
-        data.mReplyProxy.postMessage(new MessagePayload(content));
-        data = mListener.waitForOnPostMessage();
-        final String errorString = data.getAsString();
-        Assert.assertTrue(errorString.contains("Error"));
-    }
-
     private void verifyPostArrayBufferWorks(byte[] content) throws Exception {
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
         final String url = loadUrlFromPath(POST_MESSAGE_ARRAYBUFFER_REPLY_HTML);
@@ -814,7 +796,11 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
         verifyPostArrayBufferWorks(content);
     }
 
-    private void verifyPostNullOrUndefinedShouldThrowException() throws Throwable {
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    public void testPostNullOrUndefinedShouldThrowExceptionWithArrayBufferFeature()
+            throws Throwable {
         final byte[] content = (HELLO + "FromJava").getBytes(StandardCharsets.UTF_8);
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
         final String url = loadUrlFromPath(POST_MESSAGE_NULL_OR_UNDEFINED_HTML);
@@ -831,22 +817,6 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
         errorString = data.getAsString();
         Assert.assertTrue(errorString.contains("Error"));
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView", "JsJavaInteraction"})
-    @CommandLineFlags.Add({"disable-features=JsInjectionArrayBufferJsToBrowser"})
-    public void testPostNullOrUndefinedShouldThrowException() throws Throwable {
-        verifyPostNullOrUndefinedShouldThrowException();
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView", "JsJavaInteraction"})
-    public void testPostNullOrUndefinedShouldThrowExceptionWithArrayBufferFeature()
-            throws Throwable {
-        verifyPostNullOrUndefinedShouldThrowException();
     }
 
     @Test
