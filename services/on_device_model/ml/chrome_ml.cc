@@ -58,7 +58,7 @@ void LogGpuBlocked(GpuBlockedReason reason) {
 }
 
 void FatalErrorFn(const char* msg) {
-  SCOPED_CRASH_KEY_STRING256("ChromeML", "error_msg", msg);
+  SCOPED_CRASH_KEY_STRING1024("ChromeML", "error_msg", msg);
   CHECK(false) << "ChromeML Error: " << msg;
 }
 
