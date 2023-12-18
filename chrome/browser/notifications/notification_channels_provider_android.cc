@@ -27,6 +27,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
+#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search_engines/template_url.h"
@@ -218,8 +219,9 @@ void NotificationChannelsProviderAndroid::MigrateToChannelsIfNecessary(
   // Collect the existing rules and create channels for them.
   {
     std::unique_ptr<content_settings::RuleIterator> it(
-        pref_provider->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
-                                       false /* incognito */));
+        pref_provider->GetRuleIterator(
+            ContentSettingsType::NOTIFICATIONS, false /* incognito */,
+            content_settings::PartitionKey::WipGetDefault()));
 
     while (it && it->HasNext()) {
       std::unique_ptr<content_settings::Rule> rule = it->Next();
@@ -231,9 +233,9 @@ void NotificationChannelsProviderAndroid::MigrateToChannelsIfNecessary(
 
   // Remove the existing |rules| from the preference provider.
   for (const auto& pattern : patterns) {
-    pref_provider->SetWebsiteSetting(pattern.first, pattern.second,
-                                     ContentSettingsType::NOTIFICATIONS,
-                                     base::Value(), {});
+    pref_provider->SetWebsiteSetting(
+        pattern.first, pattern.second, ContentSettingsType::NOTIFICATIONS,
+        base::Value(), {}, content_settings::PartitionKey::WipGetDefault());
   }
 
   prefs->SetBoolean(prefs::kMigratedToSiteNotificationChannels, true);
