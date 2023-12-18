@@ -602,6 +602,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     buttonConfiguration.attributedTitle = nil;
     buttonConfiguration.title = _primaryActionString;
     _primaryActionButton.configuration = buttonConfiguration;
+    [self setPrimaryActionButtonFont:_primaryActionButton];
   }
 }
 
@@ -695,7 +696,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
     // Use `primaryActionString` even if scrolling to the end is mandatory
     // because at the viewDidLoad stage, the scroll view hasn't computed its
-    // content height, so there is no way to knOow if scrolling is needed.
+    // content height, so there is no way to know if scrolling is needed.
     // This label will be updated at the viewDidAppear stage if necessary.
     buttonConfiguration.title = self.primaryActionString;
     buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
