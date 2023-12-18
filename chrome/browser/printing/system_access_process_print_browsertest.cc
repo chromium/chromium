@@ -3247,14 +3247,8 @@ class ContentAnalysisScriptedPreviewlessPrintAfterDialogBrowserTest
 
 #if !BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/1496991): Timeout on Mac
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_PrintWithPreviewBeforeLoaded DISABLED_PrintWithPreviewBeforeLoaded
-#else
-#define MAYBE_PrintWithPreviewBeforeLoaded PrintWithPreviewBeforeLoaded
-#endif
 IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
-                       MAYBE_PrintWithPreviewBeforeLoaded) {
+                       PrintWithPreviewBeforeLoaded) {
   AddPrinter("printer_name");
 
   ASSERT_TRUE(embedded_test_server()->Started());
