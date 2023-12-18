@@ -365,16 +365,6 @@ class FetcherImpl final : public ProtoFetcher<Response> {
   FetcherImpl(const FetcherImpl&) = delete;
   FetcherImpl& operator=(const FetcherImpl&) = delete;
 
- protected:
-  std::string GetMetricKey(StringPiece metric_id) const {
-    return JoinString({config_.histogram_basename, metric_id}, ".");
-  }
-  std::string GetMetricKey(StringPiece metric_id,
-                           StringPiece metric_suffix) const {
-    return JoinString({config_.histogram_basename, metric_id, metric_suffix},
-                      ".");
-  }
-
  private:
   void RecordMetrics(const ProtoFetcherStatus& status) {
     metrics_.RecordStatus(status);
