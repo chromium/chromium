@@ -1998,7 +1998,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.OverflowMenu.Customization.DestinationsReordered.FirstPosition"
-    enum="IOSOverflowMenuDestination" expires_after="2024-04-28">
+    enum="IOSOverflowMenuDestination" expires_after="2024-06-30">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2093,6 +2093,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     The amount of time the overflow/tools menu is open and a destination (the
     horizontal list) is selected.
+  </summary>
+</histogram>
+
+<histogram name="IOS.OverflowMenu.UserScrolledToEndAndStartedCustomization"
+    enum="Boolean" expires_after="2024-04-28">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Fired whenever the user ends an overflow menu session after having scrolled
+    to the end of the menu. Records whether the user started the menu
+    customization flow during that session.
   </summary>
 </histogram>
 

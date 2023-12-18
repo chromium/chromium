@@ -26,6 +26,9 @@
 // list).
 - (void)popupMenuUserSelectedDestination;
 
+// Called when the user scrolls to the end of the action list.
+- (void)popupMenuUserScrolledToEndOfActions;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_POPUP_MENU_METRICS_HANDLER_H_
