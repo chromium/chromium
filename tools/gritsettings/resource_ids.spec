@@ -1130,7 +1130,7 @@
     "messages": [7500],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/shimless_rma/resources/resources.grd": {
-    "META": {"sizes": {"includes": [80],}},
+    "META": {"sizes": {"includes": [100],}},
     "includes": [7520],
   },
   "ash/keyboard/ui/keyboard_resources.grd": {

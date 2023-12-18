@@ -1,0 +1,34 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {StateResult} from './shimless_rma.mojom-webui.js';
+
+export const DISABLE_NEXT_BUTTON = 'disable-next-button';
+export type DisableNextButtonEvent = CustomEvent<boolean>;
+
+export const DISABLE_ALL_BUTTONS = 'disable-all-buttons';
+export type DisableAllButtonsEvent =
+    CustomEvent<{showBusyStateOverlay: boolean}>;
+
+export const ENABLE_ALL_BUTTONS = 'enable-all-buttons';
+export type EnableAllButtonsEvent = CustomEvent;
+
+export const TRANSITION_STATE = 'transition-state';
+export type TransitionStateEvent =
+    CustomEvent<() => Promise<{stateResult: StateResult}>>;
+
+export const CLICK_NEXT_BUTTON = 'click-next-button';
+export type ClickNextButtonEvent = CustomEvent;
+
+type ExtractDetail<T> = T extends CustomEvent<infer U>? U : never;
+
+/**
+ * Constructs a CustomEvent with the given event type and details.
+ * The event will bubble up through elements and components.
+ */
+export function createCustomEvent<T extends keyof HTMLElementEventMap>(
+    type: T,
+    detail: ExtractDetail<HTMLElementEventMap[T]>): CustomEvent<typeof detail> {
+  return new CustomEvent(type, {bubbles: true, composed: true, detail});
+}

@@ -68,10 +68,11 @@ build_webui("build") {
 
   non_web_component_files = [
     "data.js",
+    "events.ts",
     "fake_data.js",
     "fake_shimless_rma_service.js",
     "mojo_interface_provider.js",
-    "shimless_rma_util.js",
+    "shimless_rma_util.ts",
   ]
 
   mojo_files = [ "$root_gen_dir/mojom-webui/ash/webui/shimless_rma/mojom/shimless_rma.mojom-webui.js" ]
