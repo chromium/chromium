@@ -4,6 +4,7 @@
 //
 #include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
@@ -109,15 +110,34 @@ bool NetworkServiceProxyAllowList::Matches(
 
 void NetworkServiceProxyAllowList::UseMaskedDomainList(
     const masked_domain_list::MaskedDomainList& mdl) {
+  const int experiment_group_id =
+      network::features::kMaskedDomainListExperimentGroup.Get();
+
+  // Clients are in the default group if the experiment_group_id is the feature
+  // default value of 0.
+  const bool in_default_group = experiment_group_id == 0;
+
+  // All Resources are used by the default group unless they are explicitly
+  // excluded. For a client in the experiment group to use a Resource, the
+  // Resource must explicitly list the experiment group.
+  auto is_eligible = [&](masked_domain_list::Resource resource) {
+    if (in_default_group) {
+      return !resource.exclude_default_group();
+    }
+    return base::Contains(resource.experiment_group_ids(), experiment_group_id);
+  };
+
   url_matcher_with_bypass_.Clear();
   for (auto owner : mdl.resource_owners()) {
     // Group domains by partition first so that only one set of the owner's
     // bypass rules are created per partition.
     std::map<std::string, std::vector<std::string>> owned_domains_by_partition;
     for (auto resource : owner.owned_resources()) {
-      const std::string partition =
-          UrlMatcherWithBypass::PartitionMapKey(resource.domain());
-      owned_domains_by_partition[partition].emplace_back(resource.domain());
+      if (is_eligible(resource)) {
+        const std::string partition =
+            UrlMatcherWithBypass::PartitionMapKey(resource.domain());
+        owned_domains_by_partition[partition].emplace_back(resource.domain());
+      }
     }
 
     for (const auto& [partition, domains] : owned_domains_by_partition) {

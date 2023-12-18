@@ -33,6 +33,8 @@ BASE_DECLARE_FEATURE(kSplitAuthCacheByNetworkIsolationKey);
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kDnsOverHttpsUpgrade);
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kMaskedDomainList);
 COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::FeatureParam<int> kMaskedDomainListExperimentGroup;
+COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::FeatureParam<std::string>
     kMaskedDomainListExperimentalVersion;
 COMPONENT_EXPORT(NETWORK_CPP)
