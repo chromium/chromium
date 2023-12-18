@@ -5583,7 +5583,7 @@ void NavigationRequest::CommitErrorPage(
 
   DetermineOriginAgentClusterEndResult();
 
-  UpdateCommitNavigationParamsHistory();
+  UpdateHistoryParamsInCommitNavigationParams();
 
   common_params_->should_replace_current_entry =
       ShouldReplaceCurrentEntryForFailedNavigation();
@@ -5680,7 +5680,7 @@ void NavigationRequest::CommitNavigation() {
 
   DetermineOriginAgentClusterEndResult();
 
-  UpdateCommitNavigationParamsHistory();
+  UpdateHistoryParamsInCommitNavigationParams();
   DCHECK(NeedsUrlLoader() == !!response_head_ ||
          (was_redirected_ && common_params_->url.IsAboutBlank()));
   DCHECK(!common_params_->url.SchemeIs(url::kJavaScriptScheme));
@@ -6573,7 +6573,7 @@ NavigationRequest::CheckCSPEmbeddedEnforcement() {
   return CSPEmbeddedEnforcementResult::BLOCK_RESPONSE;
 }
 
-void NavigationRequest::UpdateCommitNavigationParamsHistory() {
+void NavigationRequest::UpdateHistoryParamsInCommitNavigationParams() {
   NavigationController& navigation_controller =
       frame_tree_node_->navigator().controller();
   commit_params_->current_history_list_offset =
