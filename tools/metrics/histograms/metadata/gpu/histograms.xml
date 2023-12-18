@@ -832,15 +832,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.GPUProcessInitialized" enum="BooleanSuccess"
-    expires_after="2021-01-03">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    Whether the GPU process successfully initialized or failed and then exitted
-    normally.
-  </summary>
-</histogram>
-
 <histogram name="GPU.GPUProcessLaunchTime" units="ms"
     expires_after="2024-05-19">
   <owner>vmiura@chromium.org</owner>
