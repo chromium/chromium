@@ -17,12 +17,12 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {chimeBrowserProxy} from './chime_browser_proxy.js';
 import {getTemplate} from './cross_device_internals.html.js';
 import {NearbyLogsBrowserProxy} from './cross_device_logs_browser_proxy.js';
 import {NearbyPrefsBrowserProxy} from './nearby_prefs_browser_proxy.js';
 import {NearbyPresenceBrowserProxy} from './nearby_presence_browser_proxy.js';
 import {NearbyUiTriggerBrowserProxy} from './nearby_ui_trigger_browser_proxy.js';
+import {PushNotificationBrowserProxy} from './push_notification_browser_proxy.js';
 import {ActionValues, FeatureValues, LogMessage, LogProvider, PresenceDevice, SelectOption, Severity} from './types.js';
 
 
@@ -67,8 +67,8 @@ Polymer({
   /** @private {?NearbyPresenceBrowserProxy} */
   nearbyPresenceBrowserProxy_: null,
 
-  /** @private {?chimeBrowserProxy} */
-  chimeBrowserProxy_: null,
+  /** @private {?PushNotificationBrowserProxy} */
+  PushNotificationBrowserProxy_: null,
 
   /** @private {?NearbyPrefsBrowserProxy}*/
   prefsBrowserProxy_: null,
@@ -91,7 +91,7 @@ Polymer({
         {name: 'Nearby Share', value: FeatureValues.NEARBY_SHARE},
         {name: 'Nearby Connections', value: FeatureValues.NEARBY_CONNECTIONS},
         {name: 'Fast Pair', value: FeatureValues.FAST_PAIR},
-        {name: 'Chime', value: FeatureValues.CHIME},
+        {name: 'Push Notification', value: FeatureValues.PUSH_NOTIFICATION},
       ],
     },
 
@@ -142,10 +142,13 @@ Polymer({
     },
 
     /** @private {!Array<!SelectOption>} */
-    chimeActionList: {
+    pushNotificationActionList: {
       type: Array,
       value: [
-        {name: 'Add Chime Client', value: ActionValues.ADD_CHIME_CLIENT},
+        {
+          name: 'Add Push Notification Client',
+          value: ActionValues.ADD_PUSH_NOTIFICATION_CLIENT,
+        },
       ],
     },
 
@@ -205,7 +208,8 @@ Polymer({
 
   created() {
     this.nearbyPresenceBrowserProxy_ = NearbyPresenceBrowserProxy.getInstance();
-    this.chimeBrowserProxy_ = chimeBrowserProxy.getInstance();
+    this.PushNotificationBrowserProxy_ =
+        PushNotificationBrowserProxy.getInstance();
     this.prefsBrowserProxy_ = NearbyPrefsBrowserProxy.getInstance();
     this.nearbyUITriggerBrowserProxy_ =
         NearbyUiTriggerBrowserProxy.getInstance();
@@ -219,7 +223,7 @@ Polymer({
   attached() {
     this.nearbyPresenceBrowserProxy_.initialize();
     this.nearbyUITriggerBrowserProxy_.initialize();
-    this.chimeBrowserProxy_.initialize();
+    this.PushNotificationBrowserProxy_.initialize();
     this.addWebUIListener(
         'presence-device-found', device => this.onPresenceDeviceFound_(device));
     this.addWebUIListener(
@@ -260,8 +264,8 @@ Polymer({
       case FeatureValues.FAST_PAIR:
         this.set('actionsSelectList', this.fastPairActionList);
         break;
-      case FeatureValues.CHIME:
-        this.set('actionsSelectList', this.chimeActionList);
+      case FeatureValues.PUSH_NOTIFICATION:
+        this.set('actionsSelectList', this.pushNotificationActionList);
         break;
     }
   },
@@ -283,10 +287,10 @@ Polymer({
       case ActionValues.RESET_NEARBY_SHARE:
         this.prefsBrowserProxy_.clearNearbyPrefs();
         break;
-      case ActionValues.ADD_CHIME_CLIENT:
-        this.chimeBrowserProxy_.SendAddChimeClient();
       case ActionValues.SHOW_RECEIVED_NOTIFICATION:
         this.nearbyUITriggerBrowserProxy_.showNearbyShareReceivedNotification();
+      case ActionValues.ADD_PUSH_NOTIFICATION_CLIENT:
+        this.PushNotificationBrowserProxy_.SendAddPushNotificationClient();
       default:
         break;
     }
