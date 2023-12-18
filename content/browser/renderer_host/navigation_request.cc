@@ -5689,8 +5689,6 @@ void NavigationRequest::CommitNavigation() {
   AddOldPageInfoToCommitParamsIfNeeded();
 
   url::Origin origin = GetOriginToCommit().value();
-  // TODO(crbug.com/979296): Consider changing this code to copy an origin
-  // instead of creating one from a URL which lacks opacity information.
   isolation_info_for_subresources_ =
       GetRenderFrameHost()->ComputeIsolationInfoForSubresourcesForPendingCommit(
           origin, is_credentialless(), ComputeFencedFrameNonce());
