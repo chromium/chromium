@@ -15,9 +15,9 @@
   const readAnythingApp = document.querySelector('read-anything-app');
   const container = readAnythingApp.shadowRoot.getElementById('container');
 
-  const sentence1 = 'The snow glows white on the mountain tonight.';
-  const sentence2 = 'Not a footprint to be seen';
-  const sentence3 = 'A kingdom of isolation.';
+  const sentence1 = 'The snow glows white on the mountain tonight. ';
+  const sentence2 = 'Not a footprint to be seen. ';
+  const sentence3 = 'A kingdom of isolation. ';
   const sentence4 = 'And it looks like I\'m the queen.';
   const axTree = {
     rootId: 1,

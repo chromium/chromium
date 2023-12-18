@@ -1362,41 +1362,147 @@ std::vector<std::vector<int>> ReadAnythingAppController::GetNextText(
     return next_nodes;
   }
 
-  // Look at the current node and the text position within it. If we're at
-  // the end of the node, move to the next node.
-  ui::AXNode* anchor_node = GetNodeFromCurrentPosition();
+  std::u16string current_text;
 
-  std::u16string text = anchor_node->GetTextContentUTF16();
-  int prev_index = current_text_index_;
+  // Loop through the tree in order to group nodes together into the same
+  // granularity segment until there are no more pieces that can be added
+  // to the current segment or we've reached the end of the tree.
+  // e.g. if the following two nodes are next to one another in the tree:
+  //  AXNode: id=1, text = "This is a "
+  //  AXNode: id=2, text = "link. "
+  // both AXNodes should be added to next_nodes, as the combined text across
+  // the two nodes forms a complete sentence.
+  // This allows text to be spoken smoothly across nodes with broken sentences,
+  // such as links and formatted text.
+  // TODO(crbug.com/1474951): Investigate how much of this can be pulled into
+  // AXPosition to simplify Read Aloud-specific code and allow improvements
+  // to be used by other places where AXPosition is used.
+  while (!ax_position_->IsNullPosition() && !ax_position_->AtEndOfAXTree()) {
+    ui::AXNode* anchor_node = GetNodeFromCurrentPosition();
+    std::u16string text = anchor_node->GetTextContentUTF16();
+    std::u16string text_substr = text.substr(current_text_index_);
+    int prev_index = current_text_index_;
+    // Gets the starting index for the next sentence in the current node.
+    int next_sentence_index =
+        GetNextSentence(text_substr, max_text_length) + prev_index;
+    // If our current index within the current node is greater than that node's
+    // text, look at the next node. If the starting index of the next sentence
+    // in the node is the same the current index within the node, this means
+    // that we've reached the end of all possible sentences within the current
+    // node, and should move to the next node.
+    if ((size_t)current_text_index_ >= text.size() ||
+        (current_text_index_ == next_sentence_index)) {
+      // Move the AXPosition to the next node.
+      ax_position_ = GetNextValidPositionFromCurrentPosition();
+      // Reset the current text index within the current node since we just
+      // moved to a new node.
+      current_text_index_ = 0;
+      // If we've reached the end of the content, go ahead and return the
+      // current list of nodes because there are no more nodes to look through.
+      if (ax_position_->IsNullPosition() || ax_position_->AtEndOfAXTree() ||
+          !ax_position_->GetAnchor()) {
+        return next_nodes;
+      }
 
-  std::u16string text_substr = text.substr(current_text_index_);
-  int nextSentenceIndex =
-      GetNextSentence(text_substr, max_text_length) + prev_index;
+      std::u16string base_text =
+          GetNodeFromCurrentPosition()->GetTextContentUTF16();
 
-  // If the current text index is greater than the current size or the
-  // remaining text in the node, move to the next node.
-  if (((size_t)current_text_index_ >= text.size()) ||
-      (current_text_index_ == nextSentenceIndex)) {
-    ax_position_ = GetNextValidPositionFromCurrentPosition();
-    if (ax_position_->IsNullPosition()) {
-      return next_nodes;
+      // TODO(crbug.com/1474951): With this implementation, sometimes headers
+      // are combined with standard text. In addition to checking if the text
+      // is too long, also check that we're not crossing paragraphs.
+
+      // Look at the text of the items we've already added to the
+      // current sentence (current_text) combined with the text of the next
+      // node (base_text).
+      const std::u16string& combined_text = current_text + base_text;
+      // Get the index of the next sentence if we're looking at the combined
+      // previous and current node text.
+      int combined_sentence_index =
+          GetNextSentence(combined_text, max_text_length);
+      // If the combined_sentence_index is the same as the current_text length,
+      // the new node should not be considered part of the current sentence.
+      // If these values differ, add the current node's text to the list of
+      // nodes in the current sentence.
+      // Consider these two examples:
+      // Example 1:
+      //  current text: Hello
+      //  current node's text: , how are you?
+      //    The current text length is 5, but the index of the next sentence of
+      //    the combined text is 19, so the current node should be added to
+      //    the current sentence.
+      // Example 2:
+      //  current text: Hello.
+      //  current node: Goodbye.
+      //    The current text length is 6, and the next sentence index of
+      //    "Hello. Goodbye." is still 6, so the current node's text shouldn't
+      //    be added to the current sentence.
+      if ((int)current_text.length() != combined_sentence_index) {
+        anchor_node = GetNodeFromCurrentPosition();
+        previously_spoken_ids_.push_back(anchor_node->id());
+        // Calculate the new sentence index.
+        int index_in_new_node = combined_sentence_index - current_text.length();
+        // Add the current node to the list of nodes to be returned, with a
+        // text range from 0 to the start of the next sentence
+        // (index_in_new_node);
+        next_nodes.push_back({anchor_node->id(), 0, index_in_new_node});
+        current_text +=
+            anchor_node->GetTextContentUTF16().substr(0, index_in_new_node);
+        current_text_index_ = index_in_new_node;
+        if (current_text_index_ != (int)base_text.length()) {
+          // If we're in the middle of the node, there's no need to attempt
+          // to find another segment, as we're at the end of the current
+          // segment.
+          return next_nodes;
+        }
+        continue;
+      } else if (next_nodes.size() > 0) {
+        // If nothing has been added to the list of current nodes, we should
+        // look at the next sentence within the current node. However, if
+        // there have already been nodes added to the list of nodes to return
+        // and we determine that the next node shouldn't be added to the
+        // current sentence, we've completed the current sentence, so we can
+        // return the current list.
+        return next_nodes;
+      }
     }
 
-    // Since we've updated the position, update our state in order to calculate
-    // the next sentence.
-    current_text_index_ = 0;
+    // Add the next granularity piece within the current node.
     anchor_node = GetNodeFromCurrentPosition();
     text = anchor_node->GetTextContentUTF16();
     prev_index = current_text_index_;
     text_substr = text.substr(current_text_index_);
+    // Find the next sentence within the current node.
+    int new_current_text_index =
+        GetNextSentence(text_substr, max_text_length) + prev_index;
+    // If adding the next piece of the sentence from the current node doesn't
+    // make the returned text too long, add it to the list of nodes.
+    if ((current_text.length() + new_current_text_index - prev_index) <
+        (size_t)max_text_length) {
+      int start_index = current_text_index_;
+      current_text_index_ = new_current_text_index;
+      // Add the current node to the list of nodes to be returned, with a
+      // text range from the starting index (the end of the previous piece of
+      // the sentence) to the start of the next sentence.
+      next_nodes.push_back(
+          {anchor_node->id(), start_index, current_text_index_});
+      current_text += anchor_node->GetTextContentUTF16().substr(
+          start_index, current_text_index_ - start_index);
+      previously_spoken_ids_.push_back(anchor_node->id());
+    } else {
+      // If adding the next segment to the list of nodes is greater than the
+      // maximum text length, return the current nodes.
+      // TODO(crbug.com/1474951): Find a better way of segmenting granularities
+      // that are too long.
+      return next_nodes;
+    }
+
+    // After adding the most recent granularity segment, if we're not at the
+    //  end of the node, the current nodes can be returned, as we know there's
+    // no further segments remaining.
+    if ((size_t)current_text_index_ != text.length()) {
+      return next_nodes;
+    }
   }
-
-  int new_current_text_index =
-      GetNextSentence(text_substr, max_text_length) + prev_index;
-  current_text_index_ = new_current_text_index;
-  next_nodes.push_back({anchor_node->id(), prev_index, current_text_index_});
-  previously_spoken_ids_.push_back(anchor_node->id());
-
   return next_nodes;
 }
 
@@ -1463,6 +1569,12 @@ ReadAnythingAppController::GetNextValidPositionFromCurrentPosition() {
         new_position->CreateNextSentenceStartPosition(movement_options);
     anchor_node = possible_new_position->GetAnchor();
     if (!anchor_node) {
+      if (was_previously_spoken) {
+        // If the previous position we were looking at was previously spoken,
+        // go ahead and return the null position to avoid duplicate nodes
+        // being added.
+        return possible_new_position;
+      }
       return new_position;
     }
 

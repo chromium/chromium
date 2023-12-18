@@ -2174,9 +2174,11 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetNextText_ReturnsExpectedNodes) {
-  std::u16string sentence1 = u"This is a sentence.";
-  std::u16string sentence2 = u"This is another sentence.";
-  std::u16string sentence3 = u"And this is yet another sentence.";
+  // TODO(crbug.com/1474951): Investigate if we can improve in scenarios when
+  // there's not a space between sentences.
+  std::u16string sentence1 = u"This is a sentence. ";
+  std::u16string sentence2 = u"This is another sentence. ";
+  std::u16string sentence3 = u"And this is yet another sentence. ";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
   ui::AXNodeData staticText1;
@@ -2230,8 +2232,8 @@ TEST_F(ReadAnythingAppControllerTest, GetNextText_ReturnsExpectedNodes) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetNextText_AfterAXTreeRefresh) {
-  std::u16string sentence1 = u"This is a sentence.";
-  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence1 = u"This is a sentence. ";
+  std::u16string sentence2 = u"This is another sentence. ";
   std::u16string sentence3 = u"And this is yet another sentence.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
@@ -2263,9 +2265,9 @@ TEST_F(ReadAnythingAppControllerTest, GetNextText_AfterAXTreeRefresh) {
 
   // Simulate updating the page text.
   std::u16string new_sentence_1 =
-      u"And so I read a book or maybe two or three.";
+      u"And so I read a book or maybe two or three. ";
   std::u16string new_sentence_2 =
-      u"I will add a few new paitings to my gallery.";
+      u"I will add a few new paitings to my gallery. ";
   std::u16string new_sentence_3 =
       u"I will play guitar and knit and cook and basically wonder when will my "
       u"life begin.";
@@ -2321,6 +2323,205 @@ TEST_F(ReadAnythingAppControllerTest, GetNextText_AfterAXTreeRefresh) {
   EXPECT_EQ(next_node_ids[0][0], update2.nodes[3].id);
   EXPECT_EQ(next_node_ids[0][1], 0);
   EXPECT_EQ(next_node_ids[0][2], (int)new_sentence_3.length());
+
+  // Nodes are empty at the end of the new tree.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetNextText_SentenceSplitAcrossMultipleNodes) {
+  std::u16string sentence1 = u"The wind is howling like this ";
+  std::u16string sentence2 = u"swirling storm ";
+  std::u16string sentence3 = u"inside.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData staticText1;
+  staticText1.id = 2;
+  staticText1.role = ax::mojom::Role::kStaticText;
+  staticText1.SetNameChecked(sentence1);
+
+  ui::AXNodeData staticText2;
+  staticText2.id = 3;
+  staticText2.role = ax::mojom::Role::kStaticText;
+  staticText2.SetNameChecked(sentence2);
+
+  ui::AXNodeData staticText3;
+  staticText3.id = 4;
+  staticText3.role = ax::mojom::Role::kStaticText;
+  staticText3.SetNameChecked(sentence3);
+  update.nodes = {staticText1, staticText2, staticText3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({staticText1.id, staticText2.id, staticText3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  std::vector<std::vector<int>> next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 3);
+
+  // The first segment was returned correctly.
+  EXPECT_EQ((int)next_node_ids[0].size(), 3);
+  EXPECT_EQ(next_node_ids[0][0], staticText1.id);
+  EXPECT_EQ(next_node_ids[0][1], 0);
+  EXPECT_EQ(next_node_ids[0][2], (int)sentence1.length());
+
+  // The second segment was returned correctly.
+  EXPECT_EQ((int)next_node_ids[1].size(), 3);
+  EXPECT_EQ(next_node_ids[1][0], staticText2.id);
+  EXPECT_EQ(next_node_ids[1][1], 0);
+  EXPECT_EQ(next_node_ids[1][2], (int)sentence2.length());
+
+  // The third segment was returned correctly.
+  EXPECT_EQ((int)next_node_ids[2].size(), 3);
+  EXPECT_EQ(next_node_ids[2][0], staticText3.id);
+  EXPECT_EQ(next_node_ids[2][1], 0);
+  EXPECT_EQ(next_node_ids[2][2], (int)sentence3.length());
+
+  // Nodes are empty at the end of the new tree.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetNextText_SentenceSplitAcrossTwoNodes) {
+  std::u16string sentence1 = u"And I am almost ";
+  std::u16string sentence2 = u"there. ";
+  std::u16string sentence3 = u"I am almost there.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData staticText1;
+  staticText1.id = 2;
+  staticText1.role = ax::mojom::Role::kStaticText;
+  staticText1.SetNameChecked(sentence1);
+
+  ui::AXNodeData staticText2;
+  staticText2.id = 3;
+  staticText2.role = ax::mojom::Role::kStaticText;
+  staticText2.SetNameChecked(sentence2);
+
+  ui::AXNodeData staticText3;
+  staticText3.id = 4;
+  staticText3.role = ax::mojom::Role::kStaticText;
+  staticText3.SetNameChecked(sentence3);
+  update.nodes = {staticText1, staticText2, staticText3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({staticText1.id, staticText2.id, staticText3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  std::vector<std::vector<int>> next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 2);
+  EXPECT_EQ((int)next_node_ids[0].size(), 3);
+
+  // The first segment was returned correctly.
+  EXPECT_EQ(next_node_ids[0][0], staticText1.id);
+  EXPECT_EQ(next_node_ids[0][1], 0);
+  EXPECT_EQ(next_node_ids[0][2], (int)sentence1.length());
+
+  // The second segment was returned correctly.
+  EXPECT_EQ(next_node_ids[1][0], staticText2.id);
+  EXPECT_EQ(next_node_ids[1][1], 0);
+  EXPECT_EQ(next_node_ids[1][2], (int)sentence2.length());
+
+  // The third segment was returned correctly after getting the next text.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0][0], staticText3.id);
+  EXPECT_EQ(next_node_ids[0][1], 0);
+  EXPECT_EQ(next_node_ids[0][2], (int)sentence3.length());
+
+  // Nodes are empty at the end of the new tree.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetNextText_MultipleSentencesInSameNode) {
+  std::u16string sentence1 = u"But from up here. The ";
+  std::u16string sentence2 = u"world ";
+  std::u16string sentence3 =
+      u"looks so small. And suddenly life seems so clear. And from up here. "
+      u"You coast past it all. The obstacles just disappear.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData staticText1;
+  staticText1.id = 2;
+  staticText1.role = ax::mojom::Role::kStaticText;
+  staticText1.SetNameChecked(sentence1);
+
+  ui::AXNodeData staticText2;
+  staticText2.id = 3;
+  staticText2.role = ax::mojom::Role::kStaticText;
+  staticText2.SetNameChecked(sentence2);
+
+  ui::AXNodeData staticText3;
+  staticText3.id = 4;
+  staticText3.role = ax::mojom::Role::kStaticText;
+  staticText3.SetNameChecked(sentence3);
+  update.nodes = {staticText1, staticText2, staticText3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({staticText1.id, staticText2.id, staticText3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  std::vector<std::vector<int>> next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ((int)next_node_ids[0].size(), 3);
+
+  // The first segment was returned correctly.
+  EXPECT_EQ(next_node_ids[0][0], staticText1.id);
+  EXPECT_EQ(next_node_ids[0][1], 0);
+  EXPECT_EQ(next_node_ids[0][2], (int)sentence1.find(u"The"));
+
+  // The second segment was returned correctly, across 3 nodes.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 3);
+
+  EXPECT_EQ((int)next_node_ids[0].size(), 3);
+  EXPECT_EQ(next_node_ids[0][0], staticText1.id);
+  EXPECT_EQ(next_node_ids[0][1], (int)sentence1.find(u"The"));
+  EXPECT_EQ(next_node_ids[0][2], (int)sentence1.length());
+
+  EXPECT_EQ((int)next_node_ids[1].size(), 3);
+  EXPECT_EQ(next_node_ids[1][0], staticText2.id);
+  EXPECT_EQ(next_node_ids[1][1], 0);
+  EXPECT_EQ(next_node_ids[1][2], (int)sentence2.length());
+
+  EXPECT_EQ((int)next_node_ids[2].size(), 3);
+  EXPECT_EQ(next_node_ids[2][0], staticText3.id);
+  EXPECT_EQ(next_node_ids[2][1], 0);
+  EXPECT_EQ(next_node_ids[2][2], (int)sentence3.find(u"And"));
+
+  // The next sentence "And suddenly life seems so clear" was returned correctly
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ((int)next_node_ids[0].size(), 3);
+
+  EXPECT_EQ(next_node_ids[0][0], staticText3.id);
+  EXPECT_EQ(next_node_ids[0][1], (int)sentence3.find(u"And"));
+  EXPECT_EQ(next_node_ids[0][2], (int)sentence3.find(u"And from"));
+
+  // The next sentence "And from up here" was returned correctly
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ((int)next_node_ids[0].size(), 3);
+
+  EXPECT_EQ(next_node_ids[0][0], staticText3.id);
+  EXPECT_EQ(next_node_ids[0][1], (int)sentence3.find(u"And from"));
+  EXPECT_EQ(next_node_ids[0][2], (int)sentence3.find(u"You"));
+
+  // The next sentence "You coast past it all" was returned correctly
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ((int)next_node_ids[0].size(), 3);
+
+  EXPECT_EQ(next_node_ids[0][0], staticText3.id);
+  EXPECT_EQ(next_node_ids[0][1], (int)sentence3.find(u"You"));
+  EXPECT_EQ(next_node_ids[0][2], (int)sentence3.find(u"The"));
+
+  // The next sentence "The obstacles just disappear" was returned correctly
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ((int)next_node_ids[0].size(), 3);
+
+  EXPECT_EQ(next_node_ids[0][0], staticText3.id);
+  EXPECT_EQ(next_node_ids[0][1], (int)sentence3.find(u"The"));
+  EXPECT_EQ(next_node_ids[0][2], (int)sentence3.length());
 
   // Nodes are empty at the end of the new tree.
   next_node_ids = GetNextText();

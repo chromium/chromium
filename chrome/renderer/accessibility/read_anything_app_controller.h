@@ -111,8 +111,6 @@ class ReadAnythingAppController
   void ScreenAIServiceReady() override;
 #endif
 
-  // Read Aloud Helper methods.
-
   // Returns the next valid AXNodePosition.
   ui::AXNodePosition::AXPositionInstance
   GetNextValidPositionFromCurrentPosition();
