@@ -106,18 +106,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.Fullscreen.LockStateAtEntryVia{EntryMethod}"
+<histogram name="WebCore.Fullscreen.LockStateAtEntryViaApi"
     enum="FullscreenLockState" expires_after="2024-06-07">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     This metric records whether keyboard/pointer locks are engaged each time a
-    web page enters fullscreen via {EntryMethod}.
+    web page enters fullscreen via the Fullscreen API.
   </summary>
-  <token key="EntryMethod">
-    <variant name="Api" summary="the Fullscreen API"/>
-    <variant name="BrowserUi" summary="the browser UI"/>
-  </token>
+</histogram>
+
+<histogram name="WebCore.Fullscreen.LockStateAtEntryViaBrowserUi"
+    enum="FullscreenLockState" expires_after="2024-06-07">
+  <owner>takumif@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    This metric records whether keyboard/pointer locks are engaged each time the
+    user enters fullscreen via the browser UI.
+
+    Note that even when keyboard lock has been requested, it doesn't get
+    activated when entering fullscreen through the browser UI. The Fullscreen
+    API must (also) be called.
+  </summary>
 </histogram>
 
 <histogram name="WebCore.HTMLDocumentParser.PreloadScannerAppCacheDelayTime"
