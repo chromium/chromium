@@ -4,7 +4,6 @@
 
 import os
 
-
 def _CheckNoJsChanges(input_api, output_api):
   """Enforce that JavaScript files are not changed.
 

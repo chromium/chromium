@@ -484,6 +484,3 @@ if (is_chromeos_ash) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
 }
-
-group("closure_compile") {
-}

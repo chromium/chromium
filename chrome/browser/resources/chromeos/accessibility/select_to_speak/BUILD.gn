@@ -154,6 +154,3 @@ js2gtest("select_to_speak_extjs_tests") {
   ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }
-
-group("closure_compile") {
-}

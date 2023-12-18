@@ -203,9 +203,6 @@ js2gtest("accessibility_common_extjs_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }
 
-group("closure_compile") {
-}
-
 action("pumpkin_test_files") {
   testonly = true
 

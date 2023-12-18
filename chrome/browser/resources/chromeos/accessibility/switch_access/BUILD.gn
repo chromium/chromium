@@ -173,6 +173,3 @@ js2gtest("switch_access_extjs_tests") {
   ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }
-
-group("closure_compile") {
-}

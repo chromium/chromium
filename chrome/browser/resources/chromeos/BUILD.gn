@@ -85,11 +85,6 @@ grit("multidevice_setup_resources") {
 group("closure_compile") {
   deps = [
     ":closure_compile_local",
-    "accessibility/accessibility_common:closure_compile",
-    "accessibility/braille_ime:closure_compile",
-    "accessibility/chromevox:closure_compile",
-    "accessibility/select_to_speak:closure_compile",
-    "accessibility/switch_access:closure_compile",
     "account_manager:closure_compile",
     "account_manager/components:closure_compile",
     "arc_account_picker:closure_compile",
