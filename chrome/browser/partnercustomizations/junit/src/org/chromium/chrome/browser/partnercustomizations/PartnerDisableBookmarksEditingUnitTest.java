@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsDelayedProvider;
@@ -149,6 +150,7 @@ public class PartnerDisableBookmarksEditingUnitTest {
     @Test
     @SmallTest
     @Feature({"PartnerBookmarksEditing"})
+    @DisabledTest(message = "Flaky due to ConcurrentModificationException, crbug.com/1446093")
     public void testBookmarksEditingProviderDelayed() throws InterruptedException {
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_DELAYED_PROVIDER);
