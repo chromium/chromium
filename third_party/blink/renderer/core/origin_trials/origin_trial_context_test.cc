@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -207,6 +208,7 @@ class OriginTrialContextTest : public testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   MockTokenValidator* token_validator_;
   Persistent<NullExecutionContext> execution_context_;
   base::HistogramTester histogram_tester_;
