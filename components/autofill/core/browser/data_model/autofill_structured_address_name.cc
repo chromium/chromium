@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -123,11 +124,12 @@ NameFull::NameFull(const NameFull& other) : NameFull() {
 }
 
 NameHonorificPrefix::NameHonorificPrefix()
-    : AddressComponent(NAME_HONORIFIC_PREFIX,
-                       {},
-                       MergeMode::kUseBetterOrNewerForSameValue |
-                           MergeMode::kReplaceEmpty |
-                           MergeMode::kUseBetterOrMostRecentIfDifferent) {}
+    : FeatureGuardedAddressComponent(
+          &features::kAutofillEnableSupportForHonorificPrefixes,
+          NAME_HONORIFIC_PREFIX,
+          {},
+          MergeMode::kUseBetterOrNewerForSameValue | MergeMode::kReplaceEmpty |
+              MergeMode::kUseBetterOrMostRecentIfDifferent) {}
 
 NameHonorificPrefix::~NameHonorificPrefix() = default;
 
@@ -229,9 +231,11 @@ std::u16string NameFull::GetFormatString() const {
 NameFull::~NameFull() = default;
 
 NameFullWithPrefix::NameFullWithPrefix()
-    : AddressComponent(NAME_FULL_WITH_HONORIFIC_PREFIX,
-                       {},
-                       MergeMode::kMergeChildrenAndReformatIfNeeded) {
+    : FeatureGuardedAddressComponent(
+          &features::kAutofillEnableSupportForHonorificPrefixes,
+          NAME_FULL_WITH_HONORIFIC_PREFIX,
+          {},
+          MergeMode::kMergeChildrenAndReformatIfNeeded) {
   RegisterChildNode(std::make_unique<NameHonorificPrefix>());
   RegisterChildNode(std::make_unique<NameFull>());
 }

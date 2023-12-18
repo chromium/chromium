@@ -33,31 +33,6 @@ std::u16string AddressComponentWithRewriter::GetValueForComparison(
                              /*keep_white_space=*/true);
 }
 
-FeatureGuardedAddressComponent::FeatureGuardedAddressComponent(
-    raw_ptr<const base::Feature> feature,
-    FieldType storage_type,
-    SubcomponentsList children,
-    unsigned int merge_mode)
-    : AddressComponent(storage_type, std::move(children), merge_mode),
-      feature_(feature) {}
-
-void FeatureGuardedAddressComponent::SetValue(std::u16string value,
-                                              VerificationStatus status) {
-  if (!base::FeatureList::IsEnabled(*feature_)) {
-    return;
-  }
-  AddressComponent::SetValue(value, status);
-}
-
-void FeatureGuardedAddressComponent::GetTypes(
-    bool storable_only,
-    FieldTypeSet* supported_types) const {
-  if (!base::FeatureList::IsEnabled(*feature_)) {
-    return;
-  }
-  AddressComponent::GetTypes(storable_only, supported_types);
-}
-
 StreetNameNode::StreetNameNode(SubcomponentsList children)
     : AddressComponent(ADDRESS_HOME_STREET_NAME,
                        std::move(children),

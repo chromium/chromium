@@ -97,15 +97,7 @@ void NameInfo::SetRawInfoWithVerificationStatus(FieldType type,
                                                 const std::u16string& value,
                                                 VerificationStatus status) {
   DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfFieldType(type));
-  // Without the second generation of the structured name tree, honorific
-  // prefixes and the name including the prefix are unsupported types.
-  if ((type == NAME_HONORIFIC_PREFIX ||
-       type == NAME_FULL_WITH_HONORIFIC_PREFIX) &&
-      !HonorificPrefixEnabled()) {
-    return;
-  }
-  bool success = name_->SetValueForType(type, value, status);
-  DCHECK(success) << FieldTypeToStringView(type);
+  name_->SetValueForType(type, value, status);
 }
 
 void NameInfo::GetSupportedTypes(FieldTypeSet* supported_types) const {
@@ -150,14 +142,7 @@ void NameInfo::GetMatchingTypes(const std::u16string& text,
 }
 
 VerificationStatus NameInfo::GetVerificationStatusImpl(FieldType type) const {
-  // Without the second generation of the structured name tree, honorific
-  // prefixes and the name including the prefix are unsupported types.
-  if (!((type == NAME_HONORIFIC_PREFIX ||
-         type == NAME_FULL_WITH_HONORIFIC_PREFIX) &&
-        !HonorificPrefixEnabled())) {
-    return name_->GetVerificationStatusForType(type);
-  }
-  return VerificationStatus::kNoStatus;
+  return name_->GetVerificationStatusForType(type);
 }
 
 EmailInfo::EmailInfo() = default;

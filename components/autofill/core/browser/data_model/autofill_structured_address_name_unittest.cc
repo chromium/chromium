@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -104,11 +105,20 @@ void TestLastNameParsing(const std::u16string& last_name,
 
 }  // namespace
 
+class AutofillStructuredName : public testing::Test {
+ public:
+  AutofillStructuredName() = default;
+
+ private:
+  base::test::ScopedFeatureList features_{
+      features::kAutofillEnableSupportForHonorificPrefixes};
+};
+
 // Tests the parsing of last names into their tree components:
 // * The first part, that is only used in Latinx/Hispanic names.
 // * The conjunction, that is optional in Latinx/Hispanic names.
 // * The second part, for Latinx/Hispanic and all other last names.
-TEST(AutofillStructuredName, ParseLastName) {
+TEST_F(AutofillStructuredName, ParseLastName) {
   LastNameParserTestRecord last_name_tests[] = {
       // "von" is a known prefix for a surname and should be therefore parsed
       // into the second last name
@@ -134,7 +144,7 @@ TEST(AutofillStructuredName, ParseLastName) {
 }
 
 // Tests the parsing of full names into their subcomponents.
-TEST(AutofillStructuredName, ParseFullName) {
+TEST_F(AutofillStructuredName, ParseFullName) {
   NameParserTestRecord name_tests[] = {
       // Name starting with a last name, followed by a comma and the first and
       // middle name.
@@ -251,7 +261,7 @@ TEST(AutofillStructuredName, ParseFullName) {
 }
 
 // Tests the detection of CJK name characteristics.
-TEST(AutofillStructuredName, HasCjkNameCharacteristics) {
+TEST_F(AutofillStructuredName, HasCjkNameCharacteristics) {
   EXPECT_FALSE(HasCjkNameCharacteristics("Peterson"));
   EXPECT_TRUE(HasCjkNameCharacteristics("ㅎ"));
   EXPECT_TRUE(HasCjkNameCharacteristics("房仕龙"));
@@ -286,14 +296,14 @@ TEST(AutofillStructuredName, HasCjkNameCharacteristics) {
 }
 
 // Test the detection of Hispanic/Latinx name characteristics.
-TEST(AutofillStructuredName, HasHispanicLatinxNameCharacteristics) {
+TEST_F(AutofillStructuredName, HasHispanicLatinxNameCharacteristics) {
   EXPECT_TRUE(HasHispanicLatinxNameCharacteristics("Pablo Ruiz Picasso"));
   EXPECT_FALSE(HasHispanicLatinxNameCharacteristics("Werner Heisenberg"));
   EXPECT_TRUE(HasHispanicLatinxNameCharacteristics("SomeName y SomeOtherName"));
 }
 
 // Test the detection of middle name initials.
-TEST(AutofillStructuredName, HasMiddleNameInitialsCharacteristics) {
+TEST_F(AutofillStructuredName, HasMiddleNameInitialsCharacteristics) {
   EXPECT_FALSE(HasMiddleNameInitialsCharacteristics("Diego"));
   EXPECT_FALSE(HasMiddleNameInitialsCharacteristics("d"));
   EXPECT_TRUE(HasMiddleNameInitialsCharacteristics("D"));
@@ -305,7 +315,7 @@ TEST(AutofillStructuredName, HasMiddleNameInitialsCharacteristics) {
 }
 
 // Test the reduction of a name to its initials.
-TEST(AutofillStructuredName, ReduceToInitials) {
+TEST_F(AutofillStructuredName, ReduceToInitials) {
   EXPECT_EQ(ReduceToInitials(u""), u"");
   EXPECT_EQ(ReduceToInitials(u"George"), u"G");
   EXPECT_EQ(ReduceToInitials(u"George Walker"), u"GW");
@@ -314,7 +324,7 @@ TEST(AutofillStructuredName, ReduceToInitials) {
 }
 
 // Test getting the field type |NAME_MIDDLE_INITIAL|.
-TEST(AutofillStructuredName, GetNameMiddleInitial) {
+TEST_F(AutofillStructuredName, GetNameMiddleInitial) {
   NameFull full_name;
 
   full_name.SetValueForType(NAME_MIDDLE, u"Michael",
@@ -345,7 +355,7 @@ TEST(AutofillStructuredName, GetNameMiddleInitial) {
   EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL), u"G.-W.");
 }
 
-TEST(AutofillStructuredName, TestGetSupportedTypes_FullNameWithPrefix) {
+TEST_F(AutofillStructuredName, TestGetSupportedTypes_FullNameWithPrefix) {
   NameFullWithPrefix full_name_with_prefix;
   FieldTypeSet supported_types;
   full_name_with_prefix.GetSupportedTypes(&supported_types);
@@ -356,7 +366,7 @@ TEST(AutofillStructuredName, TestGetSupportedTypes_FullNameWithPrefix) {
             supported_types);
 }
 
-TEST(AutofillStructuredName, TestGetSupportedTypes_FullName) {
+TEST_F(AutofillStructuredName, TestGetSupportedTypes_FullName) {
   NameFull full_name;
   FieldTypeSet supported_types;
   full_name.GetSupportedTypes(&supported_types);
@@ -366,7 +376,7 @@ TEST(AutofillStructuredName, TestGetSupportedTypes_FullName) {
             supported_types);
 }
 
-TEST(AutofillStructuredName, TestSettingMiddleNameInitial) {
+TEST_F(AutofillStructuredName, TestSettingMiddleNameInitial) {
   NameFullWithPrefix full_name_with_prefix;
   EXPECT_EQ(full_name_with_prefix.GetValueForType(NAME_MIDDLE),
             std::u16string());
@@ -377,7 +387,7 @@ TEST(AutofillStructuredName, TestSettingMiddleNameInitial) {
   EXPECT_EQ(full_name_with_prefix.GetValueForType(NAME_MIDDLE), u"M");
 }
 
-TEST(AutofillStructuredName, MergePermutedNames) {
+TEST_F(AutofillStructuredName, MergePermutedNames) {
   NameFull one;
   NameFull two;
 
@@ -421,8 +431,8 @@ TEST(AutofillStructuredName, MergePermutedNames) {
             VerificationStatus::kObserved);
 }
 
-TEST(AutofillStructuredName,
-     MergeNamesByCombiningSubstructureObservations_WithAdditionalPrefix) {
+TEST_F(AutofillStructuredName,
+       MergeNamesByCombiningSubstructureObservations_WithAdditionalPrefix) {
   NameFullWithPrefix one;
   NameFullWithPrefix two;
 
@@ -529,7 +539,7 @@ TEST(AutofillStructuredName,
 
 // Tests that the root node of NameFullWithPrefix is correctly populated after a
 // migration from a NameFull structure.
-TEST(AutofillStructuredName, TestPopulationOfNameFullWithPrefix) {
+TEST_F(AutofillStructuredName, TestPopulationOfNameFullWithPrefix) {
   NameFullWithPrefix name_full_with_prefix;
 
   // The first name has an incorrect componentization of the last name, but a
@@ -592,8 +602,8 @@ TEST(AutofillStructuredName, TestPopulationOfNameFullWithPrefix) {
   VerifyTestValues(&name_full_with_prefix, expectation);
 }
 
-TEST(AutofillStructuredName,
-     MergeNamesByCombiningSubstructureObservations_FullName) {
+TEST_F(AutofillStructuredName,
+       MergeNamesByCombiningSubstructureObservations_FullName) {
   NameFull one;
   NameFull two;
 
@@ -683,8 +693,8 @@ TEST(AutofillStructuredName,
   VerifyTestValues(&two, merge_expectation);
 }
 
-TEST(AutofillStructuredName,
-     MergeNamesByCombiningSubstructureObservations_FullNameWithPrefix) {
+TEST_F(AutofillStructuredName,
+       MergeNamesByCombiningSubstructureObservations_FullNameWithPrefix) {
   NameFullWithPrefix one;
   NameFullWithPrefix two;
 
@@ -793,7 +803,7 @@ TEST(AutofillStructuredName,
   VerifyTestValues(&two, merge_expectation);
 }
 
-TEST(AutofillStructuredName, TestCopyConstructor) {
+TEST_F(AutofillStructuredName, TestCopyConstructor) {
   NameFull original;
   // The first name has an incorrect componentization of the last name, but
   // a correctly observed structure of title, first, middle, last.
@@ -813,8 +823,8 @@ TEST(AutofillStructuredName, TestCopyConstructor) {
   EXPECT_TRUE(original.SameAs(copy));
 }
 
-TEST(AutofillStructuredName,
-     MigrationFromLegacyStructure_WithFullName_Unverified) {
+TEST_F(AutofillStructuredName,
+       MigrationFromLegacyStructure_WithFullName_Unverified) {
   NameFull name;
   name.SetValueForType(NAME_FULL, u"Thomas Neo Anderson",
                        VerificationStatus::kNoStatus);
@@ -844,7 +854,7 @@ TEST(AutofillStructuredName,
             VerificationStatus::kParsed);
 }
 
-TEST(AutofillStructuredName, MigrationFromLegacyStructure_WithoutFullName) {
+TEST_F(AutofillStructuredName, MigrationFromLegacyStructure_WithoutFullName) {
   NameFull name;
   // The first name has an incorrect componentization of the last name, but
   // a correctly observed structure of title, first, middle, last.
@@ -874,7 +884,7 @@ TEST(AutofillStructuredName, MigrationFromLegacyStructure_WithoutFullName) {
             VerificationStatus::kObserved);
 }
 
-TEST(AutofillStructuredName, MergeSubsetLastname) {
+TEST_F(AutofillStructuredName, MergeSubsetLastname) {
   NameFull name;
   NameFull subset_name;
   name.SetMergeModeForTesting(kRecursivelyMergeSingleTokenSubset |
@@ -934,7 +944,7 @@ TEST(AutofillStructuredName, MergeSubsetLastname) {
   VerifyTestValues(&name, name_values);
 }
 
-TEST(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
+TEST_F(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
   NameFull name;
   NameFull subset_name;
   name.SetMergeModeForTesting(kRecursivelyMergeSingleTokenSubset |
@@ -1004,7 +1014,7 @@ TEST(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
   VerifyTestValues(&name, expectation);
 }
 
-TEST(AutofillStructuredName, MergeSubsetLastname2) {
+TEST_F(AutofillStructuredName, MergeSubsetLastname2) {
   NameFullWithPrefix name;
   NameFullWithPrefix subset_name;
   name.SetMergeModeForTesting(kRecursivelyMergeSingleTokenSubset |

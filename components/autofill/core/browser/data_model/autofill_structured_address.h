@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "components/autofill/core/browser/data_model/autofill_feature_guarded_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
 
@@ -26,27 +27,6 @@ class AddressComponentWithRewriter : public AddressComponent {
   std::u16string GetValueForComparison(
       const std::u16string& value,
       const AddressComponent& other) const override;
-};
-
-// This class represents a type that is controlled by a feature flag. It
-// overrides the SetValue method to prevent setting values to nodes for which
-// the flag is turned off. It further prevents exposing disabled types as
-// supported.
-class FeatureGuardedAddressComponent : public AddressComponent {
- public:
-  FeatureGuardedAddressComponent(raw_ptr<const base::Feature> feature,
-                                 FieldType storage_type,
-                                 SubcomponentsList children,
-                                 unsigned int merge_mode);
-
-  // AddressComponent overrides:
-  void SetValue(std::u16string value, VerificationStatus status) override;
-  void GetTypes(bool storable_only,
-                FieldTypeSet* supported_types) const override;
-
- private:
-  // Feature guarding the rollout of this address component.
-  const raw_ptr<const base::Feature> feature_;
 };
 
 // The name of the street.

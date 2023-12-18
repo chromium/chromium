@@ -1211,13 +1211,8 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
 
 bool AutofillProfile::FinalizeAfterImport() {
   bool success = true;
-  if (!name_.FinalizeAfterImport()) {
-    success = false;
-  }
-  if (!address_.FinalizeAfterImport()) {
-    success = false;
-  }
-
+  success &= name_.FinalizeAfterImport();
+  success &= address_.FinalizeAfterImport();
   return success;
 }
 

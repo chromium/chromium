@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "components/autofill/core/browser/data_model/autofill_feature_guarded_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
 
@@ -132,7 +133,9 @@ class NameFull : public AddressComponent {
 };
 
 // Atomic component that represents a honorific prefix.
-class NameHonorificPrefix : public AddressComponent {
+// Without the second generation of the structured name tree, honorific
+// prefixes and the name including the prefix are unsupported types.
+class NameHonorificPrefix : public FeatureGuardedAddressComponent {
  public:
   NameHonorificPrefix();
   ~NameHonorificPrefix() override;
@@ -164,7 +167,9 @@ class NameHonorificPrefix : public AddressComponent {
 //                                   | _FIRST | | _CONJUNCTION | | _SECOND |
 //                                   +--------+ +--------------+ +---------+
 //
-class NameFullWithPrefix : public AddressComponent {
+// Without the second generation of the structured name tree, honorific
+// prefixes and the name including the prefix are unsupported types.
+class NameFullWithPrefix : public FeatureGuardedAddressComponent {
  public:
   NameFullWithPrefix();
   NameFullWithPrefix(const NameFullWithPrefix& other);

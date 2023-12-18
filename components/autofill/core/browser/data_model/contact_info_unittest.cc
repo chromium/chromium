@@ -39,7 +39,7 @@ TEST_P(SetFullNameTest, SetFullName) {
   NameInfo name;
   name.SetInfo(AutofillType(NAME_FULL), ASCIIToUTF16(test_case.full_name_input),
                "en-US");
-  name.FinalizeAfterImport();
+  EXPECT_TRUE(name.FinalizeAfterImport());
   EXPECT_EQ(ASCIIToUTF16(test_case.given_name_output),
             name.GetInfo(AutofillType(NAME_FIRST), "en-US"));
   EXPECT_EQ(ASCIIToUTF16(test_case.middle_name_output),
@@ -178,7 +178,9 @@ INSTANTIATE_TEST_SUITE_P(
         FullNameTestCase{"Mikhail Yevgrafovich Saltykov-Shchedrin", "Mikhail",
                          "Yevgrafovich", "Saltykov-Shchedrin"},
         FullNameTestCase{"Arthur Ignatius Conan Doyle", "Arthur",
-                         "Ignatius Conan", "Doyle"}));
+                         "Ignatius Conan", "Doyle"},
+        FullNameTestCase{"Pablo Diego Ruiz y Picasso", "Pablo Diego", "",
+                         "Ruiz y Picasso"}));
 
 TEST(CompanyTest, SetRawInfo) {
   CompanyInfo company;

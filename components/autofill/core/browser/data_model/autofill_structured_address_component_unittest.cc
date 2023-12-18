@@ -1801,6 +1801,9 @@ TEST(AutofillStructuredAddressAddressComponent,
 }
 
 TEST(AutofillStructuredAddressAddressComponent, TestFillTreeGaps) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      features::kAutofillEnableSupportForHonorificPrefixes);
   NameFullWithPrefix name;
 
   AddressComponentTestValues name_filled_values = {
@@ -1894,6 +1897,9 @@ TEST(AutofillStructuredAddressAddressComponent,
 }
 
 TEST(AutofillStructuredAddressAddressComponent, TestFillTreeGapsParsing) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      features::kAutofillEnableSupportForHonorificPrefixes);
   NameFullWithPrefix name;
 
   AddressComponentTestValues name_filled_values = {
