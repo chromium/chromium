@@ -63,8 +63,10 @@
 #include "content/public/test/test_utils.h"
 #include "net/http/http_status_code.h"
 
-// TODO(https://crbug.com/1512521): Failing on ASan/Lsan builder on Linux.
-#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_LINUX)
+// TODO(https://crbug.com/1512521): Failing on ASan/Lsan builder on Linux and
+// ChromeOS.
+#if defined(ADDRESS_SANITIZER) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 #define MAYBE_ASAN(x) DISABLED_##x
 #else
 #define MAYBE_ASAN(x) x
