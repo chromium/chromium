@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.device_dialog;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import android.app.Activity;
 import android.app.Dialog;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +22,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -33,7 +38,11 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
+
+import java.lang.ref.WeakReference;
 
 /** Tests for the UsbChooserDialog class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -53,6 +62,11 @@ public class UsbChooserDialogTest {
     private String mSelectedDeviceId = "";
 
     private UsbChooserDialog mChooserDialog;
+
+    // Unused member variables to avoid Java optimizer issues with Mockito.
+    @Mock ModalDialogManager mMockModalDialogManager;
+    @Mock Activity mMockActivity;
+    @Mock WindowAndroid mMockWindowAndroid;
 
     private class TestUsbChooserDialogJni implements UsbChooserDialog.Natives {
         @Override
@@ -181,5 +195,32 @@ public class UsbChooserDialogTest {
         selectItem(position);
 
         Assert.assertEquals("device_id_1", mSelectedDeviceId);
+    }
+
+    @Test
+    @SmallTest
+    public void testChooserBlockedByModalDialogManager() {
+        ModalDialogManager mockModalDialogManager = mock(ModalDialogManager.class);
+        when(mockModalDialogManager.isSuspended(ModalDialogManager.ModalDialogType.APP))
+                .thenReturn(true);
+        when(mockModalDialogManager.isSuspended(ModalDialogManager.ModalDialogType.TAB))
+                .thenReturn(true);
+        Activity mockActivity = mock(Activity.class);
+        WindowAndroid mockWindowAndroid = mock(WindowAndroid.class);
+        when(mockWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mockActivity));
+        when(mockWindowAndroid.getModalDialogManager()).thenReturn(mockModalDialogManager);
+
+        UsbChooserDialog dialog;
+        dialog =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return UsbChooserDialog.create(
+                                    mockWindowAndroid,
+                                    "https://origin.example.com/",
+                                    ConnectionSecurityLevel.SECURE,
+                                    Profile.getLastUsedRegularProfile(),
+                                    /* nativeUsbChooserDialogPtr= */ 42);
+                        });
+        Assert.assertNull(dialog);
     }
 }

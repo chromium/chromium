@@ -375,6 +375,8 @@ public class ModalDialogManagerTest {
         assertOnDismissCalled(mDialogModels.get(0), 0);
         assertOnDismissCalled(mDialogModels.get(1), 0);
         assertFalse(mModalDialogManager.isShowing());
+        assertFalse(mModalDialogManager.isSuspended(ModalDialogType.APP));
+        assertTrue(mModalDialogManager.isSuspended(ModalDialogType.TAB));
         assertNull(mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP));
         assertEquals(2, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB).size());
 
@@ -405,11 +407,13 @@ public class ModalDialogManagerTest {
 
         // Suspend all tab modal dialogs.
         int token = mModalDialogManager.suspendType(ModalDialogType.TAB);
+        assertTrue(mModalDialogManager.isSuspended(ModalDialogType.TAB));
         assertFalse(mModalDialogManager.isShowing());
         assertEquals(3, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB).size());
 
         // Resume tab modal dialogs.
         mModalDialogManager.resumeType(ModalDialogType.TAB, token);
+        assertFalse(mModalDialogManager.isSuspended(ModalDialogType.TAB));
         assertEquals(mDialogModels.get(0), mModalDialogManager.getCurrentDialogForTest());
         assertEquals(2, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB).size());
     }
@@ -424,7 +428,7 @@ public class ModalDialogManagerTest {
                 ModalDialogManager.ModalDialogPriority.VERY_HIGH,
                 false);
         // Suspend the APP type and check we are still showing the very_high priority dialog.
-        int token = mModalDialogManager.suspendType(ModalDialogType.APP);
+        mModalDialogManager.suspendType(ModalDialogType.APP);
         assertTrue(mModalDialogManager.isShowing());
     }
 
@@ -438,7 +442,7 @@ public class ModalDialogManagerTest {
                 ModalDialogManager.ModalDialogPriority.VERY_HIGH,
                 false);
         // Suspend the APP type and check we are still showing the very_high priority dialog.
-        int token = mModalDialogManager.suspendType(ModalDialogType.TAB);
+        mModalDialogManager.suspendType(ModalDialogType.TAB);
         assertTrue(mModalDialogManager.isShowing());
     }
 
@@ -453,7 +457,7 @@ public class ModalDialogManagerTest {
                 false);
 
         // Suspend the APP type.
-        int token = mModalDialogManager.suspendType(ModalDialogType.APP);
+        mModalDialogManager.suspendType(ModalDialogType.APP);
         assertFalse(mModalDialogManager.isShowing());
 
         // Create a new dialog of the same type(!) but with a very_high priority and check it's

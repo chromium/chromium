@@ -258,6 +258,13 @@ public class ModalDialogManager {
     }
 
     /**
+     * @return Whether dialogs of the specified type are suspended.
+     */
+    public boolean isSuspended(@ModalDialogType int dialogType) {
+        return mSuspendedTypes.contains(dialogType);
+    }
+
+    /**
      * @return The type of dialog showing, or last type that was shown.
      */
     public @ModalDialogType int getCurrentType() {
