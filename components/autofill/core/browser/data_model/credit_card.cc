@@ -606,9 +606,15 @@ std::u16string CreditCard::GetRawInfo(FieldType type) const {
       return name_on_card_;
 
     case CREDIT_CARD_NAME_FIRST:
+      if (!temp_card_first_name_.empty()) {
+        return temp_card_first_name_;
+      }
       return data_util::SplitName(name_on_card_).given;
 
     case CREDIT_CARD_NAME_LAST:
+      if (!temp_card_last_name_.empty()) {
+        return temp_card_last_name_;
+      }
       return data_util::SplitName(name_on_card_).family;
 
     case CREDIT_CARD_EXP_MONTH:
@@ -658,6 +664,8 @@ void CreditCard::SetRawInfoWithVerificationStatus(FieldType type,
   switch (type) {
     case CREDIT_CARD_NAME_FULL:
       name_on_card_ = value;
+      temp_card_first_name_ = u"";
+      temp_card_last_name_ = u"";
       break;
 
     case CREDIT_CARD_NAME_FIRST:
@@ -1384,6 +1392,8 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
 void CreditCard::SetNameOnCardFromSeparateParts() {
   DCHECK(!temp_card_first_name_.empty() && !temp_card_last_name_.empty());
   name_on_card_ = temp_card_first_name_ + u" " + temp_card_last_name_;
+  temp_card_first_name_ = u"";
+  temp_card_last_name_ = u"";
 }
 
 }  // namespace autofill

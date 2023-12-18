@@ -4310,15 +4310,36 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm, MergeDerivedValues) {
 // in the same priority class (user-edited fields).
 TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
        BlockImportForInconsistentValues) {
-  PushField(FieldType::CREDIT_CARD_NAME_LAST, u"Hepburn", Mode::kUserEdited);
   PushField(FieldType::CREDIT_CARD_NAME_FIRST, u"Katherine", Mode::kUserEdited);
   PushField(FieldType::CREDIT_CARD_NAME_FIRST, u"Audrey", Mode::kUserEdited);
+  PushField(FieldType::CREDIT_CARD_NAME_LAST, u"Hepburn", Mode::kUserEdited);
   PushField(FieldType::CREDIT_CARD_NUMBER, u"4444333322221111",
             Mode::kUserEdited);
   PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"12/2020",
             Mode::kUserEdited);
   auto r = form_data_importer().ExtractCreditCardFromForm(form_);
   ASSERT_TRUE(r.has_duplicate_credit_card_field_type);
+}
+
+// Tests that even editing only a first name (without editing the last name) is
+// is reflected in the import candidate.
+TEST_F(FormDataImporterTest_ExtractCreditCardFromForm, PartialFirstLastNames) {
+  PushField(FieldType::CREDIT_CARD_NAME_FIRST, u"Katherine", Mode::kAutofilled);
+  PushField(FieldType::CREDIT_CARD_NAME_FIRST, u"Audrey", Mode::kUserEdited);
+  PushField(FieldType::CREDIT_CARD_NAME_LAST, u"Hepburn", Mode::kAutofilled);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"4444333322221111",
+            Mode::kUserEdited);
+  PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"12/2020",
+            Mode::kUserEdited);
+  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NAME_FULL, kLocale),
+            u"Audrey Hepburn");
+  EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NUMBER, kLocale),
+            u"4444333322221111");
+  EXPECT_EQ(
+      r.card.GetInfo(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, kLocale),
+      u"12/2020");
+  EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
 }
 
 }  // namespace autofill
