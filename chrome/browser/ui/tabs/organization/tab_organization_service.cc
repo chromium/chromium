@@ -209,8 +209,8 @@ void TabOrganizationService::EnableTabOrganizationFeatures(
           /*enable_feature_index=*/"1",
       true);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::about_flags::FeatureFlagsUpdate(*flags_storage,
-                                       g_browser_process->local_state())
+  ash::about_flags::FeatureFlagsUpdate(
+      *flags_storage, profile_->GetOriginalProfile()->GetPrefs())
       .UpdateSessionManager();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -219,15 +219,16 @@ void TabOrganizationService::EnableTabOrganizationFeatures(
 void TabOrganizationService::EnableTabOrganizationFeaturesForChromeAsh(
     bool is_owner) {
   Profile* original_profile = profile_->GetOriginalProfile();
-  ash::OwnerSettingsServiceAsh* service =
-      ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
-          original_profile);
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage;
-  is_owner
-      ? flags_storage = std::make_unique<ash::about_flags::OwnerFlagsStorage>(
-            g_browser_process->local_state(), service)
-      : flags_storage = std::make_unique<flags_ui::PrefServiceFlagsStorage>(
-            g_browser_process->local_state());
+  if (is_owner) {
+    flags_storage = std::make_unique<ash::about_flags::OwnerFlagsStorage>(
+        original_profile->GetPrefs(),
+        ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
+            original_profile));
+  } else {
+    flags_storage = std::make_unique<flags_ui::PrefServiceFlagsStorage>(
+        original_profile->GetPrefs());
+  }
   EnableTabOrganizationFeatures(flags_storage.get());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
