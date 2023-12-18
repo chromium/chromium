@@ -33,7 +33,7 @@ TEST_F(MetadataTest, MouseMetadata) {
   const auto* metadata2 = GetMouseMetadata(kSampleMouse2);
   MouseMetadata expected_metadata;
   expected_metadata.customization_restriction =
-      mojom::CustomizationRestriction::kAllowCustomizations;
+      mojom::CustomizationRestriction::kDisallowCustomizations;
   ASSERT_TRUE(metadata2);
   EXPECT_EQ(*metadata2, expected_metadata);
 }

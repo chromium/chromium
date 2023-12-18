@@ -13,12 +13,17 @@ namespace ash {
 
 namespace {
 static constexpr auto kMouseMetadata =
-    base::MakeFixedFlatMap<VendorProductId, MouseMetadata>({
-        {{0xffff, 0xffff},
-         {mojom::CustomizationRestriction::kAllowCustomizations}},  // Fake data
-                                                                    // for
-                                                                    // testing.
-    });
+    base::MakeFixedFlatMap<VendorProductId, MouseMetadata>(
+        {// Fake data for testing.
+         {{0xffff, 0xfffe},
+          {mojom::CustomizationRestriction::kAllowCustomizations}},
+         // Fake data for testing.
+         {{0xffff, 0xffff},
+          {mojom::CustomizationRestriction::kDisallowCustomizations}},
+         // Razer Naga Pro (USB Dongle)
+         {{0x1532, 0x0090},
+          {mojom::CustomizationRestriction::
+               kAllowAlphabetOrNumberKeyEventRewrites}}});
 }
 
 bool MouseMetadata::operator==(const MouseMetadata& other) const {

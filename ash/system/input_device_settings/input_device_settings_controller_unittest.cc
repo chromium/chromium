@@ -158,8 +158,8 @@ const ui::InputDevice kSampleCustomizableMouse(4,
                                                "kSampleCustomizableMouse",
                                                /*phys=*/"",
                                                /*sys_path=*/base::FilePath(),
-                                               /*vendor=*/0x0007,
-                                               /*product=*/0x0008,
+                                               /*vendor=*/0xffff,
+                                               /*product=*/0xfffe,
                                                /*version=*/0x0009);
 
 constexpr char kUserEmail1[] = "example1@abc.com";
@@ -770,45 +770,6 @@ TEST_F(InputDeviceSettingsControllerTest, UpdateLoginScreenSettings) {
       keyboard_pref_handler_->num_login_screen_keyboard_settings_updated(), 3u);
 }
 
-TEST_F(InputDeviceSettingsControllerTest, BlockMouseKeyEventRewrite) {
-  fake_device_manager_->AddFakeKeyboard(kSampleKeyboardInternal2,
-                                        kKbdTopRowLayout1Tag);
-  EXPECT_EQ(true, IsMouseCustomizable(kSampleCustomizableMouse));
-  fake_device_manager_->AddFakeMouse(kSampleCustomizableMouse);
-  EXPECT_EQ(mojom::CustomizationRestriction::kDisableKeyEventRewrites,
-            controller_->GetConnectedMice()[0]->customization_restriction);
-
-  fake_device_manager_->RemoveAllDevices();
-  fake_device_manager_->AddFakeMouse(kSampleCustomizableMouse);
-  EXPECT_EQ(true, IsMouseCustomizable(kSampleCustomizableMouse));
-  EXPECT_EQ(mojom::CustomizationRestriction::kAllowCustomizations,
-            controller_->GetConnectedMice()[0]->customization_restriction);
-  fake_device_manager_->AddFakeKeyboard(kSampleKeyboardInternal2,
-                                        kKbdTopRowLayout1Tag);
-  EXPECT_EQ(mojom::CustomizationRestriction::kDisableKeyEventRewrites,
-            controller_->GetConnectedMice()[0]->customization_restriction);
-}
-
-TEST_F(InputDeviceSettingsControllerTest,
-       BlockMouseKeyEventRewriteRestartObserving) {
-  fake_device_manager_->AddFakeMouse(kSampleCustomizableMouse);
-  EXPECT_EQ(mojom::CustomizationRestriction::kAllowCustomizations,
-            controller_->GetConnectedMice()[0]->customization_restriction);
-
-  controller_->StartObservingButtons(kSampleCustomizableMouse.id);
-  auto* rewriter = Shell::Get()
-                       ->event_rewriter_controller()
-                       ->peripheral_customization_event_rewriter();
-  EXPECT_EQ(1u, rewriter->mice_to_observe().size());
-
-  fake_device_manager_->AddFakeKeyboard(kSampleKeyboardInternal2,
-                                        kKbdTopRowLayout1Tag);
-  EXPECT_EQ(mojom::CustomizationRestriction::kDisableKeyEventRewrites,
-            controller_->GetConnectedMice()[0]->customization_restriction);
-
-  EXPECT_EQ(1u, rewriter->mice_to_observe().size());
-}
-
 TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsAreValid) {
   fake_device_manager_->AddFakeKeyboard(kSampleKeyboardInternal,
                                         kKbdTopRowLayout1Tag);
@@ -1356,8 +1317,9 @@ TEST_F(InputDeviceSettingsControllerTest, ObservingButtons) {
   ASSERT_EQ(0u, rewriter->graphics_tablets_to_observe().size());
 }
 
-TEST_F(InputDeviceSettingsControllerTest, ObservingUncustomizableMouseButtons) {
-  ui::DeviceDataManagerTestApi().SetMouseDevices({kSampleUncustomizableMouse});
+TEST_F(InputDeviceSettingsControllerTest, ObservingMouseButtons) {
+  ui::DeviceDataManagerTestApi().SetMouseDevices(
+      {kSampleUncustomizableMouse, kSampleCustomizableMouse});
 
   auto* rewriter = Shell::Get()
                        ->event_rewriter_controller()
@@ -1367,6 +1329,11 @@ TEST_F(InputDeviceSettingsControllerTest, ObservingUncustomizableMouseButtons) {
   ASSERT_EQ(0u, rewriter->mice_to_observe().size());
   EXPECT_FALSE(
       rewriter->mice_to_observe().contains(kSampleUncustomizableMouse.id));
+
+  controller_->StartObservingButtons(kSampleCustomizableMouse.id);
+  ASSERT_EQ(1u, rewriter->mice_to_observe().size());
+  EXPECT_TRUE(
+      rewriter->mice_to_observe().contains(kSampleCustomizableMouse.id));
 }
 
 TEST_F(InputDeviceSettingsControllerTest, ObservingButtonsDuplicateIds) {

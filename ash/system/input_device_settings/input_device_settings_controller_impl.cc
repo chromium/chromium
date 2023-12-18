@@ -22,6 +22,7 @@
 #include "ash/system/input_device_settings/input_device_key_alias_manager.h"
 #include "ash/system/input_device_settings/input_device_notifier.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
+#include "ash/system/input_device_settings/input_device_settings_metadata.h"
 #include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 #include "ash/system/input_device_settings/input_device_settings_policy_handler.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
@@ -1432,72 +1433,12 @@ void InputDeviceSettingsControllerImpl::DispatchGraphicsTabletSettingsChanged(
 mojom::CustomizationRestriction
 InputDeviceSettingsControllerImpl::GetMouseCustomizationRestriction(
     const ui::InputDevice& mouse) {
-  if (!features::IsPeripheralCustomizationEnabled()) {
-    return mojom::CustomizationRestriction::kAllowCustomizations;
+  const auto* metadata = GetMouseMetadata(mouse);
+  if (metadata) {
+    return metadata->customization_restriction;
   }
 
-  // If the mouse is not customizable, then the CustomizationRestriction is
-  // kDisallowCustomizations.
-  if (!IsMouseCustomizable(mouse)) {
-    return mojom::CustomizationRestriction::kDisallowCustomizations;
-  }
-
-  // If the mouse is customizable based on its vid and pid but there exists
-  // duplicate ids in the keyboard list, then the CustomizationRestriction is
-  // kDisableKeyEventRewrites to disable the key event rewrite from the mouse.
-  auto* duplicate_ids = duplicate_id_finder_->GetDuplicateDeviceIds(mouse.id);
-  CHECK(duplicate_ids);
-  for (const auto& duplicate_id : *duplicate_ids) {
-    if (keyboards_.contains(duplicate_id)) {
-      return mojom::CustomizationRestriction::kDisableKeyEventRewrites;
-    }
-  }
-
-  return mojom::CustomizationRestriction::kAllowCustomizations;
-}
-
-void InputDeviceSettingsControllerImpl::
-    ApplyCustomizationRestrictionFromKeyboard(DeviceId keyboard_id) {
-  if (!features::IsPeripheralCustomizationEnabled()) {
-    return;
-  }
-
-  bool changed_restriction = false;
-  auto* duplicate_ids =
-      duplicate_id_finder_->GetDuplicateDeviceIds(keyboard_id);
-  CHECK(duplicate_ids);
-  for (const auto& duplicate_id : *duplicate_ids) {
-    auto iter = mice_.find(duplicate_id);
-    if (iter == mice_.end()) {
-      continue;
-    }
-    auto& mouse = *iter->second;
-
-    if (mouse.customization_restriction ==
-        mojom::CustomizationRestriction::kDisableKeyEventRewrites) {
-      continue;
-    }
-
-    mouse.customization_restriction =
-        mojom::CustomizationRestriction::kDisableKeyEventRewrites;
-    changed_restriction = true;
-    InitializeMouseSettings(&mouse);
-    DispatchMouseSettingsChanged(mouse.id);
-  }
-
-  // If the restriction changed for any mouse, refresh the observing to match
-  // the new restriction.
-  if (changed_restriction) {
-    PeripheralCustomizationEventRewriter* rewriter =
-        Shell::Get()
-            ->event_rewriter_controller()
-            ->peripheral_customization_event_rewriter();
-    DeviceId id = *duplicate_ids->begin();
-    if (rewriter->mice_to_observe().contains(id)) {
-      rewriter->StopObserving();
-      StartObservingButtons(id);
-    }
-  }
+  return mojom::CustomizationRestriction::kDisableKeyEventRewrites;
 }
 
 void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
@@ -1510,8 +1451,6 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     InitializeKeyboardSettings(mojom_keyboard.get());
     keyboards_.insert_or_assign(keyboard.id, std::move(mojom_keyboard));
     DispatchKeyboardConnected(keyboard.id);
-    // Update mouse restrictions if we have a keyboard with the same id.
-    ApplyCustomizationRestrictionFromKeyboard(keyboard.id);
   }
 
   for (const auto id : keyboard_ids_to_remove) {
