@@ -23,7 +23,6 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "content/public/browser/notification_service.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -38,9 +37,6 @@ using ::captive_portal::CaptivePortalDetector;
 // Default delay between portal detection attempts when Chrome portal detection
 // is used (for detecting proxy auth or when Shill portal state is unknown).
 constexpr base::TimeDelta kDefaultAttemptDelay = base::Seconds(1);
-
-// Delay before portal detection caused by changes in proxy settings.
-constexpr int kProxyChangeDelaySec = 1;
 
 // Timeout for attempts.
 constexpr base::TimeDelta kAttemptTimeout = base::Seconds(10);
@@ -109,11 +105,6 @@ NetworkPortalDetectorImpl::NetworkPortalDetectorImpl(
   }
   captive_portal_detector_ =
       std::make_unique<CaptivePortalDetector>(loader_factory);
-
-  registrar_.Add(this, chrome::NOTIFICATION_AUTH_SUPPLIED,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this, chrome::NOTIFICATION_AUTH_CANCELLED,
-                 content::NotificationService::AllSources());
 
   network_state_handler_observer_.Observe(
       NetworkHandler::Get()->network_state_handler());
@@ -415,19 +406,6 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
     SetNetworkPortalState(network, NetworkState::PortalState::kPortal);
   }
   ScheduleAttempt(results.retry_after_delta);
-}
-
-void NetworkPortalDetectorImpl::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  if (type == chrome::NOTIFICATION_AUTH_SUPPLIED ||
-      type == chrome::NOTIFICATION_AUTH_CANCELLED) {
-    NET_LOG(EVENT) << "Restarting portal detection due to auth change"
-                   << " id=" << NetworkGuidId(default_network_id_);
-    StopDetection();
-    ScheduleAttempt(base::Seconds(kProxyChangeDelaySec));
-  }
 }
 
 void NetworkPortalDetectorImpl::DetectionCompleted(

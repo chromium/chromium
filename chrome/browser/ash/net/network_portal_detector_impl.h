@@ -22,8 +22,6 @@
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/captive_portal/core/captive_portal_types.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -50,8 +48,7 @@ class NetworkStateHandler;
 // The status reflects the combined Shill + Chrome detection results
 // (as does NetworkState::GetPortalState()).
 class NetworkPortalDetectorImpl : public NetworkPortalDetector,
-                                  public NetworkStateHandlerObserver,
-                                  public content::NotificationObserver {
+                                  public NetworkStateHandlerObserver {
  public:
   explicit NetworkPortalDetectorImpl(
       network::mojom::URLLoaderFactory* loader_factory_for_testing = nullptr);
@@ -105,11 +102,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   void OnShuttingDown() override;
   void PortalStateChanged(const NetworkState* default_network,
                           NetworkState::PortalState portal_state) override;
-
-  // content::NotificationObserver implementation:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
 
   void DetectionCompleted(const NetworkState* network,
                           const CaptivePortalStatus& results);
@@ -188,8 +180,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   int captive_portal_detector_run_count_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  content::NotificationRegistrar registrar_;
 
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
