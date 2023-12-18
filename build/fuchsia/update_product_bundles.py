@@ -22,24 +22,10 @@ from compatible_utils import running_unattended
 
 # TODO(crbug/1361089): Remove when the old scripts have been deprecated.
 _IMAGE_TO_PRODUCT_BUNDLE = {
-    'core.x64-dfv2-release':
-    'core.x64-dfv2',
     'qemu.arm64':
     'terminal.qemu-arm64',
     'qemu.x64':
     'terminal.x64',
-    'workstation_eng.chromebook-x64-dfv2-release':
-    'workstation_eng.chromebook-x64-dfv2',
-    'workstation_eng.chromebook-x64-release':
-    'workstation_eng.chromebook-x64',
-    'workstation_eng.qemu-x64-release':
-    'workstation_eng.qemu-x64',
-    'smart_display_eng_arrested.astro-release':
-    'smart_display_eng_arrested.astro',
-    'smart_display_max_eng_arrested.sherlock-release':
-    'smart_display_max_eng_arrested.sherlock',
-    'smart_display_m3_latest_eng_paused.nelson-release':
-    'smart_display_m3_latest_eng_paused.nelson',
 }
 
 
@@ -52,7 +38,13 @@ def convert_to_products(images_list):
     if image in _IMAGE_TO_PRODUCT_BUNDLE:
       logging.warning(f'Image name {image} has been deprecated. Use '
                       f'{_IMAGE_TO_PRODUCT_BUNDLE.get(image)} instead.')
-    product_bundle_list.append(_IMAGE_TO_PRODUCT_BUNDLE.get(image, image))
+      product_bundle_list.append(_IMAGE_TO_PRODUCT_BUNDLE[image])
+    else:
+      if image.endswith('-release'):
+        image = image[:-len('-release')]
+        logging.warning(f'Image name {image}-release has been deprecated. Use '
+                        f'{image} instead.')
+      product_bundle_list.append(image)
   return product_bundle_list
 
 

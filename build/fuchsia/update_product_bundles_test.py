@@ -32,6 +32,11 @@ class TestUpdateProductBundles(unittest.TestCase):
         update_product_bundles.convert_to_products(['unknown-image']),
         ['unknown-image'])
 
+  def testConvertToProductBundleRemovesReleaseSuffix(self):
+    self.assertEqual(
+        update_product_bundles.convert_to_products(
+            ['smart_display_eng.astro-release']), ['smart_display_eng.astro'])
+
   def testConvertToProductBundleWarnsDeprecated(self):
     with self.assertLogs(level='WARNING') as logs:
       deprecated_images = [
