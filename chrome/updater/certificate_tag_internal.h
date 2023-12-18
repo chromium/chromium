@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -31,11 +32,10 @@ class PEBinary : public BinaryInterface {
 
   // Parse a signed, Windows PE binary. Note that the returned structure
   // contains pointers into the given data.
-  static std::unique_ptr<BinaryInterface> Parse(
-      base::span<const uint8_t> binary);
+  static std::unique_ptr<PEBinary> Parse(base::span<const uint8_t> binary);
 
   // Returns the embedded tag, if any.
-  std::optional<std::vector<const uint8_t>> tag() const override;
+  std::optional<std::vector<uint8_t>> tag() const override;
 
   // SetTag returns an updated version of the PE binary image that contains the
   // given tag, or `nullopt` on error. If the binary already contains a tag then
@@ -55,7 +55,7 @@ class PEBinary : public BinaryInterface {
   base::span<const uint8_t> content_info_;
 
   // tag_ contains the embedded tag, or `nullopt` if there isn't one.
-  std::optional<std::vector<const uint8_t>> tag_;
+  std::optional<std::vector<uint8_t>> tag_;
 
   // attr_cert_offset_ is the offset in the file where the `WIN_CERTIFICATE`
   // structure appears. (This is the last structure in the file.)
@@ -141,11 +141,11 @@ class MSIBinary : public BinaryInterface {
   // Parses the MSI header, the directory entry for the SignedData, and the
   // SignedData itself. If successful, returns a `BinaryInterface` to the
   // `MSIBinary` object.
-  static std::unique_ptr<BinaryInterface> Parse(
+  static std::unique_ptr<MSIBinary> Parse(
       base::span<const uint8_t> file_contents);
 
   // Returns the embedded tag, if any.
-  std::optional<std::vector<const uint8_t>> tag() const override;
+  std::optional<std::vector<uint8_t>> tag() const override;
 
   // Returns a complete MSI binary image based on bin, but where the superfluous
   // certificate contains the given tag data.
@@ -233,7 +233,7 @@ class MSIBinary : public BinaryInterface {
   std::vector<uint32_t> difat_sectors_;
 
   // The parsed tag, if any.
-  std::optional<std::vector<const uint8_t>> tag_;
+  std::optional<std::vector<uint8_t>> tag_;
 
   FRIEND_TEST_ALL_PREFIXES(CertificateTagMsiFirstFreeFatEntryTest, TestCases);
   FRIEND_TEST_ALL_PREFIXES(CertificateTagMsiEnsureFreeDifatEntryTest,
@@ -243,6 +243,9 @@ class MSIBinary : public BinaryInterface {
   FRIEND_TEST_ALL_PREFIXES(CertificateTagMsiAssignDifatEntryTest, TestCases);
   friend MSIBinary GetMsiBinary(const std::vector<uint32_t>& fat_entries,
                                 const std::vector<uint32_t>& difat_entries);
+  friend void Validate(
+      const MSIBinary& bin,
+      std::optional<std::reference_wrapper<const MSIBinary>> other);
 };
 
 // CBS is a structure from BoringSSL used for parsing binary and ASN.1-based

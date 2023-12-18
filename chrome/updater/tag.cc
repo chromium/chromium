@@ -798,13 +798,13 @@ std::string BinaryReadTagString(const base::FilePath& file) {
     return {};
   }
 
-  std::optional<std::vector<const uint8_t>> tag = bin->tag();
+  std::optional<std::vector<uint8_t>> tag = bin->tag();
   if (!tag) {
     LOG(ERROR) << __func__ << ": No superfluous certificate in file: " << file;
     return {};
   }
 
-  const std::vector<const uint8_t> tag_data = {tag->begin(), tag->end()};
+  const std::vector<uint8_t> tag_data = {tag->begin(), tag->end()};
   const std::string tag_string = ReadTag(tag_data.begin(), tag_data.end());
   if (tag_string.empty()) {
     LOG(ERROR) << __func__ << ": file is untagged: " << file;

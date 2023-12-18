@@ -38,8 +38,7 @@ PEBinary::PEBinary(const PEBinary&) = default;
 PEBinary::~PEBinary() = default;
 
 // static
-std::unique_ptr<BinaryInterface> PEBinary::Parse(
-    base::span<const uint8_t> binary) {
+std::unique_ptr<PEBinary> PEBinary::Parse(base::span<const uint8_t> binary) {
   // Parse establishes some offsets into |binary| for structures that |GetTag|
   // and |SetTag| will both need.
 
@@ -169,7 +168,7 @@ std::unique_ptr<BinaryInterface> PEBinary::Parse(
   return ret;
 }
 
-std::optional<std::vector<const uint8_t>> PEBinary::tag() const {
+std::optional<std::vector<uint8_t>> PEBinary::tag() const {
   return tag_;
 }
 
@@ -497,7 +496,7 @@ PEBinary::PEBinary() = default;
 bool PEBinary::ParseTag() {
   const auto [success, tag] = ParseTagImpl(content_info_);
   if (tag) {
-    tag_ = std::vector<const uint8_t>(tag->begin(), tag->end());
+    tag_ = std::vector<uint8_t>(tag->begin(), tag->end());
   }
   return success;
 }
@@ -790,7 +789,7 @@ MSIBinary::MSIBinary() = default;
 MSIBinary::~MSIBinary() = default;
 
 // static
-std::unique_ptr<BinaryInterface> MSIBinary::Parse(
+std::unique_ptr<MSIBinary> MSIBinary::Parse(
     base::span<const uint8_t> file_contents) {
   if (file_contents.size() < kNumHeaderTotalBytes) {
     // MSI file is too short to contain header.
@@ -867,6 +866,8 @@ std::vector<uint8_t> MSIBinary::BuildBinary(
   MSIDirEntry new_sig_dir_entry = sig_dir_entry_;
   new_sig_dir_entry.stream_first_sector = first_signed_data_sector;
   new_sig_dir_entry.stream_size = signed_data.size();
+  const size_t signed_data_offset =
+      first_signed_data_sector * sector_format_.size;
 
   // Write out the...
   // ...header,
@@ -879,9 +880,11 @@ std::vector<uint8_t> MSIBinary::BuildBinary(
 
   // ...content,
   // Make a copy of the content bytes, since new data will be overlaid on it.
-  std::vector<uint8_t> new_contents(sector_format_.size *
-                                    FirstFreeFatEntry(new_fat_entries));
-  std::memcpy(&new_contents[0], &contents_[0], contents_.size());
+  const size_t new_contents_size =
+      sector_format_.size * FirstFreeFatEntry(new_fat_entries);
+  CHECK_GT(new_contents_size, signed_data_offset + signed_data.size());
+  std::vector<uint8_t> new_contents(new_contents_size);
+  std::memcpy(&new_contents[0], &contents_[0], signed_data_offset);
 
   // ...signedData directory entry from local modified copy,
   std::memcpy(&new_contents[sig_dir_offset_], &new_sig_dir_entry,
@@ -916,8 +919,8 @@ std::vector<uint8_t> MSIBinary::BuildBinary(
   // ...signedData
   // `new_contents` is zero-initialized, so no need to add padding to end of
   // sector. The sectors allocated for signedData are guaranteed contiguous.
-  std::memcpy(&new_contents[first_signed_data_sector * sector_format_.size],
-              &signed_data[0], signed_data.size());
+  std::memcpy(&new_contents[signed_data_offset], &signed_data[0],
+              signed_data.size());
 
   // ...finally, build and return the new binary.
   std::vector<uint8_t> binary(header_sector_bytes.size() + new_contents.size());
@@ -941,12 +944,12 @@ std::optional<std::vector<uint8_t>> MSIBinary::SetTag(
 bool MSIBinary::ParseTag() {
   const auto [success, tag] = ParseTagImpl(signed_data_bytes_);
   if (tag) {
-    tag_ = std::vector<const uint8_t>(tag->begin(), tag->end());
+    tag_ = std::vector<uint8_t>(tag->begin(), tag->end());
   }
   return success;
 }
 
-std::optional<std::vector<const uint8_t>> MSIBinary::tag() const {
+std::optional<std::vector<uint8_t>> MSIBinary::tag() const {
   return tag_;
 }
 

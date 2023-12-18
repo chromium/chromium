@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -13,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/memory_mapped_file.h"
 #include "chrome/updater/certificate_tag_internal.h"
 #include "chrome/updater/util/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,7 +34,7 @@ TEST(CertificateTag, RoundTrip) {
   ASSERT_TRUE(bin);
 
   // Binary should be untagged on disk.
-  std::optional<std::vector<const uint8_t>> orig_tag(bin->tag());
+  std::optional<std::vector<uint8_t>> orig_tag(bin->tag());
   EXPECT_FALSE(orig_tag);
 
   constexpr uint8_t kTag[] = {1, 2, 3, 4, 5};
@@ -41,7 +43,7 @@ TEST(CertificateTag, RoundTrip) {
 
   std::unique_ptr<BinaryInterface> bin2(CreatePEBinary(*updated_exe));
   ASSERT_TRUE(bin2);
-  std::optional<std::vector<const uint8_t>> parsed_tag(bin2->tag());
+  std::optional<std::vector<uint8_t>> parsed_tag(bin2->tag());
   ASSERT_TRUE(parsed_tag);
   ASSERT_EQ(parsed_tag->size(), sizeof(kTag));
   EXPECT_TRUE(memcmp(kTag, parsed_tag->data(), sizeof(kTag)) == 0);
@@ -53,7 +55,7 @@ TEST(CertificateTag, RoundTrip) {
 
   std::unique_ptr<BinaryInterface> bin3(CreatePEBinary(*updated_again_exe));
   ASSERT_TRUE(bin3);
-  std::optional<std::vector<const uint8_t>> parsed_tag2(bin3->tag());
+  std::optional<std::vector<uint8_t>> parsed_tag2(bin3->tag());
   ASSERT_TRUE(parsed_tag2);
   ASSERT_EQ(parsed_tag2->size(), sizeof(kTag2));
   EXPECT_TRUE(memcmp(kTag2, parsed_tag2->data(), sizeof(kTag2)) == 0);
@@ -406,12 +408,12 @@ TEST_P(CertificateTagMsiEnsureFreeFatEntriesTest, TestCases) {
 }
 
 struct CertificateTagMsiAssignDifatEntryTestCase {
-  int difat_sectors;
-  int num_free_difat_entries;
-  size_t difat_entries_assigned_index;
-  uint32_t difat_entry_assigned_value;
-  int num_fat_sectors;
-  int num_free_fat_entries;
+  const int difat_sectors;
+  const int num_free_difat_entries;
+  const size_t difat_entries_assigned_index;
+  const uint32_t difat_entry_assigned_value;
+  const int num_fat_sectors;
+  const int num_free_fat_entries;
 };
 
 class CertificateTagMsiAssignDifatEntryTest
@@ -440,6 +442,158 @@ TEST_P(CertificateTagMsiAssignDifatEntryTest, TestCases) {
             GetParam().difat_entries_assigned_index + 1);
   ASSERT_EQ(bin.difat_entries_[GetParam().difat_entries_assigned_index],
             GetParam().difat_entry_assigned_value);
+}
+
+// Checks the provided `bin` MSIBinary for internal consistency. Additionally,
+// if `other` MSIBinary is provided, checks that the data streams in `other` are
+// bitwise identical to `bin`.
+void Validate(const MSIBinary& bin,
+              std::optional<std::reference_wrapper<const MSIBinary>> other) {
+  // Check the fat sector entries.
+  uint64_t i = 0;
+  for (const auto s : bin.difat_entries_) {
+    ASSERT_TRUE(s == kFatFreeSector || IsLastInSector(bin.sector_format_, i) ||
+                bin.fat_entries_[s] == kFatFatSector);
+    ++i;
+  }
+
+  // Check the difat sector entries.
+  i = kNumDifatHeaderEntries - 1;
+  uint32_t num = 0;
+  for (uint32_t s = bin.header_.first_difat_sector; s != kFatEndOfChain;
+       ++num) {
+    ASSERT_EQ(bin.fat_entries_[s], kFatDifSector);
+    i += bin.sector_format_.ints;
+    s = bin.difat_entries_[i];
+  }
+  ASSERT_EQ(num, bin.header_.num_difat_sectors);
+
+  // Enumerate the directory entries.
+  // * Validate streams in the fat: Walk the chain, validate the stream length,
+  //   and mark sectors in a copy of the fat so we can tell if any sectors are
+  //   re-used.
+  // * Compare bytes in the data streams, to validate none of them changed.
+  //   We could match stream names, but the directory entries are not reordered
+  //   and the streams are not moved.
+  std::vector<uint32_t> fat_entries = bin.fat_entries_;
+  uint32_t dir_sector = bin.header_.first_dir_sector;
+  MSIDirEntry entry;
+  do {
+    // Fixed `kNumDirEntryBytes` directory entry size.
+    for (i = 0; i < bin.sector_format_.size / kNumDirEntryBytes; ++i) {
+      uint64_t offset =
+          dir_sector * bin.sector_format_.size + i * kNumDirEntryBytes;
+      std::memcpy(&entry, &bin.contents_[offset], sizeof(MSIDirEntry));
+
+      // Skip the mini stream and signature entries.
+      if (entry.stream_size < kMiniStreamCutoffSize ||
+          std::equal(entry.name, entry.name + entry.num_name_bytes,
+                     std::begin(kSignatureName))) {
+        continue;
+      }
+      uint64_t allocated_size = 0;
+      uint32_t sector = entry.stream_first_sector;
+      uint32_t next = kFatEndOfChain;
+      do {
+        allocated_size += bin.sector_format_.size;
+        ASSERT_TRUE(fat_entries[sector] == kFatEndOfChain ||
+                    fat_entries[sector] < kFatReserved);
+        if (other) {
+          offset = sector * bin.sector_format_.size;
+          ASSERT_TRUE(std::equal(
+              bin.contents_.begin() + offset,
+              bin.contents_.begin() + offset + bin.sector_format_.size,
+              other->get().contents_.begin() + offset));
+        }
+        next = fat_entries[sector];
+
+        // Overwrite the fat entry and detect if the entry is re-used.
+        fat_entries[sector] = kFatReserved;
+        sector = next;
+      } while (next != kFatEndOfChain);
+      ASSERT_GE(allocated_size, entry.stream_size);
+    }
+
+    // Go to the next directory sector.
+    dir_sector = bin.fat_entries_[dir_sector];
+  } while (dir_sector != kFatEndOfChain);
+}
+
+struct CertificateTagMsiValidateTestCase {
+  const std::string infile;
+  const std::vector<uint8_t> expected_tag;
+  const std::vector<uint8_t> new_tag;
+};
+
+class CertificateTagMsiValidateTest
+    : public ::testing::TestWithParam<CertificateTagMsiValidateTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    CertificateTagMsiValidateTestCases,
+    CertificateTagMsiValidateTest,
+    ::testing::ValuesIn(std::vector<CertificateTagMsiValidateTestCase>{
+        {"GUH-untagged.msi", {}, {1, 2, 3, 4, 5}},
+        {"GUH-brand-only.msi",
+         [] {
+           std::vector<uint8_t> expected_tag = {
+               'G', 'a', 'c', 't',  '2',  '.', '0', 'O', 'm',
+               'a', 'h', 'a', '\0', '\n', 'b', 'r', 'a', 'n',
+               'd', '=', 'Q', 'A',  'Q',  'A', '\0'};
+           expected_tag.resize(8240);
+           return expected_tag;
+         }(),
+         {1, 2, 3, 4, 5}},
+        {"GUH-multiple.msi",
+         [] {
+           std::vector<uint8_t> expected_tag(8632);
+           constexpr char magic[] = "Gact2.0Omaha";
+           std::memcpy(&expected_tag[0], magic, sizeof(magic));
+           constexpr char tag[] =
+               "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-"
+               "8D3A-4EFC-6D61-AE23E3530EA2}&lang=en&browser=4&usagestats=0&"
+               "appname=Google%20Chrome&needsadmin=prefers&brand=CHMB&"
+               "installdataindex=defaultbrowser";
+           expected_tag[sizeof(magic)] = sizeof(tag) - 1;
+           std::memcpy(&expected_tag[sizeof(magic) + 1], tag, sizeof(tag));
+           return expected_tag;
+         }(),
+         [] {
+           std::vector<uint8_t> new_tag = {'G', 'a', 'c', 't', '2', '.',  '0',
+                                           'O', 'm', 'a', 'h', 'a', '\0', '\n',
+                                           'b', 'r', 'a', 'n', 'd', '=',  'Q',
+                                           'A', 'Q', 'A', '\0'};
+           new_tag.resize(8206);
+           return new_tag;
+         }()},
+    }));
+
+TEST_P(CertificateTagMsiValidateTest, TestCases) {
+  base::MemoryMappedFile mapped_file;
+  ASSERT_TRUE(mapped_file.Initialize(
+      test::GetTestFilePath("tagged_msi").AppendASCII(GetParam().infile)));
+  const std::unique_ptr<MSIBinary> bin = MSIBinary::Parse(mapped_file.bytes());
+  ASSERT_TRUE(bin);
+
+  if (GetParam().expected_tag.empty()) {
+    ASSERT_FALSE(bin->tag());
+  } else {
+    ASSERT_EQ(*bin->tag(), GetParam().expected_tag);
+  }
+  ASSERT_NO_FATAL_FAILURE(Validate(*bin, {}));
+
+  // Set a new tag on `bin`.
+  const std::optional<std::vector<uint8_t>> tagged_bytes =
+      bin->SetTag(GetParam().new_tag);
+  ASSERT_TRUE(tagged_bytes);
+  const std::unique_ptr<MSIBinary> tagged_bin = MSIBinary::Parse(*tagged_bytes);
+  ASSERT_TRUE(tagged_bin);
+
+  if (GetParam().new_tag.empty()) {
+    ASSERT_FALSE(tagged_bin->tag());
+  } else {
+    ASSERT_EQ(*tagged_bin->tag(), GetParam().new_tag);
+  }
+  ASSERT_NO_FATAL_FAILURE(Validate(*bin, *tagged_bin));
 }
 
 }  // namespace internal

@@ -27,7 +27,7 @@ namespace tagging {
 class BinaryInterface {
  public:
   // tag returns the embedded tag, if any.
-  virtual std::optional<std::vector<const uint8_t>> tag() const = 0;
+  virtual std::optional<std::vector<uint8_t>> tag() const = 0;
 
   // Returns an updated version of the binary with the provided `tag`, or
   // `nullopt` on error. If the binary already contains a tag then it will be
