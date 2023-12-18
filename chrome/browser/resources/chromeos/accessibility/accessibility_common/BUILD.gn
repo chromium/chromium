@@ -20,8 +20,6 @@ declare_args() {
 accessibility_common_dir =
     "$root_out_dir/resources/chromeos/accessibility/accessibility_common"
 tsc_out_dir = "$target_gen_dir/tsc"
-common_tsc_out_dir = "$target_gen_dir/../common/tsc/common"
-accessibility_common_tsc_out_dir = "$tsc_out_dir/accessibility_common"
 
 # TS files to build.
 ts_modules = [
@@ -93,7 +91,7 @@ ts_library("ts_build") {
 }
 
 group("build") {
-  deps = [ ":accessibility_common_copied_files" ]
+  deps = [ ":copied_files" ]
 
   if (include_mediapipe_task_vision_files_for_facegaze) {
     deps += [ ":extract_mediapipe_task_vision_files" ]
@@ -101,13 +99,12 @@ group("build") {
 }
 
 # Instead of setting up copy targets, use a script to copy all files.
-run_jsbundler("accessibility_common_copied_files") {
+run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = accessibility_common_dir
   deps = [
     ":ts_build",
-    "../common:accessibility_common_copied_files",
-    "../common:ts_build",
+    "../common:copied_files",
   ]
   sources = [
     "background.html",
@@ -123,16 +120,10 @@ run_jsbundler("accessibility_common_copied_files") {
     "dictation/parse/speech_parser.js",
     "facegaze/camera_stream.html",
   ]
-
-  foreach(_ts_file, ts_modules) {
-    sources += [ "$accessibility_common_tsc_out_dir/" +
-                 get_path_info(_ts_file, "dir") + "/" +
-                 get_path_info(_ts_file, "name") + ".js" ]
-  }
+  sources += get_target_outputs(":ts_build")
 
   rewrite_rules = [
-    rebase_path(accessibility_common_tsc_out_dir, root_build_dir) + ":",
-    rebase_path(common_tsc_out_dir, root_build_dir) + ":",
+    rebase_path("$tsc_out_dir/accessibility_common", root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]

@@ -16,13 +16,9 @@ assert(is_chromeos_ash)
 switch_access_dir =
     "$root_out_dir/resources/chromeos/accessibility/switch_access"
 tsc_out_dir = "$target_gen_dir/tsc"
-common_tsc_out_dir = "$target_gen_dir/../common/tsc"
 
 # TS files to compile.
 ts_modules = []
-
-# TS files needed from ../common/.
-common_ts_modules = []
 
 # JS files needed to compile TS.
 js_deps = []
@@ -46,14 +42,18 @@ ts_library("ts_build") {
 }
 
 group("build") {
-  deps = [ ":switch_access_copied_files" ]
+  deps = [ ":copied_files" ]
 }
 
 # Instead of setting up one copy target for each subdirectory, use a script
 # to copy all files.
-run_jsbundler("switch_access_copied_files") {
+run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = switch_access_dir
+  deps = [
+    ":ts_build",
+    "../common:copied_files",
+  ]
   sources = [
     "action_manager.js",
     "auto_scan_manager.js",
@@ -112,20 +112,10 @@ run_jsbundler("switch_access_copied_files") {
     "switch_access_predicate.js",
     "text_navigation_manager.js",
   ]
-
-  foreach(_ts_file, ts_modules) {
-    sources +=
-        [ "$tsc_out_dir/switch_access/" + get_path_info(_ts_file, "dir") + "/" +
-          get_path_info(_ts_file, "name") + ".js" ]
-  }
-  foreach(_ts_file, common_ts_modules) {
-    sources += [ "$common_tsc_out_dir/" + get_path_info(_ts_file, "dir") + "/" +
-                 get_path_info(_ts_file, "name") + ".js" ]
-  }
+  sources += get_target_outputs(":ts_build")
 
   rewrite_rules = [
     rebase_path("$tsc_out_dir/switch_access", root_build_dir) + ":",
-    rebase_path(common_tsc_out_dir, root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]

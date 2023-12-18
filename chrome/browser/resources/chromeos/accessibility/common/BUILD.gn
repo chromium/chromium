@@ -19,7 +19,7 @@ tsc_out_dir = "$target_gen_dir/tsc"
 
 group("build") {
   deps = [
-    ":accessibility_common_copied_files",
+    ":copied_files",
     "tutorial:build",
   ]
 }
@@ -55,7 +55,7 @@ ts_library("ts_build") {
   tsconfig_base = "../tsconfig.base.json"
 }
 
-run_jsbundler("accessibility_common_copied_files") {
+run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = accessibility_common_out_dir
   deps = [ ":ts_build" ]
@@ -82,11 +82,7 @@ run_jsbundler("accessibility_common_copied_files") {
     "testing/accessibility_test_base.js",
     "testing/test_node_generator.js",
   ]
-
-  foreach(_ts_file, ts_modules) {
-    sources += [ "$tsc_out_dir/" + get_path_info(_ts_file, "dir") + "/" +
-                 get_path_info(_ts_file, "name") + ".js" ]
-  }
+  sources += get_target_outputs(":ts_build")
 
   rewrite_rules = [
     rebase_path(tsc_out_dir, root_build_dir) + ":",

@@ -16,13 +16,9 @@ assert(is_chromeos_ash)
 select_to_speak_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/select_to_speak"
 tsc_out_dir = "$target_gen_dir/tsc"
-common_tsc_out_dir = "$target_gen_dir/../common/tsc"
 
 group("build") {
-  deps = [
-    ":select_to_speak_copied_files",
-    ":ts_build",
-  ]
+  deps = [ ":copied_files" ]
 }
 
 # Add typescript files to compile here.
@@ -35,13 +31,6 @@ ts_modules = [
   "ui_manager.ts",
   "prefs_manager.ts",
   "select_to_speak.ts",
-]
-
-# Add TS files needed from ../common/ here.
-common_ts_modules = [
-  "instance_checker.ts",
-  "automation_util.ts",
-  "tree_walker.ts",
 ]
 
 # Root dir must be the parent directory so it can reach common.
@@ -76,12 +65,12 @@ ts_library("ts_build") {
 
 # Instead of setting up one copy target for each subdirectory, use a script
 # to copy all files.
-run_jsbundler("select_to_speak_copied_files") {
+run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = select_to_speak_out_dir
   deps = [
     ":ts_build",
-    "../common:ts_build",
+    "../common:copied_files",
   ]
   sources = [
     "background.html",
@@ -93,20 +82,10 @@ run_jsbundler("select_to_speak_copied_files") {
     "sts-icon-48.png",
     "unchecked.png",
   ]
-
-  foreach(_ts_file, ts_modules) {
-    sources +=
-        [ "$tsc_out_dir/select_to_speak/" + get_path_info(_ts_file, "dir") +
-          "/" + get_path_info(_ts_file, "name") + ".js" ]
-  }
-  foreach(_ts_file, common_ts_modules) {
-    sources += [ "$common_tsc_out_dir/" + get_path_info(_ts_file, "dir") + "/" +
-                 get_path_info(_ts_file, "name") + ".js" ]
-  }
+  sources += get_target_outputs(":ts_build")
 
   rewrite_rules = [
     rebase_path("$tsc_out_dir/select_to_speak", root_build_dir) + ":",
-    rebase_path(common_tsc_out_dir, root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]

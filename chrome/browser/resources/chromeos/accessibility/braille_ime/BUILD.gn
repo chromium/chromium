@@ -21,8 +21,8 @@ js_deps = []
 
 group("build") {
   deps = [
-    ":braille_ime_copied_files",
     ":braille_ime_manifest",
+    ":copied_files",
   ]
 }
 
@@ -40,7 +40,7 @@ copy("braille_ime_manifest") {
   ]
 }
 
-run_jsbundler("braille_ime_copied_files") {
+run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = braille_ime_out_dir
   deps = [ ":ts_build" ]

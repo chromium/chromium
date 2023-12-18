@@ -16,7 +16,6 @@ import("//tools/typescript/ts_library.gni")
 closure_library_dir =
     "//third_party/chromevox/third_party/closure-library/closure/goog"
 tsc_out_dir = "$target_gen_dir/tsc"
-common_tsc_out_dir = "$target_gen_dir/../common/tsc"
 
 # List of all modules that are included in one or more of the production
 # chromevox scripts.
@@ -24,23 +23,12 @@ common_tsc_out_dir = "$target_gen_dir/../common/tsc"
 # TS files to compile.
 ts_modules = []
 
-# TS files needed from ../common/.
-common_ts_modules = [
-  "flags.ts",
-  "automation_util.ts",
-  "instance_checker.ts",
-  "tree_walker.ts",
-  "string_util.ts",
-]
-
 # These files all use older Closure provide/require support for dependency management and will be transitioned to ES6 modules (see below).
 chromevox_modules = [
   "background/braille/cursor_dots.js",
   "background/braille/pan_strategy.js",
   "third_party/tamachiyomi/ja_phonetic_data.js",
 ]
-
-tsc_common_out_dir = "$target_gen_dir/../common/tsc"
 
 # ES6 modules.
 chromevox_es6_modules = [
@@ -208,7 +196,6 @@ js_deps = []
 ts_library("ts_build") {
   root_dir = "../"
   out_dir = tsc_out_dir
-  deps = [ "../common:ts_build" ]
   definitions = []
 
   in_files = []
@@ -223,9 +210,9 @@ ts_library("ts_build") {
 group("build") {
   deps = [
     ":chromevox_background_script",
-    ":chromevox_copied_files",
     ":chromevox_panel_script",
     ":chromevox_phonetic_dictionaries_js",
+    ":copied_files",
     "//third_party/chromevox:chromevox_third_party_resources",
     "//third_party/liblouis",
   ]
@@ -241,10 +228,13 @@ generate_message_formatting_data("i18n_data") {
 
 # Instead of setting up one copy target for each subdirectory, use a script
 # to copy all files.
-run_jsbundler("chromevox_copied_files") {
+run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = chromevox_out_dir
-  deps = [ "../common:ts_build" ]
+  deps = [
+    ":ts_build",
+    "../common:copied_files",
+  ]
   sources = [
     "background/background.html",
     "earcons/chromevox_loaded.ogg",
@@ -272,19 +262,10 @@ run_jsbundler("chromevox_copied_files") {
     "tutorial/practice_areas/selects.html",
   ]
   sources += chromevox_es6_modules
-
-  foreach(_ts_file, ts_modules) {
-    sources += [ "$tsc_out_dir/chromevox/" + get_path_info(_ts_file, "dir") +
-                 "/" + get_path_info(_ts_file, "name") + ".js" ]
-  }
-  foreach(_ts_file, common_ts_modules) {
-    sources += [ "$common_tsc_out_dir/" + get_path_info(_ts_file, "dir") + "/" +
-                 get_path_info(_ts_file, "name") + ".js" ]
-  }
+  sources += get_target_outputs(":ts_build")
 
   rewrite_rules = [
     rebase_path("$tsc_out_dir/chromevox", root_build_dir) + ":",
-    rebase_path(common_tsc_out_dir, root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]
