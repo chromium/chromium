@@ -107,18 +107,18 @@ optimize_ts("child_frame_registration_test_ts") {
 }
 
 compile_ts("fill_js_dependencies") {
-  allow_js = true
   sources = [
     "resources/create_fill_namespace.ts",
     "resources/fill_constants.ts",
     "resources/fill_element_inference.ts",
     "resources/fill_element_inference_util.ts",
-    "resources/fill_util.js",
+    "resources/fill_util.ts",
   ]
 
   deps = [
     ":autofill_form_features_ts",
     "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 

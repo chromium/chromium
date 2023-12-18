@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {FormControlElement} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
-
-declare type FormControlElement
-    = HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement;
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
  * Shared function for InferLabelFromPrevious() and InferLabelFromNext().

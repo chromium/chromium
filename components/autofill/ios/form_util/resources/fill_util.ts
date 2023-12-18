@@ -4,6 +4,31 @@
 
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {findChildText} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {trim} from '//ios/web/public/js_messaging/resources/utils.js';
+
+declare global {
+    // Defines an additional property, `angular`, on the Window object.
+    // The code below assumes that this property exists within the object.
+    interface Window {
+        angular: any;
+    }
+
+    // Extends the Document object to add the ability to access its
+    // properties via the [] notation and defines a property that is
+    // assumed to exist within the object.
+    interface Document {
+      [key: symbol]: number;
+
+      __gCrWebURLNormalizer: HTMLAnchorElement;
+    }
+}
+
+// Extends the Element to add the ability to access its properties
+// via the [] notation.
+declare interface IndexableElement extends Element {
+    [key: symbol]: number;
+}
 
 /**
  * Maps elements using their unique ID
@@ -11,14 +36,15 @@ import {findChildText} from '//components/autofill/ios/form_util/resources/fill_
 const elementMap = new Map();
 
 /**
- * Acquires the specified DOM |attribute| from the DOM |element| and returns
+ * Acquires the specified DOM `attribute` from the DOM `element` and returns
  * its lower-case value, or null if not present.
  *
- * @param {Element} element A DOM element.
- * @param {string} attribute An attribute name.
- * @return {?string} Lowercase value of DOM element or null if not present.
+ * @param element A DOM element.
+ * @param attribute An attribute name.
+ * @return Lowercase value of DOM element or null if not present.
  */
-function getLowerCaseAttribute(element, attribute) {
+function getLowerCaseAttribute(
+    element: Element | null, attribute: string): string | null {
   if (!element) {
     return null;
   }
@@ -37,10 +63,10 @@ function getLowerCaseAttribute(element, attribute) {
  * in chromium/src/third_party/WebKit/Source/WebKit/chromium/src/
  * WebFormElement.cpp.
  *
- * @param {Element} element An element to check if it can be autocompleted.
- * @return {boolean} true if element can be autocompleted.
+ * @param element An element to check if it can be autocompleted.
+ * @return true if element can be autocompleted.
  */
-function autoComplete(element) {
+function autoComplete(element: fillConstants.FormControlElement|null): boolean {
   if (!element) {
     return false;
   }
@@ -56,17 +82,19 @@ function autoComplete(element) {
 /**
  * Returns true if an element should suggest autocomplete dropdown.
  *
- * @param {Element} element An element to check if it can be autocompleted.
- * @return {boolean} true if autocomplete dropdown should be suggested.
+ * @param element An element to check if it can be autocompleted.
+ * @return true if autocomplete dropdown should be suggested.
  */
-__gCrWeb.fill.shouldAutocomplete = function(element) {
+gCrWeb.fill.shouldAutocomplete = function(
+    element: fillConstants.FormControlElement|null): boolean {
   if (!autoComplete(element)) {
     return false;
   }
-  if (getLowerCaseAttribute(element, 'autocomplete') === 'one-time-code') {
+  if (getLowerCaseAttribute(element!, 'autocomplete') === 'one-time-code') {
     return false;
   }
-  if (getLowerCaseAttribute(element.form, 'autocomplete') === 'one-time-code') {
+  if (getLowerCaseAttribute(
+    element!.form, 'autocomplete') === 'one-time-code') {
     return false;
   }
   return true;
@@ -82,10 +110,11 @@ __gCrWeb.fill.shouldAutocomplete = function(element) {
  * https://docs.angularjs.org/api/auto/service/$injector
  * https://docs.angularjs.org/api/ng/service/$parse
  *
- * @param {string} value The value the input element will be set.
- * @param {Element} input The input element of which the value is set.
+ * @param value The value the input element will be set.
+ * @param input The input element of which the value is set.
  */
-function setInputElementAngularValue(value, input) {
+function setInputElementAngularValue(
+    value: string, input: Element | null): void {
   if (!input || !window['angular']) {
     return;
   }
@@ -102,7 +131,7 @@ function setInputElementAngularValue(value, input) {
   }
   angularElement.injector().invoke([
     '$parse',
-    function(parse) {
+    function(parse: Function) {
       const setter = parse(angularModel);
       setter.assign(angularScope, value);
     },
@@ -111,7 +140,7 @@ function setInputElementAngularValue(value, input) {
 
 /**
  * Sets the value of an input, dispatches the events on the changed element and
- * call |callback| if it is defined.
+ * call `callback` if it is defined.
  *
  * It is based on the logic in
  *
@@ -124,22 +153,23 @@ function setInputElementAngularValue(value, input) {
  *    void setChecked(bool nowChecked, TextFieldEventBehavior eventBehavior)
  * in chromium/src/third_party/WebKit/Source/core/html/HTMLInputElement.cpp.
  *
- * @param {string} value The value the input element will be set.
- * @param {Element} input The input element of which the value is set.
- * @param {function()=} callback Callback function called after the input
+ * @param value The value the input element will be set.
+ * @param input The input element of which the value is set.
+ * @param callback Callback function called after the input
  *     element's value is changed.
- * @return {boolean} Whether the value has been set successfully.
+ * @return Whether the value has been set successfully.
  */
-__gCrWeb.fill.setInputElementValue = function(
-    value, input, callback = undefined) {
+gCrWeb.fill.setInputElementValue = function(
+    value: string, input: HTMLInputElement|null,
+    callback: Function|undefined = undefined): boolean {
   if (!input) {
     return false;
   }
 
   const activeElement = document.activeElement;
   if (input !== activeElement) {
-    createAndDispatchHTMLEvent(activeElement, value, 'blur', true, false);
-    createAndDispatchHTMLEvent(input, value, 'focus', true, false);
+    createAndDispatchHTMLEvent(activeElement, 'blur', true, false);
+    createAndDispatchHTMLEvent(input, 'focus', true, false);
   }
 
   const filled = setInputElementValue(value, input);
@@ -148,20 +178,26 @@ __gCrWeb.fill.setInputElementValue = function(
   }
 
   if (input !== activeElement) {
-    createAndDispatchHTMLEvent(input, value, 'blur', true, false);
-    createAndDispatchHTMLEvent(activeElement, value, 'focus', true, false);
+    createAndDispatchHTMLEvent(input, 'blur', true, false);
+    createAndDispatchHTMLEvent(activeElement, 'focus', true, false);
   }
   return filled;
 };
 
+declare interface PropertyDescriptor {
+    get(): string;
+    set?(): void;
+    configurable: boolean;
+}
+
 /**
  * Internal function to set the element value.
  *
- * @param {string} value The value the input element will be set.
- * @param {Element} input The input element of which the value is set.
- * @return {boolean} Whether the value has been set successfully.
+ * @param value The value the input element will be set.
+ * @param input The input element of which the value is set.
+ * @return Whether the value has been set successfully.
  */
-function setInputElementValue(value, input) {
+function setInputElementValue(value: string, input: HTMLInputElement): boolean {
   const propertyName = (input.type === 'checkbox' || input.type === 'radio') ?
       'checked' :
       'value';
@@ -194,14 +230,14 @@ function setInputElementValue(value, input) {
   // The setter simply forwards the set to the older property descriptor.
   // Once the setter has been called, just forward get and set calls.
 
-  const oldPropertyDescriptor = /** @type {!Object} */ (
-      Object.getOwnPropertyDescriptor(input, propertyName));
+  const oldPropertyDescriptor =
+      Object.getOwnPropertyDescriptor(input, propertyName);
   const overrideProperty =
       oldPropertyDescriptor && oldPropertyDescriptor.configurable;
   let setterCalled = false;
 
   if (overrideProperty) {
-    const newProperty = {
+    const newProperty: PropertyDescriptor = {
       get() {
         if (setterCalled && oldPropertyDescriptor.get) {
           return oldPropertyDescriptor.get.call(input);
@@ -213,15 +249,15 @@ function setInputElementValue(value, input) {
       configurable: true,
     };
     if (oldPropertyDescriptor.set) {
-      newProperty.set = function(e) {
+      newProperty.set = function() {
         setterCalled = true;
-        oldPropertyDescriptor.set.call(input, value);
+        oldPropertyDescriptor.set!.call(input, value);
       };
     }
     Object.defineProperty(input, propertyName, newProperty);
   } else {
     setterCalled = true;
-    input[propertyName] = value;
+    (input[propertyName] as boolean|string) = value;
   }
 
   if (window['angular']) {
@@ -229,7 +265,7 @@ function setInputElementValue(value, input) {
     // sending events.
     setInputElementAngularValue(value, input);
   }
-  notifyElementValueChanged(input, value);
+  notifyElementValueChanged(input);
 
   if (overrideProperty) {
     Object.defineProperty(input, propertyName, oldPropertyDescriptor);
@@ -238,7 +274,7 @@ function setInputElementValue(value, input) {
       // ignored the input event) or not (the event did not conform to what
       // framework expected). The whole function will likely fail, but try to
       // set the value directly as a last try.
-      input[propertyName] = value;
+      (input[propertyName] as boolean|string) = value;
     }
   }
   return true;
@@ -252,12 +288,13 @@ function setInputElementValue(value, input) {
  *
  * in chromium/src/third_party/WebKit/Source/core/html/InputType.h
  *
- * @param {string} proposedValue The proposed value.
- * @param {Element} element The element for which the proposedValue is to be
+ * @param proposedValue The proposed value.
+ * @param element The element for which the proposedValue is to be
  *     sanitized.
- * @return {string} The sanitized value.
+ * @return The sanitized value.
  */
-function sanitizeValueForInputElement(proposedValue, element) {
+function sanitizeValueForInputElement(
+    proposedValue: string|null, element: Element): string {
   if (!proposedValue) {
     return '';
   }
@@ -271,8 +308,9 @@ function sanitizeValueForInputElement(proposedValue, element) {
   // chromium/src/third_party/WebKit/Source/core/html/). Currently only
   // TextFieldInputType is relevant and sanitizeValue() for other types of
   // input elements has not been implemented.
-  if (__gCrWeb.common.isTextField(element)) {
-    return sanitizeValueForTextFieldInputType(proposedValue, element);
+  if (gCrWeb.common.isTextField(element)) {
+    return sanitizeValueForTextFieldInputType(
+        proposedValue, element as HTMLInputElement);
   }
   return proposedValue;
 }
@@ -280,16 +318,17 @@ function sanitizeValueForInputElement(proposedValue, element) {
 /**
  * Returns a sanitized value for a text field.
  *
- * The logic is based on |String sanitizeValue(const String&)|
+ * The logic is based on `String sanitizeValue(const String&)`
  * in chromium/src/third_party/WebKit/Source/core/html/TextFieldInputType.h
  * Note this method is overridden in EmailInputType and NumberInputType.
  *
- * @param {string} proposedValue The proposed value.
- * @param {Element} element The element for which the proposedValue is to be
+ * @param proposedValue The proposed value.
+ * @param element The element for which the proposedValue is to be
  *     sanitized.
- * @return {string} The sanitized value.
+ * @return The sanitized value.
  */
-function sanitizeValueForTextFieldInputType(proposedValue, element) {
+function sanitizeValueForTextFieldInputType(
+    proposedValue: string, element: HTMLInputElement): string {
   const textFieldElementType = element.type;
   if (textFieldElementType === 'email') {
     return sanitizeValueForEmailInputType(proposedValue, element);
@@ -307,7 +346,7 @@ function sanitizeValueForTextFieldInputType(proposedValue, element) {
   let newLength = valueWithLineBreakRemoved.length;
   // This logic is from method String limitLength() in TextFieldInputType.h
   for (let i = 0; i < newLength; ++i) {
-    const current = valueWithLineBreakRemoved[i];
+    const current = valueWithLineBreakRemoved[i]!;
     if (current < ' ' && current !== '\t') {
       newLength = i;
       break;
@@ -325,20 +364,21 @@ function sanitizeValueForTextFieldInputType(proposedValue, element) {
  *
  * in chromium/src/third_party/WebKit/Source/core/html/EmailInputType.cpp
  *
- * @param {string} proposedValue The proposed value.
- * @param {Element} element The element for which the proposedValue is to be
+ * @param proposedValue The proposed value.
+ * @param element The element for which the proposedValue is to be
  *     sanitized.
- * @return {string} The sanitized value.
+ * @return The sanitized value.
  */
-function sanitizeValueForEmailInputType(proposedValue, element) {
+function sanitizeValueForEmailInputType(
+    proposedValue: string, element: HTMLInputElement): string {
   const valueWithLineBreakRemoved = proposedValue.replace(/(\r\n|\n\r)/gm, '');
 
   if (!element.multiple) {
-    return __gCrWeb.common.trim(proposedValue);
+    return trim(proposedValue);
   }
   const addresses = valueWithLineBreakRemoved.split(',');
   for (let i = 0; i < addresses.length; ++i) {
-    addresses[i] = __gCrWeb.common.trim(addresses[i]);
+    addresses[i] = trim(addresses[i]!);
   }
   return addresses.join(',');
 }
@@ -357,10 +397,10 @@ function sanitizeValueForEmailInputType(proposedValue, element) {
  * Note in this implementation method Number() is used in the place of method
  * parseToDoubleForNumberType() called in NumberInputType.cpp.
  *
- * @param {string} proposedValue The proposed value.
- * @return {string} The sanitized value.
+ * @param proposedValue The proposed value.
+ * @return The sanitized value.
  */
-function sanitizeValueForNumberInputType(proposedValue) {
+function sanitizeValueForNumberInputType(proposedValue: string): string {
   const sanitizedValue = Number(proposedValue);
   if (isNaN(sanitizedValue)) {
     return '';
@@ -377,12 +417,12 @@ function sanitizeValueForNumberInputType(proposedValue) {
  *
  * @param {Element} element The element that changed.
  */
-function notifyElementValueChanged(element, value) {
-  createAndDispatchHTMLEvent(element, value, 'keydown', true, false);
-  createAndDispatchHTMLEvent(element, value, 'keypress', true, false);
-  createAndDispatchHTMLEvent(element, value, 'input', true, false);
-  createAndDispatchHTMLEvent(element, value, 'keyup', true, false);
-  createAndDispatchHTMLEvent(element, value, 'change', true, false);
+function notifyElementValueChanged(element: Element): void {
+  createAndDispatchHTMLEvent(element, 'keydown', true, false);
+  createAndDispatchHTMLEvent(element, 'keypress', true, false);
+  createAndDispatchHTMLEvent(element, 'input', true, false);
+  createAndDispatchHTMLEvent(element, 'keyup', true, false);
+  createAndDispatchHTMLEvent(element, 'change', true, false);
 }
 
 /**
@@ -395,23 +435,18 @@ function notifyElementValueChanged(element, value) {
  * @param {boolean} cancelable A boolean indicating whether the event can be
  *     canceled.
  */
-function createAndDispatchHTMLEvent(element, value, type, bubbles, cancelable) {
+function createAndDispatchHTMLEvent(
+    element: Element | null, type: string, bubbles: boolean,
+    cancelable: boolean): void {
   const event =
-      new Event(type, {bubbles: bubbles, cancelable: cancelable, data: value});
-  if (type === 'input') {
-    event.inputType = 'insertText';
-  }
-  element.dispatchEvent(event);
+      new Event(type, {bubbles: bubbles, cancelable: cancelable});
+  element?.dispatchEvent(event);
 }
 
 /**
  * Converts a relative URL into an absolute URL.
- *
- * @param {Object} doc Document.
- * @param {string} relativeURL Relative URL.
- * @return {string} Absolute URL.
  */
-function absoluteURL(doc, relativeURL) {
+function absoluteURL(doc: Document, relativeURL: string): string {
   // In the case of data: URL-based pages, relativeURL === absoluteURL.
   if (doc.location.protocol === 'data:') {
     return doc.location.href;
@@ -429,20 +464,25 @@ function absoluteURL(doc, relativeURL) {
 }
 
 /**
- * Returns a canonical action for |formElement|. It works the same as upstream
+ * Returns a canonical action for `formElement`. It works the same as upstream
  * function GetCanonicalActionForForm.
- * @param {HTMLFormElement} formElement
- * @return {string} Canonical action.
+ * @return Canonical action.
  */
-__gCrWeb.fill.getCanonicalActionForForm = function(formElement) {
+gCrWeb.fill.getCanonicalActionForForm = function(
+    formElement: HTMLFormElement): string {
   const rawAction = formElement.getAttribute('action') || '';
   const absoluteUrl = absoluteURL(formElement.ownerDocument, rawAction);
-  return __gCrWeb.common.removeQueryAndReferenceFromURL(absoluteUrl);
+  return gCrWeb.common.removeQueryAndReferenceFromURL(absoluteUrl);
 };
 
+declare interface OptionFieldStrings {
+    option_values: string[] & {toJSON?: string|null};
+    option_contents: string[] & {toJSON?: string|null};
+}
+
 /**
- * Fills |field| data with the values of the <option> elements present in
- * |selectElement|.
+ * Fills `field` data with the values of the <option> elements present in
+ * `selectElement`.
  *
  * It is based on the logic in
  *     void GetOptionStringsFromElement(const WebSelectElement& select_element,
@@ -450,24 +490,25 @@ __gCrWeb.fill.getCanonicalActionForForm = function(formElement) {
  *                                      std::vector<string16>* option_contents)
  * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  *
- * @param {Element} selectElement A select element from which option data are
+ * @param selectElement A select element from which option data are
  *     extracted.
- * @param {Object} field A field that will contain the extracted option
+ * @param field A field that will contain the extracted option
  *     information.
  */
-__gCrWeb.fill.getOptionStringsFromElement = function(selectElement, field) {
-  field['option_values'] = [];
+gCrWeb.fill.getOptionStringsFromElement = function(
+    selectElement: HTMLSelectElement, field: OptionFieldStrings): void {
+  field.option_values = [];
   // Protect against custom implementation of Array.toJSON in host pages.
-  field['option_values'].toJSON = null;
-  field['option_contents'] = [];
-  field['option_contents'].toJSON = null;
+  field.option_values.toJSON = null;
+  field.option_contents = [];
+  field.option_contents.toJSON = null;
   const options = selectElement.options;
   for (let i = 0; i < options.length; ++i) {
-    const option = options[i];
-    field['option_values'].push(
-        option['value'].substring(0, fillConstants.MAX_STRING_LENGTH));
-    field['option_contents'].push(
-        option['text'].substring(0, fillConstants.MAX_STRING_LENGTH));
+    const option = options[i]!;
+    field.option_values.push(
+        option.value.substring(0, fillConstants.MAX_STRING_LENGTH));
+    field.option_contents.push(
+        option.text.substring(0, fillConstants.MAX_STRING_LENGTH));
   }
 };
 
@@ -483,19 +524,20 @@ __gCrWeb.fill.getOptionStringsFromElement = function(selectElement, field) {
  * As the result of this method will be used by code written for Blink, match
  * the behavior on it.
  *
- * @param {FormControlElement|HTMLOptionElement} element An element to examine.
- * @return {string} The value for |element|.
+ * @param element An element to examine.
+ * @return The value for `element`.
  */
-__gCrWeb.fill.value = function(element) {
+gCrWeb.fill.value = function(
+    element: fillConstants.FormControlElement|HTMLOptionElement): string {
   let value = element.value;
-  if (__gCrWeb.fill.isSelectElement(element)) {
-    if (element.options.length > 0 && element.selectedIndex === 0 &&
-        element.options[0].disabled &&
-        !element.options[0].hasAttribute('selected')) {
-      for (let i = 0; i < element.options.length; i++) {
-        if (!element.options[i].disabled ||
-            element.options[i].hasAttribute('selected')) {
-          value = element.options[i].value;
+  if (gCrWeb.fill.isSelectElement(element)) {
+    const selectElement = element as HTMLSelectElement;
+    if (selectElement.options.length > 0 && selectElement.selectedIndex === 0 &&
+        selectElement.options[0]!.disabled &&
+        !selectElement.options[0]!.hasAttribute('selected')) {
+      for (const option of selectElement.options) {
+        if (!option.disabled || option.hasAttribute('selected')) {
+          value = option.value;
           break;
         }
       }
@@ -506,7 +548,7 @@ __gCrWeb.fill.value = function(element) {
 
 /**
  * Returns the coalesced child text of the elements who's ids are found in
- * the |attribute| of |element|.
+ * the `attribute` of `element`.
  *
  * For example, given this document...
  *
@@ -524,7 +566,8 @@ __gCrWeb.fill.value = function(element) {
  * of the field1 input element would be "Billing Name" and for field2 it would
  * be "Billing Address".
  */
-function coalesceTextByIdList(element, attribute) {
+function coalesceTextByIdList(
+  element: Element|null, attribute: string): string {
   if (!element) {
     return '';
   }
@@ -543,7 +586,7 @@ function coalesceTextByIdList(element, attribute) {
         return e !== null;
       })
       .map(function(n) {
-        return findChildText(n);
+        return findChildText(n!);
       })
       .filter(function(s) {
         return s.length > 0;
@@ -557,7 +600,7 @@ function coalesceTextByIdList(element, attribute) {
  * or the value of the aria-label attribute, with priority given to the
  * aria-labelledby text.
  */
-__gCrWeb.fill.getAriaLabel = function(element) {
+gCrWeb.fill.getAriaLabel = function(element: Element): string {
   let label = coalesceTextByIdList(element, 'aria-labelledby');
   if (!label) {
     label = element.getAttribute('aria-label') || '';
@@ -568,7 +611,7 @@ __gCrWeb.fill.getAriaLabel = function(element) {
 /**
  * Returns the coalesced text referenced by the aria-describedby attribute.
  */
-__gCrWeb.fill.getAriaDescription = function(element) {
+gCrWeb.fill.getAriaDescription = function(element: Element): string {
   return coalesceTextByIdList(element, 'aria-describedby');
 };
 
@@ -580,15 +623,16 @@ __gCrWeb.fill.getAriaDescription = function(element) {
  *     bool (const WebElement& element)
  * in chromium/src/components/autofill/content/renderer/form_cache.cc
  *
- * @param {!FormControlElement} element An element to examine.
- * @return {boolean} Whether the element is inside a <form> or <fieldset>.
+ * @param element An element to examine.
+ * @return Whether the element is inside a <form> or <fieldset>.
  */
-__gCrWeb.fill.isElementInsideFormOrFieldSet = function(element) {
+gCrWeb.fill.isElementInsideFormOrFieldSet = function(
+    element: fillConstants.FormControlElement): boolean {
   let parentNode = element.parentNode;
   while (parentNode) {
     if ((parentNode.nodeType === Node.ELEMENT_NODE) &&
-        (__gCrWeb.fill.hasTagName(parentNode, 'form') ||
-         __gCrWeb.fill.hasTagName(parentNode, 'fieldset'))) {
+        (gCrWeb.fill.hasTagName(parentNode, 'form') ||
+         gCrWeb.fill.hasTagName(parentNode, 'fieldset'))) {
       return true;
     }
     parentNode = parentNode.parentNode;
@@ -597,18 +641,19 @@ __gCrWeb.fill.isElementInsideFormOrFieldSet = function(element) {
 };
 
 /**
- * @param {int} nextAvailableID Next available integer.
+ * @param nextAvailableID Next available integer.
  */
-__gCrWeb.fill['setUpForUniqueIDs'] = function(nextAvailableID) {
-  document[__gCrWeb.fill.ID_SYMBOL] = nextAvailableID;
+gCrWeb.fill['setUpForUniqueIDs'] = function(nextAvailableID: number): void {
+  const uniqueID = gCrWeb.fill.ID_SYMBOL;
+  document[uniqueID] = nextAvailableID;
 };
 
 /**
- * @param {Element} element Form or form input element.
+ * @param element Form or form input element.
  */
-__gCrWeb.fill.setUniqueIDIfNeeded = function(element) {
+gCrWeb.fill.setUniqueIDIfNeeded = function(element: IndexableElement): void {
   try {
-    const uniqueID = __gCrWeb.fill.ID_SYMBOL;
+    const uniqueID = gCrWeb.fill.ID_SYMBOL;
     // Do not assign element id value if the base value for the document
     // is not set.
     if (typeof document[uniqueID] !== 'undefined' &&
@@ -624,13 +669,14 @@ __gCrWeb.fill.setUniqueIDIfNeeded = function(element) {
 };
 
 /**
- * @param {Element} element Form or form input element.
- * @return {String} Unique stable ID converted to string..
+ * @param element Form or form input element.
+ * @return Unique stable ID converted to string..
  */
-__gCrWeb.fill.getUniqueID = function(element) {
+gCrWeb.fill.getUniqueID = function(element: any): string {
   try {
-    const uniqueID = __gCrWeb.fill.ID_SYMBOL;
-    if (typeof element[uniqueID] !== 'undefined' && !isNaN(element[uniqueID])) {
+    const uniqueID = gCrWeb.fill.ID_SYMBOL;
+    if (typeof element[uniqueID]! !== 'undefined' &&
+        !isNaN(element[uniqueID]!)) {
       return element[uniqueID].toString();
     } else {
       return fillConstants.RENDERER_ID_NOT_SET;
@@ -641,10 +687,10 @@ __gCrWeb.fill.getUniqueID = function(element) {
 };
 
 /**
- * @param {int} Unique ID.
- * @return {Element} element Form or form input element.
+ * @param Unique ID.
+ * @return element Form or form input element.
  */
-__gCrWeb.fill.getElementByUniqueID = function(id) {
+gCrWeb.fill.getElementByUniqueID = function(id: number): Element | null {
   try {
     // TODO(crbug.com/1350973): WeakRef starts in 14.5, remove checks once 14 is
     // deprecated.

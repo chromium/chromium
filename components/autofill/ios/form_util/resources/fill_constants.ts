@@ -4,6 +4,9 @@
 
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
+declare type FormControlElement =
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+
 /**
  * The maximum length allowed for form data.
  *
@@ -80,6 +83,7 @@ const RENDERER_ID_NOT_SET = '0';
 const ID_SYMBOL = window.Symbol.for('__gChrome~uniqueID');
 
 export {
+  FormControlElement,
   MAX_DATA_LENGTH,
   MAX_STRING_LENGTH,
   MAX_EXTRACTABLE_FIELDS,
