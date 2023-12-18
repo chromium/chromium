@@ -10,7 +10,6 @@ import 'chrome://resources/cr_elements/mwb_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import './infinite_list.js';
-import './tab_organization_shared_style.css.js';
 import './tab_search_group_item.js';
 import './tab_search_item.js';
 import './title_item.js';

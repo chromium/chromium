@@ -10,14 +10,6 @@
     display: flex;
   }
 
-  tab-organization-not-started[shown],
-  tab-organization-in-progress[shown],
-  tab-organization-results[shown],
-  tab-organization-failure[shown] {
-    animation: fadeIn 200ms linear forwards,
-               paddingIn 250ms var(--standard-curve) forwards;
-  }
-
   :host(.changed-state) tab-organization-not-started[shown],
   :host(.changed-state) tab-organization-in-progress[shown],
   :host(.changed-state) tab-organization-results[shown],
