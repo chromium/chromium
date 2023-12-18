@@ -399,6 +399,7 @@ async def test_scriptEvaluate_realm(websocket, context_id):
     } == result
 
 
+@pytest.mark.timeout(20)
 @pytest.mark.asyncio
 async def test_scriptEvaluate_dedicated_worker(websocket, context_id, html,
                                                snapshot):
