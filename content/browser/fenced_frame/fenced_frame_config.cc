@@ -90,6 +90,8 @@ void RedactProperty(
 
 }  // namespace
 
+AutomaticBeaconInfo::AutomaticBeaconInfo() = default;
+
 AutomaticBeaconInfo::AutomaticBeaconInfo(
     const std::string& data,
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
@@ -364,11 +366,10 @@ void FencedFrameProperties::UpdateAutomaticBeaconData(
         attribution_reporting_runtime_features,
     bool once) {
   // For an ad component, the event data from its automatic beacon is ignored.
-  automatic_beacon_info_.emplace(
-      event_type,
+  automatic_beacon_info_[event_type] =
       AutomaticBeaconInfo(is_ad_component_ ? std::string{} : event_data,
                           destinations, attribution_reporting_runtime_features,
-                          once));
+                          once);
 }
 
 void FencedFrameProperties::MaybeResetAutomaticBeaconData(

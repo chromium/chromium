@@ -112,6 +112,8 @@ using SharedStorageBudgetMetadata =
     blink::FencedFrame::SharedStorageBudgetMetadata;
 
 struct CONTENT_EXPORT AutomaticBeaconInfo {
+  AutomaticBeaconInfo();
+
   AutomaticBeaconInfo(
       const std::string& data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
