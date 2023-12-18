@@ -9,44 +9,11 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 // clang-format on
 
-/** @type {!HTMLElement} */
-let anchor;
-/** @type {!HTMLElement} */
-let popup;
-// @ts-ignore: error TS7034: Variable 'anchorParent' implicitly has type 'any'
-// in some locations where its type cannot be determined.
-let anchorParent;
-// @ts-ignore: error TS7034: Variable 'oldGetBoundingClientRect' implicitly has
-// type 'any' in some locations where its type cannot be determined.
-let oldGetBoundingClientRect;
-// @ts-ignore: error TS7034: Variable 'availRect' implicitly has type 'any' in
-// some locations where its type cannot be determined.
-let availRect;
-
-/**
- * @param {number} w width
- * @param {number} h height
- * @constructor
- */
-function MockRect(w, h) {
-  /** @type {number} */
-  this.left = 0;
-
-  /** @type {number} */
-  this.top = 0;
-
-  /** @type {number} */
-  this.width = w;
-
-  /** @type {number} */
-  this.height = h;
-
-  /** @type {number} */
-  this.right = this.left + w;
-
-  /** @type {number} */
-  this.bottom = this.top + h;
-}
+let anchor: HTMLElement;
+let popup: HTMLElement;
+let anchorParent: Element;
+let oldGetBoundingClientRect: () => DOMRect;
+let availRect: DOMRect;
 
 export function setUp() {
   document.body.innerHTML = getTrustedHTML`
@@ -78,27 +45,19 @@ export function setUp() {
     <div id="popup"></div>
   `;
 
-  anchor = /** @type {!HTMLElement} */ (document.getElementById('anchor'));
-  popup = /** @type {!HTMLElement} */ (document.getElementById('popup'));
-  anchorParent = anchor.offsetParent;
-  // @ts-ignore: error TS18047: 'anchorParent' is possibly 'null'.
+  anchor = document.getElementById('anchor')!;
+  popup = document.getElementById('popup')!;
+  anchorParent = anchor.offsetParent!;
   oldGetBoundingClientRect = anchorParent.getBoundingClientRect;
 
   anchor.style.top = '100px';
   anchor.style.left = '100px';
-  availRect = new MockRect(200, 200);
-  // @ts-ignore: error TS18047: 'anchorParent' is possibly 'null'.
-  anchorParent.getBoundingClientRect = function() {
-    // @ts-ignore: error TS7005: Variable 'availRect' implicitly has an 'any'
-    // type.
-    return availRect;
-  };
+  availRect = new DOMRect(0, 0, 200, 200);
+  anchorParent.getBoundingClientRect = () => availRect;
 }
 
 export function tearDown() {
   document.documentElement.dir = 'ltr';
-  // @ts-ignore: error TS7005: Variable 'oldGetBoundingClientRect' implicitly
-  // has an 'any' type.
   anchorParent.getBoundingClientRect = oldGetBoundingClientRect;
 }
 

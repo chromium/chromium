@@ -543,6 +543,7 @@ ts_test_files = [
   "file_manager/foreground/js/ui/list_selection_model_test_util.ts",
   "file_manager/foreground/js/ui/list_selection_model_unittest.ts",
   "file_manager/foreground/js/ui/list_unittest.ts",
+  "file_manager/foreground/js/ui/position_util_unittest.ts",
   "file_manager/foreground/js/ui/banners/drive_bulk_pinning_banner_unittest.ts",
   "file_manager/foreground/js/ui/banners/state_banner_unittest.ts",
   "file_manager/foreground/js/ui/banners/warning_banner_unittest.ts",
@@ -625,7 +626,6 @@ unittest_files = [
   "file_manager/foreground/js/ui/actions_submenu_unittest.js",
   "file_manager/foreground/js/ui/file_tap_handler_unittest.js",
   "file_manager/foreground/js/ui/install_linux_package_dialog_unittest.js",
-  "file_manager/foreground/js/ui/position_util_unittest.js",
   "file_manager/foreground/js/ui/directory_tree_unittest.js",
   "file_manager/foreground/js/navigation_list_model_unittest.js",
 
