@@ -37,7 +37,10 @@ constexpr std::string_view kChromeMLLibraryName = "optimization_guide_internal";
 
 const base::FeatureParam<std::string> kGpuBlockList{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-    "on_device_model_gpu_block_list", ""};
+    "on_device_model_gpu_block_list",
+    // These devices are nearly always crashing or have very low performance.
+    "8086:412|8086:a16|8086:41e|8086:416|8086:402|8086:166|8086:1616|8086:22b1|"
+    "8086:22b0|1414:8c|8086:*:*31.0.101.4824*|8086:*:*31.0.101.4676*"};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
