@@ -619,11 +619,13 @@ TEST_F(EventRewriterTest, TestRewriteCommandToControl) {
        {ui::VKEY_LWIN, ui::DomCode::META_LEFT,
         ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META}},
 
+      // TODO(b/312578988): This should be an identity transformation with
+      // RWinPressed as both the before and after event.
       // VKEY_RWIN (right Windows key), Alt modifier.
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_RWIN, ui::DomCode::META_RIGHT,
         ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META},
-       {ui::VKEY_RWIN, ui::DomCode::META_RIGHT,
+       {ui::VKEY_LWIN, ui::DomCode::META_RIGHT,
         ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META}},
   });
 }
@@ -690,11 +692,13 @@ TEST_F(EventRewriterTest, TestRewriteExternalMetaKey) {
        {ui::VKEY_LWIN, ui::DomCode::META_LEFT,
         ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META}},
 
+      // TODO(b/312578988): This should be an identity transformation with
+      // RWinPressed as both the before and after event.
       // VKEY_RWIN (right Windows key), Alt modifier.
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_RWIN, ui::DomCode::META_RIGHT,
         ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META},
-       {ui::VKEY_RWIN, ui::DomCode::META_RIGHT,
+       {ui::VKEY_LWIN, ui::DomCode::META_RIGHT,
         ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META}},
   });
 
