@@ -523,21 +523,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Chain contained only one certificate"/>
 </enum>
 
-<enum name="NetErrorOfflineSuggestionType">
-  <int value="0" label="Prefetched Page">
-    A Prefetched article that has been offlined.
-  </int>
-  <int value="1" label="Video">
-    A video file previously downloaded by the user.
-  </int>
-  <int value="2" label="Audio">
-    An audio file previously downloaded by the user.
-  </int>
-  <int value="3" label="Other Page">
-    An offline page previously downloaded by the user.
-  </int>
-</enum>
-
 <enum name="NetErrorPageEvents">
   <int value="0" label="Error Page Shown">
     An error page was shown. This bucket encompasses all others and works as a

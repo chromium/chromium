@@ -11,7 +11,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_value_converter.h"
 #include "base/json/json_writer.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -69,14 +68,6 @@ base::Value::List AvailableContentListToValue(
     value.Append(AvailableContentToValue(content));
   }
   return value;
-}
-
-void RecordSuggestionPresented(
-    const std::vector<AvailableOfflineContentPtr>& suggestions) {
-  for (const AvailableOfflineContentPtr& item : suggestions) {
-    UMA_HISTOGRAM_ENUMERATION("Net.ErrorPageCounts.SuggestionPresented",
-                              item->content_type);
-  }
 }
 
 AvailableOfflineContentHelper::Binder& GetBinderOverride() {
@@ -167,7 +158,6 @@ void AvailableOfflineContentHelper::AvailableContentReceived(
     has_prefetched_content_ = fetched_content_.front()->content_type ==
                               AvailableContentType::kPrefetchedPage;
 
-    RecordSuggestionPresented(fetched_content_);
     if (list_visible_by_prefs)
       RecordEvent(error_page::NETWORK_ERROR_PAGE_OFFLINE_SUGGESTIONS_SHOWN);
     else

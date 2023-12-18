@@ -1723,17 +1723,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.ErrorPageCounts.SuggestionPresented"
-    enum="NetErrorOfflineSuggestionType" expires_after="2021-12-05">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Counts of the type of offline content suggestions shown on the network error
-    page. Multiple suggestions can be shown at the same time. Reported when the
-    suggestions are presented.
-  </summary>
-</histogram>
-
 <histogram name="Net.ErrorPageCounts.WebAppAlternativeErrorPage"
     enum="NetErrorCodes" expires_after="2024-04-28">
   <owner>finnur@chromium.org</owner>
