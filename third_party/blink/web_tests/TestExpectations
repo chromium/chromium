@@ -2629,6 +2629,8 @@ crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ 
 crbug.com/626703 external/wpt/editing/other/insertparagraph-in-editing-host-cannot-have-div.tentative.html* [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 virtual/webnn-service-enabled/external/wpt/webnn/gpu/arg_min_max.https.any.html [ Skip Timeout ]
+crbug.com/626703 virtual/webnn-service-enabled/external/wpt/webnn/gpu/arg_min_max.https.any.worker.html [ Crash ]
 crbug.com/626703 [ Mac13 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-page/page-orientation-on-landscape-001-print.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-page/page-orientation-on-portrait-001-print.html [ Failure ]

@@ -395334,6 +395334,14 @@
      "3f87fc8042d2b3de1bf13d64333ba08cdfdabb3b",
      []
     ],
+    "arg_min_max.https.any-expected.txt": [
+     "6fcce59d82c31dc4b67915add69a3c5d2a2ccfbd",
+     []
+    ],
+    "arg_min_max.https.any.worker-expected.txt": [
+     "7f086a50092bb70e348758d75df9ee8668b111d7",
+     []
+    ],
     "batch_normalization.https.any-expected.txt": [
      "7369d8f44cb7cbe82d7242ea94726a2dc080ae15",
      []
@@ -395498,6 +395506,14 @@
       ],
       "add.json": [
        "0a12871cebab50b0e826674107ff503e6ede5347",
+       []
+      ],
+      "arg_max.json": [
+       "9af47a95894223eb39d4f73f81f5b9c9a4112bff",
+       []
+      ],
+      "arg_min.json": [
+       "dc0b5cdfd1a6bc822bce05f3ba014bb119f3e679",
        []
       ],
       "average_pool2d.json": [
@@ -395746,7 +395762,7 @@
       ]
      },
      "utils.js": [
-      "c3b10a7020182f1765cdd7890410766334bc6055",
+      "0e2687ec22bac4a4dea3dbe938f9fc386a0a6a4e",
       []
      ]
     },
@@ -643821,6 +643837,13 @@
       {}
      ]
     ],
+    "viewport-scrollbars-cause-resize-in-iframe.html": [
+     "ce9ec3276886b5786ffe1309251469e92f29e1a9",
+     [
+      null,
+      {}
+     ]
+    ],
     "viewport-scrollbars-cause-resize.html": [
      "086e8d92b087afe8aea2fbc91c1f96dd7d328e72",
      [
@@ -659697,6 +659720,57 @@
     ]
    },
    "webnn": {
+    "arg_min_max.https.any.js": [
+     "cff1d6a955ce31fbecde084f8407a8f53bf6b889",
+     [
+      "webnn/arg_min_max.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API argMin/Max operations"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "webnn/arg_min_max.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API argMin/Max operations"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
     "batch_normalization.https.any.js": [
      "15e66a8bc06b2e73c19f910c765428b89b3f3b3d",
      [
@@ -660259,6 +660333,57 @@
      ]
     ],
     "gpu": {
+     "arg_min_max.https.any.js": [
+      "76092ea92e6931f64f24f068341fe7335fd58259",
+      [
+       "webnn/gpu/arg_min_max.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API argMin/Max operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/gpu/arg_min_max.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API argMin/Max operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "batch_normalization.https.any.js": [
       "90b6def636d1090dc0fe19368fbb5ac38d0133cd",
       [
