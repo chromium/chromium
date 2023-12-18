@@ -40,7 +40,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.Arrays;
 
-/** View tests for PasswordEditDialogWithDetailsView */
+/** View tests for PasswordEditDialogView */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class PasswordEditDialogViewTest {

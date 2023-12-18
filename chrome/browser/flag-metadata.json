@@ -6275,11 +6275,6 @@
     "expiry_milestone": 121
   },
   {
-    "name": "password-edit-dialog-with-details",
-    "owners": ["atsvirchkova@google.com", "ioanap@chromium.org"],
-    "expiry_milestone": 112
-  },
-  {
     "name": "password-generation-bottom-sheet",
     "owners": ["atsvirchkova@google.com", "ioanap@chromium.org"],
     "expiry_milestone": 123

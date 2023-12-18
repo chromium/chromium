@@ -479,8 +479,7 @@ void SaveUpdatePasswordMessageDelegateTest::VerifyUkmMetrics(
 }
 
 // Tests that secondary menu icon is set for the save password message
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       CogButton_SavePassword_PasswordEditDialogWithDetails) {
+TEST_F(SaveUpdatePasswordMessageDelegateTest, CogButton_SavePassword) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
@@ -496,7 +495,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // Tests that secondary menu icon is set for the update password message
 // in case when user has only single credential stored for the web site
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       CogButton_SingleCredUpdatePassword_PasswordEditDialogWithDetails) {
+       CogButton_SingleCredUpdatePassword) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
@@ -512,7 +511,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // Tests that secondary menu icon is not set for the update password message
 // in case when user has multiple credentials stored for the web site
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       NoCogButton_MultipleCredUpdatePassword_PasswordEditDialogWithDetails) {
+       NoCogButton_MultipleCredUpdatePassword) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());

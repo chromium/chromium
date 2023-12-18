@@ -57,7 +57,6 @@ class PasswordEditDialog {
   virtual ~PasswordEditDialog();
 
   // Calls Java side of the bridge to display password edit modal dialog.
-  // Called when PasswordEditDialogWithDetails feature is enabled.
   virtual void ShowPasswordEditDialog(
       const std::vector<std::u16string>& usernames,
       const std::u16string& username,
@@ -87,7 +86,6 @@ class PasswordEditDialogBridge : public PasswordEditDialog {
   PasswordEditDialogBridge& operator=(const PasswordEditDialogBridge&) = delete;
 
   // Calls Java side of the bridge to display password edit modal dialog.
-  // Called when PasswordEditDialogWithDetails feature is enabled.
   void ShowPasswordEditDialog(const std::vector<std::u16string>& usernames,
                               const std::u16string& username,
                               const std::u16string& password,
@@ -101,15 +99,9 @@ class PasswordEditDialogBridge : public PasswordEditDialog {
   // Called from Java to indicate that the user tapped the positive button with
   // |username| and
   // |password| which are going to be saved.
-  // Used when PasswordEditDialogWithDetails flag is on.
   void OnDialogAccepted(JNIEnv* env,
                         const base::android::JavaParamRef<jstring>& username,
                         const base::android::JavaParamRef<jstring>& password);
-
-  // Called from Java to indicate that the user tapped the positive button with
-  // |username_index|.
-  // Used when PasswordEditDialogWithDetails flag is off.
-  void OnLegacyDialogAccepted(JNIEnv* env, jint username_index);
 
   // Called from Java when the modal dialog is dismissed.
   void OnDialogDismissed(JNIEnv* env, jboolean dialogAccepted);
