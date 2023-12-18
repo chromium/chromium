@@ -4976,18 +4976,6 @@ hooks = [
                 '-s', 'src/third_party/gvr-android-sdk/test-libraries/controller_test_api.aar.sha1',
     ],
   },
-  {
-    'name': 'vr_assets',
-    'pattern': '.',
-    'condition': 'checkout_android and checkout_src_internal',
-    'action': ['python3',
-               'src/third_party/depot_tools/download_from_google_storage.py',
-               '--bucket', 'chrome-vr-assets',
-               '--recursive',
-               '--directory',
-               'src/chrome/browser/resources/vr/assets/google_chrome',
-    ],
-  },
   # Download and unpack MediaPipe Integration tests.
   {
     'name': 'mediapipe_integration_testdata',
