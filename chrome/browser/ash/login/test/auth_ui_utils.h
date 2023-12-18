@@ -25,15 +25,26 @@ void PasswordChangedForgotPasswordAction();
 std::unique_ptr<test::TestConditionWaiter> LocalDataLossWarningPageWaiter();
 void LocalDataLossWarningPageCancelAction();
 void LocalDataLossWarningPageGoBackAction();
-void LocalDataLossWarningPageProceedAction();
+void LocalDataLossWarningPageRemoveAction();
+void LocalDataLossWarningPageResetAction();
 
 void LocalDataLossWarningPageExpectGoBack();
-void LocalDataLossWarningPageExpectProceed();
+void LocalDataLossWarningPageExpectRemove();
+void LocalDataLossWarningPageExpectReset();
+
+std::unique_ptr<test::TestConditionWaiter>
+CreatePasswordUpdateNoticePageWaiter();
+void PasswordUpdateNoticeExpectNext();
+void PasswordUpdateNoticeNextAction();
+void PasswordUpdateNoticeExpectDone();
+void PasswordUpdateNoticeDoneAction();
 
 std::unique_ptr<test::TestConditionWaiter> RecoveryPasswordUpdatedPageWaiter();
 void RecoveryPasswordUpdatedProceedAction();
 
 std::unique_ptr<test::TestConditionWaiter> RecoveryErrorPageWaiter();
+void RecoveryErrorExpectFallback();
+void RecoveryErrorFallbackAction();
 
 }  // namespace ash::test
 
