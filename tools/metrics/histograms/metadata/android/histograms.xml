@@ -619,13 +619,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.BackPress.Intercept" enum="BackPressConsumer"
-    expires_after="2024-05-12">
+<histogram name="Android.BackPress.Intercept{Direction}"
+    enum="BackPressConsumer" expires_after="2024-05-12">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
   <summary>
-    Records that a specific feature intercepted the system's back press gesture.
+    Recorded when a specific feature intercepted the system's back press
+    gesture{Direction}.
   </summary>
+  <token key="Direction">
+    <variant name="" summary=""/>
+    <variant name=".LeftEdge" summary="from left edge in U+."/>
+    <variant name=".RightEdge" summary="from right edge in U+."/>
+  </token>
 </histogram>
 
 <histogram name="Android.BackPress.Interval" units="ms"
@@ -656,6 +662,20 @@ chromium-metrics-reviews@google.com.
     Records the secondary activity which intercepts the back press when the user
     does the Backpress gesture and it's not handled by the system.
   </summary>
+</histogram>
+
+<histogram name="Android.BackPress.SwipeEdge{Type}" enum="SwipeEdge"
+    expires_after="2024-05-12">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/chrome/browser/back_press/android/OWNERS</owner>
+  <summary>
+    Record the edge from which the gesture is swiped from {Type}.
+  </summary>
+  <token key="Type">
+    <variant name="" summary=""/>
+    <variant name=".TabHistoryNavigation"
+        summary="when a back gesture triggers a tab history navigation."/>
+  </token>
 </histogram>
 
 <histogram name="Android.BindingManger.ConnectionsDroppedDueToMaxSize"

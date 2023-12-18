@@ -254,7 +254,7 @@ public class CustomTabModalDialogTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.BackPress.Intercept",
-                        BackPressManager.getHistogramValueForTesting(
+                        BackPressManager.getHistogramValue(
                                 BackPressHandler.Type.TAB_MODAL_HANDLER));
 
         TestThreadUtils.runOnUiThreadBlocking(

@@ -8,6 +8,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/back_press/BackPressHelper.java",
     "java/src/org/chromium/chrome/browser/back_press/BackPressManager.java",
+    "java/src/org/chromium/chrome/browser/back_press/BackPressMetrics.java",
     "java/src/org/chromium/chrome/browser/back_press/CloseListenerManager.java",
     "java/src/org/chromium/chrome/browser/back_press/MinimizeAppAndCloseTabBackPressHandler.java",
     "java/src/org/chromium/chrome/browser/back_press/SecondaryActivityBackPressUma.java",
