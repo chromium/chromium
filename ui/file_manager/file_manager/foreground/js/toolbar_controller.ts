@@ -13,8 +13,9 @@ import {str, strf} from '../../common/js/translations.js';
 import {canBulkPinningCloudPanelShow} from '../../common/js/util.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
 import {State} from '../../externs/ts/state.js';
+import {Store} from '../../externs/ts/store.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
-import {getStore, type Store} from '../../state/store.js';
+import {getStore} from '../../state/store.js';
 import {XfCloudPanel} from '../../widgets/xf_cloud_panel.js';
 
 import {ICON_TYPES} from './constants.js';

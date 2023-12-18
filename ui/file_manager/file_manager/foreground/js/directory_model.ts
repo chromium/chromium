@@ -19,12 +19,13 @@ import {FileSystemType, getVolumeTypeFromRootType, isNative, RootType, Source, V
 import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {SearchData} from '../../externs/ts/state.js';
 import {PropStatus, SearchLocation, SearchOptions, State, Volume, VolumeId} from '../../externs/ts/state.js';
+import type {Store} from '../../externs/ts/store.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {clearSearch, getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
-import {getFileData, getStore, getVolume, type Store} from '../../state/store.js';
+import {getFileData, getStore, getVolume} from '../../state/store.js';
 
 import {CROSTINI_CONNECT_ERR, DLP_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from './constants.js';
 import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, EmptyContentScanner, FileFilter, FileListContext, GuestOsMounter, MediaViewContentScanner, RecentContentScanner, SearchV2ContentScanner, TrashContentScanner} from './directory_contents.js';

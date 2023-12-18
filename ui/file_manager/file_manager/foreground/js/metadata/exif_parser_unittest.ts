@@ -4,8 +4,10 @@
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
+import {ExifEntry} from '../../../externs/exif_entry.js';
+
 import {ByteOrder, ByteReader} from './byte_reader.js';
-import {type ExifEntry, ExifTag} from './exif_constants.js';
+import {ExifTag} from './exif_constants.js';
 import {ExifParser} from './exif_parser.js';
 import type {MetadataParserLogger} from './metadata_parser.js';
 
@@ -243,12 +245,12 @@ function parseExifData(bytes: ArrayBufferView): Record<ExifTag, ExifEntry> {
 export function testWithoutNullCharacterTermination() {
   // Create exif with a value that does not end with null character.
   const data = new Uint8Array(0x10000);
-  writeDirectory(data, {
-    id: ExifTag.MAKE,   // Manufacturer Id.
-    format: 2,          // String format.
-    componentCount: 8,  // Length of value 'Manufact'.
-    value: 'Manufact',
-  });
+  writeDirectory(data,{
+                    id: ExifTag.MAKE,   // Manufacturer Id.
+                    format: 2,          // String format.
+                    componentCount: 8,  // Length of value 'Manufact'.
+                    value: 'Manufact',
+                  });
 
   // Parse the exif data.
   const tags = parseExifData(data);

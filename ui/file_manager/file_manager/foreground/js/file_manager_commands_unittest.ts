@@ -11,13 +11,14 @@ import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
+import type {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import {addVolume, convertVolumeInfoAndMetadataToVolume, updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
 import {createMyFilesDataWithVolumeEntry} from '../../state/ducks/volumes_unittest.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../../state/for_tests.js';
 
-import type {CommandHandlerDeps, FilesCommandId} from './command_handler.js';
 import {CommandHandler, ValidMenuCommandsForUma} from './command_handler.js';
+import type {FilesCommandId} from './command_handler.js';
 import {CanExecuteEvent, Command} from './ui/command.js';
 
 let mockMetrics: MockMetrics;

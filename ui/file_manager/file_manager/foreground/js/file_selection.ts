@@ -7,6 +7,7 @@ import {CustomEventMap, FilesEventTarget} from '../../common/js/files_event_targ
 import {isDlpEnabled} from '../../common/js/flags.js';
 import {AllowedPaths} from '../../common/js/volume_manager_types.js';
 import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import type {Store} from '../../externs/ts/store.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {updateSelection} from '../../state/ducks/current_directory.js';
 import {getStore} from '../../state/store.js';
@@ -106,7 +107,7 @@ export class FileSelectionHandler extends
     FilesEventTarget<FileSelectionHandlerEventMap> {
   selection = new FileSelection([], [], this.volumeManager_);
   private selectionUpdateTimer_: number|null = 0;
-  private store_ = getStore();
+  private store_: Store = getStore();
   /**
    * The time, in ms since the epoch, when it is OK to post next throttled
    * selection event. Can be directly compared with Date.now().
