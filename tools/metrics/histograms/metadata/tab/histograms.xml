@@ -204,8 +204,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Tab.HasCustomUnderPageBackgroundColor" units="BooleanPresent"
+    expires_after="2024-11-29">
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    [iOS] Whether a page has a custom under page background color, recorded when
+    the page is fully loaded. The default value of this color is from the
+    background colors of the &quot;html&quot; and &quot;body&quot; elements and
+    the background color of the web view. By default it is white, so this
+    histogram only records it as custom if it is not white with no alpha.
+  </summary>
+</histogram>
+
 <histogram name="Tab.HasThemeColor" units="BooleanPresent"
-    expires_after="2024-09-29">
+    expires_after="2024-11-29">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
