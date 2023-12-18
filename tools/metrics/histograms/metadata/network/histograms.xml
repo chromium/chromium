@@ -3708,19 +3708,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Network.Shill.WiFi.RestartReason"
-    enum="WiFiRestartReason" expires_after="2024-04-18">
-  <owner>billyzhao@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    ChromeOS network metric recording instances where Shill is told to restart
-    the WiFi device. This is triggered by udev event from the iwl7000 driver.
-    See b/270746800 for more details. This metric will be removed once we notice
-    the driver not sending these requests. This removal process is tracked in
-    b/278765529.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Network.Shill.WiFi.RoamComplete"
     enum="WiFiRoamComplete" expires_after="2024-05-19">
 <!-- Name completed by histogram_suffixes name="RoamSecurityType" -->

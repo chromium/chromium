@@ -2475,10 +2475,6 @@ chromium-metrics-reviews@google.com.
   <int value="45" label="kReasonCodeCipherSuiteNotSupported"/>
 </enum>
 
-<enum name="WiFiRestartReason">
-  <int value="0" label="kRestartReasonCannotAssoc"/>
-</enum>
-
 <enum name="WiFiRoamComplete">
   <int value="0" label="Roam success"/>
   <int value="1" label="Roam failure"/>
