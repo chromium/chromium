@@ -191,6 +191,7 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_coordinator.h"
 #import "ios/chrome/browser/ui/safe_browsing/safe_browsing_coordinator.h"
+#import "ios/chrome/browser/ui/save_to_drive/save_to_drive_coordinator.h"
 #import "ios/chrome/browser/ui/save_to_photos/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
@@ -472,6 +473,9 @@ enum class ToolbarKind {
 // Coordinator for Safe Browsing.
 @property(nonatomic, strong) SafeBrowsingCoordinator* safeBrowsingCoordinator;
 
+// Coordinator for displaying the Save to Drive UI.
+@property(nonatomic, strong) SaveToDriveCoordinator* saveToDriveCoordinator;
+
 // Coordinator for displaying the Save to Photos UI.
 @property(nonatomic, strong) SaveToPhotosCoordinator* saveToPhotosCoordinator;
 
@@ -658,6 +662,7 @@ enum class ToolbarKind {
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox {
   [self stopSaveToPhotos];
+  [self hideSaveToDrive];
 
   [self.passKitCoordinator stop];
 
@@ -2624,11 +2629,20 @@ enum class ToolbarKind {
 #pragma mark - SaveToDriveCommands
 
 - (void)showSaveToDrive:(ShowSaveToDriveCommand*)command {
-  // TODO(crbug.com/1495352): Start SaveToDriveCoordinator.
+  // If the Save to Drive coordinator is not nil, stop it.
+  [self hideSaveToDrive];
+
+  _saveToDriveCoordinator = [[SaveToDriveCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                        fileName:command.fileName
+                        fileSize:command.fileSize];
+  [_saveToDriveCoordinator start];
 }
 
 - (void)hideSaveToDrive {
-  // TODO(crbug.com/1495352): Stop SaveToDriveCoordinator.
+  [_saveToDriveCoordinator stop];
+  _saveToDriveCoordinator = nil;
 }
 
 #pragma mark - SaveToPhotosCommands
