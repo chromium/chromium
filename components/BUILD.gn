@@ -483,6 +483,7 @@ test("components_unittests") {
       "//components/services/paint_preview_compositor:unit_tests",
       "//components/services/storage:tests",
       "//components/session_proto_db:unit_tests",
+      "//components/subresource_filter/content/browser:unit_tests",
       "//components/subresource_filter/content/common:unit_tests",
       "//components/subresource_filter/content/renderer:unit_tests",
       "//components/tracing:unit_tests",
@@ -569,7 +570,6 @@ test("components_unittests") {
       "//components/site_isolation:unit_tests",
       "//components/spellcheck/browser:unit_tests",
       "//components/spellcheck/renderer:unit_tests",
-      "//components/subresource_filter/content/browser:unit_tests",
     ]
 
     if (!is_win) {  #!iOS and!Windows

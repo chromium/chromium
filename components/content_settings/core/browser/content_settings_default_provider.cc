@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
@@ -356,6 +357,15 @@ void DefaultProvider::RecordHistogramMetrics() {
       IntToContentSetting(
           prefs_->GetInteger(GetPrefName(ContentSettingsType::POPUPS))),
       CONTENT_SETTING_NUM_SETTINGS);
+
+#if BUILDFLAG(USE_BLINK)
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultSubresourceFilterSetting",
+      IntToContentSetting(
+          prefs_->GetInteger(GetPrefName(ContentSettingsType::ADS))),
+      CONTENT_SETTING_NUM_SETTINGS);
+#endif
+
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   base::UmaHistogramEnumeration(
       "ContentSettings.RegularProfile.DefaultImagesSetting",
@@ -411,11 +421,6 @@ void DefaultProvider::RecordHistogramMetrics() {
       "ContentSettings.RegularProfile.DefaultAutoplaySetting",
       IntToContentSetting(
           prefs_->GetInteger(GetPrefName(ContentSettingsType::AUTOPLAY))),
-      CONTENT_SETTING_NUM_SETTINGS);
-  base::UmaHistogramEnumeration(
-      "ContentSettings.RegularProfile.DefaultSubresourceFilterSetting",
-      IntToContentSetting(
-          prefs_->GetInteger(GetPrefName(ContentSettingsType::ADS))),
       CONTENT_SETTING_NUM_SETTINGS);
   base::UmaHistogramEnumeration(
       "ContentSettings.RegularProfile.DefaultSoundSetting",
