@@ -19,6 +19,7 @@
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -97,6 +98,7 @@ ModelExecutionManager::ModelExecutionManager(
     signin::IdentityManager* identity_manager,
     scoped_refptr<OnDeviceModelServiceController>
         on_device_model_service_controller,
+    OptimizationGuideModelProvider* model_provider,
     OptimizationGuideLogger* optimization_guide_logger)
     : optimization_guide_logger_(optimization_guide_logger),
       model_execution_service_url_(net::AppendOrReplaceQueryParameter(
@@ -105,10 +107,22 @@ ModelExecutionManager::ModelExecutionManager(
           features::GetOptimizationGuideServiceAPIKey())),
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
+      model_provider_(model_provider),
       on_device_model_service_controller_(
-          std::move(on_device_model_service_controller)) {}
+          std::move(on_device_model_service_controller)) {
+  if (model_provider_ && features::ShouldDownloadTextSafetyClassifierModel()) {
+    model_provider_->AddObserverForOptimizationTargetModel(
+        proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY,
+        /*model_metadata=*/absl::nullopt, this);
+  }
+}
 
-ModelExecutionManager::~ModelExecutionManager() = default;
+ModelExecutionManager::~ModelExecutionManager() {
+  if (model_provider_ && features::ShouldDownloadTextSafetyClassifierModel()) {
+    model_provider_->RemoveObserverForOptimizationTargetModel(
+        proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY, this);
+  }
+}
 
 void ModelExecutionManager::ExecuteModelWithStreaming(
     proto::ModelExecutionFeature feature,
@@ -331,6 +345,21 @@ void ModelExecutionManager::OnModelExecuteResponse(
   RecordModelExecutionResultHistogram(feature, true);
   std::move(callback).Run(base::ok(execute_response->response_metadata()),
                           std::move(log_entry));
+}
+
+void ModelExecutionManager::OnModelUpdated(
+    proto::OptimizationTarget optimization_target,
+    base::optional_ref<const ModelInfo> model_info) {
+  if (optimization_target != proto::OPTIMIZATION_TARGET_TEXT_SAFETY) {
+    return;
+  }
+
+  if (!on_device_model_service_controller_) {
+    return;
+  }
+
+  // Pass model file to on-device service controller.
+  on_device_model_service_controller_->MaybeUpdateSafetyModel(model_info);
 }
 
 }  // namespace optimization_guide

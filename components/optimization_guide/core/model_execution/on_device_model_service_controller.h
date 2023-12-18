@@ -14,9 +14,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
+#include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -50,7 +52,7 @@ class OnDeviceModelServiceController
     : public base::RefCounted<OnDeviceModelServiceController>,
       public OnDeviceModelComponentStateManager::Observer {
  public:
-  explicit OnDeviceModelServiceController(
+  OnDeviceModelServiceController(
       std::unique_ptr<OnDeviceModelAccessController> access_controller,
       base::WeakPtr<OnDeviceModelComponentStateManager>
           on_device_component_state_manager);
@@ -95,16 +97,22 @@ class OnDeviceModelServiceController
     return model_remote_.is_bound() || service_remote_.is_bound();
   }
 
+  // Updates safety model if the model path provided by `model_info` differs
+  // from what is already loaded. Virtual for testing.
+  virtual void MaybeUpdateSafetyModel(
+      base::optional_ref<const ModelInfo> model_info);
+
   // OnDeviceModelComponentStateManager::Observer.
   void StateChanged(const OnDeviceModelComponentState* state) override;
+
+ protected:
+  ~OnDeviceModelServiceController() override;
 
  private:
   friend class base::RefCounted<OnDeviceModelServiceController>;
   friend class ChromeOnDeviceModelServiceController;
   friend class OnDeviceModelServiceControllerTest;
   friend class FakeOnDeviceModelServiceController;
-
-  ~OnDeviceModelServiceController() override;
 
   // Makes sure the service is running and starts a mojo session.
   void StartMojoSession(
@@ -131,6 +139,7 @@ class OnDeviceModelServiceController
   base::WeakPtr<OnDeviceModelComponentStateManager>
       on_device_component_state_manager_;
   std::optional<on_device_model::ModelAssetPaths> model_paths_;
+  std::optional<ModelInfo> safety_model_info_;
   std::unique_ptr<OnDeviceModelExecutionConfigInterpreter> config_interpreter_;
   mojo::Remote<on_device_model::mojom::OnDeviceModelService> service_remote_;
   mojo::Remote<on_device_model::mojom::OnDeviceModel> model_remote_;

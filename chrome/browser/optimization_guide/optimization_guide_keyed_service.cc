@@ -429,7 +429,8 @@ void OptimizationGuideKeyedService::Initialize() {
           std::make_unique<optimization_guide::ModelExecutionManager>(
               url_loader_factory,
               IdentityManagerFactory::GetForProfile(profile),
-              std::move(service_controller), optimization_guide_logger_.get());
+              std::move(service_controller), this,
+              optimization_guide_logger_.get());
     }
   }
 

@@ -17,6 +17,11 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP) ModelAssetPaths {
   ModelAssetPaths(const ModelAssetPaths&);
   ~ModelAssetPaths();
 
+  // Returns whether the required models to determine text safety are set.
+  bool HasSafetyFiles() const {
+    return !ts_data.empty() && !ts_sp_model.empty();
+  }
+
   base::FilePath sp_model;
   base::FilePath model;
   base::FilePath weights;

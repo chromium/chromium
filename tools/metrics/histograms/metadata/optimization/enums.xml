@@ -312,6 +312,9 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Too many recent timeouts">
     The service took too long to respond too many times in a row.
   </int>
+  <int value="8" label="Safety model not available">
+    The on-device safety model is required but not available.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideOptimizationFilterStatus">

@@ -258,12 +258,14 @@ enum class OnDeviceModelEligibilityReason {
   kTooManyRecentCrashes = 6,
   // The on-device model took too long too many times for this version.
   kTooManyRecentTimeouts = 7,
+  // The on-device safety model was required but not available.
+  kSafetyModelNotAvailable = 8,
 
   // This must be kept in sync with
   // OptimizationGuideOnDeviceModelEligibilityReason in optimization/enums.xml.
 
   // Insert new values before this line.
-  kMaxValue = kTooManyRecentTimeouts,
+  kMaxValue = kSafetyModelNotAvailable,
 };
 
 // Status of a model quality logs upload request.

@@ -7,12 +7,16 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/core/test_model_info_builder.h"
+#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -22,6 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
+
 namespace {
 
 using ::base::test::TestMessage;
@@ -39,19 +44,55 @@ proto::ExecuteResponse BuildComposeResponse(const std::string& output) {
   return execute_response;
 }
 
+class FakeServiceController : public OnDeviceModelServiceController {
+ public:
+  FakeServiceController() : OnDeviceModelServiceController(nullptr, nullptr) {}
+
+  void LaunchService() override {}
+
+  void MaybeUpdateSafetyModel(
+      base::optional_ref<const ModelInfo> model_info) override {
+    received_safety_info_ = true;
+  }
+
+  bool received_safety_info() const { return received_safety_info_; }
+
+ private:
+  ~FakeServiceController() override = default;
+
+  bool received_safety_info_ = false;
+};
+
+class FakeModelProvider : public TestOptimizationGuideModelProvider {
+ public:
+  void AddObserverForOptimizationTargetModel(
+      proto::OptimizationTarget optimization_target,
+      const absl::optional<optimization_guide::proto::Any>& model_metadata,
+      OptimizationTargetModelObserver* observer) override {
+    CHECK_EQ(optimization_target, proto::OPTIMIZATION_TARGET_TEXT_SAFETY);
+    was_registered_ = true;
+  }
+  bool was_registered() const { return was_registered_; }
+
+ private:
+  bool was_registered_ = false;
+};
+
 class ModelExecutionManagerTest : public testing::Test {
  public:
-  ModelExecutionManagerTest() = default;
+  ModelExecutionManagerTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kTextSafetyClassifier);
+  }
   ~ModelExecutionManagerTest() override = default;
 
   void SetUp() override {
     url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
+    service_controller_ = base::MakeRefCounted<FakeServiceController>();
     model_execution_manager_ = std::make_unique<ModelExecutionManager>(
         url_loader_factory_, identity_test_env_.identity_manager(),
-        /*on_device_model_service_controller_=*/nullptr,
-        &optimization_guide_logger_);
+        service_controller_, &model_provider_, &optimization_guide_logger_);
   }
 
   bool SimulateResponse(const std::string& content,
@@ -77,6 +118,12 @@ class ModelExecutionManagerTest : public testing::Test {
     return model_execution_manager_.get();
   }
 
+  FakeModelProvider* model_provider() { return &model_provider_; }
+
+  FakeServiceController* service_controller() {
+    return service_controller_.get();
+  }
+
   void CheckPendingRequestMessage(const std::string& message) {
     EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
     auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
@@ -89,11 +136,14 @@ class ModelExecutionManagerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   signin::IdentityTestEnvironment identity_test_env_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<FakeServiceController> service_controller_;
+  FakeModelProvider model_provider_;
   OptimizationGuideLogger optimization_guide_logger_;
   std::unique_ptr<ModelExecutionManager> model_execution_manager_;
 };
@@ -436,6 +486,45 @@ TEST_F(ModelExecutionManagerTest,
   CheckPendingRequestMessage("other test");
   EXPECT_TRUE(SimulateSuccessfulResponse());
   run_loop.Run();
+}
+
+TEST_F(ModelExecutionManagerTest, DoesNotRegisterTextSafetyIfNotEnabled) {
+  EXPECT_FALSE(model_provider()->was_registered());
+}
+
+class ModelExecutionManagerSafetyEnabledTest
+    : public ModelExecutionManagerTest {
+ public:
+  ModelExecutionManagerSafetyEnabledTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kTextSafetyClassifier);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ModelExecutionManagerSafetyEnabledTest,
+       RegistersTextSafetyModelIfEnabled) {
+  EXPECT_TRUE(model_provider()->was_registered());
+}
+
+TEST_F(ModelExecutionManagerSafetyEnabledTest,
+       DoesNotNotifyServiceControllerWrongTarget) {
+  std::unique_ptr<ModelInfo> model_info =
+      TestModelInfoBuilder().SetVersion(123).Build();
+  model_execution_manager()->OnModelUpdated(
+      proto::OPTIMIZATION_TARGET_PAGE_ENTITIES, *model_info);
+
+  EXPECT_FALSE(service_controller()->received_safety_info());
+}
+
+TEST_F(ModelExecutionManagerSafetyEnabledTest, NotifiesServiceController) {
+  std::unique_ptr<ModelInfo> model_info =
+      TestModelInfoBuilder().SetVersion(123).Build();
+  model_execution_manager()->OnModelUpdated(
+      proto::OPTIMIZATION_TARGET_TEXT_SAFETY, *model_info);
+
+  EXPECT_TRUE(service_controller()->received_safety_info());
 }
 
 }  // namespace

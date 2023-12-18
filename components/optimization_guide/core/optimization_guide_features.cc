@@ -314,6 +314,11 @@ BASE_FEATURE(kLogOnDeviceMetricsOnStartup,
              "LogOnDeviceMetricsOnStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether to download the text safety classifier model.
+BASE_FEATURE(kTextSafetyClassifier,
+             "TextSafetyClassifier",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 size_t MaxRelatedSearchesCacheSize() {
   return GetFieldTrialParamByFeatureAsInt(
       kExtractRelatedSearchesFromPrefetchedZPSResponse,
@@ -1031,6 +1036,18 @@ bool GetOnDeviceModelRetractUnsafeContent() {
           &kOptimizationGuideOnDeviceModel, "on_device_retract_unsafe_content",
           false};
   return kOnDeviceModelShouldRetractUnsafeContent.Get();
+}
+
+bool GetOnDeviceModelMustUseSafetyModel() {
+  static const base::FeatureParam<bool>
+      kOnDeviceModelShouldRetractUnsafeContent{
+          &kOptimizationGuideOnDeviceModel, "on_device_must_use_safety_model",
+          false};
+  return kOnDeviceModelShouldRetractUnsafeContent.Get();
+}
+
+bool ShouldDownloadTextSafetyClassifierModel() {
+  return base::FeatureList::IsEnabled(kTextSafetyClassifier);
 }
 
 }  // namespace features

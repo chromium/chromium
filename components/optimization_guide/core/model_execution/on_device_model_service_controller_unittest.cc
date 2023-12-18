@@ -6,6 +6,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -15,10 +16,12 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/test_on_device_model_component.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -185,7 +188,7 @@ class FakeOnDeviceModelService
 class FakeOnDeviceModelServiceController
     : public OnDeviceModelServiceController {
  public:
-  explicit FakeOnDeviceModelServiceController(
+  FakeOnDeviceModelServiceController(
       std::unique_ptr<OnDeviceModelAccessController> access_controller,
       base::WeakPtr<OnDeviceModelComponentStateManager>
           on_device_component_state_manager)
@@ -225,13 +228,15 @@ class FakeOnDeviceModelServiceController
 class OnDeviceModelServiceControllerTest : public testing::Test {
  public:
   void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     g_execute_delay = base::TimeDelta();
     g_on_complete_response_type = on_device_model::mojom::ResponseStatus::kOk;
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kOptimizationGuideOnDeviceModel,
         {{"on_device_model_min_tokens_for_context", "10"},
          {"on_device_model_max_tokens_for_context", "22"},
-         {"on_device_model_context_token_chunk_size", "4"}});
+         {"on_device_model_context_token_chunk_size", "4"},
+         {"on_device_must_use_safety_model", "false"}});
     prefs::RegisterLocalStatePrefs(pref_service_.registry());
     RecreateServiceController();
   }
@@ -325,6 +330,8 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
                             base::Unretained(this)));
   }
 
+  base::FilePath temp_dir() const { return temp_dir_.GetPath(); }
+
  protected:
   void OnResponse(OptimizationGuideModelStreamingExecutionResult result,
                   std::unique_ptr<ModelQualityLogEntry> log_entry) {
@@ -344,6 +351,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple pref_service_;
   TestOnDeviceModelComponentStateManager on_device_component_state_manager_{
       &pref_service_};
@@ -481,6 +489,79 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
       "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
       "TabOrganization",
       OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {{"on_device_must_use_safety_model", "true"}});
+
+  // No safety model received yet.
+  {
+    base::HistogramTester histogram_tester;
+
+    EXPECT_FALSE(
+        test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_));
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
+        "Compose",
+        OnDeviceModelEligibilityReason::kSafetyModelNotAvailable, 1);
+  }
+
+  // Safety model info is valid, session created successfully.
+  {
+    base::HistogramTester histogram_tester;
+
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetAdditionalFiles(
+                {temp_dir().Append(kTsDataFile),
+                 temp_dir().Append(base::FilePath(kTsSpModelFile))})
+            .Build();
+    test_controller_->MaybeUpdateSafetyModel(*model_info);
+    EXPECT_TRUE(
+        test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_));
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
+        "Compose",
+        OnDeviceModelEligibilityReason::kSuccess, 1);
+  }
+
+  // Safety model reset to not available, session no longer created
+  // successfully.
+  {
+    base::HistogramTester histogram_tester;
+
+    test_controller_->MaybeUpdateSafetyModel(std::nullopt);
+    EXPECT_FALSE(
+        test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_));
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
+        "Compose",
+        OnDeviceModelEligibilityReason::kSafetyModelNotAvailable, 1);
+  }
+
+  // Safety model reset to invalid, session no longer created successfully.
+  {
+    base::HistogramTester histogram_tester;
+
+    std::unique_ptr<ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetModelFilePath(temp_dir().Append(FILE_PATH_LITERAL("garbage")))
+            .Build();
+    test_controller_->MaybeUpdateSafetyModel(*model_info);
+    EXPECT_FALSE(
+        test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_));
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
+        "Compose",
+        OnDeviceModelEligibilityReason::kSafetyModelNotAvailable, 1);
+  }
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
