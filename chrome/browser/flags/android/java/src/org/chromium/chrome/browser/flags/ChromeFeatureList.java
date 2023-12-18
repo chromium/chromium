@@ -177,7 +177,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_PAGE_INSIGHTS_HUB = "CCTPageInsightsHub";
     public static final String CCT_PAGE_INSIGHTS_HUB_BETTER_SCROLL =
             "CCTPageInsightsHubBetterScroll";
-    public static final String CCT_REAL_TIME_ENGAGEMENT_SIGNALS = "CCTRealTimeEngagementSignals";
     public static final String CCT_REPORT_PARALLEL_REQUEST_STATUS =
             "CCTReportParallelRequestStatus";
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";
@@ -679,8 +678,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP, true);
     public static final MutableFlagWithSafeDefault sAndroidImprovedBookmarks =
             newMutableFlagWithSafeDefault(ANDROID_IMPROVED_BOOKMARKS, false);
-    public static final MutableFlagWithSafeDefault sCctRealTimeEngagementSignals =
-            newMutableFlagWithSafeDefault(CCT_REAL_TIME_ENGAGEMENT_SIGNALS, false);
     public static final MutableFlagWithSafeDefault sDeferKeepScreenOnDuringGesture =
             newMutableFlagWithSafeDefault(DEFER_KEEP_SCREEN_ON_DURING_GESTURE, false);
     public static final MutableFlagWithSafeDefault sDeferNotifyInMotion =

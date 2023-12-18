@@ -184,7 +184,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTMinimized,
     &kCCTPageInsightsHub,
     &kCCTPageInsightsHubBetterScroll,
-    &kCCTRealTimeEngagementSignals,
     &kCCTReportParallelRequestStatus,
     &kCCTResizableForThirdParties,
     &kCCTResizableSideSheet,
@@ -506,10 +505,6 @@ BASE_FEATURE(kCCTPageInsightsHub,
 BASE_FEATURE(kCCTPageInsightsHubBetterScroll,
              "CCTPageInsightsHubBetterScroll",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTRealTimeEngagementSignals,
-             "CCTRealTimeEngagementSignals",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTReportParallelRequestStatus,
              "CCTReportParallelRequestStatus",

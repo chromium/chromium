@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.ON_SCROLL_END;
 import static org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS;
-import static org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.REAL_VALUES;
 
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -43,19 +42,16 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
 import org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.ScrollState;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.GestureStateListener;
@@ -70,7 +66,6 @@ import java.util.List;
 /** Unit test for {@link RealtimeEngagementSignalObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowSystemClock.class})
-@EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
 public class RealtimeEngagementSignalObserverUnitTest {
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
@@ -119,7 +114,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
     @Test
     public void addsListenersForSignalsIfFeatureIsEnabled_alternativeImpl() {
-        setFeatureParams(null);
         initializeTabForTest();
 
         verify(mGestureListenerManagerImpl)
@@ -526,70 +520,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    public void sendsFalseForScrollDirectionIfSendingFakeValues() {
-        setFeatureParams(false);
-        initializeTabForTest();
-        GestureStateListener listener = captureGestureStateListener();
-
-        // Start by scrolling down.
-        listener.onScrollStarted(0, SCROLL_EXTENT, false);
-        verify(mEngagementSignalsCallback).onVerticalScrollEvent(eq(false), any(Bundle.class));
-        // Change direction to up at 10%.
-        listener.onVerticalScrollDirectionChanged(true, .1f);
-        verify(mEngagementSignalsCallback, times(2))
-                .onVerticalScrollEvent(eq(false), any(Bundle.class));
-        // Change direction to down at 5%.
-        listener.onVerticalScrollDirectionChanged(false, .05f);
-        verify(mEngagementSignalsCallback, times(3))
-                .onVerticalScrollEvent(eq(false), any(Bundle.class));
-        // End scrolling at 50%.
-        listener.onScrollEnded(50, SCROLL_EXTENT);
-        // We shouldn't make any more calls.
-        verify(mEngagementSignalsCallback, times(3))
-                .onVerticalScrollEvent(anyBoolean(), any(Bundle.class));
-    }
-
-    @Test
-    public void sendsZeroForMaxScrollSignalsIfSendingFakeValues() {
-        setFeatureParams(false);
-        initializeTabForTest();
-        GestureStateListener listener = captureGestureStateListener();
-
-        // Start by scrolling down.
-        listener.onScrollStarted(0, SCROLL_EXTENT, false);
-        // Scroll down to 3%.
-        when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(3);
-        listener.onScrollOffsetOrExtentChanged(3, SCROLL_EXTENT);
-        // End scrolling.
-        listener.onScrollEnded(3, SCROLL_EXTENT);
-        // We shouldn't make any calls at this point.
-        verify(mEngagementSignalsCallback, never())
-                .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
-
-        // Start scrolling down again.
-        listener.onScrollStarted(3, SCROLL_EXTENT, false);
-        // Scroll down to 8%.
-        when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(8);
-        listener.onScrollOffsetOrExtentChanged(8, SCROLL_EXTENT);
-        // End scrolling.
-        listener.onScrollEnded(8, SCROLL_EXTENT);
-        // We should make a call, but it will be 0.
-        verify(mEngagementSignalsCallback, times(1))
-                .onGreatestScrollPercentageIncreased(eq(0), any(Bundle.class));
-
-        // Start scrolling down again.
-        listener.onScrollStarted(8, SCROLL_EXTENT, false);
-        // Scroll down to 94%.
-        when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(94);
-        listener.onScrollOffsetOrExtentChanged(94, SCROLL_EXTENT);
-        // End scrolling.
-        listener.onScrollEnded(94, SCROLL_EXTENT);
-        // We should make a call, 0 again.
-        verify(mEngagementSignalsCallback, times(2))
-                .onGreatestScrollPercentageIncreased(eq(0), any(Bundle.class));
-    }
-
-    @Test
     public void sendsSignalWithAlternativeImpl_updateBeforeEnd() {
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
@@ -608,7 +538,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
     @Test
     public void sendsSignalWithAlternativeImpl_updateAfterEnd() {
-        setFeatureParams(null);
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
 
@@ -632,7 +561,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
     @Test
     public void doesNotSendLowerPercentWithAlternativeImpl() {
-        setFeatureParams(null);
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
 
@@ -660,7 +588,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
     @Test
     public void doNotSendSignalWithAlternativeImplAfterThreshold() {
-        setFeatureParams(null);
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
 
@@ -679,7 +606,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
     @Test
     public void doNotSendSignalWithAlternativeImplIfScrollStartReceived() {
-        setFeatureParams(null);
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
 
@@ -872,21 +798,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
     private void advanceTime(long millis) {
         SystemClock.setCurrentTimeMillis(CURRENT_TIME_MS + millis);
-    }
-
-    /**
-     * @param realValues CCT_REAL_TIME_ENGAGEMENT_SIGNALS real_values.
-     */
-    private void setFeatureParams(Boolean realValues) {
-        if (realValues == null) return;
-
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS,
-                REAL_VALUES,
-                realValues.toString());
-        FeatureList.setTestValues(testValues);
     }
 
     private void initializeTabForTest(boolean hadScrollDown) {

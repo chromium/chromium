@@ -175,9 +175,6 @@ public class CustomTabsConnectionUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS
-    })
     public void setEngagementSignalsCallback_Available() {
         initSession();
         when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(true);
@@ -190,9 +187,6 @@ public class CustomTabsConnectionUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS
-    })
     public void setEngagementSignalsCallback_NotAvailable() {
         initSession();
         when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(false);

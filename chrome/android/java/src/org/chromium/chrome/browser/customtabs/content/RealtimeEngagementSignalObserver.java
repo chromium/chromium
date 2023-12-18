@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
 import org.chromium.chrome.browser.tab.Tab;
@@ -54,10 +53,6 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     // Limit the granularity of data the embedder receives.
     private static final int SCROLL_PERCENTAGE_GRANULARITY = 5;
 
-    // Feature param to decide whether to send real values with engagement signals.
-    @VisibleForTesting protected static final String REAL_VALUES = "real_values";
-    private static final int STUB_PERCENT = 0;
-
     // This value was chosen based on experiment data. 300ms covers about 98% of the scrolls while
     // trying to increase coverage further would require an unreasonably high threshold.
     @VisibleForTesting static final int DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS = 300;
@@ -69,8 +64,6 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final EngagementSignalsCallback mCallback;
     private final CustomTabsSessionToken mSession;
-
-    private final boolean mShouldSendRealValues;
 
     @Nullable private WebContents mWebContents;
     @Nullable private GestureStateListener mGestureStateListener;
@@ -104,8 +97,6 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         mSession = session;
         mTabObserverRegistrar = tabObserverRegistrar;
         mCallback = callback;
-
-        mShouldSendRealValues = shouldSendRealValues();
 
         mPendingInitialUpdate = hadScrollDown;
         // Do not register observer via tab#addObserver, so it can change tabs when necessary.
@@ -220,8 +211,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
                         // Only send the event if there has been a down scroll.
                         if (!mScrollState.onScrollStarted(isDirectionUp)) return;
                         mScrollState.onScrollStarted(isDirectionUp);
-                        // If we shouldn't send the real values, always send false.
-                        notifyVerticalScrollEvent(mShouldSendRealValues && isDirectionUp);
+                        notifyVerticalScrollEvent(isDirectionUp);
                     }
 
                     @Override
@@ -249,7 +239,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
                     public void onVerticalScrollDirectionChanged(
                             boolean directionUp, float currentScrollRatio) {
                         if (mScrollState.onScrollDirectionChanged(directionUp)) {
-                            notifyVerticalScrollEvent(mShouldSendRealValues && directionUp);
+                            notifyVerticalScrollEvent(directionUp);
                         }
                     }
 
@@ -259,15 +249,13 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
                     }
 
                     /**
-                     * @param allowUpdateAfter Whether an |#onScrollOffsetOrExtentChanged()| should be
-                     *     allowed. If false, updates after |#onScrollEnded()| will be
-                     *     ignored.
+                     * @param allowUpdateAfter Whether an |#onScrollOffsetOrExtentChanged()| should
+                     *     be allowed. If false, updates after |#onScrollEnded()| will be ignored.
                      */
                     private void onScrollEndedInternal(boolean allowUpdateAfter) {
                         int resultPercentage = mScrollState.onScrollEnded(allowUpdateAfter);
                         if (resultPercentage != SCROLL_STATE_MAX_PERCENTAGE_NOT_INCREASING) {
-                            notifyGreatestScrollPercentageIncreased(
-                                    mShouldSendRealValues ? resultPercentage : STUB_PERCENT);
+                            notifyGreatestScrollPercentageIncreased(resultPercentage);
                         }
                     }
                 };
@@ -504,16 +492,5 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
             sInstanceForTesting = instance;
             ResettersForTesting.register(() -> sInstanceForTesting = null);
         }
-    }
-
-    private static boolean shouldSendRealValues() {
-        boolean enabledWithOverride =
-                CustomTabsConnection.getInstance()
-                        .isDynamicFeatureEnabledWithOverrides(
-                                ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS);
-        if (enabledWithOverride) return true;
-
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS, REAL_VALUES, true);
     }
 }

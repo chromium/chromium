@@ -3904,11 +3904,6 @@ const char kCCTResizableSideSheetForThirdPartiesName[] =
     "Side sheet Custom Tabs (third party)";
 const char kCCTResizableSideSheetForThirdPartiesDescription[] =
     "Enable side sheet Custom Tabs for third party apps.";
-const char kCCTRealTimeEngagementSignalsName[] =
-    "Enable CCT real-time engagement signals.";
-const char kCCTRealTimeEngagementSignalsDescription[] =
-    "Enables sending real-time engagement signals (e.g. scroll) through "
-    "CustomTabsCallback.";
 
 const char kAccountReauthenticationRecentTimeWindowName[] =
     "Account Reauthentication Recent Time Window";

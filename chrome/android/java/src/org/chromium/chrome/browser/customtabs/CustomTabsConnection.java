@@ -1478,8 +1478,7 @@ public class CustomTabsConnection {
     @VisibleForTesting
     boolean areExperimentsSupported(
             List<String> enabledExperiments, List<String> disabledExperiments) {
-        return enabledExperiments != null
-                && enabledExperiments.contains(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS);
+        return false;
     }
 
     // TODO(https://crbug.com/1458640): Remove this and other dynamic feature related methods.
@@ -1491,8 +1490,6 @@ public class CustomTabsConnection {
      */
     public boolean isDynamicFeatureEnabled(String featureName) {
         if (mIsDynamicIntentFeatureOverridesEnabled) {
-            assert featureName.equals(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)
-                    : "Unsupported Feature";
             if (mDynamicEnabledFeatures != null && mDynamicEnabledFeatures.contains(featureName)) {
                 return true;
             }
@@ -1500,9 +1497,6 @@ public class CustomTabsConnection {
                     && mDynamicDisabledFeatures.contains(featureName)) {
                 return false;
             }
-        }
-        if (featureName.equals(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)) {
-            return ChromeFeatureList.sCctRealTimeEngagementSignals.isEnabled();
         }
         Log.e(TAG, "Unsupported Feature!");
         return false;
@@ -1933,10 +1927,8 @@ public class CustomTabsConnection {
             CustomTabsSessionToken sessionToken,
             EngagementSignalsCallback callback,
             Bundle extras) {
-        if (!isDynamicFeatureEnabled(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)
-                || !isEngagementSignalsApiAvailableInternal(sessionToken)) {
-            return false;
-        }
+        if (!isEngagementSignalsApiAvailableInternal(sessionToken)) return false;
+
         var engagementSignalsHandler =
                 mClientManager.getEngagementSignalsHandlerForSession(sessionToken);
         if (engagementSignalsHandler == null) return false;
