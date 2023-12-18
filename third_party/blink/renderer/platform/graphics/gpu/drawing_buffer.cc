@@ -49,10 +49,8 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -827,7 +825,6 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
     SkAlphaType alpha_type,
     GLenum texture_target,
     GLuint texture_id,
-    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     bool is_overlay_candidate,
     gpu::Mailbox mailbox)
     : owning_thread_ref(base::PlatformThread::CurrentRef()),
@@ -838,7 +835,6 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
       alpha_type(alpha_type),
       texture_target(texture_target),
       texture_id(texture_id),
-      gpu_memory_buffer(std::move(gpu_memory_buffer)),
       is_overlay_candidate(is_overlay_candidate),
       mailbox(mailbox) {}
 
@@ -873,7 +869,6 @@ DrawingBuffer::ColorBuffer::~ColorBuffer() {
   }
 
   sii->DestroySharedImage(receive_sync_token, mailbox);
-  gpu_memory_buffer.reset();
   gl->DeleteTextures(1u, &texture_id);
 }
 
@@ -1893,15 +1888,13 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   state_restorer_->SetTextureBindingDirty();
 
   gpu::SharedImageInterface* sii = ContextProvider()->SharedImageInterface();
-  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager =
-      Platform::Current()->GetGpuMemoryBufferManager();
 
   gpu::Mailbox back_buffer_mailbox;
   // Set only when using swap chains.
   gpu::Mailbox front_buffer_mailbox;
   GLenum texture_target = GL_TEXTURE_2D;
   GLuint texture_id = 0;
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
+  bool created_mappable_si = false;
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                    gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
@@ -1973,28 +1966,23 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
               viz::SinglePlaneSharedImageFormatToBufferFormat(
                   color_buffer_format_),
               ContextProvider()->GetCapabilities())) {
-        gpu_memory_buffer = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
-            size,
-            viz::SinglePlaneSharedImageFormatToBufferFormat(
-                color_buffer_format_),
-            buffer_usage, gpu::kNullSurfaceHandle, nullptr);
-        if (gpu_memory_buffer) {
-          auto client_shared_image = sii->CreateSharedImage(
-              color_buffer_format_, size, color_space_, origin,
-              back_buffer_alpha_type, usage | additional_usage_flags,
-              "WebGLDrawingBuffer", gpu_memory_buffer->CloneHandle());
+        auto client_shared_image = sii->CreateSharedImage(
+            color_buffer_format_, size, color_space_, origin,
+            back_buffer_alpha_type, usage | additional_usage_flags,
+            "WebGLDrawingBuffer", gpu::kNullSurfaceHandle, buffer_usage);
+        if (client_shared_image) {
+          created_mappable_si = true;
 #if BUILDFLAG(IS_MAC)
           // Ensure that the backing IOSurface has its color space set to be the
           // same as that of the just-created SharedImage (the former is used by
           // CoreAnimation, while the latter is used by viz).
           // TODO(crbug.com/924198): Explore moving to a CreateSharedImage()
           // codepath that sets the color space of the IOSurface on the service
-          // side and eliminating the usage of GMB here altogether. Will require
-          // resolving issues with low-latency canvas tests that caused prior
-          // attempts to be reverted (crbug.com/1346737).
-          gpu_memory_buffer->SetColorSpace(color_space_);
+          // side and eliminating the usage of MappableSI here altogether. Will
+          // require resolving issues with low-latency canvas tests that caused
+          // prior attempts to be reverted (crbug.com/1346737).
+          client_shared_image->SetColorSpaceOnNativeBuffer(color_space_);
 #endif
-          CHECK(client_shared_image);
           back_buffer_mailbox = client_shared_image->mailbox();
 #if BUILDFLAG(IS_MAC)
           // A CHROMIUM_image backed texture requires a specialized set of
@@ -2005,9 +1993,9 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       }
     }
 
-    // Create a normal SharedImage if GpuMemoryBuffer is not needed or the
+    // Create a normal SharedImage if Mappable SharedImage is not needed or the
     // allocation above failed.
-    if (!gpu_memory_buffer) {
+    if (!created_mappable_si) {
       // We want to set the correct SkAlphaType on the new shared image but in
       // the case of ShouldUseChromiumImage() we instead keep this buffer
       // premultiplied, draw to |premultiplied_alpha_false_mailbox_|, and
@@ -2049,7 +2037,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         front_buffer_mailbox.name);
     front_color_buffer_ = base::MakeRefCounted<ColorBuffer>(
         weak_factory_.GetWeakPtr(), size, color_space_, color_buffer_format_,
-        back_buffer_alpha_type, texture_target, texture_id, nullptr,
+        back_buffer_alpha_type, texture_target, texture_id,
         /*is_overlay_candidate=*/true, front_buffer_mailbox);
   }
 
@@ -2077,12 +2065,12 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
                               texture_target, 0, 0);
     gl_->DeleteFramebuffers(1, &fbo);
   }
-  const bool is_overlay_candidate = !!gpu_memory_buffer || using_swap_chain_;
+  const bool is_overlay_candidate = created_mappable_si || using_swap_chain_;
 
   return base::MakeRefCounted<ColorBuffer>(
       weak_factory_.GetWeakPtr(), size, color_space_, color_buffer_format_,
-      back_buffer_alpha_type, texture_target, texture_id,
-      std::move(gpu_memory_buffer), is_overlay_candidate, back_buffer_mailbox);
+      back_buffer_alpha_type, texture_target, texture_id, is_overlay_candidate,
+      back_buffer_mailbox);
 }
 
 void DrawingBuffer::AttachColorBufferToReadFramebuffer() {
@@ -2165,8 +2153,7 @@ DrawingBuffer::ScopedStateRestorer::~ScopedStateRestorer() {
 
 bool DrawingBuffer::ShouldUseChromiumImage() {
   return RuntimeEnabledFeatures::WebGLImageChromiumEnabled() &&
-         chromium_image_usage_ == kAllowChromiumImage &&
-         Platform::Current()->GetGpuMemoryBufferManager();
+         chromium_image_usage_ == kAllowChromiumImage;
 }
 
 }  // namespace blink
