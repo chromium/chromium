@@ -47691,6 +47691,10 @@ Called by update_net_error_codes.py.-->
       label="Model execution score for default model is obtained from
              database"/>
   <int value="28" label="Score from database for default model is not ready"/>
+  <int value="29"
+      label="Cached result is unavailable, execute the model ondemand."/>
+  <int value="30"
+      label="Ondemand model execution failed, returned cached results."/>
 </enum>
 
 <enum name="SelectedTheme">

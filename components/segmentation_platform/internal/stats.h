@@ -242,7 +242,9 @@ enum class SegmentationSelectionFailureReason {
   kClassificationResultNotAvailableInPrefs = 26,
   kDefaultModelDatabaseScoreUsed = 27,
   kDefaultModelDatabaseScoreNotReady = 28,
-  kMaxValue = kDefaultModelDatabaseScoreNotReady,
+  kCachedResultUnavailableExecutingOndemand = 29,
+  kOnDemandExecutionFailedReturningCachedResult = 30,
+  kMaxValue = kOnDemandExecutionFailedReturningCachedResult,
 };
 
 // Records the reason for failure or success to compute a segment selection.

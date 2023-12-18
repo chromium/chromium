@@ -22,6 +22,7 @@
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/mock_ukm_data_manager.h"
 #include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
@@ -101,6 +102,10 @@ class RequestDispatcherTest : public testing::Test {
         kAdaptiveToolbarClient,
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR));
     configs.back()->auto_execute_and_cache = false;
+    configs.emplace_back(test_utils::CreateTestConfig(
+        kShoppingUserSegmentationKey,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER));
+    configs.back()->auto_execute_and_cache = true;
     auto config_holder = std::make_unique<ConfigHolder>(std::move(configs));
 
     prefs_.registry()->RegisterStringPref(kSegmentationClientResultPrefs,
@@ -108,7 +113,6 @@ class RequestDispatcherTest : public testing::Test {
     client_result_prefs_ = std::make_unique<ClientResultPrefs>(&prefs_);
     auto cached_result_writer = std::make_unique<CachedResultWriter>(
         client_result_prefs_.get(), &clock_);
-    cached_result_writer_ = cached_result_writer.get();
     storage_service_ = std::make_unique<StorageService>(
         nullptr, nullptr, nullptr, nullptr, std::move(config_holder),
         &ukm_data_manager_);
@@ -127,6 +131,10 @@ class RequestDispatcherTest : public testing::Test {
     request_handler2_ = handler2.get();
     request_dispatcher_->set_request_handler_for_testing(kAdaptiveToolbarClient,
                                                          std::move(handler2));
+    auto handler3 = std::make_unique<MockRequestHandler>();
+    request_handler3_ = handler3.get();
+    request_dispatcher_->set_request_handler_for_testing(
+        kShoppingUserSegmentationKey, std::move(handler3));
   }
 
   void OnGetClassificationResult(base::RepeatingClosure closure,
@@ -155,7 +163,7 @@ class RequestDispatcherTest : public testing::Test {
   std::unique_ptr<StorageService> storage_service_;
   raw_ptr<MockRequestHandler, DanglingUntriaged> request_handler1_ = nullptr;
   raw_ptr<MockRequestHandler, DanglingUntriaged> request_handler2_ = nullptr;
-  raw_ptr<CachedResultWriter> cached_result_writer_;
+  raw_ptr<MockRequestHandler, DanglingUntriaged> request_handler3_ = nullptr;
   std::unique_ptr<RequestDispatcher> request_dispatcher_;
 };
 
@@ -420,6 +428,136 @@ TEST_F(RequestDispatcherTest, TestAnnotatedNumericResultRequestWithWaiting) {
   request_dispatcher_->OnPlatformInitialized(true, &execution_service,
                                              std::move(result_providers));
 
+  loop.Run();
+  EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
+}
+
+TEST_F(RequestDispatcherTest, TestOnDemandWithFallback) {
+  // Result available in client prefs.
+  client_result_prefs_->SaveClientResultToPrefs(
+      kDeviceSwitcherKey,
+      metadata_utils::CreateClientResultFromPredResult(
+          CreatePredictionResultWithBinaryClassifier(kTestLabel1),
+          /*timestamp=*/base::Time::Now()));
+  auto cached_result_provider = std::make_unique<CachedResultProvider>(
+      client_result_prefs_.get(), storage_service_->config_holder()->configs());
+  storage_service_->set_cached_result_provider_for_testing(
+      std::move(cached_result_provider));
+
+  base::RunLoop loop;
+  PredictionOptions options = PredictionOptions::ForOnDemand(true);
+  options.can_update_cache_for_future_requests = true;
+
+  // Init platform.
+  std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+      result_providers;
+  ExecutionService execution_service;
+  // Set platform as initialized.
+  request_dispatcher_->OnPlatformInitialized(true, &execution_service,
+                                             std::move(result_providers));
+  // Set both models as initialized, now requests should be dispatched
+  // immediately without queueing.
+  request_dispatcher_->OnModelUpdated(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DEVICE_SWITCHER);
+
+  // Request from client.
+  RawResult raw_result(PredictionStatus::kFailed);
+  EXPECT_CALL(*request_handler1_, GetPredictionResult(_, _, _))
+      .WillOnce(Invoke([&raw_result](const PredictionOptions& options,
+                                     scoped_refptr<InputContext> input_context,
+                                     RawResultCallback callback) {
+        std::move(callback).Run(raw_result);
+      }));
+
+  ClassificationResult result(PredictionStatus::kSucceeded);
+  result.ordered_labels.emplace_back(kTestLabel1);
+  request_dispatcher_->GetClassificationResult(
+      kDeviceSwitcherClient, options, scoped_refptr<InputContext>(),
+      base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
+                     base::Unretained(this), loop.QuitClosure(), result));
+  loop.Run();
+  EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
+}
+
+TEST_F(RequestDispatcherTest, TestCachedExecutionWithoutFallback) {
+  // Result available in client prefs.
+  client_result_prefs_->SaveClientResultToPrefs(
+      kShoppingUserSegmentationKey,
+      metadata_utils::CreateClientResultFromPredResult(
+          CreatePredictionResultWithBinaryClassifier(kTestLabel1),
+          /*timestamp=*/base::Time::Now()));
+  auto cached_result_provider = std::make_unique<CachedResultProvider>(
+      client_result_prefs_.get(), storage_service_->config_holder()->configs());
+  storage_service_->set_cached_result_provider_for_testing(
+      std::move(cached_result_provider));
+
+  base::RunLoop loop;
+  PredictionOptions options = PredictionOptions::ForCached(true);
+  options.can_update_cache_for_future_requests = true;
+
+  // Init platform.
+  std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+      result_providers;
+  ExecutionService execution_service;
+  // Set platform as initialized.
+  request_dispatcher_->OnPlatformInitialized(true, &execution_service,
+                                             std::move(result_providers));
+  // Set both models as initialized, now requests should be dispatched
+  // immediately without queueing.
+  request_dispatcher_->OnModelUpdated(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER);
+
+  // Request from client.
+  ClassificationResult result(PredictionStatus::kSucceeded);
+  result.ordered_labels.emplace_back(kTestLabel1);
+  request_dispatcher_->GetClassificationResult(
+      kShoppingUserSegmentationKey, options, scoped_refptr<InputContext>(),
+      base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
+                     base::Unretained(this), loop.QuitClosure(), result));
+  loop.Run();
+  EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
+}
+
+TEST_F(RequestDispatcherTest, TestCachedExecutionWithFallback) {
+  // Result not available in client prefs.
+  auto cached_result_provider = std::make_unique<CachedResultProvider>(
+      client_result_prefs_.get(), storage_service_->config_holder()->configs());
+  storage_service_->set_cached_result_provider_for_testing(
+      std::move(cached_result_provider));
+
+  base::RunLoop loop;
+  PredictionOptions options = PredictionOptions::ForCached(true);
+  options.can_update_cache_for_future_requests = true;
+
+  // Init platform.
+  std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+      result_providers;
+  ExecutionService execution_service;
+  // Set platform as initialized.
+  request_dispatcher_->OnPlatformInitialized(true, &execution_service,
+                                             std::move(result_providers));
+  // Set both models as initialized, now requests should be dispatched
+  // immediately without queueing.
+  request_dispatcher_->OnModelUpdated(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER);
+
+  // Request from client.
+  RawResult raw_result(PredictionStatus::kSucceeded);
+  raw_result.result = CreatePredictionResultWithBinaryClassifier(kTestLabel1);
+  EXPECT_CALL(*request_handler3_, GetPredictionResult(_, _, _))
+      .WillRepeatedly(
+          Invoke([&raw_result](const PredictionOptions& options,
+                               scoped_refptr<InputContext> input_context,
+                               RawResultCallback callback) {
+            std::move(callback).Run(raw_result);
+          }));
+
+  ClassificationResult result(PredictionStatus::kSucceeded);
+  result.ordered_labels.emplace_back(kTestLabel1);
+  request_dispatcher_->GetClassificationResult(
+      kShoppingUserSegmentationKey, options, scoped_refptr<InputContext>(),
+      base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
+                     base::Unretained(this), loop.QuitClosure(), result));
   loop.Run();
   EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
 }

@@ -365,8 +365,8 @@ void SegmentResultProviderImpl::OnModelExecuted(
                              : ResultState::kServerModelExecutionFailed;
     segment_result = std::make_unique<SegmentResult>(state);
     VLOG(1) << __func__ << ": " << (is_default_model ? "Default" : "Server")
-            << " model execution failed"
-            << " for segment " << proto::SegmentId_Name(segment_id);
+            << " model execution failed" << " for segment "
+            << proto::SegmentId_Name(segment_id);
   }
 
   if (request_state->options->save_results_to_db) {
