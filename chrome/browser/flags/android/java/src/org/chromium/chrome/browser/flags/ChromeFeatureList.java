@@ -118,8 +118,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_APP_INTEGRATION = "AndroidAppIntegration";
     public static final String ANDROID_HATS_REFACTOR = "AndroidHatsRefactor";
     public static final String ANDROID_HUB = "AndroidHub";
-    public static final String ANDROID_SEARCH_ENGINE_CHOICE_NOTIFICATION =
-            "AndroidSearchEngineChoiceNotification";
     public static final String ANDROID_IMPROVED_BOOKMARKS = "AndroidImprovedBookmarks";
     public static final String ANDROID_VISIBLE_URL_TRUNCATION = "AndroidVisibleUrlTruncation";
     public static final String ANDROID_NO_VISIBLE_HINT_FOR_TABLETS =

@@ -161,7 +161,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidAppIntegration,
     &kAndroidHatsRefactor,
     &kAndroidHub,
-    &kAndroidSearchEngineChoiceNotification,
     &kAndroidImprovedBookmarks,
     &kAndroidNoVisibleHintForTablets,
     &kAndroidVisibleUrlTruncation,
@@ -433,10 +432,6 @@ BASE_FEATURE(kAndroidHatsRefactor,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidHub, "AndroidHub", base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidSearchEngineChoiceNotification,
-             "AndroidSearchEngineChoiceNotification",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidImprovedBookmarks,
              "AndroidImprovedBookmarks",

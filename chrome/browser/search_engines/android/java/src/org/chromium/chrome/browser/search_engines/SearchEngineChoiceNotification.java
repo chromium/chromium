@@ -9,7 +9,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.VersionNumber;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -28,16 +27,8 @@ import java.util.concurrent.TimeUnit;
  * User is only meant to be prompted once, hence the fact of prompting is saved to preferences.
  */
 public final class SearchEngineChoiceNotification {
-    /** Variations parameter name for notification snackbar duration (in seconds). */
-    private static final String PARAM_NOTIFICATION_SNACKBAR_DURATION_SECONDS =
-            "notification-snackbar-duration-seconds";
-
-    /** Default value for notification snackbar duration (in seconds). */
-    private static final int PARAM_NOTIFICATION_SNACKBAR_DURATION_SECONDS_DEFAULT = 10;
-
-    /** Variations parameter name for invalidating version number. */
-    private static final String PARAM_NOTIFICATION_INVALIDATING_VERSION_NUMBER =
-            "notification-invalidating-version-number";
+    /** Notification snackbar duration (in seconds). */
+    private static final int NOTIFICATION_SNACKBAR_DURATION_SECONDS = 10;
 
     /**
      * Snackbar controller for search engine choice notification. It takes the user to the settings
@@ -107,19 +98,14 @@ public final class SearchEngineChoiceNotification {
 
     private static Snackbar buildSnackbarNotification(
             @NonNull Context context, @NonNull SettingsLauncher settingsLauncher) {
-        int durationSeconds =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.ANDROID_SEARCH_ENGINE_CHOICE_NOTIFICATION,
-                        PARAM_NOTIFICATION_SNACKBAR_DURATION_SECONDS,
-                        PARAM_NOTIFICATION_SNACKBAR_DURATION_SECONDS_DEFAULT);
-
         return Snackbar.make(
                         context.getString(R.string.search_engine_choice_prompt),
                         new NotificationSnackbarController(context, settingsLauncher),
                         Snackbar.TYPE_NOTIFICATION,
                         Snackbar.UMA_SEARCH_ENGINE_CHOICE_NOTIFICATION)
                 .setAction(context.getString(R.string.settings), null)
-                .setDuration((int) TimeUnit.SECONDS.toMillis(durationSeconds))
+                .setDuration(
+                        (int) TimeUnit.SECONDS.toMillis(NOTIFICATION_SNACKBAR_DURATION_SECONDS))
                 .setSingleLine(false)
                 .setTheme(Snackbar.Theme.GOOGLE);
     }
@@ -144,13 +130,7 @@ public final class SearchEngineChoiceNotification {
     }
 
     private static boolean wasSearchEngineChoicePresented() {
-        VersionNumber lastPresentedVersionNumber = getLastPresentedVersionNumber();
-        if (lastPresentedVersionNumber == null) return false;
-
-        VersionNumber lowestAcceptedVersionNumber = getLowestAcceptedVersionNumber();
-        if (lowestAcceptedVersionNumber == null) return true;
-
-        return !lastPresentedVersionNumber.isSmallerThan(lowestAcceptedVersionNumber);
+        return getLastPresentedVersionNumber() != null;
     }
 
     private static @Nullable VersionNumber getLastPresentedVersionNumber() {
@@ -158,19 +138,5 @@ public final class SearchEngineChoiceNotification {
                 ChromeSharedPreferences.getInstance()
                         .readString(
                                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PRESENTED_VERSION, null));
-    }
-
-    private static @Nullable VersionNumber getLowestAcceptedVersionNumber() {
-        return VersionNumber.fromString(
-                ChromeFeatureList.getFieldTrialParamByFeature(
-                        ChromeFeatureList.ANDROID_SEARCH_ENGINE_CHOICE_NOTIFICATION,
-                        PARAM_NOTIFICATION_INVALIDATING_VERSION_NUMBER));
-    }
-
-    private static int getNotificationSnackbarDuration() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.ANDROID_SEARCH_ENGINE_CHOICE_NOTIFICATION,
-                PARAM_NOTIFICATION_SNACKBAR_DURATION_SECONDS,
-                PARAM_NOTIFICATION_SNACKBAR_DURATION_SECONDS_DEFAULT);
     }
 }
