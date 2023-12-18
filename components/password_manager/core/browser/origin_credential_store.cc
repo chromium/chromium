@@ -114,6 +114,16 @@ base::span<const UiCredential> OriginCredentialStore::GetCredentials() const {
   return credentials_;
 }
 
+void OriginCredentialStore::SaveUnnotifiedSharedCredentials(
+    std::vector<PasswordForm> credentials) {
+  unnotified_shared_credentials_ = std::move(credentials);
+}
+
+base::span<const PasswordForm>
+OriginCredentialStore::GetUnnotifiedSharedCredentials() const {
+  return unnotified_shared_credentials_;
+}
+
 void OriginCredentialStore::SetBlocklistedStatus(bool is_blocklisted) {
   if (is_blocklisted) {
     blocklisted_status_ = BlocklistedStatus::kIsBlocklisted;

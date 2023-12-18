@@ -38,6 +38,15 @@ UiCredential MakeUiCredential(
                       base::Time());
 }
 
+password_manager::PasswordForm CreateTestPasswordForm(int index = 0) {
+  password_manager::PasswordForm form;
+  form.url = GURL("https://test" + base::NumberToString(index) + ".com");
+  form.signon_realm = form.url.spec();
+  form.username_value = u"username" + base::NumberToString16(index);
+  form.password_value = u"password" + base::NumberToString16(index);
+  return form;
+}
+
 }  // namespace
 
 class OriginCredentialStoreTest : public testing::Test {
@@ -58,6 +67,15 @@ TEST_F(OriginCredentialStoreTest, StoresCredentials) {
                           MakeUiCredential("Adam", "Pas83B"),
                           MakeUiCredential("Dora", "PakudC"),
                           MakeUiCredential("Carl", "P1238C")));
+}
+
+TEST_F(OriginCredentialStoreTest, StoresUnnotifiedSharedCredentials) {
+  store()->SaveUnnotifiedSharedCredentials(
+      {CreateTestPasswordForm(1), CreateTestPasswordForm(2)});
+
+  EXPECT_THAT(
+      store()->GetUnnotifiedSharedCredentials(),
+      ElementsAre(CreateTestPasswordForm(1), CreateTestPasswordForm(2)));
 }
 
 TEST_F(OriginCredentialStoreTest, StoresOnlyNormalizedOrigins) {
