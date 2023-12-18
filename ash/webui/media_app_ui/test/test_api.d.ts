@@ -27,3 +27,6 @@ interface ChaiJs {
 }
 
 declare const chai: ChaiJs;
+
+// Things that become available when dom_testing_helpers.js is injected.
+declare function waitForNode(query: string, path?: string[]): Promise<Element>;

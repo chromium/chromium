@@ -62,19 +62,18 @@ media_app_defs_for_external_js_staged = [ "$ts_root_dir/message_pipe.d.ts" ]
 # harness to load everything from the same place.
 media_app_test_unconverted_js_sources = [
   "driver.js",
-  "driver_api.js",
-  "guest_query_receiver.js",
   "media_app_ui_browsertest.js",
   "test_worker.js",
 ]
 
 # Testing .d.ts and .ts files that are staged and consumed by tsc.
-media_app_test_ts = [ "media_app_guest_ui_browsertest.ts" ]
-
-media_app_test_defs = [
-  "guest_query_receiver.d.ts",
-  "test_api.d.ts",
+media_app_test_ts = [
+  "driver_api.ts",
+  "guest_query_receiver.ts",
+  "media_app_guest_ui_browsertest.ts",
 ]
+
+media_app_test_defs = [ "test_api.d.ts" ]
 
 media_app_test_definitions_staged =
     process_file_template(media_app_test_defs,

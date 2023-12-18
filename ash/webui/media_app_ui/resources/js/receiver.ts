@@ -26,9 +26,8 @@ const PLACEHOLDER_BLOB = new Blob([]);
 /**
  * A file received from the privileged context, and decorated with IPC methods
  * added in the untrusted (this) context to communicate back.
- * @implements {mediaApp.AbstractFile}
  */
-class ReceivedFile implements AbstractFile {
+export class ReceivedFile implements AbstractFile {
   blob: Blob;
   name: string;
   token: number;
@@ -184,7 +183,7 @@ export class ReceivedFileList implements AbstractFileList {
   length: number;
   currentFileIndex: number;
 
-  private files: ReceivedFile[];
+  files: ReceivedFile[];  // Public for tests.
   private observers: Array<(files: AbstractFileList) => unknown> = [];
 
   constructor(filesMessage: LoadFilesMessage) {

@@ -2,40 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Note we can only import from 'receiver.js': other modules are rolled-up into
-// it, and already loaded.
-import {TEST_ONLY} from './receiver.js';
+/// <reference path="media_app.d.ts" />
 
-/**
- * @typedef {{
- *     name: string,
- *     message: string,
- *     stack: string,
- * }}
- */
-let GenericErrorResponse;
+import {FileSnapshot, LastLoadedFilesResponse, TestMessageQueryData, TestMessageResponseData, TestMessageRunTestCase} from './driver_api.js';
+import {ReceivedFileList, TEST_ONLY} from './receiver.js';
+
+interface GenericErrorResponse {
+  name: string;
+  message: string;
+  stack: string;
+}
 
 const {
   RenameResult,
   DELEGATE,
-  assertCast,
   parentMessagePipe,
   loadFiles,
   setLoadFiles,
 } = TEST_ONLY;
 
 /**
- * The last file list loaded into the guest, updated via a spy on loadFiles().
- * TODO(b/185734620): This should be type {ReceivedFileList} but closure fails
- * to resolve it properly. See b/185734620 for details.
+ * TODO(b/314827247): Remove this when imports are converted to TypeScript. This
+ * is needed because the generated .d.ts doesn't capture non-nullability.
  */
-let lastLoadedFileList = null;
+function assertCast<A>(arg: A): NonNullable<A> {
+  return TEST_ONLY.assertCast(arg)!;
+}
+
+/**
+ * The last file list loaded into the guest, updated via a spy on loadFiles().
+ */
+let lastLoadedFileList: ReceivedFileList|null = null;
 
 /**
  * Test cases registered by GUEST_TEST.
- * @type {!Map<string, function(): (!Promise<undefined>|undefined)>}
  */
-const guestTestCases = new Map();
+const guestTestCases = new Map<string, () => unknown>();
 
 /**
  * Returns the last file list passed to the guest context over the message pipe.
@@ -47,7 +49,7 @@ const guestTestCases = new Map();
  * the received file list on `window.customLaunchData.files`. Support either.
  * This only affects tests: `launchConsumer` cannot be awaited in the real app.
  */
-function assertLastReceivedFileList() {
+function assertLastReceivedFileList(): ReceivedFileList {
   if (lastLoadedFileList) {
     return lastLoadedFileList;
   }
@@ -55,34 +57,27 @@ function assertLastReceivedFileList() {
     throw new Error('No file list received.');
   }
   console.log('Note: app not loaded. Returning customLaunchData.files.');
-  return window.customLaunchData.files;
+  return window.customLaunchData.files as ReceivedFileList;
 }
 
-/**
- * @return {!Array<!mediaApp.AbstractFile>}
- */
-function assertLastReceivedFileArray() {
+function assertLastReceivedFileArray(): AbstractFile[] {
   const fileList = assertLastReceivedFileList();
-  return Array.from({length: fileList.length}, (v, k) => fileList.item(k));
+  return Array.from({length: fileList.length}, (_, k) => fileList.item(k)) as
+      AbstractFile[];
 }
 
-/**
- * @return {!mediaApp.AbstractFile}
- */
-function currentFile() {
+function currentFile(): AbstractFile {
   const fileList = assertLastReceivedFileList();
-  return assertCast(fileList.item(fileList.currentFileIndex));
+  return assertCast(fileList.item(fileList.currentFileIndex))!;
 }
 
 /**
  * Flatten out primitives from the file object for transfer over message pipe.
- * @param {!mediaApp.AbstractFile} file
- * @return {!FileSnapshot}
  */
-function flattenFile(file) {
+function flattenFile(file: AbstractFile): FileSnapshot {
   const hasDelete = !!file.deleteOriginalFile;
   const hasRename = !!file.renameOriginalFile;
-  const lastModified = /** @type{!File} */ (file.blob).lastModified;
+  const lastModified = (file.blob as File).lastModified;
   const {blob, name, size, mimeType, fromClipboard, error, token} = file;
   return {
     blob,
@@ -98,13 +93,14 @@ function flattenFile(file) {
   };
 }
 
+type QueryHandler = (data: TestMessageQueryData, arg: any) =>
+    Promise<string>|string;
+
 /**
  * Handlers for simple tests run in the guest that return a string result.
- * @type{!Object<string, function(!TestMessageQueryData, !Object):
- * Promise<string>>}
  */
-const SIMPLE_TEST_QUERIES = {
-  requestSaveFile: async (data, resultData) => {
+const SIMPLE_TEST_QUERIES: {[key: string]: QueryHandler} = {
+  requestSaveFile: async (data, _resultData) => {
     // Call requestSaveFile on the delegate.
     const existingFile = assertLastReceivedFileList().item(0);
     if (!existingFile) {
@@ -115,44 +111,45 @@ const SIMPLE_TEST_QUERIES = {
         data.simpleArgs ? data.simpleArgs.accept : []);
     return assertCast(pickedFile.token).toString();
   },
-  getExportFile: async (data, resultData) => {
+  getExportFile: async (data, _resultData) => {
     const existingFile = assertLastReceivedFileList().item(0);
     if (!existingFile) {
       return 'getExportFile failed, no file loaded';
     }
-    const pickedFile = await existingFile.getExportFile(data.simpleArgs.accept);
-    return pickedFile.token.toString();
+    const pickedFile =
+        await existingFile.getExportFile!(data.simpleArgs.accept);
+    return pickedFile.token!.toString();
   },
-  getLastFile: async (data, resultData) => {
+  getLastFile: async (_data, resultData) => {
     Object.assign(resultData, flattenFile(currentFile()));
     return resultData.name;
   },
-  getAllFiles: async (data, resultData) => {
+  getAllFiles: async (_data, resultData) => {
     Object.assign(resultData, assertLastReceivedFileArray().map(flattenFile));
     return `${resultData.length}`;
   },
-  notifyCurrentFile: (data, resultData) => {
+  notifyCurrentFile: (data, _resultData) => {
     DELEGATE.notifyCurrentFile(data.simpleArgs.name, data.simpleArgs.type);
+    return 'notified';
   },
-  openFileAtIndex: async (data, resultData) => {
+  openFileAtIndex: async (data, _resultData) => {
     const handle = assertLastReceivedFileList().item(data.simpleArgs.index);
-    const domFile = await handle.openFile();
-    handle.updateFile(domFile, domFile.name);
+    const domFile = await handle!.openFile();
+    // Cast to any to access private method.
+    (handle as any).updateFile(domFile, domFile.name);
     return 'opened and updated';
   },
-  openFilesWithFilePicker: async (data, resultData) => {
-    /**
-     * @typedef {{
-     *   acceptTypeKeys: !Array<string>,
-     *   explicitToken: (number|undefined),
-     *   singleFile: ?boolean,
-     * }}
-     */
-    let Args;
-    const args = /** @type {Args} */ (data.simpleArgs);
-    let existingFile = assertLastReceivedFileList().item(0) || null;
+  openFilesWithFilePicker: async (data, _resultData) => {
+    interface Args {
+      acceptTypeKeys: string[];
+      explicitToken?: number;
+      singleFile?: boolean;
+    }
+    const args: Args = data.simpleArgs;
+    let existingFile: AbstractFile|undefined =
+        assertLastReceivedFileList().item(0) || undefined;
     if (args.explicitToken) {
-      existingFile = {token: args.explicitToken};
+      existingFile = {token: args.explicitToken} as AbstractFile;
     }
     await assertLastReceivedFileList().openFilesWithFilePicker(
         args.acceptTypeKeys, existingFile, args.singleFile);
@@ -162,10 +159,9 @@ const SIMPLE_TEST_QUERIES = {
 
 /**
  * Acts on received TestMessageQueryData.
- * @param {!TestMessageQueryData} data
- * @return {!Promise<!TestMessageResponseData>}
  */
-async function runTestQuery(data) {
+async function runTestQuery(data: TestMessageQueryData):
+    Promise<TestMessageResponseData> {
   let result = 'no result';
   let extraResultData = {};
   if (data.testQuery) {
@@ -173,24 +169,24 @@ async function runTestQuery(data) {
     result = element.tagName;
 
     if (data.property) {
-      result = JSON.stringify(element[data.property]);
+      result = JSON.stringify((element as any)[data.property]);
     } else if (data.requestFullscreen) {
       try {
         await element.requestFullscreen();
         result = 'hooray';
-      } catch (/** @type {!TypeError} */ typeError) {
+      } catch (typeError: any) {
         result = typeError.message;
       }
     }
   } else if (data.simple !== undefined && data.simple in SIMPLE_TEST_QUERIES) {
-    result = await SIMPLE_TEST_QUERIES[data.simple](data, extraResultData);
+    result = await SIMPLE_TEST_QUERIES[data.simple]!(data, extraResultData);
   } else if (data.navigate !== undefined) {
     // Simulate a user navigating to the next/prev file.
     if (data.navigate.direction === 'next') {
-      await assertLastReceivedFileList().loadNext(data.navigate.token);
+      await assertLastReceivedFileList().loadNext(data.navigate.token!);
       result = 'loadNext called';
     } else if (data.navigate.direction === 'prev') {
-      await assertLastReceivedFileList().loadPrev(data.navigate.token);
+      await assertLastReceivedFileList().loadPrev(data.navigate.token!);
       result = 'loadPrev called';
     } else {
       result = 'nothing called';
@@ -202,7 +198,7 @@ async function runTestQuery(data) {
     try {
       await assertCast(file.overwriteOriginal).call(file, testBlob);
       result = 'overwriteOriginal resolved';
-    } catch (/** @type{!Error} */ error) {
+    } catch (error: unknown) {
       result = `overwriteOriginal failed Error: ${error}`;
       if (data.rethrow) {
         throw error;
@@ -217,7 +213,7 @@ async function runTestQuery(data) {
     try {
       await assertCast(currentFile().deleteOriginalFile).call(currentFile());
       result = 'deleteOriginalFile resolved success';
-    } catch (/** @type{!Error} */ error) {
+    } catch (error: unknown) {
       result = `deleteOriginalFile failed Error: ${error}`;
     }
   } else if (data.renameLastFile) {
@@ -235,7 +231,7 @@ async function runTestQuery(data) {
       } else {
         result = 'renameOriginalFile resolved success';
       }
-    } catch (/** @type{!Error} */ error) {
+    } catch (error: unknown) {
       result = `renameOriginalFile failed Error: ${error}`;
     }
   } else if (data.saveAs) {
@@ -254,7 +250,7 @@ async function runTestQuery(data) {
         await assertCast(file.saveAs).call(file, testBlob, assertCast(token));
         result = file.name;
         extraResultData = {blobText: await file.blob.text()};
-      } catch (/** @type{!Error} */ error) {
+      } catch (error: unknown) {
         result = `saveAs failed Error: ${error}`;
         extraResultData = {filename: file.name};
       }
@@ -268,8 +264,9 @@ async function runTestQuery(data) {
     // Remove the implementation of reportError so test code
     // can safely check that the right errors are being thrown without
     // triggering a crash.
-    if (chrome) {
-      chrome.crashReportPrivate.reportError = () => {};
+    const chromeWindow = window as unknown as {chrome: any};
+    if (chromeWindow.chrome) {
+      chromeWindow.chrome.crashReportPrivate.reportError = () => {};
     }
   }
 
@@ -278,10 +275,9 @@ async function runTestQuery(data) {
 
 /**
  * Acts on TestMessageRunTestCase.
- * @param {!TestMessageRunTestCase} data
- * @return {!Promise<!TestMessageResponseData>}
  */
-async function runTestCase(data) {
+async function runTestCase(data: TestMessageRunTestCase):
+    Promise<TestMessageResponseData> {
   const testCase = guestTestCases.get(data.testCase);
   if (!testCase) {
     throw new Error(`Unknown test case: '${data.testCase}'`);
@@ -293,10 +289,9 @@ async function runTestCase(data) {
 /**
  * Registers a test that runs in the guest context. To indicate failure, the
  * test throws an exception (e.g. via assertEquals).
- * @param {string} testName
- * @param {function(): (!Promise<undefined>|undefined)} testCase
  */
-export function GUEST_TEST(testName, testCase) {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function GUEST_TEST(testName: string, testCase: () => unknown) {
   guestTestCases.set(testName, testCase);
 }
 
@@ -317,7 +312,8 @@ async function signalTestHandlersReady() {
       await new Promise(resolve => setTimeout(resolve, 100));
       await parentMessagePipe.sendMessage('test-handlers-ready', {});
       return;
-    } catch (/** @type {!GenericErrorResponse} */ e) {
+    } catch (error: unknown) {
+      const e = error as GenericErrorResponse;
       if (!EXPECTED_ERROR.test(e.message)) {
         console.error('Unexpected error in signalTestHandlersReady', e);
         return;
@@ -329,22 +325,25 @@ async function signalTestHandlersReady() {
 
 /** Installs the MessagePipe handlers for receiving test queries. */
 function installTestHandlers() {
-  parentMessagePipe.registerHandler('test', (data) => {
-    return runTestQuery(/** @type {!TestMessageQueryData} */ (data));
+  parentMessagePipe.registerHandler('test', (data: TestMessageQueryData) => {
+    return runTestQuery(data);
   });
   // Turn off error rethrowing for tests so the test runner doesn't mark
   // our error handling tests as failed.
   parentMessagePipe.rethrowErrors = false;
 
-  parentMessagePipe.registerHandler('run-test-case', (data) => {
-    return runTestCase(/** @type{!TestMessageRunTestCase} */ (data));
-  });
+  parentMessagePipe.registerHandler(
+      'run-test-case', (data: TestMessageRunTestCase) => {
+        return runTestCase(data);
+      });
 
   parentMessagePipe.registerHandler('get-last-loaded-files', () => {
     //  Note: the `ReceivedFileList` has methods stripped since it gets sent
     //  over a pipe so just send the underlying files.
-    return /** @type {!LastLoadedFilesResponse} */ (
-        {fileList: assertLastReceivedFileList().files.map(flattenFile)});
+    const response: LastLoadedFilesResponse = {
+      fileList: assertLastReceivedFileList().files.map(flattenFile),
+    };
+    return response;
   });
 
   // Log errors, rather than send them to console.error. This allows the error
@@ -355,11 +354,7 @@ function installTestHandlers() {
 
   // Install spies.
   const realLoadFiles = loadFiles;
-  /**
-   * @param {*} fileList
-   * @return {!Promise<undefined>}
-   */
-  async function watchLoadFiles(fileList) {
+  async function watchLoadFiles(fileList: ReceivedFileList) {
     lastLoadedFileList = fileList;
     return realLoadFiles(fileList);
   }
