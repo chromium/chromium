@@ -186,7 +186,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_RESIZABLE_SIDE_SHEET = "CCTResizableSideSheet";
     public static final String CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES =
             "CCTResizableSideSheetForThirdParties";
-    public static final String CCT_RESOURCE_PREFETCH = "CCTResourcePrefetch";
     public static final String CCT_TAB_MODAL_DIALOG = "CCTTabModalDialog";
     public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";
     public static final String CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION =

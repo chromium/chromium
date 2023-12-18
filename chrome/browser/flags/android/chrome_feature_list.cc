@@ -191,7 +191,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableForThirdParties,
     &kCCTResizableSideSheet,
     &kCCTResizableSideSheetForThirdParties,
-    &kCCTResourcePrefetch,
     &kCCTTabModalDialog,
     &kDontAutoHideBrowserControls,
     &kCacheDeprecatedSystemLocationSetting,
@@ -534,10 +533,6 @@ BASE_FEATURE(kCCTResizableSideSheet,
 
 BASE_FEATURE(kCCTResizableSideSheetForThirdParties,
              "CCTResizableSideSheetForThirdParties",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTResourcePrefetch,
-             "CCTResourcePrefetch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTTabModalDialog,

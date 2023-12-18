@@ -113,7 +113,6 @@ public class DetachedResourceRequestTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.CCT_RESOURCE_PREFETCH)
     public void testCanDoResourcePrefetch() throws Exception {
         CustomTabsSessionToken session = CustomTabsSessionToken.createMockSessionTokenForTesting();
         Assert.assertTrue(mConnection.newSession(session));
@@ -208,7 +207,6 @@ public class DetachedResourceRequestTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.CCT_RESOURCE_PREFETCH)
     public void testStartResourcePrefetchUrlsValidation() throws Exception {
         CustomTabsSessionToken session = prepareSession();
         CustomTabsTestUtils.warmUpAndWait();
