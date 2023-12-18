@@ -123,12 +123,6 @@ void NavigationMetricsRecorder::DidFinishNavigation(
         site_engagement_service_->GetEngagementLevel(url);
     base::UmaHistogramEnumeration("Navigation.MainFrame.SiteEngagementLevel",
                                   engagement_level);
-
-    if (navigation_handle->IsFormSubmission()) {
-      base::UmaHistogramEnumeration(
-          "Navigation.MainFrameFormSubmission.SiteEngagementLevel",
-          engagement_level);
-    }
   }
   if (url.SchemeIsHTTPOrHTTPS() && !navigation_handle->IsDownload()) {
     ThirdPartyCookieBlockState block_state = GetThirdPartyCookieBlockState(url);

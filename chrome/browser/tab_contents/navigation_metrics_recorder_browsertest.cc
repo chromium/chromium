@@ -89,33 +89,6 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest,
                                blink::mojom::EngagementLevel::HIGH, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest,
-                       FormSubmission_EngagementLevel) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL url(embedded_test_server()->GetURL("/form.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // Submit a form and check the histograms. Before doing so, we set a high site
-  // engagement score so that a single form submission doesn't affect the score
-  // much.
-  site_engagement::SiteEngagementService::Get(browser()->profile())
-      ->ResetBaseScoreForURL(url, kHighEngagementScore);
-  base::HistogramTester histograms;
-  content::TestNavigationObserver observer(web_contents);
-  const char* const kScript = "document.getElementById('form').submit()";
-  EXPECT_TRUE(content::ExecJs(web_contents, kScript));
-  observer.WaitForNavigationFinished();
-
-  histograms.ExpectTotalCount(
-      "Navigation.MainFrameFormSubmission.SiteEngagementLevel", 1);
-  histograms.ExpectBucketCount(
-      "Navigation.MainFrameFormSubmission.SiteEngagementLevel",
-      blink::mojom::EngagementLevel::HIGH, 1);
-}
-
 class NavigationMetricsRecorderPrerenderBrowserTest
     : public NavigationMetricsRecorderBrowserTest {
  public:

@@ -923,16 +923,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.MainFrameFormSubmission.SiteEngagementLevel"
-    enum="SiteEngagementLevel" expires_after="2021-04-04">
-  <owner>meacer@chromium.org</owner>
-  <owner>security-enamel@chromium.org</owner>
-  <summary>
-    Site engagement level of the URL of the top frame of a form submission. This
-    is a subset of Navigation.MainFrame.SiteEngagementLevel.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.MainFrameHasRTLDomain2" enum="Boolean"
     expires_after="2024-05-19">
   <owner>cthomp@chromium.org</owner>
