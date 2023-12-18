@@ -598,6 +598,21 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_DESCRIPTION" desc="The description for section under app languages title, where clicking this will bring user to app languages settings subpage.">
     Customize display language for supported apps
   </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_SUPPORTED_APPS_DESCRIPTION" desc="The description inside app languages subpage informing that only apps supporting per-app language selection are shown in this subpage.">
+    Only apps that support language selection are shown here
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_NO_APPS_SUPPORTED_DESCRIPTION" desc="The description for section under app languages title, when there's no apps supporting app language selection.">
+    No apps support app language selection
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_EDIT_SELECTION_LABEL" desc="The label inside app languages subpage when clicking 'three-dots more info' (kebab) button to edit app language.">
+    Edit language selection
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_RESET_SELECTION_LABEL" desc="The label inside app languages subpage when clicking 'three-dots more info' (kebab) button to reset app language back to device language.">
+    Reset to device language
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_CHANGE_LANGUAGE_BUTTON_DESCRIPTION" desc="The description read by screenreader for the button where users can change the app language, either to another one, or reset to device language.">
+    Change <ph name="APP">$1<ex>Google TV</ex></ph> language. Current language is <ph name="LANGUAGE">$2<ex>English (United States)</ex></ph>.
+  </message>
 
   <!-- Suggestions Section -->
   <message name="IDS_SETTINGS_SUGGESTIONS_TITLE" desc="The label for the suggestions section, which contains features to help users type faster or more expressively such as suggesting personal information or suggesting emoji to use.">

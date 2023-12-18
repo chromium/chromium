@@ -997,6 +997,10 @@ TEST_F(
    },
  ],
  [
+   'OsLanguagesPageAppLanguagesPage',
+   'os_languages_page/app_languages_page_test.js',
+ ],
+ [
    'OsLanguagesPageInputMethodOptionsPage',
    'os_languages_page/input_method_options_page_test.js'
  ],

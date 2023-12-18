@@ -242,6 +242,7 @@ build_webui_tests("build") {
     "os_files_page/smb_shares_page_test.ts",
     "os_files_page/test_smb_browser_proxy.ts",
 
+    "os_languages_page/app_languages_page_test.ts",
     "os_languages_page/fake_language_helper.ts",
     "os_languages_page/input_method_options_page_test.ts",
     "os_languages_page/input_page_test.ts",

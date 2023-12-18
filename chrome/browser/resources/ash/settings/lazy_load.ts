@@ -104,6 +104,7 @@ import './os_files_page/google_drive_subpage.js';
 import './os_files_page/office_page.js';
 import './os_files_page/one_drive_subpage.js';
 import './os_files_page/smb_shares_page.js';
+import './os_languages_page/app_languages_page.js';
 import './os_languages_page/input_method_options_page.js';
 import './os_languages_page/input_page.js';
 import './os_languages_page/os_edit_dictionary_page.js';
@@ -258,6 +259,7 @@ export {OneDriveConnectionState, SettingsOneDriveSubpageElement} from './os_file
 export {OsSettingsFilesPageElement} from './os_files_page/os_files_page.js';
 export {SettingsSmbSharesPageElement} from './os_files_page/smb_shares_page.js';
 export {OsSettingsAddItemsDialogElement} from './os_languages_page/add_items_dialog.js';
+export {OsSettingsAppLanguagesPageElement} from './os_languages_page/app_languages_page.js';
 export {OsSettingsChangeDeviceLanguageDialogElement} from './os_languages_page/change_device_language_dialog.js';
 export {CrCheckboxWithPolicyElement} from './os_languages_page/cr_checkbox_with_policy.js';
 export {SettingsInputMethodOptionsPageElement} from './os_languages_page/input_method_options_page.js';

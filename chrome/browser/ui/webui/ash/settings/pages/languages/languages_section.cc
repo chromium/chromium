@@ -104,6 +104,16 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
       {"appLanguagesTitle", IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_TITLE},
       {"appLanguagesDescription",
        IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_DESCRIPTION},
+      {"appLanguagesSupportedAppsDescription",
+       IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_SUPPORTED_APPS_DESCRIPTION},
+      {"appLanguagesNoAppsSupportedDescription",
+       IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_NO_APPS_SUPPORTED_DESCRIPTION},
+      {"appLanguagesEditSelectionLabel",
+       IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_EDIT_SELECTION_LABEL},
+      {"appLanguagesResetSelectionLabel",
+       IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_RESET_SELECTION_LABEL},
+      {"appLanguagesChangeLanguageButtonDescription",
+       IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_CHANGE_LANGUAGE_BUTTON_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -226,6 +236,7 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   };
   RegisterNestedSettingBulk(mojom::Subpage::kLanguages, kLanguagesPageSettings,
                             generator);
+
   // Inputs subsection exists only when the OsSettingsRevampWayfinding feature
   // is disabled. It is part of the Device section when the feature is enabled.
   if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
