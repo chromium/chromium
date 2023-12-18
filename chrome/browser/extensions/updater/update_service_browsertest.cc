@@ -668,6 +668,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, Backoff) {
   }
 }
 
+#if !(defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_CHROMEOS))
 // We want to test what happens at startup with a corroption-disabled policy
 // force installed extension. So we set that up in the PRE test here.
 IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, PRE_PolicyCorruptedOnStartup) {
@@ -736,5 +737,6 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, PolicyCorruptedOnStartup) {
       CHECK_DEREF(app.FindList("disabled"))[0].GetDict();
   EXPECT_EQ(disable_reason::DISABLE_CORRUPTED, disabled.FindInt("reason"));
 }
+#endif  // !(defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_CHROMEOS))
 
 }  // namespace extensions
