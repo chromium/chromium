@@ -4123,6 +4123,12 @@
       status: "stable",
       base_feature: "none",
     },
+    // Allow creation of WebAuth credentials in cross-origin contexts (as long
+    // as the 'publickey-credentials-create' permissions policy is set).
+    {
+      name: "WebAuthAllowCreateInCrossOriginFrame",
+      status: "experimental",
+    },
     // When enabled adds the authenticator attachment used for registration and
     // authentication to the public key credential response.
     {

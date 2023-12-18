@@ -7672,6 +7672,7 @@ domain Page
       private-aggregation
       private-state-token-issuance
       private-state-token-redemption
+      publickey-credentials-create
       publickey-credentials-get
       run-ad-auction
       screen-wake-lock

@@ -22210,6 +22210,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4755" label="FedCmDomainHint"/>
   <int value="4756" label="LCPImageWasLazy"/>
   <int value="4757" label="EventTargetOnObservable"/>
+  <int value="4758" label="CredentialManagerCrossOriginPublicKeyCreateRequest"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
@@ -22335,6 +22336,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="114" label="UsbUnrestricted"/>
   <int value="115" label="CapturedSurfaceControl"/>
   <int value="116" label="SubApps"/>
+  <int value="117" label="PublicKeyCredentialsCreate"/>
 </enum>
 
 <enum name="FedCmAccountsResponseInvalidReason">

@@ -240,6 +240,9 @@ enum PermissionsPolicyFeature {
   // SubApps API
   kSubApps = 116,
 
+  // Web Authentication (https://w3c.github.io/webauthn/#sctn-permissions-policy)
+  kPublicKeyCredentialsCreate = 117,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

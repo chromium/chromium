@@ -338,6 +338,11 @@
       depends_on: ["PrivateStateTokens"],
     },
     {
+      name: "PublicKeyCredentialsCreate",
+      permissions_policy_name: "publickey-credentials-create",
+      depends_on: ["WebAuthAllowCreateInCrossOriginFrame"],
+    },
+    {
       name: "PublicKeyCredentialsGet",
       permissions_policy_name: "publickey-credentials-get",
     },

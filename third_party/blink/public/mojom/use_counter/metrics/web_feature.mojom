@@ -4094,6 +4094,7 @@ enum WebFeature {
   kFedCmDomainHint = 4755,
   kLCPImageWasLazy = 4756,
   kEventTargetOnObservable = 4757,
+  kCredentialManagerCrossOriginPublicKeyCreateRequest = 4758,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -127,6 +127,15 @@ enum class RequiredOriginType {
   // permissions-policy header, and may be inherited from parent browsing
   // contexts. See Permissions Policy spec.
   kSecureAndPermittedByWebAuthGetAssertionPermissionsPolicy,
+  // Must be a secure origin and the "publickey-credentials-create" permissions
+  // policy must be enabled. By default "publickey-credentials-create" is not
+  // inherited by cross-origin child frames, so if that policy is not
+  // explicitly enabled, behavior is the same as that of
+  // |kSecureAndSameWithAncestors|. Note that permissions policies can be
+  // expressed in various ways, e.g.: |allow| iframe attribute and/or
+  // permissions-policy header, and may be inherited from parent browsing
+  // contexts. See Permissions Policy spec.
+  kSecureAndPermittedByWebAuthCreateCredentialPermissionsPolicy,
   // Similar to the enum above, checks the "otp-credentials" permissions policy.
   kSecureAndPermittedByWebOTPAssertionPermissionsPolicy,
   // Similar to the enum above, checks the "identity-credentials-get"
@@ -248,6 +257,28 @@ bool CheckSecurityRequirementsBeforeRequest(
       break;
 
     case RequiredOriginType::
+        kSecureAndPermittedByWebAuthCreateCredentialPermissionsPolicy:
+      // The 'publickey-credentials-create' feature's "default allowlist" is
+      // "self", which means the webauthn feature is allowed by default in
+      // same-origin child browsing contexts.
+      if (!resolver->GetExecutionContext()->IsFeatureEnabled(
+              mojom::blink::PermissionsPolicyFeature::
+                  kPublicKeyCredentialsCreate)) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotAllowedError,
+            "The 'publickey-credentials-create' feature is not enabled in this "
+            "document. Permissions Policy may be used to delegate Web "
+            "Authentication capabilities to cross-origin child frames."));
+        return false;
+      } else if (!IsSameOriginWithAncestors(
+                     resolver->DomWindow()->GetFrame())) {
+        UseCounter::Count(
+            resolver->GetExecutionContext(),
+            WebFeature::kCredentialManagerCrossOriginPublicKeyCreateRequest);
+      }
+      break;
+
+    case RequiredOriginType::
         kSecureAndPermittedByWebOTPAssertionPermissionsPolicy:
       if (!resolver->GetExecutionContext()->IsFeatureEnabled(
               mojom::blink::PermissionsPolicyFeature::kOTPCredentials)) {
@@ -276,6 +307,8 @@ bool CheckSecurityRequirementsBeforeRequest(
       break;
 
     case RequiredOriginType::kSecureWithPaymentPermissionPolicy:
+      // TODO(crbug.com/1512605): "publickey-credentials-create" should also
+      // work for payments.
       if (!resolver->GetExecutionContext()->IsFeatureEnabled(
               mojom::blink::PermissionsPolicyFeature::kPayment)) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -317,6 +350,12 @@ void AssertSecurityRequirementsBeforeResponse(
         kSecureAndPermittedByWebAuthGetAssertionPermissionsPolicy:
       SECURITY_CHECK(resolver->GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kPublicKeyCredentialsGet));
+      break;
+
+    case RequiredOriginType::
+        kSecureAndPermittedByWebAuthCreateCredentialPermissionsPolicy:
+      SECURITY_CHECK(resolver->GetExecutionContext()->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kPublicKeyCredentialsCreate));
       break;
 
     case RequiredOriginType::
@@ -1012,6 +1051,9 @@ bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
   if (!payment->hasIsPayment() || !payment->isPayment())
     return true;
 
+  // TODO(crbug.com/1512245): Remove this check in favour of the validation in
+  // |CredentialsContainer::create|, which throws a NotAllowedError rather than
+  // a SecurityError like the SPC spec currently requires.
   if (!IsSameOriginWithAncestors(resolver->DomWindow()->GetFrame())) {
     bool has_user_activation = LocalFrame::ConsumeTransientUserActivation(
         resolver->DomWindow()->GetFrame(),
@@ -1745,11 +1787,15 @@ ScriptPromise CredentialsContainer::create(
   if (IsForPayment(options, resolver->GetExecutionContext())) {
     required_origin_type =
         RequiredOriginType::kSecureWithPaymentPermissionPolicy;
-  } else {
+  } else if (options->hasPublicKey()) {
     // hasPublicKey() implies that this is a WebAuthn request.
-    required_origin_type = options->hasPublicKey()
-                               ? RequiredOriginType::kSecureAndSameWithAncestors
-                               : RequiredOriginType::kSecure;
+    required_origin_type =
+        RuntimeEnabledFeatures::WebAuthAllowCreateInCrossOriginFrameEnabled()
+            ? RequiredOriginType::
+                  kSecureAndPermittedByWebAuthCreateCredentialPermissionsPolicy
+            : RequiredOriginType::kSecureAndSameWithAncestors;
+  } else {
+    required_origin_type = RequiredOriginType::kSecure;
   }
   if (!CheckSecurityRequirementsBeforeRequest(resolver, required_origin_type)) {
     return promise;
@@ -1879,6 +1925,28 @@ ScriptPromise CredentialsContainer::create(
             DOMExceptionCode::kNotSupportedError, error));
         return promise;
       }
+    }
+  }
+
+  // In the case of create() in a cross-origin iframe, the spec requires that
+  // the caller must have transient user activation (which is consumed).
+  // https://w3c.github.io/webauthn/#sctn-createCredential, step 2.
+  //
+  // TODO(crbug.com/1512245): This check should be used for payment credentials
+  // as well, but currently the SPC spec expects a SecurityError rather than
+  // NotAllowedError.
+  if (!IsSameOriginWithAncestors(resolver->DomWindow()->GetFrame()) &&
+      (!options->publicKey()->hasExtensions() ||
+       !options->publicKey()->extensions()->hasPayment())) {
+    bool has_user_activation = LocalFrame::ConsumeTransientUserActivation(
+        resolver->DomWindow()->GetFrame(),
+        UserActivationUpdateSource::kRenderer);
+    if (!has_user_activation) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "A user activation is required to create a credential in a "
+          "cross-origin iframe."));
+      return promise;
     }
   }
 
