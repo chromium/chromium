@@ -16,48 +16,23 @@ extern const char kChromeUIShoppingInsightsSidePanelHost[];
 // The url for the shopping insights side panel page.
 extern const char kChromeUIShoppingInsightsSidePanelUrl[];
 
+// Content type for network request.
+extern const char kContentType[];
+
 // Http DELETE method.
 extern const char kDeleteHttpMethod[];
 
+// Empty data for POST request.
+extern const char kEmptyPostData[];
+
 // Http GET method.
 extern const char kGetHttpMethod[];
-
-// Http POST method.
-extern const char kPostHttpMethod[];
 
 // OAuth name used for network request.
 extern const char kOAuthName[];
 
 // OAuth scope used for network request.
 extern const char kOAuthScope[];
-
-// Content type for network request.
-extern const char kContentType[];
-
-// Empty data for POST request.
-extern const char kEmptyPostData[];
-
-// Please do not use below UTM constants beyond commerce use cases.
-// UTM source label.
-extern const char kUTMSourceLabel[];
-
-// UTM medium label.
-extern const char kUTMMediumLabel[];
-
-// UTM campaign label.
-extern const char kUTMCampaignLabel[];
-
-// General UTM source value.
-extern const char kUTMSourceValue[];
-
-// General UTM medium value.
-extern const char kUTMMediumValue[];
-
-// UTM campaign value for discounts in history clusters.
-extern const char kUTMCampaignValueForDiscounts[];
-
-// Prefix of UTM labels, including the underscore.
-extern const char kUTMPrefix[];
 
 // Open graph keys.
 extern const char kOgImage[];
@@ -71,15 +46,39 @@ extern const char kOgType[];
 extern const char kOgTypeOgProduct[];
 extern const char kOgTypeProductItem[];
 
-// UTM tags related to ChromeCart and cart-related discounts.
-// Tag for non-partner merchant carts.
-extern const char kUTMCampaignValueForChromeCart[];
+// Http POST method.
+extern const char kPostHttpMethod[];
 
-// Tag for partner merchant carts when discount is enabled.
+// Please do not use below UTM constants beyond commerce use cases.
+// UTM campaign label.
+extern const char kUTMCampaignLabel[];
+
+// UTM campaign value for partner merchant carts when discount is enabled.
 extern const char kUTMCampaignValueForCartDiscount[];
 
-// Tag for partner merchant carts when discount is disabled.
+// UTM campaign value for partner merchant carts when discount is disabled.
 extern const char kUTMCampaignValueForCartNoDiscount[];
+
+// UTM campaign value for non-partner merchant carts.
+extern const char kUTMCampaignValueForChromeCart[];
+
+// UTM campaign value for discounts in history clusters.
+extern const char kUTMCampaignValueForDiscounts[];
+
+// UTM medium label.
+extern const char kUTMMediumLabel[];
+
+// General UTM medium value.
+extern const char kUTMMediumValue[];
+
+// Prefix of UTM labels, including the underscore.
+extern const char kUTMPrefix[];
+
+// UTM source label.
+extern const char kUTMSourceLabel[];
+
+// General UTM source value.
+extern const char kUTMSourceValue[];
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_COMMERCE_CONSTANTS_H_

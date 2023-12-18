@@ -14,34 +14,17 @@ const char kChromeUIShoppingInsightsSidePanelHost[] =
 const char kChromeUIShoppingInsightsSidePanelUrl[] =
     "chrome://shopping-insights-side-panel.top-chrome";
 
-const char kOAuthScope[] = "https://www.googleapis.com/auth/chromememex";
-
-const char kOAuthName[] = "chromememex_svc";
+const char kContentType[] = "application/json; charset=UTF-8";
 
 const char kDeleteHttpMethod[] = "DELETE";
 
-const char kGetHttpMethod[] = "GET";
-
-const char kPostHttpMethod[] = "POST";
-
-const char kContentType[] = "application/json; charset=UTF-8";
-
 const char kEmptyPostData[] = "";
 
-const char kUTMSourceLabel[] = "utm_source";
+const char kGetHttpMethod[] = "GET";
 
-const char kUTMMediumLabel[] = "utm_medium";
+const char kOAuthName[] = "chromememex_svc";
 
-const char kUTMCampaignLabel[] = "utm_campaign";
-
-const char kUTMSourceValue[] = "chrome";
-
-const char kUTMMediumValue[] = "app";
-
-const char kUTMCampaignValueForDiscounts[] =
-    "chrome-history-cluster-with-discount";
-
-const char kUTMPrefix[] = "utm_";
+const char kOAuthScope[] = "https://www.googleapis.com/auth/chromememex";
 
 const char kOgImage[] = "image";
 const char kOgPriceAmount[] = "price:amount";
@@ -53,7 +36,26 @@ const char kOgType[] = "type";
 const char kOgTypeOgProduct[] = "product";
 const char kOgTypeProductItem[] = "product.item";
 
-const char kUTMCampaignValueForChromeCart[] = "chrome-cart";
+const char kPostHttpMethod[] = "POST";
+
+const char kUTMCampaignLabel[] = "utm_campaign";
+
 const char kUTMCampaignValueForCartDiscount[] = "chrome-cart-discount-on";
+
 const char kUTMCampaignValueForCartNoDiscount[] = "chrome-cart-discount-off";
+
+const char kUTMCampaignValueForChromeCart[] = "chrome-cart";
+
+const char kUTMCampaignValueForDiscounts[] =
+    "chrome-history-cluster-with-discount";
+
+const char kUTMMediumLabel[] = "utm_medium";
+
+const char kUTMMediumValue[] = "app";
+
+const char kUTMPrefix[] = "utm_";
+
+const char kUTMSourceLabel[] = "utm_source";
+
+const char kUTMSourceValue[] = "chrome";
 }  // namespace commerce
