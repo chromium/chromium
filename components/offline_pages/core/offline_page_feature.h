@@ -11,7 +11,6 @@
 namespace offline_pages {
 
 BASE_DECLARE_FEATURE(kOfflinePagesCTFeature);
-BASE_DECLARE_FEATURE(kOfflinePagesLivePageSharingFeature);
 BASE_DECLARE_FEATURE(kBackgroundLoaderForDownloadsFeature);
 BASE_DECLARE_FEATURE(kOfflinePagesCTV2Feature);
 BASE_DECLARE_FEATURE(kOfflinePagesDescriptivePendingStatusFeature);
@@ -26,9 +25,6 @@ extern const char kPrefetchingOfflinePagesExperimentsOption[];
 
 // Returns true if offline CT features are enabled.  See crbug.com/620421.
 bool IsOfflinePagesCTEnabled();
-
-// Returns true if live page sharing of offline page is enabled.
-bool IsOfflinePagesLivePageSharingEnabled();
 
 // Returns true if a command line for test has been set that shortens the
 // snapshot delay.

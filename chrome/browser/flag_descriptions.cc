@@ -4169,12 +4169,6 @@ const char kNotificationPermissionRationaleBottomSheetDescription[] =
     "flow. "
     "Only works with builds targeting Android T+.";
 
-const char kOfflinePagesLivePageSharingName[] =
-    "Enables live page sharing of offline pages";
-const char kOfflinePagesLivePageSharingDescription[] =
-    "Enables to share current loaded page as offline page by saving as MHTML "
-    "first.";
-
 const char kPageInfoHistoryName[] = "Page info history";
 const char kPageInfoHistoryDescription[] =
     "Enable a history sub page to the page info menu, and a button to forget "

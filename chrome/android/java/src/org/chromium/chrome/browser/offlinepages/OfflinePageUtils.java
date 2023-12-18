@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
@@ -26,13 +25,9 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.FileProviderHelper;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -49,11 +44,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.url.GURL;
 
 import java.io.File;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,16 +56,6 @@ public class OfflinePageUtils {
     private static final String TAG = "OfflinePageUtils";
 
     private static final int DEFAULT_SNACKBAR_DURATION_MS = 6 * 1000; // 6 second
-
-    /**
-     * Bit flags to be OR-ed together to build the context of a tab restore to be used to identify
-     * the appropriate TabRestoreType in a lookup table.
-     */
-    private static final int BIT_ONLINE = 1;
-
-    private static final int BIT_CANT_SAVE_OFFLINE = 1 << 2;
-    private static final int BIT_OFFLINE_PAGE = 1 << 3;
-    private static final int BIT_LAST_N = 1 << 4;
 
     // Used instead of the constant so tests can override the value.
     private static int sSnackbarDurationMs = DEFAULT_SNACKBAR_DURATION_MS;
@@ -200,39 +182,6 @@ public class OfflinePageUtils {
         }
     }
 
-    /**
-     * Contains values from the histogram enum OfflinePagesTabRestoreType used for reporting the
-     * OfflinePages.TabRestore metric.
-     */
-    @IntDef({
-        TabRestoreType.WHILE_ONLINE,
-        TabRestoreType.WHILE_ONLINE_CANT_SAVE_FOR_OFFLINE_USAGE,
-        TabRestoreType.WHILE_ONLINE_TO_OFFLINE_PAGE,
-        TabRestoreType.WHILE_ONLINE_TO_OFFLINE_PAGE_FROM_LAST_N,
-        TabRestoreType.WHILE_OFFLINE,
-        TabRestoreType.WHILE_OFFLINE_CANT_SAVE_FOR_OFFLINE_USAGE,
-        TabRestoreType.WHILE_OFFLINE_TO_OFFLINE_PAGE,
-        TabRestoreType.WHILE_OFFLINE_TO_OFFLINE_PAGE_FROM_LAST_N,
-        TabRestoreType.FAILED,
-        TabRestoreType.CRASHED
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface TabRestoreType {
-        int WHILE_ONLINE = 0;
-        int WHILE_ONLINE_CANT_SAVE_FOR_OFFLINE_USAGE = 1;
-        int WHILE_ONLINE_TO_OFFLINE_PAGE = 2;
-        int WHILE_ONLINE_TO_OFFLINE_PAGE_FROM_LAST_N = 3;
-        int WHILE_OFFLINE = 4;
-        int WHILE_OFFLINE_CANT_SAVE_FOR_OFFLINE_USAGE = 5;
-        int WHILE_OFFLINE_TO_OFFLINE_PAGE = 6;
-        int WHILE_OFFLINE_TO_OFFLINE_PAGE_FROM_LAST_N = 7;
-        int FAILED = 8;
-        int CRASHED = 9;
-        // NOTE: always keep this entry at the end. Add new result types only immediately above this
-        // line. Make sure to update the corresponding histogram enum accordingly.
-        int NUM_ENTRIES = 10;
-    }
-
     private static Internal getInstance() {
         if (sInstance == null) {
             sInstance = new OfflinePageUtilsImpl();
@@ -308,12 +257,6 @@ public class OfflinePageUtils {
         OfflinePageTabObserver.addObserverForTab(tab);
     }
 
-    protected void showReloadSnackbarInternal(
-            Context context,
-            SnackbarManager snackbarManager,
-            final SnackbarController snackbarController,
-            int tabId) {}
-
     /**
      * Shows the "reload" snackbar for the given tab.
      * @param context The application context.
@@ -327,34 +270,6 @@ public class OfflinePageUtils {
             final SnackbarController snackbarController,
             int tabId) {
         getInstance().showReloadSnackbar(context, snackbarManager, snackbarController, tabId);
-    }
-
-    /**
-     * Save the page loaded in current tab and share the saved page.
-     * @param tab The current tab from which the page is being shared.
-     * @param shareCallback The callback to be used to send the ShareParams. This will only be
-     *                      called if this function call returns true.
-     * @return true if the sharing of the page is possible. The callback will be invoked if
-     *                      saving the page succeeds.
-     */
-    public static boolean saveAndSharePage(Tab tab, final Callback<ShareParams> shareCallback) {
-        OfflinePageBridge offlinePageBridge = getInstance().getOfflinePageBridge(tab.getProfile());
-
-        if (offlinePageBridge == null) {
-            Log.e(TAG, "Unable to share current tab as an offline page.");
-            return false;
-        }
-
-        WebContents webContents = tab.getWebContents();
-        if (webContents == null) return false;
-
-        GetPagesByNamespaceForLivePageSharingCallback callback =
-                new GetPagesByNamespaceForLivePageSharingCallback(
-                        tab, shareCallback, offlinePageBridge);
-        offlinePageBridge.getPagesByNamespace(
-                OfflinePageBridge.LIVE_PAGE_SHARING_NAMESPACE, callback);
-
-        return true;
     }
 
     private static void getOfflinePageUriForSharing(
@@ -400,25 +315,9 @@ public class OfflinePageUtils {
      *                      afterwards via PostTask.
      */
     public static void maybeShareOfflinePage(Tab tab, final Callback<ShareParams> shareCallback) {
-        if (tab == null || !tab.isInitialized()) {
+        if (tab == null || !tab.isInitialized() || !OfflinePageUtils.isOfflinePage(tab)) {
             shareCallback.onResult(null);
             return;
-        }
-
-        boolean isOfflinePage = OfflinePageUtils.isOfflinePage(tab);
-
-        // If the current tab is not showing an offline page, try to see if we should do live page
-        // sharing.
-        if (!isOfflinePage) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.OFFLINE_PAGES_LIVE_PAGE_SHARING)) {
-                if (!saveAndSharePage(tab, shareCallback)) {
-                    shareCallback.onResult(null);
-                }
-                return;
-            } else {
-                shareCallback.onResult(null);
-                return;
-            }
         }
 
         OfflinePageBridge offlinePageBridge = getInstance().getOfflinePageBridge(tab.getProfile());
@@ -831,22 +730,12 @@ public class OfflinePageUtils {
      */
     private static class RecentTabTracker extends TabModelSelectorTabModelObserver {
         /** The single, stateless TabRestoreTracker instance to monitor all tab restores. */
-        private static final TabRestoreTracker sTabRestoreTracker = new TabRestoreTracker();
 
         private TabModelSelector mTabModelSelector;
 
         public RecentTabTracker(TabModelSelector selector) {
             super(selector);
             mTabModelSelector = selector;
-        }
-
-        @Override
-        public void didAddTab(
-                Tab tab,
-                @TabLaunchType int type,
-                @TabCreationState int creationState,
-                boolean markedForSelection) {
-            tab.addObserver(sTabRestoreTracker);
         }
 
         @Override
@@ -907,62 +796,6 @@ public class OfflinePageUtils {
                         }
                     },
                     activity);
-        }
-    }
-
-    private static class TabRestoreTracker extends EmptyTabObserver {
-        /**
-         * If the tab was being restored, reports that it successfully finished reloading its
-         * contents.
-         */
-        @Override
-        public void onPageLoadFinished(Tab tab, GURL url) {
-            if (!tab.isBeingRestored()) return;
-
-            // We first compute the bitwise tab restore context.
-            int tabRestoreContext = 0;
-            if (isConnected()) tabRestoreContext |= BIT_ONLINE;
-            OfflinePageItem page = getOfflinePage(tab.getWebContents());
-            if (page != null) {
-                tabRestoreContext |= BIT_OFFLINE_PAGE;
-                if (page.getClientId().getNamespace().equals(OfflinePageBridge.LAST_N_NAMESPACE)) {
-                    tabRestoreContext |= BIT_LAST_N;
-                }
-            } else if (!OfflinePageBridge.canSavePage(tab.getUrl()) || tab.isIncognito()) {
-                tabRestoreContext |= BIT_CANT_SAVE_OFFLINE;
-            }
-
-            // Now determine the correct tab restore type based on the context.
-            int tabRestoreType;
-            switch (tabRestoreContext) {
-                case BIT_ONLINE:
-                    tabRestoreType = TabRestoreType.WHILE_ONLINE;
-                    break;
-                case BIT_ONLINE | BIT_CANT_SAVE_OFFLINE:
-                    tabRestoreType = TabRestoreType.WHILE_ONLINE_CANT_SAVE_FOR_OFFLINE_USAGE;
-                    break;
-                case BIT_ONLINE | BIT_OFFLINE_PAGE:
-                    tabRestoreType = TabRestoreType.WHILE_ONLINE_TO_OFFLINE_PAGE;
-                    break;
-                case BIT_ONLINE | BIT_OFFLINE_PAGE | BIT_LAST_N:
-                    tabRestoreType = TabRestoreType.WHILE_ONLINE_TO_OFFLINE_PAGE_FROM_LAST_N;
-                    break;
-                case 0: // offline (not BIT_ONLINE present).
-                    tabRestoreType = TabRestoreType.WHILE_OFFLINE;
-                    break;
-                case BIT_CANT_SAVE_OFFLINE:
-                    tabRestoreType = TabRestoreType.WHILE_OFFLINE_CANT_SAVE_FOR_OFFLINE_USAGE;
-                    break;
-                case BIT_OFFLINE_PAGE:
-                    tabRestoreType = TabRestoreType.WHILE_OFFLINE_TO_OFFLINE_PAGE;
-                    break;
-                case BIT_OFFLINE_PAGE | BIT_LAST_N:
-                    tabRestoreType = TabRestoreType.WHILE_OFFLINE_TO_OFFLINE_PAGE_FROM_LAST_N;
-                    break;
-                default:
-                    assert false;
-                    return;
-            }
         }
     }
 

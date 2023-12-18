@@ -2436,9 +2436,6 @@ extern const char kNotificationPermissionRationaleDescription[];
 extern const char kNotificationPermissionRationaleBottomSheetName[];
 extern const char kNotificationPermissionRationaleBottomSheetDescription[];
 
-extern const char kOfflinePagesLivePageSharingName[];
-extern const char kOfflinePagesLivePageSharingDescription[];
-
 extern const char kOmahaMinSdkVersionAndroidName[];
 extern const char kOmahaMinSdkVersionAndroidDescription[];
 extern const char kOmahaMinSdkVersionAndroidMinSdk1Description[];

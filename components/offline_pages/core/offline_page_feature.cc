@@ -24,10 +24,6 @@ BASE_FEATURE(kOfflinePagesCTFeature,
              "OfflinePagesCT",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOfflinePagesLivePageSharingFeature,
-             "OfflinePagesLivePageSharing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOfflinePagesDescriptiveFailStatusFeature,
              "OfflinePagesDescriptiveFailStatus",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -48,10 +44,6 @@ const char kPrefetchingOfflinePagesExperimentsOption[] = "exp";
 
 bool IsOfflinePagesCTEnabled() {
   return base::FeatureList::IsEnabled(kOfflinePagesCTFeature);
-}
-
-bool IsOfflinePagesLivePageSharingEnabled() {
-  return base::FeatureList::IsEnabled(kOfflinePagesLivePageSharingFeature);
 }
 
 bool ShouldUseTestingSnapshotDelay() {
