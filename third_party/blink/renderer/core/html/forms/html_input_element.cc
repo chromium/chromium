@@ -420,12 +420,12 @@ void HTMLInputElement::InitializeTypeInParsing() {
   }
 }
 
-void HTMLInputElement::UpdateType() {
+void HTMLInputElement::UpdateType(const AtomicString& typeAttributeValue) {
   DCHECK(input_type_);
   DCHECK(input_type_view_);
 
   const AtomicString& new_type_name =
-      InputType::NormalizeTypeName(FastGetAttribute(html_names::kTypeAttr));
+      InputType::NormalizeTypeName(typeAttributeValue);
   if (input_type_->FormControlTypeAsString() == new_type_name) {
     return;
   }
@@ -831,7 +831,9 @@ void HTMLInputElement::ParseAttribute(
         autocomplete_ = kOn;
     }
   } else if (name == html_names::kTypeAttr) {
-    UpdateType();
+    if (params.old_value != value) {
+      UpdateType(value);
+    }
   } else if (name == html_names::kValueAttr) {
     // We only need to setChanged if the form is looking at the default value
     // right now.
