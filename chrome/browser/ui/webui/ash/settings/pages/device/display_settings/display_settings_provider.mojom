@@ -13,6 +13,8 @@ enum DisplaySettingsType {
   kScaling,
   kOrientation,
   kOverscan,
+  kNightLight,
+  kNightLightSchedule,
   // TODO(zhangwenyu): handle more display settings.
 };
 

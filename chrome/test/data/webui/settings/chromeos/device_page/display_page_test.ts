@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrLinkRowElement, DevicePageBrowserProxyImpl, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsSliderElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, DevicePageBrowserProxyImpl, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -268,6 +268,40 @@ suite('<settings-display>', () => {
         1,
         externalDisplayHistogram.get(
             displaySettingsProviderMojom.DisplaySettingsType.kOverscan));
+
+    // Mock user toggling night light button.
+    const displayNightLight = strictQuery(
+        'settings-display-night-light', displayPage.shadowRoot, HTMLElement);
+    assertTrue(!!displayNightLight);
+    const nightLightToggleButton =
+        displayNightLight.shadowRoot!.getElementById(
+            'nightLightToggleButton') as SettingsToggleButtonElement;
+    assertTrue(!!nightLightToggleButton);
+    nightLightToggleButton.click();
+    flush();
+
+    // Verify histogram count for night light setting.
+    assertEquals(
+        1,
+        externalDisplayHistogram.get(
+            displaySettingsProviderMojom.DisplaySettingsType.kNightLight));
+
+    // Mock user updating night light schedule.
+    const schedule =
+        displayNightLight.shadowRoot!.getElementById(
+            'nightLightScheduleTypeDropDown') as SettingsDropdownMenuElement;
+    schedule.pref = {
+      key: 'ash.night_light.schedule_type',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: 1,
+    };
+
+    // Verify histogram count for night light setting.
+    assertEquals(
+        1,
+        externalDisplayHistogram.get(
+            displaySettingsProviderMojom.DisplaySettingsType
+                .kNightLightSchedule));
   });
 
   test('display tests', async function() {

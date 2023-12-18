@@ -32,6 +32,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Scaling"/>
   <int value="3" label="Orientation"/>
   <int value="4" label="Overscan"/>
+  <int value="5" label="NightLight"/>
+  <int value="6" label="NightLightSchedule"/>
 </enum>
 
 <enum name="DisplayType">

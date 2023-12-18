@@ -49,7 +49,8 @@
 <!-- Night Light Settings -->
 <template is="dom-if"
     if="[[isRevampWayfindingEnabled_]]" restamp>
-  <settings-display-night-light prefs="{{prefs}}">
+  <settings-display-night-light prefs="{{prefs}}"
+    is-internal-display="[[selectedDisplay.isInternal]]">
   </settings-display-night-light>
   <div class="hr"></div>
 </template>
@@ -318,6 +319,7 @@
 <template is="dom-if"
     if="[[!isRevampWayfindingEnabled_]]" restamp>
   <div class="hr"></div>
-  <settings-display-night-light prefs="{{prefs}}">
+  <settings-display-night-light prefs="{{prefs}}"
+    is-internal-display="[[selectedDisplay.isInternal]]">
   </settings-display-night-light>
 </template>
