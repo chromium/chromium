@@ -252,7 +252,8 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def _RestoreBrowserEnvironment(cls) -> None:
     if cls._original_environ is not None:
-      os.environ = cls._original_environ.copy()
+      os.environ.clear()
+      os.environ.update(cls._original_environ)
     super()._RestoreBrowserEnvironment()
 
   @classmethod
