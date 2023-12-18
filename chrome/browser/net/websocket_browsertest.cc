@@ -22,7 +22,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "chrome/browser/auth_notification_types.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -35,10 +34,6 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -268,46 +263,6 @@ class WebSocketBrowserHTTPSConnectToTestPre3pcd
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Automatically fill in any login prompts that appear with the supplied
-// credentials.
-class AutoLogin : public content::NotificationObserver {
- public:
-  AutoLogin(const std::string& username,
-            const std::string& password,
-            content::NavigationController* navigation_controller)
-      : username_(base::UTF8ToUTF16(username)),
-        password_(base::UTF8ToUTF16(password)),
-        logged_in_(false) {
-    registrar_.Add(
-        this,
-        chrome::NOTIFICATION_AUTH_NEEDED,
-        content::Source<content::NavigationController>(navigation_controller));
-  }
-
-  AutoLogin(const AutoLogin&) = delete;
-  AutoLogin& operator=(const AutoLogin&) = delete;
-
-  // NotificationObserver implementation
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    DCHECK_EQ(chrome::NOTIFICATION_AUTH_NEEDED, type);
-    LoginHandler* login_handler =
-        content::Details<LoginNotificationDetails>(details)->handler();
-    login_handler->SetAuth(username_, password_);
-    logged_in_ = true;
-  }
-
-  bool logged_in() const { return logged_in_; }
-
- private:
-  const std::u16string username_;
-  const std::u16string password_;
-  bool logged_in_;
-
-  content::NotificationRegistrar registrar_;
-};
-
 // Test that the browser can handle a WebSocket frame split into multiple TCP
 // segments.
 IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketSplitSegments) {
@@ -415,14 +370,12 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
   // Launch a basic-auth-protected WebSocket server.
   ws_server_.set_websocket_basic_auth(true);
   ASSERT_TRUE(ws_server_.Start());
-
-  content::NavigationController* navigation_controller =
-      &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
-  AutoLogin auto_login("test", "test", navigation_controller);
-
   NavigateToHTTP("connect_check.html");
 
-  ASSERT_TRUE(base::test::RunUntil([&]() { return auto_login.logged_in(); }));
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
+  LoginHandler::GetAllLoginHandlersForTest().front()->SetAuth(u"test", u"test");
+
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
