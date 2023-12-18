@@ -58,10 +58,6 @@ TEST_F(NetworkQualitiesPrefDelegateTest, WritingReadingToPrefsEnabled) {
         net::EFFECTIVE_CONNECTION_TYPE_OFFLINE);
     estimator.RunOneRequest();
 
-    // Prefs are written only if persistent caching was enabled.
-    EXPECT_FALSE(
-        histogram_tester.GetAllSamples("NQE.Prefs.WriteCount").empty());
-
     // NetworkQualityEstimator should not be notified of change in prefs.
     histogram_tester.ExpectTotalCount("NQE.Prefs.ReadSize", 0);
   }
@@ -73,10 +69,6 @@ TEST_F(NetworkQualitiesPrefDelegateTest, WritingReadingToPrefsEnabled) {
     estimator.set_recent_effective_connection_type(
         net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
     estimator.RunOneRequest();
-
-    // Prefs are written even if the network id was unavailable.
-    EXPECT_FALSE(
-        histogram_tester.GetAllSamples("NQE.Prefs.WriteCount").empty());
 
     // NetworkQualityEstimator should not be notified of change in prefs.
     histogram_tester.ExpectTotalCount("NQE.Prefs.ReadSize", 0);

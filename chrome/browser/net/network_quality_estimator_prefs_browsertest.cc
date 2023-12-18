@@ -258,7 +258,4 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest, PrefsWritten) {
       g_browser_process->network_quality_tracker());
   network_quality_observer.WaitForNotification(
       net::EFFECTIVE_CONNECTION_TYPE_2G);
-
-  RetryForHistogramUntilCountReached(&histogram_tester, "NQE.Prefs.WriteCount",
-                                     1);
 }

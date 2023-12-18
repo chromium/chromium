@@ -7126,15 +7126,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NQE.Prefs.WriteCount" units="count" expires_after="2021-10-10">
-  <owner>tbansal@chromium.org</owner>
-  <owner>bengr@chromium.org</owner>
-  <summary>
-    Number of times the network quality prefs were written by the network
-    quality estimator.
-  </summary>
-</histogram>
-
 <histogram name="NQE.RTT.ObservationSource" enum="NQEObservationSource"
     expires_after="2022-02-20">
   <owner>tbansal@chromium.org</owner>

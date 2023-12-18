@@ -189,7 +189,6 @@ class NetworkQualitiesPrefDelegateImpl
   // Schedules the writing of the lossy prefs.
   void SchedulePendingLossyWrites() {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    UMA_HISTOGRAM_EXACT_LINEAR("NQE.Prefs.WriteCount", 1, 2);
     pref_service_->SchedulePendingLossyWrites();
     lossy_prefs_writing_task_posted_ = false;
   }

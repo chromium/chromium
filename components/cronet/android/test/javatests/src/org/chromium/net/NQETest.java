@@ -161,15 +161,7 @@ public class NQETest {
     @Test
     @SmallTest
     public void testQuicDisabled() throws Exception {
-        // Set up HistogramWatcher before starting CronetEngine. This is because the
-        // HistogramWatcher takes a snapshot of the starting sample count and uses the delta of this
-        // and the count at assertExpected() call time to confirm that new samples are logged.
         UmaRecorderHolder.onLibraryLoaded(); // Hackish workaround to crbug.com/1338919
-        var writeCountHistogram =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("NQE.Prefs.WriteCount", 1)
-                        .allowExtraRecordsForHistogramsAbove()
-                        .build();
         assertThat(RttThroughputValues.INVALID_RTT_THROUGHPUT).isLessThan(0);
         Executor listenersExecutor = Executors.newSingleThreadExecutor(new ExecutorThreadFactory());
         TestNetworkQualityRttListener rttListener =
@@ -266,7 +258,6 @@ public class NQETest {
         assertThat(prefsFileContainsString("network_qualities")).isTrue();
 
         cronetEngine.shutdown();
-        writeCountHistogram.assertExpected();
     }
 
     @Test
