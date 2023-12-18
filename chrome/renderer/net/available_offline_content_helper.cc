@@ -132,8 +132,6 @@ void AvailableOfflineContentHelper::LaunchItem(const std::string& id,
 
   for (const AvailableOfflineContentPtr& item : fetched_content_) {
     if (item->id == id && item->name_space == name_space) {
-      UMA_HISTOGRAM_ENUMERATION("Net.ErrorPageCounts.SuggestionClicked",
-                                item->content_type);
       RecordEvent(error_page::NETWORK_ERROR_PAGE_OFFLINE_SUGGESTION_CLICKED);
       provider_->LaunchItem(id, name_space);
       return;

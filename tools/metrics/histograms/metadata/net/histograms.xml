@@ -1723,16 +1723,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.ErrorPageCounts.SuggestionClicked"
-    enum="NetErrorOfflineSuggestionType" expires_after="2021-12-19">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Counts of the type of offline content suggestions clicked on the network
-    error page. Reported upon click.
-  </summary>
-</histogram>
-
 <histogram name="Net.ErrorPageCounts.SuggestionPresented"
     enum="NetErrorOfflineSuggestionType" expires_after="2021-12-05">
   <owner>sclittle@chromium.org</owner>
