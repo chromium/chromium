@@ -958,51 +958,9 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Cras.StreamSamplingRate.Output"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Cras_DeviceType" separator=".">
-  <suffix name="A2DP" label="Bluetooth A2DP."/>
-  <suffix name="AbnormalFallback"
-      label="Abnormal use case on the fallback device."/>
-  <suffix name="AlsaLoopback" label="ALSA loopback Device."/>
-  <suffix name="Bluetooth" label="Bluetooth device."/>
-  <suffix name="BluetoothNarrowBandMic" label="Bluetooth with NarrowBand Mic."/>
-  <suffix name="BluetoothSuperWideBandMic"
-      label="Bluetooth with SuperWideBand Mic."/>
-  <suffix name="BluetoothWideBandMic" label="Bluetooth with WideBand Mic."/>
-  <suffix name="FrontMic" label="Front mic."/>
-  <suffix name="Haptic" label="Haptic device."/>
-  <suffix name="HDMI" label="HDMI device."/>
-  <suffix name="Headphone" label="Headphone."/>
-  <suffix name="HFP" label="Bluetooth HFP."/>
-  <suffix name="Hotword" label="Hotword device."/>
-  <suffix name="HSP" label="Bluetooth HSP."/>
-  <suffix name="InternalMic" label="Internal mic."/>
-  <suffix name="InternalSpeaker" label="Internal speaker."/>
-  <suffix name="InvalidType" label="Invalid type. It should not be used."/>
-  <suffix name="KeyboardMic" label="Keyboard mic."/>
-  <suffix name="Lineout" label="Line out."/>
-  <suffix name="Mic" label="External mic."/>
-  <suffix name="NoDevice" label="No device. It should not be used."/>
-  <suffix name="NormalFallback" label="Fallback device."/>
-  <suffix name="PostDspLoopback" label="Post DSP loopback."/>
-  <suffix name="PostMixLoopback" label="Post Mix loopback."/>
-  <suffix name="RearMic" label="Rear mic."/>
-  <suffix name="SilentHotword" label="Silent hotword device."/>
-  <suffix name="Unknown" label="Unknown device. It should not be used."/>
-  <suffix name="USB" label="USB device."/>
-  <affected-histogram name="Cras.DeviceGain"/>
-  <affected-histogram name="Cras.DeviceNoiseCancellationStatus"/>
-  <affected-histogram name="Cras.DeviceOpenStatus.Input"/>
-  <affected-histogram name="Cras.DeviceOpenStatus.Output"/>
-  <affected-histogram name="Cras.DeviceSampleRate.Input"/>
-  <affected-histogram name="Cras.DeviceSampleRate.Output"/>
-  <affected-histogram name="Cras.DeviceVolume"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="Cras_Direction" separator=".">
   <suffix name="Input" label="Capture"/>
   <suffix name="Output" label="Playback"/>
-  <affected-histogram name="Cras.DeviceOpenStatus"/>
-  <affected-histogram name="Cras.DeviceSampleRate"/>
   <affected-histogram name="Cras.StreamCallbackThreshold"/>
   <affected-histogram name="Cras.StreamChannelCount"/>
   <affected-histogram name="Cras.StreamEffects"/>

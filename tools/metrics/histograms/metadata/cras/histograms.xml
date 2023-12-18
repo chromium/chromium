@@ -22,7 +22,53 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="CrasDeviceBreakdown">
+<variants name="CrasDlcType">
+  <variant name="NcAp" summary="the AP Noise Cancellation DLC"/>
+  <variant name="SrBt" summary="the Bluetooth Super Resolution DLC"/>
+</variants>
+
+<!--
+This collects each final device metric type. For example,
+|BluetoothWideBandMic| is expected to be its own type.
+-->
+
+<variants name="CrasFinalDeviceBreakdown">
+  <variant name="" summary="aggregated across all breakdowns"/>
+  <variant name=".A2DP"/>
+  <variant name=".AbnormalFallback"/>
+  <variant name=".AlsaLoopback"/>
+  <variant name=".Bluetooth"/>
+  <variant name=".BluetoothNarrowBandMic"/>
+  <variant name=".BluetoothSuperWideBandMic"/>
+  <variant name=".BluetoothWideBandMic"/>
+  <variant name=".FrontMic"/>
+  <variant name=".Haptic"/>
+  <variant name=".HDMI"/>
+  <variant name=".Headphone"/>
+  <variant name=".HFP"/>
+  <variant name=".Hotword"/>
+  <variant name=".InternalMic"/>
+  <variant name=".InternalSpeaker"/>
+  <variant name=".InvalidType"/>
+  <variant name=".KeyboardMic"/>
+  <variant name=".Lineout"/>
+  <variant name=".Mic"/>
+  <variant name=".NoDevice"/>
+  <variant name=".NormalFallback"/>
+  <variant name=".PostDspLoopback"/>
+  <variant name=".PostMixLoopback"/>
+  <variant name=".RearMic"/>
+  <variant name=".SilentHotword"/>
+  <variant name=".Unknown"/>
+  <variant name=".USB"/>
+</variants>
+
+<!--
+This collects each top-level device metric type. For example,
+|BluetoothWideBandMic| is expected to be aggregated onto |HFP|.
+-->
+
+<variants name="CrasTopLevelDeviceBreakdown">
   <variant name="" summary="aggregated across all breakdowns"/>
   <variant name=".A2DP"/>
   <variant name=".AbnormalFallback"/>
@@ -48,11 +94,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".SilentHotword"/>
   <variant name=".Unknown"/>
   <variant name=".USB"/>
-</variants>
-
-<variants name="CrasDlcType">
-  <variant name="NcAp" summary="the AP Noise Cancellation DLC"/>
-  <variant name="SrBt" summary="the Bluetooth Super Resolution DLC"/>
 </variants>
 
 <histogram name="Cras.A2dp100msFailureOverStream" units="units"
@@ -129,25 +170,48 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Cras.DeviceConfigureTime{Direction}{Device}{HostCapability}{PeripheralCapability}"
+    name="Cras.DeviceConfigureTime.Input{Device}{HostCapability}{PeripheralCapability}"
     units="ms" expires_after="2024-05-19">
   <owner>hychao@google.com</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
-    The configure time of {Direction} device {Device} in CRAS(ChromeOS audio
-    server). The configure time is the time taken for the device's own configure
-    function to execute and when it returns signaling that device is ready to
+    The configure time of input device {Device} in CRAS(ChromeOS audio server).
+    The configure time is the time taken for the device's own configure function
+    to execute and when it returns signaling that device is ready to
     send/receive audio data. For wired audio devices this is expected to range
     from 10ms to 100ms, while wireless headsets this could take longer than
     500ms. We collect this configure time to gather stats and track the
     improvement on shortening this configure time.
   </summary>
-  <token key="Direction">
+  <token key="Device" variants="CrasTopLevelDeviceBreakdown"/>
+  <token key="HostCapability">
     <variant name="" summary="aggregated across all breakdowns"/>
-    <variant name=".Input"/>
-    <variant name=".Output"/>
+    <variant name=".NonOffloading"/>
+    <variant name=".Offloading"/>
   </token>
-  <token key="Device" variants="CrasDeviceBreakdown"/>
+  <token key="PeripheralCapability">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".NarrowBandMic"/>
+    <variant name=".SuperWideBandMic"/>
+    <variant name=".WideBandMic"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Cras.DeviceConfigureTime.Output{Device}{HostCapability}{PeripheralCapability}"
+    units="ms" expires_after="2024-05-19">
+  <owner>hychao@google.com</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The configure time of output device {Device} in CRAS(ChromeOS audio server).
+    The configure time is the time taken for the device's own configure function
+    to execute and when it returns signaling that device is ready to
+    send/receive audio data. For wired audio devices this is expected to range
+    from 10ms to 100ms, while wireless headsets this could take longer than
+    500ms. We collect this configure time to gather stats and track the
+    improvement on shortening this configure time.
+  </summary>
+  <token key="Device" variants="CrasTopLevelDeviceBreakdown"/>
   <token key="HostCapability">
     <variant name="" summary="aggregated across all breakdowns"/>
     <variant name=".NonOffloading"/>
@@ -170,13 +234,11 @@ chromium-metrics-reviews@google.com.
     when the configuration of associated DSP modules is changed. That is, it can
     be regarded as the DSP configuration error rate with attempt to DSP offload.
   </summary>
-  <token key="Device" variants="CrasDeviceBreakdown"/>
+  <token key="Device" variants="CrasFinalDeviceBreakdown"/>
 </histogram>
 
-<histogram name="Cras.DeviceGain" units="level" expires_after="2024-04-28">
-<!-- Name completed by histogram_suffixes
-     name="Cras.DeviceType" -->
-
+<histogram name="Cras.DeviceGain{Device}" units="level"
+    expires_after="2024-04-28">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -184,76 +246,53 @@ chromium-metrics-reviews@google.com.
     value of UI gain scaler is between 0 to 10. The gain here has been
     multiplied by 100.
   </summary>
+  <token key="Device" variants="CrasFinalDeviceBreakdown"/>
 </histogram>
 
-<histogram name="Cras.DeviceNoiseCancellationStatus"
+<histogram name="Cras.DeviceNoiseCancellationStatus{Device}"
     enum="CrasNoiseCancellationStatus" expires_after="2024-05-19">
-<!-- Name completed by histogram_suffixes
-     name="Cras.DeviceType" -->
-
   <owner>johnylin@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
     Record the staus of Noise Cancellation (blocked/disabled/enabled) for the
     supported device. It is recorded when the device is opened.
   </summary>
+  <token key="Device" variants="CrasFinalDeviceBreakdown"/>
 </histogram>
 
-<histogram name="Cras.DeviceOpenStatus" enum="CrasDeviceOpenStatus"
-    expires_after="2024-07-10">
-<!-- Name completed by histogram_suffixes
-     name="Cras.DeviceType" and
-     name="Cras.Direction" -->
-
+<histogram name="Cras.DeviceOpenStatus.Input{Device}"
+    enum="CrasDeviceOpenStatus" expires_after="2024-07-10">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
-  <summary>Log the result every time CRAS tries to open a device.</summary>
+  <summary>
+    Log the result every time CRAS tries to open an input device.
+  </summary>
+  <token key="Device" variants="CrasFinalDeviceBreakdown"/>
+</histogram>
+
+<histogram name="Cras.DeviceOpenStatus.Output{Device}"
+    enum="CrasDeviceOpenStatus" expires_after="2024-07-10">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Log the result every time CRAS tries to open an output device.
+  </summary>
+  <token key="Device" variants="CrasFinalDeviceBreakdown"/>
 </histogram>
 
 <histogram
-    name="Cras.DeviceRuntime{Direction}{Device}{HostCapability}{PeripheralCapability}"
+    name="Cras.DeviceRuntime.Input{Device}{HostCapability}{PeripheralCapability}"
     units="seconds" expires_after="2024-05-19">
   <owner>jrwu@google.com</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
-    The runtime of {Direction} device {Device} in CRAS(ChromeOS audio server).
-    The runtime is the duration between opening and closing a device. The value
-    is recorded when the device is closed. For certain devices, more detailed
+    The runtime of input device {Device} in CRAS(ChromeOS audio server). The
+    runtime is the duration between opening and closing a device. The value is
+    recorded when the device is closed. For certain devices, more detailed
     host/peripheral-capabilities are recorded. The aggregated runtime for each
     level is accessible up to &quot;Cras.DeviceRuntime&quot;.
   </summary>
-  <token key="Direction">
-    <variant name="" summary="aggregated across all breakdowns"/>
-    <variant name=".Input"/>
-    <variant name=".Output"/>
-  </token>
-  <token key="Device">
-    <variant name="" summary="aggregated across all breakdowns"/>
-    <variant name=".A2DP"/>
-    <variant name=".AbnormalFallback"/>
-    <variant name=".AlsaLoopback"/>
-    <variant name=".Bluetooth"/>
-    <variant name=".FrontMic"/>
-    <variant name=".Haptic"/>
-    <variant name=".HDMI"/>
-    <variant name=".Headphone"/>
-    <variant name=".HFP"/>
-    <variant name=".Hotword"/>
-    <variant name=".InternalMic"/>
-    <variant name=".InternalSpeaker"/>
-    <variant name=".InvalidType"/>
-    <variant name=".KeyboardMic"/>
-    <variant name=".Lineout"/>
-    <variant name=".Mic"/>
-    <variant name=".NoDevice"/>
-    <variant name=".NormalFallback"/>
-    <variant name=".PostDspLoopback"/>
-    <variant name=".PostMixLoopback"/>
-    <variant name=".RearMic"/>
-    <variant name=".SilentHotword"/>
-    <variant name=".Unknown"/>
-    <variant name=".USB"/>
-  </token>
+  <token key="Device" variants="CrasTopLevelDeviceBreakdown"/>
   <token key="HostCapability">
     <variant name="" summary="aggregated across all breakdowns"/>
     <variant name=".NonOffloading"/>
@@ -267,16 +306,52 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Cras.DeviceSampleRate" units="bps" expires_after="2024-04-21">
-<!-- Name completed by histogram_suffixes
-     name="Cras.DeviceType" and
-     name="Cras.Direction" -->
+<histogram
+    name="Cras.DeviceRuntime.Output{Device}{HostCapability}{PeripheralCapability}"
+    units="seconds" expires_after="2024-05-19">
+  <owner>jrwu@google.com</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The runtime of output device {Device} in CRAS(ChromeOS audio server). The
+    runtime is the duration between opening and closing a device. The value is
+    recorded when the device is closed. For certain devices, more detailed
+    host/peripheral-capabilities are recorded. The aggregated runtime for each
+    level is accessible up to &quot;Cras.DeviceRuntime&quot;.
+  </summary>
+  <token key="Device" variants="CrasTopLevelDeviceBreakdown"/>
+  <token key="HostCapability">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".NonOffloading"/>
+    <variant name=".Offloading"/>
+  </token>
+  <token key="PeripheralCapability">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".NarrowBandMic"/>
+    <variant name=".SuperWideBandMic"/>
+    <variant name=".WideBandMic"/>
+  </token>
+</histogram>
 
+<histogram name="Cras.DeviceSampleRate.Input{Device}" units="bps"
+    expires_after="2024-04-21">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
-    The sampling rate of a device. It is recorded when the device is opened.
+    The sampling rate of a device. It is recorded when the input device is
+    opened.
   </summary>
+  <token key="Device" variants="CrasFinalDeviceBreakdown"/>
+</histogram>
+
+<histogram name="Cras.DeviceSampleRate.Output{Device}" units="bps"
+    expires_after="2024-04-21">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The sampling rate of a device. It is recorded when the output device is
+    opened.
+  </summary>
+  <token key="Device" variants="CrasFinalDeviceBreakdown"/>
 </histogram>
 
 <histogram name="Cras.DeviceTypeInput" enum="CrasDeviceType"
@@ -301,15 +376,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cras.DeviceVolume" units="level" expires_after="2024-04-28">
-<!-- Name completed by histogram_suffixes
-     name="Cras.DeviceType" -->
-
+<histogram name="Cras.DeviceVolume{Device}" units="level"
+    expires_after="2024-04-28">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
     The volume of a device, which is recorded when closing a device.
   </summary>
+  <token key="Device" variants="CrasFinalDeviceBreakdown"/>
 </histogram>
 
 <histogram name="Cras.DlcManagerStatus.DlcStatus.{DlcType}"
