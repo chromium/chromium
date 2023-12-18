@@ -52,7 +52,7 @@ class MemorySaverModePolicy : public GraphOwned,
 
   // Returns true if Memory Saver mode is enabled, false otherwise. Useful to
   // get the state of the mode from the Performance Manager sequence.
-  bool IsHighEfficiencyDiscardingEnabled() const;
+  bool IsMemorySaverDiscardingEnabled() const;
 
  private:
   void StartAllDiscardTimers();

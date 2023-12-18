@@ -489,7 +489,7 @@ TEST_F(PageResourceMonitorUnitTest, TestUpdateLifecycleState) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(PageResourceMonitorUnitTest, TestHighEfficiencyMode) {
+TEST_F(PageResourceMonitorUnitTest, TestMemorySaverMode) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);

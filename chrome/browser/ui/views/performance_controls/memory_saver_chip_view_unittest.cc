@@ -72,7 +72,7 @@ class MemorySaverChipViewTest : public TestWithBrowserView {
     AddNewTab(kMemorySavingsKilobytes,
               ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
-    SetHighEfficiencyModeEnabled(true);
+    SetMemorySaverModeEnabled(true);
   }
 
   // Creates a new tab at index 0 that would report the given memory savings and
@@ -104,7 +104,7 @@ class MemorySaverChipViewTest : public TestWithBrowserView {
         ->UpdateAll();
   }
 
-  void SetHighEfficiencyModeEnabled(bool enabled) {
+  void SetMemorySaverModeEnabled(bool enabled) {
     performance_manager::user_tuning::UserPerformanceTuningManager::
         GetInstance()
             ->SetMemorySaverModeEnabled(enabled);
@@ -158,7 +158,7 @@ TEST_F(MemorySaverChipViewTest,
 // If a discard is triggered when the user doesn't have memory saver mode
 // enabled, we don't show the chip.
 TEST_F(MemorySaverChipViewTest, ShouldNotShowWhenPrefIsFalse) {
-  SetHighEfficiencyModeEnabled(false);
+  SetMemorySaverModeEnabled(false);
   SetTabDiscardState(0, true);
 
   PageActionIconView* view = GetPageActionIconView();
@@ -270,7 +270,7 @@ class MemorySaverChipViewMemorySavingsImprovementsTest
     AddNewTab(kMemorySavingsKilobytes,
               ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
-    SetHighEfficiencyModeEnabled(true);
+    SetMemorySaverModeEnabled(true);
   }
 
  private:
@@ -369,7 +369,7 @@ class MemorySaverChipViewWithPerformanceSidePanelTest
     AddNewTab(kMemorySavingsKilobytes,
               ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
-    SetHighEfficiencyModeEnabled(true);
+    SetMemorySaverModeEnabled(true);
   }
 
  private:

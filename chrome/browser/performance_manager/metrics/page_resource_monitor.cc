@@ -296,12 +296,12 @@ void PageResourceMonitor::CollectSlice() {
         .SetTabId(curr_info->tab_id);
 
 #if !BUILDFLAG(IS_ANDROID)
-    bool high_efficiency_mode_active =
+    bool memory_saver_mode_active =
         (policies::MemorySaverModePolicy::GetInstance() &&
          policies::MemorySaverModePolicy::GetInstance()
-             ->IsHighEfficiencyDiscardingEnabled());
+             ->IsMemorySaverDiscardingEnabled());
 
-    builder.SetHighEfficiencyMode(high_efficiency_mode_active)
+    builder.SetHighEfficiencyMode(memory_saver_mode_active)
         .SetBatterySaverMode(battery_saver_enabled_);
 #endif  // !BUILDFLAG(IS_ANDROID)
 

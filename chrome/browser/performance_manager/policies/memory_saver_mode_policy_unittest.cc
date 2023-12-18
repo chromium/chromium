@@ -106,7 +106,7 @@ class MemorySaverModeTest : public testing::GraphTestHarnessWithMockDiscarder {
   raw_ptr<TestTabRevisitTracker> tab_revisit_tracker_;
 };
 
-TEST_F(MemorySaverModeTest, NoDiscardIfHighEfficiencyOff) {
+TEST_F(MemorySaverModeTest, NoDiscardIfMemorySaverOff) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);

@@ -124,7 +124,7 @@ void MemorySaverModePolicy::SetTimeBeforeDiscard(
   }
 }
 
-bool MemorySaverModePolicy::IsHighEfficiencyDiscardingEnabled() const {
+bool MemorySaverModePolicy::IsMemorySaverDiscardingEnabled() const {
   return high_efficiency_mode_enabled_;
 }
 
@@ -142,7 +142,7 @@ void MemorySaverModePolicy::StartAllDiscardTimers() {
 void MemorySaverModePolicy::StartDiscardTimerIfEnabled(
     const TabPageDecorator::TabHandle* tab_handle,
     base::TimeDelta time_before_discard) {
-  if (IsHighEfficiencyDiscardingEnabled()) {
+  if (IsMemorySaverDiscardingEnabled()) {
     TabRevisitTracker* revisit_tracker =
         graph_->GetRegisteredObjectAs<TabRevisitTracker>();
     CHECK(revisit_tracker);
@@ -188,7 +188,7 @@ void MemorySaverModePolicy::DiscardPageTimerCallback(
 
   // Turning off Memory Saver Mode would delete the timer, so it's not
   // possible to get here and for Memory Saver Mode to be off.
-  DCHECK(IsHighEfficiencyDiscardingEnabled());
+  DCHECK(IsMemorySaverDiscardingEnabled());
 
   // If the time elapsed according to `LiveTicks` is shorter than
   // `requested_time_before_discard`, it means that the device was in a

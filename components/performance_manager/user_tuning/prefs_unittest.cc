@@ -10,14 +10,14 @@
 
 namespace performance_manager::user_tuning::prefs {
 
-class HighEfficiencyModePrefMigrationTest : public ::testing::Test {
+class MemorySaverModePrefMigrationTest : public ::testing::Test {
  public:
   void SetUp() override { RegisterLocalStatePrefs(pref_service_.registry()); }
 
   TestingPrefServiceSimple pref_service_;
 };
 
-TEST_F(HighEfficiencyModePrefMigrationTest, NoChangeToUserSetNewPref) {
+TEST_F(MemorySaverModePrefMigrationTest, NoChangeToUserSetNewPref) {
   // The old pref is set by the user, but so is the new pref so no migration
   // should happen.
   pref_service_.SetBoolean(kMemorySaverModeEnabled, true);
@@ -34,7 +34,7 @@ TEST_F(HighEfficiencyModePrefMigrationTest, NoChangeToUserSetNewPref) {
   EXPECT_FALSE(pref_service_.GetBoolean(kMemorySaverModeEnabled));
 }
 
-TEST_F(HighEfficiencyModePrefMigrationTest, BothPrefsDefaultNoMigration) {
+TEST_F(MemorySaverModePrefMigrationTest, BothPrefsDefaultNoMigration) {
   // Simulate that the default enum state value is not "disabled"
   pref_service_.SetDefaultPrefValue(kMemorySaverModeState, base::Value(1));
 
@@ -52,7 +52,7 @@ TEST_F(HighEfficiencyModePrefMigrationTest, BothPrefsDefaultNoMigration) {
             static_cast<int>(MemorySaverModeState::kEnabled));
 }
 
-TEST_F(HighEfficiencyModePrefMigrationTest,
+TEST_F(MemorySaverModePrefMigrationTest,
        MigrateDefaultNewPrefUserSetOldPrefEnabled) {
   // Set the old pref as-if set by the user.
   pref_service_.SetBoolean(kMemorySaverModeEnabled, true);
@@ -76,7 +76,7 @@ TEST_F(HighEfficiencyModePrefMigrationTest,
   EXPECT_FALSE(pref_service_.GetBoolean(kMemorySaverModeEnabled));
 }
 
-TEST_F(HighEfficiencyModePrefMigrationTest,
+TEST_F(MemorySaverModePrefMigrationTest,
        MigrateDefaultNewPrefUserSetOldPrefDisabled) {
   // Set the old pref as-if set by the user.
   pref_service_.SetBoolean(kMemorySaverModeEnabled, false);

@@ -9,8 +9,8 @@
 
 namespace performance_manager {
 
-// A policy handler that maps the boolean HighEfficiencyModeEnabled policy to
-// the enum kMemorySaverModeState pref. This is needed because HighEfficiency
+// A policy handler that maps the boolean MemorySaverModeEnabled policy to
+// the enum kMemorySaverModeState pref. This is needed because MemorySaver
 // was controlled by a boolean pref when the policy was written, but it's now
 // controlled by an integer pref. This policy will eventually be deprecated and
 // replaced by an integer policy.

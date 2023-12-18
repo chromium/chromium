@@ -135,7 +135,7 @@ void MetricsProviderDesktop::Initialize() {
   pref_change_registrar_.Init(local_state_);
   pref_change_registrar_.Add(
       kMemorySaverModeState,
-      base::BindRepeating(&MetricsProviderDesktop::OnHighEfficiencyPrefChanged,
+      base::BindRepeating(&MetricsProviderDesktop::OnMemorySaverPrefChanged,
                           base::Unretained(this)));
   performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
       ->AddObserver(this);
@@ -185,8 +185,8 @@ void MetricsProviderDesktop::OnBatterySaverActiveChanged(bool is_active) {
   OnTuningModesChanged();
 }
 
-void MetricsProviderDesktop::OnHighEfficiencyPrefChanged() {
-  high_efficiency_mode_tracker_->ModeChanged(IsHighEfficiencyEnabled());
+void MetricsProviderDesktop::OnMemorySaverPrefChanged() {
+  memory_saver_mode_tracker_->ModeChanged(IsMemorySaverEnabled());
   OnTuningModesChanged();
 }
 
@@ -215,14 +215,14 @@ MetricsProviderDesktop::ComputeCurrentMode() const {
   // BatterySaverModeManager is destroyed. Do not access UPTM directly from
   // here.
 
-  bool high_efficiency_enabled = IsHighEfficiencyEnabled();
+  bool high_efficiency_enabled = IsMemorySaverEnabled();
 
   if (high_efficiency_enabled && battery_saver_enabled_) {
     return EfficiencyMode::kBoth;
   }
 
   if (high_efficiency_enabled) {
-    return EfficiencyMode::kHighEfficiency;
+    return EfficiencyMode::kMemorySaver;
   }
 
   if (battery_saver_enabled_) {
@@ -232,7 +232,7 @@ MetricsProviderDesktop::ComputeCurrentMode() const {
   return EfficiencyMode::kNormal;
 }
 
-bool MetricsProviderDesktop::IsHighEfficiencyEnabled() const {
+bool MetricsProviderDesktop::IsMemorySaverEnabled() const {
   return local_state_->GetInteger(kMemorySaverModeState) !=
          static_cast<int>(MemorySaverModeState::kDisabled);
 }
@@ -265,8 +265,8 @@ void MetricsProviderDesktop::ResetTrackers() {
   battery_saver_mode_tracker_ = std::make_unique<ScopedTimeInModeTracker>(
       battery_saver_enabled_,
       "PerformanceManager.UserTuning.BatterySaverModeEnabledPercent");
-  high_efficiency_mode_tracker_ = std::make_unique<ScopedTimeInModeTracker>(
-      IsHighEfficiencyEnabled(),
+  memory_saver_mode_tracker_ = std::make_unique<ScopedTimeInModeTracker>(
+      IsMemorySaverEnabled(),
       "PerformanceManager.UserTuning.MemorySaverModeEnabledPercent");
 }
 
