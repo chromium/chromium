@@ -8,6 +8,14 @@ export const MICROPHONE_SUBPAGE_USER_ACTION_HISTOGRAM_NAME =
     'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction';
 export const LOCATION_SUBPAGE_USER_ACTION_HISTOGRAM_NAME =
     'ChromeOS.PrivacyHub.LocationSubpage.UserAction';
+
+export const LOCATION_PERMISSION_CHANGE_FROM_SETTINGS_HISTOGRAM_NAME =
+    'ChromeOS.PrivacyHub.Geolocation.AccessLevelChanged.SystemSettings';
+export const LOCATION_PERMISSION_CHANGE_FROM_DIALOG_HISTOGRAM_NAME =
+    'ChromeOS.PrivacyHub.Geolocation.AccessLevelChanged.GeolocationDialog';
+export const LOCATION_PERMISSION_CHANGE_FROM_NOTIFICATION_HISTOGRAM_NAME =
+    'ChromeOS.PrivacyHub.Geolocation.AccessLevelChanged.' +
+    'LocationPermissionNotification';
 /**
  * Enumeration of the user actions that can be taken on the Privacy Hub sensor
  * subpages.

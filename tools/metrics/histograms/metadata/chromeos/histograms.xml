@@ -2031,6 +2031,24 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.PrivacyHub.Geolocation.AccessLevelChanged.{Source}"
+    enum="GeolocationAccessLevel" expires_after="2024-06-01">
+  <owner>zauri@google.com</owner>
+  <owner>chromeos-privacyhub@google.com</owner>
+  <summary>
+    Records system geolocation permission change originated from the {Source}.
+  </summary>
+  <token key="Source">
+    <variant name="GeolocationDialog"
+        summary="geolocation dialogs. These dialogs are surfaced in the
+                 affected system services, like Automatic Time Zone"/>
+    <variant name="LocationPermissionNotification"
+        summary="ChromeOS system notification"/>
+    <variant name="SystemSettings"
+        summary="ChromeOS system settings &gt; Location access subpage"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.PrivacyHub.LearnMorePage.Opened"
     enum="PrivacyHubLearnMoreSensor" expires_after="2024-05-19">
   <owner>cschlosser@chromium.org</owner>

@@ -855,6 +855,12 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="FailedToDownloadToFile"/>
 </enum>
 
+<enum name="GeolocationAccessLevel">
+  <int value="0" label="Blocked for all"/>
+  <int value="1" label="Allowed"/>
+  <int value="2" label="Only allowed for system services"/>
+</enum>
+
 <enum name="HardwareVerifierQualificationStatus">
   <summary>
     List of the possible qualification status of a component. This is defined in

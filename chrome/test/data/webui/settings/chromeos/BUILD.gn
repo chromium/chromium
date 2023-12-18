@@ -289,6 +289,7 @@ build_webui_tests("build") {
     "os_privacy_page/privacy_hub_app_permission_test_util.ts",
     "os_privacy_page/privacy_hub_camera_subpage_test.ts",
     "os_privacy_page/privacy_hub_microphone_subpage_test.ts",
+    "os_privacy_page/privacy_hub_geolocation_subpage_test.ts",
     "os_privacy_page/privacy_hub_subpage_test.ts",
     "os_privacy_page/smart_privacy_subpage_test.ts",
     "os_privacy_page/test_metrics_consent_browser_proxy.ts",

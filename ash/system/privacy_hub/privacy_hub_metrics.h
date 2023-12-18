@@ -29,25 +29,20 @@ enum class PrivacyHubLearnMoreSensor {
   kMaxValue = kGeolocation
 };
 
-static constexpr char kPrivacyHubMicrophoneEnabledFromSettingsHistogram[] =
-    "ChromeOS.PrivacyHub.Microphone.Settings.Enabled";
-static constexpr char kPrivacyHubMicrophoneEnabledFromNotificationHistogram[] =
+inline constexpr char kPrivacyHubMicrophoneEnabledFromNotificationHistogram[] =
     "ChromeOS.PrivacyHub.Microphone.Notification.Enabled";
-static constexpr char kPrivacyHubCameraEnabledFromSettingsHistogram[] =
-    "ChromeOS.PrivacyHub.Camera.Settings.Enabled";
-static constexpr char kPrivacyHubCameraEnabledFromNotificationHistogram[] =
+inline constexpr char kPrivacyHubCameraEnabledFromNotificationHistogram[] =
     "ChromeOS.PrivacyHub.Camera.Notification.Enabled";
-static constexpr char kPrivacyHubGeolocationEnabledFromSettingsHistogram[] =
-    "ChromeOS.PrivacyHub.Geolocation.Settings.Enabled";
-static constexpr char kPrivacyHubGeolocationEnabledFromNotificationHistogram[] =
-    "ChromeOS.PrivacyHub.Geolocation.Notification.Enabled";
-static constexpr char kPrivacyHubOpenedHistogram[] =
+inline constexpr char
+    kPrivacyHubGeolocationAccessLevelChangedFromNotification[] =
+        "ChromeOS.PrivacyHub.Geolocation.AccessLevelChanged."
+        "LocationPermissionNotification";
+inline constexpr char kPrivacyHubOpenedHistogram[] =
     "ChromeOS.PrivacyHub.Opened";
-static constexpr char kPrivacyHubLearnMorePageOpenedHistogram[] =
+inline constexpr char kPrivacyHubLearnMorePageOpenedHistogram[] =
     "ChromeOS.PrivacyHub.LearnMorePage.Opened";
 
-// Report sensor events from system and notifications.
-ASH_EXPORT void LogSensorEnabledFromSettings(Sensor sensor, bool enabled);
+// Report sensor events from notifications.
 ASH_EXPORT void LogSensorEnabledFromNotification(Sensor sensor, bool enabled);
 
 // Report that Privacy Hub has been opened from a notification.

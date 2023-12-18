@@ -6,11 +6,13 @@
 
 
 <div
-    id="geolocationDropdownMenu"
+    id="geolocationDropdownDiv"
     class="settings-box first">
   <settings-dropdown-menu
+      id="geolocationDropdown"
       label="Label here"
       menu-options="[[geolocationMapTargets_]]"
+      on-settings-control-change="recordMetric_"
       pref="{{prefs.ash.user.geolocation_access_level}}">
   </settings-dropdown-menu>
 </div>

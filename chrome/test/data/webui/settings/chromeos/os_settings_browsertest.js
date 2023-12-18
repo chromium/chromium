@@ -1122,6 +1122,16 @@ TEST_F(
    },
  ],
  [
+   'OsPrivacyPagePrivacyHubGeolocationSubpage',
+   'os_privacy_page/privacy_hub_geolocation_subpage_test.js',
+   {
+     enabled: [
+       'ash::features::kCrosPrivacyHubV0',
+       'ash::features::kCrosPrivacyHub',
+     ]
+   },
+ ],
+ [
    'OsPrivacyPagePrivacyHubSubpage',
    'os_privacy_page/privacy_hub_subpage_test.js',
    {enabled: ['ash::features::kCrosPrivacyHubV0']},
