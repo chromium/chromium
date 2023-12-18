@@ -28,6 +28,14 @@ struct AdvancedChecks {
   char data[16];
 };
 
+// Annotated object: should have |base::internal::kAdvancedMemorySafetyChecks|.
+struct AnotherAdvancedChecks {
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
+ public:
+  char data[16];
+};
+
 // Annotated and aligned object for testing aligned allocations.
 constexpr int kLargeAlignment = 2 * __STDCPP_DEFAULT_NEW_ALIGNMENT__;
 struct alignas(kLargeAlignment) AlignedAdvancedChecks {
@@ -36,6 +44,36 @@ struct alignas(kLargeAlignment) AlignedAdvancedChecks {
  public:
   char data[16];
 };
+
+struct PrivateInheritanceWithInheritMacro : private AdvancedChecks {
+  INHERIT_MEMORY_SAFETY_CHECKS(AdvancedChecks);
+};
+static_assert(
+    is_memory_safety_checked<PrivateInheritanceWithInheritMacro,
+                             MemorySafetyCheck::kForcePartitionAlloc>);
+
+struct PrivateInheritanceWithDefaultMacro : private AdvancedChecks {
+  DEFAULT_MEMORY_SAFETY_CHECKS();
+};
+static_assert(
+    !is_memory_safety_checked<PrivateInheritanceWithDefaultMacro,
+                              MemorySafetyCheck::kForcePartitionAlloc>);
+
+struct MultipleInheritanceWithInheritMacro : AdvancedChecks,
+                                             AnotherAdvancedChecks {
+  INHERIT_MEMORY_SAFETY_CHECKS(AdvancedChecks);
+};
+static_assert(
+    is_memory_safety_checked<MultipleInheritanceWithInheritMacro,
+                             MemorySafetyCheck::kForcePartitionAlloc>);
+
+struct MultipleInheritanceWithDefaultMacro : AdvancedChecks,
+                                             AnotherAdvancedChecks {
+  DEFAULT_MEMORY_SAFETY_CHECKS();
+};
+static_assert(
+    !is_memory_safety_checked<MultipleInheritanceWithDefaultMacro,
+                              MemorySafetyCheck::kForcePartitionAlloc>);
 
 // The macro may hook memory allocation/deallocation but should forward the
 // request to PA or any other allocator via
