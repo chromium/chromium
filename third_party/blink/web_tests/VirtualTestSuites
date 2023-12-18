@@ -2480,8 +2480,15 @@
     "prefix": "permission-element",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/permission-element"],
-    "exclusive_tests": "ALL",
     "args": ["--enable-features=PermissionElement"],
+    "owners": ["permissions-core@google.com"],
+    "expires": "Jul 1, 2024"
+  },
+  {
+    "prefix": "permission-element-disabled",
+    "platforms": ["Linux"],
+    "bases": [],
+    "args": ["--disable-features=PermissionElement"],
     "owners": ["permissions-core@google.com"],
     "expires": "Jul 1, 2024"
   },
