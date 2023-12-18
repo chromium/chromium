@@ -1484,8 +1484,6 @@ ReadAnythingAppController::GetNextValidPositionFromCurrentPosition() {
 
 int ReadAnythingAppController::GetNextSentence(const std::u16string& text,
                                                int maxTextLength) {
-  // TODO(crbug.com/1474951): Investigate using getting text from the model,
-  // rather than passing it through typescript.
   // TODO(crbug.com/1474941): Investigate providing correct line breaks
   // or alternatively making adjustments to ax_text_utils to return boundaries
   // that minimize choppiness.

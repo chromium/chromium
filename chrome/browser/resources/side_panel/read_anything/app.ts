@@ -203,8 +203,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   speechStarted = false;
   maxSpeechLength = 175;
 
-  // TODO(crbug.com/1474951): Make this the screen reader default speed if a
-  // TTS speed has been set
   rate: number = 1;
 
   constructor() {
@@ -633,7 +631,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     };
 
     message.onend = () => {
-      // TODO(crbug.com/1474951): Add toggle to turn off highlight.
       // TODO(crbug.com/1474951): Handle already selected text.
       // TODO(crbug.com/1474951): Return text to its original style once
       // the document has finished.
