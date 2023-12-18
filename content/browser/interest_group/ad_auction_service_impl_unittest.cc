@@ -6148,6 +6148,85 @@ function scoreAd(
               ::testing::UnorderedElementsAre(kOriginF, kOriginG));
 }
 
+// Like UpdatesInterestGroupsAfterSuccessfulAuction but
+// kFledgeDelayPostAuctionInterestGroupUpdate is enabled.
+TEST_F(AdAuctionServiceImplTest,
+       UpdatesInterestGroupsAfterSuccessfulAuctionDelayedUpdate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kFledgeDelayPostAuctionInterestGroupUpdate);
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+)";
+
+  content_browser_client_.SetAllowList({kOriginG, kOriginF});
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+"ads": [{
+  "renderURL": "https://example.com/new_render",
+  "allowedReportingOrigins":
+      ["https://g.test", "https://f.test", "https://g.test"]
+}]})");
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group_a = CreateInterestGroup();
+  interest_group_a.update_url = kUpdateUrlA;
+  interest_group_a.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group_a.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_a.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_a);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, absl::nullopt);
+  EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
+            GURL("https://example.com/render"));
+
+  // Now that the auction has completed, check that the interest group is
+  // updated after kPostAuctionInterestGroupUpdateDelay (but not before).
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // The update shouldn't have happened yet.
+  auto a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups->size(), 1u);
+  auto a_group = a_groups->GetInterestGroups()[0]->interest_group;
+  EXPECT_EQ(a_group.ads, interest_group_a.ads);
+
+  task_environment()->FastForwardBy(
+      AuctionRunner::kPostAuctionInterestGroupUpdateDelay);
+
+  // Now the update should have happened.
+  a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups->size(), 1u);
+  a_group = a_groups->GetInterestGroups()[0]->interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url(),
+            "https://example.com/new_render");
+  ASSERT_TRUE(a_group.ads.value()[0].allowed_reporting_origins.has_value());
+  EXPECT_THAT(a_group.ads.value()[0].allowed_reporting_origins.value(),
+              ::testing::UnorderedElementsAre(kOriginF, kOriginG));
+}
+
 // Like UpdatesInterestGroupsAfterSuccessfulAuction, but the auction fails
 // because the scoring script always returns 0. The interest group should still
 // update.

@@ -51,6 +51,11 @@ struct DebugReportLockoutAndCooldowns;
 // the code to assign unique tracing IDs is not threadsafe.
 class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
  public:
+  // After each auction, delay the update of interest groups so that data in the
+  // InterestGroupCachingStorage is not invalidated while a page's other
+  // auctions are likely still running.
+  static constexpr base::TimeDelta kPostAuctionInterestGroupUpdateDelay =
+      base::Seconds(3);
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 

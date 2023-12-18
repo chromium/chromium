@@ -206,9 +206,15 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   //
   // The list is shuffled in-place to ensure fairness.
   void UpdateInterestGroupsOfOwners(
-      base::span<url::Origin> owners,
+      std::vector<url::Origin> owners,
       network::mojom::ClientSecurityStatePtr client_security_state,
       AreReportingOriginsAttestedCallback callback);
+
+  void UpdateInterestGroupsOfOwnersWithDelay(
+      std::vector<url::Origin> owners,
+      network::mojom::ClientSecurityStatePtr client_security_state,
+      AreReportingOriginsAttestedCallback callback,
+      const base::TimeDelta& delay);
 
   // For testing *only*; changes the maximum amount of time that the update
   // process can run before it gets cancelled for taking too long.

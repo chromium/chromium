@@ -213,6 +213,12 @@ BASE_FEATURE(kFledgeUseInterestGroupCache,
              "FledgeUseInterestGroupCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a delay for the post-auction interest group update to avoid
+// immediately invalidating cached values.
+BASE_FEATURE(kFledgeDelayPostAuctionInterestGroupUpdate,
+             "FledgeDelayPostAuctionInterestGroupUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables fixes for matching src: local() for web fonts correctly against full
 // font name or postscript name. Rolling out behind a flag, as enabling this
 // enables a font indexer on Android which we need to test in the field first.

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -612,8 +613,16 @@ void AuctionRunner::UpdateInterestGroupsPostAuction() {
         ContentBrowserClient::InterestGroupApiOperation::kUpdate, owner);
   });
 
-  interest_group_manager_->UpdateInterestGroupsOfOwners(
-      update_owners, client_security_state_.Clone(), attestation_callback_);
+  if (base::FeatureList::IsEnabled(
+          features::kFledgeDelayPostAuctionInterestGroupUpdate)) {
+    interest_group_manager_->UpdateInterestGroupsOfOwnersWithDelay(
+        std::move(update_owners), client_security_state_.Clone(),
+        std::move(attestation_callback_), kPostAuctionInterestGroupUpdateDelay);
+  } else {
+    interest_group_manager_->UpdateInterestGroupsOfOwners(
+        std::move(update_owners), client_security_state_.Clone(),
+        attestation_callback_);
+  }
 }
 
 void AuctionRunner::NotifyPromiseResolved(

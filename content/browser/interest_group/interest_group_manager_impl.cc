@@ -319,11 +319,24 @@ void InterestGroupManagerImpl::UpdateInterestGroupsOfOwner(
 }
 
 void InterestGroupManagerImpl::UpdateInterestGroupsOfOwners(
-    base::span<url::Origin> owners,
+    std::vector<url::Origin> owners,
     network::mojom::ClientSecurityStatePtr client_security_state,
     AreReportingOriginsAttestedCallback callback) {
   update_manager_.UpdateInterestGroupsOfOwners(
       owners, std::move(client_security_state), std::move(callback));
+}
+
+void InterestGroupManagerImpl::UpdateInterestGroupsOfOwnersWithDelay(
+    std::vector<url::Origin> owners,
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    AreReportingOriginsAttestedCallback callback,
+    const base::TimeDelta& delay) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&InterestGroupManagerImpl::UpdateInterestGroupsOfOwners,
+                     weak_factory_.GetWeakPtr(), std::move(owners),
+                     std::move(client_security_state), std::move(callback)),
+      delay);
 }
 
 void InterestGroupManagerImpl::RecordInterestGroupBids(
