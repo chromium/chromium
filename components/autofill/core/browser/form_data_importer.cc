@@ -1044,7 +1044,7 @@ FormDataImporter::ExtractCreditCardFromFormRelaxed(const FormStructure& form) {
     std::u16string_view user_input_view =
         base::TrimWhitespace(field.user_input, base::TRIM_ALL);
     if (!user_input_view.empty() &&
-        field.Type().GetStorableType() == ServerFieldType::CREDIT_CARD_NUMBER &&
+        field.Type().GetStorableType() == FieldType::CREDIT_CARD_NUMBER &&
         base::FeatureList::IsEnabled(
             features::kAutofillUseTypedCreditCardNumber)) {
       value_view = user_input_view;

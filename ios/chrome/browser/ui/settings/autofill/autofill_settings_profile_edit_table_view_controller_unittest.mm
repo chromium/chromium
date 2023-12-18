@@ -163,10 +163,9 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
 
     autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
     NSString* countryCode = base::SysUTF16ToNSString(
-        profile.GetRawInfo(autofill::ServerFieldType::ADDRESS_HOME_COUNTRY));
+        profile.GetRawInfo(autofill::FieldType::ADDRESS_HOME_COUNTRY));
 
-    std::vector<std::pair<autofill::ServerFieldType, std::u16string>>
-        expected_values;
+    std::vector<std::pair<autofill::FieldType, std::u16string>> expected_values;
     for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
       const AutofillProfileFieldDisplayInfo& field = kProfileFieldsToDisplay[i];
       if (!FieldIsUsedInAddress(field.autofillType, countryCode)) {

@@ -38,7 +38,7 @@ base::span<const MatchPatternRef> GetMatchPatterns(base::StringPiece name,
   return GetMatchPatterns(name, context.page_language, context.pattern_source);
 }
 
-base::span<const MatchPatternRef> GetMatchPatterns(ServerFieldType type,
+base::span<const MatchPatternRef> GetMatchPatterns(FieldType type,
                                                    ParsingContext& context) {
   return GetMatchPatterns(type, context.page_language, context.pattern_source);
 }

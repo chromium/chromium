@@ -439,7 +439,7 @@ enum FieldType {
 
   // No new types can be added without a corresponding change to the Autofill
   // server.
-  // This enum must be kept in sync with ServerFieldType from
+  // This enum must be kept in sync with FieldType from
   // * chrome/common/extensions/api/autofill_private.idl
   // * tools/typescript/definitions/autofill_private.d.ts
   // Please update `tools/metrics/histograms/enums.xml` by executing
@@ -511,8 +511,8 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type);
 FieldType HtmlFieldTypeToBestCorrespondingFieldType(HtmlFieldType field_type);
 
 // Returns |raw_value| if it corresponds to a non-deprecated enumeration
-// constant of ServerFieldType other than MAX_VALID_FIELD_TYPE. Otherwise,
-// returns |fallback_value|.
+// constant of FieldType other than MAX_VALID_FIELD_TYPE. Otherwise, returns
+// |fallback_value|.
 constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
                                     FieldType fallback_value) {
   auto IsValid = [](std::underlying_type_t<FieldType> t) {
@@ -582,10 +582,6 @@ constexpr HtmlFieldTypeSet kAllHtmlFieldTypes = [] {
   }
   return fields;
 }();
-
-// TODO(crbug.com/1511368): Remove aliases.
-using ServerFieldType = FieldType;
-using ServerFieldTypeSet = FieldTypeSet;
 
 }  // namespace autofill
 

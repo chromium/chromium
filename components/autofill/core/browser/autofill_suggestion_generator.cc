@@ -590,7 +590,7 @@ void AddCreditCardExpiryDateChildSuggestion(const CreditCard& credit_card,
 // This function is called only for first-level popup.
 PopupItemId GetProfileSuggestionPopupItemId(
     std::optional<FieldTypeSet> last_targeted_fields,
-    ServerFieldType trigger_field_type) {
+    FieldType trigger_field_type) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillGranularFillingAvailable)) {
     return PopupItemId::kAddressEntry;
