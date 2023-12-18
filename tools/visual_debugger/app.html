@@ -157,9 +157,10 @@
 </div>
 
 <div id='logsPanel'>
-  <div class='panelSection'>
+  <div class='panelSection collapsible'>
     <div class='sectionTitle'>
       Logs
+      [<span class="plus">+</span><span class="minus">-</span>]
       <!--input size=40 placeholder='Comma separated filter ...'>(TODO)</input-->
     </div>
     <div class='section'>
@@ -168,10 +169,11 @@
   </div>
 </div>
 
-<div class='panelSection'>
+<div class='panelSection collapsible'>
   <div class='sectionTitle'
     title="Filter debug data stream. Filter operations occur in a left to right order with first match being applied.">
     <i class="material-icons-outlined">filter_list</i> Filters
+    [<span class="plus">+</span><span class="minus">-</span>]
   </div>
   <div class='section'>
     <div id='filters' class="mdc-chip-set mdc-chip-set--filter" role="grid"
@@ -184,19 +186,23 @@
   </div>
 </div>
 
-<div class='panelSection'>
+<div class='panelSection collapsible'>
   <div class='sectionTitle'>
     <i class="material-symbols-outlined">
       airwave
     </i>
     Threads
+    [<span class="plus">+</span><span class="minus">-</span>]
   </div>
 
   <div id='threads' class='section'></div>
 </div>
 
-<div class='panelSection'>
-  <div class='sectionTitle'>Viewer Controls</div>
+<div class='panelSection collapsible'>
+  <div class='sectionTitle'>
+    Viewer Controls
+    [<span class="plus">+</span><span class="minus">-</span>]
+  </div>
   <div class='section' id='controls'>
     <div id='buttons'>
       <button class="mdc-button mdc-button--outline" id='prev'>
@@ -219,11 +225,11 @@
       </button>
 
     </div>
-    <div class='panelSection'>
+    <div>
       <div class='sectionTitle'>Frame Selection</div>
       <input type='range' min='0' max='0' value='0' id='scrubberframe'></input>
     </div>
-    <div class='panelSection'>
+    <div>
       <div class='sectionTitle'>Draw Selection<span id="drawRange"></span></div>
       <div class="minMaxScrubber">
         <input type="range" id='minDrawScrubber' class="scrubber"
@@ -235,9 +241,10 @@
   </div>
 </div>
 
-<div>
+<div class="panelSection collapsible">
   <div class='sectionTitle'>
     Viewer
+    [<span class="plus">+</span><span class="minus">-</span>]
   </div>
   <div style='float: right' class='sectionTitle'>
     Scale
@@ -406,6 +413,14 @@
       });
       f.click();
     });
+
+    document.querySelectorAll('.panelSection.collapsible').forEach(
+        (section) => {
+          let title = section.querySelector('.sectionTitle');
+          title.addEventListener('click', () => {
+            section.classList.toggle('collapsed');
+          });
+        });
 
     setUpPlayer();
     restoreFilters();
