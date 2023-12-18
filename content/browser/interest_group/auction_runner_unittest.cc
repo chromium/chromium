@@ -2325,6 +2325,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   network::mojom::ClientSecurityStatePtr GetClientSecurityState() override {
     return network::mojom::ClientSecurityState::New();
   }
+  absl::optional<std::string> GetCookieDeprecationLabel() override {
+    return absl::nullopt;
+  }
 
   // DebuggableAuctionWorkletTracker::Observer implementation
   void AuctionWorkletCreated(DebuggableAuctionWorklet* worklet,

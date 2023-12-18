@@ -696,7 +696,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          features::kBackForwardCache, features::kFledgeUseInterestGroupCache},
         /*disabled_features=*/
         {blink::features::kFencedFrames,
-         blink::features::kFledgeEnforceKAnonymity});
+         blink::features::kFledgeEnforceKAnonymity,
+         features::kCookieDeprecationFacilitatedTesting});
   }
 
   ~InterestGroupBrowserTest() override { content_browser_client_.reset(); }

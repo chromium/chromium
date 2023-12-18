@@ -33,12 +33,14 @@
 #include "content/browser/interest_group/ad_auction_result_metrics.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/cookie_deprecation_label_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
@@ -644,6 +646,23 @@ scoped_refptr<SiteInstance> AdAuctionServiceImpl::GetFrameSiteInstance() {
 network::mojom::ClientSecurityStatePtr
 AdAuctionServiceImpl::GetClientSecurityState() {
   return GetFrame()->BuildClientSecurityState();
+}
+
+absl::optional<std::string> AdAuctionServiceImpl::GetCookieDeprecationLabel() {
+  if (!base::FeatureList::IsEnabled(
+          features::kFledgeFacilitatedTestingSignalsHeaders)) {
+    return absl::nullopt;
+  }
+
+  CookieDeprecationLabelManager* cdlm =
+      render_frame_host()
+          .GetStoragePartition()
+          ->GetCookieDeprecationLabelManager();
+  if (cdlm) {
+    return cdlm->GetValue();
+  } else {
+    return absl::nullopt;
+  }
 }
 
 AdAuctionServiceImpl::AdAuctionServiceImpl(

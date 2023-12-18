@@ -18,6 +18,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kEnableUpdatingExecutionModeToFrozenContext);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableUpdatingUserBiddingSignals);
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeFacilitatedTestingSignalsHeaders);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_FEATURES_H_

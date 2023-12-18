@@ -694,6 +694,9 @@ class AuctionWorkletManagerTest : public RenderViewHostTestHarness,
   network::mojom::ClientSecurityStatePtr GetClientSecurityState() override {
     return network::mojom::ClientSecurityState::New();
   }
+  absl::optional<std::string> GetCookieDeprecationLabel() override {
+    return absl::nullopt;
+  }
 
  protected:
   void OnBadMessage(const std::string& reason) {

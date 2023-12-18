@@ -105,6 +105,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   RenderFrameHostImpl* GetFrame() override;
   scoped_refptr<SiteInstance> GetFrameSiteInstance() override;
   network::mojom::ClientSecurityStatePtr GetClientSecurityState() override;
+  absl::optional<std::string> GetCookieDeprecationLabel() override;
 
   using DocumentService::origin;
   using DocumentService::render_frame_host;

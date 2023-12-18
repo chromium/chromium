@@ -409,6 +409,9 @@ class InterestGroupAuctionReporterTest
   network::mojom::ClientSecurityStatePtr GetClientSecurityState() override {
     return frame_client_security_state_.Clone();
   }
+  absl::optional<std::string> GetCookieDeprecationLabel() override {
+    return absl::nullopt;
+  }
 
   void WaitForCompletion() { WaitForCompletionExpectingErrors({}); }
 

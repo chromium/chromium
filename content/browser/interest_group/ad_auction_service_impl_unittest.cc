@@ -108,6 +108,8 @@ constexpr char kNewBiddingUrlPath[] = "/interest_group/new_bidding_logic.js";
 constexpr char kDecisionUrlPath[] = "/interest_group/decision_logic.js";
 constexpr char kTrustedBiddingSignalsUrlPath[] =
     "/interest_group/trusted_bidding_signals.json";
+constexpr char kTrustedScoringSignalsUrlPath[] =
+    "/interest_group/trusted_scoring_signals.json";
 constexpr char kUpdateUrlPath[] = "/interest_group/daily_update_partial.json";
 constexpr char kUpdateUrlPath2[] =
     "/interest_group/daily_update_partial_2.json";
@@ -230,6 +232,11 @@ class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
     return allow_list_->contains(destination_origin);
   }
 
+  bool IsCookieDeprecationLabelAllowed(
+      content::BrowserContext* browser_context) override {
+    return true;
+  }
+
  private:
   // If not present, all origins are allowed.
   absl::optional<base::flat_set<url::Origin>> allow_list_;
@@ -249,6 +256,12 @@ constexpr char kFledgeReportHeaders[] =
     "HTTP/1.1 200 OK\n"
     "Ad-Auction-Allowed: true\n";
 
+constexpr char kFledgeSignalsHeaders[] =
+    "HTTP/1.1 200 OK\n"
+    "Content-type: Application/JSON\n"
+    "Data-Version: 2\n"
+    "Ad-Auction-Allowed: true\n";
+
 // Allows registering network responses to update and scoring / bidding script
 // requests; *must* be destroyed before the task environment is shutdown (which
 // happens in RenderViewHostTestHarness::TearDown()).
@@ -260,6 +273,9 @@ class NetworkResponder {
  public:
   using NetCallback =
       base::RepeatingCallback<void(URLLoaderInterceptor::RequestParams*)>;
+
+  using SignalsCallback = base::RepeatingCallback<std::string(
+      URLLoaderInterceptor::RequestParams*)>;
 
   // Register interest group update `response` to be served with JSON
   // content type when a request to `url_path` is made.
@@ -283,6 +299,14 @@ class NetworkResponder {
                               const std::string& response) {
     base::AutoLock auto_lock(lock_);
     report_map_[url_path] = response;
+  }
+
+  // Register signals `response` to be served when a request to `url_path` is
+  // made.
+  void RegisterSignalsResponse(const std::string& url_path,
+                               SignalsCallback callback) {
+    base::AutoLock auto_lock(lock_);
+    signals_map_[url_path] = std::move(callback);
   }
 
   // Register a repeat callback to be served when a request to `url_path` is
@@ -474,6 +498,15 @@ class NetworkResponder {
       return true;
     }
 
+    // Check if it's a trusted bidding/scoring signals response.
+    const auto signals_it = signals_map_.find(params->url_request.url.path());
+    if (signals_it != signals_map_.end()) {
+      URLLoaderInterceptor::WriteResponse(kFledgeSignalsHeaders,
+                                          signals_it->second.Run(params),
+                                          params->client.get());
+      return true;
+    }
+
     if ((params->url_request.url.path() == store_url_loader_client_url_path_)) {
       CHECK(!stored_url_loader_client_);
       stored_url_loader_client_ = std::move(params->client);
@@ -569,6 +602,11 @@ class NetworkResponder {
 
   // Like `json_update_map_`, but for reporting requests.
   base::flat_map<std::string, std::string> report_map_ GUARDED_BY(lock_);
+
+  // Like `json_update_map_`, but for registered callbacks that will be given
+  // the `URLLoaderInterceptor::RequestParams*` and return the response. Used
+  // for trusted signals requests.
+  base::flat_map<std::string, SignalsCallback> signals_map_ GUARDED_BY(lock_);
 
   // Like `json_update_map_`, but for registered callbacks that will be given
   // the `URLLoaderInterceptor::RequestParams*`.
@@ -1115,6 +1153,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   const GURL kNewBiddingLogicUrlA = kUrlA.Resolve(kNewBiddingUrlPath);
   const GURL kTrustedBiddingSignalsUrlA =
       kUrlA.Resolve(kTrustedBiddingSignalsUrlPath);
+  const GURL kTrustedScoringSignalsUrlA =
+      kUrlA.Resolve(kTrustedScoringSignalsUrlPath);
   const GURL kUpdateUrlA = kUrlA.Resolve(kUpdateUrlPath);
   const GURL kUpdateUrlA2 = kUrlA.Resolve(kUpdateUrlPath2);
   const GURL kUpdateUrlA3 = kUrlA.Resolve(kUpdateUrlPath3);
@@ -12545,6 +12585,90 @@ function reportResult(auctionConfig, browserSignals) {
                         0);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.AuctionWithWinnerTime",
                         0);
+}
+
+class AdAuctionServiceImplFacilitatedTestingTest
+    : public AdAuctionServiceImplTest {
+ public:
+  AdAuctionServiceImplFacilitatedTestingTest() {
+    features_.InitWithFeaturesAndParameters(
+        {{features::kCookieDeprecationFacilitatedTesting,
+          {{"label", "LabelForTesting"}}},
+         {features::kFledgeFacilitatedTestingSignalsHeaders, {}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(AdAuctionServiceImplFacilitatedTestingTest,
+       RunAdAuctionServesDeprecationLabelsInKVRequest) {
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+)";
+
+  bool bidding_kv_called = false;
+  bool scoring_kv_called = false;
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+  network_responder_->RegisterSignalsResponse(
+      kTrustedBiddingSignalsUrlPath,
+      base::BindLambdaForTesting(
+          [&](URLLoaderInterceptor::RequestParams* params) -> std::string {
+            std::string got_label;
+            EXPECT_TRUE(params->url_request.headers.GetHeader(
+                "Sec-Cookie-Deprecation", &got_label));
+            EXPECT_EQ("LabelForTesting", got_label);
+            bidding_kv_called = true;
+            return "{}";
+          }));
+  network_responder_->RegisterSignalsResponse(
+      kTrustedScoringSignalsUrlPath,
+      base::BindLambdaForTesting(
+          [&](URLLoaderInterceptor::RequestParams* params) -> std::string {
+            std::string got_label;
+            EXPECT_TRUE(params->url_request.headers.GetHeader(
+                "Sec-Cookie-Deprecation", &got_label));
+            EXPECT_EQ("LabelForTesting", got_label);
+            scoring_kv_called = true;
+            return "{}";
+          }));
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
+  interest_group.trusted_bidding_signals_keys = {"foo", "bar"};
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.trusted_scoring_signals_url = kTrustedScoringSignalsUrlA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, absl::nullopt);
+  EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
+            GURL("https://example.com/render"));
+  EXPECT_TRUE(bidding_kv_called);
+  EXPECT_TRUE(scoring_kv_called);
 }
 
 }  // namespace content
