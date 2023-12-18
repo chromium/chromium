@@ -1337,11 +1337,6 @@ BASE_FEATURE(kHandwritingLegacyRecognition,
              "HandwritingLegacyRecognition",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables downloading the handwriting libraries via DLC.
-BASE_FEATURE(kHandwritingLibraryDlc,
-             "HandwritingLibraryDlc",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, the Help app will render the App Detail Page and entry point.
 BASE_FEATURE(kHelpAppAppDetailPage,
              "HelpAppAppDetailPage",

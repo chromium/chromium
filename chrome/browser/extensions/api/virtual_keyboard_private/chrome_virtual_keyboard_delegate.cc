@@ -527,9 +527,11 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag(
       "autocorrectparamstuning",
       base::FeatureList::IsEnabled(ash::features::kAutocorrectParamsTuning)));
-  features.Append(GenerateFeatureFlag(
-      "handwritinglibrarydlc",
-      base::FeatureList::IsEnabled(ash::features::kHandwritingLibraryDlc)));
+
+  // TODO(b/316429185): Remove "handwritinglibrarydlc" when no longer referenced
+  // in CrOS virtual keyboard's internal code base.
+  features.Append(GenerateFeatureFlag("handwritinglibrarydlc", true));
+
   features.Append(
       GenerateFeatureFlag("jelly", chromeos::features::IsJellyEnabled()));
   features.Append(GenerateFeatureFlag(

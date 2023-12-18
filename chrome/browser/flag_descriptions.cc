@@ -1955,12 +1955,6 @@ const char kHandwritingLegacyRecognitionName[] =
 const char kHandwritingLegacyRecognitionDescription[] =
     "Enables new on-device recognition for handwriting legacy paths.";
 
-const char kHandwritingLibraryDlcName[] =
-    "Handwriting recognition with library from DLC";
-const char kHandwritingLibraryDlcDescription[] =
-    "Enables new on-device recognition with the handwriting library installed "
-    "from DLC";
-
 const char kHardwareMediaKeyHandling[] = "Hardware Media Key Handling";
 const char kHardwareMediaKeyHandlingDescription[] =
     "Enables using media keys to control the active media session. This "
