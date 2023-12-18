@@ -45,6 +45,8 @@ class WebViewWebClient : public web::WebClient {
   bool EnableWebInspector(web::BrowserState* browser_state) const override;
   bool IsMixedContentAutoupgradeEnabled(
       web::BrowserState* browser_state) const override;
+  bool IsInsecureFormWarningEnabled(
+      web::BrowserState* browser_state) const override;
 };
 
 }  // namespace ios_web_view

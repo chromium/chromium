@@ -138,6 +138,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kParcelTrackingEnabled,
     prefs::kIosParcelTrackingPolicyEnabled,
     base::Value::Type::BOOLEAN },
+  { policy::key::kInsecureFormsWarningsEnabled,
+    prefs::kInsecureFormWarningsEnabled,
+    base::Value::Type::BOOLEAN },
 };
 // clang-format on
 

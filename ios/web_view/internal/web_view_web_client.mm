@@ -183,4 +183,12 @@ bool WebViewWebClient::IsMixedContentAutoupgradeEnabled(
       security_interstitials::features::kMixedContentAutoupgrade);
 }
 
+bool WebViewWebClient::IsInsecureFormWarningEnabled(
+    web::BrowserState* browser_state) const {
+  // ios/web_view doesn't receive variations seeds at runtime, so this will
+  // only ever use the default value of the feature.
+  return base::FeatureList::IsEnabled(
+      security_interstitials::features::kInsecureFormSubmissionInterstitial);
+}
+
 }  // namespace ios_web_view

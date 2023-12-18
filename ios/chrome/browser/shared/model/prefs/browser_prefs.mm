@@ -677,6 +677,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(prefs::kNotificationsPromoLastShown, base::Time());
   registry->RegisterIntegerPref(prefs::kNotificationsPromoTimesShown, 0);
   registry->RegisterIntegerPref(prefs::kNotificationsPromoTimesDismissed, 0);
+
+  registry->RegisterBooleanPref(prefs::kInsecureFormWarningsEnabled, true);
 }
 
 // This method should be periodically pruned of year+ old migrations.

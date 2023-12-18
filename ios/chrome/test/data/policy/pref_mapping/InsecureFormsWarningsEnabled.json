@@ -1,19 +1,13 @@
 [
   {
     "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
-      "android",
-      "fuchsia"
+      "ios"
     ],
     "policy_pref_mapping_tests": [
       {
         "note": "Default value (no policies set).",
         "prefs": {
-          "profile.mixed_forms_warnings": {
+          "ios.insecure_form_warnings_enabled": {
             "default_value": true
           }
         }
@@ -23,7 +17,7 @@
           "InsecureFormsWarningsEnabled": false
         },
         "prefs": {
-          "profile.mixed_forms_warnings": {
+          "ios.insecure_form_warnings_enabled": {
             "value": false
           }
         }

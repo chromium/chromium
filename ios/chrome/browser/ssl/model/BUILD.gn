@@ -109,9 +109,12 @@ source_set("eg2_tests") {
 
   deps = [
     ":eg_test_support+eg2",
+    "//components/policy:policy_code_generate",
     "//components/security_interstitials/core",
     "//components/strings",
     "//ios/chrome/browser/overlays/model/public/web_content_area:constants",
+    "//ios/chrome/browser/policy/model:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/components/security_interstitials/https_only_mode:feature",

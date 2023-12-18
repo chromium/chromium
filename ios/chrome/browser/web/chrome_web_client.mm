@@ -565,3 +565,17 @@ void ChromeWebClient::SetOSLockdownModeEnabled(web::BrowserState* browser_state,
   PrefService* prefs = chrome_browser_state->GetPrefs();
   prefs->SetBoolean(prefs::kOSLockdownModeEnabled, enabled);
 }
+
+bool ChromeWebClient::IsInsecureFormWarningEnabled(
+    web::BrowserState* browser_state) const {
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(browser_state);
+  if (!chrome_browser_state->GetPrefs()->GetBoolean(
+          prefs::kInsecureFormWarningsEnabled) &&
+      chrome_browser_state->GetPrefs()->IsManagedPreference(
+          prefs::kInsecureFormWarningsEnabled)) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(
+      security_interstitials::features::kInsecureFormSubmissionInterstitial);
+}

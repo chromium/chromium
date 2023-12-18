@@ -66,6 +66,8 @@ class ChromeWebClient : public web::WebClient {
   bool IsBrowserLockdownModeEnabled(web::BrowserState* browser_state) override;
   void SetOSLockdownModeEnabled(web::BrowserState* browser_state,
                                 bool enabled) override;
+  bool IsInsecureFormWarningEnabled(
+      web::BrowserState* browser_state) const override;
 
  private:
   // Reference to a view that is attached to a window.

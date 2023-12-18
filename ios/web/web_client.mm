@@ -126,4 +126,9 @@ bool WebClient::IsBrowserLockdownModeEnabled(web::BrowserState* browser_state) {
 void WebClient::SetOSLockdownModeEnabled(web::BrowserState* browser_state,
                                          bool enabled) {}
 
+bool WebClient::IsInsecureFormWarningEnabled(
+    web::BrowserState* browser_state) const {
+  return true;
+}
+
 }  // namespace web

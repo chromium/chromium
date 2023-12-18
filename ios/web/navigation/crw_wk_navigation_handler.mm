@@ -1584,8 +1584,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   if (action.navigationType == WKNavigationTypeFormResubmitted) {
     return web::FormWarningType::kRepost;
   }
-  if (base::FeatureList::IsEnabled(security_interstitials::features::
-                                       kInsecureFormSubmissionInterstitial) &&
+  if (web::GetWebClient()->IsInsecureFormWarningEnabled(
+          self.webStateImpl->GetBrowserState()) &&
       action.navigationType == WKNavigationTypeFormSubmitted) {
     if (action.sourceFrame) {
       GURL source_url = web::GURLOriginWithWKSecurityOrigin(

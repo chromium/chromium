@@ -12,8 +12,11 @@
 #import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/test/ios/wait_util.h"
+#import "components/policy/policy_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_constants.h"
+#import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ssl/model/insecure_form_warning_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -87,6 +90,8 @@ void WaitForInsecureFormDialog() {
 - (void)tearDown {
   [InsecureFormWarningAppInterface setInsecureFormPortsForTesting:0
                                             portTreatedAsInsecure:0];
+  policy_test_utils::ClearPolicies();
+
   [super tearDown];
 }
 
@@ -103,14 +108,7 @@ void WaitForInsecureFormDialog() {
   return config;
 }
 
-#pragma mark - Tests
-
-// Tests that posting from HTTP to HTTP doesn't show a warning.
-- (void)testHttpToHttpFormSubmit {
-  std::string pageURLString =
-      "/insecure_form.html?" + self.testServer->GetURL("/echo").spec();
-
-  const GURL pageURL = self.testServer->GetURL(pageURLString);
+- (void)submitFormAndExpectNoWarning:(const GURL&)pageURL {
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey
       waitForWebStateContainingText:"Insecure form ready to submit"];
@@ -121,13 +119,24 @@ void WaitForInsecureFormDialog() {
       waitForWebStateContainingText:"username=testuser&password=testpassword"];
 }
 
+#pragma mark - Tests
+
+// Tests that posting from HTTP to HTTP doesn't show a warning.
+- (void)testHttpToHttpFormSubmit {
+  std::string URLString =
+      "/insecure_form.html?" + self.testServer->GetURL("/echo").spec();
+  const GURL HTTPToHTTPFormURL = self.testServer->GetURL(URLString);
+  [self submitFormAndExpectNoWarning:HTTPToHTTPFormURL];
+}
+
 // Tests that posting from HTTPS to HTTP shows a warning and tapping cancel
 // doesn't send post data.
 - (void)testInsecureFormSubmit_Cancel {
-  std::string pageURLString =
+  std::string URLString =
       "/insecure_form.html?" + self.testServer->GetURL("/echo").spec();
-  const GURL pageURL = _fakeHTTPSServer->GetURL(pageURLString);
-  [ChromeEarlGrey loadURL:pageURL];
+  const GURL FakeHTTPSToHTTPFormURL = _fakeHTTPSServer->GetURL(URLString);
+
+  [ChromeEarlGrey loadURL:FakeHTTPSToHTTPFormURL];
   [ChromeEarlGrey
       waitForWebStateContainingText:"Insecure form ready to submit"];
 
@@ -143,10 +152,11 @@ void WaitForInsecureFormDialog() {
 // Tests that posting from HTTPS to HTTP shows a warning and tapping
 // "Send anyway" sends the post data.
 - (void)testInsecureFormSubmit_SendAnyway {
-  std::string pageURLString =
+  std::string URLString =
       "/insecure_form.html?" + self.testServer->GetURL("/echo").spec();
-  const GURL pageURL = _fakeHTTPSServer->GetURL(pageURLString);
-  [ChromeEarlGrey loadURL:pageURL];
+  const GURL FakeHTTPSToHTTPFormURL = _fakeHTTPSServer->GetURL(URLString);
+
+  [ChromeEarlGrey loadURL:FakeHTTPSToHTTPFormURL];
   [ChromeEarlGrey
       waitForWebStateContainingText:"Insecure form ready to submit"];
 
@@ -162,17 +172,23 @@ void WaitForInsecureFormDialog() {
 // Tests that posting from HTTPS to HTTP doesn't show a warning when the feature
 // is disabled.
 - (void)testInsecureFormSubmit_FeatureDisabled {
-  std::string pageURLString =
+  std::string URLString =
       "/insecure_form.html?" + self.testServer->GetURL("/echo").spec();
-  const GURL pageURL = _fakeHTTPSServer->GetURL(pageURLString);
-  [ChromeEarlGrey loadURL:pageURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"Insecure form ready to submit"];
+  const GURL FakeHTTPSToHTTPFormURL = _fakeHTTPSServer->GetURL(URLString);
 
-  // Submit the form, should go through without an interstitial.
-  [ChromeEarlGrey tapWebStateElementWithID:@"submit"];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"username=testuser&password=testpassword"];
+  [self submitFormAndExpectNoWarning:FakeHTTPSToHTTPFormURL];
+}
+
+// Tests that disabling the feature by policy will stop showing a warning.
+- (void)testInsecureFormSubmit_DisabledByPolicy {
+  policy_test_utils::SetPolicy(false,
+                               policy::key::kInsecureFormsWarningsEnabled);
+
+  std::string URLString =
+      "/insecure_form.html?" + self.testServer->GetURL("/echo").spec();
+  const GURL FakeHTTPSToHTTPFormURL = _fakeHTTPSServer->GetURL(URLString);
+
+  [self submitFormAndExpectNoWarning:FakeHTTPSToHTTPFormURL];
 }
 
 @end

@@ -495,4 +495,7 @@ const char kNotificationsPromoTimesShown[] =
 const char kNotificationsPromoTimesDismissed[] =
     "ios.content_notifications.promo_times_dismissed";
 
+const char kInsecureFormWarningsEnabled[] =
+    "ios.insecure_form_warnings_enabled";
+
 }  // namespace prefs
