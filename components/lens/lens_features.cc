@@ -42,10 +42,6 @@ BASE_FEATURE(kLensRegionSearchStaticPage,
              "LensRegionSearchStaticPage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensImageFormatOptimizations,
-             "LensImageFormatOptimizations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableContextMenuInLensSidePanel,
              "EnableContextMenuInLensSidePanel",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -97,18 +93,6 @@ constexpr base::FeatureParam<int> kMaxPixelsForImageSearch{
 
 const base::FeatureParam<bool> kEnableLensFullscreenSearch{
     &kLensSearchOptimizations, "enable-lens-fullscreen-search", false};
-
-const base::FeatureParam<int> kEncodingQualityJpeg{
-    &kLensImageFormatOptimizations, "encoding-quality-jpeg", 40};
-
-const base::FeatureParam<int> kEncodingQualityWebp{
-    &kLensImageFormatOptimizations, "encoding-quality-webp", 45};
-
-const base::FeatureParam<bool> kUseWebpForImageSearch{
-    &kLensImageFormatOptimizations, "use-webp-for-image-search", false};
-
-const base::FeatureParam<bool> kUseJpegForImageSearch{
-    &kLensImageFormatOptimizations, "use-jpeg-for-image-search", true};
 
 bool GetEnableLatencyLogging() {
   return base::FeatureList::IsEnabled(kEnableLatencyLogging) &&
@@ -171,24 +155,6 @@ bool IsLensSidePanelEnabled() {
 
 bool IsLensRegionSearchStaticPageEnabled() {
   return base::FeatureList::IsEnabled(kLensRegionSearchStaticPage);
-}
-
-int GetEncodingQualityJpeg() {
-  return kEncodingQualityJpeg.Get();
-}
-
-int GetEncodingQualityWebp() {
-  return kEncodingQualityWebp.Get();
-}
-
-bool IsWebpForImageSearchEnabled() {
-  return base::FeatureList::IsEnabled(kLensImageFormatOptimizations) &&
-         kUseWebpForImageSearch.Get();
-}
-
-bool IsJpegForImageSearchEnabled() {
-  return base::FeatureList::IsEnabled(kLensImageFormatOptimizations) &&
-         kUseJpegForImageSearch.Get();
 }
 
 bool GetEnableContextMenuInLensSidePanel() {

@@ -33057,7 +33057,6 @@ from previous Chrome versions.
   <int value="-36007541"
       label="DataRetentionPoliciesDisableSyncTypesNeeded:enabled"/>
   <int value="-35745997" label="TabSearch:enabled"/>
-  <int value="-35528548" label="LensImageFormatOptimizations:disabled"/>
   <int value="-35388407" label="AshNewSystemMenu:disabled"/>
   <int value="-35256214" label="InterestFeedNoticeCardAutoDismiss:enabled"/>
   <int value="-35002051" label="DefaultBucketUsesRelaxedDurability:enabled"/>
@@ -37151,7 +37150,6 @@ from previous Chrome versions.
   <int value="1895993853" label="NtpRealboxRoundedCorners:enabled"/>
   <int value="1896456311" label="enable-password-save-in-page-navigation"/>
   <int value="1896527497" label="ImmersiveUiMode:enabled"/>
-  <int value="1897117967" label="LensImageFormatOptimizations:enabled"/>
   <int value="1898231011" label="enable-native-notifications"/>
   <int value="1898286738" label="EnableRFC8925:disabled"/>
   <int value="1899111954" label="WebRtcMetronomeTaskQueue:disabled"/>

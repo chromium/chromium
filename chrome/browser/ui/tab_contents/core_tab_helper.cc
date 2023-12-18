@@ -82,6 +82,8 @@ constexpr int kImageSearchThumbnailMinSize = 300 * 300;
 constexpr int kImageSearchThumbnailMaxWidth = 600;
 constexpr int kImageSearchThumbnailMaxHeight = 600;
 constexpr char kUnifiedSidePanelVersion[] = "1";
+constexpr int kEncodingQualityJpeg = 40;
+constexpr int kEncodingQualityWebp = 45;
 
 bool NeedsDownscale(gfx::Image image) {
   return (image.Height() * image.Width() >
@@ -132,24 +134,15 @@ std::vector<unsigned char> CoreTabHelper::EncodeImage(
     std::string& content_type,
     lens::mojom::ImageFormat& image_format) {
   std::vector<unsigned char> data;
-  // TODO(crbug/1486044): Encode off the main thread.
-  if (lens::features::IsWebpForImageSearchEnabled() &&
-      gfx::WebpCodec::Encode(image.AsBitmap(),
-                             lens::features::GetEncodingQualityWebp(), &data)) {
-    content_type = "image/webp";
-    image_format = lens::mojom::ImageFormat::WEBP;
-    return data;
-  } else if (lens::features::IsJpegForImageSearchEnabled() &&
-             gfx::JPEGCodec::Encode(image.AsBitmap(),
-                                    lens::features::GetEncodingQualityJpeg(),
-                                    &data)) {
+
+  if (gfx::JPEGCodec::Encode(image.AsBitmap(), kEncodingQualityJpeg, &data)) {
     content_type = "image/jpeg";
     image_format = lens::mojom::ImageFormat::JPEG;
     return data;
   }
-  // If the WebP/JPEG encoding fails, fall back to PNG.
+
   // Get the front and end of the image bytes in order to store them in the
-  // search_args to be sent as part of the PostContent in the request.
+  // search_args to be sent as part of the PostContent in the request
   size_t image_bytes_size = image.As1xPNGBytes()->size();
   const unsigned char* image_bytes_begin = image.As1xPNGBytes()->front();
   const unsigned char* image_bytes_end = image_bytes_begin + image_bytes_size;
@@ -171,6 +164,7 @@ void CoreTabHelper::DownscaleAndEncodeBitmap(
   gfx::Size downscaled_size;
   std::vector<lens::mojom::LatencyLogPtr> log_data;
   std::vector<unsigned char> thumbnail_data;
+
   if (bitmap.isNull()) {
     return std::move(callback).Run(thumbnail_data, content_type, original_size,
                                    downscaled_size, std::move(log_data));
@@ -219,13 +213,11 @@ void CoreTabHelper::DownscaleAndEncodeBitmap(
       lens::mojom::ImageFormat::ORIGINAL, base::Time::Now(),
       /*encoded_size_bytes=*/0));
   if (thumbnail.isOpaque() &&
-      gfx::JPEGCodec::Encode(
-          thumbnail, lens::features::GetEncodingQualityJpeg(), &encoded_data)) {
+      gfx::JPEGCodec::Encode(thumbnail, kEncodingQualityJpeg, &encoded_data)) {
     thumbnail_data.swap(encoded_data);
     content_type = "image/jpeg";
     encode_target_format = lens::mojom::ImageFormat::JPEG;
-  } else if (gfx::WebpCodec::Encode(thumbnail,
-                                    lens::features::GetEncodingQualityWebp(),
+  } else if (gfx::WebpCodec::Encode(thumbnail, kEncodingQualityWebp,
                                     &encoded_data)) {
     thumbnail_data.swap(encoded_data);
     content_type = "image/webp";

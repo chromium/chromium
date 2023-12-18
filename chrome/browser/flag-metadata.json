@@ -2983,11 +2983,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-lens-image-format-optimizations",
-    "owners": ["mercerd@google.com", "stanfield@google.com", "lens-chrome@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-lens-image-translate",
     "owners": ["nguyenbryan@google.com", "stanfield@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 120

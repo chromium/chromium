@@ -3043,14 +3043,6 @@ const FeatureEntry::FeatureVariation kUnthrottledNestedTimeout_Variations[] = {
     {"15", &kUnthrottledNestedTimeout_NestingLevel, 1, nullptr},
 };
 
-constexpr FeatureEntry::FeatureParam kLensFormatOptimizationWebp[] = {
-    {"use-webp-for-image-search", "true"},
-    {"use-jpeg-for-image-search", "false"}};
-constexpr FeatureEntry::FeatureVariation kLensImageFormatVariations[] = {
-    {"use Webp", kLensFormatOptimizationWebp,
-     std::size(kLensFormatOptimizationWebp), nullptr},
-};
-
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 constexpr FeatureEntry::FeatureParam kCscStagingEnvVariation[] = {
     {"companion-homepage-url",
@@ -8938,14 +8930,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensRegionSearchStaticPageDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensRegionSearchStaticPage)},
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-
-    {"enable-lens-image-format-optimizations",
-     flag_descriptions::kLensImageFormatOptimizationsName,
-     flag_descriptions::kLensImageFormatOptimizationsDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         lens::features::kLensImageFormatOptimizations,
-         kLensImageFormatVariations,
-         "LensImageFormatOptimizations")},
 
     {"enable-lens-image-translate", flag_descriptions::kLensImageTranslateName,
      flag_descriptions::kLensImageTranslateDescription, kOsDesktop,
