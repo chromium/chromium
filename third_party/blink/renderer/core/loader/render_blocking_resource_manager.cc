@@ -159,6 +159,7 @@ void RenderBlockingResourceManager::AddPendingParsingElementLink(
   } else {
     it->value->insert(link);
   }
+  document_->SetHasRenderBlockingExpectLinkElements(true);
 }
 
 void RenderBlockingResourceManager::RemovePendingParsingElement(
@@ -173,6 +174,7 @@ void RenderBlockingResourceManager::RemovePendingParsingElement(
 
   element_render_blocking_links_.erase(id);
   if (element_render_blocking_links_.empty()) {
+    document_->SetHasRenderBlockingExpectLinkElements(false);
     RenderBlockingResourceUnblocked();
   }
 }
@@ -200,6 +202,7 @@ void RenderBlockingResourceManager::RemovePendingParsingElementLink(
   }
 
   if (element_render_blocking_links_.empty()) {
+    document_->SetHasRenderBlockingExpectLinkElements(false);
     RenderBlockingResourceUnblocked();
   }
 }
@@ -213,6 +216,7 @@ void RenderBlockingResourceManager::ClearPendingParsingElements() {
     return;
   }
 
+  document_->SetHasRenderBlockingExpectLinkElements(false);
   element_render_blocking_links_.clear();
   RenderBlockingResourceUnblocked();
 }

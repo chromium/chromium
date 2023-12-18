@@ -2464,9 +2464,12 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       GetDocument().GetStyleEngine().IdChangedForElement(old_id, new_id, *this);
     }
 
-    if (auto* manager = GetDocument().GetRenderBlockingResourceManager();
-        manager && IsFinishedParsingChildren()) {
-      manager->RemovePendingParsingElement(new_id);
+    if (GetDocument().HasRenderBlockingExpectLinkElements() &&
+        IsFinishedParsingChildren()) {
+      DCHECK(GetDocument().GetRenderBlockingResourceManager());
+      GetDocument()
+          .GetRenderBlockingResourceManager()
+          ->RemovePendingParsingElement(GetIdAttribute());
     }
   } else if (name == html_names::kClassAttr) {
     if (params.old_value == params.new_value &&
@@ -5418,10 +5421,12 @@ void Element::FinishParsingChildren() {
   CheckForSiblingStyleChanges(kFinishedParsingChildren, nullptr, lastChild(),
                               nullptr);
 
-  if (auto* manager = GetDocument().GetRenderBlockingResourceManager()) {
-    manager->RemovePendingParsingElement(GetIdAttribute());
+  if (GetDocument().HasRenderBlockingExpectLinkElements()) {
+    DCHECK(GetDocument().GetRenderBlockingResourceManager());
+    GetDocument()
+        .GetRenderBlockingResourceManager()
+        ->RemovePendingParsingElement(GetIdAttribute());
   }
-
   GetDocument()
       .GetStyleEngine()
       .ScheduleInvalidationsForHasPseudoAffectedByInsertion(
