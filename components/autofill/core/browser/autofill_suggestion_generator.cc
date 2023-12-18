@@ -996,48 +996,47 @@ void AssignLabelsAndDeduplicate(
 }
 
 // Returns whether the `suggestion_canon` is a valid match given
-// `field_contents_canon`.
-bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
-                                       std::u16string field_contents_canon,
-                                       FieldType trigger_field_type,
-                                       bool is_masked_server_card,
-                                       bool field_is_autofilled) {
+// `field_contents_canon`. To be used for address suggestions
+bool IsValidAddressSuggestionForFieldContents(
+    std::u16string suggestion_canon,
+    std::u16string field_contents_canon,
+    FieldType trigger_field_type) {
   // Phones should do a substring match because they can be trimmed to remove
   // the first parts (e.g. country code or prefix).
   if (GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kPhone &&
       suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
     return true;
   }
+  return suggestion_canon.starts_with(field_contents_canon);
+}
 
+// Returns whether the `suggestion_canon` is a valid match given
+// `field_contents_canon`. To be used for payments suggestions.
+bool IsValidPaymentsSuggestionForFieldContents(
+    std::u16string suggestion_canon,
+    std::u16string field_contents_canon,
+    FieldType trigger_field_type,
+    bool is_masked_server_card,
+    bool field_is_autofilled) {
+  if (trigger_field_type != CREDIT_CARD_NUMBER) {
+    return suggestion_canon.starts_with(field_contents_canon);
+  }
   // For card number fields, suggest the card if:
   // - the number matches any part of the card, or
   // - it's a masked card and there are 6 or fewer typed so far.
   // - it's a masked card, field is autofilled, and the last 4 digits in the
   // field match the last 4 digits of the card.
-  if (trigger_field_type == CREDIT_CARD_NUMBER) {
-    if (suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
-      return true;
-    }
-
-    if (is_masked_server_card) {
-      if (field_contents_canon.length() < 6) {
-        return true;
-      }
-      if (field_is_autofilled) {
-        int field_contents_length = field_contents_canon.length();
-        DCHECK(field_contents_length >= 4);
-        if (suggestion_canon.find(field_contents_canon.substr(
-                field_contents_length - 4, field_contents_length)) !=
-            std::u16string::npos) {
-          return true;
-        }
-      }
-    }
-
+  if (suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
+    return true;
+  }
+  if (!is_masked_server_card) {
     return false;
   }
-
-  return suggestion_canon.starts_with(field_contents_canon);
+  return field_contents_canon.size() < 6 ||
+         (field_is_autofilled &&
+          suggestion_canon.find(field_contents_canon.substr(
+              field_contents_canon.size() - 4, field_contents_canon.size())) !=
+              std::u16string::npos);
 }
 
 // Normalizes text for comparison based on the type of the field `text` was
@@ -1366,20 +1365,16 @@ AutofillSuggestionGenerator::GetPrefixMatchedProfiles(
       continue;
     }
 #endif  // BUILDFLAG(IS_ANDROID)
-
     std::u16string main_text = GetProfileSuggestionMainText(
         *profile, personal_data_->app_locale(), trigger_field_type);
-
     // Discard profiles that do not have a value for the trigger field.
     if (main_text.empty()) {
       continue;
     }
-
     std::u16string suggestion_canon =
         NormalizeForComparisonForType(main_text, trigger_field_type);
-    if (IsValidSuggestionForFieldContents(
-            suggestion_canon, field_contents_canon, trigger_field_type,
-            /*is_masked_server_card=*/false, field_is_autofilled)) {
+    if (IsValidAddressSuggestionForFieldContents(
+            suggestion_canon, field_contents_canon, trigger_field_type)) {
       matched_profiles.push_back(profile);
     }
   }
@@ -1459,9 +1454,8 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     if (!is_manual_fallback && creditcard_field_value.empty()) {
       continue;
     }
-
     // Manual fallback suggestions aren't filtered based on the field's content.
-    if (is_manual_fallback || IsValidSuggestionForFieldContents(
+    if (is_manual_fallback || IsValidPaymentsSuggestionForFieldContents(
                                   base::i18n::ToLower(creditcard_field_value),
                                   field_contents_lower, trigger_field_type,
                                   credit_card.record_type() ==
