@@ -448,6 +448,18 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
                                       : [super caretRectForPosition:position];
 }
 
+- (NSArray<UITextSelectionRect*>*)selectionRectsForRange:(UITextRange*)range {
+  // Hide the selection UI in pre-edit. UITextField is expected to hide the
+  // selection UI when `clearsOnInsertion` is YES, but this behavior is not
+  // working on iOS 17.
+  if (@available(iOS 17, *)) {
+    if (self.isPreEditing) {
+      return nil;
+    }
+  }
+  return [super selectionRectsForRange:range];
+}
+
 #pragma mark - UITextInput
 
 - (void)beginFloatingCursorAtPoint:(CGPoint)point {
