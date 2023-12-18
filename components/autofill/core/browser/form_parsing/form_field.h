@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -20,6 +21,7 @@
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
@@ -57,6 +59,18 @@ struct ParsingContext {
   const GeoIpCountryCode client_country;
   const LanguageCode page_language;
   const PatternSource pattern_source;
+
+  // Cache for autofill features that are tested on hot code paths. Testing
+  // whether a feature is enabled is pretty expensive. Caching the status of two
+  // features led to a performance improvement for form field classification of
+  // 19% in release builds.
+  // Note that adding features here may push users into the respective
+  // experiment/control groups earlier than you may want.
+  const bool autofill_enable_support_for_parsing_with_shared_labels{
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForParsingWithSharedLabels)};
+  const bool autofill_always_parse_placeholders{
+      base::FeatureList::IsEnabled(features::kAutofillAlwaysParsePlaceholders)};
 
   base::raw_ref<AutofillRegexCache> regex_cache;
 };

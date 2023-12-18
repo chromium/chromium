@@ -9,7 +9,6 @@
 #include <iterator>
 #include <numeric>
 
-#include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -36,7 +35,6 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -572,8 +570,7 @@ bool FormField::Match(ParsingContext& context,
 
   // TODO(crbug/1165780): Remove once shared labels are launched.
   const std::u16string& label =
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForParsingWithSharedLabels)
+      context.autofill_enable_support_for_parsing_with_shared_labels
           ? field->parseable_label()
           : field->label;
 
@@ -593,8 +590,7 @@ bool FormField::Match(ParsingContext& context,
     match_type_string = "Match in name";
     value = name;
   } else if (match_label && pattern != kEmptyLabelRegex &&
-             base::FeatureList::IsEnabled(
-                 features::kAutofillAlwaysParsePlaceholders) &&
+             context.autofill_always_parse_placeholders &&
              MatchesRegexWithCache(context, field->placeholder, pattern,
                                    capture_destination)) {
     // Placeholders are matched against the same regexes as labels. However, to
