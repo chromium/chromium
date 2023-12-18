@@ -1025,9 +1025,10 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   EXPECT_EQ(kCurrentBounds, browser_bounds);
 }
 
+// TODO(crbug/1512721): Re-enable this test when the flakiness issue is fixed.
 // Test Lacros window properties and bounds are restored correctly.
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
-                       RestoreLacrosWindowProperties) {
+                       DISABLED_RestoreLacrosWindowProperties) {
   gfx::Size size(32, 32);
   gfx::Point origin(100, 100);
   gfx::Rect prerestore_bounds(origin, size);
