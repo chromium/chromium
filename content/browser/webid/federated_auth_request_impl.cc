@@ -2772,22 +2772,8 @@ void FederatedAuthRequestImpl::PreventSilentAccess(
     PreventSilentAccessCallback callback) {
   SetRequiresUserMediation(true);
   if (permission_delegate_->HasSharingPermission(GetEmbeddingOrigin())) {
-    PreventSilentAccessFrameType frame_type =
-        PreventSilentAccessFrameType::kMainFrame;
-    RenderFrameHost* main_rfh = render_frame_host().GetMainFrame();
-    if (main_rfh != &render_frame_host()) {
-      std::string site =
-          webid::FormatUrlWithDomain(origin().GetURL(), /*for_display=*/false);
-      std::string embedder =
-          webid::FormatUrlWithDomain(GetEmbeddingOrigin().GetURL(),
-                                     /*for_display=*/false);
-      if (site == embedder) {
-        frame_type = PreventSilentAccessFrameType::kSameSiteIframe;
-      } else {
-        frame_type = PreventSilentAccessFrameType::kCrossSiteIframe;
-      }
-    }
-    RecordPreventSilentAccess(render_frame_host(), frame_type);
+    RecordPreventSilentAccess(render_frame_host(), origin(),
+                              GetEmbeddingOrigin());
   }
 
   // Send acknowledge response back.
@@ -2822,7 +2808,8 @@ void FederatedAuthRequestImpl::Disconnect(
         webid::GetDisconnectConsoleErrorMessage(
             FedCmDisconnectStatus::kTooManyRequests));
     fedcm_metrics_->RecordDisconnectMetrics(
-        FedCmDisconnectStatus::kTooManyRequests, std::nullopt);
+        FedCmDisconnectStatus::kTooManyRequests, std::nullopt,
+        render_frame_host(), origin(), GetEmbeddingOrigin());
     std::move(callback).Run(DisconnectStatus::kErrorTooManyRequests);
     return;
   }

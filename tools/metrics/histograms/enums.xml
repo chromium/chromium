@@ -22472,7 +22472,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Accounts not received and pop-up not closed by IDP"/>
 </enum>
 
-<enum name="FedCmPreventSilentAccessFrameType">
+<enum name="FedCmRequesterFrameType">
   <int value="0" label="Main frame"/>
   <int value="1" label="Iframe which is same-site as main frame"/>
   <int value="2" label="Iframe which is cross-site as main frame"/>

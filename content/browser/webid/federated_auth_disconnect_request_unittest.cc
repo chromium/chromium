@@ -191,34 +191,13 @@ class TestPermissionDelegate : public MockPermissionDelegate {
       const url::Origin& relying_party_embedder,
       const url::Origin& identity_provider,
       const absl::optional<std::string>& account_id) override {
-    url::Origin rp_origin_with_data = url::Origin::Create(GURL(kRpUrl));
-    url::Origin idp_origin_with_data = url::Origin::Create(GURL(kProviderUrl));
-    bool has_granted_permission_per_profile =
-        relying_party_requester == rp_origin_with_data &&
-        relying_party_embedder == rp_origin_with_data &&
-        identity_provider == idp_origin_with_data;
-    return has_granted_permission_per_profile &&
-           (account_id
-                ? accounts_with_sharing_permission_.count(account_id.value())
-                : !accounts_with_sharing_permission_.empty());
+    return true;
   }
 
   absl::optional<bool> GetIdpSigninStatus(
       const url::Origin& idp_origin) override {
     return true;
   }
-
-  void SetConfig(const Config& config) {
-    accounts_with_sharing_permission_.clear();
-    for (const AccountConfig& account_config : config.accounts) {
-      if (account_config.was_granted_sharing_permission) {
-        accounts_with_sharing_permission_.insert(account_config.id);
-      }
-    }
-  }
-
- private:
-  std::set<std::string> accounts_with_sharing_permission_;
 };
 
 }  // namespace
@@ -248,15 +227,18 @@ class FederatedAuthDisconnectRequestTest
   }
 
   void RunDisconnectTest(const Config& config,
-                         DisconnectStatus expected_disconnect_status) {
-    permission_delegate_->SetConfig(config);
-
+                         DisconnectStatus expected_disconnect_status,
+                         RenderFrameHost* rfh = nullptr) {
     auto network_manager =
         std::make_unique<TestIdpNetworkRequestManager>(config);
     network_manager_ = network_manager.get();
 
+    if (!rfh) {
+      rfh = static_cast<RenderFrameHost*>(main_test_rfh());
+    }
+
     metrics_ = std::make_unique<FedCmMetrics>(
-        GURL(config.config_url), main_test_rfh()->GetPageUkmSourceId(),
+        GURL(config.config_url), rfh->GetPageUkmSourceId(),
         /*session_id=*/1, /*is_disabled=*/false);
 
     blink::mojom::IdentityCredentialDisconnectOptionsPtr options =
@@ -268,7 +250,7 @@ class FederatedAuthDisconnectRequestTest
 
     DisconnectRequestCallbackHelper callback_helper;
     request_ = FederatedAuthDisconnectRequest::Create(
-        std::move(network_manager), permission_delegate_.get(), main_rfh(),
+        std::move(network_manager), permission_delegate_.get(), rfh,
         metrics_.get(), std::move(options));
     request_->SetCallbackAndStart(callback_helper.callback(),
                                   api_permission_delegate_.get());
@@ -277,16 +259,20 @@ class FederatedAuthDisconnectRequestTest
     EXPECT_EQ(expected_disconnect_status, callback_helper.status());
   }
 
-  void ExpectDisconnectMetricsAndConsoleError(DisconnectStatusForMetrics status,
-                                              bool should_record_duration) {
+  void ExpectDisconnectMetricsAndConsoleError(
+      DisconnectStatusForMetrics status,
+      FedCmRequesterFrameType requester_frame_type,
+      bool should_record_duration) {
     histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Disconnect",
                                          status, 1);
+    histogram_tester_.ExpectUniqueSample("Blink.FedCm.Disconnect.FrameType",
+                                         requester_frame_type, 1);
     histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.Disconnect",
                                        should_record_duration ? 1 : 0);
-    ExpectDisconnectUKM(status, ukm::builders::Blink_FedCm::kEntryName,
-                        should_record_duration);
-    ExpectDisconnectUKM(status, ukm::builders::Blink_FedCmIdp::kEntryName,
-                        should_record_duration);
+    ExpectDisconnectUKM(ukm::builders::Blink_FedCm::kEntryName, status,
+                        requester_frame_type, should_record_duration);
+    ExpectDisconnectUKM(ukm::builders::Blink_FedCmIdp::kEntryName, status,
+                        requester_frame_type, should_record_duration);
 
     std::vector<std::string> messages =
         RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
@@ -298,8 +284,9 @@ class FederatedAuthDisconnectRequestTest
     }
   }
 
-  void ExpectDisconnectUKM(DisconnectStatusForMetrics status,
-                           const char* entry_name,
+  void ExpectDisconnectUKM(const char* entry_name,
+                           DisconnectStatusForMetrics status,
+                           FedCmRequesterFrameType requester_frame_type,
                            bool should_record_duration) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
@@ -317,6 +304,13 @@ class FederatedAuthDisconnectRequestTest
       const int64_t* metric =
           ukm_recorder()->GetEntryMetric(entry, "Status.Disconnect");
       if (!metric) {
+        EXPECT_FALSE(ukm_recorder()->GetEntryMetric(entry, "Timing.Disconnect"))
+            << "Timing.Disconnect must not be present when Status is not "
+               "present";
+        EXPECT_FALSE(
+            ukm_recorder()->GetEntryMetric(entry, "Disconnect.FrameType"))
+            << "Disconnect.FrameType must not be present when Status is not "
+               "present";
         continue;
       }
       EXPECT_FALSE(metric_found)
@@ -325,6 +319,12 @@ class FederatedAuthDisconnectRequestTest
       metric_found = true;
       EXPECT_EQ(static_cast<int>(status), *metric)
           << "Unexpected status recorded in " << entry_name;
+
+      metric = ukm_recorder()->GetEntryMetric(entry, "Disconnect.FrameType");
+      ASSERT_TRUE(metric)
+          << "Disconnect.FrameType must be present when Status is present";
+      EXPECT_EQ(static_cast<int>(requester_frame_type), *metric)
+          << "Unexpected frame type recorded in " << entry_name;
 
       if (should_record_duration) {
         EXPECT_TRUE(ukm_recorder()->GetEntryMetric(entry, "Timing.Disconnect"))
@@ -363,6 +363,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, Success) {
   EXPECT_TRUE(network_manager_->has_fetched_disconnect_);
 
   ExpectDisconnectMetricsAndConsoleError(DisconnectStatusForMetrics::kSuccess,
+                                         FedCmRequesterFrameType::kMainFrame,
                                          /*should_record_duration=*/true);
 }
 
@@ -374,14 +375,12 @@ TEST_F(FederatedAuthDisconnectRequestTest, NotTrustworthyIdP) {
 
   ExpectDisconnectMetricsAndConsoleError(
       DisconnectStatusForMetrics::kIdpNotPotentiallyTrustworthy,
+      FedCmRequesterFrameType::kMainFrame,
       /*should_record_duration=*/false);
 }
 
 TEST_F(FederatedAuthDisconnectRequestTest,
        NoSharingPermissionButIdpHasThirdPartyCookiesAccessAndClaimsSignin) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmExemptIdpWithThirdPartyCookies);
-
   const char kAccountId[] = "account";
 
   Config config = kValidConfig;
@@ -400,7 +399,45 @@ TEST_F(FederatedAuthDisconnectRequestTest,
   EXPECT_TRUE(network_manager_->has_fetched_disconnect_);
 
   ExpectDisconnectMetricsAndConsoleError(DisconnectStatusForMetrics::kSuccess,
+                                         FedCmRequesterFrameType::kMainFrame,
                                          /*should_record_duration=*/true);
+}
+
+TEST_F(FederatedAuthDisconnectRequestTest, SameSiteIframe) {
+  const char kSameSiteIframeUrl[] = "https://rp.example/iframe.html";
+  RenderFrameHost* same_site_iframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(kSameSiteIframeUrl),
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+              ->AppendChild("same_site_iframe"));
+  Config config = kValidConfig;
+  RunDisconnectTest(config, DisconnectStatus::kSuccess, same_site_iframe);
+
+  ExpectDisconnectMetricsAndConsoleError(
+      DisconnectStatusForMetrics::kSuccess,
+      FedCmRequesterFrameType::kSameSiteIframe,
+      /*should_record_duration=*/true);
+}
+
+TEST_F(FederatedAuthDisconnectRequestTest, CrossSiteIframe) {
+  // Use FedCmExemptIdpWithThirdPartyCookies since sharing permission is not set
+  // for the cross-site RP.
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmExemptIdpWithThirdPartyCookies);
+
+  const char kCrossSiteIframeUrl[] = "https://otherrp.com";
+  RenderFrameHost* cross_site_iframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(kCrossSiteIframeUrl),
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+              ->AppendChild("cross_site_iframe"));
+  Config config = kValidConfig;
+  RunDisconnectTest(config, DisconnectStatus::kSuccess, cross_site_iframe);
+
+  ExpectDisconnectMetricsAndConsoleError(
+      DisconnectStatusForMetrics::kSuccess,
+      FedCmRequesterFrameType::kCrossSiteIframe,
+      /*should_record_duration=*/true);
 }
 
 }  // namespace content

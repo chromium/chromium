@@ -1314,6 +1314,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Disconnect.FrameType"
+    enum="FedCmRequesterFrameType" expires_after="2024-06-13">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the type of frame that invokes disconnect(). Records once for each
+    disconnect() call. Possible values are: main frame, same-site iframe, and
+    cross-site iframe, where the site of the iframe is compared with the site of
+    the main frame.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.DomainHint.NumMatchingAccounts"
     enum="FedCmNumAccounts" expires_after="2024-06-12">
   <owner>npm@chromium.org</owner>
@@ -1495,7 +1507,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.PreventSilentAccessFrameType"
-    enum="FedCmPreventSilentAccessFrameType" expires_after="2024-05-10">
+    enum="FedCmRequesterFrameType" expires_after="2024-05-10">
   <owner>npm@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>

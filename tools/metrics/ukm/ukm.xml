@@ -4418,6 +4418,14 @@ be describing additional metrics about the same event.
       `kFederatedIdentityAutoReauthnEmbargoDuration`).
     </summary>
   </metric>
+  <metric name="Disconnect.FrameType" enum="FedCmRequesterFrameType">
+    <summary>
+      Records the type of frame that invokes disconnect(). Records once for each
+      disconnect() call. Possible values are: main frame, same-site iframe, and
+      cross-site iframe, where the site of the iframe is compared with the site
+      of the main frame.
+    </summary>
+  </metric>
   <metric name="Error.ErrorDialogResult" enum="FedCmErrorDialogResult">
     <summary>
       Records the outcome of the error dialog. Recorded at most once per API
@@ -4458,13 +4466,12 @@ be describing additional metrics about the same event.
       the count is 0. The bucketing method used is base::UmaHistogramCounts100.
     </summary>
   </metric>
-  <metric name="PreventSilentAccessFrameType"
-      enum="FedCmPreventSilentAccessFrameType">
+  <metric name="PreventSilentAccessFrameType" enum="FedCmRequesterFrameType">
     <summary>
       Records the type of frame that invokes preventSilentAccess(). Records only
       when there is an existing FedCM sharing permission on the main frame, and
       some frame in the page invokes the preventSilentAccess() JavaScript call.
-      Possible values are: main frame, same-site iframe, and cros-site iframe,
+      Possible values are: main frame, same-site iframe, and cross-site iframe,
       where the site of the iframe is compared with the site of the main frame.
     </summary>
   </metric>
@@ -4580,6 +4587,14 @@ be describing additional metrics about the same event.
   <metric name="AccountsRequestSent" enum="BooleanHit">
     <summary>
       Records a 1 each time a request is sent to the accounts endpoint.
+    </summary>
+  </metric>
+  <metric name="Disconnect.FrameType" enum="FedCmRequesterFrameType">
+    <summary>
+      Records the type of frame that invokes disconnect(). Records once for each
+      disconnect() call. Possible values are: main frame, same-site iframe, and
+      cross-site iframe, where the site of the iframe is compared with the site
+      of the main frame.
     </summary>
   </metric>
   <metric name="Error.ErrorDialogResult" enum="FedCmErrorDialogResult">

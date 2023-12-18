@@ -512,8 +512,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     if (metric) {
       metric_found = true;
-      EXPECT_EQ(*metric,
-                static_cast<int>(PreventSilentAccessFrameType::kMainFrame));
+      EXPECT_EQ(*metric, static_cast<int>(FedCmRequesterFrameType::kMainFrame));
     }
   }
   EXPECT_TRUE(metric_found);
@@ -558,8 +557,8 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     if (metric) {
       metric_found = true;
-      EXPECT_EQ(*metric, static_cast<int>(
-                             PreventSilentAccessFrameType::kSameSiteIframe));
+      EXPECT_EQ(*metric,
+                static_cast<int>(FedCmRequesterFrameType::kSameSiteIframe));
     }
   }
   EXPECT_TRUE(metric_found);
@@ -603,8 +602,8 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     if (metric) {
       metric_found = true;
-      EXPECT_EQ(*metric, static_cast<int>(
-                             PreventSilentAccessFrameType::kCrossSiteIframe));
+      EXPECT_EQ(*metric,
+                static_cast<int>(FedCmRequesterFrameType::kCrossSiteIframe));
     }
   }
   EXPECT_TRUE(metric_found);
