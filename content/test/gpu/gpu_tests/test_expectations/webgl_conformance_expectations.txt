@@ -442,10 +442,10 @@ crbug.com/1371306 [ fuchsia fuchsia-board-nelson web-engine-shell ] conformance/
 # Flaky tests
 crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/more/conformance/quickCheck* [ Failure ]
 crbug.com/1489477 [ fuchsia web-engine-shell ] WebglExtension_EXT_float_blend [ Failure ]
-crbug.com/1489477 [ fuchsia ] conformance/buffers/buffer-data-array-buffer-delete.html [ Failure ]
-crbug.com/1489477 [ fuchsia ] conformance/buffers/element-array-buffer-delete-recreate.html [ Failure ]
+crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/buffers/element-array-buffer-delete-recreate.html [ Failure ]
 crbug.com/1489477 [ fuchsia ] conformance/state/gl-object-get-calls.html [ Failure ]
-crbug.com/1489477 [ fuchsia ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1489477 [ fuchsia fuchsia-board-nelson ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1489477 [ fuchsia fuchsia-board-sherlock ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
 crbug.com/1489477 [ fuchsia ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
 crbug.com/1489477 [ fuchsia ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 crbug.com/1489477 [ fuchsia ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Failure ]
