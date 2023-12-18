@@ -91,3 +91,32 @@
 
 # crbug.com/1432785
 -org.chromium.chrome.browser.ContentViewFocusTest.testHideSelectionOnPhoneTabSwiping
+
+# crbug.com/1511801
+-org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testEmptyBookmarkFolder
+-org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testEmptyReadingListFolder
+-org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testOpenBookmarkManagerFolder
+
+# crbug.com/1511804
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_GroupActionAndUndo
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionGroupsOnly
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionView
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testUndoToolbarGroup
+
+# crbug.com/1512248
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSelectionEditor_PostLongPressClickNoSelectionEditor
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSelectionEditor_ShareActionTabs
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSelectionEditor_ShareActionView
+
+# crbug.com/1512250
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherTabletTest.testEmptyStateView_ToggleIncognito
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherTabletTest.testGridTabSwitcherOnCloseAllTabs
+
+# crbug.com/1512251
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_INCOGNITO_CCT
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_REGULAR_CCT
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_REGULAR_TAB
+
+# crbug.com/1512916
+-org.chromium.chrome.browser.gesturenav.NavigationHandlerTest.testCloseChromeAtHistoryStackHead
+-org.chromium.chrome.browser.gesturenav.NavigationHandlerTest.testSwipeNavigateOnNativePage
