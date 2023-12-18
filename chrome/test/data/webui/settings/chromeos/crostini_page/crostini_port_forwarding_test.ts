@@ -4,18 +4,17 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {ContainerInfo, ContainerSelectElement, CrostiniBrowserProxyImpl, CrostiniPortForwardingElement, CrostiniPortSetting, SettingsCrostiniPageElement} from 'chrome://os-settings/lazy_load.js';
+import {ContainerInfo, ContainerSelectElement, CrostiniBrowserProxyImpl, CrostiniPortForwardingElement, CrostiniPortSetting} from 'chrome://os-settings/lazy_load.js';
 import {CrInputElement, CrToastElement, CrToggleElement, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
-let crostiniPage: SettingsCrostiniPageElement;
 let subpage: CrostiniPortForwardingElement;
 let crostiniBrowserProxy: TestCrostiniBrowserProxy;
 
@@ -34,7 +33,7 @@ function setCrostiniPrefs(enabled: boolean, {
   arcEnabled = false,
   bruschettaInstalled = false,
 }: PrefParams = {}): void {
-  crostiniPage.prefs = {
+  subpage.prefs = {
     arc: {
       enabled: {value: arcEnabled},
     },
@@ -89,17 +88,15 @@ suite('<settings-crostini-port-forwarding>', () => {
       isCrostiniAllowed: true,
       isCrostiniSupported: true,
     });
+
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
-    CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
-
-    crostiniPage = document.createElement('settings-crostini-page');
-    document.body.appendChild(crostiniPage);
-    flush();
-
-    disableAnimationsAndTransitions();
-
     crostiniBrowserProxy.portOperationSuccess = true;
     crostiniBrowserProxy.containerInfo = allContainers;
+    CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
+
+    Router.getInstance().navigateTo(routes.CROSTINI_PORT_FORWARDING);
+    subpage = document.createElement('settings-crostini-port-forwarding');
+    document.body.appendChild(subpage);
     setCrostiniPrefs(true, {
       forwardedPorts: [
         {
@@ -128,22 +125,15 @@ suite('<settings-crostini-port-forwarding>', () => {
         },
       ],
     });
-
     await flushTasks();
-    Router.getInstance().navigateTo(routes.CROSTINI_PORT_FORWARDING);
 
-    await flushTasks();
-    const subpageElement = crostiniPage.shadowRoot!.querySelector(
-        'settings-crostini-port-forwarding');
-    assertTrue(!!subpageElement);
-    subpage = subpageElement;
-    assertTrue(!!subpage);
     assertEquals(1, crostiniBrowserProxy.getCallCount('requestContainerInfo'));
   });
 
   teardown(() => {
-    crostiniPage.remove();
+    subpage.remove();
     Router.getInstance().resetRouteForTesting();
+    crostiniBrowserProxy.reset();
   });
 
   test('Display ports', () => {
@@ -264,10 +254,9 @@ suite('<settings-crostini-port-forwarding>', () => {
             'cr-dialog cr-button[id="cancel"]');
     assertTrue(!!cancelBtn);
     cancelBtn.click();
+    flush();
 
-    await flushTasks();
-    assertTrue(!!crostiniPage.shadowRoot!.querySelector(
-        'settings-crostini-port-forwarding'));
+    assertFalse(isVisible(addPortDialogElement));
   });
 
   test('Remove all ports', async () => {
