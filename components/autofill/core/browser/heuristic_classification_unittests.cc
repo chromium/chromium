@@ -538,7 +538,8 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       // Other improvements.
       features::kAutofillEnableZipOnlyAddressForms,
       features::kAutofillDefaultToCityAndNumber,
-      features::kAutofillPreferLabelsInSomeCountries};
+      features::kAutofillPreferLabelsInSomeCountries,
+      features::kAutofillEnableCacheForRegexMatching};
   std::vector<base::test::FeatureRef> disabled_features = {};
 
   auto init_feature_to_value = [&](base::test::FeatureRef feature, bool value) {

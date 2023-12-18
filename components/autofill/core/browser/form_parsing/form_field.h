@@ -11,10 +11,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -45,6 +47,54 @@ struct RegExLogging {
   const char* regex_name = "";
 };
 
+// LRU cache to prevent the repetitive evaluation of identical regular
+// expressions (`pattern`) on identical `input` strings.
+class RegexMatchesCache {
+ public:
+  // A good capacity for the cache according to an empirical study of forms
+  // with AllForms/HeuristicClassificationTests.EndToEnd is 300. This needs
+  // to be confirmed in real world experiments.
+  // RegexMatchesCache is not intended as a permanent cache but instantiated
+  // once per form parsing, so this is not allocating a lot of memory
+  // permanently.
+  explicit RegexMatchesCache(int capacity);
+  RegexMatchesCache(const RegexMatchesCache&) = delete;
+  RegexMatchesCache& operator=(const RegexMatchesCache&) = delete;
+  ~RegexMatchesCache();
+
+  // Hash values of an input and a pattern. There is a theoretical risk of
+  // collision which we are accepting here to not store the inputs an patterns
+  // which both may be large. Given that our heuristics are not 100% accurate
+  // the small risk of a collision seems acceptable.
+  // TODO(crbug.com/1121990): Once we don't use autofill_regex_constants.h
+  // anymore, the second `std::size_t` should probably be a MatchPatternRef:
+  // - more accurate (they uniquely identify the pattern across all pattern
+  //   sources),
+  // - more time-efficient (no hashing needed),
+  // - more space-efficient (2 vs 8 bytes)
+  using Key = std::pair<std::size_t, std::size_t>;
+
+  // Creates a key for an `input` string and a `pattern` to be used in the LRU
+  // cache.
+  static Key BuildKey(base::StringPiece16 input, base::StringPiece16 pattern);
+
+  // Returns whether `pattern` in the key matched `input` if this information is
+  // cached. absl::nullopt if the information is not cached.
+  absl::optional<bool> Get(Key key);
+
+  // Stores whether `pattern` in the key matched `input`.
+  void Put(Key key, bool value);
+
+ private:
+  struct Hasher {
+    std::size_t operator()(const Key& key) const noexcept {
+      return std::get<0>(key) ^ std::get<1>(key);
+    }
+  };
+
+  base::HashingLRUCache<Key, bool, Hasher> cache_;
+};
+
 // This is a helper class that is instantiated before form parsing. It contains
 // a) environmental information that is needed in many places and b) caches to
 // prevent repetitive work.
@@ -72,6 +122,7 @@ struct ParsingContext {
   const bool autofill_always_parse_placeholders{
       base::FeatureList::IsEnabled(features::kAutofillAlwaysParsePlaceholders)};
 
+  std::optional<RegexMatchesCache> matches_cache;
   base::raw_ref<AutofillRegexCache> regex_cache;
 };
 

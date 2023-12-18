@@ -739,6 +739,16 @@ BASE_FEATURE(kAutofillAndroidDisableSuggestionsOnJSFocus,
              "AutofillAndroidDisableSuggestionsOnJSFocus",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, FormField::MatchesRegexWithCache tries to avoid re-computing
+// whether a regex matches an input string by caching the result. The result
+// size is controlled by kAutofillEnableCacheForRegexMatchingCacheSizeParam.
+BASE_FEATURE(kAutofillEnableCacheForRegexMatching,
+             "AutofillEnableCacheForRegexMatching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int>
+    kAutofillEnableCacheForRegexMatchingCacheSizeParam{
+        &kAutofillEnableCacheForRegexMatching, "cache_size", 300};
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls the whether the Chrome may provide a virtual view structure for
 // Android Autofill.

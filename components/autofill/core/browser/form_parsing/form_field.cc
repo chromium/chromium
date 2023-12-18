@@ -61,13 +61,40 @@ AutofillRegexCache& GetAutofillRegexCache() {
 
 }  // namespace
 
+RegexMatchesCache::RegexMatchesCache(int capacity) : cache_(capacity) {}
+RegexMatchesCache::~RegexMatchesCache() = default;
+
+RegexMatchesCache::Key RegexMatchesCache::BuildKey(
+    base::StringPiece16 input,
+    base::StringPiece16 pattern) {
+  return Key(std::hash<std::u16string_view>{}(input),
+             std::hash<std::u16string_view>{}(pattern));
+}
+
+absl::optional<bool> RegexMatchesCache::Get(RegexMatchesCache::Key key) {
+  if (auto it = cache_.Get(key); it != cache_.end()) {
+    return it->second;
+  }
+  return absl::nullopt;
+}
+
+void RegexMatchesCache::Put(RegexMatchesCache::Key key, bool value) {
+  cache_.Put(key, value);
+}
+
 ParsingContext::ParsingContext(GeoIpCountryCode client_country,
                                LanguageCode page_language,
                                PatternSource pattern_source)
     : client_country(std::move(client_country)),
       page_language(std::move(page_language)),
       pattern_source(pattern_source),
-      regex_cache(GetAutofillRegexCache()) {}
+      regex_cache(GetAutofillRegexCache()) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableCacheForRegexMatching)) {
+    matches_cache.emplace(
+        features::kAutofillEnableCacheForRegexMatchingCacheSizeParam.Get());
+  }
+}
 
 ParsingContext::~ParsingContext() = default;
 
@@ -76,9 +103,21 @@ bool FormField::MatchesRegexWithCache(ParsingContext& context,
                                       base::StringPiece16 input,
                                       base::StringPiece16 pattern,
                                       std::vector<std::u16string>* groups) {
+  RegexMatchesCache::Key key;
+  if (!groups && context.matches_cache) {
+    key = RegexMatchesCache::BuildKey(input, pattern);
+    absl::optional<bool> cache_entry = context.matches_cache->Get(key);
+    if (cache_entry.has_value()) {
+      return cache_entry.value();
+    }
+  }
   const icu::RegexPattern* regex_pattern =
       context.regex_cache->GetRegexPattern(pattern);
-  return autofill::MatchesRegex(input, *regex_pattern, groups);
+  bool result = autofill::MatchesRegex(input, *regex_pattern, groups);
+  if (!groups && context.matches_cache) {
+    context.matches_cache->Put(key, result);
+  }
+  return result;
 }
 
 // static
@@ -566,7 +605,8 @@ bool FormField::Match(ParsingContext& context,
   base::StringPiece16 value;
   std::vector<std::u16string> matches;
   std::vector<std::u16string>* capture_destination =
-      logging.log_manager ? &matches : nullptr;
+      logging.log_manager && logging.log_manager->IsLoggingActive() ? &matches
+                                                                    : nullptr;
 
   // TODO(crbug/1165780): Remove once shared labels are launched.
   const std::u16string& label =
@@ -605,7 +645,7 @@ bool FormField::Match(ParsingContext& context,
     value = field->placeholder;
   }
 
-  if (found_match) {
+  if (found_match && capture_destination) {
     LogBuffer table_rows(IsLoggingActive(logging.log_manager));
     LOG_AF(table_rows) << Tr{} << "Match type:" << match_type_string;
     LOG_AF(table_rows) << Tr{} << "RegEx:" << logging.regex_name;
