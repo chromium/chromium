@@ -143,13 +143,4 @@ TEST_F(DOMSchedulerTest, DynamicPriorityTaskQueueGarbageCollection) {
   EXPECT_EQ(GetDynamicPriorityTaskQueueCount(), 0u);
 }
 
-class DOMSchedulerTestWithCompositionDisabled : public DOMSchedulerTest {
- public:
-  DOMSchedulerTestWithCompositionDisabled()
-      : scoped_signal_composition_(false) {}
-
- private:
-  ScopedAbortSignalCompositionForTest scoped_signal_composition_;
-};
-
 }  // namespace blink

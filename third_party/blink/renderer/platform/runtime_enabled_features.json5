@@ -203,11 +203,6 @@
     {
       name: "AbortSignalAny",
       status: "stable",
-      depends_on: ["AbortSignalComposition"]
-    },
-    {
-      name: "AbortSignalComposition",
-      status: "stable"
     },
     {
       name: "Accelerated2dCanvas",
@@ -3277,7 +3272,6 @@
       name: "SchedulerYield",
       origin_trial_feature_name: "SchedulerYield",
       origin_trial_allows_third_party: true,
-      depends_on: ["AbortSignalComposition"],
       status: "experimental",
     },
     {

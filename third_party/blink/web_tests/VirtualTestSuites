@@ -2224,20 +2224,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "scheduler-composition-disabled",
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/scheduler/post-task-abort-reason.any.js",
-      "external/wpt/scheduler/post-task-run-order.any.js",
-      "external/wpt/scheduler/post-task-with-abort-signal.any.js",
-      "external/wpt/scheduler/task-controller-abort-signal-and-priority.any.js",
-      "external/wpt/scheduler/task-controller-setPriority1.any.js"
-    ],
-    "args": ["--disable-blink-features=AbortSignalComposition",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Dec 21, 2023"
-  },
-  {
     "prefix": "abort-signal-any-disabled",
     "platforms": ["Linux"],
     "bases": [
