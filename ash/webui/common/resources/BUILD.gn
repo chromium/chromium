@@ -162,6 +162,7 @@ non_web_component_files_ts = [
   "quick_unlock/utils.ts",
   "typescript_utils/strict_query.ts",
   "quick_unlock/lock_screen_constants.ts",
+  "sea_pen/sea_pen_utils.ts",
   "shortcut_input_ui/fake_shortcut_input_provider.ts",
   "shortcut_input_ui/shortcut_utils.ts",
 ]

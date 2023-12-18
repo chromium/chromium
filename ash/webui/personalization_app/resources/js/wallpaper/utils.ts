@@ -4,22 +4,19 @@
 
 /** @fileoverview Wallpaper related utility functions in personalization app */
 
+import {isNonEmptyArray, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
 import {CurrentAttribution, CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperImage, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
-import {getNumberOfGridItemsPerRow, isNonEmptyArray, isNonEmptyString} from '../utils.js';
+import {getNumberOfGridItemsPerRow, isNonEmptyString} from '../utils.js';
 
 import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './constants.js';
 import {DailyRefreshState} from './wallpaper_state.js';
 
 export function isWallpaperImage(obj: any): obj is WallpaperImage {
   return !!obj && typeof obj.unitId === 'bigint';
-}
-
-export function isFilePath(obj: any): obj is FilePath {
-  return !!obj && typeof obj.path === 'string' && obj.path;
 }
 
 export function isDefaultImage(obj: any): obj is DefaultImageSymbol {
@@ -40,7 +37,7 @@ export function isImageAMatchForKey(
   if (isDefaultImage(image)) {
     return key === kDefaultImageSymbol;
   }
-  if (isFilePath(image)) {
+  if (isNonEmptyFilePath(image)) {
     return key === image.path;
   }
   assert(isGooglePhotosPhoto(image));
@@ -72,7 +69,7 @@ export function isImageEqualToSelected(
  */
 export function getPathOrSymbol(image: FilePath|DefaultImageSymbol): string|
     DefaultImageSymbol {
-  if (isFilePath(image)) {
+  if (isNonEmptyFilePath(image)) {
     return image.path;
   }
   assert(image === kDefaultImageSymbol, 'only one symbol should be present');

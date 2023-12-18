@@ -94,12 +94,13 @@ source_set("browser_tests") {
 
   if (is_chromeos_ash) {
     sources += [
+      "chromeos/ash_common/sea_pen/sea_pen_browsertest.cc",
       "chromeos/ash_common/webui_resource_browsertest.cc",
       "chromeos/enterprise_reporting/enterprise_reporting_browsertest.cc",
       "chromeos/firmware_update/firmware_update_browsertest.cc",
       "chromeos/inline_login/inline_login_browsertest.cc",
       "chromeos/personalization_app/personalization_app_browsertest.cc",
-      "chromeos/personalization_app/sea_pen_browsertest.cc",
+      "chromeos/personalization_app/personalization_app_sea_pen_browsertest.cc",
       "chromeos/scanning/scanning_app_browsertest.cc",
       "chromeos/vc_background_ui/vc_background_ui_browsertest.cc",
     ]

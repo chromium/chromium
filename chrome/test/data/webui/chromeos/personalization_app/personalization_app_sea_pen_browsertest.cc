@@ -5,6 +5,8 @@
 #include "ash/webui/personalization_app/test/personalization_app_mojom_banned_mocha_test_base.h"
 #include "content/public/test/browser_test.h"
 
+// TODO(b/312208348) move this test to ash common sea_pen browsertest.
+
 namespace ash::personalization_app {
 
 // Tests state management and logic in SeaPen.

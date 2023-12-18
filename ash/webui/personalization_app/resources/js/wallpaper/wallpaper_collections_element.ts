@@ -14,6 +14,7 @@ import '../../css/wallpaper.css.js';
 import '../../common/icons.html.js';
 import '../../css/common.css.js';
 
+import {isImageDataUrl, isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
@@ -25,7 +26,7 @@ import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from '
 import {isGooglePhotosIntegrationEnabled, isPersonalizationJellyEnabled, isTimeOfDayWallpaperEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getCountText, isImageDataUrl, isNonEmptyArray, isSelectionEvent} from '../utils.js';
+import {getCountText, isSelectionEvent} from '../utils.js';
 
 import {DefaultImageSymbol, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './constants.js';
 import {isSeaPenEnabled} from './sea_pen/load_time_booleans.js';

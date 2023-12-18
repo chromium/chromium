@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
@@ -10,7 +11,6 @@ import {Paths, PersonalizationRouterElement} from './personalization_router_elem
 import {PersonalizationStore} from './personalization_store.js';
 import {getThemeProvider} from './theme/theme_interface_provider.js';
 import {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
-import {isNonEmptyArray} from './utils.js';
 import {setFullscreenEnabledAction} from './wallpaper/wallpaper_actions.js';
 import {selectGooglePhotosAlbum, selectWallpaper, setDailyRefreshCollectionId} from './wallpaper/wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper/wallpaper_interface_provider.js';

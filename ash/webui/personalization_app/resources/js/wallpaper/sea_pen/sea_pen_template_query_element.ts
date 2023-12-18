@@ -9,11 +9,11 @@
 
 import '../../../common/icons.html.js';
 
+import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {SeaPenQuery, SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from '../../../sea_pen.mojom-webui.js';
 import {Paths, PersonalizationRouterElement} from '../../personalization_router_element.js';
-import {isNonEmptyArray} from '../../utils.js';
 
 import {getSeaPenTemplates, parseTemplateText, SeaPenOption, SeaPenTemplate} from './constants.js';
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';

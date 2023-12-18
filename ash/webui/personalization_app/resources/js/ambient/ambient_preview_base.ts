@@ -8,6 +8,7 @@
  * polymer element.
  */
 
+import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 
@@ -15,7 +16,6 @@ import {AmbientModeAlbum, TopicSource} from '../../personalization_app.mojom-web
 import {isAmbientModeAllowed, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {setErrorAction} from '../personalization_actions.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {isNonEmptyArray} from '../utils.js';
 
 import {AmbientObserver} from './ambient_observer.js';
 import {getPhotoCount, getTopicSourceName} from './utils.js';

@@ -12,13 +12,12 @@ import '../../../css/common.css.js';
 import '../../../css/wallpaper.css.js';
 import '../../../css/sea_pen.css.js';
 
+import {isImageDataUrl, isNonEmptyArray, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {isImageDataUrl, isNonEmptyArray} from '../../utils.js';
-import {isFilePath} from '../utils.js';
 import {WallpaperGridItemSelectedEvent} from '../wallpaper_grid_item_element.js';
 
 import {RecentSeaPenData} from './constants.js';
@@ -103,8 +102,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
    */
   private onRecentImagesChanged_(recentImages: FilePath[]|null) {
     this.recentImagesToDisplay_ = (recentImages || []).filter(image => {
-      if (isFilePath(image) &&
-          this.recentImageDataLoading_[image.path] === false) {
+      if (this.recentImageDataLoading_[image.path] === false) {
         const data = this.recentImageData_[image.path];
         return data && data.queryInfo && data.url;
       }
@@ -182,13 +180,13 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   }
 
   private isRecentImageSelected_(
-      image: FilePath, currentSelected: string|null,
+      image: FilePath|null, currentSelected: string|null,
       pendingSelected: FilePath|null) {
-    if (!isFilePath(image)) {
+    if (!isNonEmptyFilePath(image)) {
       return false;
     }
 
-    return (isFilePath(pendingSelected) &&
+    return (isNonEmptyFilePath(pendingSelected) &&
             image.path === pendingSelected.path) ||
         (!pendingSelected && image.path === currentSelected);
   }
@@ -196,7 +194,8 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   private onRecentImageSelected_(event: WallpaperGridItemSelectedEvent&
                                  {model: {image: FilePath}}) {
     assert(
-        isFilePath(event.model.image), 'recent Sea Pen image is a file path');
+        isNonEmptyFilePath(event.model.image),
+        'recent Sea Pen image is a file path');
     selectRecentSeaPenImage(
         event.model.image, getSeaPenProvider(), this.getStore());
   }
@@ -230,7 +229,8 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     // TODO (b/315069374): confirm if currently set Sea Pen wallpaper can be
     // removed.
     assert(
-        isFilePath(event.model.image), 'selected Sea Pen image is a file path');
+        isNonEmptyFilePath(event.model.image),
+        'selected Sea Pen image is a file path');
     deleteRecentSeaPenImage(
         event.model.image, getSeaPenProvider(), this.getStore());
     this.closeAllActionMenus_();

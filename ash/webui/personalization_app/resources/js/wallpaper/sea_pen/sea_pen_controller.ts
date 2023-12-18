@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {isNonEmptyArray, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
 import {SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
-import {isNonEmptyArray} from '../../utils.js';
-import {isFilePath} from '../utils.js';
 
 import * as seaPenAction from './sea_pen_actions.js';
 import {SeaPenStoreInterface} from './sea_pen_store.js';
@@ -15,7 +14,7 @@ export async function selectRecentSeaPenImage(
     image: FilePath, provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
   // Returns if the selected image is the current wallpaper.
-  if (isFilePath(image) && image.path === store.data.currentSelected) {
+  if (isNonEmptyFilePath(image) && image.path === store.data.currentSelected) {
     return;
   }
   // Batch these changes together to reduce polymer churn as multiple state

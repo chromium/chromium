@@ -11,6 +11,7 @@ import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-thresh
 import '../../css/wallpaper.css.js';
 import '../../css/common.css.js';
 
+import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
@@ -22,7 +23,7 @@ import {dismissErrorAction, setErrorAction} from '../personalization_actions.js'
 import {PersonalizationRouterElement} from '../personalization_router_element.js';
 import {PersonalizationStateError} from '../personalization_state.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getCountText, isNonEmptyArray, isRecentHighlightsAlbum} from '../utils.js';
+import {getCountText, isRecentHighlightsAlbum} from '../utils.js';
 
 import {getTemplate} from './google_photos_albums_element.html.js';
 import {getLoadingPlaceholders} from './utils.js';

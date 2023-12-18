@@ -11,13 +11,14 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../common/icons.html.js';
 
+import {isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {CurrentWallpaper, WallpaperLayout} from '../../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {DisplayableImage} from './constants.js';
-import {getWallpaperLayoutEnum, isFilePath, isGooglePhotosPhoto} from './utils.js';
+import {getWallpaperLayoutEnum, isGooglePhotosPhoto} from './utils.js';
 import {setFullscreenEnabledAction} from './wallpaper_actions.js';
 import {cancelPreviewWallpaper, confirmPreviewWallpaper, selectWallpaper} from './wallpaper_controller.js';
 import {getTemplate} from './wallpaper_fullscreen_element.html.js';
@@ -92,7 +93,7 @@ export class WallpaperFullscreenElement extends WithPersonalizationStore {
     this.watch<WallpaperFullscreenElement['showLayoutOptions_']>(
         'showLayoutOptions_',
         state => !!state.wallpaper.pendingSelected &&
-            (isFilePath(state.wallpaper.pendingSelected) ||
+            (isNonEmptyFilePath(state.wallpaper.pendingSelected) ||
              isGooglePhotosPhoto(state.wallpaper.pendingSelected)));
     this.watch<WallpaperFullscreenElement['currentSelected_']>(
         'currentSelected_', state => state.wallpaper.currentSelected);
@@ -165,7 +166,7 @@ export class WallpaperFullscreenElement extends WithPersonalizationStore {
 
   private async onClickLayout_(event: MouseEvent) {
     assert(
-        isFilePath(this.pendingSelected_) ||
+        isNonEmptyFilePath(this.pendingSelected_) ||
             isGooglePhotosPhoto(this.pendingSelected_),
         'pendingSelected must be a local image or a Google Photos image to set layout');
     const layout = getWallpaperLayoutEnum(

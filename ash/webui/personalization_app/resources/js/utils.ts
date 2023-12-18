@@ -7,7 +7,6 @@
  */
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {AmbientModeAlbum, BacklightColor, BLUE_COLOR, GooglePhotosAlbum, GREEN_COLOR, INDIGO_COLOR, PURPLE_COLOR, RED_COLOR, WHITE_COLOR, YELLOW_COLOR} from './../personalization_app.mojom-webui.js';
 import {isPersonalizationJellyEnabled} from './load_time_booleans.js';
@@ -68,13 +67,6 @@ export function getNumberOfGridItemsPerRow(): number {
 }
 
 /**
- * Checks if argument is an array with non-zero length.
- */
-export function isNonEmptyArray(maybeArray: unknown): maybeArray is unknown[] {
-  return Array.isArray(maybeArray) && maybeArray.length > 0;
-}
-
-/**
  * Checks if argument is a string with non-zero length.
  */
 export function isNonEmptyString(maybeString: unknown): maybeString is string {
@@ -87,13 +79,6 @@ export function isNonEmptyString(maybeString: unknown): maybeString is string {
 export function inBetween(
     num: number, minVal: number, maxVal: number): boolean {
   return minVal <= num && num <= maxVal;
-}
-
-export function isImageDataUrl(maybeDataUrl: Url|null|
-                               undefined): maybeDataUrl is Url {
-  return !!maybeDataUrl && typeof maybeDataUrl.url === 'string' &&
-      (maybeDataUrl.url.startsWith('data:image/png;base64') ||
-       maybeDataUrl.url.startsWith('data:image/jpeg;base64'));
 }
 
 /** Returns the RGB hex in #ffffff format. */

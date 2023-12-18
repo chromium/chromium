@@ -22,7 +22,6 @@ import {AmbientModeAlbum, AmbientTheme, TemperatureUnit, TopicSource} from '../.
 import {isAmbientModeAllowed, isPersonalizationJellyEnabled, isScreenSaverDurationEnabled} from '../load_time_booleans.js';
 import {Paths, ScrollableTarget} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getZerosArray} from '../utils.js';
 
 import {dismissTimeOfDayBanner, setAmbientModeEnabled} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
@@ -242,7 +241,7 @@ export class AmbientSubpageElement extends WithPersonalizationStore {
   }
 
   private getPlaceholders_(x: number): number[] {
-    return getZerosArray(x);
+    return new Array(x).fill(0);
   }
 }
 

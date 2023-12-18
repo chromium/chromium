@@ -15,13 +15,13 @@ import './ambient_zero_state_svg_element.js';
 import '../../css/common.css.js';
 import '../../css/cros_button_style.css.js';
 
+import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {TopicSource} from '../../personalization_app.mojom-webui.js';
 import {logAmbientModeOptInUMA} from '../personalization_metrics_logger.js';
 import {Paths, PersonalizationRouterElement, ScrollableTarget} from '../personalization_router_element.js';
-import {isNonEmptyArray} from '../utils.js';
 
 import {setAmbientModeEnabled} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
