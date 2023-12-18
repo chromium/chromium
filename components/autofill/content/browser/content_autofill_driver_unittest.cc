@@ -509,18 +509,10 @@ class ContentAutofillDriverWithMultiFrameCreditCardForm
 
  private:
   content::RenderFrameHost* CreateChild(std::string_view name) {
-    content::RenderFrameHost* rfh =
-        content::NavigationSimulator::NavigateAndCommitFromDocument(
-            GURL(base::StrCat({"https://foo.com/", name})),
-            content::RenderFrameHostTester::For(main_rfh())
-                ->AppendChild(std::string(name)));
-    // Make sure the driver (and the manager) is created as there is an early
-    // return in `ContentAutofillDriverFactory::DidFinishNavigation` before
-    // `DriverForFrame()` call.
-    // In non-test setup this method is called during mojom bindings, see
-    // `ContentAutofillDriverFactory::BindAutofillDriver`.
-    factory().DriverForFrame(rfh);
-    return rfh;
+    return content::NavigationSimulator::NavigateAndCommitFromDocument(
+        GURL(base::StrCat({"https://foo.com/", name})),
+        content::RenderFrameHostTester::For(main_rfh())
+            ->AppendChild(std::string(name)));
   }
 
   FormData SeeFormWithField(content::RenderFrameHost* source_rfh,

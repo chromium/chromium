@@ -942,11 +942,6 @@ class AutofillProviderAndroidTestHidingLogic
     sub_frame_ = content::RenderFrameHostTester::For(main_frame())
                      ->AppendChild(std::string("child"));
     sub_frame_ = NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com"));
-    // Make sure the driver (and the manager) is created as there is an early
-    // return in `ContentAutofillDriverFactory::DidFinishNavigation` before
-    // `DriverForFrame()` call.
-    ContentAutofillDriverFactory::FromWebContents(web_contents())
-        ->DriverForFrame(sub_frame_);
   }
 
   void TearDown() override {
@@ -1004,7 +999,7 @@ TEST_F(AutofillProviderAndroidTestHidingLogic, HideInMainFrameOnDestruction) {
 // *sub frame* hides the popup.
 TEST_F(AutofillProviderAndroidTestHidingLogic, HideInSubFrameOnDestruction) {
   AskForValuesToFill(sub_frame_);
-  EXPECT_CALL(provider_bridge(), HideDatalistPopup).Times(AtLeast(1));
+  EXPECT_CALL(provider_bridge(), Reset);
   NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com/"));
   // Verify and clear before TearDown() closes the popup.
   Mock::VerifyAndClearExpectations(&provider_bridge());
@@ -1047,7 +1042,7 @@ TEST_F(AutofillProviderAndroidTestHidingLogic,
        FollowAskForValuesInDifferentFrames) {
   AskForValuesToFill(main_frame());
   AskForValuesToFill(sub_frame_);
-  EXPECT_CALL(provider_bridge(), HideDatalistPopup).Times(AtLeast(1));
+  EXPECT_CALL(provider_bridge(), Reset);
   NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com/"));
 }
 

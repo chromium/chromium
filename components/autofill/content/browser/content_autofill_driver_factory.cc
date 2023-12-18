@@ -193,13 +193,6 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
   if (!navigation_handle->HasCommitted()) {
     return;
   }
-
-  // TODO(crbug.com/1492636): Remove after a few days of experimentation.
-  if (!navigation_handle->IsInMainFrame() &&
-      !navigation_handle->HasSubframeNavigationEntryCommitted()) {
-    return;
-  }
-
   auto* driver = DriverForFrame(navigation_handle->GetRenderFrameHost());
   if (!driver) {
     return;
