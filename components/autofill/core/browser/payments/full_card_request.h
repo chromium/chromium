@@ -166,9 +166,9 @@ class FullCardRequest final : public CardUnmaskDelegate {
       base::WeakPtr<ResultDelegate> result_delegate,
       base::Value::Dict fido_assertion_info,
       const url::Origin& merchant_domain_for_footprints,
-      absl::optional<GURL> last_committed_primary_main_frame_origin =
-          absl::nullopt,
-      absl::optional<std::string> context_token = absl::nullopt);
+      std::optional<GURL> last_committed_primary_main_frame_origin =
+          std::nullopt,
+      std::optional<std::string> context_token = std::nullopt);
 
   // Called by the PaymentsNetworkInterface when a card has been unmasked.
   void OnDidGetRealPan(
@@ -226,10 +226,10 @@ class FullCardRequest final : public CardUnmaskDelegate {
       AutofillClient::UnmaskCardReason reason,
       base::WeakPtr<ResultDelegate> result_delegate,
       base::WeakPtr<UIDelegate> ui_delegate,
-      absl::optional<base::Value::Dict> fido_assertion_info,
-      absl::optional<GURL> last_committed_primary_main_frame_origin,
-      absl::optional<std::string> context_token,
-      absl::optional<CardUnmaskChallengeOption> selected_challenge_option,
+      std::optional<base::Value::Dict> fido_assertion_info,
+      std::optional<GURL> last_committed_primary_main_frame_origin,
+      std::optional<std::string> context_token,
+      std::optional<CardUnmaskChallengeOption> selected_challenge_option,
       const url::Origin& merchant_domain_for_footprints);
 
   // CardUnmaskDelegate:

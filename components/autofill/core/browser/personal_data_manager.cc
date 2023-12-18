@@ -698,7 +698,7 @@ void PersonalDataManager::OnAccountsCookieDeletedByUserAction() {
   prefs::ClearSyncTransportOptIns(pref_service_);
 }
 
-absl::optional<CoreAccountInfo> PersonalDataManager::GetPrimaryAccountInfo()
+std::optional<CoreAccountInfo> PersonalDataManager::GetPrimaryAccountInfo()
     const {
   if (identity_manager_ &&
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -706,7 +706,7 @@ absl::optional<CoreAccountInfo> PersonalDataManager::GetPrimaryAccountInfo()
         signin::ConsentLevel::kSignin);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool PersonalDataManager::IsPaymentsDownloadActive() const {

@@ -27,8 +27,8 @@
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/entity_data.h"
 
-using absl::optional;
 using base::UTF16ToUTF8;
+using std::optional;
 using sync_pb::AutofillProfileSpecifics;
 using syncer::EntityData;
 using syncer::MetadataChangeList;
@@ -128,7 +128,7 @@ optional<syncer::ModelError> AutofillProfileSyncBridge::MergeFullSyncData(
       FlushSyncTracker(std::move(metadata_change_list), &initial_sync_tracker));
 
   web_data_backend_->CommitChanges();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 optional<ModelError> AutofillProfileSyncBridge::ApplyIncrementalSyncChanges(
@@ -159,7 +159,7 @@ optional<ModelError> AutofillProfileSyncBridge::ApplyIncrementalSyncChanges(
   RETURN_IF_ERROR(FlushSyncTracker(std::move(metadata_change_list), &tracker));
 
   web_data_backend_->CommitChanges();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AutofillProfileSyncBridge::GetData(StorageKeyList storage_keys,
@@ -234,7 +234,7 @@ void AutofillProfileSyncBridge::ActOnLocalChange(
   // operation (that triggered this notification to the bridge) finishes.
 }
 
-absl::optional<syncer::ModelError> AutofillProfileSyncBridge::FlushSyncTracker(
+std::optional<syncer::ModelError> AutofillProfileSyncBridge::FlushSyncTracker(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     AutofillProfileSyncDifferenceTracker* tracker) {
   DCHECK(tracker);

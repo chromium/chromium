@@ -16,7 +16,7 @@
 
 namespace autofill {
 
-using absl::optional;
+using std::optional;
 using syncer::ModelError;
 
 // Simplify checking for optional errors and returning only when present.
@@ -75,7 +75,7 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
       update_to_local_.push_back(std::move(updated));
     }
     GetLocalOnlyEntries()->erase(remote_storage_key);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Check if profile appears under a different storage key to be de-duplicated.
@@ -129,13 +129,13 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
         // We keep the local entity and delete the remote one.
         delete_from_sync_.insert(remote_storage_key);
       }
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
   // If no duplicate was found, just add the remote profile.
   add_to_local_.push_back(std::move(remote));
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 optional<ModelError>
@@ -167,7 +167,7 @@ optional<ModelError> AutofillProfileSyncDifferenceTracker::FlushToLocal(
       !update_to_local_.empty()) {
     std::move(autofill_changes_callback).Run();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 optional<ModelError> AutofillProfileSyncDifferenceTracker::FlushToSync(
@@ -179,7 +179,7 @@ optional<ModelError> AutofillProfileSyncDifferenceTracker::FlushToSync(
   for (const std::string& entry : delete_from_sync_) {
     profiles_to_delete_from_sync->push_back(std::move(entry));
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 optional<AutofillProfile> AutofillProfileSyncDifferenceTracker::ReadEntry(
@@ -189,7 +189,7 @@ optional<AutofillProfile> AutofillProfileSyncDifferenceTracker::ReadEntry(
   if (iter != GetLocalOnlyEntries()->end()) {
     return *iter->second;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 optional<ModelError> AutofillProfileSyncDifferenceTracker::DeleteFromLocal(
@@ -199,7 +199,7 @@ optional<ModelError> AutofillProfileSyncDifferenceTracker::DeleteFromLocal(
   }
   delete_from_local_.insert(storage_key);
   GetLocalOnlyEntries()->erase(storage_key);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::map<std::string, std::unique_ptr<AutofillProfile>>*
@@ -243,7 +243,7 @@ AutofillProfileInitialSyncDifferenceTracker::IncorporateRemoteDelete(
     const std::string& storage_key) {
   // Remote delete is not allowed in initial sync.
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 optional<ModelError> AutofillProfileInitialSyncDifferenceTracker::FlushToSync(
@@ -262,7 +262,7 @@ optional<ModelError> AutofillProfileInitialSyncDifferenceTracker::FlushToSync(
     DCHECK(delete_from_local_.count(storage_key) == 0);
     profiles_to_upload_to_sync->push_back(std::move(data));
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 optional<ModelError>
@@ -315,7 +315,7 @@ AutofillProfileInitialSyncDifferenceTracker::MergeSimilarEntriesForInitialSync(
     RETURN_IF_ERROR(DeleteFromLocal(GetStorageKeyFromAutofillProfile(*local)));
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 optional<AutofillProfile>
@@ -328,7 +328,7 @@ AutofillProfileInitialSyncDifferenceTracker::FindMergeableLocalEntry(
       return *local_candidate;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace autofill

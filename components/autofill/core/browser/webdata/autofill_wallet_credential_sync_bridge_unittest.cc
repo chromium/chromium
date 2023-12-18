@@ -128,7 +128,7 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
       initial_updates.push_back(SpecificsToUpdateResponse(specifics));
     }
     real_processor_->OnUpdateReceived(state, std::move(initial_updates),
-                                      /*gc_directive=*/absl::nullopt);
+                                      /*gc_directive=*/std::nullopt);
   }
 
   syncer::UpdateResponseData SpecificsToUpdateResponse(
@@ -224,7 +224,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, MergeFullSyncData) {
 
   EXPECT_EQ(bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
                                         std::move(entity_change_list)),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_THAT(GetAllServerCvcDataFromTable(),
               testing::UnorderedElementsAre(server_cvc));
 }
@@ -261,7 +261,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest,
   EXPECT_EQ(
       bridge()->ApplyIncrementalSyncChanges(
           bridge()->CreateMetadataChangeList(), std::move(entity_change_list)),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(GetAllServerCvcDataFromTable(),
               testing::UnorderedElementsAre(server_cvc1, server_cvc2));
 }
@@ -294,7 +294,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest,
   EXPECT_EQ(
       bridge()->ApplyIncrementalSyncChanges(
           bridge()->CreateMetadataChangeList(), std::move(entity_change_list)),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(GetAllServerCvcDataFromTable(), testing::IsEmpty());
 }
 
@@ -330,7 +330,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest,
   EXPECT_EQ(
       bridge()->ApplyIncrementalSyncChanges(
           bridge()->CreateMetadataChangeList(), std::move(entity_change_list)),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(GetAllServerCvcDataFromTable(),
               testing::UnorderedElementsAre(server_cvc2));
 }

@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/server_prediction_overrides.h"
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -12,7 +14,6 @@
 #include "base/values.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/common/signatures.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -27,12 +28,12 @@ constexpr std::string_view kSeparatorLevel0 = "-";
 constexpr std::string_view kSeparatorLevel1 = "_";
 
 // Parses a single type prediction for a field. If unsuccessful, it returns
-// `absl::nullopt`.
-absl::optional<FieldPrediction> ParseSingleFieldTypePrediction(
+// `std::nullopt`.
+std::optional<FieldPrediction> ParseSingleFieldTypePrediction(
     std::string_view specification) {
   int32_t type = 0;
   if (!base::StringToInt(specification, &type)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   FieldPrediction result;
@@ -50,7 +51,7 @@ base::expected<FieldSuggestion, std::string> ParseFieldTypePredictions(
   FieldSuggestion result;
   result.mutable_predictions()->Reserve(specifications.size());
   for (std::string_view spec : specifications) {
-    absl::optional<FieldPrediction> prediction =
+    std::optional<FieldPrediction> prediction =
         ParseSingleFieldTypePrediction(spec);
     if (!prediction) {
       return base::unexpected(

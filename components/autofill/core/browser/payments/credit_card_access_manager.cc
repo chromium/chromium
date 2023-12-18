@@ -79,7 +79,7 @@ CreditCardAccessManager::~CreditCardAccessManager() {
     if (auto* form_data_importer = client_->GetFormDataImporter()) {
       form_data_importer
           ->SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
-              absl::nullopt);
+              std::nullopt);
     }
   }
 }
@@ -253,7 +253,7 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
   // Set delay as fido request timeout if available, otherwise set to default.
   int delay_ms = kDelayForGetUnmaskDetails;
   if (unmask_details_.fido_request_options.has_value()) {
-    const absl::optional<int> request_timeout =
+    const std::optional<int> request_timeout =
         unmask_details_.fido_request_options->FindInt("timeout_millis");
     if (request_timeout.has_value()) {
       delay_ms = *request_timeout;
@@ -283,7 +283,7 @@ void CreditCardAccessManager::FetchCreditCard(
   // autofill non-interactive flow successfully completes.
   client_->GetFormDataImporter()
       ->SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
-          absl::nullopt);
+          std::nullopt);
 
   // Return error if authentication is already in progress, but don't reset
   // status.
@@ -528,7 +528,7 @@ void CreditCardAccessManager::Authenticate(
       // UnmaskResponseDetails while for masked server cards, it comes from the
       // UnmaskDetails.
       base::Value::Dict fido_request_options;
-      absl::optional<std::string> context_token;
+      std::optional<std::string> context_token;
       if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
         context_token = virtual_card_unmask_response_details_.context_token;
         fido_request_options = std::move(
@@ -653,7 +653,7 @@ void CreditCardAccessManager::OnCvcAuthenticationComplete(
     unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
   } else if (should_register_card_with_fido) {
 #if !BUILDFLAG(IS_IOS)
-    absl::optional<base::Value::Dict> request_options = absl::nullopt;
+    std::optional<base::Value::Dict> request_options = std::nullopt;
     if (unmask_details_.fido_request_options.has_value()) {
       // For opted-in user (CVC then FIDO case), request options are returned in
       // unmask detail response.
@@ -1414,7 +1414,7 @@ void CreditCardAccessManager::OnStopWaitingForUnmaskDetails(
         card_selected_without_unmask_details_timestamp_.value());
     autofill_metrics::LogUserPerceivedLatencyOnCardSelectionTimedOut(
         /*did_time_out=*/!get_unmask_details_returned);
-    card_selected_without_unmask_details_timestamp_ = absl::nullopt;
+    card_selected_without_unmask_details_timestamp_ = std::nullopt;
   }
 
   // Start the authentication after the wait ends.
@@ -1512,9 +1512,9 @@ void CreditCardAccessManager::Reset() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
   is_authentication_in_progress_ = false;
-  preflight_call_timestamp_ = absl::nullopt;
-  card_selected_without_unmask_details_timestamp_ = absl::nullopt;
-  is_user_verifiable_called_timestamp_ = absl::nullopt;
+  preflight_call_timestamp_ = std::nullopt;
+  card_selected_without_unmask_details_timestamp_ = std::nullopt;
+  is_user_verifiable_called_timestamp_ = std::nullopt;
 #if !BUILDFLAG(IS_IOS)
   opt_in_intention_ = UserOptInIntention::kUnspecified;
 #endif

@@ -50,7 +50,7 @@ class TestAutofillImageFetcher : public AutofillImageFetcher {
       base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
           barrier_callback,
       const GURL& url,
-      const absl::optional<base::TimeTicks>& fetch_image_request_timestamp,
+      const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
       const gfx::Image& image) {
     OnCardArtImageFetched(std::move(barrier_callback), url,
                           fetch_image_request_timestamp, image,

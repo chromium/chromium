@@ -39,7 +39,7 @@ class AddressComboboxModel : public ui::ComboboxModel {
   size_t GetItemCount() const override;
   std::u16string GetItemAt(size_t index) const override;
   bool IsItemSeparatorAt(size_t index) const override;
-  absl::optional<size_t> GetDefaultIndex() const override;
+  std::optional<size_t> GetDefaultIndex() const override;
 
   // Adds |profile| to model and return its combobox index. The lifespan of
   // |profile| beyond this call is undefined so a copy must be made.
@@ -51,7 +51,7 @@ class AddressComboboxModel : public ui::ComboboxModel {
 
   // Returns the combobox index of the item with the given id or nullopt if it's
   // not found.
-  absl::optional<size_t> GetIndexOfIdentifier(
+  std::optional<size_t> GetIndexOfIdentifier(
       const std::string& identifier) const;
 
  private:

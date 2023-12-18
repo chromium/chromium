@@ -1018,7 +1018,7 @@ void FormStructureRationalizer::RationalizeByRationalizationEngine(
     const GeoIpCountryCode& client_country,
     const LanguageCode& language_code,
     LogManager* log_manager) {
-  absl::optional<PatternSource> pattern_source = GetActivePatternSource();
+  std::optional<PatternSource> pattern_source = GetActivePatternSource();
   if (!pattern_source.has_value()) {
     pattern_source = PatternSource::kLegacy;
   }

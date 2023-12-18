@@ -177,8 +177,8 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
       unmask_request_;
 
   // The timestamps when the requests are sent. Used for logging.
-  absl::optional<base::TimeTicks> select_challenge_option_request_timestamp_;
-  absl::optional<base::TimeTicks> unmask_card_request_timestamp_;
+  std::optional<base::TimeTicks> select_challenge_option_request_timestamp_;
+  std::optional<base::TimeTicks> unmask_card_request_timestamp_;
 
   base::WeakPtrFactory<CreditCardOtpAuthenticator> weak_ptr_factory_{this};
 };

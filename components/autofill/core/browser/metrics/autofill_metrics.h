@@ -776,7 +776,7 @@ class AutofillMetrics {
                        bool suggestion_filled,
                        const FormInteractionCounts& form_interaction_counts,
                        const FormInteractionsFlowId& flow_id,
-                       absl::optional<int64_t> fast_checkout_run_id);
+                       std::optional<int64_t> fast_checkout_run_id);
     void LogFormEvent(autofill_metrics::FormEvent form_event,
                       const DenseSet<FormType>& form_types,
                       const base::TimeTicks& form_parsed_timestamp);
@@ -813,7 +813,7 @@ class AutofillMetrics {
     raw_ptr<AutofillClient> autofill_client_;
     raw_ptr<ukm::UkmRecorder> ukm_recorder_;
 
-    absl::optional<ukm::SourceId> source_id_;
+    std::optional<ukm::SourceId> source_id_;
     base::TimeTicks pinned_timestamp_;
   };
 

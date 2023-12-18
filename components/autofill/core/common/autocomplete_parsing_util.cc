@@ -104,17 +104,17 @@ bool ContactTypeHintMatchesFieldType(const std::string& token,
 // Chrome Autofill supports a subset of the field types listed at
 // http://is.gd/whatwg_autocomplete. Returns the corresponding HtmlFieldType, if
 // `value` matches any of them.
-absl::optional<HtmlFieldType> ParseStandardizedAutocompleteAttribute(
+std::optional<HtmlFieldType> ParseStandardizedAutocompleteAttribute(
     std::string_view value) {
   auto* it = kStandardizedAttributes.find(value);
   return it != kStandardizedAttributes.end()
-             ? absl::optional<HtmlFieldType>(it->second)
-             : absl::nullopt;
+             ? std::optional<HtmlFieldType>(it->second)
+             : std::nullopt;
 }
 
 // Maps `value`s that Autofill has proposed for the HTML autocomplete standard,
 // but which are not standardized, to their HtmlFieldType.
-absl::optional<HtmlFieldType> ParseProposedAutocompleteAttribute(
+std::optional<HtmlFieldType> ParseProposedAutocompleteAttribute(
     std::string_view value) {
   static constexpr auto proposed_attributes =
       base::MakeFixedFlatMap<std::string_view, HtmlFieldType>({
@@ -126,13 +126,13 @@ absl::optional<HtmlFieldType> ParseProposedAutocompleteAttribute(
 
   auto* it = proposed_attributes.find(value);
   return it != proposed_attributes.end()
-             ? absl::optional<HtmlFieldType>(it->second)
-             : absl::nullopt;
+             ? std::optional<HtmlFieldType>(it->second)
+             : std::nullopt;
 }
 
 // Maps non-standardized `value`s for the HTML autocomplete attribute to an
 // HtmlFieldType. This is primarily a list of "reasonable guesses".
-absl::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
+std::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
     std::string_view value) {
   static constexpr auto non_standardized_attributes =
       base::MakeFixedFlatMap<std::string_view, HtmlFieldType>({
@@ -152,8 +152,8 @@ absl::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
 
   auto* it = non_standardized_attributes.find(value);
   return it != non_standardized_attributes.end()
-             ? absl::optional<HtmlFieldType>(it->second)
-             : absl::nullopt;
+             ? std::optional<HtmlFieldType>(it->second)
+             : std::nullopt;
 }
 
 // If the autocomplete `value` doesn't match any of Autofill's supported values,
@@ -191,7 +191,7 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(std::string value) {
     base::ReplaceFirstSubstringAfterOffset(&value, 0, "phone", "tel");
   }
 
-  absl::optional<HtmlFieldType> type =
+  std::optional<HtmlFieldType> type =
       ParseStandardizedAutocompleteAttribute(value);
   if (!type.has_value()) {
     type = ParseProposedAutocompleteAttribute(value);
@@ -214,7 +214,7 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(std::string value) {
              : HtmlFieldType::kUnrecognized;
 }
 
-absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
+std::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
     std::string_view autocomplete_attribute) {
   std::vector<std::string> tokens =
       LowercaseAndTokenizeAttributeString(autocomplete_attribute);
@@ -224,7 +224,7 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
   // latter type of attribute value.
   if (tokens.empty() ||
       (tokens.size() == 1 && ShouldIgnoreAutocompleteAttribute(tokens[0]))) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   AutocompleteParsingResult result;
@@ -249,7 +249,7 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
     // Note that an invalid token invalidates the entire attribute value, even
     // if the other tokens are valid.
     if (!ContactTypeHintMatchesFieldType(tokens.back(), result.field_type))
-      return absl::nullopt;
+      return std::nullopt;
     // Chrome Autofill ignores these type hints.
     tokens.pop_back();
   }
@@ -276,7 +276,7 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
 
   // (5) No other tokens are allowed. If there are any remaining, abort.
   if (!tokens.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   return result;
 }

@@ -70,7 +70,7 @@ void ParseAsOtpChallengeOption(
   // Get the OTP length for this challenge. This will be displayed to the user
   // in the OTP input dialog so that the user knows how many digits the OTP
   // should be.
-  absl::optional<int> otp_length =
+  std::optional<int> otp_length =
       defined_challenge_option->FindInt("otp_length");
   parsed_challenge_option->challenge_input_length =
       otp_length ? *otp_length : kDefaultOtpLength;
@@ -95,7 +95,7 @@ void ParseAsCvcChallengeOption(
   // Get the length of the CVC on the card. In most cases this is 3 digits,
   // but it is possible for this to be 4 digits, for example in the case of
   // the Card Identification Number on the front of an American Express card.
-  absl::optional<int> cvc_length =
+  std::optional<int> cvc_length =
       defined_challenge_option->FindInt("cvc_length");
   parsed_challenge_option->challenge_input_length =
       cvc_length ? *cvc_length : kDefaultCvcLength;
@@ -340,11 +340,11 @@ void UnmaskCardRequest::ParseResponse(const base::Value::Dict& response) {
 
   const base::Value::Dict* expiration = response.FindDict("expiration");
   if (expiration) {
-    if (absl::optional<int> month = expiration->FindInt("month")) {
+    if (std::optional<int> month = expiration->FindInt("month")) {
       response_details_.expiration_month = base::NumberToString(month.value());
     }
 
-    if (absl::optional<int> year = expiration->FindInt("year")) {
+    if (std::optional<int> year = expiration->FindInt("year")) {
       response_details_.expiration_year = base::NumberToString(year.value());
     }
   }

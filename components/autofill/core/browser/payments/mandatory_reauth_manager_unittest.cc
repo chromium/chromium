@@ -310,7 +310,7 @@ TEST_F(
 
   // 'card_identifier_if_non_interactive_authentication_flow_completed' is not
   // present, implying interactive authentication happened.
-  EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(absl::nullopt));
+  EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(std::nullopt));
   ExpectUniqueOfferOptInDecision(
       MandatoryReauthOfferOptInDecision::kWentThroughInteractiveAuthentication);
 }

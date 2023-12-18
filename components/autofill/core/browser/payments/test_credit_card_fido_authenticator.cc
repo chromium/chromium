@@ -24,7 +24,7 @@ void TestCreditCardFidoAuthenticator::Authenticate(
     CreditCard card,
     base::WeakPtr<Requester> requester,
     base::Value::Dict request_options,
-    absl::optional<std::string> context_token) {
+    std::optional<std::string> context_token) {
   authenticate_invoked_ = true;
   card_ = std::move(card);
   context_token_ = context_token;
@@ -124,7 +124,7 @@ bool TestCreditCardFidoAuthenticator::IsUserOptedIn() {
 
 void TestCreditCardFidoAuthenticator::Reset() {
   is_user_verifiable_ = false;
-  is_user_opted_in_ = absl::nullopt;
+  is_user_opted_in_ = std::nullopt;
   opt_out_called_ = false;
   authenticate_invoked_ = false;
   card_ = CreditCard();

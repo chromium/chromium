@@ -72,9 +72,9 @@ class TestAuthenticationRequester
 
   base::WeakPtr<TestAuthenticationRequester> GetWeakPtr();
 
-  absl::optional<bool> is_user_verifiable() { return is_user_verifiable_; }
+  std::optional<bool> is_user_verifiable() { return is_user_verifiable_; }
 
-  absl::optional<bool> did_succeed() { return did_succeed_; }
+  std::optional<bool> did_succeed() { return did_succeed_; }
 
   std::u16string number() { return number_; }
 
@@ -94,10 +94,10 @@ class TestAuthenticationRequester
 
  private:
   // Set when CreditCardFidoAuthenticator invokes IsUserVerifiableCallback().
-  absl::optional<bool> is_user_verifiable_;
+  std::optional<bool> is_user_verifiable_;
 
   // Is set to true if authentication was successful.
-  absl::optional<bool> did_succeed_;
+  std::optional<bool> did_succeed_;
 
   // The failure type of the full card request. Set when the request is
   // finished.

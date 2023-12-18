@@ -423,7 +423,7 @@ std::u16string UnencryptValueFromColumn(
 
 std::unique_ptr<CreditCard> CreditCardFromStatement(
     sql::Statement& card_statement,
-    absl::optional<std::reference_wrapper<sql::Statement>> cvc_statement,
+    std::optional<std::reference_wrapper<sql::Statement>> cvc_statement,
     const AutofillTableEncryptor& encryptor) {
   auto credit_card = std::make_unique<CreditCard>();
 
@@ -1101,9 +1101,9 @@ std::unique_ptr<CreditCard> AutofillTable::GetCreditCard(
   bool has_cvc = cvc_statement.Step();
   return CreditCardFromStatement(
       card_statement,
-      has_cvc ? absl::optional<
-                    std::reference_wrapper<sql::Statement>>{cvc_statement}
-              : absl::nullopt,
+      has_cvc
+          ? std::optional<std::reference_wrapper<sql::Statement>>{cvc_statement}
+          : std::nullopt,
       *autofill_table_encryptor_);
 }
 

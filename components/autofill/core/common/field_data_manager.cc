@@ -70,7 +70,7 @@ void FieldDataManager::UpdateFieldDataMapWithNullValue(
   if (HasFieldData(id)) {
     field_value_and_properties_map_[id].second |= mask;
   } else {
-    field_value_and_properties_map_[id] = {absl::nullopt, mask};
+    field_value_and_properties_map_[id] = {std::nullopt, mask};
   }
 }
 

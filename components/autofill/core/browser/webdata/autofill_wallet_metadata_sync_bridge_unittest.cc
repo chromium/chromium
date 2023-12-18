@@ -301,7 +301,7 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
       updates.push_back(SpecificsToUpdateResponse(specifics));
     }
     real_processor_->OnUpdateReceived(state, std::move(updates),
-                                      /*gc_directive=*/absl::nullopt);
+                                      /*gc_directive=*/std::nullopt);
   }
 
   void ReceiveTombstones(
@@ -320,7 +320,7 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
           SpecificsToUpdateResponse(specifics, /*is_deleted=*/true));
     }
     real_processor_->OnUpdateReceived(state, std::move(updates),
-                                      /*gc_directive=*/absl::nullopt);
+                                      /*gc_directive=*/std::nullopt);
   }
 
   EntityData SpecificsToEntity(const WalletMetadataSpecifics& specifics,

@@ -49,7 +49,7 @@ class TestAutofillDriverTemplate : public T {
   // AutofillDriver:
   LocalFrameToken GetFrameToken() const override { return frame_token_; }
   TestAutofillDriverTemplate* GetParent() override { return parent_; }
-  absl::optional<LocalFrameToken> Resolve(FrameToken query) override {
+  std::optional<LocalFrameToken> Resolve(FrameToken query) override {
     if (auto* local_frame_token = absl::get_if<LocalFrameToken>(&query)) {
       return *local_frame_token;
     }
@@ -57,7 +57,7 @@ class TestAutofillDriverTemplate : public T {
     if (it != remote_frame_tokens_.end()) {
       return it->second;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
   bool IsInActiveFrame() const override { return is_in_active_frame_; }
   bool IsInAnyMainFrame() const override { return is_in_any_main_frame_; }

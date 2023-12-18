@@ -287,7 +287,7 @@ struct FormFieldData {
 
   FormControlType form_control_type = FormControlType::kInputText;
   std::string autocomplete_attribute;
-  absl::optional<AutocompleteParsingResult> parsed_autocomplete;
+  std::optional<AutocompleteParsingResult> parsed_autocomplete;
   std::u16string placeholder;
   std::u16string css_classes;
   std::u16string aria_label;

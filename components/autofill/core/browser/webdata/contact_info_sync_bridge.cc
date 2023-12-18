@@ -71,7 +71,7 @@ ContactInfoSyncBridge::CreateMetadataChangeList() {
                           change_processor()->GetWeakPtr()));
 }
 
-absl::optional<syncer::ModelError> ContactInfoSyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> ContactInfoSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // Since the local storage is cleared when the data type is disabled in
@@ -81,10 +81,10 @@ absl::optional<syncer::ModelError> ContactInfoSyncBridge::MergeFullSyncData(
                                                std::move(entity_data))) {
     return error;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
@@ -134,7 +134,7 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
   if (!entity_changes.empty())
     web_data_backend_->NotifyOnAutofillChangedBySync(syncer::CONTACT_INFO);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ContactInfoSyncBridge::GetData(StorageKeyList storage_keys,

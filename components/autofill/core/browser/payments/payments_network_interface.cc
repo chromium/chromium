@@ -490,7 +490,7 @@ void PaymentsNetworkInterface::OnSimpleLoaderCompleteInternal(int response_code,
     case net::HTTP_OK: {
       std::string error_code;
       std::string error_api_error_reason;
-      absl::optional<base::Value> message_value = base::JSONReader::Read(data);
+      std::optional<base::Value> message_value = base::JSONReader::Read(data);
       if (message_value && message_value->is_dict()) {
         const auto* found_error_code =
             message_value->GetDict().FindStringByDottedPath("error.code");

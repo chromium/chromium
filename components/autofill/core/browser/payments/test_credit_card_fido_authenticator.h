@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_CREDIT_CARD_FIDO_AUTHENTICATOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/credit_card_fido_authenticator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -34,7 +34,7 @@ class TestCreditCardFidoAuthenticator : public CreditCardFidoAuthenticator {
   void Authenticate(CreditCard card,
                     base::WeakPtr<Requester> requester,
                     base::Value::Dict request_options,
-                    absl::optional<std::string> context_token) override;
+                    std::optional<std::string> context_token) override;
   void IsUserVerifiable(base::OnceCallback<void(bool)> callback) override;
   bool IsUserOptedIn() override;
   void GetAssertion(blink::mojom::PublicKeyCredentialRequestOptionsPtr
@@ -67,7 +67,7 @@ class TestCreditCardFidoAuthenticator : public CreditCardFidoAuthenticator {
   bool IsOptOutCalled() { return opt_out_called_; }
   bool authenticate_invoked() { return authenticate_invoked_; }
   const CreditCard& card() { return *card_; }
-  const absl::optional<std::string>& context_token() { return context_token_; }
+  const std::optional<std::string>& context_token() { return context_token_; }
 
   // Resets all the testing related states.
   void Reset();
@@ -79,11 +79,11 @@ class TestCreditCardFidoAuthenticator : public CreditCardFidoAuthenticator {
   blink::mojom::PublicKeyCredentialRequestOptionsPtr request_options_;
   blink::mojom::PublicKeyCredentialCreationOptionsPtr creation_options_;
   bool is_user_verifiable_ = false;
-  absl::optional<bool> is_user_opted_in_;
+  std::optional<bool> is_user_opted_in_;
   bool opt_out_called_ = false;
   bool authenticate_invoked_ = false;
-  absl::optional<CreditCard> card_;
-  absl::optional<std::string> context_token_;
+  std::optional<CreditCard> card_;
+  std::optional<std::string> context_token_;
 };
 
 }  // namespace autofill

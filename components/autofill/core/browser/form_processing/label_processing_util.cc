@@ -17,7 +17,7 @@ const int kMaxNumberOfFieldsToShareALabel = 3;
 // The maximum length of a label that can be shared among fields.
 const int kMaxLengthOfShareableLabel = 40;
 
-absl::optional<std::vector<std::u16string>> GetParseableLabels(
+std::optional<std::vector<std::u16string>> GetParseableLabels(
     const LabelPieces& labels) {
   // Make a copy of the labels.
   LabelPieces shared_labels = labels;
@@ -92,7 +92,7 @@ absl::optional<std::vector<std::u16string>> GetParseableLabels(
   }
 
   if (!shared_labels_found) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Otherwise convert the shared label string pieces into strings for memory
@@ -101,7 +101,7 @@ absl::optional<std::vector<std::u16string>> GetParseableLabels(
   result.reserve(shared_labels.size());
   base::ranges::transform(shared_labels, std::back_inserter(result),
                           [](auto& s) { return std::u16string(s); });
-  return absl::make_optional(std::move(result));
+  return std::make_optional(std::move(result));
 }
 
 }  // namespace autofill

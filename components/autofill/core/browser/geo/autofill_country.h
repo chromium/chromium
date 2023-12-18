@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_AUTOFILL_COUNTRY_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_AUTOFILL_COUNTRY_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -13,7 +14,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 
 namespace autofill {
@@ -30,7 +30,7 @@ class AutofillCountry {
   // if the name is not queried.
   explicit AutofillCountry(
       const std::string& country_code,
-      const absl::optional<std::string>& locale = absl::nullopt);
+      const std::optional<std::string>& locale = std::nullopt);
 
   AutofillCountry(const AutofillCountry&) = delete;
   AutofillCountry& operator=(const AutofillCountry&) = delete;

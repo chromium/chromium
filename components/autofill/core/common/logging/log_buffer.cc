@@ -91,7 +91,7 @@ LogBuffer::LogBuffer(LogBuffer&& other) noexcept = default;
 LogBuffer& LogBuffer::operator=(LogBuffer&& other) = default;
 LogBuffer::~LogBuffer() = default;
 
-absl::optional<base::Value::Dict> LogBuffer::RetrieveResult() {
+std::optional<base::Value::Dict> LogBuffer::RetrieveResult() {
   // The buffer should always start with a fragment.
   DCHECK(buffer_.size() >= 1);
 
@@ -101,12 +101,12 @@ absl::optional<base::Value::Dict> LogBuffer::RetrieveResult() {
 
   auto* children = buffer_[0].FindList("children");
   if (!children || children->empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   // If the fragment has a single child, remove it from |children| and return
   // that directly.
   if (children->size() == 1) {
-    return absl::optional<base::Value::Dict>(
+    return std::optional<base::Value::Dict>(
         std::move((*children).back().GetDict()));
   }
 
@@ -189,7 +189,7 @@ LogBuffer& operator<<(LogBuffer& buf, LogBuffer&& buffer) {
   if (!buf.active())
     return buf;
 
-  absl::optional<base::Value::Dict> node_to_add = buffer.RetrieveResult();
+  std::optional<base::Value::Dict> node_to_add = buffer.RetrieveResult();
   if (!node_to_add)
     return buf;
 

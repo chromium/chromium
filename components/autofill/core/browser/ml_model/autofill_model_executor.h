@@ -10,7 +10,6 @@
 
 #include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
 #include "components/optimization_guide/core/base_model_executor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -50,7 +49,7 @@ class AutofillModelExecutor
   // optimization_guide::BaseModelExecutor:
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                   const ModelInput& input) override;
-  absl::optional<ModelOutput> Postprocess(
+  std::optional<ModelOutput> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
 
   // Stores the number of fields sent to the model via `Preprocess()`. This will

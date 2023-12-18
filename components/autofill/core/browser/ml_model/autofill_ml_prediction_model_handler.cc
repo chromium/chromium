@@ -31,10 +31,10 @@ AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
           std::make_unique<AutofillModelExecutor>(),
-          /*model_inference_timeout=*/absl::nullopt,
+          /*model_inference_timeout=*/std::nullopt,
           optimization_guide::proto::OptimizationTarget::
               OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
-          /*model_metadata=*/absl::nullopt) {
+          /*model_metadata=*/std::nullopt) {
   // Store the model in memory as soon as it is available and keep it loaded for
   // the whole browser session since we query predictions very regularly.
   // TODO(crbug.com/1465926): Maybe change both back to default behavior if we
@@ -60,7 +60,7 @@ void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
           [](base::WeakPtr<AutofillMlPredictionModelHandler> self,
              std::unique_ptr<FormStructure> form_structure,
              base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback,
-             const absl::optional<AutofillModelExecutor::ModelOutput>& output) {
+             const std::optional<AutofillModelExecutor::ModelOutput>& output) {
             if (!self) {
               return;
             }

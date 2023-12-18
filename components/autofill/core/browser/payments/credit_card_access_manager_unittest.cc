@@ -205,7 +205,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     credit_card_access_manager().is_authentication_in_progress_ = false;
     credit_card_access_manager().can_fetch_unmask_details_ = true;
     credit_card_access_manager().unmask_details_request_in_progress_ = false;
-    credit_card_access_manager().is_user_verifiable_ = absl::nullopt;
+    credit_card_access_manager().is_user_verifiable_ = std::nullopt;
   }
 
   void ClearCards() { personal_data().ClearCreditCards(); }
@@ -957,7 +957,7 @@ TEST_F(CreditCardAccessManagerTest, FetchLocalCardSuccess) {
 
   // There was no interactive authentication in this flow, so check that this
   // is signaled correctly.
-  absl::optional<CreditCard::RecordType> card_identifier =
+  std::optional<CreditCard::RecordType> card_identifier =
       autofill_client_.GetFormDataImporter()
           ->GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted();
   ASSERT_TRUE(card_identifier.has_value());
@@ -2949,7 +2949,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   // There was no interactive authentication in this flow, so check that this
   // is signaled correctly.
-  absl::optional<CreditCard::RecordType> card_identifier =
+  std::optional<CreditCard::RecordType> card_identifier =
       autofill_client_.GetFormDataImporter()
           ->GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted();
   ASSERT_TRUE(card_identifier.has_value());
@@ -3405,7 +3405,7 @@ TEST_F(CreditCardAccessManagerTest, RiskBasedVirtualCardUnmasking_Success) {
 
   // There was no interactive authentication in this flow, so check that this
   // is signaled correctly.
-  absl::optional<CreditCard::RecordType> card_identifier =
+  std::optional<CreditCard::RecordType> card_identifier =
       autofill_client_.GetFormDataImporter()
           ->GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted();
   ASSERT_TRUE(card_identifier.has_value());

@@ -82,7 +82,7 @@ RequiredFieldsForAddressImport GetRequiredFieldsForAddressImport(
 }  // namespace
 
 AutofillCountry::AutofillCountry(const std::string& country_code,
-                                 const absl::optional<std::string>& locale) {
+                                 const std::optional<std::string>& locale) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
 
   // If the country code is an alias (e.g. "GB" for "UK") expand the country

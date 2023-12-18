@@ -124,8 +124,8 @@ class CardUnmaskPromptControllerImplGenericTest {
 
   // Shows the Card Unmask Prompt. `challenge_option` being present denotes that
   // we are in the virtual card use-case.
-  void ShowPrompt(const absl::optional<autofill::CardUnmaskChallengeOption>&
-                      challenge_option = absl::nullopt) {
+  void ShowPrompt(const std::optional<autofill::CardUnmaskChallengeOption>&
+                      challenge_option = std::nullopt) {
     card_.set_record_type(challenge_option.has_value()
                               ? CreditCard::RecordType::kVirtualCard
                               : CreditCard::RecordType::kMaskedServerCard);
@@ -150,10 +150,10 @@ class CardUnmaskPromptControllerImplGenericTest {
                                      bool should_unmask_virtual_card = false,
                                      bool was_checkbox_visible = true) {
     ShowPrompt(should_unmask_virtual_card
-                   ? absl::optional<autofill::CardUnmaskChallengeOption>(
+                   ? std::optional<autofill::CardUnmaskChallengeOption>(
                          test::GetCardUnmaskChallengeOptions(
                              {CardUnmaskChallengeOptionType::kCvc})[0])
-                   : absl::nullopt);
+                   : std::nullopt);
     controller_->OnUnmaskPromptAccepted(u"444", u"01", u"2050",
                                         enable_fido_auth, was_checkbox_visible);
   }
@@ -542,7 +542,7 @@ TEST_P(LoggingValidationTestForNickname,
 
 TEST_P(LoggingValidationTestForNickname, VirtualCard_LogUnmaskPromptShown) {
   base::HistogramTester histogram_tester;
-  ShowPrompt(absl::optional<autofill::CardUnmaskChallengeOption>(
+  ShowPrompt(std::optional<autofill::CardUnmaskChallengeOption>(
       test::GetCardUnmaskChallengeOptions(
           {CardUnmaskChallengeOptionType::kCvc})[0]));
 

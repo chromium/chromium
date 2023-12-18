@@ -68,11 +68,11 @@ class CreditCardRiskBasedAuthenticator {
     AutofillErrorDialogContext error_dialog_context;
     // The card will be set when the server response was successful and the
     // card's real pan was returned from the server side.
-    absl::optional<CreditCard> card;
+    std::optional<CreditCard> card;
     // The items below will be set when the server response was successful and
     // the card's real pan was not returned from the server side.
     // FIDO request options will be present only when FIDO is available.
-    absl::optional<base::Value::Dict> fido_request_options;
+    std::optional<base::Value::Dict> fido_request_options;
     // Stores the latest version of the context token, passed between Payments
     // calls and unmodified by Chrome.
     std::string context_token;
@@ -151,7 +151,7 @@ class CreditCardRiskBasedAuthenticator {
       unmask_request_details_;
 
   // The timestamp when the unmask request is sent. Used for logging.
-  absl::optional<base::TimeTicks> unmask_card_request_timestamp_;
+  std::optional<base::TimeTicks> unmask_card_request_timestamp_;
 
   base::WeakPtrFactory<CreditCardRiskBasedAuthenticator> weak_ptr_factory_{
       this};

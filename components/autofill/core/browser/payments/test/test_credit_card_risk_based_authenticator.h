@@ -32,7 +32,7 @@ class TestCreditCardRiskBasedAuthenticator
 
  private:
   bool authenticate_invoked_ = false;
-  absl::optional<CreditCard> card_;
+  std::optional<CreditCard> card_;
   int64_t billing_customer_id_;
 };
 

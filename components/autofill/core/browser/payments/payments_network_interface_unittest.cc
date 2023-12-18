@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -42,7 +43,6 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::HasSubstr;
 
@@ -616,9 +616,9 @@ class PaymentsNetworkInterfaceTest : public testing::Test {
     return profile;
   }
 
-  absl::optional<PaymentsNetworkInterface::UnmaskDetails> unmask_details_;
+  std::optional<PaymentsNetworkInterface::UnmaskDetails> unmask_details_;
   // The UnmaskResponseDetails retrieved from an UnmaskRequest.  Includes PAN.
-  absl::optional<PaymentsNetworkInterface::UnmaskResponseDetails>
+  std::optional<PaymentsNetworkInterface::UnmaskResponseDetails>
       unmask_response_details_;
   base::WeakPtrFactory<PaymentsNetworkInterfaceTest> weak_ptr_factory_{this};
 };
@@ -1392,7 +1392,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessEmptyResponse) {
 TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessInstrumentIdPresent) {
   StartUploading(UploadCardOptions());
   IssueOAuthToken();
-  upload_card_response_details_.instrument_id = absl::nullopt;
+  upload_card_response_details_.instrument_id = std::nullopt;
 
   // Test the conversion from string to int64_t using the max value for int64_t.
   ReturnResponse(net::HTTP_OK,

@@ -39,9 +39,9 @@ class MatchPatternRefTestApi {
 
   explicit MatchPatternRefTestApi(MatchPatternRef p) : p_(p) {}
 
-  absl::optional<MatchPatternRef> MakeSupplementary() const {
+  std::optional<MatchPatternRef> MakeSupplementary() const {
     if (!(*p_).match_field_attributes.contains(MatchAttribute::kName))
-      return absl::nullopt;
+      return std::nullopt;
     return MatchPatternRef(true, index());
   }
 
@@ -206,9 +206,9 @@ TEST_P(RegexPatternsTest, PseudoLanguageIsUnionOfLanguages) {
   std::erase_if(expected,
                 [](auto p) { return test_api(p).is_supplementary(); });
 
-  EXPECT_THAT(GetMatchPatterns(kSomeName, absl::nullopt, pattern_source()),
+  EXPECT_THAT(GetMatchPatterns(kSomeName, std::nullopt, pattern_source()),
               UnorderedElementsAreArray(expected));
-  EXPECT_THAT(GetMatchPatterns(kSomeName, absl::nullopt, pattern_source()),
+  EXPECT_THAT(GetMatchPatterns(kSomeName, std::nullopt, pattern_source()),
               Each(Not(IsSupplementary)));
 }
 
@@ -220,7 +220,7 @@ TEST_P(RegexPatternsTest, FallbackToPseudoLanguageIfLanguageDoesNotExist) {
   EXPECT_THAT(
       GetMatchPatterns(kSomeName, kNonexistingLanguage, pattern_source()),
       ElementsAreArray(
-          GetMatchPatterns(kSomeName, absl::nullopt, pattern_source())));
+          GetMatchPatterns(kSomeName, std::nullopt, pattern_source())));
 }
 
 // Tests that for a given pattern name, the non-English languages are

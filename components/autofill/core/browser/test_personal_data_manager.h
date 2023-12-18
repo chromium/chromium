@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_PERSONAL_DATA_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -20,7 +21,6 @@
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/test_inmemory_strike_database.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -176,14 +176,14 @@ class TestPersonalDataManager : public PersonalDataManager {
   std::string timezone_country_code_;
   std::string default_country_code_;
   int num_times_save_imported_credit_card_called_ = 0;
-  absl::optional<bool> autofill_profile_enabled_;
-  absl::optional<bool> autofill_payment_methods_enabled_;
-  absl::optional<bool> autofill_wallet_import_enabled_;
-  absl::optional<bool> eligible_for_account_storage_;
-  absl::optional<bool> payment_methods_mandatory_reauth_enabled_;
-  absl::optional<bool> payments_wallet_sync_transport_enabled_;
+  std::optional<bool> autofill_profile_enabled_;
+  std::optional<bool> autofill_payment_methods_enabled_;
+  std::optional<bool> autofill_wallet_import_enabled_;
+  std::optional<bool> eligible_for_account_storage_;
+  std::optional<bool> payment_methods_mandatory_reauth_enabled_;
+  std::optional<bool> payments_wallet_sync_transport_enabled_;
   CoreAccountInfo account_info_;
-  absl::optional<bool> payments_cvc_storage_enabled_;
+  std::optional<bool> payments_cvc_storage_enabled_;
 
   TestInMemoryStrikeDatabase inmemory_strike_database_;
   AutofillProfileMigrationStrikeDatabase

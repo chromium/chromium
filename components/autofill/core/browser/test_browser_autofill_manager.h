@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_BROWSER_AUTOFILL_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
@@ -130,7 +130,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
  private:
   bool autofill_profile_enabled_ = true;
   bool autofill_payment_methods_enabled_ = true;
-  absl::optional<bool> expected_observed_submission_;
+  std::optional<bool> expected_observed_submission_;
   const gfx::Image card_image_ = gfx::test::CreateImage(40, 24);
 
   std::unique_ptr<base::RunLoop> run_loop_;

@@ -35,19 +35,19 @@ TEST(LabelProcessingUtil, GetParseableNameStringPieces_TooManyComponents) {
   EXPECT_EQ(
       GetParseableLabels({u"City", u"Street & House Number & Floor & Stairs",
                           u"", u"", u"", u"Zip"}),
-      absl::nullopt);
+      std::nullopt);
 }
 
 TEST(LabelProcessingUtil, GetParseableNameStringPieces_UnmachtingComponents) {
   EXPECT_EQ(GetParseableLabels(
                 {u"City", u"Street & House Number & Floor", u"", u"Zip"}),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST(LabelProcessingUtil, GetParseableNameStringPieces_SplitableLabelAtEnd) {
   EXPECT_EQ(GetParseableLabels(
                 {u"City", u"", u"Zip", u"Street & House Number & Floor"}),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST(LabelProcessingUtil, GetParseableNameStringPieces_TooLongLabel) {
@@ -56,7 +56,7 @@ TEST(LabelProcessingUtil, GetParseableNameStringPieces_TooLongLabel) {
                                 u"additional text that exceeds 40 "
                                 u"characters by far",
                                 u"", u"Zip"}),
-            absl::nullopt);
+            std::nullopt);
 }
 
 }  // namespace autofill

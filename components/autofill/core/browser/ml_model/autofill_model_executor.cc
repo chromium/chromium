@@ -74,7 +74,7 @@ bool AutofillModelExecutor::Preprocess(
   return true;
 }
 
-absl::optional<AutofillModelExecutor::ModelOutput>
+std::optional<AutofillModelExecutor::ModelOutput>
 AutofillModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   // `output_tensors` is a 3D vector of floats. The first dimension is used

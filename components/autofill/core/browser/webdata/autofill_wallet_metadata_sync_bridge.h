@@ -66,10 +66,10 @@ class AutofillWalletMetadataSyncBridge
   // ModelTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeFullSyncData(
+  std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
+  std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -105,7 +105,7 @@ class AutofillWalletMetadataSyncBridge
   // |callback|. If |storage_keys_set| is not set, it returns all data entries.
   // Otherwise, it returns only entries with storage key in |storage_keys_set|.
   void GetDataImpl(
-      absl::optional<std::unordered_set<std::string>> storage_keys_set,
+      std::optional<std::unordered_set<std::string>> storage_keys_set,
       DataCallback callback);
 
   // Uploads local data that is not part of |entity_data| sent from the server
@@ -116,7 +116,7 @@ class AutofillWalletMetadataSyncBridge
   // Merges remote changes, specified in |entity_data|, with the local DB and,
   // potentially, writes changes to the local DB and/or commits updates of
   // entities from |entity_data| up to sync.
-  absl::optional<syncer::ModelError> MergeRemoteChanges(
+  std::optional<syncer::ModelError> MergeRemoteChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data);
 

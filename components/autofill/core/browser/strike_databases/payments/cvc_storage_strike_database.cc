@@ -8,7 +8,7 @@
 
 namespace autofill {
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 CvcStorageStrikeDatabase::GetRequiredDelaySinceLastStrike() const {
   return base::Days(7);
 }

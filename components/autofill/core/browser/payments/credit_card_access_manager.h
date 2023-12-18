@@ -459,14 +459,14 @@ class CreditCardAccessManager
   const raw_ptr<autofill_metrics::CreditCardFormEventLogger> form_event_logger_;
 
   // Timestamp used for preflight call metrics.
-  absl::optional<base::TimeTicks> preflight_call_timestamp_;
+  std::optional<base::TimeTicks> preflight_call_timestamp_;
 
   // Timestamp used for user-perceived latency metrics.
-  absl::optional<base::TimeTicks>
+  std::optional<base::TimeTicks>
       card_selected_without_unmask_details_timestamp_;
 
   // Timestamp for when fido_authenticator_->IsUserVerifiable() is called.
-  absl::optional<base::TimeTicks> is_user_verifiable_called_timestamp_;
+  std::optional<base::TimeTicks> is_user_verifiable_called_timestamp_;
 
 #if !BUILDFLAG(IS_IOS)
   std::unique_ptr<CreditCardFidoAuthenticator> fido_authenticator_;
@@ -513,7 +513,7 @@ class CreditCardAccessManager
   // Set to true only if user has a verifying platform authenticator.
   // e.g. Touch/Face ID, Windows Hello, Android fingerprint, etc., is available
   // and enabled.
-  absl::optional<bool> is_user_verifiable_;
+  std::optional<bool> is_user_verifiable_;
 
   // True only if currently waiting on unmask details. This avoids making
   // unnecessary calls to payments.

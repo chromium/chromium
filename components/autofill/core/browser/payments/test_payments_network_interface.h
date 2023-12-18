@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_PAYMENTS_NETWORK_INTERFACE_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -16,7 +17,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -129,7 +129,7 @@ class TestPaymentsNetworkInterface : public payments::PaymentsNetworkInterface {
   payments::PaymentsNetworkInterface::UnmaskDetails* unmask_details() {
     return &unmask_details_;
   }
-  const absl::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
+  const std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
   unmask_request() const {
     return unmask_request_;
   }
@@ -174,7 +174,7 @@ class TestPaymentsNetworkInterface : public payments::PaymentsNetworkInterface {
   // useful to control whether or not GetUnmaskDetails() is responded to.
   bool should_return_unmask_details_ = true;
   payments::PaymentsNetworkInterface::UnmaskDetails unmask_details_;
-  absl::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>
+  std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>
       unmask_request_;
   payments::PaymentsNetworkInterface::SelectChallengeOptionRequestDetails
       select_challenge_option_request_;
@@ -191,9 +191,9 @@ class TestPaymentsNetworkInterface : public payments::PaymentsNetworkInterface {
   bool use_invalid_legal_message_ = false;
   bool use_legal_message_with_multiple_lines_ = false;
   std::unique_ptr<base::Value::Dict> LegalMessage();
-  absl::optional<AutofillClient::PaymentsRpcResult>
+  std::optional<AutofillClient::PaymentsRpcResult>
       select_challenge_option_result_;
-  absl::optional<AutofillClient::PaymentsRpcResult>
+  std::optional<AutofillClient::PaymentsRpcResult>
       update_virtual_card_enrollment_result_;
   payments::PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails
       get_details_for_enrollment_request_details_;

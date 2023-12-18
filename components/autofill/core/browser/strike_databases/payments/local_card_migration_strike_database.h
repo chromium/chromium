@@ -11,12 +11,12 @@ namespace autofill {
 
 struct LocalCardMigrationStrikeDatabaseTraits {
   static constexpr std::string_view kName = "LocalCardMigration";
-  static constexpr absl::optional<size_t> kMaxStrikeEntities = absl::nullopt;
-  static constexpr absl::optional<size_t> kMaxStrikeEntitiesAfterCleanup =
-      absl::nullopt;
+  static constexpr std::optional<size_t> kMaxStrikeEntities = std::nullopt;
+  static constexpr std::optional<size_t> kMaxStrikeEntitiesAfterCleanup =
+      std::nullopt;
   static constexpr size_t kMaxStrikeLimit = 6;
-  static constexpr absl::optional<base::TimeDelta> kExpiryTimeDelta =
-      absl::nullopt;
+  static constexpr std::optional<base::TimeDelta> kExpiryTimeDelta =
+      std::nullopt;
   static constexpr bool kUniqueIdRequired = false;
 };
 

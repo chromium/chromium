@@ -53,13 +53,13 @@ base::span<const MatchPatternRef> GetMatchPatterns(
 
 }  // namespace
 
-absl::optional<PatternSource> GetActivePatternSource() {
+std::optional<PatternSource> GetActivePatternSource() {
   return HeuristicSourceToPatternSource(GetActiveHeuristicSource());
 }
 
 base::span<const MatchPatternRef> GetMatchPatterns(
     std::string_view name,
-    absl::optional<LanguageCode> language_code,
+    std::optional<LanguageCode> language_code,
     PatternSource pattern_source) {
   return language_code ? GetMatchPatterns(name, **language_code, pattern_source)
                        : GetMatchPatterns(name, "", pattern_source);
@@ -67,7 +67,7 @@ base::span<const MatchPatternRef> GetMatchPatterns(
 
 base::span<const MatchPatternRef> GetMatchPatterns(
     FieldType type,
-    absl::optional<LanguageCode> language_code,
+    std::optional<LanguageCode> language_code,
     PatternSource pattern_source) {
   return GetMatchPatterns(FieldTypeToStringView(type), language_code,
                           pattern_source);

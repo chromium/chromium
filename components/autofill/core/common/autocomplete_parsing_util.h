@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_AUTOCOMPLETE_PARSING_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_AUTOCOMPLETE_PARSING_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "components/autofill/core/common/html_field_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -18,7 +18,7 @@ namespace autofill {
 // and parses the following tokens:
 // [section-*] [shipping|billing] [type_hint] field_type [webauthn]
 // The parsing extracts these components from `field.autocomplete_attribute` or
-// returns absl::nullopt, if the parsing fails. The latter happens if:
+// returns std::nullopt, if the parsing fails. The latter happens if:
 // - The autocomplete value is empty or contains more than 5 tokens.
 // - The type_hint doesn't match the field_type.
 // - If ShouldIgnoreAutocompleteAttribute(autocomplete) is true.
@@ -38,7 +38,7 @@ struct AutocompleteParsingResult {
   bool webauthn = false;
 };
 
-absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
+std::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
     std::string_view autocomplete_attribute);
 
 // Checks if `autocomplete_attribute` could not be recognized but was

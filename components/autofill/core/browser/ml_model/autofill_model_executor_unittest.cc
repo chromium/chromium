@@ -45,7 +45,7 @@ class AutofillModelExecutorTest : public testing::Test {
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
     model_executor_ = std::make_unique<AutofillModelExecutor>();
     model_executor_->InitializeAndMoveToExecutionThread(
-        /*model_inference_timeout=*/absl::nullopt,
+        /*model_inference_timeout=*/std::nullopt,
         optimization_guide::proto::
             OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
         execution_task_runner_, base::SequencedTaskRunner::GetCurrentDefault());
@@ -79,7 +79,7 @@ TEST_F(AutofillModelExecutorTest, ExecuteModel) {
       {TokenId(1), TokenId(2), TokenId(3), TokenId(4), TokenId(5)},
       {TokenId(2), TokenId(3), TokenId(4), TokenId(5), TokenId(6)}};
   base::test::TestFuture<
-      const absl::optional<AutofillModelExecutor::ModelOutput>&>
+      const std::optional<AutofillModelExecutor::ModelOutput>&>
       predictions;
   execution_task_runner_->PostTask(
       FROM_HERE,

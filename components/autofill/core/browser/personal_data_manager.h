@@ -8,6 +8,7 @@
 #include <deque>
 #include <list>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -53,7 +54,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/webdata/common/web_data_service_consumer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PaymentsSuggestionBottomSheetMediatorTest;
 class Profile;
@@ -217,9 +217,9 @@ class PersonalDataManager : public KeyedService,
   // signin::IdentityManager::Observer:
   void OnAccountsCookieDeletedByUserAction() override;
 
-  // Returns the account info of currently signed-in user, or absl::nullopt if
+  // Returns the account info of currently signed-in user, or std::nullopt if
   // the user is not signed-in or the identity manager is not available.
-  absl::optional<CoreAccountInfo> GetPrimaryAccountInfo() const;
+  std::optional<CoreAccountInfo> GetPrimaryAccountInfo() const;
 
   // Returns whether credit card download is active (meaning that wallet sync is
   // running at least in transport mode).

@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_ACCESSORY_SHEET_DATA_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_ACCESSORY_SHEET_DATA_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -280,7 +280,7 @@ class AccessorySheetData {
   void set_option_toggle(OptionToggle toggle) {
     option_toggle_ = std::move(toggle);
   }
-  const absl::optional<OptionToggle>& option_toggle() const {
+  const std::optional<OptionToggle>& option_toggle() const {
     return option_toggle_;
   }
 
@@ -328,7 +328,7 @@ class AccessorySheetData {
   AccessoryTabType sheet_type_;
   std::u16string title_;
   std::u16string warning_;
-  absl::optional<OptionToggle> option_toggle_;
+  std::optional<OptionToggle> option_toggle_;
   std::vector<PasskeySection> passkey_section_list_;
   std::vector<UserInfo> user_info_list_;
   std::vector<PromoCodeInfo> promo_code_info_list_;

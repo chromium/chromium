@@ -43,7 +43,7 @@ DenseSet<HeuristicSource> GetNonActiveHeuristicSources();
 
 // Converts a `HeuristicSource` to `PatternSource`. If the passed
 // source is not a `PatternSource` then a nullopt is returned.
-absl::optional<PatternSource> HeuristicSourceToPatternSource(
+std::optional<PatternSource> HeuristicSourceToPatternSource(
     HeuristicSource source);
 HeuristicSource PatternSourceToHeuristicSource(PatternSource source);
 

@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/manual_testing_import.h"
 
+#include <optional>
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -19,7 +20,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -366,7 +366,7 @@ TEST_F(ManualTestingImportTesti18n, Loadi18nProfilesFromFile_Valid) {
       ADDRESS_HOME_STREET_NAME, u"street", VerificationStatus::kObserved);
   expected_profile2.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_HOUSE_NUMBER, u"123", VerificationStatus::kObserved);
-  absl::optional<std::vector<AutofillProfile>> loaded_profiles =
+  std::optional<std::vector<AutofillProfile>> loaded_profiles =
       LoadProfilesFromFile(file_path);
   EXPECT_THAT(loaded_profiles, testing::Optional(testing::Pointwise(
                                    DataModelsCompareEqual(),

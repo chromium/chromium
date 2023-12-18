@@ -6,13 +6,13 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_SIMPLE_AUTOFILL_STRIKE_DATABASE_H_
 
 #include <stddef.h>
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/time/time.h"
 #include "components/autofill/core/browser/strike_databases/strike_database_base.h"
 #include "components/autofill/core/browser/strike_databases/strike_database_integrator_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -23,11 +23,11 @@ namespace autofill {
 //
 // struct MyStrikeDatabaseTraits {
 //   static constexpr std::string_view kName = "MyStrikeDatabase";
-//   static constexpr absl::optional<size_t> kMaxStrikeEntities = 100;
-//   static constexpr absl::optional<size_t>
+//   static constexpr std::optional<size_t> kMaxStrikeEntities = 100;
+//   static constexpr std::optional<size_t>
 //                                kMaxStrikeEntitiesAfterCleanup = 70;
 //   static constexpr size_t kMaxStrikeLimit = 3;
-//   static constexpr absl::optional<base::TimeDelta> kExpiryTimeDelta =
+//   static constexpr std::optional<base::TimeDelta> kExpiryTimeDelta =
 //       base::Days(180);
 //   static constexpr bool kUniqueIdRequired = true;
 // };
@@ -45,17 +45,17 @@ class SimpleAutofillStrikeDatabase : public StrikeDatabaseIntegratorBase {
   }
   ~SimpleAutofillStrikeDatabase() override = default;
 
-  absl::optional<size_t> GetMaximumEntries() const override {
+  std::optional<size_t> GetMaximumEntries() const override {
     return Traits::kMaxStrikeEntities;
   }
-  absl::optional<size_t> GetMaximumEntriesAfterCleanup() const override {
+  std::optional<size_t> GetMaximumEntriesAfterCleanup() const override {
     return Traits::kMaxStrikeEntitiesAfterCleanup;
   }
   std::string GetProjectPrefix() const override {
     return std::string(Traits::kName);
   }
   int GetMaxStrikesLimit() const override { return Traits::kMaxStrikeLimit; }
-  absl::optional<base::TimeDelta> GetExpiryTimeDelta() const override {
+  std::optional<base::TimeDelta> GetExpiryTimeDelta() const override {
     return Traits::kExpiryTimeDelta;
   }
   bool UniqueIdsRequired() const override { return Traits::kUniqueIdRequired; }

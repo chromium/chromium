@@ -72,7 +72,7 @@ bool AddressComboboxModel::IsItemSeparatorAt(size_t index) const {
   return index == 1;
 }
 
-absl::optional<size_t> AddressComboboxModel::GetDefaultIndex() const {
+std::optional<size_t> AddressComboboxModel::GetDefaultIndex() const {
   if (!default_selected_guid_.empty()) {
     const auto index = GetIndexOfIdentifier(default_selected_guid_);
     if (index.has_value())
@@ -96,13 +96,13 @@ std::string AddressComboboxModel::GetItemIdentifierAt(size_t index) {
   return addresses_[index - kNbHeaderEntries].first;
 }
 
-absl::optional<size_t> AddressComboboxModel::GetIndexOfIdentifier(
+std::optional<size_t> AddressComboboxModel::GetIndexOfIdentifier(
     const std::string& identifier) const {
   for (size_t i = 0; i < addresses_.size(); ++i) {
     if (addresses_[i].first == identifier)
       return i + kNbHeaderEntries;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AddressComboboxModel::UpdateAddresses() {

@@ -175,7 +175,7 @@ AutofillWalletSyncBridge::CreateMetadataChangeList() {
                           change_processor()->GetWeakPtr()));
 }
 
-absl::optional<syncer::ModelError> AutofillWalletSyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> AutofillWalletSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // We want to notify the metadata bridge about all changes so that the
@@ -184,17 +184,17 @@ absl::optional<syncer::ModelError> AutofillWalletSyncBridge::MergeFullSyncData(
 
   // TODO(crbug.com/853688): Update the AutofillTable API to know about write
   // errors and report them here.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 AutofillWalletSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // This bridge does not support incremental updates, so whenever this is
   // called, the change list should be empty.
   DCHECK(entity_data.empty()) << "Received an unsupported incremental update.";
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AutofillWalletSyncBridge::GetData(StorageKeyList storage_keys,

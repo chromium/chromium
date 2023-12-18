@@ -7,10 +7,11 @@
 
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 

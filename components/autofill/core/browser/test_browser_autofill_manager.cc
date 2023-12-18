@@ -119,8 +119,9 @@ void TestBrowserAutofillManager::UploadVotesAndLogQuality(
     run_loop_->Quit();
   }
 
-  if (expected_observed_submission_ != absl::nullopt)
+  if (expected_observed_submission_ != std::nullopt) {
     EXPECT_EQ(expected_observed_submission_, observed_submission);
+  }
 
   // If we have expected field types set, make sure they match.
   if (!expected_submitted_field_types_.empty()) {

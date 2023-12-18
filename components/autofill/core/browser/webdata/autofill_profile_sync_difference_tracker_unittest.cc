@@ -70,18 +70,18 @@ class AutofillProfileSyncDifferenceTrackerTestBase : public testing::Test {
   }
 
   void IncorporateRemoteProfile(const AutofillProfile& profile) {
-    EXPECT_EQ(absl::nullopt, tracker()->IncorporateRemoteProfile(
-                                 std::make_unique<AutofillProfile>(profile)));
+    EXPECT_EQ(std::nullopt, tracker()->IncorporateRemoteProfile(
+                                std::make_unique<AutofillProfile>(profile)));
   }
 
   UpdatesToSync FlushToSync() {
-    EXPECT_EQ(absl::nullopt,
+    EXPECT_EQ(std::nullopt,
               tracker()->FlushToLocal(
                   /*autofill_changes_callback=*/base::DoNothing()));
 
     UpdatesToSync updates;
     std::vector<std::unique_ptr<AutofillProfile>> vector_of_unique_ptrs;
-    EXPECT_EQ(absl::nullopt,
+    EXPECT_EQ(std::nullopt,
               tracker()->FlushToSync(
                   /*profiles_to_upload_to_sync=*/&vector_of_unique_ptrs,
                   /*profiles_to_delete_from_sync=*/&updates
@@ -320,7 +320,7 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
   MockCallback<base::OnceClosure> autofill_changes_callback;
 
   EXPECT_CALL(autofill_changes_callback, Run()).Times(0);
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             tracker()->FlushToLocal(autofill_changes_callback.Get()));
 }
 
@@ -330,11 +330,11 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   AddAutofillProfilesToTable({local});
 
-  EXPECT_EQ(absl::nullopt, tracker()->IncorporateRemoteDelete(kSmallerGuid));
+  EXPECT_EQ(std::nullopt, tracker()->IncorporateRemoteDelete(kSmallerGuid));
 
   MockCallback<base::OnceClosure> autofill_changes_callback;
   EXPECT_CALL(autofill_changes_callback, Run()).Times(1);
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             tracker()->FlushToLocal(autofill_changes_callback.Get()));
 
   // On top of that, the profile should also get deleted.
@@ -350,7 +350,7 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 
   MockCallback<base::OnceClosure> autofill_changes_callback;
   EXPECT_CALL(autofill_changes_callback, Run()).Times(1);
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             tracker()->FlushToLocal(autofill_changes_callback.Get()));
 
   // On top of that, the profile should also get added.
@@ -372,7 +372,7 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 
   MockCallback<base::OnceClosure> autofill_changes_callback;
   EXPECT_CALL(autofill_changes_callback, Run()).Times(1);
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             tracker()->FlushToLocal(autofill_changes_callback.Get()));
 
   // On top of that, the profile with key kSmallerGuid should also get updated.
@@ -392,7 +392,7 @@ class AutofillProfileInitialSyncDifferenceTrackerTest
 
   ~AutofillProfileInitialSyncDifferenceTrackerTest() override {}
 
-  [[nodiscard]] absl::optional<syncer::ModelError>
+  [[nodiscard]] std::optional<syncer::ModelError>
   MergeSimilarEntriesForInitialSync() {
     return initial_tracker_.MergeSimilarEntriesForInitialSync(kLocaleString);
   }
@@ -427,7 +427,7 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
   merged.set_use_count(27);
 
   IncorporateRemoteProfile(remote);
-  EXPECT_EQ(absl::nullopt, MergeSimilarEntriesForInitialSync());
+  EXPECT_EQ(std::nullopt, MergeSimilarEntriesForInitialSync());
 
   // The merged profile needs to get uploaded back to sync and stored locally.
   UpdatesToSync updates = FlushToSync();
@@ -454,7 +454,7 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
   remote.set_use_count(27);
   remote.FinalizeAfterImport();
   IncorporateRemoteProfile(remote);
-  EXPECT_EQ(absl::nullopt, MergeSimilarEntriesForInitialSync());
+  EXPECT_EQ(std::nullopt, MergeSimilarEntriesForInitialSync());
 
   // Nothing gets uploaded to sync and the remote profile wins.
   UpdatesToSync updates = FlushToSync();
@@ -479,7 +479,7 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   remote.FinalizeAfterImport();
   IncorporateRemoteProfile(remote);
-  EXPECT_EQ(absl::nullopt, MergeSimilarEntriesForInitialSync());
+  EXPECT_EQ(std::nullopt, MergeSimilarEntriesForInitialSync());
 
   // The local profile gets uploaded (due to initial sync) and the remote
   // profile gets stored locally.

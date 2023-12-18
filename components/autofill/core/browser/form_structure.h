@@ -9,6 +9,7 @@
 
 #include <deque>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -32,7 +33,6 @@
 #include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -382,7 +382,7 @@ class FormStructure {
     password_attributes_vote_ = vote;
   }
 
-  absl::optional<std::pair<PasswordAttribute, bool>>
+  std::optional<std::pair<PasswordAttribute, bool>>
   get_password_attributes_vote() const {
     return password_attributes_vote_;
   }
@@ -448,9 +448,9 @@ class FormStructure {
   // The signatures of forms recently submitted on the same origin within a
   // small period of time.
   struct FormAssociations {
-    absl::optional<FormSignature> last_address_form_submitted;
-    absl::optional<FormSignature> second_last_address_form_submitted;
-    absl::optional<FormSignature> last_credit_card_form_submitted;
+    std::optional<FormSignature> last_address_form_submitted;
+    std::optional<FormSignature> second_last_address_form_submitted;
+    std::optional<FormSignature> last_credit_card_form_submitted;
   };
 
   void set_form_associations(FormAssociations associations) {
@@ -637,7 +637,7 @@ class FormStructure {
 
   // The vote about password attributes (e.g. whether the password has a numeric
   // character).
-  absl::optional<std::pair<PasswordAttribute, bool>> password_attributes_vote_;
+  std::optional<std::pair<PasswordAttribute, bool>> password_attributes_vote_;
 
   // If |password_attribute_vote_| contains (kHasSpecialSymbol, true), this
   // field contains noisified information about a special symbol in a

@@ -31,7 +31,7 @@ LogBufferSubmitter& LogBufferSubmitter::operator=(LogBufferSubmitter&& that) {
 LogBufferSubmitter::~LogBufferSubmitter() {
   if (!destruct_with_logging_ || !log_manager_)
     return;
-  absl::optional<base::Value::Dict> message = buffer_.RetrieveResult();
+  std::optional<base::Value::Dict> message = buffer_.RetrieveResult();
   if (!message)
     return;
   log_manager_->ProcessLog(std::move(*message), {});

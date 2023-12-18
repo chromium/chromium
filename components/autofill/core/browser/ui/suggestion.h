@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_SUGGESTION_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_SUGGESTION_H_
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <string_view>
@@ -16,7 +17,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"

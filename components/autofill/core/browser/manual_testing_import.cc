@@ -28,15 +28,15 @@ namespace autofill {
 namespace {
 
 // Util struct for storing the list of profiles and credit cards to be imported.
-// If any of `profiles` or `credit_cards` are absl::nullopt, then the data used
+// If any of `profiles` or `credit_cards` are std::nullopt, then the data used
 // for import is malformed, and this will cause a crash.
 // When any of `profiles` or `credit_cards` is empty, it means that the JSON
 // file used for import did not include the corresponding key. It'll be treated
 // as valid but won't be imported so that existing data in the PDM isn't
 // cleared without replacement.
 struct AutofillProfilesAndCreditCards {
-  absl::optional<std::vector<AutofillProfile>> profiles;
-  absl::optional<std::vector<CreditCard>> credit_cards;
+  std::optional<std::vector<AutofillProfile>> profiles;
+  std::optional<std::vector<CreditCard>> credit_cards;
 };
 
 constexpr std::string_view kKeyProfiles = "profiles";
@@ -64,8 +64,8 @@ bool IsFullyStructuredProfile(const AutofillProfile& profile) {
 // Extracts the `kKeySource` value of the `dict` and translates it into an
 // AutofillProfile::Source. If no source is present, Source::kLocalOrSyncable is
 // returned. If a source with invalid value is specified, an error message is
-// logged and absl::nullopt is returned.
-absl::optional<AutofillProfile::Source> GetProfileSourceFromDict(
+// logged and std::nullopt is returned.
+std::optional<AutofillProfile::Source> GetProfileSourceFromDict(
     const base::Value::Dict& dict) {
   if (!dict.contains(kKeySource)) {
     return AutofillProfile::Source::kLocalOrSyncable;
@@ -77,7 +77,7 @@ absl::optional<AutofillProfile::Source> GetProfileSourceFromDict(
     }
   }
   LOG(ERROR) << "Invalid " << kKeySource << " value.";
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Given a `dict` of "field-type" : "value" mappings, constructs an
@@ -86,12 +86,12 @@ absl::optional<AutofillProfile::Source> GetProfileSourceFromDict(
 // `kUserVerified` is problematic, since the data model expects that only root
 // level (= setting-visible) nodes are user verified.
 // If a field type cannot be mapped, or if the resulting profile is not
-// `IsFullyStructuredProfile()`, absl::nullopt is returned.
-absl::optional<AutofillProfile> MakeProfile(const base::Value::Dict& dict) {
-  absl::optional<AutofillProfile::Source> source =
+// `IsFullyStructuredProfile()`, std::nullopt is returned.
+std::optional<AutofillProfile> MakeProfile(const base::Value::Dict& dict) {
+  std::optional<AutofillProfile::Source> source =
       GetProfileSourceFromDict(dict);
   if (!source.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const std::string* country_code =
       dict.FindString(FieldTypeToStringView(ADDRESS_HOME_COUNTRY));
@@ -105,18 +105,18 @@ absl::optional<AutofillProfile> MakeProfile(const base::Value::Dict& dict) {
       continue;
     }
     if (key == kKeyInitialCreatorId) {
-      if (const absl::optional<int> creator_id = dict.FindInt(key)) {
+      if (const std::optional<int> creator_id = dict.FindInt(key)) {
         profile.set_initial_creator_id(*creator_id);
         continue;
       } else {
         LOG(ERROR) << "Incorrect value for " << key << ".";
-        return absl::nullopt;
+        return std::nullopt;
       }
     }
     const FieldType type = TypeNameToFieldType(key);
     if (type == UNKNOWN_TYPE || !IsAddressType(type)) {
       LOG(ERROR) << "Unknown or non-address type " << key << ".";
-      return absl::nullopt;
+      return std::nullopt;
     }
     profile.SetRawInfoWithVerificationStatus(
         type, base::UTF8ToUTF16(value.GetString()),
@@ -124,12 +124,12 @@ absl::optional<AutofillProfile> MakeProfile(const base::Value::Dict& dict) {
   }
   if (!IsFullyStructuredProfile(profile)) {
     LOG(ERROR) << "Some profile is not fully structured.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return profile;
 }
 
-absl::optional<CreditCard> MakeCard(const base::Value::Dict& dict) {
+std::optional<CreditCard> MakeCard(const base::Value::Dict& dict) {
   CreditCard card;
   // `dict` is a dictionary of std::string -> base::Value.
   for (const auto [key, value] : dict) {
@@ -141,13 +141,13 @@ absl::optional<CreditCard> MakeCard(const base::Value::Dict& dict) {
     if (type == UNKNOWN_TYPE ||
         GroupTypeOfFieldType(type) != FieldTypeGroup::kCreditCard) {
       LOG(ERROR) << "Unknown or non-credit card type " << key << ".";
-      return absl::nullopt;
+      return std::nullopt;
     }
     card.SetRawInfo(type, base::UTF8ToUTF16(value.GetString()));
   }
   if (!card.IsValid()) {
     LOG(ERROR) << "Some credit card is not valid.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return card;
 }
@@ -168,7 +168,7 @@ void RemoveAllExistingProfiles(PersonalDataManager& pdm) {
 // `credit_cards`, if the `pdm` still exists.
 void SetData(
     base::WeakPtr<PersonalDataManager> pdm,
-    absl::optional<AutofillProfilesAndCreditCards> profiles_or_credit_cards) {
+    std::optional<AutofillProfilesAndCreditCards> profiles_or_credit_cards) {
   // This check intentionally crashes when the data is malformed, to prevent
   // testing with incorrect data.
   LOG_IF(FATAL, !profiles_or_credit_cards.has_value() ||
@@ -194,9 +194,9 @@ void SetData(
 // Converts all `entries of `json_array` to a vector of Ts using
 // `to_data_model`. In case any conversion fails, nullopt is returned.
 template <class T>
-absl::optional<std::vector<T>> DataModelsFromJSON(
+std::optional<std::vector<T>> DataModelsFromJSON(
     const base::Value::List* const json_array,
-    base::RepeatingCallback<absl::optional<T>(const base::Value::Dict&)>
+    base::RepeatingCallback<std::optional<T>(const base::Value::Dict&)>
         to_data_model) {
   if (!json_array) {
     return std::vector<T>{};
@@ -205,11 +205,11 @@ absl::optional<std::vector<T>> DataModelsFromJSON(
   for (const base::Value& json : *json_array) {
     if (!json.is_dict()) {
       LOG(ERROR) << "Description is not a dictionary.";
-      return absl::nullopt;
+      return std::nullopt;
     }
-    absl::optional<T> data_model = to_data_model.Run(json.GetDict());
+    std::optional<T> data_model = to_data_model.Run(json.GetDict());
     if (!data_model.has_value()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     data_models.push_back(std::move(*data_model));
   }
@@ -218,17 +218,17 @@ absl::optional<std::vector<T>> DataModelsFromJSON(
 }
 
 // Parses AutofillProfiles from the JSON `content` string.
-// If parsing fails the error is logged and absl::nullopt is returned.
-absl::optional<AutofillProfilesAndCreditCards> LoadDataFromJSONContent(
+// If parsing fails the error is logged and std::nullopt is returned.
+std::optional<AutofillProfilesAndCreditCards> LoadDataFromJSONContent(
     const std::string& file_content) {
-  absl::optional<base::Value> json = base::JSONReader::Read(file_content);
+  std::optional<base::Value> json = base::JSONReader::Read(file_content);
   if (!json.has_value()) {
     LOG(ERROR) << "Failed to parse JSON file.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!json->is_dict()) {
     LOG(ERROR) << "JSON is not a dictionary at it's top level.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   const base::Value::List* const profiles_json =
       json->GetDict().FindList(kKeyProfiles);
@@ -237,49 +237,49 @@ absl::optional<AutofillProfilesAndCreditCards> LoadDataFromJSONContent(
   if (!cards_json && !profiles_json) {
     LOG(ERROR) << "JSON has no " << kKeyProfiles << " or " << kKeyCreditCards
                << " keys.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return AutofillProfilesAndCreditCards{
       .profiles = AutofillProfilesFromJSON(profiles_json),
       .credit_cards = CreditCardsFromJSON(cards_json)};
 }
 
-absl::optional<AutofillProfilesAndCreditCards> LoadDataFromFile(
+std::optional<AutofillProfilesAndCreditCards> LoadDataFromFile(
     base::FilePath file) {
   std::string file_content;
   if (!base::ReadFileToString(file, &file_content)) {
     LOG(ERROR) << "Failed to read file " << file.MaybeAsASCII() << ".";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return LoadDataFromJSONContent(file_content);
 }
 
 }  // namespace
 
-absl::optional<std::vector<AutofillProfile>> LoadProfilesFromFile(
+std::optional<std::vector<AutofillProfile>> LoadProfilesFromFile(
     base::FilePath file) {
-  if (absl::optional<AutofillProfilesAndCreditCards> profiles_and_credit_cards =
+  if (std::optional<AutofillProfilesAndCreditCards> profiles_and_credit_cards =
           LoadDataFromFile(file)) {
     return profiles_and_credit_cards->profiles;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::vector<CreditCard>> LoadCreditCardsFromFile(
+std::optional<std::vector<CreditCard>> LoadCreditCardsFromFile(
     base::FilePath file) {
-  if (absl::optional<AutofillProfilesAndCreditCards> profiles_and_credit_cards =
+  if (std::optional<AutofillProfilesAndCreditCards> profiles_and_credit_cards =
           LoadDataFromFile(file)) {
     return profiles_and_credit_cards->credit_cards;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::vector<AutofillProfile>> AutofillProfilesFromJSON(
+std::optional<std::vector<AutofillProfile>> AutofillProfilesFromJSON(
     const base::Value::List* const profiles_json) {
   return DataModelsFromJSON(profiles_json, base::BindRepeating(&MakeProfile));
 }
 
-absl::optional<std::vector<CreditCard>> CreditCardsFromJSON(
+std::optional<std::vector<CreditCard>> CreditCardsFromJSON(
     const base::Value::List* const cards_json) {
   return DataModelsFromJSON(cards_json, base::BindRepeating(&MakeCard));
 }

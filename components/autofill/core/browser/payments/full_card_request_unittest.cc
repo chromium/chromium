@@ -471,7 +471,7 @@ TEST_F(FullCardRequestTest,
               url::Origin::Create(GURL("http://example.com"))));
   payments::PaymentsNetworkInterface::UnmaskRequestDetails* request_details =
       request()->GetUnmaskRequestDetailsForTesting();
-  ASSERT_EQ(request_details->merchant_domain_for_footprints, absl::nullopt);
+  ASSERT_EQ(request_details->merchant_domain_for_footprints, std::nullopt);
 
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.cvc = u"123";

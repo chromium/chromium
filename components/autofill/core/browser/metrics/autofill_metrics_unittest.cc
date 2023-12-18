@@ -337,7 +337,7 @@ TEST_F(AutofillMetricsTest,
 struct Field {
   FieldType field_type;
   bool is_autofilled = true;
-  absl::optional<std::u16string> value = absl::nullopt;
+  std::optional<std::u16string> value = std::nullopt;
 };
 
 struct PerfectFillingTestCase {

@@ -8,11 +8,11 @@
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/barrier_callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -73,7 +73,7 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
       base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
           barrier_callback,
       const GURL& card_art_url,
-      const absl::optional<base::TimeTicks>& fetch_image_request_timestamp,
+      const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
       const gfx::Image& card_art_image,
       const image_fetcher::RequestMetadata& metadata);
 

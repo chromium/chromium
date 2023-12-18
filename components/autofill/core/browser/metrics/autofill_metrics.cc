@@ -2816,7 +2816,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogKeyMetrics(
     bool suggestion_filled,
     const FormInteractionCounts& form_interaction_counts,
     const FormInteractionsFlowId& flow_id,
-    absl::optional<int64_t> fast_checkout_run_id) {
+    std::optional<int64_t> fast_checkout_run_id) {
   if (!CanLog())
     return;
 

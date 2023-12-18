@@ -11,9 +11,9 @@ namespace autofill {
 
 struct CvcStorageStrikeDatabaseTraits {
   static constexpr std::string_view kName = "CvcStorage";
-  static constexpr absl::optional<size_t> kMaxStrikeEntities = absl::nullopt;
-  static constexpr absl::optional<size_t> kMaxStrikeEntitiesAfterCleanup =
-      absl::nullopt;
+  static constexpr std::optional<size_t> kMaxStrikeEntities = std::nullopt;
+  static constexpr std::optional<size_t> kMaxStrikeEntitiesAfterCleanup =
+      std::nullopt;
   static constexpr size_t kMaxStrikeLimit = 3;
   static constexpr base::TimeDelta kExpiryTimeDelta = base::Days(183);
   static constexpr bool kUniqueIdRequired = true;
@@ -25,7 +25,7 @@ class CvcStorageStrikeDatabase
   using SimpleAutofillStrikeDatabase<
       CvcStorageStrikeDatabaseTraits>::SimpleAutofillStrikeDatabase;
 
-  absl::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()
+  std::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()
       const override;
 };
 

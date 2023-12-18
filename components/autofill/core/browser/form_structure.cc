@@ -81,7 +81,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/security_state/core/security_state.h"
 #include "components/version_info/version_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -491,7 +490,7 @@ void FormStructure::DetermineHeuristicTypes(
   client_country_ = client_country;
 
   // The active heuristic source might not be a pattern source.
-  if (absl::optional<PatternSource> pattern_source = GetActivePatternSource()) {
+  if (std::optional<PatternSource> pattern_source = GetActivePatternSource()) {
     ParseFieldTypesWithPatterns(*pattern_source, log_manager);
   }
 
@@ -1908,7 +1907,7 @@ void FormStructure::ExtractParseableFieldLabels() {
   }
 
   // Determine the parsable labels and write them back.
-  absl::optional<std::vector<std::u16string>> parsable_labels =
+  std::optional<std::vector<std::u16string>> parsable_labels =
       GetParseableLabels(field_labels);
   // If not single label was split, the function can return, because the
   // |parsable_label_| is assigned to |label| by default.

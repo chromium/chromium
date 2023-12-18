@@ -13,9 +13,9 @@ bool VirtualCardEnrollmentStrikeDatabase::IsLastOffer(
   return GetStrikes(instrument_id) == GetMaxStrikesLimit() - 1;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 VirtualCardEnrollmentStrikeDatabase::GetRequiredDelaySinceLastStrike() const {
-  return absl::optional<base::TimeDelta>(
+  return std::optional<base::TimeDelta>(
       base::Days(kEnrollmentEnforcedDelayInDays));
 }
 

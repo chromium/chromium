@@ -10,7 +10,7 @@
 namespace autofill {
 
 TEST(TextLogReceiver, IntegrationTest) {
-  absl::optional<base::Value> input = base::JSONReader::Read(
+  std::optional<base::Value> input = base::JSONReader::Read(
       R"(
     {
       "type": "element",

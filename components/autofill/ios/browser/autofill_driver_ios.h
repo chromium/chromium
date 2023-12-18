@@ -45,7 +45,7 @@ class AutofillDriverIOS : public AutofillDriver,
 
   // AutofillDriver:
   LocalFrameToken GetFrameToken() const override;
-  absl::optional<LocalFrameToken> Resolve(FrameToken query) override;
+  std::optional<LocalFrameToken> Resolve(FrameToken query) override;
   AutofillDriverIOS* GetParent() override;
   BrowserAutofillManager& GetAutofillManager() override;
   bool IsInActiveFrame() const override;

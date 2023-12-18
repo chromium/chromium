@@ -40,7 +40,7 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptAccepted(
   }
 
   if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
-    absl::optional<GURL> last_committed_primary_main_frame_origin;
+    std::optional<GURL> last_committed_primary_main_frame_origin;
     if (autofill_client_->GetLastCommittedPrimaryMainFrameURL().is_valid()) {
       last_committed_primary_main_frame_origin =
           autofill_client_->GetLastCommittedPrimaryMainFrameURL()
@@ -386,8 +386,8 @@ void CreditCardOtpAuthenticator::Reset() {
   selected_challenge_option_request_ongoing_ = false;
   select_challenge_option_request_.reset();
   unmask_request_.reset();
-  select_challenge_option_request_timestamp_ = absl::nullopt;
-  unmask_card_request_timestamp_ = absl::nullopt;
+  select_challenge_option_request_timestamp_ = std::nullopt;
+  unmask_card_request_timestamp_ = std::nullopt;
 }
 
 }  // namespace autofill

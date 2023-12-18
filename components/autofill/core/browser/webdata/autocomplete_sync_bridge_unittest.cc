@@ -200,7 +200,7 @@ class AutocompleteSyncBridgeTest : public testing::Test {
       initial_updates.push_back(SpecificsToUpdateResponse(specifics));
     }
     real_processor_->OnUpdateReceived(state, std::move(initial_updates),
-                                      /*gc_directive=*/absl::nullopt);
+                                      /*gc_directive=*/std::nullopt);
   }
 
   void SaveSpecificsToTable(

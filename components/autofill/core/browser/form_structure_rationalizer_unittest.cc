@@ -53,12 +53,12 @@ struct FieldTemplate {
   // Section name of a field.
   std::string_view section = "";
   FormControlType form_control_type = FormControlType::kInputText;
-  absl::optional<AutocompleteParsingResult> parsed_autocomplete = absl::nullopt;
+  std::optional<AutocompleteParsingResult> parsed_autocomplete = std::nullopt;
   bool is_focusable = true;
   size_t max_length = std::numeric_limits<int>::max();
   FormFieldData::RoleAttribute role = FormFieldData::RoleAttribute::kOther;
-  absl::optional<url::Origin> subframe_origin;
-  absl::optional<FormGlobalId> host_form;
+  std::optional<url::Origin> subframe_origin;
+  std::optional<FormGlobalId> host_form;
   bool field_type_is_override = false;
   // Only appled if BuildFormStructure is called with run_heuristics=false.
   FieldType heuristic_type = UNKNOWN_TYPE;

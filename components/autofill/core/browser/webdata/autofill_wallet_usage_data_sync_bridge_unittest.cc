@@ -202,7 +202,7 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplyIncrementalSyncChanges) {
   // `MergeFullSyncData()` returns an error if it fails.
   EXPECT_EQ(bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
                                         std::move(entity_change_list_merge)),
-            absl::nullopt);
+            std::nullopt);
   // Expect `MergeFullSyncData()` was successful.
   EXPECT_THAT(GetVirtualCardUsageDataFromTable(),
               testing::UnorderedElementsAre(virtual_card_usage_data1));
@@ -269,7 +269,7 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplyDisableSyncChanges) {
       *old_data.usage_data_id(), VirtualCardUsageDataToEntity(old_data)));
   EXPECT_EQ(bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
                                         std::move(entity_change_list)),
-            absl::nullopt);
+            std::nullopt);
 
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(),

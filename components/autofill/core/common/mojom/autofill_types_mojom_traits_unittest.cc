@@ -341,7 +341,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
   input.id_attribute = u"id";
   input.name_attribute = u"name";
   input.autocomplete_attribute = "on";
-  input.parsed_autocomplete = absl::nullopt;
+  input.parsed_autocomplete = std::nullopt;
   input.placeholder = u"placeholder";
   input.css_classes = u"class1";
   input.aria_label = u"aria label";

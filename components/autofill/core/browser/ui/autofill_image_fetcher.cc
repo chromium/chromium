@@ -102,7 +102,7 @@ void AutofillImageFetcher::OnCardArtImageFetched(
     base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
         barrier_callback,
     const GURL& card_art_url,
-    const absl::optional<base::TimeTicks>& fetch_image_request_timestamp,
+    const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
     const gfx::Image& card_art_image,
     const image_fetcher::RequestMetadata& metadata) {
   CHECK(fetch_image_request_timestamp.has_value());

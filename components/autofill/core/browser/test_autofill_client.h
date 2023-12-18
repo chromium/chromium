@@ -837,11 +837,11 @@ class TestAutofillClientTemplate : public T {
   AutofillErrorDialogContext autofill_error_dialog_context_;
 
   // Populated if save was offered. True if bubble was shown, false otherwise.
-  absl::optional<bool> offer_to_save_credit_card_bubble_was_shown_;
+  std::optional<bool> offer_to_save_credit_card_bubble_was_shown_;
 
   // Populated if name fix flow was offered. True if bubble was shown, false
   // otherwise.
-  absl::optional<bool> credit_card_name_fix_flow_bubble_was_shown_;
+  std::optional<bool> credit_card_name_fix_flow_bubble_was_shown_;
 
   version_info::Channel channel_for_testing_ = version_info::Channel::UNKNOWN;
 
@@ -859,7 +859,7 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
 
   // Populated if credit card local save or upload was offered.
-  absl::optional<AutofillClient::SaveCreditCardOptions>
+  std::optional<AutofillClient::SaveCreditCardOptions>
       save_credit_card_options_;
 
   // User decision when credit card / CVC local save or upload was offered.

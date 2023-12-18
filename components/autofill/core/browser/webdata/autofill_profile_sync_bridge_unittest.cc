@@ -310,13 +310,13 @@ class AutofillProfileSyncBridgeTest : public testing::Test {
       initial_updates.push_back(SpecificsToUpdateResponse(specifics));
     }
     real_processor_->OnUpdateReceived(state, std::move(initial_updates),
-                                      /*gc_directive=*/absl::nullopt);
+                                      /*gc_directive=*/std::nullopt);
   }
 
   void ApplyIncrementalSyncChanges(EntityChangeList changes) {
     EXPECT_CALL(*backend(),
                 NotifyOnAutofillChangedBySync(syncer::AUTOFILL_PROFILE));
-    const absl::optional<syncer::ModelError> error =
+    const std::optional<syncer::ModelError> error =
         bridge()->ApplyIncrementalSyncChanges(
             bridge()->CreateMetadataChangeList(), std::move(changes));
     EXPECT_FALSE(error) << error->ToString();

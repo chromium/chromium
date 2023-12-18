@@ -13,7 +13,7 @@ const int kMaxStrikesLimit = 6;
 StrikeDatabaseIntegratorTestStrikeDatabase::
     StrikeDatabaseIntegratorTestStrikeDatabase(
         StrikeDatabase* strike_database,
-        absl::optional<base::TimeDelta> expiry_time_delta)
+        std::optional<base::TimeDelta> expiry_time_delta)
     : StrikeDatabaseIntegratorTestStrikeDatabase(strike_database) {
   expiry_time_delta_ = expiry_time_delta;
 }
@@ -27,7 +27,7 @@ StrikeDatabaseIntegratorTestStrikeDatabase::
 StrikeDatabaseIntegratorTestStrikeDatabase::
     StrikeDatabaseIntegratorTestStrikeDatabase(
         StrikeDatabase* strike_database,
-        absl::optional<base::TimeDelta> expiry_time_delta,
+        std::optional<base::TimeDelta> expiry_time_delta,
         std::string& project_prefix)
     : StrikeDatabaseIntegratorTestStrikeDatabase(strike_database,
                                                  expiry_time_delta) {
@@ -46,7 +46,7 @@ int StrikeDatabaseIntegratorTestStrikeDatabase::GetMaxStrikesLimit() const {
   return kMaxStrikesLimit;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 StrikeDatabaseIntegratorTestStrikeDatabase::GetExpiryTimeDelta() const {
   return expiry_time_delta_;
 }
@@ -66,18 +66,18 @@ void StrikeDatabaseIntegratorTestStrikeDatabase::
   required_delay_since_last_strike_ = required_delay_since_last_strike;
 }
 
-absl::optional<size_t>
+std::optional<size_t>
 StrikeDatabaseIntegratorTestStrikeDatabase::GetMaximumEntries() const {
   return maximum_entries_;
 }
 
-absl::optional<size_t>
+std::optional<size_t>
 StrikeDatabaseIntegratorTestStrikeDatabase::GetMaximumEntriesAfterCleanup()
     const {
   return maximum_entries_after_cleanup_;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 StrikeDatabaseIntegratorTestStrikeDatabase::GetRequiredDelaySinceLastStrike()
     const {
   return required_delay_since_last_strike_;
