@@ -17,7 +17,8 @@
 
 namespace ui {
 
-class TestDialogModelHost final : public DialogModelHost {
+class TestDialogModelHost final : public DialogModelHost,
+                                  public DialogModelFieldHost {
  public:
   enum class ButtonId {
     kCancel,

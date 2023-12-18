@@ -28,11 +28,19 @@ class DialogModelParagraph;
 class DialogModelCheckbox;
 class DialogModelCombobox;
 class DialogModelCustomField;
-class DialogModelHost;
 class DialogModelMenuItem;
 class DialogModelSection;
 class DialogModelTextfield;
 class Event;
+
+class DialogModelFieldHost {
+ protected:
+  // This PassKey is used to make sure that some methods on DialogModel
+  // are only called as part of the host integration.
+  static base::PassKey<DialogModelFieldHost> GetPassKey() {
+    return base::PassKey<DialogModelFieldHost>();
+  }
+};
 
 // TODO(pbos): Move this to separate header.
 // DialogModelLabel is an exception to below classes. This is not a
@@ -103,7 +111,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
   // is required to style the final label appropriately and support replacement
   // callbacks. The caller is responsible for checking replacements().empty()
   // before calling this.
-  const std::u16string& GetString(base::PassKey<DialogModelHost>) const;
+  const std::u16string& GetString() const;
 
   DialogModelLabel& set_is_secondary() {
     is_secondary_ = true;
@@ -115,18 +123,13 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
     return *this;
   }
 
-  int message_id(base::PassKey<DialogModelHost>) const { return message_id_; }
-  const std::vector<TextReplacement>& replacements(
-      base::PassKey<DialogModelHost>) const {
+  int message_id() const { return message_id_; }
+  const std::vector<TextReplacement>& replacements() const {
     return replacements_;
   }
 
-  bool is_secondary(base::PassKey<DialogModelHost>) const {
-    return is_secondary_;
-  }
-  bool allow_character_break(base::PassKey<DialogModelHost>) const {
-    return allow_character_break_;
-  }
+  bool is_secondary() const { return is_secondary_; }
+  bool allow_character_break() const { return allow_character_break_; }
 
  private:
   explicit DialogModelLabel(int message_id,
@@ -192,36 +195,25 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   Type type() const { return type_; }
   bool is_visible() { return is_visible_; }
 
-  // Methods with base::PassKey<DialogModelHost> are only intended to be called
-  // by the DialogModelHost implementation.
-  const base::flat_set<Accelerator>& accelerators(
-      base::PassKey<DialogModelHost>) const {
+  const base::flat_set<Accelerator>& accelerators() const {
     return accelerators_;
   }
-  ElementIdentifier id(base::PassKey<DialogModelHost>) const { return id_; }
-  DialogModelButton* AsButton(base::PassKey<DialogModelHost>);
-  DialogModelParagraph* AsParagraph(base::PassKey<DialogModelHost>);
-  DialogModelCheckbox* AsCheckbox(base::PassKey<DialogModelHost>);
-  DialogModelCombobox* AsCombobox(base::PassKey<DialogModelHost>);
-  DialogModelMenuItem* AsMenuItem(base::PassKey<DialogModelHost>);
-  const DialogModelMenuItem* AsMenuItem(base::PassKey<DialogModelHost>) const;
-  DialogModelTextfield* AsTextfield(base::PassKey<DialogModelHost>);
-  DialogModelSection* AsSection(base::PassKey<DialogModelHost>);
-  DialogModelCustomField* AsCustomField(base::PassKey<DialogModelHost>);
+  ElementIdentifier id() const { return id_; }
+  DialogModelButton* AsButton();
+  DialogModelParagraph* AsParagraph();
+  DialogModelCheckbox* AsCheckbox();
+  DialogModelCombobox* AsCombobox();
+  DialogModelMenuItem* AsMenuItem();
+  const DialogModelMenuItem* AsMenuItem() const;
+  DialogModelTextfield* AsTextfield();
+  DialogModelSection* AsSection();
+  DialogModelCustomField* AsCustomField();
 
  protected:
   DialogModelField(Type type,
                    ElementIdentifier id,
                    base::flat_set<Accelerator> accelerators,
                    const DialogModelField::Params& params);
-
-  DialogModelButton* AsButton();
-  DialogModelParagraph* AsParagraph();
-  DialogModelCheckbox* AsCheckbox();
-  DialogModelCombobox* AsCombobox();
-  const DialogModelMenuItem* AsMenuItem() const;
-  DialogModelTextfield* AsTextfield();
-  DialogModelCustomField* AsCustomField();
 
   void set_visible(bool visible) { is_visible_ = visible; }
 
@@ -276,17 +268,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
   DialogModelButton& operator=(const DialogModelButton&) = delete;
   ~DialogModelButton() override;
 
-  // Methods with base::PassKey<DialogModelHost> are only intended to be called
-  // by the DialogModelHost implementation.
-  const std::u16string& label(base::PassKey<DialogModelHost>) const {
-    return label_;
-  }
-  const absl::optional<ButtonStyle> style(
-      base::PassKey<DialogModelHost>) const {
-    return style_;
-  }
-  bool is_enabled(base::PassKey<DialogModelHost>) const { return is_enabled_; }
-  void OnPressed(base::PassKey<DialogModelHost>, const Event& event);
+  const std::u16string& label() const { return label_; }
+  const absl::optional<ButtonStyle> style() const { return style_; }
+  bool is_enabled() const { return is_enabled_; }
+  void OnPressed(base::PassKey<DialogModelFieldHost>, const Event& event);
 
  private:
   friend class DialogModel;
@@ -310,13 +295,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelParagraph : public DialogModelField {
   DialogModelParagraph& operator=(const DialogModelParagraph&) = delete;
   ~DialogModelParagraph() override;
 
-  const DialogModelLabel& label(base::PassKey<DialogModelHost>) const {
-    return label_;
-  }
+  const DialogModelLabel& label() const { return label_; }
 
-  const std::u16string header(base::PassKey<DialogModelHost>) const {
-    return header_;
-  }
+  const std::u16string header() const { return header_; }
 
  private:
   const DialogModelLabel label_;
@@ -358,10 +339,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCheckbox : public DialogModelField {
 
   bool is_checked() const { return is_checked_; }
 
-  void OnChecked(base::PassKey<DialogModelHost>, bool is_checked);
-  const DialogModelLabel& label(base::PassKey<DialogModelHost>) const {
-    return label_;
-  }
+  void OnChecked(base::PassKey<DialogModelFieldHost>, bool is_checked);
+  const DialogModelLabel& label() const { return label_; }
 
  private:
   const DialogModelLabel label_;
@@ -421,17 +400,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
   size_t selected_index() const { return selected_index_; }
   ui::ComboboxModel* combobox_model() { return combobox_model_.get(); }
 
-  // Methods with base::PassKey<DialogModelHost> are only intended to be called
-  // by the DialogModelHost implementation.
-  const std::u16string& label(base::PassKey<DialogModelHost>) const {
-    return label_;
-  }
-  const std::u16string& accessible_name(base::PassKey<DialogModelHost>) const {
-    return accessible_name_;
-  }
-  void OnSelectedIndexChanged(base::PassKey<DialogModelHost>,
+  const std::u16string& label() const { return label_; }
+  const std::u16string& accessible_name() const { return accessible_name_; }
+  void OnSelectedIndexChanged(base::PassKey<DialogModelFieldHost>,
                               size_t selected_index);
-  void OnPerformAction(base::PassKey<DialogModelHost>);
+  void OnPerformAction(base::PassKey<DialogModelFieldHost>);
 
  private:
   friend class DialogModel;
@@ -479,14 +452,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelMenuItem : public DialogModelField {
   DialogModelMenuItem& operator=(const DialogModelMenuItem&) = delete;
   ~DialogModelMenuItem() override;
 
-  // Methods with base::PassKey<DialogModelHost> are only intended to be called
-  // by the DialogModelHost implementation.
-  const ImageModel& icon(base::PassKey<DialogModelHost>) const { return icon_; }
-  const std::u16string& label(base::PassKey<DialogModelHost>) const {
-    return label_;
-  }
-  bool is_enabled(base::PassKey<DialogModelHost>) const { return is_enabled_; }
-  void OnActivated(base::PassKey<DialogModelHost>, int event_flags);
+  const ImageModel& icon() const { return icon_; }
+  const std::u16string& label() const { return label_; }
+  bool is_enabled() const { return is_enabled_; }
+  void OnActivated(base::PassKey<DialogModelFieldHost>, int event_flags);
 
  private:
   const ImageModel icon_;
@@ -548,15 +517,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
 
   const std::u16string& text() const { return text_; }
 
-  // Methods with base::PassKey<DialogModelHost> are only intended to be called
-  // by the DialogModelHost implementation.
-  const std::u16string& label(base::PassKey<DialogModelHost>) const {
-    return label_;
-  }
-  const std::u16string& accessible_name(base::PassKey<DialogModelHost>) const {
-    return accessible_name_;
-  }
-  void OnTextChanged(base::PassKey<DialogModelHost>, std::u16string text);
+  const std::u16string& label() const { return label_; }
+  const std::u16string& accessible_name() const { return accessible_name_; }
+  void OnTextChanged(base::PassKey<DialogModelFieldHost>, std::u16string text);
 
  private:
   friend class DialogModel;
@@ -584,11 +547,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCustomField
   DialogModelCustomField& operator=(const DialogModelCustomField&) = delete;
   ~DialogModelCustomField() override;
 
-  // Methods with base::PassKey<DialogModelHost> are only intended to be called
-  // by the DialogModelHost implementation.
-  DialogModelCustomField::Field* field(base::PassKey<DialogModelHost>) {
-    return field_.get();
-  }
+  DialogModelCustomField::Field* field() { return field_.get(); }
 
  private:
   friend class DialogModel;

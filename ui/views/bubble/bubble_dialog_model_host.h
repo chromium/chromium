@@ -17,6 +17,10 @@
 
 namespace views {
 
+// TODO(pbos): Find a better name and move to a file separate from
+// BubbleDialogModelHost.
+class BubbleDialogModelHostContentsView;
+
 // BubbleDialogModelHost is a views implementation of ui::DialogModelHost which
 // hosts a ui::DialogModel as a BubbleDialogDelegate. This exposes such as
 // SetAnchorView(), SetArrow() and SetHighlightedButton(). For methods that are
@@ -26,11 +30,10 @@ namespace views {
 // ui::DialogModelHost through DialogModel::host(). This helps minimize
 // platform-specific code from platform-agnostic model-delegate code.
 class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
-                                           public ui::DialogModelHost {
+                                           public ui::DialogModelHost,
+                                           public ui::DialogModelFieldHost {
  public:
   enum class FieldType { kText, kControl, kMenuItem };
-
-  class ContentsView;
 
   class VIEWS_EXPORT CustomView : public ui::DialogModelCustomField::Field {
    public:
@@ -89,7 +92,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   class ThemeChangedObserver : public ViewObserver {
    public:
     ThemeChangedObserver(BubbleDialogModelHost* parent,
-                         ContentsView* contents_view);
+                         BubbleDialogModelHostContentsView* contents_view);
     ThemeChangedObserver(const ThemeChangedObserver&) = delete;
     ThemeChangedObserver& operator=(const ThemeChangedObserver&) = delete;
     ~ThemeChangedObserver() override;
@@ -102,7 +105,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
     base::ScopedObservation<View, ViewObserver> observation_{this};
   };
 
-  [[nodiscard]] ContentsView* InitContentsView(
+  [[nodiscard]] BubbleDialogModelHostContentsView* InitContentsView(
       ui::DialogModelSection* contents);
 
   void OnFieldAdded(ui::DialogModelField* field);
@@ -118,7 +121,8 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   bool IsModalDialog() const;
 
   std::unique_ptr<ui::DialogModel> model_;
-  const raw_ptr<ContentsView> contents_view_;
+  const raw_ptr<BubbleDialogModelHostContentsView> contents_view_;
+  base::CallbackListSubscription on_field_added_subscription_;
   ThemeChangedObserver theme_observer_;
 };
 

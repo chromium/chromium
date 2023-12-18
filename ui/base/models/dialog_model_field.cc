@@ -5,6 +5,7 @@
 #include "ui/base/models/dialog_model_field.h"
 
 #include <string>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -43,8 +44,7 @@ DialogModelLabel::DialogModelLabel(int message_id,
 DialogModelLabel::DialogModelLabel(std::u16string fixed_string)
     : message_id_(-1), string_(std::move(fixed_string)) {}
 
-const std::u16string& DialogModelLabel::GetString(
-    base::PassKey<DialogModelHost>) const {
+const std::u16string& DialogModelLabel::GetString() const {
   CHECK(replacements_.empty(), base::NotFatalUntil::M123);
   return string_;
 }
@@ -105,45 +105,6 @@ DialogModelField::DialogModelField(Type type,
 
 DialogModelField::~DialogModelField() = default;
 
-DialogModelButton* DialogModelField::AsButton(base::PassKey<DialogModelHost>) {
-  return AsButton();
-}
-
-DialogModelParagraph* DialogModelField::AsParagraph(
-    base::PassKey<DialogModelHost>) {
-  return AsParagraph();
-}
-
-DialogModelCheckbox* DialogModelField::AsCheckbox(
-    base::PassKey<DialogModelHost>) {
-  return AsCheckbox();
-}
-
-DialogModelCombobox* DialogModelField::AsCombobox(
-    base::PassKey<DialogModelHost>) {
-  return AsCombobox();
-}
-
-DialogModelTextfield* DialogModelField::AsTextfield(
-    base::PassKey<DialogModelHost>) {
-  return AsTextfield();
-}
-
-const DialogModelMenuItem* DialogModelField::AsMenuItem(
-    base::PassKey<DialogModelHost>) const {
-  return AsMenuItem();
-}
-
-DialogModelMenuItem* DialogModelField::AsMenuItem(
-    base::PassKey<DialogModelHost>) {
-  return const_cast<DialogModelMenuItem*>(AsMenuItem());
-}
-
-DialogModelCustomField* DialogModelField::AsCustomField(
-    base::PassKey<DialogModelHost>) {
-  return AsCustomField();
-}
-
 DialogModelButton* DialogModelField::AsButton() {
   CHECK_EQ(type_, kButton, base::NotFatalUntil::M123);
   return static_cast<DialogModelButton*>(this);
@@ -162,6 +123,10 @@ DialogModelCheckbox* DialogModelField::AsCheckbox() {
 DialogModelCombobox* DialogModelField::AsCombobox() {
   CHECK_EQ(type_, kCombobox, base::NotFatalUntil::M123);
   return static_cast<DialogModelCombobox*>(this);
+}
+
+DialogModelMenuItem* DialogModelField::AsMenuItem() {
+  return const_cast<DialogModelMenuItem*>(std::as_const(*this).AsMenuItem());
 }
 
 const DialogModelMenuItem* DialogModelField::AsMenuItem() const {
@@ -230,7 +195,7 @@ DialogModelButton::DialogModelButton(
 
 DialogModelButton::~DialogModelButton() = default;
 
-void DialogModelButton::OnPressed(base::PassKey<DialogModelHost>,
+void DialogModelButton::OnPressed(base::PassKey<DialogModelFieldHost>,
                                   const Event& event) {
   callback_.Run(event);
 }
@@ -254,7 +219,7 @@ DialogModelCheckbox::DialogModelCheckbox(
 
 DialogModelCheckbox::~DialogModelCheckbox() = default;
 
-void DialogModelCheckbox::OnChecked(base::PassKey<DialogModelHost>,
+void DialogModelCheckbox::OnChecked(base::PassKey<DialogModelFieldHost>,
                                     bool is_checked) {
   is_checked_ = is_checked;
 }
@@ -288,12 +253,13 @@ DialogModelCombobox::DialogModelCombobox(
 
 DialogModelCombobox::~DialogModelCombobox() = default;
 
-void DialogModelCombobox::OnSelectedIndexChanged(base::PassKey<DialogModelHost>,
-                                                 size_t selected_index) {
+void DialogModelCombobox::OnSelectedIndexChanged(
+    base::PassKey<DialogModelFieldHost>,
+    size_t selected_index) {
   selected_index_ = selected_index;
 }
 
-void DialogModelCombobox::OnPerformAction(base::PassKey<DialogModelHost>) {
+void DialogModelCombobox::OnPerformAction(base::PassKey<DialogModelFieldHost>) {
   if (callback_)
     callback_.Run();
 }
@@ -328,7 +294,7 @@ DialogModelMenuItem::DialogModelMenuItem(
 
 DialogModelMenuItem::~DialogModelMenuItem() = default;
 
-void DialogModelMenuItem::OnActivated(base::PassKey<DialogModelHost> pass_key,
+void DialogModelMenuItem::OnActivated(base::PassKey<DialogModelFieldHost>,
                                       int event_flags) {
   CHECK(callback_, base::NotFatalUntil::M123);
   callback_.Run(event_flags);
@@ -368,7 +334,7 @@ DialogModelTextfield::DialogModelTextfield(
 
 DialogModelTextfield::~DialogModelTextfield() = default;
 
-void DialogModelTextfield::OnTextChanged(base::PassKey<DialogModelHost>,
+void DialogModelTextfield::OnTextChanged(base::PassKey<DialogModelFieldHost>,
                                          std::u16string text) {
   text_ = std::move(text);
 }
