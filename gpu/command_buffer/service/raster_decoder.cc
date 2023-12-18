@@ -1253,7 +1253,8 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   // Vulkan currently doesn't support single-component cross-thread shared
   // images.
   caps.disable_one_component_textures =
-      disable_legacy_mailbox_ && features::IsUsingVulkan();
+      workarounds().avoid_one_component_egl_images ||
+      (disable_legacy_mailbox_ && features::IsUsingVulkan());
   caps.angle_rgbx_internal_format =
       feature_info()->feature_flags().angle_rgbx_internal_format;
   caps.chromium_gpu_fence = feature_info()->feature_flags().chromium_gpu_fence;
