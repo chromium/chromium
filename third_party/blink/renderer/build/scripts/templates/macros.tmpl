@@ -33,11 +33,11 @@
 {% set string_prefix = "" if is_lchar else "u" %}
 {% set factor = "" if is_lchar else "2 * " %}
 {% if name|length > 1 and not lowercase_data %}
-if (memcmp(data + {{index}}, {{string_prefix}}"{{name}}", {{factor}}{{name|length}}) == 0)
+if (memcmp(data + {{index}}, {{string_prefix}}"{{name}}", {{factor}}{{name|length}}) == 0) {
   return {{ return_macro(value) }};
+}
 break;
 {% elif name|length %}
-
 if (
     {%- for c in name -%}
         {%- if lowercase_data -%}
@@ -46,8 +46,9 @@ if (
     {{ " && " if not loop.first }}data[{{index + loop.index0}}] == '{{c}}'
         {%- endif -%}
         {%- endfor -%}
-    )
-    return {{ return_macro(value) }};
+    ) {
+  return {{ return_macro(value) }};
+}
 break;
 {% else %}
 return {{ return_macro(value) }};
@@ -66,7 +67,7 @@ switch (data[{{index}}]) {
     {% endif %}
     {% for char, value in trie.items()|sort %}
 case '{{char}}':
-    {{ trie_switch(value, index + 1, return_macro, lowercase_data, is_lchar) | indent(4) }}
+  {{ trie_switch(value, index + 1, return_macro, lowercase_data, is_lchar) | indent(2) -}}
     {% endfor %}
 }
 break;
@@ -78,7 +79,7 @@ break;
 switch (length) {
 {% for length, trie in length_tries %}
 case {{ length }}:
-    {{ trie_switch(trie, 0, return_macro, lowercase_data, string_prefix) | indent(4) }}
+  {{ trie_switch(trie, 0, return_macro, lowercase_data, string_prefix) | indent(2) -}}
 {% endfor %}
 }
 {% endmacro %}

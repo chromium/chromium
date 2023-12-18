@@ -14,10 +14,10 @@ namespace blink {
 const QualifiedName& Lookup{{namespace}}AttributeName(const UChar* data, unsigned length) {
   DCHECK(data);
   DCHECK(length);
-  {% macro trie_return_statement(tag) -%}
+  {% macro trie_return_expression(tag) -%}
   {{namespace|lower}}_names::{{tag|symbol}}Attr
   {%- endmacro %}
-  {{ trie_length_switch(length_tries, trie_return_statement, false, false) | indent(4) }}
+  {{ trie_length_switch(length_tries, trie_return_expression, false, false) | indent(2) }}
   return g_null_name;
 }
 
@@ -25,10 +25,10 @@ const QualifiedName& Lookup{{namespace}}AttributeName(const UChar* data, unsigne
 const QualifiedName& Lookup{{namespace}}AttributeName(const LChar* data, unsigned length) {
   DCHECK(data);
   DCHECK(length);
-  {% macro trie_return_statement(tag) -%}
+  {% macro trie_return_expression(tag) -%}
   {{namespace|lower}}_names::{{tag|symbol}}Attr
   {%- endmacro %}
-  {{ trie_length_switch(length_tries, trie_return_statement, false, true) | indent(4) }}
+  {{ trie_length_switch(length_tries, trie_return_expression, false, true) | indent(2) }}
   return g_null_name;
 }
 #endif
