@@ -18,6 +18,10 @@ const LoginAcceleratorData kLoginAcceleratorData[] = {
         kShowFeedback,
         ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
         true, kScopeOobe | kScopeLogin,
+    },{
+        kShowFeedback,
+        ui::VKEY_I, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
+        true, kScopeOobe | kScopeLogin,
     }, {
         kShowResetScreen,
         ui::VKEY_R, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,

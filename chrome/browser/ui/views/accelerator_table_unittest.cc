@@ -72,6 +72,22 @@ TEST(AcceleratorTableTest, PrintKeySupport) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
+TEST(AcceleratorTableTest, OpenFeedbackWithSearchBasedAccelerator) {
+  int command_id = -1;
+  for (const auto& entry : GetAcceleratorList()) {
+    if (entry.keycode == ui::VKEY_I &&
+        entry.modifiers == (ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN)) {
+      command_id = entry.command_id;
+    }
+  }
+
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_EQ(IDC_FEEDBACK, command_id);
+#else   // !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_EQ(-1, command_id);
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(AcceleratorTableTest, CheckDuplicatedAcceleratorsAsh) {
   base::flat_set<AcceleratorMapping, Cmp> accelerators(GetAcceleratorList());

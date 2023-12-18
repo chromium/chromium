@@ -18,11 +18,11 @@ namespace ash {
 namespace {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Internal builds add an extra accelerator for the Feedback app.
+// Internal builds add two extra accelerator for the Feedback app.
 // The total number of Chrome accelerators (available on Chrome OS).
-constexpr int kChromeAcceleratorsTotalNum = 103;
+constexpr int kChromeAcceleratorsTotalNum = 104;
 // The hash of Chrome accelerators (available on Chrome OS).
-constexpr char kChromeAcceleratorsHash[] = "e9e2edcc3a1a7332c960f7b3a00ee8cc";
+constexpr char kChromeAcceleratorsHash[] = "5b47444cf7dc4cc78a4384cacb617997";
 #else
 // The total number of Chrome accelerators (available on Chrome OS).
 constexpr int kChromeAcceleratorsTotalNum = 102;

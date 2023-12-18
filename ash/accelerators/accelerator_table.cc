@@ -497,11 +497,14 @@ const AcceleratorAction kActionsDuplicatedWithBrowser[] = {
     AcceleratorAction::kToggleMultitaskMenu,
 // clang-format on
 
-// AcceleratorAction::kOpenFeedbackPage is guarded by the BRANDING macro on
-// defining Browser's shortcuts. To follow it, guard it here, too.
+// kOpenFeedbackPage has two accelerators in browser:
+// 1: [alt shift i] guarded by GOOGLE_CHROME_BRANDING.
+// 2: [search ctrl i] guarded by both GOOGLE_CHROME_BRANDING and IS_CHROMEOS.
+// This file is built only for ash-chrome, so we only need to check BRANDING
+// macro.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     AcceleratorAction::kOpenFeedbackPage,
-#endif
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 };
 
 const size_t kActionsDuplicatedWithBrowserLength =
