@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -66,6 +67,10 @@ class MockObserver : public ash::FwupdClient::Observer {
   MOCK_METHOD(void,
               OnPropertiesChangedResponse,
               (ash::FwupdProperties * properties),
+              (override));
+  MOCK_METHOD(void,
+              OnDeviceRequestResponse,
+              (ash::FwupdRequest * request),
               (override));
 };
 

@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_device.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_update.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -92,6 +93,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   // When the fwupd DBus client gets a response with devices from fwupd,
   // it calls this function and passes the response.
   void OnDeviceListResponse(FwupdDeviceList* devices) override;
+
+  void OnDeviceRequestResponse(FwupdRequest* request) override;
 
   // When the fwupd DBus client gets a response with updates from fwupd,
   // it calls this function and passes the response.
