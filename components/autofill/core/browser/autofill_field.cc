@@ -350,7 +350,7 @@ AutofillType AutofillField::ComputedType() const {
   // If autocomplete=tel/tel-* and server confirms it really is a phone field,
   // we always use the server prediction as html types are not very reliable.
   if (GroupTypeOfHtmlFieldType(html_type_) == FieldTypeGroup::kPhone &&
-      GroupTypeOfServerFieldType(server_type()) == FieldTypeGroup::kPhone) {
+      GroupTypeOfFieldType(server_type()) == FieldTypeGroup::kPhone) {
     return AutofillType(server_type());
   }
 
@@ -406,7 +406,7 @@ AutofillType AutofillField::ComputedType() const {
     // Either way, retain a preference for the CVC heuristic over the
     // server's password predictions (http://crbug.com/469007)
     believe_server =
-        believe_server && !(GroupTypeOfServerFieldType(server_type()) ==
+        believe_server && !(GroupTypeOfFieldType(server_type()) ==
                                 FieldTypeGroup::kPasswordField &&
                             heuristic_type() == CREDIT_CARD_VERIFICATION_CODE);
 
@@ -503,10 +503,8 @@ void AutofillField::NormalizePossibleTypesValidities() {
 }
 
 bool AutofillField::IsCreditCardPrediction() const {
-  return GroupTypeOfServerFieldType(server_type()) ==
-             FieldTypeGroup::kCreditCard ||
-         GroupTypeOfServerFieldType(heuristic_type()) ==
-             FieldTypeGroup::kCreditCard;
+  return GroupTypeOfFieldType(server_type()) == FieldTypeGroup::kCreditCard ||
+         GroupTypeOfFieldType(heuristic_type()) == FieldTypeGroup::kCreditCard;
 }
 
 void AutofillField::AppendLogEventIfNotRepeated(

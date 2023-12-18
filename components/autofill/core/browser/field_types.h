@@ -504,7 +504,7 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type);
 // There's a one-to-many relationship between FieldTypeGroup and
 // FieldType as well as HtmlFieldType.
 FieldTypeSet GetFieldTypesOfGroup(FieldTypeGroup group);
-FieldTypeGroup GroupTypeOfServerFieldType(FieldType field_type);
+FieldTypeGroup GroupTypeOfFieldType(FieldType field_type);
 FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type);
 
 // Not all HtmlFieldTypes have a corresponding FieldType.

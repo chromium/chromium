@@ -132,7 +132,7 @@ TEST_P(AutofillTypeTestForHtmlFieldTypes, GroupsOfHtmlFieldTypes) {
                << "html_field_type=" << FieldTypeToStringView(html_field_type())
                << " "
                << "field_type=" << FieldTypeToStringView(t.GetStorableType()));
-  EXPECT_EQ(t.group(), GroupTypeOfServerFieldType(t.GetStorableType()));
+  EXPECT_EQ(t.group(), GroupTypeOfFieldType(t.GetStorableType()));
 }
 
 }  // namespace

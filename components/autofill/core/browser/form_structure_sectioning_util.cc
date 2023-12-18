@@ -44,8 +44,8 @@ bool ConsecutiveSimilarFieldType(FieldType current_type,
                                  FieldType previous_type) {
   if (previous_type == current_type)
     return true;
-  if (GroupTypeOfServerFieldType(current_type) == FieldTypeGroup::kName &&
-      GroupTypeOfServerFieldType(previous_type) == FieldTypeGroup::kName) {
+  if (GroupTypeOfFieldType(current_type) == FieldTypeGroup::kName &&
+      GroupTypeOfFieldType(previous_type) == FieldTypeGroup::kName) {
     return true;
   }
   if (FieldTypeSet({ADDRESS_HOME_ZIP, ADDRESS_HOME_DEPENDENT_LOCALITY,
@@ -150,7 +150,7 @@ bool BelongsToCurrentSection(const FieldTypeSet& seen_types,
   // There are many phone number field types and their classification is
   // generally a little bit off. Furthermore, forms often ask for multiple phone
   // numbers, e.g. both a daytime and evening phone number.
-  if (GroupTypeOfServerFieldType(current_type) == FieldTypeGroup::kPhone) {
+  if (GroupTypeOfFieldType(current_type) == FieldTypeGroup::kPhone) {
     return true;
   }
 

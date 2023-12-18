@@ -82,7 +82,7 @@ void PhoneNumber::GetSupportedTypes(FieldTypeSet* supported_types) const {
 }
 
 std::u16string PhoneNumber::GetRawInfo(FieldType type) const {
-  DCHECK_EQ(FieldTypeGroup::kPhone, GroupTypeOfServerFieldType(type));
+  DCHECK_EQ(FieldTypeGroup::kPhone, GroupTypeOfFieldType(type));
   if (type == PHONE_HOME_WHOLE_NUMBER)
     return number_;
 
@@ -95,7 +95,7 @@ std::u16string PhoneNumber::GetRawInfo(FieldType type) const {
 void PhoneNumber::SetRawInfoWithVerificationStatus(FieldType type,
                                                    const std::u16string& value,
                                                    VerificationStatus status) {
-  DCHECK_EQ(FieldTypeGroup::kPhone, GroupTypeOfServerFieldType(type));
+  DCHECK_EQ(FieldTypeGroup::kPhone, GroupTypeOfFieldType(type));
   if (type != PHONE_HOME_WHOLE_NUMBER) {
     // Only full phone numbers should be set directly. The browser is
     // intentionally caused to crash to prevent all users from setting raw info

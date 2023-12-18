@@ -273,7 +273,7 @@ bool SplitCJKName(const std::vector<base::StringPiece16>& name_tokens,
 }
 
 void AddGroupToBitmask(uint32_t* group_bitmask, FieldType type) {
-  const FieldTypeGroup group = GroupTypeOfServerFieldType(type);
+  const FieldTypeGroup group = GroupTypeOfFieldType(type);
   switch (group) {
     case autofill::FieldTypeGroup::kName:
       *group_bitmask |= kName;

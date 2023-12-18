@@ -78,7 +78,7 @@ bool NameInfo::operator==(const NameInfo& other) const {
 }
 
 std::u16string NameInfo::GetRawInfo(FieldType type) const {
-  DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfServerFieldType(type));
+  DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfFieldType(type));
 
   // TODO(crbug.com/1141460): Remove once honorific prefixes are launched.
   if (type == NAME_FULL_WITH_HONORIFIC_PREFIX && !HonorificPrefixEnabled()) {
@@ -96,7 +96,7 @@ std::u16string NameInfo::GetRawInfo(FieldType type) const {
 void NameInfo::SetRawInfoWithVerificationStatus(FieldType type,
                                                 const std::u16string& value,
                                                 VerificationStatus status) {
-  DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfServerFieldType(type));
+  DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfFieldType(type));
   // Without the second generation of the structured name tree, honorific
   // prefixes and the name including the prefix are unsupported types.
   if ((type == NAME_HONORIFIC_PREFIX ||

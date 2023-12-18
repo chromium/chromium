@@ -660,7 +660,7 @@ std::u16string CreditCard::GetRawInfo(FieldType type) const {
 void CreditCard::SetRawInfoWithVerificationStatus(FieldType type,
                                                   const std::u16string& value,
                                                   VerificationStatus status) {
-  DCHECK_EQ(FieldTypeGroup::kCreditCard, GroupTypeOfServerFieldType(type));
+  DCHECK_EQ(FieldTypeGroup::kCreditCard, GroupTypeOfFieldType(type));
   switch (type) {
     case CREDIT_CARD_NAME_FULL:
       name_on_card_ = value;

@@ -77,7 +77,7 @@ bool IsValidFieldTypeAndValue(
   // - phone number components because a form might request several phone
   // numbers.
   // TODO(crbug.com/1156315) Clean up when launched.
-  FieldTypeGroup field_type_group = GroupTypeOfServerFieldType(field_type);
+  FieldTypeGroup field_type_group = GroupTypeOfFieldType(field_type);
   if (observed_types.contains(field_type) && field_type != EMAIL_ADDRESS &&
       (!base::FeatureList::IsEnabled(
            features::kAutofillEnableImportWhenMultiplePhoneNumbers) ||

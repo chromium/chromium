@@ -820,7 +820,7 @@ bool FormStructureRationalizer::FieldShouldBeRationalizedToCountry(
   // is a country.
   for (int field_index = upper_index - 1; field_index >= 0; --field_index) {
     if ((*fields_)[field_index]->IsFocusable() &&
-        GroupTypeOfServerFieldType(
+        GroupTypeOfFieldType(
             (*fields_)[field_index]->Type().GetStorableType()) ==
             FieldTypeGroup::kAddress &&
         (*fields_)[field_index]->section == (*fields_)[upper_index]->section) {

@@ -388,7 +388,7 @@ std::string ServerTypesToString(const AutofillField* field) {
 bool HasPasswordManagerPrediction(const FieldSuggestion& field_suggestion) {
   return base::ranges::any_of(
       field_suggestion.predictions(), [](const auto& prediction) {
-        auto group_type = GroupTypeOfServerFieldType(
+        auto group_type = GroupTypeOfFieldType(
             ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
         return group_type == FieldTypeGroup::kPasswordField ||
                group_type == FieldTypeGroup::kUsernameField;
@@ -402,7 +402,7 @@ void MergePasswordManagerPredictions(
     FieldSuggestion& merge_to_predictions) {
   CHECK_NE(&merge_to_predictions, &merge_from_predictions);
   for (const auto& prediction : merge_from_predictions.predictions()) {
-    FieldTypeGroup group_type = GroupTypeOfServerFieldType(
+    FieldTypeGroup group_type = GroupTypeOfFieldType(
         ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
     // Only add predictions relevant for PasswordManager.
     if (group_type == FieldTypeGroup::kPasswordField ||
@@ -1006,7 +1006,7 @@ std::vector<FieldGlobalId> FormStructure::FindFieldsEligibleForManualFilling(
   for (const auto* form : forms) {
     for (const auto& field : form->fields_) {
       FieldTypeGroup field_type_group =
-          GroupTypeOfServerFieldType(field->server_type());
+          GroupTypeOfFieldType(field->server_type());
       // In order to trigger the payments bottom sheet that assists users to
       // manually fill the form, credit card form fields are marked eligible for
       // manual filling. Also, if a field is not classified to a type, we can
@@ -1631,8 +1631,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
   for (const auto& field : fields_) {
     const FieldType current_type = field->Type().GetStorableType();
     // Put credit card fields into one, separate credit card section.
-    if (GroupTypeOfServerFieldType(current_type) ==
-        FieldTypeGroup::kCreditCard) {
+    if (GroupTypeOfFieldType(current_type) == FieldTypeGroup::kCreditCard) {
       if (!credit_card_section) {
         credit_card_section =
             Section::FromFieldIdentifier(*field, frame_token_ids);
@@ -1649,7 +1648,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
     // Forms often ask for multiple phone numbers -- e.g. both a daytime and
     // evening phone number.  Our phone number detection is also generally a
     // little off.  Hence, ignore this field type as a signal here.
-    if (GroupTypeOfServerFieldType(current_type) == FieldTypeGroup::kPhone) {
+    if (GroupTypeOfFieldType(current_type) == FieldTypeGroup::kPhone) {
       already_saw_current_type = false;
     }
 
@@ -1798,8 +1797,7 @@ void FormStructure::IdentifySections(bool ignore_autocomplete) {
     for (const auto& field : fields_) {
       const FieldType current_type = field->Type().GetStorableType();
       // Credit card fields are already in one, separate credit card section.
-      if (GroupTypeOfServerFieldType(current_type) ==
-          FieldTypeGroup::kCreditCard) {
+      if (GroupTypeOfFieldType(current_type) == FieldTypeGroup::kCreditCard) {
         continue;
       }
 
@@ -1811,7 +1809,7 @@ void FormStructure::IdentifySections(bool ignore_autocomplete) {
       // Forms often ask for multiple phone numbers -- e.g. both a daytime and
       // evening phone number.  Our phone number detection is also generally a
       // little off.  Hence, ignore this field type as a signal here.
-      if (GroupTypeOfServerFieldType(current_type) == FieldTypeGroup::kPhone) {
+      if (GroupTypeOfFieldType(current_type) == FieldTypeGroup::kPhone) {
         already_saw_current_type = false;
       }
 

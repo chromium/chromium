@@ -99,7 +99,7 @@ constexpr std::string_view kPlusAddressSuggestionMetric =
 Suggestion CreateFieldByFieldFillingSuggestion(const std::string& guid,
                                                FieldType fbf_type_used) {
   Suggestion suggestion = test::CreateAutofillSuggestion(
-      GroupTypeOfServerFieldType(fbf_type_used) == FieldTypeGroup::kCreditCard
+      GroupTypeOfFieldType(fbf_type_used) == FieldTypeGroup::kCreditCard
           ? PopupItemId::kCreditCardFieldByFieldFilling
           : PopupItemId::kAddressFieldByFieldFilling,
       u"field by field", Suggestion::Guid(guid));

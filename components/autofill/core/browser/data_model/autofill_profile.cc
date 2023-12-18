@@ -88,11 +88,11 @@ const std::array<FieldType, 7> kStructuredDataTypes = {
 // similarly.
 FieldType GetStorableTypeCollapsingGroups(FieldType type) {
   FieldType storable_type = AutofillType(type).GetStorableType();
-  if (GroupTypeOfServerFieldType(storable_type) == FieldTypeGroup::kName) {
+  if (GroupTypeOfFieldType(storable_type) == FieldTypeGroup::kName) {
     return NAME_FULL;
   }
 
-  if (GroupTypeOfServerFieldType(storable_type) == FieldTypeGroup::kPhone) {
+  if (GroupTypeOfFieldType(storable_type) == FieldTypeGroup::kPhone) {
     return PHONE_HOME_WHOLE_NUMBER;
   }
 
@@ -463,7 +463,7 @@ void AutofillProfile::GetSupportedTypes(FieldTypeSet* supported_types) const {
 }
 
 FieldType AutofillProfile::GetStorableTypeOf(FieldType type) const {
-  const FieldTypeGroup group = GroupTypeOfServerFieldType(type);
+  const FieldTypeGroup group = GroupTypeOfFieldType(type);
   if (group == FieldTypeGroup::kAddress) {
     return address_.GetStructuredAddress().GetStorableTypeOf(type).value_or(
         type);

@@ -459,14 +459,14 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
 FieldTypeSet GetFieldTypesOfGroup(FieldTypeGroup group) {
   FieldTypeSet fields_matching_group;
   for (FieldType field_type : kAllFieldTypes) {
-    if (GroupTypeOfServerFieldType(field_type) == group) {
+    if (GroupTypeOfFieldType(field_type) == group) {
       fields_matching_group.insert(field_type);
     }
   }
   return fields_matching_group;
 }
 
-FieldTypeGroup GroupTypeOfServerFieldType(FieldType field_type) {
+FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
   switch (field_type) {
     case NAME_HONORIFIC_PREFIX:
     case NAME_FIRST:

@@ -216,7 +216,7 @@ class AutofillCapturedSitesInteractiveTest
       // the "Enter CVC" dialog will pop up for card autofill.
       bool is_credit_card_field =
           triggered_field_type.has_value() &&
-          GroupTypeOfServerFieldType(triggered_field_type.value()) ==
+          GroupTypeOfFieldType(triggered_field_type.value()) ==
               FieldTypeGroup::kCreditCard;
       bool should_cvc_dialog_pop_up = is_credit_card_field && cvc;
 

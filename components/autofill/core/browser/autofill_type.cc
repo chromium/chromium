@@ -53,7 +53,7 @@ AutofillType::AutofillType(FieldType field_type)
 AutofillType::AutofillType(HtmlFieldType field_type) : html_type_(field_type) {}
 
 FieldTypeGroup AutofillType::group() const {
-  return server_type_ != UNKNOWN_TYPE ? GroupTypeOfServerFieldType(server_type_)
+  return server_type_ != UNKNOWN_TYPE ? GroupTypeOfFieldType(server_type_)
                                       : GroupTypeOfHtmlFieldType(html_type_);
 }
 

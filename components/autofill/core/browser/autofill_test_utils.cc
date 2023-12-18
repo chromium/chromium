@@ -916,7 +916,7 @@ FieldPrediction CreateFieldPrediction(FieldType type, bool is_override) {
     return CreateFieldPrediction(type, FieldPrediction::SOURCE_UNSPECIFIED);
   }
   return CreateFieldPrediction(
-      type, GroupTypeOfServerFieldType(type) == FieldTypeGroup::kPasswordField
+      type, GroupTypeOfFieldType(type) == FieldTypeGroup::kPasswordField
                 ? FieldPrediction::SOURCE_PASSWORDS_DEFAULT
                 : FieldPrediction::SOURCE_AUTOFILL_DEFAULT);
 }

@@ -158,7 +158,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
   DCHECK_LT(metric, AutofillMetrics::NUM_FIELD_TYPE_QUALITY_METRICS);
 
   FieldTypeGroupForMetrics group = GROUP_AMBIGUOUS;
-  switch (GroupTypeOfServerFieldType(field_type)) {
+  switch (GroupTypeOfFieldType(field_type)) {
     case FieldTypeGroup::kNoGroup:
       group = GROUP_AMBIGUOUS;
       break;

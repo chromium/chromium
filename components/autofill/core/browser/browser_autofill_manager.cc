@@ -199,7 +199,7 @@ void SelectRightNameType(AutofillField* field, bool is_credit_card) {
   const auto& old_types = field->possible_types();
 
   for (FieldType type : old_types) {
-    FieldTypeGroup group = GroupTypeOfServerFieldType(type);
+    FieldTypeGroup group = GroupTypeOfFieldType(type);
     if ((is_credit_card && group == FieldTypeGroup::kCreditCard) ||
         (!is_credit_card && group == FieldTypeGroup::kName)) {
       types_to_keep.insert(type);
@@ -716,8 +716,7 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
   FieldType field_type = autofill_field
                              ? autofill_field->Type().GetStorableType()
                              : CREDIT_CARD_NUMBER;
-  DCHECK_EQ(FieldTypeGroup::kCreditCard,
-            GroupTypeOfServerFieldType(field_type));
+  DCHECK_EQ(FieldTypeGroup::kCreditCard, GroupTypeOfFieldType(field_type));
 
   bool should_display_gpay_logo = false;
   auto cards = GetCreditCardSuggestions(field_data, field_type,

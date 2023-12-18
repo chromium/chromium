@@ -232,7 +232,7 @@ std::unique_ptr<AddressComponent> CreateAddressComponentModel(
 std::u16string GetFormattingExpression(FieldType field_type,
                                        AddressCountryCode country_code) {
   if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel) &&
-      GroupTypeOfServerFieldType(field_type) == FieldTypeGroup::kAddress) {
+      GroupTypeOfFieldType(field_type) == FieldTypeGroup::kAddress) {
     // If `country_code` is specified, return the corresponding formatting
     // expression if they exist. Note that it should not fallback to a legacy
     // expression, as these ones refer to a different hierarchy.
@@ -262,7 +262,7 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
     std::string_view value,
     FieldType field_type,
     AddressCountryCode country_code) {
-  CHECK(GroupTypeOfServerFieldType(field_type) == FieldTypeGroup::kAddress);
+  CHECK(GroupTypeOfFieldType(field_type) == FieldTypeGroup::kAddress);
   // If `country_code` is specified, attempt to parse the `value` using a
   // custom parsing structure (if exist).
   // Otherwise try using a legacy parsing expression (if exist).

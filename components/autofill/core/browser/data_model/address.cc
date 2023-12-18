@@ -110,7 +110,7 @@ AddressCountryCode Address::GetAddressCountryCode() const {
 }
 
 std::u16string Address::GetRawInfo(FieldType type) const {
-  DCHECK_EQ(FieldTypeGroup::kAddress, GroupTypeOfServerFieldType(type));
+  DCHECK_EQ(FieldTypeGroup::kAddress, GroupTypeOfFieldType(type));
 
   return structured_address_->GetValueForType(type);
 }
@@ -118,7 +118,7 @@ std::u16string Address::GetRawInfo(FieldType type) const {
 void Address::SetRawInfoWithVerificationStatus(FieldType type,
                                                const std::u16string& value,
                                                VerificationStatus status) {
-  DCHECK_EQ(FieldTypeGroup::kAddress, GroupTypeOfServerFieldType(type));
+  DCHECK_EQ(FieldTypeGroup::kAddress, GroupTypeOfFieldType(type));
   // The street address has a structure that may have already been set before
   // using the settings dialog. In case the settings dialog was used to change
   // the address to contain different tokens, the structure must be reset.

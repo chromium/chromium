@@ -58,7 +58,7 @@ const FieldTypeSet& GetDatabaseStoredTypesOfAutofillProfile() {
 size_t NumberOfPossibleFieldTypesInGroup(const AutofillField& field,
                                          FieldTypeGroup group) {
   return base::ranges::count(field.possible_types(), group,
-                             GroupTypeOfServerFieldType);
+                             GroupTypeOfFieldType);
 }
 
 bool FieldHasMeaningfulPossibleFieldTypes(const AutofillField& field) {
@@ -84,7 +84,7 @@ bool IsStreetNameOrHouseNumberType(const FieldType type) {
 }
 
 bool IsAddressType(FieldType type) {
-  switch (GroupTypeOfServerFieldType(type)) {
+  switch (GroupTypeOfFieldType(type)) {
     case FieldTypeGroup::kName:
     case FieldTypeGroup::kEmail:
     case FieldTypeGroup::kCompany:

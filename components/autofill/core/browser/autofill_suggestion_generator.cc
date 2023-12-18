@@ -431,7 +431,7 @@ void AddContactChildSuggestions(FieldType trigger_field_type,
                                 const std::string& app_locale,
                                 Suggestion& suggestion) {
   const FieldTypeGroup trigger_field_type_group =
-      GroupTypeOfServerFieldType(trigger_field_type);
+      GroupTypeOfFieldType(trigger_field_type);
 
   bool phone_number_suggestion_added = false;
   if (profile.HasInfo(PHONE_HOME_WHOLE_NUMBER)) {
@@ -605,7 +605,7 @@ PopupItemId GetProfileSuggestionPopupItemId(
   }
 
   const FieldTypeGroup trigger_field_type_group =
-      GroupTypeOfServerFieldType(trigger_field_type);
+      GroupTypeOfFieldType(trigger_field_type);
 
   // Lambda to return the expected `PopupItemId` when
   // `last_targeted_fields` matches one of the granular filling groups.
@@ -702,7 +702,7 @@ std::vector<std::vector<std::u16string>> GetGranularFillingLabels(
   std::vector<std::vector<std::u16string>> labels;
   labels.reserve(profiles.size());
   for (const AutofillProfile* profile : profiles) {
-    switch (GroupTypeOfServerFieldType(triggering_field_type)) {
+    switch (GroupTypeOfFieldType(triggering_field_type)) {
       case FieldTypeGroup::kName:
         labels.push_back({l10n_util::GetStringUTF16(
             IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED)});
@@ -750,7 +750,7 @@ FieldTypeSet GetFieldTypesToExcludeFromDifferentiatingLabelsGeneration(
       !AreFieldsGranularFillingGroup(*last_targeted_fields)) {
     return {triggering_field_type};
   }
-  switch (GroupTypeOfServerFieldType(triggering_field_type)) {
+  switch (GroupTypeOfFieldType(triggering_field_type)) {
     case FieldTypeGroup::kAddress:
       if (ShouldAddAddressLine1ToGranularFillingLabels(triggering_field_type)) {
         // In the case where the `ADDRESS_HOME_LINE1` was added to the granular
@@ -1004,8 +1004,7 @@ bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
                                        bool field_is_autofilled) {
   // Phones should do a substring match because they can be trimmed to remove
   // the first parts (e.g. country code or prefix).
-  if (GroupTypeOfServerFieldType(trigger_field_type) ==
-          FieldTypeGroup::kPhone &&
+  if (GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kPhone &&
       suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
     return true;
   }
@@ -1045,7 +1044,7 @@ bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
 // entered into.
 std::u16string NormalizeForComparisonForType(const std::u16string& text,
                                              FieldType type) {
-  if (GroupTypeOfServerFieldType(type) == FieldTypeGroup::kEmail) {
+  if (GroupTypeOfFieldType(type) == FieldTypeGroup::kEmail) {
     // For emails, keep special characters so that if the user has two emails
     // `test@foo.xyz` and `test1@foo.xyz` saved, only the first one is suggested
     // upon entering `test@` into the email field.
@@ -1187,8 +1186,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
   // This will be used to check if suggestions should be supported with icons.
   const bool contains_profile_related_fields =
       base::ranges::count_if(field_types, [](FieldType field_type) {
-        FieldTypeGroup field_type_group =
-            GroupTypeOfServerFieldType(field_type);
+        FieldTypeGroup field_type_group = GroupTypeOfFieldType(field_type);
         return field_type_group == FieldTypeGroup::kName ||
                field_type_group == FieldTypeGroup::kAddress ||
                field_type_group == FieldTypeGroup::kPhone ||
@@ -1196,7 +1194,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
       }) > 1;
 
   FieldTypeGroup trigger_field_type_group =
-      GroupTypeOfServerFieldType(trigger_field_type);
+      GroupTypeOfFieldType(trigger_field_type);
   for (const AutofillProfile* profile : profiles) {
     // Compute the main text to be displayed in the suggestion bubble.
     std::u16string main_text =
@@ -1406,7 +1404,7 @@ void AutofillSuggestionGenerator::AddAddressGranularFillingChildSuggestions(
     const AutofillProfile& profile,
     Suggestion& suggestion) const {
   const FieldTypeGroup trigger_field_type_group =
-      GroupTypeOfServerFieldType(trigger_field_type);
+      GroupTypeOfFieldType(trigger_field_type);
   const std::string app_locale = personal_data_->app_locale();
   AddNameChildSuggestions(trigger_field_type_group, profile, app_locale,
                           suggestion);
@@ -1428,8 +1426,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   std::vector<Suggestion> suggestions;
   // Manual fallback entries are shown for all non credit card fields.
   const bool is_manual_fallback =
-      GroupTypeOfServerFieldType(trigger_field_type) !=
-      FieldTypeGroup::kCreditCard;
+      GroupTypeOfFieldType(trigger_field_type) != FieldTypeGroup::kCreditCard;
   const std::string& app_locale = personal_data_->app_locale();
 
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
@@ -1752,8 +1749,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     bool card_linked_offer_available) const {
   // Manual fallback entries are shown for all non credit card fields.
   const bool is_manual_fallback =
-      GroupTypeOfServerFieldType(trigger_field_type) !=
-      FieldTypeGroup::kCreditCard;
+      GroupTypeOfFieldType(trigger_field_type) != FieldTypeGroup::kCreditCard;
 
   Suggestion suggestion;
   suggestion.icon = credit_card.CardIconForAutofillSuggestion();

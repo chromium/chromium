@@ -139,7 +139,7 @@ absl::optional<CreditCard> MakeCard(const base::Value::Dict& dict) {
     }
     const FieldType type = TypeNameToFieldType(key);
     if (type == UNKNOWN_TYPE ||
-        GroupTypeOfServerFieldType(type) != FieldTypeGroup::kCreditCard) {
+        GroupTypeOfFieldType(type) != FieldTypeGroup::kCreditCard) {
       LOG(ERROR) << "Unknown or non-credit card type " << key << ".";
       return absl::nullopt;
     }

@@ -72,7 +72,7 @@ FieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
   switch (GetFillingMethodFromTargetedFields(last_targeted_field_types)) {
     case AutofillFillingMethod::kGroupFilling:
       return GetServerFieldsForFieldGroup(
-          GroupTypeOfServerFieldType(triggering_field_type));
+          GroupTypeOfFieldType(triggering_field_type));
     case AutofillFillingMethod::kFullForm:
       return kAllFieldTypes;
     case AutofillFillingMethod::kFieldByFieldFilling:
