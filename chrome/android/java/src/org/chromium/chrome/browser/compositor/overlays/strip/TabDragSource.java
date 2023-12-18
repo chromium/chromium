@@ -27,6 +27,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -65,7 +66,7 @@ public class TabDragSource implements View.OnDragListener {
     private StripTabDragShadowView mShadowView;
     private PointF mDragShadowDefaultOffset = new PointF(0, 0);
     private float mPxToDp;
-    private final float mTabStripHeightPx;
+    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
 
     /** Drag Event Listener trackers * */
     // Drag start screen position.
@@ -91,6 +92,7 @@ public class TabDragSource implements View.OnDragListener {
      * @param browserControlStateProvider @{@link BrowserControlsStateProvider} to compute
      *     drag-shadow dimens.
      * @param windowAndroid @{@link WindowAndroid} to access activity.
+     * @param tabStripHeightSupplier Supplier of the tab strip height.
      */
     public TabDragSource(
             @NonNull Context context,
@@ -100,10 +102,10 @@ public class TabDragSource implements View.OnDragListener {
             @NonNull MultiInstanceManager multiInstanceManager,
             @NonNull DragAndDropDelegate dragAndDropDelegate,
             @NonNull BrowserControlsStateProvider browserControlStateProvider,
-            @NonNull WindowAndroid windowAndroid) {
+            @NonNull WindowAndroid windowAndroid,
+            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
         mPxToDp = 1.f / context.getResources().getDisplayMetrics().density;
-        // TODO(crbug.com/1498252): Use Toolbar#getTabStripHeight() instead.
-        mTabStripHeightPx = context.getResources().getDimension(R.dimen.tab_strip_height);
+        mTabStripHeightSupplier = tabStripHeightSupplier;
         mStripLayoutHelperSupplier = stripLayoutHelperSupplier;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
@@ -231,7 +233,7 @@ public class TabDragSource implements View.OnDragListener {
     }
 
     private boolean didOccurInTabStrip(float yPx) {
-        return yPx <= mTabStripHeightPx;
+        return yPx <= mTabStripHeightSupplier.get();
     }
 
     private boolean onDragStart(float xPx, float yPx, ClipDescription clipDescription) {

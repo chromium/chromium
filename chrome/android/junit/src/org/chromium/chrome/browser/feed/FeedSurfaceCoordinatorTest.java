@@ -43,7 +43,9 @@ import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Callback;
 import org.chromium.base.jank_tracker.PlaceholderJankTracker;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -67,7 +69,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
@@ -215,12 +216,13 @@ public class FeedSurfaceCoordinatorTest {
     @Mock private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
     @Mock private Tracker mTracker;
-    @Mock private TabModelSelector mTabModelSelector;
     @Mock private ScrollableContainerDelegate mScrollableContainerDelegate;
+    @Mock ObservableSupplier<Integer> mTabStripHeightSupplier;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private FeedSurfaceMediator mMediatorSpy;
+    private int mTabStripHeight;
 
     @Before
     public void setUp() {
@@ -277,10 +279,11 @@ public class FeedSurfaceCoordinatorTest {
                 .thenReturn(mRecyclerView);
         when(mSurfaceScope.getLaunchReliabilityLogger()).thenReturn(mLaunchReliabilityLogger);
         TrackerFactory.setTrackerForTests(mTracker);
-        when(mTabModelSelector.getModel(eq(false))).thenReturn(mTabModel);
-        when(mTabModelSelector.getModel(eq(true))).thenReturn(mTabModelIncognito);
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
+
+        mTabStripHeight = mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
+        when(mTabStripHeightSupplier.get()).thenReturn(mTabStripHeight);
 
         mCoordinator = createCoordinator();
 
@@ -498,6 +501,18 @@ public class FeedSurfaceCoordinatorTest {
         assertFalse(mCoordinator.shouldDisplaySupervisedFeed());
     }
 
+    @Test
+    public void testTabStripHeightChangeCallback() {
+        ArgumentCaptor<Callback<Integer>> captor = ArgumentCaptor.forClass(Callback.class);
+        verify(mTabStripHeightSupplier).addObserver(captor.capture());
+        Callback<Integer> tabStripHeightChangeCallback = captor.getValue();
+        tabStripHeightChangeCallback.onResult(mTabStripHeight);
+        assertEquals(
+                "Top padding of root view should be updated when tab strip height changes.",
+                mTabStripHeight,
+                mCoordinator.getRootViewForTesting().getPaddingTop());
+    }
+
     private AccountInfo createFakeAccount(boolean isChild) {
         AccountCapabilities capabilities =
                 new AccountCapabilities(
@@ -562,6 +577,6 @@ public class FeedSurfaceCoordinatorTest {
                 /* viewportView= */ null,
                 mFeedActionDelegate,
                 /* helpAndFeedbackLauncher= */ null,
-                mTabModelSelector);
+                mTabStripHeightSupplier);
     }
 }

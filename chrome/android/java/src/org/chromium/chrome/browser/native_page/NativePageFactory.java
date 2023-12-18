@@ -65,6 +65,7 @@ public class NativePageFactory {
     private final Supplier<Toolbar> mToolbarSupplier;
     private final HomeSurfaceTracker mHomeSurfaceTracker;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
     private NewTabPageUma mNewTabPageUma;
 
     private NativePageBuilder mNativePageBuilder;
@@ -82,7 +83,8 @@ public class NativePageFactory {
             @NonNull JankTracker jankTracker,
             @NonNull Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
-            @Nullable ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
+            @Nullable ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
         mActivity = activity;
         mBottomSheetController = sheetController;
         mBrowserControlsManager = browserControlsManager;
@@ -96,6 +98,7 @@ public class NativePageFactory {
         mToolbarSupplier = toolbarSupplier;
         mHomeSurfaceTracker = homeSurfaceTracker;
         mTabContentManagerSupplier = tabContentManagerSupplier;
+        mTabStripHeightSupplier = tabStripHeightSupplier;
     }
 
     private NativePageBuilder getBuilder() {
@@ -115,7 +118,8 @@ public class NativePageFactory {
                             mJankTracker,
                             mToolbarSupplier,
                             mHomeSurfaceTracker,
-                            mTabContentManagerSupplier);
+                            mTabContentManagerSupplier,
+                            mTabStripHeightSupplier);
         }
         return mNativePageBuilder;
     }
@@ -144,6 +148,7 @@ public class NativePageFactory {
         private final Supplier<Toolbar> mToolbarSupplier;
         private final HomeSurfaceTracker mHomeSurfaceTracker;
         private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+        private final ObservableSupplier<Integer> mTabStripHeightSupplier;
 
         public NativePageBuilder(
                 Activity activity,
@@ -159,7 +164,8 @@ public class NativePageFactory {
                 JankTracker jankTracker,
                 Supplier<Toolbar> toolbarSupplier,
                 HomeSurfaceTracker homeSurfaceTracker,
-                ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
+                ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+                ObservableSupplier<Integer> tabStripHeightSupplier) {
             mActivity = activity;
             mUma = uma;
             mBottomSheetController = sheetController;
@@ -174,6 +180,7 @@ public class NativePageFactory {
             mToolbarSupplier = toolbarSupplier;
             mHomeSurfaceTracker = homeSurfaceTracker;
             mTabContentManagerSupplier = tabContentManagerSupplier;
+            mTabStripHeightSupplier = tabStripHeightSupplier;
         }
 
         protected NativePage buildNewTabPage(Tab tab, String url) {
@@ -200,7 +207,8 @@ public class NativePageFactory {
                     mJankTracker,
                     mToolbarSupplier,
                     mHomeSurfaceTracker,
-                    mTabContentManagerSupplier);
+                    mTabContentManagerSupplier,
+                    mTabStripHeightSupplier);
         }
 
         protected NativePage buildBookmarksPage(Tab tab) {
@@ -247,7 +255,8 @@ public class NativePageFactory {
                     mActivity,
                     recentTabsManager,
                     new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
-                    mBrowserControlsManager);
+                    mBrowserControlsManager,
+                    mTabStripHeightSupplier);
         }
 
         protected NativePage buildManagementPage(Tab tab) {

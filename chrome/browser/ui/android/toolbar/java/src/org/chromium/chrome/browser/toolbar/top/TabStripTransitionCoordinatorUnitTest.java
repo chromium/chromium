@@ -18,6 +18,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
@@ -286,6 +287,10 @@ public class TabStripTransitionCoordinatorUnitTest {
                 tabStripHeight,
                 mSpyControlContainer.findToolbar.getTopMargin());
         Assert.assertEquals(
+                "Top margin is wrong for dropTargetView.",
+                tabStripHeight,
+                mSpyControlContainer.dropTargetView.getTopMargin());
+        Assert.assertEquals(
                 "Top margin is wrong for toolbarHairline.",
                 tabStripHeight + TEST_TOOLBAR_HEIGHT,
                 mSpyControlContainer.toolbarHairline.getTopMargin());
@@ -333,6 +338,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         public TestView toolbarLayout;
         public TestView toolbarHairline;
         public TestView findToolbar;
+        public TestView dropTargetView;
 
         @Nullable public View.OnLayoutChangeListener onLayoutChangeListener;
 
@@ -346,9 +352,19 @@ public class TabStripTransitionCoordinatorUnitTest {
             doReturn(controlContainer.toolbarHairline)
                     .when(controlContainer)
                     .findViewById(R.id.toolbar_hairline);
+
+            // Initialize a non-null ViewParent for common use by the following control_container
+            // child views only for the purpose of testing.
+            var viewParent = Mockito.spy(ViewParent.class);
             doReturn(controlContainer.findToolbar)
                     .when(controlContainer)
-                    .findViewById(R.id.find_toolbar);
+                    .findViewById(R.id.find_toolbar_stub);
+            doReturn(controlContainer.dropTargetView)
+                    .when(controlContainer)
+                    .findViewById(R.id.target_view_stub);
+            doReturn(viewParent).when(controlContainer.findToolbar).getParent();
+            doReturn(viewParent).when(controlContainer.dropTargetView).getParent();
+
             doAnswer(args -> context.getResources().getDisplayMetrics().widthPixels)
                     .when(controlContainer)
                     .getWidth();
@@ -368,8 +384,10 @@ public class TabStripTransitionCoordinatorUnitTest {
 
             toolbarLayout = Mockito.spy(new TestView(context, attrs));
             findToolbar = Mockito.spy(new TestView(context, attrs));
+            dropTargetView = Mockito.spy(new TestView(context, attrs));
             when(toolbarLayout.getHeight()).thenReturn(TEST_TOOLBAR_HEIGHT);
             when(findToolbar.getHeight()).thenReturn(TEST_TOOLBAR_HEIGHT);
+            when(dropTargetView.getHeight()).thenReturn(TEST_TOOLBAR_HEIGHT);
             toolbarHairline = new TestView(context, attrs);
 
             MarginLayoutParams sourceParams =
@@ -383,6 +401,7 @@ public class TabStripTransitionCoordinatorUnitTest {
             sourceParams.height = TEST_TOOLBAR_HEIGHT;
             addView(toolbarLayout, new MarginLayoutParams(sourceParams));
             addView(findToolbar, new MarginLayoutParams(sourceParams));
+            addView(dropTargetView, new MarginLayoutParams(sourceParams));
         }
     }
 

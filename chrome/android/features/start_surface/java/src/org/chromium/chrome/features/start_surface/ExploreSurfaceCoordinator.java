@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.jank_tracker.JankTracker;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
@@ -84,7 +85,8 @@ public class ExploreSurfaceCoordinator {
             Supplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
             JankTracker jankTracker,
-            TabModelSelector tabModelSelector) {
+            TabModelSelector tabModelSelector,
+            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
         mActivity = activity;
         mJankTracker = jankTracker;
         mExploreSurfaceNavigationDelegate = new ExploreSurfaceNavigationDelegate(parentTabSupplier);
@@ -122,7 +124,7 @@ public class ExploreSurfaceCoordinator {
                                 BookmarkModel.getForProfile(profile),
                                 tabModelSelector),
                         HelpAndFeedbackLauncherImpl.getForProfile(profile),
-                        tabModelSelector);
+                        tabStripHeightSupplier);
 
         mFeedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
         // TODO(crbug.com/982018): Customize surface background for incognito and dark mode.

@@ -30,6 +30,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
@@ -157,6 +158,7 @@ public class NewTabPageLayout extends LinearLayout {
     // order to make sure the animation is completed.
     private float mTransitionLengthOffset;
     private boolean mIsTablet;
+    private ObservableSupplier<Integer> mTabStripHeightSupplier;
 
     /** Constructor for inflating from XML. */
     public NewTabPageLayout(Context context, AttributeSet attrs) {
@@ -197,23 +199,25 @@ public class NewTabPageLayout extends LinearLayout {
     /**
      * Initializes the NewTabPageLayout. This must be called immediately after inflation, before
      * this object is used in any other way.
-     * @param manager NewTabPageManager used to perform various actions when the user interacts
-     *                with the page.
+     *
+     * @param manager NewTabPageManager used to perform various actions when the user interacts with
+     *     the page.
      * @param activity The activity that currently owns the new tab page
      * @param tileGroupDelegate Delegate for {@link TileGroup}.
      * @param searchProviderHasLogo Whether the search provider has a logo.
      * @param searchProviderIsGoogle Whether the search provider is Google.
      * @param scrollDelegate The delegate used to obtain information about scroll state.
      * @param touchEnabledDelegate The {@link TouchEnabledDelegate} for handling whether touch
-     *         events are allowed.
+     *     events are allowed.
      * @param uiConfig UiConfig that provides display information about this view.
      * @param lifecycleDispatcher Activity lifecycle dispatcher.
      * @param uma {@link NewTabPageUma} object recording user metrics.
      * @param isIncognito Whether the new tab page is in incognito mode.
      * @param windowAndroid An instance of a {@link WindowAndroid}
      * @param isNtpAsHomeSurfaceOnTablet {@code true} if the NTP is showing as the home surface on
-     *         tablets.
+     *     tablets.
      * @param isSurfacePolishEnabled {@code true} if the NTP surface is polished.
+     * @param tabStripHeightSupplier Supplier of the tab strip height.
      */
     public void initialize(
             NewTabPageManager manager,
@@ -231,7 +235,8 @@ public class NewTabPageLayout extends LinearLayout {
             boolean isNtpAsHomeSurfaceOnTablet,
             boolean isSurfacePolishEnabled,
             boolean isSurfacePolishOmniboxColorEnabled,
-            boolean isTablet) {
+            boolean isTablet,
+            ObservableSupplier<Integer> tabStripHeightSupplier) {
         TraceEvent.begin(TAG + ".initialize()");
         mScrollDelegate = scrollDelegate;
         mManager = manager;
@@ -245,6 +250,7 @@ public class NewTabPageLayout extends LinearLayout {
         mIsSurfacePolishOmniboxColorEnabled = isSurfacePolishOmniboxColorEnabled;
         Profile profile = Profile.getLastUsedRegularProfile();
         mIsTablet = isTablet;
+        mTabStripHeightSupplier = tabStripHeightSupplier;
 
         if (mIsTablet) {
             mDisplayStyleObserver = this::onDisplayStyleChanged;
@@ -542,8 +548,8 @@ public class NewTabPageLayout extends LinearLayout {
         final float transitionLength =
                 getResources().getDimensionPixelSize(R.dimen.ntp_search_box_transition_length)
                         + mTransitionLengthOffset;
-        // Tab strip height is zero on phones, nonzero on tablets.
-        int tabStripHeight = getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
+        // Tab strip height is zero on phones, and may vary on tablets.
+        int tabStripHeight = mTabStripHeightSupplier.get();
 
         // |scrollY - searchBoxTop + tabStripHeight| gives the distance the search bar is from the
         // top of the tab.

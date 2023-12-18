@@ -78,6 +78,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param toolbarContainerView @{link View} passed to @{link StripLayoutHelper} to support tab
      *     drag and drop.
      * @param tabHoverCardViewStub The {@link ViewStub} representing the strip tab hover card.
+     * @param tabStripHeightSupplier Supplier for the tab strip height.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
@@ -97,7 +98,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             DragAndDropDelegate dragAndDropDelegate,
             View toolbarContainerView,
             @NonNull ViewStub tabHoverCardViewStub,
-            @NonNull WindowAndroid windowAndroid) {
+            @NonNull WindowAndroid windowAndroid,
+            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
         super(
                 host,
                 contentContainer,
@@ -125,7 +127,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         tabHoverCardViewStub,
                         tabContentManagerSupplier,
                         browserControlsStateProvider,
-                        windowAndroid);
+                        windowAndroid,
+                        tabStripHeightSupplier);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
 

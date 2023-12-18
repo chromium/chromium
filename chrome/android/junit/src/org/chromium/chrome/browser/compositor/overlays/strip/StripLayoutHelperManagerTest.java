@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -96,10 +97,12 @@ public class StripLayoutHelperManagerTest {
     @Mock private ObservableSupplierImpl<TabContentManager> mTabContentManagerSupplier;
     @Mock private BrowserControlsStateProvider mBrowserControlStateProvider;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private Toolbar mToolbar;
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
     private Context mContext;
     private ObservableSupplierImpl<TabModelStartupInfo> mTabModelStartupInfoSupplier;
+    private ObservableSupplierImpl<Integer> mTabStripHeightSupplier;
     private static final float SCREEN_WIDTH = 800.f;
     private static final float SCREEN_HEIGHT = 1600.f;
     private static final float VISIBLE_VIEWPORT_Y = 200.f;
@@ -128,6 +131,12 @@ public class StripLayoutHelperManagerTest {
         when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
 
         mTabModelStartupInfoSupplier = new ObservableSupplierImpl<>();
+
+        var tabStripHeight =
+                mContext.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
+        mTabStripHeightSupplier = new ObservableSupplierImpl<>();
+        mTabStripHeightSupplier.set(tabStripHeight);
+
         mStripLayoutHelperManager =
                 new StripLayoutHelperManager(
                         mContext,
@@ -143,7 +152,8 @@ public class StripLayoutHelperManagerTest {
                         mTabHoverCardViewStub,
                         mTabContentManagerSupplier,
                         mBrowserControlStateProvider,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mTabStripHeightSupplier);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
     }
 

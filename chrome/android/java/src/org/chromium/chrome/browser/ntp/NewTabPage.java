@@ -167,6 +167,7 @@ public class NewTabPage
     private final TabModelSelector mTabModelSelector;
     private final TemplateUrlService mTemplateUrlService;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
 
     private SingleTabSwitcherCoordinator mSingleTabSwitcherCoordinator;
     private ViewGroup mSingleTabCardContainer;
@@ -361,6 +362,7 @@ public class NewTabPage
      * @param toolbarSupplier Supplies the {@link Toolbar}.
      * @param homeSurfaceTracker Used to decide whether we are the home surface.
      * @param tabContentManagerSupplier Used to create tab thumbnails.
+     * @param tabStripHeightSupplier Supplier for the tab strip height.
      */
     public NewTabPage(
             Activity activity,
@@ -381,7 +383,8 @@ public class NewTabPage
             JankTracker jankTracker,
             Supplier<Toolbar> toolbarSupplier,
             HomeSurfaceTracker homeSurfaceTracker,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            ObservableSupplier<Integer> tabStripHeightSupplier) {
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
 
@@ -398,6 +401,7 @@ public class NewTabPage
         mHomeSurfaceTracker = homeSurfaceTracker;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mIsInNightMode = isInNightMode;
+        mTabStripHeightSupplier = tabStripHeightSupplier;
 
         Profile profile = mTab.getProfile();
 
@@ -560,7 +564,8 @@ public class NewTabPage
                 isNtpAsHomeSurfaceOnTablet(),
                 mIsSurfacePolishEnabled,
                 mIsSurfacePolishOmniboxColorEnabled,
-                mIsTablet);
+                mIsTablet,
+                mTabStripHeightSupplier);
 
         // If new NewTabPage is created via back operations, re-show the single Tab card with the
         // previously tracked Tab.
@@ -636,7 +641,7 @@ public class NewTabPage
                         /* viewportView= */ null,
                         actionDelegate,
                         HelpAndFeedbackLauncherImpl.getForProfile(profile),
-                        mTabModelSelector);
+                        mTabStripHeightSupplier);
         mFeedSurfaceProvider = feedSurfaceCoordinator;
     }
 

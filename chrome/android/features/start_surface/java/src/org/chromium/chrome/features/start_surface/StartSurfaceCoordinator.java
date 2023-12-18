@@ -207,6 +207,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     private QueryTileSection mQueryTileSection;
     private boolean mIsMVTilesInitialized;
     private final boolean mIsSurfacePolishEnabled;
+    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
 
     private class ScrollableContainerDelegateImpl implements ScrollableContainerDelegate {
         @Override
@@ -248,7 +249,7 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param windowAndroid The current {@link WindowAndroid}.a
      * @param jankTracker asd
      * @param containerView The container {@link ViewGroup} for this ui, also the root view for
-     *         StartSurface.
+     *     StartSurface.
      * @param dynamicResourceLoaderSupplier Supplies the current {@link DynamicResourceLoader}.
      * @param tabModelSelector The current {@link TabModelSelector}.
      * @param browserControlsManager Manages the browser controls.
@@ -265,9 +266,10 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param toolbarSupplier Supplies the {@link Toolbar}.
      * @param backPressManager {@link BackPressManager} to handle back press.
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
-     *         to detect pending re-auth when tab switcher is shown.
+     *     to detect pending re-auth when tab switcher is shown.
      * @param profileSupplier Supplies the {@Profile}.
      * @param tabSwitcherClickHandler The {@link OnClickListener} for the tab switcher button.
+     * @param tabStripHeightSupplier Supplier for the tab strip height.
      */
     public StartSurfaceCoordinator(
             @NonNull Activity activity,
@@ -296,7 +298,8 @@ public class StartSurfaceCoordinator implements StartSurface {
             BackPressManager backPressManager,
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener tabSwitcherClickHandler,
-            @NonNull ObservableSupplier<Profile> profileSupplier) {
+            @NonNull ObservableSupplier<Profile> profileSupplier,
+            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
         mConstructedTimeNs = SystemClock.elapsedRealtimeNanos();
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
@@ -322,6 +325,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mToolbarSupplier = toolbarSupplier;
         mIncognitoReauthControllerSupplier = incognitoReauthControllerSupplier;
         mProfileSupplier = profileSupplier;
+        mTabStripHeightSupplier = tabStripHeightSupplier;
 
         mUseMagicSpace = mIsStartSurfaceEnabled && StartSurfaceConfiguration.useMagicSpace();
         mTabSwitcherCustomViewManagerSupplier = new ObservableSupplierImpl<>();
@@ -557,7 +561,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                             mTabModelSelector,
                             mToolbarSupplier,
                             mConstructedTimeNs,
-                            mSwipeRefreshLayout);
+                            mSwipeRefreshLayout,
+                            mTabStripHeightSupplier);
         }
         mStartSurfaceMediator.initWithNative(
                 mIsStartSurfaceEnabled ? mOmniboxStubSupplier.get() : null,

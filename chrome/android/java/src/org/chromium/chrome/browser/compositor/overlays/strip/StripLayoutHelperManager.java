@@ -290,6 +290,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
      * @param tabHoverCardViewStub The {@link ViewStub} representing the strip tab hover card.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param browserControlsStateProvider @{@link BrowserControlsStateProvider} for drag drop.
+     * @param tabStripHeightSupplier Supplier for the tab strip height.
      */
     public StripLayoutHelperManager(
             Context context,
@@ -305,7 +306,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             @NonNull ViewStub tabHoverCardViewStub,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull WindowAndroid windowAndroid) {
+            @NonNull WindowAndroid windowAndroid,
+            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mTabStripTreeProvider = new TabStripSceneLayer(context);
@@ -402,7 +404,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                             multiInstanceManager,
                             dragDropDelegate,
                             browserControlsStateProvider,
-                            windowAndroid);
+                            windowAndroid,
+                            tabStripHeightSupplier);
         }
 
         mNormalHelper =
@@ -547,7 +550,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         if (mIsHidden) {
             // When tab strip is hidden, the stable offset of this scene layer should be a negative
             // value.
-            yOffset -= mHeight;
+            yOffset -= getHeight();
         }
         mTabStripTreeProvider.pushAndUpdateStrip(
                 this,
@@ -588,9 +591,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                     getModelSelectorButtonWidthWithEndPadding() - mModelSelectorWidth);
         }
 
-        mNormalHelper.onSizeChanged(mWidth, mHeight, orientationChanged, LayoutManagerImpl.time());
+        mNormalHelper.onSizeChanged(
+                mWidth, getHeight(), orientationChanged, LayoutManagerImpl.time());
         mIncognitoHelper.onSizeChanged(
-                mWidth, mHeight, orientationChanged, LayoutManagerImpl.time());
+                mWidth, getHeight(), orientationChanged, LayoutManagerImpl.time());
 
         mStripFilterArea.set(0, 0, mWidth, Math.min(getHeight(), visibleViewportOffsetY));
         mEventFilter.setEventArea(mStripFilterArea);

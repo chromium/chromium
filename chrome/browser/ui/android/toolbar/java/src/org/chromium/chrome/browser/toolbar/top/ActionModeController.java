@@ -14,6 +14,7 @@ import android.util.IntProperty;
 
 import androidx.appcompat.app.ActionBar;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.toolbar.R;
 
 /**
@@ -26,7 +27,7 @@ public class ActionModeController {
     private ToolbarActionModeCallback mToolbarActionModeCallback;
     private ObjectAnimator mCurrentAnimation;
     private boolean mShowingActionMode;
-    private float mTabStripHeight;
+    private ObservableSupplier<Integer> mTabStripHeightSupplier;
     private final Context mContext;
     private final ActionBarDelegate mActionBarDelegate;
 
@@ -75,23 +76,21 @@ public class ActionModeController {
     /**
      * Creates the {@link ActionModeController} and ties it to an action bar using the given action
      * bar delegate.
+     *
      * @param actionBarDelegate The delegate for communicating with toolbar for animation.
      * @param toolbarActionModeCallback The callback for communicating action mode changes.
+     * @param tabStripHeightSupplier Supplier for the tab strip height.
      */
     public ActionModeController(
             Context context,
             ActionBarDelegate actionBarDelegate,
-            ToolbarActionModeCallback toolbarActionModeCallback) {
+            ToolbarActionModeCallback toolbarActionModeCallback,
+            ObservableSupplier<Integer> tabStripHeightSupplier) {
         mActionBarDelegate = actionBarDelegate;
         mContext = context;
         mToolbarActionModeCallback = toolbarActionModeCallback;
         mToolbarActionModeCallback.setActionModeController(this);
-        mTabStripHeight = mContext.getResources().getDimension(R.dimen.tab_strip_height);
-    }
-
-    /** Overrides the preset height of the tab strip. */
-    public void setTabStripHeight(int tabStripHeight) {
-        mTabStripHeight = tabStripHeight;
+        mTabStripHeightSupplier = tabStripHeightSupplier;
     }
 
     /**
@@ -133,7 +132,7 @@ public class ActionModeController {
     public void startShowAnimation() {
         if (mCurrentAnimation != null) mCurrentAnimation.cancel();
 
-        int curHeight = queryCurrentActionBarHeight() - (int) mTabStripHeight;
+        int curHeight = queryCurrentActionBarHeight() - getTabStripHeight();
         mCurrentAnimation =
                 ObjectAnimator.ofInt(
                                 mActionBarDelegate,
@@ -155,7 +154,7 @@ public class ActionModeController {
                     public void onAnimationUpdate(ValueAnimator animation) {
                         ActionBar actionBar = mActionBarDelegate.getSupportActionBar();
                         if (actionBar != null) {
-                            int newHeight = queryCurrentActionBarHeight() - (int) mTabStripHeight;
+                            int newHeight = queryCurrentActionBarHeight() - getTabStripHeight();
                             animation.setIntValues(newHeight < 0 ? 0 : newHeight);
                         }
                     }
@@ -164,6 +163,10 @@ public class ActionModeController {
         mActionBarDelegate.setActionBarBackgroundVisibility(true);
         mCurrentAnimation.start();
         mShowingActionMode = true;
+    }
+
+    private int getTabStripHeight() {
+        return mTabStripHeightSupplier.get();
     }
 
     /** Hide animation for the textview if the action bar is not visible. */

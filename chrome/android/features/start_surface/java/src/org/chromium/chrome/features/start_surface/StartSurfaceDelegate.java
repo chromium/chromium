@@ -93,18 +93,18 @@ public class StartSurfaceDelegate {
 
     /**
      * Create the {@link StartSurfaceCoordinator}
+     *
      * @param activity The {@link Activity} creates this {@link StartSurface}.
      * @param scrimCoordinator The {@link ScrimCoordinator} to control the scrim view.
      * @param sheetController A {@link BottomSheetController} to show content in the bottom sheet.
      * @param startSurfaceOneshotSupplier Supplies the {@link StartSurface}, passing the owned
-     *         supplier to StartSurface itself.
-     * @param parentTabSupplier A {@link Supplier} to provide parent tab for
-     *         StartSurface.
+     *     supplier to StartSurface itself.
+     * @param parentTabSupplier A {@link Supplier} to provide parent tab for StartSurface.
      * @param hadWarmStart Whether the activity had a warm start because the native library was
-     *         already fully loaded and initialized
+     *     already fully loaded and initialized
      * @param windowAndroid An instance of a {@link WindowAndroid}
      * @param containerView The container {@link ViewGroup} for this ui, also the root view for
-     *         StartSurface.
+     *     StartSurface.
      * @param dynamicResourceLoaderSupplier Supplies the current {@link DynamicResourceLoader}.
      * @param tabModelSelector Gives access to the current set of {@TabModel}.
      * @param browserControlsManager Manages the browser controls.
@@ -121,9 +121,10 @@ public class StartSurfaceDelegate {
      * @param toolbarSupplier Supplies the {@link Toolbar}.
      * @param backPressManager {@link BackPressManager} to handle back press gesture.
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
-     *         to detect pending re-auth when tab switcher is shown.
+     *     to detect pending re-auth when tab switcher is shown.
      * @param tabSwitcherClickHandler The {@link OnClickListener} for the tab switcher button.
      * @param profileSupplier Supplies the {@link Profile}.
+     * @param tabStripHeightSupplier Supplier for the tab strip height.
      * @return the {@link StartSurface}
      */
     public static StartSurface createStartSurface(
@@ -153,7 +154,8 @@ public class StartSurfaceDelegate {
             BackPressManager backPressManager,
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener tabSwitcherClickHandler,
-            @NonNull ObservableSupplier<Profile> profileSupplier) {
+            @NonNull ObservableSupplier<Profile> profileSupplier,
+            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
         return new StartSurfaceCoordinator(
                 activity,
                 scrimCoordinator,
@@ -181,6 +183,7 @@ public class StartSurfaceDelegate {
                 backPressManager,
                 incognitoReauthControllerSupplier,
                 tabSwitcherClickHandler,
-                profileSupplier);
+                profileSupplier,
+                tabStripHeightSupplier);
     }
 }

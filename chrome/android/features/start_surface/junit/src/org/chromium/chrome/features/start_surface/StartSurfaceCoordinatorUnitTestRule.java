@@ -267,6 +267,9 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         when(voiceRecognitionHandler.isVoiceSearchEnabled()).thenReturn(true);
         mIncognitoReauthControllerSupplier.set(Mockito.mock(IncognitoReauthController.class));
 
+        var tabStripHeightSupplier = new ObservableSupplierImpl<Integer>();
+        tabStripHeightSupplier.set(0);
+
         mCoordinator =
                 new StartSurfaceCoordinator(
                         mActivity,
@@ -295,7 +298,8 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
                         new BackPressManager(),
                         mIncognitoReauthControllerSupplier,
                         null,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        tabStripHeightSupplier);
 
         Assert.assertFalse(LibraryLoader.getInstance().isLoaded());
         when(mLibraryLoader.isInitialized()).thenReturn(true);

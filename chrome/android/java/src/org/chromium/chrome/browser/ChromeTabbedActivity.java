@@ -768,6 +768,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mDragDropDelegate.setDragAndDropBrowserDelegate(
                     new ChromeDragAndDropBrowserDelegate(this));
 
+            assert getToolbarManager() != null;
             mLayoutManager =
                     new LayoutManagerChromeTablet(
                             compositorViewHolder,
@@ -787,7 +788,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             mDragDropDelegate,
                             toolbarContainerView,
                             tabHoverCardViewStub,
-                            getWindowAndroid());
+                            getWindowAndroid(),
+                            getToolbarManager().getTabStripHeightSupplier());
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
     }
@@ -839,7 +841,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mBackPressManager,
                 mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
                 v -> onTabSwitcherClicked(),
-                mTabModelProfileSupplier);
+                mTabModelProfileSupplier,
+                getToolbarManager().getTabStripHeightSupplier());
     }
 
     private void createGridTabSwitcher(
@@ -2380,7 +2383,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             mJankTracker,
                             getToolbarManager()::getToolbar,
                             mHomeSurfaceTracker,
-                            getTabContentManagerSupplier());
+                            getTabContentManagerSupplier(),
+                            getToolbarManager().getTabStripHeightSupplier());
         }
         return mTabDelegateFactory;
     }

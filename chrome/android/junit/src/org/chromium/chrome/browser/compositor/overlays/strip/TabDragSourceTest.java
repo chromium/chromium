@@ -46,6 +46,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -97,6 +98,7 @@ public class TabDragSourceTest {
     @Mock private TestTabModel mTabModel;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private MultiWindowUtils mMultiWindowUtils;
+    @Mock private ObservableSupplier<Integer> mTabStripHeightSupplier;
 
     private Activity mActivity;
     private TabDragSource mTabDragSource;
@@ -128,6 +130,8 @@ public class TabDragSourceTest {
         MultiWindowUtils.setInstanceForTesting(mMultiWindowUtils);
         MultiWindowTestUtils.enableMultiInstance();
 
+        when(mTabStripHeightSupplier.get()).thenReturn(mTabStripHeight);
+
         mTabDragSource =
                 new TabDragSource(
                         mActivity,
@@ -137,7 +141,8 @@ public class TabDragSourceTest {
                         mMultiInstanceManager,
                         mDragDropDelegate,
                         mBrowserControlsStateProvider,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mTabStripHeightSupplier);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         mTabDragSource.setTabModelSelector(mTabModelSelector);
     }

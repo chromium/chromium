@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.feed;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Handler;
@@ -26,6 +25,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
@@ -33,6 +33,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.jank_tracker.JankScenario;
 import org.chromium.base.jank_tracker.JankTracker;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -50,7 +51,6 @@ import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
@@ -159,6 +159,8 @@ public class FeedSurfaceCoordinator
     private FeedSwipeRefreshLayout mSwipeRefreshLayout;
 
     private boolean mWebFeedHasContent;
+    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final Callback<Integer> mTabStripHeightChangeCallback;
 
     /** Provides the additional capabilities needed for the container view. */
     private class RootView extends FrameLayout {
@@ -343,6 +345,7 @@ public class FeedSurfaceCoordinator
 
     /**
      * Constructs a new FeedSurfaceCoordinator.
+     *
      * @param activity The containing {@link Activity}.
      * @param snackbarManager The {@link SnackbarManager} displaying Snackbar UI.
      * @param windowAndroid The window of the page.
@@ -350,7 +353,7 @@ public class FeedSurfaceCoordinator
      * @param snapScrollHelper The {@link SnapScrollHelper} for the New Tab Page.
      * @param ntpHeader The extra header on top of the feeds for the New Tab Page.
      * @param toolbarHeight The height of the toolbar which overlaps Feed content at the top of the
-     *   view.
+     *     view.
      * @param showDarkBackground Whether is shown on dark background.
      * @param delegate The constructing {@link FeedSurfaceDelegate}.
      * @param profile The current user profile.
@@ -365,10 +368,10 @@ public class FeedSurfaceCoordinator
      * @param swipeRefreshLayout The layout to support pull-to-refresh.
      * @param overScrollDisabled Whether the overscroll effect is disabled.
      * @param viewportView The view that should be used as a container for viewport measurement
-     *   purposes, or |null| if the view returned by HybridListRenderer is to be used.
+     *     purposes, or |null| if the view returned by HybridListRenderer is to be used.
      * @param actionDelegate Implements some Feed actions.
      * @param helpAndFeedbackLauncher A HelpAndFeedbackLauncher.
-     * @param tabModelSelector TabModelSelector used to get TabModels we can observe.
+     * @param tabStripHeightSupplier Supplier for the tab strip height.
      */
     public FeedSurfaceCoordinator(
             Activity activity,
@@ -395,7 +398,7 @@ public class FeedSurfaceCoordinator
             @Nullable ViewGroup viewportView,
             FeedActionDelegate actionDelegate,
             HelpAndFeedbackLauncher helpAndFeedbackLauncher,
-            TabModelSelector tabModelSelector) {
+            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
         mActivity = activity;
         mSnackbarManager = snackbarManager;
         mNtpHeader = ntpHeader;
@@ -420,11 +423,18 @@ public class FeedSurfaceCoordinator
         mWebFeedHasContent = false;
         mSectionHeaderIndex = 0;
         mToolbarHeight = toolbarHeight;
-
-        Resources resources = mActivity.getResources();
+        mTabStripHeightSupplier = tabStripHeightSupplier;
 
         mRootView = new RootView(mActivity);
-        mRootView.setPadding(0, resources.getDimensionPixelOffset(R.dimen.tab_strip_height), 0, 0);
+        mRootView.setPadding(0, mTabStripHeightSupplier.get(), 0, 0);
+        mTabStripHeightChangeCallback =
+                newHeight ->
+                        mRootView.setPadding(
+                                mRootView.getPaddingLeft(),
+                                newHeight,
+                                mRootView.getPaddingRight(),
+                                mRootView.getPaddingBottom());
+        mTabStripHeightSupplier.addObserver(mTabStripHeightChangeCallback);
         mUiConfig = new UiConfig(mRootView);
         mRecyclerView = setUpView();
         mStreamViewResizer =
@@ -604,6 +614,7 @@ public class FeedSurfaceCoordinator
             mHybridListRenderer.unbind();
         }
         mRootView.removeAllViews();
+        mTabStripHeightSupplier.removeObserver(mTabStripHeightChangeCallback);
     }
 
     /**
@@ -1211,5 +1222,9 @@ public class FeedSurfaceCoordinator
 
     public FeedActionDelegate getActionDelegateForTesting() {
         return mActionDelegate;
+    }
+
+    FrameLayout getRootViewForTesting() {
+        return mRootView;
     }
 }

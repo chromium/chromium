@@ -98,7 +98,8 @@ public class TabUmaTest {
                 new PlaceholderJankTracker(),
                 rootUiCoordinator.getToolbarManager()::getToolbar,
                 null,
-                null);
+                null,
+                rootUiCoordinator.getToolbarManager().getTabStripHeightSupplier());
     }
 
     private Tab createLazilyLoadedTab(boolean show) throws ExecutionException {

@@ -11,6 +11,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -313,13 +314,19 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
         View toolbarHairline = mControlContainer.findViewById(R.id.toolbar_hairline);
         updateTopMargin(toolbarHairline, topControlHeight);
 
-        // optionally, update the find toolbar.
-        View findToolbar = mControlContainer.findViewById(R.id.find_toolbar);
-        if (findToolbar != null) {
-            updateTopMargin(findToolbar, mTabStripHeight);
+        // Optionally, update the find toolbar and toolbar drop target views.
+        updateViewStubTopMargin(R.id.find_toolbar_stub, mTabStripHeight);
+        updateViewStubTopMargin(R.id.target_view_stub, mTabStripHeight);
+    }
+
+    private void updateViewStubTopMargin(int viewStubResourceId, int topMargin) {
+        View viewStub = mControlContainer.findViewById(viewStubResourceId);
+        if (viewStub.getParent() != null) {
+            // View is not yet inflated.
+            updateTopMargin(viewStub, topMargin);
         } else {
-            View findToolbarStub = mControlContainer.findViewById(R.id.find_toolbar_stub);
-            updateTopMargin(findToolbarStub, mTabStripHeight);
+            View view = mControlContainer.findViewById(((ViewStub) viewStub).getInflatedId());
+            updateTopMargin(view, topMargin);
         }
 
         for (var observer : mTabStripHeightObservers) {

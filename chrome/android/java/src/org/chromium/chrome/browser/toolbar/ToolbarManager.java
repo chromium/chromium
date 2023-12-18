@@ -751,8 +751,11 @@ public class ToolbarManager
                         mConstraintsProxy);
         mTabStripHeightSupplier.set(mToolbar.getTabStripHeight());
         mActionModeController =
-                new ActionModeController(mActivity, mActionBarDelegate, toolbarActionModeCallback);
-        mActionModeController.setTabStripHeight(mToolbar.getTabStripHeight());
+                new ActionModeController(
+                        mActivity,
+                        mActionBarDelegate,
+                        toolbarActionModeCallback,
+                        mTabStripHeightSupplier);
 
         tabObscuringHandler.addObserver(this);
 
@@ -859,7 +862,8 @@ public class ToolbarManager
                         /* context= */ activity,
                         mLocationBarModel,
                         clickDelegate,
-                        scrimTarget);
+                        scrimTarget,
+                        mTabStripHeightSupplier);
 
         var omnibox = mLocationBar.getOmniboxStub();
         if (omnibox != null) {
@@ -1989,6 +1993,7 @@ public class ToolbarManager
 
         mControlContainer.destroy();
         mConstraintsProxy.destroy();
+        mLocationBarFocusHandler.destroy();
     }
 
     /** Called when the orientation of the activity has changed. */
