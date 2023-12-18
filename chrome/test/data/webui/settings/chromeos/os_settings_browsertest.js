@@ -240,6 +240,24 @@ TEST_F(
       mocha.run();
     });
 
+var OSSettingsCrostiniPageCrostiniExtraContainersSubpageRevampTest =
+    class extends OSSettingsCrostiniPageCrostiniExtraContainersSubpageTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled.concat([
+        'ash::features::kOsSettingsRevampWayfinding',
+      ]),
+    };
+  }
+};
+
+TEST_F(
+    'OSSettingsCrostiniPageCrostiniExtraContainersSubpageRevampTest',
+    'AllJsTests', () => {
+      mocha.run();
+    });
+
 var OSSettingsCrostiniPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {

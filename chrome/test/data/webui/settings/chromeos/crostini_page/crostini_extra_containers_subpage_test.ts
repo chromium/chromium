@@ -4,11 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {ContainerInfo, CrostiniBrowserProxyImpl, ExtraContainersCreateDialog, ExtraContainersElement, SettingsCrostiniPageElement} from 'chrome://os-settings/lazy_load.js';
+import {ContainerInfo, CrostiniBrowserProxyImpl, ExtraContainersCreateDialog, ExtraContainersElement} from 'chrome://os-settings/lazy_load.js';
 import {CrInputElement, CrToggleElement, IronCollapseElement, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
@@ -16,17 +15,14 @@ import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
 import {SharedVmDevices, TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
 suite('<settings-crostini-extra-containers>', () => {
-  let crostiniPage: SettingsCrostiniPageElement;
   let crostiniBrowserProxy: TestCrostiniBrowserProxy;
   let subpage: ExtraContainersElement;
 
-  setup(async () => {
-    crostiniBrowserProxy = new TestCrostiniBrowserProxy();
-    CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
-    crostiniPage = document.createElement('settings-crostini-page');
-    document.body.appendChild(crostiniPage);
+  suiteSetup(() => {
     disableAnimationsAndTransitions();
+  });
 
+  setup(async () => {
     const allContainers: ContainerInfo[] = [
       {
         id: {container_name: 'penguin', vm_name: 'termina'},
@@ -57,36 +53,31 @@ suite('<settings-crostini-extra-containers>', () => {
       },
     ];
 
+    crostiniBrowserProxy = new TestCrostiniBrowserProxy();
+    CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
     crostiniBrowserProxy.containerInfo = allContainers;
     crostiniBrowserProxy.sharedVmDevices = sharedVmDevices;
-    crostiniPage.prefs = {
+
+    Router.getInstance().navigateTo(routes.CROSTINI_EXTRA_CONTAINERS);
+
+    subpage = document.createElement('settings-crostini-extra-containers');
+    subpage.prefs = {
       crostini: {
         enabled: {value: true},
       },
     };
-    flush();
-
-    assertEquals(0, crostiniBrowserProxy.getCallCount('requestContainerInfo'));
-    assertEquals(
-        0, crostiniBrowserProxy.getCallCount('requestSharedVmDevices'));
-
-    Router.getInstance().navigateTo(routes.CROSTINI_EXTRA_CONTAINERS);
-
+    document.body.appendChild(subpage);
     await flushTasks();
-    const subpageElement =
-        crostiniPage.shadowRoot!.querySelector<ExtraContainersElement>(
-            'settings-crostini-extra-containers');
-    assertTrue(!!subpageElement);
-    subpage = subpageElement;
-    assertTrue(!!subpage);
+
     assertEquals(1, crostiniBrowserProxy.getCallCount('requestContainerInfo'));
     assertEquals(
         1, crostiniBrowserProxy.getCallCount('requestSharedVmDevices'));
   });
 
   teardown(() => {
-    crostiniPage.remove();
+    subpage.remove();
     Router.getInstance().resetRouteForTesting();
+    crostiniBrowserProxy.reset();
   });
 
   suite('CreateContainerDialog', () => {
