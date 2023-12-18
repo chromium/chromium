@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -14,6 +15,7 @@ using ConstraintSpaceBuilderTest = RenderingTest;
 // Asserts that indefinite inline length becomes initial containing
 // block width for horizontal-tb inside vertical document.
 TEST(ConstraintSpaceBuilderTest, AvailableSizeFromHorizontalICB) {
+  test::TaskEnvironment task_environment;
   PhysicalSize icb_size{kIndefiniteSize, LayoutUnit(51)};
 
   ConstraintSpaceBuilder horizontal_builder(
@@ -45,6 +47,7 @@ TEST(ConstraintSpaceBuilderTest, AvailableSizeFromHorizontalICB) {
 // Asserts that indefinite inline length becomes initial containing
 // block height for vertical-lr inside horizontal document.
 TEST(ConstraintSpaceBuilderTest, AvailableSizeFromVerticalICB) {
+  test::TaskEnvironment task_environment;
   PhysicalSize icb_size{LayoutUnit(51), kIndefiniteSize};
 
   ConstraintSpaceBuilder horizontal_builder(

@@ -32,6 +32,7 @@ class LayoutWorkletTest : public PageTestBase, public ModuleTestBase {
   }
 
   void TearDown() override {
+    Terminate();
     PageTestBase::TearDown();
     ModuleTestBase::TearDown();
   }

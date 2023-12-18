@@ -32,6 +32,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -49,6 +50,7 @@ class BoxOverflowModelTest : public testing::Test {
   BoxOverflowModelTest()
       : scrollable_overflow_(InitialScrollableOverflow()),
         visual_overflow_(InitialVisualOverflow()) {}
+  test::TaskEnvironment task_environment_;
   BoxScrollableOverflowModel scrollable_overflow_;
   BoxVisualOverflowModel visual_overflow_;
 };

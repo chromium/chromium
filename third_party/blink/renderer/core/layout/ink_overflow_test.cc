@@ -7,6 +7,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -21,7 +22,10 @@ PhysicalRect FromFloatRound(const gfx::RectF& rect) {
 
 using testing::ElementsAre;
 
-class InkOverflowTest : public testing::Test {};
+class InkOverflowTest : public testing::Test {
+ private:
+  test::TaskEnvironment task_environment_;
+};
 
 TEST_F(InkOverflowTest, Empty) {
   InkOverflow overflow;

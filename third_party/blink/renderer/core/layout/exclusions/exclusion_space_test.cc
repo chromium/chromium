@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -82,6 +83,7 @@ LayoutOpportunity CreateLayoutOpportunity(float inline_start,
 // Tests that an empty exclusion space returns exactly one layout opportunity
 // each one, and sized appropriately given the area.
 TEST(ExclusionSpaceTest, Empty) {
+  test::TaskEnvironment task_environment;
   ExclusionSpace exclusion_space;
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
@@ -111,6 +113,7 @@ TEST(ExclusionSpaceTest, Empty) {
 }
 
 TEST(ExclusionSpaceTest, SingleExclusion) {
+  test::TaskEnvironment task_environment;
   ExclusionSpace exclusion_space;
 
   exclusion_space.Add(
@@ -173,6 +176,7 @@ TEST(ExclusionSpaceTest, SingleExclusion) {
 }
 
 TEST(ExclusionSpaceTest, TwoExclusions) {
+  test::TaskEnvironment task_environment;
   ExclusionSpace exclusion_space;
 
   exclusion_space.Add(
@@ -213,6 +217,7 @@ TEST(ExclusionSpaceTest, TwoExclusions) {
 //      |xxx|   +---+
 // 40   +---+
 TEST(ExclusionSpaceTest, SolidEdges) {
+  test::TaskEnvironment task_environment;
   ExclusionSpace exclusion_space;
 
   exclusion_space.Add(
@@ -264,6 +269,7 @@ TEST(ExclusionSpaceTest, SolidEdges) {
 // 30               |NEW|
 //                  +---+
 TEST(ExclusionSpaceTest, OverlappingWithShelf) {
+  test::TaskEnvironment task_environment;
   ExclusionSpace exclusion_space;
 
   exclusion_space.Add(
@@ -311,6 +317,7 @@ TEST(ExclusionSpaceTest, OverlappingWithShelf) {
 // 30              |xxx|
 //    X----------------X
 TEST(ExclusionSpaceTest, InsertBetweenShelves) {
+  test::TaskEnvironment task_environment;
   ExclusionSpace exclusion_space;
 
   exclusion_space.Add(
@@ -345,6 +352,7 @@ TEST(ExclusionSpaceTest, InsertBetweenShelves) {
 }
 
 TEST(ExclusionSpaceTest, InitialLetterBasic) {
+  test::TaskEnvironment task_environment;
   constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
   ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
 
@@ -387,6 +395,7 @@ TEST(ExclusionSpaceTest, InitialLetterBasic) {
 }
 
 TEST(ExclusionSpaceTest, InitialLetterDirectionRight) {
+  test::TaskEnvironment task_environment;
   constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
   ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
 
@@ -442,6 +451,7 @@ TEST(ExclusionSpaceTest, InitialLetterDirectionRight) {
 }
 
 TEST(ExclusionSpaceTest, InitialLetterFloatLeft1) {
+  test::TaskEnvironment task_environment;
   constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
   ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
 
@@ -494,6 +504,7 @@ TEST(ExclusionSpaceTest, InitialLetterFloatLeft1) {
 }
 
 TEST(ExclusionSpaceTest, InitialLetterFloatLeft2) {
+  test::TaskEnvironment task_environment;
   constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
   ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
 
@@ -548,6 +559,7 @@ TEST(ExclusionSpaceTest, InitialLetterFloatLeft2) {
 }
 
 TEST(ExclusionSpaceTest, InitialLetterFloatLeft2ClearLeft) {
+  test::TaskEnvironment task_environment;
   constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
   ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
 
@@ -604,6 +616,7 @@ TEST(ExclusionSpaceTest, InitialLetterFloatLeft2ClearLeft) {
 }
 
 TEST(ExclusionSpaceTest, InitialLetterFloatLeftAndRight) {
+  test::TaskEnvironment task_environment;
   constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
   ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
 
@@ -669,6 +682,7 @@ TEST(ExclusionSpaceTest, InitialLetterFloatLeftAndRight) {
 }
 
 TEST(ExclusionSpaceTest, InitialLetterFloatLeftAfterBreak) {
+  test::TaskEnvironment task_environment;
   constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
   ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
 
@@ -726,6 +740,7 @@ TEST(ExclusionSpaceTest, InitialLetterFloatLeftAfterBreak) {
 }
 
 TEST(ExclusionSpaceTest, InitialLetterFloatRight2) {
+  test::TaskEnvironment task_environment;
   constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
   ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
 
@@ -786,6 +801,7 @@ TEST(ExclusionSpaceTest, InitialLetterFloatRight2) {
 }
 
 TEST(ExclusionSpaceTest, ZeroInlineSizeOpportunity) {
+  test::TaskEnvironment task_environment;
   ExclusionSpace exclusion_space;
 
   exclusion_space.Add(
@@ -805,6 +821,7 @@ TEST(ExclusionSpaceTest, ZeroInlineSizeOpportunity) {
 }
 
 TEST(ExclusionSpaceTest, NegativeInlineSizeOpportunityLeft) {
+  test::TaskEnvironment task_environment;
   ExclusionSpace exclusion_space;
 
   exclusion_space.Add(
@@ -824,6 +841,7 @@ TEST(ExclusionSpaceTest, NegativeInlineSizeOpportunityLeft) {
 }
 
 TEST(ExclusionSpaceTest, NegativeInlineSizeOpportunityRight) {
+  test::TaskEnvironment task_environment;
   ExclusionSpace exclusion_space;
 
   exclusion_space.Add(
@@ -843,6 +861,7 @@ TEST(ExclusionSpaceTest, NegativeInlineSizeOpportunityRight) {
 }
 
 TEST(ExclusionSpaceTest, PreInitialization) {
+  test::TaskEnvironment task_environment;
   ExclusionSpace original_exclusion_space;
 
   original_exclusion_space.Add(
@@ -897,6 +916,7 @@ TEST(ExclusionSpaceTest, PreInitialization) {
 }
 
 TEST(ExclusionSpaceTest, MergeExclusionSpacesNoPreviousExclusions) {
+  test::TaskEnvironment task_environment;
   ExclusionSpace old_input;
   ExclusionSpace old_output = old_input;
 
@@ -924,6 +944,7 @@ TEST(ExclusionSpaceTest, MergeExclusionSpacesNoPreviousExclusions) {
 }
 
 TEST(ExclusionSpaceTest, MergeExclusionSpacesPreviousExclusions) {
+  test::TaskEnvironment task_environment;
   ExclusionSpace old_input;
   old_input.Add(
       ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(20), LayoutUnit(45)),
@@ -963,6 +984,7 @@ TEST(ExclusionSpaceTest, MergeExclusionSpacesPreviousExclusions) {
 }
 
 TEST(ExclusionSpaceTest, MergeExclusionSpacesNoOutputExclusions) {
+  test::TaskEnvironment task_environment;
   ExclusionSpace old_input;
   old_input.Add(
       ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(20), LayoutUnit(45)),

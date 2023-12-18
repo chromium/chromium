@@ -30,9 +30,11 @@
 #include "third_party/blink/renderer/core/layout/shapes/box_shape.h"
 
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -45,6 +47,7 @@ class BoxShapeTest : public testing::Test {
     return Shape::CreateLayoutBoxShape(bounds, WritingMode::kHorizontalTb,
                                        shape_margin);
   }
+  test::TaskEnvironment task_environment_;
 };
 
 namespace {

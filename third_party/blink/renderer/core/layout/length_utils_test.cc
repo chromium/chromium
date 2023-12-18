@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -88,6 +89,7 @@ class LengthUtilsTest : public testing::Test {
   }
 
   Persistent<const ComputedStyle> initial_style_;
+  test::TaskEnvironment task_environment_;
 };
 
 class LengthUtilsTestWithNode : public RenderingTest {
