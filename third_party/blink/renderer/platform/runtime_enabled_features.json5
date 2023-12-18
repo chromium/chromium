@@ -300,7 +300,7 @@
     {
       // crbug.com/1500511
       name: "AlignContentForBlocks",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "AllowContentInitiatedDataUrlNavigations",
