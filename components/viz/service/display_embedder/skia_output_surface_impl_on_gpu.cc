@@ -2735,6 +2735,12 @@ void SkiaOutputSurfaceImplOnGpu::DestroySharedImage(gpu::Mailbox mailbox) {
   solid_color_images_.erase(mailbox);
 }
 
+void SkiaOutputSurfaceImplOnGpu::SetSharedImagePurgeable(
+    const gpu::Mailbox& mailbox,
+    bool purgeable) {
+  shared_image_factory_->SetSharedImagePurgeable(mailbox, purgeable);
+}
+
 gpu::SkiaImageRepresentation* SkiaOutputSurfaceImplOnGpu::GetSkiaRepresentation(
     gpu::Mailbox mailbox) {
   auto it = skia_representations_.find(mailbox);

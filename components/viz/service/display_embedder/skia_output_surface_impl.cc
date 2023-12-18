@@ -1731,6 +1731,15 @@ void SkiaOutputSurfaceImpl::DestroySharedImage(const gpu::Mailbox& mailbox) {
                  /*need_framebuffer=*/false);
 }
 
+void SkiaOutputSurfaceImpl::SetSharedImagePurgeable(const gpu::Mailbox& mailbox,
+                                                    bool purgeable) {
+  auto task =
+      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SetSharedImagePurgeable,
+                     base::Unretained(impl_on_gpu_.get()), mailbox, purgeable);
+  EnqueueGpuTask(std::move(task), {}, /*make_current=*/false,
+                 /*need_framebuffer=*/false);
+}
+
 bool SkiaOutputSurfaceImpl::SupportsBGRA() const {
   if (graphite_recorder_) {
     // TODO(crbug.com/1451789): Implement properly for Graphite.

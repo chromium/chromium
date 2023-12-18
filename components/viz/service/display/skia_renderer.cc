@@ -1090,16 +1090,19 @@ void SkiaRenderer::FinishDrawingFrame() {
           current_frame()->overlay_list.begin(), surface_candidate);
     }
   } else {
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_APPLE)
-    // If there's no primary plane on these platforms it mean's we're delegating
-    // to the system compositor, and don't need the buffers anymore. If those
-    // buffers are managed by buffer_queue_, we can tell it to destroy them.
-    // They'll be recreated when we need them again when GetCurrentBuffer() is
-    // called.
     if (buffer_queue_) {
+      // If there's no primary plane on these platforms it mean's we're
+      // delegating to the system compositor, and don't need the buffers
+      // anymore. On LaCrOS the primary plane buffers are immediately destroyed.
+      // They'll be recreated when we need them again when GetCurrentBuffer() is
+      // called. On Mac the primary plane buffers are marked as purgeable so the
+      // OS can decide if they should be destroyed or not.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
       buffer_queue_->DestroyBuffers();
+#elif BUILDFLAG(IS_APPLE)
+      buffer_queue_->SetBuffersPurgeable();
+#endif
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_APPLE)
   }
 
   ScheduleOverlays();

@@ -772,10 +772,23 @@ bool SharedImageFactory::DestroySharedImage(const Mailbox& mailbox) {
   return true;
 }
 
+bool SharedImageFactory::SetSharedImagePurgeable(const Mailbox& mailbox,
+                                                 bool purgeable) {
+  auto it = shared_images_.find(mailbox);
+  if (it == shared_images_.end()) {
+    LOG(ERROR)
+        << "SetSharedImagePurgeable: Could not find shared image mailbox";
+    return false;
+  }
+  (*it)->SetPurgeable(purgeable);
+  return true;
+}
+
 void SharedImageFactory::DestroyAllSharedImages(bool have_context) {
   if (!have_context) {
-    for (auto& shared_image : shared_images_)
+    for (auto& shared_image : shared_images_) {
       shared_image->OnContextLost();
+    }
   }
   shared_images_.clear();
 }

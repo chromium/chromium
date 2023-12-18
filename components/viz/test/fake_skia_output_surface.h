@@ -24,6 +24,9 @@
 namespace viz {
 
 class FakeSkiaOutputSurface : public SkiaOutputSurface {
+  using SharedImagePurgeableCallback =
+      base::RepeatingCallback<void(const gpu::Mailbox&, bool)>;
+
  public:
   static std::unique_ptr<FakeSkiaOutputSurface> Create3d() {
     auto provider = TestContextProvider::Create();
@@ -118,6 +121,8 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       const SkColor4f& color,
       const gfx::ColorSpace& color_space) override;
   void DestroySharedImage(const gpu::Mailbox& mailbox) override {}
+  void SetSharedImagePurgeable(const gpu::Mailbox& mailbox,
+                               bool purgeable) override;
   bool SupportsBGRA() const override;
 
   // ExternalUseClient implementation:
@@ -133,6 +138,10 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       bool raw_draw_if_possible) override;
 
   gpu::SharedImageInterface* GetSharedImageInterface();
+
+  void SetSharedImagePurgeableCallback(SharedImagePurgeableCallback callback) {
+    set_purgeable_callback_ = std::move(callback);
+  }
 
   // If set true, callbacks triggering will be in a reverse order as SignalQuery
   // calls.
@@ -200,6 +209,8 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   // here or not. Used in testing to confirm that the pending receiver is
   // correctly routed towards gpu main when the platform supports delegated ink.
   bool delegated_ink_renderer_receiver_arrived_ = false;
+
+  SharedImagePurgeableCallback set_purgeable_callback_;
 
   THREAD_CHECKER(thread_checker_);
 

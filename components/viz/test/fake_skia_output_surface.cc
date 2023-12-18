@@ -436,6 +436,13 @@ gpu::Mailbox FakeSkiaOutputSurface::CreateSolidColorSharedImage(
   return gpu::Mailbox::GenerateForSharedImage();
 }
 
+void FakeSkiaOutputSurface::SetSharedImagePurgeable(const gpu::Mailbox& mailbox,
+                                                    bool purgeable) {
+  if (set_purgeable_callback_) {
+    set_purgeable_callback_.Run(mailbox, purgeable);
+  }
+}
+
 bool FakeSkiaOutputSurface::SupportsBGRA() const {
   return true;
 }

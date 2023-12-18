@@ -281,6 +281,7 @@ class SkiaOutputSurfaceImplOnGpu
                                    const SkColor4f& color,
                                    const gfx::ColorSpace& color_space);
   void DestroySharedImage(gpu::Mailbox mailbox);
+  void SetSharedImagePurgeable(const gpu::Mailbox& mailbox, bool purgeable);
 
   // Called on the viz thread!
   base::ScopedClosureRunner GetCacheBackBufferCb();

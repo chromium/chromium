@@ -221,6 +221,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // Enqueue a GPU task to delete the specified shared image.
   virtual void DestroySharedImage(const gpu::Mailbox& mailbox) = 0;
 
+  // Enqueue a GPU task to set specified shared image as `purgeable`.
+  virtual void SetSharedImagePurgeable(const gpu::Mailbox& mailbox,
+                                       bool purgeable) = 0;
+
   virtual bool SupportsBGRA() const = 0;
 };
 

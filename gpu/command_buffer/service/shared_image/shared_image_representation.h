@@ -192,6 +192,7 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
     backing()->Update(std::move(in_fence));
     backing()->OnWriteSucceeded();
   }
+  void SetPurgeable(bool purgeable) { backing()->SetPurgeable(purgeable); }
   bool CopyToGpuMemoryBuffer() { return backing()->CopyToGpuMemoryBuffer(); }
   void GetGpuMemoryBufferHandleInfo(gfx::GpuMemoryBufferHandle& handle,
                                     viz::SharedImageFormat& format,
