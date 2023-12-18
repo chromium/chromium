@@ -130,9 +130,14 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   apps::Permissions Permissions() const;
   bool PermissionsChanged() const;
 
+  // The main reason why this app is currently installed on the device (e.g.
+  // because it is required by Policy). This may change over time and is not
+  // necessarily the reason why the app was originally installed.
   apps::InstallReason InstallReason() const;
   bool InstallReasonChanged() const;
 
+  // How installation of the app was triggered on this device. Either a UI
+  // surface (e.g. Play Store), or a system component (e.g. Sync).
   apps::InstallSource InstallSource() const;
   bool InstallSourceChanged() const;
 

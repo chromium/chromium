@@ -186,11 +186,13 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // There is no guarantee that this is sorted by any criteria.
   Permissions permissions;
 
-  // Whether the app was installed by sync, policy or as a default app.
+  // The main reason why this app is currently installed on the device (e.g.
+  // because it is required by Policy). This may change over time and is not
+  // necessarily the reason why the app was originally installed.
   InstallReason install_reason = InstallReason::kUnknown;
 
-  // Where the app was installed from, e.g. from Play Store, from Chrome Web
-  // Store, etc.
+  // How installation of the app was triggered on this device. Either a UI
+  // surface (e.g. Play Store), or a system component (e.g. Sync).
   InstallSource install_source = InstallSource::kUnknown;
 
   // IDs used for policy to identify the app.
