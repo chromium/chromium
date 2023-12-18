@@ -22,6 +22,7 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/test/test_context_support.h"
+#include "components/viz/test/test_gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
@@ -161,6 +162,14 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   const gpu::SharedImageCapabilities& GetCapabilities() override;
   void SetCapabilities(const gpu::SharedImageCapabilities& caps);
 
+  void SetFailSharedImageCreationWithBufferUsage(bool value) {
+    fail_shared_image_creation_with_buffer_usage_ = value;
+  }
+
+  void UseTestGMBInSharedImageCreationWithBufferUsage() {
+    test_gmb_manager_ = std::make_unique<TestGpuMemoryBufferManager>();
+  }
+
  private:
   mutable base::Lock lock_;
 
@@ -171,6 +180,11 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   base::flat_set<gpu::Mailbox> shared_images_;
 
   gpu::SharedImageCapabilities shared_image_capabilities_;
+  bool fail_shared_image_creation_with_buffer_usage_ = false;
+
+  // If non-null, this will be used to back mappable SharedImages with test
+  // GpuMemoryBuffers.
+  std::unique_ptr<TestGpuMemoryBufferManager> test_gmb_manager_;
 };
 
 class TestContextProvider

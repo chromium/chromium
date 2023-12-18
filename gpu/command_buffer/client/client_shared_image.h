@@ -106,6 +106,14 @@ class GPU_EXPORT ClientSharedImage
         Mailbox::GenerateForSharedImage());
   }
 
+  static scoped_refptr<ClientSharedImage> CreateForTesting(
+      const Mailbox& mailbox,
+      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer) {
+    auto client_si = base::MakeRefCounted<ClientSharedImage>(mailbox);
+    client_si->gpu_memory_buffer_ = std::move(gpu_memory_buffer);
+    return client_si;
+  }
+
  private:
   friend class base::RefCountedThreadSafe<ClientSharedImage>;
   ~ClientSharedImage();
