@@ -41,7 +41,6 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void UnSetFullscreen() override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetUseImmersiveMode(bool immersive) override;
-  bool SupportsTopLevelImmersiveStatus() const override;
   void SetTopInset(int height) override;
   void SetShadowCornersRadii(const gfx::RoundedCornersF& radii) override;
 #endif

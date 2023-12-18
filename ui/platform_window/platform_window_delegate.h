@@ -45,6 +45,24 @@ enum class PlatformWindowState {
   kFloated,
 };
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+enum class PlatformFullscreenType {
+  // kNone represents a non-fullscreen state. This should be set for most cases
+  // except for the window state is `kFullscreen`.
+  kNone,
+
+  // kPlain represents a fullscreen mode without immersive feature. This
+  // corresponds to fullscreen + non-immersive mode. The window state must be
+  // 'kFullscreen`. This state is also used by the locked fullscreen or pinned
+  // mode in other words.
+  kPlain,
+
+  // kImmersive represents a immersive fullscreen mode. This corresponds to
+  // fullscreen + immersive mode. The window state must be `kFullscreen`.
+  kImmersive,
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 enum class PlatformWindowOcclusionState {
   kUnknown,
   kVisible,
@@ -140,17 +158,13 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Notifies delegate that the pending fullscreen operation has been completed.
-  virtual void OnFullscreenModeChanged();
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(ffred): We should just add kImmersiveFullscreen as a state. However,
   // that will require more refactoring in other places to understand that
   // kImmersiveFullscreen is a fullscreen status.
-  // Sets the immersive mode for the window. This will only have an effect on
-  // ChromeOS platforms.
-  virtual void OnImmersiveModeChanged(bool immersive) {}
+  //
+  // Notifies that fullscreen type has changed.
+  virtual void OnFullscreenTypeChanged(PlatformFullscreenType old_type,
+                                       PlatformFullscreenType new_type);
 
   // Lets the window know that ChromeOS overview mode has changed.
   virtual void OnOverviewModeChanged(bool in_overview) {}

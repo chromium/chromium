@@ -84,10 +84,6 @@ class ShellToplevelWrapper {
   // Sets a native window's immersive mode.
   virtual void SetUseImmersiveMode(bool immersive) = 0;
 
-  // Whether the shell supports top level immersive status. The deprecated
-  // immersive status used to be set on the surface level.
-  virtual bool SupportsTopLevelImmersiveStatus() const = 0;
-
   // Sets the top inset (header) height which is reserved or occupied by the top
   // window frame.
   virtual void SetTopInset(int height) = 0;

@@ -1186,7 +1186,10 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
 
   // Now, set to fullscreen.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_CALL(delegate_, OnFullscreenModeChanged()).Times(1);
+  EXPECT_CALL(delegate_,
+              OnFullscreenTypeChanged(PlatformFullscreenType::kNone,
+                                      PlatformFullscreenType::kPlain))
+      .Times(1);
 #endif
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kFullScreen)))
@@ -1203,7 +1206,9 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
 
   // Unfullscreen
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_CALL(delegate_, OnFullscreenModeChanged()).Times(1);
+  EXPECT_CALL(delegate_, OnFullscreenTypeChanged(PlatformFullscreenType::kPlain,
+                                                 PlatformFullscreenType::kNone))
+      .Times(1);
 #endif
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kNormal)))
@@ -1240,7 +1245,10 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   AdvanceFrameToCurrent(window_.get(), delegate_);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_CALL(delegate_, OnFullscreenModeChanged()).Times(1);
+  EXPECT_CALL(delegate_,
+              OnFullscreenTypeChanged(PlatformFullscreenType::kNone,
+                                      PlatformFullscreenType::kPlain))
+      .Times(1);
 #endif
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kFullScreen)))
@@ -1257,7 +1265,9 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
 
   // Restore
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_CALL(delegate_, OnFullscreenModeChanged()).Times(1);
+  EXPECT_CALL(delegate_, OnFullscreenTypeChanged(PlatformFullscreenType::kPlain,
+                                                 PlatformFullscreenType::kNone))
+      .Times(1);
 #endif
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kNormal)))
@@ -4219,7 +4229,10 @@ TEST_P(WaylandWindowTest, ImmersiveFullscreen) {
   auto toplevel = CreateWaylandWindowWithParams(
       PlatformWindowType::kWindow, gfx::Rect(10, 10, 200, 200), &delegate_2);
 
-  EXPECT_CALL(delegate_2, OnImmersiveModeChanged(true)).Times(1);
+  EXPECT_CALL(delegate_2,
+              OnFullscreenTypeChanged(PlatformFullscreenType::kNone,
+                                      PlatformFullscreenType::kImmersive))
+      .Times(1);
   toplevel->HandleAuraToplevelConfigure(0, 0, 0, 0,
                                         {.is_maximized = false,
                                          .is_fullscreen = true,
@@ -4248,7 +4261,10 @@ TEST_P(WaylandWindowTest, ImmersiveFullscreen_Disabled) {
                                          .is_activated = true});
   toplevel->HandleSurfaceConfigure(++serial);
 
-  EXPECT_CALL(delegate_2, OnImmersiveModeChanged(false)).Times(1);
+  EXPECT_CALL(delegate_2,
+              OnFullscreenTypeChanged(PlatformFullscreenType::kImmersive,
+                                      PlatformFullscreenType::kNone))
+      .Times(1);
   toplevel->HandleAuraToplevelConfigure(0, 0, 0, 0,
                                         {.is_maximized = false,
                                          .is_fullscreen = false,

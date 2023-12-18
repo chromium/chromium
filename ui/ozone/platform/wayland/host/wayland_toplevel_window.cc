@@ -558,17 +558,17 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   fullscreen_display_id_ = display::kInvalidDisplayId;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (shell_toplevel_ && shell_toplevel()->SupportsTopLevelImmersiveStatus() &&
-      is_immersive_fullscreen_ != window_states.is_immersive_fullscreen) {
-    is_immersive_fullscreen_ = window_states.is_immersive_fullscreen;
-    delegate()->OnImmersiveModeChanged(is_immersive_fullscreen_);
-  }
-
-  if (is_fullscreen_ != window_states.is_fullscreen) {
-    is_fullscreen_ = window_states.is_fullscreen;
+  CHECK(!window_states.is_immersive_fullscreen || window_states.is_fullscreen);
+  PlatformFullscreenType fullscreen_type =
+      window_states.is_immersive_fullscreen
+          ? PlatformFullscreenType::kImmersive
+          : (window_states.is_fullscreen ? PlatformFullscreenType::kPlain
+                                         : PlatformFullscreenType::kNone);
+  if (fullscreen_type_ != fullscreen_type) {
     // The fullscreen state change has finished and we we need to inform the
     // browser/app that the transition is done.
-    delegate()->OnFullscreenModeChanged();
+    delegate()->OnFullscreenTypeChanged(fullscreen_type_, fullscreen_type);
+    fullscreen_type_ = fullscreen_type;
   }
 #endif
 
@@ -822,21 +822,13 @@ void WaylandToplevelWindow::StartWindowDraggingSessionIfNeeded(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
-  auto* zaura_surface = GetZAuraSurface();
-  if (shell_toplevel_ && shell_toplevel_->SupportsTopLevelImmersiveStatus()) {
+  if (shell_toplevel_) {
     shell_toplevel_->SetUseImmersiveMode(status);
-  } else if (zaura_surface &&
-             zaura_surface->SetFullscreenMode(
-                 status ? ZAURA_SURFACE_FULLSCREEN_MODE_IMMERSIVE
-                        : ZAURA_SURFACE_FULLSCREEN_MODE_PLAIN)) {
-    // TODO(ffred): the deprecated immersive mode flow used to transition
-    // immediately after sending the request to exo. This is needed to
-    // maintain backwards compatibility. Remove once we have rolled past the
-    // supported skew.
-    delegate()->OnImmersiveModeChanged(status);
   } else {
-    // TODO(https://crbug.com/1113900): Implement AuraShell support for
-    // non-browser windows and replace this if-else clause by a DCHECK.
+    // TODO(elkurin): Investigate whether we can deprecate this clause. This
+    // pass is used by some tests which do not set shell properly and ideally we
+    // would like to fix those tests. After those fixes, remove this clause or
+    // replace it by CHECK.
     NOTIMPLEMENTED_LOG_ONCE();
     // TODO(https://crbug.com/1113900): With Lacros, the state change gets
     // completed asynchronously (see removal of notification call in
@@ -844,7 +836,10 @@ void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
     // application now. This needs also be properly addressed with the
     // immersive mode change inside the immersive mode handling by calling
     // this delegate - or `BrowserView::FullscreenStateChanged()` directly.
-    delegate()->OnFullscreenModeChanged();
+    auto new_type = status ? PlatformFullscreenType::kImmersive
+                           : PlatformFullscreenType::kPlain;
+    delegate()->OnFullscreenTypeChanged(fullscreen_type_, new_type);
+    fullscreen_type_ = new_type;
   }
 }
 
@@ -1016,7 +1011,18 @@ void WaylandToplevelWindow::SetSystemModal(bool modal) {
 void WaylandToplevelWindow::DumpState(std::ostream& out) const {
   WaylandWindow::DumpState(out);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  out << ", is_immersive_fullscreen=" << ToBoolString(is_immersive_fullscreen_);
+  out << ", fullscreen_type=";
+  switch (fullscreen_type_) {
+    case PlatformFullscreenType::kNone:
+      out << "not fullscreen";
+      break;
+    case PlatformFullscreenType::kPlain:
+      out << "plain fullscreen";
+      break;
+    case PlatformFullscreenType::kImmersive:
+      out << "immersive fullscreen";
+      break;
+  }
 #endif
   out << ", title=" << window_title_
       << ", is_active=" << ToBoolString(is_active_)

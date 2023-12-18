@@ -195,16 +195,9 @@ void XDGToplevelWrapperImpl::SetFullscreen(WaylandOutput* wayland_output) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void XDGToplevelWrapperImpl::SetUseImmersiveMode(bool immersive) {
-  if (SupportsTopLevelImmersiveStatus()) {
-    auto mode = immersive ? ZAURA_TOPLEVEL_FULLSCREEN_MODE_IMMERSIVE
-                          : ZAURA_TOPLEVEL_FULLSCREEN_MODE_PLAIN;
-    zaura_toplevel_set_fullscreen_mode(aura_toplevel_.get(), mode);
-  }
-}
-
-bool XDGToplevelWrapperImpl::SupportsTopLevelImmersiveStatus() const {
-  return aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                               ZAURA_TOPLEVEL_SET_FULLSCREEN_MODE_SINCE_VERSION;
+  auto mode = immersive ? ZAURA_TOPLEVEL_FULLSCREEN_MODE_IMMERSIVE
+                        : ZAURA_TOPLEVEL_FULLSCREEN_MODE_PLAIN;
+  zaura_toplevel_set_fullscreen_mode(aura_toplevel_.get(), mode);
 }
 
 void XDGToplevelWrapperImpl::SetTopInset(int height) {
