@@ -25,6 +25,7 @@
 #include "url/origin.h"
 
 using blink::mojom::FederatedAuthRequestResult;
+using content::FedCmDisconnectStatus;
 
 namespace content::webid {
 
@@ -299,6 +300,75 @@ std::string GetConsoleErrorMessageFromResult(
       // message for success.
       DCHECK(false);
       return "";
+    }
+  }
+}
+
+std::string GetDisconnectConsoleErrorMessage(
+    FedCmDisconnectStatus disconnect_status_for_metrics) {
+  switch (disconnect_status_for_metrics) {
+    case FedCmDisconnectStatus::kSuccess: {
+      NOTREACHED();
+      return "";
+    }
+    case FedCmDisconnectStatus::kTooManyRequests: {
+      return "There is a pending disconnect() call.";
+    }
+    case FedCmDisconnectStatus::kUnhandledRequest: {
+      return "The disconnect request did not finish by the time the page was "
+             "closed.";
+    }
+    case FedCmDisconnectStatus::kNoAccountToDisconnect: {
+      return "There is no account to disconnect.";
+    }
+    case FedCmDisconnectStatus::kDisconnectUrlIsCrossOrigin: {
+      return "The disconnect URL is cross origin";
+    }
+    case FedCmDisconnectStatus::kDisconnectFailedOnServer: {
+      return "The disconnect request failed on the server";
+    }
+    case FedCmDisconnectStatus::kConfigHttpNotFound: {
+      return "The config file cannot be found.";
+    }
+    case FedCmDisconnectStatus::kConfigNoResponse: {
+      return "The config file returned an error response code.";
+    }
+    case FedCmDisconnectStatus::kConfigInvalidResponse: {
+      return "The config file returned some invalid response.";
+    }
+    case FedCmDisconnectStatus::kDisabledInSettings: {
+      return "FedCM is disabled by user settings.";
+    }
+    case FedCmDisconnectStatus::kDisabledInFlags: {
+      return "The disconnect API is disabled by a flag.";
+    }
+    case FedCmDisconnectStatus::kWellKnownHttpNotFound: {
+      return "The well known file cannot be found.";
+    }
+    case FedCmDisconnectStatus::kWellKnownNoResponse: {
+      return "The well-known file returned an error response code.";
+    }
+    case FedCmDisconnectStatus::kWellKnownInvalidResponse: {
+      return "The well-known filed returned some invalid response.";
+    }
+    case FedCmDisconnectStatus::kWellKnownListEmpty: {
+      return "The well-known file returned an empty list.";
+    }
+    case FedCmDisconnectStatus::kConfigNotInWellKnown: {
+      return "The config file is not in the well-known file.";
+    }
+    case FedCmDisconnectStatus::kWellKnownTooBig: {
+      return "Provider's FedCM well-known file contains too many config URLs.";
+    }
+    case FedCmDisconnectStatus::kWellKnownInvalidContentType: {
+      return "Provider's well-known content type must be a JSON content type.";
+    }
+    case FedCmDisconnectStatus::kConfigInvalidContentType: {
+      return "Provider's FedCM config file content type must be a JSON content "
+             "type.";
+    }
+    case FedCmDisconnectStatus::kIdpNotPotentiallyTrustworthy: {
+      return "The provider's config file URL is not potentially trustworthy.";
     }
   }
 }

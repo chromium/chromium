@@ -17,7 +17,7 @@ namespace content {
 using FederatedApiPermissionStatus =
     FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
 using LoginState = IdentityRequestAccount::LoginState;
-using DisconnectStatusForMetrics = content::FedCmDisconnectStatus;
+using DisconnectStatusForMetrics = FedCmDisconnectStatus;
 using blink::mojom::DisconnectStatus;
 using blink::mojom::FederatedAuthRequestResult;
 
@@ -237,9 +237,12 @@ void FederatedAuthDisconnectRequest::OnDisconnectResponse(
 
 void FederatedAuthDisconnectRequest::Complete(
     blink::mojom::DisconnectStatus status,
-    content::FedCmDisconnectStatus disconnect_status_for_metrics) {
+    FedCmDisconnectStatus disconnect_status_for_metrics) {
   if (!callback_) {
     return;
+  }
+  if (disconnect_status_for_metrics != FedCmDisconnectStatus::kSuccess) {
+    AddConsoleErrorMessage(disconnect_status_for_metrics);
   }
 
   std::optional<base::TimeDelta> duration =
@@ -249,6 +252,13 @@ void FederatedAuthDisconnectRequest::Complete(
   metrics_->RecordDisconnectMetrics(disconnect_status_for_metrics, duration);
 
   std::move(callback_).Run(status);
+}
+
+void FederatedAuthDisconnectRequest::AddConsoleErrorMessage(
+    FedCmDisconnectStatus disconnect_status_for_metrics) {
+  render_frame_host_->AddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel::kError,
+      webid::GetDisconnectConsoleErrorMessage(disconnect_status_for_metrics));
 }
 
 }  // namespace content

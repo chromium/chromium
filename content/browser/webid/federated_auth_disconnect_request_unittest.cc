@@ -18,6 +18,7 @@
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_permission_delegate.h"
+#include "content/browser/webid/webid_utils.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -276,8 +277,8 @@ class FederatedAuthDisconnectRequestTest
     EXPECT_EQ(expected_disconnect_status, callback_helper.status());
   }
 
-  void ExpectDisconnectMetrics(DisconnectStatusForMetrics status,
-                               bool should_record_duration) {
+  void ExpectDisconnectMetricsAndConsoleError(DisconnectStatusForMetrics status,
+                                              bool should_record_duration) {
     histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Disconnect",
                                          status, 1);
     histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.Disconnect",
@@ -286,6 +287,15 @@ class FederatedAuthDisconnectRequestTest
                         should_record_duration);
     ExpectDisconnectUKM(status, ukm::builders::Blink_FedCmIdp::kEntryName,
                         should_record_duration);
+
+    std::vector<std::string> messages =
+        RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
+    if (status == DisconnectStatusForMetrics::kSuccess) {
+      EXPECT_TRUE(messages.empty());
+    } else {
+      ASSERT_EQ(messages.size(), 1u);
+      EXPECT_EQ(messages[0], webid::GetDisconnectConsoleErrorMessage(status));
+    }
   }
 
   void ExpectDisconnectUKM(DisconnectStatusForMetrics status,
@@ -352,8 +362,8 @@ TEST_F(FederatedAuthDisconnectRequestTest, Success) {
   EXPECT_TRUE(network_manager_->has_fetched_config_);
   EXPECT_TRUE(network_manager_->has_fetched_disconnect_);
 
-  ExpectDisconnectMetrics(DisconnectStatusForMetrics::kSuccess,
-                          /*should_record_duration=*/true);
+  ExpectDisconnectMetricsAndConsoleError(DisconnectStatusForMetrics::kSuccess,
+                                         /*should_record_duration=*/true);
 }
 
 TEST_F(FederatedAuthDisconnectRequestTest, NotTrustworthyIdP) {
@@ -362,7 +372,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, NotTrustworthyIdP) {
   RunDisconnectTest(config, DisconnectStatus::kError);
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
-  ExpectDisconnectMetrics(
+  ExpectDisconnectMetricsAndConsoleError(
       DisconnectStatusForMetrics::kIdpNotPotentiallyTrustworthy,
       /*should_record_duration=*/false);
 }
@@ -389,8 +399,8 @@ TEST_F(FederatedAuthDisconnectRequestTest,
   EXPECT_TRUE(network_manager_->has_fetched_config_);
   EXPECT_TRUE(network_manager_->has_fetched_disconnect_);
 
-  ExpectDisconnectMetrics(DisconnectStatusForMetrics::kSuccess,
-                          /*should_record_duration=*/true);
+  ExpectDisconnectMetricsAndConsoleError(DisconnectStatusForMetrics::kSuccess,
+                                         /*should_record_duration=*/true);
 }
 
 }  // namespace content

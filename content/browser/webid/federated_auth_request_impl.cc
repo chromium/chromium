@@ -2817,6 +2817,10 @@ void FederatedAuthRequestImpl::Disconnect(
   if (disconnect_request_) {
     // Since we do not send any fetches in this case, consider the request to be
     // instant, e.g. duration is 0.
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        webid::GetDisconnectConsoleErrorMessage(
+            FedCmDisconnectStatus::kTooManyRequests));
     fedcm_metrics_->RecordDisconnectMetrics(
         FedCmDisconnectStatus::kTooManyRequests, std::nullopt);
     std::move(callback).Run(DisconnectStatus::kErrorTooManyRequests);

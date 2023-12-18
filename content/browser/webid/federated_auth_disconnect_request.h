@@ -65,6 +65,9 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
   void Complete(blink::mojom::DisconnectStatus status,
                 content::FedCmDisconnectStatus disconnect_status_for_metrics);
 
+  void AddConsoleErrorMessage(
+      FedCmDisconnectStatus disconnect_status_for_metrics);
+
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   // Owned by |BrowserContext|
   raw_ptr<FederatedIdentityPermissionContextDelegate> permission_delegate_ =
