@@ -1567,7 +1567,7 @@
       "--enable-features=AutomaticLazyFrameLoadingToEmbeds:timeout/1000,AutomaticLazyFrameLoadingToEmbedUrls:allowed_websites/http%3A%2F%2Fbad3p.test%3A3001%7C%2Fembed,AutomaticLazyFrameLoadingToAds:timeout/5000,DelayAsyncScriptExecution:delay_async_exec_target/cross_site_with_allow_list/delay_async_exec_allow_list/http%3A%2F%2Fbad3p.test",
       "--disable-field-trial-config", "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "automatic-lazy-frame-loading-ads",
@@ -1575,7 +1575,7 @@
     "bases": [],
     "args": ["--enable-features=AutomaticLazyFrameLoadingToAds:timeout/1000",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "async-script-scheduling-disabled",
@@ -1583,7 +1583,7 @@
     "bases": ["wpt_internal/async-script-scheduling"],
     "args": ["--disable-features=DelayAsyncScriptExecution",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "async-script-scheduling-apply-to-cross-site-only",
@@ -1591,7 +1591,7 @@
     "bases": ["wpt_internal/async-script-scheduling"],
     "args": ["--enable-features=DelayAsyncScriptExecution:delay_async_exec_target/cross_site_only",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "async-script-scheduling-apply-to-allowlist",
@@ -1599,7 +1599,7 @@
     "bases": ["wpt_internal/async-script-scheduling"],
     "args": ["--enable-features=DelayAsyncScriptExecution:delay_async_exec_target/cross_site_with_allow_list/delay_async_exec_allow_list/http%3A%2F%2Fbad3p.test%7C%2Fwpt_internal%2Fasync-script-scheduling%2Fresources%2Fscript.sub.js",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "async-script-scheduling-finished-parsing",
@@ -1607,7 +1607,7 @@
     "bases": ["wpt_internal/async-script-scheduling"],
     "args": ["--enable-features=DelayAsyncScriptExecution:delay_async_exec_delay_type/finished_parsing",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "async-script-scheduling-finished-parsing-with-dom-content-loaded-wait-for-async-script",
@@ -1615,7 +1615,7 @@
     "bases": ["wpt_internal/async-script-scheduling"],
     "args": ["--enable-features=DelayAsyncScriptExecution:delay_async_exec_delay_type/finished_parsing,DOMContentLoadedWaitForAsyncScript",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "async-script-scheduling-first-paint-or-finished-parsing",
@@ -1623,7 +1623,7 @@
     "bases": ["wpt_internal/async-script-scheduling"],
     "args": ["--enable-features=DelayAsyncScriptExecution:delay_async_exec_delay_type/first_paint_or_finished_parsing",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "low-priority-script-loading",
@@ -1631,7 +1631,7 @@
     "bases": ["http/tests/devtools/network/resource-priority.js"],
     "args": ["--enable-features=LowPriorityScriptLoading",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "lcp-multiple-updates-per-element",
