@@ -37,6 +37,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ApplicationState;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -1113,6 +1114,43 @@ public class ReadAloudControllerUnitTest {
         mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
 
         assertFalse(mController.isReadable(mTab));
+    }
+
+    @Test
+    public void testPlaybackStopsAndStateSavedWhenAppBackgrounded() {
+        // Play tab.
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+        verify(mPlayback, times(1)).play();
+        var data = Mockito.mock(PlaybackData.class);
+        // set progress
+        doReturn(2).when(data).paragraphIndex();
+        doReturn(1000000L).when(data).positionInParagraphNanos();
+        mController.onPlaybackDataChanged(data);
+
+        // App is backgrounded. Make sure playback stops.
+        mController.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
+        verify(mPlayback).release();
+        reset(mPlayback);
+
+        // App goes back in foreground. Restore progress.
+        mController.onApplicationStateChange(ApplicationState.HAS_RUNNING_ACTIVITIES);
+        verify(mPlaybackHooks, times(2)).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+        verify(mPlayback).seekToParagraph(2, 1000000L);
+        verify(mPlayback, never()).play();
+
+        // once saved state is restored, it's cleared and no further interactions with playback
+        // should happen.
+        reset(mPlayback);
+        reset(mPlaybackHooks);
+        mController.onApplicationStateChange(ApplicationState.HAS_PAUSED_ACTIVITIES);
+        mController.onApplicationStateChange(ApplicationState.HAS_RUNNING_ACTIVITIES);
+        verify(mPlaybackHooks, never()).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        verify(mPlayback, never()).release();
     }
 
     private void onPlaybackSuccess(Playback playback) {
