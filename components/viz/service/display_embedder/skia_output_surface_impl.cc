@@ -1231,7 +1231,7 @@ SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationRenderPass(
   }
 
   auto cache_max_resource_bytes = impl_on_gpu_->max_resource_cache_bytes();
-  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
+  SkSurfaceProps surface_props;
   const int sample_count = std::min(
       sample_count_,
       gr_context_thread_safe_->maxSurfaceSampleCountForColorType(color_type));
@@ -1280,7 +1280,7 @@ SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationCurrentFrame(
   }
 
   auto cache_max_resource_bytes = impl_on_gpu_->max_resource_cache_bytes();
-  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
+  SkSurfaceProps surface_props;
   int sample_count = std::min(
       sample_count_,
       gr_context_thread_safe_->maxSurfaceSampleCountForColorType(color_type));

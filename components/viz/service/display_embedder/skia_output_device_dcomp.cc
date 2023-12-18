@@ -291,7 +291,7 @@ bool SkiaOutputDeviceDCompGLSurface::Reshape(const SkImageInfo& image_info,
     base::debug::Alias(nullptr);
     return false;
   }
-  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
+  SkSurfaceProps surface_props;
 
   GrGLFramebufferInfo framebuffer_info = {0};
   DCHECK_EQ(gl_surface_->GetBackingFramebufferObject(), 0u);

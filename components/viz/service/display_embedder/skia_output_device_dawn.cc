@@ -165,7 +165,7 @@ SkSurface* SkiaOutputDeviceDawn::BeginPaint(
   wgpu::Texture texture = swap_chain_.GetCurrentTexture();
   skgpu::graphite::BackendTexture backend_texture(texture.Get());
 
-  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
+  SkSurfaceProps surface_props;
   sk_surface_ = SkSurfaces::WrapBackendTexture(
       context_state_->gpu_main_graphite_recorder(), backend_texture,
       kSurfaceColorType, sk_color_space_, &surface_props);

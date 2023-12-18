@@ -361,8 +361,7 @@ SkiaGaneshImageRepresentation::BeginScopedWriteAccess(
     AllowUnclearedAccess allow_uncleared,
     bool use_sk_surface) {
   return BeginScopedWriteAccess(
-      /*final_msaa_count=*/1,
-      SkSurfaceProps(/*flags=*/0, kUnknown_SkPixelGeometry), begin_semaphores,
+      /*final_msaa_count=*/1, SkSurfaceProps(), begin_semaphores,
       end_semaphores, allow_uncleared, use_sk_surface);
 }
 
@@ -602,8 +601,7 @@ SkiaGraphiteImageRepresentation::BeginScopedWriteAccess(
     AllowUnclearedAccess allow_uncleared,
     bool use_sk_surface) {
   return BeginScopedWriteAccess(
-      /*final_msaa_count=*/1,
-      SkSurfaceProps(/*flags=*/0, kUnknown_SkPixelGeometry), begin_semaphores,
+      /*final_msaa_count=*/1, SkSurfaceProps(), begin_semaphores,
       end_semaphores, allow_uncleared, use_sk_surface);
 }
 
