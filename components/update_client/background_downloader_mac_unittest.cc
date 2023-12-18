@@ -53,6 +53,7 @@ using net::test_server::EmbeddedTestServerHandle;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
 using net::test_server::HttpResponseDelegate;
+using net::test_server::HungResponse;
 
 namespace update_client {
 namespace {
@@ -300,55 +301,49 @@ TEST_F(BackgroundDownloaderTest, ServerHangup) {
 }
 
 TEST_F(BackgroundDownloaderTest, DuplicateDownload) {
+  scoped_refptr<base::SequencedTaskRunner> current_task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  base::RunLoop second_download_run_loop;
   request_handler_ = base::BindLambdaForTesting([&](const HttpRequest&) {
-    std::unique_ptr<BasicHttpResponse> response =
-        std::make_unique<BasicHttpResponse>();
-    response->set_code(net::HTTP_OK);
-    response->set_content(kSmallDownloadData);
-    response->set_content_type("text/plain");
-    return base::WrapUnique<HttpResponse>(response.release());
+    current_task_runner->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          DoStartDownload(
+              GetURL(),
+              base::BindLambdaForTesting(
+                  [&](bool is_handled, const CrxDownloader::Result& result,
+                      const CrxDownloader::DownloadMetrics& metrics) {
+                    EXPECT_FALSE(is_handled);
+                    EXPECT_EQ(
+                        result.error,
+                        static_cast<int>(
+                            CrxDownloaderError::MAC_BG_DUPLICATE_DOWNLOAD));
+                    ExpectDownloadMetrics(
+                        metrics,
+                        static_cast<int>(
+                            CrxDownloaderError::MAC_BG_DUPLICATE_DOWNLOAD),
+                        0, -1, -1, false);
+                  })
+                  .Then(second_download_run_loop.QuitClosure()));
+        }));
+    return base::WrapUnique<HttpResponse>(new HungResponse());
   });
 
-  base::RunLoop run_loop;
-  base::RepeatingClosure barrier_closure =
-      base::BarrierClosure(2, run_loop.QuitClosure());
+  base::RunLoop first_download_run_loop;
   DoStartDownload(GetURL(),
                   base::BindLambdaForTesting(
                       [&](bool is_handled, const CrxDownloader::Result& result,
                           const CrxDownloader::DownloadMetrics& metrics) {
-                        EXPECT_TRUE(is_handled);
-                        EXPECT_EQ(result.error, 0);
-                        ExpectSmallDownloadContents(result.response);
-                        ExpectDownloadMetrics(
-                            metrics, static_cast<int>(CrxDownloaderError::NONE),
-                            0, std::strlen(kSmallDownloadData),
-                            std::strlen(kSmallDownloadData), true);
-                      })
-                      .Then(base::BindPostTaskToCurrentDefault(barrier_closure,
-                                                               FROM_HERE)));
-  DoStartDownload(
-      GetURL(),
-      base::BindLambdaForTesting([&](bool is_handled,
-                                     const CrxDownloader::Result& result,
-                                     const CrxDownloader::DownloadMetrics&
-                                         metrics) {
-        EXPECT_FALSE(is_handled);
-        EXPECT_EQ(
-            result.error,
-            static_cast<int>(CrxDownloaderError::MAC_BG_DUPLICATE_DOWNLOAD));
-        ExpectDownloadMetrics(
-            metrics,
-            static_cast<int>(CrxDownloaderError::MAC_BG_DUPLICATE_DOWNLOAD), 0,
-            -1, -1, false);
-      }).Then(base::BindPostTaskToCurrentDefault(barrier_closure, FROM_HERE)));
-
-  run_loop.Run();
+                        first_download_run_loop.Quit();
+                      }));
+  second_download_run_loop.Run();
+  shared_session_->InvalidateAndCancel();
+  first_download_run_loop.Run();
 }
 
 // Tests that downloads can complete when using multiple instances of
 // BackgroundDownloader.
 TEST_F(BackgroundDownloaderTest, ConcurrentDownloaders) {
-  request_handler_ = base::BindLambdaForTesting([&](const HttpRequest&) {
+  request_handler_ = base::BindLambdaForTesting([](const HttpRequest&) {
     std::unique_ptr<BasicHttpResponse> response =
         std::make_unique<BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
@@ -388,7 +383,57 @@ TEST_F(BackgroundDownloaderTest, ConcurrentDownloaders) {
   run_loop.Run();
 }
 
-class BackgroundDownloaderCacheCleanTest : public BackgroundDownloaderTest {
+TEST_F(BackgroundDownloaderTest, MaxDownloads) {
+  request_handler_ = base::BindLambdaForTesting([](const HttpRequest& request) {
+    return base::WrapUnique<HttpResponse>(new HungResponse());
+  });
+
+  base::RunLoop all_downloads_complete_run_loop;
+  base::RepeatingClosure barrier_closure =
+      base::BarrierClosure(10, all_downloads_complete_run_loop.QuitClosure());
+  for (int i = 0; i < 10; i++) {
+    DoStartDownload(
+        GetURL(base::NumberToString(i)),
+        base::BindLambdaForTesting(
+            [](bool is_handled, const CrxDownloader::Result& result,
+               const CrxDownloader::DownloadMetrics& metrics) {})
+            .Then(base::BindPostTaskToCurrentDefault(barrier_closure)));
+  }
+
+  base::RunLoop run_loop;
+  // Mac may decide to not make progress on all of the downloads created
+  // immediately. Thus, we have no way of observing when all of the download
+  // tasks above have been created. Delaying the request for the final download
+  // is an alternative to adding intrusive instrumentation to the
+  // implementation.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        DoStartDownload(
+            GetURL(),
+            base::BindLambdaForTesting(
+                [&](bool is_handled, const CrxDownloader::Result& result,
+                    const CrxDownloader::DownloadMetrics& metrics) {
+                  EXPECT_FALSE(is_handled);
+                  EXPECT_EQ(
+                      result.error,
+                      static_cast<int>(
+                          CrxDownloaderError::MAC_BG_SESSION_TOO_MANY_TASKS));
+                  ExpectDownloadMetrics(
+                      metrics,
+                      static_cast<int>(
+                          CrxDownloaderError::MAC_BG_SESSION_TOO_MANY_TASKS),
+                      0, -1, -1, false);
+                })
+                .Then(run_loop.QuitClosure()));
+      }),
+      base::Milliseconds(100));
+  run_loop.Run();
+
+  shared_session_->InvalidateAndCancel();
+  all_downloads_complete_run_loop.Run();
+}
+
+class BackgroundDownloaderPeriodicTasksTest : public BackgroundDownloaderTest {
  public:
   std::unique_ptr<base::test::TaskEnvironment> CreateTaskEnvironment()
       override {
@@ -403,8 +448,8 @@ class BackgroundDownloaderCacheCleanTest : public BackgroundDownloaderTest {
   }
 };
 
-TEST_F(BackgroundDownloaderCacheCleanTest, CleansStaleDownloads) {
-  request_handler_ = base::BindLambdaForTesting([&](const HttpRequest&) {
+TEST_F(BackgroundDownloaderPeriodicTasksTest, CleansStaleDownloads) {
+  request_handler_ = base::BindLambdaForTesting([](const HttpRequest&) {
     std::unique_ptr<BasicHttpResponse> response =
         std::make_unique<BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
@@ -432,6 +477,23 @@ TEST_F(BackgroundDownloaderCacheCleanTest, CleansStaleDownloads) {
 
   EXPECT_FALSE(base::PathExists(download_cache_.AppendASCII("file1")));
   EXPECT_FALSE(base::PathExists(download_cache_.AppendASCII("file2")));
+}
+
+TEST_F(BackgroundDownloaderPeriodicTasksTest, CancelsTasksWithNoProgress) {
+  request_handler_ = base::BindLambdaForTesting([](const HttpRequest&) {
+    return base::WrapUnique<HttpResponse>(new HungResponse());
+  });
+
+  base::RunLoop run_loop;
+  DoStartDownload(GetURL(),
+                  base::BindLambdaForTesting(
+                      [](bool is_handled, const CrxDownloader::Result& result,
+                         const CrxDownloader::DownloadMetrics& metrics) {
+                        EXPECT_EQ(result.error, -999 /* NSURLErrorCancelled */);
+                      })
+                      .Then(run_loop.QuitClosure()));
+  environment_->FastForwardBy(base::Minutes(30));
+  run_loop.Run();
 }
 
 class BackgroundDownloaderCrashingClientTest : public testing::Test {

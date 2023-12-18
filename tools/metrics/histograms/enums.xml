@@ -50640,6 +50640,7 @@ would be helpful to identify which type is being sent.
   <int value="1" label="Download recovered from cache"/>
   <int value="2" label="Session has ongoing download"/>
   <int value="3" label="New download task created"/>
+  <int value="4" label="Rejected (too many tasks)"/>
 </enum>
 
 <enum name="UpdateClientCanUpdateResult">
