@@ -35,6 +35,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.policy.AbstractAppRestrictionsProvider;
@@ -58,6 +59,7 @@ import java.util.concurrent.TimeUnit;
 /** Tests for the WebViewClient.shouldOverrideUrlLoading() method. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@DisabledTest(message = "Multiple test cases failing, crbug.com/1512112")
 public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
