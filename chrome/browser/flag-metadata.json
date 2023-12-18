@@ -9,7 +9,7 @@
 //   name: the internal name of the flag, as present in chrome://flags. This is
 //   used as a primary key. The value is a string.
 //
-//   owners: the person(s) or team(s) responsible for this flag. The value is a
+//   owners: the person(s) or team(s) responsible for this flag. The value is aios-pasword
 //   nonempty list of strings, in order of specificity (i.e., the first entry
 //   on the list is the best contact). Each entry is either:
 //
@@ -4967,6 +4967,11 @@
     "name": "ios-password-bottom-sheet",
     "owners": ["veronguyen@chromium.org", "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com"],
     "expiry_milestone": 118
+  },
+  {
+    "name": "ios-password-bottom-sheet-autofocus",
+    "owners": ["sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com"],
+    "expiry_milestone": 140
   },
   {
     "name": "ios-password-checkup",

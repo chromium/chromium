@@ -138,6 +138,16 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
   config.features_enabled.push_back(
       password_manager::features::kIOSPasswordBottomSheet);
 
+  if ([self isRunningTest:@selector(testOpenPasswordBottomOnAutofocus)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordBottomSheetAutofocus);
+  }
+
+  if ([self isRunningTest:@selector(testOpenKeyboardOnAutofocus)]) {
+    config.features_disabled.push_back(
+        password_manager::features::kIOSPasswordBottomSheetAutofocus);
+  }
+
   if ([self isRunningTest:@selector
             (testOpenPasswordBottomSheetOpenPasswordDetails)] ||
       [self
@@ -179,12 +189,25 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
 }
 
-// Return the edit button from the navigation bar.
+- (void)loadLoginAutofocusPage {
+  // Loads simple page. It is on localhost so it is considered a secure context.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(
+                              "/simple_login_form_empty_autofocus.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+}
+
+// Returns the matcher for the edit button from the navigation bar.
 id<GREYMatcher> NavigationBarEditButton() {
   return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
                         IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
                     grey_not(chrome_test_util::TabGridEditButton()),
                     grey_userInteractionEnabled(), nil);
+}
+
+// Returns the matcher for the use password button.
+id<GREYMatcher> UsePasswordButton() {
+  return chrome_test_util::StaticTextWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD));
 }
 
 - (void)verifyPasswordFieldsHaveBeenFilled:(NSString*)username {
@@ -243,6 +266,39 @@ id<GREYMatcher> NavigationBarEditButton() {
   [self verifyPasswordFieldsHaveBeenFilled:@"user"];
 }
 
+// This test verifies that the bottom sheet opens on autofocus events, when the
+// kIOSPasswordBottomSheetAutofocus feature is enabled.
+- (void)testOpenPasswordBottomOnAutofocus {
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/simple_login_form_empty_autofocus."
+                                      "html"))];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+  [self loadLoginAutofocusPage];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:UsePasswordButton()];
+}
+
+// This test verifies that the keyboard opens on autofocus events, when the
+// kIOSPasswordBottomSheetAutofocus feature is disabled.
+- (void)testOpenKeyboardOnAutofocus {
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/simple_login_form_empty_autofocus."
+                                      "html"))];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+
+  [self loadLoginAutofocusPage];
+
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+}
+
 // This test will allow us to know if we're using a coherent browser state to
 // open the bottom sheet in incognito mode.
 - (void)testOpenPasswordBottomSheetUsePasswordIncognito {
@@ -297,7 +353,7 @@ id<GREYMatcher> NavigationBarEditButton() {
                                    IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD)]
       performAction:grey_tap()];
 
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 }
 
 - (void)testOpenPasswordBottomSheetOpenPasswordManager {
@@ -792,7 +848,7 @@ id<GREYMatcher> NavigationBarEditButton() {
                                    IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD)]
       performAction:grey_tap()];
 
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 
   // Dismiss #2.
   [self loadLoginPage];
@@ -808,7 +864,7 @@ id<GREYMatcher> NavigationBarEditButton() {
                                    IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD)]
       performAction:grey_tap()];
 
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 
   // Dismiss #3.
   [self loadLoginPage];
@@ -824,13 +880,13 @@ id<GREYMatcher> NavigationBarEditButton() {
                                    IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD)]
       performAction:grey_tap()];
 
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 
   // Verify that keyboard is shown.
   [self loadLoginPage];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 }
 
 // TODO(crbug.com/1474949): Fix flaky test & re-enable.
@@ -870,7 +926,7 @@ id<GREYMatcher> NavigationBarEditButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
 
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 }
 
 // Tests that the Password Bottom Sheet appears when tapping on a password

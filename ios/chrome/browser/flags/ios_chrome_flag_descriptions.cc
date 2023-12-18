@@ -564,6 +564,11 @@ const char kIOSPasswordBottomSheetName[] = "IOS Password Manager Bottom Sheet";
 const char kIOSPasswordBottomSheetDescription[] =
     "Enables the display of the password bottom sheet on IOS.";
 
+const char kIOSPasswordBottomSheetAutofocusName[] =
+    "IOS Password Manager Bottom Sheet Autofocus";
+const char kIOSPasswordBottomSheetAutofocusDescription[] =
+    "Enables triggering the password bottom sheet on autofocus on IOS.";
+
 const char kIOSPasswordSettingsBulkUploadLocalPasswordsName[] =
     "iOS Bulk Upload Local Passwords";
 const char kIOSPasswordSettingsBulkUploadLocalPasswordsDescription[] =
