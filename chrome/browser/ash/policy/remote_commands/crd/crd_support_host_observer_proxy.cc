@@ -64,6 +64,10 @@ void SupportHostObserverProxy::OnHostStateReceivedAccessCode(
 
 void SupportHostObserverProxy::OnHostStateConnecting() {
   CRD_VLOG(3) << __func__;
+
+  for (auto& observer : observers_) {
+    observer.OnClientConnecting();
+  }
 }
 
 void SupportHostObserverProxy::OnHostStateConnected(

@@ -634,9 +634,10 @@ void CrdAdminSessionController::TerminateSession() {
 void CrdAdminSessionController::OnHostStopped(
     ExtendedStartCrdSessionResultCode result,
     const std::string& message) {
-  CRD_VLOG(3) << "Destroying CRD host session asynchronously";
-
-  DeleteSoon(std::move(active_session_));
+  if (active_session_) {
+    CRD_VLOG(3) << "Destroying CRD host session asynchronously";
+    DeleteSoon(std::move(active_session_));
+  }
 }
 
 void CrdAdminSessionController::TryToReconnect(

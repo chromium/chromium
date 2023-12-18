@@ -34,12 +34,22 @@ class RemoteActivityNotificationController
   void OnLoginOrLockScreenVisible() override;
 
   // `CrdSessionObserver` implementation:
+  void OnClientConnecting() override;
   void OnClientConnected() override;
+  void OnClientDisconnected() override;
 
  private:
-  void Init();
+  class Notification {
+   public:
+    void Show();
+    void Hide();
 
-  void ShowNotification();
+   private:
+    // Unfortunately the `LocalHost` has no API to query if the notification
+    // screen is showing, so this must manually be tracked to prevent
+    // dismissing other OOBE screens when trying to hide the notification.
+    bool is_showing_ = false;
+  };
 
   void OnRemoteAdminWasPresentPrefChanged();
 
@@ -48,6 +58,7 @@ class RemoteActivityNotificationController
                           session_manager::SessionManagerObserver>
       observation_{this};
   BooleanPrefMember remote_admin_was_present_;
+  Notification notification_;
 
   base::WeakPtrFactory<RemoteActivityNotificationController> weak_ptr_factory_{
       this};

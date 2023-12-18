@@ -27,6 +27,7 @@ class CrdSessionObserver : public base::CheckedObserver {
 
   // Invoked when the remote admin used the access code to actually start a
   // CRD connection.
+  virtual void OnClientConnecting() {}
   virtual void OnClientConnected() {}
 
   // Invoked when the remote admin disconnects.
