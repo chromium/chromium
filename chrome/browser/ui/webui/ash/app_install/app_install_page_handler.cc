@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"
 
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
@@ -21,7 +22,10 @@ AppInstallPageHandler::AppInstallPageHandler(
       dialog_args_{std::move(args)},
       dialog_accepted_callback_{std::move(dialog_accepted_callback)},
       receiver_{this, std::move(pending_page_handler)},
-      close_dialog_callback_{std::move(close_dialog_callback)} {}
+      close_dialog_callback_{std::move(close_dialog_callback)} {
+  base::RecordAction(
+      base::UserMetricsAction("ChromeOS.AppInstallDialog.Shown"));
+}
 
 AppInstallPageHandler::~AppInstallPageHandler() = default;
 
@@ -32,8 +36,11 @@ void AppInstallPageHandler::GetDialogArgs(GetDialogArgsCallback callback) {
 
 void AppInstallPageHandler::CloseDialog() {
   if (dialog_accepted_callback_) {
+    base::RecordAction(
+        base::UserMetricsAction("ChromeOS.AppInstallDialog.Cancelled"));
     std::move(dialog_accepted_callback_).Run(false);
   }
+
   // The callback could be null if the close button is clicked a second time
   // before the dialog closes.
   if (close_dialog_callback_) {
@@ -42,6 +49,9 @@ void AppInstallPageHandler::CloseDialog() {
 }
 
 void AppInstallPageHandler::InstallApp(InstallAppCallback callback) {
+  base::RecordAction(
+      base::UserMetricsAction("ChromeOS.AppInstallDialog.Installed"));
+
   install_app_callback_ = std::move(callback);
   std::move(dialog_accepted_callback_).Run(true);
 }
@@ -50,6 +60,7 @@ void AppInstallPageHandler::OnInstallComplete(const std::string* app_id) {
   if (app_id) {
     app_id_ = *app_id;
   }
+
   if (install_app_callback_) {
     std::move(install_app_callback_).Run(/*success=*/app_id);
   }
@@ -60,6 +71,8 @@ void AppInstallPageHandler::LaunchApp() {
     mojo::ReportBadMessage("Unable to launch app without an app_id.");
     return;
   }
+  base::RecordAction(
+      base::UserMetricsAction("ChromeOS.AppInstallDialog.AppLaunched"));
   apps::AppServiceProxyFactory::GetForProfile(profile_)->Launch(
       app_id_, ui::EF_NONE, apps::LaunchSource::kFromInstaller);
 }

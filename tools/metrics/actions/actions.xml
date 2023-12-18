@@ -6093,6 +6093,40 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ChromeOS.AppInstallDialog.AppLaunched">
+  <owner>dominicschulz@google.com</owner>
+  <owner>cros-web-apps-infra-team@google.com</owner>
+  <description>
+    Recorded when the user requested a previously installed app to be launched
+    in the CrOS App Install dialog.
+  </description>
+</action>
+
+<action name="ChromeOS.AppInstallDialog.Cancelled">
+  <owner>dominicschulz@google.com</owner>
+  <owner>cros-web-apps-infra-team@google.com</owner>
+  <description>
+    Recorded when the user closed an installation dialog without installing.
+  </description>
+</action>
+
+<action name="ChromeOS.AppInstallDialog.Installed">
+  <owner>dominicschulz@google.com</owner>
+  <owner>cros-web-apps-infra-team@google.com</owner>
+  <description>
+    Recorded when the user requested an app to be installed in the CrOS App
+    Install dialog.
+  </description>
+</action>
+
+<action name="ChromeOS.AppInstallDialog.Shown">
+  <owner>dominicschulz@google.com</owner>
+  <owner>cros-web-apps-infra-team@google.com</owner>
+  <description>
+    Recorded when the CrOS App Install dialog was opened by the user.
+  </description>
+</action>
+
 <action name="ChromeOS.Settings.InputMethod.Autocorrect.Open">
   <owner>zacpartridge@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
