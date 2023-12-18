@@ -540,6 +540,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                          ShelfItemDelegate::AppMenuItems menu_items);
 
   // Show either a context or normal click menu of given |menu_model|.
+  // |source| is either a ShelfView or a ShelfAppButton.
   // If |context_menu| is set, the displayed menu is a context menu and not
   // a menu listing one or more running applications.
   // The |click_point| is only used for |context_menu|'s.
@@ -551,6 +552,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                 ui::MenuSourceType source_type);
 
   // Callback for MenuRunner.
+  // |source| is either a ShelfView or a ShelfAppButton.
   void OnMenuClosed(views::View* source);
 
   // Overridden from views::BoundsAnimatorObserver:
@@ -653,10 +655,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // The view being dragged. This is set immediately when the mouse is pressed.
   // |dragging_| is set only if the mouse is dragged far enough.
   raw_ptr<ShelfAppButton, ExperimentalAsh> drag_view_ = nullptr;
-
-  // The view showing a context menu. This can be either a ShelfView or
-  // ShelfAppButton.
-  raw_ptr<views::View, ExperimentalAsh> menu_owner_ = nullptr;
 
   // A reference to the view used as a separator between pinned and unpinned
   // items.

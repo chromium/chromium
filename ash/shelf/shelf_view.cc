@@ -2638,8 +2638,6 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
 
   context_menu_id_ = shelf_id;
 
-  menu_owner_ = source;
-
   closing_event_time_ = base::TimeTicks();
 
   // NOTE: If you convert to HAS_MNEMONICS be sure to update menu building code.
@@ -2683,7 +2681,6 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
 }
 
 void ShelfView::OnMenuClosed(views::View* source) {
-  menu_owner_ = nullptr;
   context_menu_id_ = ShelfID();
 
   closing_event_time_ = shelf_menu_model_adapter_->GetClosingEventTime();
