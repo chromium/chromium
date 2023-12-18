@@ -95,7 +95,7 @@ oobe_screens_js_files = [
   "screens/oobe/auto_enrollment_check.js",
   "screens/oobe/consumer_update.js",
   "screens/oobe/demo_preferences.ts",
-  "screens/oobe/demo_setup.js",
+  "screens/oobe/demo_setup.ts",
   "screens/oobe/enable_debugging.js",
   "screens/oobe/enterprise_enrollment.js",
   "screens/oobe/hid_detection.js",

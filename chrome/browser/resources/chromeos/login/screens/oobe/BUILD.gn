@@ -19,7 +19,6 @@ js_type_check("closure_compile") {
   deps = [
     ":auto_enrollment_check",
     ":consumer_update",
-    ":demo_setup",
     ":enable_debugging",
     ":enterprise_enrollment",
     ":hid_detection",
@@ -51,20 +50,6 @@ js_library("consumer_update") {
     "../../components:oobe_slide",
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("demo_setup") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/demo_setup.js" ]
-  deps = [
-    "../../components:progress_list_item",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
