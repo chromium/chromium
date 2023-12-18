@@ -12,7 +12,6 @@
 
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class Browser;
 namespace Content {

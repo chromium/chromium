@@ -126,18 +126,11 @@ TEST_F(TabOrganizationServiceTest, NoIncognito) {
 
 // Service tests.
 
-TEST_F(TabOrganizationServiceTest, AddsSessionOnTrigger) {
-  Browser* browser = AddBrowser();
-  AddValidTabToBrowser(browser, 0);
-  service()->OnTriggerOccured(browser);
-  EXPECT_TRUE(base::Contains(service()->browser_session_map(), browser));
-  EXPECT_NE(service()->GetSessionForBrowser(browser), nullptr);
-}
-
 TEST_F(TabOrganizationServiceTest, DoesntAddSessionOnTriggerIfExists) {
   Browser* browser = AddBrowser();
   AddValidTabToBrowser(browser, 0);
   service()->OnTriggerOccured(browser);
+  service()->CreateSessionForBrowser(browser);
   EXPECT_TRUE(base::Contains(service()->browser_session_map(), browser));
   const TabOrganizationSession* session =
       service()->GetSessionForBrowser(browser);
@@ -151,8 +144,8 @@ TEST_F(TabOrganizationServiceTest, DoesntAddSessionOnTriggerIfExists) {
 TEST_F(TabOrganizationServiceTest, EachBrowserHasADistinctSession) {
   Browser* browser1 = AddBrowser();
   Browser* browser2 = AddBrowser();
-  service()->OnTriggerOccured(browser1);
-  service()->OnTriggerOccured(browser2);
+  service()->CreateSessionForBrowser(browser1);
+  service()->CreateSessionForBrowser(browser2);
   EXPECT_NE(service()->GetSessionForBrowser(browser1),
             service()->GetSessionForBrowser(browser2));
 }
@@ -276,4 +269,21 @@ TEST_F(TabOrganizationServiceTest, CreateSessionForBrowserOnTab) {
   std::unique_ptr<TabOrganizationSession> session =
       TabOrganizationSession::CreateSessionForBrowser(browser1, base_tab);
   EXPECT_NE(session->request()->base_tab_id(), absl::nullopt);
+}
+
+TEST_F(TabOrganizationServiceTest, TabStripAddRemoveDestroysSession) {
+  Browser* browser1 = AddBrowser();
+  for (int i = 0; i < 4; i++) {
+    AddValidTabToBrowser(browser1, 0);
+  }
+
+  service()->CreateSessionForBrowser(browser1);
+  content::WebContents* contents = AddValidTabToBrowser(browser1, 0);
+  EXPECT_EQ(service()->GetSessionForBrowser(browser1), nullptr);
+
+  service()->CreateSessionForBrowser(browser1);
+  browser1->tab_strip_model()->CloseWebContentsAt(
+      browser1->tab_strip_model()->GetIndexOfWebContents(contents),
+      TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(service()->GetSessionForBrowser(browser1), nullptr);
 }
