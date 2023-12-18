@@ -16,9 +16,6 @@
 #include "base/power_monitor/power_observer.h"
 #include "base/run_loop.h"
 #include "base/values.h"
-#include "chrome/browser/performance_manager/metrics/page_resource_monitor.h"
-#include "components/performance_manager/public/features.h"
-#include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/frame_rate_throttling.h"
@@ -63,32 +60,13 @@ class FrameThrottlingDelegateImpl
  public:
   void StartThrottlingAllFrameSinks() override {
     content::StartThrottlingAllFrameSinks(base::Hertz(30));
-    NotifyPageResourceMonitor(/*battery_saver_mode_enabled=*/true);
   }
 
   void StopThrottlingAllFrameSinks() override {
     content::StopThrottlingAllFrameSinks();
-    NotifyPageResourceMonitor(/*battery_saver_mode_enabled=*/false);
   }
 
   ~FrameThrottlingDelegateImpl() override = default;
-
- private:
-  void NotifyPageResourceMonitor(bool battery_saver_mode_enabled) {
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindOnce(
-            [](bool enabled, performance_manager::Graph* graph) {
-              auto* monitor = graph->GetRegisteredObjectAs<
-                  performance_manager::metrics::PageResourceMonitor>();
-              // It's possible for this to be null if the PageTimeline finch
-              // feature is disabled.
-              if (monitor) {
-                monitor->SetBatterySaverEnabled(enabled);
-              }
-            },
-            battery_saver_mode_enabled));
-  }
 };
 
 }  // namespace

@@ -7,39 +7,33 @@
 #include <stdint.h>
 #include <algorithm>
 #include <array>
+#include <functional>
+#include <iterator>
 #include <limits>
-#include <map>
-#include <memory>
 #include <numeric>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
-#include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/performance_manager/metrics/cpu_probe/cpu_probe.h"
-#include "components/content_settings/core/common/content_settings_types.h"
-#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "services/metrics/public/cpp/metrics_utils.h"
+#include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace performance_manager::metrics {
 
@@ -83,18 +77,8 @@ PageMeasurementBackgroundState GetBackgroundStateForMeasurementPeriod(
 }  // namespace
 
 PageResourceMonitor::PageResourceMonitor(bool enable_system_cpu_probe)
-    // These counters are initialized to a random value due to privacy concerns,
-    // so that we cannot tie either the startup time of a specific tab or the
-    // recording time of a specific slice to the browser startup time.
-    : slice_id_counter_(base::RandInt(1, 32767)),
-      system_cpu_probe_(enable_system_cpu_probe ? CpuProbe::Create()
+    : system_cpu_probe_(enable_system_cpu_probe ? CpuProbe::Create()
                                                 : nullptr) {
-  collect_slice_timer_.Start(
-      FROM_HERE,
-      performance_manager::features::kPageTimelineStateIntervalTime.Get(), this,
-      &PageResourceMonitor::CollectSlice);
-
-  // PageResourceUsage is collected on a different schedule from PageTimeline.
   collect_page_resource_usage_timer_.Start(
       FROM_HERE, base::Minutes(2),
       base::BindRepeating(&PageResourceMonitor::CollectPageResourceUsage,
@@ -105,25 +89,6 @@ PageResourceMonitor::PageResourceMonitor(bool enable_system_cpu_probe)
 }
 
 PageResourceMonitor::~PageResourceMonitor() = default;
-
-PageResourceMonitor::PageState
-PageResourceMonitor::PageNodeInfo::GetPageState() {
-  switch (current_lifecycle) {
-    case PageNode::LifecycleState::kRunning: {
-      if (currently_visible) {
-        return PageState::kVisible;
-      } else {
-        return PageState::kBackground;
-      }
-    }
-    case PageNode::LifecycleState::kFrozen: {
-      return PageState::kFrozen;
-    }
-    case PageNode::LifecycleState::kDiscarded: {
-      return PageState::kDiscarded;
-    }
-  }
-}
 
 void PageResourceMonitor::CollectPageResourceUsage(
     base::OnceClosure done_closure) {
@@ -209,114 +174,6 @@ void PageResourceMonitor::OnPageResourceUsageResult(
     }
   }
 #endif
-}
-
-void PageResourceMonitor::CollectSlice() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // We only collect a slice randomly every ~20 times this gets called for
-  // privacy purposes. Always fall through when we're in a test.
-  if (!ShouldCollectSlice()) {
-    return;
-  }
-
-  const base::TimeTicks now = base::TimeTicks::Now();
-  const int slice_id = slice_id_counter_++;
-  base::TimeDelta time_since_last_slice = now - time_of_last_slice_;
-
-  time_of_last_slice_ = now;
-
-  for (auto const& pair : page_node_info_map_) {
-    const PageNode* page_node = pair.first->page_node();
-    const std::unique_ptr<PageNodeInfo>& curr_info = pair.second;
-    CheckPageState(page_node, *curr_info);
-
-    const PageNode::LifecycleState lifecycle_state =
-        page_node->GetLifecycleState();
-    const bool is_visible = page_node->IsVisible();
-    const ukm::SourceId source_id = page_node->GetUkmSourceID();
-
-    DCHECK_EQ(is_visible, curr_info->currently_visible);
-    DCHECK(curr_info->current_lifecycle == mojom::LifecycleState::kDiscarded ||
-           lifecycle_state == curr_info->current_lifecycle);
-
-    if (is_visible) {
-      curr_info->total_foreground_milliseconds +=
-          (now - curr_info->time_of_last_foreground_millisecond_update)
-              .InMilliseconds();
-      curr_info->time_of_last_foreground_millisecond_update = now;
-    }
-
-    bool is_active_tab = false;
-    bool has_notification_permission = false;
-    bool is_capturing_media = false;
-    bool is_connected_to_device = false;
-    bool updated_title_or_favicon_in_background = false;
-
-    const auto* page_live_state_data =
-        PageLiveStateDecorator::Data::FromPageNode(page_node);
-    if (page_live_state_data) {
-      is_active_tab = page_live_state_data->IsActiveTab();
-      has_notification_permission =
-          page_live_state_data->IsContentSettingTypeAllowed(
-              ContentSettingsType::NOTIFICATIONS);
-      is_capturing_media = page_live_state_data->IsCapturingVideo() ||
-                           page_live_state_data->IsCapturingAudio() ||
-                           page_live_state_data->IsBeingMirrored() ||
-                           page_live_state_data->IsCapturingWindow() ||
-                           page_live_state_data->IsCapturingDisplay();
-      is_connected_to_device =
-          page_live_state_data->IsConnectedToUSBDevice() ||
-          page_live_state_data->IsConnectedToBluetoothDevice();
-      updated_title_or_favicon_in_background =
-          page_live_state_data->UpdatedTitleOrFaviconInBackground();
-    }
-
-    ukm::builders::PerformanceManager_PageTimelineState builder(source_id);
-
-    builder.SetSliceId(slice_id)
-        .SetIsActiveTab(is_active_tab)
-        .SetTimeSinceLastSlice(ukm::GetSemanticBucketMinForDurationTiming(
-            time_since_last_slice.InMilliseconds()))
-        .SetTimeSinceCreation(ukm::GetSemanticBucketMinForDurationTiming(
-            (now - curr_info->time_of_creation).InMilliseconds()))
-        .SetCurrentState(static_cast<uint64_t>(curr_info->GetPageState()))
-        .SetTimeInCurrentState(ukm::GetSemanticBucketMinForDurationTiming(
-            (now - curr_info->time_of_most_recent_state_change)
-                .InMilliseconds()))
-        .SetTotalForegroundTime(ukm::GetSemanticBucketMinForDurationTiming(
-            curr_info->total_foreground_milliseconds))
-        .SetChangedFaviconOrTitleInBackground(
-            updated_title_or_favicon_in_background)
-        .SetHasNotificationPermission(has_notification_permission)
-        .SetIsCapturingMedia(is_capturing_media)
-        .SetIsConnectedToDevice(is_connected_to_device)
-        .SetIsPlayingAudio(page_node->IsAudible())
-        .SetPrivateFootprint(page_node->EstimatePrivateFootprintSize())
-        .SetResidentSetSize(page_node->EstimateResidentSetSize())
-        .SetTabId(curr_info->tab_id);
-
-#if !BUILDFLAG(IS_ANDROID)
-    bool memory_saver_mode_active =
-        (policies::MemorySaverModePolicy::GetInstance() &&
-         policies::MemorySaverModePolicy::GetInstance()
-             ->IsMemorySaverDiscardingEnabled());
-
-    builder.SetHighEfficiencyMode(memory_saver_mode_active)
-        .SetBatterySaverMode(battery_saver_enabled_);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-    builder.Record(ukm::UkmRecorder::Get());
-  }
-}
-
-bool PageResourceMonitor::ShouldCollectSlice() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (should_collect_slice_callback_) {
-    return should_collect_slice_callback_.Run();
-  }
-
-  // The default if not overridden by tests is to report ~1 out of 20 slices.
-  return base::RandInt(0, 19) == 1;
 }
 
 void PageResourceMonitor::CheckDelayedCPUInterventionMetrics() {
@@ -536,17 +393,19 @@ void PageResourceMonitor::OnPageCPUUsageResult(
                             absl::optional<PressureSample>)> callback,
     const PageResourceCPUMonitor::CPUUsageMap& cpu_usage_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(graph_);
 
   // Calculate the overall CPU usage.
   PageCPUUsageVector page_cpu_usage;
-  page_cpu_usage.reserve(page_node_info_map_.size());
-  for (const auto& [tab_handle, info_ptr] : page_node_info_map_) {
-    const PageNode* page_node = tab_handle->page_node();
-    CheckPageState(page_node, *info_ptr);
-    double cpu_usage =
-        PageResourceCPUMonitor::EstimatePageCPUUsage(page_node, cpu_usage_map);
-    page_cpu_usage.emplace_back(page_node->GetResourceContext(), cpu_usage);
-  }
+  graph_->VisitAllPageNodes([&page_cpu_usage,
+                             &cpu_usage_map](const PageNode* page_node) {
+    if (page_node->GetType() == PageType::kTab) {
+      page_cpu_usage.emplace_back(page_node->GetResourceContext(),
+                                  PageResourceCPUMonitor::EstimatePageCPUUsage(
+                                      page_node, cpu_usage_map));
+    }
+    return true;
+  });
 
   // Now fetch the system CPU usage if available.
   CpuProbe* cpu_probe = use_delayed_system_cpu_probe
@@ -562,15 +421,8 @@ void PageResourceMonitor::OnPageCPUUsageResult(
 
 void PageResourceMonitor::SetTriggerCollectionManuallyForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  collect_slice_timer_.Stop();
   collect_page_resource_usage_timer_.Stop();
   log_cpu_on_delay_timer_.Stop();
-}
-
-void PageResourceMonitor::SetShouldCollectSliceCallbackForTesting(
-    base::RepeatingCallback<bool()> should_collect_slice_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  should_collect_slice_callback_ = should_collect_slice_callback;
 }
 
 void PageResourceMonitor::SetCPUMeasurementDelegateFactoryForTesting(
@@ -585,143 +437,16 @@ void PageResourceMonitor::SetCPUMeasurementDelegateFactoryForTesting(
       graph, factory);
 }
 
-PageResourceMonitor::PageNodeInfoMap&
-PageResourceMonitor::GetPageNodeInfoForTesting() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return page_node_info_map_;
-}
-
 void PageResourceMonitor::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph_ = graph;
-  graph_->AddPageNodeObserver(this);
-  graph_->RegisterObject(this);
-  graph->GetRegisteredObjectAs<TabPageDecorator>()->AddObserver(this);
   cpu_monitor_.StartMonitoring(graph_);
 }
 
 void PageResourceMonitor::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cpu_monitor_.StopMonitoring(graph_);
-
-  // GraphOwned object destruction order is undefined, so only remove ourselves
-  // as observers if the decorator still exists.
-  TabPageDecorator* tab_page_decorator =
-      graph->GetRegisteredObjectAs<TabPageDecorator>();
-  if (tab_page_decorator) {
-    tab_page_decorator->RemoveObserver(this);
-  }
-
-  graph_->UnregisterObject(this);
-  graph_->RemovePageNodeObserver(this);
   graph_ = nullptr;
-}
-
-void PageResourceMonitor::OnTabAdded(TabPageDecorator::TabHandle* tab_handle) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  page_node_info_map_[tab_handle] = std::make_unique<PageNodeInfo>(
-      base::TimeTicks::Now(), tab_handle->page_node(), slice_id_counter_++);
-}
-
-void PageResourceMonitor::OnTabAboutToBeDiscarded(
-    const PageNode* old_page_node,
-    TabPageDecorator::TabHandle* tab_handle) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = page_node_info_map_.find(tab_handle);
-  CHECK(it != page_node_info_map_.end());
-
-  it->second->current_lifecycle = mojom::LifecycleState::kDiscarded;
-  CheckPageState(tab_handle->page_node(), *it->second);
-}
-
-void PageResourceMonitor::OnBeforeTabRemoved(
-    TabPageDecorator::TabHandle* tab_handle) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  page_node_info_map_.erase(tab_handle);
-}
-
-void PageResourceMonitor::OnIsVisibleChanged(const PageNode* page_node) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (page_node->GetType() != performance_manager::PageType::kTab) {
-    return;
-  }
-
-  TabPageDecorator::TabHandle* tab_handle =
-      TabPageDecorator::FromPageNode(page_node);
-  // It's possible for this to happen when a tab is discarded. The sequence of
-  // events is:
-  // 1. New web contents (and page node) created
-  // 2. AboutToBeDiscarded(old_page_node, new_page_node) is invoked
-  // 3. Tab is detached from the tabstrip, causing its web contents to become
-  // "occluded", which triggers a visibility change notification
-  // 4. The old web contents (and page node) are deleted
-  // In the case of PageResourceMonitor, the page_node is removed from the map
-  // on step 2, so the notification from step 3 has to be ignored.
-  if (!tab_handle) {
-    return;
-  }
-
-  auto it = page_node_info_map_.find(tab_handle);
-  CHECK(it != page_node_info_map_.end());
-
-  std::unique_ptr<PageNodeInfo>& info = it->second;
-  base::TimeTicks now = base::TimeTicks::Now();
-  if (info->currently_visible && !page_node->IsVisible()) {
-    // Increase total foreground seconds by the time since we entered the
-    // foreground now that we are entering the background.
-    info->total_foreground_milliseconds +=
-        (now - info->time_of_last_foreground_millisecond_update)
-            .InMilliseconds();
-    info->time_of_last_foreground_millisecond_update = now;
-  } else if (!info->currently_visible && page_node->IsVisible()) {
-    // Update time_of_last[...] without increasing
-    // total_foreground_milliseconds because we've just entered the
-    // foreground.
-    info->time_of_last_foreground_millisecond_update = now;
-  }
-  info->currently_visible = page_node->IsVisible();
-  info->time_of_most_recent_state_change = now;
-}
-
-void PageResourceMonitor::OnPageLifecycleStateChanged(
-    const PageNode* page_node) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (page_node->GetType() != performance_manager::PageType::kTab) {
-    return;
-  }
-
-  TabPageDecorator::TabHandle* tab_handle =
-      TabPageDecorator::FromPageNode(page_node);
-  if (!tab_handle) {
-    // This function is called by the tab freezing apparatus between the time a
-    // page is discarded and when its PageNode is removed from the graph. In
-    // that situation, it's not in the map anymore, it doesn't have a tab
-    // handle, and another PageNode is being tracked in its place. It's safe to
-    // return early.
-    return;
-  }
-
-  auto it = page_node_info_map_.find(tab_handle);
-  CHECK(it != page_node_info_map_.end());
-
-  it->second->current_lifecycle = page_node->GetLifecycleState();
-  it->second->time_of_most_recent_state_change = base::TimeTicks::Now();
-}
-
-void PageResourceMonitor::SetBatterySaverEnabled(bool enabled) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  battery_saver_enabled_ = enabled;
-}
-
-void PageResourceMonitor::CheckPageState(const PageNode* page_node,
-                                         const PageNodeInfo& info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // There's a window after OnAboutToBeDiscarded() where a discarded placeholder
-  // page is in the map with type kUnknown, before it's updated to kTab in
-  // OnTypeChanged().
-  CHECK(page_node->GetType() == PageType::kTab ||
-        page_node->GetType() == PageType::kUnknown &&
-            info.current_lifecycle == mojom::LifecycleState::kDiscarded);
 }
 
 }  // namespace performance_manager::metrics

@@ -42478,6 +42478,9 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="PageState">
+  <obsolete>
+    Deprecated as of Dec 2023 (M122).
+  </obsolete>
   <int value="0" label="Focused"/>
   <int value="1" label="Visible"/>
   <int value="2" label="Background"/>

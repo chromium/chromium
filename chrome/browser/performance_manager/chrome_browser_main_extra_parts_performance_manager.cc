@@ -212,12 +212,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
 
   graph->PassToGraph(
       std::make_unique<performance_manager::metrics::MemoryPressureMetrics>());
-
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kPageTimelineMonitor)) {
-    graph->PassToGraph(
-        std::make_unique<performance_manager::metrics::PageResourceMonitor>());
-  }
+  graph->PassToGraph(
+      std::make_unique<performance_manager::metrics::PageResourceMonitor>());
 
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kBFCachePerformanceManagerPolicy)) {

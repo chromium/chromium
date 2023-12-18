@@ -5,13 +5,11 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_RESOURCE_MONITOR_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_RESOURCE_MONITOR_H_
 
-#include <map>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -19,10 +17,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/performance_manager/metrics/cpu_probe/pressure_sample.h"
 #include "chrome/browser/performance_manager/metrics/page_resource_cpu_monitor.h"
-#include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
-#include "components/performance_manager/public/graph/graph_registered.h"
-#include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,26 +26,9 @@ namespace performance_manager::metrics {
 class CpuProbe;
 class PageResourceMonitorUnitTest;
 
-// Periodically reports tab state via UKM, to enable analysis of usage patterns
-// over time.
-class PageResourceMonitor : public PageNode::ObserverDefaultImpl,
-                            public GraphOwned,
-                            public GraphRegisteredImpl<PageResourceMonitor>,
-                            public TabPageObserver {
+// Periodically reports tab resource usage via UKM.
+class PageResourceMonitor : public GraphOwned {
  public:
-  // These values are logged to UKM. Entries should not be renumbered and
-  // numeric values should never be reused. Please keep in sync with PageState
-  // in enums.xml.
-  enum class PageState {
-    kFocused = 0,
-    kVisible = 1,
-    kBackground = 2,
-    kThrottled = 3,
-    kFrozen = 4,
-    kDiscarded = 5,
-    kMaxValue = kDiscarded,
-  };
-
   // These values are logged to UKM. Entries should not be renumbered and
   // numeric values should never be reused. Please keep in sync with
   // PageMeasurementBackgroundState in enums.xml.
@@ -75,57 +53,8 @@ class PageResourceMonitor : public PageNode::ObserverDefaultImpl,
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
-  // TabPageObserver:
-  void OnTabAdded(TabPageDecorator::TabHandle* tab_handle) override;
-  void OnTabAboutToBeDiscarded(
-      const PageNode* old_page_node,
-      TabPageDecorator::TabHandle* tab_handle) override;
-  void OnBeforeTabRemoved(TabPageDecorator::TabHandle* tab_handle) override;
-
-  // PageNode::Observer:
-  void OnIsVisibleChanged(const PageNode* page_node) override;
-  void OnPageLifecycleStateChanged(const PageNode* page_node) override;
-
-  void SetBatterySaverEnabled(bool enabled);
-
  private:
-  friend class PageResourceMonitorBrowserTest;
   friend PageResourceMonitorUnitTest;
-  FRIEND_TEST_ALL_PREFIXES(
-      PageResourceMonitorUnitTest,
-      TestPageTimelineDoesntRecordIfShouldCollectSliceReturnsFalse);
-  FRIEND_TEST_ALL_PREFIXES(PageResourceMonitorUnitTest,
-                           TestUpdateFaviconInBackground);
-  FRIEND_TEST_ALL_PREFIXES(PageResourceMonitorUnitTest,
-                           TestUpdateTitleInBackground);
-  FRIEND_TEST_ALL_PREFIXES(PageResourceMonitorUnitTest,
-                           TestUpdateLifecycleState);
-  FRIEND_TEST_ALL_PREFIXES(PageResourceMonitorUnitTest,
-                           TestUpdatePageNodeBeforeTypeChange);
-
-  struct PageNodeInfo {
-    base::TimeTicks time_of_creation;
-    bool currently_visible;
-    PageNode::LifecycleState current_lifecycle;
-    base::TimeTicks time_of_most_recent_state_change;
-    base::TimeTicks time_of_last_foreground_millisecond_update;
-    int total_foreground_milliseconds{0};
-    int tab_id;
-
-    PageResourceMonitor::PageState GetPageState();
-
-    explicit PageNodeInfo(base::TimeTicks time_of_creation,
-                          const PageNode* page_node,
-                          int tab_id)
-        : time_of_creation(time_of_creation),
-          currently_visible(page_node->IsVisible()),
-          current_lifecycle(page_node->GetLifecycleState()),
-          time_of_most_recent_state_change(base::TimeTicks::Now()),
-          time_of_last_foreground_millisecond_update(
-              time_of_most_recent_state_change),
-          tab_id(tab_id) {}
-    ~PageNodeInfo() = default;
-  };
 
   // Suffix for CPU intervention histograms.
   enum class CPUInterventionSuffix {
@@ -140,9 +69,6 @@ class PageResourceMonitor : public PageNode::ObserverDefaultImpl,
   using PageCPUUsageVector =
       std::vector<std::pair<resource_attribution::PageContext, double>>;
 
-  using PageNodeInfoMap = std::map<const TabPageDecorator::TabHandle*,
-                                   std::unique_ptr<PageNodeInfo>>;
-
   // Asynchronously collects the PageResourceUsage UKM. Calls `done_closure`
   // when finished.
   void CollectPageResourceUsage(base::OnceClosure done_closure);
@@ -151,11 +77,6 @@ class PageResourceMonitor : public PageNode::ObserverDefaultImpl,
   // are ready.
   void OnPageResourceUsageResult(const PageCPUUsageVector& page_cpu_usage,
                                  absl::optional<PressureSample> system_cpu);
-
-  // Method collecting a slice for the PageTimelineState UKM.
-  void CollectSlice();
-
-  bool ShouldCollectSlice() const;
 
   // Asynchronously checks if the CPU metrics are still above the threshold
   // after a delay.
@@ -196,38 +117,16 @@ class PageResourceMonitor : public PageNode::ObserverDefaultImpl,
                               absl::optional<PressureSample>)> callback,
       const PageResourceCPUMonitor::CPUUsageMap& cpu_usage_map);
 
-  // If this is called, CollectSlice() and CollectPageResourceUsage() will not
-  // be called on a timer. Tests can call them manually.
+  // If this is called, CollectPageResourceUsage() will not be called on a
+  // timer. Tests can call it manually.
   void SetTriggerCollectionManuallyForTesting();
-
-  // If this is called, the given callback will be called instead of
-  // ShouldCollectSlice().
-  void SetShouldCollectSliceCallbackForTesting(base::RepeatingCallback<bool()>);
 
   // Passes the given `factory` to PageResourceCPUMonitor.
   void SetCPUMeasurementDelegateFactoryForTesting(
       Graph* graph,
       PageResourceCPUMonitor::CPUMeasurementDelegate::Factory* factory);
 
-  // Lets tests examine the contents of `page_node_info_map_`.
-  PageNodeInfoMap& GetPageNodeInfoForTesting();
-
-  // CHECK's that `page_node` and `info` are in the right state to be
-  // mapped to each other in `page_node_info_map_`.
-  void CheckPageState(const PageNode* page_node, const PageNodeInfo& info);
-
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // Monotonically increasing counters for tabs and slices.
-  int slice_id_counter_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // A map in which we store info about PageNodes to keep track of their state,
-  // as well as the timing of their state transitions.
-  PageNodeInfoMap page_node_info_map_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Timer which is used to trigger CollectSlice(), which records the UKM.
-  base::RepeatingTimer collect_slice_timer_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Timer which is used to trigger CollectPageResourceUsage().
   base::RepeatingTimer collect_page_resource_usage_timer_
@@ -244,20 +143,9 @@ class PageResourceMonitor : public PageNode::ObserverDefaultImpl,
   // Pointer to this process' graph.
   raw_ptr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
-  // Time when last slice was run.
-  base::TimeTicks time_of_last_slice_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      base::TimeTicks::Now();
-
   // Time of last PageResourceUsage collection.
   base::TimeTicks time_of_last_resource_usage_
       GUARDED_BY_CONTEXT(sequence_checker_) = base::TimeTicks::Now();
-
-  // Function which is called to determine whether a PageTimelineState slice
-  // should be collected. Overridden in tests.
-  base::RepeatingCallback<bool()> should_collect_slice_callback_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  bool battery_saver_enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // Helper to take CPU measurements for the UKM.
   PageResourceCPUMonitor cpu_monitor_ GUARDED_BY_CONTEXT(sequence_checker_);

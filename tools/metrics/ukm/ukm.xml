@@ -20040,6 +20040,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PerformanceManager.PageTimelineState">
+  <obsolete>
+    Deprecated as of Dec 2023 (M122).
+  </obsolete>
   <owner>anthonyvd@chromium.org</owner>
   <owner>spvw@chromium.org</owner>
   <summary>
