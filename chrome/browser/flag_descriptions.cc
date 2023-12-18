@@ -4090,9 +4090,6 @@ const char kInterestFeedV2Description[] =
 const char kInterestFeedV2HeartsName[] = "Interest Feed v2 Hearts";
 const char kInterestFeedV2HeartsDescription[] = "Enable hearts on Feedv2.";
 
-const char kInterestFeedV2AutoplayName[] = "Interest Feed v2 Autoplay";
-const char kInterestFeedV2AutoplayDescription[] = "Enable autoplay on Feedv2.";
-
 const char kMediaPickerAdoptionStudyName[] = "Android Media Picker Adoption";
 const char kMediaPickerAdoptionStudyDescription[] =
     "Controls how to launch the Android Media Picker (note: This flag is "

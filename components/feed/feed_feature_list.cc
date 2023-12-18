@@ -25,10 +25,6 @@ BASE_FEATURE(kInterestFeedV2,
              "InterestFeedV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kInterestFeedV2Autoplay,
-             "InterestFeedV2Autoplay",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kInterestFeedV2Hearts,
              "InterestFeedV2Hearts",
              base::FEATURE_DISABLED_BY_DEFAULT);

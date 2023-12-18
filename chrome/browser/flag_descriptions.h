@@ -2391,9 +2391,6 @@ extern const char kInterestFeedV2Description[];
 extern const char kInterestFeedV2HeartsName[];
 extern const char kInterestFeedV2HeartsDescription[];
 
-extern const char kInterestFeedV2AutoplayName[];
-extern const char kInterestFeedV2AutoplayDescription[];
-
 extern const char kMediaPickerAdoptionStudyName[];
 extern const char kMediaPickerAdoptionStudyDescription[];
 
