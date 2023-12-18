@@ -5,7 +5,6 @@
 #ifndef WOLVIC_WOLVIC_PERMISSION_MANAGER_H_
 #define WOLVIC_WOLVIC_PERMISSION_MANAGER_H_
 
-#include "base/containers/unique_ptr_adapters.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_request_description.h"
@@ -77,8 +76,16 @@ class WolvicPermissionManager : public content::PermissionControllerDelegate {
 
   void OnPermissionResult(InProgressRequest* in_progress_request,
                           const std::vector<content::PermissionStatus>& result);
+  void OnAndroidPermissionResult(
+      InProgressRequest* in_progress_request,
+      const std::vector<content::PermissionStatus>& result);
 
  private:
+  void RequestContentPermissions(
+    JNIEnv* env,
+    InProgressRequest* in_progress_request,
+    const content::PermissionRequestDescription& request_description);
+
   raw_ptr<content::BrowserContext> browser_context_;
 
   InProgressRequest* FindInProgressRequest(
