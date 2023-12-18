@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_GLANCEABLES_TASKS_GLANCEABLES_TASK_VIEW_H_
-#define ASH_GLANCEABLES_TASKS_GLANCEABLES_TASK_VIEW_H_
+#ifndef ASH_GLANCEABLES_TASKS_GLANCEABLES_TASK_VIEW_V2_H_
+#define ASH_GLANCEABLES_TASKS_GLANCEABLES_TASK_VIEW_V2_H_
 
 #include <string>
 
@@ -25,10 +25,10 @@ namespace api {
 struct Task;
 }  // namespace api
 
-// GlanceablesTaskView uses `views::FlexLayout` to show tasks metadata within
+// GlanceablesTaskViewV2 uses `views::FlexLayout` to show tasks metadata within
 // the `GlanceablesTasksView` or `TasksBubbleView`.
 // +---------------------------------------------------------------+
-// |`GlanceablesTaskView`                                          |
+// |`GlanceablesTaskViewV2`                                          |
 // |                                                               |
 // | +-----------------+ +---------------------------------------+ |
 // | |'button_'        | |'contents_view_'                       | |
@@ -40,9 +40,9 @@ struct Task;
 // | |                 | | +-----------------------------------+ | |
 // | +-----------------+ +---------------------------------------+ |
 // +---------------------------------------------------------------+
-class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
+class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView {
  public:
-  METADATA_HEADER(GlanceablesTaskView);
+  METADATA_HEADER(GlanceablesTaskViewV2);
 
   using MarkAsCompletedCallback =
       base::RepeatingCallback<void(const std::string& task_id, bool completed)>;
@@ -52,18 +52,16 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
       api::TasksClient::OnTaskSavedCallback callback)>;
 
   // Modes of `tasks_title_view_` (simple label or text field).
-  // TODO(b/315188389): Remove this as editing functions is replaced by
-  // GlanceablesTaskViewV2 when the stable launch is enabled.
   enum class TaskTitleViewState { kView, kEdit };
 
-  GlanceablesTaskView(const api::Task* task,
-                      MarkAsCompletedCallback mark_as_completed_callback,
-                      SaveCallback save_callback);
-  GlanceablesTaskView(const GlanceablesTaskView&) = delete;
-  GlanceablesTaskView& operator=(const GlanceablesTaskView&) = delete;
-  ~GlanceablesTaskView() override;
+  GlanceablesTaskViewV2(const api::Task* task,
+                        MarkAsCompletedCallback mark_as_completed_callback,
+                        SaveCallback save_callback);
+  GlanceablesTaskViewV2(const GlanceablesTaskViewV2&) = delete;
+  GlanceablesTaskViewV2& operator=(const GlanceablesTaskViewV2&) = delete;
+  ~GlanceablesTaskViewV2() override;
 
-  const views::ImageButton* GetButtonForTest() const;
+  const views::ImageButton* GetCheckButtonForTest() const;
   bool GetCompletedForTest() const;
 
   // Updates `tasks_title_view_` according to `state`.
@@ -101,14 +99,14 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
   std::u16string task_title_;
 
   // Marks the task as completed.
-  MarkAsCompletedCallback mark_as_completed_callback_;
+  const MarkAsCompletedCallback mark_as_completed_callback_;
 
   // Saves the task (either creates or updates the existing one).
-  SaveCallback save_callback_;
+  const SaveCallback save_callback_;
 
-  base::WeakPtrFactory<GlanceablesTaskView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GlanceablesTaskViewV2> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_GLANCEABLES_TASKS_GLANCEABLES_TASK_VIEW_H_
+#endif  // ASH_GLANCEABLES_TASKS_GLANCEABLES_TASK_VIEW_V2_H_

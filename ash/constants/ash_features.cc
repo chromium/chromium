@@ -3501,6 +3501,10 @@ bool IsGlanceablesV2ErrorMessageEnabled() {
   return base::FeatureList::IsEnabled(kGlanceablesV2ErrorMessage);
 }
 
+bool IsGlanceablesTimeManagementStableLaunchEnabled() {
+  return base::FeatureList::IsEnabled(kGlanceablesTimeManagementStableLaunch);
+}
+
 bool IsHibernateEnabled() {
   return base::FeatureList::IsEnabled(kHibernate);
 }

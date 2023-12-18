@@ -29,7 +29,7 @@ namespace ash {
 class Combobox;
 class GlanceablesListFooterView;
 class GlanceablesProgressBarView;
-class GlanceablesTaskView;
+class GlanceablesTaskViewV2;
 class TasksComboboxModel;
 
 // Temporary interface to allow smooth migration from `TasksBubbleView` to
@@ -73,8 +73,8 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   // Handles press behavior for `add_new_task_button_`.
   void AddNewTaskButtonPressed();
 
-  // Creates a `GlanceablesTaskView` instance with bound callbacks.
-  std::unique_ptr<GlanceablesTaskView> CreateTaskView(
+  // Creates a `GlanceablesTaskViewV2` instance with bound callbacks.
+  std::unique_ptr<GlanceablesTaskViewV2> CreateTaskView(
       const std::string& task_list_id,
       const api::Task* task);
 
@@ -133,7 +133,7 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   // Pending new task that was added after pressing `add_new_task_button_`.
   // Used to limit the number of such views to only one and to remove the view
   // from `task_items_container_view_` if needed.
-  raw_ptr<GlanceablesTaskView> pending_new_task_ = nullptr;
+  raw_ptr<GlanceablesTaskViewV2> pending_new_task_ = nullptr;
 
   // Records the time when the bubble was about to request a task list. Used for
   // metrics.

@@ -15,7 +15,7 @@
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_metrics.h"
-#include "ash/glanceables/tasks/glanceables_task_view.h"
+#include "ash/glanceables/tasks/glanceables_task_view_v2.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -75,8 +75,6 @@ std::unique_ptr<views::LabelButton> CreateAddNewTaskButton(
       ui::ImageModel::FromVectorIcon(kGlanceablesTasksAddNewTaskIcon,
                                      cros_tokens::kFocusRingColor));
   add_new_task_button->SetImageLabelSpacing(18);
-  add_new_task_button->SetBackground(
-      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemOnBase));
   add_new_task_button->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::VH(13, 18)));
   add_new_task_button->SetEnabledTextColorIds(cros_tokens::kFocusRingColor);
@@ -101,6 +99,15 @@ GlanceablesTasksView::GlanceablesTasksView(
                                             kInteriorGlanceableBubbleMargin))
       .SetOrientation(views::LayoutOrientation::kVertical);
 
+  // It is the parent container of GlanceablesTasksView that matches the style
+  // of GlanceableTrayChildBubble. Manually update this bubble to match the
+  // spec.
+  CHECK(layer());
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{16.f});
+  SetBackground(
+      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemOnBase));
+  SetBorder(nullptr);
+
   tasks_header_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   tasks_header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   tasks_header_view_->SetMainAxisAlignment(views::LayoutAlignment::kStart);
@@ -122,9 +129,6 @@ GlanceablesTasksView::GlanceablesTasksView(
 
   auto* const list_view =
       scroll_view->SetContents(std::make_unique<views::View>());
-  list_view->SetPaintToLayer();
-  list_view->layer()->SetFillsBoundsOpaquely(false);
-  list_view->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(16));
   list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       /*inside_border_insets=*/gfx::Insets(), kListViewBetweenChildSpacing));
@@ -151,7 +155,7 @@ GlanceablesTasksView::GlanceablesTasksView(
                               TasksLaunchSource::kHeaderButton),
           IconButton::Type::kMedium, &kGlanceablesTasksIcon,
           IDS_GLANCEABLES_TASKS_HEADER_ICON_ACCESSIBLE_NAME));
-  header_icon->SetBackgroundColor(cros_tokens::kCrosSysBaseElevated);
+  header_icon->SetBackgroundColor(SK_ColorTRANSPARENT);
   header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
   header_icon->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleHeaderIcon));
@@ -218,14 +222,14 @@ void GlanceablesTasksView::AddNewTaskButtonPressed() {
       CreateTaskView(active_task_list->id, /*task=*/nullptr),
       /*index=*/0);
   pending_new_task_->UpdateTaskTitleViewForState(
-      GlanceablesTaskView::TaskTitleViewState::kEdit);
+      GlanceablesTaskViewV2::TaskTitleViewState::kEdit);
   PreferredSizeChanged();
 }
 
-std::unique_ptr<GlanceablesTaskView> GlanceablesTasksView::CreateTaskView(
+std::unique_ptr<GlanceablesTaskViewV2> GlanceablesTasksView::CreateTaskView(
     const std::string& task_list_id,
     const api::Task* task) {
-  return std::make_unique<GlanceablesTaskView>(
+  return std::make_unique<GlanceablesTaskViewV2>(
       task,
       base::BindRepeating(&GlanceablesTasksView::MarkTaskAsCompleted,
                           base::Unretained(this), task_list_id),

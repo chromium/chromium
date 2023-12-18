@@ -1033,6 +1033,8 @@ bool IsGlanceablesV2ClassroomTeacherViewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGlanceablesV2CalendarViewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGlanceablesV2ErrorMessageEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsGlanceablesTimeManagementStableLaunchEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHibernateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideArcMediaNotificationsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideShelfControlsInTabletModeEnabled();

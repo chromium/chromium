@@ -66,6 +66,10 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   void OnGlanceablesContainerPreferredSizeChanged();
   void OnGlanceablesContainerHeightChanged(int height_delta);
 
+  // Adjusts the order of the views in the focus list under
+  // GlanceableTrayBubbleView.
+  void AdjustChildrenFocusOrder();
+
   // Sets the preferred size of `calendar_view_`. This is called during
   // initialization and when the screen height changes.
   void SetCalendarPreferredSize() const;
@@ -83,16 +87,24 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   // A scrollable view which contains the individual glanceables.
   raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
 
-  // Child bubble view for the tasks glanceable. Owned by bubble_view_.
+  // Container view for the tasks and classroom glanceables. Owned by this view.
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh>
+      time_management_container_view_ = nullptr;
+
+  // Child bubble view for the tasks glanceable. Owned by this view.
   raw_ptr<GlanceablesTasksViewBase, ExperimentalAsh> tasks_bubble_view_ =
       nullptr;
 
   // Child bubble view for the student classrooms glanceable. Owned by
-  // bubble_view_.
+  // this view.
   raw_ptr<ClassroomBubbleStudentView, ExperimentalAsh>
       classroom_bubble_student_view_ = nullptr;
 
-  // Child bubble view for the calendar glanceable. Owned by bubble_view_.
+  // The parent container of `calendar_view_`. Only exists if the glanceables
+  // calendar flag is on.
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> calendar_container_ = nullptr;
+
+  // Child bubble view for the calendar glanceable. Owned by this view.
   raw_ptr<CalendarView, ExperimentalAsh> calendar_view_ = nullptr;
 
   base::CallbackListSubscription on_contents_scrolled_subscription_;

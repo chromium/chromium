@@ -97,8 +97,6 @@ class GlanceablesPixelTest : public AshTestBase {
 };
 
 // Pixel test for glanceables when no data is available.
-// Test disabled due to not taking dark/light mode into consideration.
-// http://b/294612234
 TEST_F(GlanceablesPixelTest, GlanceablesZeroState) {
   base::subtle::ScopedTimeClockOverrides time_override(
       []() {
@@ -123,8 +121,6 @@ TEST_F(GlanceablesPixelTest, GlanceablesZeroState) {
 
 // Pixel test verifying initial UI for tasks glanceable as well as UI updates
 // when a task is marked as completed.
-// Test disabled due to not taking dark/light mode into consideration.
-// http://b/294612234
 TEST_F(GlanceablesPixelTest, GlanceablesTasksMarkAsCompleted) {
   base::subtle::ScopedTimeClockOverrides time_override(
       []() {
