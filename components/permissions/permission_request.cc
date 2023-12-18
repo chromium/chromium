@@ -282,6 +282,10 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
 }
 #endif
 
+std::optional<std::u16string> PermissionRequest::GetAllowAlwaysText() const {
+  return std::nullopt;
+}
+
 bool PermissionRequest::ShouldUseTwoOriginPrompt() const {
   return request_type() == RequestType::kStorageAccess &&
          base::FeatureList::IsEnabled(

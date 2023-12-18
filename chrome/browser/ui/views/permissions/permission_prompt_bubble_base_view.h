@@ -82,7 +82,7 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
   std::u16string GetPermissionFragmentForTesting() const;
 
  protected:
-  void CreatePermissionButtons();
+  void CreatePermissionButtons(const std::u16string& allow_always_text);
   void CreateExtraTextLabel(const std::u16string& extra_text);
 
   void CreateWidget();
@@ -96,6 +96,9 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
   // option.
   static bool IsOneTimePermission(
       permissions::PermissionPrompt::Delegate& delegate);
+
+  static std::u16string GetAllowAlwaysText(
+      const std::vector<permissions::PermissionRequest*>& visible_requests);
 
  private:
   void SetPromptStyle(PermissionPromptStyle prompt_style);

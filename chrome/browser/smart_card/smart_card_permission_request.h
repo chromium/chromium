@@ -31,6 +31,7 @@ class SmartCardPermissionRequest : public permissions::PermissionRequest {
   bool IsDuplicateOf(
       permissions::PermissionRequest* other_request) const override;
   std::u16string GetMessageTextFragment() const override;
+  std::optional<std::u16string> GetAllowAlwaysText() const override;
 
   void OnPermissionDecided(ContentSetting result,
                            bool is_one_time,

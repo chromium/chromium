@@ -73,7 +73,8 @@ PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
 
 PermissionPromptBubbleBaseView::~PermissionPromptBubbleBaseView() = default;
 
-void PermissionPromptBubbleBaseView::CreatePermissionButtons() {
+void PermissionPromptBubbleBaseView::CreatePermissionButtons(
+    const std::u16string& allow_always_text) {
   if (is_one_time_permission_) {
     SetButtons(ui::DIALOG_BUTTON_NONE);
 
@@ -95,7 +96,7 @@ void PermissionPromptBubbleBaseView::CreatePermissionButtons() {
                                 FilterUnintenedEventsAndRunCallbacks,
                             base::Unretained(this),
                             GetViewId(PermissionDialogButton::kAccept)),
-        l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_EVERY_VISIT));
+        allow_always_text);
     allow_always_button->SetProperty(views::kElementIdentifierKey,
                                      kAllowButtonElementId);
     allow_always_button->SetID(GetViewId(PermissionDialogButton::kAccept));
@@ -297,6 +298,21 @@ bool PermissionPromptBubbleBaseView::IsOneTimePermission(
     }
   }
   return true;
+}
+
+std::u16string PermissionPromptBubbleBaseView::GetAllowAlwaysText(
+    const std::vector<permissions::PermissionRequest*>& visible_requests) {
+  CHECK_GT(visible_requests.size(), 0u);
+
+  if (visible_requests.size() == 1 &&
+      visible_requests[0]->GetAllowAlwaysText().has_value()) {
+    // A prompt for a single request can use an "allow always" text that is
+    // customized for it.
+    return visible_requests[0]->GetAllowAlwaysText().value();
+  }
+
+  // Use the generic text.
+  return l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_EVERY_VISIT);
 }
 
 void PermissionPromptBubbleBaseView::RecordDecision(

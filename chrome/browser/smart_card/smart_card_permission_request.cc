@@ -39,6 +39,11 @@ std::u16string SmartCardPermissionRequest::GetMessageTextFragment() const {
                                     base::ASCIIToUTF16(reader_name_));
 }
 
+std::optional<std::u16string> SmartCardPermissionRequest::GetAllowAlwaysText()
+    const {
+  return l10n_util::GetStringUTF16(IDS_SMART_CARD_PERMISSION_ALWAYS_ALLOW);
+}
+
 void SmartCardPermissionRequest::OnPermissionDecided(
     ContentSetting content_setting_result,
     bool is_one_time,

@@ -116,6 +116,12 @@ class PermissionRequest {
   virtual std::u16string GetMessageTextFragment() const;
 #endif
 
+  // Returns the text to be used in the "allow always" button of the
+  // permission prompt.
+  // If not provided, the generic text for this button will be used instead.
+  // The default implementation returns std::nullopt (ie, use generic text).
+  virtual std::optional<std::u16string> GetAllowAlwaysText() const;
+
   // Whether the request was initiated by the user clicking on the permission
   // element.
   bool IsEmbeddedPermissionElementInitiated() const;

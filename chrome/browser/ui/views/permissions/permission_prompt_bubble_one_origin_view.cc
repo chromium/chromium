@@ -172,7 +172,7 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
     CreateExtraTextLabel(extra_text.value());
   }
 
-  CreatePermissionButtons();
+  CreatePermissionButtons(GetAllowAlwaysText(visible_requests));
 
   bool has_camera_request = false;
   bool has_mic_request = false;
