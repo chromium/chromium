@@ -523,11 +523,6 @@ bool CheckVulkanCompatibilities(const VulkanInfo& vulkan_info,
     return false;
   }
 
-  // Canvas not working on NVidia shield https://crbug.com/1508791
-  if (device_info.properties.vendorID == kVendorNvidia) {
-    return false;
-  }
-
   return true;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
