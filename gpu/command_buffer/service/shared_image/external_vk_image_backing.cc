@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/service/shared_image/external_vk_image_skia_representation.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
@@ -122,13 +123,6 @@ bool UseSeparateGLTexture(SharedContextState* context_state,
   // doesn't work correctly.
   // TODO(crbug.com/angleproject/4831): fix ANGLE and return false.
   return true;
-}
-
-bool UseTexStorage2D() {
-  const auto* version_info = gl::g_current_gl_version;
-  const auto& ext = gl::g_current_gl_driver->ext;
-  return ext.b_GL_EXT_texture_storage || ext.b_GL_ARB_texture_storage ||
-         version_info->is_es3 || version_info->IsAtLeastGL(4, 2);
 }
 
 bool UseMinimalUsageFlags(SharedContextState* context_state) {
@@ -805,7 +799,7 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
 
   if (use_separate_gl_texture()) {
     DCHECK(!memory_object);
-    if (UseTexStorage2D()) {
+    if (IsTexStorage2DAvailable()) {
       api->glTexStorage2DEXTFn(GL_TEXTURE_2D, 1,
                                format_desc.storage_internal_format,
                                plane_size.width(), plane_size.height());
