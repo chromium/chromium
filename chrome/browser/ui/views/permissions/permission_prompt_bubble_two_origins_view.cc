@@ -24,20 +24,6 @@ constexpr int kDesiredFaviconSizeInPixel = 28;
 // so we can adjust this delay accordingly.
 constexpr int kMaxShowDelayMs = 200;
 
-std::u16string GetWindowTitleTwoOrigin(
-    permissions::PermissionPrompt::Delegate& delegate) {
-  CHECK_GT(delegate.Requests().size(), 0u);
-  switch (delegate.Requests()[0]->request_type()) {
-    case permissions::RequestType::kStorageAccess:
-      return l10n_util::GetStringFUTF16(
-          IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_PROMPT_TITLE,
-          url_formatter::FormatUrlForSecurityDisplay(
-              delegate.GetRequestingOrigin(),
-              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-    default:
-      NOTREACHED_NORETURN();
-  }
-}
 
 std::optional<std::u16string> GetExtraTextTwoOrigin(
     permissions::PermissionPrompt::Delegate& delegate) {
@@ -73,10 +59,16 @@ PermissionPromptBubbleTwoOriginsView::PermissionPromptBubbleTwoOriginsView(
     : PermissionPromptBubbleBaseView(browser,
                                      delegate,
                                      permission_requested_time,
-                                     prompt_style,
-                                     GetWindowTitleTwoOrigin(*delegate),
-                                     GetWindowTitleTwoOrigin(*delegate),
-                                     GetExtraTextTwoOrigin(*delegate)) {
+                                     prompt_style) {
+  SetTitle(CreateWindowTitle());
+
+  auto extra_text = GetExtraTextTwoOrigin(*delegate);
+  if (extra_text.has_value()) {
+    CreateExtraTextLabel(extra_text.value());
+  }
+
+  CreatePermissionButtons();
+
   // Only requests for Storage Access should use this prompt.
   CHECK(delegate);
   CHECK_GT(delegate->Requests().size(), 0u);
@@ -162,6 +154,21 @@ void PermissionPromptBubbleTwoOriginsView::Show() {
                                    base::Unretained(this)));
 }
 
+std::u16string PermissionPromptBubbleTwoOriginsView::CreateWindowTitle() const {
+  CHECK_GT(delegate()->Requests().size(), 0u);
+
+  switch (delegate()->Requests()[0]->request_type()) {
+    case permissions::RequestType::kStorageAccess:
+      return l10n_util::GetStringFUTF16(
+          IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_PROMPT_TITLE,
+          url_formatter::FormatUrlForSecurityDisplay(
+              delegate()->GetRequestingOrigin(),
+              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
 void PermissionPromptBubbleTwoOriginsView::CreateFaviconRow() {
   // Getting default favicon.
   ui::ImageModel default_favicon_ = ui::ImageModel::FromVectorIcon(
@@ -224,7 +231,7 @@ void PermissionPromptBubbleTwoOriginsView::MaybeAddLink() {
   views::StyledLabel::RangeStyleInfo link_style;
   std::optional<std::u16string> link = GetLink(link_range, link_style);
   if (link.has_value()) {
-    size_t index = HasExtraText(*GetDelegate()) ? 1 : 0;
+    size_t index = HasExtraText(*delegate()) ? 1 : 0;
     auto* link_label =
         AddChildViewAt(std::make_unique<views::StyledLabel>(), index);
     link_label->SetText(link.value());
@@ -239,9 +246,8 @@ void PermissionPromptBubbleTwoOriginsView::MaybeAddLink() {
 std::optional<std::u16string> PermissionPromptBubbleTwoOriginsView::GetLink(
     gfx::Range& link_range,
     views::StyledLabel::RangeStyleInfo& link_style) {
-  auto delegate = GetDelegate();
-  CHECK_GT(delegate->Requests().size(), 0u);
-  switch (delegate->Requests()[0]->request_type()) {
+  CHECK_GT(delegate()->Requests().size(), 0u);
+  switch (delegate()->Requests()[0]->request_type()) {
     case permissions::RequestType::kStorageAccess:
       return GetLinkStorageAccess(link_range, link_style);
     default:
@@ -266,8 +272,8 @@ std::u16string PermissionPromptBubbleTwoOriginsView::GetLinkStorageAccess(
 
 void PermissionPromptBubbleTwoOriginsView::HelpCenterLinkClicked(
     const ui::Event& event) {
-  if (auto delegate = GetDelegate()) {
-    delegate->OpenHelpCenterLink(event);
+  if (delegate()) {
+    delegate()->OpenHelpCenterLink(event);
   }
 }
 

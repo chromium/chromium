@@ -155,23 +155,27 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
     base::TimeTicks permission_requested_time,
     PermissionPromptStyle prompt_style)
-    : PermissionPromptBubbleBaseView(
-          browser,
-          delegate,
-          permission_requested_time,
-          prompt_style,
-          l10n_util::GetStringFUTF16(
-              IDS_PERMISSIONS_BUBBLE_PROMPT,
-              PermissionPromptBaseView::GetUrlIdentity(browser, *delegate)
-                  .name),
-          GetAccessibleWindowTitleInternal(
-              PermissionPromptBaseView::GetUrlIdentity(browser, *delegate).name,
-              GetVisibleRequests(*delegate.get())),
-          GetExtraText(*delegate.get())) {
-  bool has_camera_request = false;
-  bool has_mic_request = false;
+    : PermissionPromptBubbleBaseView(browser,
+                                     delegate,
+                                     permission_requested_time,
+                                     prompt_style) {
   std::vector<permissions::PermissionRequest*> visible_requests =
       GetVisibleRequests(*delegate.get());
+
+  SetAccessibleTitle(GetAccessibleWindowTitleInternal(
+      GetUrlIdentityObject().name, visible_requests));
+  SetTitle(l10n_util::GetStringFUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT,
+                                      GetUrlIdentityObject().name));
+
+  auto extra_text = GetExtraText(*delegate.get());
+  if (extra_text.has_value()) {
+    CreateExtraTextLabel(extra_text.value());
+  }
+
+  CreatePermissionButtons();
+
+  bool has_camera_request = false;
+  bool has_mic_request = false;
   for (std::size_t i = 0; i < visible_requests.size(); i++) {
     AddRequestLine(visible_requests[i], i);
     if (visible_requests[i]->request_type() ==

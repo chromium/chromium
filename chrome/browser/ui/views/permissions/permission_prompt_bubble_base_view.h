@@ -48,10 +48,7 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
       Browser* browser,
       base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
       base::TimeTicks permission_requested_time,
-      PermissionPromptStyle prompt_style,
-      std::u16string window_title,
-      std::u16string accessible_window_title_,
-      std::optional<std::u16string> extra_text);
+      PermissionPromptStyle prompt_style);
   PermissionPromptBubbleBaseView(const PermissionPromptBubbleBaseView&) =
       delete;
   PermissionPromptBubbleBaseView& operator=(
@@ -74,14 +71,10 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
 
   void ShowWidget();
 
-  void SetPromptStyle(PermissionPromptStyle prompt_style);
-
   void ClosingPermission();
 
   // views::BubbleDialogDelegateView:
   bool ShouldShowCloseButton() const override;
-  std::u16string GetAccessibleWindowTitle() const override;
-  std::u16string GetWindowTitle() const override;
 
   // PermissionPromptBaseView:
   void RunButtonCallback(int button_id) override;
@@ -89,9 +82,12 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
   std::u16string GetPermissionFragmentForTesting() const;
 
  protected:
+  void CreatePermissionButtons();
+  void CreateExtraTextLabel(const std::u16string& extra_text);
+
   void CreateWidget();
 
-  base::WeakPtr<permissions::PermissionPrompt::Delegate> GetDelegate() {
+  base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate() const {
     return delegate_;
   }
 
@@ -102,6 +98,8 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
       permissions::PermissionPrompt::Delegate& delegate);
 
  private:
+  void SetPromptStyle(PermissionPromptStyle prompt_style);
+
   // Record UMA Permissions.*.TimeToDecision.|action| metric. Can be
   // Permissions.Prompt.TimeToDecision.* or Permissions.Chip.TimeToDecision.*,
   // depending on which UI is used.
@@ -124,8 +122,6 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
   PermissionPromptStyle prompt_style_;
 
   const bool is_one_time_permission_;
-  const std::u16string accessible_window_title_;
-  const std::u16string window_title_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_BASE_VIEW_H_
