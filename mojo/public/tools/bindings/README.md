@@ -908,7 +908,7 @@ Statement = ModuleStatement | ImportStatement | Definition
 
 ModuleStatement = AttributeSection "module" Identifier ";"
 ImportStatement = "import" StringLiteral ";"
-Definition = Struct Union Interface Enum Const
+Definition = Struct Union Interface Enum Feature Const
 
 AttributeSection = <empty> | "[" AttributeList "]"
 AttributeList = <empty> | NonEmptyAttributeList
@@ -972,6 +972,13 @@ NonEmptyEnumValueList = EnumValue | NonEmptyEnumValueList "," EnumValue
 EnumValue = AttributeSection Name
           | AttributeSection Name "=" Integer
           | AttributeSection Name "=" Identifier
+
+; Note: `feature` is a weak keyword and can appear as, say, a struct field name.
+Feature = AttributeSection "feature" Name "{" FeatureBody "}" ";"
+       | AttributeSection "feature" Name ";"
+FeatureBody = <empty>
+           | FeatureBody FeatureField
+FeatureField = AttributeSection TypeSpec Name Default ";"
 
 Const = "const" TypeSpec Name "=" Constant ";"
 
