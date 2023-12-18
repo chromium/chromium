@@ -59,7 +59,6 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
-import org.chromium.content_public.browser.AdditionalSelectionMenuItemProvider;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.ImeEventObserver;
@@ -163,9 +162,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     private SelectionClient.ResultCallback mResultCallback;
 
-    // Used to customize PastePopupMenu
-    private @Nullable AdditionalSelectionMenuItemProvider mNonSelectionAdditionalItemProvider;
-
     // Selection rectangle in DIP.
     private final Rect mSelectionRect = new Rect();
 
@@ -235,7 +231,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     private boolean mPreserveSelectionOnNextLossOfFocus;
 
-    // Used to customize selection menu.
+    // Delegate used by embedders to customize selection menu.
     @Nullable private SelectionActionMenuDelegate mSelectionActionMenuDelegate;
 
     private MagnifierAnimator mMagnifierAnimator;
@@ -428,12 +424,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @Override
     public RenderFrameHost getRenderFrameHost() {
         return mRenderFrameHost;
-    }
-
-    @Override
-    public void setNonSelectionAdditionalMenuItemProvider(
-            @Nullable AdditionalSelectionMenuItemProvider provider) {
-        mNonSelectionAdditionalItemProvider = provider;
     }
 
     @Override
@@ -722,8 +712,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         if (windowContext == null) return;
         mPastePopupMenu =
                 new FloatingPastePopupMenu(
-                        windowContext, mView, delegate, mNonSelectionAdditionalItemProvider,
-                        mSelectionActionMenuDelegate);
+                        windowContext, mView, delegate, mSelectionActionMenuDelegate);
         showPastePopup();
     }
 
@@ -754,8 +743,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             } else {
                 allItemGroups =
                         getNonSelectionMenuItems(
-                                mContext, this, mNonSelectionAdditionalItemProvider,
-                                mSelectionActionMenuDelegate);
+                                mContext, this, mSelectionActionMenuDelegate);
             }
 
             int groupIndex = 0;
@@ -1062,10 +1050,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private static SortedSet<SelectionMenuGroup> getNonSelectionMenuItems(
             @Nullable Context context,
             SelectActionMenuDelegate delegate,
-            @Nullable AdditionalSelectionMenuItemProvider nonSelectionAdditionalItemProvider,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
         return SelectActionMenuHelper.getNonSelectionMenuItems(
-                context, delegate, nonSelectionAdditionalItemProvider, selectionActionMenuDelegate);
+                context, delegate, selectionActionMenuDelegate);
     }
 
     /**
@@ -1216,8 +1203,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
         SelectionMenuGroup textProcessingItems =
                 SelectActionMenuHelper.getTextProcessingItems(
-                        mContext, false, false, this::processText);
-        if (textProcessingItems != null) {
+                        mContext, false, false, this::processText, mSelectionActionMenuDelegate);
+        if (!textProcessingItems.items.isEmpty()) {
             boolean isSelectionMenuOrderCorrectionEnabled =
                     ContentFeatureMap.isEnabled(
                             ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION);

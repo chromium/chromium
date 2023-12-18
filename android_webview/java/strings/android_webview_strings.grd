@@ -177,6 +177,9 @@
       <message name="IDS_LICENSE_ACTIVITY_TITLE" desc="The title of the activity that displays licenses of WebView. [CHAR_LIMIT=50]">
         System WebView licenses
       </message>
+      <message name="IDS_ACTIONBAR_MANAGE_APPS" desc="Contextual action bar item for managing Text Processing Menu items.">
+        Manage apps
+      </message>
     </messages>
   </release>
 </grit>

@@ -28,7 +28,6 @@ import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.content.R;
-import org.chromium.content_public.browser.AdditionalSelectionMenuItemProvider;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionMenuGroup;
@@ -143,17 +142,20 @@ public class SelectActionMenuHelper {
     public static SortedSet<SelectionMenuGroup> getNonSelectionMenuItems(
             @Nullable Context context,
             SelectActionMenuDelegate delegate,
-            @Nullable AdditionalSelectionMenuItemProvider nonSelectionAdditionalItemProvider,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
         SortedSet<SelectionMenuGroup> pasteMenuItems = new TreeSet<>();
         pasteMenuItems.add(getDefaultItems(context, delegate, selectionActionMenuDelegate));
 
-        if (nonSelectionAdditionalItemProvider != null
-                && !nonSelectionAdditionalItemProvider.getItems().isEmpty()) {
-            SelectionMenuGroup additionalItemGroup =
-                    new SelectionMenuGroup(Menu.NONE, GroupItemOrder.DEFAULT_ITEMS + 1);
-            additionalItemGroup.addItems(nonSelectionAdditionalItemProvider.getItems());
-            pasteMenuItems.add(additionalItemGroup);
+        if (selectionActionMenuDelegate != null) {
+            List<SelectionMenuItem> additionalMenuItems =
+                    selectionActionMenuDelegate.getAdditionalNonSelectionItems();
+            if (!additionalMenuItems.isEmpty()) {
+                // Additional menu item group which comes after default menu items.
+                SelectionMenuGroup additionalItemGroup =
+                        new SelectionMenuGroup(Menu.NONE, GroupItemOrder.SECONDARY_ASSIST_ITEMS);
+                additionalItemGroup.addItems(additionalMenuItems);
+                pasteMenuItems.add(additionalItemGroup);
+            }
         }
         return pasteMenuItems;
     }
@@ -194,10 +196,9 @@ public class SelectActionMenuHelper {
                         context,
                         isSelectionPassword,
                         isSelectionReadOnly,
-                        textProcessingIntentHandler);
-        if (textProcessingItems != null) {
-            itemGroups.add(textProcessingItems);
-        }
+                        textProcessingIntentHandler,
+                        selectionActionMenuDelegate);
+        itemGroups.add(textProcessingItems);
         return itemGroups;
     }
 
@@ -246,7 +247,7 @@ public class SelectActionMenuHelper {
         }
         if (ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION)
                 && selectionActionMenuDelegate != null) {
-            selectionActionMenuDelegate.getModifiedMenuItems(menuItemBuilders);
+            selectionActionMenuDelegate.modifyDefaultMenuItems(menuItemBuilders);
         }
         for (SelectionMenuItem.Builder builder : menuItemBuilders) {
             defaultGroup.addItem(builder.build());
@@ -306,25 +307,32 @@ public class SelectActionMenuHelper {
         return secondaryAssistItems;
     }
 
-    @Nullable
     @VisibleForTesting
     /* package */ static SelectionMenuGroup getTextProcessingItems(
             Context context,
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
-            @Nullable TextProcessingIntentHandler intentHandler) {
-        if (isSelectionPassword || intentHandler == null) {
-            return null;
-        }
-        List<ResolveInfo> supportedActivities =
-                PackageManagerUtils.queryIntentActivities(createProcessTextIntent(), 0);
-        if (supportedActivities.isEmpty()) {
-            return null;
-        }
+            @Nullable TextProcessingIntentHandler intentHandler,
+            @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
         SelectionMenuGroup textProcessingItems =
                 new SelectionMenuGroup(
                         R.id.select_action_menu_text_processing_items,
                         GroupItemOrder.TEXT_PROCESSING_ITEMS);
+        if (isSelectionPassword || intentHandler == null) {
+            addAdditionalTextProcessingItems(textProcessingItems, selectionActionMenuDelegate);
+            return textProcessingItems;
+        }
+        List<ResolveInfo> supportedActivities =
+                PackageManagerUtils.queryIntentActivities(createProcessTextIntent(), 0);
+        if (ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION) &&
+                selectionActionMenuDelegate != null) {
+            supportedActivities =
+                    selectionActionMenuDelegate.filterTextProcessingActivities(supportedActivities);
+        }
+        if (supportedActivities.isEmpty()) {
+            addAdditionalTextProcessingItems(textProcessingItems, selectionActionMenuDelegate);
+            return textProcessingItems;
+        }
         final PackageManager packageManager = context.getPackageManager();
         for (int i = 0; i < supportedActivities.size(); i++) {
             ResolveInfo resolveInfo = supportedActivities.get(i);
@@ -346,7 +354,18 @@ public class SelectActionMenuHelper {
                             .setIntent(intent)
                             .build());
         }
+        addAdditionalTextProcessingItems(textProcessingItems, selectionActionMenuDelegate);
         return textProcessingItems;
+    }
+
+    private static void addAdditionalTextProcessingItems(
+            SelectionMenuGroup textProcessingItems,
+            SelectionActionMenuDelegate selectionActionMenuDelegate) {
+        if (ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION)
+                && selectionActionMenuDelegate != null) {
+            textProcessingItems.addItems(
+                    selectionActionMenuDelegate.getAdditionalTextProcessingItems());
+        }
     }
 
     private static Intent createProcessTextIntentForResolveInfo(

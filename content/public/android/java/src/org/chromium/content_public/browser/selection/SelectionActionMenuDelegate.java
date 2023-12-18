@@ -4,6 +4,10 @@
 
 package org.chromium.content_public.browser.selection;
 
+import android.content.pm.ResolveInfo;
+
+import androidx.annotation.NonNull;
+
 import org.chromium.content_public.browser.SelectionMenuItem;
 
 import java.util.List;
@@ -14,9 +18,41 @@ import java.util.List;
  */
 public interface SelectionActionMenuDelegate {
     /**
-     * Used to modify menu items.
+     * Allows the delegate make changes to default menu items created by {@link
+     * SelectionPopupController}. These menu items are present in both text selection and no text
+     * selection scenario if they satisfy respective conditions and are present before additional
+     * menu items from {@link #getAdditionalNonSelectionItems()} and {@link
+     * #getAdditionalTextProcessingItems()}.
      *
-     * @param menuItemBuilders menu item builder list which need to be modified.
+     * @param menuItemBuilders default menu item builder list which need to be modified.
      */
-    void getModifiedMenuItems(List<SelectionMenuItem.Builder> menuItemBuilders);
+    void modifyDefaultMenuItems(List<SelectionMenuItem.Builder> menuItemBuilders);
+
+    /**
+     * Allows filtering of text processing activities.
+     *
+     * @param activities list to text processing activities to be filtered.
+     * @return list of text processing activities after filtering.
+     */
+    List<ResolveInfo> filterTextProcessingActivities(List<ResolveInfo> activities);
+
+    /**
+     * Provides additional menu items when no text is selected and while editing text with a cursor.
+     * These menu items are ordered after default menu items from {@link
+     * #modifyDefaultMenuItems(List)} if any.
+     *
+     * @return list of additional non selection secondary menu items if any.
+     */
+    @NonNull
+    List<SelectionMenuItem> getAdditionalNonSelectionItems();
+
+    /**
+     * Provides additional menu items which registers for text processing when text is selected.
+     * These menu items are ordered after default menu items from {@link
+     * #modifyDefaultMenuItems(List)} if any.
+     *
+     * @return list of additional text selection menu items handling text processing if any.
+     */
+    @NonNull
+    List<SelectionMenuItem> getAdditionalTextProcessingItems();
 }
