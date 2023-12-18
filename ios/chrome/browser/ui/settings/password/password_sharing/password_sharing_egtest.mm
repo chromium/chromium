@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
@@ -204,9 +205,17 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordAndOpenDetails];
 
+  // Share button should be visible and display the policy info popup upon tap.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kEnterpriseInfoBubbleViewId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 - (void)testFamilyPickerCancelFlow {

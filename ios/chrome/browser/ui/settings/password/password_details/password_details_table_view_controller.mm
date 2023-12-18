@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
+#import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/cells/table_view_stacked_details_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
@@ -830,13 +831,15 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   _userEmail = userEmail;
 }
 
-- (void)setupRightShareButton {
+- (void)setupRightShareButton:(BOOL)enabled {
+  SEL selector = enabled ? @selector(onShareButtonPressed)
+                         : @selector(onPolicyDisabledShareButtonPressed:);
   UIBarButtonItem* shareButton = [[UIBarButtonItem alloc]
       initWithImage:DefaultSymbolWithPointSize(kShareSymbol,
                                                kSymbolActionPointSize)
               style:UIBarButtonItemStylePlain
              target:self
-             action:@selector(onShareButtonPressed)];
+             action:selector];
   shareButton.accessibilityIdentifier = kPasswordShareButtonID;
   self.navigationItem.rightBarButtonItems =
       @[ self.navigationItem.rightBarButtonItem, shareButton ];
@@ -1266,9 +1269,30 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
                              repeats:NO];
 }
 
+// Notifies the handler that the share button was pressed by the user.
 - (void)onShareButtonPressed {
   CHECK(self.handler);
   [self.handler onShareButtonPressed];
+}
+
+// Displays the popup informing that password sharing is disabled by the
+// administrator.
+- (void)onPolicyDisabledShareButtonPressed:(UIBarButtonItem*)button {
+  EnterpriseInfoPopoverViewController* popoverViewController =
+      [[EnterpriseInfoPopoverViewController alloc]
+                 initWithMessage:
+                     l10n_util::GetNSString(
+                         IDS_IOS_PASSWORD_SHARING_ENTERPRISE_POLICY_DISABLED_MESSAGE)
+                  enterpriseName:nil
+          isPresentingFromButton:YES
+                addLearnMoreLink:NO];
+  popoverViewController.popoverPresentationController.barButtonItem = button;
+  popoverViewController.popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionAny;
+
+  [self presentViewController:popoverViewController
+                     animated:YES
+                   completion:nil];
 }
 
 #pragma mark - AutofillEditTableViewController

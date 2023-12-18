@@ -24,8 +24,10 @@
 // Set the signed in user email.
 - (void)setUserEmail:(NSString*)userEmail;
 
-// Sets up the share button next to the navigation's right bar button.
-- (void)setupRightShareButton;
+// Sets up the share button next to the navigation's right bar button. Tapping
+// on the button results in entering the sharing flow when `enabled`. Otherwise,
+// info popup is displayed explaining that the feature is disabled by policy.
+- (void)setupRightShareButton:(BOOL)enabled;
 
 @end
 

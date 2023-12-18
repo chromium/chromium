@@ -3177,6 +3177,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_SHARING_CANCELLED_TITLE" desc="Title text on the sharing status view when the sharing was cancelled. [iOS only]">
         Password Was Not Shared
       </message>
+      <message name="IDS_IOS_PASSWORD_SHARING_ENTERPRISE_POLICY_DISABLED_MESSAGE" desc="Text displayed on the password sharing popover explaining that the feature is disabled by the enterprise administrator. [iOS only]">
+        Password sharing is disabled by your administrator.
+      </message>
       <message name="IDS_IOS_PASSWORD_SHARING_FAMILY_PICKER_BACK_BUTTON" desc="Button text for the navigation back action in the family picker view in the password sharing flow. [iOS only]">
         Back
       </message>
