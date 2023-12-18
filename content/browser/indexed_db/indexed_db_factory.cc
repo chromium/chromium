@@ -26,15 +26,12 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/base_tracing.h"
-#include "base/trace_event/memory_dump_manager.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
@@ -174,17 +171,10 @@ std::tuple<bool, leveldb::Status> AreSchemasKnown(
 IndexedDBFactory::IndexedDBFactory(IndexedDBContextImpl* context)
     : context_(context) {
   DCHECK(context);
-  base::trace_event::MemoryDumpManager::GetInstance()
-      ->RegisterDumpProviderWithSequencedTaskRunner(
-          this, "IndexedDBFactory",
-          base::SequencedTaskRunner::GetCurrentDefault(),
-          base::trace_event::MemoryDumpProvider::Options());
 }
 
 IndexedDBFactory::~IndexedDBFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
-      this);
 }
 
 void IndexedDBFactory::AddReceiver(
@@ -999,33 +989,6 @@ void IndexedDBFactory::OnDatabaseDeleted(
     return;
   }
   context_->DatabaseDeleted(bucket_locator);
-}
-
-bool IndexedDBFactory::OnMemoryDump(
-    const base::trace_event::MemoryDumpArgs& args,
-    base::trace_event::ProcessMemoryDump* pmd) {
-  for (const auto& bucket_context_pair : bucket_contexts_) {
-    IndexedDBBucketContext* bucket_context = bucket_context_pair.second.get();
-    base::CheckedNumeric<uint64_t> total_memory_in_flight = 0;
-    for (const auto& db_name_object_pair : bucket_context->databases()) {
-      for (IndexedDBConnection* connection :
-           db_name_object_pair.second->connections()) {
-        for (const auto& txn_id_pair : connection->transactions()) {
-          total_memory_in_flight += txn_id_pair.second->in_flight_memory();
-        }
-      }
-    }
-    // This pointer is used to match the pointer used in
-    // TransactionalLevelDBDatabase::OnMemoryDump.
-    leveldb::DB* db = bucket_context->backing_store()->db()->db();
-    auto* db_dump = pmd->CreateAllocatorDump(
-        base::StringPrintf("site_storage/index_db/in_flight_0x%" PRIXPTR,
-                           reinterpret_cast<uintptr_t>(db)));
-    db_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                       base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                       total_memory_in_flight.ValueOrDefault(0));
-  }
-  return true;
 }
 
 IndexedDBFactory::ReceiverContext::ReceiverContext(

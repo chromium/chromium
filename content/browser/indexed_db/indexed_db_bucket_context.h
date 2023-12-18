@@ -18,6 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -63,7 +64,8 @@ constexpr const char kIDBCloseImmediatelySwitch[] = "idb-close-immediately";
 // as `IndexedDBFactory`, and those that pertain to a specific bucket and
 // therefore run on a bucket's IDB task runner, such as `IndexedDBDatabase` or
 // `IndexedDBCursor`.
-class CONTENT_EXPORT IndexedDBBucketContext {
+class CONTENT_EXPORT IndexedDBBucketContext
+    : public base::trace_event::MemoryDumpProvider {
  public:
   using DBMap =
       base::flat_map<std::u16string, std::unique_ptr<IndexedDBDatabase>>;
@@ -177,7 +179,7 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   IndexedDBBucketContext(const IndexedDBBucketContext&) = delete;
   IndexedDBBucketContext& operator=(const IndexedDBBucketContext&) = delete;
 
-  ~IndexedDBBucketContext();
+  ~IndexedDBBucketContext() override;
 
   void QueueRunTasks();
 
@@ -225,7 +227,12 @@ class CONTENT_EXPORT IndexedDBBucketContext {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return backing_store_.get();
   }
+  // TODO(crbug.com/1474996): remove this.
   const DBMap& databases() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return databases_;
+  }
+  const DBMap& GetDatabasesForTesting() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return databases_;
   }
@@ -271,6 +278,10 @@ class CONTENT_EXPORT IndexedDBBucketContext {
       base::OnceCallback<void(storage::mojom::IdbBucketMetadataPtr)> result);
 
   void CompactBackingStoreForTesting();
+
+  // base::trace_event::MemoryDumpProvider:
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
 
  private:
   friend IndexedDBFactory;

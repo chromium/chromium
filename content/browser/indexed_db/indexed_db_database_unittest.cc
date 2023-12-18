@@ -173,7 +173,7 @@ TEST_F(IndexedDBDatabaseTest, ConnectionLifecycle) {
 
   RunPostedTasks();
 
-  EXPECT_TRUE(bucket_context_->databases().empty());
+  EXPECT_TRUE(bucket_context_->GetDatabasesForTesting().empty());
 }
 
 TEST_F(IndexedDBDatabaseTest, ForcedClose) {

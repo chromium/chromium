@@ -14,10 +14,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
@@ -288,6 +291,12 @@ IndexedDBBucketContext::IndexedDBBucketContext(
       blob_storage_context_(std::move(blob_storage_context)),
       file_system_access_context_(std::move(file_system_access_context)),
       delegate_(std::move(delegate)) {
+  // TODO(estade): is `SequencedTaskRunner::GetCurrentDefault()` actually safe?
+  base::trace_event::MemoryDumpManager::GetInstance()
+      ->RegisterDumpProviderWithSequencedTaskRunner(
+          this, "IndexedDBBucketContext",
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::trace_event::MemoryDumpProvider::Options());
 
   backing_store_->set_bucket_context(this);
 
@@ -304,6 +313,8 @@ IndexedDBBucketContext::IndexedDBBucketContext(
 
 IndexedDBBucketContext::~IndexedDBBucketContext() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
   if (!backing_store_) {
     return;
   }
@@ -873,6 +884,30 @@ void IndexedDBBucketContext::BindFileReader(
 void IndexedDBBucketContext::RemoveBoundReaders(const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   file_reader_map_.erase(path);
+}
+
+bool IndexedDBBucketContext::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  base::CheckedNumeric<uint64_t> total_memory_in_flight = 0;
+  for (const auto& db_name_object_pair : databases()) {
+    for (IndexedDBConnection* connection :
+         db_name_object_pair.second->connections()) {
+      for (const auto& txn_id_pair : connection->transactions()) {
+        total_memory_in_flight += txn_id_pair.second->in_flight_memory();
+      }
+    }
+  }
+  // This pointer is used to match the pointer used in
+  // TransactionalLevelDBDatabase::OnMemoryDump.
+  leveldb::DB* db = backing_store()->db()->db();
+  auto* db_dump = pmd->CreateAllocatorDump(
+      base::StringPrintf("site_storage/index_db/in_flight_0x%" PRIXPTR,
+                         reinterpret_cast<uintptr_t>(db)));
+  db_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                     base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                     total_memory_in_flight.ValueOrDefault(0));
+  return true;
 }
 
 }  // namespace content

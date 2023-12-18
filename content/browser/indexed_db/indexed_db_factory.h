@@ -21,8 +21,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "base/trace_event/memory_dump_provider.h"
-#include "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -54,9 +52,7 @@ class TransactionalLevelDBDatabase;
 
 // This class has a 1:1 relationship with `IndexedDBContextImpl`.
 // TODO(crbug.com/1474996): merge with `IndexedDBContextImpl`.
-class CONTENT_EXPORT IndexedDBFactory
-    : public blink::mojom::IDBFactory,
-      public base::trace_event::MemoryDumpProvider {
+class CONTENT_EXPORT IndexedDBFactory : public blink::mojom::IDBFactory {
  public:
   explicit IndexedDBFactory(IndexedDBContextImpl* context);
 
@@ -86,10 +82,6 @@ class CONTENT_EXPORT IndexedDBFactory
                           blink::mojom::IDBFactoryClient> factory_client,
                       const std::u16string& name,
                       bool force_close) override;
-
-  // base::trace_event::MemoryDumpProvider:
-  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
-                    base::trace_event::ProcessMemoryDump* pmd) override;
 
   // Close all connections to all databases within the bucket. If
   // `will_be_deleted` is true, references to in-memory databases will be
