@@ -4368,8 +4368,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
                "opener", opener, "params", params);
   DCHECK(opener);
 
-  if (base::FeatureList::IsEnabled(features::kWindowOpenFileSelectFix) &&
-      active_file_chooser_) {
+  if (active_file_chooser_) {
     // Do not allow opening a new window or tab while a file select is active
     // file chooser to avoid user confusion over which tab triggered the file
     // chooser.
@@ -6940,15 +6939,13 @@ void WebContentsImpl::EnumerateDirectory(
   base::ScopedClosureRunner cancel_chooser(base::BindOnce(
       &FileChooserImpl::FileSelectListenerImpl::FileSelectionCanceled,
       listener));
-  if (base::FeatureList::IsEnabled(features::kWindowOpenFileSelectFix)) {
-    if (visibility_ == Visibility::HIDDEN) {
-      // Do not allow background tab to open file chooser.
-      return;
-    }
-    if (active_file_chooser_) {
-      // Only allow one active file chooser at one time.
-      return;
-    }
+  if (visibility_ == Visibility::HIDDEN) {
+    // Do not allow background tab to open file chooser.
+    return;
+  }
+  if (active_file_chooser_) {
+    // Only allow one active file chooser at one time.
+    return;
   }
 
   // Any explicit focusing of another window while this WebContents is in
@@ -6957,9 +6954,7 @@ void WebContentsImpl::EnumerateDirectory(
   listener->SetFullscreenBlock(std::move(fullscreen_block));
 
   if (delegate_) {
-    if (base::FeatureList::IsEnabled(features::kWindowOpenFileSelectFix)) {
-      active_file_chooser_ = std::move(file_chooser);
-    }
+    active_file_chooser_ = std::move(file_chooser);
     delegate_->EnumerateDirectory(this, std::move(listener), directory_path);
     std::ignore = cancel_chooser.Release();
   }
@@ -7732,15 +7727,13 @@ void WebContentsImpl::RunFileChooser(
   base::ScopedClosureRunner cancel_chooser(base::BindOnce(
       &FileChooserImpl::FileSelectListenerImpl::FileSelectionCanceled,
       listener));
-  if (base::FeatureList::IsEnabled(features::kWindowOpenFileSelectFix)) {
-    if (visibility_ == Visibility::HIDDEN) {
-      // Do not allow background tab to open file chooser.
-      return;
-    }
-    if (active_file_chooser_) {
-      // Only allow one active file chooser at one time.
-      return;
-    }
+  if (visibility_ == Visibility::HIDDEN) {
+    // Do not allow background tab to open file chooser.
+    return;
+  }
+  if (active_file_chooser_) {
+    // Only allow one active file chooser at one time.
+    return;
   }
 
   // Any explicit focusing of another window while this WebContents is in
@@ -7749,9 +7742,7 @@ void WebContentsImpl::RunFileChooser(
   listener->SetFullscreenBlock(std::move(fullscreen_block));
 
   if (delegate_) {
-    if (base::FeatureList::IsEnabled(features::kWindowOpenFileSelectFix)) {
-      active_file_chooser_ = std::move(file_chooser);
-    }
+    active_file_chooser_ = std::move(file_chooser);
     delegate_->RunFileChooser(render_frame_host, std::move(listener), params);
     std::ignore = cancel_chooser.Release();
   }
