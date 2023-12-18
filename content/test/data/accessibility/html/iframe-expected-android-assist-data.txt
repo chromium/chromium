@@ -1,4 +1,4 @@
-WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
-++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
-++++View textSize:16.00 style:0 bundle:[aria-label="Empty iframe", display="inline", htmlTag="iframe", src="frame/empty.html", style="width:100px; height: 100px;"]
-++++++View textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="iframe"}, {display="inline"}, {aria-label="Empty iframe"}, {src="frame/empty.html"}, {style="width:100px; height: 100px;"}]
+++++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]

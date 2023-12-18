@@ -15,7 +15,6 @@ import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBu
 
 import android.app.assist.AssistStructure.ViewNode;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.ViewStructure;
 
@@ -31,14 +30,7 @@ import java.util.Arrays;
 public class ViewStructureBuilder {
     private RenderCoordinatesImpl mRenderCoordinates;
 
-    public static ViewStructureBuilder create(RenderCoordinatesImpl renderCoordinates) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return new OViewStructureBuilder(renderCoordinates);
-        }
-        return new ViewStructureBuilder(renderCoordinates);
-    }
-
-    protected ViewStructureBuilder(RenderCoordinatesImpl renderCoordinates) {
+    public ViewStructureBuilder(RenderCoordinatesImpl renderCoordinates) {
         this.mRenderCoordinates = renderCoordinates;
     }
 
@@ -122,11 +114,13 @@ public class ViewStructureBuilder {
     @CalledByNative
     protected void setViewStructureNodeHtmlInfo(
             ViewStructure node, String htmlTag, String cssDisplay, String[][] htmlAttributes) {
-        Bundle extras = node.getExtras();
-        extras.putCharSequence("htmlTag", htmlTag);
-        extras.putCharSequence("display", cssDisplay);
-        for (String[] attr : htmlAttributes) {
-            extras.putCharSequence(attr[0], attr[1]);
+        ViewStructure.HtmlInfo.Builder htmlBuilder = node.newHtmlInfoBuilder(htmlTag);
+        if (htmlBuilder != null) {
+            htmlBuilder.addAttribute("display", cssDisplay);
+            for (String[] attr : htmlAttributes) {
+                htmlBuilder.addAttribute(attr[0], attr[1]);
+            }
+            node.setHtmlInfo(htmlBuilder.build());
         }
     }
 

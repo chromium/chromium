@@ -1,3 +1,3 @@
-WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
-++View textSize:16.00 style:0 bundle:[display="block", htmlTag="p"]
-++++TextView text:"This test is for body tag" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}]
+++++TextView text:"This test is for body tag" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

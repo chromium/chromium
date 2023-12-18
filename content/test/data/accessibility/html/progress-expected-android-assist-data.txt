@@ -1,4 +1,4 @@
-WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
-++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
-++++ProgressBar textSize:16.00 style:0 bundle:[display="inline-block", htmlTag="progress", max="100", value="22"]
-++++ProgressBar textSize:16.00 style:0 bundle:[display="inline-block", htmlTag="progress"]
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++ProgressBar textSize:16.0 style:0 htmlInfo:[{htmlTag="progress"}, {display="inline-block"}, {max="100"}, {value="22"}]
+++++ProgressBar textSize:16.0 style:0 htmlInfo:[{htmlTag="progress"}, {display="inline-block"}]

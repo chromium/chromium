@@ -1,4 +1,4 @@
-WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
-++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
-++++Image textSize:16.00 style:0 bundle:[display="inline", htmlTag="svg"]
-++++++View textSize:16.00 style:0 bundle:[display="inline", height="10", htmlTag="rect", id="clickable", width="10"]
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++Image textSize:16.0 style:0 htmlInfo:[{htmlTag="svg"}, {display="inline"}]
+++++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="rect"}, {display="inline"}, {height="10"}, {id="clickable"}, {width="10"}]

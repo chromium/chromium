@@ -1,4 +1,4 @@
-WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
-++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="group"]
-++++MenuItem textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="menuitem", tabindex="0"]
-++++++TextView text:"Menu item" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="group"}]
+++++MenuItem textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="menuitem"}, {tabindex="0"}]
+++++++TextView text:"Menu item" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
