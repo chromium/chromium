@@ -230,13 +230,6 @@ absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
 absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     const std::string& language_name);
 
-// Get the language component config matching a given language subtag. For
-// example, the "fr-CA" language name will return the language component config
-// for "fr-FR".
-absl::optional<SodaLanguagePackComponentConfig>
-GetLanguageComponentConfigMatchingLanguageSubtag(
-    const std::string& language_name);
-
 LanguageCode GetLanguageCodeByComponentId(const std::string& component_id);
 
 std::string GetLanguageName(LanguageCode language_code);

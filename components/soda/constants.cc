@@ -159,20 +159,6 @@ absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
   return absl::nullopt;
 }
 
-absl::optional<SodaLanguagePackComponentConfig>
-GetLanguageComponentConfigMatchingLanguageSubtag(
-    const std::string& language_name) {
-  for (const SodaLanguagePackComponentConfig& config :
-       kLanguageComponentConfigs) {
-    if (l10n_util::GetLanguage(base::ToLowerASCII(config.language_name)) ==
-        l10n_util::GetLanguage(base::ToLowerASCII(language_name))) {
-      return config;
-    }
-  }
-
-  return absl::nullopt;
-}
-
 LanguageCode GetLanguageCodeByComponentId(const std::string& component_id) {
   for (const SodaLanguagePackComponentConfig& config :
        kLanguageComponentConfigs) {
