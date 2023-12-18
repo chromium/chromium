@@ -53,6 +53,9 @@ class [[nodiscard]] ErrorStatus final : public Status {
 //   std::move(cb).Run(base::unexpected(Status(...)));
 template <typename T>
 using StatusOr = base::expected<T, internal::ErrorStatus>;
+
+// Create a `StatusOr<T>` object with an unknown error.
+base::unexpected<Status> CreateUnknownErrorStatusOr();
 }  // namespace reporting
 
 #endif  // COMPONENTS_REPORTING_UTIL_STATUSOR_H_

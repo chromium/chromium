@@ -158,7 +158,6 @@ void Encryptor::RetrieveAsymmetricKey(
              scoped_refptr<Encryptor> encryptor) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(
                 encryptor->asymmetric_key_sequence_checker_);
-            StatusOr<std::pair<std::string, PublicKeyId>> response;
             // Schedule response on regular thread pool.
             base::ThreadPool::PostTask(
                 FROM_HERE,

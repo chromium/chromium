@@ -119,7 +119,8 @@ void Decryptor::RecordKeyPair(
              base::OnceCallback<void(StatusOr<Encryptor::PublicKeyId>)> cb,
              scoped_refptr<Decryptor> decryptor) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(decryptor->keys_sequence_checker_);
-            StatusOr<Encryptor::PublicKeyId> result;
+            StatusOr<Encryptor::PublicKeyId> result =
+                CreateUnknownErrorStatusOr();
             if (key_info.private_key.size() != kKeySize) {
               result = base::unexpected(Status(
                   error::FAILED_PRECONDITION,

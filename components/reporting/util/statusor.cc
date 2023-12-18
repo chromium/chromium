@@ -7,8 +7,11 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/no_destructor.h"
+#include "base/types/expected.h"
 
-namespace reporting::internal {
+namespace reporting {
+namespace internal {
 ErrorStatus::ErrorStatus(const ErrorStatus&) = default;
 ErrorStatus& ErrorStatus::operator=(const ErrorStatus&) = default;
 ErrorStatus::ErrorStatus(ErrorStatus&&) = default;
@@ -22,4 +25,11 @@ ErrorStatus::ErrorStatus(const Status& status) : Status(status) {
 ErrorStatus::ErrorStatus(Status&& status) : Status(std::move(status)) {
   CHECK(!ok()) << "The status must not be OK";
 }
-}  // namespace reporting::internal
+}  // namespace internal
+
+base::unexpected<Status> CreateUnknownErrorStatusOr() {
+  static base::NoDestructor<base::unexpected<Status>> status_not_initialized(
+      Status(error::UNKNOWN, "Not initialized"));
+  return *status_not_initialized;
+}
+}  // namespace reporting
