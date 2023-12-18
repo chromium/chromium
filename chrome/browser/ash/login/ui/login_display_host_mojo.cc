@@ -356,6 +356,8 @@ void LoginDisplayHostMojo::OnLocalAuthenticationCompleted(
     bool success,
     std::unique_ptr<UserContext> user_context) {
   if (!success) {
+    // TODO: pass flow to WizardController, suggest to
+    // remove & re-create user in case of Recovery flow.
     existing_user_controller_->OnLocalAuthenticationCancelled();
     // While dialog itself is already hidden, this call should
     // correctly reset all associated data.

@@ -40,7 +40,9 @@ std::string LocalDataLossWarningScreen::GetResultString(Result result) {
   switch (result) {
     case Result::kRemoveUser:
       return "removeUser";
-    case Result::kBack:
+    case Result::kBackToLocalAuth:
+      return "Back";
+    case Result::kBackToOnlineAuth:
       return "Back";
     case Result::kCryptohomeError:
       return "CryptohomeError";
@@ -61,8 +63,11 @@ LocalDataLossWarningScreen::LocalDataLossWarningScreen(
 LocalDataLossWarningScreen::~LocalDataLossWarningScreen() = default;
 
 void LocalDataLossWarningScreen::ShowImpl() {
+  bool can_go_back = context()->knowledge_factor_setup.data_loss_back_option !=
+                     WizardContext::DataLossBackOptions::kNone;
   view_->Show(isOwner(context()->user_context->GetAccountId()),
-              context()->user_context->GetAccountId().GetUserEmail(), true);
+              context()->user_context->GetAccountId().GetUserEmail(),
+              can_go_back);
 }
 
 void LocalDataLossWarningScreen::OnUserAction(const base::Value::List& args) {
@@ -81,8 +86,17 @@ void LocalDataLossWarningScreen::OnUserAction(const base::Value::List& args) {
     SessionManagerClient::Get()->StartDeviceWipe(base::DoNothing());
     return;
   } else if (action_id == kUserActionBack) {
-    exit_callback_.Run(Result::kBack);
-    return;
+    switch (context()->knowledge_factor_setup.data_loss_back_option) {
+      case WizardContext::DataLossBackOptions::kNone:
+        NOTREACHED() << "Back button should not be shown";
+        return;
+      case WizardContext::DataLossBackOptions::kBackToOnlineAuth:
+        exit_callback_.Run(Result::kBackToOnlineAuth);
+        return;
+      case WizardContext::DataLossBackOptions::kBackToLocalAuth:
+        exit_callback_.Run(Result::kBackToLocalAuth);
+        return;
+    }
   } else if (action_id == kUserActionCancel) {
     exit_callback_.Run(Result::kCancel);
     return;
@@ -96,7 +110,7 @@ void LocalDataLossWarningScreen::OnRemovedUserDirectory(
   context()->user_context = std::move(user_context);
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Failed to remove user home directory";
-    // TODO(b/239420684): Send an error to the UI.
+    context()->osauth_error = WizardContext::OSAuthErrorKind::kFatal;
     exit_callback_.Run(Result::kCryptohomeError);
     return;
   }
@@ -113,9 +127,12 @@ void LocalDataLossWarningScreen::OnRemovedUserDirectory(
   // related to cryptohome state.
   context()->user_context->ResetAuthSessionIds();
   context()->user_context->ClearAuthFactorsConfiguration();
+
   // Move online password back so that it can be used as key.
   // See `ShowImpl()` to see where it was stored.
-  context()->user_context->ReuseReplacementKey();
+  if (context()->user_context->HasReplacementKey()) {
+    context()->user_context->ReuseReplacementKey();
+  }
   exit_callback_.Run(Result::kRemoveUser);
 }
 

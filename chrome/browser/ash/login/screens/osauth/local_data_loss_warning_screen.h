@@ -24,7 +24,8 @@ class LocalDataLossWarningScreen : public BaseOSAuthSetupScreen {
 
   enum class Result {
     kRemoveUser,
-    kBack,
+    kBackToOnlineAuth,
+    kBackToLocalAuth,
     kCryptohomeError,
     kCancel,
   };

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/osauth/cryptohome_recovery_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -12,6 +13,10 @@
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
+#include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
 #include "components/user_manager/user_manager.h"
 
 namespace {
@@ -31,20 +36,26 @@ namespace ash {
 // static
 std::string CryptohomeRecoveryScreen::GetResultString(Result result) {
   switch (result) {
-    case Result::kSucceeded:
+    case Result::kObsoleteSucceeded:
       return "Succeeded";
     case Result::kGaiaLogin:
       return "GaiaLogin";
-    case Result::kManualRecovery:
+    case Result::kObsoleteManualRecovery:
       return "ManualRecovery";
-    case Result::kRetry:
+    case Result::kObsoleteRetry:
       return "Retry";
-    case Result::kNoRecoveryFactor:
+    case Result::kObsoleteNoRecoveryFactor:
       return "NoRecoveryFactor";
-    case Result::kNotApplicable:
-      return BaseScreen::kNotApplicable;
-    case Result::kTimeout:
+    case Result::kObsoleteTimeout:
       return "Timeout";
+    case Result::kAuthenticated:
+      return "Authenticated";
+    case Result::kError:
+      return "Error";
+    case Result::kFallbackLocal:
+      return "FallbackLocal";
+    case Result::kFallbackOnline:
+      return "FallbackOnline";
   }
 }
 
@@ -77,15 +88,15 @@ void CryptohomeRecoveryScreen::HideImpl() {}
 void CryptohomeRecoveryScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionDone) {
-    exit_callback_.Run(Result::kSucceeded);
+    exit_callback_.Run(Result::kObsoleteSucceeded);
   } else if (action_id == kUserActionRetry) {
     // TODO(b/257073746): We probably want to differentiate between retry with
     // or without login.
     RecordReauthReason(context()->user_context->GetAccountId(),
                        ReauthReason::kCryptohomeRecovery);
-    exit_callback_.Run(Result::kRetry);
+    exit_callback_.Run(Result::kObsoleteRetry);
   } else if (action_id == kUserActionEnterOldPassword) {
-    exit_callback_.Run(Result::kManualRecovery);
+    exit_callback_.Run(Result::kObsoleteManualRecovery);
   } else if (action_id == kUserActionReauth) {
     exit_callback_.Run(Result::kGaiaLogin);
   } else {
@@ -100,7 +111,13 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
     LOG(ERROR) << "Failed to get auth factors configuration, code "
                << error->get_cryptohome_code();
     context()->user_context = std::move(user_context);
-    view_->OnRecoveryFailed();
+    if (base::FeatureList::IsEnabled(
+            ash::features::kCryptohomeRecoveryBeforeFlowSplit)) {
+      view_->OnRecoveryFailed();
+      return;
+    }
+    context()->osauth_error = WizardContext::OSAuthErrorKind::kFatal;
+    exit_callback_.Run(Result::kError);
     return;
   }
 
@@ -109,20 +126,28 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
       config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
   if (is_configured) {
     if (user_context->GetReauthProofToken().empty()) {
+      auto account_id = user_context->GetAccountId();
+      context()->user_context = std::move(user_context);
       if (was_reauth_proof_token_missing_) {
         LOG(ERROR)
             << "Reauth proof token is still missing after the second attempt";
-        view_->OnRecoveryFailed();
+        if (base::FeatureList::IsEnabled(
+                ash::features::kCryptohomeRecoveryBeforeFlowSplit)) {
+          view_->OnRecoveryFailed();
+          return;
+        }
+        context()->osauth_error = WizardContext::OSAuthErrorKind::kFatal;
+        exit_callback_.Run(Result::kError);
+        return;
       } else {
         LOG(WARNING) << "Reauth proof token is not present";
         was_reauth_proof_token_missing_ = true;
-        RecordReauthReason(user_context->GetAccountId(),
-                           ReauthReason::kCryptohomeRecovery);
+        RecordReauthReason(account_id, ReauthReason::kCryptohomeRecovery);
         view_->ShowReauthNotification();
+        return;
       }
-      context()->user_context = std::move(user_context);
-      return;
     }
+    CHECK(user_context->HasAuthFactorsConfiguration());
     recovery_performer_ = std::make_unique<CryptohomeRecoveryPerformer>(
         UserDataAuthClient::Get(),
         g_browser_process->shared_url_loader_factory());
@@ -131,8 +156,27 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
         base::BindOnce(&CryptohomeRecoveryScreen::OnAuthenticateWithRecovery,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
+    if (base::FeatureList::IsEnabled(
+            ash::features::kCryptohomeRecoveryBeforeFlowSplit)) {
+      context()->user_context = std::move(user_context);
+      exit_callback_.Run(Result::kObsoleteNoRecoveryFactor);
+      return;
+    }
+    CHECK(user_context->HasAuthFactorsConfiguration());
+    const auto& auth_config = user_context->GetAuthFactorsConfiguration();
+
+    bool has_online_password = false;
+    if (auth_config.HasConfiguredFactor(
+            cryptohome::AuthFactorType::kPassword)) {
+      has_online_password = auth::IsGaiaPassword(
+          *auth_config.FindFactorByType(cryptohome::AuthFactorType::kPassword));
+    }
     context()->user_context = std::move(user_context);
-    exit_callback_.Run(Result::kNoRecoveryFactor);
+    if (has_online_password) {
+      exit_callback_.Run(Result::kFallbackOnline);
+    } else {
+      exit_callback_.Run(Result::kFallbackLocal);
+    }
   }
 }
 
@@ -143,7 +187,14 @@ void CryptohomeRecoveryScreen::OnAuthenticateWithRecovery(
     LOG(ERROR) << "Failed to authenticate with recovery, "
                << error->ToDebugString();
     context()->user_context = std::move(user_context);
-    view_->OnRecoveryFailed();
+    if (base::FeatureList::IsEnabled(
+            ash::features::kCryptohomeRecoveryBeforeFlowSplit)) {
+      view_->OnRecoveryFailed();
+      return;
+    }
+    context()->osauth_error =
+        WizardContext::OSAuthErrorKind::kRecoveryAuthenticationFailed;
+    exit_callback_.Run(Result::kError);
     return;
   }
 
@@ -159,7 +210,23 @@ void CryptohomeRecoveryScreen::OnRotateRecoveryFactor(
   if (error.has_value()) {
     LOG(ERROR) << "Failed to rotate recovery factor, code "
                << error->get_cryptohome_code();
-    // TODO(b/289472295): handle failure scenario.
+    context()->extra_factors_token =
+        ash::AuthSessionStorage::Get()->Store(std::move(user_context));
+    context()->osauth_error =
+        WizardContext::OSAuthErrorKind::kRecoveryRotationFailed;
+    exit_callback_.Run(Result::kError);
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          ash::features::kCryptohomeRecoveryBeforeFlowSplit)) {
+    // Get AuthFactorsConfiguration again, as it was cleared after
+    // rotation.
+    auth_factor_editor_.GetAuthFactorsConfiguration(
+        std::move(user_context),
+        base::BindOnce(&CryptohomeRecoveryScreen::OnRefreshFactorsConfiguration,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
 
   std::string key_label;
@@ -182,6 +249,22 @@ void CryptohomeRecoveryScreen::OnRotateRecoveryFactor(
       std::move(user_context),
       base::BindOnce(&CryptohomeRecoveryScreen::OnReplaceContextKey,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CryptohomeRecoveryScreen::OnRefreshFactorsConfiguration(
+    std::unique_ptr<UserContext> user_context,
+    absl::optional<AuthenticationError> error) {
+  if (error.has_value()) {
+    LOG(ERROR) << "Failed to get auth factors configuration, code "
+               << error->get_cryptohome_code();
+    context()->user_context = std::move(user_context);
+    context()->osauth_error = WizardContext::OSAuthErrorKind::kFatal;
+    exit_callback_.Run(Result::kError);
+    return;
+  }
+  context()->extra_factors_token =
+      ash::AuthSessionStorage::Get()->Store(std::move(user_context));
+  exit_callback_.Run(Result::kAuthenticated);
 }
 
 void CryptohomeRecoveryScreen::OnReplaceContextKey(
@@ -210,7 +293,7 @@ void CryptohomeRecoveryScreen::OnReplaceContextKey(
 
 void CryptohomeRecoveryScreen::OnAuthSessionExpired() {
   LOG(WARNING) << "Exiting due to expired Auth Session.";
-  exit_callback_.Run(Result::kTimeout);
+  exit_callback_.Run(Result::kObsoleteTimeout);
 }
 
 }  // namespace ash

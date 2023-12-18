@@ -27,7 +27,6 @@ class EnterOldPasswordScreen : public BaseOSAuthSetupScreen {
     kForgotOldPassword,
     kCryptohomeError,
     kAuthenticated,
-    kNotApplicable,
   };
 
   static std::string GetResultString(Result result);

@@ -23,6 +23,9 @@ class OSAuthErrorScreen : public BaseOSAuthSetupScreen {
   using TView = OSAuthErrorScreenView;
   enum class Result {
     kAbortSignin,
+    kFallbackOnline,
+    kFallbackLocal,
+    kProceedAuthenticated,
   };
 
   static std::string GetResultString(Result result);

@@ -484,10 +484,10 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<FingerprintSetupScreenHandler>());
 
   if (features::AreLocalPasswordsEnabledForConsumers()) {
-    AddScreenHandler(std::make_unique<PasswordSelectionScreenHandler>());
     AddScreenHandler(std::make_unique<LocalPasswordSetupHandler>());
-    AddScreenHandler(std::make_unique<ApplyOnlinePasswordScreenHandler>());
   }
+  AddScreenHandler(std::make_unique<PasswordSelectionScreenHandler>());
+  AddScreenHandler(std::make_unique<ApplyOnlinePasswordScreenHandler>());
 
   AddScreenHandler(std::make_unique<LocalDataLossWarningScreenHandler>());
   AddScreenHandler(std::make_unique<EnterOldPasswordScreenHandler>());

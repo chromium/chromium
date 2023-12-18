@@ -207,7 +207,8 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, SuccessfulRecovery) {
   test::OobeJS().ClickOnPath(kDoneButton);
 
   WaitForScreenExit();
-  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kSucceeded);
+  EXPECT_EQ(result_.value(),
+            CryptohomeRecoveryScreen::Result::kObsoleteSucceeded);
 
   OobeWindowVisibilityWaiter(false).Wait();
   login_manager_mixin_.WaitForActiveSession();
@@ -233,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenNoRecoveryTest,
 
   WaitForScreenExit();
   EXPECT_EQ(result_.value(),
-            CryptohomeRecoveryScreen::Result::kNoRecoveryFactor);
+            CryptohomeRecoveryScreen::Result::kObsoleteNoRecoveryFactor);
   OobeScreenWaiter(GaiaPasswordChangedView::kScreenId).Wait();
   EXPECT_FALSE(IsMounted());
 }
@@ -254,7 +255,8 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, ManualRecoveryAfterError) {
   test::OobeJS().ClickOnPath(kManualRecoveryButton);
 
   WaitForScreenExit();
-  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kManualRecovery);
+  EXPECT_EQ(result_.value(),
+            CryptohomeRecoveryScreen::Result::kObsoleteManualRecovery);
   OobeScreenWaiter(GaiaPasswordChangedView::kScreenId).Wait();
   EXPECT_FALSE(IsMounted());
 }
@@ -274,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, RetryAfterError) {
   test::OobeJS().ClickOnPath(kRetryButton);
 
   WaitForScreenExit();
-  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kRetry);
+  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kObsoleteRetry);
 
   fake_recovery_service_.SetErrorResponse("/v1/cryptorecovery", net::HTTP_OK);
 
@@ -286,7 +288,8 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, RetryAfterError) {
   test::OobeJS().ClickOnPath(kDoneButton);
 
   WaitForScreenExit();
-  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kSucceeded);
+  EXPECT_EQ(result_.value(),
+            CryptohomeRecoveryScreen::Result::kObsoleteSucceeded);
 
   OobeWindowVisibilityWaiter(false).Wait();
   login_manager_mixin_.WaitForActiveSession();
@@ -324,7 +327,8 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest,
   test::OobeJS().ClickOnPath(kDoneButton);
 
   WaitForScreenExit();
-  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kSucceeded);
+  EXPECT_EQ(result_.value(),
+            CryptohomeRecoveryScreen::Result::kObsoleteSucceeded);
 
   OobeWindowVisibilityWaiter(false).Wait();
   login_manager_mixin_.WaitForActiveSession();
@@ -348,7 +352,8 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, CancelledOnTimeout) {
   ASSERT_TRUE(FireExpirationTimer());
 
   WaitForScreenExit();
-  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kTimeout);
+  EXPECT_EQ(result_.value(),
+            CryptohomeRecoveryScreen::Result::kObsoleteTimeout);
   EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   EXPECT_FALSE(IsMounted());
 }
@@ -408,7 +413,8 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenChildTest, SuccessfulRecovery) {
   test::OobeJS().ClickOnPath(kDoneButton);
 
   WaitForScreenExit();
-  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kSucceeded);
+  EXPECT_EQ(result_.value(),
+            CryptohomeRecoveryScreen::Result::kObsoleteSucceeded);
 
   OobeWindowVisibilityWaiter(false).Wait();
   login_manager_mixin_.WaitForActiveSession();
@@ -433,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenChildNoRecoveryTest,
 
   WaitForScreenExit();
   EXPECT_EQ(result_.value(),
-            CryptohomeRecoveryScreen::Result::kNoRecoveryFactor);
+            CryptohomeRecoveryScreen::Result::kObsoleteNoRecoveryFactor);
   OobeScreenWaiter(GaiaPasswordChangedView::kScreenId).Wait();
 }
 

@@ -228,6 +228,7 @@
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
@@ -913,17 +914,17 @@ WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
+  append(std::make_unique<PasswordSelectionScreen>(
+      oobe_ui->GetView<PasswordSelectionScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnPasswordSelectionScreenExit,
+                          weak_factory_.GetWeakPtr())));
+
+  append(std::make_unique<ApplyOnlinePasswordScreen>(
+      oobe_ui->GetView<ApplyOnlinePasswordScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnApplyOnlinePasswordScreenExit,
+                          weak_factory_.GetWeakPtr())));
+
   if (features::AreLocalPasswordsEnabledForConsumers()) {
-    append(std::make_unique<PasswordSelectionScreen>(
-        oobe_ui->GetView<PasswordSelectionScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(&WizardController::OnPasswordSelectionScreenExit,
-                            weak_factory_.GetWeakPtr())));
-
-    append(std::make_unique<ApplyOnlinePasswordScreen>(
-        oobe_ui->GetView<ApplyOnlinePasswordScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(&WizardController::OnApplyOnlinePasswordScreenExit,
-                            weak_factory_.GetWeakPtr())));
-
     append(std::make_unique<LocalPasswordSetupScreen>(
         oobe_ui->GetView<LocalPasswordSetupHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnLocalPasswordSetupScreenExit,
@@ -932,11 +933,13 @@ WizardController::CreateScreens() {
 
   append(std::make_unique<LocalDataLossWarningScreen>(
       oobe_ui->GetView<LocalDataLossWarningScreenHandler>()->AsWeakPtr(),
-      base::DoNothing()));
+      base::BindRepeating(&WizardController::OnLocalDataLossWarningScreenExit,
+                          weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<EnterOldPasswordScreen>(
       oobe_ui->GetView<EnterOldPasswordScreenHandler>()->AsWeakPtr(),
-      base::DoNothing()));
+      base::BindRepeating(&WizardController::OnEnterOldPasswordScreenExit,
+                          weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<OSAuthErrorScreen>(
       oobe_ui->GetView<OSAuthErrorScreenHandler>()->AsWeakPtr(),
@@ -1032,6 +1035,14 @@ void WizardController::ShowLocalPasswordSetupScreen() {
 
 void WizardController::ShowApplyOnlinePasswordScreen() {
   SetCurrentScreen(GetScreen(ApplyOnlinePasswordScreenView::kScreenId));
+}
+
+void WizardController::ShowLocalDataLossWarningScreen() {
+  SetCurrentScreen(GetScreen(LocalDataLossWarningScreenView::kScreenId));
+}
+
+void WizardController::ShowEnterOldPasswordScreen() {
+  SetCurrentScreen(GetScreen(EnterOldPasswordScreenView::kScreenId));
 }
 
 void WizardController::ShowEnrollmentScreen() {
@@ -1694,27 +1705,117 @@ void WizardController::OnCryptohomeRecoveryScreenExit(
   OnScreenExit(CryptohomeRecoveryScreenView::kScreenId,
                CryptohomeRecoveryScreen::GetResultString(result));
   switch (result) {
-    case CryptohomeRecoveryScreen::Result::kSucceeded:
-      ash::LoginDisplayHost::default_host()
-          ->GetExistingUserController()
-          ->LoginAuthenticated(std::move(wizard_context_->user_context));
+    case CryptohomeRecoveryScreen::Result::kObsoleteSucceeded:
+      LoginAuthenticatedWithContext(std::move(wizard_context_->user_context));
       break;
+    case CryptohomeRecoveryScreen::Result::kAuthenticated: {
+      switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
+        case WizardContext::AuthChangeFlow::kInitialSetup:
+          NOTREACHED() << "Recovery can not be used during initial setup.";
+          return;
+        case WizardContext::AuthChangeFlow::kRecovery:
+          ShowPasswordSelectionScreen();
+          return;
+        case WizardContext::AuthChangeFlow::kReauthentication:
+          // Proceed with login
+          ObtainContextAndLoginAuthenticated();
+          return;
+      }
+    }
     case CryptohomeRecoveryScreen::Result::kGaiaLogin:
-    case CryptohomeRecoveryScreen::Result::kRetry:
+    case CryptohomeRecoveryScreen::Result::kObsoleteRetry:
       // TODO(b/257073746): We probably want to differentiate between retry with
       // or without login.
       wizard_context_->gaia_config.prefilled_account =
           wizard_context_->user_context->GetAccountId();
       AdvanceToScreen(GaiaView::kScreenId);
       break;
-    case CryptohomeRecoveryScreen::Result::kManualRecovery:
-    case CryptohomeRecoveryScreen::Result::kNoRecoveryFactor:
-    case CryptohomeRecoveryScreen::Result::kNotApplicable:
+    case CryptohomeRecoveryScreen::Result::kObsoleteManualRecovery:
+    case CryptohomeRecoveryScreen::Result::kObsoleteNoRecoveryFactor:
       ShowGaiaPasswordChangedScreen(std::move(wizard_context_->user_context));
       break;
-    case CryptohomeRecoveryScreen::Result::kTimeout:
+    case CryptohomeRecoveryScreen::Result::kFallbackOnline:
+      ShowEnterOldPasswordScreen();
+      break;
+    case CryptohomeRecoveryScreen::Result::kFallbackLocal: {
+      switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
+        case WizardContext::AuthChangeFlow::kInitialSetup:
+          NOTREACHED() << "Recovery is not used during initial setup";
+          return;
+        case WizardContext::AuthChangeFlow::kReauthentication:
+          AttemptLocalAuthenticationWithContext(
+              std::move(wizard_context_->user_context));
+          return;
+        case WizardContext::AuthChangeFlow::kRecovery:
+          // Recovery flow indicates that user does not remember
+          // their local password, so there is no step to retry.
+          wizard_context_->knowledge_factor_setup.data_loss_back_option =
+              WizardContext::DataLossBackOptions::kNone;
+          ShowLocalDataLossWarningScreen();
+          return;
+      }
+    }
+    case CryptohomeRecoveryScreen::Result::kObsoleteTimeout:
       ShowLoginScreen();
       break;
+    case CryptohomeRecoveryScreen::Result::kError:
+      ShowOSAuthErrorScreen();
+      break;
+  }
+}
+
+void WizardController::OnLocalDataLossWarningScreenExit(
+    LocalDataLossWarningScreen::Result result) {
+  OnScreenExit(LocalDataLossWarningScreenView::kScreenId,
+               LocalDataLossWarningScreen::GetResultString(result));
+  switch (result) {
+    case LocalDataLossWarningScreen::Result::kRemoveUser: {
+      std::unique_ptr<UserContext> context =
+          std::move(wizard_context_->user_context);
+      ash::LoginDisplayHost::default_host()->CompleteLogin(*context);
+      break;
+    }
+    case LocalDataLossWarningScreen::Result::kCryptohomeError:
+      ShowOSAuthErrorScreen();
+      break;
+    case LocalDataLossWarningScreen::Result::kCancel:
+      ShowLoginScreen();
+      break;
+    case LocalDataLossWarningScreen::Result::kBackToOnlineAuth:
+      ShowEnterOldPasswordScreen();
+      break;
+    case LocalDataLossWarningScreen::Result::kBackToLocalAuth:
+      AttemptLocalAuthenticationWithContext(
+          std::move(wizard_context_->user_context));
+      break;
+  }
+}
+
+void WizardController::OnEnterOldPasswordScreenExit(
+    EnterOldPasswordScreen::Result result) {
+  OnScreenExit(EnterOldPasswordScreenView::kScreenId,
+               EnterOldPasswordScreen::GetResultString(result));
+  switch (result) {
+    case EnterOldPasswordScreen::Result::kForgotOldPassword:
+      wizard_context_->knowledge_factor_setup.data_loss_back_option =
+          WizardContext::DataLossBackOptions::kBackToOnlineAuth;
+      ShowLocalDataLossWarningScreen();
+      break;
+    case EnterOldPasswordScreen::Result::kCryptohomeError:
+      ShowOSAuthErrorScreen();
+      break;
+    case EnterOldPasswordScreen::Result::kAuthenticated: {
+      switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
+        case WizardContext::AuthChangeFlow::kInitialSetup:
+          NOTREACHED() << "Old password is not used during initial setup";
+          break;
+        case WizardContext::AuthChangeFlow::kRecovery:
+        case WizardContext::AuthChangeFlow::kReauthentication:
+          ShowApplyOnlinePasswordScreen();
+          return;
+      }
+      break;
+    }
   }
 }
 
@@ -2022,7 +2123,8 @@ void WizardController::OnEnrollmentDone() {
       OobeMetricsHelper::CompletedPreLoginOobeFlowType::kAutoEnrollment);
 
   // Restart to make the login page pick up the policy changes resulting from
-  // enrollment recovery.  (Not pretty, but this codepath is rarely exercised.)
+  // enrollment recovery.  (Not pretty, but this codepath is rarely
+  // exercised.)
   if (prescribed_enrollment_config_.mode ==
       policy::EnrollmentConfig::MODE_RECOVERY) {
     LOG(WARNING) << "Restart Chrome to pick up the policy changes";
@@ -2249,8 +2351,19 @@ void WizardController::OnApplyOnlinePasswordScreenExit(
       ShowOSAuthErrorScreen();
       return;
     case ApplyOnlinePasswordScreen::Result::kSuccess:
-    case ApplyOnlinePasswordScreen::Result::kNotApplicable:
-      ShowFingerprintSetupScreen();
+    case ApplyOnlinePasswordScreen::Result::kNotApplicable: {
+      switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
+        case WizardContext::AuthChangeFlow::kInitialSetup:
+          ShowFingerprintSetupScreen();
+          return;
+        case WizardContext::AuthChangeFlow::kRecovery:
+          ShowFactorSetupSuccessScreen();
+          return;
+        case WizardContext::AuthChangeFlow::kReauthentication:
+          NOTREACHED() << "Reauthentication should have been switched to "
+                          "Recovery if there was password update";
+      }
+    }
       return;
   }
 }
@@ -2260,6 +2373,39 @@ void WizardController::OnOSAuthErrorScreenExit(
   OnScreenExit(OSAuthErrorScreenView::kScreenId,
                OSAuthErrorScreen::GetResultString(result));
   switch (result) {
+    case OSAuthErrorScreen::Result::kFallbackOnline:
+      ShowEnterOldPasswordScreen();
+      break;
+    case OSAuthErrorScreen::Result::kFallbackLocal: {
+      switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
+        case WizardContext::AuthChangeFlow::kInitialSetup:
+          NOTREACHED() << "Recovery is not used during initial setup";
+          return;
+        case WizardContext::AuthChangeFlow::kReauthentication:
+          AttemptLocalAuthenticationWithContext(
+              std::move(wizard_context_->user_context));
+          return;
+        case WizardContext::AuthChangeFlow::kRecovery:
+          // Recovery flow means that the user forgot their
+          // local password. It does not make sense to ask for it.
+          ShowLocalDataLossWarningScreen();
+          return;
+      }
+    }
+
+    case OSAuthErrorScreen::Result::kProceedAuthenticated: {
+      switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
+        case WizardContext::AuthChangeFlow::kInitialSetup:
+        case WizardContext::AuthChangeFlow::kRecovery:
+          ShowPasswordSelectionScreen();
+          return;
+        case WizardContext::AuthChangeFlow::kReauthentication:
+          // Proceed with login
+          ObtainContextAndLoginAuthenticated();
+          return;
+      }
+    }
+      return;
     case OSAuthErrorScreen::Result::kAbortSignin:
       ShowLoginScreen();
       return;
@@ -2272,9 +2418,18 @@ void WizardController::OnFactorSetupSuccessScreenExit(
                FactorSetupSuccessScreen::GetResultString(result));
   switch (result) {
     case FactorSetupSuccessScreen::Result::kNotApplicable:
-    case FactorSetupSuccessScreen::Result::kProceed:
-      ShowFingerprintSetupScreen();
-      break;
+    case FactorSetupSuccessScreen::Result::kProceed: {
+      switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
+        case WizardContext::AuthChangeFlow::kInitialSetup:
+          ShowFingerprintSetupScreen();
+          return;
+        case WizardContext::AuthChangeFlow::kRecovery:
+        case WizardContext::AuthChangeFlow::kReauthentication:
+          // Proceed with login
+          ObtainContextAndLoginAuthenticated();
+          return;
+      }
+    }
     case FactorSetupSuccessScreen::Result::kTimedOut:
       ShowLoginScreen();
       return;
@@ -2292,6 +2447,47 @@ void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
   OnScreenExit(PinSetupScreenView::kScreenId,
                PinSetupScreen::GetResultString(result));
   FinishAuthFactorsSetup();
+}
+
+void WizardController::ObtainContextAndLoginAuthenticated() {
+  CHECK(wizard_context_->extra_factors_token);
+  auto token = std::move(wizard_context_->extra_factors_token);
+  wizard_context_->extra_factors_token = absl::nullopt;
+
+  ash::AuthSessionStorage::Get()->Withdraw(
+      *token, base::BindOnce(&WizardController::LoginAuthenticatedWithContext,
+                             weak_factory_.GetWeakPtr()));
+}
+
+void WizardController::ObtainContextAndAttemptLocalAuthentication() {
+  CHECK(wizard_context_->extra_factors_token);
+  auto token = std::move(wizard_context_->extra_factors_token);
+  wizard_context_->extra_factors_token = absl::nullopt;
+
+  ash::AuthSessionStorage::Get()->Withdraw(
+      *token,
+      base::BindOnce(&WizardController::AttemptLocalAuthenticationWithContext,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void WizardController::LoginAuthenticatedWithContext(
+    std::unique_ptr<UserContext> context) {
+  if (!context) {
+    // Session has expired.
+    LOG(ERROR) << "Session expired before login could proceed.";
+    wizard_context_->osauth_error = WizardContext::OSAuthErrorKind::kFatal;
+    ShowOSAuthErrorScreen();
+    return;
+  }
+  ash::LoginDisplayHost::default_host()
+      ->GetExistingUserController()
+      ->LoginAuthenticated(std::move(context));
+}
+
+void WizardController::AttemptLocalAuthenticationWithContext(
+    std::unique_ptr<UserContext> context) {
+  ash::LoginDisplayHost::default_host()->GetSigninUI()->RunLocalAuthentication(
+      std::move(context));
 }
 
 void WizardController::FinishAuthFactorsSetup() {
@@ -2625,9 +2821,9 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
                !wizard_context_->is_cloud_ready_update_flow &&
                wizard_context_->screen_after_managed_tos !=
                    ash::OOBE_SCREEN_UNKNOWN) {
-      // If screen_after_managed_tos == SCREEN_UNKNOWN means that the onboarding
-      // has already been finished by the user and we don't need to save the
-      // state here.
+      // If screen_after_managed_tos == SCREEN_UNKNOWN means that the
+      // onboarding has already been finished by the user and we don't need to
+      // save the state here.
       user_manager::KnownUser(GetLocalState())
           .SetPendingOnboardingScreen(
               user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
@@ -2646,8 +2842,9 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
 void WizardController::UpdateStatusAreaVisibilityForScreen(
     OobeScreenId screen_id) {
   if (screen_id == WelcomeView::kScreenId) {
-    // Hide the status area initially; it only appears after OOBE first animates
-    // in. Keep it visible if the user goes back to the existing welcome screen.
+    // Hide the status area initially; it only appears after OOBE first
+    // animates in. Keep it visible if the user goes back to the existing
+    // welcome screen.
     GetLoginDisplayHost()->SetStatusAreaVisible(
         screen_manager_->HasScreen(WelcomeView::kScreenId));
   } else {
@@ -2686,9 +2883,9 @@ void WizardController::UpdateOobeConfiguration() {
     policy::EnrollmentRequisitionManager::SetDeviceRequisition(
         *requisition_value);
   } else if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
-    VLOG(1)
-        << "Using default Device Requisition value for CFM build configuration"
-        << policy::EnrollmentRequisitionManager::kRemoraRequisition;
+    VLOG(1) << "Using default Device Requisition value for CFM build "
+               "configuration"
+            << policy::EnrollmentRequisitionManager::kRemoraRequisition;
     policy::EnrollmentRequisitionManager::SetDeviceRequisition(
         policy::EnrollmentRequisitionManager::kRemoraRequisition);
   }
@@ -2911,8 +3108,8 @@ void WizardController::AutoLaunchKioskApp(const KioskApp& app) {
   }
 
   if (status == CrosSettingsProvider::PERMANENTLY_UNTRUSTED) {
-    // If the `cros_settings_` are permanently untrusted, show an error message
-    // and refuse to auto-launch the kiosk app.
+    // If the `cros_settings_` are permanently untrusted, show an error
+    // message and refuse to auto-launch the kiosk app.
     AdvanceToScreen(LocalStateErrorScreenView::kScreenId);
     return;
   }
@@ -3102,7 +3299,8 @@ void WizardController::StartEnrollmentScreen(bool force_interactive) {
   // Determine the effective enrollment configuration. If there is a valid
   // prescribed configuration, use that. If not, figure out which variant of
   // manual enrollment is taking place.
-  // If OOBE Configuration exits, it might also affect enrollment configuration.
+  // If OOBE Configuration exits, it might also affect enrollment
+  // configuration.
   policy::EnrollmentConfig effective_config = prescribed_enrollment_config_;
   if (!effective_config.should_enroll() ||
       (force_interactive && !effective_config.should_enroll_interactively())) {

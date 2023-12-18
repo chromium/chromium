@@ -80,11 +80,17 @@ class WizardContext {
   // part of recovery flow, or it it just an reauthentication flow.
   enum class AuthChangeFlow { kInitialSetup, kReauthentication, kRecovery };
 
+  // Indicates the flow path that lead to Data Loss warning screen,
+  // allowing screen to correctly display/handle Back button.
+  enum class DataLossBackOptions { kNone, kBackToOnlineAuth, kBackToLocalAuth };
+
   struct KnowledgeFactorSetup {
     // Whether usage of local password is forced.
     bool local_password_forced = false;
 
     AuthChangeFlow auth_setup_flow = AuthChangeFlow::kInitialSetup;
+
+    DataLossBackOptions data_loss_back_option = DataLossBackOptions::kNone;
 
     AuthFactorsSet modified_factors;
   };
@@ -92,6 +98,13 @@ class WizardContext {
   enum class OSAuthErrorKind {
     // Most of the errors
     kFatal,
+    // User is already authenticated, but cryptohome failed to rotate the key.
+    // It is more of a warning.
+    kRecoveryRotationFailed,
+    // There were problems using the recovery key, but it is still
+    // possible to proceed using knowledge-based keys.
+    kRecoveryAuthenticationFailed,
+
   };
 
   // Configuration for automating OOBE screen actions, e.g. during device
