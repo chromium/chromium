@@ -190,11 +190,6 @@ public class MediaSessionHelper implements MediaImageCallback {
                 }
 
                 Intent contentIntent = mDelegate.createBringTabToFrontIntent();
-                if (contentIntent != null) {
-                    contentIntent.putExtra(
-                            MediaNotificationUma.INTENT_EXTRA_NAME,
-                            MediaNotificationUma.Source.MEDIA);
-                }
 
                 if (mFallbackTitle == null) mFallbackTitle = sanitizeMediaTitle(mOrigin);
 

@@ -1239,12 +1239,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="MediaStream"/>
 </enum>
 
-<enum name="MediaNotificationClickSource">
-  <int value="0" label="Media"/>
-  <int value="1" label="Presentation"/>
-  <int value="2" label="MediaFling"/>
-</enum>
-
 <enum name="MediaNotificationDisplayPage">
   <int value="0" label="Unknown"/>
   <int value="1" label="Quick settings media view"/>

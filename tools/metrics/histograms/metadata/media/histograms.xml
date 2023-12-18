@@ -4242,15 +4242,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Notification.Click" enum="MediaNotificationClickSource"
-    expires_after="2020-06-07">
-  <owner>mlamouri@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    The type of media notification the user clicked to go back to Chrome.
-  </summary>
-</histogram>
-
 <histogram name="Media.Notification.Count" units="count"
     expires_after="2024-06-02">
   <owner>yrw@chromium.org</owner>

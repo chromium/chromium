@@ -20,15 +20,6 @@ constexpr int kAutoDismissTimerInMinutesDefault = 60;  // minutes
 
 constexpr const char kAutoDismissTimerInMinutesParamName[] = "timer_in_minutes";
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class MediaNotificationClickSource {
-  kMedia = 0,
-  kPresentation,
-  kMediaFling,
-  kMaxValue = kMediaFling
-};
-
 // Returns the time value to be used for the auto-dismissing of the
 // notifications after they are inactive.
 // If the feature (auto-dismiss) is disabled, the returned value will be
@@ -335,9 +326,6 @@ void MediaSessionItemProducer::OnMediaItemUIClicked(
   }
 
   it->second.OnSessionInteractedWith();
-
-  base::UmaHistogramEnumeration("Media.Notification.Click",
-                                MediaNotificationClickSource::kMedia);
 
   if (activate_original_media) {
     it->second.item()->Raise();
