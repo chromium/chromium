@@ -20,6 +20,7 @@
 #include "base/trace_event/trace_log.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -95,6 +96,7 @@ class ScopedMLTraceTest : public testing::Test {
   }
 
   // The task runner we use for posting tasks.
+  test::TaskEnvironment task_environment_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
 };
 
