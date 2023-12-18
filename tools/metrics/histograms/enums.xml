@@ -51184,21 +51184,6 @@ would be helpful to identify which type is being sent.
   <int value="505" label="505: HTTP Version Not Supported"/>
 </enum>
 
-<enum name="VerifyDidCommitParamsDifference">
-  <summary>
-    The params that differ when comparing browser- and renderer-calculated
-    DidCommitProvisionalLoadParams.
-  </summary>
-  <int value="0" label="intended_as_new_entry"/>
-  <int value="1" label="method"/>
-  <int value="2" label="url_is_unreachable"/>
-  <int value="3" label="base_url"/>
-  <int value="4" label="post_id"/>
-  <int value="5" label="is_overriding_user_agent"/>
-  <int value="6" label="http_status_code"/>
-  <int value="7" label="should_update_history"/>
-</enum>
-
 <enum name="VertexOpacityUsage">
   <int value="0" label="None">
     Vertex opacity is not used. Default value of 1f.

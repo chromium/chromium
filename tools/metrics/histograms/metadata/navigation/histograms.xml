@@ -1510,19 +1510,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.VerifyDidCommitParams"
-    enum="VerifyDidCommitParamsDifference" expires_after="2021-12-26">
-  <owner>rakina@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Logs inconsistencies between browser- vs renderer-calculated values of
-    DidCommitProvisionalLoadParams which are detected in RenderFrameHostImpl's
-    VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch(). This is used
-    to trigger traces to be uploaded to analyze what happened in these
-    navigations.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.{Stage}.{FrameType}" units="ms"
     expires_after="2023-05-06">
   <owner>cduvall@chromium.org</owner>

@@ -715,9 +715,8 @@ DetermineAfterCommitWhetherToForbidTrustTokenOperation(
 }
 
 // Verify that |browser_side_origin| and |renderer_side_origin| match.  See also
-// https://crbug.com/888079. Returns true if the origins match, and false
-// otherwise.
-bool VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
+// https://crbug.com/888079.
+void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
     NavigationRequest* navigation_request,
     const mojom::DidCommitProvisionalLoadParams& params) {
   DCHECK(navigation_request);
@@ -732,7 +731,7 @@ bool VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   // NavigationBrowserTest.OpenerNavigation_DownloadPolicy,
   // WebContentsImplBrowserTest.NewNamedWindow.
   if (navigation_request->state() < NavigationRequest::WILL_PROCESS_RESPONSE)
-    return true;
+    return;
 
   // Blob urls with content scheme are opaque on browser side because the
   // browser doesn't have access to the BlobURLNullOriginMap.
@@ -743,7 +742,7 @@ bool VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
           navigation_request->GetOriginToCommitWithDebugInfo();
   if (renderer_side_origin.scheme() == url::kContentScheme &&
       browser_side_origin_and_debug_info.first->opaque()) {
-    return true;
+    return;
   }
 
   // For non-opaque origins, we say the browser and renderer calculated origins
@@ -791,34 +790,11 @@ bool VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
     DCHECK_EQ(browser_side_origin_and_debug_info.first.value(),
               renderer_side_origin)
         << "; navigation_request->GetURL() = " << navigation_request->GetURL();
-    return false;
+    return;
   }
 
-  return true;
+  return;
 }
-
-// Enum used for Navigation.VerifyDidCommitParams histogram, to indicate which
-// DidCommitProvisionalLoadParams differ when comparing browser- vs
-// renderer-calculated values.
-// Do NOT delete or reorder existing entries.
-enum class VerifyDidCommitParamsDifference {
-  kIntendedAsNewEntry = 0,
-  kMethod = 1,
-  kURLIsUnreachable = 2,
-  kBaseURL = 3,
-  kPostID = 4,
-  kIsOverridingUserAgent = 5,
-  kHTTPStatusCode = 6,
-  kShouldUpdateHistory = 7,
-  kGesture = 8,
-  kShouldReplaceCurrentEntry = 9,
-  kURL = 10,
-  kDidCreateNewEntry = 11,
-  kTransition = 12,
-  kHistoryListWasCleared = 13,
-  kOrigin = 14,
-  kMaxValue = kOrigin,
-};
 
 // A simplified version of Blink's WebFrameLoadType, used to simulate renderer
 // calculations. See CalculateRendererLoadType() further below.
@@ -14643,11 +14619,6 @@ bool ShouldVerify(const std::string& param) {
 #endif
 }
 
-void LogVerifyDidCommitParamsDifference(
-    VerifyDidCommitParamsDifference difference) {
-  UMA_HISTOGRAM_ENUMERATION("Navigation.VerifyDidCommitParams", difference);
-}
-
 std::string GetURLTypeForCrashKey(const GURL& url) {
   if (url == kUnreachableWebDataURL)
     return "error";
@@ -14995,55 +14966,9 @@ void RenderFrameHostImpl::
                                                      params.transition));
   DCHECK_EQ(browser_history_list_was_cleared, params.history_list_was_cleared);
 
-  // Log histograms to trigger Chrometto slow reports, allowing us to see traces
-  // to analyze what happened in these navigations.
-  if (browser_method != params.method) {
-    LogVerifyDidCommitParamsDifference(
-        VerifyDidCommitParamsDifference::kMethod);
-  }
-  if (browser_url_is_unreachable != params.url_is_unreachable) {
-    LogVerifyDidCommitParamsDifference(
-        VerifyDidCommitParamsDifference::kURLIsUnreachable);
-  }
-  if (browser_post_id != params.post_id) {
-    LogVerifyDidCommitParamsDifference(
-        VerifyDidCommitParamsDifference::kPostID);
-  }
-  if (browser_is_overriding_user_agent != params.is_overriding_user_agent) {
-    LogVerifyDidCommitParamsDifference(
-        VerifyDidCommitParamsDifference::kIsOverridingUserAgent);
-  }
-  if (browser_http_status_code != params.http_status_code) {
-    LogVerifyDidCommitParamsDifference(
-        VerifyDidCommitParamsDifference::kHTTPStatusCode);
-  }
-  if (browser_should_update_history != params.should_update_history) {
-    LogVerifyDidCommitParamsDifference(
-        VerifyDidCommitParamsDifference::kShouldUpdateHistory);
-  }
-  if (browser_url != params.url) {
-    LogVerifyDidCommitParamsDifference(VerifyDidCommitParamsDifference::kURL);
-  }
-  if (browser_did_create_new_entry != params.did_create_new_entry) {
-    LogVerifyDidCommitParamsDifference(
-        VerifyDidCommitParamsDifference::kDidCreateNewEntry);
-  }
-  if (!ui::PageTransitionTypeIncludingQualifiersIs(browser_transition,
-                                                   params.transition)) {
-    LogVerifyDidCommitParamsDifference(
-        VerifyDidCommitParamsDifference::kTransition);
-  }
-  if (browser_history_list_was_cleared != params.history_list_was_cleared) {
-    LogVerifyDidCommitParamsDifference(
-        VerifyDidCommitParamsDifference::kHistoryListWasCleared);
-  }
   // TODO(https://crbug.com/888079): The origin computed from the browser must
   // match the one reported from the renderer process.
-  if (!VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(request,
-                                                                  params)) {
-    LogVerifyDidCommitParamsDifference(
-        VerifyDidCommitParamsDifference::kOrigin);
-  }
+  VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(request, params);
 
   if (!everything_except_origin_matches) {
     // It's possible to get here when everything except the origin matches.
