@@ -500,6 +500,9 @@ bool ShouldAllowDefaultShelfPinLayoutIgnoringSync();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsBirchSecretKeyMatched();
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+void SetIgnoreBirchSecretKeyForTest(bool ignore);
+
 }  // namespace ash::switches
 
 #endif  // ASH_CONSTANTS_ASH_SWITCHES_H_

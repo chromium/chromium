@@ -28,6 +28,9 @@ constexpr char kBirchHashKey[] =
     "\x1a\x93\x5f\x64\x0d\x7f\x0c\x2f\x88\xe8\x80\x9a\x5f\x16\xbb\xd8\x74\x06"
     "\x8a\xb1";
 
+// Whether checking the birch secret key is ignored.
+bool g_ignore_birch_secret_key = false;
+
 }  // namespace
 
 // Please keep the order of these switches synchronized with the header file
@@ -1324,6 +1327,10 @@ bool ShouldAllowDefaultShelfPinLayoutIgnoringSync() {
 }
 
 bool IsBirchSecretKeyMatched() {
+  if (g_ignore_birch_secret_key) {
+    return true;
+  }
+
   // Commandline looks like:
   //  out/Default/chrome --user-data-dir=/tmp/tmp123
   //  --birch-feature-key="INSERT KEY HERE" --enable-features=BirchFeature
@@ -1337,6 +1344,10 @@ bool IsBirchSecretKeyMatched() {
   }
 
   return birch_key_matched;
+}
+
+void SetIgnoreBirchSecretKeyForTest(bool ignore) {
+  g_ignore_birch_secret_key = ignore;
 }
 
 }  // namespace switches
