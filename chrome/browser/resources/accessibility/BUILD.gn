@@ -5,8 +5,8 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 if (is_chromeos_lacros) {
-  import("//chrome/browser/resources/chromeos/accessibility/tools/manifest.gni")
   import("strings/extension_strings.gni")
+  import("tools/manifest.gni")
 }
 
 build_webui("build") {

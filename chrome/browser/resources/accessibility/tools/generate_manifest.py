@@ -10,16 +10,15 @@ import optparse
 import os
 import sys
 
+src_dir_path = os.path.normpath(
+    os.path.join(os.path.abspath(__file__), *[os.path.pardir] * 6))
+
 jinja2_path = os.path.normpath(
-    os.path.join(
-        os.path.abspath(__file__), *[os.path.pardir] * 8 + ['third_party']))
+    os.path.join(src_dir_path, 'third_party'))
 nom_path = os.path.normpath(
-    os.path.join(
-        os.path.abspath(__file__),
-        *[os.path.pardir] * 8 + ['tools/json_comment_eater']))
+    os.path.join(src_dir_path, 'tools/json_comment_eater'))
 version_py_path = os.path.normpath(
-    os.path.join(
-        os.path.abspath(__file__), *[os.path.pardir] * 8 + ['build/util']))
+    os.path.join(src_dir_path, 'build/util'))
 sys.path.insert(0, jinja2_path)
 sys.path.insert(0, nom_path)
 sys.path.insert(0, version_py_path)
