@@ -194,7 +194,7 @@ void CookieManager::DeleteSessionOnlyCookies(
       base::BindRepeating(
           [](const DeleteCookiePredicate& predicate,
              const net::CanonicalCookie& cookie) {
-            return predicate.Run(cookie.Domain(), cookie.IsSecure());
+            return predicate.Run(cookie.Domain(), cookie.SourceScheme());
           },
           std::move(delete_cookie_predicate)),
       std::move(callback));

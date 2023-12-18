@@ -62,6 +62,7 @@
 #include "net/cert/cert_verifier.h"
 #include "net/cert/coalescing_cert_verifier.h"
 #include "net/cookies/cookie_access_delegate.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/dns/host_cache.h"
@@ -1052,7 +1053,7 @@ void NetworkContext::ClearTrustTokenSessionOnlyData(
 
   auto store_predicate = base::BindRepeating(
       [](DeleteCookiePredicate predicate, const std::string& origin) {
-        return predicate.Run(origin, true);
+        return predicate.Run(origin, net::CookieSourceScheme::kSecure);
       },
       std::move(cookie_predicate));
   trust_token_store_->ExecuteOrEnqueue(base::BindOnce(

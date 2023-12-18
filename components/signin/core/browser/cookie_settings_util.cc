@@ -6,6 +6,7 @@
 
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "url/gurl.h"
@@ -37,9 +38,11 @@ bool SettingsDeleteSigninCookiesOnExit(
 
   return !cookie_settings ||
          cookie_settings->ShouldDeleteCookieOnExit(
-             settings, "." + gaia_url.host(), true) ||
+             settings, "." + gaia_url.host(),
+             net::CookieSourceScheme::kSecure) ||
          cookie_settings->ShouldDeleteCookieOnExit(
-             settings, "." + google_url.host(), true);
+             settings, "." + google_url.host(),
+             net::CookieSourceScheme::kSecure);
 }
 
 }  // namespace signin

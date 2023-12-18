@@ -15,6 +15,7 @@
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
@@ -95,8 +96,11 @@ GURL CookieSettingsBase::GetFirstPartyURL(
 bool CookieSettingsBase::ShouldDeleteCookieOnExit(
     const ContentSettingsForOneType& cookie_settings,
     const std::string& domain,
-    bool is_https) const {
-  GURL origin = net::cookie_util::CookieOriginToURL(domain, is_https);
+    net::CookieSourceScheme scheme) const {
+  // Cookies with an unknown (kUnset) scheme will be treated as having a not
+  // secure scheme.
+  GURL origin = net::cookie_util::CookieOriginToURL(
+      domain, scheme == net::CookieSourceScheme::kSecure);
   // Pass GURL() as first_party_url since we don't know the context and
   // don't want to match against (*, exception) pattern.
   // No overrides are given since existing ones only pertain to 3P checks.
@@ -110,10 +114,11 @@ bool CookieSettingsBase::ShouldDeleteCookieOnExit(
     return false;
   }
   // Non-secure cookies are readable by secure sites. We need to check for
-  // https pattern if http is not allowed. The section below is independent
-  // of the scheme so we can just retry from here.
-  if (!is_https) {
-    return ShouldDeleteCookieOnExit(cookie_settings, domain, true);
+  // the secure pattern if non-secure is not allowed. The section below is
+  // independent of the scheme so we can just retry from here.
+  if (scheme != net::CookieSourceScheme::kSecure) {
+    return ShouldDeleteCookieOnExit(cookie_settings, domain,
+                                    net::CookieSourceScheme::kSecure);
   }
   // Check if there is a more precise rule that "domain matches" this cookie.
   bool matches_session_only_rule = false;

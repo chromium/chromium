@@ -314,7 +314,9 @@ class CookieSettingsTest
  protected:
   bool ShouldDeleteCookieOnExit(const std::string& domain, bool is_https) {
     return cookie_settings_->ShouldDeleteCookieOnExit(
-        cookie_settings_->GetCookieSettings(), domain, is_https);
+        cookie_settings_->GetCookieSettings(), domain,
+        is_https ? net::CookieSourceScheme::kSecure
+                 : net::CookieSourceScheme::kNonSecure);
   }
 
   // There must be a valid SingleThreadTaskRunner::CurrentDefaultHandle in
