@@ -1084,6 +1084,27 @@ bool GpuInit::InitializeVulkan() {
       gpu_preferences_.use_vulkan == VulkanImplementationName::kForcedNative;
   bool use_swiftshader = gl_use_swiftshader_ || vulkan_use_swiftshader;
 
+  const base::FeatureParam<std::string> force_enable_patterns(
+      &features::kVulkan, "force_enable_by_gl_renderer", "");
+  forced_native |=
+      MatchGLInfo(gpu_info_.gl_renderer, force_enable_patterns.Get());
+
+  const base::FeatureParam<std::string> disable_by_renderer(
+      &features::kVulkan, "disable_by_gl_renderer", "");
+  bool disabled = MatchGLInfo(gpu_info_.gl_renderer, disable_by_renderer.Get());
+  const base::FeatureParam<std::string> disable_by_driver(
+      &features::kVulkan, "disable_by_gl_driver", "");
+  disabled |=
+      MatchGLInfo(gpu_info_.gpu.driver_version, disable_by_driver.Get());
+#if !BUILDFLAG(IS_ANDROID)
+  // For non-Android, check disabling params before Vulkan initialization.
+  // Android disabling params are checked later, because they can be overridden
+  // by |enable_by_device_name| which requires Vulkan to already be initialized.
+  if (!use_swiftshader && !forced_native && disabled) {
+    return false;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   vulkan_implementation_ = CreateVulkanImplementation(
       vulkan_use_swiftshader, gpu_preferences_.enable_vulkan_protected_memory);
   if (!vulkan_implementation_ ||
@@ -1102,22 +1123,12 @@ bool GpuInit::InitializeVulkan() {
   if (!vulkan_implementation_)
     return false;
 
-  const base::FeatureParam<std::string> force_enable_patterns(
-      &features::kVulkan, "force_enable_by_gl_renderer", "");
-  forced_native |=
-      MatchGLInfo(gpu_info_.gl_renderer, force_enable_patterns.Get());
-
   const base::FeatureParam<std::string> enable_by_device_name(
       &features::kVulkan, "enable_by_device_name", "");
-  const base::FeatureParam<std::string> disable_by_renderer(
-      &features::kVulkan, "disable_by_gl_renderer", "");
-  const base::FeatureParam<std::string> disable_by_driver(
-      &features::kVulkan, "disable_by_gl_driver", "");
   if (!use_swiftshader && !forced_native &&
       !CheckVulkanCompatibilities(
           vulkan_implementation_->GetVulkanInstance()->vulkan_info(), gpu_info_,
-          enable_by_device_name.Get(), disable_by_renderer.Get(),
-          disable_by_driver.Get())) {
+          enable_by_device_name.Get(), disabled)) {
     vulkan_implementation_.reset();
     return false;
   }

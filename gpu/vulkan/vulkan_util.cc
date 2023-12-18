@@ -44,6 +44,8 @@ namespace gpu {
 
 namespace {
 
+#if BUILDFLAG(IS_ANDROID)
+
 bool IsDeviceBlocked(base::StringPiece field, base::StringPiece block_list) {
   auto disable_patterns = base::SplitString(
       block_list, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -54,8 +56,6 @@ bool IsDeviceBlocked(base::StringPiece field, base::StringPiece block_list) {
   }
   return false;
 }
-
-#if BUILDFLAG(IS_ANDROID)
 
 int GetEMUIVersion() {
   const auto* build_info = base::android::BuildInfo::GetInstance();
@@ -411,8 +411,7 @@ VkResult VulkanQueuePresentKHRHook(VkQueue queue,
 bool CheckVulkanCompatibilities(const VulkanInfo& vulkan_info,
                                 const GPUInfo& gpu_info,
                                 const std::string& enable_by_device_name,
-                                const std::string& disable_by_renderer,
-                                const std::string& disable_by_driver) {
+                                bool disabled) {
 // Android uses AHB and SyncFD for interop. They are imported into GL with other
 // API.
 #if !BUILDFLAG(IS_ANDROID)
@@ -426,11 +425,7 @@ bool CheckVulkanCompatibilities(const VulkanInfo& vulkan_info,
   constexpr char kMemoryObjectExtension[] = "GL_EXT_memory_object_fd";
   constexpr char kSemaphoreExtension[] = "GL_EXT_semaphore_fd";
 #endif
-  if (IsDeviceBlocked(gpu_info.gl_renderer, disable_by_renderer)) {
-    return false;
-  }
-
-  if (IsDeviceBlocked(gpu_info.gpu.driver_version, disable_by_driver)) {
+  if (disabled) {
     return false;
   }
 
@@ -471,11 +466,7 @@ bool CheckVulkanCompatibilities(const VulkanInfo& vulkan_info,
       return true;
   }
 
-  if (IsDeviceBlocked(gpu_info.gl_renderer, disable_by_renderer)) {
-    return false;
-  }
-
-  if (IsDeviceBlocked(gpu_info.gpu.driver_version, disable_by_driver)) {
+  if (disabled) {
     return false;
   }
 
