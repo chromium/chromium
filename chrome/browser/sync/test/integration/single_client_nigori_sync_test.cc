@@ -131,53 +131,10 @@ MATCHER_P4(StatusLabelsMatch,
   return true;
 }
 
-GURL GetFakeTrustedVaultRetrievalURL(
-    const net::test_server::EmbeddedTestServer& test_server,
-    const std::vector<uint8_t>& encryption_key,
-    int encryption_key_version) {
-  // encryption_keys_retrieval.html would populate encryption key to sync
-  // service upon loading. Key is provided as part of URL and needs to be
-  // encoded with Base64, because |encryption_key| is binary.
-  const std::string base64_encoded_key = base::Base64Encode(encryption_key);
-  return test_server.GetURL(base::StringPrintf(
-      "/sync/encryption_keys_retrieval.html?gaia=%s&key=%s&key_version=%d",
-      kGaiaId, base64_encoded_key.c_str(), encryption_key_version));
-}
-
-GURL GetFakeTrustedVaultRecoverabilityURL(
-    const net::test_server::EmbeddedTestServer& test_server,
-    const std::vector<uint8_t>& public_key) {
-  // encryption_keys_recoverability.html would populate encryption key to sync
-  // service upon loading. Key is provided as part of URL and needs to be
-  // encoded with Base64, because |public_key| is binary.
-  const std::string base64_encoded_public_key = base::Base64Encode(public_key);
-  return test_server.GetURL(
-      base::StringPrintf("/sync/encryption_keys_recoverability.html?%s#%s",
-                         kGaiaId, base64_encoded_public_key.c_str()));
-}
-
 std::string ComputeKeyName(const KeyParamsForTesting& key_params) {
   return syncer::Nigori::CreateByDerivation(key_params.derivation_params,
                                             key_params.password)
       ->GetKeyName();
-}
-
-// Helper function to install server redirects in the test HTTP server.
-std::unique_ptr<net::test_server::HttpResponse> HttpServerRedirect(
-    const GURL& from_prefix,
-    const GURL& to,
-    const net::test_server::HttpRequest& request) {
-  if (!base::StartsWith(request.GetURL().spec(), from_prefix.spec())) {
-    return nullptr;
-  }
-  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
-  http_response->AddCustomHeader("Location", to.spec());
-  http_response->set_content_type("text/html");
-  http_response->set_content(base::StringPrintf(
-      "<html><head></head><body>Redirecting to %s</body></html>",
-      to.spec().c_str()));
-  return http_response;
 }
 
 class WifiConfigurationsSyncActiveChecker
@@ -950,30 +907,9 @@ class SingleClientNigoriWithWebApiTest : public SyncTest {
         &trusted_vault::FakeSecurityDomainsServer::HandleRequest,
         base::Unretained(security_domains_server_.get())));
 
-    // Install a redirect from the actual degraded recoverability URL as
-    // determined by GaiaUrls to |recoverability_url|, which runs Javascript
-    // code to mimic adding recovery method with key
-    // |kTestRecoveryMethodPublicKey|. Note that this needs to be installed
-    // before the analogous below for retrieval, because they share prefix.
-    const GURL recoverability_url = GetFakeTrustedVaultRecoverabilityURL(
-        *embedded_test_server(), kTestRecoveryMethodPublicKey);
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        &HttpServerRedirect,
-        /*from_prefix=*/
-        GaiaUrls::GetInstance()
-            ->signin_chrome_sync_keys_recoverability_degraded_url(),
-        /*to=*/recoverability_url));
-
-    // Install a redirect from the actual retrieval URL as determined by
-    // GaiaUrls to |retrieval_url|, which runs Javascript code to mimic
-    // retrieval of key |kTestEncryptionKey|.
-    const GURL retrieval_url = GetFakeTrustedVaultRetrievalURL(
-        *embedded_test_server(), kTestEncryptionKey, kTestEncryptionKeyVersion);
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        &HttpServerRedirect,
-        /*from_prefix=*/
-        GaiaUrls::GetInstance()->signin_chrome_sync_keys_retrieval_url(),
-        /*to=*/retrieval_url));
+    encryption_helper::SetupFakeTrustedVaultPages(
+        kGaiaId, kTestEncryptionKey, kTestEncryptionKeyVersion,
+        kTestRecoveryMethodPublicKey, embedded_test_server());
 
     embedded_test_server()->StartAcceptingConnections();
   }
