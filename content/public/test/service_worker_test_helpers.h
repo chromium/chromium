@@ -5,18 +5,70 @@
 #ifndef CONTENT_PUBLIC_TEST_SERVICE_WORKER_TEST_HELPERS_H_
 #define CONTENT_PUBLIC_TEST_SERVICE_WORKER_TEST_HELPERS_H_
 
+#include <cstdint>
+#include <memory>
+#include <vector>
+
 #include "base/functional/callback_forward.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 
 class GURL;
 
 namespace blink {
+enum class EmbeddedWorkerStatus;
 struct PlatformNotificationData;
 }  // namespace blink
 
 namespace content {
 
 class ServiceWorkerContext;
+class ServiceWorkerVersion;
+
+// Helper classes.
+
+// A class that assists with observing the state of `ServiceWorkerVersion`s
+// during tests.
+class ServiceWorkerTestHelper {
+ public:
+  // Starts observing every new `ServiceWorkerVersion`'s running status. If a
+  // valid `worker_verion_id` is provided it starts observing the
+  // `ServiceWorkerVersion`'s (for `worker_verion_id`'s) running status.
+  explicit ServiceWorkerTestHelper(
+      ServiceWorkerContext* context,
+      int64_t worker_verion_id = blink::mojom::kInvalidServiceWorkerVersionId);
+
+  ~ServiceWorkerTestHelper();
+  ServiceWorkerTestHelper(const ServiceWorkerTestHelper&) = delete;
+  ServiceWorkerTestHelper& operator=(const ServiceWorkerTestHelper&) = delete;
+
+  // Proxy for ServiceWorkerVersion::Observer::OnDidRunningStatusChange().
+  // Override this to observe changes to running status.
+  virtual void OnDidRunningStatusChange(
+      blink::EmbeddedWorkerStatus running_status,
+      int64_t version_id) {}
+
+ private:
+  class ServiceWorkerVersionCreatedWatcher;
+  class ServiceWorkerVersionStateManager;
+
+  void RegisterVersionCreatedObserver(ServiceWorkerContext* context);
+  void RegisterStateObserver(ServiceWorkerContext* context,
+                             int64_t worker_version_id);
+
+  // When a new version is noticed being created this starts observing it with a
+  // `ServiceWorkerVersionStateManager`.
+  void OnServiceWorkerVersionCreated(ServiceWorkerVersion* version);
+
+  // Watches for any new versions being created.
+  std::unique_ptr<ServiceWorkerVersionCreatedWatcher> version_created_watcher_;
+
+  // Contains observers for all versions encountered by this class.
+  std::vector<std::unique_ptr<ServiceWorkerVersionStateManager>>
+      version_state_managers_;
+};
+
+// Helper methods.
 
 // Stops the active service worker of the registration for the given |scope|,
 // and calls |complete_callback_ui| callback on UI thread when done.

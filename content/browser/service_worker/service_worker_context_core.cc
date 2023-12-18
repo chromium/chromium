@@ -915,6 +915,9 @@ void ServiceWorkerContextCore::AddLiveVersion(ServiceWorkerVersion* version) {
   observer_list_->Notify(FROM_HERE,
                          &ServiceWorkerContextCoreObserver::OnNewLiveVersion,
                          version_info);
+  for (auto& observer : test_version_observers_) {
+    observer.OnServiceWorkerVersionCreated(version);
+  }
 }
 
 void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
