@@ -196,6 +196,13 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
 }
 
+- (void)loadLoginPasskeyPage {
+  // Loads simple page. It is on localhost so it is considered a secure context.
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL("/simple_login_form_empty_passkey.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+}
+
 // Returns the matcher for the edit button from the navigation bar.
 id<GREYMatcher> NavigationBarEditButton() {
   return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
@@ -298,6 +305,26 @@ id<GREYMatcher> OpenKeyboardButton() {
                                 enableSync:NO];
 
   [self loadLoginAutofocusPage];
+
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+}
+
+// This test verifies that the password bottom sheet does not open when the
+// webpage has enabled passkey login.
+- (void)testOpenKeyboardOnPasskey {
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/simple_login_form_empty_passkey."
+                                      "html"))];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+
+  [self loadLoginPasskeyPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
 
   GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 }

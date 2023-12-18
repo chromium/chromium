@@ -27,8 +27,12 @@ let observedElements_: Element[] = [];
  * @private
  */
 function isObservable_(element: HTMLElement): boolean {
-  return (element instanceof HTMLInputElement) ||
-      (element instanceof HTMLFormElement);
+  // Ignore passkey fields, which contain the 'webauthn' autofill tag.
+  const autocomplete_attribute = element.getAttribute('autocomplete');
+  const isPasskeyField = autocomplete_attribute?.includes('webauthn');
+  return ((element instanceof HTMLInputElement) ||
+          (element instanceof HTMLFormElement)) &&
+      !isPasskeyField;
 }
 
 /*
