@@ -6,6 +6,7 @@
 #define COMPONENTS_CAST_RECEIVER_RENDERER_WRAPPING_URL_LOADER_THROTTLE_PROVIDER_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
@@ -31,7 +32,7 @@ class WrappingURLLoaderThrottleProvider
         const blink::LocalFrameToken& frame_token) = 0;
 
     // Returns whether |header| is a cors exempt header.
-    virtual bool IsCorsExemptHeader(base::StringPiece header) = 0;
+    virtual bool IsCorsExemptHeader(std::string_view header) = 0;
   };
 
   // |client| is expected to outlive this instance.

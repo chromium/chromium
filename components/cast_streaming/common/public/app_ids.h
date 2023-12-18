@@ -5,14 +5,14 @@
 #ifndef COMPONENTS_CAST_STREAMING_COMMON_PUBLIC_APP_IDS_H_
 #define COMPONENTS_CAST_STREAMING_COMMON_PUBLIC_APP_IDS_H_
 
-#include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
+#include <string_view>
 
-#include "base/strings/string_piece.h"
+#include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 
 namespace cast_streaming {
 
 // Returns true if |app_id| is associated with a streaming application.
-bool IsStreamingReceiverAppId(base::StringPiece app_id);
+bool IsStreamingReceiverAppId(std::string_view app_id);
 
 // Returns the app ID for the audio and video streaming receiver used by iOS
 // apps.
