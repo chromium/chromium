@@ -863,9 +863,17 @@ void AppMenuModel::ExecuteCommand(int command_id, int event_flags) {
 
 void AppMenuModel::LogSafetyHubInteractionMetrics(
     std::optional<safety_hub::SafetyHubModuleType> expected_module) {
-  auto const* safety_hub_menu_notification_service =
+  // TODO(crbug.com/1443466): Remove when the service is only created when the
+  // feature is enabled.
+  if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
+    return;
+  }
+  auto* const safety_hub_menu_notification_service =
       SafetyHubMenuNotificationServiceFactory::GetForProfile(
           browser_->profile());
+  if (!safety_hub_menu_notification_service) {
+    return;
+  }
   std::optional<safety_hub::SafetyHubModuleType> sh_module =
       safety_hub_menu_notification_service->GetModuleOfActiveNotification();
   if (sh_module.has_value() && (!expected_module.has_value() ||
@@ -1557,37 +1565,9 @@ void AppMenuModel::Build() {
 #endif
   }
 
-  if (base::FeatureList::IsEnabled(features::kSafetyHub) &&
-      !browser_->profile()->IsGuestSession() &&
-      !browser_->profile()->IsIncognitoProfile()) {
-    auto* safety_hub_menu_notification_service =
-        SafetyHubMenuNotificationServiceFactory::GetForProfile(
-            browser_->profile());
-    std::optional<MenuNotificationEntry> notification =
-        safety_hub_menu_notification_service->GetNotificationToShow();
-    if (notification.has_value()) {
-      base::UmaHistogramEnumeration(
-          "Settings.SafetyHub.Impression",
-          safety_hub::SafetyHubSurfaces::kThreeDotMenu);
-      base::UmaHistogramEnumeration(
-          "Settings.SafetyHub.EntryPointImpression",
-          safety_hub::SafetyHubEntryPoint::kMenuNotifications);
-      std::optional<safety_hub::SafetyHubModuleType> sh_module =
-          safety_hub_menu_notification_service->GetModuleOfActiveNotification();
-      if (sh_module.has_value()) {
-        base::UmaHistogramEnumeration(
-            "Settings.SafetyHub.MenuNotificationImpression", sh_module.value());
-      }
-      const auto safety_hub_icon = ui::ImageModel::FromVectorIcon(
-          kSecurityIcon, ui::kColorMenuIcon, kDefaultIconSize);
-      AddItemWithIcon(notification->command, notification->label,
-                      safety_hub_icon);
-      need_separator = true;
-    }
-  }
-
-  if (AddGlobalErrorMenuItems() || need_separator)
+  if (AddSafetyHubMenuItem() || AddGlobalErrorMenuItems() || need_separator) {
     AddSeparator(ui::NORMAL_SEPARATOR);
+  }
 
   AddItemWithStringId(IDC_NEW_TAB,
                       browser_->profile()->IsIncognitoProfile() &&
@@ -1939,6 +1919,40 @@ bool AppMenuModel::AddGlobalErrorMenuItems() {
     }
   }
   return menu_items_added;
+}
+
+bool AppMenuModel::AddSafetyHubMenuItem() {
+  // TODO(crbug.com/1443466): Remove when the service is only created when the
+  // feature is enabled.
+  if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
+    return false;
+  }
+  auto* const safety_hub_menu_notification_service =
+      SafetyHubMenuNotificationServiceFactory::GetForProfile(
+          browser_->profile());
+  if (!safety_hub_menu_notification_service) {
+    return false;
+  }
+  std::optional<MenuNotificationEntry> notification =
+      safety_hub_menu_notification_service->GetNotificationToShow();
+  if (!notification.has_value()) {
+    return false;
+  }
+  base::UmaHistogramEnumeration("Settings.SafetyHub.Impression",
+                                safety_hub::SafetyHubSurfaces::kThreeDotMenu);
+  base::UmaHistogramEnumeration(
+      "Settings.SafetyHub.EntryPointImpression",
+      safety_hub::SafetyHubEntryPoint::kMenuNotifications);
+  std::optional<safety_hub::SafetyHubModuleType> sh_module =
+      safety_hub_menu_notification_service->GetModuleOfActiveNotification();
+  if (sh_module.has_value()) {
+    base::UmaHistogramEnumeration(
+        "Settings.SafetyHub.MenuNotificationImpression", sh_module.value());
+  }
+  const auto safety_hub_icon = ui::ImageModel::FromVectorIcon(
+      kSecurityIcon, ui::kColorMenuIcon, kDefaultIconSize);
+  AddItemWithIcon(notification->command, notification->label, safety_hub_icon);
+  return true;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

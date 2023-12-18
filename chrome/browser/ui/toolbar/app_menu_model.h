@@ -262,6 +262,10 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // Returns a boolean indicating whether any menu items were added.
   bool AddGlobalErrorMenuItems();
 
+  // Adds the Safety Hub menu notifications to the menu. Returns a boolean
+  // indicating whether any menu items were added.
+  [[nodiscard]] bool AddSafetyHubMenuItem();
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Disables/Enables the settings item based on kSystemFeaturesDisableList
   // pref.
