@@ -37,8 +37,8 @@ struct Configure {
   unsigned int height;   // Nonzero
   // TODO(wtc): displayWidth, displayHeight, bitrate, framerate,
   // scalabilityMode.
-  vpx_rc_mode end_usage;   // Implies bitrateMode: constant, variable.
-                           // Note: quantizer not implemented for VP8.
+  vpx_rc_mode end_usage;        // Implies bitrateMode: constant, variable.
+                                // TODO(wtc): quantizer.
   vpx_enc_deadline_t deadline;  // Implies LatencyMode: quality, realtime.
   // TODO(wtc): contentHint.
 };
@@ -70,7 +70,7 @@ auto AnyConfigureWithMaxSize(unsigned int max_width, unsigned int max_height) {
 //   optional VideoEncoderEncodeOptions options = {}
 struct Encode {
   bool key_frame;
-  // Note: quantizer not implemented for VP8
+  // TODO(wtc): quantizer.
 };
 
 auto AnyEncode() {
@@ -102,9 +102,9 @@ auto AnyCallSequence() {
                  /*max_height=*/InRange(1u, 1080u));
 }
 
-void VP8EncodeArbitraryCallSequenceSucceeds(int speed,
+void VP9EncodeArbitraryCallSequenceSucceeds(int speed,
                                             const CallSequence& call_sequence) {
-  vpx_codec_iface_t* const iface = vpx_codec_vp8_cx();
+  vpx_codec_iface_t* const iface = vpx_codec_vp9_cx();
   vpx_codec_enc_cfg_t cfg;
   ASSERT_EQ(vpx_codec_enc_config_default(iface, &cfg, /*usage=*/0),
             VPX_CODEC_OK);
@@ -141,7 +141,7 @@ void VP8EncodeArbitraryCallSequenceSucceeds(int speed,
     } else {
       // Encode a frame.
       const Encode& encode = std::get<Encode>(call);
-      // VP8 supports only one image format: 8-bit YUV 4:2:0.
+      // TODO(wtc): Support high bit depths and other YUV formats.
       vpx_image_t* const image =
           vpx_img_alloc(nullptr, VPX_IMG_FMT_I420, cfg.g_w, cfg.g_h, 1);
       ASSERT_NE(image, nullptr);
@@ -187,19 +187,19 @@ void VP8EncodeArbitraryCallSequenceSucceeds(int speed,
   ASSERT_EQ(vpx_codec_destroy(&enc), VPX_CODEC_OK);
 }
 
-FUZZ_TEST(VP8EncodeFuzzTest, VP8EncodeArbitraryCallSequenceSucceeds)
-    .WithDomains(/*speed=*/InRange(-16, 16),
+FUZZ_TEST(VP9EncodeFuzzTest, VP9EncodeArbitraryCallSequenceSucceeds)
+    .WithDomains(/*speed=*/InRange(-9, 9),
                  /*call_sequence=*/AnyCallSequence());
 
-// speed: range -16..16
+// speed: range -9..9
 // end_usage: Rate control mode
-void VP8EncodeSucceeds(unsigned int threads,
+void VP9EncodeSucceeds(unsigned int threads,
                        int speed,
                        vpx_rc_mode end_usage,
                        unsigned int width,
                        unsigned int height,
                        int num_frames) {
-  vpx_codec_iface_t* const iface = vpx_codec_vp8_cx();
+  vpx_codec_iface_t* const iface = vpx_codec_vp9_cx();
   vpx_codec_enc_cfg_t cfg;
   ASSERT_EQ(vpx_codec_enc_config_default(iface, &cfg, /*usage=*/0),
             VPX_CODEC_OK);
@@ -219,7 +219,7 @@ void VP8EncodeSucceeds(unsigned int threads,
 
   ASSERT_EQ(vpx_codec_control(&enc, VP8E_SET_CPUUSED, speed), VPX_CODEC_OK);
 
-  // VP8 supports only one image format: 8-bit YUV 4:2:0.
+  // TODO(wtc): Support high bit depths and other YUV formats.
   vpx_image_t* const image =
       vpx_img_alloc(nullptr, VPX_IMG_FMT_I420, cfg.g_w, cfg.g_h, 1);
   ASSERT_NE(image, nullptr);
@@ -262,9 +262,9 @@ void VP8EncodeSucceeds(unsigned int threads,
 }
 
 // Chrome's WebCodecs uses at most 16 threads.
-FUZZ_TEST(VP8EncodeFuzzTest, VP8EncodeSucceeds)
+FUZZ_TEST(VP9EncodeFuzzTest, VP9EncodeSucceeds)
     .WithDomains(/*threads=*/InRange(0u, 16u),
-                 /*speed=*/InRange(-16, 16),
+                 /*speed=*/InRange(-9, 9),
                  /*end_usage=*/ElementOf({VPX_VBR, VPX_CBR}),
                  /*width=*/InRange(1u, 1920u),
                  /*height=*/InRange(1u, 1080u),
