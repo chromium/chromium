@@ -4517,9 +4517,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 // frame and mouse up is on OOF iframe, the mouse up event is delivered to the
 // main frame as well to clear cached mouse states including autoscroll
 // selection state.
+// TODO(crbug.com/1512574): This test was detected flaky.
 IN_PROC_BROWSER_TEST_F(
     WebContentsImplBrowserTest,
-    MouseUpInOOPIframeShouldCancelMainFrameAutoscrollSelection) {
+    DISABLED_MouseUpInOOPIframeShouldCancelMainFrameAutoscrollSelection) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
