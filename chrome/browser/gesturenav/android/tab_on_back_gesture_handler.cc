@@ -21,10 +21,10 @@ void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
                                             float progress,
                                             int edge,
                                             bool forward) {
-  CHECK(!is_in_progress_, base::NotFatalUntil::M122);
+  CHECK(!is_in_progress_, base::NotFatalUntil::M123);
   is_in_progress_ = true;
   content::WebContents* web_contents = tab_android_->web_contents();
-  CHECK(web_contents, base::NotFatalUntil::M122);
+  CHECK(web_contents, base::NotFatalUntil::M123);
   ui::BackGestureEvent backEvent(gfx::PointF(x, y), progress);
   started_edge_ = static_cast<ui::BackGestureEventSwipeEdge>(edge);
 }
@@ -34,18 +34,18 @@ void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
                                                float y,
                                                float progress,
                                                int edge) {
-  CHECK(is_in_progress_, base::NotFatalUntil::M122);
+  CHECK(is_in_progress_, base::NotFatalUntil::M123);
   CHECK_EQ(started_edge_, static_cast<ui::BackGestureEventSwipeEdge>(edge));
   ui::BackGestureEvent backEvent(gfx::PointF(x, y), progress);
 }
 
 void TabOnBackGestureHandler::OnBackCancelled(JNIEnv* env) {
-  CHECK(is_in_progress_, base::NotFatalUntil::M122);
+  CHECK(is_in_progress_, base::NotFatalUntil::M123);
   is_in_progress_ = false;
 }
 
 void TabOnBackGestureHandler::OnBackInvoked(JNIEnv* env) {
-  CHECK(is_in_progress_, base::NotFatalUntil::M122);
+  CHECK(is_in_progress_, base::NotFatalUntil::M123);
   is_in_progress_ = false;
 }
 
