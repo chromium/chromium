@@ -9,6 +9,7 @@ import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-ch
 import {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {Descriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
+import {CustomizeChromeCombobox} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/combobox/customize_chrome_combobox.js';
 import {DESCRIPTOR_D_VALUE, WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search_proxy.js';
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
@@ -115,93 +116,23 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           1,
           wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorComboboxA .category-item')
-              .length);
+              .querySelector<CustomizeChromeCombobox>(
+                  '#descriptorComboboxA')!.items.length);
       assertEquals(
           1,
           wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorComboboxB .dropdown-item')
-              .length);
+              .querySelector<CustomizeChromeCombobox>(
+                  '#descriptorComboboxB')!.items.length);
       assertEquals(
           3,
           wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorComboboxC .dropdown-item')
-              .length);
+              .querySelector<CustomizeChromeCombobox>(
+                  '#descriptorComboboxC')!.items.length);
       assertEquals(
           6,
           wallpaperSearchElement.shadowRoot!
               .querySelectorAll('#descriptorMenuD button')
               .length);
-    });
-
-    test('expands and collapses categories', async () => {
-      createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
-
-      // No dropdown items by default since all categories are collapsed.
-      assertEquals(
-          0,
-          wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorComboboxA .dropdown-item')
-              .length);
-
-      const categoryLabel =
-          wallpaperSearchElement.shadowRoot!.querySelector<HTMLElement>(
-              '#descriptorComboboxA .category-item')!;
-      const categoryLabelIcon = categoryLabel.querySelector('iron-icon')!;
-      assertEquals('cr:expand-more', categoryLabelIcon.icon);
-
-      // Clicking on a category expands the dropdown items below it.
-      categoryLabel.click();
-      await flushTasks();
-      assertEquals(
-          2,
-          wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorComboboxA .dropdown-item')
-              .length);
-      assertEquals('cr:expand-less', categoryLabelIcon.icon);
-
-      // Clicking on the category again hides the dropdown items below it.
-      categoryLabel.click();
-      await flushTasks();
-      assertEquals(
-          0,
-          wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorComboboxA .dropdown-item')
-              .length);
-      assertEquals('cr:expand-more', categoryLabelIcon.icon);
-    });
-
-    test('check marks selected descriptorComboboxB option', async () => {
-      createWallpaperSearchElement({
-        descriptorA: [],
-        descriptorB: [
-          {label: 'one', imagePath: 'one.png'},
-          {label: 'two', imagePath: 'two.png'},
-        ],
-        descriptorC: [],
-      });
-      await flushTasks();
-
-      const optionCheckmarks =
-          wallpaperSearchElement.$.descriptorComboboxB.querySelectorAll(
-              'customize-chrome-check-mark-wrapper');
-      assertEquals(2, optionCheckmarks.length);
-
-      const option1Checkmark = optionCheckmarks[0]!;
-      const option2Checkmark = optionCheckmarks[1]!;
-      assertFalse(option1Checkmark.checked);
-      assertFalse(option2Checkmark.checked);
-
-      wallpaperSearchElement.$.descriptorComboboxB.value = 'one';
-      await flushTasks();
-      assertTrue(option1Checkmark.checked);
-      assertFalse(option2Checkmark.checked);
-
-      wallpaperSearchElement.$.descriptorComboboxB.value = 'two';
-      await flushTasks();
-      assertFalse(option1Checkmark.checked);
-      assertTrue(option2Checkmark.checked);
     });
 
     test('check marks one item in descriptorMenuD at a time', async () => {
@@ -263,19 +194,12 @@ suite('WallpaperSearchTest', () => {
       });
       await flushTasks();
 
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .category-item')!.click();
-      await flushTasks();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .dropdown-item')!.click();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxB .dropdown-item')!.click();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxC .dropdown-item')!.click();
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxA')!.value = 'bar';
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxB')!.value = 'foo';
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxC')!.value = 'baz';
       $$<HTMLElement>(
           wallpaperSearchElement, '#descriptorMenuD button')!.click();
       wallpaperSearchElement.$.submitButton.click();
@@ -323,14 +247,6 @@ suite('WallpaperSearchTest', () => {
 
           wallpaperSearchElement.$.submitButton.click();
           await flushTasks();
-
-          // Category is expanded to reveal dropdown items.
-          assertEquals(
-              2,
-              wallpaperSearchElement.shadowRoot!
-                  .querySelectorAll('#descriptorComboboxA .dropdown-item')
-                  .length);
-
           assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
           assertNotEquals(
               undefined, wallpaperSearchElement.$.descriptorComboboxA.value);
@@ -348,13 +264,9 @@ suite('WallpaperSearchTest', () => {
       });
       await flushTasks();
 
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .category-item')!.click();
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxA')!.value = 'bar';
       await flushTasks();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .dropdown-item')!.click();
       wallpaperSearchElement.$.submitButton.click();
 
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
@@ -590,13 +502,9 @@ suite('WallpaperSearchTest', () => {
       await flushTasks();
 
       // Select only descriptor A.
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .category-item')!.click();
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxA')!.value = 'Label A1';
       await flushTasks();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .dropdown-item')!.click();
       wallpaperSearchElement.$.submitButton.click();
       await waitAfterNextRender(wallpaperSearchElement);
 
@@ -609,18 +517,18 @@ suite('WallpaperSearchTest', () => {
       assertEquals('Image 2 of Label A1', getAriaLabelOfTile(1));
 
       // Select descriptor B.
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxB .dropdown-item')!.click();
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxB')!.value = 'Label B';
+      await flushTasks();
       wallpaperSearchElement.$.submitButton.click();
       await waitAfterNextRender(wallpaperSearchElement);
       assertEquals('Image 1 of Label A1, Label B', getAriaLabelOfTile(0));
       assertEquals('Image 2 of Label A1, Label B', getAriaLabelOfTile(1));
 
       // Select descriptor C.
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxC .dropdown-item')!.click();
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxC')!.value = 'Label C';
+      await flushTasks();
       wallpaperSearchElement.$.submitButton.click();
       await waitAfterNextRender(wallpaperSearchElement);
       assertEquals(
@@ -636,16 +544,11 @@ suite('WallpaperSearchTest', () => {
         descriptorC: ['Label C'],
       });
       await flushTasks();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .category-item')!.click();
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxA')!.value = 'Label A1';
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxC')!.value = 'Label C';
       await flushTasks();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .dropdown-item')!.click();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxC .dropdown-item')!.click();
       wallpaperSearchElement.$.submitButton.click();
       await waitAfterNextRender(wallpaperSearchElement);
       assertEquals('Image 1 of Label A1, Label C', getAriaLabelOfTile(0));
@@ -1199,13 +1102,9 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
 
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .category-item')!.click();
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxA')!.value = 'bar';
       await flushTasks();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .dropdown-item')!.click();
 
       assertEquals(
           1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
@@ -1221,9 +1120,9 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
 
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxB .dropdown-item')!.click();
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxB')!.value = 'foo';
+      await flushTasks();
 
       assertEquals(
           1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
@@ -1238,9 +1137,9 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
 
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxC .dropdown-item')!.click();
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxC')!.value = 'foo';
+      await flushTasks();
 
       assertEquals(
           1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));

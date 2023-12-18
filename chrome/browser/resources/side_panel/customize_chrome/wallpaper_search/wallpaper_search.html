@@ -56,50 +56,6 @@
     width: 100%;
   }
 
-  .category-item {
-    display: flex;
-    font-weight: 700;
-  }
-
-  .category-item iron-icon {
-    --iron-icon-height: 16px;
-    --iron-icon-width: 16px;
-    margin-inline-start: auto;
-  }
-
-  .category-item,
-  .dropdown-item {
-    align-items: center;
-    box-sizing: border-box;
-    border: none;
-    display: flex;
-    height: 28px;
-    padding: 0 20px;
-  }
-
-  .category-item[highlighted],
-  .dropdown-item[highlighted] {
-    background: var(--cr-active-neutral-on-subtle-background-color);
-  }
-
-  .dropdown-item iron-icon {
-    --iron-icon-height: 16px;
-    --iron-icon-width: 16px;
-    flex-shrink: 0;
-    visibility: hidden;
-    margin-inline-end: 8px;
-  }
-
-  .dropdown-item[selected] iron-icon {
-    visibility: visible;
-  }
-
-  .dropdown-item span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   #optionalDetails {
     display: flex;
     flex-wrap: wrap;
@@ -122,26 +78,6 @@
   #descriptorComboboxB,
   #descriptorComboboxC {
     flex-grow: 1;
-  }
-
-  #descriptorComboboxB .dropdown-item {
-    height: 48px;
-  }
-
-  #descriptorComboboxB customize-chrome-check-mark-wrapper {
-    --customize-chrome-check-mark-wrapper-end: -8px;
-    --customize-chrome-check-mark-wrapper-size: 16px;
-    --customize-chrome-check-mark-wrapper-top: -3px;
-  }
-
-  #descriptorComboboxB img {
-    border-radius: 8px;
-    height: 40px;
-    width: 40px;
-  }
-
-  #descriptorComboboxB span {
-    padding-inline-start: 16px;
   }
 
   #descriptorMenuD {
@@ -328,52 +264,20 @@
       tabindex="-1">
     <customize-chrome-combobox id="descriptorComboboxA"
         label="$i18n{wallpaperSearchSubjectLabel}"
+        items="[[comboboxItems_.a]]"
         value="{{selectedDescriptorA_}}">
-      <template is="dom-repeat" items="[[descriptors_.descriptorA]]">
-        <div class="category" role="group">
-          <label class="category-item" on-click="onComboboxCategoryClick_">
-            [[item.category]]
-            <iron-icon icon="[[
-                getCategoryIcon_(index, expandedCategories_.*)]]">
-            </iron-icon>
-          </label>
-          <template is="dom-if" restamp if="[[
-              isCategoryExpanded_(index, expandedCategories_.*)]]">
-            <template is="dom-repeat" items="[[item.labels]]">
-              <div class="dropdown-item" role="option" value="[[item]]">
-                <iron-icon icon="cr:check"></iron-icon>
-                <span>[[item]]</span>
-              </div>
-            </template>
-          </template>
-        </div>
-      </template>
     </customize-chrome-combobox>
     <div id="optionalDetails">
       <div id="optionalDetailsLabel">$i18n{optionalDetailsLabel}</div>
       <customize-chrome-combobox id="descriptorComboboxB"
           label="$i18n{wallpaperSearchStyleLabel}"
+          items="[[comboboxItems_.b]]"
           value="{{selectedDescriptorB_}}">
-        <template is="dom-repeat" items="[[descriptors_.descriptorB]]">
-          <div class="dropdown-item" role="option" value="[[item.label]]">
-            <customize-chrome-check-mark-wrapper
-                checked="[[isOptionSelectedInDescriptorB_(
-                    item, selectedDescriptorB_)]]">
-              <img is="cr-auto-img" auto-src="[[item.imagePath]]"></img>
-            </customize-chrome-check-mark-wrapper>
-            <span>[[item.label]]</span>
-          </div>
-        </template>
       </customize-chrome-combobox>
       <customize-chrome-combobox id="descriptorComboboxC"
           label="$i18n{wallpaperSearchMoodLabel}"
+          items="[[comboboxItems_.c]]"
           value="{{selectedDescriptorC_}}" right-align-dropbox>
-        <template is="dom-repeat" items="[[descriptors_.descriptorC]]">
-          <div class="dropdown-item" role="option" value="[[item]]">
-            <iron-icon icon="cr:check"></iron-icon>
-            <span>[[item]]</span>
-          </div>
-        </template>
       </customize-chrome-combobox>
       <cr-grid columns="6" id="descriptorMenuD">
         <template is="dom-repeat" items="[[descriptorD_]]">

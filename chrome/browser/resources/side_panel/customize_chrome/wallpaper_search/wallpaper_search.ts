@@ -37,7 +37,7 @@ import {CustomizeChromeApiProxy} from '../customize_chrome_api_proxy.js';
 import {DescriptorA, DescriptorB, DescriptorDValue, Descriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
-import {CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
+import {ComboboxGroup, ComboboxItem, CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
 import {getTemplate} from './wallpaper_search.html.js';
 import {WallpaperSearchProxy} from './wallpaper_search_proxy.js';
 
@@ -74,6 +74,12 @@ interface ResultsDescriptors {
   a?: string|null;
   b?: string|null;
   c?: string|null;
+}
+
+interface ComboxItems {
+  a: ComboboxGroup[];
+  b: ComboboxItem[];
+  c: ComboboxItem[];
 }
 
 export interface ErrorState {
@@ -120,6 +126,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   static get properties() {
     return {
+      comboboxItems_: Array,
       descriptors_: {
         type: Object,
         value: null,
@@ -180,6 +187,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     };
   }
 
+  private comboboxItems_: ComboxItems|null;
   private descriptors_: Descriptors|null;
   private descriptorD_: string[];
   private emptyHistoryContainers_: number[] = [];
@@ -309,6 +317,20 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.wallpaperSearchHandler_.getDescriptors().then(({descriptors}) => {
       if (descriptors) {
         this.descriptors_ = descriptors;
+        this.comboboxItems_ = {
+          a: descriptors.descriptorA.map((group) => {
+            return {
+              label: group.category,
+              items: group.labels.map((label) => {
+                return {label};
+              }),
+            };
+          }),
+          b: descriptors.descriptorB,
+          c: descriptors.descriptorC.map((label) => {
+            return {label};
+          }),
+        };
         this.errorCallback_ = undefined;
       } else {
         this.errorCallback_ = () => this.fetchDescriptors_();
@@ -363,11 +385,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     return this.isBackgroundSelected_(id) ? 'true' : 'false';
   }
 
-  private getCategoryIcon_(categoryIndex: number): string {
-    return this.expandedCategories_[categoryIndex] ? 'cr:expand-less' :
-                                                     'cr:expand-more';
-  }
-
   private getColorCheckedStatus_(defaultColor: string): string {
     return this.isColorSelected_(defaultColor) ? 'true' : 'false';
   }
@@ -412,10 +429,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         this.theme_.backgroundImage.localBackgroundId &&
         this.theme_.backgroundImage.localBackgroundId.low === id.low &&
         this.theme_.backgroundImage.localBackgroundId.high === id.high);
-  }
-
-  private isCategoryExpanded_(categoryIndex: number): boolean {
-    return this.expandedCategories_[categoryIndex];
   }
 
   private isColorSelected_(defaultColor: string): boolean {
