@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -9,6 +10,7 @@
 #include "chrome/browser/web_applications/commands/compute_app_size_command.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -22,7 +24,7 @@ IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandBrowserTest, RetrieveWebAppSize) {
 
   GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
   webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
-  NavigateToURLAndWait(browser(), app_url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
 
   const char* script = R"(
         localStorage.setItem('data', 'data'.repeat(5000));
@@ -38,7 +40,6 @@ IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandBrowserTest, RetrieveWebAppSize) {
   // renderer process. As updates to quota manager usage occurs on a different
   // sequence to this procress, it requires multiple events. Due to all of this,
   // we are resorting to polling for non-zero values.
-
   while (true) {
     base::test::TestFuture<absl::optional<ComputeAppSizeCommand::Size>>
         app_size;

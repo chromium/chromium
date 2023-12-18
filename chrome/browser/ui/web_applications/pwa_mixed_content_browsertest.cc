@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
   const GURL app_url = GetMixedContentAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
 
-  NavigateToURLAndWait(browser(), GetMixedContentAppURL());
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GetMixedContentAppURL()));
   content::WebContents* tab_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(tab_contents->GetLastCommittedURL(), GetMixedContentAppURL());
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL app_url = GetSecureIFrameAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
 
-  NavigateToURLAndWait(browser(), app_url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
   CheckMixedContentFailedToLoad(browser());
 
   Browser* const app_browser = ReparentWebContentsIntoAppBrowser(
