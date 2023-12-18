@@ -5979,9 +5979,9 @@ class DelegatedInkTest : public VizPixelTestWithParam,
 
 INSTANTIATE_TEST_SUITE_P(,
                          DelegatedInkTest,
-                         testing::ValuesIn(GetRendererTypesSkiaOnly()),
+                         testing::ValuesIn(GetGpuRendererTypes()),
                          testing::PrintToStringParamName());
-// GetRendererTypesSkiaOnly() can return an empty list, e.g. on Fuchsia ARM64.
+// GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(DelegatedInkTest);
 
 // Test to confirm that predicted points are not drawn if prediction is not
@@ -6034,10 +6034,10 @@ class DelegatedInkWithPredictionTest : public DelegatedInkTest {
 
 INSTANTIATE_TEST_SUITE_P(,
                          DelegatedInkWithPredictionTest,
-                         testing::ValuesIn(GetRendererTypesSkiaOnly()),
+                         testing::ValuesIn(GetGpuRendererTypes()),
                          testing::PrintToStringParamName());
 
-// GetRendererTypesSkiaOnly() can return an empty list, e.g. on Fuchsia ARM64.
+// GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(DelegatedInkWithPredictionTest);
 
 // Draw a single trail and erase it, making sure that no bits of trail are left

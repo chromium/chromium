@@ -1405,10 +1405,10 @@ class MixedFilterZoomAndOffsetTest : public LayerTreeHostFiltersPixelTest {
 // For now only run on SkiaRenderer-based compositors.
 INSTANTIATE_TEST_SUITE_P(,
                          MixedFilterZoomAndOffsetTest,
-                         ::testing::ValuesIn(viz::GetRendererTypesSkiaOnly()),
+                         ::testing::ValuesIn(viz::GetGpuRendererTypes()),
                          ::testing::PrintToStringParamName());
 
-// viz::GetRendererTypesSkiaOnly() can return an empty list on some platforms.
+// viz::GetGpuRendererTypes() can return an empty list on some platforms.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(MixedFilterZoomAndOffsetTest);
 
 TEST_P(MixedFilterZoomAndOffsetTest, StandardDpi) {
