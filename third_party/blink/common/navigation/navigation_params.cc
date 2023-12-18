@@ -29,12 +29,14 @@ mojom::CommitNavigationParamsPtr CreateCommitNavigationParams() {
 }
 
 mojom::RendererContentSettingsPtr CreateDefaultRendererContentSettings() {
-  // These defaults are used in exactly 2 places:
+  // These defaults are used in exactly 3 places:
   //   (1) A new empty window does not go through "navigation" and thus needs
   //   default values. As this is an empty window, the values do not matter.
   //   (2) On navigation error, the renderer sets the URL to
   //   kUnreachableWebDataURL. This page does have script and images, which we
   //   always want to allow regardless of the user's content settings.
+  //   (3) When content settings are not supported on a given platform (e.g.
+  //   allow_image is not supported on Android), then these defaults are used.
   return mojom::RendererContentSettings::New(
       /*allow_script=*/true, /*allow_image=*/true, /*allow_popup=*/false,
       /*allow_mixed_content=*/false);
