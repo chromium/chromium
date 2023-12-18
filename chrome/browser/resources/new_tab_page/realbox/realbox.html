@@ -162,6 +162,31 @@
     width: var(--ntp-realbox-icon-width);
   }
 
+  :host([realbox-chrome-refresh-theming]) .realbox-icon-button {
+    position: static;
+  }
+
+  /* When voice/lens icons are monochrome, they are webkit mask images.
+   * Webkit mask images hide borders so container rules are created to
+   * show focus borders on these icons. */
+  .realbox-icon-button-container {
+    border-radius: 2px;
+    height: 100%;
+    position: absolute;
+    right: 16px;
+    top: 0;
+    z-index: 100;
+  }
+
+  .realbox-icon-button-container.voice {
+    right: var(--ntp-realbox-voice-icon-offset);
+  }
+
+  :host-context(.focus-outline-visible) .realbox-icon-button-container:focus-within {
+    box-shadow: var(--ntp-focus-shadow);
+  }
+
+
   :host(:not([realbox-chrome-refresh-theming])) #voiceSearchButton {
     background-image: url(icons/googlemic_clr_24px.svg);
   }
@@ -208,6 +233,16 @@
     right: unset;
   }
 
+  :host-context([dir='rtl']) .realbox-icon-button-container {
+    left: 16px;
+    right: unset;
+  }
+
+  :host([realbox-lens-search-enabled_]):host-context([dir='rtl']) .realbox-icon-button-container.voice {
+    left: var(--ntp-realbox-voice-icon-offset);
+    right: unset;
+  }
+
   :host-context(.focus-outline-visible) .realbox-icon-button:focus {
     box-shadow: var(--ntp-focus-shadow);
   }
@@ -242,12 +277,28 @@
   <cr-realbox-icon id="icon" match="[[selectedMatch_]]"
       default-icon="[[realboxIcon_]]" in-searchbox>
   </cr-realbox-icon>
-  <button id="voiceSearchButton" class="realbox-icon-button"
+  <div class="realbox-icon-button-container voice"
+      hidden="[[!realboxChromeRefreshTheming]]">
+    <button id="voiceSearchButton" class="realbox-icon-button"
         on-click="onVoiceSearchClick_" title="$i18n{voiceSearchButtonLabel}">
+    </button>
+  </div>
+  <div class="realbox-icon-button-container lens"
+      hidden="[[!realboxChromeRefreshTheming]]">
+    <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
+      <button id="lensSearchButton" class="realbox-icon-button"
+          on-click="onLensSearchClick_" title="$i18n{lensSearchButtonLabel}">
+      </button>
+    </template>
+  </div>
+  <button id="voiceSearchButton" class="realbox-icon-button"
+      on-click="onVoiceSearchClick_" title="$i18n{voiceSearchButtonLabel}"
+      hidden="[[realboxChromeRefreshTheming]]">
   </button>
   <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
     <button id="lensSearchButton" class="realbox-icon-button"
-        on-click="onLensSearchClick_" title="$i18n{lensSearchButtonLabel}">
+        on-click="onLensSearchClick_" title="$i18n{lensSearchButtonLabel}"
+        hidden="[[realboxChromeRefreshTheming]]">
     </button>
   </template>
   <cr-realbox-dropdown id="matches" role="listbox" result="[[result_]]"
