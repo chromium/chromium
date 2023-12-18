@@ -35,22 +35,20 @@
 
 namespace tpcd::experiment {
 
-// The param indicates whether the user is in in a cohort with 3PCD enabled.
-// (True indicates that third-party cookies are blocked.)
 // These tests are running with "force_eligible" enabled to be deterministic
 // and avoid being flaky.
-class EligibilityServiceBrowserTest : public InProcessBrowserTest,
-                                      public testing::WithParamInterface<bool> {
+class EligibilityServiceBrowserTestBase : public InProcessBrowserTest {
  public:
-  EligibilityServiceBrowserTest() {
+  EligibilityServiceBrowserTestBase(bool disable_3p_cookies,
+                                    bool enable_silent_onboarding) {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kCookieDeprecationFacilitatedTesting,
         {{"label", "label_test"},
          {"force_eligible", "true"},
-         {"disable_3p_cookies", GetDisable3PCookies()}});
+         {kDisable3PCookiesName, disable_3p_cookies ? "true" : "false"},
+         {kEnableSilentOnboardingName,
+          enable_silent_onboarding ? "true" : "false"}});
   }
-
-  ~EligibilityServiceBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -59,8 +57,6 @@ class EligibilityServiceBrowserTest : public InProcessBrowserTest,
   }
 
  protected:
-  std::string GetDisable3PCookies() { return GetParam() ? "true" : "false"; }
-
   void AddImageToDocument(const GURL& src_url) {
     ASSERT_EQ(true,
               EvalJs(GetActiveWebContents(),
@@ -92,6 +88,16 @@ class EligibilityServiceBrowserTest : public InProcessBrowserTest,
   }
 
   base::test::ScopedFeatureList feature_list_;
+};
+
+// The param indicates whether the user is in in a cohort with 3PCD enabled.
+// (True indicates that third-party cookies are blocked.)
+class EligibilityServiceBrowserTest : public EligibilityServiceBrowserTestBase,
+                                      public testing::WithParamInterface<bool> {
+ public:
+  EligibilityServiceBrowserTest()
+      : EligibilityServiceBrowserTestBase(/*disable_3p_cookies=*/GetParam(),
+                                          /*enable_silent_onboarding=*/false) {}
 };
 
 IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
@@ -292,5 +298,108 @@ IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(All, EligibilityServiceBrowserTest, testing::Bool());
+
+class EligibilityServiceSilentOnboardingBrowserTest
+    : public EligibilityServiceBrowserTestBase {
+ public:
+  EligibilityServiceSilentOnboardingBrowserTest()
+      : EligibilityServiceBrowserTestBase(/*disable_3p_cookies=*/false,
+                                          /*enable_silent_onboarding=*/true) {}
+};
+
+IN_PROC_BROWSER_TEST_F(EligibilityServiceSilentOnboardingBrowserTest,
+                       EligibilityChanged_OnboardingServiceNotified) {
+  privacy_sandbox::TrackingProtectionOnboarding* onboarding_service =
+      TrackingProtectionOnboardingFactory::GetForProfile(browser()->profile());
+
+  EXPECT_EQ(onboarding_service->GetSilentOnboardingStatus(),
+            privacy_sandbox::TrackingProtectionOnboarding::
+                SilentOnboardingStatus::kEligible);
+
+  MarkProfileEligibility(/*is_eligible=*/false);
+
+  EXPECT_EQ(onboarding_service->GetSilentOnboardingStatus(),
+            privacy_sandbox::TrackingProtectionOnboarding::
+                SilentOnboardingStatus::kIneligible);
+
+  MarkProfileEligibility(/*is_eligible=*/true);
+
+  EXPECT_EQ(onboarding_service->GetSilentOnboardingStatus(),
+            privacy_sandbox::TrackingProtectionOnboarding::
+                SilentOnboardingStatus::kEligible);
+}
+
+IN_PROC_BROWSER_TEST_F(EligibilityServiceSilentOnboardingBrowserTest,
+                       OnboardingChanged_NetworkContextUpdated) {
+  auto response_b_a =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          &https_server_, "/b_a");
+  auto response_b_b =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          &https_server_, "/b_b");
+  auto response_b_c =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          &https_server_, "/b_c");
+  ASSERT_TRUE(https_server_.Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("a.test", "/title1.html")));
+
+  auto* privacy_sandbox_settings =
+      PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
+  auto privacy_sandbox_delegate = std::make_unique<
+      privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
+  EXPECT_CALL(*privacy_sandbox_delegate, IsCookieDeprecationLabelAllowed)
+      .WillOnce(testing::Return(false))
+      .WillOnce(testing::Return(true));
+  privacy_sandbox_settings->SetDelegateForTesting(
+      std::move(privacy_sandbox_delegate));
+
+  auto* onboarding_service =
+      TrackingProtectionOnboardingFactory::GetForProfile(browser()->profile());
+  onboarding_service->MaybeMarkSilentIneligible();
+
+  // Ensures the cookie deprecation label is updated in the network context.
+  FlushNetworkInterface();
+
+  AddImageToDocument(https_server_.GetURL("b.test", "/b_a"));
+
+  // [b.test/a] - Non opted-in request should not receive a label header.
+  response_b_a->WaitForRequest();
+  ASSERT_FALSE(base::Contains(response_b_a->http_request()->headers,
+                              "Sec-Cookie-Deprecation"));
+  auto http_response_b_a =
+      std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response_b_a->set_code(net::HTTP_MOVED_PERMANENTLY);
+  http_response_b_a->AddCustomHeader(
+      "Location", https_server_.GetURL("b.test", "/b_b").spec());
+  // b.test opts in to receiving the label.
+  http_response_b_a->AddCustomHeader(
+      "Set-Cookie",
+      "receive-cookie-deprecation=any-value; Secure; HttpOnly; "
+      "Path=/; SameSite=None; Partitioned");
+  response_b_a->Send(http_response_b_a->ToResponseString());
+  response_b_a->Done();
+
+  // [b.test/b] - Opted-in request should not receive a label header if
+  // not allowed.
+  response_b_b->WaitForRequest();
+  ASSERT_FALSE(base::Contains(response_b_b->http_request()->headers,
+                              "Sec-Cookie-Deprecation"));
+
+  onboarding_service->MaybeMarkSilentEligible();
+
+  // Ensures the cookie deprecation label is updated in the network context.
+  FlushNetworkInterface();
+
+  AddImageToDocument(https_server_.GetURL("b.test", "/b_c"));
+
+  // [b.test/c] - Opted-in request should receive a label header if allowed.
+  response_b_c->WaitForRequest();
+  ASSERT_TRUE(base::Contains(response_b_c->http_request()->headers,
+                             "Sec-Cookie-Deprecation"));
+  EXPECT_EQ(response_b_c->http_request()->headers.at("Sec-Cookie-Deprecation"),
+            "label_test");
+}
 
 }  // namespace tpcd::experiment

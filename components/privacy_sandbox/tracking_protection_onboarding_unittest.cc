@@ -43,6 +43,11 @@ class MockTrackingProtectionObserver
       (TrackingProtectionOnboarding::OnboardingStatus onboarding_status),
       (override));
   MOCK_METHOD(void, OnShouldShowNoticeUpdated, (), (override));
+  MOCK_METHOD(
+      void,
+      OnTrackingProtectionSilentOnboardingUpdated,
+      (TrackingProtectionOnboarding::SilentOnboardingStatus onboarding_status),
+      (override));
 };
 
 class TrackingProtectionOnboardingTest : public testing::Test {
@@ -1214,6 +1219,500 @@ TEST_F(TrackingProtectionOnboardingTest,
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.TrackingProtection.Onboarding.DidNoticeActionAckowledge",
       true, 1);
+}
+
+class TrackingProtectionSilentOnboardingTest
+    : public TrackingProtectionOnboardingTest {};
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       OnboardingProfileTriggersOnboardingObservers) {
+  MockTrackingProtectionObserver observer;
+  tracking_protection_onboarding()->AddObserver(&observer);
+  EXPECT_CALL(
+      observer,
+      OnTrackingProtectionSilentOnboardingUpdated(
+          TrackingProtectionOnboarding::SilentOnboardingStatus::kOnboarded));
+
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       EligibleProfileTriggersOnboardingObservers) {
+  MockTrackingProtectionObserver observer;
+  tracking_protection_onboarding()->AddObserver(&observer);
+  EXPECT_CALL(
+      observer,
+      OnTrackingProtectionSilentOnboardingUpdated(
+          TrackingProtectionOnboarding::SilentOnboardingStatus::kEligible));
+
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       MarkingAsEligibleTriggersShouldShowNoticeObservers) {
+  // Setup
+  MockTrackingProtectionObserver observer;
+  tracking_protection_onboarding()->AddObserver(&observer);
+  EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(1);
+
+  // Action
+  tracking_protection_onboarding()->MaybeMarkSilentEligible();
+
+  // Verification
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       MarkingAsIneligibleTriggersShouldShowNoticeObservers) {
+  // Setup
+  // We start with an eligible profile
+  tracking_protection_onboarding()->MaybeMarkSilentEligible();
+  MockTrackingProtectionObserver observer;
+  tracking_protection_onboarding()->AddObserver(&observer);
+  EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(1);
+
+  // Action
+  tracking_protection_onboarding()->MaybeMarkSilentIneligible();
+
+  // Verification
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       NoticeShownTriggersShouldShowNoticeObservers) {
+  // Setup
+  // We start with an eligible profile
+  tracking_protection_onboarding()->MaybeMarkSilentEligible();
+  MockTrackingProtectionObserver observer;
+  tracking_protection_onboarding()->AddObserver(&observer);
+  EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(1);
+
+  // Action
+  tracking_protection_onboarding()->SilentOnboardingNoticeShown();
+
+  // Verification
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       MaybeMarkEligibleDoesNothingIfProfileNotIneligible) {
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
+
+  // Action
+  tracking_protection_onboarding()->MaybeMarkSilentEligible();
+
+  // Verification
+  EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
+                prefs::kTrackingProtectionSilentOnboardingStatus)),
+            TrackingProtectionOnboardingStatus::kOnboarded);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       MaybeMarkEligibleMarksEligibleIfProfileIsIneligible) {
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
+
+  // Action
+  tracking_protection_onboarding()->MaybeMarkSilentEligible();
+
+  // Verification
+  EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
+                prefs::kTrackingProtectionSilentOnboardingStatus)),
+            TrackingProtectionOnboardingStatus::kEligible);
+  EXPECT_EQ(prefs()->GetTime(prefs::kTrackingProtectionSilentEligibleSince),
+            base::Time::Now());
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       MaybeMarkIneligibleDoesNothingIfProfileNotEligible) {
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
+
+  // Action
+  tracking_protection_onboarding()->MaybeMarkSilentIneligible();
+
+  // Verification
+  EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
+                prefs::kTrackingProtectionSilentOnboardingStatus)),
+            TrackingProtectionOnboardingStatus::kOnboarded);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       MaybeMarkSilentIneligibleMarksIneligibleIfProfileIsEligible) {
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
+
+  // Action
+  tracking_protection_onboarding()->MaybeMarkSilentIneligible();
+
+  // Verification
+  EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
+                prefs::kTrackingProtectionSilentOnboardingStatus)),
+            TrackingProtectionOnboardingStatus::kIneligible);
+  EXPECT_TRUE(
+      prefs()
+          ->FindPreference(prefs::kTrackingProtectionSilentEligibleSince)
+          ->IsDefaultValue());
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       NoticeShownDoesNothingIfProfileNotEligible) {
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
+
+  // Action
+  tracking_protection_onboarding()->SilentOnboardingNoticeShown();
+
+  // Verification
+  EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
+                prefs::kTrackingProtectionSilentOnboardingStatus)),
+            TrackingProtectionOnboardingStatus::kIneligible);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       NoticeShownMarksOnboardedIfProfileIsEligible) {
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
+
+  // Action
+  tracking_protection_onboarding()->SilentOnboardingNoticeShown();
+
+  // Verification
+  EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
+                prefs::kTrackingProtectionSilentOnboardingStatus)),
+            TrackingProtectionOnboardingStatus::kOnboarded);
+  EXPECT_EQ(prefs()->GetTime(prefs::kTrackingProtectionSilentOnboardedSince),
+            base::Time::Now());
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       ShouldNotShowNoticeIfProfileIneligible) {
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
+
+  // Verification
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(),
+            NoticeType::kNone);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       ShouldShowNoticeIfProfileEligible) {
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
+
+  // Verification
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(),
+            NoticeType::kSilentOnboarding);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       ShouldNotShowNoticeIfProfileOnboarded) {
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
+
+  // Verification
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(),
+            NoticeType::kNone);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       OnboardingEligibleToOnboardedDuration) {
+  tracking_protection_onboarding_service_->MaybeMarkSilentEligible();
+  tracking_protection_onboarding_service_->SilentOnboardingNoticeShown();
+  tracking_protection_onboarding_service_.reset();
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::UNKNOWN);
+
+  auto eligible_to_onboarded_duration =
+      prefs()->GetTime(prefs::kTrackingProtectionSilentOnboardedSince) -
+      prefs()->GetTime(prefs::kTrackingProtectionSilentEligibleSince);
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.TrackingProtection.SilentOnboarding."
+      "EligibleToOnboardedDuration",
+      eligible_to_onboarded_duration, 1);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest, MaybeMarkEligibleHistogram) {
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
+
+  // Action
+  tracking_protection_onboarding_service_->MaybeMarkSilentEligible();
+
+  // Verification
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.SilentOnboarding.MaybeMarkEligible",
+      false, 1);
+
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
+
+  // Action
+  tracking_protection_onboarding_service_->MaybeMarkSilentEligible();
+
+  // Verification
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.SilentOnboarding.MaybeMarkEligible",
+      true, 1);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest, MaybeMarkIneligibleHistogram) {
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
+
+  // Action
+  tracking_protection_onboarding_service_->MaybeMarkSilentIneligible();
+
+  // Verification
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.SilentOnboarding.MaybeMarkIneligible",
+      false, 1);
+
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
+
+  // Action
+  tracking_protection_onboarding_service_->MaybeMarkSilentIneligible();
+
+  // Verification
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.SilentOnboarding.MaybeMarkIneligible",
+      true, 1);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest, DidNoticeShownOnboardHistogram) {
+  // Action
+  tracking_protection_onboarding_service_->SilentOnboardingNoticeShown();
+
+  // Verification
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.SilentOnboarding."
+      "DidNoticeShownOnboard",
+      false, 1);
+
+  // Setup
+  tracking_protection_onboarding_service_->MaybeMarkSilentEligible();
+
+  // Action
+  tracking_protection_onboarding_service_->SilentOnboardingNoticeShown();
+
+  // Verification
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.SilentOnboarding."
+      "DidNoticeShownOnboard",
+      true, 1);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       MaybeResetOnboardingPrefsInStable) {
+  // Setup
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::STABLE);
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
+
+  // Action
+  tracking_protection_onboarding()->MaybeResetOnboardingPrefs();
+
+  // Verification
+  EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
+                prefs::kTrackingProtectionSilentOnboardingStatus)),
+            TrackingProtectionOnboardingStatus::kOnboarded);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       MaybeResetOnboardingPrefsInCanary) {
+  // Setup
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::CANARY);
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
+
+  // Action
+  tracking_protection_onboarding()->MaybeResetOnboardingPrefs();
+
+  // Verification
+  EXPECT_FALSE(
+      prefs()
+          ->FindPreference(prefs::kTrackingProtectionSilentOnboardingStatus)
+          ->HasUserSetting());
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       MaybeResetOnboardingPrefsInCanaryTriggersObserver) {
+  // Setup
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::CANARY);
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
+  prefs()->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
+  MockTrackingProtectionObserver observer;
+  tracking_protection_onboarding()->AddObserver(&observer);
+  EXPECT_CALL(
+      observer,
+      OnTrackingProtectionSilentOnboardingUpdated(
+          TrackingProtectionOnboarding::SilentOnboardingStatus::kIneligible));
+  // Action
+  tracking_protection_onboarding()->MaybeResetOnboardingPrefs();
+
+  // Expectation
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+class TrackingProtectionSilentOnboardingAccessorTest
+    : public TrackingProtectionSilentOnboardingTest,
+      public testing::WithParamInterface<
+          std::pair<TrackingProtectionOnboardingStatus,
+                    TrackingProtectionOnboarding::SilentOnboardingStatus>> {};
+
+TEST_P(TrackingProtectionSilentOnboardingAccessorTest,
+       ReturnsCorrectOnboardingValue) {
+  prefs()->SetInteger(prefs::kTrackingProtectionSilentOnboardingStatus,
+                      static_cast<int>(std::get<0>(GetParam())));
+  EXPECT_EQ(tracking_protection_onboarding()->GetSilentOnboardingStatus(),
+            std::get<1>(GetParam()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    TrackingProtectionSilentOnboardingAccessorTest,
+    TrackingProtectionSilentOnboardingAccessorTest,
+    testing::Values(
+        std::pair(
+            TrackingProtectionOnboardingStatus::kIneligible,
+            TrackingProtectionOnboarding::SilentOnboardingStatus::kIneligible),
+        std::pair(
+            TrackingProtectionOnboardingStatus::kEligible,
+            TrackingProtectionOnboarding::SilentOnboardingStatus::kEligible),
+        std::pair(
+            TrackingProtectionOnboardingStatus::kOnboarded,
+            TrackingProtectionOnboarding::SilentOnboardingStatus::kOnboarded)));
+
+class TrackingProtectionSilentOnboardingStartupStateTest
+    : public TrackingProtectionSilentOnboardingTest {
+ protected:
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_F(TrackingProtectionSilentOnboardingStartupStateTest,
+       StartupStateIneligible) {
+  // Silent onboarding startup state starts as ineligible
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.SilentOnboardingStartup.State",
+      TrackingProtectionOnboarding::OnboardingStartupState::kIneligible, 1);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingStartupStateTest,
+       StartupStateEligible) {
+  tracking_protection_onboarding_service_->MaybeMarkSilentEligible();
+  tracking_protection_onboarding_service_.reset();
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::UNKNOWN);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.SilentOnboardingStartup.State",
+      TrackingProtectionOnboarding::SilentOnboardingStartupState::
+          kEligibleWaitingToOnboard,
+      1);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingStartupStateTest,
+       StartupStateOnboarded) {
+  tracking_protection_onboarding_service_->MaybeMarkSilentEligible();
+  tracking_protection_onboarding_service_->SilentOnboardingNoticeShown();
+  tracking_protection_onboarding_service_.reset();
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::UNKNOWN);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.SilentOnboardingStartup.State",
+      TrackingProtectionOnboarding::SilentOnboardingStartupState::kOnboarded,
+      1);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingStartupStateTest,
+       StartupStateEligibleWaitingToOnboardSince) {
+  // Setup
+  tracking_protection_onboarding_service_->MaybeMarkSilentEligible();
+  auto delay = base::Seconds(15);
+  task_env_.FastForwardBy(delay);
+
+  // Action
+  tracking_protection_onboarding_service_.reset();
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::UNKNOWN);
+
+  // Verification
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.TrackingProtection.SilentOnboardingStartup."
+      "WaitingToOnboardSince",
+      delay, 1);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingStartupStateTest,
+       StartupStateEligibleToOnboardedDuration) {
+  tracking_protection_onboarding_service_->MaybeMarkSilentEligible();
+  tracking_protection_onboarding_service_->SilentOnboardingNoticeShown();
+  tracking_protection_onboarding_service_.reset();
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::UNKNOWN);
+  auto eligible_to_onboarded_duration =
+      prefs()->GetTime(prefs::kTrackingProtectionSilentOnboardedSince) -
+      prefs()->GetTime(prefs::kTrackingProtectionSilentEligibleSince);
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.TrackingProtection.SilentOnboardingStartup."
+      "EligibleToOnboardedDuration",
+      eligible_to_onboarded_duration, 1);
 }
 
 }  // namespace

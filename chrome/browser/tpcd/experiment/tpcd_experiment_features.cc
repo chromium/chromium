@@ -20,6 +20,7 @@ const char kDecisionDelayTimeName[] = "decision_delay_time";
 const char kNeedOnboardingForSyntheticTrialName[] =
     "need_onboarding_for_synthetic_trial";
 const char kNeedOnboardingForLabelName[] = "need_onboarding_for_label";
+const char kEnableSilentOnboardingName[] = "enable_silent_onboarding";
 const char kExclude3PCBlockedName[] = "exclude_3pc_blocked";
 const char kExcludeNotSeenAdsAPIsNoticeName[] = "exclude_has_not_seen_notice";
 const char kExcludeDasherAccountName[] = "exclude_dasher_account";
@@ -46,24 +47,35 @@ const base::FeatureParam<base::TimeDelta> kDecisionDelayTime{
     /*name=*/kDecisionDelayTimeName,
     /*default_value=*/base::Seconds(1)};
 
-// Set whether to force client being eligible for manual testing.
+// Set whether to force client being eligible for manual testing. When
+// "disable_3p_cookies" feature param is false, this feature param is only
+// meaningful when "enable_silent_onboarding" feature param is true.
 const base::FeatureParam<bool> kForceEligibleForTesting{
     &features::kCookieDeprecationFacilitatedTesting,
     /*name=*/kForceEligibleForTestingName,
     /*default_value=*/false};
 
-// Set whether to wait for onboarding to register the synthetic trial. Only
-// meaningful when "disable_3p_cookies" feature param is true.
+// Set whether to wait for onboarding to register the synthetic trial. When
+// "disable_3p_cookies" feature param is false, this feature param is only
+// meaningful when "enable_silent_onboarding" feature param is true.
 const base::FeatureParam<bool> kNeedOnboardingForSyntheticTrial{
     &features::kCookieDeprecationFacilitatedTesting,
     /*name=*/kNeedOnboardingForSyntheticTrialName,
     /*default_value=*/false};
 
-// Set whether to wait for onboarding to send the label. Only meaningful when
-// "disable_3p_cookies" feature param is true.
+// Set whether to wait for onboarding to send the label.
 const base::FeatureParam<bool> kNeedOnboardingForLabel{
     &features::kCookieDeprecationFacilitatedTesting,
     /*name=*/kNeedOnboardingForLabelName,
+    /*default_value=*/false};
+
+// Set whether to enable silent onboarding. Only meaningful when
+// "disable_3p_cookies" feature param is false, and should be enabled if
+// either "need_onboarding_for_synthetic_trial" or "need_onboarding_for_label"
+// feature param is enabled.
+const base::FeatureParam<bool> kEnableSilentOnboarding{
+    &features::kCookieDeprecationFacilitatedTesting,
+    /*name=*/kEnableSilentOnboardingName,
     /*default_value=*/false};
 
 const base::FeatureParam<bool> kExclude3PCBlocked{

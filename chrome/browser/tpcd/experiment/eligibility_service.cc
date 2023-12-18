@@ -112,16 +112,29 @@ void EligibilityService::MarkProfileEligibility(bool is_client_eligible) {
 
   UpdateCookieDeprecationLabel();
 
-  // Update the eligibility for the onboarding UX flow. Check that the user is
-  // in Mode B (kDisable3PCookies is true).
-  if (onboarding_service_ && kDisable3PCookies.Get()) {
-    if (is_client_eligible) {
-      onboarding_service_->MaybeMarkEligible();
+  // Update the eligibility for the onboarding UX flow.
+  if (onboarding_service_) {
+    if (kDisable3PCookies.Get()) {
+      onboarding_service_->MaybeMarkSilentIneligible();
+      if (is_client_eligible) {
+        onboarding_service_->MaybeMarkEligible();
+      } else {
+        onboarding_service_->MaybeMarkIneligible();
+      }
+      MaybeNotifyManagerTrackingProtectionOnboarded(
+          onboarding_service_->GetOnboardingStatus());
     } else {
       onboarding_service_->MaybeMarkIneligible();
+      if (kEnableSilentOnboarding.Get()) {
+        if (is_client_eligible) {
+          onboarding_service_->MaybeMarkSilentEligible();
+        } else {
+          onboarding_service_->MaybeMarkSilentIneligible();
+        }
+        MaybeNotifyManagerTrackingProtectionSilentOnboarded(
+            onboarding_service_->GetSilentOnboardingStatus());
+      }
     }
-    MaybeNotifyManagerTrackingProtectionOnboarded(
-        onboarding_service_->GetOnboardingStatus());
   }
 }
 
@@ -158,11 +171,30 @@ void EligibilityService::OnTrackingProtectionOnboardingUpdated(
   UpdateCookieDeprecationLabel();
 }
 
+void EligibilityService::OnTrackingProtectionSilentOnboardingUpdated(
+    privacy_sandbox::TrackingProtectionOnboarding::SilentOnboardingStatus
+        onboarding_status) {
+  if (kDisable3PCookies.Get()) {
+    return;
+  }
+  MaybeNotifyManagerTrackingProtectionSilentOnboarded(onboarding_status);
+  UpdateCookieDeprecationLabel();
+}
+
 void EligibilityService::MaybeNotifyManagerTrackingProtectionOnboarded(
     privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus
         onboarding_status) {
   if (onboarding_status == privacy_sandbox::TrackingProtectionOnboarding::
                                OnboardingStatus::kOnboarded) {
+    experiment_manager_->NotifyProfileTrackingProtectionOnboarded();
+  }
+}
+
+void EligibilityService::MaybeNotifyManagerTrackingProtectionSilentOnboarded(
+    privacy_sandbox::TrackingProtectionOnboarding::SilentOnboardingStatus
+        onboarding_status) {
+  if (onboarding_status == privacy_sandbox::TrackingProtectionOnboarding::
+                               SilentOnboardingStatus::kOnboarded) {
     experiment_manager_->NotifyProfileTrackingProtectionOnboarded();
   }
 }

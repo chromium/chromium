@@ -112,14 +112,14 @@ class TrackingProtectionNoticeService
 
    private:
     // Fires when the notice is closed (For any reason)
-    void OnNoticeClosed(
+    virtual void OnNoticeClosed(
         base::Time showed_when,
         user_education::FeaturePromoController* promo_controller);
 
-    bool WasPromoPreviouslyDismissed(Browser* browser);
-    bool IsPromoShowing(Browser* browser);
-    bool MaybeShowPromo(Browser* browser);
-    void HidePromo(Browser* browser);
+    virtual bool WasPromoPreviouslyDismissed(Browser* browser);
+    virtual bool IsPromoShowing(Browser* browser);
+    virtual bool MaybeShowPromo(Browser* browser);
+    virtual void HidePromo(Browser* browser);
     bool IsLocationBarEligible(Browser* browser);
 
     virtual TrackingProtectionOnboarding::NoticeType GetNoticeType() = 0;
@@ -147,6 +147,23 @@ class TrackingProtectionNoticeService
    private:
     TrackingProtectionOnboarding::NoticeType GetNoticeType() override;
     const base::Feature& GetIPHFeature() override;
+  };
+
+  class SilentOnboardingNotice : public BaseIPHNotice {
+   public:
+    SilentOnboardingNotice(Profile* profile,
+                           TrackingProtectionOnboarding* onboarding_service);
+
+   private:
+    TrackingProtectionOnboarding::NoticeType GetNoticeType() override;
+    const base::Feature& GetIPHFeature() override;
+    bool WasPromoPreviouslyDismissed(Browser* browser) override;
+    bool IsPromoShowing(Browser* browser) override;
+    bool MaybeShowPromo(Browser* browser) override;
+    void HidePromo(Browser* browser) override;
+    void OnNoticeClosed(
+        base::Time showed_when,
+        user_education::FeaturePromoController* promo_controller) override;
   };
 
   // Indicates if the notice is needed to be displayed.
@@ -184,6 +201,7 @@ class TrackingProtectionNoticeService
   raw_ptr<TrackingProtectionOnboarding> onboarding_service_;
   std::unique_ptr<BaseIPHNotice> onboarding_notice_;
   std::unique_ptr<BaseIPHNotice> offboarding_notice_;
+  std::unique_ptr<BaseIPHNotice> silent_onboarding_notice_;
   std::unique_ptr<BrowserTabStripTracker> tab_strip_tracker_;
   base::ScopedObservation<TrackingProtectionOnboarding,
                           TrackingProtectionOnboarding::Observer>

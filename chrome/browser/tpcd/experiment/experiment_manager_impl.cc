@@ -36,7 +36,7 @@ const base::FeatureParam<std::string> kSyntheticTrialGroupOverride{
     "synthetic_trial_group_override", ""};
 
 bool NeedsOnboardingForExperiment() {
-  if (!kDisable3PCookies.Get()) {
+  if (!kDisable3PCookies.Get() && !kEnableSilentOnboarding.Get()) {
     return false;
   }
 
