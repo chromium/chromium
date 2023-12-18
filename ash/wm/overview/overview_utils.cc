@@ -163,7 +163,6 @@ void MaximizeIfSnapped(aura::Window* window) {
 gfx::Rect GetGridBoundsInScreen(aura::Window* target_root) {
   return GetGridBoundsInScreen(target_root,
                                /*window_dragging_state=*/std::nullopt,
-                               /*divider_changed=*/false,
                                /*account_for_hotseat=*/true);
 }
 
@@ -171,7 +170,6 @@ gfx::Rect GetGridBoundsInScreen(
     aura::Window* target_root,
     std::optional<SplitViewDragIndicators::WindowDraggingState>
         window_dragging_state,
-    bool divider_changed,
     bool account_for_hotseat) {
   auto* split_view_controller = SplitViewController::Get(target_root);
   SplitViewController::State state = split_view_controller->state();
@@ -268,11 +266,12 @@ gfx::Rect GetGridBoundsInScreen(
     }
   }
 
-  if (!divider_changed) {
+  if (!opposite_position) {
+    // `opposite_position` is only non-empty if we are in split view state not
+    // `kNoSnap`.
     return bounds;
   }
 
-  DCHECK(opposite_position);
   const bool horizontal = IsLayoutHorizontal(target_root);
   const int min_length =
       (horizontal ? work_area.width() : work_area.height()) / 3;
@@ -323,7 +322,6 @@ std::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
   // The hotseat bounds do not affect splitview after a window is snapped, so
   // the aspect ratio should reflect it and not worry about the hotseat.
   return gfx::RectF(GetGridBoundsInScreen(root_window, window_dragging_state,
-                                          /*divider_changed=*/false,
                                           /*account_for_hotseat=*/false));
 }
 

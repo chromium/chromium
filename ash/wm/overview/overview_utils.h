@@ -77,7 +77,6 @@ gfx::Rect GetGridBoundsInScreen(
     aura::Window* target_root,
     std::optional<SplitViewDragIndicators::WindowDraggingState>
         window_dragging_state,
-    bool divider_changed,
     bool account_for_hotseat);
 
 // Gets the bounds of a window if it were to be snapped or about to be snapped

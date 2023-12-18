@@ -906,7 +906,6 @@ void OverviewGrid::RemoveItem(OverviewItemBase* overview_item,
             ? std::make_optional(
                   split_view_drag_indicators_->current_window_dragging_state())
             : std::nullopt,
-        /*divider_changed=*/false,
         /*account_for_hotseat=*/true);
     SetBoundsAndUpdatePositions(grid_bounds, ignored_items, /*animate=*/true);
   }
@@ -997,7 +996,7 @@ void OverviewGrid::RearrangeDuringDrag(
   // Update the grid's bounds.
   const gfx::Rect wanted_grid_bounds = GetGridBoundsInScreen(
       root_window_, std::make_optional(window_dragging_state),
-      /*divider_changed=*/false, /*account_for_hotseat=*/true);
+      /*account_for_hotseat=*/true);
   if (bounds_ != wanted_grid_bounds) {
     base::flat_set<OverviewItemBase*> ignored_items;
     if (dragged_item)
@@ -2314,7 +2313,6 @@ void OverviewGrid::OnSplitViewDividerPositionChanged() {
   SetBoundsAndUpdatePositions(
       GetGridBoundsInScreen(root_window_,
                             /*window_dragging_state=*/std::nullopt,
-                            /*divider_changed=*/true,
                             /*account_for_hotseat=*/true),
       /*ignored_items=*/{}, /*animate=*/false);
 }
