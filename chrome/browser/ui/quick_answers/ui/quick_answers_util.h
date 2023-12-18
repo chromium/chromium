@@ -12,20 +12,21 @@
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 
 namespace quick_answers {
 
 // Size constants.
-inline constexpr int kContentHeaderWidth = 252;
+inline constexpr int kContentHeaderWidth = 248;
 inline constexpr int kContentTextWidth = 280;
 
 // Spacing constants.
 inline constexpr int kContentSingleSpacing = 8;
 inline constexpr int kContentDoubleSpacing = 16;
-inline constexpr gfx::Insets kUnderLineIndentation =
+inline constexpr gfx::Insets kViewVerticalSpacingMargins =
     gfx::Insets::TLBR(0, 0, kContentSingleSpacing, 0);
-inline constexpr gfx::Insets kViewSpacingMargins =
+inline constexpr gfx::Insets kViewHorizontalSpacingMargins =
     gfx::Insets::TLBR(0, 0, 0, kContentSingleSpacing);
 
 // View constants.
@@ -72,18 +73,15 @@ views::View* AddHorizontalUiElements(
     views::View* container,
     const std::vector<std::unique_ptr<QuickAnswerUiElement>>& elements);
 
-// Adds the list of |Views| horizontally to the container.
-// Returns the resulting container view.
-views::View* AddHorizontalViews(
-    views::View* container,
-    std::vector<std::unique_ptr<views::View>>& views);
-
 // Creates a child view using FillLayout in the container. Uses |view| as the
 // child view if it's specified, otherwise creates a new view.
 // Returns the child view.
 views::View* AddFillLayoutChildView(
     views::View* container,
     std::unique_ptr<views::View> view = std::make_unique<views::View>());
+
+// Creates a horizontal FlexLayoutView with |kViewSpacingMargins| spacing.
+std::unique_ptr<views::FlexLayoutView> CreateHorizontalLayoutView();
 
 // Creates a separator view with |kContentDoubleSpacing| vertical margins.
 std::unique_ptr<views::Separator> CreateSeparatorView();

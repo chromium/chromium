@@ -20,6 +20,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 
 namespace {
 
@@ -136,26 +137,21 @@ View* AddHorizontalUiElements(
   return labels_container;
 }
 
-View* AddHorizontalViews(View* container,
-                         std::vector<std::unique_ptr<views::View>>& views) {
-  auto* views_container = container->AddChildView(std::make_unique<View>());
-  auto* layout =
-      views_container->SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetDefault(views::kMarginsKey, kViewSpacingMargins);
-
-  for (auto& view : views) {
-    views_container->AddChildView(std::move(view));
-  }
-
-  return views_container;
-}
-
 View* AddFillLayoutChildView(View* container,
                              std::unique_ptr<views::View> view) {
   View* child_view = container->AddChildView(std::move(view));
   child_view->SetLayoutManager(std::make_unique<views::FillLayout>());
-  child_view->SetProperty(views::kMarginsKey, kUnderLineIndentation);
+  child_view->SetProperty(views::kMarginsKey, kViewVerticalSpacingMargins);
+
+  return child_view;
+}
+
+std::unique_ptr<views::FlexLayoutView> CreateHorizontalLayoutView() {
+  std::unique_ptr<views::FlexLayoutView> child_view =
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .Build();
+  child_view->SetDefault(views::kMarginsKey, kViewHorizontalSpacingMargins);
 
   return child_view;
 }

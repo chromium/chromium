@@ -63,7 +63,7 @@ constexpr auto kMainViewInsets = gfx::Insets::TLBR(20, 20, 8, 20);
 constexpr auto kContentViewInsets = gfx::Insets::TLBR(0, 16, 0, 0);
 
 // Buttons view.
-constexpr auto kSettingsButtonInsets = gfx::Insets::TLBR(0, 8, 8, 0);
+constexpr auto kSettingsButtonInsets = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr int kSettingsButtonSizeDip = 20;
 
 // Border corner radius.
@@ -247,14 +247,13 @@ void RichAnswersView::AddResultTypeIcon() {
       /*icon_size=*/kRichAnswersIconSizeDip));
 }
 
-void RichAnswersView::AddSettingsButtonTo(views::View* container_view) {
+views::View* RichAnswersView::AddSettingsButtonTo(views::View* container_view) {
   CHECK(container_view);
 
   auto* buttons_view = container_view->AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kHorizontal)
           .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-          .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
           .SetInteriorMargin(kSettingsButtonInsets)
           .Build());
 
@@ -268,6 +267,8 @@ void RichAnswersView::AddSettingsButtonTo(views::View* container_view) {
                                      /*icon_size=*/kSettingsButtonSizeDip));
   settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
+
+  return buttons_view;
 }
 
 void RichAnswersView::AddHeaderViewsTo(views::View* container_view,

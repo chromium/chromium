@@ -49,7 +49,6 @@ RichAnswersTranslationView::RichAnswersTranslationView(
 RichAnswersTranslationView::~RichAnswersTranslationView() = default;
 
 void RichAnswersTranslationView::InitLayout() {
-  // TODO (b/265258270): Populate translation view contents.
   content_view_ = GetContentView();
 
   // Source language.
@@ -81,13 +80,12 @@ void RichAnswersTranslationView::AddLanguageTitle(const std::string& locale,
   if (is_header_view) {
     AddHeaderViewsTo(content_view_, base::UTF16ToUTF8(locale_name));
   } else {
-    auto* second_header_view = AddFillLayoutChildView(
+    AddFillLayoutChildView(
         content_view_,
         QuickAnswersTextLabel::CreateLabelWithStyle(
             base::UTF16ToUTF8(locale_name),
             GetFontList(TypographyToken::kCrosButton2), kContentHeaderWidth,
             /*is_multi_line=*/false, cros_tokens::kCrosSysSecondary));
-    second_header_view->SetProperty(views::kMarginsKey, kUnderLineIndentation);
   }
 }
 
@@ -124,17 +122,15 @@ void RichAnswersTranslationView::AddReadAndCopyButtons(
   // view as the translated text. Otherwise, add the buttons on a separate line
   // underneath.
   if (should_append_buttons_) {
-    translated_text_view->SetDefault(views::kMarginsKey, kViewSpacingMargins);
+    translated_text_view->SetDefault(views::kMarginsKey,
+                                     kViewHorizontalSpacingMargins);
     container_view = translated_text_view;
   } else {
     container_view = AddFillLayoutChildView(content_view_);
   }
 
-  auto* button_views = container_view->AddChildView(
-      views::Builder<views::FlexLayoutView>()
-          .SetOrientation(views::LayoutOrientation::kHorizontal)
-          .Build());
-  button_views->SetDefault(views::kMarginsKey, kViewSpacingMargins);
+  auto* button_views =
+      container_view->AddChildView(CreateHorizontalLayoutView());
 
   // Setup an invisible web view to play TTS audio.
   tts_audio_web_view_ = container_view->AddChildView(
@@ -143,8 +139,9 @@ void RichAnswersTranslationView::AddReadAndCopyButtons(
 
   // Read button.
   base::RepeatingClosure read_closure = base::BindRepeating(
-      &RichAnswersTranslationView::OnReadButtonPressed, base::Unretained(this),
-      translation_result_.translated_text, translation_result_.target_locale);
+      &RichAnswersTranslationView::OnReadButtonPressed,
+      weak_factory_.GetWeakPtr(), translation_result_.translated_text,
+      translation_result_.target_locale);
   ui::ImageModel read_image_model = ui::ImageModel::FromVectorIcon(
       vector_icons::kVolumeUpIcon, cros_tokens::kCrosSysOnSurface,
       /*icon_size=*/kRichAnswersIconSizeDip);
@@ -155,8 +152,8 @@ void RichAnswersTranslationView::AddReadAndCopyButtons(
 
   // Copy button.
   base::RepeatingClosure copy_closure = base::BindRepeating(
-      &RichAnswersTranslationView::OnCopyButtonPressed, base::Unretained(this),
-      translation_result_.translated_text);
+      &RichAnswersTranslationView::OnCopyButtonPressed,
+      weak_factory_.GetWeakPtr(), translation_result_.translated_text);
   ui::ImageModel copy_image_model = ui::ImageModel::FromVectorIcon(
       vector_icons::kContentCopyIcon, cros_tokens::kCrosSysOnSurface,
       /*icon_size=*/kRichAnswersIconSizeDip);

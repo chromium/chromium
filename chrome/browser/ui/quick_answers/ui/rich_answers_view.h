@@ -74,7 +74,7 @@ class RichAnswersView : public views::View {
                   base::WeakPtr<QuickAnswersUiController> controller,
                   const ResultType result_type);
 
-  void AddSettingsButtonTo(views::View* container_view);
+  views::View* AddSettingsButtonTo(views::View* container_view);
 
   void AddHeaderViewsTo(views::View* container_view,
                         const std::string& header_text);
