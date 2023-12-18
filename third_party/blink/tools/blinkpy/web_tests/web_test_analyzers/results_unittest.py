@@ -4,8 +4,8 @@
 
 import unittest
 
-from blinkpy.web_tests.fuzzy_diff_analyzer import data_types
-from blinkpy.web_tests.fuzzy_diff_analyzer import results
+from blinkpy.web_tests.web_test_analyzers import data_types
+from blinkpy.web_tests.web_test_analyzers import results
 from flake_suppressor_common import tag_utils as common_tag_utils
 from flake_suppressor_common import unittest_utils as uu
 

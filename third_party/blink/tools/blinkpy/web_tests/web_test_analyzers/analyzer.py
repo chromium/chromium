@@ -5,7 +5,7 @@
 
 from typing import List
 
-from blinkpy.web_tests.fuzzy_diff_analyzer import data_types as dt
+from blinkpy.web_tests.web_test_analyzers import data_types as dt
 
 MAX_BUILDER_NUM = 5
 AVG_DURATION_THRESHOLD = 0.75

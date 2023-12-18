@@ -21,9 +21,9 @@ import urllib.parse
 from blinkpy.common.host import Host
 from blinkpy.common.net.luci_auth import LuciAuth
 from blinkpy.w3c.monorail import MonorailAPI
-from blinkpy.web_tests.fuzzy_diff_analyzer import analyzer
-from blinkpy.web_tests.fuzzy_diff_analyzer import queries
-from blinkpy.web_tests.fuzzy_diff_analyzer import results
+from blinkpy.web_tests.web_test_analyzers import analyzer
+from blinkpy.web_tests.web_test_analyzers import queries
+from blinkpy.web_tests.web_test_analyzers import results
 
 
 DASHBOARD_BASE_URL = 'https://dashboards.corp.google.com/image_comparison'\

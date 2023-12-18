@@ -19,9 +19,9 @@ builder2 : timeout count: 5, slow count: 32, slow ratio: 1.00, avg duration: 5.2
 
 import argparse
 
-from blinkpy.web_tests.fuzzy_diff_analyzer import analyzer
-from blinkpy.web_tests.fuzzy_diff_analyzer import queries
-from blinkpy.web_tests.fuzzy_diff_analyzer import results
+from blinkpy.web_tests.web_test_analyzers import analyzer
+from blinkpy.web_tests.web_test_analyzers import queries
+from blinkpy.web_tests.web_test_analyzers import results
 
 
 def ParseArgs() -> argparse.Namespace:
