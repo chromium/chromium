@@ -2471,7 +2471,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   ////////////////
   std::unique_ptr<FormStructure> form_structure;
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
+  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
@@ -2644,7 +2644,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
   ////////////////
   std::unique_ptr<FormStructure> form_structure;
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
+  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
 
@@ -2761,7 +2761,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
   ////////////////
   std::unique_ptr<FormStructure> form_structure;
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
+  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
@@ -2879,7 +2879,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
 TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
   std::unique_ptr<FormStructure> form_structure;
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
+  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
@@ -3074,7 +3074,7 @@ TEST_F(FormStructureTestImpl,
        EncodeUploadRequestWithAdditionalPasswordFormSignature) {
   std::unique_ptr<FormStructure> form_structure;
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
+  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
@@ -3181,7 +3181,7 @@ TEST_F(FormStructureTestImpl,
 TEST_F(FormStructureTestImpl, EncodeUploadRequestWithPropertiesMask) {
   std::unique_ptr<FormStructure> form_structure;
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
+  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
@@ -3265,7 +3265,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequestWithPropertiesMask) {
 TEST_F(FormStructureTestImpl, EncodeUploadRequest_ObservedSubmissionFalse) {
   std::unique_ptr<FormStructure> form_structure;
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
+  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
@@ -3343,7 +3343,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_ObservedSubmissionFalse) {
 TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithLabels) {
   std::unique_ptr<FormStructure> form_structure;
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
+  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
@@ -3416,7 +3416,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithLabels) {
 TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSubForms) {
   std::unique_ptr<FormStructure> form_structure;
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
+  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.host_frame = test::MakeLocalFrameToken();
   form.url = GURL("http://www.foo.com/");
@@ -3581,7 +3581,7 @@ TEST_F(FormStructureTestImpl, CheckDataPresence) {
     fs_field->host_form_signature = form_structure.form_signature();
 
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
+  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
 
   for (size_t i = 0; i < form_structure.field_count(); ++i) {
     test::InitializePossibleTypesAndValidities(
@@ -3803,7 +3803,7 @@ TEST_F(FormStructureTestImpl, CheckMultipleTypes) {
 
   // Check that multiple types for the field are processed correctly.
   std::vector<FieldTypeSet> possible_field_types;
-  std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
+  std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = false;

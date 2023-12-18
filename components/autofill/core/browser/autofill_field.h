@@ -27,7 +27,7 @@
 namespace autofill {
 
 typedef std::map<FieldType, std::vector<AutofillDataModel::ValidityState>>
-    ServerFieldTypeValidityStatesMap;
+    FieldTypeValidityStatesMap;
 
 typedef std::map<FieldType, AutofillDataModel::ValidityState>
     ServerFieldTypeValidityStateMap;
@@ -92,7 +92,7 @@ class AutofillField : public FormFieldData {
   HtmlFieldType html_type() const { return html_type_; }
   HtmlFieldMode html_mode() const { return html_mode_; }
   const FieldTypeSet& possible_types() const { return possible_types_; }
-  const ServerFieldTypeValidityStatesMap& possible_types_validities() const {
+  const FieldTypeValidityStatesMap& possible_types_validities() const {
     return possible_types_validities_;
   }
   bool previously_autofilled() const { return previously_autofilled_; }
@@ -116,7 +116,7 @@ class AutofillField : public FormFieldData {
     possible_types_ = possible_types;
   }
   void set_possible_types_validities(
-      const ServerFieldTypeValidityStatesMap& possible_types_validities) {
+      const FieldTypeValidityStatesMap& possible_types_validities) {
     possible_types_validities_ = possible_types_validities;
   }
   std::vector<AutofillDataModel::ValidityState>
@@ -406,7 +406,7 @@ class AutofillField : public FormFieldData {
   FieldTypeSet possible_types_;
 
   // The set of possible types and their validity for this field.
-  ServerFieldTypeValidityStatesMap possible_types_validities_;
+  FieldTypeValidityStatesMap possible_types_validities_;
 
   // A low-entropy hash of the field's initial value before user-interactions or
   // automatic fillings. This field is used to detect static placeholders.

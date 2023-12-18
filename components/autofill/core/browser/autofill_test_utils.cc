@@ -746,12 +746,11 @@ void SetServerCreditCards(AutofillTable* table,
 
 void InitializePossibleTypesAndValidities(
     std::vector<FieldTypeSet>& possible_field_types,
-    std::vector<ServerFieldTypeValidityStatesMap>&
-        possible_field_types_validities,
+    std::vector<FieldTypeValidityStatesMap>& possible_field_types_validities,
     const std::vector<FieldType>& possible_types,
     const std::vector<AutofillDataModel::ValidityState>& validity_states) {
   possible_field_types.push_back(FieldTypeSet());
-  possible_field_types_validities.push_back(ServerFieldTypeValidityStatesMap());
+  possible_field_types_validities.push_back(FieldTypeValidityStatesMap());
 
   if (validity_states.empty()) {
     for (const auto& possible_type : possible_types) {

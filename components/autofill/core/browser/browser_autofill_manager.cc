@@ -206,7 +206,7 @@ void SelectRightNameType(AutofillField* field, bool is_credit_card) {
     }
   }
 
-  ServerFieldTypeValidityStatesMap new_types_validities;
+  FieldTypeValidityStatesMap new_types_validities;
   // Since the disambiguation takes place when we up to four possible types,
   // here we can add up to three remaining types when only one is removed.
   for (auto type_to_keep : types_to_keep) {
