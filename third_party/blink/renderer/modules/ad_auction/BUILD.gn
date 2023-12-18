@@ -33,6 +33,7 @@ source_set("unit_tests") {
     "//third_party/blink/public:test_headers",
     "//third_party/blink/public/common:headers",
     "//third_party/blink/renderer/modules:modules",
+    "//third_party/blink/renderer/platform:test_support",
     "//url",
   ]
 }
