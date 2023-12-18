@@ -133,6 +133,8 @@ void RemoteWindowProxy::SetupWindowPrototypeChain() {
 
   // The global proxy object.  Note this is not the global object.
   v8::Local<v8::Object> global_proxy = global_proxy_.Get(GetIsolate());
+  V8DOMWrapper::SetNativeInfo(GetIsolate(), global_proxy, wrapper_type_info,
+                              window);
   CHECK(global_proxy == window->AssociateWithWrapper(GetIsolate(), world_,
                                                      wrapper_type_info,
                                                      global_proxy));
