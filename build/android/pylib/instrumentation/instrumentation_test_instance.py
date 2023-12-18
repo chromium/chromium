@@ -691,13 +691,15 @@ class InstrumentationTestInstance(test_instance.TestInstance):
       self._apk_under_test = apk_helper.ToHelper(apk_under_test_path)
 
     test_apk_path = args.test_apk
-    if not os.path.exists(test_apk_path):
+    if (not args.test_apk.endswith('.apk')
+        and not args.test_apk.endswith('.apks')):
       test_apk_path = os.path.join(
           constants.GetOutDirectory(), constants.SDK_BUILD_APKS_DIR,
           '%s.apk' % args.test_apk)
-      # TODO(jbudorick): Move the realpath up to the argument parser once
-      # APK-by-name is no longer supported.
-      test_apk_path = os.path.realpath(test_apk_path)
+
+    # TODO(jbudorick): Move the realpath up to the argument parser once
+    # APK-by-name is no longer supported.
+    test_apk_path = os.path.realpath(test_apk_path)
 
     if not os.path.exists(test_apk_path):
       error_func('Unable to find test APK: %s' % test_apk_path)
