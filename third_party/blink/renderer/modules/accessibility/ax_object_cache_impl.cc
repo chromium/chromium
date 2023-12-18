@@ -5388,7 +5388,6 @@ void AXObjectCacheImpl::HandleLayoutComplete(Document* document) {
   }
 
   need_to_send_location_changes_ = true;
-  MarkElementDirty(document);
   DeferTreeUpdate(TreeUpdateReason::kMarkDirtyFromHandleLayout, document);
 }
 
@@ -5416,15 +5415,6 @@ void AXObjectCacheImpl::SetCachedBoundingBox(
     AXID id,
     const ui::AXRelativeBounds& bounds) {
   cached_bounding_boxes_.Set(id, bounds);
-}
-
-void AXObjectCacheImpl::HandleScrollPositionChanged(
-    LocalFrameView* frame_view) {
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-
-  InvalidateBoundingBoxForFixedOrStickyPosition();
-  need_to_send_location_changes_ = true;
-  MarkElementDirty(document_);
 }
 
 void AXObjectCacheImpl::HandleScrollPositionChanged(

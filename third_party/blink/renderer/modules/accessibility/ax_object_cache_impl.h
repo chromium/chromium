@@ -70,7 +70,6 @@ namespace blink {
 class AXRelationCache;
 class AbstractInlineTextBox;
 class HTMLAreaElement;
-class LocalFrameView;
 class WebLocalFrameClient;
 
 // Describes a decicion on whether to create an AXNodeObject, an AXLayoutObject,
@@ -313,7 +312,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void EmbeddingTokenChanged(HTMLFrameOwnerElement*) override;
 
   // Called when the scroll offset changes.
-  void HandleScrollPositionChanged(LocalFrameView*) override;
   void HandleScrollPositionChanged(LayoutObject*) override;
 
   void HandleScrolledToAnchor(const Node* anchor_node) override;
