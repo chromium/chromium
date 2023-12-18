@@ -14,7 +14,6 @@ sys.path.append(os.path.join(_CHROME_SOURCE, 'build'))
 
 import action_helpers
 
-
 # Set of unicode characters that do not render with fonts available on ChromeOS
 # TODO(b:267370102) add font(s) such that there are no more invalid characters
 INVALID_CHARACTERS = set([
@@ -40,15 +39,15 @@ def process_emoticon_data(metadata):
         list(dict): list of readily used emoticon groups.
     """
     return [{
-        "group":
-        group["group"],
-        "emoji": [{
-            "base": {
-                "string": emoticon["value"],
-                "name": emoticon["description"],
+        'group':
+        group['group'],
+        'emoji': [{
+            'base': {
+                'string': emoticon['value'],
+                'name': emoticon['description'],
             },
-        } for emoticon in group["emoticon"]
-                  if isValidEmoticon(emoticon["value"])]
+        } for emoticon in group['emoticon']
+                  if isValidEmoticon(emoticon['value'])]
     } for group in metadata]
 
 

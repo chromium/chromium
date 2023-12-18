@@ -24,7 +24,6 @@ import action_helpers
 logging.basicConfig(stream=sys.stdout, level=logging.ERROR)
 LOGGER = logging.getLogger(__name__)
 
-
 # List of unicode ranges for each symbol group (ranges are inclusive).
 SYMBOLS_GROUPS = {
     'Arrows': [
@@ -113,7 +112,6 @@ SEARCH_ONLY_SYMBOLS_GROUPS = {
     ],
 }
 
-
 # Set of unicode symbols that do not render with fonts available on ChromeOS
 INVALID_SYMBOLS = set([
     '\u2BBA',
@@ -125,34 +123,33 @@ INVALID_SYMBOLS = set([
     '\U0001F8B1',
 ])
 
-
 # Custom search keywords for symbols.
 # By default, symbols do not have search keywords.
 # These are "shortcut" style search keywords based off compose key to provide a
 # fast way to access common symbols.
 CUSTOM_KEYWORDS = {
-    '⅐':['17'],
-    '⅓':['13'],
-    '⅔':['23'],
-    '½':['12'],
-    '¼':['14'],
-    '¾':['34'],
-    '⅕':['15'],
-    '⅖':['25'],
-    '⅗':['35'],
-    '⅘':['45'],
-    '⅙':['16'],
-    '⅛':['18'],
-    '⅜':['38'],
-    '⅝':['58'],
-    '⅞':['78'],
-    '©':['oc', 'co'],
-    '®':['or', 'ro'],
-    '₠':['CE'],
-    '₡':['C/','/C'],
-    '₢':['Cr'],
-    '₣':['Fr'],
-    '¢':['|c', 'c|', 'c/', '/c'],
+    '⅐': ['17'],
+    '⅓': ['13'],
+    '⅔': ['23'],
+    '½': ['12'],
+    '¼': ['14'],
+    '¾': ['34'],
+    '⅕': ['15'],
+    '⅖': ['25'],
+    '⅗': ['35'],
+    '⅘': ['45'],
+    '⅙': ['16'],
+    '⅛': ['18'],
+    '⅜': ['38'],
+    '⅝': ['58'],
+    '⅞': ['78'],
+    '©': ['oc', 'co'],
+    '®': ['or', 'ro'],
+    '₠': ['CE'],
+    '₡': ['C/', '/C'],
+    '₢': ['Cr'],
+    '₣': ['Fr'],
+    '¢': ['|c', 'c|', 'c/', '/c'],
     '£': ['L-', '-L'],
     '₥': ['m/', '/m'],
     '₦': ['N=', '=N'],
@@ -180,8 +177,7 @@ class EmojiPickerChar:
     # Name of the unicode character.
     name: str
     # Search keywords related to the unicode character.
-    keywords: List[str] = dataclasses.field(
-        default_factory=list)
+    keywords: List[str] = dataclasses.field(default_factory=list)
 
 
 @dataclasses.dataclass
@@ -190,8 +186,7 @@ class EmojiPickerEmoji:
     # Base Emoji.
     base: EmojiPickerChar
     # Base Emoji's variants and alternative emojis.
-    alternates: List[EmojiPickerChar] = dataclasses.field(
-        default_factory=list)
+    alternates: List[EmojiPickerChar] = dataclasses.field(default_factory=list)
 
 
 @dataclasses.dataclass
@@ -235,8 +230,7 @@ def _emoji_data_dict_factory(
     """
     return {
         _convert_snake_case_to_camel_case(key): value
-        for (key, value) in data
-        if not isinstance(value, list) or value
+        for (key, value) in data if not isinstance(value, list) or value
     }
 
 
@@ -286,9 +280,8 @@ def _convert_unicode_ranges_to_emoji_chars(
 
     LOGGER.info(
         'generating EmojiPickerChar instances for ranges: [%s].',
-        ', '.join(
-            '(U+{:02x}, U+{:02x})'.format(*rng)
-            for rng in unicode_ranges))
+        ', '.join('(U+{:02x}, U+{:02x})'.format(*rng)
+                  for rng in unicode_ranges))
 
     num_chars = 0
     num_ignored = 0
@@ -297,9 +290,7 @@ def _convert_unicode_ranges_to_emoji_chars(
     for (start_code_point, end_code_point) in unicode_ranges:
         LOGGER.debug(
             'generating EmojiPickerChar instances '
-            'for range (U+%02x to U+%02x).',
-            start_code_point,
-            end_code_point)
+            'for range (U+%02x to U+%02x).', start_code_point, end_code_point)
 
         num_chars += end_code_point + 1 - start_code_point
         # Iterate over all code points in the range.
@@ -319,18 +310,16 @@ def _convert_unicode_ranges_to_emoji_chars(
                     raise
                 else:
                     num_ignored += 1
-                    LOGGER.warning(
-                        'invalid code point U+%02x.', code_point)
+                    LOGGER.warning('invalid code point U+%02x.', code_point)
 
-    LOGGER.info(
-        'stats: #returned instances: %d, #ignored code points: %d',
-        num_chars,
-        num_ignored)
+    LOGGER.info('stats: #returned instances: %d, #ignored code points: %d',
+                num_chars, num_ignored)
 
 
 def get_symbols_groups(
         group_unicode_ranges: Dict[str, List[Tuple[int, int]]],
-        search_only: bool = False, ignore_errors: bool = True,
+        search_only: bool = False,
+        ignore_errors: bool = True,
         filter_set: Optional[Set[str]] = None) -> List[EmojiPickerGroup]:
     """Creates symbols data from predefined groups and their unicode ranges.
 
@@ -353,27 +342,29 @@ def get_symbols_groups(
         emoji_chars = _convert_unicode_ranges_to_emoji_chars(
             unicode_ranges, ignore_errors=ignore_errors)
         emoji = [
-            EmojiPickerEmoji(base=emoji_char)
-            for emoji_char in emoji_chars
-            if filter_set is None or emoji_char.string not in filter_set]
+            EmojiPickerEmoji(base=emoji_char) for emoji_char in emoji_chars
+            if filter_set is None or emoji_char.string not in filter_set
+        ]
 
-        emoji_group = EmojiPickerGroup(
-            group=group_name, emoji=emoji, search_only=search_only)
+        emoji_group = EmojiPickerGroup(group=group_name,
+                                       emoji=emoji,
+                                       search_only=search_only)
         emoji_groups.append(emoji_group)
     return emoji_groups
 
 
 def main(argv: List[str]) -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--output', required=True, type=str,
-        help='Path to write the output JSON file.')
-    parser.add_argument(
-        '--verbose', required=False, default=False,
-        action='store_true',
-        help="Set the logging level to Debug.")
-    parser.add_argument(
-        '--filter-data-paths', action='append', nargs='+')
+    parser.add_argument('--output',
+                        required=True,
+                        type=str,
+                        help='Path to write the output JSON file.')
+    parser.add_argument('--verbose',
+                        required=False,
+                        default=False,
+                        action='store_true',
+                        help='Set the logging level to Debug.')
+    parser.add_argument('--filter-data-paths', action='append', nargs='+')
 
     args = parser.parse_args(argv)
 
@@ -395,35 +386,30 @@ def main(argv: List[str]) -> None:
     filter_set |= INVALID_SYMBOLS
 
     # Add symbol groups.
-    symbols_groups = get_symbols_groups(
-        group_unicode_ranges=SYMBOLS_GROUPS,
-        filter_set=filter_set,
-        search_only=False)
+    symbols_groups = get_symbols_groups(group_unicode_ranges=SYMBOLS_GROUPS,
+                                        filter_set=filter_set,
+                                        search_only=False)
 
     # Add search-only symbol groups.
     symbols_groups.extend(
-        get_symbols_groups(
-            group_unicode_ranges=SEARCH_ONLY_SYMBOLS_GROUPS,
-            filter_set=filter_set,
-            search_only=True)
-    )
+        get_symbols_groups(group_unicode_ranges=SEARCH_ONLY_SYMBOLS_GROUPS,
+                           filter_set=filter_set,
+                           search_only=True))
 
     # Create the data and convert them to dict.
     symbols_groups_dicts = []
     for symbol_group in symbols_groups:
         symbol_group_dict = dataclasses.asdict(
-            symbol_group,
-            dict_factory=_emoji_data_dict_factory)
+            symbol_group, dict_factory=_emoji_data_dict_factory)
         symbols_groups_dicts.append(symbol_group_dict)
 
     # Write the result to output path as json file.
     with action_helpers.atomic_output(args.output) as tmp_file:
         tmp_file.write(
-            json.dumps(
-                symbols_groups_dicts,
-                separators=(',', ':'),
-                ensure_ascii=False).encode('utf-8'))
+            json.dumps(symbols_groups_dicts,
+                       separators=(',', ':'),
+                       ensure_ascii=False).encode('utf-8'))
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main(sys.argv[1:])
