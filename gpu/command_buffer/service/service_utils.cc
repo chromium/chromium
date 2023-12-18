@@ -208,7 +208,12 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
         base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   }
   gpu_preferences.gr_context_type = ParseGrContextType(command_line);
-  gpu_preferences.use_vulkan = ParseVulkanImplementationName(command_line);
+  // ParseGrContextType checks Vulkan setting as well, so only parse Vulkan
+  // implementation name if gr_context_type is kVulkan.
+  gpu_preferences.use_vulkan =
+      gpu_preferences.gr_context_type == GrContextType::kVulkan
+          ? ParseVulkanImplementationName(command_line)
+          : VulkanImplementationName::kNone;
 
 #if BUILDFLAG(IS_FUCHSIA)
   // Vulkan Surface is not used on Fuchsia.
