@@ -14,7 +14,6 @@
 #import "base/functional/callback.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
-#import "components/cookie_config/cookie_store_util.h"
 #import "components/net_log/chrome_net_log.h"
 #import "components/prefs/json_pref_store.h"
 #import "components/prefs/pref_filter.h"
@@ -173,8 +172,7 @@ void ChromeBrowserStateImplIOData::InitializeInternal(
   cookie_util::CookieStoreConfig ios_cookie_config(
       lazy_params_->cookie_path,
       cookie_util::CookieStoreConfig::RESTORED_SESSION_COOKIES,
-      cookie_util::CookieStoreConfig::COOKIE_STORE_IOS,
-      cookie_config::GetCookieCryptoDelegate());
+      cookie_util::CookieStoreConfig::COOKIE_STORE_IOS);
   auto cookie_store = cookie_util::CreateCookieStore(
       ios_cookie_config, std::move(profile_params->system_cookie_store),
       io_thread->net_log());

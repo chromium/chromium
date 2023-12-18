@@ -50,7 +50,6 @@ source_set("model") {
     "//components/browser_sync",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
-    "//components/cookie_config",
     "//components/invalidation/impl",
     "//components/keyed_service/ios",
     "//components/metrics",

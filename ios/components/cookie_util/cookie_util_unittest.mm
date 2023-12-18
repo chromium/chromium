@@ -79,8 +79,7 @@ TEST_F(CookieUtilTest, CreateCookieStore) {
   cookie_util::CookieStoreConfig config(
       base::FilePath(),
       cookie_util::CookieStoreConfig::EPHEMERAL_SESSION_COOKIES,
-      cookie_util::CookieStoreConfig::CookieStoreType::COOKIE_STORE_IOS,
-      nullptr);
+      cookie_util::CookieStoreConfig::CookieStoreType::COOKIE_STORE_IOS);
   std::unique_ptr<net::CookieStore> cookie_store =
       cookie_util::CreateCookieStore(config, std::move(system_cookie_store),
                                      nullptr /* net_log */);

@@ -37,15 +37,14 @@ NSString* const kLastCookieDeletionDate = @"LastCookieDeletionDate";
 // Creates a SQLitePersistentCookieStore running on a background thread.
 scoped_refptr<net::SQLitePersistentCookieStore> CreatePersistentCookieStore(
     const base::FilePath& path,
-    bool restore_old_session_cookies,
-    net::CookieCryptoDelegate* crypto_delegate) {
+    bool restore_old_session_cookies) {
   return scoped_refptr<net::SQLitePersistentCookieStore>(
       new net::SQLitePersistentCookieStore(
           path, web::GetIOThreadTaskRunner({}),
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-          restore_old_session_cookies, crypto_delegate,
+          restore_old_session_cookies, /*crypto_delegate=*/nullptr,
           /*enable_exclusive_access=*/false));
 }
 
@@ -61,8 +60,7 @@ std::unique_ptr<net::CookieMonster> CreateCookieMonster(
   const bool restore_old_session_cookies =
       config.session_cookie_mode == CookieStoreConfig::RESTORED_SESSION_COOKIES;
   scoped_refptr<net::SQLitePersistentCookieStore> persistent_store =
-      CreatePersistentCookieStore(config.path, restore_old_session_cookies,
-                                  config.crypto_delegate);
+      CreatePersistentCookieStore(config.path, restore_old_session_cookies);
   std::unique_ptr<net::CookieMonster> cookie_monster(
       new net::CookieMonster(persistent_store.get(), net_log));
   if (restore_old_session_cookies)
@@ -74,12 +72,10 @@ std::unique_ptr<net::CookieMonster> CreateCookieMonster(
 
 CookieStoreConfig::CookieStoreConfig(const base::FilePath& path,
                                      SessionCookieMode session_cookie_mode,
-                                     CookieStoreType cookie_store_type,
-                                     net::CookieCryptoDelegate* crypto_delegate)
+                                     CookieStoreType cookie_store_type)
     : path(path),
       session_cookie_mode(session_cookie_mode),
-      cookie_store_type(cookie_store_type),
-      crypto_delegate(crypto_delegate) {
+      cookie_store_type(cookie_store_type) {
   CHECK(!path.empty() || session_cookie_mode == EPHEMERAL_SESSION_COOKIES);
 }
 

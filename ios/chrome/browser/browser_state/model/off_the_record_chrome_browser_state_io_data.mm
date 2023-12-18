@@ -147,7 +147,7 @@ void OffTheRecordChromeBrowserStateIOData::InitializeInternal(
       cookie_util::CookieStoreConfig(
           cookie_path_,
           cookie_util::CookieStoreConfig::RESTORED_SESSION_COOKIES,
-          cookie_util::CookieStoreConfig::COOKIE_STORE_IOS, nullptr),
+          cookie_util::CookieStoreConfig::COOKIE_STORE_IOS),
       std::move(profile_params->system_cookie_store), io_thread->net_log()));
 
   net::URLRequestContextBuilder::HttpCacheParams cache_params;

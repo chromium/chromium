@@ -11,7 +11,6 @@
 #include "net/cookies/canonical_cookie.h"
 
 namespace net {
-class CookieCryptoDelegate;
 class CookieStore;
 class SystemCookieStore;
 class NetLog;
@@ -53,22 +52,14 @@ struct CookieStoreConfig {
   // If `path` is empty, then this specifies an in-memory cookie store.
   // With in-memory cookie stores, `session_cookie_mode` must be
   // EPHEMERAL_SESSION_COOKIES.
-  // Note: If `crypto_delegate` is non-null, it must outlive any CookieStores
-  // created using this config.
   CookieStoreConfig(const base::FilePath& path,
                     SessionCookieMode session_cookie_mode,
-                    CookieStoreType cookie_store_type,
-                    net::CookieCryptoDelegate* crypto_delegate);
+                    CookieStoreType cookie_store_type);
   ~CookieStoreConfig();
 
   const base::FilePath path;
   const SessionCookieMode session_cookie_mode;
   const CookieStoreType cookie_store_type;
-
-  // Used to provide encryption hooks for the cookie store. The
-  // CookieCryptoDelegate must outlive any cookie store created with this
-  // config.
-  net::CookieCryptoDelegate* crypto_delegate;
 };
 
 // Creates a cookie store which is internally either a CookieMonster or a

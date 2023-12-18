@@ -324,8 +324,7 @@ void SafeBrowsingServiceImpl::IOThreadEnabler::SetUpURLRequestContext(
           cookie_util::CookieStoreConfig(
               cookie_file_path,
               cookie_util::CookieStoreConfig::RESTORED_SESSION_COOKIES,
-              cookie_util::CookieStoreConfig::COOKIE_MONSTER,
-              /*crypto_delegate=*/nullptr),
+              cookie_util::CookieStoreConfig::COOKIE_MONSTER),
           /*system_cookie_store=*/nullptr, net::NetLog::Get());
 
   builder.SetCookieStore(std::move(cookie_store));
