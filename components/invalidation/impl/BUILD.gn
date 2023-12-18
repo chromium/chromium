@@ -25,8 +25,6 @@ static_library("impl") {
     "fcm_invalidation_listener.h",
     "fcm_invalidation_service.cc",
     "fcm_invalidation_service.h",
-    "fcm_invalidation_service_base.cc",
-    "fcm_invalidation_service_base.h",
     "fcm_network_handler.cc",
     "fcm_network_handler.h",
     "fcm_sync_network_channel.cc",
