@@ -200,16 +200,6 @@ TEST_F(FaviconSourceTestWithLegacyFormat,
       test_web_contents_getter_, base::DoNothing());
 }
 
-TEST_F(FaviconSourceTestWithLegacyFormat,
-       ShouldRecordFaviconResourceHistogram_NonExtensionOrigin) {
-  base::HistogramTester tester;
-  source()->StartDataRequest(
-      GURL(base::StrCat({kDummyPrefix, "size/16@1x/https://www.google.com"})),
-      test_web_contents_getter_, base::DoNothing());
-  tester.ExpectBucketCount("Extensions.FaviconResourceRequested",
-                           extensions::Manifest::TYPE_EXTENSION, 0);
-}
-
 TEST_F(FaviconSourceTestWithLegacyFormat, ShouldNotQueryIfDesiredSizeTooLarge) {
   EXPECT_CALL(*mock_history_ui_favicon_request_handler_,
               GetRawFaviconForPageURL)
@@ -235,21 +225,6 @@ TEST_F(FaviconSourceTestWithLegacyFormat, ShouldNotQueryIfInvalidScaleFactor) {
   source()->StartDataRequest(
       GURL(base::StrCat({kDummyPrefix, "size/16@-2x/https://www.google.com"})),
       test_web_contents_getter_, base::DoNothing());
-}
-
-TEST_F(FaviconSourceTestWithLegacyFormat,
-       ShouldRecordFaviconResourceHistogram_ExtensionOrigin) {
-  scoped_refptr<const extensions::Extension> extension =
-      extensions::ExtensionBuilder("one").Build();
-  extensions::ExtensionRegistry::Get(&profile_)->AddEnabled(extension);
-  content::WebContentsTester::For(test_web_contents_.get())
-      ->SetLastCommittedURL(extension->url());
-  base::HistogramTester tester;
-  source()->StartDataRequest(
-      GURL(base::StrCat({kDummyPrefix, "size/16@1x/https://www.google.com"})),
-      test_web_contents_getter_, base::DoNothing());
-  tester.ExpectBucketCount("Extensions.FaviconResourceRequested",
-                           extensions::Manifest::TYPE_EXTENSION, 1);
 }
 
 TEST_F(FaviconSourceTestWithFavicon2Format,
