@@ -1391,6 +1391,12 @@ void CreditCardAccessManager::OnNonInteractiveAuthenticationSuccess(
             : AutofillClient::PaymentsRpcCardType::kServerCard,
         autofill_metrics::ServerCardUnmaskFlowType::kRiskBased);
 
+    if (!card_->cvc().empty()) {
+      autofill_metrics::LogCvcFilling(
+          autofill_metrics::CvcFillingFlowType::kNoInteractiveAuthentication,
+          record_type);
+    }
+
     // `OnCreditCardFetchedCallback` makes a copy of `card` and `cvc` before it
     // asynchronously fills them into the form. Thus we can safely call
     // `Reset()` here, and we should as from this class' point of view the
