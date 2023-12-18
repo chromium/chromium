@@ -17,6 +17,7 @@
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
@@ -43,6 +44,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout_view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace arc::input_overlay {
 
@@ -83,64 +85,6 @@ void EditingList::UpdateWidget() {
 
   controller_->UpdateWidgetBoundsInRootWindow(
       widget, gfx::Rect(GetWidgetMagneticPositionLocal(), GetPreferredSize()));
-}
-
-void EditingList::MayShowEduNudgeForEditingTip() {
-  // If key edit nudge has already shown once, no need to show it again.
-  if (!show_nudge_) {
-    return;
-  }
-
-  const auto& list_children = scroll_content_->children();
-  DCHECK_EQ(list_children.size(), 1u);
-
-  // TODO(b/274690042): Replace it with localized strings.
-  auto nudge_data = ash::AnchoredNudgeData(
-      kKeyEditNudgeID, ash::NudgeCatalogName::kGameDashboardControlsNudge,
-      u"Reassign by selecting a new key", list_children[0]);
-  nudge_data.title_text = u"Quickly switch keys";
-  nudge_data.image_model =
-      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
-          IDR_ARC_INPUT_OVERLAY_KEY_EDIT_NUDGE_JSON);
-  nudge_data.background_color_id = cros_tokens::kCrosSysBaseHighlight;
-  nudge_data.image_background_color_id = cros_tokens::kCrosSysOnBaseHighlight;
-  nudge_data.arrow = views::BubbleBorder::LEFT_CENTER;
-  ash::Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
-  show_nudge_ = false;
-}
-
-bool EditingList::OnMousePressed(const ui::MouseEvent& event) {
-  OnDragStart(event);
-  return true;
-}
-
-bool EditingList::OnMouseDragged(const ui::MouseEvent& event) {
-  OnDragUpdate(event);
-  return true;
-}
-
-void EditingList::OnMouseReleased(const ui::MouseEvent& event) {
-  OnDragEnd(event);
-}
-
-void EditingList::OnGestureEvent(ui::GestureEvent* event) {
-  switch (event->type()) {
-    case ui::ET_GESTURE_SCROLL_BEGIN:
-      OnDragStart(*event);
-      event->SetHandled();
-      break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
-      OnDragUpdate(*event);
-      event->SetHandled();
-      break;
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
-      OnDragEnd(*event);
-      event->SetHandled();
-      break;
-    default:
-      return;
-  }
 }
 
 void EditingList::Init() {
@@ -309,6 +253,42 @@ void EditingList::AddControlListContent() {
     }
     scroll_content_->AddChildView(
         std::make_unique<ActionViewListItem>(controller_, action.get()));
+  }
+}
+
+void EditingList::MaybeApplyEduDecoration() {
+  // Show education decoration only once.
+  if (show_edu_) {
+    ShowKeyEditNudge();
+    PerformPulseAnimation();
+    show_edu_ = false;
+  }
+}
+
+void EditingList::ShowKeyEditNudge() {
+  const auto& list_children = scroll_content_->children();
+  DCHECK_EQ(list_children.size(), 1u);
+
+  // TODO(b/274690042): Replace it with localized strings.
+  auto nudge_data = ash::AnchoredNudgeData(
+      kKeyEditNudgeID, ash::NudgeCatalogName::kGameDashboardControlsNudge,
+      u"Reassign by selecting a new key", list_children[0]);
+  nudge_data.title_text = u"Quickly switch keys";
+  nudge_data.image_model =
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          IDR_ARC_INPUT_OVERLAY_KEY_EDIT_NUDGE_JSON);
+  nudge_data.background_color_id = cros_tokens::kCrosSysBaseHighlight;
+  nudge_data.image_background_color_id = cros_tokens::kCrosSysOnBaseHighlight;
+  nudge_data.arrow = views::BubbleBorder::LEFT_CENTER;
+  ash::Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
+}
+
+void EditingList::PerformPulseAnimation() {
+  const auto& scroll_children = scroll_content_->children();
+  DCHECK_EQ(scroll_children.size(), 1u);
+  if (auto* list_item =
+          views::AsViewClass<ActionViewListItem>(scroll_children[0])) {
+    list_item->PerformPulseAnimation();
   }
 }
 
@@ -497,12 +477,52 @@ void EditingList::OnThemeChanged() {
   focus_ring->SetHaloThickness(kHaloThickness);
 }
 
+bool EditingList::OnMousePressed(const ui::MouseEvent& event) {
+  OnDragStart(event);
+  return true;
+}
+
+bool EditingList::OnMouseDragged(const ui::MouseEvent& event) {
+  OnDragUpdate(event);
+  return true;
+}
+
+void EditingList::OnMouseReleased(const ui::MouseEvent& event) {
+  OnDragEnd(event);
+}
+
+void EditingList::OnGestureEvent(ui::GestureEvent* event) {
+  switch (event->type()) {
+    case ui::ET_GESTURE_SCROLL_BEGIN:
+      OnDragStart(*event);
+      event->SetHandled();
+      break;
+    case ui::ET_GESTURE_SCROLL_UPDATE:
+      OnDragUpdate(*event);
+      event->SetHandled();
+      break;
+    case ui::ET_GESTURE_SCROLL_END:
+    case ui::ET_SCROLL_FLING_START:
+      OnDragEnd(*event);
+      event->SetHandled();
+      break;
+    default:
+      return;
+  }
+}
+void EditingList::VisibilityChanged(views::View* starting_from,
+                                    bool is_visible) {
+  if (is_visible) {
+    MaybeApplyEduDecoration();
+  }
+}
+
 void EditingList::OnActionAdded(Action& action) {
   DCHECK(scroll_content_);
   if (controller_->GetActiveActionsSize() == 1u) {
     // Clear the zero-state.
     UpdateOnZeroState(/*is_zero_state=*/false);
-    show_nudge_ = true;
+    show_edu_ = true;
   }
   scroll_content_->AddChildView(
       std::make_unique<ActionViewListItem>(controller_, &action));

@@ -798,13 +798,6 @@ void DisplayOverlayController::HideActionHighlightWidget() {
   }
 }
 
-void DisplayOverlayController::MayShowEduNudgeForEditingTip() {
-  DCHECK(editing_list_widget_);
-  if (auto* editing_list = GetEditingList()) {
-    editing_list->MayShowEduNudgeForEditingTip();
-  }
-}
-
 void DisplayOverlayController::UpdateButtonOptionsMenuWidgetBounds() {
   // There is no `button_options_widget_` in view mode.
   if (!button_options_widget_) {

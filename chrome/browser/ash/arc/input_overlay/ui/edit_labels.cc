@@ -133,6 +133,11 @@ std::u16string EditLabels::CalculateActionName() {
   return prefix_string + key_string;
 }
 
+void EditLabels::PerformPulseAnimationOnFirstLabel() {
+  DCHECK_GE(labels_.size(), 1u);
+  labels_[0]->PerformPulseAnimation(/*pulse_count=*/0);
+}
+
 void EditLabels::InitForActionTapKeyboard() {
   SetUseDefaultFillLayout(true);
   labels_.emplace_back(

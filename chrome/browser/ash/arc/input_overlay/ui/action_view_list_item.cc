@@ -22,6 +22,10 @@ ActionViewListItem::ActionViewListItem(DisplayOverlayController* controller,
 
 ActionViewListItem::~ActionViewListItem() = default;
 
+void ActionViewListItem::PerformPulseAnimation() {
+  labels_view_->PerformPulseAnimationOnFirstLabel();
+}
+
 void ActionViewListItem::OnActionNameUpdated() {
   NOTIMPLEMENTED();
 }

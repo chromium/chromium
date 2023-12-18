@@ -123,10 +123,6 @@ class DisplayOverlayController : public ui::EventHandler,
   void RemoveActionHighlightWidget();
   void HideActionHighlightWidget();
 
-  // Show education nudge for editing tip. It only shows up for the first new
-  // action after closing `ButtonOptionsMenu`.
-  void MayShowEduNudgeForEditingTip();
-
   // Update widget bounds if the view content is changed or the app window
   // bounds are changed.
   void UpdateButtonOptionsMenuWidgetBounds();

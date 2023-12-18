@@ -59,9 +59,10 @@ class EditLabels : public views::View {
   // Called when this view is clicked upon.
   void FocusLabel();
 
-
   // Returns Action name, such as "Joystick WASD".
   std::u16string CalculateActionName();
+
+  void PerformPulseAnimationOnFirstLabel();
 
   void set_should_update_title(bool should_update_title) {
     should_update_title_ = should_update_title;
