@@ -2589,6 +2589,8 @@ void BrowserView::OnCanResizeFromWebAPIChanged() {
 }
 
 void BrowserView::SynchronizeRenderWidgetHostVisualPropertiesForMainFrame() {
+// TODO(crbug.com/1503145): Investigate and fix on MacOS.
+#if !BUILDFLAG(IS_MAC)
   content::WebContents* web_contents = GetActiveWebContents();
   if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
     return;
@@ -2598,6 +2600,7 @@ void BrowserView::SynchronizeRenderWidgetHostVisualPropertiesForMainFrame() {
           web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost()) {
     render_widget_host->SynchronizeVisualProperties();
   }
+#endif
 }
 
 void BrowserView::OnWidgetSizeConstraintsChanged(views::Widget* widget) {
