@@ -325,7 +325,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     // TODO(crbug.com/1393116): Look into a more scalable pattern like
     // notifyPageOpened(String className).
     public void notifyRequestDesktopSiteSettingsPageOpened() {
-        RequestDesktopUtils.notifyRequestDesktopSiteSettingsPageOpened();
+        RequestDesktopUtils.notifyRequestDesktopSiteSettingsPageOpened(mProfile);
     }
 
     @Override

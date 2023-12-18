@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import org.jni_zero.NativeMethods;
 
 /** Bridge, providing access to the native-side Tracking Protection configuration. */
+// TODO(crbug.com/1410601): Pass in the profile and remove GetActiveUserProfile in C++.
 public class TrackingProtectionBridge {
 
     public static @NoticeType int getRequiredNotice() {

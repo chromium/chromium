@@ -908,8 +908,8 @@ public class RequestDesktopUtils {
     }
 
     /** Record event for feature engagement on desktop site settings page open. */
-    public static void notifyRequestDesktopSiteSettingsPageOpened() {
-        TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+    public static void notifyRequestDesktopSiteSettingsPageOpened(Profile profile) {
+        TrackerFactory.getTrackerForProfile(profile)
                 .notifyEvent(EventConstants.DESKTOP_SITE_SETTINGS_PAGE_OPENED);
     }
 
