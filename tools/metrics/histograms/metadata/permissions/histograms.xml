@@ -352,18 +352,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Permissions.CrowdDeny.PreloadData.WarningOnly" enum="Boolean"
-    expires_after="2021-10-25">
-  <owner>andypaicu@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <summary>
-    Records, each time a notification permission prompt is about to be shown,
-    the whether there is preload data that indicates the origin being on a
-    warning list.
-  </summary>
-</histogram>
-
 <histogram name="Permissions.CrowdDeny.SafeBrowsing.RequestDuration" units="ms"
     expires_after="2024-11-30">
   <owner>andypaicu@chromium.org</owner>
