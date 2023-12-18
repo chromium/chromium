@@ -34,7 +34,9 @@ using resource_attribution::ResourceContext;
 
 PageResourceCPUMonitor::PageResourceCPUMonitor()
     : cpu_measurement_delegate_factory_(
-          CPUMeasurementDelegate::GetDefaultFactory()) {}
+          CPUMeasurementDelegate::GetDefaultFactory()),
+      cpu_proportion_tracker_(
+          base::BindRepeating(&resource_attribution::ContextIs<PageContext>)) {}
 
 PageResourceCPUMonitor::~PageResourceCPUMonitor() = default;
 
@@ -60,8 +62,10 @@ void PageResourceCPUMonitor::StartMonitoring(Graph* graph) {
   last_measurement_time_ = base::TimeTicks::Now();
 
   if (features::kUseResourceAttributionCPUMonitor.Get()) {
-    CHECK(cached_cpu_measurements_.empty());
     cpu_query_ = std::make_unique<resource_attribution::ScopedCPUQuery>();
+    cpu_query_->QueryOnce(base::BindOnce(
+        &PageResourceCPUMonitor::StartResourceAttributionCPUMeasurements,
+        weak_factory_.GetWeakPtr(), last_measurement_time_));
     return;
   }
 
@@ -83,7 +87,7 @@ void PageResourceCPUMonitor::StopMonitoring(Graph* graph) {
 
   if (features::kUseResourceAttributionCPUMonitor.Get()) {
     cpu_query_.reset();
-    cached_cpu_measurements_.clear();
+    cpu_proportion_tracker_.Stop();
   } else {
     cpu_measurement_map_.clear();
     graph->RemoveProcessNodeObserver(this);
@@ -100,8 +104,7 @@ void PageResourceCPUMonitor::UpdateCPUMeasurements(
   if (features::kUseResourceAttributionCPUMonitor.Get()) {
     cpu_query_->QueryOnce(base::BindOnce(
         &PageResourceCPUMonitor::UpdateResourceAttributionCPUMeasurements,
-        weak_factory_.GetWeakPtr(), std::move(callback),
-        now - last_measurement_time_));
+        weak_factory_.GetWeakPtr(), std::move(callback), now));
   } else {
     CPUUsageMap cpu_usage_map;
     for (auto& [process_node, cpu_measurement] : cpu_measurement_map_) {
@@ -190,109 +193,29 @@ void PageResourceCPUMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   CHECK(was_inserted);
 }
 
-void PageResourceCPUMonitor::UpdateResourceAttributionCPUMeasurements(
-    base::OnceCallback<void(const CPUUsageMap&)> callback,
-    base::TimeDelta measurement_interval,
+void PageResourceCPUMonitor::StartResourceAttributionCPUMeasurements(
+    base::TimeTicks measurement_interval_start,
     const resource_attribution::QueryResultMap& results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(features::kUseResourceAttributionCPUMonitor.Get());
-  if (measurement_interval.is_zero()) {
-    // No time passed to measure. Ignore the results to avoid division by zero.
+  CHECK(!cpu_proportion_tracker_.IsTracking());
+  cpu_proportion_tracker_.StartFirstInterval(measurement_interval_start,
+                                             results);
+}
+
+void PageResourceCPUMonitor::UpdateResourceAttributionCPUMeasurements(
+    base::OnceCallback<void(const CPUUsageMap&)> callback,
+    base::TimeTicks measurement_interval_end,
+    const resource_attribution::QueryResultMap& results) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(features::kUseResourceAttributionCPUMonitor.Get());
+  if (!cpu_proportion_tracker_.IsTracking()) {
+    // StopMonitoring() was called while waiting for update. Ignore the results.
     std::move(callback).Run({});
     return;
   }
-  CHECK(measurement_interval.is_positive());
-
-  // Swap a new measurement into `cached_cpu_measurements_`, storing the
-  // previous contents in `previous_measurements`.
-  resource_attribution::QueryResultMap previous_measurements =
-      std::exchange(cached_cpu_measurements_, results);
-
-  CPUUsageMap cpu_usage_map;
-  for (const auto& [context, query_result] : cached_cpu_measurements_) {
-    using CPUTimeResult = resource_attribution::CPUTimeResult;
-    if (!resource_attribution::ContextIs<PageContext>(context)) {
-      continue;
-    }
-    const auto& result =
-        resource_attribution::AsResult<CPUTimeResult>(query_result).value();
-
-    // Let time A be the last time UpdateCPUMeasurements() was called (with the
-    // results saved in `previous_measurements`), or the time when
-    // StartMonitoring() was called if this is the first one
-    // (`previous_measurements` will be empty).
-    //
-    // Let time B be current time. (`measurement_interval` is A..B.)
-    //
-    // There are 4 cases:
-    //
-    // 1. The context was created at time C, between A and B. (It will not be
-    // found in `previous_measurements`).
-    //
-    // This snapshot should include 0% CPU for time A..C, and the measured % of
-    // CPU for time C..B.
-    //
-    // A    C         B
-    // |----+---------|
-    // | 0% |   X%    |
-    //
-    // CPU(C..B) is `result.cumulative_cpu`.
-    // `result.start_time` is C.
-    // `result.metadata.measurement_time` is B.
-    //
-    // 2. The context existed for the entire duration A..B.
-    //
-    // This snapshot should include the measured % of CPU for the whole time
-    // A..B.
-    //
-    // A              B
-    // |--------------|
-    // |      X%      |
-    //
-    // CPU(A..B) is `result.cumulative_cpu -
-    // previous_measurements[context].cumulative_cpu`.
-    // `result.start_time` <= A.
-    // `result.metadata.measurement_time` is B.
-    //
-    // 3. Context created before time A, exited at time D, between A and B.
-    //
-    // The snapshot should include the measured % of CPU for time A..D, and 0%
-    // CPU for time D..B.
-    //
-    // A         D    B
-    // |---------+----|
-    // |    X%   | 0% |
-    //
-    // CPU(A..D) is `result.cumulative_cpu -
-    // previous_measurements[context].cumulative_cpu`.
-    // `result.start_time` <= A.
-    // `result.metadata.measurement_time` is D.
-    //
-    // 4. Context created at time C and exited at time D, both between A and B.
-    // (context is not found in `previous_measurements`.
-    // `result.cumulative_cpu` ends at time D, which is
-    // `result.metadata.measurement_time`.)
-    //
-    // The snapshot should include the measured % of CPU for time C..D, and 0%
-    // CPU for the rest.
-    //
-    // A    C    D    B
-    // |----+----+----|
-    // | 0% | X% | 0% |
-    //
-    // CPU(C..D) is `result.cumulative_cpu`.
-    // `result.start_time` is C.
-    // `result.metadata.measurement_time` is D.
-    base::TimeDelta current_cpu = result.cumulative_cpu;
-    const auto it = previous_measurements.find(context);
-    if (it != previous_measurements.end()) {
-      const auto& previous_result =
-          resource_attribution::AsResult<CPUTimeResult>(it->second).value();
-      current_cpu -= previous_result.cumulative_cpu;
-    }
-    CHECK(!current_cpu.is_negative());
-    cpu_usage_map.emplace(context, current_cpu / measurement_interval);
-  }
+  CPUUsageMap cpu_usage_map = cpu_proportion_tracker_.StartNextInterval(
+      measurement_interval_end, results);
   std::move(callback).Run(std::move(cpu_usage_map));
 }
 

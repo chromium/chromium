@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
+#include "components/performance_manager/public/resource_attribution/cpu_proportion_tracker.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/resource_attribution/scoped_cpu_query.h"
@@ -42,11 +43,10 @@ class PageResourceCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   // ProcessMetrics::GetPlatformIndependentCPUUsage().
   //
   // If the kUseResourceAttributionCPUMonitor feature parameter is enabled, the
-  // map is keyed by PageNode instead since `cpu_measurement_monitor_` returns
-  // page estimates. In production the FrameNode and WorkerNode values are only
-  // ever used as inputs to EstimatePageCPUUsage() to get page estimates, so
-  // it's more efficient to only store the final page estimates when they're
-  // available.
+  // map is keyed by PageNode instead since `cpu_query_` returns page estimates.
+  // In production the FrameNode and WorkerNode values are only ever used as
+  // inputs to EstimatePageCPUUsage() to get page estimates, so it's more
+  // efficient to only store the final page estimates when they're available.
   using CPUUsageMap = std::map<resource_attribution::ResourceContext, double>;
 
   PageResourceCPUMonitor();
@@ -126,12 +126,19 @@ class PageResourceCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   // `cpu_measurement_map_`.
   void MonitorCPUUsage(const ProcessNode* process_node);
 
-  // Uses results from `cpu_measurement_monitor_` to update CPU measurements.
-  // Called from UpdateCPUMeasurements() if the
+  // Uses results from `cpu_query_` to establish a baseline for the CPU
+  // measurements. Called from StartMonitoring() if the
   // kUseResourceAttributionCPUMonitor feature parameter is enabled.
+  void StartResourceAttributionCPUMeasurements(
+      base::TimeTicks measurement_interval_start,
+      const resource_attribution::QueryResultMap& results);
+
+  // Uses results from `cpu_query_` to update CPU measurements. Called from
+  // UpdateCPUMeasurements() if the kUseResourceAttributionCPUMonitor feature
+  // parameter is enabled.
   void UpdateResourceAttributionCPUMeasurements(
       base::OnceCallback<void(const CPUUsageMap&)> callback,
-      base::TimeDelta measurement_interval,
+      base::TimeTicks measurement_interval_end,
       const resource_attribution::QueryResultMap& results);
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -158,7 +165,7 @@ class PageResourceCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   // If the kUseResourceAttributionCPUMonitor feature parameter is enabled, this
   // will cache the measurements of each page when UpdateCPUMeasurements is
   // called. Otherwise it's unused.
-  resource_attribution::QueryResultMap cached_cpu_measurements_
+  resource_attribution::CPUProportionTracker cpu_proportion_tracker_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<PageResourceCPUMonitor> weak_factory_{this};

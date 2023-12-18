@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -30,6 +31,7 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
+#include "components/performance_manager/public/resource_attribution/cpu_proportion_tracker.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -53,9 +55,11 @@ namespace {
 
 using ::testing::AllOf;
 using ::testing::Conditional;
+using ::testing::Contains;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Not;
+using ::testing::Pair;
 using ::testing::VariantWith;
 
 constexpr base::TimeDelta kTimeBetweenMeasurements = base::Minutes(5);
@@ -136,6 +140,17 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
   void UpdateAndGetCPUMeasurements() {
     last_measurements_ = current_measurements_;
     current_measurements_ = cpu_monitor_.UpdateAndGetCPUMeasurements();
+  }
+
+  // Helper to get the most recent output of `cpu_monitor_` and convert to a
+  // QueryResultMap which CPUProportionTracker expects.
+  QueryResultMap GetCPUQueryResults() {
+    QueryResultMap results;
+    for (const auto& [context, cpu_time_result] :
+         cpu_monitor_.UpdateAndGetCPUMeasurements()) {
+      results[context] = QueryResults{cpu_time_result};
+    }
+    return results;
   }
 
   // GMock matcher expecting that a given QueryResult variant contains a
@@ -1235,6 +1250,290 @@ TEST_F(ResourceAttrCPUMonitorTest, MeasurementError) {
                                     kTimeBetweenMeasurements * 2.5),
                     StartTimeMatches(monitoring_start_time +
                                      kTimeBetweenMeasurements / 2)));
+}
+
+// Tests the CPUProportionTracker helper class.
+TEST_F(ResourceAttrCPUMonitorTest, CPUProportionTracker) {
+  // Since the CPU monitor has trouble measuring processes on exit, create some
+  // long-lived processes. The test will create and delete frames in a process
+  // to measure contexts that are added and removed during measurement periods.
+  // The frames will not share the process so they get all the process CPU.
+  auto create_process = [&](double cpu_usage) {
+    TestNodeWrapper<ProcessNodeImpl> renderer = CreateMockCPURenderer();
+    SetProcessId(renderer.get());
+    SetProcessCPUUsage(renderer.get(), cpu_usage);
+    return renderer;
+  };
+  const TestNodeWrapper<ProcessNodeImpl> process_90 = create_process(0.9);
+  const TestNodeWrapper<ProcessNodeImpl> process_80 = create_process(0.8);
+  const TestNodeWrapper<ProcessNodeImpl> process_70 = create_process(0.7);
+  const TestNodeWrapper<ProcessNodeImpl> process_60 = create_process(0.6);
+  const TestNodeWrapper<ProcessNodeImpl> process_50 = create_process(0.5);
+  const TestNodeWrapper<ProcessNodeImpl> process_40 = create_process(0.4);
+  const TestNodeWrapper<PageNodeImpl> page_node = CreateNode<PageNodeImpl>();
+
+  // Create a tracker that only looks at frames, so that the results are easier
+  // to compare.
+  CPUProportionTracker proportion_tracker(
+      base::BindRepeating(&ContextIs<FrameContext>));
+  StartMonitoring();
+
+  std::map<ResourceContext, double> expected_results;
+
+  // Context that existed before CPUProportionTracker started.
+  // Uses 50% CPU for the entire interval = 0.5.
+  std::optional<TestNodeWrapper<FrameNodeImpl>> existing_frame1 =
+      CreateFrameNodeAutoId(process_50.get(), page_node.get());
+  expected_results[existing_frame1.value()->GetResourceContext()] = 0.5;
+
+  // Another context that existed before CPUProportionTracker, and will exit
+  // half-way through the interval.
+  // Uses 40% CPU for half the interval = 0.2.
+  std::optional<TestNodeWrapper<FrameNodeImpl>> existing_frame2 =
+      CreateFrameNodeAutoId(process_40.get(), page_node.get());
+  expected_results[existing_frame2.value()->GetResourceContext()] = 0.2;
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
+
+  // Test the first interval, where the CPUProportionTracker has no history.
+  proportion_tracker.StartFirstInterval(base::TimeTicks::Now(),
+                                        GetCPUQueryResults());
+
+  // Context exists for entire interval.
+  // Uses 90% CPU for entire interval = 0.9.
+  std::optional<TestNodeWrapper<FrameNodeImpl>> frame1 =
+      CreateFrameNodeAutoId(process_90.get(), page_node.get());
+  expected_results[frame1.value()->GetResourceContext()] = 0.9;
+
+  // Context exists at start of interval, destroyed half-way through.
+  // Uses 80% CPU for half the interval = 0.4.
+  std::optional<TestNodeWrapper<FrameNodeImpl>> frame2 =
+      CreateFrameNodeAutoId(process_80.get(), page_node.get());
+  expected_results[frame2.value()->GetResourceContext()] = 0.4;
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+  const auto half_first_interval = base::TimeTicks::Now();
+  frame2.reset();
+  existing_frame2.reset();
+
+  // Context created half-way through measurement interval.
+  // Uses 70% CPU for half the interval = 0.35.
+  const TestNodeWrapper<FrameNodeImpl> frame3 =
+      CreateFrameNodeAutoId(process_70.get(), page_node.get());
+  expected_results[frame3->GetResourceContext()] = 0.35;
+
+  // Context created half-way through measurement interval, destroyed 3/4 of the
+  // way through.
+  // Uses 60% CPU for 1/4 of the interval = 0.15.
+  std::optional<TestNodeWrapper<FrameNodeImpl>> frame4 =
+      CreateFrameNodeAutoId(process_60.get(), page_node.get());
+  expected_results[frame4.value()->GetResourceContext()] = 0.15;
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 4);
+  frame4.reset();
+
+  // Destroy existing_frame1 at end of interval. Should still count as existing
+  // for the whole interval since this is the same tick as the measurement.
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 4);
+  const auto existing_frame1_context =
+      existing_frame1.value()->GetResourceContext();
+  existing_frame1.reset();
+
+  EXPECT_EQ(expected_results,
+            proportion_tracker.StartNextInterval(base::TimeTicks::Now(),
+                                                 GetCPUQueryResults()));
+
+  // Make sure the same scenarios also work for a second interval, where
+  // CPUProportionTracker has history.
+  std::map<ResourceContext, double> expected_results2;
+
+  // existing_frame1 existed at start of interval so is included, but has no CPU
+  // because it was destroyed on that tick.
+  expected_results2[existing_frame1_context] = 0.0;
+
+  // frame3 existed before the interval.
+  // Uses 70% CPU for the entire interval = 0.7.
+  expected_results2[frame3->GetResourceContext()] = 0.7;
+
+  // New context created at start of interval.
+  // Uses 80% CPU for the entire interval = 0.8.
+  const TestNodeWrapper<FrameNodeImpl> frame5 =
+      CreateFrameNodeAutoId(process_80.get(), page_node.get());
+  expected_results2[frame5->GetResourceContext()] = 0.8;
+
+  // frame1 exists at start of interval, destroyed half-way through.
+  // Uses 90% CPU for half the interval = 0.45.
+  expected_results2[frame1.value()->GetResourceContext()] = 0.45;
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+  frame1.reset();
+
+  // New context created half-way through measurement interval.
+  // Uses 60% CPU for half the interval = 0.3.
+  const TestNodeWrapper<FrameNodeImpl> frame6 =
+      CreateFrameNodeAutoId(process_60.get(), page_node.get());
+  expected_results2[frame6->GetResourceContext()] = 0.3;
+
+  // New context created half-way through measurement interval, destroyed 3/4 of
+  // the way through. Uses 50% CPU for 1/4 of the interval = 0.125.
+  std::optional<TestNodeWrapper<FrameNodeImpl>> frame7 =
+      CreateFrameNodeAutoId(process_50.get(), page_node.get());
+  expected_results2[frame7.value()->GetResourceContext()] = 0.125;
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 4);
+  frame7.reset();
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 4);
+
+  // Fake that the result included a node with `start_time` during the first
+  // interval, which CPUProportionTracker didn't see during that interval. This
+  // can happen in production if a WorkerNode that existed at `start_time` is
+  // added to a PageNode later, moving the page's `start_time` back.
+  // Since there's no baseline for the node, it shouldn't be included yet.
+  TestNodeWrapper<FrameNodeImpl> frame8 =
+      CreateFrameNodeAutoId(process_40.get(), page_node.get());
+  auto add_fake_result = [&](QueryResultMap results,
+                             base::TimeTicks measurement_time) {
+    results[frame8->GetResourceContext()] = QueryResults{CPUTimeResult{
+        .metadata = {.measurement_time = measurement_time},
+        .start_time = half_first_interval,
+        .cumulative_cpu = (measurement_time - half_first_interval) * 0.4,
+    }};
+    return results;
+  };
+  EXPECT_EQ(expected_results2,
+            proportion_tracker.StartNextInterval(
+                base::TimeTicks::Now(),
+                add_fake_result(GetCPUQueryResults(), base::TimeTicks::Now())));
+
+  // Third interval. The fake `frame8` should now be included using 40% CPU for
+  // the entire interval.
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
+  EXPECT_THAT(
+      proportion_tracker.StartNextInterval(
+          base::TimeTicks::Now(),
+          add_fake_result(GetCPUQueryResults(), base::TimeTicks::Now())),
+      Contains(Pair(frame8->GetResourceContext(), 0.4)));
+}
+
+// Tests that multiple CPUProportionTrackers with different schedules are
+// independent. Also tests trackers with and without a context filter.
+TEST_F(ResourceAttrCPUMonitorTest, MultipleCPUProportionTrackers) {
+  MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
+  SetProcessCPUUsage(mock_graph.process.get(), 1.0);
+  SetProcessCPUUsage(mock_graph.other_process.get(), 1.0);
+
+  // Helper to return expected results for all nodes in `mock_graph`.
+  auto get_all_expected_results = [&](double process_cpu) {
+    // `other_process` is fixed at 100%.
+    const double other_process_cpu = 1.0;
+    // `frame` and `other_frame` get 1/2 of `process`.
+    const double frame_cpu = process_cpu / 2;
+    const double other_frame_cpu = process_cpu / 2;
+    // `child_frame` gets all of `other_process`.
+    const double child_frame_cpu = other_process_cpu;
+
+    return std::map<ResourceContext, double>{
+        {mock_graph.process->GetResourceContext(), process_cpu},
+        {mock_graph.other_process->GetResourceContext(), other_process_cpu},
+        {mock_graph.frame->GetResourceContext(), frame_cpu},
+        {mock_graph.other_frame->GetResourceContext(), other_frame_cpu},
+        {mock_graph.child_frame->GetResourceContext(), child_frame_cpu},
+        // `page` contains only `frame`.
+        {mock_graph.page->GetResourceContext(), frame_cpu},
+        // `other_page` contains `other_frame` and `child_frame`.
+        {mock_graph.other_page->GetResourceContext(),
+         other_frame_cpu + child_frame_cpu},
+        // `browser_process` is fixed at 100%.
+        {mock_graph.browser_process->GetResourceContext(), 1.0},
+    };
+  };
+
+  // T = 0
+  StartMonitoring();
+
+  // Tracker that watches all contexts, with a 1 minute interval.
+  CPUProportionTracker all_tracker;
+  all_tracker.StartFirstInterval(base::TimeTicks::Now(), GetCPUQueryResults());
+
+  // T = 15s
+  // `process` CPU drops to 50%.
+  task_env().FastForwardBy(base::Seconds(15));
+  SetProcessCPUUsage(mock_graph.process.get(), 0.5);
+
+  // Tracker that watches only processes. It starts 15 seconds later, with a 30
+  // second interval.
+  CPUProportionTracker process_tracker(
+      base::BindRepeating(&ContextIs<ProcessContext>));
+  process_tracker.StartFirstInterval(base::TimeTicks::Now(),
+                                     GetCPUQueryResults());
+
+  // `other_process` and `browser_process` CPU are fixed at 100%. `process` CPU
+  // will vary.
+  std::map<ResourceContext, double> expected_process_results{
+      {mock_graph.other_process->GetResourceContext(), 1.0},
+      {mock_graph.browser_process->GetResourceContext(), 1.0},
+  };
+
+  // T = 30s
+  // `process` CPU drops to 40%.
+  task_env().FastForwardBy(base::Seconds(15));
+  SetProcessCPUUsage(mock_graph.process.get(), 0.4);
+
+  // T = 45s
+  // End of `process_tracker` 1st interval.
+  task_env().FastForwardBy(base::Seconds(15));
+
+  // `process` used 50% CPU for first half, 40% for second half.
+  expected_process_results[mock_graph.process->GetResourceContext()] =
+      0.5 / 2 + 0.4 / 2;
+  EXPECT_EQ(expected_process_results,
+            process_tracker.StartNextInterval(base::TimeTicks::Now(),
+                                              GetCPUQueryResults()));
+
+  // T = 60s
+  // End of `all_tracker` 1st interval.
+  task_env().FastForwardBy(base::Seconds(15));
+
+  // `process` used 100% CPU for 1/4, 50% for 1/4, 40% for 1/2.
+  EXPECT_EQ(get_all_expected_results(1.0 / 4 + 0.5 / 4 + 0.4 / 2),
+            all_tracker.StartNextInterval(base::TimeTicks::Now(),
+                                          GetCPUQueryResults()));
+
+  // T = 75s
+  // End of `process_tracker` 2nd interval.
+  task_env().FastForwardBy(base::Seconds(15));
+
+  // `process` used 40% CPU for whole interval.
+  expected_process_results[mock_graph.process->GetResourceContext()] = 0.4;
+  EXPECT_EQ(expected_process_results,
+            process_tracker.StartNextInterval(base::TimeTicks::Now(),
+                                              GetCPUQueryResults()));
+
+  // T = 90s
+  // `process` CPU returns to 100%.
+  task_env().FastForwardBy(base::Seconds(15));
+  SetProcessCPUUsage(mock_graph.process.get(), 1.0);
+
+  // T = 105s
+  // End of `process_tracker` 3rd interval.
+  task_env().FastForwardBy(base::Seconds(15));
+
+  // `process` used 40% CPU for first half, 100% for second half.
+  expected_process_results[mock_graph.process->GetResourceContext()] =
+      0.4 / 2 + 1.0 / 2;
+  EXPECT_EQ(expected_process_results,
+            process_tracker.StartNextInterval(base::TimeTicks::Now(),
+                                              GetCPUQueryResults()));
+
+  // T = 120s
+  // End of `all_tracker` 2nd interval.
+  task_env().FastForwardBy(base::Seconds(15));
+
+  // `process` used 40% of CPU for first half, 100% for second half.
+  EXPECT_EQ(get_all_expected_results(0.4 / 2 + 1.0 / 2),
+            all_tracker.StartNextInterval(base::TimeTicks::Now(),
+                                          GetCPUQueryResults()));
 }
 
 // A test that creates real processes, to verify that measurement works with the

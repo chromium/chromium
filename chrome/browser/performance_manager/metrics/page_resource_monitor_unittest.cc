@@ -849,10 +849,12 @@ TEST_P(PageResourceMonitorWithFeatureTest, TestCPUInterventionMetrics) {
   mock_graph.other_page->SetType(performance_manager::PageType::kTab);
   mock_graph.other_page->SetIsVisible(false);
 
-  // Set CPU usage to 0, so only the .Baseline metrics should be logged.
-  cpu_delegate_factory_.GetDelegate(mock_graph.process.get()).SetCPUUsage(0.0);
+  // Set CPU usage to near-0, so only the .Baseline metrics should be logged.
+  // 0 is used as an error value by base::ProcessMetrics so it will cause no
+  // results at all for the process to be returned.
+  cpu_delegate_factory_.GetDelegate(mock_graph.process.get()).SetCPUUsage(0.01);
   cpu_delegate_factory_.GetDelegate(mock_graph.other_process.get())
-      .SetCPUUsage(0.0);
+      .SetCPUUsage(0.01);
 
   {
     PatternedHistogramTester histograms;
