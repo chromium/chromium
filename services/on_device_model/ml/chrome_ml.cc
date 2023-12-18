@@ -9,6 +9,7 @@
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/debug/crash_logging.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -54,6 +55,11 @@ enum class GpuBlockedReason {
 
 void LogGpuBlocked(GpuBlockedReason reason) {
   base::UmaHistogramEnumeration("OnDeviceModel.GpuBlockedReason", reason);
+}
+
+void FatalErrorFn(const char* msg) {
+  SCOPED_CRASH_KEY_STRING1024("ChromeML", "error_msg", msg);
+  CHECK(false) << "ChromeML Error: " << msg;
 }
 
 }  // namespace
@@ -116,6 +122,9 @@ std::unique_ptr<ChromeML> ChromeML::Create() {
   }
 
   api->InitDawnProcs(dawn::native::GetProcs());
+  if (api->SetFatalErrorFn) {
+    api->SetFatalErrorFn(&FatalErrorFn);
+  }
   return std::make_unique<ChromeML>(base::PassKey<ChromeML>(),
                                     std::move(scoped_library), api);
 }
