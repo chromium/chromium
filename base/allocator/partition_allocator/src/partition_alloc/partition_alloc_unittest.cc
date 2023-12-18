@@ -995,7 +995,15 @@ TEST_P(PartitionAllocTest, PreferSlotSpansWithProvisionedEntries) {
 
 // Test some corner cases relating to slot span transitions in the internal
 // free slot span list metadata bucket.
-TEST_P(PartitionAllocTest, FreeSlotSpanListSlotSpanTransitions) {
+// TODO(crbug.com/1512944): Test flaky on iPhone device.
+#if BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
+#define MAYBE_FreeSlotSpanListSlotSpanTransitions \
+  DISABLED_FreeSlotSpanListSlotSpanTransitions
+#else
+#define MAYBE_FreeSlotSpanListSlotSpanTransitions \
+  FreeSlotSpanListSlotSpanTransitions
+#endif  // BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
+TEST_P(PartitionAllocTest, MAYBE_FreeSlotSpanListSlotSpanTransitions) {
   PartitionRoot::Bucket* bucket =
       &allocator.root()->buckets[test_bucket_index_];
 
