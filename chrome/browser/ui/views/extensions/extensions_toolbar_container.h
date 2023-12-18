@@ -44,9 +44,9 @@ class ExtensionsToolbarContainer
       public ToolbarActionView::Delegate,
       public views::WidgetObserver,
       public extensions::PermissionsManager::Observer {
- public:
-  METADATA_HEADER(ExtensionsToolbarContainer);
+  METADATA_HEADER(ExtensionsToolbarContainer, ToolbarIconContainerView)
 
+ public:
   using ToolbarIcons =
       std::map<ToolbarActionsModel::ActionId, ToolbarActionView*>;
 

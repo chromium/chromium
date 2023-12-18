@@ -124,5 +124,5 @@ bool ExtensionsToolbarControls::IsShowingConfirmationFor(
   return request_access_button_->IsShowingConfirmationFor(origin);
 }
 
-BEGIN_METADATA(ExtensionsToolbarControls, ToolbarIconContainerView)
+BEGIN_METADATA(ExtensionsToolbarControls)
 END_METADATA

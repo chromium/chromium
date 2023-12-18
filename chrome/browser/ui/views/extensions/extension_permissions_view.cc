@@ -49,5 +49,5 @@ void ExtensionPermissionsView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
-BEGIN_METADATA(ExtensionPermissionsView, views::View)
+BEGIN_METADATA(ExtensionPermissionsView)
 END_METADATA

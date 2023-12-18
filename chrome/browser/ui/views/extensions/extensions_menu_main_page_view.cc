@@ -780,5 +780,5 @@ content::WebContents* ExtensionsMenuMainPageView::GetActiveWebContents() const {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
 
-BEGIN_METADATA(ExtensionsMenuMainPageView, views::View)
+BEGIN_METADATA(ExtensionsMenuMainPageView)
 END_METADATA

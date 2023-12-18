@@ -538,5 +538,5 @@ ExtensionsMenuView::GetSortedItemsForSectionForTesting(
   return menu_item_views;
 }
 
-BEGIN_METADATA(ExtensionsMenuView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(ExtensionsMenuView)
 END_METADATA

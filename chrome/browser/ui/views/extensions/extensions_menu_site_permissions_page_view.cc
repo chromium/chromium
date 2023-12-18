@@ -433,5 +433,5 @@ ExtensionsMenuSitePermissionsPageView::GetSiteAccessButtonForTesting(
   return site_access_buttons[GetSiteAccessButtonIndex(site_access)];
 }
 
-BEGIN_METADATA(ExtensionsMenuSitePermissionsPageView, views::View)
+BEGIN_METADATA(ExtensionsMenuSitePermissionsPageView)
 END_METADATA

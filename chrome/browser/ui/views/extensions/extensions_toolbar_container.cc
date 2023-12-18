@@ -1143,5 +1143,5 @@ void ExtensionsToolbarContainer::UpdateCloseSidePanelButtonIcon() {
       is_right_aligned ? kRightPanelCloseIcon : kLeftPanelCloseIcon);
 }
 
-BEGIN_METADATA(ExtensionsToolbarContainer, ToolbarIconContainerView)
+BEGIN_METADATA(ExtensionsToolbarContainer)
 END_METADATA

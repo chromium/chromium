@@ -21,9 +21,9 @@ class ExtensionsRequestAccessButton;
 class ToolbarActionViewController;
 
 class ExtensionsToolbarControls : public ToolbarIconContainerView {
- public:
-  METADATA_HEADER(ExtensionsToolbarControls);
+  METADATA_HEADER(ExtensionsToolbarControls, ToolbarIconContainerView)
 
+ public:
   explicit ExtensionsToolbarControls(
       std::unique_ptr<ExtensionsToolbarButton> extensions_button,
       std::unique_ptr<ExtensionsRequestAccessButton> request_button);

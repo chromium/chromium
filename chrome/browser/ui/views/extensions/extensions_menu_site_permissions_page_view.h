@@ -25,9 +25,9 @@ class Browser;
 class ExtensionsMenuHandler;
 
 class ExtensionsMenuSitePermissionsPageView : public views::View {
- public:
-  METADATA_HEADER(ExtensionsMenuSitePermissionsPageView);
+  METADATA_HEADER(ExtensionsMenuSitePermissionsPageView, views::View)
 
+ public:
   explicit ExtensionsMenuSitePermissionsPageView(
       Browser* browser,
       extensions::ExtensionId extension_id,

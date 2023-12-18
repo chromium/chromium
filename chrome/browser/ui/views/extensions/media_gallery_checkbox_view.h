@@ -24,8 +24,9 @@ class Label;
 // text that will elide to its parent's width. Used by
 // MediaGalleriesDialogViews.
 class MediaGalleryCheckboxView : public views::BoxLayoutView {
+  METADATA_HEADER(MediaGalleryCheckboxView, views::BoxLayoutView)
+
  public:
-  METADATA_HEADER(MediaGalleryCheckboxView);
   MediaGalleryCheckboxView(const MediaGalleryPrefInfo& pref_info,
                            int trailing_vertical_space,
                            views::ContextMenuController* menu_controller);

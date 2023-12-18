@@ -502,5 +502,5 @@ bool ExtensionMenuItemView::IsContextMenuRunningForTesting() const {
   return context_menu_controller_->IsMenuRunning();
 }
 
-BEGIN_METADATA(ExtensionMenuItemView, views::View)
+BEGIN_METADATA(ExtensionMenuItemView)
 END_METADATA

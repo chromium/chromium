@@ -34,9 +34,9 @@ class MessageSection;
 
 // The main view of the extensions menu.
 class ExtensionsMenuMainPageView : public views::View {
- public:
-  METADATA_HEADER(ExtensionsMenuMainPageView);
+  METADATA_HEADER(ExtensionsMenuMainPageView, views::View)
 
+ public:
   enum class MessageSectionState {
     // Site is restricted to all extensions.
     kRestrictedAccess,
