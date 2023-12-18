@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrostiniPortSetting, SettingsCrostiniArcAdbElement, SettingsCrostiniPageElement} from 'chrome://os-settings/lazy_load.js';
+import {CrostiniPortSetting, SettingsCrostiniArcAdbElement} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -12,8 +12,8 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
-let crostiniPage: SettingsCrostiniPageElement;
 let subpage: SettingsCrostiniArcAdbElement;
 
 interface PrefParams {
@@ -31,7 +31,7 @@ function setCrostiniPrefs(enabled: boolean, {
   arcEnabled = false,
   bruschettaInstalled = false,
 }: PrefParams = {}): void {
-  crostiniPage.prefs = {
+  subpage.prefs = {
     arc: {
       enabled: {value: arcEnabled},
     },
@@ -53,35 +53,26 @@ function setCrostiniPrefs(enabled: boolean, {
 }
 
 suite('<settings-crostini-arc-adb>', () => {
+  suiteSetup(() => {
+    disableAnimationsAndTransitions();
+  });
+
   setup(async () => {
     loadTimeData.overrideValues({
+      arcAdbSideloadingSupported: true,
       isCrostiniAllowed: true,
       isCrostiniSupported: true,
     });
 
-    crostiniPage = document.createElement('settings-crostini-page');
-    document.body.appendChild(crostiniPage);
-    flush();
-
-    disableAnimationsAndTransitions();
-
-    setCrostiniPrefs(true, {arcEnabled: true});
-    loadTimeData.overrideValues({
-      arcAdbSideloadingSupported: true,
-    });
-
-    await flushTasks();
     Router.getInstance().navigateTo(routes.CROSTINI_ANDROID_ADB);
-
+    subpage = document.createElement('settings-crostini-arc-adb');
+    document.body.appendChild(subpage);
+    setCrostiniPrefs(true, {arcEnabled: true});
     await flushTasks();
-    const subpageElement =
-        crostiniPage.shadowRoot!.querySelector('settings-crostini-arc-adb');
-    assertTrue(!!subpageElement);
-    subpage = subpageElement;
   });
 
   teardown(() => {
-    crostiniPage.remove();
+    subpage.remove();
     Router.getInstance().resetRouteForTesting();
   });
 
@@ -98,6 +89,8 @@ suite('<settings-crostini-arc-adb>', () => {
         subpage.shadowRoot!.querySelector<HTMLButtonElement>(
             '#arcAdbEnabledButton');
     assertTrue(!!deepLinkElement);
+    assertTrue(isVisible(deepLinkElement));
+
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
