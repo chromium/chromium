@@ -380,8 +380,7 @@ TEST(IDBKeyFromValue, CircularArray) {
 }
 
 TEST(IDBKeyFromValue, DeepArray) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto key = ScriptToKey(scope,
                          "(() => {"

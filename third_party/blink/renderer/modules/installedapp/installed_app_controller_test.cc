@@ -64,8 +64,7 @@ class InstalledAppControllerTest : public testing::Test {
   }
 
  private:
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> holder_;
   v8::HandleScope handle_scope_;
   v8::Local<v8::Context> context_;

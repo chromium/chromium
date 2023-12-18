@@ -66,8 +66,7 @@ void OpenWebDatabaseInWindow(const char* outer_origin,
 }
 
 TEST(DOMWindowWebDatabaseTest, WebSQLThirdPartyContext) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   OpenWebDatabaseInIFrame("http://not-example.test:0/",
                           "first_party/nested-originA.html",
@@ -80,8 +79,7 @@ TEST(DOMWindowWebDatabaseTest, WebSQLThirdPartyContext) {
 }
 
 TEST(DOMWindowWebDatabaseTest, WebSQLNonSecureContext) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   OpenWebDatabaseInWindow("http://example.test:0/", "first_party/empty.html",
                           scope.GetExceptionState());
@@ -93,8 +91,7 @@ TEST(DOMWindowWebDatabaseTest, WebSQLNonSecureContext) {
 }
 
 TEST(DOMWindowWebDatabaseTest, WebSQLFirstPartyContext) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   OpenWebDatabaseInWindow("https://example.test:0/", "first_party/empty.html",
                           scope.GetExceptionState());

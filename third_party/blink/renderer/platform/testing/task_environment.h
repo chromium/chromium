@@ -17,15 +17,7 @@ namespace internal {
 
 class TaskEnvironmentImpl : public base::test::TaskEnvironment {
  public:
-  // Instantiates a full featured blink::MainThreadScheduler as opposed to a
-  // simple Thread scheduler.
-  // TODO(crbug.com/1315595): Remove this once all callsites are updated.
-  struct RealMainThreadScheduler {};
-
-  struct ValidTraits {
-    explicit ValidTraits(base::test::TaskEnvironment::ValidTraits);
-    explicit ValidTraits(RealMainThreadScheduler);
-  };
+  using ValidTraits = base::test::TaskEnvironment::ValidTraits;
 
   template <typename... Traits>
     requires base::trait_helpers::AreValidTraits<ValidTraits, Traits...>
@@ -33,9 +25,7 @@ class TaskEnvironmentImpl : public base::test::TaskEnvironment {
       : TaskEnvironmentImpl(CreateTaskEnvironmentWithPriorities(
             blink::scheduler::CreatePrioritySettings(),
             SubclassCreatesDefaultTaskRunner{},
-            base::trait_helpers::
-                Exclude<MainThreadType, RealMainThreadScheduler>::Filter(
-                    traits)...)) {}
+            traits...)) {}
 
   ~TaskEnvironmentImpl() override;
 
@@ -71,8 +61,6 @@ class TaskEnvironmentImpl : public base::test::TaskEnvironment {
 // base::test::TaskEnvironment otherwise.
 class TaskEnvironment {
  public:
-  using RealMainThreadScheduler =
-      internal::TaskEnvironmentImpl::RealMainThreadScheduler;
   using ValidTraits = internal::TaskEnvironmentImpl::ValidTraits;
 
   template <typename... Traits>

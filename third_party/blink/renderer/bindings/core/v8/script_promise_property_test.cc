@@ -178,8 +178,7 @@ class ScriptPromisePropertyTestBase {
   }
 
  private:
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> page_;
   Persistent<ScriptState> other_script_state_;
 };

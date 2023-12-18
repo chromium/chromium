@@ -45,8 +45,7 @@ HeapVector<Member<V8UnionPresentationSourceOrUSVString>> CreateUrlSources(
 }
 
 TEST(PresentationRequestTest, TestSingleUrlConstructor) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   PresentationRequest* request = PresentationRequest::Create(
       scope.GetExecutionContext(), "https://example.com",
@@ -60,8 +59,7 @@ TEST(PresentationRequestTest, TestSingleUrlConstructor) {
 }
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructor) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources =
       CreateUrlSources({"https://example.com", "cast://deadbeef?param=foo"});
@@ -79,8 +77,7 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructor) {
 }
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructorInvalidUrl) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources =
       CreateUrlSources({"https://example.com", ""});
@@ -93,8 +90,7 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorInvalidUrl) {
 }
 
 TEST(PresentationRequestTest, TestMixedContentNotCheckedForNonHttpFamily) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope(KURL("https://example.test"));
 
   PresentationRequest* request = PresentationRequest::Create(
@@ -109,8 +105,7 @@ TEST(PresentationRequestTest, TestMixedContentNotCheckedForNonHttpFamily) {
 }
 
 TEST(PresentationRequestTest, TestSingleUrlConstructorMixedContent) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope(KURL("https://example.test"));
 
   PresentationRequest::Create(scope.GetExecutionContext(), "http://example.com",
@@ -121,8 +116,7 @@ TEST(PresentationRequestTest, TestSingleUrlConstructorMixedContent) {
 }
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructorMixedContent) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope(KURL("https://example.test"));
 
   HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources =
@@ -136,8 +130,7 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorMixedContent) {
 }
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructorEmptySequence) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources;
 
@@ -149,8 +142,7 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorEmptySequence) {
 }
 
 TEST(PresentationRequestTest, TestSingleUrlConstructorUnknownScheme) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   PresentationRequest::Create(scope.GetExecutionContext(), "foobar:unknown",
                               scope.GetExceptionState());
@@ -160,8 +152,7 @@ TEST(PresentationRequestTest, TestSingleUrlConstructorUnknownScheme) {
 }
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructorSomeUnknownSchemes) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources =
       CreateUrlSources({"foobar:unknown", "https://example.com",
@@ -180,8 +171,7 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorSomeUnknownSchemes) {
 }
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructorAllUnknownSchemes) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources =
       CreateUrlSources({"foobar:unknown", "deadbeef:random"});
@@ -197,8 +187,7 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorAllUnknownSchemes) {
 // the PresentationSource specialization of V8UnionPresentationSourceOrUSVString
 // to be used to create a PresentationRequest.
 TEST(PresentationRequestTest, TestPresentationSourceNotAllowed) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   ScopedSiteInitiatedMirroringForTest site_initiated_mirroring_enabled{false};
   V8TestingScope scope;
   PresentationRequest::Create(scope.GetExecutionContext(),
@@ -210,8 +199,7 @@ TEST(PresentationRequestTest, TestPresentationSourceNotAllowed) {
 }
 
 TEST(PresentationRequestTest, TestPresentationSourcesInConstructor) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   ScopedSiteInitiatedMirroringForTest site_initiated_mirroring_enabled{true};
   V8TestingScope scope;
   PresentationRequest* request = PresentationRequest::Create(
@@ -234,8 +222,7 @@ TEST(PresentationRequestTest, TestPresentationSourcesInConstructor) {
 }
 
 TEST(PresentationRequestTest, TestInvalidPresentationSource) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   ScopedSiteInitiatedMirroringForTest site_initiated_mirroring_enabled{true};
   V8TestingScope scope;
   PresentationRequest::Create(scope.GetExecutionContext(),

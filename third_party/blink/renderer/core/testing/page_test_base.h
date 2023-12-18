@@ -144,8 +144,7 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   void AdvanceClock(base::TimeDelta);
 
  private:
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment_;
   // The order is important: |platform_| must be destroyed after
   // |dummy_page_holder_| is destroyed.
   std::unique_ptr<ScopedTestingPlatformSupport<TestingPlatformSupport>>

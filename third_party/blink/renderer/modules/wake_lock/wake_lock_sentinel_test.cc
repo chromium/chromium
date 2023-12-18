@@ -41,8 +41,7 @@ class SyncEventListener final : public NativeEventListener {
 }  // namespace
 
 TEST(WakeLockSentinelTest, SentinelType) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
@@ -58,8 +57,7 @@ TEST(WakeLockSentinelTest, SentinelType) {
 }
 
 TEST(WakeLockSentinelTest, SentinelReleased) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
@@ -77,8 +75,7 @@ TEST(WakeLockSentinelTest, SentinelReleased) {
 }
 
 TEST(WakeLockSentinelTest, MultipleReleaseCalls) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
@@ -116,8 +113,7 @@ TEST(WakeLockSentinelTest, MultipleReleaseCalls) {
 }
 
 TEST(WakeLockSentinelTest, ContextDestruction) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
@@ -154,8 +150,7 @@ TEST(WakeLockSentinelTest, ContextDestruction) {
 }
 
 TEST(WakeLockSentinelTest, HasPendingActivityConditions) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 

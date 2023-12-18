@@ -119,8 +119,7 @@ class ActivityLoggerTest : public testing::Test {
  private:
   static const int kIsolatedWorldId = 1;
 
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment_;
   WebViewHelper web_view_helper_;
   Persistent<LocalFrame> local_frame_;
   // TestActivityLogger is owned by a static table within V8DOMActivityLogger

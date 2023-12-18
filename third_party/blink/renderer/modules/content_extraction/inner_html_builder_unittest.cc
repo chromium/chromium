@@ -14,8 +14,7 @@ namespace blink {
 namespace {
 
 TEST(InnerHtmlBuilderTest, Basic) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   frame_test_helpers::WebViewHelper helper;
   helper.Initialize();
   ASSERT_TRUE(helper.LocalMainFrame());

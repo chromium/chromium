@@ -29,8 +29,7 @@ namespace blink {
 namespace {
 
 TEST(InnerTextBuilderTest, Basic) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   frame_test_helpers::WebViewHelper helper;
   helper.Initialize();
   // ScopedNullExecutionContext execution_context;
@@ -62,8 +61,7 @@ TEST(InnerTextBuilderTest, Basic) {
 }
 
 TEST(InnerTextBuilderTest, MultiFrames) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   frame_test_helpers::WebViewHelper helper;
   std::string base_url("http://internal.test/");
   url_test_helpers::RegisterMockedURLLoadFromBase(WebString::FromUTF8(base_url),
@@ -143,8 +141,7 @@ TEST(InnerTextBuilderTest, MultiFrames) {
 }
 
 TEST(InnerTextBuilderTest, DifferentOrigin) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   frame_test_helpers::WebViewHelper helper;
   std::string base_url("http://internal.test/");
   url_test_helpers::RegisterMockedURLLoadFromBase(WebString::FromUTF8(base_url),

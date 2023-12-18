@@ -101,8 +101,7 @@ class PaymentRequestForInvalidOriginOrSslTest : public testing::Test {
         payment_provider_->CreatePendingRemoteAndBind(), ASSERT_NO_EXCEPTION);
   }
 
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<MockPaymentProvider> payment_provider_;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 };

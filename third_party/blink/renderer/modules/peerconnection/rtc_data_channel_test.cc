@@ -257,8 +257,7 @@ class RTCDataChannelTest : public ::testing::Test {
   }
 
  protected:
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment_;
   Persistent<NullExecutionContext> execution_context_ =
       MakeGarbageCollected<NullExecutionContext>();
 

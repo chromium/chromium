@@ -188,8 +188,7 @@ class ViewTransitionTest : public testing::Test,
   }
 
  protected:
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
+  test::TaskEnvironment task_environment;
 
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
 };

@@ -1149,8 +1149,7 @@ void RunCallbackPermutationTest(std::vector<PredictionType> callback_order) {
 // Test that decodingInfo() behaves correctly for all orderings/timings of the
 // underlying prediction services.
 TEST(MediaCapabilitiesTests, PredictionCallbackPermutations) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   std::vector<PredictionType> callback_order(
       {PredictionType::kDB, PredictionType::kBadWindow, PredictionType::kNnr,
        PredictionType::kGpuFactories});

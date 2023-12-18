@@ -20,8 +20,7 @@
 namespace blink {
 
 TEST(WakeLockTest, RequestWakeLockGranted) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
@@ -49,8 +48,7 @@ TEST(WakeLockTest, RequestWakeLockGranted) {
 }
 
 TEST(WakeLockTest, RequestWakeLockDenied) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
@@ -85,8 +83,7 @@ TEST(WakeLockTest, RequestWakeLockDenied) {
 
 // https://w3c.github.io/screen-wake-lock/#handling-document-loss-of-full-activity
 TEST(WakeLockTest, LossOfDocumentActivity) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
@@ -131,8 +128,7 @@ TEST(WakeLockTest, LossOfDocumentActivity) {
 
 // https://w3c.github.io/screen-wake-lock/#handling-document-loss-of-visibility
 TEST(WakeLockTest, PageVisibilityHidden) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
@@ -184,8 +180,7 @@ TEST(WakeLockTest, PageVisibilityHidden) {
 
 // https://w3c.github.io/screen-wake-lock/#handling-document-loss-of-visibility
 TEST(WakeLockTest, PageVisibilityHiddenBeforeLockAcquisition) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
 
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);

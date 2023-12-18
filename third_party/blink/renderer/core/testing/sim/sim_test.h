@@ -78,8 +78,7 @@ class SimTest : public testing::Test {
   void SetPreferCompositingToLCDText(bool enabled);
 
  private:
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment_;
   // These are unique_ptrs in order to destroy them in TearDown. Subclasses
   // may override Platform::Current() and these must shutdown before the
   // subclass destructor.
