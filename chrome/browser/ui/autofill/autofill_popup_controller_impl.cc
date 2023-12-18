@@ -24,10 +24,12 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
+#include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -171,6 +173,15 @@ void AutofillPopupControllerImpl::OnVisibilityChanged(
   }
 }
 
+void AutofillPopupControllerImpl::OnBeforeTextFieldDidChange(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldGlobalId field) {
+  // This method is only called for popups with a Compose entry. In this case,
+  // an edit on a field should lead to the popup hiding.
+  Hide(PopupHidingReason::kFieldValueChanged);
+}
+
 void AutofillPopupControllerImpl::Show(
     std::vector<Suggestion> suggestions,
     AutofillSuggestionTriggerSource trigger_source,
@@ -235,6 +246,16 @@ void AutofillPopupControllerImpl::Show(
         GetWeakPtr());
     rfh->GetRenderWidgetHost()->AddKeyPressEventCallback(
         key_press_observer_.handler);
+
+    // It suffices if the root popup observes changes in form elements.
+    // Currently, this is only relevant for Compose.
+    if (suggestions_.size() == 1 &&
+        suggestions_[0].popup_item_id == PopupItemId::kCompose) {
+      autofill_managers_observation_.Observe(
+          web_contents(),
+          ScopedAutofillManagersObservation::InitializationPolicy::
+              kObservePreexistingManagers);
+    }
 
     delegate_->OnPopupShown();
   }
@@ -322,6 +343,7 @@ void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
     }
     key_press_observer_ = {};
   }
+  autofill_managers_observation_.Reset();
   AutofillMetrics::LogAutofillPopupHidingReason(reason);
   HideViewAndDie();
 }

@@ -81,7 +81,11 @@ enum class PopupHidingReason {
   // Sub-popup related reason, used when closing a sub-popup (e.g. by moving
   // the mouse out of the suggestion control or by the keyboard navigation).
   kExpandedSuggestionCollapsedSubPopup = 24,
-  kMaxValue = kExpandedSuggestionCollapsedSubPopup
+  // The field's value changed. Currently, this event is only used for
+  // Compose-related
+  // popups, which close in response to user edits of the focused field.
+  kFieldValueChanged = 25,
+  kMaxValue = kFieldValueChanged
 };
 
 }  // namespace autofill

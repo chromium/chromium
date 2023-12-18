@@ -39,8 +39,10 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -1217,6 +1219,28 @@ TEST_F(AutofillPopupControllerImplTest, GetPopupScreenLocationCallsView) {
       .WillOnce(Return(PopupScreenLocation{.bounds = kSampleRect}));
   EXPECT_THAT(client().popup_controller(manager()).GetPopupScreenLocation(),
               Optional(Field(&PopupScreenLocation::bounds, kSampleRect)));
+}
+
+// Tests that a change to a text field hides a popup with a Compose suggestion.
+TEST_F(AutofillPopupControllerImplTest, HidesOnFieldChangeForComposeEntries) {
+  ShowSuggestions(manager(), {PopupItemId::kCompose});
+  EXPECT_CALL(client().popup_controller(manager()),
+              Hide(PopupHidingReason::kFieldValueChanged));
+  manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeTextFieldDidChange, FormGlobalId(),
+      FieldGlobalId());
+}
+
+// Tests that a change to a text field does not hide a popup with an
+// Autocomplete suggestion.
+TEST_F(AutofillPopupControllerImplTest,
+       DoeNotHideOnFieldChangeForNonComposeEntries) {
+  ShowSuggestions(manager(), {PopupItemId::kAutocompleteEntry});
+  EXPECT_CALL(client().popup_controller(manager()), Hide).Times(0);
+  manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeTextFieldDidChange, FormGlobalId(),
+      FieldGlobalId());
+  Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

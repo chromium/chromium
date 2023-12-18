@@ -3356,6 +3356,12 @@ Called by update_autofill_enums.py.-->
   <int value="23"
       label="No frame currently has focus. This case is caught for safety
              because it might be reachable due to race conditions."/>
+  <int value="24"
+      label="The sub-popup was closed, e.g. because the mouse was moved to a
+             different suggestion in the parent popup."/>
+  <int value="25"
+      label="The user edited the field. Currently applied only to Compose
+             suggestions."/>
 </enum>
 
 <enum name="AutofillPredictionsComparisonResult">

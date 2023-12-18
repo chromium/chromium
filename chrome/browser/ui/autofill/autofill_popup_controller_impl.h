@@ -16,6 +16,8 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
+#include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
+#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -69,6 +71,7 @@ class ExpandablePopupParentControllerImpl {
 class AutofillPopupControllerImpl
     : public AutofillPopupController,
       public content::WebContentsObserver,
+      public AutofillManager::Observer,
       public PictureInPictureWindowManager::Observer,
       public ExpandablePopupParentControllerImpl {
  public:
@@ -208,6 +211,11 @@ class AutofillPopupControllerImpl
       content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
+  // AutofillManager::Observer:
+  void OnBeforeTextFieldDidChange(AutofillManager& manager,
+                                  FormGlobalId form,
+                                  FieldGlobalId field) override;
+
   // Clear the internal state of the controller. This is needed to ensure that
   // when the popup is reused it doesn't leak values between uses.
   void ClearState();
@@ -266,6 +274,8 @@ class AutofillPopupControllerImpl
   base::ScopedObservation<PictureInPictureWindowManager,
                           PictureInPictureWindowManager::Observer>
       picture_in_picture_window_observation_{this};
+
+  ScopedAutofillManagersObservation autofill_managers_observation_{this};
 
   // Callback invoked to try to show the password migration warning on Android.
   // Used to facilitate testing.
