@@ -18,8 +18,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size);
 
 namespace blink {
 
-// The enum entries below are written to histograms and thus cannot be deleted
-// or reordered.
 // New entries must be added immediately before the end.
 enum class OriginTrialTokenStatus {
   kSuccess = 0,

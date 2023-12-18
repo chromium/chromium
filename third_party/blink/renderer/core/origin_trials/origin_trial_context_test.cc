@@ -9,7 +9,6 @@
 
 #include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,9 +51,6 @@ const char kUnrelatedSecureOrigin[] = "https://other.example.com";
 
 // The tokens expire in 2033.
 const base::Time kBaseTokenExpiryTime = base::Time::FromTimeT(2000000000);
-
-// Names of UMA histograms
-const char kResultHistogram[] = "OriginTrials.ValidationResult";
 
 // Trial token placeholder for mocked calls to validator
 const char kTokenPlaceholder[] = "The token contents are not used";
@@ -198,33 +194,11 @@ class OriginTrialContextTest : public testing::Test {
         ->IsNavigationFeatureActivated(feature);
   }
 
-  void ExpectStatusCount(OriginTrialTokenStatus status, int count) {
-    histogram_tester_.ExpectBucketCount(kResultHistogram,
-                                        static_cast<int>(status), count);
-  }
-
-  void ExpectStatusTotalMetric(int total) {
-    histogram_tester_.ExpectTotalCount(kResultHistogram, total);
-  }
-
  protected:
   test::TaskEnvironment task_environment_;
   MockTokenValidator* token_validator_;
   Persistent<NullExecutionContext> execution_context_;
-  base::HistogramTester histogram_tester_;
 };
-
-// Check that validation status gets logged to the histogram
-// on both success and failure
-TEST_F(OriginTrialContextTest, ValidationStatusLoggedInHistogram) {
-  UpdateSecurityOrigin(kFrobulateEnabledOrigin);
-  AddTokenWithResponse(kFrobulateTrialName, OriginTrialTokenStatus::kSuccess);
-  AddTokenWithResponse(kUnknownTrialName,
-                       OriginTrialTokenStatus::kUnknownTrial);
-  ExpectStatusCount(OriginTrialTokenStatus::kSuccess, 1);
-  ExpectStatusCount(OriginTrialTokenStatus::kUnknownTrial, 1);
-  ExpectStatusTotalMetric(2);
-}
 
 // Test that we're passing correct information to the validator
 TEST_F(OriginTrialContextTest, ValidatorGetsCorrectInfo) {

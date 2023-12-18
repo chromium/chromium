@@ -7451,18 +7451,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OriginTrials.ValidationResult" enum="OriginTrialTokenStatus"
-    expires_after="2021-10-10">
-  <owner>chasej@chromium.org</owner>
-  <owner>iclelland@chromium.org</owner>
-  <owner>feature-control@chromium.org</owner>
-  <summary>
-    Counts the results of token validation checks to enable experimental
-    features. The result for each token validation check is counted once per
-    token per execution context (e.g. page, worker).
-  </summary>
-</histogram>
-
 <histogram name="OSCrypt.AppBoundEncryption.Decrypt.ResultCode" enum="Hresult"
     expires_after="2024-06-02">
   <owner>wfh@chromium.org</owner>

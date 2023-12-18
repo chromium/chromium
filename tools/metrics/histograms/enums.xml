@@ -41874,20 +41874,6 @@ Called by update_net_error_codes.py.-->
              OriginAgentCluster-by-default)"/>
 </enum>
 
-<enum name="OriginTrialTokenStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="NotSupported"/>
-  <int value="2" label="Insecure"/>
-  <int value="3" label="Expired"/>
-  <int value="4" label="WrongOrigin"/>
-  <int value="5" label="InvalidSignature"/>
-  <int value="6" label="Malformed"/>
-  <int value="7" label="WrongVersion"/>
-  <int value="8" label="FeatureDisabled"/>
-  <int value="9" label="TokenDisabled"/>
-  <int value="10" label="FeatureDisabledForUser"/>
-</enum>
-
 <enum name="OsSetting">
   <int value="0" label="Configure Ethernet"/>
   <int value="1" label="Ethernet: Automatically Configure IP Address"/>

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/features.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
@@ -35,7 +34,6 @@
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -48,10 +46,6 @@ namespace blink {
 namespace {
 
 constexpr char kDefaultTrialName[] = "UNKNOWN";
-
-void RecordTokenValidationResultHistogram(OriginTrialTokenStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("OriginTrials.ValidationResult", status);
-}
 
 bool IsWhitespace(UChar chr) {
   return (chr == ' ') || (chr == '\t');
@@ -723,7 +717,6 @@ bool OriginTrialContext::EnableTrialFromToken(
                        script_origins);
   }
 
-  RecordTokenValidationResultHistogram(token_result.Status());
   CacheToken(token, token_result, trial_status);
   return trial_status == OriginTrialStatus::kEnabled;
 }
