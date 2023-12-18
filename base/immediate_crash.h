@@ -167,7 +167,9 @@ namespace base {
   // handlers. We want to dump coverage information so we'll do that
   // here explicitly too.
 #if BUILDFLAG(IS_LINUX)
-  __llvm_profile_write_file();
+  if (__llvm_profile_write_file) {
+    __llvm_profile_write_file();
+  }
 #endif  // BUILDFLAG(IS_LINUX)
   exit(-1);
 #else   // BUILDFLAG(USE_FUZZING_ENGINE)
