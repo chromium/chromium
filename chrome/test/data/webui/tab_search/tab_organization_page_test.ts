@@ -212,6 +212,84 @@ suite('TabOrganizationPageTest', () => {
     assertEquals(1, testApiProxy.getCallCount('acceptTabOrganization'));
   });
 
+  test('Refresh rejects organization', async () => {
+    const rejectFinalSuggestion = 'Clear';
+
+    loadTimeData.overrideValues({
+      tabOrganizationRefreshButtonEnabled: true,
+      rejectFinalSuggestion: rejectFinalSuggestion,
+    });
+
+    await tabOrganizationPageSetup();
+
+    testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
+        createSession({state: TabOrganizationState.kSuccess}));
+    await flushTasks();
+
+    assertEquals(0, testApiProxy.getCallCount('rejectTabOrganization'));
+
+    const results = tabOrganizationPage.shadowRoot!.querySelector(
+        'tab-organization-results');
+    assertTrue(!!results);
+    const refreshButton = results.shadowRoot!.querySelector('cr-button');
+    assertTrue(!!refreshButton);
+    assertTrue(refreshButton.innerHTML.includes(rejectFinalSuggestion));
+    refreshButton.click();
+    await flushTasks();
+
+    assertEquals(1, testApiProxy.getCallCount('rejectTabOrganization'));
+  });
+
+  test(
+      'Refresh button has different label for multiple suggestions',
+      async () => {
+        const rejectSuggestion = 'Refresh';
+
+        loadTimeData.overrideValues({
+          tabOrganizationRefreshButtonEnabled: true,
+          rejectSuggestion: rejectSuggestion,
+        });
+
+        await tabOrganizationPageSetup();
+
+        const multiOrganizationSession = {
+          sessionId: 1,
+          state: TabOrganizationState.kSuccess,
+          organizations: [
+            {
+              organizationId: 1,
+              name: stringToMojoString16('foo'),
+              tabs: [
+                createTab({title: 'Tab 1', url: {url: 'https://tab-1.com/'}}),
+                createTab({title: 'Tab 2', url: {url: 'https://tab-2.com/'}}),
+                createTab({title: 'Tab 3', url: {url: 'https://tab-3.com/'}}),
+              ],
+            },
+            {
+              organizationId: 2,
+              name: stringToMojoString16('bar'),
+              tabs: [
+                createTab({title: 'Tab 4', url: {url: 'https://tab-4.com/'}}),
+                createTab({title: 'Tab 5', url: {url: 'https://tab-5.com/'}}),
+                createTab({title: 'Tab 6', url: {url: 'https://tab-6.com/'}}),
+              ],
+            },
+          ],
+          error: TabOrganizationError.kNone,
+        };
+
+        testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
+            multiOrganizationSession);
+        await flushTasks();
+
+        const results = tabOrganizationPage.shadowRoot!.querySelector(
+            'tab-organization-results');
+        assertTrue(!!results);
+        const refreshButton = results.shadowRoot!.querySelector('cr-button');
+        assertTrue(!!refreshButton);
+        assertTrue(refreshButton.innerHTML.includes(rejectSuggestion));
+      });
+
   test('Sync required for organization', async () => {
     const syncInfo: SyncInfo = {
       syncing: false,

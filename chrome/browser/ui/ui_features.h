@@ -143,6 +143,8 @@ extern const base::FeatureParam<double> kTabOrganizationTriggerBackoffBase;
 // The minimum score threshold for proactive nudge triggering to occur.
 extern const base::FeatureParam<double> kTabOrganizationTriggerThreshold;
 
+BASE_DECLARE_FEATURE(kTabOrganizationRefreshButton);
+
 BASE_DECLARE_FEATURE(kTabSearchChevronIcon);
 
 BASE_DECLARE_FEATURE(kTabSearchFeedback);

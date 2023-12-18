@@ -1,7 +1,6 @@
 <style include="mwb-shared-style tab-organization-shared-style">
   cr-button {
-    align-self: flex-end;
-    margin: 16px 16px 0 16px;
+    margin-top: 16px;
     width: fit-content;
   }
 
@@ -20,6 +19,13 @@
     --cr-input-border: 2px solid var(--cr-focus-outline-color);
     --cr-input-padding-bottom: 8px;
     --cr-input-padding-top: 8px;
+  }
+
+  .button-row {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+    margin: 0 16px;
   }
 
   .feedback {
@@ -74,9 +80,16 @@
           </tab-search-item>
         </template>
       </iron-selector>
-      <cr-button class="action-button" on-click="onCreateGroupClick_">
-        $i18n{createGroup}
-      </cr-button>
+      <div class="button-row">
+        <template is="dom-if" if="[[showRefresh_]]">
+          <cr-button class="tonal-button" on-click="onRefreshClick_">
+            [[getRefreshButtonText_(isLastOrganization)]]
+          </cr-button>
+        </template>
+        <cr-button class="action-button" on-click="onCreateGroupClick_">
+          $i18n{createGroup}
+        </cr-button>
+      </div>
     </div>
   </div>
   <div class="feedback">
