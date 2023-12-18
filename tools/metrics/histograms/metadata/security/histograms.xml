@@ -292,7 +292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.JSONParser.ParsingTime" units="microseconds"
-    expires_after="M120">
+    expires_after="M124">
   <owner>djmitche@chromium.org</owner>
   <owner>chrome-platform-security@google.com</owner>
   <summary>
@@ -306,6 +306,8 @@ chromium-metrics-reviews@google.com.
     mostly interested in comparing C++ vs Rust and it seems okay to assume that
     such comparison would give similar results for the filtered and non-filtered
     population.
+
+    Data for this metric is missing before M122.
   </summary>
 </histogram>
 
