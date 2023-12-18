@@ -8,6 +8,7 @@
     --search-engine-omnibox-shadow-color: var(--google-grey-300);
     --scrollbar-height: 116px;
     --action-button-margins: 40px;
+    --omnibox-width: 252px;
     color: var(--cr-primary-text-color);
   }
 
@@ -72,7 +73,7 @@
     flex-direction: row;
     gap: 12px;
     padding: var(--dummy-omnibox-vertical-padding) 0;
-    width: 230px;
+    width: var(--omnibox-width);
   }
 
   /* We modify the bottom and transform parameters so that the
@@ -92,7 +93,7 @@
     opacity: 0;
     position: absolute;
     transform: translateY(var(--search-engine-omnibox-bottom-value));
-    width: 234px;
+    width: var(--omnibox-width);
   }
 
   .fade-in-animation {
@@ -145,7 +146,7 @@
   .omnibox-text,
   .choice-title {
     font-family: Roboto, Arial;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     font-weight: 400;
     line-height: 20px;
     text-align: start;
@@ -274,12 +275,6 @@
       opacity: 0;
       top: 30px;
       transform: rotate(5deg);
-    }
-
-    /* To add a bouncing effect. */
-    90% {
-      top: -9%;
-      transform: translateY(0);
     }
 
     100% {
