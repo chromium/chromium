@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/types/strong_alias.h"
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
@@ -21,6 +22,9 @@
 
 namespace supervised_user {
 
+using FamilyIdentifier =
+    base::StrongAlias<class FamilyIdentifierTag, std::string>;
+
 // A LiveTest which assumes a specific structure of provided test accounts,
 // which are forming a family:
 // * head of household,
@@ -29,7 +33,12 @@ class FamilyLiveTest : public signin::test::LiveTest {
  public:
   FamilyLiveTest();
   // Navigation will be allowed to extra hosts.
-  explicit FamilyLiveTest(const std::vector<std::string>& extra_enabled_hosts);
+  explicit FamilyLiveTest(FamilyIdentifier family_identifier);
+  // The provided family identifier will be used to select the test accounts.
+  // Navigation will be allowed to extra hosts.
+  FamilyLiveTest(FamilyIdentifier family_identifier,
+                 const std::vector<std::string>& extra_enabled_hosts);
+
   ~FamilyLiveTest() override;
 
   // Turns on sync and closes auxiliary tabs.
@@ -44,8 +53,16 @@ class FamilyLiveTest : public signin::test::LiveTest {
   // explicitly added to `extra_enabled_hosts`.
   GURL GetRoutedUrl(std::string_view url_spec) const;
 
-  FamilyMember& head_of_household() { return *head_of_household_; }
-  FamilyMember& child() { return *child_; }
+  FamilyMember& head_of_household() {
+    CHECK(head_of_household_) << "No head of household found in family: " +
+                                     std::string(family_identifier_->data());
+    return *head_of_household_;
+  }
+  FamilyMember& child() {
+    CHECK(child_) << "No child found in family: " +
+                         std::string(family_identifier_->data());
+    return *child_;
+  }
 
  private:
   base::test::ScopedFeatureList features{
@@ -53,12 +70,15 @@ class FamilyLiveTest : public signin::test::LiveTest {
 
   // Extracts requested account, which must exist.
   signin::test::TestAccount GetTestAccount(std::string_view account_name) const;
+  // Checks if test account exists.
+  bool TestAccountExists(std::string_view account_name) const;
 
   // Creates a new browser signed in to the specified account, which must
   // exist.
   std::unique_ptr<FamilyMember> MakeSignedInBrowser(
       std::string_view account_name);
 
+  FamilyIdentifier family_identifier_;
   std::unique_ptr<FamilyMember> head_of_household_;
   std::unique_ptr<FamilyMember> child_;
 

@@ -29,10 +29,10 @@ namespace supervised_user {
 namespace {
 
 // List of accounts specified in
-// chrome/browser/internal/resources/signin/test_accounts.json
+// chrome/browser/internal/resources/signin/test_accounts.json.
 static constexpr std::string_view kHeadOfHouseholdAccountId{
-    "FAMILY_HEAD_OF_HOUSEHOLD"};
-static constexpr std::string_view kChildAccountId{"FAMILY_CHILD_1"};
+    "HEAD_OF_HOUSEHOLD"};
+static constexpr std::string_view kChildAccountId{"CHILD_1"};
 
 Profile& CreateNewProfile() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -41,12 +41,21 @@ Profile& CreateNewProfile() {
   return profiles::testing::CreateProfileSync(profile_manager, profile_path);
 }
 
+std::string GetFamilyMemberIdentifier(FamilyIdentifier family_identifier,
+                                      std::string_view member_identifier) {
+  return family_identifier.value() + "_" + std::string(member_identifier);
+}
+
 }  // namespace
 
 FamilyLiveTest::FamilyLiveTest() = default;
+FamilyLiveTest::FamilyLiveTest(FamilyIdentifier family_identifier)
+    : family_identifier_(family_identifier) {}
 FamilyLiveTest::FamilyLiveTest(
+    FamilyIdentifier famiy_identifier,
     const std::vector<std::string>& extra_enabled_hosts)
-    : extra_enabled_hosts_(extra_enabled_hosts) {}
+    : family_identifier_(famiy_identifier),
+      extra_enabled_hosts_(extra_enabled_hosts) {}
 FamilyLiveTest::~FamilyLiveTest() = default;
 
 /* static */ void FamilyLiveTest::TurnOnSyncFor(FamilyMember& member) {
@@ -67,8 +76,10 @@ void FamilyLiveTest::SetUp() {
 void FamilyLiveTest::SetUpOnMainThread() {
   signin::test::LiveTest::SetUpOnMainThread();
 
-  child_ = MakeSignedInBrowser(kChildAccountId);
-  head_of_household_ = MakeSignedInBrowser(kHeadOfHouseholdAccountId);
+  child_ = MakeSignedInBrowser(
+      GetFamilyMemberIdentifier(family_identifier_, kChildAccountId));
+  head_of_household_ = MakeSignedInBrowser(
+      GetFamilyMemberIdentifier(family_identifier_, kHeadOfHouseholdAccountId));
 }
 
 void FamilyLiveTest::SetUpInProcessBrowserTestFixture() {
@@ -86,8 +97,17 @@ signin::test::TestAccount FamilyLiveTest::GetTestAccount(
   return account;
 }
 
+bool FamilyLiveTest::TestAccountExists(std::string_view account_name) const {
+  signin::test::TestAccount account;
+  return GetTestAccountsUtil()->GetAccount(std::string(account_name), account);
+}
+
 std::unique_ptr<FamilyMember> FamilyLiveTest::MakeSignedInBrowser(
     std::string_view account_name) {
+  if (!TestAccountExists(std::string(account_name))) {
+    return nullptr;
+  }
+
   // Managed externally to the test fixture.
   Profile& profile = CreateNewProfile();
   Browser* browser = CreateBrowser(&profile);

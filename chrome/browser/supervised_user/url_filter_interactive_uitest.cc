@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/strong_alias.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/supervised_user/family_live_test.h"
@@ -25,10 +26,13 @@ static constexpr std::string_view kPermissionRequestUrl =
 
 // TODO(b/303401498): Use dedicated RPCs in supervised user e2e desktop tests
 // instead of clicking around the pages.
-class UrlFilterUiTest : public InteractiveBrowserTestT<FamilyLiveTest> {
+class UrlFilterUiTest
+    : public InteractiveBrowserTestT<FamilyLiveTest>,
+      public testing::WithParamInterface<supervised_user::FamilyIdentifier> {
  public:
   UrlFilterUiTest()
       : InteractiveBrowserTestT<FamilyLiveTest>(
+            /*family_identifier=*/GetParam(),
             /*extra_enabled_hosts=*/std::vector<std::string>(
                 {"example.com", "www.pornhub.com"})) {}
 
@@ -163,7 +167,7 @@ class UrlFilterUiTest : public InteractiveBrowserTestT<FamilyLiveTest> {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentBlocksPage) {
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentControlsTab);
 
@@ -200,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentBlocksPage) {
       WaitForStateChange(kChildElementId, RemoteApprovalButtonAppeared()));
 }
 
-IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentControlsTab);
 
@@ -236,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Pornhub")));
 }
 
-IN_PROC_BROWSER_TEST_F(UrlFilterUiTest,
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
                        ParentAprovesPermissionRequestForBlockedSite) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentControlsTab);
@@ -285,6 +289,13 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest,
       ParentApprovesPermissionRequest(kParentApprovalTab),
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Pornhub")));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    UrlFilterUiTest,
+    // TODO(b/315794138): Add the rest of DMA-configured accounts.
+    testing::Values(supervised_user::FamilyIdentifier("FAMILY")),
+    [](const auto& info) { return info.param->data(); });
 
 }  // namespace
 }  // namespace supervised_user
