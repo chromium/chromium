@@ -54,6 +54,15 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
                  @"Expected Autofill profile to be present");
 }
 
+void ClearRelevantData() {
+  [BookmarkEarlGrey clearBookmarks];
+
+  [ChromeEarlGrey clearFakeSyncServerData];
+  WaitForEntitiesOnFakeServer(0, syncer::AUTOFILL_PROFILE);
+  WaitForEntitiesOnFakeServer(0, syncer::BOOKMARKS);
+  WaitForEntitiesOnFakeServer(0, syncer::HISTORY);
+}
+
 }  // namespace
 
 // Hermetic sync tests, which use the fake sync server.
@@ -62,29 +71,27 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
 
 @implementation SyncFakeServerTestCase
 
-- (void)tearDown {
++ (void)setUpForTestCase {
+  [super setUpForTestCase];
+
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [BookmarkEarlGrey clearBookmarks];
 
-  [ChromeEarlGrey clearFakeSyncServerData];
-
-  WaitForEntitiesOnFakeServer(0, syncer::AUTOFILL_PROFILE);
-  WaitForEntitiesOnFakeServer(0, syncer::BOOKMARKS);
-  WaitForEntitiesOnFakeServer(0, syncer::HISTORY);
-
-  [super tearDown];
+  // Normally there shouldn't be any data (locally or on the fake server) at
+  // this point, but just in case some other test case didn't clean up after
+  // itself, clear everything here.
+  ClearRelevantData();
 }
 
 - (void)setUp {
   [super setUp];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+}
 
-  [ChromeEarlGrey clearFakeSyncServerData];
+- (void)tearDown {
+  ClearRelevantData();
 
-  WaitForEntitiesOnFakeServer(0, syncer::AUTOFILL_PROFILE);
-  WaitForEntitiesOnFakeServer(0, syncer::BOOKMARKS);
-  WaitForEntitiesOnFakeServer(0, syncer::HISTORY);
+  [super tearDown];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
