@@ -105,6 +105,13 @@ bool AutomationTestUtils::NodeExistsNoWait(const std::string& name,
   return script_result == "true";
 }
 
+void AutomationTestUtils::DoDefault(const std::string& name,
+                                    const std::string& role) {
+  ExecuteScriptInExtensionPage(base::StringPrintf(
+      R"JS(globalThis.automationTestSupport.doDefault(`%s`, `%s`))JS",
+      name.c_str(), role.c_str()));
+}
+
 void AutomationTestUtils::WaitForTextSelectionChangedEvent() {
   std::string script = R"(
     globalThis.automationTestSupport.waitForTextSelectionChangedEvent();

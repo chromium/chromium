@@ -101,6 +101,21 @@ class AutomationTestSupport {
   }
 
   /**
+   * Does the default action on the node with the given `name` and `role` after
+   * waiting for that node to exist.
+   * @param {string} name
+   * @param {string} role
+   */
+  doDefault(name, role) {
+    const findParams = {role, attributes: {name}};
+    const node = this.desktop_.find(findParams);
+    if (node) {
+      node.doDefault();
+      this.notifyCcTests_('ready');
+    }
+  }
+
+  /**
    * @param {chrome.automation.FindParams} findParams
    * @private
    */

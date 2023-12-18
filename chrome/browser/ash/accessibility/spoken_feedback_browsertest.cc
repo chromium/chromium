@@ -34,6 +34,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
@@ -940,6 +941,38 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenStatusTray) {
   sm_.ExpectSpeech("Quick Settings");
 
   sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenSettingsFromPanel) {
+  EnableChromeVox();
+
+  AutomationTestUtils test_utils(extension_misc::kChromeVoxExtensionId);
+  sm_.Call([&test_utils]() { test_utils.SetUpTestSupport(); });
+
+  base::RunLoop waiter;
+  AccessibilityManager::Get()->SetOpenSettingsSubpageObserverForTest(
+      base::BindLambdaForTesting([&waiter]() { waiter.Quit(); }));
+
+  // Find the settings button in the panel.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_OEM_PERIOD); });
+  sm_.ExpectSpeech("Search the menus");
+  sm_.Call([this]() {
+    SendKeyPress(ui::VKEY_TAB);
+    SendKeyPress(ui::VKEY_TAB);
+  });
+  sm_.ExpectSpeech("ChromeVox Menus collapse");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_TAB); });
+  sm_.ExpectSpeech("ChromeVox Options");
+
+  // TODO(b/316916793): We cannot click this button with ChromeVox directly, so
+  // using test utils for now.
+  sm_.Call(
+      [&test_utils]() { test_utils.DoDefault("ChromeVox Options", "button"); });
+
+  sm_.Replay();
+
+  // We should have tried to open the settings subpage.
+  waiter.Run();
 }
 
 // Fails on ASAN. See http://crbug.com/776308 . (Note MAYBE_ doesn't work well

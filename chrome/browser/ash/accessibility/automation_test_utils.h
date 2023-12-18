@@ -61,6 +61,9 @@ class AutomationTestUtils {
   // node does not exist.
   bool NodeExistsNoWait(const std::string& name, const std::string& role);
 
+  // Does the default action on the node with `name` and `role`.
+  void DoDefault(const std::string& name, const std::string& role);
+
   // Various event waiters. This is the automation equivalent of
   // AccessibilityNotificationWaiter.
 
