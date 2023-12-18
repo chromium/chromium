@@ -244,8 +244,7 @@ LoopbackServer::LoopbackServer(const base::FilePath& persistent_file)
 }
 
 LoopbackServer::~LoopbackServer() {
-  if (writer_.HasPendingWrite())
-    writer_.DoScheduledWrite();
+  FlushToDisk();
 }
 
 void LoopbackServer::Init() {
@@ -392,6 +391,12 @@ void LoopbackServer::EnableStrongConsistencyWithConflictDetectionModel() {
 
 void LoopbackServer::AddNewKeystoreKeyForTesting() {
   keystore_keys_.push_back(GenerateNewKeystoreKey());
+}
+
+void LoopbackServer::FlushToDisk() {
+  if (writer_.HasPendingWrite()) {
+    writer_.DoScheduledWrite();
+  }
 }
 
 bool LoopbackServer::HandleGetUpdatesRequest(

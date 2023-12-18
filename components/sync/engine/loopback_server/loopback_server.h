@@ -99,6 +99,8 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
       base::RepeatingCallback<sync_pb::CommitResponse::ResponseType(
           const LoopbackServerEntity& entity)>;
 
+  void FlushToDisk();
+
   // ImportantFileWriter::DataSerializer:
   absl::optional<std::string> SerializeData() override;
 

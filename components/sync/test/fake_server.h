@@ -268,6 +268,11 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   void OverrideResponseType(
       syncer::LoopbackServer::ResponseTypeProvider response_type_override);
 
+  // Performs any pending disk write immediately. This is useful on platforms
+  // where shutdown isn't graceful, and this object may not be destructed
+  // properly (otherwise, the destructor takes care of this automatically).
+  void FlushToDisk();
+
  private:
   // Analogous to HandleCommand() but deals with parsed protos.
   net::HttpStatusCode HandleParsedCommand(

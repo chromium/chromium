@@ -114,6 +114,11 @@ void ClearFakeSyncServerData() {
   }
 }
 
+void FlushFakeSyncServerToDisk() {
+  DCHECK(gSyncFakeServer);
+  gSyncFakeServer->FlushToDisk();
+}
+
 void TriggerSyncCycle(syncer::ModelType type) {
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();

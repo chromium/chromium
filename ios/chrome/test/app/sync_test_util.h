@@ -38,6 +38,11 @@ void TearDownFakeSyncServer();
 // nothing.
 void ClearFakeSyncServerData();
 
+// Ensures that all of the FakeServer's data is persisted to disk. This is
+// useful before app restarts, where otherwise the FakeServer may not get to do
+// its usual on-destruction flush.
+void FlushFakeSyncServerToDisk();
+
 // Triggers a sync cycle for a `type`.
 void TriggerSyncCycle(syncer::ModelType type);
 

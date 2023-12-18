@@ -1013,6 +1013,10 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
   chrome_test_util::ClearFakeSyncServerData();
 }
 
++ (void)flushFakeSyncServerToDisk {
+  chrome_test_util::FlushFakeSyncServerToDisk();
+}
+
 + (NSError*)verifyNumberOfSyncEntitiesWithType:(NSUInteger)type
                                           name:(NSString*)name
                                          count:(NSUInteger)count {
