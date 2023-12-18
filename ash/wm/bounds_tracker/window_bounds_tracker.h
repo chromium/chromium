@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chromeos/ui/base/display_util.h"
 #include "ui/aura/window_observer.h"
@@ -57,6 +58,11 @@ class WindowBoundsTracker : public aura::WindowObserver,
   // host display is the display that was just added.
   void MaybeRestoreWindowsOnDisplayAdded();
 
+  // Updates the window's `displays_with_window_user_assigned_bounds` on the
+  // given `bounds_changed_by_user`.
+  void SetWindowBoundsChangedByUser(aura::Window* window,
+                                    bool bounds_changed_by_user);
+
  private:
   // This defines the key of the window bounds database that stores the window's
   // bounds in each display configuration. It tracks the display's change,
@@ -87,7 +93,41 @@ class WindowBoundsTracker : public aura::WindowObserver,
     gfx::Rect local_work_area;
   };
 
-  using WindowBoundsMap = base::flat_map<WindowDisplayInfo, gfx::Rect>;
+  struct WindowBoundsInfo {
+    WindowBoundsInfo(const gfx::Rect& given_bounds_in_parent,
+                     bool given_is_restore_bounds);
+    WindowBoundsInfo(const WindowBoundsInfo&) = default;
+    WindowBoundsInfo& operator=(const WindowBoundsInfo&) = default;
+    ~WindowBoundsInfo() = default;
+
+    gfx::Rect bounds_in_parent;
+    // True if the stored `bounds_in_parent` is a restore bounds, which means a
+    // user-assigned bounds. And the window will be put back to this restore
+    // bounds directly instead of recalculation when being moved back to a
+    // display with the same `WindowDisplayInfo`.
+    bool is_restore_bounds;
+  };
+
+  // This defines all the info of a window stored in `bounds_database_`.
+  struct WindowBoundsEntry {
+    WindowBoundsEntry();
+    WindowBoundsEntry(WindowBoundsEntry&&);
+    WindowBoundsEntry& operator=(WindowBoundsEntry&&);
+    ~WindowBoundsEntry();
+
+    // Returns true if the window's current bounds should be stored as
+    // `is_restore_bounds` inside `WindowBoundsInfo`.
+    bool ShouldUseCurrentBoundsAsRestoreBounds(int64_t display_id) const;
+
+    // Includes the displays that the window's bounds there is a user-assigned
+    // bounds, which means the bounds is set by the user. See
+    // `WindowState::bounds_changed_by_user_` for more details.
+    base::flat_set<int64_t> displays_with_window_user_assigned_bounds;
+
+    // A map stores the window's bounds in each `WindowDisplayInfo` it has been
+    // there, which will be updated by `RemapOrRestore` on the window.
+    base::flat_map<WindowDisplayInfo, WindowBoundsInfo> window_bounds_map;
+  };
 
   // Stores the window's bounds in its current display for restoring the window
   // back to this display later. Calculates and stores the window's remapping
@@ -106,12 +146,16 @@ class WindowBoundsTracker : public aura::WindowObserver,
   void RemapOrRestore(aura::Window* window, int64_t target_display_id);
 
   // Updates the window's bounds stored in `bounds_database_` on the key
-  // `window_display_info` to the given `bounds`. Returns the bounds database of
-  // `window` stored in `bounds_database_`.
-  WindowBoundsMap& UpdateBoundsDatabaseOfWindow(
+  // `window_display_info`. `is_current_bounds` is true if the given `bounds` is
+  // the window's current bounds, only update it to the database if it is a
+  // restore bounds. If the given bounds is not window's current bounds, which
+  // means it is calculated by the system for future use, always update it to
+  // the database.
+  WindowBoundsEntry& UpdateBoundsDatabaseOfWindow(
       aura::Window* window,
       const WindowDisplayInfo& window_display_info,
-      const gfx::Rect& bounds);
+      const gfx::Rect& bounds,
+      bool is_current_bounds);
 
   // Stores the window's host display id when removing its host display, which
   // will be used to restore the window when its host display being reconnected
@@ -123,12 +167,17 @@ class WindowBoundsTracker : public aura::WindowObserver,
   raw_ptr<aura::Window, ExperimentalAsh> moving_window_between_displays_ =
       nullptr;
 
+  // True if restoring a window back to its host display on display
+  // reconnection. Will be used to see whether remapping or restoring should be
+  // triggered on the window on this root window changes.
+  bool is_restoring_window_on_display_added_ = false;
+
   // TODO: Figure out how we can redesign this data structure, then extra data
   // structures like `window_to_display_map_` above can be removed.
   // The database that stores the window's bounds in each display configuration.
   // `WindowDisplayInfo` defines the display configuration changes that we are
   // tracking. Note: stored window bounds are in parent coordinates.
-  std::unordered_map<aura::Window*, WindowBoundsMap> bounds_database_;
+  std::unordered_map<aura::Window*, WindowBoundsEntry> bounds_database_;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};

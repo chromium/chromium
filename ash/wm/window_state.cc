@@ -18,6 +18,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/wm/bounds_tracker/window_bounds_tracker.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/default_state.h"
 #include "ash/wm/float/float_controller.h"
@@ -713,6 +714,11 @@ void WindowState::SetBoundsChangedByUser(bool bounds_changed_by_user) {
     pre_added_to_workspace_window_bounds_.reset();
     persistent_window_info_of_display_removal_.reset();
     persistent_window_info_of_screen_rotation_.reset();
+  }
+
+  if (auto* window_bounds_tracker = Shell::Get()->window_bounds_tracker()) {
+    window_bounds_tracker->SetWindowBoundsChangedByUser(window_,
+                                                        bounds_changed_by_user);
   }
 }
 
