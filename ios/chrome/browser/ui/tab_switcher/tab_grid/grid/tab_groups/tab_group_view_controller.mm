@@ -5,21 +5,30 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_view_controller.h"
 
 #import "base/check.h"
+#import "base/i18n/time_formatting.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 constexpr CGFloat kColoredDotSize = 20;
+constexpr CGFloat kDotSeparationSize = 4;
 constexpr CGFloat kTitleHorizontalMargin = 16;
 constexpr CGFloat kTitleVerticalMargin = 10;
-constexpr CGFloat kLeftMargin = 9;
-constexpr CGFloat kFullTitleTopMargin = 24;
+constexpr CGFloat kHorizontalMargin = 9;
+constexpr CGFloat kPrimaryTitleMargin = 24;
 constexpr CGFloat kDotTitleSeparationMargin = 8;
 constexpr CGFloat kBackgroundAlpha = 0.6;
+constexpr CGFloat kSubTitleHorizontalPadding = 7;
+constexpr CGFloat kThreeDotButtonSize = 19;
+constexpr CGFloat kTitleBackgroundCornerRadius = 17;
 }  // namespace
 
 @interface TabGroupViewController () <UINavigationBarDelegate>
@@ -67,7 +76,26 @@ constexpr CGFloat kBackgroundAlpha = 0.6;
   }
 
   [self configureNavigationBar];
-  [self configurePrimaryTitle];
+  UIView* primaryTitle = [self configuredPrimaryTitle];
+  UIView* secondaryTitle = [self configuredSubTitle];
+
+  [self.view addSubview:primaryTitle];
+  [self.view addSubview:secondaryTitle];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [primaryTitle.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
+                                               constant:kHorizontalMargin],
+    [primaryTitle.topAnchor constraintEqualToAnchor:_navigationBar.bottomAnchor
+                                           constant:kPrimaryTitleMargin],
+    [secondaryTitle.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor
+                       constant:kHorizontalMargin],
+    [secondaryTitle.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor
+                       constant:-kHorizontalMargin],
+    [secondaryTitle.topAnchor constraintEqualToAnchor:primaryTitle.bottomAnchor
+                                             constant:kPrimaryTitleMargin],
+  ]];
 }
 
 - (void)didTapPlusButton {
@@ -192,13 +220,13 @@ constexpr CGFloat kBackgroundAlpha = 0.6;
   return titleLabel;
 }
 
-// Configures the full primary title (colored dot and text title).
-- (void)configurePrimaryTitle {
+// Returns the configured full primary title (colored dot and text title).
+- (UIView*)configuredPrimaryTitle {
   UIView* fullTitleView = [[UIView alloc] initWithFrame:CGRectZero];
   fullTitleView.translatesAutoresizingMaskIntoConstraints = NO;
   fullTitleView.backgroundColor =
       [[UIColor colorNamed:kSolidWhiteColor] colorWithAlphaComponent:0.1];
-  fullTitleView.layer.cornerRadius = 17;
+  fullTitleView.layer.cornerRadius = kTitleBackgroundCornerRadius;
   fullTitleView.opaque = NO;
 
   UIView* coloredDotView = [self groupColorDotView];
@@ -206,18 +234,12 @@ constexpr CGFloat kBackgroundAlpha = 0.6;
   [fullTitleView addSubview:coloredDotView];
   [fullTitleView addSubview:titleView];
 
-  [self.view addSubview:fullTitleView];
-
   [NSLayoutConstraint activateConstraints:@[
     [titleView.leadingAnchor
         constraintEqualToAnchor:coloredDotView.trailingAnchor
                        constant:kDotTitleSeparationMargin],
     [coloredDotView.centerYAnchor
         constraintEqualToAnchor:titleView.centerYAnchor],
-    [fullTitleView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
-                                                constant:kLeftMargin],
-    [fullTitleView.topAnchor constraintEqualToAnchor:_navigationBar.bottomAnchor
-                                            constant:kFullTitleTopMargin],
     [coloredDotView.leadingAnchor
         constraintEqualToAnchor:fullTitleView.leadingAnchor
                        constant:kTitleHorizontalMargin],
@@ -229,6 +251,96 @@ constexpr CGFloat kBackgroundAlpha = 0.6;
     [fullTitleView.bottomAnchor constraintEqualToAnchor:titleView.bottomAnchor
                                                constant:kTitleVerticalMargin],
   ]];
+  return fullTitleView;
+}
+
+// Returns the string with give the current number of tabs in the group.
+- (NSString*)numberOfTabsString {
+  // TODO(crbug.com/1501837): Configure the string with the real number of
+  // items.
+  return l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER, 1);
+}
+
+// Returns the string which give information about the creation date.
+- (NSString*)creationDateString {
+  NSString* dateString = base::SysUTF16ToNSString(
+      base::LocalizedTimeFormatWithPattern(_groupCreationDate, "YYYY/MM/dd"));
+  return l10n_util::GetNSStringF(IDS_IOS_TAB_GROUP_CREATION_DATE,
+                                 base::SysNSStringToUTF16(dateString));
+}
+
+// Returns the configured sub titles view.
+- (UIView*)configuredSubTitle {
+  UIView* subTitleView = [[UIView alloc] initWithFrame:CGRectZero];
+  subTitleView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UITraitCollection* interfaceStyleDarkTraitCollection = [UITraitCollection
+      traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark];
+  UIColor* textColor = [[UIColor colorNamed:kTextSecondaryColor]
+      resolvedColorWithTraitCollection:interfaceStyleDarkTraitCollection];
+
+  UILabel* numberOfTabsLabel = [[UILabel alloc] init];
+  numberOfTabsLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  numberOfTabsLabel.textColor = textColor;
+  numberOfTabsLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  numberOfTabsLabel.text = [self numberOfTabsString];
+
+  UILabel* creationDateLabel = [[UILabel alloc] init];
+  creationDateLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  creationDateLabel.textColor = textColor;
+  creationDateLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  creationDateLabel.text = [self creationDateString];
+
+  UIView* dotSeparation = [[UIView alloc] initWithFrame:CGRectZero];
+  dotSeparation.translatesAutoresizingMaskIntoConstraints = NO;
+  dotSeparation.layer.backgroundColor = textColor.CGColor;
+  dotSeparation.layer.cornerRadius = kDotSeparationSize / 2;
+
+  // TODO(crbug.com/1501837): Add action to the button.
+  UIButton* menuButton = [[UIButton alloc] init];
+  menuButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [menuButton
+      setImage:DefaultSymbolWithPointSize(kMenuSymbol, kThreeDotButtonSize)
+      forState:UIControlStateNormal];
+  menuButton.tintColor = [UIColor colorNamed:kSolidWhiteColor];
+
+  [subTitleView addSubview:numberOfTabsLabel];
+  [subTitleView addSubview:dotSeparation];
+  [subTitleView addSubview:creationDateLabel];
+  [subTitleView addSubview:menuButton];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [numberOfTabsLabel.leadingAnchor
+        constraintEqualToAnchor:subTitleView.leadingAnchor
+                       constant:kSubTitleHorizontalPadding],
+    [numberOfTabsLabel.topAnchor
+        constraintEqualToAnchor:subTitleView.topAnchor],
+    [subTitleView.heightAnchor
+        constraintEqualToAnchor:numberOfTabsLabel.heightAnchor],
+    [dotSeparation.leadingAnchor
+        constraintEqualToAnchor:numberOfTabsLabel.trailingAnchor
+                       constant:kDotTitleSeparationMargin],
+    [dotSeparation.centerYAnchor
+        constraintEqualToAnchor:numberOfTabsLabel.centerYAnchor],
+    [dotSeparation.heightAnchor constraintEqualToConstant:kDotSeparationSize],
+    [dotSeparation.widthAnchor constraintEqualToConstant:kDotSeparationSize],
+    [creationDateLabel.leadingAnchor
+        constraintEqualToAnchor:dotSeparation.trailingAnchor
+                       constant:kDotTitleSeparationMargin],
+    [creationDateLabel.centerYAnchor
+        constraintEqualToAnchor:numberOfTabsLabel.centerYAnchor],
+    [menuButton.trailingAnchor
+        constraintEqualToAnchor:subTitleView.trailingAnchor
+                       constant:-kSubTitleHorizontalPadding],
+    [menuButton.centerYAnchor
+        constraintEqualToAnchor:numberOfTabsLabel.centerYAnchor],
+    [creationDateLabel.trailingAnchor
+        constraintLessThanOrEqualToAnchor:menuButton.leadingAnchor],
+  ]];
+
+  return subTitleView;
 }
 
 @end
