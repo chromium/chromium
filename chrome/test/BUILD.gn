@@ -7824,6 +7824,7 @@ if (!is_fuchsia) {
         "../browser/ui/commander/entity_match_unittest.cc",
         "../browser/ui/commander/fuzzy_finder_unittest.cc",
         "../browser/ui/commerce/commerce_ui_tab_helper_unittest.cc",
+        "../browser/ui/commerce/price_tracking_page_action_controller_unittest.cc",
         "../browser/ui/content_settings/content_setting_bubble_model_unittest.cc",
         "../browser/ui/content_settings/content_setting_image_model_unittest.cc",
         "../browser/ui/exclusive_access/fullscreen_controller_state_unittest.cc",

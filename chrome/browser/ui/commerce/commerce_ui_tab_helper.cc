@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/commerce/commerce_page_action_controller.h"
+#include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
@@ -56,36 +58,6 @@ END_METADATA
 namespace commerce {
 
 namespace {
-constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("shopping_list_ui_image_fetcher",
-                                        R"(
-        semantics {
-          sender: "Product image fetcher for the shopping list feature."
-          description:
-            "Retrieves the image for a product that is displayed on the active "
-            "web page. This will be shown to the user as part of the "
-            "bookmarking or price tracking action."
-          trigger:
-            "On navigation, if the URL of the page is determined to be a "
-            "product that can be price tracked, we will attempt to fetch the "
-            "image for it."
-          data:
-            "An image of a product that can be price tracked."
-          destination: WEBSITE
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "This fetch is enabled for any user with the 'Shopping List' "
-            "feature enabled."
-          chrome_policy {
-            ShoppingListEnabled {
-              policy_options {mode: MANDATORY}
-              ShoppingListEnabled: true
-            }
-          }
-        })");
-
 constexpr char kImageFetcherUmaClient[] = "ShoppingList";
 
 // price tracking chip (assuming price insights isn't expanded).
@@ -342,7 +314,7 @@ void CommerceUiTabHelper::MaybeDoProductImageFetch(
       info.value().image_url,
       base::BindOnce(&CommerceUiTabHelper::HandleImageFetcherResponse,
                      weak_ptr_factory_.GetWeakPtr(), info.value().image_url),
-      image_fetcher::ImageFetcherParams(kTrafficAnnotation,
+      image_fetcher::ImageFetcherParams(kShoppingListTrafficAnnotation,
                                         kImageFetcherUmaClient));
 }
 
