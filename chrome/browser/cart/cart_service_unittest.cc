@@ -117,10 +117,19 @@ MATCHER_P(EqualsProto, message, "") {
 constexpr char kFakeDataPrefix[] = "Fake:";
 const char kMockMerchantA[] = "foo.com";
 const char kMockMerchantURLA[] = "https://www.foo.com";
+const char kMockMerchantURLWithDiscountUtmA[] =
+    "https://www.foo.com/"
+    "?utm_source=chrome&utm_medium=app&utm_campaign=chrome-cart-discount-on";
+const char kMockMerchantURLWithNoDiscountUtmA[] =
+    "https://www.foo.com/"
+    "?utm_source=chrome&utm_medium=app&utm_campaign=chrome-cart-discount-off";
 const char kMockMerchantB[] = "bar.com";
 const char kMockMerchantURLB[] = "https://www.bar.com";
 const char kMockMerchantC[] = "baz.com";
 const char kMockMerchantURLC[] = "https://www.baz.com";
+const char kMockMerchantURLWithCartUtmC[] =
+    "https://www.baz.com/"
+    "?utm_source=chrome&utm_medium=app&utm_campaign=chrome-cart";
 const char kNoDiscountMerchant[] = "nodiscount.com";
 const char kNoDiscountMerchantURL[] = "https://www.nodiscount.com";
 const char kProductURL[] = "https://www.product.com";
@@ -1711,9 +1720,6 @@ class CartServiceDiscountTest : public CartServiceTest {
     base::FieldTrialParams cart_params, coupon_params, code_based_rbd_param;
     cart_params[ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam] =
         "true";
-    cart_params
-        [ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam] =
-            "false";
 
     enabled_features.emplace_back(ntp_features::kNtpChromeCartModule,
                                   cart_params);
@@ -1844,14 +1850,14 @@ TEST_F(CartServiceDiscountTest, TestNoFetchForNonPartner) {
   base::RunLoop run_loop[2];
   SetCartDiscountURLForTesting(GURL("https://www.discount.com"), false);
   cart_db::ChromeCartContentProto cart_proto =
-      BuildProto(kMockMerchantB, kMockMerchantURLB);
+      BuildProto(kMockMerchantC, kMockMerchantURLC);
   service_->GetDB()->AddCart(
-      kMockMerchantB, cart_proto,
+      kMockMerchantC, cart_proto,
       base::BindOnce(&CartServiceTest::OperationEvaluation,
                      base::Unretained(this), run_loop[0].QuitClosure(), true));
   run_loop[0].Run();
 
-  GURL default_cart_url(kMockMerchantURLB);
+  GURL default_cart_url(kMockMerchantURLWithCartUtmC);
   service_->GetDiscountURL(
       default_cart_url,
       base::BindOnce(&CartServiceTest::GetEvaluationDiscountURL,
@@ -1874,7 +1880,7 @@ TEST_F(CartServiceDiscountTest, TestNoFetchWhenNoDiscount) {
                      base::Unretained(this), run_loop[0].QuitClosure()));
   run_loop[0].Run();
 
-  GURL default_cart_url(kMockMerchantURLA);
+  GURL default_cart_url(kMockMerchantURLWithDiscountUtmA);
   service_->GetDiscountURL(
       default_cart_url,
       base::BindOnce(&CartServiceTest::GetEvaluationDiscountURL,
@@ -1904,7 +1910,7 @@ TEST_F(CartServiceDiscountTest, TestNoFetchWhenFeatureDisabled) {
                      base::Unretained(this), run_loop[0].QuitClosure(), true));
   run_loop[0].Run();
 
-  GURL default_cart_url(kMockMerchantURLA);
+  GURL default_cart_url(kMockMerchantURLWithNoDiscountUtmA);
   service_->GetDiscountURL(
       default_cart_url,
       base::BindOnce(&CartServiceTest::GetEvaluationDiscountURL,
@@ -1932,7 +1938,7 @@ TEST_F(CartServiceDiscountTest, TestNoDiscountedURLFetchForCouponDiscount) {
                      base::Unretained(this), run_loop[0].QuitClosure(), true));
   run_loop[0].Run();
 
-  GURL default_cart_url(kMockMerchantURLA);
+  GURL default_cart_url(kMockMerchantURLWithDiscountUtmA);
   service_->GetDiscountURL(
       default_cart_url,
       base::BindOnce(&CartServiceTest::GetEvaluationDiscountURL,
@@ -1954,7 +1960,7 @@ TEST_F(CartServiceDiscountTest,
   GURL discount_url("https://www.discount.com");
   SetCartDiscountURLForTesting(discount_url, /*expect_call=*/false);
   cart_db::ChromeCartContentProto cart_proto = AddCouponDiscountToProto(
-      BuildProto(kMockMerchantA, kMockMerchantURLA), timestamp,
+      BuildProto(kMockMerchantA, kMockMerchantURLWithDiscountUtmA), timestamp,
       /*discount_text=*/"10% off", kMockMerchantADiscountPromoId);
   service_->GetDB()->AddCart(
       kMockMerchantA, cart_proto,
@@ -1970,7 +1976,7 @@ TEST_F(CartServiceDiscountTest,
                                      run_loop[1].QuitClosure(), expected));
   run_loop[1].Run();
 
-  GURL default_cart_url(kMockMerchantURLA);
+  GURL default_cart_url(kMockMerchantURLWithDiscountUtmA);
   service_->GetDiscountURL(
       default_cart_url,
       base::BindOnce(&CartServiceTest::GetEvaluationDiscountURL,
@@ -1987,7 +1993,7 @@ TEST_F(CartServiceDiscountTest,
 TEST_F(CartServiceDiscountTest, TestReturnDiscountURL) {
   base::RunLoop run_loop[4];
   const double timestamp = 1;
-  GURL discount_url("https://www.foo.com/discounted");
+  GURL discount_url(kMockMerchantURLWithDiscountUtmA);
   SetCartDiscountURLForTesting(discount_url, true);
   EXPECT_FALSE(service_->IsDiscountUsed(kMockMerchantADiscountRuleId));
   cart_db::ChromeCartContentProto cart_proto = AddDiscountToProto(
@@ -2042,7 +2048,7 @@ TEST_F(CartServiceDiscountTest, TestFetchInvalidFallback) {
                      base::Unretained(this), run_loop[0].QuitClosure(), true));
   run_loop[0].Run();
 
-  GURL default_cart_url(kMockMerchantURLA);
+  GURL default_cart_url(kMockMerchantURLWithDiscountUtmA);
   service_->GetDiscountURL(
       default_cart_url,
       base::BindOnce(&CartServiceTest::GetEvaluationDiscountURL,
@@ -2371,8 +2377,7 @@ class CartServiceCartURLUTMTest : public CartServiceTest {
     // if a feature is enabled.
     features_.InitAndEnableFeatureWithParameters(
         ntp_features::kNtpChromeCartModule,
-        {{ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"},
-         {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
+        {{ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam,
           "true"}});
   }
   void SetUp() override {
@@ -2394,50 +2399,36 @@ class CartServiceCartURLUTMTest : public CartServiceTest {
 
 TEST_F(CartServiceCartURLUTMTest, TestAppendUTMForPartnerMerchants) {
   EXPECT_FALSE(service_->IsCartDiscountEnabled());
-  EXPECT_EQ(GURL("https://"
-                 "www.foo.com?utm_source=chrome&utm_medium=app&utm_campaign="
-                 "chrome-cart-discount-off"),
+  EXPECT_EQ(GURL(kMockMerchantURLWithNoDiscountUtmA),
             service_->AppendUTM(GURL(kMockMerchantURLA)));
 
   profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
   EXPECT_TRUE(service_->IsCartDiscountEnabled());
-  EXPECT_EQ(GURL("https://"
-                 "www.foo.com?utm_source=chrome&utm_medium=app&utm_campaign="
-                 "chrome-cart-discount-on"),
+  EXPECT_EQ(GURL(kMockMerchantURLWithDiscountUtmA),
             service_->AppendUTM(GURL(kMockMerchantURLA)));
 }
 
 TEST_F(CartServiceCartURLUTMTest, TestAppendUTMForNonPartnerMerchants) {
   EXPECT_FALSE(service_->IsCartDiscountEnabled());
-  EXPECT_EQ(GURL("https://"
-                 "www.bar.com?utm_source=chrome&utm_medium=app&utm_campaign="
-                 "chrome-cart"),
-            service_->AppendUTM(GURL(kMockMerchantURLB)));
+  EXPECT_EQ(GURL(kMockMerchantURLWithCartUtmC),
+            service_->AppendUTM(GURL(kMockMerchantURLC)));
 
   profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
   EXPECT_TRUE(service_->IsCartDiscountEnabled());
-  EXPECT_EQ(GURL("https://"
-                 "www.bar.com?utm_source=chrome&utm_medium=app&utm_campaign="
-                 "chrome-cart"),
-            service_->AppendUTM(GURL(kMockMerchantURLB)));
+  EXPECT_EQ(GURL(kMockMerchantURLWithCartUtmC),
+            service_->AppendUTM(GURL(kMockMerchantURLC)));
 }
 
 TEST_F(CartServiceCartURLUTMTest, TestAppendUTMAvoidDuplicates) {
-  GURL merchantUrl = GURL("https://www.foo.com");
+  GURL merchantUrl = GURL(kMockMerchantURLA);
   EXPECT_FALSE(service_->IsCartDiscountEnabled());
   merchantUrl = service_->AppendUTM(GURL(merchantUrl));
-  EXPECT_EQ(GURL("https://"
-                 "www.foo.com?utm_source=chrome&utm_medium=app&utm_campaign="
-                 "chrome-cart-discount-off"),
-            merchantUrl);
+  EXPECT_EQ(GURL(kMockMerchantURLWithNoDiscountUtmA), merchantUrl);
 
   profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
   EXPECT_TRUE(service_->IsCartDiscountEnabled());
   merchantUrl = service_->AppendUTM(GURL(merchantUrl));
-  EXPECT_EQ(GURL("https://"
-                 "www.foo.com?utm_source=chrome&utm_medium=app&utm_campaign="
-                 "chrome-cart-discount-on"),
-            merchantUrl);
+  EXPECT_EQ(GURL(kMockMerchantURLWithDiscountUtmA), merchantUrl);
 }
 
 class FakeFetchDiscountWorker : public FetchDiscountWorker {

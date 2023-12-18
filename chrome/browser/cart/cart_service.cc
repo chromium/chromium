@@ -25,6 +25,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_heuristics_data.h"
 #include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
@@ -47,21 +48,12 @@
 
 namespace {
 constexpr char kFakeDataPrefix[] = "Fake:";
-constexpr char kUTMSourceTag[] = "chrome";
-constexpr char kUTMMediumTag[] = "app";
-constexpr char kUTMCampaignChromeCartTag[] = "chrome-cart";
-constexpr char kUTMCampaignDiscountTag[] = "chrome-cart-discount-on";
-constexpr char kUTMCampaignNoDiscountTag[] = "chrome-cart-discount-off";
 constexpr char kCartPrefsKey[] = "chrome_cart";
 
 constexpr base::FeatureParam<std::string> kSkipCartExtractionPattern{
     &ntp_features::kNtpChromeCartModule, "skip-cart-extraction-pattern",
     // This regex does not match anything.
     "\\b\\B"};
-
-constexpr base::FeatureParam<bool> kRbdUtmParam{
-    &ntp_features::kNtpChromeCartModule,
-    ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam, true};
 
 constexpr base::FeatureParam<bool> kBypassDisocuntFetchingThreshold{
     &commerce::kCommerceDeveloper, "bypass-discount-fetching-threshold", false};
@@ -329,19 +321,20 @@ void CartService::InterestedInDiscountConsent() {
 
 const GURL CartService::AppendUTM(const GURL& base_url) {
   DCHECK(base_url.is_valid());
-  if (!kRbdUtmParam.Get())
-    return base_url;
   auto url = base_url;
-  url = net::AppendOrReplaceQueryParameter(url, "utm_source", kUTMSourceTag);
-  url = net::AppendOrReplaceQueryParameter(url, "utm_medium", kUTMMediumTag);
+  url = net::AppendOrReplaceQueryParameter(url, commerce::kUTMSourceLabel,
+                                           commerce::kUTMSourceValue);
+  url = net::AppendOrReplaceQueryParameter(url, commerce::kUTMMediumLabel,
+                                           commerce::kUTMMediumValue);
   if (commerce::IsPartnerMerchant(base_url)) {
-    return net::AppendOrReplaceQueryParameter(url, "utm_campaign",
-                                              IsCartDiscountEnabled()
-                                                  ? kUTMCampaignDiscountTag
-                                                  : kUTMCampaignNoDiscountTag);
+    return net::AppendOrReplaceQueryParameter(
+        url, commerce::kUTMCampaignLabel,
+        IsCartDiscountEnabled() ? commerce::kUTMCampaignValueForCartDiscount
+                                : commerce::kUTMCampaignValueForCartNoDiscount);
   }
-  return net::AppendOrReplaceQueryParameter(url, "utm_campaign",
-                                            kUTMCampaignChromeCartTag);
+  return net::AppendOrReplaceQueryParameter(
+      url, commerce::kUTMCampaignLabel,
+      commerce::kUTMCampaignValueForChromeCart);
 }
 
 void CartService::HasActiveCartForURL(const GURL& url,
@@ -665,6 +658,9 @@ void CartService::OnURLsDeleted(history::HistoryService* history_service,
                                 const history::DeletionInfo& deletion_info) {
   // TODO(crbug.com/1157892): Add more fine-grained deletion of cart data when
   // history deletion happens.
+  if (deletion_info.is_from_expiration()) {
+    return;
+  }
   cart_db_->DeleteAllCarts(base::BindOnce(&CartService::OnOperationFinished,
                                           weak_ptr_factory_.GetWeakPtr()));
   coupon_service_->DeleteAllFreeListingCoupons();

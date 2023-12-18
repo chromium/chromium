@@ -8262,6 +8262,7 @@ if (!is_fuchsia) {
         "//components/app_constants",
         "//components/color",
         "//components/commerce/core:cart_db_content_proto",
+        "//components/commerce/core:commerce_constants",
         "//components/commerce/core:coupon_db_content_proto",
         "//components/commerce/core:shopping_service_test_support",
         "//components/commerce/core/webui:webui",

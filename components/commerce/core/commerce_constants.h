@@ -70,6 +70,16 @@ extern const char kOgType[];
 // Specific open graph values we're interested in.
 extern const char kOgTypeOgProduct[];
 extern const char kOgTypeProductItem[];
+
+// UTM tags related to ChromeCart and cart-related discounts.
+// Tag for non-partner merchant carts.
+extern const char kUTMCampaignValueForChromeCart[];
+
+// Tag for partner merchant carts when discount is enabled.
+extern const char kUTMCampaignValueForCartDiscount[];
+
+// Tag for partner merchant carts when discount is disabled.
+extern const char kUTMCampaignValueForCartNoDiscount[];
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_COMMERCE_CONSTANTS_H_

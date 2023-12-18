@@ -53,4 +53,7 @@ const char kOgType[] = "type";
 const char kOgTypeOgProduct[] = "product";
 const char kOgTypeProductItem[] = "product.item";
 
+const char kUTMCampaignValueForChromeCart[] = "chrome-cart";
+const char kUTMCampaignValueForCartDiscount[] = "chrome-cart-discount-on";
+const char kUTMCampaignValueForCartNoDiscount[] = "chrome-cart-discount-off";
 }  // namespace commerce
