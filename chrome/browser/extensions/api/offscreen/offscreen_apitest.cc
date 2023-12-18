@@ -685,6 +685,56 @@ class OffscreenApiTestWithoutCommandLineFlag : public OffscreenApiTest {
   }
 };
 
+// Tests opening an offscreen document that takes awhile to load properly waits
+// for the document to load before resolving the promise, ensuring the document
+// is ready to receive messages by the time the promise resolves.
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest, LongLoadOffscreenDocument) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["offscreen"],
+           "background": { "service_worker": "background.js" }
+         })";
+  static constexpr char kOffscreenHtml[] =
+      R"(<html><script src="offscreen.js"></script></html>)";
+  // This script busy-waits for two seconds before (synchronously) adding a
+  // message listener.
+  static constexpr char kOffscreenJs[] =
+      R"(const startTime = performance.now();
+         const endTime = startTime + 2000;
+         while (performance.now() < endTime) { /* Spin our wheels! */ }
+         chrome.runtime.onMessage.addListener((msg, sender, reply) => {
+           reply(msg + ' reply');
+         });)";
+  // The background script will open an offscreen document and, once the
+  // createDocument() call resolves, send a message. Since createDocument()
+  // should wait for document to finish loading, this should work.
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           async function longLoadDocAndSendMessage() {
+             await chrome.offscreen.createDocument(
+                       {
+                           url: 'offscreen.html',
+                           reasons: ['TESTING'],
+                           justification: 'testing'
+                       });
+             const reply = await chrome.runtime.sendMessage('test message');
+             chrome.test.assertEq('test message reply', reply);
+             chrome.test.succeed();
+           },
+         ]);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"), kOffscreenHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.js"), kOffscreenJs);
+
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
+
 // Tests that the `TESTING` reason is disallowed without the appropriate
 // commandline switch.
 IN_PROC_BROWSER_TEST_F(OffscreenApiTestWithoutCommandLineFlag,
