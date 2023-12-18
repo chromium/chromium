@@ -28,6 +28,8 @@ class ComposeDialogView : public WebUIBubbleDialogView {
   gfx::Rect GetBubbleBounds() override;
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                         const content::ContextMenuParams& params) override;
 
   BubbleContentsWrapperT<ComposeUI>* bubble_wrapper() {
     return bubble_wrapper_.get();

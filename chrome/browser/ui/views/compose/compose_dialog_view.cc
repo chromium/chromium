@@ -88,6 +88,12 @@ gfx::Rect ComposeDialogView::GetBubbleBounds() {
   return best_location;
 }
 
+bool ComposeDialogView::HandleContextMenu(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params) {
+  return false;
+}
+
 base::WeakPtr<ComposeDialogView> ComposeDialogView::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
