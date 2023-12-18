@@ -31,8 +31,6 @@ source_set("content_suggestions") {
     "content_suggestions_coordinator.h",
     "content_suggestions_coordinator.mm",
     "content_suggestions_delegate.h",
-    "content_suggestions_favicon_mediator.h",
-    "content_suggestions_favicon_mediator.mm",
     "content_suggestions_mediator.h",
     "content_suggestions_mediator.mm",
     "content_suggestions_mediator_util.h",
@@ -205,7 +203,10 @@ source_set("constants") {
 }
 
 source_set("public") {
-  sources = [ "content_suggestions_menu_provider.h" ]
+  sources = [
+    "content_suggestions_image_data_source.h",
+    "content_suggestions_menu_provider.h",
+  ]
 }
 
 source_set("content_suggestions_ui") {

@@ -70,6 +70,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
@@ -261,6 +262,8 @@
   self.contentSuggestionsViewController =
       [[ContentSuggestionsViewController alloc] init];
   self.contentSuggestionsViewController.suggestionCommandHandler =
+      self.contentSuggestionsMediator;
+  self.contentSuggestionsViewController.imageDataSource =
       self.contentSuggestionsMediator;
   self.contentSuggestionsViewController.audience = self;
   self.contentSuggestionsViewController.menuProvider = self;

@@ -96,7 +96,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_delegate.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_favicon_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_tile_saver.h"
@@ -110,6 +109,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_metrics.h"
+#import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
@@ -133,6 +133,12 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 
 // Maximum number of most visited tiles fetched.
 const NSInteger kMaxNumMostVisitedTiles = 4;
+
+// Size of the favicon returned by the provider for the most visited items.
+const CGFloat kMostVisitedFaviconSize = 48;
+// Size below which the provider returns a colored tile instead of an image.
+const CGFloat kMostVisitedFaviconMinimalSize = 32;
+const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 
 // Checks the last action the user took on the Credential Provider Promo to
 // determine if it was dismissed.
@@ -200,8 +206,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     ContentSuggestionsSectionInformation* mostVisitedSectionInfo;
 // Whether the page impression has been recorded.
 @property(nonatomic, assign) BOOL recordedPageImpression;
-// Mediator fetching the favicons for the items.
-@property(nonatomic, strong) ContentSuggestionsFaviconMediator* faviconMediator;
 // Item for the reading list action item.  Reference is used to update the
 // reading list count.
 @property(nonatomic, strong)
@@ -265,6 +269,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   NSArray<NSNumber*>* _latestMagicStackOrder;
   commerce::ShoppingService* _shoppingService;
   NSArray<ParcelTrackingItem*>* _parcelTrackingItems;
+  FaviconAttributesProvider* _mostVisitedAttributesProvider;
+  std::map<GURL, FaviconCompletionHandler> _mostVisitedFetchFaviconCallbacks;
 }
 
 #pragma mark - Public
@@ -291,9 +297,17 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     _contentSuggestionsPolicyEnabled =
         prefService->FindPreference(prefs::kNTPContentSuggestionsEnabled);
 
-    _faviconMediator = [[ContentSuggestionsFaviconMediator alloc]
-        initWithLargeIconService:largeIconService
-                  largeIconCache:largeIconCache];
+    _mostVisitedAttributesProvider = [[FaviconAttributesProvider alloc]
+        initWithFaviconSize:IsMagicStackEnabled() ? kMagicStackFaviconWidth
+                                                  : kMostVisitedFaviconSize
+             minFaviconSize:IsMagicStackEnabled()
+                                ? kMagicStackMostVisitedFaviconMinimalSize
+                                : kMostVisitedFaviconMinimalSize
+           largeIconService:largeIconService];
+    // Set a cache only for the Most Visited provider, as the cache is
+    // overwritten for every new results and the size of the favicon fetched for
+    // the suggestions is much smaller.
+    _mostVisitedAttributesProvider.cache = largeIconCache;
 
     _logoSectionInfo = LogoSectionInformation();
     _mostVisitedSectionInfo = MostVisitedSectionInformation();
@@ -448,7 +462,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)setConsumer:(id<ContentSuggestionsConsumer>)consumer {
   _consumer = consumer;
-  self.faviconMediator.consumer = consumer;
   [self configureConsumer];
 }
 
@@ -790,6 +803,15 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   [self showMostVisitedUndoForURL:item.URL];
 }
 
+#pragma mark - ContentSuggestionsImageDataSource
+
+- (void)fetchFaviconForURL:(const GURL&)URL
+                completion:(FaviconCompletionHandler)completion {
+  _mostVisitedFetchFaviconCallbacks[URL] = completion;
+  [_mostVisitedAttributesProvider fetchFaviconAttributesForURL:URL
+                                                    completion:completion];
+}
+
 #pragma mark - StartSurfaceRecentTabObserving
 
 - (void)mostRecentTabWasRemoved:(web::WebState*)webState {
@@ -831,7 +853,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     (const ntp_tiles::NTPTilesVector&)mostVisited {
   // This is used by the content widget.
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
-      mostVisited, self.faviconMediator.mostVisitedAttributesProvider,
+      mostVisited, _mostVisitedAttributesProvider,
       app_group::ContentWidgetFaviconsFolder());
 
   self.freshMostVisitedItems = [NSMutableArray array];
@@ -844,7 +866,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     item.index = index;
     DCHECK(index < kShortcutMinimumIndex);
     index++;
-    [self.faviconMediator fetchFaviconForMostVisited:item];
     [self.freshMostVisitedItems addObject:item];
   }
 
@@ -853,7 +874,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   if (mostVisited.size() && !self.recordedPageImpression) {
     self.recordedPageImpression = YES;
     [self recordMostVisitedTilesDisplayed];
-    [self.faviconMediator setMostVisitedDataForLogging:mostVisited];
     ntp_tiles::metrics::RecordPageImpression(mostVisited.size());
   }
 }
@@ -861,12 +881,18 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)onIconMadeAvailable:(const GURL&)siteURL {
   // This is used by the content widget.
   content_suggestions_tile_saver::UpdateSingleFavicon(
-      siteURL, self.faviconMediator.mostVisitedAttributesProvider,
+      siteURL, _mostVisitedAttributesProvider,
       app_group::ContentWidgetFaviconsFolder());
 
   for (ContentSuggestionsMostVisitedItem* item in self.mostVisitedItems) {
     if (item.URL == siteURL) {
-      [self.faviconMediator fetchFaviconForMostVisited:item];
+      FaviconCompletionHandler completion =
+          _mostVisitedFetchFaviconCallbacks[siteURL];
+      if (completion) {
+        [_mostVisitedAttributesProvider
+            fetchFaviconAttributesForURL:siteURL
+                              completion:completion];
+      }
       return;
     }
   }
@@ -1754,10 +1780,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)setContentSuggestionsMetricsRecorder:
     (ContentSuggestionsMetricsRecorder*)contentSuggestionsMetricsRecorder {
-  CHECK(self.faviconMediator);
   _contentSuggestionsMetricsRecorder = contentSuggestionsMetricsRecorder;
-  self.faviconMediator.contentSuggestionsMetricsRecorder =
-      self.contentSuggestionsMetricsRecorder;
 }
 
 - (BOOL)contentSuggestionsEnabled {

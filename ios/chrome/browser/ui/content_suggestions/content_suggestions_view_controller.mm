@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
@@ -424,6 +425,22 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         stringWithFormat:
             @"%@%li",
             kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix, index];
+
+    __weak ContentSuggestionsMostVisitedItem* weakItem = item;
+    __weak ContentSuggestionsMostVisitedTileView* weakView = view;
+    void (^completion)(FaviconAttributes*) = ^(FaviconAttributes* attributes) {
+      ContentSuggestionsMostVisitedTileView* strongView = weakView;
+      ContentSuggestionsMostVisitedItem* strongItem = weakItem;
+      if (!strongView || !weakItem) {
+        return;
+      }
+
+      strongItem.attributes = attributes;
+      [strongView.faviconView configureWithAttributes:attributes];
+    };
+    [self.imageDataSource fetchFaviconForURL:item.URL completion:completion];
+    [self.contentSuggestionsMetricsRecorder recordMostVisitedTileShown:item
+                                                               atIndex:index];
     [self.mostVisitedViews addObject:view];
     index++;
   }
@@ -484,17 +501,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   for (ContentSuggestionsShortcutTileView* view in self.shortcutsViews) {
     if (view.config == config) {
       [view updateConfiguration:config];
-      return;
-    }
-  }
-}
-
-- (void)updateMostVisitedTileConfig:(ContentSuggestionsMostVisitedItem*)config {
-  for (ContentSuggestionsMostVisitedTileView* view in self.mostVisitedViews) {
-    if (view.config == config) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [view.faviconView configureWithAttributes:config.attributes];
-      });
       return;
     }
   }

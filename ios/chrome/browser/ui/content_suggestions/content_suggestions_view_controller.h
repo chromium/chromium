@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 
 @protocol ContentSuggestionsCommands;
+@protocol ContentSuggestionsImageDataSource;
 @protocol ContentSuggestionsMenuProvider;
 @protocol ContentSuggestionsViewControllerAudience;
 @protocol ParcelTrackingOptInCommands;
@@ -33,6 +34,9 @@ class UrlLoadingBrowserAgent;
 // Handler for the commands sent by the ContentSuggestionsViewController.
 @property(nonatomic, weak) id<ContentSuggestionsCommands>
     suggestionCommandHandler;
+// Datasource to fetch favicons.
+@property(nonatomic, weak) id<ContentSuggestionsImageDataSource>
+    imageDataSource;
 @property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience,
                               SafetyCheckViewDelegate,
                               SetUpListViewDelegate>

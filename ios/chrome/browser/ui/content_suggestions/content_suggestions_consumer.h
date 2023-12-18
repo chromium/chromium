@@ -66,10 +66,6 @@ struct MagicStackOrderChange {
 - (void)updateShortcutTileConfig:
     (ContentSuggestionsMostVisitedActionItem*)config;
 
-// Indicates to the consumer update the Most Visited tile associated with
-// `config`.
-- (void)updateMostVisitedTileConfig:(ContentSuggestionsMostVisitedItem*)config;
-
 // Indicates to the consumer to set the Magic Stack module order as listed in
 // `order`.
 - (void)setMagicStackOrder:(NSArray<NSNumber*>*)order;

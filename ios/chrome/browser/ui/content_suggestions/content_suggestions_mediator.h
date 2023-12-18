@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_removal_observer_bridge.h"
 
 namespace commerce {
@@ -63,6 +64,7 @@ class WebStateList;
 // Mediator for ContentSuggestions.
 @interface ContentSuggestionsMediator
     : NSObject <ContentSuggestionsCommands,
+                ContentSuggestionsImageDataSource,
                 ContentSuggestionsGestureCommands,
                 StartSurfaceRecentTabObserving>
 
