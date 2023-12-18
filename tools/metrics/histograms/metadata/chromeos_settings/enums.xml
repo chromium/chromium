@@ -34,6 +34,11 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Overscan"/>
 </enum>
 
+<enum name="DisplayType">
+  <int value="0" label="ExternalDisplay"/>
+  <int value="1" label="InternalDisplay"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

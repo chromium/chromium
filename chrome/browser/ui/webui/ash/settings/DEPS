@@ -22,6 +22,7 @@ specific_include_rules = {
   ],
   'display_settings_provider\.cc': [
     '+ash/shell.h',
+    "+ash/display/display_prefs.h",
   ],
   'fast_pair_.*': [
     "+ash/quick_pair",

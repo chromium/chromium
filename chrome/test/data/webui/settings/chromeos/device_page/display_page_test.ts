@@ -20,6 +20,8 @@ import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 
 import DisplayUnitInfo = chrome.system.display.DisplayUnitInfo;
 
+const kDisplayIdPrefix = '123456789';
+
 suite('<settings-display>', () => {
   let displayPage: SettingsDisplayElement;
   let fakeSystemDisplay: FakeSystemDisplay;
@@ -29,7 +31,7 @@ suite('<settings-display>', () => {
   // Add a fake display.
   function addDisplay(displayIndex: number): void {
     const display = {
-      id: 'fakeDisplayId' + displayIndex,
+      id: kDisplayIdPrefix + displayIndex,
       name: 'fakeDisplayName' + displayIndex,
       mirroring: '',
       isPrimary: displayIndex === 1,
@@ -161,8 +163,8 @@ suite('<settings-display>', () => {
     const displayLayout =
         displayPage.shadowRoot!.querySelector('#displayLayout');
     assertTrue(!!displayLayout);
-    const displayDiv =
-        strictQuery('#_fakeDisplayId2', displayLayout.shadowRoot, HTMLElement);
+    const displayDiv = strictQuery(
+        `#_${kDisplayIdPrefix}2`, displayLayout.shadowRoot, HTMLElement);
     assertTrue(!!displayDiv);
     displayDiv.click();
 
@@ -397,7 +399,7 @@ suite('<settings-display>', () => {
               displayPage.shadowRoot!.querySelector('#displayLayout');
           assertTrue(!!displayLayout);
           const displayDiv = strictQuery(
-              '#_fakeDisplayId2', displayLayout.shadowRoot, HTMLElement);
+              `#_${kDisplayIdPrefix}2`, displayLayout.shadowRoot, HTMLElement);
           assertTrue(!!displayDiv);
           displayDiv.click();
           assertEquals(
@@ -568,10 +570,11 @@ suite('<settings-display>', () => {
               displayPage.shadowRoot!.querySelector('#displayLayout') as any;
           assert(!!displayLayout);
           const display = strictQuery(
-              '#_fakeDisplayId2', displayLayout.shadowRoot, HTMLElement);
-          const layout = displayLayout.displayLayoutMap_.get('fakeDisplayId2');
+              `#_${kDisplayIdPrefix}2`, displayLayout.shadowRoot, HTMLElement);
+          const layout =
+              displayLayout.displayLayoutMap_.get(`${kDisplayIdPrefix}2`);
 
-          assertEquals(layout.parentId, 'fakeDisplayId1');
+          assertEquals(layout.parentId, `${kDisplayIdPrefix}1`);
           assertEquals(layout.position, 'right');
 
           const offset =

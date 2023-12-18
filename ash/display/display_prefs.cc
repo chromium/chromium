@@ -1002,4 +1002,15 @@ void DisplayPrefs::StoreDisplayMixedMirrorModeParamsForTest(
   StoreDisplayMixedMirrorModeParams(local_state_, mixed_params);
 }
 
+bool DisplayPrefs::IsDisplayAvailableInPref(int64_t display_id) const {
+  for (const auto it : local_state_->GetDict(prefs::kDisplayProperties)) {
+    int64_t id = display::kInvalidDisplayId;
+    if (base::StringToInt64(it.first, &id) && id == display_id) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace ash

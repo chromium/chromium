@@ -1851,4 +1851,15 @@ TEST_F(DisplayPrefsTest, SaveTabletModeWithMixedExternalDisplays) {
               Optional(static_cast<int>(display::Display::ROTATE_0)));
 }
 
+TEST_F(DisplayPrefsTest, IsDisplayAvailableInPref) {
+  int64_t id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+
+  // Display is not available in prefs before adding the display.
+  EXPECT_FALSE(display_prefs()->IsDisplayAvailableInPref(id));
+
+  // Display is available in prefs after adding the display.
+  UpdateDisplay("300x200");
+  EXPECT_TRUE(display_prefs()->IsDisplayAvailableInPref(id));
+}
+
 }  // namespace ash

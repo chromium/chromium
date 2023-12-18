@@ -175,6 +175,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Display.NewDisplayConnected"
+    enum="DisplayType" expires_after="2024-06-28">
+  <owner>zhangwenyu@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records when an internal/external display is connected for the first time.
+    This is part of the metrics aiming to measure how well system provided
+    default display settings work, by calculating the percentage of users who
+    change the default settings after a display is connected for the first time.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Display.{DisplayType}"
     enum="DisplaySettingsType" expires_after="2024-06-28">
   <owner>zhangwenyu@google.com</owner>
@@ -186,6 +198,26 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="DisplayType">
     <variant name="External" summary="external"/>
     <variant name="Internal" summary="internal"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Display.{DisplayType}.UserOverrideDisplayDefaultSettingsTimeElapsed.{DisplaySettings}"
+    units="minutes" expires_after="2024-06-28">
+  <owner>zhangwenyu@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the time elapsed when user overrides the {DisplayType} display
+    {DisplaySettings} provided by default. Only record when an {DisplayType}
+    display is connected for the first time.
+  </summary>
+  <token key="DisplayType">
+    <variant name="External" summary="external"/>
+    <variant name="Internal" summary="internal"/>
+  </token>
+  <token key="DisplaySettings">
+    <variant name="Resolution" summary="resolution"/>
+    <variant name="Scaling" summary="scaling"/>
   </token>
 </histogram>
 

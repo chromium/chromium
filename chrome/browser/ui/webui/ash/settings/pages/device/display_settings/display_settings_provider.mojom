@@ -22,6 +22,13 @@ struct DisplaySettingsValue {
   // settings like toggling mirror mode apply to both internal and external
   // displays. In that case, this property will not be provided.
   bool? is_internal_display;
+
+  // The id of the display. This is optional since we mostly don't need the
+  // display id for histogram recording purpose. Only for default display
+  // settings performance metrics, this is necessary to identify the time
+  // elapsed when users change settings, otherwise those metrics will not
+  // be recorded.
+  int64? display_id;
 };
 
 // Implemented by clients that wish to be notified when the tablet mode is

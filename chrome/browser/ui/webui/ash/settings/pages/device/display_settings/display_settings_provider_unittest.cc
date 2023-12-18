@@ -9,7 +9,9 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/screen.h"
 
 namespace ash::settings {
 
@@ -86,7 +88,9 @@ class FakeDisplayConfigurationObserver
 
 class DisplaySettingsProviderTest : public ChromeAshTestBase {
  public:
-  DisplaySettingsProviderTest() = default;
+  DisplaySettingsProviderTest()
+      : ChromeAshTestBase(std::make_unique<content::BrowserTaskEnvironment>(
+            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME)) {}
   ~DisplaySettingsProviderTest() override = default;
 
   void SetUp() override {
@@ -97,6 +101,10 @@ class DisplaySettingsProviderTest : public ChromeAshTestBase {
   void TearDown() override {
     provider_.reset();
     ChromeAshTestBase::TearDown();
+  }
+
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment()->FastForwardBy(delta);
   }
 
  protected:
@@ -158,6 +166,49 @@ TEST_F(DisplaySettingsProviderTest, ChangeDisplaySettingsHistogram) {
           type, 1);
     }
   }
+}
+
+// Test histogram is recorded only when a display is connected for the first
+// time.
+TEST_F(DisplaySettingsProviderTest, NewDisplayConnectedHistogram) {
+  int64_t id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  provider_->OnDisplayAdded(display::Display(id));
+
+  // Expect to count new display is connected.
+  histogram_tester_.ExpectBucketCount(
+      DisplaySettingsProvider::kNewDisplayConnectedHistogram,
+      DisplaySettingsProvider::DisplayType::kExternalDisplay, 1);
+
+  UpdateDisplay("300x200");
+  provider_->OnDisplayAdded(display::Display(id));
+
+  // Expect not to count new display is connected since it's already saved
+  // into prefs before.
+  histogram_tester_.ExpectBucketCount(
+      DisplaySettingsProvider::kNewDisplayConnectedHistogram,
+      DisplaySettingsProvider::DisplayType::kExternalDisplay, 1);
+}
+
+// Test histogram is recorded when user overrides system default display
+// settings.
+TEST_F(DisplaySettingsProviderTest, UserOverrideDefaultSettingsHistogram) {
+  int64_t id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  provider_->OnDisplayAdded(display::Display(id));
+
+  constexpr uint16_t kTimeDeltaInMinute = 15;
+  FastForwardBy(base::Minutes(kTimeDeltaInMinute));
+
+  auto value = mojom::DisplaySettingsValue::New();
+  value->is_internal_display = false;
+  value->display_id = id;
+  provider_->RecordChangingDisplaySettings(
+      mojom::DisplaySettingsType::kResolution, std::move(value));
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "ChromeOS.Settings.Display.External."
+      "UserOverrideDisplayDefaultSettingsTimeElapsed.Resolution",
+      base::Minutes(kTimeDeltaInMinute) / base::Minutes(1).InMilliseconds(),
+      /*expected_count=*/1);
 }
 
 }  // namespace ash::settings

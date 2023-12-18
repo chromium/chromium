@@ -1194,8 +1194,10 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         DisplaySettingsType.kRefreshRate :
         DisplaySettingsType.kResolution;
     this.displaySettingsProvider.recordChangingDisplaySettings(
-        displaySettingsType,
-        {isInternalDisplay: this.selectedDisplay.isInternal});
+        displaySettingsType, {
+          isInternalDisplay: this.selectedDisplay.isInternal,
+          displayId: BigInt(this.selectedDisplay.id),
+        });
   }
 
   /**
@@ -1216,8 +1218,10 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         .setDisplayProperties(this.selectedDisplay.id, properties)
         .then(() => this.setPropertiesCallback_());
     this.displaySettingsProvider.recordChangingDisplaySettings(
-        DisplaySettingsType.kScaling,
-        {isInternalDisplay: this.selectedDisplay.isInternal});
+        DisplaySettingsType.kScaling, {
+          isInternalDisplay: this.selectedDisplay.isInternal,
+          displayId: BigInt(this.selectedDisplay.id),
+        });
   }
 
   /**

@@ -4,20 +4,58 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.h"
 
+#include <optional>
+
+#include "ash/display/display_prefs.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.mojom.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/display/manager/display_manager_observer.h"
+#include "ui/display/util/display_util.h"
 
 namespace ash::settings {
+
+namespace {
+
+// Minimum/maximum bucket value of user overriding display default settings.
+constexpr int kMinTimeInMinuteOfUserOverrideDisplaySettings = 1;
+constexpr int kMaxTimeInHourOfUserOverrideDisplaySettings = 8;
+
+// The histogram bucket count of user overriding display default settings.
+constexpr int kUserOverrideDisplaySettingsTimeDeltaBucketCount = 100;
+
+// Get UMA histogram name that records the time elapsed between users changing
+// the display settings and the display is connected.
+const std::string GetUserOverrideDefaultSettingsHistogramName(
+    mojom::DisplaySettingsType type,
+    bool is_internal_display) {
+  // Should only need to handle resolution and scaling, no other display
+  // settings.
+  CHECK(type == mojom::DisplaySettingsType::kResolution ||
+        type == mojom::DisplaySettingsType::kScaling);
+
+  std::string histogram_name("ChromeOS.Settings.Display.");
+  histogram_name.append(is_internal_display ? "Internal." : "External.");
+  histogram_name.append("UserOverrideDisplayDefaultSettingsTimeElapsed.");
+  histogram_name.append(type == mojom::DisplaySettingsType::kResolution
+                            ? "Resolution"
+                            : "Scaling");
+  return histogram_name;
+}
+
+}  // namespace
 
 DisplaySettingsProvider::DisplaySettingsProvider() {
   if (TabletMode::Get()) {
     TabletMode::Get()->AddObserver(this);
   }
   if (Shell::HasInstance() && Shell::Get()->display_manager()) {
-    Shell::Get()->display_manager()->AddObserver(this);
+    Shell::Get()->display_manager()->AddObserver(
+        static_cast<display::DisplayManagerObserver*>(this));
+    Shell::Get()->display_manager()->AddObserver(
+        static_cast<display::DisplayObserver*>(this));
   }
 }
 
@@ -26,7 +64,10 @@ DisplaySettingsProvider::~DisplaySettingsProvider() {
     TabletMode::Get()->RemoveObserver(this);
   }
   if (Shell::HasInstance() && Shell::Get()->display_manager()) {
-    Shell::Get()->display_manager()->RemoveObserver(this);
+    Shell::Get()->display_manager()->RemoveObserver(
+        static_cast<display::DisplayManagerObserver*>(this));
+    Shell::Get()->display_manager()->RemoveObserver(
+        static_cast<display::DisplayObserver*>(this));
   }
 }
 
@@ -65,6 +106,25 @@ void DisplaySettingsProvider::OnDidProcessDisplayChanges(
   }
 }
 
+void DisplaySettingsProvider::OnDisplayAdded(
+    const display::Display& new_display) {
+  // Check with prefs service to see if this display is firstly seen or was
+  // saved to prefs before.
+  if (Shell::HasInstance() && Shell::Get()->display_prefs() &&
+      !Shell::Get()->display_prefs()->IsDisplayAvailableInPref(
+          new_display.id())) {
+    // Found display that is connected for the first time. Add the connection
+    // timestamp.
+    displays_connection_timestamp_map_[DisplayId(new_display.id())] =
+        base::TimeTicks::Now();
+
+    base::UmaHistogramEnumeration(kNewDisplayConnectedHistogram,
+                                  display::IsInternalDisplayId(new_display.id())
+                                      ? DisplayType::kInternalDisplay
+                                      : DisplayType::kExternalDisplay);
+  }
+}
+
 void DisplaySettingsProvider::RecordChangingDisplaySettings(
     mojom::DisplaySettingsType type,
     mojom::DisplaySettingsValuePtr value) {
@@ -75,10 +135,35 @@ void DisplaySettingsProvider::RecordChangingDisplaySettings(
     return;
   }
 
+  // Record display settings usage metrics.
   const std::string histogram_name =
       is_internal_display.value() ? kInternalDisplaySettingsHistogramName
                                   : kExternalDisplaySettingsHistogramName;
   base::UmaHistogramEnumeration(histogram_name, type);
+
+  // Record default display settings performance metrics.
+  if (value->display_id.has_value() &&
+      (type == mojom::DisplaySettingsType::kResolution ||
+       type == mojom::DisplaySettingsType::kScaling)) {
+    const DisplayId id = DisplayId(value->display_id.value());
+    auto it = displays_connection_timestamp_map_.find(id);
+    if (it != displays_connection_timestamp_map_.end()) {
+      int time_delta = (base::TimeTicks::Now() - it->second).InMinutes();
+      const std::string override_histogram_name =
+          GetUserOverrideDefaultSettingsHistogramName(
+              type, is_internal_display.value());
+      base::UmaHistogramCustomCounts(
+          override_histogram_name, time_delta,
+          kMinTimeInMinuteOfUserOverrideDisplaySettings,
+          base::Hours(kMaxTimeInHourOfUserOverrideDisplaySettings).InMinutes(),
+          kUserOverrideDisplaySettingsTimeDeltaBucketCount);
+
+      // Once user has overridden the settings, remove it from the map to
+      // prevent further recording, in which case, the user does not override
+      // system default settings, but override previous user settings.
+      displays_connection_timestamp_map_.erase(id);
+    }
+  }
 }
 
 }  // namespace ash::settings
