@@ -7103,6 +7103,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OnDeviceModel.MaxBufferSize.{GpuType}" units="MB"
+    expires_after="2024-05-27">
+  <owner>cduvall@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    The maxiumum buffer size for a device with {GpuType} GPU. Logged whenever
+    OnDeviceModelService.GetEstimatedPerformanceClass() is called.
+  </summary>
+  <token key="GpuType">
+    <variant name="Discrete" summary="discrete"/>
+    <variant name="Integrated" summary="integrated"/>
+  </token>
+</histogram>
+
 <histogram name="OnDeviceModel.SystemRAM.{GpuType}" units="MB"
     expires_after="2024-05-27">
   <owner>cduvall@chromium.org</owner>
