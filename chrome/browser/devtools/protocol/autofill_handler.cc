@@ -287,7 +287,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
   const std::string locale = "en-US";
   autofill::GetAddressComponents(
       base::UTF16ToUTF8(profile_used_to_fill_form->GetInfo(
-          autofill::ServerFieldType::ADDRESS_HOME_COUNTRY, locale)),
+          autofill::FieldType::ADDRESS_HOME_COUNTRY, locale)),
       locale,
       /*include_literals=*/false, &components, nullptr);
 

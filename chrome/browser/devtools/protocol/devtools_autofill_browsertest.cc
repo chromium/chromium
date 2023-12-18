@@ -274,12 +274,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, SetAddresses) {
                                                    .GetPersonalDataManager()
                                                    ->test_addresses();
   ASSERT_EQ(res.size(), 2u);
-  ASSERT_EQ(res[0].GetAddress().GetRawInfo(
-                autofill::ServerFieldType::ADDRESS_HOME_LINE1),
-            u"Erika-mann");
-  ASSERT_EQ(res[1].GetAddress().GetRawInfo(
-                autofill::ServerFieldType::ADDRESS_HOME_LINE2),
-            u"Faria lima");
+  ASSERT_EQ(
+      res[0].GetAddress().GetRawInfo(autofill::FieldType::ADDRESS_HOME_LINE1),
+      u"Erika-mann");
+  ASSERT_EQ(
+      res[1].GetAddress().GetRawInfo(autofill::FieldType::ADDRESS_HOME_LINE2),
+      u"Faria lima");
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCard) {
