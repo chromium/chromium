@@ -14,6 +14,7 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/strings/string_piece.h"
 #include "base/token.h"
 
 namespace base {
@@ -65,6 +66,15 @@ class BASE_EXPORT UnguessableToken {
   // initialized via Create(). This is a security issue, and should be handled.
   static absl::optional<UnguessableToken> Deserialize(uint64_t high,
                                                       uint64_t low);
+
+  // Returns an `UnguessableToken` built from its string representation. It
+  // should only be used in deserialization scenarios.
+  //
+  // NOTE: If the returned `absl::optional` does not have a value, it means that
+  // the given string does not represent a valid serialized `UnguessableToken`.
+  // This should be handled as a security issue.
+  static absl::optional<UnguessableToken> DeserializeFromString(
+      StringPiece string_representation);
 
   // Creates an empty UnguessableToken.
   // Assign to it with Create() before using it.
