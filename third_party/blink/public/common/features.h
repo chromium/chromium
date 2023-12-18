@@ -51,6 +51,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAdInterestGroupAPIRestrictedPolicyByDefault);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kAllowBFCacheWhenClosedMediaStreamTrack);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAlignFontDisplayAutoTimeoutWithLCPGoal);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam;
@@ -147,7 +150,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAvifGainmapHdrImages);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBackForwardCacheDWCOnJavaScriptExecution);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheWithKeepaliveRequest);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackgroundResourceFetch);
@@ -398,7 +400,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int> kDeprecateUnloadBucket;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kDeprecateUnloadAllowlist;
-
 // This feature (EventTimingReportAllEarlyEntriesOnPaintedPresentation) is
 // having an effect only when EventTimingMatchPresentationIndex is turned on.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
@@ -1467,6 +1468,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebviewAccelerateSmallCanvases);
 // ----------------------------------------------------------------------------
 // Helper functions for querying feature status. Please declare any features or
 // constants for features in the section above.
+
+BLINK_COMMON_EXPORT bool IsAllowBFCacheWhenClosedMediaStreamTrackEnabled();
 
 BLINK_COMMON_EXPORT int GetMaxUnthrottledTimeoutNestingLevel();
 

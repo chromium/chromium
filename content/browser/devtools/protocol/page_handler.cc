@@ -1626,6 +1626,8 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       NOTREACHED_NORETURN();
     case WebSchedulerTrackedFeature::kSmartCard:
       return Page::BackForwardCacheNotRestoredReasonEnum::SmartCard;
+    case WebSchedulerTrackedFeature::kLiveMediaStreamTrack:
+      return Page::BackForwardCacheNotRestoredReasonEnum::LiveMediaStreamTrack;
   }
 }
 
@@ -1826,6 +1828,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kWebTransport:
     case WebSchedulerTrackedFeature::kIndexedDBEvent:
     case WebSchedulerTrackedFeature::kSmartCard:
+    case WebSchedulerTrackedFeature::kLiveMediaStreamTrack:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
     case WebSchedulerTrackedFeature::kPortal:
     case WebSchedulerTrackedFeature::kWebNfc:

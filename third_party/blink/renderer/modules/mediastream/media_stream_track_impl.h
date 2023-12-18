@@ -201,6 +201,17 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   FrameScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
 
+  // This handle notifies the scheduler about a live media stream track
+  // for the purpose of disabling/enabling BFCache. When there is a live stream
+  // track, the page should not be BFCached.
+  // TODO(crbug.com/1502395): Currently we intentionally use this handler for
+  // BFCache although its behavior is almost the same as the one above. The one
+  // above uses the WebRTC feature even though it's not necessarily related to
+  // Web RTC. Discuss with those who own the handler and merge the two handlers
+  // into one.
+  FrameScheduler::SchedulingAffectingFeatureHandle
+      feature_handle_for_scheduler_on_live_media_stream_track_;
+
   MediaStreamSource::ReadyState ready_state_;
   HeapHashSet<Member<MediaStream>> registered_media_streams_;
   bool is_iterating_registered_media_streams_ = false;

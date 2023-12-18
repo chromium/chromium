@@ -33,6 +33,7 @@
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "url/origin.h"
@@ -42,13 +43,6 @@
 #endif
 
 using blink::mojom::MediaDeviceType;
-
-namespace features {
-// When enabled, MediaDevicesDispatcherHost does not block back/forward cache.
-BASE_FEATURE(kEnableBackForwardCacheForPagesWithMediaDevicesDispatcherHost,
-             "EnableBackForwardCacheForPagesWithMediaDevicesDispatcherHost",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-}  // namespace features
 
 namespace content {
 
@@ -101,9 +95,8 @@ void MediaDevicesDispatcherHost::Create(
                        if (!render_frame_host)
                          return;
 
-                       if (!base::FeatureList::IsEnabled(
-                               features::
-                                   kEnableBackForwardCacheForPagesWithMediaDevicesDispatcherHost)) {
+                       if (!blink::features::
+                               IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
                          BackForwardCache::DisableForRenderFrameHost(
                              render_frame_host,
                              BackForwardCacheDisable::DisabledReason(

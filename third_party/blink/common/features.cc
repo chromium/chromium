@@ -54,6 +54,12 @@ BASE_FEATURE(kAdInterestGroupAPIRestrictedPolicyByDefault,
              "AdInterestGroupAPIRestrictedPolicyByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Make MediaDevicesDispatcherHost and ended MediaStreamTrack not block BFCache.
+// See https://chrbug.com/1502395 for more details.
+BASE_FEATURE(kAllowBFCacheWhenClosedMediaStreamTrack,
+             "AllowBFCacheWhenClosedMediaStreamTrack",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kComputePressureRateObfuscationMitigation,
              "ComputePressureRateObfuscationMitigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2269,6 +2275,11 @@ bool IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled() {
 
 bool IsAllowURNsInIframeEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kAllowURNsInIframes);
+}
+
+bool IsAllowBFCacheWhenClosedMediaStreamTrackEnabled() {
+  return base::FeatureList::IsEnabled(
+      blink::features::kAllowBFCacheWhenClosedMediaStreamTrack);
 }
 
 bool IsFencedFramesEnabled() {

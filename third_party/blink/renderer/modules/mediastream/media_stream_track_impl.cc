@@ -27,8 +27,10 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
@@ -416,6 +418,7 @@ void MediaStreamTrackImpl::stopTrack(ExecutionContext* execution_context) {
 
   setReadyState(MediaStreamSource::kReadyStateEnded);
   feature_handle_for_scheduler_.reset();
+  feature_handle_for_scheduler_on_live_media_stream_track_.reset();
   UserMediaClient* user_media_client =
       UserMediaClient::From(To<LocalDOMWindow>(execution_context));
   if (user_media_client) {
@@ -857,6 +860,8 @@ void MediaStreamTrackImpl::SourceChangedState() {
       }
       PropagateTrackEnded();
       feature_handle_for_scheduler_.reset();
+      feature_handle_for_scheduler_on_live_media_stream_track_.reset();
+
       break;
   }
   SendLogMessage(String::Format("%s()", __func__));
@@ -1062,9 +1067,18 @@ void MediaStreamTrackImpl::CloneInternal(MediaStreamTrackImpl* cloned_track) {
 }
 
 void MediaStreamTrackImpl::EnsureFeatureHandleForScheduler() {
+  // The two handlers must be in sync.
+  if (features::IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
+    CHECK_EQ(!!feature_handle_for_scheduler_,
+             !!feature_handle_for_scheduler_on_live_media_stream_track_);
+  } else {
+    CHECK(!feature_handle_for_scheduler_on_live_media_stream_track_);
+  }
+
   if (feature_handle_for_scheduler_) {
     return;
   }
+
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
   // Ideally we'd use To<LocalDOMWindow>, but in unittests the ExecutionContext
   // may not be a LocalDOMWindow.
@@ -1080,6 +1094,12 @@ void MediaStreamTrackImpl::EnsureFeatureHandleForScheduler() {
           SchedulingPolicy::Feature::kWebRTC,
           {SchedulingPolicy::DisableAggressiveThrottling(),
            SchedulingPolicy::DisableAlignWakeUps()});
+  if (features::IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
+    feature_handle_for_scheduler_on_live_media_stream_track_ =
+        GetExecutionContext()->GetScheduler()->RegisterFeature(
+            SchedulingPolicy::Feature::kLiveMediaStreamTrack,
+            {SchedulingPolicy::DisableBackForwardCache()});
+  }
 }
 
 void MediaStreamTrackImpl::AddObserver(MediaStreamTrack::Observer* observer) {

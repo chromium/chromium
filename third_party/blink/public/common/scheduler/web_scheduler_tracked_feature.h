@@ -147,13 +147,14 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // See comments for `kWebTransportSticky`.
   kWebSocketSticky = 63,
   kWebRTCSticky = 64,
-
   kSmartCard = 65,
+  // There is a "live" MediaStreamTrack.
+  kLiveMediaStreamTrack = 66,
 
   // Please keep in sync with WebSchedulerTrackedFeature in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
 
-  kMaxValue = kSmartCard,
+  kMaxValue = kLiveMediaStreamTrack,
 };
 
 using WebSchedulerTrackedFeatures =
