@@ -61,11 +61,9 @@ void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
              std::unique_ptr<FormStructure> form_structure,
              base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback,
              const std::optional<AutofillModelExecutor::ModelOutput>& output) {
-            if (!self) {
-              return;
+            if (self && output) {
+              self->AssignMostLikelyTypes(*form_structure, *output);
             }
-            CHECK(output);
-            self->AssignMostLikelyTypes(*form_structure, *output);
             std::move(callback).Run(std::move(form_structure));
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
