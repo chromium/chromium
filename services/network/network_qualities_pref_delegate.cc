@@ -45,7 +45,6 @@ class PrefDelegateImpl
 
   base::Value::Dict GetDictionaryValue() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    UMA_HISTOGRAM_EXACT_LINEAR("NQE.Prefs.ReadCount", 1, 2);
     return pref_service_->GetDict(path_).Clone();
   }
 

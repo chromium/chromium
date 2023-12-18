@@ -182,7 +182,6 @@ class NetworkQualitiesPrefDelegateImpl
 
   base::Value::Dict GetDictionaryValue() override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    UMA_HISTOGRAM_EXACT_LINEAR("NQE.Prefs.ReadCount", 1, 2);
     return pref_service_->GetDict(kNetworkQualitiesPref).Clone();
   }
 

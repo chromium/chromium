@@ -61,7 +61,6 @@ TEST_F(NetworkQualitiesPrefDelegateTest, WritingReadingToPrefsEnabled) {
     // Prefs are written only if persistent caching was enabled.
     EXPECT_FALSE(
         histogram_tester.GetAllSamples("NQE.Prefs.WriteCount").empty());
-    histogram_tester.ExpectTotalCount("NQE.Prefs.ReadCount", 0);
 
     // NetworkQualityEstimator should not be notified of change in prefs.
     histogram_tester.ExpectTotalCount("NQE.Prefs.ReadSize", 0);
@@ -78,7 +77,6 @@ TEST_F(NetworkQualitiesPrefDelegateTest, WritingReadingToPrefsEnabled) {
     // Prefs are written even if the network id was unavailable.
     EXPECT_FALSE(
         histogram_tester.GetAllSamples("NQE.Prefs.WriteCount").empty());
-    histogram_tester.ExpectTotalCount("NQE.Prefs.ReadCount", 0);
 
     // NetworkQualityEstimator should not be notified of change in prefs.
     histogram_tester.ExpectTotalCount("NQE.Prefs.ReadSize", 0);

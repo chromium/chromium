@@ -7117,15 +7117,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NQE.Prefs.ReadCount" units="count" expires_after="2021-10-10">
-  <owner>tbansal@chromium.org</owner>
-  <owner>bengr@chromium.org</owner>
-  <summary>
-    Number of times the network quality prefs were read by the network quality
-    estimator.
-  </summary>
-</histogram>
-
 <histogram name="NQE.Prefs.ReadSize" units="count" expires_after="2021-10-10">
   <owner>tbansal@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
