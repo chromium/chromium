@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/script/html_parser_script_runner_host.h"
-#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
@@ -141,13 +140,12 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void ForcePlaintextForTextDocument();
 
  private:
-  enum NextTokenStatus { kNoTokens, kHaveTokens, kHaveTokensAfterScript };
-  class PendingPreloads;
-
   HTMLDocumentParser(Document&,
                      ParserContentPolicy,
                      ParserSynchronizationPolicy,
                      ParserPrefetchPolicy);
+
+  enum NextTokenStatus { kNoTokens, kHaveTokens, kHaveTokensAfterScript };
 
   // DocumentParser
   void Detach() final;
@@ -236,12 +234,14 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
 
   // Called on the background thread by |background_scanner_|.
   static void AddPreloadDataOnBackgroundThread(
-      CrossThreadWeakHandle<HTMLDocumentParser> parser_handle,
-      scoped_refptr<PendingPreloads> pending_preloads,
+      CrossThreadWeakPersistent<HTMLDocumentParser> weak_parser,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::unique_ptr<PendingPreloadData> preload_data);
 
-  bool HasPendingPreloads();
+  bool HasPendingPreloads() {
+    base::AutoLock lock(pending_preload_lock_);
+    return !pending_preload_data_.empty();
+  }
 
   // Returns true if the data should be processed (tokenizer pumped) now. If
   // this returns false, SchedulePumpTokenizer() should be called. This is
@@ -285,10 +285,12 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // A timer for how long we are inactive after yielding
   std::unique_ptr<base::ElapsedTimer> yield_timer_;
 
-  // If ThreadedPreloadScanner is enabled, preload data will be added to
-  // `pending_preloads_` from a background thread. The main thread will
-  // take this preload data and send out the requests.
-  scoped_refptr<PendingPreloads> pending_preloads_;
+  // If ThreadedPreloadScanner is enabled, preload data will be added to this
+  // vector from a background thread. The main thread will take this preload
+  // data and send out the requests.
+  base::Lock pending_preload_lock_;
+  Vector<std::unique_ptr<PendingPreloadData>> pending_preload_data_
+      GUARDED_BY(pending_preload_lock_);
 
   ThreadScheduler* scheduler_;
 
