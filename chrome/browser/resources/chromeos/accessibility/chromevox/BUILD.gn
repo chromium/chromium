@@ -22,7 +22,7 @@ common_tsc_out_dir = "$target_gen_dir/../common/tsc"
 # chromevox scripts.
 #
 # TS files to compile.
-ts_modules = [ "background/input/keyboard_handler.ts" ]
+ts_modules = []
 
 # TS files needed from ../common/.
 common_ts_modules = [
@@ -107,6 +107,7 @@ chromevox_es6_modules = [
   "background/input/command_handler_interface.js",
   "background/input/gesture_command_handler.js",
   "background/input/gesture_interface.js",
+  "background/input/keyboard_handler.js",
   "background/input/smart_sticky_mode.js",
   "background/live_regions.js",
   "background/logging/event_stream_logger.js",
@@ -151,6 +152,7 @@ chromevox_es6_modules = [
   "common/key_map.js",
   "common/key_sequence.js",
   "common/key_util.js",
+  "common/keyboard_handler.js",
   "common/learn_mode_bridge.js",
   "common/locale_output_helper.js",
   "common/log_types.js",
@@ -206,23 +208,8 @@ js_deps = []
 ts_library("ts_build") {
   root_dir = "../"
   out_dir = tsc_out_dir
-
-  definitions = [
-    "../definitions/tts.d.ts",
-    "//tools/typescript/definitions/metrics_private.d.ts",
-    "//tools/typescript/definitions/context_menus.d.ts",
-    "../definitions/automation.d.ts",
-    "../definitions/extensions.d.ts",
-    "../definitions/runtime.d.ts",
-    "../definitions/i18n.d.ts",
-    "../definitions/tabs.d.ts",
-    "../definitions/accessibility_private_mv2.d.ts",
-    "../definitions/settings_private_mv2.d.ts",
-    "../definitions/storage_mv2.d.ts",
-    "../definitions/clipboard_mv2.d.ts",
-    "../definitions/extension_types.d.ts",
-    "//tools/typescript/definitions/windows.d.ts",
-  ]
+  deps = [ "../common:ts_build" ]
+  definitions = []
 
   in_files = []
   foreach(_js_file, js_deps) {
@@ -231,8 +218,6 @@ ts_library("ts_build") {
   foreach(_ts_file, ts_modules) {
     in_files += [ "chromevox/" + _ts_file ]
   }
-
-  tsconfig_base = "../tsconfig.base.json"
 }
 
 group("build") {
@@ -259,10 +244,7 @@ generate_message_formatting_data("i18n_data") {
 run_jsbundler("chromevox_copied_files") {
   mode = "copy"
   dest_dir = chromevox_out_dir
-  deps = [
-    ":ts_build",
-    "../common:ts_build",
-  ]
+  deps = [ "../common:ts_build" ]
   sources = [
     "background/background.html",
     "earcons/chromevox_loaded.ogg",

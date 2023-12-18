@@ -6,6 +6,7 @@
  * @fileoverview ChromeVox keyboard handler.
  */
 import {KeyCode} from '../../../common/key_code.js';
+import {EarconId} from '../../common/earcon_id.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {ChromeVoxKbHandler} from '../../common/keyboard_handler.js';
 import {Msgs} from '../../common/msgs.js';
@@ -19,35 +20,36 @@ import {Output} from '../output/output.js';
 import {ChromeVoxPrefs} from '../prefs.js';
 
 /**
+ * @enum {string}
  * Internal pass through mode state (see usage below).
+ * @private
  */
-enum KeyboardPassThroughState {
+const KeyboardPassThroughState_ = {
   // No pass through is in progress.
-  NO_PASS_THROUGH = 'no_pass_through',
+  NO_PASS_THROUGH: 'no_pass_through',
 
   // The pass through shortcut command has been pressed (keydowns), waiting for
   // user to release (keyups) all the shortcut keys.
-  PENDING_PASS_THROUGH_SHORTCUT_KEYUPS = 'pending_pass_through_keyups',
+  PENDING_PASS_THROUGH_SHORTCUT_KEYUPS: 'pending_pass_through_keyups',
 
   // The pass through shortcut command has been pressed and released, waiting
   // for the user to press/release a shortcut to be passed through.
-  PENDING_SHORTCUT_KEYUPS = 'pending_shortcut_keyups',
-}
-
-class InternalKeyEvent extends KeyboardEvent {
-  stickyMode?: boolean;
-}
+  PENDING_SHORTCUT_KEYUPS: 'pending_shortcut_keyups',
+};
 
 export class BackgroundKeyboardHandler {
-  static instance?: BackgroundKeyboardHandler;
-  private static passThroughModeEnabled_: boolean = false;
-  private eatenKeyDowns_: Set<number>;
-  private passThroughState_: KeyboardPassThroughState;
-  private passedThroughKeyDowns_: Set<number>;
-
-  private constructor() {
+  /** @private */
+  constructor() {
+    /** @private {Set} */
     this.eatenKeyDowns_ = new Set();
-    this.passThroughState_ = KeyboardPassThroughState.NO_PASS_THROUGH;
+
+    /** @private {boolean} */
+    this.passThroughModeEnabled_ = false;
+
+    /** @private {!KeyboardPassThroughState_} */
+    this.passThroughState_ = KeyboardPassThroughState_.NO_PASS_THROUGH;
+
+    /** @private {Set} */
     this.passedThroughKeyDowns_ = new Set();
 
     document.addEventListener(
@@ -58,24 +60,25 @@ export class BackgroundKeyboardHandler {
         true, ChromeVoxPrefs.isStickyPrefOn);
   }
 
-  static init(): void {
+  static init() {
     if (BackgroundKeyboardHandler.instance) {
       throw 'Error: trying to create two instances of singleton BackgroundKeyboardHandler.';
     }
     BackgroundKeyboardHandler.instance = new BackgroundKeyboardHandler();
   }
 
-  static enablePassThroughMode(): void {
+  static enablePassThroughMode() {
     ChromeVox.tts.speak(Msgs.getMsg('pass_through_key'), QueueMode.QUEUE);
-    BackgroundKeyboardHandler.passThroughModeEnabled_ = true;
+    BackgroundKeyboardHandler.instance.passThroughModeEnabled_ = true;
   }
 
   /**
    * Handles key down events.
-   * The return value has no effect since we ignore it in
+   * @param {Event} evt The key down event to process.
+   * @return {boolean} This value has no effect since we ignore it in
    *     SpokenFeedbackEventRewriterDelegate::HandleKeyboardEvent.
    */
-  onKeyDown(evt: InternalKeyEvent): boolean {
+  onKeyDown(evt) {
     EventSource.set(EventSourceType.STANDARD_KEYBOARD);
     evt.stickyMode = ChromeVoxPrefs.isStickyModeOn();
 
@@ -87,7 +90,7 @@ export class BackgroundKeyboardHandler {
       this.passedThroughKeyDowns_.clear();
     }
 
-    if (BackgroundKeyboardHandler.passThroughModeEnabled_) {
+    if (this.passThroughModeEnabled_) {
       this.passedThroughKeyDowns_.add(evt.keyCode);
       return false;
     }
@@ -99,9 +102,9 @@ export class BackgroundKeyboardHandler {
 
     if (!this.callOnKeyDownHandlers_(evt) ||
         this.shouldConsumeSearchKey_(evt)) {
-      if (BackgroundKeyboardHandler.passThroughModeEnabled_) {
+      if (this.passThroughModeEnabled_) {
         this.passThroughState_ =
-            KeyboardPassThroughState.PENDING_PASS_THROUGH_SHORTCUT_KEYUPS;
+            KeyboardPassThroughState_.PENDING_PASS_THROUGH_SHORTCUT_KEYUPS;
       }
       evt.preventDefault();
       evt.stopPropagation();
@@ -111,7 +114,12 @@ export class BackgroundKeyboardHandler {
     return false;
   }
 
-  private callOnKeyDownHandlers_(evt: Event): boolean {
+  /**
+   * @param {Event} evt The key down event to process.
+   * @return {boolean} Whether the event should continue propagating.
+   * @private
+   */
+  callOnKeyDownHandlers_(evt) {
     // Defer first to the math handler, if it exists, then ordinary keyboard
     // commands.
     if (!MathHandler.onKeyDown(evt)) {
@@ -126,7 +134,12 @@ export class BackgroundKeyboardHandler {
     return ChromeVoxKbHandler.basicKeyDownActionsListener(evt);
   }
 
-  private shouldConsumeSearchKey_(evt: InternalKeyEvent): boolean {
+  /**
+   * @param {Event} evt The key down event to evaluate.
+   * @return {boolean} Whether the event should be consumed.
+   * @private
+   */
+  shouldConsumeSearchKey_(evt) {
     // We natively always capture Search, so we have to be very careful to
     // either eat it here or re-inject it; otherwise, some components, like
     // ARC++ with TalkBack never get it. We only want to re-inject when
@@ -135,44 +148,49 @@ export class BackgroundKeyboardHandler {
       return false;
     }
 
-    return Boolean(evt.metaKey) || evt.keyCode === KeyCode['SEARCH'];
+    return Boolean(evt.metaKey) || evt.keyCode === KeyCode.SEARCH;
   }
 
   /**
-   * The return value has no effect since we ignore it in
+   * Handles key up events.
+   * @param {Event} evt The key up event to process.
+   * @return {boolean} This value has no effect since we ignore it in
    *     SpokenFeedbackEventRewriterDelegate::HandleKeyboardEvent.
    */
-  onKeyUp(evt: InternalKeyEvent): boolean {
+  onKeyUp(evt) {
     if (this.eatenKeyDowns_.has(evt.keyCode)) {
       evt.preventDefault();
       evt.stopPropagation();
       this.eatenKeyDowns_.delete(evt.keyCode);
     }
 
-    if (BackgroundKeyboardHandler.passThroughModeEnabled_) {
+    if (this.passThroughModeEnabled_) {
       this.passedThroughKeyDowns_.delete(evt.keyCode);
 
       // Assuming we have no keys held (detected by held modifiers + keys we've
       // eaten in key down), we can start pass through for the next keys.
       if (this.passThroughState_ ===
-              KeyboardPassThroughState.PENDING_PASS_THROUGH_SHORTCUT_KEYUPS &&
+              KeyboardPassThroughState_.PENDING_PASS_THROUGH_SHORTCUT_KEYUPS &&
           !evt.altKey && !evt.ctrlKey && !evt.metaKey && !evt.shiftKey &&
           this.eatenKeyDowns_.size === 0) {
         // All keys of the pass through shortcut command have been released.
         // Ready to pass through the next shortcut.
         this.passThroughState_ =
-            KeyboardPassThroughState.PENDING_SHORTCUT_KEYUPS;
+            KeyboardPassThroughState_.PENDING_SHORTCUT_KEYUPS;
       } else if (
           this.passThroughState_ ===
-              KeyboardPassThroughState.PENDING_SHORTCUT_KEYUPS &&
+              KeyboardPassThroughState_.PENDING_SHORTCUT_KEYUPS &&
           this.passedThroughKeyDowns_.size === 0) {
         // All keys of the passed through shortcut have been released. Ready to
         // go back to normal processing (aka no pass through).
-        BackgroundKeyboardHandler.passThroughModeEnabled_ = false;
-        this.passThroughState_ = KeyboardPassThroughState.NO_PASS_THROUGH;
+        this.passThroughModeEnabled_ = false;
+        this.passThroughState_ = KeyboardPassThroughState_.NO_PASS_THROUGH;
       }
     }
 
     return false;
   }
 }
+
+/** @type {BackgroundKeyboardHandler} */
+BackgroundKeyboardHandler.instance;
