@@ -190,11 +190,12 @@ public class DirectWritingTriggerTest {
     public void testRequestStartStylusWriting() {
         mDwTrigger.updateDWSettings(mContext);
         // requestStartStylusWriting returns false until service is connected.
-        assertFalse(mDwTrigger.requestStartStylusWriting());
+        // Pass view = null as DW doesn't use the view.
+        assertFalse(mDwTrigger.requestStartStylusWriting(null));
         assertFalse(mDwTrigger.stylusWritingDetected());
 
         doReturn(true).when(mDwServiceBinder).isServiceConnected();
-        assertTrue(mDwTrigger.requestStartStylusWriting());
+        assertTrue(mDwTrigger.requestStartStylusWriting(null));
         assertTrue(mDwTrigger.stylusWritingDetected());
     }
 
