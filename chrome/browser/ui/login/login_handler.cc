@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -62,21 +61,6 @@ using content::WebContents;
 using password_manager::PasswordForm;
 
 namespace {
-
-// Auth prompt types for UMA. Do not reorder or delete entries; only add to the
-// end.
-enum AuthPromptType {
-  AUTH_PROMPT_TYPE_WITH_INTERSTITIAL = 0,
-  AUTH_PROMPT_TYPE_MAIN_FRAME = 1,
-  AUTH_PROMPT_TYPE_SUBRESOURCE_SAME_ORIGIN = 2,
-  AUTH_PROMPT_TYPE_SUBRESOURCE_CROSS_ORIGIN = 3,
-  AUTH_PROMPT_TYPE_ENUM_COUNT = 4
-};
-
-void RecordHttpAuthPromptType(AuthPromptType prompt_type) {
-  UMA_HISTOGRAM_ENUMERATION("Net.HttpAuthPromptType", prompt_type,
-                            AUTH_PROMPT_TYPE_ENUM_COUNT);
-}
 
 // All login handlers should be tracked in this global singleton.
 using LoginHandlerVector = std::vector<base::WeakPtr<LoginHandler>>;
@@ -529,17 +513,11 @@ void LoginHandler::MaybeSetUpLoginPromptBeforeCommit(
   // rare due to credential caching, we commit an interstitial for all
   // main-frame navigations.
   if (is_request_for_main_frame) {
-    RecordHttpAuthPromptType(AUTH_PROMPT_TYPE_WITH_INTERSTITIAL);
     CancelAuth();
     return;
   }
 
   prompt_started_ = true;
-  RecordHttpAuthPromptType(
-      web_contents_->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
-              request_url.DeprecatedGetOriginAsURL()
-          ? AUTH_PROMPT_TYPE_SUBRESOURCE_CROSS_ORIGIN
-          : AUTH_PROMPT_TYPE_SUBRESOURCE_SAME_ORIGIN);
   ShowLoginPrompt(request_url);
 }
 

@@ -387,21 +387,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Enabled over secure connection"/>
 </enum>
 
-<enum name="HttpAuthPromptType">
-  <int value="0" label="Main frame with interstitial">
-    Auth prompt displayed over a blank interstitial
-  </int>
-  <int value="1" label="Main frame without interstitial">
-    Auth prompt displayed for the main frame, without a blank interstitial
-  </int>
-  <int value="2" label="Same origin subresource">
-    Auth prompt displayed for a subresource from the same origin
-  </int>
-  <int value="3" label="Cross origin subresource">
-    Auth prompt displayed for a subresource from a different origin
-  </int>
-</enum>
-
 <enum name="HttpAuthTarget">
   <int value="0" label="Basic Proxy"/>
   <int value="1" label="Basic Secure Proxy"/>
