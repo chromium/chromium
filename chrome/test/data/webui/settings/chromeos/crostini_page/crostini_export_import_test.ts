@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {ContainerInfo, ContainerSelectElement, CrostiniBrowserProxyImpl, CrostiniPortSetting, GuestOsBrowserProxyImpl, SettingsCrostiniExportImportElement, SettingsCrostiniPageElement} from 'chrome://os-settings/lazy_load.js';
+import {ContainerInfo, ContainerSelectElement, CrostiniBrowserProxyImpl, CrostiniPortSetting, GuestOsBrowserProxyImpl, SettingsCrostiniExportImportElement} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -13,12 +13,12 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestGuestOsBrowserProxy} from '../guest_os/test_guest_os_browser_proxy.js';
 
 import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
-let crostiniPage: SettingsCrostiniPageElement;
 let subpage: SettingsCrostiniExportImportElement;
 let guestOsBrowserProxy: TestGuestOsBrowserProxy;
 let crostiniBrowserProxy: TestCrostiniBrowserProxy;
@@ -66,7 +66,7 @@ function setCrostiniPrefs(enabled: boolean, {
   arcEnabled = false,
   bruschettaInstalled = false,
 }: PrefParams = {}): void {
-  crostiniPage.prefs = {
+  subpage.prefs = {
     arc: {
       enabled: {value: arcEnabled},
     },
@@ -98,27 +98,14 @@ function selectContainerByIndex(
 }
 
 suite('<settings-crostini-export-import>', () => {
+  suiteSetup(() => {
+    disableAnimationsAndTransitions();
+  });
+
   setup(async () => {
     loadTimeData.overrideValues({
       isCrostiniAllowed: true,
       isCrostiniSupported: true,
-    });
-    crostiniBrowserProxy = new TestCrostiniBrowserProxy();
-    CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
-    guestOsBrowserProxy = new TestGuestOsBrowserProxy();
-    GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
-
-    crostiniPage = document.createElement('settings-crostini-page');
-    document.body.appendChild(crostiniPage);
-    flush();
-
-    disableAnimationsAndTransitions();
-
-    setCrostiniPrefs(true, {arcEnabled: true});
-    const requestInstallerStatusCallCount =
-        crostiniBrowserProxy.getCallCount('requestCrostiniInstallerStatus');
-
-    loadTimeData.overrideValues({
       showCrostiniExportImport: true,
       showCrostiniContainerUpgrade: true,
       showCrostiniPortForwarding: true,
@@ -126,29 +113,33 @@ suite('<settings-crostini-export-import>', () => {
       arcAdbSideloadingSupported: true,
       showCrostiniExtraContainers: true,
     });
+
+    crostiniBrowserProxy = new TestCrostiniBrowserProxy();
     crostiniBrowserProxy.containerInfo = singleContainer;
-    await flushTasks();
+    CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
+    guestOsBrowserProxy = new TestGuestOsBrowserProxy();
+    GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
 
     Router.getInstance().navigateTo(routes.CROSTINI_EXPORT_IMPORT);
-
+    subpage = document.createElement('settings-crostini-export-import');
+    document.body.appendChild(subpage);
+    setCrostiniPrefs(true, {arcEnabled: true});
     await flushTasks();
-    const subpageElement = crostiniPage.shadowRoot!.querySelector(
-        'settings-crostini-export-import');
-    assertTrue(!!subpageElement);
-    subpage = subpageElement;
+
     assertEquals(
         1,
         crostiniBrowserProxy.getCallCount(
             'requestCrostiniExportImportOperationStatus'));
     assertEquals(
-        requestInstallerStatusCallCount + 1,
-        crostiniBrowserProxy.getCallCount('requestCrostiniInstallerStatus'));
+        1, crostiniBrowserProxy.getCallCount('requestCrostiniInstallerStatus'));
     assertEquals(1, crostiniBrowserProxy.getCallCount('requestContainerInfo'));
   });
 
   teardown(() => {
-    crostiniPage.remove();
+    subpage.remove();
     Router.getInstance().resetRouteForTesting();
+    crostiniBrowserProxy.reset();
+    guestOsBrowserProxy.reset();
   });
 
   test('Deep link to backup linux', async () => {
@@ -157,17 +148,13 @@ suite('<settings-crostini-export-import>', () => {
     const params = new URLSearchParams();
     params.append('settingId', BACKUP_LINUX_APPS_AND_FILES_SETTING);
     Router.getInstance().navigateTo(routes.CROSTINI_EXPORT_IMPORT, params);
-
     flush();
-    const subpageElement = crostiniPage.shadowRoot!.querySelector(
-        'settings-crostini-export-import');
-    assertTrue(!!subpageElement);
-    subpage = subpageElement;
 
     const deepLinkElement =
         subpage.shadowRoot!.querySelector<HTMLButtonElement>(
             '#export cr-button');
     assertTrue(!!deepLinkElement);
+    assertTrue(isVisible(subpage));
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -281,12 +268,8 @@ suite('<settings-crostini-export-import>', () => {
     assertFalse(importBtn.disabled);
     webUIListenerCallback(
         'crostini-export-import-operation-status-changed', true);
-
     await flushTasks();
-    let subpageElement = crostiniPage.shadowRoot!.querySelector(
-        'settings-crostini-export-import');
-    assertTrue(!!subpageElement);
-    subpage = subpageElement;
+
     exportBtn = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
         '#export cr-button');
     assertTrue(!!exportBtn);
@@ -297,12 +280,8 @@ suite('<settings-crostini-export-import>', () => {
     assertTrue(importBtn.disabled);
     webUIListenerCallback(
         'crostini-export-import-operation-status-changed', false);
-
     await flushTasks();
-    subpageElement = crostiniPage.shadowRoot!.querySelector(
-        'settings-crostini-export-import');
-    assertTrue(!!subpageElement);
-    subpage = subpageElement;
+
     exportBtn = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
         '#export cr-button');
     assertTrue(!!exportBtn);
@@ -326,12 +305,8 @@ suite('<settings-crostini-export-import>', () => {
         assertFalse(exportBtn.disabled);
         assertFalse(importBtn.disabled);
         webUIListenerCallback('crostini-installer-status-changed', true);
-
         await flushTasks();
-        let subpageElement = crostiniPage.shadowRoot!.querySelector(
-            'settings-crostini-export-import');
-        assertTrue(!!subpageElement);
-        subpage = subpageElement;
+
         exportBtn = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
             '#export cr-button');
         assertTrue(!!exportBtn);
@@ -342,12 +317,8 @@ suite('<settings-crostini-export-import>', () => {
         assertTrue(exportBtn.disabled);
         assertTrue(importBtn.disabled);
         webUIListenerCallback('crostini-installer-status-changed', false);
-
         await flushTasks();
-        subpageElement = crostiniPage.shadowRoot!.querySelector(
-            'settings-crostini-export-import');
-        assertTrue(!!subpageElement);
-        subpage = subpageElement;
+
         exportBtn = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
             '#export cr-button');
         assertTrue(!!exportBtn);
