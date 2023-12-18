@@ -8,14 +8,17 @@
 #include <stdint.h>
 
 #include <map>
-
-#include "base/containers/flat_set.h"
+#include <set>
 
 class EncounteredSurfaceTracker {
  public:
   // Maximum number of surfaces that this class can track. Prevents unbounded
   // memory growth.
   static constexpr unsigned kMaxTrackedSurfaces = 1000;
+
+  // Maximum number of sources that every surface can track. Prevents unbounded
+  // memory growth.
+  static constexpr unsigned kMaxTrackedSources = 1000;
 
   EncounteredSurfaceTracker();
   ~EncounteredSurfaceTracker();
@@ -25,10 +28,9 @@ class EncounteredSurfaceTracker {
   void Reset();
 
  private:
-  using HashKey = uint64_t;
-  // We use std::map since it makes it fast to remove the minimum.
-  std::map<HashKey, base::flat_set<uint64_t>> surfaces_;
-  uint64_t seed_;
+  // We use std::map and std::set since these containers are small and we need
+  // to insert and erase frequently.
+  std::map<uint64_t, std::set<uint64_t>> surfaces_;
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_BUDGET_ENCOUNTERED_SURFACE_TRACKER_H_
