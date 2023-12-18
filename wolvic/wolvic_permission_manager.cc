@@ -74,6 +74,24 @@ WolvicPermissionType ToWolvicPermissionType(blink::PermissionType permission) {
   return WolvicPermissionType::kNotSupported;
 }
 
+// These strings are taken from the android.Manifest class shipped with the
+// Android SDK.
+std::string ToAndroidPermission(blink::PermissionType permission) {
+  switch (permission) {
+    case blink::PermissionType::GEOLOCATION:
+      return "android.permission.ACCESS_FINE_LOCATION";
+    case blink::PermissionType::AUDIO_CAPTURE:
+      return "android.permission.RECORD_AUDIO";
+    case blink::PermissionType::VIDEO_CAPTURE:
+      return "android.permission.CAMERA";
+    default:
+      // This is a custom permission type defined in
+      // PermissionManagerBridge.java. It's used to tell Wolvic that the given
+      // permission type doesn't require any Android permissions.
+      return "org.chromium.wolvic.NO_ANDROID_PERMISSION";
+  }
+}
+
 content::PermissionStatus FromWolvicPermissionStatus(
     WolvicPermissionStatus status) {
   switch (status) {
@@ -94,6 +112,15 @@ std::vector<int> ToJavaWolvicPermissionTypes(
   std::vector<int> result(permissions.size());
   for (size_t i = 0; i < permissions.size(); ++i) {
     result[i] = static_cast<int>(ToWolvicPermissionType(permissions[i]));
+  }
+  return result;
+}
+
+std::vector<std::string> ToAndroidPermissionTypes(
+    const std::vector<blink::PermissionType>& permissions) {
+  std::vector<std::string> result(permissions.size());
+  for (size_t i = 0; i < result.size(); ++i) {
+    result[i] = ToAndroidPermission(permissions[i]);
   }
   return result;
 }
@@ -171,23 +198,11 @@ void WolvicPermissionManager::RequestPermissions(
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
-
-  auto url_java_string = base::android::ScopedJavaGlobalRef<jstring>(
-      base::android::ConvertUTF8ToJavaString(
-          env, request_description.requesting_origin.spec()));
-  auto permissions =
-      ToJavaWolvicPermissionTypes(request_description.permissions);
-  auto permissions_java_array = base::android::ScopedJavaGlobalRef<jintArray>(
-      base::android::ToJavaIntArray(
-          env, std::span(permissions.begin(), permissions.end())));
-
   in_progress_requests_.emplace_back(std::make_unique<InProgressRequest>(
       request_description, std::move(callback)));
 
-  Java_PermissionManagerBridge_onPermissionRequest(
-      env, permissions_java_array, url_java_string,
-      browser_context_->IsOffTheRecord(),
-      reinterpret_cast<jlong>(in_progress_requests_.back().get()));
+  RequestContentPermissions(env, in_progress_requests_.back().get(),
+                            request_description);
 }
 
 void WolvicPermissionManager::ResetPermission(blink::PermissionType permission,
@@ -282,10 +297,36 @@ void WolvicPermissionManager::OnPermissionResult(
                            return request.get() == in_progress_request;
                          });
   CHECK(it != in_progress_requests_.end());
-  for (auto& callback : (*it)->callbacks) {
+  for (auto& callback : in_progress_request->callbacks) {
     std::move(callback).Run(result);
   }
   in_progress_requests_.erase(it);
+}
+
+void WolvicPermissionManager::RequestContentPermissions(
+    JNIEnv* env,
+    InProgressRequest* in_progress_request,
+    const content::PermissionRequestDescription& request_description) {
+  auto url_java_string = base::android::ScopedJavaGlobalRef<jstring>(
+      base::android::ConvertUTF8ToJavaString(
+          env, request_description.requesting_origin.spec()));
+  auto permissions =
+      ToJavaWolvicPermissionTypes(request_description.permissions);
+  auto permissions_java_array = base::android::ScopedJavaGlobalRef<jintArray>(
+      base::android::ToJavaIntArray(
+          env, std::span(permissions.begin(), permissions.end())));
+  auto android_permissions =
+      ToAndroidPermissionTypes(request_description.permissions);
+  auto java_android_permissions =
+      base::android::ScopedJavaGlobalRef<jobjectArray>(
+          base::android::ToJavaArrayOfStrings(
+              env, std::span(android_permissions.begin(),
+                             android_permissions.end())));
+
+  Java_PermissionManagerBridge_onPermissionRequest(
+      env, permissions_java_array, java_android_permissions, url_java_string,
+      browser_context_->IsOffTheRecord(),
+      reinterpret_cast<jlong>(in_progress_request));
 }
 
 InProgressRequest* WolvicPermissionManager::FindInProgressRequest(

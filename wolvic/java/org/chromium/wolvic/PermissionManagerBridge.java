@@ -15,6 +15,10 @@ import java.util.stream.Stream;
 
 @JNINamespace("wolvic")
 public class PermissionManagerBridge {
+    // Android permission which is requested when no android permissions are required for the given
+    // permission request. This permission must be always granted.
+    public static final String NO_ANDROID_PERMISSION = "org.chromium.wolvic.NO_ANDROID_PERMISSION";
+
     public enum PermissionType {
         GEOLOCATION(0),
         DESKTOP_NOTIFICATION(1),
@@ -75,8 +79,8 @@ public class PermissionManagerBridge {
     }
 
     public interface Delegate {
-        void onPermissionRequest(PermissionType[] permissionTypes, String url,
-                                 boolean isOffTheRecord, PermissionCallback callback);
+        void onPermissionRequest(PermissionType[] permissionTypes, String[] androidPermissionTypes,
+                                 String url, boolean isOffTheRecord, PermissionCallback callback);
     }
     
     private static PermissionManagerBridge sInstance;
@@ -94,7 +98,9 @@ public class PermissionManagerBridge {
     }
 
     @CalledByNative
-    public static void onPermissionRequest(int[] permissionTypes, String url,
+    public static void onPermissionRequest(int[] permissionTypes,
+                                           String[] androidPermissionTypes,
+                                           String url,
                                            boolean isOffTheRecord,
                                            long inProgressRequestPtr) {
         PermissionManagerBridge bridge = get();
@@ -105,6 +111,7 @@ public class PermissionManagerBridge {
                 Arrays.stream(permissionTypes)
                         .mapToObj(PermissionType::fromValue)
                         .toArray(PermissionType[]::new),
+                androidPermissionTypes,
                 url,
                 isOffTheRecord,
                 new PermissionCallback() {
