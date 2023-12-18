@@ -303,6 +303,23 @@ BASE_FEATURE(kWebGPUService, "WebGPUService", WEBGPU_ENABLED);
 BASE_FEATURE(kWebGPUBlobCache, "WebGPUBlobCache", WEBGPU_ENABLED);
 #undef WEBGPU_ENABLED
 
+// List of WebGPU feature names, delimited by ,
+// The FeatureParam may be overridden via Finch config, or via the command line
+// For example:
+//   --enable-field-trial-config \
+//   --force-fieldtrial-params=WebGPU.Enabled:UnsafeFeatures/timestamp-query%2Cshader-f16
+// Note that the comma should be URL-encoded.
+const base::FeatureParam<std::string> kWebGPUUnsafeFeatures{
+    &kWebGPUService, "UnsafeFeatures", ""};
+// List of WGSL feature names, delimited by ,
+// The FeatureParam may be overridden via Finch config, or via the command line
+// For example:
+//   --enable-field-trial-config \
+//   --force-fieldtrial-params=WebGPU.Enabled:UnsafeWGSLFeatures/feature_1%2Cfeature_2
+// Note that the comma should be URL-encoded.
+const base::FeatureParam<std::string> kWGSLUnsafeFeatures{
+    &kWebGPUService, "UnsafeWGSLFeatures", ""};
+
 BASE_FEATURE(kWebGPUUseDXC, "WebGPUUseDXC2", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebGPUUseTintIR,
              "WebGPUUseTintIR",

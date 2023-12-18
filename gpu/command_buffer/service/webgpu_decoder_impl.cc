@@ -81,15 +81,6 @@ constexpr wgpu::TextureUsage kAllowedReadableMailboxTextureUsages =
 constexpr wgpu::TextureUsage kAllowedMailboxTextureUsages =
     kAllowedWritableMailboxTextureUsages | kAllowedReadableMailboxTextureUsages;
 
-// List of feature names, delimited by ,
-// The FeatureParam may be overridden via Finch config, or via the command line
-// For example:
-//   --enable-field-trial-config \
-//   --force-fieldtrial-params=WebGPU.Enabled:UnsafeFeatures/timestamp-query%2Cshader-f16
-// Note that the comma should be URL-encoded.
-const base::FeatureParam<std::string> kRuntimeUnsafeFeatures{
-    &features::kWebGPUService, "UnsafeFeatures", ""};
-
 template <typename T1, typename T2>
 void ChainStruct(T1& head, T2* struct_to_chain) {
   DCHECK(struct_to_chain->nextInChain == nullptr);
@@ -1107,7 +1098,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   require_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
   require_disabled_toggles_ = gpu_preferences.disabled_dawn_features_list;
   for (std::string f :
-       base::SplitString(kRuntimeUnsafeFeatures.Get(), ",",
+       base::SplitString(features::kWebGPUUnsafeFeatures.Get(), ",",
                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     runtime_unsafe_features_.insert(std::move(f));
   }

@@ -8,7 +8,9 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -152,8 +154,7 @@ std::vector<WGPUWGSLFeatureName> GatherWGSLFeatures() {
   NoopSerializer noop_serializer;
   dawn::wire::WireClient client{{.serializer = &noop_serializer}};
 
-  // Make an instance descriptor with chained structs to control which WGSL
-  // features are exposed.
+  // Control which WGSL features are exposed based on flags.
   WGPUDawnWireWGSLControl wgsl_control = {};
   wgsl_control.chain.sType = WGPUSType_DawnWireWGSLControl;
   wgsl_control.enableUnsafe = base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -165,11 +166,31 @@ std::vector<WGPUWGSLFeatureName> GatherWGSLFeatures() {
   // WGSL features.
   wgsl_control.enableTesting = false;
 
+  // Additionally populate the WGSL blocklist based on the Finch feature.
+  std::vector<std::string> wgsl_unsafe_features_owned;
+  std::vector<const char*> wgsl_unsafe_features;
+
+  if (!wgsl_control.enableUnsafe) {
+    wgsl_unsafe_features_owned =
+        base::SplitString(features::kWGSLUnsafeFeatures.Get(), ",",
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    wgsl_unsafe_features.reserve(wgsl_unsafe_features_owned.size());
+    for (const auto& f : wgsl_unsafe_features_owned) {
+      wgsl_unsafe_features.push_back(f.c_str());
+    }
+  }
+  WGPUDawnWGSLBlocklist wgsl_blocklist = {};
+  wgsl_blocklist.chain.sType = WGPUSType_DawnWGSLBlocklist;
+  wgsl_blocklist.chain.next = &wgsl_control.chain;
+  wgsl_blocklist.blocklistedFeatureCount = wgsl_unsafe_features.size();
+  wgsl_blocklist.blocklistedFeatures = wgsl_unsafe_features.data();
+
+  // Create the instance from all the chained structures and gather features
+  // from it.
   WGPUInstanceDescriptor instance_desc = {};
-  instance_desc.nextInChain = &wgsl_control.chain;
+  instance_desc.nextInChain = &wgsl_blocklist.chain;
   WGPUInstance instance = client.ReserveInstance(&instance_desc).instance;
 
-  // Gather features from the instance and release the reference we have to it.
   const DawnProcTable& procs = dawn::wire::client::GetProcs();
 
   size_t feature_count =
