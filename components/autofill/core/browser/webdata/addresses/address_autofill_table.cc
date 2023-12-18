@@ -140,12 +140,6 @@ constexpr std::string_view kValue = "value";
 constexpr std::string_view kVerificationStatus = "verification_status";
 constexpr std::string_view kObservations = "observations";
 
-// Truncates `data` to the maximum length that can be stored in a column of the
-// Autofill database. Shorter strings are left as-is.
-std::u16string Truncate(const std::u16string& data) {
-  return data.substr(0, AddressAutofillTable::kMaxDataLength);
-}
-
 void AddAutofillProfileDetailsFromStatement(sql::Statement& s,
                                             AutofillProfile* profile) {
   int index = 0;
@@ -476,9 +470,6 @@ bool AddAutofillProfileToTableVersion113(sql::Database* db,
 }
 
 }  // namespace
-
-// static
-const size_t AddressAutofillTable::kMaxDataLength = 1024;
 
 AddressAutofillTable::AddressAutofillTable() = default;
 

@@ -695,11 +695,6 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion120AddPaymentInstrumentAndBankAccountTables();
   bool MigrateToVersion123AddProductTermsUrlColumnAndAddCardBenefitsTables();
 
-  // Max data length saved in the table, AKA the maximum length allowed for
-  // form data.
-  // Copied to components/autofill/ios/browser/resources/autofill_controller.js.
-  static const size_t kMaxDataLength;
-
  private:
   bool SupportsMetadataForModelType(syncer::ModelType model_type) const;
   int GetKeyValueForModelType(syncer::ModelType model_type) const;

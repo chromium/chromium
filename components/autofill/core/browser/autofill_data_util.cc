@@ -20,7 +20,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -361,8 +361,7 @@ std::string GetSuffixForProfileFormType(uint32_t bitmask) {
 
 std::string TruncateUTF8(const std::string& data) {
   std::string trimmed_value;
-  base::TruncateUTF8ToByteSize(data, AutofillTable::kMaxDataLength,
-                               &trimmed_value);
+  base::TruncateUTF8ToByteSize(data, kMaxDataLengthForDatabase, &trimmed_value);
   return trimmed_value;
 }
 

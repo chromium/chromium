@@ -315,11 +315,6 @@ class AddressAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion117AddProfileObservationColumn();
   bool MigrateToVersion121DropServerAddressTables();
 
-  // Max data length saved in the table, AKA the maximum length allowed for
-  // form data.
-  // Copied to components/autofill/ios/browser/resources/autofill_controller.js.
-  static const size_t kMaxDataLength;
-
  private:
   // Reads profiles from the deprecated autofill_profiles table.
   std::unique_ptr<AutofillProfile> GetAutofillProfileFromLegacyTable(

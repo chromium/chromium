@@ -280,12 +280,6 @@ constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
         {kBenefitId, "VARCHAR NOT NULL"},
         {kMerchantDomain, "VARCHAR NOT NULL"}};
 
-// Truncates `data` to the maximum length that can be stored in a column of the
-// Autofill database. Shorter strings are left as-is.
-std::u16string Truncate(const std::u16string& data) {
-  return data.substr(0, AutofillTable::kMaxDataLength);
-}
-
 void BindEncryptedValueToColumn(sql::Statement* s,
                                 int column_index,
                                 const std::u16string& value,
@@ -497,9 +491,6 @@ time_t GetEndTime(const base::Time& end) {
 PaymentInstrumentFields::PaymentInstrumentFields() = default;
 
 PaymentInstrumentFields::~PaymentInstrumentFields() = default;
-
-// static
-const size_t AutofillTable::kMaxDataLength = 1024;
 
 AutofillTable::AutofillTable()
     : autofill_table_encryptor_(
