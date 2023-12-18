@@ -441,38 +441,6 @@ class PolicyGenerationTest(unittest.TestCase):
         self._assertCallsEqual(expected_formatted,
                                mocked_file().write.call_args_list)
 
-  def testWriteChromeOSPolicyConstantsHeader(self):
-    output_path = 'mock_policy_constants_h'
-    with patch('codecs.open', mock_open()) as mocked_file:
-      with codecs.open(output_path, 'w', encoding='utf-8') as f:
-        generate_policy_source._WriteChromeOSPolicyConstantsHeader(
-            self.policies,
-            self.policy_atomic_groups,
-            self.target_platform,
-            f,
-            self.risk_tags,
-            chunking=True,
-        )
-    mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
-    self._assertCallsEqual(test_data.EXPECTED_CROS_POLICY_CONSTANTS_HEADER,
-                           mocked_file().write.call_args_list)
-
-  def testWriteChromeOSPolicyConstantsSource(self):
-    output_path = 'mock_policy_constants_cc'
-    with patch('codecs.open', mock_open()) as mocked_file:
-      with codecs.open(output_path, 'w', encoding='utf-8') as f:
-        generate_policy_source._WriteChromeOSPolicyConstantsSource(
-            self.policies,
-            self.policy_atomic_groups,
-            self.target_platform,
-            f,
-            self.risk_tags,
-            chunking=True,
-        )
-    mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
-    self._assertCallsEqual(test_data.EXPECTED_CROS_POLICY_CONSTANTS_SOURCE,
-                           mocked_file().write.call_args_list)
-
 
   def testWriteAppRestrictions(self):
     output_path = 'app_restrictions_xml'

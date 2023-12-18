@@ -92,8 +92,6 @@ class PolicyDetails:
     self.is_deprecated = policy.get('deprecated', False)
     self.is_device_only = policy.get('device_only', False)
     self.per_profile = features.get('per_profile', False)
-    self.supported_chrome_os_management = policy.get(
-        'supported_chrome_os_management', ['active_directory', 'google_cloud'])
     self.schema = policy['schema']
     self.validation_schema = policy.get('validation_schema')
     self.has_enterprise_default = 'default_for_enterprise_users' in policy
@@ -266,20 +264,6 @@ def main():
       help='generate header file for policy risk tags',
       metavar='FILE')
   parser.add_argument(
-      '--crospch',
-      '--cros-policy-constants-header',
-      dest='cros_constants_header_path',
-      help='generate header file of policy constants for use in '
-      'Chrome OS',
-      metavar='FILE')
-  parser.add_argument(
-      '--crospcc',
-      '--cros-policy-constants-source',
-      dest='cros_constants_source_path',
-      help='generate source file of policy constants for use in '
-      'Chrome OS',
-      metavar='FILE')
-  parser.add_argument(
       '--chrome-version-file',
       dest='chrome_version_file',
       help='path to src/chrome/VERSION',
@@ -389,18 +373,6 @@ def main():
 
   if target_platform == 'android' and args.app_restrictions_path:
     GenerateFile(args.app_restrictions_path, _WriteAppRestrictions, xml=True)
-
-  # Generated code for Chrome OS (unused in Chromium).
-  if args.cros_constants_header_path:
-    GenerateFile(
-        args.cros_constants_header_path,
-        _WriteChromeOSPolicyConstantsHeader,
-        sorted=True)
-  if args.cros_constants_source_path:
-    GenerateFile(
-        args.cros_constants_source_path,
-        _WriteChromeOSPolicyConstantsSource,
-        sorted=True)
 
   return 0
 
@@ -1458,8 +1430,6 @@ namespace policy {
 
 #------------------ policy protobufs -------------------------------#
 
-# This code applies to both Active Directory and Google cloud management.
-
 CHROME_SETTINGS_PROTO_HEAD = '''
 syntax = "proto2";
 
@@ -1634,170 +1604,9 @@ def _WriteCloudPolicyProtobuf(policies, policy_atomic_groups, target_platform,
   f.write('}\n')
 
 
-#------------------ Chrome OS policy constants header --------------#
-
-# This code applies to Active Directory management only.
-
-
-# Filter for _GetSupportedChromeOSPolicies().
-def _IsSupportedChromeOSPolicy(type, policy):
-  # Filter out unsupported policies.
-  if not policy.is_supported:
-    return False
-  # Filter out device policies if user policies are requested.
-  if type == 'user' and policy.is_device_only:
-    return False
-  # Filter out user policies if device policies are requested.
-  if type == 'device' and not policy.is_device_only:
-    return False
-  # Filter out non-Active-Directory policies.
-  if 'active_directory' not in policy.supported_chrome_os_management:
-    return False
-  return True
-
-
-# Returns a list of supported user and/or device policies by filtering
-# |policies|. |type| may be 'user', 'device' or 'both'.
-def _GetSupportedChromeOSPolicies(policies, type):
-  if (type not in ['user', 'device', 'both']):
-    raise RuntimeError('Unsupported type "%s"' % type)
-
-  return list(filter(partial(_IsSupportedChromeOSPolicy, type), policies))
-
-
-# Returns a list of supported user and/or device |policies| additionally
-# filtered by |protobuf_type|, which may be any of |_GetProtobufTypes|.
-def _GetSupportedChromeOSPoliciesForProtobufType(policies, type, protobuf_type):
-  supported_policies = _GetSupportedChromeOSPolicies(policies, type)
-
-  return [
-      p for p in supported_policies if p.policy_protobuf_type == protobuf_type
-  ]
-
-
 # Returns the list of all policy.policy_protobuf_type strings from |policies|.
 def _GetProtobufTypes():
   return sorted(['Integer', 'Boolean', 'String', 'StringList'])
-
-
-# Writes the definition of an array that contains the pointers to the mutable
-# proto field for each policy in |policies| of the given |protobuf_type|.
-def _WriteChromeOSPolicyAccessHeader(supported_policies, f, protobuf_type):
-  f.write('// Access to the mutable protobuf function of all supported '
-          '%s user\n// policies.\n' % protobuf_type.lower())
-  f.write('struct %sPolicyAccess {\n'
-          '  const char* policy_key;\n'
-          '  bool per_profile;\n'
-          '  enterprise_management::%sPolicyProto* (*mutable_proto_ptr)(\n'
-          '      enterprise_management::CloudPolicySettings* policy);\n'
-          '};\n' % (protobuf_type, protobuf_type))
-  f.write('extern const std::array<%sPolicyAccess, %d> k%sPolicyAccess;\n\n' %
-          (protobuf_type, len(supported_policies), protobuf_type))
-
-
-# Writes policy_constants.h for use in Chrome OS.
-def _WriteChromeOSPolicyConstantsHeader(policies, policy_atomic_groups,
-                                        target_platform, f, risk_tags,
-                                        chunking):
-  f.write('#ifndef __BINDINGS_POLICY_CONSTANTS_H_\n'
-          '#define __BINDINGS_POLICY_CONSTANTS_H_\n\n'
-          '#include <array>\n\n')
-
-  # Forward declarations.
-  supported_user_policies = _GetSupportedChromeOSPolicies(policies, 'user')
-  protobuf_types = _GetProtobufTypes()
-  f.write('namespace enterprise_management {\n' 'class CloudPolicySettings;\n')
-  for protobuf_type in protobuf_types:
-    f.write('class %sPolicyProto;\n' % protobuf_type)
-  f.write('}  // namespace enterprise_management\n\n')
-
-  f.write('namespace policy {\n\n')
-
-  # Policy keys.
-  all_supported_policies = _GetSupportedChromeOSPolicies(policies, 'both')
-  f.write('// Registry key names for user and device policies.\n'
-          'namespace key {\n\n')
-  for policy in all_supported_policies:
-    f.write('extern const char k' + policy.name + '[];\n')
-  f.write('\n}  // namespace key\n\n')
-
-  # Device policy keys.
-  f.write('// NULL-terminated list of device policy registry key names.\n')
-  f.write('extern const char* kDevicePolicyKeys[];\n\n')
-
-  # User policy proto pointers, one struct for each protobuf type.
-  for protobuf_type in protobuf_types:
-    supported_user_policies = _GetSupportedChromeOSPoliciesForProtobufType(
-        policies, 'user', protobuf_type)
-    _WriteChromeOSPolicyAccessHeader(supported_user_policies, f, protobuf_type)
-
-  f.write('}  // namespace policy\n\n'
-          '#endif  // __BINDINGS_POLICY_CONSTANTS_H_\n')
-
-
-#------------------ Chrome OS policy constants source --------------#
-
-
-# Writes an array that contains the pointers to the mutable proto field for each
-# policy in |policies| of the given |protobuf_type|.
-def _WriteChromeOSPolicyAccessSource(supported_policies, f, protobuf_type,
-                                     chunking):
-  f.write('const std::array<%sPolicyAccess, %d> k%sPolicyAccess {{\n' %
-          (protobuf_type, len(supported_policies), protobuf_type))
-  for policy in supported_policies:
-    name = policy.name
-    lowercase_name = name.lower()
-
-    chunk_number = _ChunkNumber(policy.id, chunking)
-    if chunk_number == 0:
-      mutable_proto_ptr = 'policy->mutable_%s()' % lowercase_name
-    else:
-      mutable_proto_ptr = 'policy->mutable_subproto%d()->mutable_%s()' % (
-          chunk_number, lowercase_name)
-
-    f.write('  {key::k%s,\n'
-            '   %s,\n'
-            '   [](em::CloudPolicySettings* policy)\n'
-            '       -> em::%sPolicyProto* {\n'
-            '     return %s;\n'
-            '   }\n'
-            '  },\n' % (name, str(
-                policy.per_profile).lower(), protobuf_type, mutable_proto_ptr))
-  f.write('}};\n\n')
-
-
-# Writes policy_constants.cc for use in Chrome OS.
-def _WriteChromeOSPolicyConstantsSource(policies, policy_atomic_groups,
-                                        target_platform, f, risk_tags,
-                                        chunking):
-  f.write('#include "bindings/cloud_policy.pb.h"\n'
-          '#include "bindings/policy_constants.h"\n\n'
-          'namespace em = enterprise_management;\n\n'
-          'namespace policy {\n\n')
-
-  # Policy keys.
-  all_supported_policies = _GetSupportedChromeOSPolicies(policies, 'both')
-  f.write('namespace key {\n\n')
-  for policy in all_supported_policies:
-    f.write('const char k{name}[] = "{name}";\n'.format(name=policy.name))
-  f.write('\n}  // namespace key\n\n')
-
-  # Device policy keys.
-  supported_device_policies = _GetSupportedChromeOSPolicies(policies, 'device')
-  f.write('const char* kDevicePolicyKeys[] = {\n\n')
-  for policy in supported_device_policies:
-    f.write('  key::k%s,\n' % policy.name)
-  f.write('  nullptr};\n\n')
-
-  # User policy proto pointers, one struct for each protobuf type.
-  protobuf_types = _GetProtobufTypes()
-  for protobuf_type in protobuf_types:
-    supported_user_policies = _GetSupportedChromeOSPoliciesForProtobufType(
-        policies, 'user', protobuf_type)
-    _WriteChromeOSPolicyAccessSource(supported_user_policies, f, protobuf_type,
-                                     chunking)
-
-  f.write('}  // namespace policy\n')
 
 
 #------------------ app restrictions -------------------------------#

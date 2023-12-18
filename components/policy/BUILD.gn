@@ -26,7 +26,6 @@ gen_policy_templates_win = is_win
 gen_policy_templates_linux = is_linux || is_chromeos
 gen_policy_templates_android = is_android
 gen_policy_templates_mac = is_mac
-gen_policy_templates_chromeos = is_chromeos_ash
 gen_policy_templates_ios = is_ios
 
 # The zip file is grabbed from the Windows build right now.
@@ -36,7 +35,6 @@ gen_policy_templates_zip = is_win
 if (gen_policy_templates_zip) {
   gen_policy_templates_common = true
   gen_policy_templates_win = true
-  gen_policy_templates_chromeos = true
 }
 
 if (is_mac) {
@@ -203,27 +201,6 @@ action("policy_templates") {
       ]
     }
   }
-  if (gen_policy_templates_chromeos) {
-    outputs += policy_templates_chromeos_outputs
-    args += [
-      "--chromeos_adml",
-      rebase_path(policy_templates_chromeos_adml_path, root_build_dir),
-      "--chromeos_admx",
-      rebase_path(policy_templates_chromeos_admx_path, root_build_dir),
-    ]
-    if (is_chrome_branded) {
-      # Create google.admx and google.adml files that define a common 'Google'
-      # category used for Chrome, Chrome OS and possibly external tools, see
-      # crbug.com/665400.
-      outputs += policy_templates_chromeos_google_outputs
-      args += [
-        "--google_adml",
-        rebase_path(policy_templates_chromeos_google_adml_path, root_build_dir),
-        "--google_admx",
-        rebase_path(policy_templates_chromeos_google_admx_path, root_build_dir),
-      ]
-    }
-  }
   if (gen_policy_templates_ios) {
     outputs += policy_templates_ios_outputs
     args += [
@@ -368,7 +345,7 @@ if (gen_policy_templates_zip) {
     output_zip_file = "$root_out_dir/policy_templates.zip"
     script = "tools/make_policy_zip.py"
     inputs = [ version_path ] + policy_templates_win_outputs +
-             policy_templates_chromeos_outputs + policy_templates_common_outputs
+             policy_templates_common_outputs
     outputs = [ output_zip_file ]
     args = [
       "--output",
@@ -393,23 +370,14 @@ if (gen_policy_templates_zip) {
       rebase_path(policy_templates_win_adml_path, root_build_dir),
       "--add",
       rebase_path(policy_templates_win_admx_path, root_build_dir),
-      "--add",
-      rebase_path(policy_templates_chromeos_adml_path, root_build_dir),
-      "--add",
-      rebase_path(policy_templates_chromeos_admx_path, root_build_dir),
     ]
     if (is_chrome_branded) {
       inputs += policy_templates_win_google_outputs
-      inputs += policy_templates_chromeos_google_outputs
       args += [
         "--add",
         rebase_path(policy_templates_win_google_adml_path, root_build_dir),
         "--add",
         rebase_path(policy_templates_win_google_admx_path, root_build_dir),
-        "--add",
-        rebase_path(policy_templates_chromeos_google_adml_path, root_build_dir),
-        "--add",
-        rebase_path(policy_templates_chromeos_google_admx_path, root_build_dir),
       ]
     }
     deps = [

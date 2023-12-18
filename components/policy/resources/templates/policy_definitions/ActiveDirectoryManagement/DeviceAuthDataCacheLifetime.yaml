@@ -20,8 +20,6 @@ schema:
   maximum: 9999
   minimum: 0
   type: integer
-supported_chrome_os_management:
-- active_directory
 supported_on:
 - chrome_os:73-114
 tags:
