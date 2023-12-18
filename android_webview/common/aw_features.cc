@@ -16,11 +16,6 @@ BASE_FEATURE(kWebViewBrotliSupport,
              "WebViewBrotliSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Check layer_tree_frame_sink_id when return resources to compositor.
-BASE_FEATURE(kWebViewCheckReturnResources,
-             "WebViewCheckReturnResources",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether to destroy the WebView rendering functor when after a WebView window
 // becomes invisible.
 //
