@@ -271,11 +271,15 @@ void PopupRowWithButtonView::UpdateFocusedPartAndSelectedSuggestion(
     return;
   }
 
+  if (!controller()) {
+    return;
+  }
+
   focused_part_ = part;
-  if (controller()) {
-    controller()->SelectSuggestion(focused_part_ == RowWithButtonPart::kContent
-                                       ? std::optional<size_t>(line_number())
-                                       : std::nullopt);
+  if (focused_part_ == RowWithButtonPart::kContent) {
+    controller()->SelectSuggestion(line_number());
+  } else {
+    controller()->UnselectSuggestion();
   }
 }
 

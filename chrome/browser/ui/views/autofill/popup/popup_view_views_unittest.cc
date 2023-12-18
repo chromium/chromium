@@ -427,12 +427,12 @@ TEST_F(PopupViewViewsTest, SelectionOnTouchAndUnselectionOnCancel) {
   CreateAndShowView({PopupItemId::kPasswordEntry});
 
   // Tap down (initiated by generating a touch press) will select an element.
-  EXPECT_CALL(controller(), SelectSuggestion(std::optional<size_t>(0u)));
+  EXPECT_CALL(controller(), SelectSuggestion(0));
   generator().PressTouch(
       GetPopupRowViewAt(0).GetBoundsInScreen().CenterPoint());
 
   // Canceling gesture clears any selection.
-  EXPECT_CALL(controller(), SelectSuggestion(std::optional<size_t>()));
+  EXPECT_CALL(controller(), UnselectSuggestion);
   generator().CancelTouch();
 }
 #endif  // !BUILDFLAG(IS_MAC)

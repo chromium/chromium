@@ -645,25 +645,24 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
   return true;
 }
 
-void AutofillPopupControllerImpl::SelectSuggestion(
-    std::optional<size_t> index) {
+void AutofillPopupControllerImpl::SelectSuggestion(int index) {
+  CHECK_LT(index, static_cast<int>(suggestions_.size()));
+
   if (IsMouseLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
     return;
   }
 
-  if (index) {
-    DCHECK_LT(*index, suggestions_.size());
-    if (!CanAccept(GetSuggestionAt(*index).popup_item_id)) {
-      index = std::nullopt;
-    }
+  if (!CanAccept(GetSuggestionAt(index).popup_item_id)) {
+    UnselectSuggestion();
+    return;
   }
 
-  if (index) {
-    delegate_->DidSelectSuggestion(GetSuggestionAt(*index));
-  } else {
-    delegate_->ClearPreviewedForm();
-  }
+  delegate_->DidSelectSuggestion(GetSuggestionAt(index));
+}
+
+void AutofillPopupControllerImpl::UnselectSuggestion() {
+  delegate_->ClearPreviewedForm();
 }
 
 PopupType AutofillPopupControllerImpl::GetPopupType() const {

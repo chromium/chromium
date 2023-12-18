@@ -115,7 +115,8 @@ class AutofillPopupControllerImpl
 
   // AutofillPopupController:
   void OnSuggestionsChanged() override;
-  void SelectSuggestion(std::optional<size_t> index) override;
+  void SelectSuggestion(int index) override;
+  void UnselectSuggestion() override;
   void AcceptSuggestion(int index, base::TimeTicks event_time) override;
   void PerformButtonActionForSuggestion(int index) override;
   bool RemoveSuggestion(

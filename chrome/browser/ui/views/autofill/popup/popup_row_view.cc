@@ -340,7 +340,7 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
     content_view_->UpdateStyle(/*selected=*/false);
     content_view_->GetViewAccessibility().OverrideIsSelected(false);
     if (controller_) {
-      controller_->SelectSuggestion(std::nullopt);
+      controller_->UnselectSuggestion();
     }
   }
 

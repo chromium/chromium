@@ -32,7 +32,7 @@ namespace autofill {
 class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
                                          public AutofillPopupController {
  public:
-  AutofillKeyboardAccessoryAdapter(
+  explicit AutofillKeyboardAccessoryAdapter(
       base::WeakPtr<AutofillPopupController> controller);
 
   AutofillKeyboardAccessoryAdapter(const AutofillKeyboardAccessoryAdapter&) =
@@ -106,7 +106,8 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   bool RemoveSuggestion(
       int index,
       AutofillMetrics::SingleEntryRemovalMethod removal_method) override;
-  void SelectSuggestion(std::optional<size_t> index) override;
+  void SelectSuggestion(int index) override;
+  void UnselectSuggestion() override;
   PopupType GetPopupType() const override;
   bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
   base::WeakPtr<AutofillPopupController> OpenSubPopup(

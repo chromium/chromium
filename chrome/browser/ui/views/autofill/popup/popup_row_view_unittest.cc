@@ -278,7 +278,7 @@ TEST_F(PopupRowViewTest, SetSelectedCellTriggersController) {
   ASSERT_TRUE(row_view().GetExpandChildSuggestionsView());
   ASSERT_FALSE(row_view().GetSelectedCell().has_value());
 
-  EXPECT_CALL(controller(), SelectSuggestion(std::optional<size_t>(0)));
+  EXPECT_CALL(controller(), SelectSuggestion(0u));
   row_view().SetSelectedCell(CellType::kContent);
 
   // No selection triggering if trying to set already selected content.
@@ -286,10 +286,10 @@ TEST_F(PopupRowViewTest, SetSelectedCellTriggersController) {
   row_view().SetSelectedCell(CellType::kContent);
 
   // Deselection of selected content.
-  EXPECT_CALL(controller(), SelectSuggestion(std::optional<size_t>()));
+  EXPECT_CALL(controller(), UnselectSuggestion);
   row_view().SetSelectedCell(CellType::kControl);
 
-  EXPECT_CALL(controller(), SelectSuggestion(std::optional<size_t>(0)));
+  EXPECT_CALL(controller(), SelectSuggestion(0u));
   row_view().SetSelectedCell(CellType::kContent);
 }
 
