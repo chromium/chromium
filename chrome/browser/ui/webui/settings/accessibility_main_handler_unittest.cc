@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/accessibility_main_handler.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -15,16 +16,21 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 namespace settings {
 
 namespace {
 
-const char kA11yPageReadyCallback[] = "a11yPageReady";
+// TODO(crbug.com/1499996): Uncomment and use the callback string below when
+// adding test cases for a11y_page.ts.
+// const char kA11yPageReadyCallback[] = "a11yPageReady";
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+const char kWebUIListenerCall[] = "cr.webUIListenerCallback";
 const char kPdfOcrDownloadingProgressChangedEventName[] =
     "pdf-ocr-downloading-progress-changed";
 const char kPdfOcrStateChangedEventName[] = "pdf-ocr-state-changed";
-const char kWebUIListenerCall[] = "cr.webUIListenerCallback";
 
 class TestScreenAIInstallState : public screen_ai::ScreenAIInstallState {
  public:
@@ -59,18 +65,21 @@ class TestAccessibilityMainHandler : public AccessibilityMainHandler {
                           screen_ai::ScreenAIInstallState::Observer>
       component_ready_observer_{this};
 };
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 }  // namespace
 
-class AccessibilityMainHandlerTest : public testing::Test {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+class AccessibilityMainHandlerPdfOcrTest : public testing::Test {
  public:
-  AccessibilityMainHandlerTest() : features_({features::kPdfOcr}) {}
+  AccessibilityMainHandlerPdfOcrTest() : features_({features::kPdfOcr}) {}
 
-  AccessibilityMainHandlerTest(const AccessibilityMainHandlerTest&) = delete;
-  AccessibilityMainHandlerTest& operator=(const AccessibilityMainHandlerTest&) =
-      delete;
+  AccessibilityMainHandlerPdfOcrTest(
+      const AccessibilityMainHandlerPdfOcrTest&) = delete;
+  AccessibilityMainHandlerPdfOcrTest& operator=(
+      const AccessibilityMainHandlerPdfOcrTest&) = delete;
 
-  ~AccessibilityMainHandlerTest() override = default;
+  ~AccessibilityMainHandlerPdfOcrTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -91,9 +100,6 @@ class AccessibilityMainHandlerTest : public testing::Test {
     handler_->RegisterMessages();
     handler_->AllowJavascript();
     ASSERT_TRUE(handler_->IsJavascriptAllowed());
-
-    base::Value::List empty_args;
-    test_web_ui()->HandleReceivedMessage(kA11yPageReadyCallback, empty_args);
 
     // Run until idle so the handler picks up initial screen ai install state,
     // which is screen_ai::ScreenAIInstallState::State::kNotDownloaded.
@@ -137,7 +143,7 @@ class AccessibilityMainHandlerTest : public testing::Test {
   std::unique_ptr<content::WebContents> web_contents_;
 };
 
-TEST_F(AccessibilityMainHandlerTest, MessageForScreenAIDownloadingState) {
+TEST_F(AccessibilityMainHandlerPdfOcrTest, MessageForScreenAIDownloadingState) {
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
   screen_ai::ScreenAIInstallState::State state =
@@ -148,7 +154,8 @@ TEST_F(AccessibilityMainHandlerTest, MessageForScreenAIDownloadingState) {
                     /*call_count=*/call_data_count_before_call + 1u);
 }
 
-TEST_F(AccessibilityMainHandlerTest, MessageForScreenAIDownloadingProgress) {
+TEST_F(AccessibilityMainHandlerPdfOcrTest,
+       MessageForScreenAIDownloadingProgress) {
   // State needs to be `kDownloading` before updating the download progress.
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
@@ -169,7 +176,7 @@ TEST_F(AccessibilityMainHandlerTest, MessageForScreenAIDownloadingProgress) {
                     /*call_count=*/call_data_count_before_call + 1u);
 }
 
-TEST_F(AccessibilityMainHandlerTest, MessageForScreenAIDownloadedState) {
+TEST_F(AccessibilityMainHandlerPdfOcrTest, MessageForScreenAIDownloadedState) {
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
   screen_ai::ScreenAIInstallState::State state =
@@ -180,7 +187,8 @@ TEST_F(AccessibilityMainHandlerTest, MessageForScreenAIDownloadedState) {
                     /*call_count=*/call_data_count_before_call + 1u);
 }
 
-TEST_F(AccessibilityMainHandlerTest, MessageForScreenAIDownloadFailedState) {
+TEST_F(AccessibilityMainHandlerPdfOcrTest,
+       MessageForScreenAIDownloadFailedState) {
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
   screen_ai::ScreenAIInstallState::State state =
@@ -191,7 +199,7 @@ TEST_F(AccessibilityMainHandlerTest, MessageForScreenAIDownloadFailedState) {
                     /*call_count=*/call_data_count_before_call + 1u);
 }
 
-TEST_F(AccessibilityMainHandlerTest, MessageForScreenAIReadyState) {
+TEST_F(AccessibilityMainHandlerPdfOcrTest, MessageForScreenAIReadyState) {
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
   screen_ai::ScreenAIInstallState::State state =
@@ -202,7 +210,8 @@ TEST_F(AccessibilityMainHandlerTest, MessageForScreenAIReadyState) {
                     /*call_count=*/call_data_count_before_call + 1u);
 }
 
-TEST_F(AccessibilityMainHandlerTest, MessageForScreenAINotDownloadedState) {
+TEST_F(AccessibilityMainHandlerPdfOcrTest,
+       MessageForScreenAINotDownloadedState) {
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
   // Either `kReady` or `kFailed` needs to be set for testing `kNotDownloaded`.
@@ -219,5 +228,6 @@ TEST_F(AccessibilityMainHandlerTest, MessageForScreenAINotDownloadedState) {
                     /*expected_arg=*/static_cast<int>(state),
                     /*call_count=*/call_data_count_before_call + 1u);
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 }  // namespace settings

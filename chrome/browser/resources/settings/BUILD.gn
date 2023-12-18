@@ -261,6 +261,9 @@ build_webui("build") {
   if (is_win || is_mac) {
     web_component_files += [ "autofill_page/passkeys_subpage.ts" ]
   }
+  if (is_win || is_mac || is_linux) {
+    web_component_files += [ "a11y_page/pdf_ocr_toggle.ts" ]
+  }
   if (is_chrome_branded) {
     web_component_files += [ "get_most_chrome_page/get_most_chrome_page.ts" ]
   }

@@ -58,14 +58,10 @@
             sub-label="$i18n{accessibleImageLabelsSubtitle}">
         </settings-toggle-button>
 <if expr="is_win or is_linux or is_macosx">
-        <settings-toggle-button id="pdfOcrToggle"
-            class="hr"
-            hidden$="[[!showPdfOcrToggle_]]"
-            pref="{{prefs.settings.a11y.pdf_ocr_always_active}}"
-            label="$i18n{pdfOcrTitle}"
-            sub-label="[[getPdfOcrToggleSublabel_(
-                pdfOcrStatus_, pdfOcrProgress_)]]">
-        </settings-toggle-button>
+        <template is="dom-if" if="[[showPdfOcrToggle_]]">
+          <settings-pdf-ocr-toggle id="pdfOcrToggle" prefs="{{prefs}}">
+          </settings-pdf-ocr-toggle>
+        </template>
 </if>
 <if expr="is_win or is_linux">
         <settings-toggle-button

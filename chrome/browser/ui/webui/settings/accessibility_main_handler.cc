@@ -39,6 +39,13 @@ void AccessibilityMainHandler::RegisterMessages() {
       base::BindRepeating(
           &AccessibilityMainHandler::HandleCheckAccessibilityImageLabels,
           base::Unretained(this)));
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  web_ui()->RegisterMessageCallback(
+      "getScreenAiInstallState",
+      base::BindRepeating(
+          &AccessibilityMainHandler::HandleGetScreenAIInstallState,
+          base::Unretained(this)));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 }
 
 void AccessibilityMainHandler::OnJavascriptAllowed() {
@@ -83,6 +90,18 @@ void AccessibilityMainHandler::StateChanged(
     screen_ai::ScreenAIInstallState::State state) {
   base::Value state_value = base::Value(static_cast<int>(state));
   FireWebUIListener("pdf-ocr-state-changed", state_value);
+}
+
+void AccessibilityMainHandler::HandleGetScreenAIInstallState(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+  AllowJavascript();
+  // Get the current install state and send it back to a UI listener.
+  screen_ai::ScreenAIInstallState::State current_install_state =
+      screen_ai::ScreenAIInstallState::GetInstance()->get_state();
+  ResolveJavascriptCallback(
+      callback_id, base::Value(static_cast<int>(current_install_state)));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
