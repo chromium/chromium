@@ -300,7 +300,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kWebApkAllowIconUpdate,
     &kWebApkBackupAndRestoreBackend,
     &kWebApkIconUpdateThreshold,
-    &kWebApkInstallService,
     &features::kDnsOverHttps,
     &notifications::features::kUseChimeAndroidSdk,
     &paint_preview::kPaintPreviewDemo,
@@ -994,11 +993,6 @@ BASE_FEATURE(kWebApkIconUpdateThreshold,
 
 BASE_FEATURE(kWebApkBackupAndRestoreBackend,
              "WebApkBackupAndRestoreBackend",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables the Chrome Android WebAPK-install service.
-BASE_FEATURE(kWebApkInstallService,
-             "WebApkInstallService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace android

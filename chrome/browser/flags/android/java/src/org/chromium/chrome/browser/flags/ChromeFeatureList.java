@@ -456,7 +456,6 @@ public abstract class ChromeFeatureList {
     public static final String VOICE_SEARCH_AUDIO_CAPTURE_POLICY = "VoiceSearchAudioCapturePolicy";
     public static final String WEB_APK_ALLOW_ICON_UPDATE = "WebApkAllowIconUpdate";
     public static final String WEB_APK_ICON_UPDATE_THRESHOLD = "WebApkIconUpdateThreshold";
-    public static final String WEB_APK_INSTALL_SERVICE = "WebApkInstallService";
     public static final String WEB_APP_AMBIENT_BADGE_SUPRESS_FIRST_VISIT =
             "AmbientBadgeSuppressFirstVisit";
     public static final String WEB_APK_INSTALL_FAILURE_NOTIFICATION =

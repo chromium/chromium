@@ -1087,15 +1087,6 @@ by a child template that "extends" this file.
             </intent-filter>
         </service>
 
-        <service
-            android:name="org.chromium.chrome.browser.webapps.WebApkInstallCoordinatorService"
-            android:exported="true"
-            tools:ignore="ExportedService">
-            <intent-filter>
-              <action android:name="org.chromium.intent.action.INSTALL_WEB_APK" />
-            </intent-filter>
-        </service>
-
 
         <receiver android:name="org.chromium.chrome.browser.announcement.AnnouncementNotificationManager$Receiver"
             android:exported="false"/>

@@ -590,7 +590,6 @@ if (current_toolchain == default_toolchain) {
       "//components/webapk/android/libs/client:java",
       "//components/webapk/android/libs/common:java",
       "//components/webapps/browser/android:java",
-      "//components/webapps/common/android:webapk_install_java",
       "//components/webauthn/android:java",
       "//components/webrtc/android:java",
       "//components/webxr/android:xr_java",
@@ -2570,7 +2569,6 @@ if (current_toolchain == default_toolchain) {
       "java/src/org/chromium/chrome/browser/services/gcm/GCMBackgroundService.java",
       "java/src/org/chromium/chrome/browser/services/gcm/InvalidationGcmUpstreamSender.java",
       "java/src/org/chromium/chrome/browser/tracing/TracingNotificationService.java",
-      "java/src/org/chromium/chrome/browser/webapps/WebApkInstallCoordinatorService.java",
     ]
     deps = [
       ":chrome_base_module_resources",
@@ -3634,7 +3632,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/usage_stats/UsageStatsBridge.java",
     "java/src/org/chromium/chrome/browser/webapps/WebApkDataProvider.java",
     "java/src/org/chromium/chrome/browser/webapps/WebApkHandlerDelegate.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkInstallCoordinatorBridge.java",
     "java/src/org/chromium/chrome/browser/webapps/WebApkInstallService.java",
     "java/src/org/chromium/chrome/browser/webapps/WebApkInstaller.java",
     "java/src/org/chromium/chrome/browser/webapps/WebApkPostShareTargetNavigator.java",
