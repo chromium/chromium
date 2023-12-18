@@ -7765,6 +7765,14 @@ const char kEnableBoundSessionCredentialsDescription[] =
     "Enables Google session credentials binding to cryptographic keys that are "
     "practically impossible to extract from the user device. This will mostly "
     "prevent the usage of bound credentials outside of the user device.";
+
+const char kEnableBoundSessionCredentialsSoftwareKeysForManualTestingName[] =
+    "Device Bound Session Credentials with software keys";
+const char
+    kEnableBoundSessionCredentialsSoftwareKeysForManualTestingDescription[] =
+        "Enables mock software-backed cryptographic keys for Google session "
+        "credentials binding (not secure). This is intented to be used for "
+        "manual testing only.";
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)

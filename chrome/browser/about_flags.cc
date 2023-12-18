@@ -344,6 +344,10 @@
 #include "ui/views/views_switches.h"
 #endif  // defined(TOOLKIT_VIEWS)
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "components/unexportable_keys/features.h"  // nogncheck
+#endif
+
 using flags_ui::FeatureEntry;
 using flags_ui::kDeprecated;
 using flags_ui::kOsAndroid;
@@ -10742,6 +10746,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kEnableBoundSessionCredentials,
                                     kEnableBoundSessionCredentialsVariations,
                                     "EnableBoundSessionCredentials")},
+    {"enable-bound-session-credentials-software-keys-for-manual-testing",
+     flag_descriptions::
+         kEnableBoundSessionCredentialsSoftwareKeysForManualTestingName,
+     flag_descriptions::
+         kEnableBoundSessionCredentialsSoftwareKeysForManualTestingDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(
+         unexportable_keys::
+             kEnableBoundSessionCredentialsSoftwareKeysForManualTesting)},
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

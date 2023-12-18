@@ -30823,6 +30823,8 @@ from previous Chrome versions.
   <int value="-1093135462" label="DesktopPWAsAttentionBadgingCrOS:disabled"/>
   <int value="-1092514142" label="JourneysKeywordFiltering:disabled"/>
   <int value="-1092211161" label="BluetoothWbsDogfood:disabled"/>
+  <int value="-1092165602"
+      label="EnableBoundSessionCredentialsSoftwareKeysForManualTesting:enabled"/>
   <int value="-1090001589" label="WebViewRestrictSensitiveContent:enabled"/>
   <int value="-1089665395" label="HTMLParamElementUrlSupport:enabled"/>
   <int value="-1088804127" label="DuetTabStripIntegrationAndroid:disabled"/>
@@ -32274,6 +32276,8 @@ from previous Chrome versions.
   <int value="-400098787" label="QuietNotificationPrompts:enabled"/>
   <int value="-399614193" label="EnableSuggestedDriveFiles:enabled"/>
   <int value="-399333540" label="FiltersInRecents:disabled"/>
+  <int value="-399166855"
+      label="enable-bound-session-credentials-software-keys-for-manual-testing:enabled"/>
   <int value="-398922143" label="IframeOneGoogleBar:enabled"/>
   <int value="-398623652" label="CCTTargetTranslateLanguage:enabled"/>
   <int value="-398325847" label="HelpAppCrosComponents:enabled"/>
@@ -34340,6 +34344,8 @@ from previous Chrome versions.
   <int value="578894559" label="IPH_Snooze:enabled"/>
   <int value="580288865" label="ClipboardMaximumAge:disabled"/>
   <int value="580546202" label="WindowSplitting:disabled"/>
+  <int value="580915599"
+      label="EnableBoundSessionCredentialsSoftwareKeysForManualTesting:disabled"/>
   <int value="581118445" label="enable-eol-notification"/>
   <int value="581355159" label="ContentSuggestionsCategoryRanker:disabled"/>
   <int value="582187448" label="DontPrefetchLibraries:enabled"/>
@@ -36119,6 +36125,8 @@ from previous Chrome versions.
   <int value="1429923065" label="enable-media-internals:enabled"/>
   <int value="1430924529" label="TranslateIntent:enabled"/>
   <int value="1431050645" label="PayWithGoogleV1:disabled"/>
+  <int value="1431148950"
+      label="enable-bound-session-credentials-software-keys-for-manual-testing:disabled"/>
   <int value="1431934725" label="OmniboxAutocompleteTitles:disabled"/>
   <int value="1432263468" label="SpeculationRulesPrefetchProxy:disabled"/>
   <int value="1433706192" label="FileSystemObserver:disabled"/>

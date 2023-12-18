@@ -4497,6 +4497,11 @@ extern const char kProfilesReorderingDescription[];
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 extern const char kEnableBoundSessionCredentialsName[];
 extern const char kEnableBoundSessionCredentialsDescription[];
+
+extern const char
+    kEnableBoundSessionCredentialsSoftwareKeysForManualTestingName[];
+extern const char
+    kEnableBoundSessionCredentialsSoftwareKeysForManualTestingDescription[];
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
