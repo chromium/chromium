@@ -11,7 +11,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/ml/webnn/features.mojom-features.h"
 #include "components/ml/webnn/graph_validation_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -4999,6 +5001,9 @@ TEST_F(WebNNGraphImplTest, WhereTest) {
 }
 
 TEST_F(WebNNGraphImplTest, ValidateInputsTest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitFromCommandLine("WebMachineLearningNeuralNetwork", "");
+
   const std::vector<uint32_t> dimensions = {3, 5};
   // Build the graph with mojo type.
   GraphInfoBuilder builder;

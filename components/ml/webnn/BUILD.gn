@@ -2,15 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-component("features") {
-  defines = [ "IS_WEBNN_FEATURES_IMPL" ]
+import("//mojo/public/tools/bindings/mojom.gni")
 
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-
-  deps = [ "//base" ]
+mojom_component("features") {
+  sources = [ "features.mojom" ]
+  output_prefix = "components_ml_webnn_features_mojom"
+  macro_prefix = "COMPONENTS_ML_WEBNN_FEATURES_MOJOM"
 }
 
 static_library("webnn") {

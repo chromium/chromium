@@ -111,7 +111,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "components/ml/webnn/features.h"
+#include "components/ml/webnn/features.mojom-features.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -937,8 +937,6 @@ void GpuServiceImpl::BindClientGmbInterface(
 void GpuServiceImpl::BindWebNNContextProvider(
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> pending_receiver,
     int client_id) {
-  CHECK(base::FeatureList::IsEnabled(
-      webnn::features::kWebMachineLearningNeuralNetwork));
   webnn::WebNNContextProviderImpl::Create(std::move(pending_receiver));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

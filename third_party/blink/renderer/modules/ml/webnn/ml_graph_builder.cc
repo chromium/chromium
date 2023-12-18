@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/numerics/checked_math.h"
-#include "components/ml/webnn/features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"

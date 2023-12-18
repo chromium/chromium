@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/ml/ml.h"
 
 #include "components/ml/mojom/web_platform_model.mojom-blink.h"
-#include "components/ml/webnn/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"

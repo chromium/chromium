@@ -113,7 +113,7 @@
 #include "components/lens/lens_features.h"
 #include "components/manta/features.h"
 #include "components/mirroring/service/mirroring_features.h"
-#include "components/ml/webnn/features.h"
+#include "components/ml/webnn/features.mojom-features.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/nacl/common/nacl_switches.h"
 #include "components/network_session_configurator/common/network_features.h"
@@ -8158,7 +8158,8 @@ const FeatureEntry kFeatureEntries[] = {
     {"web-machine-learning-neural-network",
      flag_descriptions::kWebMachineLearningNeuralNetworkName,
      flag_descriptions::kWebMachineLearningNeuralNetworkDescription, kOsAll,
-     FEATURE_VALUE_TYPE(webnn::features::kWebMachineLearningNeuralNetwork)},
+     FEATURE_VALUE_TYPE(
+         webnn::mojom::features::kWebMachineLearningNeuralNetwork)},
 
     {"one-time-permission", flag_descriptions::kOneTimePermissionName,
      flag_descriptions::kOneTimePermissionDescription, kOsAll,

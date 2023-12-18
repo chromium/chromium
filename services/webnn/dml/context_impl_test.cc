@@ -6,7 +6,9 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/ml/webnn/features.mojom-features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/dml/test_base.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -21,6 +23,10 @@ class WebNNContextDMLImplTest : public TestBase {
 };
 
 TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::mojom::features::kWebMachineLearningNeuralNetwork);
+
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
   bool is_platform_supported = true;

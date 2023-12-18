@@ -237,7 +237,7 @@
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "components/ml/webnn/features.h"
+#include "components/ml/webnn/features.mojom-features.h"
 #include "components/viz/host/gpu_client.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #endif
@@ -902,7 +902,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
-          webnn::features::kWebMachineLearningNeuralNetwork)) {
+          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
     map->Add<webnn::mojom::WebNNContextProvider>(base::BindRepeating(
         &BindWebNNContextProviderForRenderFrame, base::Unretained(host)));
   }
@@ -1282,7 +1282,7 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
 
 #if !BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
-          webnn::features::kWebMachineLearningNeuralNetwork)) {
+          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
     // base::Unretained(host->GetProcessHost()) is safe because the map is owned
     // by |DedicatedWorkerHost::broker_|.
     map->Add<webnn::mojom::WebNNContextProvider>(base::BindRepeating(

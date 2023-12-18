@@ -6,7 +6,9 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/ml/webnn/features.mojom-features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,6 +40,10 @@ class WebNNContextProviderImplTest : public testing::Test {
 #if !BUILDFLAG(IS_WIN)
 
 TEST_F(WebNNContextProviderImplTest, CreateWebNNContextTest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      webnn::mojom::features::kWebMachineLearningNeuralNetwork);
+
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
 
   WebNNContextProviderImpl::Create(
