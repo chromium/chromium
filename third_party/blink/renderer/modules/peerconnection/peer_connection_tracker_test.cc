@@ -68,12 +68,11 @@ class MockPeerConnectionTrackerHost
   MOCK_METHOD2(AddStandardStats, void(int, base::Value::List));
   MOCK_METHOD2(AddLegacyStats, void(int, base::Value::List));
 
-  mojo::Remote<blink::mojom::blink::PeerConnectionTrackerHost>
+  mojo::PendingRemote<blink::mojom::blink::PeerConnectionTrackerHost>
   CreatePendingRemoteAndBind() {
     receiver_.reset();
-    return mojo::Remote<blink::mojom::blink::PeerConnectionTrackerHost>(
-        receiver_.BindNewPipeAndPassRemote(
-            blink::scheduler::GetSingleThreadTaskRunnerForTesting()));
+    return receiver_.BindNewPipeAndPassRemote(
+        blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
   mojo::Receiver<blink::mojom::blink::PeerConnectionTrackerHost> receiver_{

@@ -10,18 +10,18 @@
 #include "base/threading/thread_checker.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_peer_connection_handler_client.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_transceiver_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_platform.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
@@ -66,12 +66,12 @@ class MODULES_EXPORT PeerConnectionTracker
 
   // Ctors for tests.
   PeerConnectionTracker(
-      mojo::Remote<mojom::blink::PeerConnectionTrackerHost> host,
+      mojo::PendingRemote<mojom::blink::PeerConnectionTrackerHost> host,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       base::PassKey<PeerConnectionTrackerTest> key)
       : PeerConnectionTracker(std::move(host), main_thread_task_runner) {}
   PeerConnectionTracker(
-      mojo::Remote<mojom::blink::PeerConnectionTrackerHost> host,
+      mojo::PendingRemote<mojom::blink::PeerConnectionTrackerHost> host,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       base::PassKey<MockPeerConnectionTracker> key)
       : PeerConnectionTracker(std::move(host), main_thread_task_runner) {}
@@ -238,6 +238,7 @@ class MODULES_EXPORT PeerConnectionTracker
                                      const WTF::Vector<uint8_t>& output);
 
   void Trace(Visitor* visitor) const override {
+    visitor->Trace(peer_connection_tracker_host_);
     visitor->Trace(receiver_);
     Supplement<LocalDOMWindow>::Trace(visitor);
   }
@@ -250,7 +251,7 @@ class MODULES_EXPORT PeerConnectionTracker
                            ReportInitialThermalState);
 
   PeerConnectionTracker(
-      mojo::Remote<mojom::blink::PeerConnectionTrackerHost> host,
+      mojo::PendingRemote<mojom::blink::PeerConnectionTrackerHost> host,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner);
 
   void Bind(mojo::PendingReceiver<blink::mojom::blink::PeerConnectionManager>
@@ -308,8 +309,7 @@ class MODULES_EXPORT PeerConnectionTracker
   int32_t current_speed_limit_ = mojom::blink::kSpeedLimitMax;
 
   THREAD_CHECKER(main_thread_);
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::Remote<blink::mojom::blink::PeerConnectionTrackerHost>
+  HeapMojoRemote<blink::mojom::blink::PeerConnectionTrackerHost>
       peer_connection_tracker_host_;
   HeapMojoReceiver<blink::mojom::blink::PeerConnectionManager,
                    PeerConnectionTracker>
