@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -118,6 +119,7 @@ class WebDataServiceTest : public testing::Test {
 
     wdbs_ = new WebDatabaseService(
         path, base::SequencedTaskRunner::GetCurrentDefault(), db_task_runner_);
+    wdbs_->AddTable(std::make_unique<AddressAutofillTable>());
     wdbs_->AddTable(std::make_unique<AutocompleteTable>());
     wdbs_->AddTable(std::make_unique<AutofillTable>());
     wdbs_->LoadDatabase();

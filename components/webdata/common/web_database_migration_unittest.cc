@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -26,12 +27,6 @@
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using autofill::AutofillProfile;
-using autofill::AutofillTable;
-using autofill::CreditCard;
-using base::ASCIIToUTF16;
-using base::Time;
 
 namespace {
 
@@ -77,12 +72,14 @@ class WebDatabaseMigrationTest : public testing::Test {
   // Load the database via the WebDatabase class and migrate the database to
   // the current version.
   void DoMigration() {
+    autofill::AddressAutofillTable address_autofill_table;
     autofill::AutocompleteTable autocomplete_table;
-    AutofillTable autofill_table;
+    autofill::AutofillTable autofill_table;
     KeywordTable keyword_table;
     TokenServiceTable token_service_table;
 
     WebDatabase db;
+    db.AddTable(&address_autofill_table);
     db.AddTable(&autocomplete_table);
     db.AddTable(&autofill_table);
     db.AddTable(&keyword_table);
@@ -1058,21 +1055,22 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion112ToCurrent) {
     EXPECT_TRUE(connection.DoesTableExist("local_addresses"));
     EXPECT_TRUE(connection.DoesTableExist("local_addresses_type_tokens"));
 
-    // Expect to find the profiles in the local_addresses tables. AutofillTable
-    // will read from them.
-    AutofillTable table;
+    // Expect to find the profiles in the local_addresses tables.
+    // AddressAutofillTable will read from them.
+    autofill::AddressAutofillTable table;
     table.Init(&connection, /*meta_table=*/nullptr);
-    std::unique_ptr<AutofillProfile> profile =
-        table.GetAutofillProfile("00000000-0000-0000-0000-000000000000",
-                                 AutofillProfile::Source::kLocalOrSyncable);
+    std::unique_ptr<autofill::AutofillProfile> profile =
+        table.GetAutofillProfile(
+            "00000000-0000-0000-0000-000000000000",
+            autofill::AutofillProfile::Source::kLocalOrSyncable);
     ASSERT_TRUE(profile);
-    EXPECT_EQ(profile->modification_date(), Time::FromTimeT(123));
+    EXPECT_EQ(profile->modification_date(), base::Time::FromTimeT(123));
     EXPECT_EQ(profile->GetRawInfo(autofill::NAME_FULL), u"full name");
     EXPECT_EQ(profile->GetRawInfo(autofill::ADDRESS_HOME_ZIP), u"4567");
 
-    EXPECT_TRUE(
-        table.GetAutofillProfile("00000000-0000-0000-0000-000000000001",
-                                 AutofillProfile::Source::kLocalOrSyncable));
+    EXPECT_TRUE(table.GetAutofillProfile(
+        "00000000-0000-0000-0000-000000000001",
+        autofill::AutofillProfile::Source::kLocalOrSyncable));
   }
 }
 

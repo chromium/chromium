@@ -66,7 +66,7 @@ std::unique_ptr<syncer::MetadataChangeList>
 ContactInfoSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetAutofillTable(), syncer::CONTACT_INFO,
+      GetSyncMetadataStore(), syncer::CONTACT_INFO,
       base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
@@ -273,7 +273,12 @@ bool ContactInfoSyncBridge::SyncMetadataCacheContainsSupportedFields(
   return false;
 }
 
-AutofillTable* ContactInfoSyncBridge::GetAutofillTable() {
+AddressAutofillTable* ContactInfoSyncBridge::GetAutofillTable() {
+  return AddressAutofillTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
+}
+
+AutofillTable* ContactInfoSyncBridge::GetSyncMetadataStore() {
   return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
 
@@ -303,8 +308,8 @@ ContactInfoSyncBridge::GetDataAndFilter(
 
 void ContactInfoSyncBridge::LoadMetadata() {
   auto batch = std::make_unique<syncer::MetadataBatch>();
-  if (!GetAutofillTable()->GetAllSyncMetadata(syncer::CONTACT_INFO,
-                                              batch.get())) {
+  if (!GetSyncMetadataStore()->GetAllSyncMetadata(syncer::CONTACT_INFO,
+                                                  batch.get())) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed reading CONTACT_INFO metadata from WebDatabase."});
     return;
@@ -315,7 +320,8 @@ void ContactInfoSyncBridge::LoadMetadata() {
     // contains supported fields, this means that the browser was updated and
     // we should force the initial sync flow to propagate the cached data into
     // the local model.
-    GetAutofillTable()->DeleteAllSyncMetadata(syncer::ModelType::CONTACT_INFO);
+    GetSyncMetadataStore()->DeleteAllSyncMetadata(
+        syncer::ModelType::CONTACT_INFO);
 
     batch = std::make_unique<syncer::MetadataBatch>();
   }

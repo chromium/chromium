@@ -10,8 +10,8 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/sync/model/model_error.h"
 
 namespace autofill {
@@ -26,7 +26,7 @@ using syncer::ModelError;
   }
 
 AutofillProfileSyncDifferenceTracker::AutofillProfileSyncDifferenceTracker(
-    AutofillTable* table)
+    AddressAutofillTable* table)
     : table_(table) {}
 
 AutofillProfileSyncDifferenceTracker::~AutofillProfileSyncDifferenceTracker() =
@@ -232,7 +232,7 @@ bool AutofillProfileSyncDifferenceTracker::
 }
 
 AutofillProfileInitialSyncDifferenceTracker::
-    AutofillProfileInitialSyncDifferenceTracker(AutofillTable* table)
+    AutofillProfileInitialSyncDifferenceTracker(AddressAutofillTable* table)
     : AutofillProfileSyncDifferenceTracker(table) {}
 
 AutofillProfileInitialSyncDifferenceTracker::

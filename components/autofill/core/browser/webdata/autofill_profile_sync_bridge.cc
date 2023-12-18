@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/autofill_profile_sync_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_difference_tracker.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -92,7 +93,7 @@ std::unique_ptr<MetadataChangeList>
 AutofillProfileSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetAutofillTable(), syncer::AUTOFILL_PROFILE,
+      GetSyncMetadataStore(), syncer::AUTOFILL_PROFILE,
       base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
@@ -261,15 +262,15 @@ absl::optional<syncer::ModelError> AutofillProfileSyncBridge::FlushSyncTracker(
 
 void AutofillProfileSyncBridge::LoadMetadata() {
   if (!web_data_backend_ || !web_data_backend_->GetDatabase() ||
-      !GetAutofillTable()) {
+      !GetAutofillTable() || !GetSyncMetadataStore()) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load AutofillWebDatabase."});
     return;
   }
 
   auto batch = std::make_unique<syncer::MetadataBatch>();
-  if (!GetAutofillTable()->GetAllSyncMetadata(syncer::AUTOFILL_PROFILE,
-                                              batch.get())) {
+  if (!GetSyncMetadataStore()->GetAllSyncMetadata(syncer::AUTOFILL_PROFILE,
+                                                  batch.get())) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed reading autofill metadata from WebDatabase."});
     return;
@@ -298,7 +299,12 @@ void AutofillProfileSyncBridge::AutofillProfileChanged(
   ActOnLocalChange(change);
 }
 
-AutofillTable* AutofillProfileSyncBridge::GetAutofillTable() {
+AddressAutofillTable* AutofillProfileSyncBridge::GetAutofillTable() {
+  return AddressAutofillTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
+}
+
+AutofillTable* AutofillProfileSyncBridge::GetSyncMetadataStore() {
   return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
 

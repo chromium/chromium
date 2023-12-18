@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/autofill_profile_sync_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
@@ -263,6 +264,7 @@ class AutofillProfileSyncBridgeTest : public testing::Test {
     test_clock_.SetNow(kJune2017);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
+    db_.AddTable(&sync_metadata_table_);
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
     ON_CALL(*backend(), GetDatabase()).WillByDefault(Return(&db_));
     ResetProcessor();
@@ -361,7 +363,7 @@ class AutofillProfileSyncBridgeTest : public testing::Test {
     return mock_processor_;
   }
 
-  AutofillTable* table() { return &table_; }
+  AddressAutofillTable* table() { return &table_; }
 
   MockAutofillWebDataBackend* backend() { return &backend_; }
 
@@ -370,7 +372,8 @@ class AutofillProfileSyncBridgeTest : public testing::Test {
   ScopedTempDir temp_dir_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
-  AutofillTable table_;
+  AddressAutofillTable table_;
+  AutofillTable sync_metadata_table_;
   WebDatabase db_;
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;

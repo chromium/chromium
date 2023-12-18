@@ -14,7 +14,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/sync/model/model_error.h"
 #include "components/webdata/common/web_database.h"
@@ -114,13 +114,13 @@ class AutofillProfileSyncDifferenceTrackerTestBase : public testing::Test {
 
   virtual AutofillProfileSyncDifferenceTracker* tracker() = 0;
 
-  AutofillTable* table() { return &table_; }
+  AddressAutofillTable* table() { return &table_; }
 
  private:
   autofill::TestAutofillClock test_clock_;
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_;
-  AutofillTable table_;
+  AddressAutofillTable table_;
   WebDatabase db_;
 };
 

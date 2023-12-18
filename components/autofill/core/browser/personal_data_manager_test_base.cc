@@ -6,6 +6,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill {
@@ -29,6 +30,7 @@ void PersonalDataManagerTestBase::SetUpTest() {
       path, base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
+  profile_web_database_->AddTable(std::make_unique<AddressAutofillTable>());
   // Hacky: hold onto a pointer but pass ownership.
   profile_autofill_table_ = new AutofillTable;
   profile_web_database_->AddTable(

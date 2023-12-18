@@ -3359,20 +3359,6 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   profile_autofill_table_->GetCreditCards(&cards);
   EXPECT_EQ(1U, cards.size());
   EXPECT_EQ(local_card.LastFourDigits(), cards[0]->LastFourDigits());
-
-  // Add a local profile
-  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox", "123 Zoo St", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
-  AddProfileToPersonalDataManager(profile);
-
-  std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  // Expect that a profile is stored in the profile autofill table.
-  profile_autofill_table_->GetAutofillProfiles(
-      AutofillProfile::Source::kLocalOrSyncable, &profiles);
-  EXPECT_EQ(1U, profiles.size());
-  EXPECT_EQ(profile, *profiles[0]);
 }
 
 // Tests that the least recently used profile of two existing profiles is

@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/core/browser/contact_info_sync_util.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
@@ -81,7 +82,11 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
       const syncer::EntityMetadataMap& metadata_map) const;
 
   // Returns the `AutofillTable` associated with the `web_data_backend_`.
-  AutofillTable* GetAutofillTable();
+  AddressAutofillTable* GetAutofillTable();
+
+  // AutofillTable acts as the metadata storage for all components/autofill-
+  // related sync code.
+  AutofillTable* GetSyncMetadataStore();
 
   // Queries all `Source::kAccount` profiles from `GetAutofillTable()` and
   // restricts the result to profiles where `filter(guid)` is true.

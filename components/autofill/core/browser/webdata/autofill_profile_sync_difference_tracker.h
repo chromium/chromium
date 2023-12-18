@@ -23,7 +23,7 @@ namespace autofill {
 
 class AutofillProfile;
 class AutofillProfileComparator;
-class AutofillTable;
+class AddressAutofillTable;
 
 // This is used to respond to ApplyIncrementalSyncChanges() and
 // MergeFullSyncData(). Attempts to lazily load local data, and then react to
@@ -32,7 +32,7 @@ class AutofillTable;
 // directions.
 class AutofillProfileSyncDifferenceTracker {
  public:
-  explicit AutofillProfileSyncDifferenceTracker(AutofillTable* table);
+  explicit AutofillProfileSyncDifferenceTracker(AddressAutofillTable* table);
 
   AutofillProfileSyncDifferenceTracker(
       const AutofillProfileSyncDifferenceTracker&) = delete;
@@ -90,7 +90,7 @@ class AutofillProfileSyncDifferenceTracker {
   bool InitializeLocalOnlyEntriesIfNeeded();
 
   // The table for reading local data.
-  const raw_ptr<AutofillTable> table_;
+  const raw_ptr<AddressAutofillTable> table_;
 
   // This class loads local data from |table_| lazily. This field tracks if that
   // has happened or not yet.
@@ -119,7 +119,8 @@ class AutofillProfileSyncDifferenceTracker {
 class AutofillProfileInitialSyncDifferenceTracker
     : public AutofillProfileSyncDifferenceTracker {
  public:
-  explicit AutofillProfileInitialSyncDifferenceTracker(AutofillTable* table);
+  explicit AutofillProfileInitialSyncDifferenceTracker(
+      AddressAutofillTable* table);
 
   AutofillProfileInitialSyncDifferenceTracker(
       const AutofillProfileInitialSyncDifferenceTracker&) = delete;

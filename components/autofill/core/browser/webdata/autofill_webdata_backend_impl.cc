@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -321,7 +322,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddAutofillProfile(
     const AutofillProfile& profile,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  AutofillTable* table = AutofillTable::FromWebDatabase(db);
+  AddressAutofillTable* table = AddressAutofillTable::FromWebDatabase(db);
   if (!table->AddAutofillProfile(profile)) {
     ReportResult(Result::kAddAutofillProfile_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
@@ -351,7 +352,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
     const AutofillProfile& profile,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  AutofillTable* table = AutofillTable::FromWebDatabase(db);
+  AddressAutofillTable* table = AddressAutofillTable::FromWebDatabase(db);
   // Only perform the update if the profile exists.  It is currently
   // valid to try to update a missing profile.  We simply drop the write and
   // the caller will detect this on the next refresh.
@@ -392,14 +393,14 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::unique_ptr<AutofillProfile> profile =
-      AutofillTable::FromWebDatabase(db)->GetAutofillProfile(guid,
-                                                             profile_source);
+      AddressAutofillTable::FromWebDatabase(db)->GetAutofillProfile(
+          guid, profile_source);
   if (!profile) {
     ReportResult(Result::kRemoveAutofillProfile_ReadFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
-  if (!AutofillTable::FromWebDatabase(db)->RemoveAutofillProfile(
+  if (!AddressAutofillTable::FromWebDatabase(db)->RemoveAutofillProfile(
           guid, profile_source)) {
     ReportResult(Result::kRemoveAutofillProfile_WriteFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
@@ -426,8 +427,8 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillProfiles(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  AutofillTable::FromWebDatabase(db)->GetAutofillProfiles(profile_source,
-                                                          &profiles);
+  AddressAutofillTable::FromWebDatabase(db)->GetAutofillProfiles(profile_source,
+                                                                 &profiles);
   return std::unique_ptr<WDTypedResult>(
       new WDResult<std::vector<std::unique_ptr<AutofillProfile>>>(
           AUTOFILL_PROFILES_RESULT, std::move(profiles)));
@@ -855,12 +856,13 @@ WebDatabase::State AutofillWebDataBackendImpl::ClearAllServerData(
 WebDatabase::State AutofillWebDataBackendImpl::ClearAllLocalData(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (AutofillTable::FromWebDatabase(db)->ClearAllLocalData()) {
-    ReportResult(Result::kClearAllLocalData_Success);
-    return WebDatabase::COMMIT_NEEDED;
-  }
-  ReportResult(Result::kClearAllLocalData_Failure);
-  return WebDatabase::COMMIT_NOT_NEEDED;
+  bool a_succeeded =
+      AddressAutofillTable::FromWebDatabase(db)->ClearAllLocalData();
+  bool b_succeeded = AutofillTable::FromWebDatabase(db)->ClearAllLocalData();
+  ReportResult(a_succeeded && b_succeeded ? Result::kClearAllLocalData_Success
+                                          : Result::kClearAllLocalData_Failure);
+  return a_succeeded || b_succeeded ? WebDatabase::COMMIT_NEEDED
+                                    : WebDatabase::COMMIT_NOT_NEEDED;
 }
 
 WebDatabase::State
@@ -870,28 +872,39 @@ AutofillWebDataBackendImpl::RemoveAutofillDataModifiedBetween(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  std::vector<std::unique_ptr<CreditCard>> credit_cards;
-  if (AutofillTable::FromWebDatabase(db)->RemoveAutofillDataModifiedBetween(
-          delete_begin, delete_end, &profiles, &credit_cards)) {
+  bool commit_needed = false;
+  bool failures_observed = false;
+  if (AddressAutofillTable::FromWebDatabase(db)
+          ->RemoveAutofillDataModifiedBetween(delete_begin, delete_end,
+                                              &profiles)) {
     for (const std::unique_ptr<AutofillProfile>& profile : profiles) {
       for (auto& db_observer : db_observer_list_) {
         db_observer.AutofillProfileChanged(AutofillProfileChange(
             AutofillProfileChange::REMOVE, profile->guid(), *profile));
       }
     }
+    commit_needed = true;
+  } else {
+    failures_observed = true;
+  }
+  std::vector<std::unique_ptr<CreditCard>> credit_cards;
+  if (AutofillTable::FromWebDatabase(db)->RemoveAutofillDataModifiedBetween(
+          delete_begin, delete_end, &credit_cards)) {
     for (const std::unique_ptr<CreditCard>& credit_card : credit_cards) {
       for (auto& db_observer : db_observer_list_) {
         db_observer.CreditCardChanged(CreditCardChange(
             CreditCardChange::REMOVE, credit_card->guid(), *credit_card));
       }
     }
-    // Note: It is the caller's responsibility to post notifications for any
-    // changes, e.g. by calling the Refresh() method of PersonalDataManager.
-    ReportResult(Result::kRemoveAutofillDataModifiedBetween_Success);
-    return WebDatabase::COMMIT_NEEDED;
+    commit_needed = true;
+  } else {
+    failures_observed = true;
   }
-  ReportResult(Result::kRemoveAutofillDataModifiedBetween_Failure);
-  return WebDatabase::COMMIT_NOT_NEEDED;
+  ReportResult(failures_observed
+                   ? Result::kRemoveAutofillDataModifiedBetween_Success
+                   : Result::kRemoveAutofillDataModifiedBetween_Failure);
+  return commit_needed ? WebDatabase::COMMIT_NEEDED
+                       : WebDatabase::COMMIT_NOT_NEEDED;
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::RemoveOriginURLsModifiedBetween(
