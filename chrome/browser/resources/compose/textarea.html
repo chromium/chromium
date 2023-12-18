@@ -150,13 +150,14 @@
       value="{{value::input}}"
       rows="4"
       required
-      autofocus>
+      autofocus
+      aria-invalid="[[invalidInput_]]"
+      aria-errormessage="error">
   </textarea>
-  <div class="error" id="tooShortError" hidden$="[[!tooShort_]]">
-    $i18n{errorTooShort}
-  </div>
-  <div class="error" id="tooLongError" hidden$="[[!tooLong_]]">
-    $i18n{errorTooLong}
+  <div id="error" class="error" role="region" aria-live="assertive"
+      hidden$="[[!invalidInput_]]">
+    <div id="tooShortError" hidden$="[[!tooShort_]]">$i18n{errorTooShort}</div>
+    <div id="tooLongError" hidden$="[[!tooLong_]]">$i18n{errorTooLong}</div>
   </div>
 </div>
 
