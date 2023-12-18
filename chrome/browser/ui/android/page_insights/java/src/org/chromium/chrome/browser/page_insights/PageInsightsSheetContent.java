@@ -521,4 +521,16 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         }
         return null;
     }
+
+    void setContentViewForTesting(ViewGroup view) {
+        mSheetContentView = view;
+    }
+
+    void setShouldHavePeekStateForTesting(boolean hasPeek) {
+        mShouldHavePeekState = hasPeek;
+    }
+
+    void setFullScreenHeightForTesting(int height) {
+        mFullScreenHeight = height;
+    }
 }

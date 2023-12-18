@@ -30246,6 +30246,7 @@ from previous Chrome versions.
   <int value="-1367447724"
       label="IncognitoClearBrowsingDataDialogForDesktop:disabled"/>
   <int value="-1366114365" label="BluetoothAdvertisementMonitoring:disabled"/>
+  <int value="-1365859601" label="CCTPageInsightsHubBetterScroll:disabled"/>
   <int value="-1365795470"
       label="ServiceWorkerImportedScriptUpdateCheck:disabled"/>
   <int value="-1365503870" label="enable-simplified-fullscreen-ui"/>
@@ -32074,6 +32075,7 @@ from previous Chrome versions.
   <int value="-502813092" label="SmdsSupport:enabled"/>
   <int value="-502004335" label="OobeHidDetectionRevamp:enabled"/>
   <int value="-501853726" label="MultiZoneRgbKeyboard:enabled"/>
+  <int value="-500367371" label="CCTPageInsightsHubBetterScroll:enabled"/>
   <int value="-499723386" label="EnableFilesAppCopyImage:disabled"/>
   <int value="-499186481"
       label="OmniboxGroupSuggestionsBySearchVsUrl:disabled"/>

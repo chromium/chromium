@@ -3893,6 +3893,11 @@ const char kCCTPageInsightsHubName[] = "Page Insights Hub";
 const char kCCTPageInsightsHubDescription[] =
     "Show Page Insights Hub on Chrome Custom Tabs.";
 
+const char kCCTPageInsightsHubBetterScrollName[] =
+    "Page Insights Hub Scroll improvement";
+const char kCCTPageInsightsHubBetterScrollDescription[] =
+    "Resize Web content in sync with Page Insights sheet.";
+
 const char kCCTResizableForThirdPartiesName[] =
     "Bottom sheet Custom Tabs (third party)";
 const char kCCTResizableForThirdPartiesDescription[] =

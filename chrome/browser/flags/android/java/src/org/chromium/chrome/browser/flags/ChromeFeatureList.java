@@ -179,6 +179,8 @@ public abstract class ChromeFeatureList {
     public static final String CCT_MINIMIZED = "CCTMinimized";
     public static final String CCT_INTENT_FEATURE_OVERRIDES = "CCTIntentFeatureOverrides";
     public static final String CCT_PAGE_INSIGHTS_HUB = "CCTPageInsightsHub";
+    public static final String CCT_PAGE_INSIGHTS_HUB_BETTER_SCROLL =
+            "CCTPageInsightsHubBetterScroll";
     public static final String CCT_REAL_TIME_ENGAGEMENT_SIGNALS = "CCTRealTimeEngagementSignals";
     public static final String CCT_REPORT_PARALLEL_REQUEST_STATUS =
             "CCTReportParallelRequestStatus";
@@ -705,6 +707,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(OMNIBOX_HISTORY_CLUSTER_PROVIDER, false);
     public static final MutableFlagWithSafeDefault sOmniboxNoopEditUrlSuggestionClicks =
             newMutableFlagWithSafeDefault(OMNIBOX_NOOP_EDIT_URL_SUGGESTION_CLICKS, false);
+    public static final MutableFlagWithSafeDefault sPageInsightsResizeInSync =
+            newMutableFlagWithSafeDefault(CCT_PAGE_INSIGHTS_HUB_BETTER_SCROLL, false);
     public static final MutableFlagWithSafeDefault sQuickDeleteForAndroid =
             newMutableFlagWithSafeDefault(QUICK_DELETE_FOR_ANDROID, false);
     public static final MutableFlagWithSafeDefault sReaderModeCct =

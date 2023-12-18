@@ -351,6 +351,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         mCompositorViewHolderSupplier.get() == null
                                 ? null
                                 : mCompositorViewHolderSupplier.get().getInMotionSupplier(),
+                        mWindowAndroid.getApplicationBottomInsetSupplier(),
                         this::isPageInsightsHubEnabled,
                         this::getPageInsightsConfig);
 

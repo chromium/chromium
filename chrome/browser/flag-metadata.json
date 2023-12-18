@@ -1095,6 +1095,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "cct-page-insights-hub-better-scroll",
+    "owners": [ "jinsukkim@chromium.org", "kgrosu@google.com", "twellington@chromium.org" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "cct-prevent-touches",
     "owners": [ "jinsukkim@chromium.org", "kgrosu@google.com", "twellington@chromium.org" ],
     "expiry_milestone": 140

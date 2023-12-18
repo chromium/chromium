@@ -467,6 +467,9 @@ public class CustomTabBottomBarDelegate
      */
     public void hideBottomBar(boolean hidesBottomBar) {
         if (hidesBottomBar) {
+            // No-op if it is already in hidden state. This keeps bottom controls height from
+            // changing inadvertently while it is being updated by other insets.
+            if (getBottomBarView().getVisibility() == View.GONE) return;
             getBottomBarView().setVisibility(View.GONE);
             mBrowserControlsSizer.setBottomControlsHeight(0, 0);
         } else {

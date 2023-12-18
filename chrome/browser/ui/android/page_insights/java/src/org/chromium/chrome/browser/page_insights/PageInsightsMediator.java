@@ -57,6 +57,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
@@ -141,6 +142,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     @Nullable private final ObservableSupplier<Boolean> mInMotionSupplier;
     @Nullable private final BackPressManager mBackPressManager;
     @Nullable private final BackPressHandler mBackPressHandler;
+    private final ObservableSupplierImpl<Integer> mSheetInset = new ObservableSupplierImpl<>();
+    private final boolean mResizeInSync;
 
     private PageInsightsDataLoader mPageInsightsDataLoader;
     @Nullable private PageInsightsSurfaceRenderer mSurfaceRenderer;
@@ -233,6 +236,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             BrowserControlsSizer browserControlsSizer,
             @Nullable BackPressManager backPressManager,
             @Nullable ObservableSupplier<Boolean> inMotionSupplier,
+            ApplicationViewportInsetSupplier appViewportInsetSupplier,
             BooleanSupplier isPageInsightsEnabledSupplier,
             Function<NavigationHandle, PageInsightsConfig> pageInsightsConfigProvider) {
         mContext = context;
@@ -328,6 +332,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         } else {
             mBackPressHandler = null;
         }
+
+        // Native is ready by now. The feature flag can be cached from here.
+        mResizeInSync = ChromeFeatureList.sPageInsightsResizeInSync.isEnabled();
+        if (mResizeInSync) appViewportInsetSupplier.setBottomSheetInsetSupplier(mSheetInset);
     }
 
     void initView(View bottomSheetContainer) {
@@ -402,6 +410,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mAutoTriggerStage = AutoTriggerStage.CANCELLED_OR_NOT_STARTED;
         mHandler.removeCallbacks(mAutoTriggerTimerRunnable);
     }
+
+    // TabObserver
 
     @Override
     public void onPageLoadStarted(Tab tab, GURL url) {
@@ -638,10 +648,12 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     public void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason) {
         if (newState == SheetState.HIDDEN) {
             mWillHandleBackPressSupplier.set(false);
+            if (mResizeInSync) mSheetInset.set(0);
             setBottomControlsHeight(mSheetController.getCurrentOffset());
             handleDismissal(mOldState);
         } else if (newState == SheetState.PEEK) {
             mWillHandleBackPressSupplier.set(false);
+            if (mResizeInSync) mSheetInset.set(0);
             setBottomControlsHeight(mSheetController.getCurrentOffset());
             setBackgroundColors(/* ratioOfCompletionFromPeekToExpanded= */ .0f);
             // The user should always be able to swipe to dismiss from peek state.
@@ -715,11 +727,21 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     @Override
     public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
         float peekHeightRatio = getPeekHeightRatio();
-        if (mSheetController.getSheetState() == SheetState.SCROLLING
-                && heightFraction < peekHeightRatio) {
-            // Set the content height to zero in advance when user drags/scrolls the sheet down
-            // below the peeking state. This helps hide the white patch (blank bottom controls).
-            setBottomControlsHeight(0);
+        if (mSheetController.getSheetState() == SheetState.SCROLLING) {
+            if (mResizeInSync) {
+                // Calling |setBottomControlsHeight| to resize WebContents per each offset change
+                // is janky. While the sheet is being dragged, let the app-wide inset supplier
+                // handle the resizing so the sheet and the contents move in sync smoothly.
+                if (BrowserControlsUtils.areBrowserControlsFullyVisible(mControlsStateProvider)
+                        && heightFraction < peekHeightRatio) {
+                    setBottomControlsHeight(0);
+                    mSheetInset.set((int) offsetPx);
+                }
+            } else if (heightFraction < peekHeightRatio) {
+                // Set the content height to zero in advance when user drags/scrolls the sheet down
+                // below the peeking state. This helps hide the white patch (blank bottom controls).
+                setBottomControlsHeight(0);
+            }
         }
 
         float ratioOfCompletionFromPeekToExpanded =
@@ -793,6 +815,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
     View getContainerForTesting() {
         return mSheetContainer;
+    }
+
+    ObservableSupplierImpl<Integer> getSheetInsetForTesting() {
+        return mSheetInset;
     }
 
     private PageInsightsSurfaceRenderer getSurfaceRenderer() {
