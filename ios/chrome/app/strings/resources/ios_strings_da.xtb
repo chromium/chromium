@@ -19,7 +19,7 @@
 <translation id="1069154182096085577">Adgangskoden findes allerede</translation>
 <translation id="1076421457278169141">Koden er scannet</translation>
 <translation id="1076785341346483463">Synkroniser med managerstyret konto</translation>
-<translation id="1084365883616172403">Indlæg delt på Facebook.</translation>
+<translation id="1084365883616172403">Opslag delt på Facebook.</translation>
 <translation id="1085696779717592361">Brug Chrome som standard</translation>
 <translation id="1103523840287552314">Oversæt altid <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Skift til åbent vindue</translation>
@@ -758,7 +758,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5062321486222145940">Installer Google Drev</translation>
 <translation id="5083464117946352670">Kan ikke fastslå filstørrelse.</translation>
 <translation id="5090832849094901128">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="WEBSITE" />.</translation>
-<translation id="5094827893301452931">Indlæg delt på Twitter.</translation>
+<translation id="5094827893301452931">Opslag delt på Twitter.</translation>
 <translation id="5100848274708256363">Bliv medlem af en familiegruppe</translation>
 <translation id="5100969332803472179">Skjul Føj til Bogmærker</translation>
 <translation id="5109892411553231226">Administrer betalingsmetoder</translation>
@@ -1415,7 +1415,7 @@ Dine data blev krypteret med din adgangssætning <ph name="TIME" />. Angiv adgan
 <translation id="8532105204136943229">Udløbsår</translation>
 <translation id="8533166274275423134">Blev åbnet et andet sted</translation>
 <translation id="8533670235862049797">Beskyttet browsing er aktiveret</translation>
-<translation id="8534481786647257214">Indlæg delt på Google+.</translation>
+<translation id="8534481786647257214">Opslag delt på Google+.</translation>
 <translation id="8548878600947630424">Find på siden...</translation>
 <translation id="854938212724803178">Du har 1 kompromitteret adgangskode. Løs problemet nu for at forblive beskyttet.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Du har afvist {count} advarsel}one{Du har afvist {count} advarsel}other{Du har afvist {count} advarsler}}</translation>
