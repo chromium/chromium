@@ -66,7 +66,7 @@ bool AutofillType::IsUnknown() const {
 FieldType AutofillType::GetStorableType() const {
   return server_type_ != UNKNOWN_TYPE
              ? server_type_
-             : HtmlFieldTypeToBestCorrespondingServerFieldType(html_type_);
+             : HtmlFieldTypeToBestCorrespondingFieldType(html_type_);
 }
 
 std::string AutofillType::ToString() const {

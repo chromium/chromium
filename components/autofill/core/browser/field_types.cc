@@ -675,8 +675,7 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type) {
   NOTREACHED_NORETURN();
 }
 
-FieldType HtmlFieldTypeToBestCorrespondingServerFieldType(
-    HtmlFieldType field_type) {
+FieldType HtmlFieldTypeToBestCorrespondingFieldType(HtmlFieldType field_type) {
   switch (field_type) {
     case HtmlFieldType::kUnspecified:
       return UNKNOWN_TYPE;

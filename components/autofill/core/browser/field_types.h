@@ -508,8 +508,7 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type);
 FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type);
 
 // Not all HtmlFieldTypes have a corresponding FieldType.
-FieldType HtmlFieldTypeToBestCorrespondingServerFieldType(
-    HtmlFieldType field_type);
+FieldType HtmlFieldTypeToBestCorrespondingFieldType(HtmlFieldType field_type);
 
 // Returns |raw_value| if it corresponds to a non-deprecated enumeration
 // constant of ServerFieldType other than MAX_VALID_FIELD_TYPE. Otherwise,

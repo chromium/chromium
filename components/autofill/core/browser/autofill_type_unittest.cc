@@ -123,7 +123,7 @@ INSTANTIATE_TEST_SUITE_P(
                    base::to_underlying(HtmlFieldType::kMaxValue)));
 
 TEST_P(AutofillTypeTestForHtmlFieldTypes, GroupsOfHtmlFieldTypes) {
-  if (HtmlFieldTypeToBestCorrespondingServerFieldType(html_field_type()) ==
+  if (HtmlFieldTypeToBestCorrespondingFieldType(html_field_type()) ==
       UNKNOWN_TYPE) {
     return;
   }

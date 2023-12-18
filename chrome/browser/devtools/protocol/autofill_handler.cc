@@ -34,7 +34,7 @@ using autofill::CreditCard;
 using autofill::FieldGlobalId;
 using autofill::FormData;
 using autofill::FormFieldData;
-using autofill::HtmlFieldTypeToBestCorrespondingServerFieldType;
+using autofill::HtmlFieldTypeToBestCorrespondingFieldType;
 using autofill::mojom::HtmlFieldType;
 using protocol::Maybe;
 using protocol::Response;
@@ -259,7 +259,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
     bool autofill_inferred =
         autofill_field->html_type() == HtmlFieldType::kUnspecified ||
         autofill_field->html_type() == HtmlFieldType::kUnrecognized ||
-        HtmlFieldTypeToBestCorrespondingServerFieldType(
+        HtmlFieldTypeToBestCorrespondingFieldType(
             autofill_field->html_type()) !=
             autofill_field->Type().GetStorableType();
     filled_fields_to_be_sent_to_devtools->push_back(
