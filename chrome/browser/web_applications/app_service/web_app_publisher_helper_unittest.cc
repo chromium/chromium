@@ -118,18 +118,7 @@ class WebAppPublisherHelperTest : public testing::Test,
 
   webapps::AppId CreateShortcut(const GURL& shortcut_url,
                                 const std::string& shortcut_name) {
-    // Create a web app entry without scope, which would be recognised
-    // as ShortcutApp in the web app system.
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->title = base::UTF8ToUTF16(shortcut_name);
-    web_app_info->start_url = shortcut_url;
-
-    webapps::AppId app_id =
-        test::InstallWebApp(profile(), std::move(web_app_info));
-    CHECK(
-        WebAppProvider::GetForTest(profile())->registrar_unsafe().IsShortcutApp(
-            app_id));
-    return app_id;
+    return test::InstallShortcut(profile(), shortcut_name, shortcut_url);
   }
 
   content::BrowserTaskEnvironment task_environment_;
