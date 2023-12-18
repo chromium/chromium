@@ -49,7 +49,7 @@ class DeskBarExpandedObserver : public ui::test::StateObserver<bool> {
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(DeskBarExpandedObserver,
                                     kDeskBarExpandedState);
 
-class DesksIntegrationTest : public InteractiveAshTest {
+class DesksInteractiveUiTest : public InteractiveAshTest {
  public:
   // This function is used to name the DeskMiniView that is associated with the
   // desk at `desk_index`. This will find the right view regardless of how the
@@ -72,7 +72,7 @@ class DesksIntegrationTest : public InteractiveAshTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DesksIntegrationTest, DesksBasic) {
+IN_PROC_BROWSER_TEST_F(DesksInteractiveUiTest, DesksBasic) {
   base::AddFeatureIdTagToTestResult(
       "screenplay-c873d6a0-8e97-4a94-bb28-c1b9e6af4a51");
   SetupContextWidget();

@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,11 +33,11 @@ EnterpriseDomainModel* GetEnterpriseDomainModel() {
   return Shell::Get()->system_tray_model()->enterprise_domain();
 }
 
-class QuickSettingsIntegrationTest : public InteractiveAshTest {
+class QuickSettingsIntegrationTest : public AshIntegrationTest {
  public:
-  // InteractiveAshTest:
+  // AshIntegrationTest:
   void SetUpOnMainThread() override {
-    InteractiveAshTest::SetUpOnMainThread();
+    AshIntegrationTest::SetUpOnMainThread();
 
     // Ensure the OS Settings system web app (SWA) is installed.
     InstallSystemApps();
@@ -94,9 +94,6 @@ IN_PROC_BROWSER_TEST_F(QuickSettingsIntegrationTest, ManagedDeviceInfo) {
 
                   Log("Test complete"));
 }
-
-// Testing with Lacros requires a VM or DUT.
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
 
 // Observes the aura environment to detect the Lacros window title.
 class LacrosWindowTitleObserver
@@ -157,7 +154,7 @@ class QuickSettingsLacrosIntegrationTest : public QuickSettingsIntegrationTest {
         ash::standalone_browser::features::kLacrosOnly);
   }
 
-  // InteractiveAshTest:
+  // AshIntegrationTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     QuickSettingsIntegrationTest::SetUpCommandLine(command_line);
     SetUpCommandLineForLacros(command_line);
@@ -211,8 +208,6 @@ IN_PROC_BROWSER_TEST_F(QuickSettingsLacrosIntegrationTest, ManagedDeviceInfo) {
 
       Log("Test complete"));
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
 
 }  // namespace
 }  // namespace ash

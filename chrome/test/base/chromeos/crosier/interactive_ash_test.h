@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -15,45 +14,25 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-#include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
-#include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
-#endif
-
 class GURL;
 class Profile;
-
-namespace base {
-class CommandLine;
-}
 
 namespace content {
 class NavigationHandle;
 }
 
-namespace net::test_server {
-class EmbeddedTestServer;
-}
-
-// Base class for tests of ash-chrome integration with the ChromeOS platform,
-// like hardware daemons, graphics, kernel, etc.
-//
 // Sets up Kombucha for ash testing:
 // - Provides 1 Kombucha "context" per display, shared by all views::Widgets
 // - Provides a default "context widget" so Kombucha can synthesize mouse events
 // - Suppresses creating a browser window on startup, because most ash-chrome
 //   tests don't need the window and creating it slows down the test
 //
-// Tests using this base class can be added to "chromeos_integration_tests" to
-// run on devices under test (DUTs) and virtual machines (VMs). Also, if a test
-// only communicates with OS daemons via D-Bus then the test can also run in the
-// linux-chromeos "emulator" in "interactive_ui_tests". The latter approach
-// makes it simpler to write the initial version of a test, which can then be
-// added to "chromeos_integration_tests" to also run on DUT/VM.
-//
 // Because this class derives from InProcessBrowserTest the source files must be
 // added to a target that defines HAS_OUT_OF_PROC_TEST_RUNNER. The source files
 // cannot be in a shared test support target that lacks that define.
+//
+// For tests that run on a DUT or in a VM, use the subclass AshIntegrationTest,
+// which supports running on hardware.
 class InteractiveAshTest
     : public InteractiveBrowserTestT<MixinBasedInProcessBrowserTest> {
  public:
@@ -82,20 +61,7 @@ class InteractiveAshTest
   // browser_navigator.h.
   base::WeakPtr<content::NavigationHandle> CreateBrowserWindow(const GURL& url);
 
-  // Sets up the command line and environment variables to support Lacros (by
-  // enabling the Wayland server in ash). Call this from SetUpCommandLine() if
-  // your test starts Lacros.
-  void SetUpCommandLineForLacros(base::CommandLine* command_line);
-
-  // Waits for Ash to be ready for Lacros, including starting the "Exo" Wayland
-  // server. Call this method if your test starts Lacros, otherwise Exo may not
-  // be ready and Lacros may not start.
-  // TODO(http://b/297930282): Ensure we compile ToT Lacros and use it when
-  // testing ToT ash. The rootfs Lacros may be too old to run with ToT ash.
-  void WaitForAshFullyStarted();
-
   // MixinBasedInProcessBrowserTest:
-  void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
   // Blocks until a window exists with the given title. If a matching window
@@ -116,10 +82,6 @@ class InteractiveAshTest
   WaitForElementDoesNotExist(const ui::ElementIdentifier& element_id,
                              const DeepQuery& query);
 
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-  ChromeOSIntegrationLoginMixin& login_mixin() { return login_mixin_; }
-#endif
-
   // Waits until the element or any of its children have the requested text.
   //
   // element_id
@@ -136,24 +98,6 @@ class InteractiveAshTest
       const ui::ElementIdentifier& element_id,
       const WebContentsInteractionTestUtil::DeepQuery& query,
       const std::string& expected);
-
- private:
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-  // Overrides the Gaia URL to point to a local test server that produces an
-  // error, which is expected behavior in test environments.
-  void OverrideGaiaUrlForLacros(base::CommandLine* command_line);
-
-  // This test runs on linux-chromeos in interactive_ui_tests and on a DUT in
-  // chromeos_integration_tests.
-  ChromeOSIntegrationTestMixin chromeos_integration_test_mixin_{&mixin_host_};
-
-  // Login support.
-  ChromeOSIntegrationLoginMixin login_mixin_{&mixin_host_};
-#endif
-
-  // Directory used by Wayland/Lacros in environment variable XDG_RUNTIME_DIR.
-  base::ScopedTempDir scoped_temp_dir_xdg_;
-
-  std::unique_ptr<net::test_server::EmbeddedTestServer> https_server_;
 };
+
 #endif  // CHROME_TEST_BASE_CHROMEOS_CROSIER_INTERACTIVE_ASH_TEST_H_

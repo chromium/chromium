@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 
 #include "chrome/test/base/chromeos/crosier/upstart.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
@@ -12,7 +12,7 @@ namespace chromeos::machine_learning {
 
 namespace {
 
-using MLIntegrationTest = InteractiveAshTest;
+using MLIntegrationTest = AshIntegrationTest;
 
 }  // namespace
 

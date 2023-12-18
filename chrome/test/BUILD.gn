@@ -1126,8 +1126,6 @@ if (is_chromeos && is_chromeos_device) {
         "../browser/ash/screenshot_integration_test.cc",
         "../browser/ash/system_web_apps/apps/terminal_integration_test.cc",
         "../browser/ash/web_handwriting_integration_test.cc",
-        "../browser/ui/ash/app_list/app_list_integration_test.cc",
-        "../browser/ui/ash/desks/desks_integration_test.cc",
         "../browser/ui/ash/quick_settings_integration_test.cc",
         "../browser/ui/ash/shelf/shelf_integration_test.cc",
         "base/chromeos/crosier/helper/test_sudo_helper_client_test.cc",
@@ -1135,9 +1133,11 @@ if (is_chromeos && is_chromeos_device) {
 
         # These cannot live in ":test_support" because they use
         # InProcessBrowserTest which requires HAS_OUT_OF_PROC_TEST_RUNNER.
+        "base/chromeos/crosier/ash_integration_test.cc",
+        "base/chromeos/crosier/ash_integration_test.h",
+        "base/chromeos/crosier/ash_integration_test_test.cc",
         "base/chromeos/crosier/interactive_ash_test.cc",
         "base/chromeos/crosier/interactive_ash_test.h",
-        "base/chromeos/crosier/interactive_ash_test_uitest.cc",
       ]
 
       if (is_chrome_branded) {
@@ -11159,11 +11159,9 @@ if (!is_android && !is_chromeos_device && !is_fuchsia) {
       }
       if (is_chromeos_ash) {
         sources += [
-          "../browser/ash/bluetooth/bluetooth_integration_test.cc",
           "../browser/ash/file_manager/file_manager_interactive_uitest.cc",
-          "../browser/ui/ash/app_list/app_list_integration_test.cc",
-          "../browser/ui/ash/desks/desks_integration_test.cc",
-          "../browser/ui/ash/quick_settings_integration_test.cc",
+          "../browser/ui/ash/app_list/app_list_interactive_uitest.cc",
+          "../browser/ui/ash/desks/desks_interactive_uitest.cc",
           "../browser/ui/ash/user_education/welcome_tour/welcome_tour_interactive_uitest.cc",
           "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/add_new_keyboard_interactive_uitest.cc",

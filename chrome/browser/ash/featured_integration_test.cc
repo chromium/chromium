@@ -13,9 +13,9 @@
 #include "base/task/task_traits.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_test_definition.pb.h"
 #include "chrome/test/base/chromeos/crosier/crosier_util.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -40,7 +40,7 @@ struct TestCase {
   const char* expected_default_disabled = "";
 };
 
-class FeaturedIntegrationTest : public InteractiveAshTest,
+class FeaturedIntegrationTest : public AshIntegrationTest,
                                 public ::testing::WithParamInterface<TestCase> {
  public:
   FeaturedIntegrationTest() {
@@ -48,9 +48,9 @@ class FeaturedIntegrationTest : public InteractiveAshTest,
                                       GetParam().disabled_features);
   }
 
-  // InteractiveAshTest:
+  // AshIntegrationTest:
   void SetUpOnMainThread() override {
-    InteractiveAshTest::SetUpOnMainThread();
+    AshIntegrationTest::SetUpOnMainThread();
 
     chrome_test_base_chromeos_crosier::TestInfo info;
     info.set_description(

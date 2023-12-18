@@ -14,7 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/smart_dim_component_installer.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/component_updater/component_updater_service.h"
 #include "net/dns/mock_host_resolver.h"
@@ -70,7 +70,7 @@ class LacrosWindowWaiter : public aura::EnvObserver,
 
 }  // namespace
 
-class SmartDimIntegrationTest : public InteractiveAshTest {
+class SmartDimIntegrationTest : public AshIntegrationTest {
  public:
   SmartDimIntegrationTest() {
     feature_list_.InitAndEnableFeature(features::kSmartDim);
@@ -182,7 +182,7 @@ class SmartDimLacrosIntegrationTest : public SmartDimIntegrationTest {
         ash::standalone_browser::features::kLacrosOnly);
   }
 
-  // InteractiveAshTest:
+  // AshIntegrationTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SmartDimIntegrationTest::SetUpCommandLine(command_line);
     SetUpCommandLineForLacros(command_line);

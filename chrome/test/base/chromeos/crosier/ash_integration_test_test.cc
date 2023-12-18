@@ -2,20 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "url/gurl.h"
 
 namespace ash {
 namespace {
 
-using InteractiveAshTestUITest = InteractiveAshTest;
+class AshIntegrationTestTest : public AshIntegrationTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveAshTest::SetUpCommandLine(command_line);
+    SetUpCommandLineForLacros(command_line);
+  }
+};
 
-// TODO(crbug.com/1511507): Re-enable this test
-IN_PROC_BROWSER_TEST_F(InteractiveAshTestUITest, DISABLED_Basics) {
+IN_PROC_BROWSER_TEST_F(AshIntegrationTestTest, Basics) {
   SetupContextWidget();
 
   // Verify that installing system apps doesn't crash or flake.
   InstallSystemApps();
+
+  // Verify that the Wayland server starts and doesn't crash or flake.
+  WaitForAshFullyStarted();
 
   // Verify an active user exists.
   ASSERT_TRUE(GetActiveUserProfile());

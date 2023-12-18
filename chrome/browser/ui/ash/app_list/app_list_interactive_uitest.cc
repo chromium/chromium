@@ -15,13 +15,13 @@
 namespace ash {
 namespace {
 
-using AppListIntegrationTest = InteractiveAshTest;
+using AppListInteractiveUiTest = InteractiveAshTest;
 
 // Basic smoke test of the bubble launcher.
 // Contacts: chromeos-launcher@google.com, chromeos-sw-engprod@google.com
 // Ported from Tast by: jamescook@chromium.org
 // BugComponent: b:1288350
-IN_PROC_BROWSER_TEST_F(AppListIntegrationTest, BubbleSmoke) {
+IN_PROC_BROWSER_TEST_F(AppListInteractiveUiTest, BubbleSmoke) {
   base::AddFeatureIdTagToTestResult(
       "screenplay-90e4fecc-d2ea-40dc-b9db-eb9d61089e22");
 

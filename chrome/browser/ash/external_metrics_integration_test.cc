@@ -8,7 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/external_metrics.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 
 namespace ash {
 namespace {
@@ -23,7 +23,7 @@ constexpr int kMetricsClientTimeoutSec = 30;
 
 const char kTestHistogramName[] = "ExternalMetricsIntegrationTest.Histogram";
 
-class ExternalMetricsIntegrationTest : public InteractiveAshTest {
+class ExternalMetricsIntegrationTest : public AshIntegrationTest {
  public:
   void ReportMetrics(int num_samples, int value, int max) {
     std::vector<std::string> args{kMetricsClientBinaryName};
