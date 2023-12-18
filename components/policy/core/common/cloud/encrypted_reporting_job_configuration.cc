@@ -167,6 +167,7 @@ EncryptedReportingJobConfiguration::EncryptedReportingJobConfiguration(
   generation_id_ = -1;
   sequence_id_ = -1;
   if (encrypted_record_list != nullptr && !encrypted_record_list->empty()) {
+    record_count_ = encrypted_record_list->size();
     const auto sequence_information_it =
         std::prev(encrypted_record_list->cend());
     const auto* const sequence_information =
@@ -225,6 +226,10 @@ base::TimeDelta EncryptedReportingJobConfiguration::WhenIsAllowedToProceed()
   // Now pick up the state.
   const auto* const state =
       AccessState(priority_, generation_id_, sequence_id_);
+  // If there are no records, allow upload (it will not overload the server).
+  if (record_count_ == 0u) {
+    return base::TimeDelta();  // 0 - allowed right away.
+  }
   // Use and update previously recorded state, base upload decision on it.
   if (state->last_sequence_id > sequence_id_) {
     // Sequence id decreased, the upload is outdated, reject it forever.
