@@ -956,6 +956,11 @@ const char kDesktopSiteDisplaySettingEnabled[] = "desktop_site.display_setting";
 constexpr char kDownloadDuplicateFilePromptEnabled[] =
     "download_duplicate_file_prompt_enabled";
 
+// Deprecated 12/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kIsolatedWebAppsEnabled[] = "ash.isolated_web_apps_enabled";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1070,6 +1075,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 09/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kGestureEducationNotificationShown, true);
+#endif
+
+  // Deprecated 11/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kIsolatedWebAppsEnabled, false);
 #endif
 }
 
@@ -2211,6 +2221,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 // Added 09/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   local_state->ClearPref(kGestureEducationNotificationShown);
+#endif
+
+// Added 11/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  local_state->ClearPref(kIsolatedWebAppsEnabled);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

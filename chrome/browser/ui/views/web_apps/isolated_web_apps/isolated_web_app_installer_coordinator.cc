@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -45,8 +46,9 @@ IsolatedWebAppInstallerCoordinator::~IsolatedWebAppInstallerCoordinator() =
 
 void IsolatedWebAppInstallerCoordinator::Show(
     base::OnceCallback<void(std::optional<webapps::AppId>)> callback) {
-  controller_->Start();
-  controller_->Show(
+  controller_->Start(
+      base::BindOnce(&IsolatedWebAppInstallerViewController::Show,
+                     base::Unretained(controller_.get())),
       base::BindOnce(&IsolatedWebAppInstallerCoordinator::OnDialogClosed,
                      base::Unretained(this), std::move(callback)));
 }

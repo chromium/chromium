@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/callback_delayer.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -125,22 +127,45 @@ IsolatedWebAppInstallerViewController::IsolatedWebAppInstallerViewController(
       web_app_provider_(web_app_provider),
       model_(model),
       view_(nullptr),
-      dialog_delegate_(nullptr) {}
+      dialog_delegate_(nullptr) {
+  CHECK(profile_);
+  CHECK(model_);
+  CHECK(web_app_provider_);
+}
 
 IsolatedWebAppInstallerViewController::
     ~IsolatedWebAppInstallerViewController() = default;
 
-void IsolatedWebAppInstallerViewController::Start() {
-  // TODO(crbug.com/1479140): Check if Feature is enabled
-  OnPrefChanged(true);
+void IsolatedWebAppInstallerViewController::Start(
+    base::OnceClosure initialized_callback,
+    base::OnceClosure completion_callback) {
+  CHECK(initialized_callback);
+  initialized_callback_ = std::move(initialized_callback);
+
+  CHECK(completion_callback);
+  completion_callback_ = std::move(completion_callback);
+
+  CHECK(!pref_observer_);
+  // Upon creation, the observer will invoke callback with initial pref value.
+  pref_observer_ = IsolatedWebAppsEnabledPrefObserver::
+      CreateIsolatedWebAppsEnabledPrefObserver(
+          profile_, base::BindRepeating(
+                        &IsolatedWebAppInstallerViewController::OnPrefChanged,
+                        weak_ptr_factory_.GetWeakPtr()));
 }
 
-void IsolatedWebAppInstallerViewController::Show(base::OnceClosure callback) {
-  CHECK(!callback_);
-  callback_ = std::move(callback);
+void IsolatedWebAppInstallerViewController::SetViewForTesting(
+    IsolatedWebAppInstallerView* view) {
+  view_ = view;
+}
+
+void IsolatedWebAppInstallerViewController::Show() {
+  CHECK(is_initialized_) << "Show() is being called before initialized.";
+  CHECK(!view_) << "Show() should not be called twice";
 
   auto view = IsolatedWebAppInstallerView::Create(this);
   view_ = view.get();
+
   std::unique_ptr<views::DialogDelegate> dialog_delegate =
       CreateDialogDelegate(std::move(view));
   dialog_delegate_ = dialog_delegate.get();
@@ -151,11 +176,6 @@ void IsolatedWebAppInstallerViewController::Show(base::OnceClosure callback) {
                                             /*context=*/nullptr,
                                             /*parent=*/nullptr)
       ->Show();
-}
-
-void IsolatedWebAppInstallerViewController::SetViewForTesting(
-    IsolatedWebAppInstallerView* view) {
-  view_ = view;
 }
 
 // static
@@ -211,7 +231,7 @@ bool IsolatedWebAppInstallerViewController::OnAccept() {
 void IsolatedWebAppInstallerViewController::OnComplete() {
   view_ = nullptr;
   dialog_delegate_ = nullptr;
-  std::move(callback_).Run();
+  std::move(completion_callback_).Run();
 }
 
 void IsolatedWebAppInstallerViewController::Close() {
@@ -242,11 +262,15 @@ void IsolatedWebAppInstallerViewController::OnPrefChanged(bool enabled) {
     // complete and blocks the IWA from launching.
     if (model_->step() < IsolatedWebAppInstallerModel::Step::kInstall) {
       model_->SetStep(IsolatedWebAppInstallerModel::Step::kDisabled);
-      model_->SetDialogContent(absl::nullopt);
+      model_->SetDialogContent(std::nullopt);
       installability_checker_.reset();
     }
   }
   OnModelChanged();
+  if (!is_initialized_) {
+    is_initialized_ = true;
+    std::move(initialized_callback_).Run();
+  }
 }
 
 void IsolatedWebAppInstallerViewController::OnGetMetadataProgressUpdated(
@@ -341,7 +365,9 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
       // A child dialog on the install screen means the installation failed.
       // Accepting the dialog corresponds to the Retry button.
       model_->SetDialogContent(std::nullopt);
-      Start();
+      installability_checker_.reset();
+      pref_observer_.reset();
+      Start(base::DoNothing(), std::move(completion_callback_));
       break;
 
     default:

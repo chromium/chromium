@@ -71,6 +71,8 @@ base::StringPiece GetProfilePrefNameForPref(mojom::PrefPath path) {
            media_router::prefs::kAccessCodeCastDeviceAdditionTime},
           {mojom::PrefPath::kDefaultSearchProviderDataPrefName,
            DefaultSearchManager::kDefaultSearchProviderDataPrefName},
+          {mojom::PrefPath::kIsolatedWebAppsEnabled,
+           ash::prefs::kIsolatedWebAppsEnabled},
       });
   auto* pref_name = kProfilePrefPathToName.find(path);
   DCHECK(pref_name != kProfilePrefPathToName.end());
@@ -292,7 +294,8 @@ std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kMultitaskMenuNudgeClamshellLastShown:
     case mojom::PrefPath::kAccessCodeCastDevices:
     case mojom::PrefPath::kAccessCodeCastDeviceAdditionTime:
-    case mojom::PrefPath::kDefaultSearchProviderDataPrefName: {
+    case mojom::PrefPath::kDefaultSearchProviderDataPrefName:
+    case mojom::PrefPath::kIsolatedWebAppsEnabled: {
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
         return std::nullopt;
