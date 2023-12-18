@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FileSnapshot, LastLoadedFilesResponse, TestMessageQueryData, TestMessageResponseData, TestMessageRunTestCase} from './driver_api.js';
 import {TEST_ONLY} from './launch.js';
 
 const {
@@ -16,7 +17,7 @@ const {
 } = TEST_ONLY;
 
 // See message_pipe.js.
-function assertCast(condition) {
+function assertCast<A>(condition: A): NonNullable<A> {
   if (!condition) {
     throw new Error('Failed assertion');
   }
@@ -26,7 +27,6 @@ function assertCast(condition) {
 /**
  * Promise that signals the guest is ready to receive test messages (in addition
  * to messages handled by receiver.js).
- * @type {!Promise<undefined>}
  */
 const testMessageHandlersReady = new Promise(resolve => {
   guestMessagePipe.registerHandler('test-handlers-ready', resolve);
@@ -44,13 +44,12 @@ export class GuestDriver {
    * @return Promise<string> JSON.stringify()'d value of the property, or
    *   tagName if unspecified.
    */
-  async waitForElementInGuest(query, opt_property, opt_commands = {}) {
-    /** @type {!TestMessageQueryData} */
-    const message = {testQuery: query, property: opt_property};
+  async waitForElementInGuest(
+      query: string, property?: string, commands: Object = {}) {
+    const message: TestMessageQueryData = {testQuery: query, property};
     await testMessageHandlersReady;
-    const result = /** @type {!TestMessageResponseData} */ (
-        await guestMessagePipe.sendMessage(
-            'test', {...message, ...opt_commands}));
+    const result: TestMessageResponseData =
+        await guestMessagePipe.sendMessage('test', {...message, ...commands});
     return result.testQueryResult;
   }
 }
@@ -59,9 +58,8 @@ export class GuestDriver {
  * Runs the given `testCase` in the guest context.
  * @param {string} testCase
  */
-export async function runTestInGuest(testCase) {
-  /** @type {!TestMessageRunTestCase} */
-  const message = {testCase};
+export async function runTestInGuest(testCase: string) {
+  const message: TestMessageRunTestCase = {testCase};
   await testMessageHandlersReady;
   await guestMessagePipe.sendMessage('run-test-case', message);
 }
@@ -70,10 +68,10 @@ export async function runTestInGuest(testCase) {
  * @param {!Object=} data
  * @return {!Promise<!TestMessageResponseData>}
  */
-export async function sendTestMessage(data = undefined) {
+export async function sendTestMessage(data?: Object):
+    Promise<TestMessageResponseData> {
   await testMessageHandlersReady;
-  return /** @type {!Promise<!TestMessageResponseData>} */ (
-      guestMessagePipe.sendMessage('test', data));
+  return guestMessagePipe.sendMessage('test', data);
 }
 
 /**
@@ -81,37 +79,38 @@ export async function sendTestMessage(data = undefined) {
  * currently open file is always at index 0.
  * @return {!Promise<string>}
  */
-export async function getFileErrors() {
+export async function getFileErrors(): Promise<string> {
   await testMessageHandlersReady;
   const message = {getFileErrors: true};
-  const response = /** @type {!TestMessageResponseData} */ (
-      await guestMessagePipe.sendMessage('test', message));
+  const response: TestMessageResponseData =
+      await guestMessagePipe.sendMessage('test', message);
   return response.testQueryResult;
 }
 
 export class FakeWritableFileSink {
-  constructor(/** !Blob= */ data = new Blob()) {
-    this.data = data;
+  writes: Array<{position: number, size?: number}> = [];
+  resolveClose!: (blob: Blob) => void;
+  closePromise = new Promise<Blob>(resolve => {
+    this.resolveClose = resolve;
+  });
 
-    /** @type {!Array<{position: number, size: (number|undefined)}>} */
-    this.writes = [];
+  constructor(public data = new Blob()) {}
 
-    /** @type {function(!Blob)} */
-    this.resolveClose;
 
-    this.closePromise = new Promise((/** function(!Blob) */ resolve) => {
-      this.resolveClose = resolve;
-    });
-  }
   /** @param {?BufferSource|!Blob|string|!WriteParams} data */
-  async write(data) {
+  async write(dataParam: BufferSource|Blob|string|WriteParams) {
     const position = 0;  // Assume no seeks.
-    if (!data) {
+    if (!dataParam) {
       this.writes.push({position, size: 0});
       return;
     }
+    interface HasLengthOrSize {
+      size?: number;
+      length: number;
+    }
+    const data = dataParam as BlobPart & HasLengthOrSize;
     const dataSize = data.size === undefined ? data.length : data.size;
-    this.writes.push({position, size: /** @type {number} */ (dataSize)});
+    this.writes.push({position, size: dataSize});
     this.data = new Blob([
       this.data.slice(0, position),
       data,
@@ -119,7 +118,7 @@ export class FakeWritableFileSink {
     ]);
   }
   /** @param {number} size */
-  async truncate(size) {
+  async truncate(size: number) {
     this.data = this.data.slice(0, size);
   }
   /** Resolves the close promise. */
@@ -127,60 +126,37 @@ export class FakeWritableFileSink {
     this.resolveClose(this.data);
   }
   /** @param {number} offset */
-  async seek(offset) {
+  async seek(_offset: number) {
     throw new Error('seek() not implemented.');
   }
 }
 
 /** @implements FileSystemHandle  */
-export class FakeFileSystemHandle {
-  /**
-   * @param {string=} name
-   */
-  constructor(name = 'fake_file.png') {
-    this.kind = 'file';
-    this.name = name;
-  }
-  /** @override */
-  async isSameEntry(other) {
+export class FakeFileSystemHandle implements FileSystemHandle {
+  kind: FileSystemHandleKind = 'file';
+  constructor(public name: string = 'fake_file.png') {}
+  async isSameEntry(other: FileSystemHandle): Promise<boolean> {
     return this === other;
   }
-  /** @override */
-  async queryPermission(descriptor) {}
-  /** @override */
-  async requestPermission(descriptor) {}
 }
 
 /** @implements FileSystemFileHandle  */
-export class FakeFileSystemFileHandle extends FakeFileSystemHandle {
-  /**
-   * @param {string=} name
-   * @param {string=} type
-   * @param {number=} lastModified
-   * @param {!Blob=} blob
-   */
+export class FakeFileSystemFileHandle extends FakeFileSystemHandle implements
+    FileSystemFileHandle {
+  override kind: 'file' = 'file';
+  lastWritable: FakeWritableFileSink;
+  nextCreateWritableError?: DOMException|Error;
+
+  /** Used simulate an error thrown from directory traversal. */
+  errorToFireOnIterate?: null|DOMException;
+
   constructor(
-      name = 'fake_file.png', type = '', lastModified = 0, blob = new Blob()) {
+      name = 'fake_file.png', public type: string = '',
+      public lastModified: number = 0, blob: Blob = new Blob()) {
     super(name);
     this.lastWritable = new FakeWritableFileSink(blob);
-
-    /** @type {string} */
-    this.type = type;
-
-    /** @type {number} */
-    this.lastModified = lastModified;
-
-    /** @type {!DOMException|!Error|undefined} */
-    this.nextCreateWritableError;
-
-    /**
-     * Used simulate an error thrown from directory traversal.
-     * @type {?DOMException|undefined}
-     */
-    this.errorToFireOnIterate;
   }
-  /** @override */
-  async createWritable(options) {
+  async createWritable(_options: FileSystemCreateWritableOptions) {
     if (this.nextCreateWritableError) {
       throw this.nextCreateWritableError;
     }
@@ -189,9 +165,10 @@ export class FakeFileSystemFileHandle extends FakeFileSystemHandle {
 
     // The FileSystemWritableFileStream supports both streams and direct writes.
     // Splice on the direct writing capabilities by delegating to the sink.
-    const writable = /** @type {!FileSystemWritableFileStream} */ (stream);
-    writable.write = (data) => sink.write(data);
-    writable.truncate = (size) => sink.truncate(size);
+    const writable = stream as FileSystemWritableFileStream;
+    writable.write = (data: BufferSource|Blob|string|WriteParams) =>
+        sink.write(data);
+    writable.truncate = (size: number) => sink.truncate(size);
     writable.close = () => sink.close();
     return writable;
   }
@@ -209,40 +186,36 @@ export class FakeFileSystemFileHandle extends FakeFileSystemHandle {
 }
 
 /** @implements FileSystemDirectoryHandle  */
-export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle {
-  /**
-   * @param {string=} name
-   */
+export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle
+    implements FileSystemDirectoryHandle {
+  override kind: 'directory' = 'directory';
+
+  /** Internal state mocking file handles in a directory handle. */
+  files: FakeFileSystemFileHandle[] = [];
+
+  /** Used to spy on the last deleted file. */
+  lastDeleted?: null|FakeFileSystemFileHandle = null;
+
   constructor(name = 'fake-dir') {
     super(name);
-    this.kind = 'directory';
-    /**
-     * Internal state mocking file handles in a directory handle.
-     * @type {!Array<!FakeFileSystemFileHandle>}
-     */
-    this.files = [];
-    /**
-     * Used to spy on the last deleted file.
-     * @type {?FakeFileSystemFileHandle}
-     */
-    this.lastDeleted = null;
   }
+
   /**
    * Use to populate `FileSystemFileHandle`s for tests.
    * @param {!FakeFileSystemFileHandle} fileHandle
    */
-  addFileHandleForTest(fileHandle) {
+  addFileHandleForTest(fileHandle: FakeFileSystemFileHandle) {
     this.files.push(fileHandle);
   }
   /**
    * Helper to get all entries as File.
    * @return {!Array<!File>}
    */
-  getFilesSync() {
+  getFilesSync(): File[] {
     return this.files.map(f => f.getFileSync());
   }
-  /** @override */
-  async getFileHandle(name, options) {
+
+  async getFileHandle(name: string, options?: FileSystemGetFileOptions) {
     const fileHandle = this.files.find(f => f.name === name);
     if (!fileHandle && options && options.create === true) {
       // Simulate creating a new file, assume it is an image. This is needed for
@@ -257,14 +230,18 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle {
                             'NotFoundError', `File ${name} not found`)));
   }
   /** @override */
-  getDirectoryHandle(name, options) {}
+  async getDirectoryHandle(
+      _name: string, _options?: FileSystemGetDirectoryOptions):
+      Promise<FakeFileSystemDirectoryHandle> {
+    throw new Error('Not implemented');
+  }
   /**
    * @override
    * @return {!AsyncIterable<!Array<string|!FileSystemHandle>>}
    * @suppress {reportUnknownTypes} suppress [JSC_UNKNOWN_EXPR_TYPE] for `yield
    * [file.name, file]`.
    */
-  async * entries() {
+  async * entries(): AsyncIterable<Array<string|FileSystemHandle>> {
     for (const file of this.files) {
       yield [file.name, file];
     }
@@ -275,18 +252,12 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle {
    * @suppress {reportUnknownTypes} suppress [JSC_UNKNOWN_EXPR_TYPE] for `yield
    * file.name`.
    */
-  async * keys() {
+  async * keys(): AsyncIterable<string> {
     for (const file of this.files) {
       yield file.name;
     }
   }
-  /**
-   * @override
-   * @return {!AsyncIterable<!FileSystemHandle>}
-   * @suppress {reportUnknownTypes} suppress [JSC_UNKNOWN_EXPR_TYPE] for `yield
-   * file`.
-   */
-  async * values() {
+  async * values(): AsyncIterable<FileSystemHandle> {
     for (const file of this.files) {
       if (file.errorToFireOnIterate) {
         const error = file.errorToFireOnIterate;
@@ -297,7 +268,7 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle {
     }
   }
   /** @override */
-  async removeEntry(name, options) {
+  async removeEntry(name: string, _options: FileSystemRemoveOptions) {
     // Remove file handle from internal state.
     const fileHandleIndex = this.files.findIndex(f => f.name === name);
     // Store the file removed for spying in tests.
@@ -319,16 +290,22 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle {
  *   arrayBuffer: (function(): (!Promise<!ArrayBuffer>)|undefined)
  * }}
  */
-export let FileDesc;
+export interface FileDesc {
+  name?: string;
+  type?: string;
+  lastModified?: number;
+  arrayBuffer?: () => Promise<ArrayBuffer>;
+}
 
 /**
  * Creates a mock directory with the provided files in it.
  * @param {!Array<!FileDesc>=} files
  * @return {!Promise<!FakeFileSystemDirectoryHandle>}
  */
-export async function createMockTestDirectory(files = [{}]) {
+export async function createMockTestDirectory(files: FileDesc[] = [{}]):
+    Promise<FakeFileSystemDirectoryHandle> {
   const directory = new FakeFileSystemDirectoryHandle();
-  for (const /** !FileDesc */ file of files) {
+  for (const file of files) {
     const fileBlob = file.arrayBuffer !== undefined ?
         new Blob([await file.arrayBuffer()]) :
         new Blob();
@@ -340,81 +317,69 @@ export async function createMockTestDirectory(files = [{}]) {
 
 /**
  * Creates a mock LaunchParams object from the provided `files`.
- * @param {!Array<!FileSystemHandle>} files
- * @return {!LaunchParams}
  */
-export function handlesToLaunchParams(files) {
-  return /** @type{!LaunchParams} */ ({files});
+export function handlesToLaunchParams(files: FileSystemHandle[]): LaunchParams {
+  return {files};
 }
 
 /**
  * Helper to "launch" with the given `directoryContents`. Populates a fake
  * directory containing those handles, then launches the app. The focus file is
  * either the first file in `multiSelectionFiles`, or the first directory entry.
- * @param {!Array<!FakeFileSystemFileHandle>} directoryContents
- * @param {!Array<!FakeFileSystemFileHandle>=} multiSelectionFiles If provided,
+ * @param multiSelectionFiles If provided,
  *     holds additional files selected in the files app at launch time.
- * @return {!Promise<!FakeFileSystemDirectoryHandle>}
  */
 export async function launchWithHandles(
-    directoryContents, multiSelectionFiles = []) {
+    directoryContents: FakeFileSystemFileHandle[],
+    multiSelectionFiles: FakeFileSystemFileHandle[] =
+        []): Promise<FakeFileSystemDirectoryHandle> {
   await testMessageHandlersReady;
 
-  /** @type {?FakeFileSystemFileHandle} */
   let focusFile = multiSelectionFiles[0];
   if (!focusFile) {
-    focusFile = directoryContents[0];
+    focusFile = directoryContents[0]!;
   }
   multiSelectionFiles = multiSelectionFiles.slice(1);
   const directory = new FakeFileSystemDirectoryHandle();
   for (const handle of directoryContents) {
     directory.addFileHandleForTest(handle);
   }
-  const files = [directory, focusFile, ...multiSelectionFiles];
+  const files: FileSystemHandle[] =
+      [directory, focusFile, ...multiSelectionFiles];
   await launchConsumer(handlesToLaunchParams(files));
   return directory;
 }
 
 /**
  * Wraps a file in a FakeFileSystemFileHandle.
- * @param {!File} file
- * @return {!FakeFileSystemFileHandle}
  */
-export function fileToFileHandle(file) {
+export function fileToFileHandle(file: File): FakeFileSystemFileHandle {
   return new FakeFileSystemFileHandle(
       file.name, file.type, file.lastModified, file);
 }
 
 /**
  * Helper to invoke launchWithHandles after wrapping `files` in fake handles.
- * @param {!Array<!File>} files
- * @param {!Array<number>=} selectedIndexes
- * @return {!Promise<!FakeFileSystemDirectoryHandle>}
  */
-export async function launchWithFiles(files, selectedIndexes = []) {
+export async function launchWithFiles(
+    files: File[],
+    selectedIndexes: number[] = []): Promise<FakeFileSystemDirectoryHandle> {
   const fileHandles = files.map(fileToFileHandle);
-  const selection =
-      selectedIndexes.map((/** @type {number} */ i) => fileHandles[i]);
+  const selection = selectedIndexes.map(i => fileHandles[i]!);
   return launchWithHandles(fileHandles, selection);
 }
 
 /**
  * Creates an `Error` with the name field set.
- * @param {string} name
- * @param {string} msg
- * @return {!Error}
  */
-export function createNamedError(name, msg) {
+export function createNamedError(name: string, msg: string): Error {
   const error = new Error(msg);
   error.name = name;
   return error;
 }
 
-/**
- * @param {!FileSystemDirectoryHandle} directory
- * @param {!File} file
- */
-export async function loadFilesWithoutSendingToGuest(directory, file) {
+export async function loadFilesWithoutSendingToGuest(
+    directory: FileSystemDirectoryHandle, file: File) {
   const handle = await directory.getFileHandle(file.name);
   const launchNumber = incrementLaunchNumber();
   setCurrentDirectory(directory, {file, handle});
@@ -424,20 +389,18 @@ export async function loadFilesWithoutSendingToGuest(directory, file) {
 /**
  * Checks that the `currentFiles` array maintained by launch.js has the same
  * sequence of files as `expectedFiles`.
- * @param {!Array<!File>} expectedFiles
- * @param {string=} testCase
  */
-export function assertFilesToBe(expectedFiles, testCase = undefined) {
-  assertFilenamesToBe(expectedFiles.map(f => f.name).join(), testCase);
+export function assertFilesToBe(
+    expectedFiles: Array<undefined|{name: string}>, testCase?: string) {
+  assertFilenamesToBe(expectedFiles.map(f => f!.name).join(), testCase);
 }
 
 /**
  * Checks that the `currentFiles` array maintained by launch.js has the same
  * sequence of filenames as `expectedFilenames`.
- * @param {string} expectedFilenames
- * @param {string=} testCase
  */
-export function assertFilenamesToBe(expectedFilenames, testCase = undefined) {
+export function assertFilenamesToBe(
+    expectedFilenames: string, testCase?: string) {
   // Use filenames as an approximation of file uniqueness.
   const currentFilenames = currentFiles.map(d => d.handle.name).join();
   chai.assert.equal(
@@ -448,25 +411,25 @@ export function assertFilenamesToBe(expectedFilenames, testCase = undefined) {
 
 /**
  * Wraps `chai.assert.match` allowing tests to use `assertMatch`.
- * @param {string} string the string to match
- * @param {string} regex an escaped regex compatible string
- * @param {string=} opt_message logged if the assertion fails
+ * @param string the string to match
+ * @param regex an escaped regex compatible string
+ * @param message logged if the assertion fails
  */
-export function assertMatch(string, regex, opt_message = undefined) {
-  chai.assert.match(string, new RegExp(regex), opt_message);
+export function assertMatch(string: string, regex: string, message?: string) {
+  chai.assert.match(string, new RegExp(regex), message);
 }
 
 /**
  * Returns the files loaded in the most recent call to `loadFiles()`.
- * @return {!Promise<?Array<!FileSnapshot>>}
  */
-export async function getLoadedFiles() {
-  const response = /** @type {!LastLoadedFilesResponse} */ (
-      await guestMessagePipe.sendMessage('get-last-loaded-files'));
+export async function getLoadedFiles(): Promise<FileSnapshot[]> {
+  const response: LastLoadedFilesResponse =
+      await guestMessagePipe.sendMessage('get-last-loaded-files');
   if (response.fileList) {
     return response.fileList;
   }
-  return null;
+  // No callers currently want this to return null.
+  throw new Error('No last loaded files');
 }
 
 /**
@@ -478,31 +441,25 @@ export function simulateLosingAccessToDirectory() {
   setCurrentDirectoryHandle(null);
 }
 
-/**
- * @param {!FakeFileSystemDirectoryHandle} directory
- * @return {{handle: !FakeFileSystemFileHandle, file: !File}}
- */
-export function launchWithFocusFile(directory) {
+export function launchWithFocusFile(directory: FakeFileSystemDirectoryHandle):
+    {handle: FakeFileSystemFileHandle, file: File} {
+  const firstFile = assertCast(directory.files[0]);
   const focusFile = {
-    /** @type {!FakeFileSystemFileHandle} */
-    handle: directory.files[0],
-    file: directory.files[0].getFileSync(),
+    handle: firstFile,
+    file: firstFile.getFileSync(),
   };
   incrementLaunchNumber();
   setCurrentDirectory(directory, focusFile);
   return focusFile;
 }
 
-/**
- * @param {!FakeFileSystemDirectoryHandle} directory
- * @param {number} totalFiles
- */
-export async function assertSingleFileLaunch(directory, totalFiles) {
+export async function assertSingleFileLaunch(
+    directory: FakeFileSystemDirectoryHandle, totalFiles: number) {
   chai.assert.equal(1, currentFiles.length);
 
   await sendFilesToGuest();
 
-  const loadedFiles = assertCast(await getLoadedFiles());
+  const loadedFiles = await getLoadedFiles();
   // The untrusted context only loads the first file.
   chai.assert.equal(1, loadedFiles.length);
   // All files are in the `FileSystemDirectoryHandle`.
@@ -512,16 +469,14 @@ export async function assertSingleFileLaunch(directory, totalFiles) {
 /**
  * Check files loaded in the trusted context `currentFiles` against the working
  * directory and the untrusted context.
- * @param {!FakeFileSystemDirectoryHandle} directory
- * @param {!Array<string>} fileNames
- * @param {string=} testCase
  */
 export async function assertFilesLoaded(
-    directory, fileNames, testCase = undefined) {
+    directory: FakeFileSystemDirectoryHandle, fileNames: string[],
+    testCase?: string) {
   chai.assert.equal(fileNames.length, directory.files.length);
   chai.assert.equal(fileNames.length, currentFiles.length);
 
-  const loadedFiles = /** @type {!Array<!File>} */ (await getLoadedFiles());
+  const loadedFiles = await getLoadedFiles();
   chai.assert.equal(fileNames.length, loadedFiles.length);
 
   // Check `currentFiles` in the trusted context matches up with files sent

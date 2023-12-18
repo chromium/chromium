@@ -19,6 +19,8 @@ declare function assertDeepEquals(lhs: any, rhs: any): void;
 interface ChaiJsAsserts {
   isTrue(value: any): void;
   isDefined(value: any): void;
+  equal(lhs: any, rhs: any, message?: string): void;
+  match(string: string, regex: RegExp, message?: string): void;
 }
 
 interface ChaiJs {

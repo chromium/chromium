@@ -417,9 +417,6 @@ window.addEventListener('DOMContentLoaded', () => {
 declare global {
   interface Window {
     chooseFileSystemEntries: null;
-    showOpenFilePicker: null;
-    showSaveFilePicker: null;
-    showDirectoryPicker: null;
     addColorChangeListener: (listener: EventListenerOrEventListenerObject|
                              null) => unknown;
     removeColorChangeListener: (listener: EventListenerOrEventListenerObject|
