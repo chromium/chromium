@@ -64,9 +64,13 @@ class PickerViewDelegateImpl : public PickerView::Delegate {
                    SearchResultsCallback callback) override {
     // TODO(b/310088338): Do a real search.
     callback.Run(PickerSearchResults({{
-        PickerSearchResults::Section(u"Matching expressions", {{u"👍", u"😊"}}),
+        PickerSearchResults::Section(
+            u"Matching expressions",
+            {{PickerSearchResult(u"👍"), PickerSearchResult(u"😊")}}),
     }}));
   }
+
+  void InsertResult(const PickerSearchResult& result) override {}
 
   bool ShouldPaint() override { return should_paint_; }
 

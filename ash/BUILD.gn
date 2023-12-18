@@ -946,6 +946,8 @@ component("ash") {
     "picker/views/picker_contents_view.h",
     "picker/views/picker_search_field_view.cc",
     "picker/views/picker_search_field_view.h",
+    "picker/views/picker_search_results_view.cc",
+    "picker/views/picker_search_results_view.h",
     "picker/views/picker_user_education_view.cc",
     "picker/views/picker_user_education_view.h",
     "picker/views/picker_view.cc",

@@ -13,6 +13,15 @@
 
 namespace ash {
 
+// TODO(b/310088338): Support result types beyond just literal text.
+class ASH_EXPORT PickerSearchResult {
+ public:
+  explicit PickerSearchResult(const std::u16string& text);
+
+ private:
+  std::u16string text_;
+};
+
 // The search results for a particular Picker query.
 class ASH_EXPORT PickerSearchResults {
  public:
@@ -20,7 +29,7 @@ class ASH_EXPORT PickerSearchResults {
   class Section {
    public:
     explicit Section(const std::u16string& heading,
-                     base::span<const std::u16string> results);
+                     base::span<const PickerSearchResult> results);
     Section(const Section& other);
     Section& operator=(const Section& other);
     ~Section();
@@ -28,8 +37,7 @@ class ASH_EXPORT PickerSearchResults {
    private:
     std::u16string heading_;
 
-    // TODO(b/310088338): Support result types beyond just literal text.
-    std::vector<std::u16string> results_;
+    std::vector<PickerSearchResult> results_;
   };
 
   explicit PickerSearchResults(base::span<const Section> sections);

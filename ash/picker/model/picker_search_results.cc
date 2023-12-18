@@ -6,8 +6,12 @@
 
 namespace ash {
 
-PickerSearchResults::Section::Section(const std::u16string& heading,
-                                      base::span<const std::u16string> results)
+PickerSearchResult::PickerSearchResult(const std::u16string& text)
+    : text_(text) {}
+
+PickerSearchResults::Section::Section(
+    const std::u16string& heading,
+    base::span<const PickerSearchResult> results)
     : heading_(heading), results_(results.begin(), results.end()) {}
 
 PickerSearchResults::Section::Section(const Section& other) = default;

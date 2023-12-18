@@ -20,11 +20,13 @@ class NonClientFrameView;
 
 namespace ash {
 
+class PickerContentsView;
 class PickerSearchFieldView;
+class PickerSearchResult;
+class PickerSearchResults;
+class PickerSearchResultsView;
 class PickerUserEducationView;
 class PickerZeroStateView;
-class PickerContentsView;
-class PickerSearchResults;
 
 // View for the Picker widget.
 class ASH_EXPORT PickerView : public views::WidgetDelegateView {
@@ -44,6 +46,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
     // which may be called multiples times to update the results.
     virtual void StartSearch(const std::u16string& query,
                              SearchResultsCallback callback) = 0;
+
+    // Inserts `result` into the previously focused input field.
+    virtual void InsertResult(const PickerSearchResult& result) = 0;
 
     // Whether the view should paint. Certain test scenarios do not need
     // painting, so it is better to skip painting.
@@ -72,11 +77,11 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   PickerSearchFieldView& search_field_view_for_testing() {
     return *search_field_view_;
   }
+  PickerSearchResultsView& search_results_view_for_testing() {
+    return *search_results_view_;
+  }
   PickerZeroStateView& zero_state_view_for_testing() {
     return *zero_state_view_;
-  }
-  views::View& search_results_view_for_testing() {
-    return *search_results_view_;
   }
 
  private:
@@ -87,12 +92,15 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   // Displays `results` in the view.
   void PublishSearchResults(const PickerSearchResults& results);
 
+  // Selects a search result.
+  void SelectSearchResult(const PickerSearchResult& result);
+
   PickerSessionMetrics session_metrics_;
   std::unique_ptr<Delegate> delegate_;
   raw_ptr<PickerSearchFieldView> search_field_view_ = nullptr;
   raw_ptr<PickerContentsView> contents_view_ = nullptr;
   raw_ptr<PickerZeroStateView> zero_state_view_ = nullptr;
-  raw_ptr<views::View> search_results_view_ = nullptr;
+  raw_ptr<PickerSearchResultsView> search_results_view_ = nullptr;
   raw_ptr<PickerUserEducationView> user_education_view_ = nullptr;
 };
 

@@ -9,6 +9,7 @@
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_contents_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
+#include "ash/picker/views/picker_search_results_view.h"
 #include "ash/picker/views/picker_user_education_view.h"
 #include "ash/picker/views/picker_zero_state_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -72,8 +73,11 @@ PickerView::PickerView(std::unique_ptr<Delegate> delegate,
 
   zero_state_view_ =
       contents_view_->AddPage(std::make_unique<PickerZeroStateView>());
-  search_results_view_ =
-      contents_view_->AddPage(std::make_unique<views::View>());
+  // `base::Unretained` is safe here because this class owns
+  // `search_results_view_`.
+  search_results_view_ = contents_view_->AddPage(
+      std::make_unique<PickerSearchResultsView>(base::BindOnce(
+          &PickerView::SelectSearchResult, base::Unretained(this))));
   contents_view_->SetActivePage(zero_state_view_);
 
   user_education_view_ =
@@ -130,6 +134,11 @@ void PickerView::StartSearch(const std::u16string& query) {
 
 void PickerView::PublishSearchResults(const PickerSearchResults& results) {
   // TODO(b/310088338): Show results.
+}
+
+void PickerView::SelectSearchResult(const PickerSearchResult& result) {
+  GetWidget()->Close();
+  delegate_->InsertResult(result);
 }
 
 BEGIN_METADATA(PickerView, views::View)

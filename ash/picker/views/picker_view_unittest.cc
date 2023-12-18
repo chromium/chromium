@@ -6,6 +6,7 @@
 
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_search_field_view.h"
+#include "ash/picker/views/picker_search_results_view.h"
 #include "ash/picker/views/picker_user_education_view.h"
 #include "ash/picker/views/picker_zero_state_view.h"
 #include "ash/test/ash_test_base.h"
@@ -35,6 +36,8 @@ class FakePickerViewDelegate : public PickerView::Delegate {
 
   void StartSearch(const std::u16string& query,
                    SearchResultsCallback callback) override {}
+
+  void InsertResult(const PickerSearchResult& result) override {}
 
   bool ShouldPaint() override { return true; }
 
