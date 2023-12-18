@@ -1748,11 +1748,10 @@ TEST_F(BrowserAutofillManagerTest,
     GetAutofillSuggestions(
         form, field, AutofillSuggestionTriggerSource::kManualFallbackPayments);
     external_delegate()->CheckSuggestionCount(field.global_id(), 3);
-    EXPECT_TRUE(base::ranges::all_of(
-        external_delegate()->suggestions(), [](const Suggestion& suggestion) {
-          return suggestion.popup_item_id ==
-                 PopupItemId::kPaymentsEntryNotSelectable;
-        }));
+    EXPECT_TRUE(base::ranges::all_of(external_delegate()->suggestions(),
+                                     [](const Suggestion& suggestion) {
+                                       return !suggestion.is_selectable;
+                                     }));
   }
 }
 
@@ -9230,18 +9229,6 @@ TEST_F(BrowserAutofillManagerTest,
   browser_autofill_manager_->DidShowSuggestions(
       std::vector<PopupItemId>({PopupItemId::kCreditCardEntry}), form,
       form.fields[0]);
-}
-
-TEST_F(BrowserAutofillManagerTest,
-       DidShowSuggestions_CreditCardManualFallback_PreflightFetchingCall) {
-  FormData form = CreateTestAddressFormData();
-  FormsSeen({form});
-
-  EXPECT_CALL(cc_access_manager(), PrepareToFetchCreditCard)
-      .Times(IsCreditCardFidoAuthenticationEnabled() ? 1 : 0);
-  browser_autofill_manager_->DidShowSuggestions(
-      std::vector<PopupItemId>({PopupItemId::kPaymentsEntryNotSelectable}),
-      form, form.fields[0]);
 }
 
 TEST_F(BrowserAutofillManagerTest,

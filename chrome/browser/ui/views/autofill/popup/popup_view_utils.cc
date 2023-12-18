@@ -560,7 +560,6 @@ int GetMainTextStyleForPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kFillFullEmail:
     case PopupItemId::kFillFullPhoneNumber:
     case PopupItemId::kAddressEntryNotSelectable:
-    case PopupItemId::kPaymentsEntryNotSelectable:
     case PopupItemId::kGeneratePasswordEntry:
     case PopupItemId::kIbanEntry:
     case PopupItemId::kInsecureContextPaymentDisabledMessage:
@@ -612,7 +611,6 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kDevtoolsTestAddressEntry:
     case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kAddressEntryNotSelectable:
-    case PopupItemId::kPaymentsEntryNotSelectable:
     case PopupItemId::kFillExistingPlusAddress:
     case PopupItemId::kFillFullAddress:
     case PopupItemId::kFillFullName:
@@ -644,7 +642,7 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kFillFullEmail:
     case PopupItemId::kFillFullPhoneNumber:
     case PopupItemId::kAddressEntryNotSelectable:
-    case PopupItemId::kPaymentsEntryNotSelectable:
+    case PopupItemId::kCreditCardEntry:
       return true;
     case PopupItemId::kAccountStoragePasswordEntry:
     case PopupItemId::kAccountStorageUsernameEntry:
@@ -654,7 +652,6 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kClearForm:
     case PopupItemId::kCompose:
     case PopupItemId::kCreateNewPlusAddress:
-    case PopupItemId::kCreditCardEntry:
     case PopupItemId::kDatalistEntry:
     case PopupItemId::kDevtoolsTestAddressEntry:
     case PopupItemId::kDeleteAddressProfile:

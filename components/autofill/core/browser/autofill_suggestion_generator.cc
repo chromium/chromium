@@ -1749,9 +1749,8 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   suggestion.icon = credit_card.CardIconForAutofillSuggestion();
   // First layer manual fallback entries can't fill forms and thus can't be
   // selected by the user.
-  suggestion.popup_item_id = is_manual_fallback
-                                 ? PopupItemId::kPaymentsEntryNotSelectable
-                                 : PopupItemId::kCreditCardEntry;
+  suggestion.popup_item_id = PopupItemId::kCreditCardEntry;
+  suggestion.is_selectable = !is_manual_fallback;
   suggestion.payload = Suggestion::Guid(credit_card.guid());
 #if BUILDFLAG(IS_ANDROID)
   // The card art icon should always be shown at the start of the suggestion.
@@ -1803,10 +1802,10 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   }
 
   suggestion.acceptance_a11y_announcement =
-      suggestion.popup_item_id == PopupItemId::kPaymentsEntryNotSelectable
-          ? l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY)
-          : l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
+      suggestion.is_selectable
+          ? l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM)
+          : l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY);
 
   return suggestion;
 }

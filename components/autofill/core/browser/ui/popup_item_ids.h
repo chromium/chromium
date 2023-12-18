@@ -69,7 +69,6 @@ enum class PopupItemId : int {
   kVirtualCreditCardEntry,
   kCreditCardFieldByFieldFilling,
   kIbanEntry,
-  kPaymentsEntryNotSelectable,
 
   // Plus address suggestions.
   kCreateNewPlusAddress,

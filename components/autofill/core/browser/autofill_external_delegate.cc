@@ -182,7 +182,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
       // suggestions related to standalone CVC fields.
     case PopupItemId::kVirtualCreditCardEntry:
     case PopupItemId::kAddressEntryNotSelectable:
-    case PopupItemId::kPaymentsEntryNotSelectable:
       return true;
     case PopupItemId::kAccountStoragePasswordEntry:
     case PopupItemId::kAccountStorageUsernameEntry:
@@ -394,6 +393,10 @@ void AutofillExternalDelegate::OnPopupHidden() {
 
 void AutofillExternalDelegate::DidSelectSuggestion(
     const Suggestion& suggestion) {
+  if (!suggestion.is_selectable) {
+    // TODO(crbug.com/1493361): Handle this in the popup controller.
+    return;
+  }
   ClearPreviewedForm();
 
   const Suggestion::BackendId backend_id =
@@ -468,7 +471,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
                TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
     case PopupItemId::kAddressEntryNotSelectable:
-    case PopupItemId::kPaymentsEntryNotSelectable:
       return;
     case PopupItemId::kEditAddressProfile:
     case PopupItemId::kDeleteAddressProfile:
@@ -504,6 +506,10 @@ void AutofillExternalDelegate::DidSelectSuggestion(
 void AutofillExternalDelegate::DidAcceptSuggestion(
     const Suggestion& suggestion,
     const SuggestionPosition& position) {
+  if (!suggestion.is_selectable) {
+    // TODO(crbug.com/1493361): Handle this in the popup controller.
+    return;
+  }
   switch (suggestion.popup_item_id) {
     case PopupItemId::kAutofillOptions:
       // User selected 'Autofill Options'.
@@ -683,7 +689,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       // If the selected element is a warning we don't want to do anything.
       break;
     case PopupItemId::kAddressEntryNotSelectable:
-    case PopupItemId::kPaymentsEntryNotSelectable:
       return;
     case PopupItemId::kAddressEntry:
       autofill_metrics::LogAutofillSuggestionAcceptedIndex(
@@ -783,7 +788,6 @@ bool AutofillExternalDelegate::RemoveSuggestion(
     case PopupItemId::kCreditCardFieldByFieldFilling:
     case PopupItemId::kCreditCardEntry:
     case PopupItemId::kAddressEntryNotSelectable:
-    case PopupItemId::kPaymentsEntryNotSelectable:
       return manager_->RemoveAutofillProfileOrCreditCard(backend_id);
     case PopupItemId::kAutocompleteEntry:
       manager_->RemoveCurrentSingleFieldSuggestion(query_field_.name, value,

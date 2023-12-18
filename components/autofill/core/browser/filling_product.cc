@@ -27,7 +27,6 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kScanCreditCard:
     case PopupItemId::kVirtualCreditCardEntry:
     case PopupItemId::kCreditCardFieldByFieldFilling:
-    case PopupItemId::kPaymentsEntryNotSelectable:
       return FillingProduct::kCreditCard;
     case PopupItemId::kMerchantPromoCodeEntry:
       return FillingProduct::kMerchantPromoCode;
