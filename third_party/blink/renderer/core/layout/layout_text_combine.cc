@@ -64,11 +64,6 @@ void LayoutTextCombine::AssertStyleIsValid(const ComputedStyle& style) {
 #endif
 }
 
-bool LayoutTextCombine::IsOfType(LayoutObjectType type) const {
-  NOT_DESTROYED();
-  return type == kLayoutObjectTextCombine || LayoutNGBlockFlow::IsOfType(type);
-}
-
 float LayoutTextCombine::DesiredWidth() const {
   DCHECK_EQ(StyleRef().GetFont().GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);

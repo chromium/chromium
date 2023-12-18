@@ -50,9 +50,9 @@ class LayoutCustom final : public LayoutNGBlockFlow {
   }
 
  private:
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsLayoutCustom() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectCustom || LayoutNGBlockFlow::IsOfType(type);
+    return true;
   }
 
   State state_;

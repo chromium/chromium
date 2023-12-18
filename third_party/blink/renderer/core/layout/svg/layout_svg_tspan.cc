@@ -28,11 +28,6 @@ namespace blink {
 
 LayoutSVGTSpan::LayoutSVGTSpan(Element* element) : LayoutSVGInline(element) {}
 
-bool LayoutSVGTSpan::IsOfType(LayoutObjectType type) const {
-  NOT_DESTROYED();
-  return type == kLayoutObjectSVGTSpan || LayoutSVGInline::IsOfType(type);
-}
-
 bool LayoutSVGTSpan::IsChildAllowed(LayoutObject* child,
                                     const ComputedStyle&) const {
   NOT_DESTROYED();

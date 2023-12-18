@@ -83,9 +83,9 @@ class LayoutQuote final : public LayoutInline {
 
  private:
   void WillBeDestroyed() override;
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsQuote() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectQuote || LayoutInline::IsOfType(type);
+    return true;
   }
   void StyleDidChange(StyleDifference, const ComputedStyle*) override;
   void WillBeRemovedFromTree() override;

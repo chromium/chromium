@@ -56,10 +56,9 @@ class LayoutSVGViewportContainer final : public LayoutSVGContainer {
   gfx::RectF ViewBoxRect() const;
 
  private:
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsSVGViewportContainer() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectSVGViewportContainer ||
-           LayoutSVGContainer::IsOfType(type);
+    return true;
   }
 
   void UpdateLayout() override;

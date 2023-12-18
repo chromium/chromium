@@ -81,9 +81,9 @@ class LayoutRubyAsInline final : public LayoutInline {
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
  private:
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsRuby() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectRuby || LayoutInline::IsOfType(type);
+    return true;
   }
 
   Member<RubyContainer> ruby_container_;

@@ -397,8 +397,10 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   void ApplyTextTransform();
   void SecureText(UChar mask);
 
-  // This will catch anyone doing an unnecessary check.
-  bool IsText() const = delete;
+  bool IsText() const final {
+    NOT_DESTROYED();
+    return true;
+  }
 
   PhysicalRect LocalVisualRectIgnoringVisibility() const final;
 

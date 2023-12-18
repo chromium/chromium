@@ -134,10 +134,13 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
     return &content_.Children();
   }
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsSVG() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectSVG || type == kLayoutObjectSVGRoot ||
-           LayoutReplaced::IsOfType(type);
+    return true;
+  }
+  bool IsSVGRoot() const final {
+    NOT_DESTROYED();
+    return true;
   }
 
   void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const override;

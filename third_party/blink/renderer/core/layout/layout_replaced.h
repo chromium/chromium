@@ -179,9 +179,9 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsLayoutReplaced() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectReplaced || LayoutBox::IsOfType(type);
+    return true;
   }
 
   // The intrinsic size for a replaced element is based on its content's natural

@@ -27,11 +27,6 @@ void LayoutRubyAsBlock::Trace(Visitor* visitor) const {
   LayoutNGBlockFlow::Trace(visitor);
 }
 
-bool LayoutRubyAsBlock::IsOfType(LayoutObjectType type) const {
-  NOT_DESTROYED();
-  return type == kLayoutObjectRuby || LayoutNGBlockFlow::IsOfType(type);
-}
-
 void LayoutRubyAsBlock::AddChild(LayoutObject* child,
                                  LayoutObject* before_child) {
   NOT_DESTROYED();

@@ -74,9 +74,9 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsVideo() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectVideo || LayoutMedia::IsOfType(type);
+    return true;
   }
 
   void PaintReplaced(const PaintInfo&,

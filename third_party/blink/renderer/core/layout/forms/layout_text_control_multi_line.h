@@ -17,7 +17,10 @@ class LayoutTextControlMultiLine final : public LayoutNGBlockFlow {
  private:
   HTMLElement* InnerEditorElement() const;
 
-  bool IsOfType(LayoutObjectType) const override;
+  bool IsTextArea() const final {
+    NOT_DESTROYED();
+    return true;
+  }
 
   const char* GetName() const override {
     NOT_DESTROYED();

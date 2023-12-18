@@ -101,9 +101,9 @@ class CORE_EXPORT LayoutTableCell : public LayoutNGBlockFlow {
   unsigned ColSpan() const;
 
  protected:
-  bool IsOfType(LayoutObjectType type) const final {
+  bool IsTableCell() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectTableCell || LayoutNGBlockFlow::IsOfType(type);
+    return true;
   }
 
   // Table cell applies a special clip to its background.

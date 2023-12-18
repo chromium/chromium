@@ -12,11 +12,6 @@ LayoutRubyBase::LayoutRubyBase() : LayoutNGBlockFlow(nullptr) {
 
 LayoutRubyBase::~LayoutRubyBase() = default;
 
-bool LayoutRubyBase::IsOfType(LayoutObjectType type) const {
-  NOT_DESTROYED();
-  return type == kLayoutObjectRubyBase || LayoutBlockFlow::IsOfType(type);
-}
-
 bool LayoutRubyBase::IsChildAllowed(LayoutObject*, const ComputedStyle&) const {
   NOT_DESTROYED();
   NOTREACHED();  // Because LayoutRubyColumn manages child types.

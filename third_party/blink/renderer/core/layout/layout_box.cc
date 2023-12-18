@@ -466,7 +466,6 @@ void LayoutBoxRareData::Trace(Visitor* visitor) const {
 LayoutBox::LayoutBox(ContainerNode* node)
     : LayoutBoxModelObject(node),
       intrinsic_logical_widths_initial_block_size_(LayoutUnit::Min()) {
-  SetIsBox();
   if (blink::IsA<HTMLLegendElement>(node))
     SetIsHTMLLegendElement();
 }

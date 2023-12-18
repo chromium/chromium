@@ -38,7 +38,10 @@ class CORE_EXPORT LayoutNGBlockFlow : public LayoutBlockFlow {
   void ClearInlineNodeData() final;
 
  protected:
-  bool IsOfType(LayoutObjectType) const override;
+  bool IsLayoutNGBlockFlow() const final {
+    NOT_DESTROYED();
+    return true;
+  }
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   void AddOutlineRects(OutlineRectCollector&,

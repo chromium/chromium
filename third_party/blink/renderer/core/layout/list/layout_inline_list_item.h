@@ -30,7 +30,10 @@ class LayoutInlineListItem final : public LayoutInline {
  private:
   void WillBeDestroyed() override;
   const char* GetName() const override;
-  bool IsOfType(LayoutObjectType) const override;
+  bool IsInlineListItem() const final {
+    NOT_DESTROYED();
+    return true;
+  }
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;

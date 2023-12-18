@@ -32,11 +32,6 @@ namespace blink {
 LayoutIFrame::LayoutIFrame(HTMLFrameOwnerElement* element)
     : LayoutEmbeddedContent(element) {}
 
-bool LayoutIFrame::IsInlineBlockOrInlineTable() const {
-  NOT_DESTROYED();
-  return IsInline();
-}
-
 void LayoutIFrame::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());

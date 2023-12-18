@@ -36,7 +36,10 @@ class CORE_EXPORT LayoutFieldset final : public LayoutNGBlockFlow {
   }
 
  protected:
-  bool IsOfType(LayoutObjectType) const override;
+  bool IsFieldset() const final {
+    NOT_DESTROYED();
+    return true;
+  }
   void InsertedIntoTree() override;
   void UpdateAnonymousChildStyle(
       const LayoutObject* child,

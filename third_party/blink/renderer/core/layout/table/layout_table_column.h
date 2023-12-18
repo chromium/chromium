@@ -83,9 +83,9 @@ class CORE_EXPORT LayoutTableColumn : public LayoutBox {
   }
 
  protected:
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsLayoutTableCol() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectTableCol || LayoutBox::IsOfType(type);
+    return true;
   }
 
   // Table row doesn't paint background by itself.

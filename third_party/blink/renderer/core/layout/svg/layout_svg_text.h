@@ -38,7 +38,10 @@ class LayoutSVGText final : public LayoutSVGBlock {
   // boundaries needs to be propagated (because of a change to the transform).
   bool UpdateAfterSvgLayout(bool bounds_changed);
   const char* GetName() const override;
-  bool IsOfType(LayoutObjectType type) const override;
+  bool IsSVGText() const final {
+    NOT_DESTROYED();
+    return true;
+  }
   bool IsChildAllowed(LayoutObject* child, const ComputedStyle&) const override;
   void AddChild(LayoutObject* child, LayoutObject* before_child) override;
   void RemoveChild(LayoutObject* child) override;

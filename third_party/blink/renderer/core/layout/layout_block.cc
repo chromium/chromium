@@ -668,8 +668,8 @@ LayoutBlockFlow* LayoutBlock::NearestInnerBlockWithFirstLine() {
 // so the firstChild() is nullptr if the only child is an empty inline-block.
 inline bool LayoutBlock::IsInlineBoxWrapperActuallyChild() const {
   NOT_DESTROYED();
-  return IsInlineBlockOrInlineTable() && !Size().IsEmpty() && GetNode() &&
-         EditingIgnoresContent(*GetNode());
+  return IsInline() && IsAtomicInlineLevel() && !Size().IsEmpty() &&
+         GetNode() && EditingIgnoresContent(*GetNode());
 }
 
 PhysicalRect LayoutBlock::LocalCaretRect(

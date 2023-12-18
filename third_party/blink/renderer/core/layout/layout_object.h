@@ -856,204 +856,199 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return false;
   }
-  bool IsBR() const {
+  virtual bool IsBox() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectBr);
+    return false;
   }
-  bool IsCanvas() const {
+  virtual bool IsText() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectCanvas);
+    return false;
   }
-  bool IsCounter() const {
+  virtual bool IsBR() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectCounter);
+    return false;
   }
-  bool IsEmbeddedObject() const {
+  virtual bool IsCanvas() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectEmbeddedObject);
+    return false;
   }
-  bool IsFieldset() const {
+  virtual bool IsCounter() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectFieldset);
+    return false;
   }
-  bool IsFrame() const {
+  virtual bool IsEmbeddedObject() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectFrame);
+    return false;
   }
-  bool IsFrameSet() const {
+  virtual bool IsFieldset() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectFrameSet);
+    return false;
   }
-  bool IsLayoutNGBlockFlow() const {
+  virtual bool IsFrame() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGBlockFlow);
+    return false;
   }
-  bool IsFlexibleBox() const {
+  virtual bool IsFrameSet() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectFlexibleBox);
+    return false;
   }
-  bool IsLayoutListItem() const {
+  virtual bool IsLayoutNGBlockFlow() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectListItem);
+    return false;
   }
-  bool IsInlineListItem() const {
+  virtual bool IsFlexibleBox() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectInlineListItem);
+    return false;
   }
-  bool IsLayoutInsideListMarker() const {
+  virtual bool IsLayoutListItem() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectInsideListMarker);
+    return false;
   }
-  bool IsLayoutOutsideListMarker() const {
+  virtual bool IsInlineListItem() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectOutsideListMarker);
+    return false;
   }
-  bool IsLayoutTextCombine() const {
+  virtual bool IsLayoutInsideListMarker() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTextCombine);
+    return false;
   }
-  bool IsLayoutTableCol() const {
+  virtual bool IsLayoutOutsideListMarker() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTableCol);
+    return false;
   }
-  bool IsListMarkerImage() const {
+  virtual bool IsLayoutTextCombine() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectListMarkerImage);
+    return false;
   }
-  bool IsMathML() const {
+  virtual bool IsLayoutTableCol() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectMathML);
+    return false;
   }
-  bool IsMathMLRoot() const {
+  virtual bool IsListMarkerImage() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectMathMLRoot);
+    return false;
   }
-  bool IsMedia() const {
+  virtual bool IsMathML() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectMedia);
+    return false;
   }
-  bool IsProgress() const {
+  virtual bool IsMathMLRoot() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectProgress);
+    return false;
   }
-  bool IsQuote() const {
+  virtual bool IsMedia() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectQuote);
+    return false;
   }
-  bool IsButton() const {
+  virtual bool IsProgress() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectButton);
+    return false;
   }
-  bool IsLayoutCustom() const {
+  virtual bool IsQuote() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectCustom);
+    return false;
   }
-  bool IsLayoutGrid() const {
+  virtual bool IsButton() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectGrid);
+    return false;
   }
-  bool IsLayoutIFrame() const {
+  virtual bool IsLayoutCustom() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectIFrame);
+    return false;
   }
-  bool IsLayoutImage() const {
+  virtual bool IsLayoutGrid() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectImage);
+    return false;
   }
-  bool IsLayoutMultiColumnSet() const {
+  virtual bool IsLayoutIFrame() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectMultiColumnSet);
+    return false;
   }
-  bool IsLayoutMultiColumnSpannerPlaceholder() const {
+  virtual bool IsLayoutImage() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectMultiColumnSpannerPlaceholder);
+    return false;
   }
-  bool IsLayoutReplaced() const {
+  virtual bool IsLayoutMultiColumnSet() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectReplaced);
+    return false;
   }
-  bool IsLayoutCustomScrollbarPart() const {
+  virtual bool IsLayoutMultiColumnSpannerPlaceholder() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectCustomScrollbarPart);
+    return false;
   }
-  bool IsLayoutView() const {
+  virtual bool IsLayoutReplaced() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectView);
+    return false;
   }
-  bool IsRuby() const {
+  virtual bool IsLayoutCustomScrollbarPart() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectRuby);
+    return false;
   }
-  bool IsRubyBase() const {
+  virtual bool IsLayoutView() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectRubyBase);
+    return false;
   }
-  bool IsRubyColumn() const {
+  virtual bool IsRuby() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectRubyColumn);
+    return false;
   }
-  bool IsRubyText() const {
+  virtual bool IsRubyBase() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectRubyText);
+    return false;
   }
-  bool IsTable() const {
+  virtual bool IsRubyColumn() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTable);
+    return false;
   }
-  bool IsTableCaption() const {
+  virtual bool IsRubyText() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTableCaption);
+    return false;
   }
-  bool IsTableCell() const {
+  virtual bool IsTable() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTableCell);
+    return false;
   }
-  bool IsTableRow() const {
+  virtual bool IsTableCaption() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTableRow);
+    return false;
   }
-  bool IsTableSection() const {
+  virtual bool IsTableCell() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTableSection);
+    return false;
   }
-  bool IsTextArea() const {
+  virtual bool IsTableRow() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTextControlMultiLine);
+    return false;
   }
-  bool IsTextControl() const {
+  virtual bool IsTableSection() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTextControlMultiLine) ||
-           IsOfType(kLayoutObjectTextControlSingleLine);
+    return false;
   }
-  bool IsTextField() const {
+  virtual bool IsTextArea() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTextControlSingleLine);
+    return false;
   }
-  bool IsVideo() const {
+  virtual bool IsTextField() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectVideo);
+    return false;
   }
-  bool IsWidget() const {
+  virtual bool IsVideo() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectWidget);
+    return false;
   }
-
+  virtual bool IsWidget() const {
+    NOT_DESTROYED();
+    return false;
+  }
   virtual bool IsImage() const {
     NOT_DESTROYED();
     return false;
   }
-
   virtual bool IsViewTransitionContent() const {
     NOT_DESTROYED();
     return false;
   }
-
   virtual bool IsViewTransitionRoot() const {
-    NOT_DESTROYED();
-    return false;
-  }
-
-  virtual bool IsInlineBlockOrInlineTable() const {
     NOT_DESTROYED();
     return false;
   }
@@ -1080,6 +1075,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   virtual bool IsLayoutNGObject() const {
     NOT_DESTROYED();
     return false;
+  }
+
+  bool IsTextControl() const {
+    NOT_DESTROYED();
+    return IsTextArea() || IsTextField();
   }
 
   bool IsDocumentElement() const {
@@ -1209,73 +1209,73 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // FIXME: Until all SVG layoutObjects can be subclasses of
   // LayoutSVGModelObject we have to add SVG layoutObject methods to
   // LayoutObject with an NOTREACHED() default implementation.
-  bool IsSVG() const {
+  virtual bool IsSVG() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVG);
+    return false;
   }
-  bool IsSVGRoot() const {
+  virtual bool IsSVGRoot() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVGRoot);
+    return false;
   }
   bool IsSVGChild() const {
     NOT_DESTROYED();
     return IsSVG() && !IsSVGRoot();
   }
-  bool IsSVGContainer() const {
+  virtual bool IsSVGContainer() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVGContainer);
+    return false;
   }
-  bool IsSVGTransformableContainer() const {
+  virtual bool IsSVGTransformableContainer() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVGTransformableContainer);
+    return false;
   }
-  bool IsSVGViewportContainer() const {
+  virtual bool IsSVGViewportContainer() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVGViewportContainer);
+    return false;
   }
-  bool IsSVGHiddenContainer() const {
+  virtual bool IsSVGHiddenContainer() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVGHiddenContainer);
+    return false;
   }
-  bool IsSVGShape() const {
+  virtual bool IsSVGShape() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVGShape);
+    return false;
   }
-  bool IsSVGTextPath() const {
+  virtual bool IsSVGTextPath() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVGTextPath);
+    return false;
   }
-  bool IsSVGTSpan() const {
+  virtual bool IsSVGTSpan() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVGTSpan);
+    return false;
   }
-  bool IsSVGInline() const {
+  virtual bool IsSVGInline() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVGInline);
+    return false;
   }
-  bool IsSVGInlineText() const {
+  virtual bool IsSVGInlineText() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVGInlineText);
+    return false;
   }
-  bool IsSVGImage() const {
+  virtual bool IsSVGImage() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVGImage);
+    return false;
   }
-  bool IsSVGForeignObject() const {
+  virtual bool IsSVGForeignObject() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVGForeignObject);
+    return false;
   }
-  bool IsSVGResourceContainer() const {
+  virtual bool IsSVGResourceContainer() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVGResourceContainer);
+    return false;
   }
-  bool IsSVGFilterPrimitive() const {
+  virtual bool IsSVGFilterPrimitive() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVGFilterPrimitive);
+    return false;
   }
-  bool IsSVGText() const {
+  virtual bool IsSVGText() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVGText);
+    return false;
   }
 
   // FIXME: Those belong into a SVG specific base-class for all layoutObjects
@@ -1415,15 +1415,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool IsPositioned() const {
     NOT_DESTROYED();
     return positioned_state_ != kIsStaticallyPositioned;
-  }
-
-  bool IsText() const {
-    NOT_DESTROYED();
-    return bitfields_.IsText();
-  }
-  bool IsBox() const {
-    NOT_DESTROYED();
-    return bitfields_.IsBox();
   }
   bool IsInline() const {
     NOT_DESTROYED();
@@ -2075,14 +2066,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   void SetHasBoxDecorationBackground(bool);
 
-  void SetIsText() {
-    NOT_DESTROYED();
-    bitfields_.SetIsText(true);
-  }
-  void SetIsBox() {
-    NOT_DESTROYED();
-    bitfields_.SetIsBox(true);
-  }
   void SetIsAtomicInlineLevel(bool is_atomic_inline_level) {
     NOT_DESTROYED();
     bitfields_.SetIsAtomicInlineLevel(is_atomic_inline_level);
@@ -3463,76 +3446,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool BelongsToElementChangingOverflowBehaviour() const;
 
  protected:
-  // Identifiers for each of LayoutObject subclasses.
-  // The identifier name for blink::LayoutFoo should be kLayoutObjectFoo.
-  enum LayoutObjectType {
-    kLayoutObjectBr,
-    kLayoutObjectButton,
-    kLayoutObjectCanvas,
-    kLayoutObjectCounter,
-    kLayoutObjectCustom,
-    kLayoutObjectCustomScrollbarPart,
-    kLayoutObjectEmbeddedObject,
-    kLayoutObjectFieldset,
-    kLayoutObjectFlexibleBox,
-    kLayoutObjectFrame,
-    kLayoutObjectFrameSet,
-    kLayoutObjectGrid,
-    kLayoutObjectIFrame,
-    kLayoutObjectImage,
-    kLayoutObjectInlineListItem,
-    kLayoutObjectInsideListMarker,
-    kLayoutObjectListItem,
-    kLayoutObjectListMarkerImage,
-    kLayoutObjectMathML,
-    kLayoutObjectMathMLRoot,
-    kLayoutObjectMedia,
-    kLayoutObjectMultiColumnSet,
-    kLayoutObjectMultiColumnSpannerPlaceholder,
-    kLayoutObjectNGBlockFlow,
-    kLayoutObjectOutsideListMarker,
-    kLayoutObjectProgress,
-    kLayoutObjectQuote,
-    kLayoutObjectReplaced,
-    kLayoutObjectRuby,
-    kLayoutObjectRubyBase,
-    kLayoutObjectRubyColumn,
-    kLayoutObjectRubyText,
-    kLayoutObjectTable,
-    kLayoutObjectTableCaption,
-    kLayoutObjectTableCell,
-    kLayoutObjectTableCol,
-    kLayoutObjectTableRow,
-    kLayoutObjectTableSection,
-    kLayoutObjectTextCombine,
-    kLayoutObjectTextControlMultiLine,
-    kLayoutObjectTextControlSingleLine,
-    kLayoutObjectVideo,
-    kLayoutObjectView,
-    kLayoutObjectWidget,
-
-    kLayoutObjectSVG, /* Keep by itself? */
-    kLayoutObjectSVGContainer,
-    kLayoutObjectSVGFilterPrimitive,
-    kLayoutObjectSVGForeignObject,
-    kLayoutObjectSVGHiddenContainer,
-    kLayoutObjectSVGImage,
-    kLayoutObjectSVGInline,
-    kLayoutObjectSVGInlineText,
-    kLayoutObjectSVGResourceContainer,
-    kLayoutObjectSVGRoot,
-    kLayoutObjectSVGShape,
-    kLayoutObjectSVGTSpan,
-    kLayoutObjectSVGText,
-    kLayoutObjectSVGTextPath,
-    kLayoutObjectSVGTransformableContainer,
-    kLayoutObjectSVGViewportContainer,
-  };
-  virtual bool IsOfType(LayoutObjectType type) const {
-    NOT_DESTROYED();
-    return false;
-  }
-
   void SetDestroyedForTesting() {
     NOT_DESTROYED();
     bitfields_.SetBeingDestroyed(true);
@@ -3858,8 +3771,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           descendant_needs_paint_property_update_(true),
           floating_(false),
           is_anonymous(!node),
-          is_text_(false),
-          is_box_(false),
           is_inline_(true),
           is_in_layout_ng_inline_formatting_context_(false),
           is_atomic_inline_level_(false),
@@ -4003,8 +3914,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     ADD_BOOLEAN_BITFIELD(floating_, Floating);
 
     ADD_BOOLEAN_BITFIELD(is_anonymous, IsAnonymous);
-    ADD_BOOLEAN_BITFIELD(is_text_, IsText);
-    ADD_BOOLEAN_BITFIELD(is_box_, IsBox);
 
     // This boolean represents whether the LayoutObject is 'inline-level'
     // (a CSS concept). Inline-level boxes are laid out inside a line. If

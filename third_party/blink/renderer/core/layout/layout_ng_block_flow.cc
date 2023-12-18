@@ -22,11 +22,6 @@ void LayoutNGBlockFlow::Trace(Visitor* visitor) const {
   LayoutBlockFlow::Trace(visitor);
 }
 
-bool LayoutNGBlockFlow::IsOfType(LayoutObjectType type) const {
-  NOT_DESTROYED();
-  return type == kLayoutObjectNGBlockFlow || LayoutBlockFlow::IsOfType(type);
-}
-
 void LayoutNGBlockFlow::StyleDidChange(StyleDifference diff,
                                        const ComputedStyle* old_style) {
   NOT_DESTROYED();

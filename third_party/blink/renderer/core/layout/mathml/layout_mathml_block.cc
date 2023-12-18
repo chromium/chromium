@@ -12,11 +12,9 @@ namespace blink {
 
 LayoutMathMLBlock::LayoutMathMLBlock(Element* element) : LayoutBlock(element) {}
 
-bool LayoutMathMLBlock::IsOfType(LayoutObjectType type) const {
-  return type == kLayoutObjectMathML ||
-         (type == kLayoutObjectMathMLRoot && GetNode() &&
-          GetNode()->HasTagName(mathml_names::kMathTag)) ||
-         LayoutBlock::IsOfType(type);
+bool LayoutMathMLBlock::IsMathMLRoot() const {
+  NOT_DESTROYED();
+  return GetNode() && GetNode()->HasTagName(mathml_names::kMathTag);
 }
 
 bool LayoutMathMLBlock::IsChildAllowed(LayoutObject* child,

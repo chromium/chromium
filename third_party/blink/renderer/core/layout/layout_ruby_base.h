@@ -21,7 +21,10 @@ class CORE_EXPORT LayoutRubyBase final : public LayoutNGBlockFlow {
     NOT_DESTROYED();
     return "LayoutRubyBase";
   }
-  bool IsOfType(LayoutObjectType type) const override;
+  bool IsRubyBase() const final {
+    NOT_DESTROYED();
+    return true;
+  }
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
   // This function removes all children that are before (!) `before_child`

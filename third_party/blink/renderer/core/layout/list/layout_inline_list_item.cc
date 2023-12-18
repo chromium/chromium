@@ -29,10 +29,6 @@ const char* LayoutInlineListItem::GetName() const {
   return "LayoutInlineListItem";
 }
 
-bool LayoutInlineListItem::IsOfType(LayoutObjectType type) const {
-  return type == kLayoutObjectInlineListItem || LayoutInline::IsOfType(type);
-}
-
 void LayoutInlineListItem::InsertedIntoTree() {
   LayoutInline::InsertedIntoTree();
   ListItemOrdinal::ItemInsertedOrRemoved(this);

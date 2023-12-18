@@ -41,7 +41,10 @@ class CORE_EXPORT LayoutInsideListMarker final : public LayoutInline {
 #endif
 
  private:
-  bool IsOfType(LayoutObjectType) const override;
+  bool IsLayoutInsideListMarker() const final {
+    NOT_DESTROYED();
+    return true;
+  }
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
   ListMarker list_marker_;

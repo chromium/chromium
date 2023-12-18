@@ -51,11 +51,13 @@ class LayoutSVGFilterPrimitive final : public LayoutObject {
     NOT_DESTROYED();
     return "LayoutSVGFilterPrimitive";
   }
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsSVG() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectSVG ||
-           type == kLayoutObjectSVGFilterPrimitive ||
-           LayoutObject::IsOfType(type);
+    return true;
+  }
+  bool IsSVGFilterPrimitive() const final {
+    NOT_DESTROYED();
+    return true;
   }
   gfx::RectF ObjectBoundingBox() const override {
     NOT_DESTROYED();

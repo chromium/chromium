@@ -25,12 +25,6 @@ const char* LayoutSVGForeignObject::GetName() const {
   return "LayoutSVGForeignObject";
 }
 
-bool LayoutSVGForeignObject::IsOfType(LayoutObjectType type) const {
-  NOT_DESTROYED();
-  return type == kLayoutObjectSVGForeignObject ||
-         LayoutSVGBlock::IsOfType(type);
-}
-
 bool LayoutSVGForeignObject::IsChildAllowed(LayoutObject* child,
                                             const ComputedStyle& style) const {
   NOT_DESTROYED();

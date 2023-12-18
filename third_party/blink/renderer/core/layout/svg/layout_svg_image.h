@@ -62,10 +62,9 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
     return !object_bounding_box_.IsEmpty();
   }
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsSVGImage() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectSVGImage ||
-           LayoutSVGModelObject::IsOfType(type);
+    return true;
   }
 
   AffineTransform LocalSVGTransform() const override {

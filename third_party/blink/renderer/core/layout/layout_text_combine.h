@@ -104,7 +104,10 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutNGBlockFlow {
   static bool ShouldBeParentOf(const LayoutObject& layout_object);
 
  private:
-  bool IsOfType(LayoutObjectType) const override;
+  bool IsLayoutTextCombine() const final {
+    NOT_DESTROYED();
+    return true;
+  }
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutTextCombine";

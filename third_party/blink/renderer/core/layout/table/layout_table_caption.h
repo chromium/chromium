@@ -24,10 +24,9 @@ class CORE_EXPORT LayoutTableCaption final : public LayoutNGBlockFlow {
     return true;
   }
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsTableCaption() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectTableCaption ||
-           LayoutNGBlockFlow::IsOfType(type);
+    return true;
   }
 };
 

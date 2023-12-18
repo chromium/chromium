@@ -24,7 +24,10 @@ class CORE_EXPORT LayoutListMarkerImage final : public LayoutImage {
   gfx::SizeF DefaultSize() const;
 
  private:
-  bool IsOfType(LayoutObjectType) const override;
+  bool IsListMarkerImage() const final {
+    NOT_DESTROYED();
+    return true;
+  }
 
   void ComputeIntrinsicSizingInfoByDefaultSize(IntrinsicSizingInfo&) const;
   void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const final;

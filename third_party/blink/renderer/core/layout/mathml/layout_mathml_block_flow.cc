@@ -11,8 +11,4 @@ LayoutMathMLBlockFlow::LayoutMathMLBlockFlow(Element* element)
   DCHECK(element);
 }
 
-bool LayoutMathMLBlockFlow::IsOfType(LayoutObjectType type) const {
-  return type == kLayoutObjectMathML || LayoutNGBlockFlow::IsOfType(type);
-}
-
 }  // namespace blink

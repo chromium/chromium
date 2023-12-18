@@ -15,7 +15,10 @@ class LayoutFrameSet final : public LayoutBlock {
 
  private:
   const char* GetName() const override;
-  bool IsOfType(LayoutObjectType type) const override;
+  bool IsFrameSet() const final {
+    NOT_DESTROYED();
+    return true;
+  }
   bool IsChildAllowed(LayoutObject* child, const ComputedStyle&) const override;
   void AddChild(LayoutObject* new_child, LayoutObject* before_child) override;
   void RemoveChild(LayoutObject* child) override;

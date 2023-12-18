@@ -160,8 +160,6 @@ LayoutText::LayoutText(Node* node, String str)
   DCHECK(text_);
   DCHECK(!node || !node->IsDocumentNode());
 
-  SetIsText();
-
   if (node)
     GetFrameView()->IncrementVisuallyNonEmptyCharacterCount(text_.length());
 

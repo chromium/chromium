@@ -60,10 +60,9 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
   }
 
   void UpdateLayout() override;
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsSVGResourceContainer() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectSVGResourceContainer ||
-           LayoutSVGHiddenContainer::IsOfType(type);
+    return true;
   }
 
   virtual LayoutSVGResourceType ResourceType() const = 0;

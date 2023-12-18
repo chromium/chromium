@@ -171,10 +171,6 @@ void LayoutFieldset::UpdateAnonymousChildStyle(
   child_style_builder.SetScrollStartY(StyleRef().ScrollStartY());
 }
 
-bool LayoutFieldset::IsOfType(LayoutObjectType type) const {
-  return type == kLayoutObjectFieldset || LayoutNGBlockFlow::IsOfType(type);
-}
-
 void LayoutFieldset::InvalidatePaint(
     const PaintInvalidatorContext& context) const {
   // Fieldset's box decoration painting depends on the legend geometry.

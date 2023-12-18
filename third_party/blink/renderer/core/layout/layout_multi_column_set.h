@@ -106,10 +106,9 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
     return fragmentainer_groups_;
   }
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsLayoutMultiColumnSet() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectMultiColumnSet ||
-           LayoutBlockFlow::IsOfType(type);
+    return true;
   }
   bool CanHaveChildren() const final {
     NOT_DESTROYED();

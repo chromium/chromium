@@ -16,11 +16,6 @@ HTMLElement* LayoutTextControlMultiLine::InnerEditorElement() const {
   return To<TextControlElement>(GetNode())->InnerEditorElement();
 }
 
-bool LayoutTextControlMultiLine::IsOfType(LayoutObjectType type) const {
-  return type == kLayoutObjectTextControlMultiLine ||
-         LayoutNGBlockFlow::IsOfType(type);
-}
-
 void LayoutTextControlMultiLine::StyleDidChange(
     StyleDifference style_diff,
     const ComputedStyle* old_style) {

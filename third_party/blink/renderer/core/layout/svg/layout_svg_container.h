@@ -96,10 +96,9 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
     return content_;
   }
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsSVGContainer() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectSVGContainer ||
-           LayoutSVGModelObject::IsOfType(type);
+    return true;
   }
   void UpdateLayout() override;
   // Update LayoutObject state after layout has completed. Returns true if

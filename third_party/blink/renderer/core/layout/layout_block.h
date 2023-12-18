@@ -235,15 +235,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
                        const PhysicalOffset& additional_offset,
                        OutlineType) const override;
 
-  // TODO(jchaffraix): We should rename this function as inline-flex and
-  // inline-grid as also covered.
-  // Alternatively it should be removed as we clarify the meaning of
-  // IsAtomicInlineLevel to imply isInline.
-  bool IsInlineBlockOrInlineTable() const final {
-    NOT_DESTROYED();
-    return IsInline() && IsAtomicInlineLevel();
-  }
-
   bool IsInSelfHitTestingPhase(HitTestPhase phase) const final {
     NOT_DESTROYED();
     return phase == HitTestPhase::kSelfBlockBackground;

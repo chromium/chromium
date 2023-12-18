@@ -15,11 +15,6 @@ class HTMLOListElement;
 LayoutOutsideListMarker::LayoutOutsideListMarker(Element* element)
     : LayoutNGBlockFlow(element) {}
 
-bool LayoutOutsideListMarker::IsOfType(LayoutObjectType type) const {
-  return type == kLayoutObjectOutsideListMarker ||
-         LayoutNGBlockFlow::IsOfType(type);
-}
-
 void LayoutOutsideListMarker::WillCollectInlines() {
   list_marker_.UpdateMarkerTextIfNeeded(*this);
 }

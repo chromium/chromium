@@ -78,11 +78,6 @@ const char* LayoutSVGText::GetName() const {
   return "LayoutSVGText";
 }
 
-bool LayoutSVGText::IsOfType(LayoutObjectType type) const {
-  NOT_DESTROYED();
-  return type == kLayoutObjectSVGText || LayoutSVGBlock::IsOfType(type);
-}
-
 bool LayoutSVGText::CreatesNewFormattingContext() const {
   NOT_DESTROYED();
   return true;

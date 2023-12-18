@@ -28,7 +28,11 @@ class CORE_EXPORT LayoutRubyAsBlock : public LayoutNGBlockFlow {
     NOT_DESTROYED();
     return "LayoutRubyAsBlock";
   }
-  bool IsOfType(LayoutObjectType type) const override;
+  bool IsRuby() const final {
+    NOT_DESTROYED();
+    return true;
+  }
+
   void AddChild(LayoutObject* child,
                 LayoutObject* before_child = nullptr) override;
   void RemoveChild(LayoutObject* child) override;

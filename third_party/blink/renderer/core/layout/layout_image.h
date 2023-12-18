@@ -130,9 +130,9 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
   void Paint(const PaintInfo&) const final;
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsLayoutImage() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectImage || LayoutReplaced::IsOfType(type);
+    return true;
   }
 
   void WillBeDestroyed() override;

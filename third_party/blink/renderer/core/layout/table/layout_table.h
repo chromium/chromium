@@ -205,9 +205,9 @@ class CORE_EXPORT LayoutTable : public LayoutBlock {
   unsigned EffectiveColumnCount() const;
 
  protected:
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsTable() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectTable || LayoutBlock::IsOfType(type);
+    return true;
   }
 
   // Table paints background specially.

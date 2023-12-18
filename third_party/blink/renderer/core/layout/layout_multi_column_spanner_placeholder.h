@@ -18,10 +18,9 @@ namespace blink {
 // multicol container.
 class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
  public:
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsLayoutMultiColumnSpannerPlaceholder() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectMultiColumnSpannerPlaceholder ||
-           LayoutBox::IsOfType(type);
+    return true;
   }
 
   static LayoutMultiColumnSpannerPlaceholder* CreateAnonymous(

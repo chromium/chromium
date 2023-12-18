@@ -24,11 +24,6 @@ Element* LayoutTextControlSingleLine::ContainerElement() const {
       shadow_element_names::kIdTextFieldContainer);
 }
 
-bool LayoutTextControlSingleLine::IsOfType(LayoutObjectType type) const {
-  return type == kLayoutObjectTextControlSingleLine ||
-         LayoutNGBlockFlow::IsOfType(type);
-}
-
 void LayoutTextControlSingleLine::StyleDidChange(
     StyleDifference style_diff,
     const ComputedStyle* old_style) {
