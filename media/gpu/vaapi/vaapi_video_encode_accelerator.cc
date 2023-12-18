@@ -23,6 +23,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -367,7 +368,8 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
   DCHECK_GT(ave_config.max_num_ref_frames, 0u);
   if (!encoder_->Initialize(config, ave_config)) {
     NotifyError({EncoderStatus::Codes::kEncoderInitializationError,
-                 "Failed initializing encoder"});
+                 base::StrCat({"Failed initializing encoder. config: ",
+                               config.AsHumanReadableString()})});
     return;
   }
 
@@ -389,7 +391,8 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
       num_frames_in_flight_ * std::max<size_t>(1, config.spatial_layers.size());
   if (!vaapi_wrapper_->CreateContext(encoder_->GetCodedSize())) {
     NotifyError({EncoderStatus::Codes::kEncoderInitializationError,
-                 "Failed creating VAContext"});
+                 base::StrCat({"Failed creating VAContext. config: ",
+                               config.AsHumanReadableString()})});
     return;
   }
 
