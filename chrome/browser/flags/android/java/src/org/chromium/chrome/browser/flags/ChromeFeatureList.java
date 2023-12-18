@@ -102,8 +102,6 @@ public abstract class ChromeFeatureList {
         return ChromeFeatureMap.getInstance().mutableFlagWithSafeDefault(featureName, defaultValue);
     }
 
-    /* Alphabetical: */
-    public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR = "AdaptiveButtonInTopToolbar";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE =
             "AdaptiveButtonInTopToolbarTranslate";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS =

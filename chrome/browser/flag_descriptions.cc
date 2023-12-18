@@ -4522,10 +4522,6 @@ const char kVerticalAutomotiveBackButtonToolbarDescription[] =
 const char kVideoTutorialsName[] = "Enable video tutorials";
 const char kVideoTutorialsDescription[] = "Show video tutorials in Chrome";
 
-const char kAdaptiveButtonInTopToolbarName[] = "Adaptive button in top toolbar";
-const char kAdaptiveButtonInTopToolbarDescription[] =
-    "Enables showing an adaptive action button in the top toolbar";
-
 const char kAdaptiveButtonInTopToolbarTranslateName[] =
     "Adaptive button in top toolbar - Translate button";
 const char kAdaptiveButtonInTopToolbarTranslateDescription[] =

@@ -149,7 +149,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &history_clusters::internal::kJourneys,
     &history_clusters::internal::kOmniboxAction,
     &history_clusters::internal::kOmniboxHistoryClusterProvider,
-    &kAdaptiveButtonInTopToolbar,
     &kAdaptiveButtonInTopToolbarTranslate,
     &kAdaptiveButtonInTopToolbarAddToBookmarks,
     &kAdaptiveButtonInTopToolbarCustomizationV2,
@@ -382,10 +381,6 @@ static jlong JNI_ChromeFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 // Alphabetical:
-
-BASE_FEATURE(kAdaptiveButtonInTopToolbar,
-             "AdaptiveButtonInTopToolbar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAdaptiveButtonInTopToolbarTranslate,
              "AdaptiveButtonInTopToolbarTranslate",

@@ -620,8 +620,6 @@ public class LocationBarTest {
     @MediumTest
     @CommandLineFlags.Add({
         "disable-features="
-                + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR
-                + ","
                 + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
     })
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)

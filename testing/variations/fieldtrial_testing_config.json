@@ -12475,9 +12475,6 @@
                     },
                     "enable_features": [
                         "AdaptiveButtonInTopToolbarCustomizationV2"
-                    ],
-                    "disable_features": [
-                        "AdaptiveButtonInTopToolbar"
                     ]
                 }
             ]

@@ -623,28 +623,6 @@ const FeatureEntry::FeatureVariation kReaderModeDiscoverabilityVariations[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kAdaptiveButton_AlwaysNone[] = {
-    {"mode", "always-none"}};
-const FeatureEntry::FeatureParam kAdaptiveButton_AlwaysNewTab[] = {
-    {"mode", "always-new-tab"}};
-const FeatureEntry::FeatureParam kAdaptiveButton_AlwaysShare[] = {
-    {"mode", "always-share"}};
-const FeatureEntry::FeatureParam kAdaptiveButton_AlwaysVoice[] = {
-    {"mode", "always-voice"}};
-const FeatureEntry::FeatureParam kAdaptiveButton_AlwaysTranslate[] = {
-    {"mode", "always-translate"}};
-const FeatureEntry::FeatureVariation kAdaptiveButtonInTopToolbarVariations[] = {
-    {"Always None", kAdaptiveButton_AlwaysNone,
-     std::size(kAdaptiveButton_AlwaysNone), nullptr},
-    {"Always New Tab", kAdaptiveButton_AlwaysNewTab,
-     std::size(kAdaptiveButton_AlwaysNewTab), nullptr},
-    {"Always Share", kAdaptiveButton_AlwaysShare,
-     std::size(kAdaptiveButton_AlwaysShare), nullptr},
-    {"Always Voice", kAdaptiveButton_AlwaysVoice,
-     std::size(kAdaptiveButton_AlwaysVoice), nullptr},
-    {"Always Translate", kAdaptiveButton_AlwaysTranslate,
-     std::size(kAdaptiveButton_AlwaysTranslate), nullptr},
-};
 
 const FeatureEntry::FeatureParam kAdaptiveButtonCustomization_NewTab[] = {
     {"default_segment", "new-tab"},
@@ -4692,13 +4670,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSystemNotifications)},
 #endif  // BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_ANDROID)
-    {"adaptive-button-in-top-toolbar",
-     flag_descriptions::kAdaptiveButtonInTopToolbarName,
-     flag_descriptions::kAdaptiveButtonInTopToolbarDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kAdaptiveButtonInTopToolbar,
-         kAdaptiveButtonInTopToolbarVariations,
-         "OptionalToolbarButton")},
     {"adaptive-button-in-top-toolbar-translate",
      flag_descriptions::kAdaptiveButtonInTopToolbarTranslateName,
      flag_descriptions::kAdaptiveButtonInTopToolbarTranslateDescription,

@@ -33,9 +33,6 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 /** Unit tests for the {@code AdaptiveToolbarStatePredictor} */
 @Config(manifest = Config.NONE)
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-})
 @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 public class AdaptiveToolbarStatePredictorTest {
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
