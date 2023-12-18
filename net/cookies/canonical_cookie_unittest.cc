@@ -2739,6 +2739,47 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_DomainCookiesPortMatch) {
   }
 }
 
+TEST(CanonicalCookieTest, InsecureCookiesExpiryTimeLimit) {
+  GURL url("http://www.example.com/test/foo.html");
+  base::Time creation_time = base::Time::Now();
+  base::Time future_date = creation_time + base::Days(1);
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {features::kEnableSchemeBoundCookies,
+         features::kTimeLimitedInsecureCookies},
+        {});
+    std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
+        url, "A=1; expires=" + HttpUtil::TimeFormatHTTP(future_date),
+        creation_time, /*server_time=*/absl::nullopt,
+        /*cookie_partition_key=*/absl::nullopt);
+    ASSERT_TRUE(cookie);
+    // With the feature enabled, expiration time should be limited to 3 hours
+    // after creation. Equality check needs to have a second margin due to
+    // microsecond rounding causing breakage.
+    EXPECT_TRUE(((creation_time + base::Hours(3)) - cookie->ExpiryDate())
+                    .FloorToMultiple(base::Seconds(1))
+                    .is_zero());
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {features::kEnableSchemeBoundCookies},
+        {features::kTimeLimitedInsecureCookies});
+    std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
+        url, "A=1; expires=" + HttpUtil::TimeFormatHTTP(future_date),
+        creation_time, /*server_time=*/absl::nullopt,
+        /*cookie_partition_key=*/absl::nullopt);
+    ASSERT_TRUE(cookie);
+    // With the feature disabled, expiration time should not be limited.
+    // Equality check needs to have a second margin due to microsecond rounding
+    // causing breakage.
+    EXPECT_TRUE((future_date - cookie->ExpiryDate())
+                    .FloorToMultiple(base::Seconds(1))
+                    .is_zero());
+  }
+}
+
 TEST(CanonicalCookieTest, MultipleExclusionReasons) {
   GURL url("http://www.not-secure.com/foo");
   base::Time creation_time = base::Time::Now();

@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "net/cookies/cookie_constants.h"
 
 namespace {
 
@@ -112,7 +113,8 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
     // Alternatly, if we were sure GAIA cookies wouldn't try to expire more
     // than 400 days in the future we wouldn't need this either.
     base::Time expiration = net::CanonicalCookie::ValidateAndAdjustExpiryDate(
-        now + base::Seconds(expiration_delta.value_or(0.0)), now);
+        now + base::Seconds(expiration_delta.value_or(0.0)), now,
+        net::CookieSourceScheme::kSecure);
     std::string cookie_domain = domain ? *domain : "";
     std::string cookie_host = host ? *host : "";
     if (cookie_domain.empty() && !cookie_host.empty() &&

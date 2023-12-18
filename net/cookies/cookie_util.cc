@@ -890,6 +890,11 @@ bool IsSchemeBoundCookiesEnabled() {
   return base::FeatureList::IsEnabled(features::kEnableSchemeBoundCookies);
 }
 
+bool IsTimeLimitedInsecureCookiesEnabled() {
+  return IsSchemeBoundCookiesEnabled() &&
+         base::FeatureList::IsEnabled(features::kTimeLimitedInsecureCookies);
+}
+
 bool IsSchemefulSameSiteEnabled() {
   return base::FeatureList::IsEnabled(features::kSchemefulSameSite);
 }

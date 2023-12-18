@@ -133,8 +133,8 @@ void CookieManager::SetCanonicalCookie(const net::CanonicalCookie& cookie,
 
   auto cookie_ptr = std::make_unique<net::CanonicalCookie>(cookie);
   base::Time adjusted_expiry_date =
-      net::CanonicalCookie::ValidateAndAdjustExpiryDate(cookie.ExpiryDate(),
-                                                        cookie.CreationDate());
+      net::CanonicalCookie::ValidateAndAdjustExpiryDate(
+          cookie.ExpiryDate(), cookie.CreationDate(), cookie.SourceScheme());
   if (adjusted_expiry_date != cookie.ExpiryDate() || !cookie_partition_key) {
     cookie_ptr = net::CanonicalCookie::FromStorage(
         cookie.Name(), cookie.Value(), cookie.Domain(), cookie.Path(),
