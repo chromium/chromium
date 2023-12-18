@@ -43,6 +43,7 @@ const char* GetEnterprisePolicyPrefName(proto::ModelExecutionFeature feature) {
       return kTabOrganizationEnterprisePolicyAllowed;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
       return kWallpaperSearchEnterprisePolicyAllowed;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       NOTREACHED();
       return nullptr;
