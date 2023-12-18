@@ -565,8 +565,9 @@ class FirmwareUpdateManagerTest : public testing::Test {
     update_provider_remote_->PrepareForUpdate(
         device_id, pending_remote_future.GetCallback());
     auto pending_remote = pending_remote_future.Take();
-    if (!pending_remote.is_valid())
+    if (!pending_remote.is_valid()) {
       return false;
+    }
 
     install_controller_remote_.Bind(std::move(pending_remote));
     base::RunLoop().RunUntilIdle();

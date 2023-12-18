@@ -13,9 +13,8 @@ namespace {
 const char kHistogramName[] = "ChromeOS.FirmwareUpdateUi.";
 
 }  // namespace
-namespace ash {
-namespace firmware_update {
-namespace metrics {
+namespace ash::firmware_update::metrics {
+
 void EmitDeviceCount(int num_devices, bool is_startup) {
   base::UmaHistogramCounts100(
       GetSourceStr(is_startup) + std::string(".DeviceCount"), num_devices);
@@ -40,6 +39,5 @@ std::string GetSourceStr(bool is_startup) {
   return std::string(kHistogramName) +
          std::string(is_startup ? "OnStartup" : "OnRefresh");
 }
-}  // namespace metrics
-}  // namespace firmware_update
-}  // namespace ash
+
+}  // namespace ash::firmware_update::metrics

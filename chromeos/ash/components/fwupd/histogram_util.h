@@ -8,9 +8,7 @@
 #include <cstdint>
 #include <string>
 
-namespace ash {
-namespace firmware_update {
-namespace metrics {
+namespace ash::firmware_update::metrics {
 
 // The enums below are used in histograms, do not remove/renumber entries. If
 // you're adding to any of these enums, update the corresponding enum listing in
@@ -35,8 +33,6 @@ void EmitInstallResult(FirmwareUpdateInstallResult result);
 
 std::string GetSourceStr(bool is_startup);
 
-}  // namespace metrics
-}  // namespace firmware_update
-}  // namespace ash
+}  // namespace ash::firmware_update::metrics
 
 #endif  // CHROMEOS_ASH_COMPONENTS_FWUPD_HISTOGRAM_UTIL_H_

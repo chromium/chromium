@@ -209,10 +209,11 @@ std::unique_ptr<network::SimpleURLLoader> CreateSimpleURLLoader(GURL url) {
 }
 
 int GetResponseCode(network::SimpleURLLoader* simple_loader) {
-  if (simple_loader->ResponseInfo() && simple_loader->ResponseInfo()->headers)
+  if (simple_loader->ResponseInfo() && simple_loader->ResponseInfo()->headers) {
     return simple_loader->ResponseInfo()->headers->response_code();
-  else
+  } else {
     return -1;
+  }
 }
 
 // TODO(michaelcheco): Determine if more granular states are needed.
