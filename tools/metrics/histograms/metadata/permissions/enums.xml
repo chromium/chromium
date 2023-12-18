@@ -186,8 +186,9 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Page action bubble"/>
   <int value="4" label="Permission settings from Android OS"/>
   <int value="5" label="Inline settings as part of the event's UI"/>
-  <int value="6" label="Automatic revocation"/>
-  <int value="7" label="Unidentified source"/>
+  <int value="6" label="Automatic revocation from Safe Browsing"/>
+  <int value="7" label="Automatic revocation from Safety Hub"/>
+  <int value="8" label="Unidentified source"/>
 </enum>
 
 <enum name="PermissionsPolicyConfiguration">
