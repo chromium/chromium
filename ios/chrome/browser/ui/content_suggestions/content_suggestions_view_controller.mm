@@ -1665,6 +1665,11 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   CGPoint offset = _magicStackScrollView.contentOffset;
   offset.x = _magicStackPage * (moduleWidth + kMagicStackSpacing) -
              [self peekOffsetForMagicStackPage:_magicStackPage];
+  // Do not allow scrolling beyond the end of content, which also ensures that
+  // the "edit menu" page doesn't end up left-aligned after a rotation.
+  CGFloat maxOffset = MAX(0, _magicStackScrollView.contentSize.width -
+                                 _magicStackScrollView.bounds.size.width);
+  offset.x = MIN(offset.x, maxOffset);
   _magicStackScrollView.contentOffset = offset;
 }
 
