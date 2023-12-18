@@ -763,6 +763,11 @@ def main():
         GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
                       '46a801559127441675f2341bd1d684809a47def1')
 
+        # TODO: Remove once
+        # https://github.com/rust-lang/rust/pull/118941 has been merged.
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      '0a285e8de7eec36e1de68c83764d23f2522a4274')
+
         path = FetchBetaPackage('cargo', checkout_revision)
         if sys.platform == 'win32':
             cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo.exe')
