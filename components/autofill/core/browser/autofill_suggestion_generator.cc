@@ -40,7 +40,6 @@
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/ui/label_formatter.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -790,34 +789,13 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
     FieldType trigger_field_type,
     std::optional<FieldTypeSet> last_targeted_fields,
     const std::string& app_locale) {
-  std::unique_ptr<LabelFormatter> formatter;
-  bool use_formatter;
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  use_formatter = base::FeatureList::IsEnabled(
-      features::kAutofillUseImprovedLabelDisambiguation);
-#else
-  use_formatter = base::FeatureList::IsEnabled(
-      features::kAutofillUseMobileLabelDisambiguation);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-  // The formatter stores a constant reference to |profiles|.
-  // This is safe since the formatter is destroyed when this function returns.
-  formatter = use_formatter
-                  ? LabelFormatter::Create(profiles, app_locale,
-                                           trigger_field_type, field_types)
-                  : nullptr;
-
   // Generate disambiguating labels based on the list of matches.
   std::vector<std::u16string> differentiating_labels;
-
   if (!IsAddressType(trigger_field_type) &&
       base::FeatureList::IsEnabled(
           features::kAutofillForUnclassifiedFieldsAvailable)) {
     differentiating_labels =
         GetProfileSuggestionLabelForNonAddressField(profiles, app_locale);
-  } else if (formatter) {
-    differentiating_labels = formatter->GetLabels();
   } else {
     AutofillProfile::CreateInferredLabels(
         profiles, field_types,
@@ -825,12 +803,6 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
             trigger_field_type, last_targeted_fields),
         1, app_locale, &differentiating_labels);
   }
-
-  if (use_formatter && !profiles.empty()) {
-    AutofillMetrics::LogProfileSuggestionsMadeWithFormatter(formatter !=
-                                                            nullptr);
-  }
-
   return differentiating_labels;
 }
 

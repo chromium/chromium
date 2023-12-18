@@ -376,9 +376,6 @@ extern const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[];
 extern const char kAutofillMoreProminentPopupName[];
 extern const char kAutofillMoreProminentPopupDescription[];
 
-extern const char kAutofillUseImprovedLabelDisambiguationName[];
-extern const char kAutofillUseImprovedLabelDisambiguationDescription[];
-
 extern const char kAutofillVirtualCardsOnTouchToFillAndroidName[];
 extern const char kAutofillVirtualCardsOnTouchToFillAndroidDescription[];
 
@@ -2234,9 +2231,6 @@ extern const char kAndroidHubDescription[];
 
 extern const char kArchiveTabServiceName[];
 extern const char kArchiveTabServiceDescription[];
-
-extern const char kAutofillUseMobileLabelDisambiguationName[];
-extern const char kAutofillUseMobileLabelDisambiguationDescription[];
 
 extern const char kBackGestureActivityTabProviderName[];
 extern const char kBackGestureActivityTabProviderDescription[];

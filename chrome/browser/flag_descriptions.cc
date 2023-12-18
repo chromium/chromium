@@ -652,12 +652,6 @@ const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[] =
     "When enabled, Chrome Settings link directs to GPay Web rather than "
     "Payments Center for payment methods management.";
 
-const char kAutofillUseImprovedLabelDisambiguationName[] =
-    "Autofill Uses Improved Label Disambiguation";
-const char kAutofillUseImprovedLabelDisambiguationDescription[] =
-    "When enabled, the Autofill dropdown's suggestions' labels are displayed "
-    "using the improved disambiguation format.";
-
 const char kAutofillVirtualCardsOnTouchToFillAndroidName[] =
     "Enable virtual cards on Touch To Fill bottomsheet for credit cards";
 const char kAutofillVirtualCardsOnTouchToFillAndroidDescription[] =
@@ -3859,12 +3853,6 @@ const char kAnimatedImageDragShadowDescription[] =
     "Animate the shadow image from its original bound to the touch point. "
     "Image drag on Android is available when flag touch-drag-and-context-menu "
     "is enabled.";
-
-const char kAutofillUseMobileLabelDisambiguationName[] =
-    "Autofill Uses Mobile Label Disambiguation";
-const char kAutofillUseMobileLabelDisambiguationDescription[] =
-    "When enabled, Autofill suggestions' labels are displayed using a "
-    "mobile-friendly format.";
 
 const char kArchiveTabServiceName[] = "Enable archive tab service";
 const char kArchiveTabServiceDescription[] =

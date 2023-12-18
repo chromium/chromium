@@ -117,11 +117,6 @@ extern const char kAutofillUpdateChromeSettingsLinkToGPayWebName[];
 extern const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[];
 
 // Title and description for the flag that controls whether Autofill's
-// suggestions' labels are formatting with a mobile-friendly approach.
-extern const char kAutofillUseMobileLabelDisambiguationName[];
-extern const char kAutofillUseMobileLabelDisambiguationDescription[];
-
-// Title and description for the flag that controls whether Autofill's
 // logic is using numeric unique renderer IDs instead of string IDs for
 // form and field elements.
 extern const char kAutofillUseRendererIDsName[];

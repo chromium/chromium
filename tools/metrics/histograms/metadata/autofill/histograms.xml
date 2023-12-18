@@ -3791,19 +3791,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.ProfileSuggestionsMadeWithFormatter"
-    enum="BooleanCreated" expires_after="2024-12-12">
-  <owner>battre@chromium.org</owner>
-  <owner>src/components/autofill/OWNERS</owner>
-  <summary>
-    This metric is recorded when the autofill-use-improved-label-disambiguation
-    experiment is enabled and profile suggestions are available. This metric
-    measures how often suggestions were created with and without a formatter.
-    Warning: this histogram was expired from 2020-09-30 to 2022-04-07; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram
     name="Autofill.ProfileTokenQuality.ObservationCountBeforeSubmission.PerProfile"
     units="Observations" expires_after="M125">

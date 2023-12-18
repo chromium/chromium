@@ -746,13 +746,6 @@ void LogPredictionQualityMetrics(
 const int kMaxBucketsCount = 50;
 
 // static
-void AutofillMetrics::LogProfileSuggestionsMadeWithFormatter(
-    bool made_with_formatter) {
-  UMA_HISTOGRAM_BOOLEAN("Autofill.ProfileSuggestionsMadeWithFormatter",
-                        made_with_formatter);
-}
-
-// static
 void AutofillMetrics::LogSubmittedCardStateMetric(
     SubmittedCardStateMetric metric) {
   DCHECK_LT(metric, NUM_SUBMITTED_CARD_STATE_METRICS);

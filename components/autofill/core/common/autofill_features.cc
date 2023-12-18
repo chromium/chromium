@@ -641,12 +641,6 @@ BASE_FEATURE(kAutofillTrackProfileTokenQuality,
              "AutofillTrackProfileTokenQuality",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether suggestions' labels use the improved label disambiguation
-// format.
-BASE_FEATURE(kAutofillUseImprovedLabelDisambiguation,
-             "AutofillUseImprovedLabelDisambiguation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to use the combined heuristic and the autocomplete section
 // implementation for section splitting or not. See https://crbug.com/1076175.
 BASE_FEATURE(kAutofillUseNewSectioningMethod,
@@ -755,13 +749,6 @@ BASE_FEATURE(kAutofillVirtualViewStructureAndroid,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-BASE_FEATURE(kAutofillUseMobileLabelDisambiguation,
-             "AutofillUseMobileLabelDisambiguation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const char kAutofillUseMobileLabelDisambiguationParameterName[] = "variant";
-const char kAutofillUseMobileLabelDisambiguationParameterShowAll[] = "show-all";
-const char kAutofillUseMobileLabelDisambiguationParameterShowOne[] = "show-one";
-
 // When enabled, the keyboard accessory is shown for autocomplete=unrecognized
 // fields. Selecting a keyboard accessory suggestion will fill the triggering
 // field (independently of the autocomplete attribute) and all

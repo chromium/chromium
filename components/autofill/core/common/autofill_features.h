@@ -212,8 +212,6 @@ BASE_DECLARE_FEATURE(kAutofillContentEditableChangeEvents);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillTrackProfileTokenQuality);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillUseImprovedLabelDisambiguation);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillUseNewSectioningMethod);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillUseParameterizedSectioning);
@@ -259,14 +257,6 @@ BASE_DECLARE_FEATURE(kAutofillVirtualViewStructureAndroid);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillUseMobileLabelDisambiguation);
-COMPONENT_EXPORT(AUTOFILL)
-extern const char kAutofillUseMobileLabelDisambiguationParameterName[];
-COMPONENT_EXPORT(AUTOFILL)
-extern const char kAutofillUseMobileLabelDisambiguationParameterShowOne[];
-COMPONENT_EXPORT(AUTOFILL)
-extern const char kAutofillUseMobileLabelDisambiguationParameterShowAll[];
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(
     kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile);

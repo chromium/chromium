@@ -28552,8 +28552,6 @@ from previous Chrome versions.
   <int value="-2133276662" label="EduCoexistenceConsentLog:disabled"/>
   <int value="-2132591642" label="enable-input-view"/>
   <int value="-2132161378" label="SendTabToSelfHistory:disabled"/>
-  <int value="-2131746498"
-      label="AutofillUseImprovedLabelDisambiguation:enabled"/>
   <int value="-2130982324" label="DesktopPWAsWebBundles:disabled"/>
   <int value="-2129940395" label="WebAssemblySimd:disabled"/>
   <int value="-2129781123" label="RequestDesktopSiteZoom:enabled"/>
@@ -33465,7 +33463,6 @@ from previous Chrome versions.
   <int value="160524775" label="PDFTwoUpView:disabled"/>
   <int value="160838658" label="SmartDimModelV3:enabled"/>
   <int value="161008398" label="NearbyKeepAliveFix:disabled"/>
-  <int value="161409456" label="AutofillUseMobileLabelDisambiguation:disabled"/>
   <int value="161694478" label="OmniboxNewAnswerLayout:enabled"/>
   <int value="161706692" label="ContextualPageActionPriceTracking:disabled"/>
   <int value="165429419" label="DrawNativeEdgeToEdge:disabled"/>
@@ -35236,8 +35233,6 @@ from previous Chrome versions.
   <int value="1006280999" label="CrOSLateBootArcVmmSwap:enabled"/>
   <int value="1006608931" label="ArcEnableUnifiedAudioFocus:disabled"/>
   <int value="1007444341" label="enable-prefixed-encrypted-media"/>
-  <int value="1008677979"
-      label="AutofillUseImprovedLabelDisambiguation:disabled"/>
   <int value="1009252543" label="BlinkExtension:disabled"/>
   <int value="1009437086" label="AutofillEnableOfferNotification:disabled"/>
   <int value="1009596554" label="PWAsDefaultOfflinePage:enabled"/>
@@ -35569,7 +35564,6 @@ from previous Chrome versions.
   <int value="1169418814" label="ManualFallbacksFilling:enabled"/>
   <int value="1170030686" label="BookmarkBottomSheet:enabled"/>
   <int value="1170632919" label="DrawNativeEdgeToEdge:enabled"/>
-  <int value="1173244409" label="AutofillUseMobileLabelDisambiguation:enabled"/>
   <int value="1174088940" label="enable-wasm"/>
   <int value="1175660959" label="AutofillEnableCardArtImage:enabled"/>
   <int value="1176183341" label="SearchHistoryLink:enabled"/>
