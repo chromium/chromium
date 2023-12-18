@@ -531,7 +531,8 @@ class FormDataImporterTest : public testing::Test {
          features::kAutofillEnableSupportForAddressOverflow,
          features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
          features::kAutofillEnableSupportForAddressOverflowAndLandmark,
-         features::kAutofillEnableParsingOfStreetLocation},
+         features::kAutofillEnableParsingOfStreetLocation,
+         features::kAutofillRelaxCreditCardImport},
         {});
   }
 
@@ -4228,6 +4229,96 @@ TEST_F(FormDataImporterTest,
       test_api(form_data_importer())
           .GetObservedFieldValues(base::make_span(&field_ptr, 1u));
   EXPECT_TRUE(observed_field_types.empty());
+}
+
+// Test case for credit card extraction.
+class FormDataImporterTest_ExtractCreditCardFromForm
+    : public FormDataImporterTest {
+ public:
+  enum class Mode { kDefaultValue, kAutofilled, kUserEdited };
+
+  void PushField(FieldType field_type,
+                 std::u16string value,
+                 Mode mode = Mode::kDefaultValue) {
+    AutofillField& f = test_api(form_).PushField();
+    f.set_server_predictions({test::CreateFieldPrediction(field_type)});
+    f.value = std::move(value);
+    f.is_autofilled = mode == Mode::kAutofilled;
+    f.is_user_edited = mode == Mode::kUserEdited;
+  }
+
+  FormStructure form_{/*form=*/{}};
+};
+
+// Tests that inconsistent values from different priority classes do not prevent
+// import.
+// For example, the user-edited "Donald Trump" has higher priority than the
+// autofilled "Joe Biden", which has still higher priority than default-value
+// "Joe Average".
+TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
+       IgnoreInconsistentValuesFromDifferentPriorityClasses) {
+  PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Joe Average",
+            Mode::kAutofilled);
+  PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Joe Biden", Mode::kAutofilled);
+  PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Donald Trump",
+            Mode::kUserEdited);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"4444444444444444",
+            Mode::kDefaultValue);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"4444333322221111",
+            Mode::kAutofilled);
+  PushField(FieldType::CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, u"01/2020",
+            Mode::kAutofilled);
+  PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"01/2021",
+            Mode::kUserEdited);
+  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NAME_FULL, kLocale),
+            u"Donald Trump");
+  EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NUMBER, kLocale),
+            u"4444333322221111");
+  EXPECT_EQ(
+      r.card.GetInfo(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, kLocale),
+      u"01/2021");
+  EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
+}
+
+// Tests that equivalent values of different types do not prevent import:
+// - first name + last names = full name;
+// - month + year = expiration date.
+TEST_F(FormDataImporterTest_ExtractCreditCardFromForm, MergeDerivedValues) {
+  PushField(FieldType::CREDIT_CARD_NAME_FIRST, u"Donald", Mode::kUserEdited);
+  PushField(FieldType::CREDIT_CARD_NAME_LAST, u"Trump", Mode::kUserEdited);
+  PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Joe Biden", Mode::kAutofilled);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"4444333322221111",
+            Mode::kAutofilled);
+  PushField(FieldType::CREDIT_CARD_EXP_MONTH, u"12", Mode::kUserEdited);
+  PushField(FieldType::CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2020",
+            Mode::kUserEdited);
+  PushField(FieldType::CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, u"12/20",
+            Mode::kUserEdited);
+  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NAME_FULL, kLocale),
+            u"Donald Trump");
+  EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NUMBER, kLocale),
+            u"4444333322221111");
+  EXPECT_EQ(
+      r.card.GetInfo(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, kLocale),
+      u"12/2020");
+  EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
+}
+
+// Tests detection of inconsistent values (first names "Audrey" and "Katherine")
+// in the same priority class (user-edited fields).
+TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
+       BlockImportForInconsistentValues) {
+  PushField(FieldType::CREDIT_CARD_NAME_LAST, u"Hepburn", Mode::kUserEdited);
+  PushField(FieldType::CREDIT_CARD_NAME_FIRST, u"Katherine", Mode::kUserEdited);
+  PushField(FieldType::CREDIT_CARD_NAME_FIRST, u"Audrey", Mode::kUserEdited);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"4444333322221111",
+            Mode::kUserEdited);
+  PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"12/2020",
+            Mode::kUserEdited);
+  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  ASSERT_TRUE(r.has_duplicate_credit_card_field_type);
 }
 
 }  // namespace autofill

@@ -959,6 +959,10 @@ std::optional<Iban> FormDataImporter::ExtractIban(const FormStructure& form) {
 
 FormDataImporter::ExtractCreditCardFromFormResult
 FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
+  if (base::FeatureList::IsEnabled(features::kAutofillRelaxCreditCardImport)) {
+    return ExtractCreditCardFromFormRelaxed(form);
+  }
+
   ExtractCreditCardFromFormResult result;
 
   FieldTypeSet types_seen;
@@ -1021,6 +1025,98 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
     }
   }
 
+  return result;
+}
+
+FormDataImporter::ExtractCreditCardFromFormResult
+FormDataImporter::ExtractCreditCardFromFormRelaxed(const FormStructure& form) {
+  // Populated by the lambdas below.
+  ExtractCreditCardFromFormResult result;
+
+  // Populates `result` from `field` if it's a credit card field.
+  // For example, if `field` contains credit card number, this sets the number
+  // of `result.card` to the `field`'s value.
+  auto extract_if_credit_card_field = [&result, &app_locale = app_locale_](
+                                          const AutofillField& field) {
+    // The value of interest is `field->value` or `field->user_input`.
+    std::u16string_view value_view =
+        base::TrimWhitespace(field.value, base::TRIM_ALL);
+    std::u16string_view user_input_view =
+        base::TrimWhitespace(field.user_input, base::TRIM_ALL);
+    if (!user_input_view.empty() &&
+        field.Type().GetStorableType() == ServerFieldType::CREDIT_CARD_NUMBER &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillUseTypedCreditCardNumber)) {
+      value_view = user_input_view;
+    }
+    std::u16string value(value_view);
+
+    // If we don't know the type of the field, or the user hasn't entered any
+    // information into the field, then skip it.
+    if (!field.IsFieldFillable() || value.empty() ||
+        field.Type().group() != FieldTypeGroup::kCreditCard) {
+      return;
+    }
+    std::u16string old_value = result.card.GetInfo(field.Type(), app_locale);
+    if (field.form_control_type == FormControlType::kInputMonth) {
+      // If |field| is an HTML5 month input, handle it as a special case.
+      DCHECK_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
+                field.Type().GetStorableType());
+      result.card.SetInfoForMonthInputType(value);
+    } else {
+      bool saved = result.card.SetInfo(field.Type(), value, app_locale);
+      if (!saved && field.IsSelectOrSelectListElement()) {
+        // Saving with the option text (here `value`) may fail for the
+        // expiration month. Attempt to save with the option value. First find
+        // the index of the option text in the select options and try the
+        // corresponding value.
+        if (auto it = base::ranges::find(field.options, value,
+                                         &SelectOption::content);
+            it != field.options.end()) {
+          result.card.SetInfo(field.Type(), it->value, app_locale);
+        }
+      }
+    }
+    std::u16string new_value = result.card.GetInfo(field.Type(), app_locale);
+    result.has_duplicate_credit_card_field_type |=
+        !old_value.empty() && old_value != new_value;
+  };
+
+  // Populates `result` from `fields` that satisfy `pred`, and erases those
+  // fields. Afterwards, it also erases all remaining fields whose type is now
+  // present in `result.card`.
+  // For example, if a `CREDIT_CARD_NAME_FULL` field matches `pred`, this
+  // function sets the credit card first, last, and full name and erases
+  // all `fields` of type `CREDIT_CARD_NAME_{FULL,FIRST,LAST}`.
+  auto extract_data_and_remove_field_if =
+      [&result, &extract_if_credit_card_field, &app_locale = app_locale_](
+          std::vector<const AutofillField*>& fields, const auto& pred) {
+        for (const AutofillField* field : fields) {
+          if (std::invoke(pred, *field)) {
+            extract_if_credit_card_field(*field);
+          }
+        }
+        std::erase_if(fields, [&](const AutofillField* field) {
+          return std::invoke(pred, *field) ||
+                 !result.card.GetInfo(field->Type(), app_locale).empty();
+        });
+      };
+
+  // We split the fields into three priority groups: user-typed values,
+  // autofilled values, other values. The duplicate-value recognition is limited
+  // to values of the respective group.
+  //
+  // Suppose the user first autofills a form, including invisible fields. Then
+  // they edited a visible fields. The priority groups ensure that the invisible
+  // field does not prevent credit card import.
+  std::vector<const AutofillField*> fields;
+  fields.reserve(form.fields().size());
+  for (const std::unique_ptr<AutofillField>& field : form.fields()) {
+    fields.push_back(field.get());
+  }
+  extract_data_and_remove_field_if(fields, &AutofillField::is_user_edited);
+  extract_data_and_remove_field_if(fields, &AutofillField::is_autofilled);
+  extract_data_and_remove_field_if(fields, [](const auto&) { return true; });
   return result;
 }
 

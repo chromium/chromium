@@ -91,6 +91,11 @@ class FormDataImporter : public PersonalDataManagerObserver {
   ExtractCreditCardFromFormResult ExtractCreditCardFromForm(
       const FormStructure& form);
 
+  // TODO(crbug.com/1381477): Rename to ExtractCreditCardFromForm() once
+  // `features::kAutofillRelaxCreditCardImport` is launched.
+  ExtractCreditCardFromFormResult ExtractCreditCardFromFormRelaxed(
+      const FormStructure& form);
+
   // Tries to initiate the saving of `extracted_iban` if applicable.
   bool ProcessIbanImportCandidate(const Iban& extracted_iban);
 

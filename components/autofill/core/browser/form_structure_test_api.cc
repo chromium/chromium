@@ -18,7 +18,6 @@ using ::testing::Pair;
 using FieldPrediction =
     AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
 
-// static
 void FormStructureTestApi::SetFieldTypes(
     const std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>&
         heuristic_types,
@@ -47,7 +46,7 @@ void FormStructureTestApi::SetFieldTypes(
     const std::vector<FieldType>& server_types) {
   std::vector<FieldPrediction> server_predictions;
   for (FieldType type : server_types) {
-    server_predictions.push_back(::autofill::test::CreateFieldPrediction(type));
+    server_predictions.push_back(test::CreateFieldPrediction(type));
   }
   SetFieldTypes(heuristic_types, server_predictions);
 }

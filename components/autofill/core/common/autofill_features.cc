@@ -167,7 +167,6 @@ BASE_FEATURE(kAutofillEnableRankingFormulaCreditCards,
 const base::FeatureParam<int> kAutofillRankingFormulaCreditCardsUsageHalfLife{
     &kAutofillEnableRankingFormulaCreditCards,
     "autofill_ranking_formula_credit_cards_usage_half_life", 20};
-
 // The boost factor applied to ranking virtual cards.
 const base::FeatureParam<int> kAutofillRankingFormulaVirtualCardBoost{
     &kAutofillEnableRankingFormulaCreditCards,
@@ -176,6 +175,12 @@ const base::FeatureParam<int> kAutofillRankingFormulaVirtualCardBoost{
 const base::FeatureParam<int> kAutofillRankingFormulaVirtualCardBoostHalfLife{
     &kAutofillEnableRankingFormulaCreditCards,
     "autofill_ranking_formula_virtual_card_boost_half_life", 15};
+
+// Relaxes the requirements for offering credit card import.
+// TODO(crbug.com/1381477): Clean up when launched.
+BASE_FEATURE(kAutofillRelaxCreditCardImport,
+             "AutofillRelaxCreditCardImport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, autofill will fill <selectlist> elements.
 // TODO(crbug.com/1427153) Remove once autofilling <selectlist> is launched.

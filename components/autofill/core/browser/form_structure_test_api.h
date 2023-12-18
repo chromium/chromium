@@ -43,6 +43,11 @@ class FormStructureTestApi {
   explicit FormStructureTestApi(FormStructure* form_structure)
       : form_structure_(*form_structure) {}
 
+  AutofillField& PushField() {
+    form_structure_->fields_.push_back(std::make_unique<AutofillField>());
+    return *form_structure_->fields_.back();
+  }
+
   [[nodiscard]] bool ShouldBeParsed(ShouldBeParsedParams params = {},
                                     LogManager* log_manager = nullptr) {
     return form_structure_->ShouldBeParsed(params, log_manager);
