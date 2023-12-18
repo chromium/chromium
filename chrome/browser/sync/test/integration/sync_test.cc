@@ -224,7 +224,7 @@ void SyncTest::SetUp() {
     if (cl->HasSwitch(switches::kSyncUserForTest)) {
       username_ = cl->GetSwitchValueASCII(switches::kSyncUserForTest);
     } else if (server_type_ != EXTERNAL_LIVE_SERVER) {
-      username_ = "user@gmail.com";
+      username_ = kDefaultUserEmail;
     }
     // Decide on password to use.
     password_ = cl->HasSwitch(switches::kSyncPasswordForTest)

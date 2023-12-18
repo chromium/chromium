@@ -141,6 +141,9 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
     WAIT_FOR_COMMITS_TO_COMPLETE,
   };
 
+  // Used unless specified otherwise by command line switches.
+  static constexpr char kDefaultUserEmail[] = "user@gmail.com";
+
   // A SyncTest must be associated with a particular test type.
   explicit SyncTest(TestType test_type);
 
