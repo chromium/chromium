@@ -18,7 +18,7 @@ switch_access_dir =
 tsc_out_dir = "$target_gen_dir/tsc"
 
 # TS files to compile.
-ts_modules = [ "switch_access_constants.ts" ]
+ts_modules = []
 
 # JS files needed to compile TS.
 js_deps = []
@@ -107,6 +107,7 @@ run_jsbundler("copied_files") {
     "point_scan_manager.js",
     "settings_manager.js",
     "switch_access.js",
+    "switch_access_constants.js",
     "switch_access_predicate.js",
     "text_navigation_manager.js",
   ]
