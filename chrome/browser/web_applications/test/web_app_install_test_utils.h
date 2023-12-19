@@ -61,7 +61,8 @@ webapps::AppId InstallWebApp(
 webapps::AppId InstallShortcut(Profile* profile,
                                const std::string& shortcut_name,
                                const GURL& start_url,
-                               bool create_default_icon = true);
+                               bool create_default_icon = true,
+                               bool is_policy_install = false);
 
 // Synchronously uninstall a web app. May be used in unit tests and browser
 // tests.

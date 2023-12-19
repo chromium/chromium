@@ -638,10 +638,8 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest,
 class MediaAccessBrowserShortcutsTest : public MediaAccessWebAppsTest {
  public:
   std::string CreateShortcut(const GURL& url) const {
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = url;
-    return web_app::test::InstallWebApp(browser()->profile(),
-                                        std::move(web_app_info));
+    return web_app::test::InstallShortcut(browser()->profile(), "Shortcut Name",
+                                          url);
   }
 
  private:

@@ -117,7 +117,8 @@ webapps::AppId InstallWebApp(Profile* profile,
 webapps::AppId InstallShortcut(Profile* profile,
                                const std::string& shortcut_name,
                                const GURL& start_url,
-                               bool create_default_icon) {
+                               bool create_default_icon,
+                               bool is_policy_install) {
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
 
   web_app_info->start_url = start_url;
@@ -144,18 +145,19 @@ webapps::AppId InstallShortcut(Profile* profile,
   // `WebAppInstallCommand` to install the web app.
   provider->scheduler().InstallFromInfo(
       std::move(web_app_info), /*overwrite_existing_manifest_fields =*/true,
-      webapps::WebappInstallSource::MENU_CREATE_SHORTCUT, future.GetCallback());
+      is_policy_install ? webapps::WebappInstallSource::EXTERNAL_POLICY
+                        : webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
+      future.GetCallback());
 
-  webapps::AppId app_id = future.Get<0>();
-  webapps::InstallResultCode code = future.Get<1>();
-
-  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            future.Get<webapps::InstallResultCode>());
 
   // Allow updates to be published to App Service listeners.
   base::RunLoop().RunUntilIdle();
 
-  CHECK(provider->registrar_unsafe().IsShortcutApp(app_id));
-  return app_id;
+  CHECK(
+      provider->registrar_unsafe().IsShortcutApp(future.Get<webapps::AppId>()));
+  return future.Get<webapps::AppId>();
 }
 
 void UninstallWebApp(Profile* profile, const webapps::AppId& app_id) {
