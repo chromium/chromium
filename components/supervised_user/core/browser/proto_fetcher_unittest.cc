@@ -71,6 +71,23 @@ constexpr FetcherConfig kTestGetConfig{
     },
 };
 
+constexpr FetcherConfig kTestGetConfigWithoutMetrics{
+    .service_path = "/superviser/user:get",
+    .method = FetcherConfig::Method::kGet,
+    .traffic_annotation =
+        annotations::ClassifyUrlTag,  // traffic annotation is meaningless for
+                                      // this tests since there's no real
+                                      // traffic.
+    .access_token_config{
+        .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+        // TODO(b/284523446): Refer to GaiaConstants rather than literal.
+        .oauth2_scope =
+            "https://www.googleapis.com/auth/kid.permission",  // Real scope
+                                                               // required.
+
+    },
+};
+
 constexpr FetcherConfig kTestPostConfig{
     .service_path = "/superviser/user:post",
     .method = FetcherConfig::Method::kPost,
@@ -139,7 +156,7 @@ class Receiver {
       result_;
 };
 
-// Test fixture for proto fetcher.
+// Base of the test fixture for proto fetcher.
 // Defines required runtime environment, and a collection of helper methods
 // which are used to build initial test state and define behaviours.
 //
@@ -148,15 +165,17 @@ class Receiver {
 //
 // FastForward is important for retrying feature tests: make sure that the time
 // skipped is greater than possible retry timeouts.
-class ProtoFetcherTest : public ::testing::TestWithParam<FetcherConfig> {
- protected:
-  using Fetcher = DeferredProtoFetcher<Response>;
-
-  void SetUp() override {
+class ProtoFetcherTestBase {
+ public:
+  ProtoFetcherTestBase() = delete;
+  explicit ProtoFetcherTestBase(const FetcherConfig& config) : config_(config) {
     SetHttpEndpointsForKidsManagementApis(feature_list_, "example.com");
   }
 
-  const FetcherConfig& GetConfig() const { return GetParam(); }
+ protected:
+  using Fetcher = DeferredProtoFetcher<Response>;
+
+  const FetcherConfig& GetConfig() const { return config_; }
 
   // Receivers are not-copyable because of mocked method.
   std::unique_ptr<Receiver> MakeReceiver() const {
@@ -217,15 +236,27 @@ class ProtoFetcherTest : public ::testing::TestWithParam<FetcherConfig> {
     identity_test_env_.SetAutomaticIssueOfAccessTokens(/*grant=*/true);
   }
 
+  bool MetricsAreExpected() const {
+    return GetConfig().histogram_basename.has_value();
+  }
+
  private:
   // Must be first attribute, see base::test::TaskEnvironment docs.
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  FetcherConfig config_;
 
  protected:
   network::TestURLLoaderFactory test_url_loader_factory_;
   IdentityTestEnvironment identity_test_env_;
   base::test::ScopedFeatureList feature_list_;
+};
+
+class ProtoFetcherTest : public ProtoFetcherTestBase,
+                         public ::testing::TestWithParam<FetcherConfig> {
+ public:
+  ProtoFetcherTest() : ProtoFetcherTestBase(GetConfig()) {}
+  static const FetcherConfig& GetConfig() { return GetParam(); }
 };
 
 // Test whether the outgoing request has correctly set endpoint and method.
@@ -402,29 +433,34 @@ TEST_P(ProtoFetcherTest, RecordsMetrics) {
 
   ASSERT_TRUE(receiver->GetResult().has_value());
 
-  // The actual latency of mocked fetch is variable, so only expect that some
-  // value was recorded.
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({GetConfig().histogram_basename, ".Latency"}),
-      /*expected_count(grew by)*/ 1);
-  histogram_tester.ExpectTotalCount(
-      base::StrCat(
-          {GetConfig().histogram_basename, ".NONE.AccessTokenLatency"}),
-      /*expected_count(grew by)*/ 1);
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({GetConfig().histogram_basename, ".HTTP_OK.ApiLatency"}),
-      /*expected_count(grew by)*/ 1);
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({GetConfig().histogram_basename, ".NoError.Latency"}),
-      /*expected_count(grew by)*/ 1);
+  if (MetricsAreExpected()) {
+    // The actual latency of mocked fetch is variable, so only expect that some
+    // value was recorded.
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({*GetConfig().histogram_basename, ".Latency"}),
+        /*expected_count(grew by)*/ 1);
+    histogram_tester.ExpectTotalCount(
+        base::StrCat(
+            {*GetConfig().histogram_basename, ".NONE.AccessTokenLatency"}),
+        /*expected_count(grew by)*/ 1);
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({*GetConfig().histogram_basename, ".HTTP_OK.ApiLatency"}),
+        /*expected_count(grew by)*/ 1);
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({*GetConfig().histogram_basename, ".NoError.Latency"}),
+        /*expected_count(grew by)*/ 1);
 
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          base::StrCat({GetConfig().histogram_basename, ".Status"})),
-      base::BucketsInclude(
-          base::Bucket(ProtoFetcherStatus::State::OK, /*count=*/1),
-          base::Bucket(ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR,
-                       /*count=*/0)));
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            base::StrCat({*GetConfig().histogram_basename, ".Status"})),
+        base::BucketsInclude(
+            base::Bucket(ProtoFetcherStatus::State::OK, /*count=*/1),
+            base::Bucket(ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR,
+                         /*count=*/0)));
+
+  } else {
+    EXPECT_FALSE(fetcher->IsMetricsRecordingEnabled());
+  }
 }
 
 // When retrying is configured, the fetch process is re-launched until a
@@ -463,57 +499,62 @@ TEST_P(ProtoFetcherTest, RetryingFetcherTerminatesOnOkStatusAndRecordsMetrics) {
   EXPECT_TRUE(receiver->HasResultOrError());
   EXPECT_TRUE(receiver->GetResult().has_value());
 
-  // Expect that one sample with value 3 (number of requests) was recorded.
-  EXPECT_THAT(histogram_tester.GetAllSamples(base::StrCat(
-                  {GetConfig().histogram_basename, ".RetryCount"})),
-              base::BucketsInclude(base::Bucket(3, 1)));
+  if (MetricsAreExpected()) {
+    // Expect that one sample with value 3 (number of requests) was recorded.
+    EXPECT_THAT(histogram_tester.GetAllSamples(base::StrCat(
+                    {*GetConfig().histogram_basename, ".RetryCount"})),
+                base::BucketsInclude(base::Bucket(3, 1)));
 
-  // The actual latency of mocked fetch is variable, so only expect that some
-  // value was recorded.
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({GetConfig().histogram_basename, ".OverallLatency"}),
-      /*expected_count(grew by)*/ 1);
+    // The actual latency of mocked fetch is variable, so only expect that some
+    // value was recorded.
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({*GetConfig().histogram_basename, ".OverallLatency"}),
+        /*expected_count(grew by)*/ 1);
 
-  EXPECT_THAT(histogram_tester.GetAllSamples(base::StrCat(
-                  {GetConfig().histogram_basename, ".OverallStatus"})),
-              base::BucketsInclude(
-                  base::Bucket(ProtoFetcherStatus::State::OK, /*count=*/1)));
+    EXPECT_THAT(histogram_tester.GetAllSamples(base::StrCat(
+                    {*GetConfig().histogram_basename, ".OverallStatus"})),
+                base::BucketsInclude(
+                    base::Bucket(ProtoFetcherStatus::State::OK, /*count=*/1)));
 
-  // Individual status and latencies were also recorded because the compound
-  // fetcher consists of an individual fetchers. Note that the count of
-  // individual metrics grew by the number related to number of responses used.
+    // Individual status and latencies were also recorded because the compound
+    // fetcher consists of an individual fetchers. Note that the count of
+    // individual metrics grew by the number related to number of responses
+    // used.
 
-  // The actual latency of mocked fetch is variable, so only expect that some
-  // value was recorded.
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({GetConfig().histogram_basename, ".Latency"}),
-      /*expected_count(grew by)*/ 3);
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({GetConfig().histogram_basename, ".NoError.Latency"}),
-      /*expected_count(grew by)*/ 1);
+    // The actual latency of mocked fetch is variable, so only expect that some
+    // value was recorded.
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({*GetConfig().histogram_basename, ".Latency"}),
+        /*expected_count(grew by)*/ 3);
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({*GetConfig().histogram_basename, ".NoError.Latency"}),
+        /*expected_count(grew by)*/ 1);
 
-  // System made it through access token phase three times.
-  histogram_tester.ExpectTotalCount(
-      base::StrCat(
-          {GetConfig().histogram_basename, ".NONE.AccessTokenLatency"}),
-      /*expected_count(grew by)*/ 3);
-  // Only one successful api call.
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({GetConfig().histogram_basename, ".HTTP_OK.ApiLatency"}),
-      /*expected_count(grew by)*/ 1);
+    // System made it through access token phase three times.
+    histogram_tester.ExpectTotalCount(
+        base::StrCat(
+            {*GetConfig().histogram_basename, ".NONE.AccessTokenLatency"}),
+        /*expected_count(grew by)*/ 3);
+    // Only one successful api call.
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({*GetConfig().histogram_basename, ".HTTP_OK.ApiLatency"}),
+        /*expected_count(grew by)*/ 1);
 
-  histogram_tester.ExpectTotalCount(
-      base::StrCat(
-          {GetConfig().histogram_basename, ".HttpStatusOrNetError.Latency"}),
-      /*expected_count(grew by)*/ 2);
+    histogram_tester.ExpectTotalCount(
+        base::StrCat(
+            {*GetConfig().histogram_basename, ".HttpStatusOrNetError.Latency"}),
+        /*expected_count(grew by)*/ 2);
 
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          base::StrCat({GetConfig().histogram_basename, ".Status"})),
-      base::BucketsInclude(
-          base::Bucket(ProtoFetcherStatus::State::OK, /*count=*/1),
-          base::Bucket(ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR,
-                       /*count=*/2)));
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            base::StrCat({*GetConfig().histogram_basename, ".Status"})),
+        base::BucketsInclude(
+            base::Bucket(ProtoFetcherStatus::State::OK, /*count=*/1),
+            base::Bucket(ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR,
+                         /*count=*/2)));
+  } else {
+    EXPECT_FALSE(fetcher->IsMetricsRecordingEnabled());
+  }
 }
 
 // When retrying is configured, the fetch process is re-launched until a
@@ -549,58 +590,63 @@ TEST_P(ProtoFetcherTest,
   EXPECT_TRUE(receiver->HasResultOrError());
   EXPECT_TRUE(receiver->GetResult().error().IsPersistentError());
 
-  // Expect that one sample with value 2 (number of requests) was recorded.
-  EXPECT_THAT(histogram_tester.GetAllSamples(base::StrCat(
-                  {GetConfig().histogram_basename, ".RetryCount"})),
-              base::BucketsInclude(base::Bucket(2, 1)));
+  if (MetricsAreExpected()) {
+    // Expect that one sample with value 2 (number of requests) was recorded.
+    EXPECT_THAT(histogram_tester.GetAllSamples(base::StrCat(
+                    {*GetConfig().histogram_basename, ".RetryCount"})),
+                base::BucketsInclude(base::Bucket(2, 1)));
 
-  // The actual latency of mocked fetch is variable, so only expect that some
-  // value was recorded.
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({GetConfig().histogram_basename, ".OverallLatency"}),
-      /*expected_count(grew by)*/ 1);
+    // The actual latency of mocked fetch is variable, so only expect that some
+    // value was recorded.
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({*GetConfig().histogram_basename, ".OverallLatency"}),
+        /*expected_count(grew by)*/ 1);
 
-  EXPECT_THAT(histogram_tester.GetAllSamples(base::StrCat(
-                  {GetConfig().histogram_basename, ".OverallStatus"})),
-              base::BucketsInclude(base::Bucket(
-                  ProtoFetcherStatus::State::INVALID_RESPONSE, 1)));
+    EXPECT_THAT(histogram_tester.GetAllSamples(base::StrCat(
+                    {*GetConfig().histogram_basename, ".OverallStatus"})),
+                base::BucketsInclude(base::Bucket(
+                    ProtoFetcherStatus::State::INVALID_RESPONSE, 1)));
 
-  // Individual status and latencies were also recorded because the compound
-  // fetcher consists of an individual fetchers. Note that the count of
-  // individual metrics grew by the number related to number of responses used.
+    // Individual status and latencies were also recorded because the compound
+    // fetcher consists of an individual fetchers. Note that the count of
+    // individual metrics grew by the number related to number of responses
+    // used.
 
-  // The actual latency of mocked fetch is variable, so only expect that some
-  // value was recorded.
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({GetConfig().histogram_basename, ".Latency"}),
-      /*expected_count(grew by)*/ 2);
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({GetConfig().histogram_basename, ".ParseError.Latency"}),
-      /*expected_count(grew by)*/ 1);
+    // The actual latency of mocked fetch is variable, so only expect that some
+    // value was recorded.
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({*GetConfig().histogram_basename, ".Latency"}),
+        /*expected_count(grew by)*/ 2);
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({*GetConfig().histogram_basename, ".ParseError.Latency"}),
+        /*expected_count(grew by)*/ 1);
 
-  // System made it through access token phase two times.
-  histogram_tester.ExpectTotalCount(
-      base::StrCat(
-          {GetConfig().histogram_basename, ".NONE.AccessTokenLatency"}),
-      /*expected_count(grew by)*/ 2);
-  // Only one successful api call (parse error is a successful api call).
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({GetConfig().histogram_basename, ".HTTP_OK.ApiLatency"}),
-      /*expected_count(grew by)*/ 1);
+    // System made it through access token phase two times.
+    histogram_tester.ExpectTotalCount(
+        base::StrCat(
+            {*GetConfig().histogram_basename, ".NONE.AccessTokenLatency"}),
+        /*expected_count(grew by)*/ 2);
+    // Only one successful api call (parse error is a successful api call).
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({*GetConfig().histogram_basename, ".HTTP_OK.ApiLatency"}),
+        /*expected_count(grew by)*/ 1);
 
-  histogram_tester.ExpectTotalCount(
-      base::StrCat(
-          {GetConfig().histogram_basename, ".HttpStatusOrNetError.Latency"}),
-      /*expected_count(grew by)*/ 1);
+    histogram_tester.ExpectTotalCount(
+        base::StrCat(
+            {*GetConfig().histogram_basename, ".HttpStatusOrNetError.Latency"}),
+        /*expected_count(grew by)*/ 1);
 
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          base::StrCat({GetConfig().histogram_basename, ".Status"})),
-      base::BucketsInclude(
-          base::Bucket(ProtoFetcherStatus::State::INVALID_RESPONSE,
-                       /*count=*/1),
-          base::Bucket(ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR,
-                       /*count=*/1)));
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            base::StrCat({*GetConfig().histogram_basename, ".Status"})),
+        base::BucketsInclude(
+            base::Bucket(ProtoFetcherStatus::State::INVALID_RESPONSE,
+                         /*count=*/1),
+            base::Bucket(ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR,
+                         /*count=*/1)));
+  } else {
+    EXPECT_FALSE(fetcher->IsMetricsRecordingEnabled());
+  }
 }
 
 // When retrying is configured, the fetch process is re-launched until a
@@ -634,56 +680,70 @@ TEST_P(ProtoFetcherTest, RetryingFetcherContinuesOnTransientError) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
   EXPECT_FALSE(receiver->HasResultOrError());
 
-  // No final status was recorded as the fetcher is still pending.
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({GetConfig().histogram_basename, ".OverallStatus"}),
-      /*expected_count(grew by)*/ 0);
+  if (MetricsAreExpected()) {
+    // No final status was recorded as the fetcher is still pending.
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({*GetConfig().histogram_basename, ".OverallStatus"}),
+        /*expected_count(grew by)*/ 0);
 
-  // Individual status and latencies were also recorded because the compound
-  // fetcher consists of an individual fetchers. Note that the count of
-  // individual metrics grew by the number related to number of responses used.
+    // Individual status and latencies were also recorded because the compound
+    // fetcher consists of an individual fetchers. Note that the count of
+    // individual metrics grew by the number related to number of responses
+    // used.
 
-  // The actual latency of mocked fetch is variable, so only expect that some
-  // value was recorded.
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({GetConfig().histogram_basename, ".Latency"}),
-      /*expected_count(grew by)*/ 2);
-  histogram_tester.ExpectTotalCount(
-      base::StrCat(
-          {GetConfig().histogram_basename, ".HttpStatusOrNetError.Latency"}),
-      /*expected_count(grew by)*/ 2);
+    // The actual latency of mocked fetch is variable, so only expect that some
+    // value was recorded.
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({*GetConfig().histogram_basename, ".Latency"}),
+        /*expected_count(grew by)*/ 2);
+    histogram_tester.ExpectTotalCount(
+        base::StrCat(
+            {*GetConfig().histogram_basename, ".HttpStatusOrNetError.Latency"}),
+        /*expected_count(grew by)*/ 2);
 
-  // System made it through access token phase two times.
-  histogram_tester.ExpectTotalCount(
-      base::StrCat(
-          {GetConfig().histogram_basename, ".NONE.AccessTokenLatency"}),
-      /*expected_count(grew by)*/ 3);
-  // Server only responds with error.
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({GetConfig().histogram_basename, ".HTTP_OK.ApiLatency"}),
-      /*expected_count(grew by)*/ 0);
+    // System made it through access token phase two times.
+    histogram_tester.ExpectTotalCount(
+        base::StrCat(
+            {*GetConfig().histogram_basename, ".NONE.AccessTokenLatency"}),
+        /*expected_count(grew by)*/ 3);
+    // Server only responds with error.
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({*GetConfig().histogram_basename, ".HTTP_OK.ApiLatency"}),
+        /*expected_count(grew by)*/ 0);
 
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          base::StrCat({GetConfig().histogram_basename, ".Status"})),
-      base::BucketsInclude(base::Bucket(
-          ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR, /*count=*/2)));
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            base::StrCat({*GetConfig().histogram_basename, ".Status"})),
+        base::BucketsInclude(base::Bucket(
+            ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR, /*count=*/2)));
+  } else {
+    EXPECT_FALSE(fetcher->IsMetricsRecordingEnabled());
+  }
 }
 
 // Instead of /0, /1... print human-readable description of the test: status of
 // the retrying feature followed by http method.
 std::string PrettyPrintFetcherTestCaseName(
     const ::testing::TestParamInfo<FetcherConfig>& info) {
-  return base::StrCat(
-      {(info.param.backoff_policy.has_value() ? "Retrying" : ""),
-       info.param.GetHttpMethod()});
+  std::string base = info.param.GetHttpMethod();
+  if (info.param.backoff_policy.has_value()) {
+    base += "Retrying";
+  }
+  if (info.param.histogram_basename.has_value()) {
+    base += "WithMetrics";
+  } else {
+    base += "WithoutMetrics";
+  }
+
+  return base;
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ProtoFetcherTest,
                          testing::Values(kTestGetConfig,
                                          kTestPostConfig,
-                                         kTestRetryConfig),
+                                         kTestRetryConfig,
+                                         kTestGetConfigWithoutMetrics),
                          &PrettyPrintFetcherTestCaseName);
 
 class FetchManagerTest : public testing::Test {

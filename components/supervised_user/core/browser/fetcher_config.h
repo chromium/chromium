@@ -54,8 +54,8 @@ struct FetcherConfig {
   // HTTP method used to communicate with the service.
   const Method method = Method::kUndefined;
 
-  // Basename for histograms
-  base::StringPiece histogram_basename;
+  // Basename for histograms. When unset, metrics won't be emitted.
+  absl::optional<std::string_view> histogram_basename;
 
   net::NetworkTrafficAnnotationTag (*const traffic_annotation)() = nullptr;
 

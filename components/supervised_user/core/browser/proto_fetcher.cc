@@ -164,7 +164,12 @@ class Metrics {
   };
 
   Metrics() = delete;
-  explicit Metrics(StringPiece basename) : basename_(basename) {}
+  static absl::optional<Metrics> FromConfig(const FetcherConfig& config) {
+    if (config.histogram_basename.has_value()) {
+      return Metrics(*config.histogram_basename);
+    }
+    return absl::nullopt;
+  }
 
   void RecordStatus(const ProtoFetcherStatus& status) const {
     base::UmaHistogramEnumeration(GetFullHistogramName(MetricType::kStatus),
@@ -204,6 +209,8 @@ class Metrics {
   }
 
  protected:
+  explicit Metrics(StringPiece basename) : basename_(basename) {}
+
   // Translates top-level metric type into a string. ::ToMetricEnumLabel
   // translates statuses for per-status latency tracking.
   virtual StringPiece GetMetricKey(MetricType metric_type) const {
@@ -291,11 +298,26 @@ class Metrics {
 class OverallMetrics final : public Metrics {
  public:
   OverallMetrics() = delete;
-  explicit OverallMetrics(StringPiece basename) : Metrics(basename) {}
+
+  static absl::optional<OverallMetrics> FromConfig(
+      const FetcherConfig& config) {
+    if (config.histogram_basename.has_value()) {
+      return OverallMetrics(*config.histogram_basename);
+    }
+    return absl::nullopt;
+  }
 
   // Per-status latency is not defined for OverallMetrics.
   void RecordStatusLatency(const ProtoFetcherStatus& status) const override {
     NOTIMPLEMENTED();
+  }
+
+  void RecordRetryCount(int count) const {
+    // It's a prediction that it will take less than 100 retries to get a
+    // decisive response. Double exponential backoff set at 4 hour limit
+    // shouldn't exhaust this limit too soon.
+    base::UmaHistogramCounts100(GetFullHistogramName(MetricType::kRetryCount),
+                                count);
   }
 
  protected:
@@ -314,14 +336,8 @@ class OverallMetrics final : public Metrics {
     }
   }
 
- public:
-  void RecordRetryCount(int count) const {
-    // It's a prediction that it will take less than 100 retries to get a
-    // decisive response. Double exponential backoff set at 4 hour limit
-    // shouldn't exhaust this limit too soon.
-    base::UmaHistogramCounts100(GetFullHistogramName(MetricType::kRetryCount),
-                                count);
-  }
+ private:
+  explicit OverallMetrics(StringPiece basename) : Metrics(basename) {}
 };
 
 // A fetcher with underlying network::SharedURLLoaderFactory.
@@ -352,7 +368,7 @@ class FetcherImpl final : public ProtoFetcher<Response> {
               Callback callback)
       : payload_(payload),
         config_(fetcher_config),
-        metrics_(fetcher_config.histogram_basename),
+        metrics_(Metrics::FromConfig(fetcher_config)),
         fetcher_(identity_manager,
                  fetcher_config.access_token_config,
                  BindOnce(&FetcherImpl::OnAccessTokenFetchComplete,
@@ -365,15 +381,23 @@ class FetcherImpl final : public ProtoFetcher<Response> {
   FetcherImpl(const FetcherImpl&) = delete;
   FetcherImpl& operator=(const FetcherImpl&) = delete;
 
+  bool IsMetricsRecordingEnabled() const override {
+    return metrics_.has_value();
+  }
+
  private:
   void RecordMetrics(const ProtoFetcherStatus& status) {
-    metrics_.RecordStatus(status);
-    metrics_.RecordLatency();
-    metrics_.RecordStatusLatency(status);
+    if (!IsMetricsRecordingEnabled()) {
+      return;
+    }
+
+    metrics_->RecordStatus(status);
+    metrics_->RecordLatency();
+    metrics_->RecordStatusLatency(status);
 
     // Record additional metrics for various failures.
     if (status.state() == ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR) {
-      metrics_.RecordHttpStatusOrNetError(status);
+      metrics_->RecordHttpStatusOrNetError(status);
     }
   }
 
@@ -389,7 +413,9 @@ class FetcherImpl final : public ProtoFetcher<Response> {
       return;
     }
 
-    metrics_.RecordAccessTokenLatency(GoogleServiceAuthError::State::NONE);
+    if (IsMetricsRecordingEnabled()) {
+      metrics_->RecordAccessTokenLatency(GoogleServiceAuthError::State::NONE);
+    }
 
     simple_url_loader_ = InitializeSimpleUrlLoader(
         access_token.value(), config_, GetRequestPayload());
@@ -411,8 +437,10 @@ class FetcherImpl final : public ProtoFetcher<Response> {
       return;
     }
 
-    metrics_.RecordApiLatency(
-        ProtoFetcherStatus::HttpStatusOrNetErrorType(net::HTTP_OK));
+    if (IsMetricsRecordingEnabled()) {
+      metrics_->RecordApiLatency(
+          ProtoFetcherStatus::HttpStatusOrNetErrorType(net::HTTP_OK));
+    }
 
     std::unique_ptr<Response> response = std::make_unique<Response>();
     if (!response->ParseFromString(*response_body)) {
@@ -447,7 +475,7 @@ class FetcherImpl final : public ProtoFetcher<Response> {
 
   const std::string payload_;
   const FetcherConfig config_;
-  Metrics metrics_;
+  absl::optional<Metrics> metrics_;
 
   // Entrypoint of the fetch process, which starts with ApiAccessToken access
   // followed by a request made with SimpleURLLoader. Purposely made last field
@@ -484,6 +512,10 @@ class DeferredFetcherImpl : public DeferredProtoFetcher<Response> {
     fetcher_.reset();
   }
 
+  bool IsMetricsRecordingEnabled() const override {
+    return fetcher_->IsMetricsRecordingEnabled();
+  }
+
  private:
   std::unique_ptr<FetcherImpl<Response>> fetcher_;
   std::string payload_;
@@ -512,7 +544,7 @@ class RetryingFetcherImpl final : public DeferredFetcherImpl<Response> {
                                       request,
                                       fetcher_config),
         backoff_entry_(&backoff_policy),
-        metrics_(fetcher_config.histogram_basename) {}
+        metrics_(OverallMetrics::FromConfig(fetcher_config)) {}
 
   // Not copyable.
   RetryingFetcherImpl(const RetryingFetcherImpl&) = delete;
@@ -525,6 +557,10 @@ class RetryingFetcherImpl final : public DeferredFetcherImpl<Response> {
   void Stop() override {
     DeferredFetcherImpl<Response>::Stop();
     timer_.Stop();
+  }
+
+  bool IsMetricsRecordingEnabled() const override {
+    return metrics_.has_value();
   }
 
  private:
@@ -549,9 +585,11 @@ class RetryingFetcherImpl final : public DeferredFetcherImpl<Response> {
 
     CHECK(callback_) << "Callback can be used only once.";
     backoff_entry_.InformOfRequest(/*succeeded=*/true);
-    metrics_.RecordLatency();
-    metrics_.RecordStatus(status);
-    metrics_.RecordRetryCount(retry_count_);
+    if (IsMetricsRecordingEnabled()) {
+      metrics_->RecordLatency();
+      metrics_->RecordStatus(status);
+      metrics_->RecordRetryCount(retry_count_);
+    }
     std::move(callback_).Run(status, std::move(response));
   }
 
@@ -563,7 +601,7 @@ class RetryingFetcherImpl final : public DeferredFetcherImpl<Response> {
   net::BackoffEntry backoff_entry_;
   int retry_count_{0};
 
-  const OverallMetrics metrics_;
+  const absl::optional<OverallMetrics> metrics_;
 };
 
 using ClassifyUrlFetcher =

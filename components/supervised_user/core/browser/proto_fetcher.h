@@ -129,6 +129,7 @@ class ProtoFetcher {
   using Callback = base::OnceCallback<void(const ProtoFetcherStatus&,
                                            std::unique_ptr<Response>)>;
   virtual ~ProtoFetcher() = default;
+  virtual bool IsMetricsRecordingEnabled() const = 0;
 };
 
 // Use instance of DeferredProtoFetcher to create fetch process which is
