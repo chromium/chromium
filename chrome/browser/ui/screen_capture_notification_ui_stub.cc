@@ -8,8 +8,8 @@
 // Stub implementation of the ScreenCaptureNotificationUI interface.
 class ScreenCaptureNotificationUIStub : public ScreenCaptureNotificationUI {
  public:
-  ScreenCaptureNotificationUIStub() {}
-  ~ScreenCaptureNotificationUIStub() override {}
+  ScreenCaptureNotificationUIStub() = default;
+  ~ScreenCaptureNotificationUIStub() override = default;
 
   gfx::NativeViewId OnStarted(
       base::OnceClosure stop_callback,
@@ -22,7 +22,8 @@ class ScreenCaptureNotificationUIStub : public ScreenCaptureNotificationUI {
 
 // static
 std::unique_ptr<ScreenCaptureNotificationUI>
-ScreenCaptureNotificationUI::Create(const std::u16string& title) {
-  return std::unique_ptr<ScreenCaptureNotificationUI>(
-      new ScreenCaptureNotificationUIStub());
+ScreenCaptureNotificationUI::Create(
+    const std::u16string& title,
+    content::WebContents* capturing_web_contents) {
+  return std::make_unique<ScreenCaptureNotificationUIStub>();
 }

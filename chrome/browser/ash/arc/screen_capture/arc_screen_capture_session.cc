@@ -130,7 +130,8 @@ ArcScreenCaptureSession::Initialize(content::DesktopMediaID desktop_id,
     std::u16string notification_text =
         l10n_util::GetStringFUTF16(IDS_MEDIA_SCREEN_CAPTURE_NOTIFICATION_TEXT,
                                    base::UTF8ToUTF16(display_name));
-    notification_ui_ = ScreenCaptureNotificationUI::Create(notification_text);
+    notification_ui_ = ScreenCaptureNotificationUI::Create(
+        notification_text, /*capturing_web_contents=*/nullptr);
     notification_ui_->OnStarted(
         base::BindOnce(&ArcScreenCaptureSession::NotificationStop,
                        weak_ptr_factory_.GetWeakPtr()),

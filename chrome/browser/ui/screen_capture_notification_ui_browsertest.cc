@@ -28,7 +28,7 @@ class ScreenCaptureNotificationUiBrowserTest : public DialogBrowserTest {
   // TestBrowserUi:
   void ShowUi(const std::string& name) override {
     screen_capture_notification_ui_ = ScreenCaptureNotificationUI::Create(
-        std::u16string(u"ScreenCaptureNotificationUI Browser Test"));
+        std::u16string(u"ScreenCaptureNotificationUI Browser Test"), nullptr);
     on_started_result_ = screen_capture_notification_ui_->OnStarted(
         base::BindOnce(
             [](ScreenCaptureNotificationUiBrowserTest* test) {
