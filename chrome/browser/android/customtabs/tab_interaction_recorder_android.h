@@ -42,7 +42,7 @@ class AutofillObserverImpl : public autofill::AutofillManager::Observer {
   void OnAfterTextFieldDidChange(autofill::AutofillManager&,
                                  autofill::FormGlobalId,
                                  autofill::FieldGlobalId,
-                                 std::u16string) override;
+                                 const std::u16string&) override;
   void OnAfterTextFieldDidScroll(autofill::AutofillManager&,
                                  autofill::FormGlobalId,
                                  autofill::FieldGlobalId) override;

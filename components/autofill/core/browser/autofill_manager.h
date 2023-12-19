@@ -99,7 +99,7 @@ class AutofillManager
     virtual void OnAfterTextFieldDidChange(AutofillManager& manager,
                                            FormGlobalId form,
                                            FieldGlobalId field,
-                                           std::u16string text_value) {}
+                                           const std::u16string& text_value) {}
 
     virtual void OnBeforeTextFieldDidScroll(AutofillManager& manager,
                                             FormGlobalId form,
