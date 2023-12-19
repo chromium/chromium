@@ -299,12 +299,12 @@ void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
 void FullscreenController::FullscreenTabOpeningPopup(
     content::WebContents* opener,
     content::WebContents* popup) {
-  if (popunder_preventer_) {
-    DCHECK_EQ(exclusive_access_tab(), opener);
-    popunder_preventer_->AddPotentialPopunder(popup);
-  } else {
-    DCHECK(IsFullscreenWithinTab(opener));
+  if (!popunder_preventer_) {
+    return;
   }
+
+  DCHECK_EQ(exclusive_access_tab(), opener);
+  popunder_preventer_->AddPotentialPopunder(popup);
 }
 
 void FullscreenController::OnTabDeactivated(
