@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Script error.
+[FAIL] ORB should block opaque font/ttf: fetch(..., {mode: "no-cors"})
+  assert_unreached: Should have rejected: fetch(..., {mode: "no-cors"}) Reached unreachable code
+[FAIL] ORB should block opaque font/ttf: <script src=...>
+  assert_unreached: Should have rejected: <script src=...> Reached unreachable code
+[FAIL] ORB should block opaque text/plain: fetch(..., {mode: "no-cors"})
+  assert_unreached: Should have rejected: fetch(..., {mode: "no-cors"}) Reached unreachable code
+[FAIL] ORB should block opaque text/plain: <script src=...>
+  assert_unreached: Should have rejected: <script src=...> Reached unreachable code
+[FAIL] ORB should block opaque application/json (non-empty): fetch(..., {mode: "no-cors"})
+  assert_unreached: Should have rejected: fetch(..., {mode: "no-cors"}) Reached unreachable code
+[FAIL] ORB should block opaque application/json (empty): fetch(..., {mode: "no-cors"})
+  assert_unreached: Should have rejected: fetch(..., {mode: "no-cors"}) Reached unreachable code
+[FAIL] ORB should block opaque application/json (empty): <script src=...>
+  assert_unreached: Should have rejected: <script src=...> Reached unreachable code
+[FAIL] ORB should block opaque application/json which contains non ascii characters: fetch(..., {mode: "no-cors"})
+  assert_unreached: Should have rejected: fetch(..., {mode: "no-cors"}) Reached unreachable code
+[FAIL] ORB should block opaque application/json which contains non ascii characters: <script src=...>
+  assert_unreached: Should have rejected: <script src=...> Reached unreachable code
+Harness: the test ran to completion.
+
