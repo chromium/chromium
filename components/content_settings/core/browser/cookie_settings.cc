@@ -362,9 +362,7 @@ bool CookieSettings::IsStorageAccessApiEnabled() const {
   // the feature here, we should rely on CookieSettingsFactory to plumb in this
   // boolean instead.
 #if BUILDFLAG(USE_BLINK)
-  return base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) ||
-         base::FeatureList::IsEnabled(
-             permissions::features::kPermissionStorageAccessAPI);
+  return true;
 #else
   return false;
 #endif

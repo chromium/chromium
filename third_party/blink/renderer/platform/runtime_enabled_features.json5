@@ -3649,13 +3649,6 @@
       base_feature: "none",
     },
     {
-      // Enabled when blink::features::kStorageAccessAPI or
-      // permissions::features::kPermissionStorageAccessAPI is enabled.
-      name: "StorageAccessAPI",
-      public: true,
-      status: "stable",
-    },
-    {
       name: "StorageAccessAPIBeyondCookies",
       status: "experimental",
       base_feature: "none",
@@ -3665,7 +3658,6 @@
       name: "StorageAccessAPIForOriginExtension",
       public: true,
       status: "stable",
-      depends_on: ["StorageAccessAPI"],
     },
     {
       name: "StorageBuckets",

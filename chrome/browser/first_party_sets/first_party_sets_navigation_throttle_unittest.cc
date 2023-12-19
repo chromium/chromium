@@ -40,7 +40,7 @@ class FirstPartySetsNavigationThrottleTest
                    kWaitForFirstPartySetsInitNavigationThrottleTimeout.name,
                "2s"}}},
         },
-        {{blink::features::kStorageAccessAPI}});
+        {});
   }
 
   void SetUp() override {

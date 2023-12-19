@@ -565,11 +565,6 @@ void ChromeContentRendererClient::RenderThreadStarted() {
     blink::IdentifiabilityStudySettings::SetGlobalProvider(
         std::make_unique<PrivacyBudgetSettingsProvider>());
   }
-
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionStorageAccessAPI)) {
-    blink::WebRuntimeFeatures::EnableStorageAccessAPI(true);
-  }
 }
 
 void ChromeContentRendererClient::ExposeInterfacesToBrowser(

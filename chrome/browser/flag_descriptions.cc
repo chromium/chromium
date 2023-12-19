@@ -3206,11 +3206,6 @@ const char kStrictOriginIsolationDescription[] =
     "Controls whether site isolation should use origins instead of scheme and "
     "eTLD+1.";
 
-const char kStorageAccessAPIName[] = "Storage Access API";
-const char kStorageAccessAPIDescription[] =
-    "Enables the Storage Access API, allowing websites to request storage "
-    "access when it would otherwise be restricted.";
-
 const char kSupportTool[] = "Support Tool";
 const char kSupportToolDescription[] =
     "Support Tool collects and exports logs to help debugging the issues. It's"

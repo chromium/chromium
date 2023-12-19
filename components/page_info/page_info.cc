@@ -37,6 +37,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/page_info/page_info_delegate.h"
 #include "components/page_info/page_info_ui.h"
+#include "components/permissions/constants.h"
 #include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/origin_keyed_permission_action_service.h"
@@ -663,7 +664,7 @@ void PageInfo::OnSitePermissionChanged(
   }
   if (type == ContentSettingsType::STORAGE_ACCESS) {
     constraints.set_lifetime(
-        blink::features::kStorageAccessAPIExplicitPermissionLifetime.Get());
+        permissions::kStorageAccessAPIExplicitPermissionLifetime);
   }
 
   map->SetNarrowestContentSetting(primary_url, site_url_, type, setting,

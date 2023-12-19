@@ -164,12 +164,6 @@ class CookieSettingsTest
 
     enabled_features.push_back({features::kTpcdHeuristicsGrants,
                                 {{"TpcdReadHeuristicsGrants", "true"}}});
-#if !BUILDFLAG(IS_IOS)
-    if (IsStorageAccessGrantEligible() ||
-        IsTopLevelStorageAccessGrantEligible()) {
-      enabled_features.push_back({blink::features::kStorageAccessAPI, {}});
-    }
-#endif
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
@@ -358,12 +352,6 @@ class CookieSettingsTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-#if !BUILDFLAG(IS_IOS)
-TEST(CookieSettings, TestDefaultStorageAccessSetting) {
-  EXPECT_TRUE(base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI));
-}
-#endif
 
 TEST_P(CookieSettingsTest, UserBypassPermanentExceptions) {
   // Bypass shouldn't be enabled.

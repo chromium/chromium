@@ -215,27 +215,16 @@ void UpdateAntiAbuseSettings(Profile* profile) {
       });
 }
 
-// `kPermissionStorageAccessAPI` enables feature: Storage Access API with
-// Prompts (https://chromestatus.com/feature/5085655327047680). StorageAccessAPI
-// is considered enabled when either feature is enabled (by different field
-// trial studies).
-bool StorageAccessAPIEnabled() {
-  return base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) ||
-         base::FeatureList::IsEnabled(
-             permissions::features::kPermissionStorageAccessAPI);
-}
-
 // TODO(crbug.com/1385156): Separate the two flags entirely.
 bool TopLevelStorageAccessAPIEnabled() {
-  return base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) &&
-         base::FeatureList::IsEnabled(
-             blink::features::kStorageAccessAPIForOriginExtension);
+  return base::FeatureList::IsEnabled(
+      blink::features::kStorageAccessAPIForOriginExtension);
 }
 
 bool IsContentSettingsTypeEnabled(ContentSettingsType type) {
   switch (type) {
     case ContentSettingsType::STORAGE_ACCESS:
-      return StorageAccessAPIEnabled();
+      return true;
     case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
       return TopLevelStorageAccessAPIEnabled();
     default:

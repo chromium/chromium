@@ -966,8 +966,7 @@ class ThirdPartyCookieDeprecationObserverSSABrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kCookieDeprecationFacilitatedTesting,
           {{tpcd::experiment::kDisable3PCookiesName, "true"}}},
-         {content_settings::features::kTrackingProtection3pcd, {}},
-         {blink::features::kStorageAccessAPI, {}}},
+         {content_settings::features::kTrackingProtection3pcd, {}}},
         {});
     subresource_filter::SubresourceFilterBrowserTest::SetUp();
   }

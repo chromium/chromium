@@ -1955,32 +1955,6 @@ BASE_FEATURE(kStopInBackground,
 #endif
 );
 
-const base::FeatureParam<int> kStorageAccessAPIImplicitGrantLimit{
-    &kStorageAccessAPI, "storage-access-api-implicit-grant-limit", 0};
-const base::FeatureParam<bool> kStorageAccessAPIAutoGrantInFPS{
-    &kStorageAccessAPI, "storage_access_api_auto_grant_in_fps", true};
-const base::FeatureParam<bool> kStorageAccessAPIAutoDenyOutsideFPS{
-    &kStorageAccessAPI, "storage_access_api_auto_deny_outside_fps", true};
-const base::FeatureParam<bool> kStorageAccessAPIRefreshGrantsOnUserInteraction{
-    &kStorageAccessAPI, "storage_access_api_refresh_grants_on_user_interaction",
-    true};
-const base::FeatureParam<base::TimeDelta>
-    kStorageAccessAPITopLevelUserInteractionBound{
-        &kStorageAccessAPI,
-        "storage_access_api_top_level_user_interaction_bound", base::Days(30)};
-const base::FeatureParam<base::TimeDelta>
-    kStorageAccessAPIRelatedWebsiteSetsLifetime{
-        &kStorageAccessAPI, "related_website_sets_permission_lifetime",
-        base::Days(30)};
-const base::FeatureParam<base::TimeDelta>
-    kStorageAccessAPIImplicitPermissionLifetime{
-        &kStorageAccessAPI, "storage_access_api_implicit_permission_lifetime",
-        base::Hours(24)};
-const base::FeatureParam<base::TimeDelta>
-    kStorageAccessAPIExplicitPermissionLifetime{
-        &kStorageAccessAPI, "storage_access_api_explicit_permission_lifetime",
-        base::Days(30)};
-
 BASE_FEATURE(kStylusPointerAdjustment,
              "StylusPointerAdjustment",
              base::FEATURE_ENABLED_BY_DEFAULT);

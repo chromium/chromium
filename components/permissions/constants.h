@@ -79,6 +79,21 @@ extern const char kPermissionsPromptSurveyReleaseChannelKey[];
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kRevokedKey[];
 
+// How long an explicit Storage Access API permission grant/denial should last
+// (not taking renewals into account).
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::TimeDelta kStorageAccessAPIExplicitPermissionLifetime;
+
+// How long an implicit Storage Access API permission grant/denial should last
+// (not taking renewals into account).
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::TimeDelta kStorageAccessAPIImplicitPermissionLifetime;
+
+// How long a Related Website Sets Storage Access API permission
+// grant/denial should last (not taking renewals into account).
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::TimeDelta kStorageAccessAPIRelatedWebsiteSetsLifetime;
+
 }  // namespace permissions
 
 #endif  // COMPONENTS_PERMISSIONS_CONSTANTS_H_

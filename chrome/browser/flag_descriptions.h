@@ -1819,9 +1819,6 @@ extern const char kSiteSearchSettingsPolicyDescription[];
 extern const char kSkiaRendererName[];
 extern const char kSkiaRendererDescription[];
 
-extern const char kStorageAccessAPIName[];
-extern const char kStorageAccessAPIDescription[];
-
 extern const char kIsolateOriginsName[];
 extern const char kIsolateOriginsDescription[];
 

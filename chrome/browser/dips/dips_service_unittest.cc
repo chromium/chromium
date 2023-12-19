@@ -550,7 +550,6 @@ TEST_F(DIPSServiceStateRemovalTest,
   std::vector<base::test::FeatureRefAndParams> enabled_features;
   enabled_features.push_back(
       {features::kDIPS, {{"delete", "true"}, {"triggering_action", "bounce"}}});
-  enabled_features.push_back({blink::features::kStorageAccessAPI, {}});
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(enabled_features, {});
 

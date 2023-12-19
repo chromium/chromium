@@ -18,6 +18,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/constants.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -227,7 +228,7 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
 
   content_settings::ContentSettingConstraints constraints;
   constraints.set_lifetime(
-      blink::features::kStorageAccessAPIRelatedWebsiteSetsLifetime.Get());
+      permissions::kStorageAccessAPIRelatedWebsiteSetsLifetime);
   constraints.set_session_model(
       content_settings::SessionModel::NonRestorableUserSession);
 

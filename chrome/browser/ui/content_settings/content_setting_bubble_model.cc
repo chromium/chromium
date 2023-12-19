@@ -53,6 +53,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/permissions/constants.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
@@ -777,7 +778,7 @@ void ContentSettingStorageAccessBubbleModel::CommitChanges() {
     auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
     content_settings::ContentSettingConstraints constraints;
     constraints.set_lifetime(
-        blink::features::kStorageAccessAPIExplicitPermissionLifetime.Get());
+        permissions::kStorageAccessAPIExplicitPermissionLifetime);
     map->SetNarrowestContentSetting(primary, secondary,
                                     ContentSettingsType::STORAGE_ACCESS,
                                     setting, constraints);

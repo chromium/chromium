@@ -202,13 +202,8 @@ void HTMLIFrameElement::ParseAttribute(
         network::mojom::blink::WebSandboxFlags::kNone;
     if (!value.IsNull()) {
       using network::mojom::blink::WebSandboxFlags;
-      WebSandboxFlags ignored_flags =
-          !RuntimeEnabledFeatures::StorageAccessAPIEnabled()
-              ? WebSandboxFlags::kStorageAccessByUserActivation
-              : WebSandboxFlags::kNone;
-
       auto parsed = network::ParseWebSandboxPolicy(sandbox_->value().Utf8(),
-                                                   ignored_flags);
+                                                   WebSandboxFlags::kNone);
       current_flags = parsed.flags;
       if (!parsed.error_message.empty()) {
         GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(

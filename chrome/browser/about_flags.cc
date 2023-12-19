@@ -2519,13 +2519,6 @@ const FeatureEntry::FeatureVariation kAddToHomescreenIPHVariations[] = {
      std::size(kAddToHomescreen_UseMessage), nullptr}};
 #endif
 
-constexpr FeatureEntry::FeatureParam kStorageAccessAPI_WithPrompt[] = {
-    {"storage_access_api_auto_deny_outside_fps", "false"}};
-
-const FeatureEntry::FeatureVariation kStorageAccessAPIVariations[] = {
-    {"(with prompt)", kStorageAccessAPI_WithPrompt,
-     std::size(kStorageAccessAPI_WithPrompt), nullptr}};
-
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kLensCameraAssistedSearchLensButtonStart[] = {
     {"searchBoxStartVariantForLensCameraAssistedSearch", "true"}};
@@ -7668,12 +7661,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          blink::features::kFencedFramesReportingAttestationsChanges)},
-
-    {"storage-access-api", flag_descriptions::kStorageAccessAPIName,
-     flag_descriptions::kStorageAccessAPIDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kStorageAccessAPI,
-                                    kStorageAccessAPIVariations,
-                                    "kStorageAccessAPI")},
 
     {"enable-unsafe-webgpu", flag_descriptions::kUnsafeWebGPUName,
      flag_descriptions::kUnsafeWebGPUDescription, kOsAll,

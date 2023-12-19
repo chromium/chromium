@@ -54,11 +54,8 @@ class EnabledPolicyBrowsertest
  public:
   EnabledPolicyBrowsertest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        blink::features::kStorageAccessAPI};
-    std::vector<base::test::FeatureRef> disabled_features = {
-        content_settings::features::kTrackingProtection3pcd};
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatures(
+        {}, {content_settings::features::kTrackingProtection3pcd});
   }
 
   void SetBlockThirdPartyCookies(bool value) {

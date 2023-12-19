@@ -325,15 +325,10 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     return CreatePermissionDescriptor(PermissionName::NFC);
   }
   if (name == V8PermissionName::Enum::kStorageAccess) {
-    if (!RuntimeEnabledFeatures::StorageAccessAPIEnabled()) {
-      exception_state.ThrowTypeError("The Storage Access API is not enabled.");
-      return nullptr;
-    }
     return CreatePermissionDescriptor(PermissionName::STORAGE_ACCESS);
   }
   if (name == V8PermissionName::Enum::kTopLevelStorageAccess) {
-    if (!RuntimeEnabledFeatures::StorageAccessAPIEnabled() ||
-        !RuntimeEnabledFeatures::StorageAccessAPIForOriginExtensionEnabled()) {
+    if (!RuntimeEnabledFeatures::StorageAccessAPIForOriginExtensionEnabled()) {
       exception_state.ThrowTypeError(
           "The requestStorageAccessFor API is not enabled.");
       return nullptr;

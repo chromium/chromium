@@ -23,6 +23,7 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/permissions/constants.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_request_manager.h"
@@ -83,40 +84,19 @@ GURL GetDummyEmbeddingUrl(int dummy_id) {
 
 struct TestCase {
   std::string test_name;
-  bool saa_feature_enabled;
   bool permission_saa_feature_enabled;
 };
 
 }  // namespace
 
-class StorageAccessGrantPermissionContextTest
-    : public ChromeRenderViewHostTestHarness,
-      public testing::WithParamInterface<TestCase> {
+class StorageAccessGrantPermissionContextTestBase
+    : public ChromeRenderViewHostTestHarness {
  public:
-  StorageAccessGrantPermissionContextTest() {
+  StorageAccessGrantPermissionContextTestBase() = default;
+
+  void SetUp() override {
     std::vector<base::test::FeatureRefAndParams> enabled;
     std::vector<base::test::FeatureRef> disabled;
-    if (StorageAccessAPIFeatureEnabled()) {
-      enabled.push_back(
-          {blink::features::kStorageAccessAPI,
-           {
-               {
-                   blink::features::kStorageAccessAPIAutoGrantInFPS.name,
-                   "false",
-               },
-               {
-                   blink::features::kStorageAccessAPIAutoDenyOutsideFPS.name,
-                   "false",
-               },
-               {
-                   blink::features::kStorageAccessAPIImplicitGrantLimit.name,
-                   "0",
-               },
-           }});
-    } else {
-      disabled.push_back(blink::features::kStorageAccessAPI);
-    }
-
     if (PermissionStorageAccessAPIFeatureEnabled()) {
       enabled.push_back(
           {permissions::features::kPermissionStorageAccessAPI, {}});
@@ -124,9 +104,6 @@ class StorageAccessGrantPermissionContextTest
       disabled.push_back(permissions::features::kPermissionStorageAccessAPI);
     }
     features_.InitWithFeaturesAndParameters(enabled, disabled);
-  }
-
-  void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
     // Ensure we are navigated to some page so that the proper views get setup.
@@ -170,12 +147,7 @@ class StorageAccessGrantPermissionContextTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  bool StorageAccessAPIFeatureEnabled() {
-    return GetParam().saa_feature_enabled;
-  }
-  bool PermissionStorageAccessAPIFeatureEnabled() {
-    return GetParam().permission_saa_feature_enabled;
-  }
+  virtual bool PermissionStorageAccessAPIFeatureEnabled() const = 0;
 
   std::unique_ptr<base::test::TestFuture<ContentSetting>> DecidePermission(
       bool user_gesture) {
@@ -274,8 +246,11 @@ class StorageAccessGrantPermissionContextTest
     }
   };
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   base::test::ScopedFeatureList features_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<StorageAccessGrantPermissionContext> permission_context_;
   std::unique_ptr<permissions::MockPermissionPromptFactory>
       mock_permission_prompt_factory_;
@@ -284,12 +259,28 @@ class StorageAccessGrantPermissionContextTest
   first_party_sets::ScopedMockFirstPartySetsHandler first_party_sets_handler_;
 };
 
-class StorageAccessGrantPermissionContextAPIDisabledTest
-    : public StorageAccessGrantPermissionContextTest {
+class StorageAccessGrantPermissionContextTest
+    : public StorageAccessGrantPermissionContextTestBase,
+      public testing::WithParamInterface<TestCase> {
+ public:
+  StorageAccessGrantPermissionContextTest() = default;
+
+  bool PermissionStorageAccessAPIFeatureEnabled() const override {
+    return GetParam().permission_saa_feature_enabled;
+  }
 };
 
-TEST_P(StorageAccessGrantPermissionContextAPIDisabledTest,
-       InsecureOriginsDisallowed) {
+class StorageAccessGrantPermissionContextWithPromptsTest
+    : public StorageAccessGrantPermissionContextTestBase {
+ public:
+  StorageAccessGrantPermissionContextWithPromptsTest() = default;
+
+  bool PermissionStorageAccessAPIFeatureEnabled() const override {
+    return true;
+  }
+};
+
+TEST_P(StorageAccessGrantPermissionContextTest, InsecureOriginsDisallowed) {
   GURL insecure_url = GURL("http://www.example.com");
   EXPECT_FALSE(permission_context()->IsPermissionAvailableToOrigins(
       insecure_url, insecure_url));
@@ -301,62 +292,9 @@ TEST_P(StorageAccessGrantPermissionContextAPIDisabledTest,
               IsEmpty());
 }
 
-// When the Storage Access API feature is disabled (the default) we
-// should block the permission request.
-TEST_P(StorageAccessGrantPermissionContextAPIDisabledTest, PermissionBlocked) {
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, DecidePermissionSync(/*user_gesture=*/true));
-
-  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
-                  ContentSettingsType::STORAGE_ACCESS),
-              IsEmpty());
-}
-
-// When 3p cookie access is already allowed by user-agent-specific cookie
-// settings, request should be allowed even when the Storage Access API feature
-// is disabled.
-TEST_P(StorageAccessGrantPermissionContextAPIDisabledTest,
-       AllowedByCookieSettings) {
-  base::HistogramTester histogram_tester;
-  // Allow 3p cookies.
-  profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kOff));
-
-  // User gesture is not needed.
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            DecidePermissionSync(/*user_gesture=*/false));
-  histogram_tester.ExpectUniqueSample(
-      kRequestOutcomeHistogram, RequestOutcome::kAllowedByCookieSettings, 1);
-
-  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
-                  ContentSettingsType::STORAGE_ACCESS),
-              IsEmpty());
-}
-
-// It's a bit odd to have a parameterized test suite only check the disabled
-// case. But in this case, the test cases of API being enabled by either feature
-// is already covered by StorageAccessGrantPermissionContextAPIEnabledTest.
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    StorageAccessGrantPermissionContextAPIDisabledTest,
-    testing::ValuesIn<TestCase>({
-        {"disable_all", false, false},
-    }),
-    StorageAccessGrantPermissionContextTest::PrintToStringParamName());
-
-class StorageAccessGrantPermissionContextAPIEnabledTest
-    : public StorageAccessGrantPermissionContextTest {
- public:
-
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
- private:
-  base::HistogramTester histogram_tester_;
-};
-
 // Test that after a successful explicit storage access grant, there's a content
 // setting that applies on an (embedded site, top-level site) scope.
-TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest,
+TEST_F(StorageAccessGrantPermissionContextWithPromptsTest,
        ExplicitGrantAcceptCrossSiteContentSettings) {
   // Assert that all content settings are in their initial state.
   CheckCrossSiteContentSettings(ContentSetting::CONTENT_SETTING_ASK);
@@ -388,7 +326,7 @@ TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest,
 
 // When the Storage Access API feature is enabled and we have a user gesture we
 // should get a decision.
-TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest, PermissionDecided) {
+TEST_F(StorageAccessGrantPermissionContextWithPromptsTest, PermissionDecided) {
   auto future = DecidePermission(/*user_gesture=*/true);
   WaitUntilPrompt();
 
@@ -411,7 +349,7 @@ TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest, PermissionDecided) {
 }
 
 // No user gesture should force a permission rejection.
-TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest,
+TEST_P(StorageAccessGrantPermissionContextTest,
        PermissionDeniedWithoutUserGesture) {
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             DecidePermissionSync(/*user_gesture=*/false));
@@ -423,8 +361,7 @@ TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest,
               IsEmpty());
 }
 
-TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest,
-       PermissionGrantReused) {
+TEST_P(StorageAccessGrantPermissionContextTest, PermissionGrantReused) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetContentSettingDefaultScope(GetRequesterURL(), GetTopLevelURL(),
                                      ContentSettingsType::STORAGE_ACCESS,
@@ -437,7 +374,7 @@ TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest,
               UnorderedElementsAre(Pair(GetRequesterSite(), true)));
 }
 
-TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest, BlockReused) {
+TEST_P(StorageAccessGrantPermissionContextTest, BlockReused) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetContentSettingDefaultScope(GetRequesterURL(), GetTopLevelURL(),
                                      ContentSettingsType::STORAGE_ACCESS,
@@ -450,7 +387,7 @@ TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest, BlockReused) {
               UnorderedElementsAre(Pair(GetRequesterSite(), true)));
 }
 
-TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest, FpsGrantReused) {
+TEST_P(StorageAccessGrantPermissionContextTest, FpsGrantReused) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   content_settings::ContentSettingConstraints constraint;
   constraint.set_session_model(
@@ -467,16 +404,7 @@ TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest, FpsGrantReused) {
               IsEmpty());
 }
 
-TEST_P(StorageAccessGrantPermissionContextAPIDisabledTest,
-       PermissionStatusBlocked) {
-  EXPECT_EQ(PermissionStatus::DENIED,
-            permission_context()
-                ->GetPermissionStatus(/*render_frame_host=*/nullptr,
-                                      GetRequesterURL(), GetTopLevelURL())
-                .status);
-}
-
-TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest,
+TEST_P(StorageAccessGrantPermissionContextTest,
        PermissionStatusAsksWhenFeatureEnabled) {
   EXPECT_EQ(PermissionStatus::ASK,
             permission_context()
@@ -488,8 +416,7 @@ TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest,
 // When 3p cookie access is already allowed by user-agent-specific cookie
 // settings, request should be allowed without granting an explicit storage
 // access permission.
-TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest,
-       AllowedByCookieSettings) {
+TEST_P(StorageAccessGrantPermissionContextTest, AllowedByCookieSettings) {
   // Allow 3p cookies.
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
@@ -508,8 +435,7 @@ TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest,
 
 // When 3p cookie access is blocked by user explicitly, request should be denied
 // without prompting.
-TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest,
-       DeniedByCookieSettings) {
+TEST_P(StorageAccessGrantPermissionContextTest, DeniedByCookieSettings) {
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   settings_map->SetContentSettingDefaultScope(
@@ -529,37 +455,18 @@ TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest,
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    StorageAccessGrantPermissionContextAPIEnabledTest,
+    StorageAccessGrantPermissionContextTest,
     testing::ValuesIn<TestCase>({
-        {"enable_all", true, true},
-        {"enable_saa", true, false},
-        {"enable_permission_saa", false, true},
+        {"enable_prompts", true},
+        {"disable_prompts", false},
     }),
     StorageAccessGrantPermissionContextTest::PrintToStringParamName());
 
 class StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest
-    : public StorageAccessGrantPermissionContextAPIEnabledTest {
+    : public StorageAccessGrantPermissionContextWithPromptsTest {
  public:
   StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest() {
-    features_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{blink::features::kStorageAccessAPI,
-          {
-              {
-                  blink::features::kStorageAccessAPIAutoGrantInFPS.name,
-                  "false",
-              },
-              {
-                  blink::features::kStorageAccessAPIAutoDenyOutsideFPS.name,
-                  "false",
-              },
-              {
-                  blink::features::kStorageAccessAPIImplicitGrantLimit.name,
-                  "5",
-              },
-          }}},
-        /*disabled_features=*/{
-            permissions::features::kPermissionStorageAccessAPI});
+    StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(5);
   }
 
   // Helper to request storage access on enough unique embedding_origin GURLs
@@ -569,7 +476,7 @@ class StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest
     permissions::PermissionRequestID fake_id = CreateFakeID();
 
     const int implicit_grant_limit =
-        blink::features::kStorageAccessAPIImplicitGrantLimit.Get();
+        StorageAccessGrantPermissionContext::GetImplicitGrantLimitForTesting();
     base::test::TestFuture<const std::vector<ContentSetting>> future;
     auto barrier = base::BarrierCallback<ContentSetting>(implicit_grant_limit,
                                                          future.GetCallback());
@@ -586,12 +493,11 @@ class StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest
   }
 
  private:
-  base::test::ScopedFeatureList features_;
 };
 
 // Validate that each requesting origin has its own implicit grant limit. If
 // the limit for one origin is exhausted it should not affect another.
-TEST_P(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
+TEST_F(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
        ImplicitGrantLimitPerRequestingOrigin) {
   histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 0);
 
@@ -654,7 +560,7 @@ TEST_P(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
 }
 
 // Validate that each the implicit grant limit is scoped by top-level site.
-TEST_P(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
+TEST_F(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
        ImplicitGrantLimitSiteScoping) {
   histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 0);
 
@@ -664,7 +570,7 @@ TEST_P(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
       ->NavigateAndCommit(GetDummyEmbeddingUrlWithSubdomain());
 
   int implicit_grant_limit =
-      blink::features::kStorageAccessAPIImplicitGrantLimit.Get();
+      StorageAccessGrantPermissionContext::GetImplicitGrantLimitForTesting();
 
   // Although the grants are exhausted, another request from a top-level origin
   // that is same site with an existing grant should still be auto-granted. The
@@ -687,7 +593,8 @@ TEST_P(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
               IsEmpty());
 }
 
-TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantDenial) {
+TEST_F(StorageAccessGrantPermissionContextWithPromptsTest,
+       ExplicitGrantDenial) {
   histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 0);
   histogram_tester().ExpectTotalCount(kPromptResultHistogram, 0);
 
@@ -711,7 +618,7 @@ TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantDenial) {
               UnorderedElementsAre(Pair(GetRequesterSite(), false)));
 }
 
-TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest,
+TEST_F(StorageAccessGrantPermissionContextWithPromptsTest,
        ExplicitGrantDenialNotExposedViaQuery) {
   // Set the content setting to blocked, mimicking a prompt rejection by the
   // user.
@@ -742,7 +649,8 @@ TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest,
               UnorderedElementsAre(Pair(GetRequesterSite(), false)));
 }
 
-TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantAccept) {
+TEST_F(StorageAccessGrantPermissionContextWithPromptsTest,
+       ExplicitGrantAccept) {
   histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 0);
   histogram_tester().ExpectTotalCount(kPromptResultHistogram, 0);
 
@@ -766,42 +674,17 @@ TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantAccept) {
               UnorderedElementsAre(Pair(GetRequesterSite(), true)));
 }
 
-// This test suite is no-op since the enablde/disabled features are hard coded.
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
-    testing::ValuesIn<TestCase>({
-        {"enable_saa", true, false},
-    }),
-    StorageAccessGrantPermissionContextTest::PrintToStringParamName());
-
 class StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest
-    : public StorageAccessGrantPermissionContextAPIEnabledTest {
+    : public StorageAccessGrantPermissionContextTestBase {
  public:
-  StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest() {
-    features_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{blink::features::kStorageAccessAPI,
-          {
-              {
-                  blink::features::kStorageAccessAPIAutoGrantInFPS.name,
-                  "true",
-              },
-              {
-                  blink::features::kStorageAccessAPIAutoDenyOutsideFPS.name,
-                  "true",
-              },
-              {
-                  blink::features::kStorageAccessAPIImplicitGrantLimit.name,
-                  "0",
-              },
-          }}},
-        /*disabled_features=*/{
-            permissions::features::kPermissionStorageAccessAPI});
+  StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest() = default;
+
+  bool PermissionStorageAccessAPIFeatureEnabled() const override {
+    return false;
   }
 
   void SetUp() override {
-    StorageAccessGrantPermissionContextAPIEnabledTest::SetUp();
+    StorageAccessGrantPermissionContextTestBase::SetUp();
 
     // Create a FPS with https://requester.example.com as the member and
     // https://embedder.com as the primary.
@@ -818,11 +701,10 @@ class StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest
   }
 
  private:
-  base::test::ScopedFeatureList features_;
   first_party_sets::ScopedMockFirstPartySetsHandler first_party_sets_handler_;
 };
 
-TEST_P(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
+TEST_F(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
        ImplicitGrant_AutograntedWithinFPS) {
   base::Time expiration_lower_bound_check = base::Time::Now();
 
@@ -860,18 +742,9 @@ TEST_P(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
   EXPECT_NE(true, setting.IsExpired());
   // Check to ensure the expiration time is in expected range.
   EXPECT_GT(setting.metadata.expiration(),
-            blink::features::kStorageAccessAPIRelatedWebsiteSetsLifetime.Get() +
+            permissions::kStorageAccessAPIRelatedWebsiteSetsLifetime +
                 expiration_lower_bound_check);
   EXPECT_LT(setting.metadata.expiration(),
-            blink::features::kStorageAccessAPIRelatedWebsiteSetsLifetime.Get() +
+            permissions::kStorageAccessAPIRelatedWebsiteSetsLifetime +
                 base::Time::Now());
 }
-
-// This test suite is no-op since the enablde/disabled features are hard coded.
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
-    testing::ValuesIn<TestCase>({
-        {"enable_saa", true, false},
-    }),
-    StorageAccessGrantPermissionContextTest::PrintToStringParamName());

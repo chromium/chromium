@@ -104,7 +104,7 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
   }
 
   virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
-    return {{blink::features::kStorageAccessAPI, {}}};
+    return {};
   }
 
   virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() {
@@ -414,8 +414,7 @@ class RequestStorageAccessForWithFirstPartySetsBrowserTest
 
  protected:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
-    return {{blink::features::kStorageAccessAPIForOriginExtension, {}},
-            {blink::features::kStorageAccessAPI, {}}};
+    return {{blink::features::kStorageAccessAPIForOriginExtension, {}}};
   }
 };
 
@@ -784,34 +783,22 @@ IN_PROC_BROWSER_TEST_F(
 // explicitly disabled, or if the larger Storage Access API is disabled, it does
 // not leak onto the document object.
 class RequestStorageAccessForExplicitlyDisabledBrowserTest
-    : public RequestStorageAccessForBaseBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public RequestStorageAccessForBaseBrowserTest {
  public:
-  RequestStorageAccessForExplicitlyDisabledBrowserTest()
-      : enable_standard_storage_access_api_(GetParam()) {}
+  RequestStorageAccessForExplicitlyDisabledBrowserTest() = default;
 
  protected:
   std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    if (enable_standard_storage_access_api_) {
-      return {blink::features::kStorageAccessAPIForOriginExtension};
-    }
-    return {blink::features::kStorageAccessAPI,
-            blink::features::kStorageAccessAPIForOriginExtension};
+    return {blink::features::kStorageAccessAPIForOriginExtension};
   }
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
-    // When the standard API is enabled, return the parent class's enabled
-    // feature list.
-    if (enable_standard_storage_access_api_) {
-      return RequestStorageAccessForBaseBrowserTest::GetEnabledFeatures();
-    }
-    return {};
+    return RequestStorageAccessForBaseBrowserTest::GetEnabledFeatures();
   }
 
  private:
-  bool enable_standard_storage_access_api_;
 };
 
-IN_PROC_BROWSER_TEST_P(RequestStorageAccessForExplicitlyDisabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForExplicitlyDisabledBrowserTest,
                        RsaForOriginNotPresentOnDocumentWhenExplicitlyDisabled) {
   NavigateToPageWithFrame(kHostA);
   // Ensure that the proposed extension is not available unless explicitly
@@ -820,11 +807,6 @@ IN_PROC_BROWSER_TEST_P(RequestStorageAccessForExplicitlyDisabledBrowserTest,
       EvalJs(GetPrimaryMainFrame(), "\"requestStorageAccessFor\" in document")
           .ExtractBool());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    RequestStorageAccessForExplicitlyDisabledBrowserTest,
-    testing::Bool());
 
 class RequestStorageAccessForWithCHIPSBrowserTest
     : public RequestStorageAccessForBaseBrowserTest {
