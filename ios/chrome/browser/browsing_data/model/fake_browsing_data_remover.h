@@ -17,6 +17,10 @@ class FakeBrowsingDataRemover : public BrowsingDataRemover {
   void Remove(browsing_data::TimePeriod time_period,
               BrowsingDataRemoveMask remove_mask,
               base::OnceClosure callback) override;
+  void RemoveInRange(base::Time start_time,
+                     base::Time end_time,
+                     BrowsingDataRemoveMask remove_mask,
+                     base::OnceClosure callback) override;
   BrowsingDataRemoveMask GetLastUsedRemovalMask();
   void SetFailedForTesting();
 

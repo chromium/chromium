@@ -34,6 +34,13 @@ class BrowsingDataRemover : public KeyedService {
                       BrowsingDataRemoveMask remove_mask,
                       base::OnceClosure callback) = 0;
 
+  // A version of `Remove` that removes browsing data between a given
+  // `start_time` and `end_time` instead of a pre-specified `TimePeriod`.
+  virtual void RemoveInRange(base::Time start_time,
+                             base::Time end_time,
+                             BrowsingDataRemoveMask mask,
+                             base::OnceClosure callback) = 0;
+
   // Adds/removes `observer` from the list of observers notified when data is
   // removed by BrowsingDataRemover.
   void AddObserver(BrowsingDataRemoverObserver* observer);

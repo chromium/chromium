@@ -248,6 +248,42 @@ void BrowsingDataRemoverImpl::Remove(browsing_data::TimePeriod time_period,
   }
 }
 
+void BrowsingDataRemoverImpl::RemoveInRange(base::Time start_time,
+                                            base::Time end_time,
+                                            BrowsingDataRemoveMask mask,
+                                            base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(browser_state_);
+
+  // Should always remove something.
+  DCHECK(mask != BrowsingDataRemoveMask::REMOVE_NOTHING);
+
+  // In incognito, only data removal for all time is currently supported.
+  DCHECK(!browser_state_->IsOffTheRecord());
+
+  // Partial clearing of downloads, bookmarks or reading lists is not supported.
+  DCHECK(!(
+      IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_DOWNLOADS) ||
+      IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_BOOKMARKS) ||
+      IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_READING_LIST)));
+
+  // Removing visited links requires clearing the cookies.
+  DCHECK(
+      IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_COOKIES) ||
+      !IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_VISITED_LINKS));
+
+  // browsing_data::RecordDeletionForPeriod(time_period);
+  removal_queue_.emplace(start_time, end_time, mask, std::move(callback));
+
+  // If this is the only scheduled task, execute it immediately. Otherwise,
+  // it will be automatically executed when all tasks scheduled before it
+  // finish.
+  if (removal_queue_.size() == 1) {
+    SetRemoving(true);
+    RunNextTask();
+  }
+}
+
 void BrowsingDataRemoverImpl::RunNextTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!removal_queue_.empty());
