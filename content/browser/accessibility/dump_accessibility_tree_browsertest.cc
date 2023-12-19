@@ -1182,16 +1182,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwnsGrid) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-grid.html"));
 }
 
-// TODO(crbug.com/1503056): Enable flaky tests
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_AccessibilityAriaTwoOwnersRemoveOne \
-  DISABLED_AccessibilityAriaTwoOwnersRemoveOne
-#else
-#define MAYBE_AccessibilityAriaTwoOwnersRemoveOne \
-  AccessibilityAriaTwoOwnersRemoveOne
-#endif  // BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityAriaTwoOwnersRemoveOne) {
+                       AccessibilityAriaTwoOwnersRemoveOne) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-two-owners-remove-one.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityAriaTwoOwnersRemoveOne) {
   RunAriaTest(FILE_PATH_LITERAL("aria-two-owners-remove-one.html"));
 }
 
