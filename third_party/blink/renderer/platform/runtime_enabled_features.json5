@@ -1691,6 +1691,17 @@
       public: true,
     },
     {
+      // Allows fenced frames to access unpartioned data via Shared Storage in
+      // exchange for disabling untrusted network access. This is the Blink
+      // counterpart of the base::Feature with the same name. Because local
+      // unpartitioned data access requires browser and renderer process
+      // coordination, the value of this flag is strictly controlled by the
+      // base::Feature variant, and setting this flag does nothing.
+      name: "FencedFramesLocalUnpartitionedDataAccess",
+      base_feature: "none",
+      public: true,
+    },
+    {
       // The Blink runtime-enabled feature name for the API's IDL.
       name: "FetchLaterAPI",
       status: "experimental",

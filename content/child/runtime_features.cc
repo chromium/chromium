@@ -392,6 +392,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kCookieDeprecationFacilitatedTesting)},
           {"Database", raw_ref(blink::features::kWebSQLAccess),
            kSetOnlyIfOverridden},
+          {"FencedFramesLocalUnpartitionedDataAccess",
+           raw_ref(blink::features::kFencedFramesLocalUnpartitionedDataAccess)},
           {"Fledge", raw_ref(blink::features::kFledge), kSetOnlyIfOverridden},
           {"Fledge", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},
@@ -630,6 +632,20 @@ void ResolveInvalidConfigurations() {
         << switches::kEnableFeatures << "="
         << blink::features::kFencedFrames.name << " instead.";
     WebRuntimeFeatures::EnableFencedFrames(false);
+  }
+
+  if (!base::FeatureList::IsEnabled(blink::features::kFencedFrames) &&
+      base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+    LOG_IF(
+        WARNING,
+        WebRuntimeFeatures::IsFencedFramesLocalUnpartitionedDataAccessEnabled())
+        << "Fenced frames must be enabled in order to enable local "
+           "unpartitioned "
+        << "data access. Use --" << switches::kEnableFeatures << "="
+        << blink::features::kFencedFrames.name << " in addition.";
+    WebRuntimeFeatures::EnableFeatureFromString(
+        "FencedFramesLocalUnpartitionedDataAccess", false);
   }
 
   // Topics API cannot be enabled without the support of the browser process.
