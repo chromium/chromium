@@ -143,7 +143,7 @@ class RequestQueue<T>::iterator {
 
  private:
   friend class RequestQueue<T>;
-  typedef base::circular_deque<typename RequestQueue<T>::Request> Container;
+  using Container = base::circular_deque<typename RequestQueue<T>::Request>;
 
   explicit iterator(const typename Container::iterator& it) : it_(it) {}
 
