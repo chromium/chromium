@@ -793,7 +793,38 @@ bool AutofillExternalDelegate::RemoveSuggestion(
       manager_->RemoveCurrentSingleFieldSuggestion(query_field_.name, value,
                                                    popup_item_id);
       return true;
-    default:
+    case PopupItemId::kFillEverythingFromAddressProfile:
+    case PopupItemId::kEditAddressProfile:
+    case PopupItemId::kDeleteAddressProfile:
+    case PopupItemId::kAutofillOptions:
+    case PopupItemId::kCreateNewPlusAddress:
+    case PopupItemId::kFillExistingPlusAddress:
+    case PopupItemId::kInsecureContextPaymentDisabledMessage:
+    case PopupItemId::kScanCreditCard:
+    case PopupItemId::kVirtualCreditCardEntry:
+    case PopupItemId::kIbanEntry:
+    case PopupItemId::kPasswordEntry:
+    case PopupItemId::kUsernameEntry:
+    case PopupItemId::kAllSavedPasswordsEntry:
+    case PopupItemId::kGeneratePasswordEntry:
+    case PopupItemId::kShowAccountCards:
+    case PopupItemId::kPasswordAccountStorageOptIn:
+    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
+    case PopupItemId::kAccountStoragePasswordEntry:
+    case PopupItemId::kAccountStorageUsernameEntry:
+    case PopupItemId::kPasswordAccountStorageReSignin:
+    case PopupItemId::kPasswordAccountStorageEmpty:
+    case PopupItemId::kCompose:
+    case PopupItemId::kDatalistEntry:
+    case PopupItemId::kMerchantPromoCodeEntry:
+    case PopupItemId::kSeePromoCodeDetails:
+    case PopupItemId::kWebauthnCredential:
+    case PopupItemId::kWebauthnSignInWithAnotherDevice:
+    case PopupItemId::kSeparator:
+    case PopupItemId::kClearForm:
+    case PopupItemId::kMixedFormMessage:
+    case PopupItemId::kDevtoolsTestAddresses:
+    case PopupItemId::kDevtoolsTestAddressEntry:
       return false;
   }
 }
