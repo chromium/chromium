@@ -158,6 +158,11 @@ BASE_FEATURE(kSidePanelPinning,
              "SidePanelPinning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsSidePanelPinningEnabled() {
+  return (IsChromeRefresh2023() &&
+          base::FeatureList::IsEnabled(kSidePanelPinning));
+}
+
 BASE_FEATURE(kSidePanelMinimumWidth,
              "SidePanelMinimumWidth",
              base::FEATURE_DISABLED_BY_DEFAULT);

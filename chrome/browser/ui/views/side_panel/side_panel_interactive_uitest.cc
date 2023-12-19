@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, ToggleSidePanelVisibility) {
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (features::IsSidePanelPinningEnabled()) {
     GTEST_SKIP()
         << "Default sidepanel button is not present with pinning feature.";
   }
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, ToggleSidePanelVisibility) {
 
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
                        SwitchBetweenDifferentEntries) {
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (features::IsSidePanelPinningEnabled()) {
     GTEST_SKIP()
         << "Default sidepanel button is not present with pinning feature.";
   }
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
                        StaysOpenOnTabSwitchWithActiveGlobalEntry) {
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (features::IsSidePanelPinningEnabled()) {
     GTEST_SKIP()
         << "Default sidepanel button is not present with pinning feature.";
   }
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
   // This test does not make sense with pinned feature the default toolbar
   // sidepanel button is not present to show the last active global entry.
   // A particular sidepanel has to be opened.
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (features::IsSidePanelPinningEnabled()) {
     GTEST_SKIP()
         << "Default sidepanel button is not present with pinning feature.";
   }

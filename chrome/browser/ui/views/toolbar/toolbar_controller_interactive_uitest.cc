@@ -30,6 +30,7 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_class_properties.h"
 
@@ -43,7 +44,9 @@ class ToolbarControllerUiTest : public InteractiveBrowserTest {
   ToolbarControllerUiTest() {
     ToolbarControllerUtil::SetPreventOverflowForTesting(false);
     scoped_feature_list_.InitWithFeatures(
-        {features::kResponsiveToolbar, features::kSidePanelPinning}, {});
+        {features::kResponsiveToolbar, features::kSidePanelPinning,
+         features::kChromeRefresh2023},
+        {});
   }
 
   void SetUpOnMainThread() override {
