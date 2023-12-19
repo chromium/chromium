@@ -331,6 +331,12 @@ TEST_F(RedactionToolTest, Redact) {
   EXPECT_EQ("(HASH:1122 1)",
             redactor_.Redact("11223344556677889900AABBCCDDEEFF"));
 
+  // Make sure (partial) user id hash in cryptohome devices is redacted.
+  EXPECT_EQ("dmcrypt-(UID: 1)-cache",
+            redactor_.Redact("dmcrypt-123abcde-cache"));
+  EXPECT_EQ("FOO-cryptohome--(UID: 1)--cache",
+            redactor_.Redact("FOO-cryptohome--123abcde--cache"));
+
   // Make sure custom pattern redaction is invoked.
   EXPECT_EQ("Cell ID: '(CellID: 1)'", RedactCustomPatterns("Cell ID: 'A1B2'"));
 
