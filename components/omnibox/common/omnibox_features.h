@@ -159,6 +159,9 @@ BASE_DECLARE_FEATURE(kOmniboxTouchDownTriggerForPrefetch);
 // intranet site search engines.
 BASE_DECLARE_FEATURE(kSiteSearchSettingsPolicy);
 
+// Kill switch for use of the new SQL recovery module in `ShortcutsDatabase`.
+BASE_DECLARE_FEATURE(kShortcutsDatabaseUseBuiltInRecoveryIfSupported);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_

@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "sql/meta_table.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
@@ -60,22 +61,16 @@ bool DeleteShortcut(const char* field_name,
 }
 
 void DatabaseErrorCallback(sql::Database* db,
-                           const base::FilePath& db_path,
                            int extended_error,
                            sql::Statement* stmt) {
-  if (sql::Recovery::ShouldRecover(extended_error)) {
-    // Prevent reentrant calls.
-    db->reset_error_callback();
+  // Attempt to recover a corrupt database, if it is eligible to be recovered.
+  if (sql::BuiltInRecovery::RecoverIfPossible(
+          db, extended_error, sql::BuiltInRecovery::Strategy::kRecoverOrRaze,
+          &omnibox::kShortcutsDatabaseUseBuiltInRecoveryIfSupported)) {
+    // Recovery was attempted. The database handle has been poisoned and the
+    // error callback has been reset.
 
-    // After this call, the |db| handle is poisoned so that future calls will
-    // return errors until the handle is re-opened.
-    sql::Recovery::RecoverDatabase(db, db_path);
-
-    // The DLOG(FATAL) below is intended to draw immediate attention to errors
-    // in newly-written code.  Database corruption is generally a result of OS
-    // or hardware issues, not coding errors at the client level, so displaying
-    // the error would probably lead to confusion.  The ignored call signals the
-    // test-expectation framework that the error was handled.
+    // Signal the test-expectation framework that the error was handled.
     std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
     return;
   }
@@ -166,9 +161,11 @@ ShortcutsDatabase::ShortcutsDatabase(const base::FilePath& database_path)
 bool ShortcutsDatabase::Init() {
   db_.set_histogram_tag("Shortcuts");
 
-  // To recover from corruption.
-  db_.set_error_callback(
-      base::BindRepeating(&DatabaseErrorCallback, &db_, database_path_));
+  if (!db_.has_error_callback()) {
+    // The error callback may be reset if recovery was attempted, so ensure the
+    // callback is re-set when the database is re-opened.
+    db_.set_error_callback(base::BindRepeating(&DatabaseErrorCallback, &db_));
+  }
 
   // Attach the database to our index file.
   return db_.Open(database_path_) && EnsureTable();
