@@ -46,6 +46,19 @@ AutofillSyncMetadataTable* AutofillSyncMetadataTable::FromWebDatabase(
   return static_cast<AutofillSyncMetadataTable*>(db->GetTable(GetKey()));
 }
 
+// static
+bool AutofillSyncMetadataTable::SupportsMetadataForModelType(
+    syncer::ModelType model_type) {
+  return model_type == syncer::AUTOFILL ||
+         model_type == syncer::AUTOFILL_PROFILE ||
+         model_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
+         model_type == syncer::AUTOFILL_WALLET_DATA ||
+         model_type == syncer::AUTOFILL_WALLET_METADATA ||
+         model_type == syncer::AUTOFILL_WALLET_OFFER ||
+         model_type == syncer::AUTOFILL_WALLET_USAGE ||
+         model_type == syncer::CONTACT_INFO;
+}
+
 WebDatabaseTable::TypeKey AutofillSyncMetadataTable::GetTypeKey() const {
   return GetKey();
 }
@@ -148,18 +161,6 @@ bool AutofillSyncMetadataTable::ClearModelTypeState(
   s.BindInt(0, GetKeyValueForModelType(model_type));
 
   return s.Run();
-}
-
-bool AutofillSyncMetadataTable::SupportsMetadataForModelType(
-    syncer::ModelType model_type) const {
-  return (model_type == syncer::AUTOFILL ||
-          model_type == syncer::AUTOFILL_PROFILE ||
-          model_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
-          model_type == syncer::AUTOFILL_WALLET_DATA ||
-          model_type == syncer::AUTOFILL_WALLET_METADATA ||
-          model_type == syncer::AUTOFILL_WALLET_OFFER ||
-          model_type == syncer::AUTOFILL_WALLET_USAGE ||
-          model_type == syncer::CONTACT_INFO);
 }
 
 int AutofillSyncMetadataTable::GetKeyValueForModelType(

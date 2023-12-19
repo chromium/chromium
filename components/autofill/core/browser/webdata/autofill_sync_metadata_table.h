@@ -53,6 +53,10 @@ class AutofillSyncMetadataTable : public WebDatabaseTable,
   // Retrieves the AutofillSyncMetadataTable* owned by |db|.
   static AutofillSyncMetadataTable* FromWebDatabase(WebDatabase* db);
 
+  // Checks if the `model_type` corresponds to one of the Autofill-related
+  // model types that store their metadata in `AutofillSyncMetadataTable`.
+  static bool SupportsMetadataForModelType(syncer::ModelType model_type);
+
   // WebDatabaseTable:
   WebDatabaseTable::TypeKey GetTypeKey() const override;
   bool CreateTablesIfNecessary() override;
@@ -78,7 +82,6 @@ class AutofillSyncMetadataTable : public WebDatabaseTable,
   bool ClearModelTypeState(syncer::ModelType model_type) override;
 
  private:
-  bool SupportsMetadataForModelType(syncer::ModelType model_type) const;
   int GetKeyValueForModelType(syncer::ModelType model_type) const;
 
   bool GetAllSyncEntityMetadata(syncer::ModelType model_type,

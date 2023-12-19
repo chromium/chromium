@@ -8,6 +8,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
@@ -153,10 +154,19 @@ TEST_P(AutfillSyncMetadataTableTest, AutofillCorruptModelTypeState) {
   EXPECT_FALSE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
 }
 
-INSTANTIATE_TEST_SUITE_P(AutofillTableTest,
-                         AutfillSyncMetadataTableTest,
-                         testing::Values(syncer::AUTOFILL,
-                                         syncer::AUTOFILL_PROFILE));
+INSTANTIATE_TEST_SUITE_P(
+    AutofillTableTest,
+    AutfillSyncMetadataTableTest,
+    testing::ValuesIn([] {
+      std::vector<syncer::ModelType> supported_types;
+      for (syncer::ModelType model_type : syncer::ModelTypeSet::All()) {
+        if (AutofillSyncMetadataTable::SupportsMetadataForModelType(
+                model_type)) {
+          supported_types.push_back(model_type);
+        }
+      }
+      return supported_types;
+    }()));
 
 }  // namespace
 
