@@ -86,6 +86,8 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service.h"
+#include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service_factory.h"
 #include "chrome/browser/ash/notifications/update_notification.h"
 #include "chrome/browser/ash/notifications/update_notification_showing_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -1825,9 +1827,22 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
     if (user_manager->GetPrimaryUser() == user) {
       StartTetherServiceIfPossible(profile);
 
+      ash::AlwaysOnVpnPreConnectUrlAllowlistService* service =
+          ash::AlwaysOnVpnPreConnectUrlAllowlistServiceFactory::GetInstance()
+              ->GetForProfile(profile);
+
       // PrefService is ready, check whether we need to force a VPN connection.
-      always_on_vpn_manager_ =
-          std::make_unique<arc::AlwaysOnVpnManager>(profile->GetPrefs());
+      always_on_vpn_manager_ = std::make_unique<arc::AlwaysOnVpnManager>(
+          profile->GetPrefs(),
+          /*delay_lockdown_until_vpn_connected=*/service &&
+              service->enforce_alwayson_pre_connect_url_allowlist());
+
+      if (service) {
+        // Configure the `AlwaysOnVpnPreConnectUrlAllowlistService` service to
+        // store a weak ptr reference to `always_on_vpn_manager_` because it
+        // outlives the `always_on_vpn_manager_` instance.
+        service->SetAlwaysOnVpnManager(always_on_vpn_manager_->GetWeakPtr());
+      }
 
       secure_dns_manager_ =
           std::make_unique<SecureDnsManager>(g_browser_process->local_state());

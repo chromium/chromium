@@ -11,6 +11,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
+namespace arc {
+class AlwaysOnVpnManager;
+}
+
 namespace content {
 class BrowserContext;
 }
@@ -39,6 +43,14 @@ class AlwaysOnVpnPreConnectUrlAllowlistService
     return enforce_alwayson_pre_connect_url_allowlist_;
   }
 
+  // Sets a pointer to the `AlwaysOnVpnManager` instance. The
+  // `AlwaysOnVpnPreConnectUrlAllowlistService` will use the pointer to instruct
+  // the `AlwaysOnVpnManager` instance to delay or apply the VPN lockdown mode,
+  // depending on the network and pref settings (see the
+  // `DeterminePreConnectUrlAllowlistEnforcement` method).
+  void SetAlwaysOnVpnManager(
+      base::WeakPtr<arc::AlwaysOnVpnManager> always_on_vpn_manager);
+
  private:
   // NetworkStateHandlerObserver:
   void DefaultNetworkChanged(const ash::NetworkState* network) override;
@@ -58,6 +70,8 @@ class AlwaysOnVpnPreConnectUrlAllowlistService
   bool enforce_alwayson_pre_connect_url_allowlist_ = false;
 
   raw_ptr<content::BrowserContext> browser_context_;
+
+  base::WeakPtr<arc::AlwaysOnVpnManager> always_on_vpn_manager_;
 
   base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>

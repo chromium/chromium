@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service.h"
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/net/always_on_vpn_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -48,6 +49,11 @@ AlwaysOnVpnPreConnectUrlAllowlistService::
   profile_pref_change_registrar_.RemoveAll();
 }
 
+void AlwaysOnVpnPreConnectUrlAllowlistService::SetAlwaysOnVpnManager(
+    base::WeakPtr<arc::AlwaysOnVpnManager> always_on_vpn_manager) {
+  always_on_vpn_manager_ = std::move(always_on_vpn_manager);
+}
+
 void AlwaysOnVpnPreConnectUrlAllowlistService::OnPrefChanged() {
   DeterminePreConnectUrlAllowlistEnforcement();
 }
@@ -77,9 +83,24 @@ void AlwaysOnVpnPreConnectUrlAllowlistService::
       profile_pref_change_registrar_.prefs()->GetList(
           policy::policy_prefs::kAlwaysOnVpnPreConnectUrlAllowlist);
 
-  enforce_alwayson_pre_connect_url_allowlist_ =
-      is_alwayson_vpn_enabled && !is_vpn_connected &&
-      !pre_vpn_connect_url_allowlist.empty();
+  const bool use_vpn_preconnect_list = is_alwayson_vpn_enabled &&
+                                       !is_vpn_connected &&
+                                       !pre_vpn_connect_url_allowlist.empty();
+
+  if (enforce_alwayson_pre_connect_url_allowlist_ == use_vpn_preconnect_list) {
+    return;
+  }
+
+  enforce_alwayson_pre_connect_url_allowlist_ = use_vpn_preconnect_list;
+
+  // TODO(b/188864779, acostinas): After the ARC legacy migration is completed,
+  // replace the call to the `arc::AlwaysOnVpnManager` with a shill network
+  // profile property. Shill needs to be aware of this value when it evaluates
+  // whether to set the Always-on VPN lockdown mode for the device.
+  if (always_on_vpn_manager_) {
+    always_on_vpn_manager_->SetDelayLockdownUntilVpnConnectedState(
+        enforce_alwayson_pre_connect_url_allowlist_);
+  }
 }
 
 void AlwaysOnVpnPreConnectUrlAllowlistService::OnShuttingDown() {
