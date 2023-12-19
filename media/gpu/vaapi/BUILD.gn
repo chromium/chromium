@@ -29,7 +29,6 @@ generate_stubs("libva_stubs") {
 }
 
 source_set("vaapi") {
-  assert(use_libgav1_parser)
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
     "av1_vaapi_video_decoder_delegate.cc",
