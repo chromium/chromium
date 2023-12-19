@@ -38,6 +38,7 @@ source_set("flags") {
     "//components/payments/core",
     "//components/policy:generated",
     "//components/policy/core/common:common_constants",
+    "//components/reading_list/features:flags",
     "//components/safe_browsing/core/common",
     "//components/search_provider_logos",
     "//components/security_state/core",

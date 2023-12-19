@@ -156,9 +156,7 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{kEnableBookmarkFoldersForAccountStorage,
                             kReplaceSyncPromosWithSignInPromos,
-#if !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
-#endif  // !BUILDFLAG(IS_IOS)
                             password_manager::features::
                                 kEnablePasswordsAccountStorage,
                             kSyncEnableContactInfoDataTypeInTransportMode,

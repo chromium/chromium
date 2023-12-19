@@ -620,7 +620,8 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
           kEnableBookmarkFoldersForAccountStorage);
 #endif
     case UserSelectableType::kReadingList:
-      return syncer::IsReadingListAccountStorageEnabled();
+      return base::FeatureList::IsEnabled(
+                 kReadingListEnableSyncTransportModeUponSignIn);
     case UserSelectableType::kPreferences:
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
              base::FeatureList::IsEnabled(kEnablePreferencesAccountStorage);
