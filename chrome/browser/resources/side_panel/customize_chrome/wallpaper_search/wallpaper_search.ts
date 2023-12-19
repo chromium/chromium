@@ -113,6 +113,12 @@ function getRandomDescriptorA(descriptorArrayA: DescriptorA[]): string {
   return randomLabels[Math.floor(Math.random() * randomLabels.length)];
 }
 
+function recordStatusChange(status: WallpaperSearchStatus) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'NewTabPage.WallpaperSearch.Status', status,
+      WallpaperSearchStatus.MAX_VALUE);
+}
+
 const WallpaperSearchElementBase = I18nMixin(PolymerElement);
 
 export class WallpaperSearchElement extends WallpaperSearchElementBase {
@@ -332,11 +338,13 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
           }),
         };
         this.errorCallback_ = undefined;
+        recordStatusChange(WallpaperSearchStatus.kOk);
       } else {
         this.errorCallback_ = () => this.fetchDescriptors_();
         this.status_ = WindowProxy.getInstance().onLine ?
             WallpaperSearchStatus.kError :
             WallpaperSearchStatus.kOffline;
+        recordStatusChange(this.status_);
       }
     });
   }
@@ -454,6 +462,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private onErrorClick_() {
     this.status_ = WallpaperSearchStatus.kOk;
+    recordStatusChange(this.status_);
     if (this.errorCallback_) {
       this.errorCallback_();
     }
@@ -526,13 +535,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private async onSearchClick_() {
     if (!WindowProxy.getInstance().onLine) {
-      this.errorCallback_ = () => {
-        if (WindowProxy.getInstance().onLine) {
-          this.status_ = WallpaperSearchStatus.kOk;
-          this.errorCallback_ = undefined;
-        }
-      };
       this.status_ = WallpaperSearchStatus.kOffline;
+      recordStatusChange(this.status_);
       return;
     }
 
@@ -559,6 +563,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       c: this.selectedDescriptorC_,
     };
     this.status_ = status;
+    recordStatusChange(status);
     this.selectedFeedbackOption_ = CrFeedbackOption.UNSPECIFIED;
     this.emptyResultContainers_ = this.calculateEmptyTiles(results);
   }
@@ -580,9 +585,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       this.$.wallpaperSearch.focus();
     } else {
       this.$.error.focus();
-      chrome.metricsPrivate.recordEnumerationValue(
-          'NewTabPage.WallpaperSearch.Error', this.status_,
-          WallpaperSearchStatus.MAX_VALUE);
     }
   }
 

@@ -41194,7 +41194,8 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
-<enum name="NtpWallpaperSearchError">
+<enum name="NtpWallpaperSearchStatus">
+  <int value="0" label="Okay"/>
   <int value="1" label="Generic error"/>
   <int value="2" label="Request throttled"/>
   <int value="3" label="Offline"/>

@@ -1859,18 +1859,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.WallpaperSearch.Error"
-    enum="NtpWallpaperSearchError" expires_after="2024-04-28">
-  <owner>tiborg@chromium.org</owner>
-  <owner>rtatum@google.com</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Histogram of the errors shown for Wallpaper Search within the Customize
-    Chrome Side Panel. This records whenever an error status is set within the
-    UI of Wallpaper Search.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.WallpaperSearch.GetResultProcessingLatency"
     units="ms" expires_after="2024-04-28">
   <owner>tiborg@chromium.org</owner>
@@ -1907,6 +1895,18 @@ chromium-metrics-reviews@google.com.
     result as the current theme. This tracks how long the image processing takes
     from the time image processing starts for setting a Wallpaper Search result
     theme to when the profile preference is set to change the background image.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.WallpaperSearch.Status"
+    enum="NtpWallpaperSearchStatus" expires_after="2024-04-28">
+  <owner>tiborg@chromium.org</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Histogram of the statuses shown for Wallpaper Search within the Customize
+    Chrome Side Panel. This records the status is of Wallpaper Search's UI
+    whenever it loads, a search is triggered, or a search completes.
   </summary>
 </histogram>
 

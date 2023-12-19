@@ -830,7 +830,7 @@ suite('WallpaperSearchTest', () => {
         $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
         await waitAfterNextRender(wallpaperSearchElement);
 
-        assertEquals(2, windowProxy.getCallCount('onLine'));
+        assertEquals(1, windowProxy.getCallCount('onLine'));
         assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
         assertNotStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
@@ -1176,8 +1176,9 @@ suite('WallpaperSearchTest', () => {
     [WallpaperSearchStatus.kError,
      WallpaperSearchStatus.kRequestThrottled,
      WallpaperSearchStatus.kOffline,
+     WallpaperSearchStatus.kOk,
     ].forEach((status) => {
-      test(`error ${status} sets metric`, async () => {
+      test(`status ${status} sets metric`, async () => {
         handler.setResultFor(
             'getWallpaperSearchResults',
             Promise.resolve({status: status, results: []}));
@@ -1187,10 +1188,38 @@ suite('WallpaperSearchTest', () => {
         wallpaperSearchElement.$.submitButton.click();
         await waitAfterNextRender(wallpaperSearchElement);
 
-        assertEquals(1, metrics.count('NewTabPage.WallpaperSearch.Error'));
+        assertEquals(2, metrics.count('NewTabPage.WallpaperSearch.Status'));
         assertEquals(
-            1, metrics.count('NewTabPage.WallpaperSearch.Error', status));
+            status === WallpaperSearchStatus.kOk ? 2 : 1,
+            metrics.count('NewTabPage.WallpaperSearch.Status', status));
       });
+    });
+
+    test('onLine/offLine status sets metric', async () => {
+      windowProxy.setResultFor('onLine', false);
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      assertEquals(2, metrics.count('NewTabPage.WallpaperSearch.Status'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.WallpaperSearch.Status',
+              WallpaperSearchStatus.kOffline));
+
+      windowProxy.setResultFor('onLine', true);
+
+      $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      assertEquals(3, metrics.count('NewTabPage.WallpaperSearch.Status'));
+      assertEquals(
+          2,
+          metrics.count(
+              'NewTabPage.WallpaperSearch.Status', WallpaperSearchStatus.kOk));
     });
   });
 
