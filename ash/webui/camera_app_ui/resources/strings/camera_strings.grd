@@ -296,7 +296,13 @@
         URL detected.
       </message>
       <message desc="Text showing on the barcode chip when wifi is detected under scan mode." name="IDS_BARCODE_WIFI_CHIPTEXT">
-        Join "<ph name="wifiname">$1<ex>wifi network name</ex></ph>" Network
+        Join "<ph name="wifiname">$1<ex>wifi network name</ex></ph>"
+      </message>
+      <message desc="Label for the barcode chip when wifi is detected under scan mode." name="IDS_LABEL_BARCODE_WIFI">
+        Wi-Fi network detected.
+      </message>
+      <message desc="Label for the barcode chip when wifi is detected under scan mode." name="IDS_LABEL_BARCODE_WIFI_CHIP">
+        Join <ph name="wifiname">$1<ex>wifi network name</ex></ph>
       </message>
       <message desc="Label for the button of expert mode options." name="IDS_EXPERT_MODE_BUTTON">
         Expert mode

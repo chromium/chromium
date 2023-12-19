@@ -70,6 +70,8 @@ export enum I18nString {
   LABEL_BACK_CAMERA = 'label_back_camera',
   LABEL_BARCODE_TEXT = 'label_barcode_text',
   LABEL_BARCODE_URL = 'label_barcode_url',
+  LABEL_BARCODE_WIFI = 'label_barcode_wifi',
+  LABEL_BARCODE_WIFI_CHIP = 'label_barcode_wifi_chip',
   LABEL_CROP_DONE = 'label_crop_done',
   LABEL_CURRENT_AND_MAXIMAL_RECORD_TIME =
       'label_current_and_maximal_record_time',

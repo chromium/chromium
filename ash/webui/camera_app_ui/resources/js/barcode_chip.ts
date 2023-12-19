@@ -259,12 +259,17 @@ function showWifi(wifiConfig: WifiConfig) {
   const container = dom.get('#barcode-chip-wifi-container', HTMLDivElement);
   activate(container);
 
+  const ssidString = assertExists(wifiConfig.ssid);
+
   const textEl = dom.get('#barcode-chip-wifi-content', HTMLSpanElement);
-  const label = loadTimeData.getI18nMessage(
-      I18nString.BARCODE_WIFI_CHIPTEXT, assertExists(wifiConfig.ssid));
-  textEl.textContent = label;
+  const text =
+      loadTimeData.getI18nMessage(I18nString.BARCODE_WIFI_CHIPTEXT, ssidString);
+  textEl.textContent = text;
 
   const chip = dom.get('#barcode-chip-wifi', HTMLDivElement);
+  const label = loadTimeData.getI18nMessage(
+      I18nString.LABEL_BARCODE_WIFI_CHIP, ssidString);
+  chip.setAttribute('aria-label', label);
   chip.onclick = () => {
     // TODO(dorahkim): After is crrev/c/4964660 is landed, connect to the Wi-fi
     // here.

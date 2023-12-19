@@ -81,6 +81,8 @@ const struct {
     {"label_back_camera", IDS_LABEL_BACK_CAMERA},
     {"label_barcode_text", IDS_LABEL_BARCODE_TEXT},
     {"label_barcode_url", IDS_LABEL_BARCODE_URL},
+    {"label_barcode_wifi", IDS_LABEL_BARCODE_WIFI},
+    {"label_barcode_wifi_chip", IDS_LABEL_BARCODE_WIFI_CHIP},
     {"label_crop_done", IDS_LABEL_CROP_DONE},
     {"label_current_and_maximal_record_time",
      IDS_LABEL_CURRENT_AND_MAXIMAL_RECORD_TIME},
