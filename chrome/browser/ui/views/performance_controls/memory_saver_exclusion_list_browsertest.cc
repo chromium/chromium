@@ -13,6 +13,7 @@
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -26,7 +27,6 @@
 #include "url/gurl.h"
 
 namespace {
-constexpr base::TimeDelta kShortDelay = base::Seconds(1);
 const char kWWWExampleURL[] = "www.example.com";
 const char kExampleURL[] = "example.com";
 const char kSubDomainURL[] = "test.example.com";
@@ -35,46 +35,17 @@ const char kPathWithQuery[] =
     "/extensions/favicon/test_file.html?q=hello+world";
 }  // namespace
 
-class MemorySaverExclusionListBrowserTest : public InProcessBrowserTest {
+class MemorySaverExclusionListBrowserTest
+    : public MemorySaverBrowserTestMixin<InProcessBrowserTest> {
  public:
-  MemorySaverExclusionListBrowserTest()
-      : scoped_set_tick_clock_for_testing_(&test_clock_) {
-    // Start with a non-null TimeTicks, as there is no discard protection for
-    // a tab with a null focused timestamp.
-    test_clock_.Advance(kShortDelay);
-  }
-
-  ~MemorySaverExclusionListBrowserTest() override = default;
-
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    MemorySaverBrowserTestMixin::SetUpOnMainThread();
 
-    // To avoid flakes when focus changes, set the active tab strip model
-    // explicitly.
-    resource_coordinator::GetTabLifecycleUnitSource()
-        ->SetFocusedTabStripModelForTesting(tab_strip_model);
-
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
     GURL test_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
     content::NavigateToURLBlockUntilNavigationsComplete(
-        tab_strip_model->GetActiveWebContents(), test_url, 1);
+        browser()->tab_strip_model()->GetActiveWebContents(), test_url, 1);
     ASSERT_TRUE(AddTabAtIndexToBrowser(
         browser(), 1, test_url, ui::PageTransition::PAGE_TRANSITION_LINK));
-  }
-
-  void TearDown() override { InProcessBrowserTest::TearDown(); }
-
-  bool TryDiscardTabAt(int tab_index) {
-    TabStripModel* tab_strip_model = browser()->tab_strip_model();
-    performance_manager::user_tuning::UserPerformanceTuningManager* manager =
-        performance_manager::user_tuning::UserPerformanceTuningManager::
-            GetInstance();
-    manager->DiscardPageForTesting(
-        tab_strip_model->GetWebContentsAt(tab_index));
-
-    return tab_strip_model->GetWebContentsAt(tab_index)->WasDiscarded();
   }
 
   PrefService* GetPrefs() { return browser()->profile()->GetPrefs(); }
@@ -92,11 +63,6 @@ class MemorySaverExclusionListBrowserTest : public InProcessBrowserTest {
   GURL GetURL(base::StringPiece host, base::StringPiece path = "/title1.html") {
     return embedded_test_server()->GetURL(host, path);
   }
-
- private:
-  base::SimpleTestTickClock test_clock_;
-  resource_coordinator::ScopedSetTickClockForTesting
-      scoped_set_tick_clock_for_testing_;
 };
 
 IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,

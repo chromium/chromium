@@ -12,6 +12,7 @@
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
@@ -44,32 +45,12 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 
-namespace {
-
-constexpr base::TimeDelta kShortDelay = base::Seconds(1);
-}  // namespace
-
-class MemorySaverChipViewBrowserTest : public InProcessBrowserTest {
+class MemorySaverChipViewBrowserTest
+    : public MemorySaverBrowserTestMixin<InProcessBrowserTest> {
  public:
-  MemorySaverChipViewBrowserTest()
-      : scoped_set_tick_clock_for_testing_(&test_clock_) {
-    // Start with a non-null TimeTicks, as there is no discard protection for
-    // a tab with a null focused timestamp.
-    test_clock_.Advance(kShortDelay);
-  }
-
-  ~MemorySaverChipViewBrowserTest() override = default;
-
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    MemorySaverBrowserTestMixin::SetUpOnMainThread();
 
-    // To avoid flakes when focus changes, set the active tab strip model
-    // explicitly.
-    resource_coordinator::GetTabLifecycleUnitSource()
-        ->SetFocusedTabStripModelForTesting(browser()->tab_strip_model());
-
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
     GURL test_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), test_url, WindowOpenDisposition::CURRENT_TAB,
@@ -88,25 +69,11 @@ class MemorySaverChipViewBrowserTest : public InProcessBrowserTest {
         ->GetIconView(PageActionIconType::kMemorySaver);
   }
 
-  void DiscardTabAt(int tab_index) {
-    content::WebContents* contents =
-        browser()->tab_strip_model()->GetWebContentsAt(tab_index);
-    performance_manager::user_tuning::UserPerformanceTuningManager* manager =
-        performance_manager::user_tuning::UserPerformanceTuningManager::
-            GetInstance();
-    manager->DiscardPageForTesting(contents);
-  }
-
   views::InkDropState GetInkDropState() {
     return views::InkDrop::Get(GetMemorySaverChipView())
         ->GetInkDrop()
         ->GetTargetInkDropState();
   }
-
- private:
-  base::SimpleTestTickClock test_clock_;
-  resource_coordinator::ScopedSetTickClockForTesting
-      scoped_set_tick_clock_for_testing_;
 };
 
 IN_PROC_BROWSER_TEST_F(MemorySaverChipViewBrowserTest,
@@ -116,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipViewBrowserTest,
                        ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(chip);
 
-  DiscardTabAt(0);
+  EXPECT_TRUE(TryDiscardTabAt(0));
   chrome::SelectNumberedTab(browser(), 0);
 
   EXPECT_EQ(GetInkDropState(), views::InkDropState::HIDDEN);

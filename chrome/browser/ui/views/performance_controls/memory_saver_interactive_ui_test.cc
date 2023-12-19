@@ -15,6 +15,7 @@
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -60,56 +61,18 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPerformanceSettingsTab);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAudioIsAudible);
 
-constexpr base::TimeDelta kShortDelay = base::Seconds(1);
 constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
-
-class QuitRunLoopOnMemoryMetricsRefreshObserver
-    : public performance_manager::user_tuning::UserPerformanceTuningManager::
-          Observer {
- public:
-  explicit QuitRunLoopOnMemoryMetricsRefreshObserver(
-      base::OnceClosure quit_closure)
-      : quit_closure_(std::move(quit_closure)) {}
-
-  ~QuitRunLoopOnMemoryMetricsRefreshObserver() override = default;
-
-  void OnMemoryMetricsRefreshed() override { std::move(quit_closure_).Run(); }
-
- private:
-  base::OnceClosure quit_closure_;
-};
 
 }  // namespace
 
-class MemorySaverInteractiveTest : public InteractiveBrowserTest {
+class MemorySaverInteractiveTest
+    : public MemorySaverBrowserTestMixin<InteractiveBrowserTest> {
  public:
-  MemorySaverInteractiveTest()
-      : scoped_set_tick_clock_for_testing_(&test_clock_) {
-    // Start with a non-null TimeTicks, as there is no discard protection for
-    // a tab with a null focused timestamp.
-    test_clock_.Advance(kShortDelay);
-  }
-
   void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
+    MemorySaverBrowserTestMixin::SetUpOnMainThread();
     performance_manager::user_tuning::UserPerformanceTuningManager::
         GetInstance()
             ->SetMemorySaverModeEnabled(true);
-
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
-  void TearDownOnMainThread() override {
-    InteractiveBrowserTest::TearDownOnMainThread();
-  }
-
-  content::WebContents* GetWebContentsAt(int index) {
-    return browser()->tab_strip_model()->GetWebContentsAt(index);
-  }
-
-  bool IsTabDiscarded(int tab_index) {
-    return GetWebContentsAt(tab_index)->WasDiscarded();
   }
 
   auto CheckTabIsDiscarded(int tab_index) {
@@ -123,38 +86,13 @@ class MemorySaverInteractiveTest : public InteractiveBrowserTest {
   }
 
   auto TryDiscardTab(int tab_index) {
-    return Do(base::BindLambdaForTesting([=]() {
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          GetInstance()
-              ->DiscardPageForTesting(GetWebContentsAt(tab_index));
-    }));
+    return Do(
+        base::BindLambdaForTesting([=]() { TryDiscardTabAt(tab_index); }));
   }
 
   auto ForceRefreshMemoryMetrics() {
-    return Do(base::BindLambdaForTesting([]() {
-      performance_manager::user_tuning::UserPerformanceTuningManager* manager =
-          performance_manager::user_tuning::UserPerformanceTuningManager::
-              GetInstance();
-
-      base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-      QuitRunLoopOnMemoryMetricsRefreshObserver observer(
-          run_loop.QuitClosure());
-      base::ScopedObservation<
-          performance_manager::user_tuning::UserPerformanceTuningManager,
-          QuitRunLoopOnMemoryMetricsRefreshObserver>
-          memory_metrics_observer(&observer);
-      memory_metrics_observer.Observe(manager);
-
-      performance_manager::PerformanceManager::CallOnGraph(
-          FROM_HERE,
-          base::BindLambdaForTesting([](performance_manager::Graph* graph) {
-            auto* metrics_decorator = graph->GetRegisteredObjectAs<
-                performance_manager::ProcessMetricsDecorator>();
-            metrics_decorator->RequestImmediateMetrics();
-          }));
-
-      run_loop.Run();
-    }));
+    return Do(base::BindLambdaForTesting(
+        [=]() { ForceRefreshMemoryMetricsAndWait(); }));
   }
 
   // Attempts to discard the tab at discard_tab_index and navigates to that
@@ -176,11 +114,6 @@ class MemorySaverInteractiveTest : public InteractiveBrowserTest {
   GURL GetURL(base::StringPiece hostname, base::StringPiece path) {
     return embedded_test_server()->GetURL(hostname, path);
   }
-
- private:
-  base::SimpleTestTickClock test_clock_;
-  resource_coordinator::ScopedSetTickClockForTesting
-      scoped_set_tick_clock_for_testing_;
 };
 
 // Tests Discarding on pages with various types of content
@@ -329,15 +262,6 @@ class MemorySaverChipInteractiveTest : public MemorySaverInteractiveTest {
         performance_manager::features::kDiscardExceptionsImprovements);
 
     MemorySaverInteractiveTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    MemorySaverInteractiveTest::SetUpOnMainThread();
-
-    // To avoid flakes when focus changes, set the active tab strip model
-    // explicitly.
-    resource_coordinator::GetTabLifecycleUnitSource()
-        ->SetFocusedTabStripModelForTesting(browser()->tab_strip_model());
   }
 
   PageActionIconView* GetPageActionIconView() {

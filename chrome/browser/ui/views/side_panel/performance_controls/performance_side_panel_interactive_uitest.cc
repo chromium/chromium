@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -37,11 +38,9 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPerformanceWebContentsElementId);
 }  // namespace
 
-class PerformanceSidePanelInteractiveTest : public InteractiveBrowserTest {
+class PerformanceSidePanelInteractiveTest
+    : public MemorySaverBrowserTestMixin<InteractiveBrowserTest> {
  public:
-  PerformanceSidePanelInteractiveTest() = default;
-  ~PerformanceSidePanelInteractiveTest() override = default;
-
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kSidePanelPinning, features::kChromeRefresh2023,
@@ -55,12 +54,10 @@ class PerformanceSidePanelInteractiveTest : public InteractiveBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
+    MemorySaverBrowserTestMixin::SetUpOnMainThread();
     performance_manager::user_tuning::UserPerformanceTuningManager::
         GetInstance()
             ->SetMemorySaverModeEnabled(true);
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
   }
 
   void SetUpFakeBatterySampler() {
@@ -82,12 +79,8 @@ class PerformanceSidePanelInteractiveTest : public InteractiveBrowserTest {
   }
 
   auto TryDiscardTab(int tab_index) {
-    return Do(base::BindLambdaForTesting([=]() {
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          GetInstance()
-              ->DiscardPageForTesting(
-                  browser()->tab_strip_model()->GetWebContentsAt(tab_index));
-    }));
+    return Do(
+        base::BindLambdaForTesting([=]() { TryDiscardTabAt(tab_index); }));
   }
 
   // Attempts to discard the tab at discard_tab_index and navigates to that
