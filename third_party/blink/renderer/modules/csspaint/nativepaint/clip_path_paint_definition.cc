@@ -116,7 +116,7 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
   bool ValueChangeShouldCauseRepaint(const PropertyValue& val1,
                                      const PropertyValue& val2) const override {
     return !val1.float_value.has_value() || !val2.float_value.has_value() ||
-           GetAdjustedProgress(*val1.float_value) ==
+           GetAdjustedProgress(*val1.float_value) !=
                GetAdjustedProgress(*val2.float_value);
   }
 
