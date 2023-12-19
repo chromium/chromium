@@ -2064,42 +2064,39 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
   }
 
   for (auto& source : sources) {
-    absl::optional<std::vector<uint64_t>> dedup_keys =
-        ReadDedupKeys(source.source_id(), AttributionReport::Type::kEventLevel);
-    if (!dedup_keys.has_value()) {
+    if (!ReadDedupKeys(source)) {
       return {};
     }
-    source.SetDedupKeys(std::move(*dedup_keys));
-
-    absl::optional<std::vector<uint64_t>> aggregatable_dedup_keys =
-        ReadDedupKeys(source.source_id(),
-                      AttributionReport::Type::kAggregatableAttribution);
-    if (!aggregatable_dedup_keys.has_value()) {
-      return {};
-    }
-    source.SetAggregatableDedupKeys(std::move(*aggregatable_dedup_keys));
   }
 
   return sources;
 }
 
-absl::optional<std::vector<uint64_t>> AttributionStorageSql::ReadDedupKeys(
-    StoredSource::Id source_id,
-    AttributionReport::Type report_type) {
+bool AttributionStorageSql::ReadDedupKeys(StoredSource& source) {
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE, attribution_queries::kDedupKeySql));
-  statement.BindInt64(0, *source_id);
-  statement.BindInt(1, SerializeReportType(report_type));
+  statement.BindInt64(0, *source.source_id());
 
-  std::vector<uint64_t> dedup_keys;
   while (statement.Step()) {
-    dedup_keys.push_back(DeserializeUint64(statement.ColumnInt64(0)));
-  }
-  if (!statement.Succeeded()) {
-    return absl ::nullopt;
-  }
+    uint64_t dedup_key = DeserializeUint64(statement.ColumnInt64(0));
 
-  return dedup_keys;
+    absl::optional<AttributionReport::Type> report_type =
+        DeserializeReportType(statement.ColumnInt(1));
+    if (!report_type.has_value()) {
+      continue;
+    }
+    switch (*report_type) {
+      case AttributionReport::Type::kEventLevel:
+        source.dedup_keys().push_back(dedup_key);
+        break;
+      case AttributionReport::Type::kAggregatableAttribution:
+        source.aggregatable_dedup_keys().push_back(dedup_key);
+        break;
+      case AttributionReport::Type::kNullAggregatable:
+        break;
+    }
+  }
+  return statement.Succeeded();
 }
 
 bool AttributionStorageSql::StoreDedupKey(StoredSource::Id source_id,

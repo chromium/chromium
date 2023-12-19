@@ -71,7 +71,7 @@ inline constexpr const char kCountReportsSql[] =
     "WHERE source_id=? AND report_type=? AND dedup_key=?";
 
 inline constexpr const char kDedupKeySql[] =
-    "SELECT dedup_key FROM dedup_keys WHERE source_id=? AND report_type=?";
+    "SELECT dedup_key,report_type FROM dedup_keys WHERE source_id=?";
 
 inline constexpr const char kGetSourcesDataKeysSql[] =
     "SELECT reporting_origin FROM sources";

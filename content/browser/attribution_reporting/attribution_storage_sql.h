@@ -243,9 +243,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   absl::optional<AttributionReport> GetReport(AttributionReport::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  absl::optional<std::vector<uint64_t>> ReadDedupKeys(
-      StoredSource::Id source_id,
-      AttributionReport::Type report_type)
+  [[nodiscard]] bool ReadDedupKeys(StoredSource&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   bool StoreDedupKey(StoredSource::Id source_id,
