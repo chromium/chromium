@@ -219,6 +219,7 @@ class TemplateURLServiceTest : public testing::Test,
 
   // Verifies the two TemplateURLs are equal.
   void AssertEquals(const TemplateURL& expected, const TemplateURL& actual);
+  void AssertEquals(const TemplateURL* expected, const TemplateURL* actual);
 
   // Verifies the two timestamps are equal, within the expected degree of
   // precision.
@@ -342,6 +343,17 @@ void TemplateURLServiceTest::AssertEquals(const TemplateURL& expected,
   AssertTimesEqual(expected.last_modified(), actual.last_modified());
   ASSERT_EQ(expected.last_visited(), actual.last_visited());
   ASSERT_EQ(expected.sync_guid(), actual.sync_guid());
+}
+
+void TemplateURLServiceTest::AssertEquals(const TemplateURL* expected,
+                                          const TemplateURL* actual) {
+  ASSERT_TRUE(expected);
+  ASSERT_TRUE(actual);
+  if (expected == actual) {
+    return;
+  }
+
+  AssertEquals(*expected, *actual);
 }
 
 void TemplateURLServiceTest::AssertTimesEqual(const Time& expected,
@@ -2832,6 +2844,261 @@ TEST_P(TemplateURLServiceTest,
     AssertEquals(*user_engine, *actual_turl);
   }
 }
+
+TEST_P(TemplateURLServiceTest, NonFeaturedSiteSearchPolicyConflictWithDSP) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  test_util()->ResetModel(/*verify_load=*/true);
+
+  const TemplateURL* dse = model()->GetDefaultSearchProvider();
+  ASSERT_TRUE(dse);
+
+  AssertEquals(dse, model()->GetTemplateURLForKeyword(dse->keyword()));
+
+  // Set a managed preference that establishes a site search provider
+  // conflicting with pre-defined default search engine not customized by the
+  // user.
+  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  site_search_engines.push_back(
+      CreateTestSiteSearchEntry(base::UTF16ToUTF8(dse->keyword())));
+
+  SetManagedSiteSearchSettingsPreference(site_search_engines,
+                                         test_util()->profile());
+
+  // Expect no change in default search engine.
+  EXPECT_EQ(dse, model()->GetDefaultSearchProvider());
+  // Override DES for keyword search because `safe_for_autoreplace` is true.
+  ExpectSimilar(site_search_engines[0].get(),
+                &model()->GetTemplateURLForKeyword(dse->keyword())->data());
+
+  // Reset the policy.
+  SetManagedSiteSearchSettingsPreference(
+      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      test_util()->profile());
+
+  // No changes to the DSE once the policy is no longer applied.
+  EXPECT_EQ(dse, model()->GetDefaultSearchProvider());
+  AssertEquals(dse, model()->GetTemplateURLForKeyword(dse->keyword()));
+}
+
+TEST_P(TemplateURLServiceTest,
+       NonFeaturedSiteSearchPolicyConflictWithUserDefinedDSP) {
+  constexpr char kKeyword[] = "keyword";
+  constexpr char16_t kKeywordU16[] = u"keyword";
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  test_util()->ResetModel(/*verify_load=*/true);
+
+  TemplateURL* user_dse = AddKeywordWithDate(
+      "DSE name", kKeyword, "http://www.goo.com/s?q={searchTerms}",
+      std::string(), std::string(), std::string(),
+      /*safe_for_autoreplace=*/false);
+  model()->SetUserSelectedDefaultSearchProvider(user_dse);
+  EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
+  AssertEquals(user_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
+
+  // Set a managed preference that establishes a site search provider
+  // conflicting with user-defined default search engine.
+  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword));
+
+  SetManagedSiteSearchSettingsPreference(site_search_engines,
+                                         test_util()->profile());
+
+  // Expect no change in default search engine.
+  EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
+  // Do not override DES for keyword search because `safe_for_autoreplace` is
+  // false.
+  AssertEquals(*user_dse, *model()->GetTemplateURLForKeyword(kKeywordU16));
+
+  // Reset the policy.
+  SetManagedSiteSearchSettingsPreference(
+      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      test_util()->profile());
+
+  // No changes to the DSE once the policy is no longer applied.
+  EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
+  AssertEquals(user_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
+}
+
+TEST_P(TemplateURLServiceTest,
+       NonFeaturedSiteSearchPolicyConflictWithDSPSetByExtension) {
+  constexpr char kKeyword[] = "keyword";
+  constexpr char16_t kKeywordU16[] = u"keyword";
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  test_util()->ResetModel(/*verify_load=*/true);
+
+  TemplateURL* extension_dse =
+      AddExtensionSearchEngine(kKeyword, "extension_id", true);
+  EXPECT_EQ(extension_dse, model()->GetDefaultSearchProvider());
+  AssertEquals(extension_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
+
+  // Set a managed preference that establishes a site search provider
+  // conflicting with default search engine set by extension.
+  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword));
+
+  SetManagedSiteSearchSettingsPreference(site_search_engines,
+                                         test_util()->profile());
+
+  // Expect no change in default search engine.
+  EXPECT_EQ(extension_dse, model()->GetDefaultSearchProvider());
+  // Do not override DSE for keyword search because `safe_for_autoreplace` is
+  // false.
+  AssertEquals(extension_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
+
+  // Reset the policy.
+  SetManagedSiteSearchSettingsPreference(
+      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      test_util()->profile());
+
+  // No changes to the DSE once the policy is no longer applied.
+  EXPECT_EQ(extension_dse, model()->GetDefaultSearchProvider());
+  AssertEquals(extension_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
+}
+
+TEST_P(TemplateURLServiceTest,
+       FeaturedSiteSearchPolicyConflictWithUserDefinedDSP) {
+  constexpr char kKeyword[] = "@keyword";
+  constexpr char16_t kKeywordU16[] = u"@keyword";
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  test_util()->ResetModel(/*verify_load=*/true);
+
+  TemplateURL* user_dse = AddKeywordWithDate(
+      "DSE name", kKeyword, "http://www.goo.com/s?q={searchTerms}",
+      std::string(), std::string(), std::string(),
+      /*safe_for_autoreplace=*/false);
+  model()->SetUserSelectedDefaultSearchProvider(user_dse);
+  EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
+  AssertEquals(user_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
+
+  // Set a managed preference that establishes a site search provider
+  // conflicting with user-defined default search engine.
+  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  site_search_engines.push_back(
+      CreateTestSiteSearchEntry(kKeyword, /*featured_by_policy=*/true));
+
+  SetManagedSiteSearchSettingsPreference(site_search_engines,
+                                         test_util()->profile());
+
+  // Expect no change in default search engine.
+  EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
+  // Override DES for keyword search because the site search engine is featured.
+  ExpectSimilar(site_search_engines[0].get(),
+                &model()->GetTemplateURLForKeyword(kKeywordU16)->data());
+
+  // Reset the policy.
+  SetManagedSiteSearchSettingsPreference(
+      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      test_util()->profile());
+
+  // No changes to the DSE once the policy is no longer applied.
+  EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
+  AssertEquals(user_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
+}
+
+TEST_P(TemplateURLServiceTest,
+       FeaturedSiteSearchPolicyConflictWithDSPSetByExtension) {
+  constexpr char kKeyword[] = "@keyword";
+  constexpr char16_t kKeywordU16[] = u"@keyword";
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  test_util()->ResetModel(/*verify_load=*/true);
+
+  TemplateURL* extension_dse =
+      AddExtensionSearchEngine(kKeyword, "extension_id", true);
+  EXPECT_EQ(extension_dse, model()->GetDefaultSearchProvider());
+  AssertEquals(extension_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
+
+  // Set a managed preference that establishes a site search provider
+  // conflicting with default search engine set by extension.
+  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  site_search_engines.push_back(
+      CreateTestSiteSearchEntry(kKeyword, /*featured_by_policy=*/true));
+
+  SetManagedSiteSearchSettingsPreference(site_search_engines,
+                                         test_util()->profile());
+
+  // Expect no change in default search engine.
+  EXPECT_EQ(extension_dse, model()->GetDefaultSearchProvider());
+  // Override DES for keyword search because the site search engine is featured.
+  ExpectSimilar(site_search_engines[0].get(),
+                &model()->GetTemplateURLForKeyword(kKeywordU16)->data());
+
+  // Reset the policy.
+  SetManagedSiteSearchSettingsPreference(
+      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      test_util()->profile());
+
+  // No changes to the DSE once the policy is no longer applied.
+  EXPECT_EQ(extension_dse, model()->GetDefaultSearchProvider());
+  AssertEquals(extension_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
+}
+
+TEST_P(TemplateURLServiceTest,
+       FeaturedSiteSearchPolicyConflictWithStarterPack) {
+  constexpr char kBookmarksKeyword[] = "@bookmarks";
+  constexpr char16_t kBookmarksKeywordU16[] = u"@bookmarks";
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  test_util()->ResetModel(/*verify_load=*/true);
+
+  const TemplateURL* bookmarks_entry =
+      model()->GetTemplateURLForKeyword(kBookmarksKeywordU16);
+  ASSERT_TRUE(bookmarks_entry);
+
+  // Set a managed preference that establishes a site search provider
+  // conflicting with pre-defined default search engine not customized by the
+  // user.
+  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  site_search_engines.push_back(CreateTestSiteSearchEntry(
+      kBookmarksKeyword, /*featured_by_policy=*/true));
+
+  SetManagedSiteSearchSettingsPreference(site_search_engines,
+                                         test_util()->profile());
+
+  // Override bookmarks for keyword search because the site search engine is
+  // featured.
+  ExpectSimilar(
+      site_search_engines[0].get(),
+      &model()->GetTemplateURLForKeyword(kBookmarksKeywordU16)->data());
+
+  // Reset the policy.
+  SetManagedSiteSearchSettingsPreference(
+      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      test_util()->profile());
+
+  // Go back to the original bookmarks search once the policy is no longer
+  // applied.
+  AssertEquals(bookmarks_entry,
+               model()->GetTemplateURLForKeyword(kBookmarksKeywordU16));
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_ASH)
 
