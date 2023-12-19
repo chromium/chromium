@@ -2239,8 +2239,8 @@
   <message name="IDS_TRACKING_PROTECTION_ALLOWED_GROUP_TITLE" desc="Title of the list of exceptions for sites that are allowed to use third-party cookies on the Tracking Protection page." formatter_data="android_java">
     Sites allowed to use third-party cookies
   </message>
-  <message name="IDS_TRACKING_PROTECTION_ALLOWED_GROUP_DESCRIPTION" desc="Description of the list of exceptions for sites that are allowed to use third-party cookies on the Tracking Protection page." formatter_data="android_java">
-    Affects the sites listed here and their subdomains. For example, adding “google.com” means that third-party cookies can also be active for mail.google.com, because it’s part of google.com.
+  <message name="IDS_TRACKING_PROTECTION_ALLOWED_GROUP_DESCRIPTION" desc="Description of the list of exceptions for sites that are allowed to use third-party cookies on the Tracking Protection page. Explains how to use a wildcard to create an exception for an entire domain." formatter_data="android_java">
+    Affects the sites listed here. Inserting “[*.]” before a domain name creates an exception for the entire domain. For example, adding “[*.]google.com” means that third-party cookies can also be active for mail.google.com, because it’s part of google.com.
   </message>
   <message name="IDS_TRACKING_PROTECTION_NEVER_EXPIRES_LABEL" desc="Label on an exception for allowing third-party cookies that indicates that it never expires." formatter_data="android_java">
     Does not expire
