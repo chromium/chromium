@@ -955,6 +955,10 @@ constexpr char kDownloadDuplicateFilePromptEnabled[] =
 constexpr char kIsolatedWebAppsEnabled[] = "ash.isolated_web_apps_enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 12/2023.
+const char kPrivacyBudgetReportedReidBlocks[] =
+    "privacy_budget.reported_reid_blocks";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1075,6 +1079,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kIsolatedWebAppsEnabled, false);
 #endif
+
+  // Deprecated 12/2023
+  registry->RegisterStringPref(kPrivacyBudgetReportedReidBlocks, std::string());
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2215,6 +2222,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   local_state->ClearPref(kIsolatedWebAppsEnabled);
 #endif
+
+  // Added 12/2023
+  local_state->ClearPref(kPrivacyBudgetReportedReidBlocks);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

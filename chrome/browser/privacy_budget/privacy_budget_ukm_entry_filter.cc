@@ -46,10 +46,6 @@ bool PrivacyBudgetUkmEntryFilter::FilterEntry(
         blink::IdentifiableSurface::FromMetricHash(metric.first);
     const blink::IdentifiableToken token = metric.second;
 
-    // Update the Reid surface storage map.
-    identifiability_study_state_->MaybeStoreValueForComputingReidScore(surface,
-                                                                       token);
-
     if (!blink::IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
             surface))
       return true;

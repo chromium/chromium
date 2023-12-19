@@ -64,10 +64,6 @@ class ScopedPrivacyBudgetConfig {
     SurfaceSetEquivalentClassesList equivalence_classes;
     IdentifiableSurfaceBlocks blocks;
     std::vector<double> block_weights;
-    IdentifiableSurfaceBlocks reid_blocks;
-    std::vector<uint64_t> reid_salts_ranges;
-    std::vector<int> reid_bits;
-    std::vector<double> reid_noise;
     std::vector<blink::IdentifiableSurface::Type> allowed_random_types;
   };
 
