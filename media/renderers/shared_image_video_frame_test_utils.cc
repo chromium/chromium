@@ -98,8 +98,7 @@ scoped_refptr<VideoFrame> CreateSharedImageRGBAFrame(
   auto shared_image = sii->CreateSharedImage(
       viz::SinglePlaneFormat::kRGBA_8888, coded_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
-      "RGBAVideoFrame", pixels);
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ, "RGBAVideoFrame", pixels);
 
   return CreateSharedImageFrame(
       std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_ABGR,
