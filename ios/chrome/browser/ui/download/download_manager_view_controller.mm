@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/ui/download/download_manager_constants.h"
 #import "ios/chrome/browser/ui/download/download_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/download/radial_progress_view.h"
@@ -443,6 +444,8 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
         setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
+    _downloadToFilesButton.accessibilityIdentifier =
+        kDownloadManagerDownloadToFilesAccessibilityIdentifier;
   }
 
   return _downloadToFilesButton;
@@ -469,6 +472,8 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
         setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
+    _downloadToDriveButton.accessibilityIdentifier =
+        kDownloadManagerDownloadToDriveAccessibilityIdentifier;
   }
 
   return _downloadToDriveButton;
@@ -520,6 +525,8 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
         setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
+    _openInButton.accessibilityIdentifier =
+        kDownloadManagerOpenInAccessibilityIdentifier;
   }
 
   return _openInButton;
@@ -543,6 +550,8 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
         setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
+    _tryAgainButton.accessibilityIdentifier =
+        kDownloadManagerTryAgainAccessibilityIdentifier;
   }
 
   return _tryAgainButton;

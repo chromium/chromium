@@ -6,8 +6,6 @@ source_set("download") {
   sources = [
     "ar_quick_look_coordinator.h",
     "ar_quick_look_coordinator.mm",
-    "download_manager_animation_constants.h",
-    "download_manager_animation_constants.mm",
     "download_manager_consumer.h",
     "download_manager_coordinator.h",
     "download_manager_coordinator.mm",
@@ -34,6 +32,7 @@ source_set("download") {
     "vcard_coordinator.mm",
   ]
   deps = [
+    ":constants",
     ":features",
     "resources:background_compact",
     "resources:background_regular",
@@ -81,6 +80,13 @@ source_set("download") {
     "ARKit.framework",
     "StoreKit.framework",
     "UIKit.framework",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "download_manager_constants.h",
+    "download_manager_constants.mm",
   ]
 }
 
