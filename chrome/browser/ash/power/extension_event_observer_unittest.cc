@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/common/extensions/api/gcm.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -53,8 +54,10 @@ class ExtensionEventObserverTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
 
     chromeos::PowerManagerClient::InitializeFake();
-    profile_manager_ = std::make_unique<TestingProfileManager>(
+    testing_local_state_ = std::make_unique<ScopedTestingLocalState>(
         TestingBrowserProcess::GetGlobal());
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal(), testing_local_state_.get());
 
     // Must be called from ::testing::Test::SetUp.
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -131,6 +134,8 @@ class ExtensionEventObserverTest : public ChromeRenderViewHostTestHarness {
   user_manager::ScopedUserManager scoped_user_manager_enabler_;
 
   std::vector<scoped_refptr<const extensions::Extension>> created_apps_;
+
+  std::unique_ptr<ScopedTestingLocalState> testing_local_state_;
 };
 
 // Tests that the ExtensionEventObserver reports readiness for suspend when
