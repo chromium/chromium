@@ -10,7 +10,6 @@
 #import <vector>
 
 #import "base/check.h"
-#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/string_split.h"
@@ -38,13 +37,6 @@ const char kITunesAppPathIdentifier[] = "app";
 const size_t kITunesUrlPathMinComponentsCount = 2;
 const size_t kITunesUrlRegionComponentDefaultIndex = 0;
 const size_t kITunesUrlMediaTypeComponentDefaultIndex = 1;
-
-// Records the StoreKit handling result to IOS.StoreKit.ITunesURLsHandlingResult
-// UMA histogram.
-void RecordStoreKitHandlingResult(ITunesUrlsStoreKitHandlingResult result) {
-  UMA_HISTOGRAM_ENUMERATION("IOS.StoreKit.ITunesURLsHandlingResult", result,
-                            ITunesUrlsStoreKitHandlingResult::kCount);
-}
 
 // Returns true, it the given `url` is iTunes product URL.
 // iTunes URL should start with apple host and has product id.
@@ -136,16 +128,12 @@ void ITunesUrlsHandlerTabHelper::SetWebContentsHandler(
 #pragma mark - Private
 
 void ITunesUrlsHandlerTabHelper::HandleITunesUrl(const GURL& url) {
-  ITunesUrlsStoreKitHandlingResult handling_result =
-      ITunesUrlsStoreKitHandlingResult::kUrlHandlingFailed;
   if (web_content_handler_) {
     base::RecordAction(
         base::UserMetricsAction("ITunesLinksHandler_StoreKitLaunched"));
-    handling_result = ITunesUrlsStoreKitHandlingResult::kSingleAppUrlHandled;
     [web_content_handler_
         showAppStoreWithParameters:ExtractITunesProductParameters(url)];
   }
-  RecordStoreKitHandlingResult(handling_result);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(ITunesUrlsHandlerTabHelper)

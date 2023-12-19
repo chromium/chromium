@@ -3294,18 +3294,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.StoreKit.ITunesURLsHandlingResult"
-    enum="IOSITunesURLsStoreKitHandlingResult" expires_after="2021-06-23">
-  <owner>mrefaat@chromium.org</owner>
-  <owner>rohitrao@chromium.org</owner>
-  <summary>
-    The result of StoreKit handling for a specific iTunes URL. Not Handled will
-    be logged when the LinksHandler didn't handle a specific URL on purpose (not
-    supported), and Failure will be logged when a URL that should have been
-    handled wasn't handled.
-  </summary>
-</histogram>
-
 <histogram name="IOS.TabGrid.CloseTabs" units="Tabs" expires_after="2024-04-28">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>

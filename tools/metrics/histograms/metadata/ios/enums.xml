@@ -293,13 +293,6 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Distant tab resumption tile"/>
 </enum>
 
-<enum name="IOSITunesURLsStoreKitHandlingResult">
-  <int value="0" label="Handling failed"/>
-  <int value="1" label="Single App URL, handled"/>
-  <int value="2" label="App Bundle URL, handled"/>
-  <int value="3" label="App Bundle URL, not handled"/>
-</enum>
-
 <enum name="IOSJavascriptContentBlockType">
   <int value="0" label="Cookie"/>
   <int value="1" label="Local Storage"/>

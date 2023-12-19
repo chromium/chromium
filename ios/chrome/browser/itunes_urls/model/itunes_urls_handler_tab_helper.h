@@ -10,24 +10,6 @@
 
 @protocol WebContentCommands;
 
-// Enum for the IOS.StoreKit.ITunesURLsHandlingResult UMA histogram to report
-// the results of the StoreKit handling.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ITunesUrlsStoreKitHandlingResult {
-  // ITunes URL handling failed. This can happen if the Storekit tab helper is
-  // null, which in general should not happen, but if it happens StoreKit will
-  // not launch and this will value be logged.
-  kUrlHandlingFailed = 0,
-  // ITunes URL for single app was handled by the StoreKit.
-  kSingleAppUrlHandled = 1,
-  // ITunes URL for app bundle was handled by the StoreKit.
-  kBundleUrlHandled = 2,
-  // ITunes URL for app bundle was not handled by the StoreKit.
-  kBundleUrlNotHandled = 3,
-  kCount
-};
-
 // A Tab helper for iTunes Apps URLs handling.
 // If a navigation to web page for a supported product in iTunes App Store
 // happens while in non off the record browsing mode, this helper will use

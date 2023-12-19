@@ -6,7 +6,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/chrome/test/fakes/fake_web_content_handler.h"
@@ -15,11 +14,6 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-
-namespace {
-const char kITunesURLsHandlingResultHistogram[] =
-    "IOS.StoreKit.ITunesURLsHandlingResult";
-}  // namespace
 
 class ITunesUrlsHandlerTabHelperTest : public PlatformTest {
  protected:
@@ -61,7 +55,6 @@ class ITunesUrlsHandlerTabHelperTest : public PlatformTest {
   FakeWebContentHandler* fake_handler_;
   web::FakeWebState web_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  base::HistogramTester histogram_tester_;
 };
 
 // Verifies that iTunes URLs are not handled when in off the record mode.
@@ -121,7 +114,6 @@ TEST_F(ITunesUrlsHandlerTabHelperTest, NonMatchingUrlsDoesntLaunchStoreKit) {
       /*main_frame=*/true));
   EXPECT_FALSE(VerifyStoreKitLaunched(
       @"http://itunes.apple.com/app-bundle/id12345", /*main_frame=*/true));
-  histogram_tester_.ExpectTotalCount(kITunesURLsHandlingResultHistogram, 0);
 }
 
 // Verifies that navigating to URLs for a product hosted on iTunes AppStore
@@ -171,11 +163,4 @@ TEST_F(ITunesUrlsHandlerTabHelperTest, MatchingUrlsLaunchesStoreKit) {
       /*main_frame=*/true));
   expected_params = @{product_id : @"123", af_tkn : @"2", @"uo" : @"4"};
   EXPECT_NSEQ(expected_params, fake_handler_.productParams);
-
-  histogram_tester_.ExpectUniqueSample(
-      kITunesURLsHandlingResultHistogram,
-      static_cast<base::HistogramBase::Sample>(
-          ITunesUrlsStoreKitHandlingResult::kSingleAppUrlHandled),
-      8);
-  histogram_tester_.ExpectTotalCount(kITunesURLsHandlingResultHistogram, 8);
 }
