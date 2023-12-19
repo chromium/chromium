@@ -1036,8 +1036,8 @@ export class FileGrid extends Grid {
    * @param height Height of the coordinate.
    * @return Indexes of the hit elements.
    */
-  getHitElements(x: number, y: number, width?: number, height?: number):
-      number[] {
+  override getHitElements(
+      x: number, y: number, width?: number, height?: number): number[] {
     const currentSelection = [];
     const startXWithPadding =
         isRTL() ? this.clientWidth - (x + (width ?? 0)) : x;

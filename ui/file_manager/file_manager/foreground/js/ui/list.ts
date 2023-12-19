@@ -59,7 +59,7 @@ export function createList(): List {
 /**
  * Creates a new list element.
  */
-export class List extends HTMLUListElement {
+export abstract class List extends HTMLUListElement {
   /**
    * Measured size of list items. This is lazily calculated the first time it
    * is needed. Note that lead item is allowed to have a different height, to
@@ -1437,6 +1437,18 @@ export class List extends HTMLUListElement {
   set hasElementFocus(value: boolean) {
     boolAttrSetter(this, 'hasElementFocus', value);
   }
+
+  /**
+   * Obtains the index list of elements that are hit by a point or rectangle.
+   *
+   * @param x X coordinate value.
+   * @param y Y coordinate value.
+   * @param width Width of the coordinate.
+   * @param height Height of the coordinate.
+   * @return Indexes of the hit elements.
+   */
+  abstract getHitElements(
+      x: number, y: number, width?: number, height?: number): number[];
 }
 
 

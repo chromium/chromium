@@ -34,7 +34,6 @@ static_js_files = [
   "file_manager/foreground/js/ui/default_task_dialog.js",
   "file_manager/foreground/js/ui/dialog_footer.js",
   "file_manager/foreground/js/ui/directory_tree.js",
-  "file_manager/foreground/js/ui/drag_selector.js",
   "file_manager/foreground/js/ui/install_linux_package_dialog.js",
   "file_manager/foreground/js/ui/tree.js",
 ]
@@ -165,6 +164,7 @@ ts_files = [
   "file_manager/foreground/js/ui/combobutton.ts",
   "file_manager/foreground/js/ui/command.ts",
   "file_manager/foreground/js/ui/context_menu_handler.ts",
+  "file_manager/foreground/js/ui/drag_selector.ts",
   "file_manager/foreground/js/ui/file_grid.ts",
   "file_manager/foreground/js/ui/file_list_selection_model.ts",
   "file_manager/foreground/js/ui/file_manager_dialog_base.ts",

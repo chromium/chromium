@@ -40,7 +40,7 @@ export class GridItem extends ListItem {
 /**
  * Creates a new grid element.
  */
-export class Grid extends List {
+export abstract class Grid extends List {
   /**
    * The number of columns in the grid. Either set by the user, or lazy
    * calculated as the maximum number of items fitting in the grid width.

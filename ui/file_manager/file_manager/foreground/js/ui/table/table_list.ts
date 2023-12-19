@@ -16,7 +16,7 @@ import {Table} from './table.js';
 /**
  * Creates a new table list element.
  */
-export class TableList extends List {
+export abstract class TableList extends List {
   private table_: Table|null = null;
 
   override initialize() {

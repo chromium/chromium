@@ -258,11 +258,11 @@ export class FileTableList extends TableList {
    * @param _x X coordinate value.
    * @param y Y coordinate value.
    * @param _width Width of the coordinate.
-   * @param _height Height of the coordinate.
+   * @param height Height of the coordinate.
    * @return Index list of hit elements.
    */
-  getHitElements(_x: number, y: number, _width?: number, _height?: number):
-      number[] {
+  override getHitElements(
+      _x: number, y: number, _width?: number, height?: number): number[] {
     const fileListModel = this.dataModel;
     const groupBySnapshot =
         fileListModel ? fileListModel.getGroupBySnapshot() : [];
@@ -272,7 +272,7 @@ export class FileTableList extends TableList {
 
     const currentSelection = [];
     const startHeight = y;
-    const endHeight = y + (_height || 0);
+    const endHeight = y + (height || 0);
     const length = this.selectionModel?.length ?? 0;
     for (let i = 0; i < length; i++) {
       const itemMetrics = this.getHeightsForIndex(i);
