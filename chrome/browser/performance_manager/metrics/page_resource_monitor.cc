@@ -18,7 +18,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -55,6 +54,9 @@ constexpr int kCPUUsageFactor = 100 * 100;
 // The values for n when calculating the total CPU usage of the top n tabs.
 constexpr std::array<size_t, 5> kTabCountSlices = {1, 2, 4, 8, 16};
 
+// The time between calls to CollectPageResourceUsage()
+constexpr base::TimeDelta kCollectionDelay = base::Minutes(2);
+
 PageMeasurementBackgroundState GetBackgroundStateForMeasurementPeriod(
     const PageNode* page_node,
     base::TimeDelta time_since_last_measurement) {
@@ -82,9 +84,9 @@ PageResourceMonitor::PageResourceMonitor(bool enable_system_cpu_probe)
     : system_cpu_probe_(enable_system_cpu_probe ? CpuProbe::Create()
                                                 : nullptr) {
   collect_page_resource_usage_timer_.Start(
-      FROM_HERE, base::Minutes(2),
+      FROM_HERE, kCollectionDelay,
       base::BindRepeating(&PageResourceMonitor::CollectPageResourceUsage,
-                          weak_factory_.GetWeakPtr(), base::DoNothing()));
+                          weak_factory_.GetWeakPtr()));
   if (system_cpu_probe_) {
     system_cpu_probe_->StartSampling();
   }
@@ -92,14 +94,45 @@ PageResourceMonitor::PageResourceMonitor(bool enable_system_cpu_probe)
 
 PageResourceMonitor::~PageResourceMonitor() = default;
 
-void PageResourceMonitor::CollectPageResourceUsage(
-    base::OnceClosure done_closure) {
+void PageResourceMonitor::OnPassedToGraph(Graph* graph) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  graph_ = graph;
+  cpu_monitor_.StartMonitoring(graph_);
+}
+
+void PageResourceMonitor::OnTakenFromGraph(Graph* graph) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cpu_monitor_.StopMonitoring(graph_);
+  graph_ = nullptr;
+}
+
+base::TimeDelta PageResourceMonitor::GetCollectionDelayForTesting() const {
+  return kCollectionDelay;
+}
+
+base::TimeDelta PageResourceMonitor::GetDelayedMetricsTimeoutForTesting()
+    const {
+  return performance_manager::features::kDelayBeforeLogging.Get();
+}
+
+void PageResourceMonitor::SetCPUMeasurementDelegateFactoryForTesting(
+    Graph* graph,
+    PageResourceCPUMonitor::CPUMeasurementDelegate::Factory* factory) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Callback should be installed before `cpu_monitor_` starts
+  // measuring the graph.
+  CHECK(graph);
+  CHECK(!graph_);
+  cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(  // IN-TEST
+      graph, factory);
+}
+
+void PageResourceMonitor::CollectPageResourceUsage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CalculatePageCPUUsage(
       /*use_delayed_system_cpu_probe=*/false,
       base::BindOnce(&PageResourceMonitor::OnPageResourceUsageResult,
-                     weak_factory_.GetWeakPtr())
-          .Then(std::move(done_closure)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void PageResourceMonitor::OnPageResourceUsageResult(
@@ -419,36 +452,6 @@ void PageResourceMonitor::OnPageCPUUsageResult(
   } else {
     std::move(callback).Run(page_cpu_usage, absl::nullopt);
   }
-}
-
-void PageResourceMonitor::SetTriggerCollectionManuallyForTesting() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  collect_page_resource_usage_timer_.Stop();
-  log_cpu_on_delay_timer_.Stop();
-}
-
-void PageResourceMonitor::SetCPUMeasurementDelegateFactoryForTesting(
-    Graph* graph,
-    PageResourceCPUMonitor::CPUMeasurementDelegate::Factory* factory) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Callback should be installed before `cpu_monitor_` starts
-  // measuring the graph.
-  CHECK(graph);
-  CHECK(!graph_);
-  cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(  // IN-TEST
-      graph, factory);
-}
-
-void PageResourceMonitor::OnPassedToGraph(Graph* graph) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  graph_ = graph;
-  cpu_monitor_.StartMonitoring(graph_);
-}
-
-void PageResourceMonitor::OnTakenFromGraph(Graph* graph) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cpu_monitor_.StopMonitoring(graph_);
-  graph_ = nullptr;
 }
 
 }  // namespace performance_manager::metrics

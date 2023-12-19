@@ -27,8 +27,6 @@ class CpuProbe;
 
 namespace performance_manager::metrics {
 
-class PageResourceMonitorUnitTest;
-
 // Periodically reports tab resource usage via UKM.
 class PageResourceMonitor : public GraphOwned {
  public:
@@ -56,9 +54,22 @@ class PageResourceMonitor : public GraphOwned {
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
- private:
-  friend PageResourceMonitorUnitTest;
+  // Returns the time between calls to CollectPageResourceUsage(). Tests can
+  // advance the mock clock by this amount to trigger metrics collection.
+  base::TimeDelta GetCollectionDelayForTesting() const;
 
+  // Returns the delay before logging
+  // PerformanceManager.PerformanceInterventions.CPU.*.Delayed. Tests can
+  // advance the mock clock by this amount after CollectPageResourceUsage() to
+  // trigger the delayed metrics logging.
+  base::TimeDelta GetDelayedMetricsTimeoutForTesting() const;
+
+  // Passes the given `factory` to PageResourceCPUMonitor.
+  void SetCPUMeasurementDelegateFactoryForTesting(
+      Graph* graph,
+      PageResourceCPUMonitor::CPUMeasurementDelegate::Factory* factory);
+
+ private:
   // Suffix for CPU intervention histograms.
   enum class CPUInterventionSuffix {
     kBaseline,
@@ -72,9 +83,8 @@ class PageResourceMonitor : public GraphOwned {
   using PageCPUUsageVector =
       std::vector<std::pair<resource_attribution::PageContext, double>>;
 
-  // Asynchronously collects the PageResourceUsage UKM. Calls `done_closure`
-  // when finished.
-  void CollectPageResourceUsage(base::OnceClosure done_closure);
+  // Asynchronously collects the PageResourceUsage UKM.
+  void CollectPageResourceUsage();
 
   // Invoked asynchronously from CollectPageResourceUsage() when measurements
   // are ready.
@@ -122,15 +132,6 @@ class PageResourceMonitor : public GraphOwned {
                               absl::optional<system_cpu::PressureSample>)>
           callback,
       const PageResourceCPUMonitor::CPUUsageMap& cpu_usage_map);
-
-  // If this is called, CollectPageResourceUsage() will not be called on a
-  // timer. Tests can call it manually.
-  void SetTriggerCollectionManuallyForTesting();
-
-  // Passes the given `factory` to PageResourceCPUMonitor.
-  void SetCPUMeasurementDelegateFactoryForTesting(
-      Graph* graph,
-      PageResourceCPUMonitor::CPUMeasurementDelegate::Factory* factory);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

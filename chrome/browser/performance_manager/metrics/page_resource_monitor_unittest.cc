@@ -187,9 +187,9 @@ class PageResourceMonitorUnitTest : public GraphTestHarness {
     std::unique_ptr<PageResourceMonitor> monitor =
         std::make_unique<PageResourceMonitor>(enable_system_cpu_probe_);
     monitor_ = monitor.get();
-    monitor_->SetTriggerCollectionManuallyForTesting();
     monitor_->SetCPUMeasurementDelegateFactoryForTesting(
         graph(), &cpu_delegate_factory_);
+    last_collection_time_ = base::TimeTicks::Now();
     graph()->PassToGraph(std::move(monitor));
     ResetUkmRecorder();
   }
@@ -211,30 +211,28 @@ class PageResourceMonitorUnitTest : public GraphTestHarness {
   ukm::TestUkmRecorder* test_ukm_recorder() { return test_ukm_recorder_.get(); }
   PageResourceMonitor* monitor() { return monitor_; }
 
-  void TriggerCollectPageResourceUsage() {
-    base::RunLoop run_loop;
-    monitor_->CollectPageResourceUsage(run_loop.QuitClosure());
-    // GraphTestHarness uses ThreadPoolExecutionMode::QUEUED, so RunLoop only
-    // pumps the main thread. Manually pump ThreadPool threads for CPUProbe.
-    task_env().FastForwardBy(base::TimeDelta());
-    run_loop.Run();
-  }
+  // Advances the clock to trigger the PageResourceUsage UKM.
+  void TriggerCollectPageResourceUsage();
 
-  // Let an arbitrary amount of time pass so there's some CPU usage to measure.
-  // Page CPU can use the mock clock, but CPUProbe needs real time to pass.
-  void LetTimePass() {
-    task_env().FastForwardBy(base::Minutes(1));
-    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  }
+  // Advances the mock clock slightly to give enough time to make asynchronous
+  // measurements after CollectPageResourceUsage is triggered. If
+  // `include_system_cpu` is true, also waits for some real time to let the
+  // system CpuProbe collect data.
+  void WaitForMetrics(bool include_system_cpu = false);
+
+  // Advances the clock long enough to record
+  // PerformanceManager.PerformanceInterventions.CPU.*.Delayed after logging CPU
+  // intervention metrics.
+  void WaitForDelayedCPUInterventionMetrics();
 
   void ResetUkmRecorder() {
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
-  // Triggers a metrics collection and tests whether the BackgroundState logged
+  // Waits for metrics collection and tests whether the BackgroundState logged
   // for each ukm::SourceId matches the given expectation, then clears the
   // collected UKM's for the next slice.
-  void TestBackgroundStates(
+  void WaitForMetricsAndTestBackgroundStates(
       std::map<ukm::SourceId, PageMeasurementBackgroundState> expected_states);
 
   // Subclasses can override this before calling
@@ -243,12 +241,47 @@ class PageResourceMonitorUnitTest : public GraphTestHarness {
   bool enable_system_cpu_probe_ = true;
 
  private:
+  // Advances the mock clock to `target_time`.
+  void WaitUntil(base::TimeTicks target_time) {
+    ASSERT_GT(target_time, base::TimeTicks::Now());
+    task_env().FastForwardBy(target_time - base::TimeTicks::Now());
+  }
+
   std::unique_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
+
+  // The last time CollectPageResourceUsage() was triggered.
+  base::TimeTicks last_collection_time_;
 };
 
-void PageResourceMonitorUnitTest::TestBackgroundStates(
+void PageResourceMonitorUnitTest::TriggerCollectPageResourceUsage() {
+  WaitUntil(last_collection_time_ + monitor_->GetCollectionDelayForTesting());
+  last_collection_time_ = base::TimeTicks::Now();
+}
+
+void PageResourceMonitorUnitTest::WaitForMetrics(bool include_system_cpu) {
+  if (include_system_cpu) {
+    // Page CPU can use the mock clock, but CPUProbe needs real time to pass.
+    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+  }
+  // GraphTestHarness uses ThreadPoolExecutionMode::QUEUED, so RunLoop only
+  // pumps the main thread. FastForwardBy also pumps ThreadPool threads. With
+  // the mock clock, any timeout will pump the threads enough to post the tasks
+  // that gather and record metrics.
+  task_env().FastForwardBy(TestTimeouts::tiny_timeout());
+}
+
+void PageResourceMonitorUnitTest::WaitForDelayedCPUInterventionMetrics() {
+  // Trigger the delayed metrics timer.
+  WaitUntil(last_collection_time_ +
+            monitor_->GetDelayedMetricsTimeoutForTesting());
+
+  // Now that the timer has triggered, wait for the measurements to finish.
+  WaitForMetrics(/*include_system_cpu=*/true);
+}
+
+void PageResourceMonitorUnitTest::WaitForMetricsAndTestBackgroundStates(
     std::map<ukm::SourceId, PageMeasurementBackgroundState> expected_states) {
-  TriggerCollectPageResourceUsage();
+  WaitForMetrics();
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
   // Expect 1 entry per page.
@@ -325,6 +358,7 @@ TEST_F(PageResourceMonitorUnitTest, TestPageResourceUsage) {
   mock_graph.page->SetUkmSourceId(mock_source_id);
 
   TriggerCollectPageResourceUsage();
+  WaitForMetrics();
 
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
@@ -341,6 +375,7 @@ TEST_F(PageResourceMonitorUnitTest, TestPageResourceUsageNavigation) {
   mock_graph.page->SetType(performance_manager::PageType::kTab);
 
   TriggerCollectPageResourceUsage();
+  WaitForMetrics();
 
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
@@ -349,6 +384,7 @@ TEST_F(PageResourceMonitorUnitTest, TestPageResourceUsageNavigation) {
   mock_graph.page->SetUkmSourceId(mock_source_id_2);
 
   TriggerCollectPageResourceUsage();
+  WaitForMetrics();
 
   entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
@@ -368,6 +404,7 @@ TEST_F(PageResourceMonitorUnitTest, TestOnlyRecordTabs) {
   mock_graph.page->SetUkmSourceId(mock_source_id);
 
   TriggerCollectPageResourceUsage();
+  WaitForMetrics();
 
   auto entries2 = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
@@ -388,10 +425,8 @@ TEST_P(PageResourceMonitorWithFeatureTest, TestResourceUsage) {
   mock_graph.other_frame->SetPrivateFootprintKbEstimate(789);
   mock_graph.child_frame->SetPrivateFootprintKbEstimate(1000);
 
-  // Let an arbitrary amount of time pass so there's some CPU usage to measure.
-  task_env().FastForwardBy(base::Minutes(1));
-
   TriggerCollectPageResourceUsage();
+  WaitForMetrics();
 
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
@@ -444,19 +479,26 @@ TEST_F(PageResourceMonitorUnitTest, TestResourceUsageBackgroundState) {
   mock_graph.other_page->SetType(performance_manager::PageType::kTab);
   mock_graph.other_page->SetUkmSourceId(mock_source_id2);
 
-  // Start with page 1 in foreground.
+  // Start with page 1 in foreground. Pages remain in the same state for all
+  // of the first measurement period.
   mock_graph.page->SetIsVisible(true);
   mock_graph.other_page->SetIsVisible(false);
-  task_env().FastForwardBy(base::Minutes(1));
-  TestBackgroundStates(
+  TriggerCollectPageResourceUsage();
+
+  // Pages become audible for all of next measurement period. Change the state
+  // before waiting for the metrics to finish logging so the change happens at
+  // the beginning of the period.
+  mock_graph.page->SetIsAudible(true);
+  mock_graph.other_page->SetIsAudible(true);
+
+  // Test the metrics from the first measurement period.
+  WaitForMetricsAndTestBackgroundStates(
       {{mock_source_id, PageMeasurementBackgroundState::kForeground},
        {mock_source_id2, PageMeasurementBackgroundState::kBackground}});
 
-  // Pages become audible for all of next measurement period.
-  mock_graph.page->SetIsAudible(true);
-  mock_graph.other_page->SetIsAudible(true);
-  task_env().FastForwardBy(base::Minutes(1));
-  TestBackgroundStates(
+  // Finish the second measurement period.
+  TriggerCollectPageResourceUsage();
+  WaitForMetricsAndTestBackgroundStates(
       {{mock_source_id, PageMeasurementBackgroundState::kForeground},
        {mock_source_id2,
         PageMeasurementBackgroundState::kAudibleInBackground}});
@@ -464,10 +506,11 @@ TEST_F(PageResourceMonitorUnitTest, TestResourceUsageBackgroundState) {
   // Partway through next measurement period:
   // - Page 1 moves to background (still audible).
   // - Page 2 stops playing audio.
-  task_env().FastForwardBy(base::Minutes(1));
+  task_env().FastForwardBy(TestTimeouts::action_timeout());
   mock_graph.page->SetIsVisible(false);
   mock_graph.other_page->SetIsAudible(false);
-  TestBackgroundStates(
+  TriggerCollectPageResourceUsage();
+  WaitForMetricsAndTestBackgroundStates(
       {{mock_source_id,
         PageMeasurementBackgroundState::kMixedForegroundBackground},
        {mock_source_id2,
@@ -475,9 +518,10 @@ TEST_F(PageResourceMonitorUnitTest, TestResourceUsageBackgroundState) {
 
   // Partway through next measurement period, page 2 moves to foreground (still
   // inaudible).
-  task_env().FastForwardBy(base::Minutes(1));
+  task_env().FastForwardBy(TestTimeouts::action_timeout());
   mock_graph.other_page->SetIsVisible(true);
-  TestBackgroundStates(
+  TriggerCollectPageResourceUsage();
+  WaitForMetricsAndTestBackgroundStates(
       {{mock_source_id, PageMeasurementBackgroundState::kAudibleInBackground},
        {mock_source_id2,
         PageMeasurementBackgroundState::kMixedForegroundBackground}});
@@ -504,9 +548,21 @@ TEST_P(PageResourceMonitorWithFeatureTest, TestCPUInterventionMetrics) {
 
   {
     PatternedHistogramTester histograms;
-
-    LetTimePass();
     TriggerCollectPageResourceUsage();
+
+    // At the end of the measurement interval, before waiting for metrics to be
+    // logged, increase the CPU usage so that the new level applies to the whole
+    // next interval.
+    //
+    // The intervention metrics measure total CPU, not percentage of each core,
+    // so set the measurement delegates to return half of the total available
+    // CPU (100% per processor).
+    cpu_delegate_factory_.GetDelegate(mock_graph.process.get())
+        .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 2.0);
+    cpu_delegate_factory_.GetDelegate(mock_graph.other_process.get())
+        .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 2.0);
+
+    WaitForMetrics(/*include_system_cpu=*/true);
 
     auto baseline = histograms.WithSuffix("Baseline");
     baseline.ExpectUniqueSample("AverageBackgroundCPU", 0);
@@ -548,19 +604,11 @@ TEST_P(PageResourceMonitorWithFeatureTest, TestCPUInterventionMetrics) {
     histograms.ExpectNone("DurationOverThreshold");
   }
 
-  // The intervention metrics measure total CPU, not percentage of each core, so
-  // set the measurement delegates to return half of the total available CPU
-  // (100% per processor).
-  cpu_delegate_factory_.GetDelegate(mock_graph.process.get())
-      .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 2.0);
-  cpu_delegate_factory_.GetDelegate(mock_graph.other_process.get())
-      .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 2.0);
-
+  // Finish the next measurement interval with the higher CPU usage.
   {
     PatternedHistogramTester histograms;
-
-    LetTimePass();
     TriggerCollectPageResourceUsage();
+    WaitForMetrics(/*include_system_cpu=*/true);
 
     // `page` is in the foreground, and gets 50% of the `process` CPU (25% of
     // total CPU). `other_page` is in the background, and gets 50% of the
@@ -603,11 +651,10 @@ TEST_P(PageResourceMonitorWithFeatureTest, TestCPUInterventionMetrics) {
     histograms.ExpectNone("DurationOverThreshold");
   }
 
+  // Fast forward for Delayed UMA to be logged.
   {
     PatternedHistogramTester histograms;
-
-    // Fast forward for Delayed UMA to be logged.
-    LetTimePass();
+    WaitForDelayedCPUInterventionMetrics();
 
     auto baseline = histograms.WithSuffix("Baseline");
     baseline.ExpectNone("AverageBackgroundCPU");
@@ -663,15 +710,9 @@ TEST_P(PageResourceMonitorWithFeatureTest, TestCPUInterventionMetrics) {
     histograms.ExpectNone("DurationOverThreshold");
   }
 
-  if (!GetParam()) {
-    // The legacy CPU monitor only measures the CPU during
-    // TriggerCollectPageResourceUsage(), and returns the average CPU since
-    // the last call. Measure now so the next test doesn't include the last
-    // minute of CPU in the average.
-    TriggerCollectPageResourceUsage();
-  }
-
-  // Lower CPU measurement so the duration is logged.
+  // Finish this measurement interval, then lower the CPU measurement so the
+  // average CPU usage over the next interval is under the threshold.
+  TriggerCollectPageResourceUsage();
   cpu_delegate_factory_.GetDelegate(mock_graph.process.get())
       .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 8.0);
   cpu_delegate_factory_.GetDelegate(mock_graph.other_process.get())
@@ -679,12 +720,14 @@ TEST_P(PageResourceMonitorWithFeatureTest, TestCPUInterventionMetrics) {
 
   {
     PatternedHistogramTester histograms;
-
-    LetTimePass();
     TriggerCollectPageResourceUsage();
+    WaitForMetrics(/*include_system_cpu=*/true);
 
-    histograms.ExpectUniqueSample("DurationOverThreshold",
-                                  base::Minutes(2).InMilliseconds());
+    // CPU was over the threshold for one interval, and went under it during the
+    // second interval. The drop was detected at the end of the interval.
+    histograms.ExpectUniqueSample(
+        "DurationOverThreshold",
+        (2 * monitor()->GetCollectionDelayForTesting()).InMilliseconds());
 
     // `page` is in the foreground, and gets 50% of the `process` CPU (6.25%
     // of total CPU). `other_page` is in the background, and gets 50% of the
@@ -739,8 +782,8 @@ TEST_P(PageResourceMonitorWithFeatureTest,
   mock_graph.page->SetIsVisible(false);
 
   PatternedHistogramTester histograms;
-  LetTimePass();
   TriggerCollectPageResourceUsage();
+  WaitForMetrics();
 
   auto baseline = histograms.WithSuffix("Baseline");
   baseline.ExpectUniqueSample("AverageBackgroundCPU", 100);
@@ -775,8 +818,8 @@ TEST_P(PageResourceMonitorWithFeatureTest,
   mock_graph.page->SetIsVisible(true);
 
   PatternedHistogramTester histograms;
-  LetTimePass();
   TriggerCollectPageResourceUsage();
+  WaitForMetrics();
 
   auto baseline = histograms.WithSuffix("Baseline");
   // AverageBackgroundCPU would divide by 0.
@@ -812,10 +855,9 @@ TEST_F(PageResourceMonitorNoCPUProbeTest,
       .SetCPUUsage(base::SysInfo::NumberOfProcessors());
 
   PatternedHistogramTester histograms;
-  LetTimePass();
-  // Let enough time pass for Delayed histograms to be logged too.
-  LetTimePass();
   TriggerCollectPageResourceUsage();
+  // Let enough time pass for Delayed histograms to be logged too.
+  WaitForDelayedCPUInterventionMetrics();
 
   // Ensure each type of metrics were collected.
   auto baseline = histograms.WithSuffix("Baseline");
