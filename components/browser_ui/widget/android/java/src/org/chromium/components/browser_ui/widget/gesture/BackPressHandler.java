@@ -23,11 +23,10 @@ import java.lang.annotation.RetentionPolicy;
 public interface BackPressHandler {
     // The smaller the value is, the higher the priority is.
     // When adding a new identifier, make corresponding changes in the
-    // - tools/metrics/histograms/enums.xml: <enum name="BackPressConsumer">
+    // - tools/metrics/histograms/metadata/android/enums.xml: <enum name="BackPressConsumer">
     // - chrome/browser/back_press/android/.../BackPressManager.java: sMetricsMap
     @IntDef({
         Type.TEXT_BUBBLE,
-        Type.VR_DELEGATE,
         Type.XR_DELEGATE,
         Type.SCENE_OVERLAY,
         Type.START_SURFACE,
@@ -51,29 +50,28 @@ public interface BackPressHandler {
     @Retention(RetentionPolicy.SOURCE)
     @interface Type {
         int TEXT_BUBBLE = 0;
-        int VR_DELEGATE = 1;
-        int XR_DELEGATE = 2;
-        int SCENE_OVERLAY = 3;
-        int BOTTOM_SHEET = 4;
+        int XR_DELEGATE = 1;
+        int SCENE_OVERLAY = 2;
+        int BOTTOM_SHEET = 3;
         // TODO(b/307046796): Remove this once we have found better way to integrate with back
         // handling logic.
-        int PAGE_INSIGHTS_BOTTOM_SHEET = 5;
-        int START_SURFACE = 6;
-        int HUB = 7;
-        int TAB_SWITCHER = 8;
+        int PAGE_INSIGHTS_BOTTOM_SHEET = 4;
+        int START_SURFACE = 5;
+        int HUB = 6;
+        int TAB_SWITCHER = 7;
         // Fullscreen must be before selection popup. crbug.com/1454817.
-        int FULLSCREEN = 9;
-        int SELECTION_POPUP = 10;
-        int MANUAL_FILLING = 11;
-        int LOCATION_BAR = 12;
-        int TAB_MODAL_HANDLER = 13;
-        int CLOSE_WATCHER = 14;
-        int FIND_TOOLBAR = 15;
-        int BOTTOM_CONTROLS = 16;
-        int TAB_HISTORY = 17;
-        int TAB_RETURN_TO_CHROME_START_SURFACE = 18;
-        int SHOW_READING_LIST = 19;
-        int MINIMIZE_APP_AND_CLOSE_TAB = 20;
+        int FULLSCREEN = 8;
+        int SELECTION_POPUP = 9;
+        int MANUAL_FILLING = 10;
+        int LOCATION_BAR = 11;
+        int TAB_MODAL_HANDLER = 12;
+        int CLOSE_WATCHER = 13;
+        int FIND_TOOLBAR = 14;
+        int BOTTOM_CONTROLS = 15;
+        int TAB_HISTORY = 16;
+        int TAB_RETURN_TO_CHROME_START_SURFACE = 17;
+        int SHOW_READING_LIST = 18;
+        int MINIMIZE_APP_AND_CLOSE_TAB = 19;
         int NUM_TYPES = MINIMIZE_APP_AND_CLOSE_TAB + 1;
     }
 

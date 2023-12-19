@@ -27,7 +27,6 @@
       "ash/ash_strings.grd",
       "ash/shortcut_viewer/shortcut_viewer_strings.grd",
       "ash/webui/camera_app_ui/resources/strings/camera_strings.grd",
-      "chrome/android/features/vr/java/strings/android_chrome_vr_strings.grd",
       "chrome/android/features/keyboard_accessory/internal/java/strings/android_keyboard_accessory_strings.grd",
       "chrome/android/features/tab_ui/java/strings/android_chrome_tab_ui_strings.grd",
       "chrome/android/webapk/strings/android_webapk_strings.grd",

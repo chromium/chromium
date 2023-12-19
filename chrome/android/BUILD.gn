@@ -16,7 +16,6 @@ import("//chrome/android/expectations/expectations.gni")
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
 import("//chrome/android/features/start_surface/start_surface_java_sources.gni")
 import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
-import("//chrome/android/features/vr/public_vr_java_sources.gni")
 import("//chrome/android/feed/feed_java_sources.gni")
 import("//chrome/android/modules/chrome_bundle_tmpl.gni")
 import("//chrome/android/modules/chrome_feature_module_tmpl.gni")
@@ -123,12 +122,6 @@ if (current_toolchain == default_toolchain) {
       module_descs = _module_descs
       chrome_deps = [ ":delegate_public_impl_java" ]
     }
-  }
-
-  jinja_template("chrome_public_android_feature_vr_manifest") {
-    input = "features/vr/java/AndroidManifest.xml"
-    output = feature_module_vr_android_manifest_path
-    variables = default_chrome_public_jinja_variables
   }
 
   generate_ui_locale_resources("ui_locale_string_resources") {
@@ -690,8 +683,6 @@ if (current_toolchain == default_toolchain) {
     sources += feed_java_sources
     srcjar_deps += feed_srcjar_deps
 
-    sources += public_vr_java_sources
-
     # Include sources from tab_management_java_sources.gni.
     sources += public_tab_management_java_sources
 
@@ -701,10 +692,7 @@ if (current_toolchain == default_toolchain) {
     # Include sources for start_surface_java_sources.gni
     sources += start_surface_java_sources
 
-    srcjar_deps += [
-      ":chrome_jni_headers",
-      ":chrome_vr_android_java_enums_srcjar",
-    ]
+    srcjar_deps += [ ":chrome_jni_headers" ]
 
     # Add the actual implementation where necessary so that downstream targets
     # can provide their own implementations.
@@ -849,10 +837,7 @@ if (current_toolchain == default_toolchain) {
   }
 
   java_cpp_enum("chrome_vr_android_java_enums_srcjar") {
-    sources = [
-      "//chrome/browser/android/vr/vrcore_install_helper.h",
-      "//chrome/browser/vr/ui_test_input.h",
-    ]
+    sources = [ "//chrome/browser/vr/ui_test_input.h" ]
   }
 
   proto_java_library("update_proto_java") {
@@ -2038,17 +2023,13 @@ if (current_toolchain == default_toolchain) {
         sources = [
           "javatests/src/org/chromium/chrome/browser/vr/WebXrVrPermissionTestFramework.java",
           "javatests/src/org/chromium/chrome/browser/vr/WebXrVrTestFramework.java",
-          "javatests/src/org/chromium/chrome/browser/vr/rules/VrModuleNotInstalled.java",
           "javatests/src/org/chromium/chrome/browser/vr/rules/VrTestRule.java",
-          "javatests/src/org/chromium/chrome/browser/vr/util/NativeUiUtils.java",
-          "javatests/src/org/chromium/chrome/browser/vr/util/VrMessageUtils.java",
         ]
 
         deps = chrome_test_xr_java_deps + [
                  ":chrome_test_util_java",
                  "//base:base_java_test_support_uncommon",
                  "//chrome/android:chrome_test_xr_java",
-                 "//chrome/android/features/vr:java_resources",
                  "//chrome/browser/profiles/android:java",
                  "//chrome/browser/settings:java",
                  "//chrome/browser/tabmodel:java",
@@ -3641,10 +3622,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/webapps/WebappRegistry.java",
   ]
 
-  if (enable_vr) {
-    sources += [ "features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java" ]
-  }
-
   # Used for testing only, should not be shipped to end users.
   if (enable_offline_pages_harness) {
     sources += [ "java/src/org/chromium/chrome/browser/offlinepages/evaluation/OfflinePageEvaluationBridge.java" ]
@@ -3733,10 +3710,6 @@ template("libchrome_impl") {
       deps += invoker.deps
     }
 
-    if (enable_vr) {
-      deps += [ "//chrome/browser/android/vr:module_factory" ]
-    }
-
     java_targets = [ "//chrome/android:chrome_public_apk" ]
     forward_variables_from(invoker, "*", [ "deps" ])
   }
@@ -3785,9 +3758,6 @@ chrome_common_shared_library("libchromefortest") {
     "//content/test:test_support",
     "//ui/base/clipboard:clipboard_test_support",
   ]
-  if (enable_vr) {
-    deps += [ "//chrome/browser/android/vr:test_support" ]
-  }
 
   # Make this a partitioned library, since some partitioned code is linked in
   # (otherwise, the library will warn at build time that it contains multiple
@@ -3825,10 +3795,6 @@ template("libmonochrome_apk_or_bundle_tmpl") {
       java_targets = [ "//chrome/android:monochrome_64_public_bundle" ]
     } else {
       java_targets = [ "//chrome/android:monochrome_public_bundle" ]
-    }
-
-    if (enable_vr) {
-      deps += [ "//chrome/browser/android/vr:module_factory" ]
     }
 
     is_monochrome = true

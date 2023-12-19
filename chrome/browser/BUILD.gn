@@ -7838,12 +7838,6 @@ static_library("browser") {
   }
 
   if (enable_vr) {
-    if (enable_gvr_services) {
-      public_deps += [ "android/vr:vr_android" ]
-      configs += [ "//third_party/gvr-android-sdk:libgvr_config" ]
-      allow_circular_includes_from += [ "android/vr:vr_android" ]
-    }
-
     if (is_win) {
       sources += [
         "vr/ui_host/vr_ui_host_impl.cc",

@@ -187,7 +187,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -1137,14 +1136,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 tab.loadIfNeeded(TabLoadIfNeededCaller.ON_ACTIVITY_SHOWN);
             }
         }
-        VrModuleProvider.getDelegate().onActivityShown(this);
-
         MultiWindowUtils.getInstance().recordMultiWindowStateUkm(this, tab);
     }
 
     private void onActivityHidden() {
-        VrModuleProvider.getDelegate().onActivityHidden(this);
-
         Tab tab = getActivityTab();
         TabModelSelector tabModelSelector = mTabModelOrchestrator.getTabModelSelector();
         // If tab reparenting is in progress and the activity Tab isn't being reparented, e.g.
@@ -1871,8 +1866,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         maybeRemoveWindowBackground();
         DownloadManagerService.getDownloadManagerService()
                 .onActivityLaunched(new DownloadMessageUiDelegate());
-        VrModuleProvider.maybeInit();
-        VrModuleProvider.getDelegate().onNativeLibraryAvailable();
 
         PowerMonitor.create();
 
@@ -2351,8 +2344,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
         }
 
-        VrModuleProvider.getDelegate().onMultiWindowModeChanged(isInMultiWindowMode);
-
         super.onMultiWindowModeChanged(isInMultiWindowMode);
     }
 
@@ -2393,11 +2384,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // TODO(crbug.com/1279941): should this stop propagating the event?
             TextBubble.dismissBubbles();
             BackPressManager.record(Type.TEXT_BUBBLE);
-        }
-
-        if (VrModuleProvider.getDelegate().onBackPressed()) {
-            BackPressManager.record(Type.VR_DELEGATE);
-            return true;
         }
 
         XrDelegate xrDelegate = XrDelegateProvider.getDelegate();
@@ -2461,7 +2447,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // TODO(crbug.com/1279941): consider move to RootUiCoordinator.
             mTextBubbleBackPressHandler = new TextBubbleBackPressHandler();
             mBackPressManager.addHandler(mTextBubbleBackPressHandler, Type.TEXT_BUBBLE);
-            mBackPressManager.addHandler(VrModuleProvider.getDelegate(), Type.VR_DELEGATE);
 
             if (XrDelegateProvider.getDelegate() != null) {
                 mBackPressManager.addHandler(XrDelegateProvider.getDelegate(), Type.XR_DELEGATE);
@@ -2930,9 +2915,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public boolean onActivityResultWithNative(int requestCode, int resultCode, Intent intent) {
         if (super.onActivityResultWithNative(requestCode, resultCode, intent)) return true;
-        if (VrModuleProvider.getDelegate().onActivityResultWithNative(requestCode, resultCode)) {
-            return true;
-        }
         return false;
     }
 

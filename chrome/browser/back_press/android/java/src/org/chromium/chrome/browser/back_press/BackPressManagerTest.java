@@ -114,7 +114,7 @@ public class BackPressManagerTest {
                 TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    manager.addHandler(h1, BackPressHandler.Type.VR_DELEGATE);
+                    manager.addHandler(h1, BackPressHandler.Type.TEXT_BUBBLE);
                     manager.addHandler(h2, BackPressHandler.Type.XR_DELEGATE);
                     h1.getHandleBackPressChangedSupplier().set(false);
                     h2.getHandleBackPressChangedSupplier().set(true);
@@ -126,29 +126,30 @@ public class BackPressManagerTest {
 
         histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        BackPressManager.HISTOGRAM, 1); // 1 is VR_DELEGATE
+                        BackPressManager.HISTOGRAM,
+                        BackPressManager.getHistogramValue(BackPressHandler.Type.TEXT_BUBBLE));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     h1.getHandleBackPressChangedSupplier().set(true);
                     manager.getCallback().handleOnBackPressed();
                 });
         histogramWatcher.assertExpected(
-                "Only record to handler's histogram should have value 1 (VR_DELEGATE).");
+                "Only record to handler's histogram should have value 0 (TEXT_BUBBLE).");
     }
 
     @Test
     @SmallTest
     public void testFailedHandlers() {
         BackPressManager manager = new BackPressManager();
-        var vrFailedHandler =
+        var textBubbleFailedHandler =
                 TestThreadUtils.runOnUiThreadBlockingNoException(FailedBackPressHandler::new);
         var arSuccessHandler =
                 TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    manager.addHandler(vrFailedHandler, BackPressHandler.Type.VR_DELEGATE);
+                    manager.addHandler(textBubbleFailedHandler, BackPressHandler.Type.TEXT_BUBBLE);
                     manager.addHandler(arSuccessHandler, BackPressHandler.Type.XR_DELEGATE);
-                    vrFailedHandler.getHandleBackPressChangedSupplier().set(true);
+                    textBubbleFailedHandler.getHandleBackPressChangedSupplier().set(true);
                     arSuccessHandler.getHandleBackPressChangedSupplier().set(true);
                 });
 
@@ -157,7 +158,7 @@ public class BackPressManagerTest {
                         .expectIntRecord(
                                 BackPressManager.FAILURE_HISTOGRAM,
                                 BackPressManager.getHistogramValue(
-                                        BackPressHandler.Type.VR_DELEGATE))
+                                        BackPressHandler.Type.TEXT_BUBBLE))
                         .expectIntRecord(
                                 BackPressManager.HISTOGRAM,
                                 BackPressManager.getHistogramValue(
@@ -173,12 +174,12 @@ public class BackPressManagerTest {
         CallbackHelper callbackHelper = new CallbackHelper();
         BackPressManager manager = new BackPressManager();
         manager.setFallbackOnBackPressed(callbackHelper::notifyCalled);
-        var vrFailedHandler =
+        var textBubbleFailedHandler =
                 TestThreadUtils.runOnUiThreadBlockingNoException(FailedBackPressHandler::new);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    manager.addHandler(vrFailedHandler, BackPressHandler.Type.VR_DELEGATE);
-                    vrFailedHandler.getHandleBackPressChangedSupplier().set(true);
+                    manager.addHandler(textBubbleFailedHandler, BackPressHandler.Type.TEXT_BUBBLE);
+                    textBubbleFailedHandler.getHandleBackPressChangedSupplier().set(true);
                 });
 
         var watcher =
@@ -186,7 +187,7 @@ public class BackPressManagerTest {
                         .expectIntRecord(
                                 BackPressManager.FAILURE_HISTOGRAM,
                                 BackPressManager.getHistogramValue(
-                                        BackPressHandler.Type.VR_DELEGATE))
+                                        BackPressHandler.Type.TEXT_BUBBLE))
                         .build();
         triggerBackPressWithoutAssertionError(manager);
         callbackHelper.waitForFirst("Fallback should be triggered if all handlers failed.");
@@ -280,7 +281,7 @@ public class BackPressManagerTest {
         // Trigger XR delegate back press handler from left side.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    manager.addHandler(h1, BackPressHandler.Type.VR_DELEGATE);
+                    manager.addHandler(h1, BackPressHandler.Type.TEXT_BUBBLE);
                     manager.addHandler(h2, BackPressHandler.Type.XR_DELEGATE);
                     h1.getHandleBackPressChangedSupplier().set(false);
                     h2.getHandleBackPressChangedSupplier().set(true);
@@ -301,11 +302,11 @@ public class BackPressManagerTest {
                         .expectIntRecord(
                                 "Android.BackPress.Intercept.RightEdge",
                                 BackPressManager.getHistogramValue(
-                                        BackPressHandler.Type.VR_DELEGATE))
+                                        BackPressHandler.Type.TEXT_BUBBLE))
                         .expectNoRecords("Android.BackPress.Intercept.LeftEdge")
                         .expectNoRecords("Android.BackPress.SwipeEdge.TabHistoryNavigation")
                         .build();
-        // Trigger VR delegate back press handler from left side.
+        // Trigger Text bubble delegate back press handler from right side.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     h1.getHandleBackPressChangedSupplier().set(true);
@@ -319,7 +320,7 @@ public class BackPressManagerTest {
                     manager.getCallback().handleOnBackPressed();
                 });
 
-        edgeRecords2.assertExpected("Wrong histogram records for VR delegate.");
+        edgeRecords2.assertExpected("Wrong histogram records for Text Bubble delegate.");
     }
 
     @Test

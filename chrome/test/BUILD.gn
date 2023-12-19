@@ -580,12 +580,6 @@ static_library("test_support") {
       "../browser/installable/ml_promotion_browsertest_base.h",
     ]
 
-    if (enable_vr) {
-      public_deps += [ "//chrome/browser/android/vr:test_support" ]
-
-      # Add a dummy implementation of RegisterJni to satisfy the linker.
-      sources += [ "../browser/android/vr/register_jni_monochrome.cc" ]
-    }
     allow_circular_includes_from = [ ":test_support_ui_android" ]
   } else {
     public_deps += [

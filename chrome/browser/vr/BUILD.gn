@@ -282,10 +282,6 @@ component("vr_base") {
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  if (is_android) {
-    deps += [ "//chrome/android/features/vr:split_jni_headers" ]
-  }
 }
 
 test("vr_common_unittests") {

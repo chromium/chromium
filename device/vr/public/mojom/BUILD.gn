@@ -128,10 +128,6 @@ mojom_component("xr_common") {
     enabled_features += [ "enable_cardboard" ]
   }
 
-  if (enable_gvr_services) {
-    enabled_features += [ "enable_gvr_services" ]
-  }
-
   if (enable_arcore) {
     enabled_features += [ "enable_arcore" ]
   }

@@ -1736,10 +1736,6 @@ if (is_android) {
     if (is_chromeos_ash) {
       public_deps += [ "//ui/lottie" ]
     }
-
-    if (enable_vr) {
-      deps += [ "//third_party/gvr-android-sdk:gvr_shim" ]
-    }
   }
 }
 

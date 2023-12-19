@@ -51,7 +51,7 @@ public class BackPressManager implements Destroyable {
         // Max value is 22 - 1 obsolete value +1 for 0 indexing = 21 elements.
         SparseIntArray map = new SparseIntArray(20);
         map.put(Type.TEXT_BUBBLE, 0);
-        map.put(Type.VR_DELEGATE, 1);
+        // map.put(Type.VR_DELEGATE, 1);
         // map.put(Type.AR_DELEGATE, 2);
         map.put(Type.SCENE_OVERLAY, 3);
         map.put(Type.START_SURFACE, 4);

@@ -150,30 +150,6 @@ if (enable_vr) {
 
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-    if (enable_gvr_services) {
-      sources += [
-        "android/gvr/gvr_delegate.cc",
-        "android/gvr/gvr_delegate.h",
-        "android/gvr/gvr_delegate_provider.h",
-        "android/gvr/gvr_delegate_provider_factory.cc",
-        "android/gvr/gvr_delegate_provider_factory.h",
-        "android/gvr/gvr_device.cc",
-        "android/gvr/gvr_device.h",
-        "android/gvr/gvr_device_provider.cc",
-        "android/gvr/gvr_device_provider.h",
-        "android/gvr/gvr_utils.cc",
-        "android/gvr/gvr_utils.h",
-      ]
-
-      deps += [
-        ":jni_headers",
-        "//third_party/blink/public:blink_headers",
-        "//third_party/gvr-android-sdk:gvr_shim",
-      ]
-      ldflags = [ "-landroid" ]
-      configs += [ "//third_party/gvr-android-sdk:libgvr_config" ]
-    }
-
     if (enable_openxr) {
       sources += [
         "openxr/context_provider_callbacks.h",
@@ -384,27 +360,5 @@ if (enable_openxr) {
 
       data_deps = [ "//device/vr:json_mock" ]
     }
-  }
-}
-
-if (enable_gvr_services) {
-  java_sources_needing_jni =
-      [ "android/java/src/org/chromium/device/vr/NonPresentingGvrContext.java" ]
-
-  generate_jni("jni_headers") {
-    sources = java_sources_needing_jni
-    split_name = "vr"
-  }
-
-  android_library("java") {
-    srcjar_deps = [ ":jni_headers" ]
-    sources = java_sources_needing_jni
-    deps = [
-      "//base:base_java",
-      "//build/android:build_java",
-      "//third_party/gvr-android-sdk:gvr_common_java",
-      "//third_party/jni_zero:jni_zero_java",
-      "//ui/android:ui_java",
-    ]
   }
 }

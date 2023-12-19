@@ -1,9 +1,0 @@
-include_rules = [
-  "+chrome/browser/profiles/android/java",
-  "+chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/Tab.java",
-  "+chrome/browser/tabmodel/android/java",
-  "+components/browser_ui/notifications/android",
-  "+components/module_installer",
-  "+content/public/android/java/src/org/chromium/content_public",
-  "+components/browser_ui/widget/android:java",
-]

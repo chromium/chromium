@@ -1,3 +1,0 @@
-The VR dynamic feature module contains code necessary to support VR in Chrome.
-This folder contains the template for creating an VR DFM target as well as the
-required Android manifest.

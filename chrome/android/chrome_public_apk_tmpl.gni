@@ -425,10 +425,6 @@ template("chrome_common_apk_or_module_tmpl") {
         # For bundles, Dev UI is a feature in a DFM.
         deps += [ "//chrome/android/features/dev_ui:java" ]
       }
-      if (enable_vr) {
-        # For bundles, VR is a feature in a DFM.
-        deps += [ "//chrome/android/features/vr:java" ]
-      }
     }
 
     if (_is_monochrome) {
