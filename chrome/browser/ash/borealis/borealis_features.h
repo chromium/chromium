@@ -36,9 +36,7 @@ class BorealisFeatures {
     kVmPolicyBlocked,
     kUserPrefBlocked,
     kBlockedByFlag,
-    kUnsupportedModel,
-    kHardwareChecksFailed,
-    kIncorrectToken,
+    kInsufficientHardware,
   };
 
   // Creates a per-profile instance of the feature-checker for borealis.

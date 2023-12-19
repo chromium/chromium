@@ -16,10 +16,10 @@ class BorealisDisallowedDialogBrowserTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     if (name == "Launcher") {
       ShowLauncherDisallowedDialog(
-          ::borealis::BorealisFeatures::AllowStatus::kHardwareChecksFailed);
+          ::borealis::BorealisFeatures::AllowStatus::kInsufficientHardware);
     } else if (name == "Installer") {
       ShowInstallerDisallowedDialog(
-          ::borealis::BorealisFeatures::AllowStatus::kHardwareChecksFailed);
+          ::borealis::BorealisFeatures::AllowStatus::kInsufficientHardware);
     } else {
       NOTREACHED();
     }

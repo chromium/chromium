@@ -28,10 +28,8 @@ constexpr char kAmdCpuRegex[] = "Ryzen [357]";
 
 }  // namespace
 
-using AllowStatus = BorealisFeatures::AllowStatus;
-
 // static
-AllowStatus BorealisTokenHardwareChecker::BuildAndCheck(Data data) {
+bool BorealisTokenHardwareChecker::BuildAndCheck(Data data) {
   return BorealisTokenHardwareChecker(std::move(data)).Check();
 }
 
@@ -40,91 +38,85 @@ BorealisTokenHardwareChecker::BorealisTokenHardwareChecker(Data data)
 
 BorealisTokenHardwareChecker::~BorealisTokenHardwareChecker() = default;
 
-AllowStatus BorealisTokenHardwareChecker::Check() const {
+bool BorealisTokenHardwareChecker::Check() const {
   // Get the status from the board's perspective, based on some combination of
   // tokens and hardware/model checks.
-  AllowStatus per_board_status = BoardSpecificChecks();
-
+  //
   // Early exit if we're allowed.
-  if (per_board_status == AllowStatus::kAllowed) {
-    return AllowStatus::kAllowed;
+  if (BoardSpecificChecks()) {
+    return true;
   }
 
-  if (HasNamedToken("super", "i9n6HT3+3Bo:C1p^_qk!\\",
-                    "X1391g+2yiuBQrceA3gRGrT7+DQcaYGR/GkmFscyOfQ=")) {
-    return AllowStatus::kAllowed;
-  }
-
-  return per_board_status;
+  return HasNamedToken("super", "i9n6HT3+3Bo:C1p^_qk!\\",
+                       "X1391g+2yiuBQrceA3gRGrT7+DQcaYGR/GkmFscyOfQ=");
 }
 
 // Helper method that performs different checks based on the user's board.
-AllowStatus BorealisTokenHardwareChecker::BoardSpecificChecks() const {
+bool BorealisTokenHardwareChecker::BoardSpecificChecks() const {
   if (BoardIn({"hatch-borealis", "puff-borealis", "zork-borealis",
                "volteer-borealis"})) {
     if (HasNamedToken("dogfood", "MXlY+SFZ!2,P_k^02]hK",
                       "FbxB2mxNa/uqskX4X+NqHhAE6ebHeWC0u+Y+UlGEB/4=")) {
-      return AllowStatus::kAllowed;
+      return true;
     }
-    return AllowStatus::kIncorrectToken;
+    return false;
   } else if (IsBoard("volteer")) {
     bool valid_model =
         ModelIn({"delbin", "voxel", "volta", "lindar", "elemi", "volet",
                  "drobit", "lillipup", "delbing", "eldrid", "chronicler"});
     if (HasSufficientHardware(kIntelCpuRegex) && valid_model) {
-      return AllowStatus::kAllowed;
+      return true;
     } else if (HasNamedToken("volteer", "w/8GMLXyB.EOkFaP/-AA",
                              "waiTIRjxZCFjFIRkuUVlnAbiDOMBSzyp3iSJl5x3YwA=")) {
-      return AllowStatus::kAllowed;
+      return true;
     }
-    return valid_model ? AllowStatus::kHardwareChecksFailed
-                       : AllowStatus::kUnsupportedModel;
+    return false;
   } else if (BoardIn({"brya", "adlrvp", "brask"})) {
     if (HasSufficientHardware(kIntelCpuRegex)) {
-      return AllowStatus::kAllowed;
+      return true;
     } else if (HasNamedToken("brya", "tPl24iMxXNR,w$h6,g",
                              "LWULWUcemqmo6Xvdu2LalOYOyo/V4/CkljTmAneXF+U=")) {
-      return AllowStatus::kAllowed;
+      return true;
     }
-    return AllowStatus::kHardwareChecksFailed;
+    return false;
   } else if (BoardIn({"guybrush", "majolica"})) {
     if (HasSufficientHardware(kAmdCpuRegex)) {
-      return AllowStatus::kAllowed;
+      return true;
     } else if (HasNamedToken("guybrush-majolica", "^_GkTVWDP.FQo5KclS",
                              "ftqv2wT3qeJKajioXqd+VrEW34CciMsigH3MGfMiMsU=")) {
-      return AllowStatus::kAllowed;
+      return true;
     }
-    return AllowStatus::kHardwareChecksFailed;
+    return false;
   } else if (BoardIn({"aurora"})) {
-    return AllowStatus::kAllowed;
+    return true;
   } else if (BoardIn({"myst"})) {
-    return AllowStatus::kAllowed;
+    return true;
   } else if (IsBoard("nissa")) {
     if (HasSufficientHardware(kIntelCpuRegex) && InTargetSegment()) {
-      return AllowStatus::kAllowed;
+      return true;
     } else if (HasNamedToken("nissa", "nissa/!wcers4vuP7+2a/X$C8",
                              "24/U3nXWbTno/VJwp17HI+UDzWd77iXj5oDgavIZhoI=")) {
-      return AllowStatus::kAllowed;
+      return true;
     }
   } else if (IsBoard("skyrim")) {
     if (HasSufficientHardware(kAmdCpuRegex) && InTargetSegment()) {
-      return AllowStatus::kAllowed;
+      return true;
     } else if (HasNamedToken("skyrim", "skyrim/!2-DxWY_cL/nXF1U+oV",
                              "esBGhWX18eOMlNrqOS5oEcFfyy0MbNJ5VWz+92iVOwk=")) {
-      return AllowStatus::kAllowed;
+      return true;
     }
   } else if (IsBoard("rex")) {
     // TODO(307825451): .* allows any CPU, add the correct cpu regex once we
     // know what that is.
     if (HasSufficientHardware(".*")) {
-      return AllowStatus::kAllowed;
+      return true;
     } else if (HasNamedToken("rex", "!P$z%iOvTg,5n3t@%8m",
                              "+Ynue2NR7pnJrI9McC5aHhcO9OEW6q2dS0kr9fQaq2Q=")) {
-      return AllowStatus::kAllowed;
+      return true;
     }
-    return AllowStatus::kHardwareChecksFailed;
+    return false;
   }
-  return AllowStatus::kUnsupportedModel;
+  return false;
 }
 
 bool BorealisTokenHardwareChecker::HasSufficientHardware(
