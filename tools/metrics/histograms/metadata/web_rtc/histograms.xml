@@ -1423,15 +1423,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.Simulcast.NumberOfSendEncodings"
-    units="units" expires_after="2020-08-30">
-  <owner>amithi@chromium.org</owner>
-  <summary>
-    Counts the number of send encodings given to PeerConnection::AddTransceiver.
-    This histogram will be used to understand if and how the API is used.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.PeerConnection.SpeedLimit" units="%"
     expires_after="2024-04-28">
   <owner>handellm@google.com</owner>
