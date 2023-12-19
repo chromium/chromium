@@ -69,6 +69,7 @@ void WorkTracker::WaitNoSyncWork() {
   // `std::memory_order_relaxed` instead of `kMemoryAcquireBeforeWork` because
   // the lock implicitly acquires memory released by `~SyncWorkAuthorization`.
   base::internal::CheckedAutoLock auto_lock(active_sync_work_lock_);
+  ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow;
   uint32_t prev = state_.load(std::memory_order_relaxed);
   while (prev & kActiveSyncWork) {
     active_sync_work_cv_->Wait();
