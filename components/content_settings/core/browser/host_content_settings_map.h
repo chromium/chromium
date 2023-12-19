@@ -193,6 +193,13 @@ class HostContentSettingsMap : public content_settings::Observer,
       absl::optional<content_settings::SessionModel> session_model =
           absl::nullopt) const;
 
+  // Returns the correct patterns for the scoping of the particular content
+  // type.
+  static content_settings::PatternPair GetPatternsForContentSettingsType(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType type);
+
   // Sets the default setting for a particular content type. This method must
   // not be invoked on an incognito map.
   //

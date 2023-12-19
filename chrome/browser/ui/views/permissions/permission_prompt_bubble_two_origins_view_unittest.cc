@@ -133,29 +133,33 @@ class PermissionPromptBubbleTwoOriginsViewTest : public ChromeViewsTestBase {
 
 TEST_F(PermissionPromptBubbleTwoOriginsViewTest,
        TitleMentionsRequestingOriginAndPermission) {
-  TestDelegateTwoOrigins delegate(GURL("https://test.requesting.origin"),
-                                  GURL("https://test.embedding.origin"),
+  TestDelegateTwoOrigins delegate(GURL("https://www.test.requesting.com"),
+                                  GURL("https://www.test.embedding.com"),
                                   {permissions::RequestType::kStorageAccess});
   auto bubble = CreateBubble(&delegate);
 
   const auto title = base::UTF16ToUTF8(bubble->GetWindowTitle());
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, "info they've saved about you",
                       title);
-  // The scheme is not included.
-  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "test.requesting.origin", title);
+  // The scheme is not included. Only the origin should be visible.
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "requesting.com", title);
+  EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "https://", title);
+  EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "www", title);
+  EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "test.requesting", title);
+  EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "test.embedding", title);
 }
 
 TEST_F(PermissionPromptBubbleTwoOriginsViewTest, DiesIfPermissionNotAllowed) {
-  TestDelegateTwoOrigins delegate(GURL("https://test.requesting.origin"),
-                                  GURL("https://test.embedding.origin"),
+  TestDelegateTwoOrigins delegate(GURL("https://www.test.requesting.com"),
+                                  GURL("https://www.test.embedding.com"),
                                   {permissions::RequestType::kCameraStream});
   EXPECT_DEATH_IF_SUPPORTED(CreateBubble(&delegate), "");
 }
 
 TEST_F(PermissionPromptBubbleTwoOriginsViewTest,
        DescriptionMentionsTwoOriginsAndPermission) {
-  TestDelegateTwoOrigins delegate(GURL("https://test.requesting.origin"),
-                                  GURL("https://test.embedding.origin"),
+  TestDelegateTwoOrigins delegate(GURL("https://www.test.requesting.com"),
+                                  GURL("https://www.test.embedding.com"),
                                   {permissions::RequestType::kStorageAccess});
   auto bubble = CreateBubble(&delegate);
 
@@ -164,16 +168,19 @@ TEST_F(PermissionPromptBubbleTwoOriginsViewTest,
                               VIEW_ID_PERMISSION_PROMPT_EXTRA_TEXT));
   EXPECT_TRUE(label_description);
 
+  // The scheme is not included. Only the origin should be visible.
   const auto description = base::UTF16ToUTF8(label_description->GetText());
-  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "test.requesting.origin",
-                      description);
-  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "test.embedding.origin",
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "requesting.com", description);
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "embedding.com", description);
+  EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "https://", description);
+  EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "www", description);
+  EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "test.requesting",
                       description);
 }
 
 TEST_F(PermissionPromptBubbleTwoOriginsViewTest, LinkIsPresent) {
-  TestDelegateTwoOrigins delegate(GURL("https://test.requesting.origin"),
-                                  GURL("https://test.embedding.origin"),
+  TestDelegateTwoOrigins delegate(GURL("https://www.test.requesting.com"),
+                                  GURL("https://www.test.embedding.com"),
                                   {permissions::RequestType::kStorageAccess});
   auto bubble = CreateBubble(&delegate);
 

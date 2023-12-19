@@ -125,11 +125,17 @@ std::u16string PermissionPromptAndroid::GetMessageText() const {
     if (requests[0]->request_type() == RequestType::kStorageAccess) {
       if (base::FeatureList::IsEnabled(
               permissions::features::kPermissionStorageAccessAPI)) {
+        auto patterns =
+            HostContentSettingsMap::GetPatternsForContentSettingsType(
+                delegate_->GetRequestingOrigin(),
+                delegate_->GetEmbeddingOrigin(),
+                ContentSettingsType::STORAGE_ACCESS);
+
         auto requesting_origin = url_formatter::FormatUrlForSecurityDisplay(
-            delegate_->GetRequestingOrigin(),
+            patterns.first.ToRepresentativeUrl(),
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
         auto embedding_origin = url_formatter::FormatUrlForSecurityDisplay(
-            delegate_->GetEmbeddingOrigin(),
+            patterns.second.ToRepresentativeUrl(),
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 
         return l10n_util::GetStringFUTF16(

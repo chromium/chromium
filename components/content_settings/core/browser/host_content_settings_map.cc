@@ -210,18 +210,6 @@ content_settings::PatternPair GetPatternsFromScopingType(
   return patterns;
 }
 
-content_settings::PatternPair GetPatternsForContentSettingsType(
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    ContentSettingsType type) {
-  const WebsiteSettingsInfo* website_settings_info =
-      content_settings::WebsiteSettingsRegistry::GetInstance()->Get(type);
-  DCHECK(website_settings_info);
-  content_settings::PatternPair patterns = GetPatternsFromScopingType(
-      website_settings_info->scoping_type(), primary_url, secondary_url);
-  return patterns;
-}
-
 // This enum is used to collect Flash permission data.
 enum class FlashPermissions {
   kFirstTime = 0,
@@ -619,6 +607,19 @@ content_settings::PatternPair HostContentSettingsMap::GetNarrowestPatterns(
       patterns.second = std::move(info.secondary_pattern);
   }
 
+  return patterns;
+}
+
+content_settings::PatternPair
+HostContentSettingsMap::GetPatternsForContentSettingsType(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType type) {
+  const WebsiteSettingsInfo* website_settings_info =
+      content_settings::WebsiteSettingsRegistry::GetInstance()->Get(type);
+  DCHECK(website_settings_info);
+  content_settings::PatternPair patterns = GetPatternsFromScopingType(
+      website_settings_info->scoping_type(), primary_url, secondary_url);
   return patterns;
 }
 
