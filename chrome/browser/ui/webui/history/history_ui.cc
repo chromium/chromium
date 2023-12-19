@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
+#include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -174,6 +175,22 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
 }
 
 }  // namespace
+
+HistoryUIConfig::HistoryUIConfig()
+    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIHistoryHost) {}
+
+HistoryUIConfig::~HistoryUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+HistoryUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                       const GURL& url) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+  if (profile->IsGuestSession()) {
+    return std::make_unique<PageNotAvailableForGuestUI>(
+        web_ui, chrome::kChromeUIHistoryHost);
+  }
+  return std::make_unique<HistoryUI>(web_ui);
+}
 
 HistoryUI::HistoryUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {

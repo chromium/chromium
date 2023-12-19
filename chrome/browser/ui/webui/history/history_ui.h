@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -26,6 +27,17 @@ class HistoryClustersHandler;
 namespace page_image_service {
 class ImageServiceHandler;
 }
+
+class HistoryUIConfig : public content::WebUIConfig {
+ public:
+  HistoryUIConfig();
+  ~HistoryUIConfig() override;
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+};
 
 class HistoryUI : public ui::MojoWebUIController {
  public:
