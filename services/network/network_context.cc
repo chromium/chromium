@@ -2382,6 +2382,12 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
             std::move(params_->custom_proxy_config_client_receiver),
             std::move(params_->custom_proxy_connection_observer_remote),
             network_service_->network_service_proxy_allow_list());
+    if (params_->ip_protection_config_getter) {
+      proxy_delegate->SetIpProtectionConfigCache(
+          std::make_unique<IpProtectionConfigCacheImpl>(
+              std::move(params_->ip_protection_config_getter)));
+      proxy_delegate->GetIpProtectionConfigCache()->SetUp();
+    }
     proxy_delegate_ = proxy_delegate.get();
     builder.set_proxy_delegate(std::move(proxy_delegate));
   }
@@ -2751,18 +2757,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     domain_reliability_monitor_->AddBakedInConfigs();
     domain_reliability_monitor_->SetDiscardUploads(
         params_->discard_domain_reliablity_uploads);
-  }
-
-  if (proxy_delegate_) {
-    proxy_delegate_->SetProxyResolutionService(
-        result.url_request_context->proxy_resolution_service());
-
-    if (params_->ip_protection_config_getter) {
-      proxy_delegate_->SetIpProtectionConfigCache(
-          std::make_unique<IpProtectionConfigCacheImpl>(
-              std::move(params_->ip_protection_config_getter)));
-      proxy_delegate_->GetIpProtectionConfigCache()->SetUp();
-    }
   }
 
   return result;

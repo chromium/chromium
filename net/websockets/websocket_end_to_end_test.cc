@@ -303,6 +303,9 @@ class TestProxyDelegateWithProxyInfo : public ProxyDelegate {
     return OK;
   }
 
+  void SetProxyResolutionService(
+      ProxyResolutionService* proxy_resolution_service) override {}
+
  private:
   ResolvedProxyInfo resolved_proxy_info_;
 };

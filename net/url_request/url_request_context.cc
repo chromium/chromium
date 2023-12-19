@@ -77,6 +77,15 @@ URLRequestContext::~URLRequestContext() {
   // down before this cancels the ProxyResolutionService's URLRequests.
   proxy_resolution_service()->OnShutdown();
 
+  // If a ProxyDelegate is set then the builder gave it a pointer to the
+  // ProxyResolutionService, so clear that here to avoid having a dangling
+  // pointer. There's no need to clear the ProxyResolutionService's pointer to
+  // ProxyDelegate because the member destruction order ensures that
+  // ProxyResolutionService is destroyed first.
+  if (proxy_delegate()) {
+    proxy_delegate()->SetProxyResolutionService(nullptr);
+  }
+
   DCHECK(host_resolver());
   host_resolver()->OnShutdown();
 

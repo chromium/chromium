@@ -254,6 +254,9 @@ class TestResolveProxyDelegate : public ProxyDelegate {
     return OK;
   }
 
+  void SetProxyResolutionService(
+      ProxyResolutionService* proxy_resolution_service) override {}
+
  private:
   int num_resolve_proxy_called_ = 0;
   bool add_proxy_ = false;
@@ -289,6 +292,9 @@ class TestProxyFallbackProxyDelegate : public ProxyDelegate {
       const HttpResponseHeaders& response_headers) override {
     return OK;
   }
+
+  void SetProxyResolutionService(
+      ProxyResolutionService* proxy_resolution_service) override {}
 
   bool num_proxy_fallback_called() const { return num_proxy_fallback_called_; }
 

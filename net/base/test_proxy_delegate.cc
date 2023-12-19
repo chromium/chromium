@@ -10,6 +10,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -75,5 +76,8 @@ Error TestProxyDelegate::OnTunnelHeadersReceived(
   on_tunnel_headers_received_chain_indices_.push_back(chain_index);
   return OK;
 }
+
+void TestProxyDelegate::SetProxyResolutionService(
+    ProxyResolutionService* proxy_resolution_service) {}
 
 }  // namespace net

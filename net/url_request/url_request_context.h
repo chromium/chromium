@@ -312,8 +312,10 @@ class NET_EXPORT URLRequestContext final {
   std::unique_ptr<HostResolver> host_resolver_;
   std::unique_ptr<CertVerifier> cert_verifier_;
   std::unique_ptr<HttpAuthHandlerFactory> http_auth_handler_factory_;
-  std::unique_ptr<ProxyDelegate> proxy_delegate_;
   std::unique_ptr<NetworkDelegate> network_delegate_;
+  // `proxy_resolution_service_` may store a pointer to `proxy_delegate_`, so
+  // ensure that the latter outlives the former.
+  std::unique_ptr<ProxyDelegate> proxy_delegate_;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   std::unique_ptr<SSLConfigService> ssl_config_service_;
   std::unique_ptr<HttpServerProperties> http_server_properties_;

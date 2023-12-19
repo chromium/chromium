@@ -315,6 +315,11 @@ net::Error NetworkServiceProxyDelegate::OnTunnelHeadersReceived(
   return net::OK;
 }
 
+void NetworkServiceProxyDelegate::SetProxyResolutionService(
+    net::ProxyResolutionService* proxy_resolution_service) {
+  proxy_resolution_service_ = proxy_resolution_service;
+}
+
 void NetworkServiceProxyDelegate::OnCustomProxyConfigUpdated(
     mojom::CustomProxyConfigPtr proxy_config,
     OnCustomProxyConfigUpdatedCallback callback) {

@@ -394,6 +394,8 @@ class SingleProxyDelegate : public ProxyDelegate {
       const HttpResponseHeaders& response_headers) override {
     return OK;
   }
+  void SetProxyResolutionService(
+      ProxyResolutionService* proxy_resolution_service) override {}
 
   size_t on_before_tunnel_request_call_count() const {
     return on_before_tunnel_request_call_count_;
@@ -27187,6 +27189,8 @@ class IpProtectionProxyDelegate : public ProxyDelegate {
       const HttpResponseHeaders& response_headers) override {
     return OK;
   }
+  void SetProxyResolutionService(
+      ProxyResolutionService* proxy_resolution_service) override {}
 
   static std::string GetAuthorizationHeaderValue(
       const ProxyServer& proxy_server) {

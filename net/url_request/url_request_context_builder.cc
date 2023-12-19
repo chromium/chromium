@@ -452,6 +452,14 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
       proxy_resolution_service_.get();
   context->set_proxy_resolution_service(std::move(proxy_resolution_service_));
 
+  if (proxy_delegate_) {
+    ProxyDelegate* proxy_delegate = proxy_delegate_.get();
+    context->set_proxy_delegate(std::move(proxy_delegate_));
+
+    proxy_resolution_service->SetProxyDelegate(proxy_delegate);
+    proxy_delegate->SetProxyResolutionService(proxy_resolution_service);
+  }
+
 #if BUILDFLAG(ENABLE_REPORTING)
   // Note: ReportingService::Create and NetworkErrorLoggingService::Create can
   // both return nullptr if the corresponding base::Feature is disabled.
@@ -487,11 +495,6 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
         context->reporting_service());
   }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
-
-  if (proxy_delegate_) {
-    proxy_resolution_service->SetProxyDelegate(proxy_delegate_.get());
-    context->set_proxy_delegate(std::move(proxy_delegate_));
-  }
 
   HttpNetworkSessionContext network_session_context;
   // Unlike the other fields of HttpNetworkSession::Context,

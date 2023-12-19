@@ -50,6 +50,7 @@
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_list.h"
+#include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/mock_quic_context.h"
@@ -242,6 +243,8 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
     factory_ = nullptr;
     job_controller_ = nullptr;
     session_.reset();
+
+    session_deps_.proxy_resolution_service->SetProxyDelegate(nullptr);
 
     session_deps_ = SpdySessionDependencies(
         ConfiguredProxyResolutionService::CreateDirect());
