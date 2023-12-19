@@ -578,36 +578,35 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // getNextText returns a list of triples of AXNodeIds and start / end text
     // indices, represented as a double array.
-    const nextTextIds: number[][] =
-        chrome.readingMode.getNextText(maxTextLength);
+    const nextTextIds: number[] = chrome.readingMode.getNextText(maxTextLength);
     return this.playCurrentMessage(nextTextIds);
   }
 
   playPreviousMessage(): boolean {
     const maxTextLength = this.maxSpeechLength;
-    const previousTextIds: number[][] =
+    const previousTextIds: number[] =
         chrome.readingMode.getPreviousText(maxTextLength);
     return this.playCurrentMessage(previousTextIds);
   }
 
   // TODO (crbug.com/1474951): Investigate using AXRange.GetText to get text
   // between start node / end nodes and their offsets.
-  playCurrentMessage(nextTextIds: number[][]): boolean {
+  playCurrentMessage(nextTextIds: number[]): boolean {
     if (nextTextIds.length === 0) {
       return false;
     }
     let utterance: string = '';
     for (let i = 0; i < nextTextIds.length; i++) {
-      assert(nextTextIds[i].length === 3);
-      const node = nextTextIds[i][0];
-      const startIndex = nextTextIds[i][1];
-      const index = nextTextIds[i][2];
-      const element = this.domNodeToAxNodeIdMap_.keyFrom(node);
-      if (!element) {
+      assert(nextTextIds[i]);
+      const nodeId = nextTextIds[i];
+      const startIndex = chrome.readingMode.getNextTextStartIndex(nodeId);
+      const endIndex = chrome.readingMode.getNextTextEndIndex(nodeId);
+      const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
+      if (!element || startIndex < 0 || endIndex < 0) {
         continue;
       }
-      const content =
-          chrome.readingMode.getTextContent(node).substring(startIndex, index);
+      const content = chrome.readingMode.getTextContent(nodeId).substring(
+          startIndex, endIndex);
       if (content) {
         // Add all of the text from the current nodes into a single utterance.
         utterance += ' ' + content;
@@ -650,22 +649,27 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   // TODO(crbug.com/1474951): Handle previous highlighting.
-  highlightNodes(nextTextIds: number[][]) {
+  highlightNodes(nextTextIds: number[]) {
     // implementation based off of #highlightCurrentText below
     assert(nextTextIds.length > 0);
     for (let i = 0; i < nextTextIds.length; i++) {
-      const element = this.domNodeToAxNodeIdMap_.keyFrom(nextTextIds[i][0]);
+      const nodeId = nextTextIds[i];
+      const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
       if (!element) {
         continue;
       }
-      const start = nextTextIds[i][1];
-      const end = nextTextIds[i][2];
+      const start = chrome.readingMode.getNextTextStartIndex(nodeId);
+      const end = chrome.readingMode.getNextTextEndIndex(nodeId);
+      if ((start < 0) || (end < 0)) {
+        // If the start or end index is invalid, don't use this node.
+        continue;
+      }
       let text = element.textContent;
       if (text) {
         text = text.substring(start, end);
       }
       const newElement: Node = this.highlightCurrentText_(start, end, element);
-      this.domNodeToAxNodeIdMap_.set(newElement, nextTextIds[i][0]);
+      this.domNodeToAxNodeIdMap_.set(newElement, nodeId);
     }
   }
 

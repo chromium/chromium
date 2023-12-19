@@ -75,6 +75,42 @@ class ReadAnythingAppController
   // to page.
   static ReadAnythingAppController* Install(content::RenderFrame* render_frame);
 
+  // A current segment of text that will be consumed by Read Aloud.
+  struct ReadAloudTextSegment {
+    // The AXNodeID associated with this particular text segment.
+    ui::AXNodeID id;
+
+    // The starting index for the text with the node of the given id.
+    int text_start;
+
+    // The ending index for the text with the node of the given id.
+    int text_end;
+  };
+
+  // A representation of multiple ReadAloudTextSegments that are processed
+  // by Read Aloud at a single moment. For example, when using sentence
+  // granularity, the list of ReadAloudTextSegments in a
+  // ReadAloudCurrentGranularity will include all ReadAloudTextSegments
+  // necessary to represent a single sentence.
+  struct ReadAloudCurrentGranularity {
+    ReadAloudCurrentGranularity();
+    ReadAloudCurrentGranularity(const ReadAloudCurrentGranularity& other);
+    ~ReadAloudCurrentGranularity();
+
+    // Adds a segment to the current granularity.
+    void AddSegment(ReadAloudTextSegment segment) {
+      segments[segment.id] = segment;
+      node_ids.push_back(segment.id);
+    }
+
+    // All of the ReadAloudTextSegments in the current granularity.
+    std::map<ui::AXNodeID, ReadAloudTextSegment> segments;
+
+    // Because GetNextText returns a vector of node ids to be used by
+    // TypeScript also store the node ids as a vector for easier retrieval.
+    std::vector<ui::AXNodeID> node_ids;
+  };
+
  private:
   friend ReadAnythingAppControllerTest;
 
@@ -222,17 +258,33 @@ class ReadAnythingAppController
   // where this isn't needed.
   void InitAXPositionWithNode(const ui::AXNodeID starting_node_id);
 
-  // Returns a list of triples representing the next nodes that should be
-  // spoken and highlighted with Read Aloud. Each triple contains three numbers:
-  // the AXNodeID, the starting text index, and the ending text index. This
-  // list of triples is represented as a double array.
-  std::vector<std::vector<int>> GetNextText(int max_text_length);
+  // Returns a list of AXNodeIds representing the next nodes that should be
+  // spoken and highlighted with Read Aloud. GetNextTextStartIndex and
+  // GetNextTextEndIndex called with an AXNodeID return by GetNextText will
+  // return the starting text and ending text indices for specific text that
+  // should be referenced within the node.
+  std::vector<ui::AXNodeID> GetNextText(int max_text_length);
+
+  // Helper method for GetNextText.
+  ReadAloudCurrentGranularity GetNextNodes(int max_text_length);
 
   // Returns a list of triples representing the previous nodes that should be
   // spoken and highlighted with Read Aloud. Each triple contains three numbers:
   // the AXNodeID, the starting text index, and the ending text index. This
   // list of triples is represented as a double array.
-  std::vector<std::vector<int>> GetPreviousText(int max_text_length);
+  std::vector<ui::AXNodeID> GetPreviousText(int max_text_length);
+
+  // Returns the Read Aloud starting text index for a node. For example,
+  // if the entire text of the node should be read by Read Aloud at a particular
+  // moment, this will return 0. Returns -1 if the node isn't in the current
+  // segment.
+  int GetNextTextStartIndex(ui::AXNodeID node_id);
+
+  // Returns the Read Aloud ending text index for a node. For example,
+  // if the entire text of the node should be read by Read Aloud at a particular
+  // moment, this will return the length of the node's text. Returns -1 if the
+  // node isn't in the current segment.
+  int GetNextTextEndIndex(ui::AXNodeID node_id);
 
   // Returns the index of the next sentence of the given text, such that the
   // next sentence is equivalent to text.substr(0, <returned_index>).
@@ -281,6 +333,7 @@ class ReadAnythingAppController
   mojo::Remote<read_anything::mojom::UntrustedPageHandler> page_handler_;
   mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};
 
+  // TODO(crbug.com/1474951): Move Read Aloud state to Read Anything App Model.
   // Read Aloud state
   ui::AXNodePosition::AXPositionInstance ax_position_;
   // The current text index within the given node.
@@ -289,6 +342,12 @@ class ReadAnythingAppController
   // TODO(b/1474951): There should be a way to navigate text without needing
   //  to store spoken ids.
   std::vector<ui::AXNodeID> previously_spoken_ids_;
+
+  // TODO(crbug.com/1474951): Clear this when granularity changes.
+  // TODO(crbug.com/1474951): Use this to assist in navigating forwards /
+  // backwards.
+  // Previously processed granularities on the current page.
+  std::vector<ReadAloudCurrentGranularity> processed_sentences_on_current_page_;
 
   // Model that holds state for this controller.
   ReadAnythingAppModel model_;
