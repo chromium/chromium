@@ -30,7 +30,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/aura/client/screen_position_client.h"
-#include "ui/display/screen.h"
 #endif
 
 namespace eye_dropper {
@@ -47,8 +46,6 @@ class EyeDropperView::ViewPositionHandler {
 
   // Timer used for updating the window location.
   base::RepeatingTimer timer_;
-  gfx::Point last_cursor_position_ =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
   raw_ptr<EyeDropperView> owner_;
 };
 
@@ -65,14 +62,8 @@ EyeDropperView::ViewPositionHandler::~ViewPositionHandler() {
 }
 
 void EyeDropperView::ViewPositionHandler::UpdateViewPosition() {
-  // The view can be moved by either mouse or touch. Only move it to the cursor
-  // position when cursor changes.
-  gfx::Point cursor_position =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
-  if (std::exchange(last_cursor_position_, cursor_position) !=
-      cursor_position) {
-    owner_->UpdatePosition(cursor_position);
-  }
+  owner_->OnCursorPositionUpdate(
+      display::Screen::GetScreen()->GetCursorScreenPoint());
 }
 
 class EyeDropperView::ScreenCapturer
@@ -233,7 +224,7 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
   pre_dispatch_handler_ =
       std::make_unique<PreEventDispatchHandler>(this, event_handler);
   widget->Show();
-  CaptureInputIfNeeded();
+  CaptureInput();
   auto* screen = display::Screen::GetScreen();
   gfx::Point initial_position = screen->GetCursorScreenPoint();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -256,6 +247,15 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
 EyeDropperView::~EyeDropperView() {
   if (GetWidget()) {
     GetWidget()->CloseNow();
+  }
+}
+
+void EyeDropperView::OnCursorPositionUpdate(gfx::Point cursor_position) {
+  // The view can be moved by either mouse or touch. Only move it to the cursor
+  // position when cursor changes.
+  if (std::exchange(last_cursor_position_, cursor_position) !=
+      cursor_position) {
+    UpdatePosition(std::move(cursor_position));
   }
 }
 
