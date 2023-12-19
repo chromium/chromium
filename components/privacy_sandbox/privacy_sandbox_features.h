@@ -24,6 +24,12 @@ BASE_DECLARE_FEATURE(kPrivacySandboxSettings4);
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxAdsNoticeCCT);
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const char kPrivacySandboxAdsNoticeCCTAppIdName[];
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<std::string> kPrivacySandboxAdsNoticeCCTAppId;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Split out name definitions since about_flags otherwise complains about the

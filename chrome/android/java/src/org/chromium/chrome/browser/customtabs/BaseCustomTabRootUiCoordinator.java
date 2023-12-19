@@ -549,23 +549,39 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             boolean didShowPrompt = false;
                             boolean shouldShowPrivacySandboxDialog =
                                     PrivacySandboxDialogController.shouldShowPrivacySandboxDialog(
-                                            mTabModelSelectorSupplier.get().isIncognitoSelected());
+                                                    mTabModelSelectorSupplier
+                                                            .get()
+                                                            .isIncognitoSelected())
+                                            && !(mIntentDataProvider.get().isPartialCustomTab());
                             RecordHistogram.recordBooleanHistogram(
                                     "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT",
                                     shouldShowPrivacySandboxDialog);
-
                             if (ChromeFeatureList.isEnabled(
                                             ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT)
-                                    && !(mIntentDataProvider.get().isPartialCustomTab())
                                     && shouldShowPrivacySandboxDialog) {
-                                didShowPrompt =
-                                        PrivacySandboxDialogController
-                                                .maybeLaunchPrivacySandboxDialog(
-                                                        mActivity,
-                                                        new SettingsLauncherImpl(),
-                                                        mTabModelSelectorSupplier
-                                                                .get()
-                                                                .isIncognitoSelected());
+                                boolean shouldShowPrivacySandboxDialogAppIdCheck = true;
+                                String appId = mIntentDataProvider.get().getClientPackageName();
+                                String paramAdsNoticeAppId =
+                                        ChromeFeatureList.getFieldTrialParamByFeature(
+                                                ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
+                                                "app-id");
+                                if (!paramAdsNoticeAppId.isEmpty()
+                                        && !paramAdsNoticeAppId.equals(appId)) {
+                                    shouldShowPrivacySandboxDialogAppIdCheck = false;
+                                }
+                                RecordHistogram.recordBooleanHistogram(
+                                        "Startup.Android.PrivacySandbox.AdsNoticeCCTAppIDCheck",
+                                        shouldShowPrivacySandboxDialogAppIdCheck);
+                                if (shouldShowPrivacySandboxDialogAppIdCheck) {
+                                    didShowPrompt =
+                                            PrivacySandboxDialogController
+                                                    .maybeLaunchPrivacySandboxDialog(
+                                                            mActivity,
+                                                            new SettingsLauncherImpl(),
+                                                            mTabModelSelectorSupplier
+                                                                    .get()
+                                                                    .isIncognitoSelected());
+                                }
                             }
                             if (!didShowPrompt) {
                                 didShowPrompt =

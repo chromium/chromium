@@ -11,6 +11,11 @@ namespace privacy_sandbox {
 BASE_FEATURE(kPrivacySandboxAdsNoticeCCT,
              "PrivacySandboxAdsNoticeCCT",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kPrivacySandboxAdsNoticeCCTAppIdName[] = "app-id";
+
+const base::FeatureParam<std::string> kPrivacySandboxAdsNoticeCCTAppId{
+    &kPrivacySandboxAdsNoticeCCT, kPrivacySandboxAdsNoticeCCTAppIdName, ""};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Show the Tracking Protection onboarding flow if not already onboarded.
