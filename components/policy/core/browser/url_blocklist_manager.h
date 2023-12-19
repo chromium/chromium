@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -81,6 +82,23 @@ class POLICY_EXPORT URLBlocklist {
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
 };
 
+// Interface definition for specifying sources (e.g. preferences) for the URL
+// blocklist.
+class BlocklistSource {
+ public:
+  virtual ~BlocklistSource() {}
+
+  // Returns the blocklist which can contains URLs, domain/subdomains and
+  // schemes.
+  virtual const base::Value::List* GetBlocklistSpec() const = 0;
+
+  // Returns exceptions to the blocklist.
+  virtual const base::Value::List* GetAllowlistSpec() const = 0;
+
+  // Adds an observer that will be called when the blocklist changes.
+  virtual void SetBlocklistObserver(base::RepeatingClosure observer) = 0;
+};
+
 // Tracks the blocklist policies for a given profile, and updates it on changes.
 class POLICY_EXPORT URLBlocklistManager {
  public:
@@ -105,6 +123,9 @@ class POLICY_EXPORT URLBlocklistManager {
   // Registers the preferences related to blocklisting in the given PrefService.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  void SetOverrideBlockListSource(
+      std::unique_ptr<BlocklistSource> blocklist_source);
+
  protected:
   // Used to delay updating the blocklist while the preferences are
   // changing, and execute only one update per simultaneous prefs changes.
@@ -115,12 +136,8 @@ class POLICY_EXPORT URLBlocklistManager {
   virtual void Update();
 
  private:
-  // Used to track the policies and update the blocklist on changes.
-  PrefChangeRegistrar pref_change_registrar_;
-  raw_ptr<PrefService> pref_service_;  // Weak.
-
-  const absl::optional<std::string> blocklist_pref_path_;
-  const absl::optional<std::string> allowlist_pref_path_;
+  std::unique_ptr<BlocklistSource> default_blocklist_source_;
+  std::unique_ptr<BlocklistSource> override_blocklist_source_;
 
   // Used to post tasks to a background thread.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

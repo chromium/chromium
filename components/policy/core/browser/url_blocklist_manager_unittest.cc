@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -71,6 +72,10 @@ class URLBlocklistManagerTest : public testing::Test {
   void SetUp() override {
     pref_service_.registry()->RegisterListPref(policy_prefs::kUrlBlocklist);
     pref_service_.registry()->RegisterListPref(policy_prefs::kUrlAllowlist);
+#if BUILDFLAG(IS_CHROMEOS)
+    pref_service_.registry()->RegisterListPref(
+        policy_prefs::kAlwaysOnVpnPreConnectUrlAllowlist);
+#endif
     blocklist_manager_ =
         std::make_unique<TestingURLBlocklistManager>(&pref_service_);
     task_environment_.RunUntilIdle();
@@ -643,4 +648,147 @@ TEST_F(URLBlocklistManagerTest, UseBlocklistState) {
   EXPECT_EQ(neutral_state, GetMatch("file:*", "http://example.com", true));
   EXPECT_EQ(neutral_state, GetMatch("https://*", "http://example.com", false));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Custom BlocklistSource implementation.
+// Custom BlocklistSource implementation.
+class CustomBlocklistSource : public policy::BlocklistSource {
+ public:
+  CustomBlocklistSource() {}
+  CustomBlocklistSource(const CustomBlocklistSource&) = delete;
+  CustomBlocklistSource& operator=(const CustomBlocklistSource&) = delete;
+  ~CustomBlocklistSource() override = default;
+
+  const base::Value::List* GetBlocklistSpec() const override {
+    return &blocklist_;
+  }
+
+  const base::Value::List* GetAllowlistSpec() const override {
+    return &allowlist_;
+  }
+
+  void SetBlocklistObserver(base::RepeatingClosure observer) override {
+    blocklist_observer_ = std::move(observer);
+  }
+
+  void SetBlocklistSpec(base::Value::List blocklist) {
+    blocklist_ = std::move(blocklist);
+    TriggerObserver();
+  }
+
+  void SetAllowlistSpec(base::Value::List allowlist) {
+    allowlist_ = std::move(allowlist);
+    TriggerObserver();
+  }
+
+ private:
+  void TriggerObserver() {
+    if (!blocklist_observer_) {
+      return;
+    }
+    blocklist_observer_.Run();
+  }
+
+  base::Value::List blocklist_;
+  base::Value::List allowlist_;
+  base::RepeatingClosure blocklist_observer_;
+};
+
+TEST_F(URLBlocklistManagerTest, SetAndUnsetOverrideBlockListSource) {
+  {
+    base::Value::List list;
+    list.Append("blocked-by-general-pref.com");
+    pref_service_.SetManagedPref(policy_prefs::kUrlBlocklist,
+                                 base::Value(std::move(list)));
+  }
+  {
+    base::Value::List list;
+    list.Append("allowed-by-general-pref.com");
+    pref_service_.SetManagedPref(policy_prefs::kUrlAllowlist,
+                                 base::Value(std::move(list)));
+  }
+
+  auto manager = std::make_unique<URLBlocklistManager>(
+      &pref_service_, policy_prefs::kUrlBlocklist, policy_prefs::kUrlAllowlist);
+  task_environment_.RunUntilIdle();
+
+  std::unique_ptr<CustomBlocklistSource> custom_blocklist =
+      std::make_unique<CustomBlocklistSource>();
+  base::Value::List allowlist;
+  allowlist.Append("allowed-preconnect.com");
+  custom_blocklist->SetAllowlistSpec(std::move(allowlist));
+  base::Value::List blocklist;
+  blocklist.Append("blocked-preconnect.com");
+  custom_blocklist->SetBlocklistSpec(std::move(blocklist));
+
+  manager->SetOverrideBlockListSource(std::move(custom_blocklist));
+  task_environment_.RunUntilIdle();
+  // Verify that custom BlocklistSource is active.
+  EXPECT_EQ(
+      URLBlocklist::URL_IN_ALLOWLIST,
+      manager->GetURLBlocklistState(GURL("http://allowed-preconnect.com")));
+  EXPECT_EQ(
+      URLBlocklist::URL_IN_BLOCKLIST,
+      manager->GetURLBlocklistState(GURL("http://blocked-preconnect.com")));
+  // URLs not covered by the custom BlocklistSource should be in neutrat state.
+  EXPECT_EQ(URLBlocklist::URL_NEUTRAL_STATE,
+            manager->GetURLBlocklistState(
+                GURL("http://allowed-by-general-pref.com")));
+  EXPECT_EQ(URLBlocklist::URL_NEUTRAL_STATE,
+            manager->GetURLBlocklistState(
+                GURL("http://neutral-by-general-pref.com")));
+
+  manager->SetOverrideBlockListSource(nullptr);
+  task_environment_.RunUntilIdle();
+  // Verify that default BlocklistSource is active.
+  EXPECT_EQ(URLBlocklist::URL_IN_BLOCKLIST,
+            manager->GetURLBlocklistState(
+                GURL("http://blocked-by-general-pref.com")));
+  EXPECT_EQ(URLBlocklist::URL_IN_ALLOWLIST,
+            manager->GetURLBlocklistState(
+                GURL("http://allowed-by-general-pref.com")));
+  // URLs not covered by the default BlocklistSource should be in neutrat state.
+  EXPECT_EQ(
+      URLBlocklist::URL_NEUTRAL_STATE,
+      manager->GetURLBlocklistState(GURL("http://allowed-preconnect.com")));
+  EXPECT_EQ(
+      URLBlocklist::URL_NEUTRAL_STATE,
+      manager->GetURLBlocklistState(GURL("http://blocked-preconnect.com")));
+}
+
+TEST_F(URLBlocklistManagerTest, BlockListSourceUpdates) {
+  std::unique_ptr<CustomBlocklistSource> custom_blocklist =
+      std::make_unique<CustomBlocklistSource>();
+
+  {
+    base::Value::List blocklist;
+    blocklist.Append("preconnect.com");
+    custom_blocklist->SetBlocklistSpec(std::move(blocklist));
+  }
+
+  raw_ptr<CustomBlocklistSource> custom_blocklist_ptr = custom_blocklist.get();
+
+  auto manager = std::make_unique<URLBlocklistManager>(
+      &pref_service_, policy_prefs::kUrlBlocklist, policy_prefs::kUrlAllowlist);
+  task_environment_.RunUntilIdle();
+
+  manager->SetOverrideBlockListSource(std::move(custom_blocklist));
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(URLBlocklist::URL_IN_BLOCKLIST,
+            manager->GetURLBlocklistState(GURL("http://preconnect.com")));
+
+  {
+    // Update the BlocklistSource.
+    base::Value::List blocklist = base::Value::List();
+    custom_blocklist_ptr->SetBlocklistSpec(std::move(blocklist));
+    task_environment_.RunUntilIdle();
+  }
+
+  EXPECT_EQ(URLBlocklist::URL_NEUTRAL_STATE,
+            manager->GetURLBlocklistState(GURL("http://preconnect.com")));
+
+  custom_blocklist_ptr = nullptr;
+}
+#endif
 }  // namespace policy

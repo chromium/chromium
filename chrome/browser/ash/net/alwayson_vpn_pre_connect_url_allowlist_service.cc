@@ -8,6 +8,7 @@
 #include "ash/components/arc/net/always_on_vpn_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
@@ -101,6 +102,10 @@ void AlwaysOnVpnPreConnectUrlAllowlistService::
     always_on_vpn_manager_->SetDelayLockdownUntilVpnConnectedState(
         enforce_alwayson_pre_connect_url_allowlist_);
   }
+  PolicyBlocklistService* service =
+      PolicyBlocklistFactory::GetForBrowserContext(browser_context_.get());
+  service->SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(
+      enforce_alwayson_pre_connect_url_allowlist_);
 }
 
 void AlwaysOnVpnPreConnectUrlAllowlistService::OnShuttingDown() {

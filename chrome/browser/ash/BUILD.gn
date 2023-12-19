@@ -3821,6 +3821,7 @@ source_set("ash") {
     "//components/metrics/structured:structured_events",
     "//components/onc",
     "//components/ownership",
+    "//components/policy/content:content",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
