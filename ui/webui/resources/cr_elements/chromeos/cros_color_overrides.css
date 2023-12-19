@@ -462,3 +462,16 @@
     cr-toggle:focus {
   --cr-toggle-ripple-ring: none;
 }
+
+/* Tooltip */
+:host-context(body.jelly-enabled) cr-policy-indicator,
+:host-context(body.jelly-enabled) cr-policy-pref-indicator,
+:host-context(body.jelly-enabled) cr-tooltip-icon::part(tooltip),
+:host-context([cros][chrome-refresh-2023]) cr-policy-indicator,
+:host-context([cros][chrome-refresh-2023]) cr-policy-pref-indicator,
+:host-context([cros][chrome-refresh-2023]) cr-tooltip-icon::part(tooltip) {
+  --paper-tooltip-background: var(--cros-sys-on_surface);
+  --paper-tooltip-padding: 5px 8px;
+  --paper-tooltip-text-color: var(--cros-sys-inverse_on_surface);
+  font: var(--cros-annotation-1-font);
+}
