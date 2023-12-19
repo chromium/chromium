@@ -404,6 +404,15 @@ export class CCATest {
   }
 
   /**
+   * Gets the cover image URL of the gallery button.
+   */
+  static getGalleryButtonCoverURL(): string {
+    return assertExists(resolveElement('galleryButton').querySelector('img'))
+               .getAttribute('src') ??
+        '';
+  }
+
+  /**
    * Performs mouse hold by sending pointerdown and pointerup events.
    */
   static async hold(component: UIComponent, ms: number, index?: number):
