@@ -285,6 +285,7 @@ source_set("eg_test_support+eg2") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",

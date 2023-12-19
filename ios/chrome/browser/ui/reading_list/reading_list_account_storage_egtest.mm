@@ -41,6 +41,7 @@ using reading_list_test_utils::AddedToLocalReadingListSnackbar;
 using reading_list_test_utils::AddURLToReadingList;
 using reading_list_test_utils::OpenReadingList;
 using reading_list_test_utils::ReadingListItem;
+using reading_list_test_utils::VisibleLocalItemIcon;
 using reading_list_test_utils::VisibleReadingListItem;
 
 namespace {
@@ -77,14 +78,6 @@ id<GREYMatcher> AddedToAccountReadingListSnackbar(NSString* email) {
 
 id<GREYMatcher> AddedToAccountReadingListSnackbarUndoButton() {
   return grey_accessibilityID(kReadingListAddedToAccountSnackbarUndoID);
-}
-
-// The cloud slash icon that appears for Reading List items that are only stored
-// in the local storage. Shown only for signed-in users.
-id<GREYMatcher> VisibleLocalItemIcon(NSString* title) {
-  return grey_allOf(grey_ancestor(ReadingListItem(title)),
-                    grey_accessibilityID(kTableViewURLCellMetadataImageID),
-                    grey_sufficientlyVisible(), nil);
 }
 
 // Provides responses containing a custom title for fake URLs.

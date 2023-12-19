@@ -10,10 +10,13 @@
 #import "components/browser_sync/browser_sync_switches.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_egtest_utils.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
@@ -58,11 +61,14 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
 
 void ClearRelevantData() {
   [BookmarkEarlGrey clearBookmarks];
+  GREYAssertNil([ReadingListAppInterface clearEntries],
+                @"Unable to clear Reading List entries");
 
   [ChromeEarlGrey clearFakeSyncServerData];
   WaitForEntitiesOnFakeServer(0, syncer::AUTOFILL_PROFILE);
   WaitForEntitiesOnFakeServer(0, syncer::BOOKMARKS);
   WaitForEntitiesOnFakeServer(0, syncer::HISTORY);
+  WaitForEntitiesOnFakeServer(0, syncer::READING_LIST);
 }
 
 }  // namespace
@@ -495,13 +501,24 @@ void ClearRelevantData() {
 
   NSString* const kBookmarkUrl = @"https://www.goo.com/";
   NSString* const kBookmarkTitle = @"Goo";
+
+  NSString* const kReadingListUrl = @"https://www.rl.com/";
+  NSString* const kReadingListTitle = @"RL";
+
   // Create some data and wait for it to arrive on the server.
   [BookmarkEarlGrey
       addBookmarkWithTitle:kBookmarkTitle
                        URL:kBookmarkUrl
                  inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  GREYAssertNil([ReadingListAppInterface
+                    addEntryWithURL:[NSURL URLWithString:kReadingListUrl]
+                              title:kReadingListTitle
+                               read:YES],
+                @"Unable to add Reading List item");
+
   WaitForEntitiesOnFakeServer(1, syncer::BOOKMARKS);
-  // TODO(crbug.com/1486420): Also add a password and a reading list entry.
+  WaitForEntitiesOnFakeServer(1, syncer::READING_LIST);
+  // TODO(crbug.com/1486420): Also add a password.
 
   // Restart Chrome with UNO phase 2 enabled.
   [self relaunchWithIdentity:fakeIdentity
@@ -540,6 +557,22 @@ void ClearRelevantData() {
       verifyExistenceOfBookmarkWithURL:kBookmarkUrl
                                   name:kBookmarkTitle
                              inStorage:bookmarks::StorageType::kAccount];
+
+  // The reading list item should still exist, and *not* have a crossed-cloud
+  // icon (no crossed-cloud icon means that it's in the account store).
+  reading_list_test_utils::OpenReadingList();
+  [[EarlGrey
+      selectElementWithMatcher:reading_list_test_utils::VisibleReadingListItem(
+                                   kReadingListTitle)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:reading_list_test_utils::VisibleLocalItemIcon(
+                                   kReadingListTitle)]
+      assertWithMatcher:grey_nil()];
+  // Close the Reading List.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTableViewNavigationDismissButtonId)]
+      performAction:grey_tap()];
 
   // The sync machinery should still be functional: Add an account bookmarks
   // and ensure it arrives on the server.

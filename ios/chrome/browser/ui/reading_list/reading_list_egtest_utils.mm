@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -31,6 +32,12 @@ id<GREYMatcher> ReadingListItem(NSString* entryTitle) {
 id<GREYMatcher> VisibleReadingListItem(NSString* entryTitle) {
   return grey_allOf(grey_accessibilityID(entryTitle),
                     grey_kindOfClassName(@"TableViewURLCell"),
+                    grey_sufficientlyVisible(), nil);
+}
+
+id<GREYMatcher> VisibleLocalItemIcon(NSString* title) {
+  return grey_allOf(grey_ancestor(ReadingListItem(title)),
+                    grey_accessibilityID(kTableViewURLCellMetadataImageID),
                     grey_sufficientlyVisible(), nil);
 }
 
