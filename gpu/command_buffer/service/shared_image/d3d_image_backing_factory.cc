@@ -308,8 +308,8 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   DCHECK(!is_thread_safe);
 
   // Without D3D11, we cannot do shared images. This will happen if we're
-  // running with Vulkan, D3D9, GL or with the non-passthrough command decoder
-  // in tests.
+  // running with Vulkan, D3D12, D3D9, GL or with the non-passthrough command
+  // decoder in tests.
   if (!d3d11_device_) {
     return nullptr;
   }

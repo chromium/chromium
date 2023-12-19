@@ -10,6 +10,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -30,15 +31,22 @@ constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
     SHARED_IMAGE_USAGE_CPU_UPLOAD | SHARED_IMAGE_USAGE_MIPMAP;
 
-constexpr uint32_t kGraphiteDawnVulkanFallbackUsage =
+constexpr uint32_t kGraphiteDawnFallbackUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
     SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT | SHARED_IMAGE_USAGE_WEBGPU |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE;
 
 uint32_t GetSupportedUsage(const SharedContextState* context_state) {
-  // We support WebGL and WebGPU fallback when using Graphite Dawn Vulkan.
-  if (context_state->IsGraphiteDawnVulkan()) {
-    return kSupportedUsage | kGraphiteDawnVulkanFallbackUsage;
+  // We support WebGL and WebGPU fallback when using Graphite Dawn Vulkan or
+  // D3D12.
+  if (context_state->gr_context_type() == GrContextType::kGraphiteDawn) {
+    switch (context_state->dawn_context_provider()->backend_type()) {
+      case wgpu::BackendType::D3D12:
+      case wgpu::BackendType::Vulkan:
+        return kSupportedUsage | kGraphiteDawnFallbackUsage;
+      default:
+        break;
+    }
   }
   return kSupportedUsage;
 }

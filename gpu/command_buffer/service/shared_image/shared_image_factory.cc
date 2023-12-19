@@ -284,7 +284,6 @@ SharedImageFactory::SharedImageFactory(
         shared_context_state_.get()));
   }
   if (D3DImageBackingFactory::IsD3DSharedImageSupported(gpu_preferences)) {
-    // TODO(sunnyps): Should we get the device from SharedContextState instead?
     auto d3d_factory = std::make_unique<D3DImageBackingFactory>(
         shared_context_state_->GetD3D11Device(),
         shared_image_manager_->dxgi_shared_handle_manager(),
