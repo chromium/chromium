@@ -116,14 +116,8 @@ class BatteryView : public views::View {
     label_ = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_ASH_STYLUS_BATTERY_LOW_LABEL)));
     label_->SetEnabledColor(stylus_battery_delegate_.GetColorForBatteryLevel());
-    if (chromeos::features::IsJellyEnabled()) {
-      label_->SetAutoColorReadabilityEnabled(false);
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
-                                            *label_);
-    } else {
-      TrayPopupUtils::SetLabelFontList(label_,
-                                       TrayPopupUtils::FontStyle::kSmallTitle);
-    }
+    label_->SetAutoColorReadabilityEnabled(false);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label_);
   }
 
   // views::View:
@@ -182,14 +176,9 @@ class TitleView : public views::View {
         l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE)));
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_label->SetEnabledColorId(kColorAshTextColorPrimary);
-    if (chromeos::features::IsJellyEnabled()) {
-      title_label->SetAutoColorReadabilityEnabled(false);
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
-                                            *title_label);
-    } else {
-      TrayPopupUtils::SetLabelFontList(
-          title_label, TrayPopupUtils::FontStyle::kPodMenuHeader);
-    }
+    title_label->SetAutoColorReadabilityEnabled(false);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
+                                          *title_label);
     layout_ptr->SetFlexForView(title_label, 1);
 
     if (ash::features::IsStylusBatteryStatusEnabled()) {

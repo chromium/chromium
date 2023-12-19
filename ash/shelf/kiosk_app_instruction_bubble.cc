@@ -4,7 +4,6 @@
 
 #include "ash/shelf/kiosk_app_instruction_bubble.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -13,7 +12,6 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/functional/callback_helpers.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -63,13 +61,8 @@ KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
 
   // Set up the title view.
   title_ = AddChildView(std::make_unique<views::Label>());
-  if (chromeos::features::IsJellyEnabled()) {
-    title_->SetAutoColorReadabilityEnabled(false);
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *title_);
-  } else {
-    TrayPopupUtils::SetLabelFontList(title_,
-                                     TrayPopupUtils::FontStyle::kSmallTitle);
-  }
+  title_->SetAutoColorReadabilityEnabled(false);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *title_);
   title_->SetText(l10n_util::GetStringUTF16(IDS_SHELF_KIOSK_APP_INSTRUCTION));
   title_->SetMultiLine(true);
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);

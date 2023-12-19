@@ -962,7 +962,7 @@ void NetworkListViewControllerImpl::ShowConnectionWarning(
   // Set up layout and apply sticky row property.
   std::unique_ptr<TriView> connection_warning(
       TrayPopupUtils::CreateDefaultRowView(/*use_wide_layout=*/false));
-  TrayPopupUtils::ConfigureAsStickyHeader(connection_warning.get());
+  TrayPopupUtils::ConfigureHeader(connection_warning.get());
 
   SetConnectionWarningIcon(connection_warning.get(),
                            /*use_managed_icon=*/show_managed_icon);
