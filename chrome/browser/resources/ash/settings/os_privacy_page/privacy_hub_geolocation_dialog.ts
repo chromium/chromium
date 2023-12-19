@@ -35,7 +35,7 @@ class PrivacyHubGeolocationDialog extends
   }
 
   /**
-   * Closes the warning dialog and transitions to the disabling dialog.
+   * Enables geolocation usage for system services.
    */
   private onEnableClicked_(): void {
     // Send the new state immediately, this will also toggle the underlying
