@@ -208,7 +208,8 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
   // Disable gpu sandbox in Lacros since it fails in Linux emulator environment.
   // See details in crbug/1483530.
   lacros_args.emplace_back("--disable-gpu-sandbox");
-  crosapi::BrowserLauncher::AddLacrosArgumentsForTest(lacros_args);
+  command_line->AppendSwitchASCII(ash::switches::kLacrosChromeAdditionalArgs,
+                                  base::JoinString(lacros_args, "####"));
 
   return true;
 }

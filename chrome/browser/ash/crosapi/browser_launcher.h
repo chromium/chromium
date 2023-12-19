@@ -109,9 +109,6 @@ class BrowserLauncher {
   bool LaunchProcessForTesting(const base::CommandLine& command_line,
                                const base::LaunchOptions& options);
 
-  // Adds command line arguments that will be passed to Lacros.
-  static void AddLacrosArgumentsForTest(const std::vector<std::string>& args);
-
  private:
   // Initializes argv for making the command line.
   // TODO(mayukoaiba): The process of making `command_line` is separated into 2
