@@ -10,7 +10,9 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/base_switches.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -18,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/string_split.h"
@@ -45,6 +48,12 @@
 namespace crosapi {
 
 namespace {
+
+// Returns additional test-only arguments for Lacros.
+std::vector<std::string>& GetLacrosTestArguments() {
+  static base::NoDestructor<std::vector<std::string>> args;
+  return *args;
+}
 
 base::FilePath LacrosPostLoginLogPath() {
   return browser_util::GetUserDataDir().Append("lacros.log");
@@ -170,6 +179,21 @@ bool BrowserLauncher::LaunchProcessForTesting(
   return LaunchProcessWithParameters(command_line, options);
 }
 
+// static
+void BrowserLauncher::AddLacrosArgumentsForTest(
+    const std::vector<std::string>& args) {
+  CHECK_IS_TEST();
+  for (const std::string& arg : args) {
+    CHECK(!base::Contains(arg, switches::kEnableFeatures) &&
+          !base::Contains(arg, switches::kDisableFeatures))
+        << "AddLacrosArgumentsForTest() does not support "  // IN-TEST
+           "--enable-features or --disable-features. Use the ash switch "
+           "kLacrosChromeAdditionalArgs instead.";
+  }
+  std::vector<std::string>& test_args = GetLacrosTestArguments();
+  test_args.insert(test_args.end(), args.begin(), args.end());
+}
+
 std::vector<std::string> BrowserLauncher::InitializeArgv(
     const base::FilePath& chrome_path,
     const LaunchParamsFromBackground& params,
@@ -233,6 +257,10 @@ std::vector<std::string> BrowserLauncher::InitializeArgv(
 
   argv.insert(argv.end(), params.lacros_additional_args.begin(),
               params.lacros_additional_args.end());
+
+  // Provide any test switches.
+  const auto& test_args = GetLacrosTestArguments();
+  argv.insert(argv.end(), test_args.begin(), test_args.end());
 
   // Forward flag for zero copy video capture to Lacros if it is enabled.
   if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {

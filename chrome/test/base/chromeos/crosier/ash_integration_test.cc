@@ -15,6 +15,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/crosapi/browser_launcher.h"
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
@@ -116,6 +117,5 @@ void AshIntegrationTest::OverrideGaiaUrlForLacros(
   // crbug.com/1371655.
   lacros_args.emplace_back(base::StringPrintf(
       "--%s=%s", switches::kGaiaUrl, https_server_->base_url().spec().c_str()));
-  command_line->AppendSwitchASCII(ash::switches::kLacrosChromeAdditionalArgs,
-                                  base::JoinString(lacros_args, "####"));
+  crosapi::BrowserLauncher::AddLacrosArgumentsForTest(lacros_args);
 }

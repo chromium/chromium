@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/environment.h"
+#include "chrome/browser/ash/crosapi/browser_launcher.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/fake_device_ownership_waiter.h"
@@ -43,9 +44,7 @@ void KioskAshBrowserTestStarter::PrepareEnvironmentForKioskLacros() {
       // environment.
       // See details in crbug/1483530.
       "--disable-gpu-sandbox"};
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      ash::switches::kLacrosChromeAdditionalArgs,
-      base::JoinString(lacros_args, "####"));
+  crosapi::BrowserLauncher::AddLacrosArgumentsForTest(lacros_args);
 }
 
 void KioskAshBrowserTestStarter::SetLacrosAvailabilityPolicy() {
