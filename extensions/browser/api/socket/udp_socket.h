@@ -70,7 +70,7 @@ class UDPSocket : public Socket, public network::mojom::UDPSocketListener {
 
  private:
   // Make net::IPEndPoint can be refcounted
-  typedef base::RefCountedData<net::IPEndPoint> IPEndPoint;
+  using IPEndPoint = base::RefCountedData<net::IPEndPoint>;
 
   // network::mojom::UDPSocketListener implementation.
   void OnReceived(int32_t result,
