@@ -191,11 +191,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCacheDeprecatedSystemLocationSetting,
     &kChromeSurveyNextAndroid,
     &kCommandLineOnNonRooted,
-    &kContextMenuEnableLensShoppingAllowlist,
-    &kContextMenuGoogleLensChip,
-    &kContextMenuSearchWithGoogleLens,
-    &kContextMenuShopWithGoogleLens,
-    &kContextMenuSearchAndShopWithGoogleLens,
     &kContextMenuTranslateWithGoogleLens,
     &kContextMenuPopupForAllScreenSizes,
     &kContextualSearchDisableOnlineDetection,
@@ -535,28 +530,8 @@ BASE_FEATURE(kCommandLineOnNonRooted,
              "CommandLineOnNonRooted",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kContextMenuEnableLensShoppingAllowlist,
-             "ContextMenuEnableLensShoppingAllowlist",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kContextMenuGoogleLensChip,
-             "ContextMenuGoogleLensChip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kContextMenuPopupForAllScreenSizes,
              "ContextMenuPopupForAllScreenSizes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kContextMenuSearchWithGoogleLens,
-             "ContextMenuSearchWithGoogleLens",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kContextMenuShopWithGoogleLens,
-             "ContextMenuShopWithGoogleLens",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kContextMenuSearchAndShopWithGoogleLens,
-             "ContextMenuSearchAndShopWithGoogleLens",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextMenuTranslateWithGoogleLens,
