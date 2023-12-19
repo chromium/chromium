@@ -9310,6 +9310,21 @@
             ]
         }
     ],
+    "IOSTabGridCompositionalLayout": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabGridCompositionalLayout"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSTabPickup": [
         {
             "platforms": [
