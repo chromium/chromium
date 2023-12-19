@@ -5688,10 +5688,10 @@ void NavigationRequest::CommitNavigation() {
 
   AddOldPageInfoToCommitParamsIfNeeded();
 
-  url::Origin origin = GetOriginToCommit().value();
+  url::Origin origin_to_commit = GetOriginToCommit().value();
   isolation_info_for_subresources_ =
       GetRenderFrameHost()->ComputeIsolationInfoForSubresourcesForPendingCommit(
-          origin, is_credentialless(), ComputeFencedFrameNonce());
+          origin_to_commit, is_credentialless(), ComputeFencedFrameNonce());
   DCHECK(!isolation_info_for_subresources_.IsEmpty());
 
   // TODO(https://crbug.com/888079): The storage key's origin is ignored at the
@@ -5702,7 +5702,7 @@ void NavigationRequest::CommitNavigation() {
                                          ComputeFencedFrameNonce());
 
   commit_params_->storage_key = GetRenderFrameHost()->CalculateStorageKey(
-      GetOriginToCommit().value(), base::OptionalToPtr(nonce));
+      origin_to_commit, base::OptionalToPtr(nonce));
   commit_params_->session_storage_key =
       frame_tree_node()->frame_tree().GetSessionStorageKey(
           commit_params_->storage_key);
@@ -5719,7 +5719,8 @@ void NavigationRequest::CommitNavigation() {
   }
 
   if (ad_auction_headers_eligible_ && response_head_->headers) {
-    ProcessAdAuctionResponseHeaders(origin, GetRenderFrameHost()->GetPage(),
+    ProcessAdAuctionResponseHeaders(origin_to_commit,
+                                    GetRenderFrameHost()->GetPage(),
                                     *response_head_->headers);
   } else if (has_ad_auction_headers_attribute_ && response_head_->headers) {
     RemoveAdAuctionResponseHeaders(*response_head_->headers);
@@ -5784,13 +5785,13 @@ void NavigationRequest::CommitNavigation() {
           response()->headers.get(), browser_context, client_hints_delegate,
           frame_tree_node_);
     }
-    commit_params_->enabled_client_hints = LookupAcceptCHForCommit(
-        GetOriginToCommit().value(), client_hints_delegate, frame_tree_node_,
-        common_params_->url);
+    commit_params_->enabled_client_hints =
+        LookupAcceptCHForCommit(origin_to_commit, client_hints_delegate,
+                                frame_tree_node_, common_params_->url);
   }
   // Navigation requests should use the new origin as the partition origin
   // except if embedded in an outer frame.
-  url::Origin partition_origin = origin;
+  url::Origin partition_origin = origin_to_commit;
   bool is_top_level = frame_tree_node()->GetParentOrOuterDocument() == nullptr;
   if (!is_top_level) {
     partition_origin = frame_tree_node()
@@ -5799,7 +5800,7 @@ void NavigationRequest::CommitNavigation() {
                            ->GetLastCommittedOrigin();
   }
 
-  PersistOriginTrialsFromHeaders(origin, partition_origin, response(),
+  PersistOriginTrialsFromHeaders(origin_to_commit, partition_origin, response(),
                                  browser_context);
 
   // Update the reduced accept-language to commit if it's empty, and stop
@@ -5818,13 +5819,12 @@ void NavigationRequest::CommitNavigation() {
     if (commit_params_->reduced_accept_language.empty()) {
       commit_params_->reduced_accept_language =
           reduce_accept_lang_utils.value()
-              .LookupReducedAcceptLanguage(GetOriginToCommit().value(),
-                                           frame_tree_node_)
+              .LookupReducedAcceptLanguage(origin_to_commit, frame_tree_node_)
               .value_or("");
     }
     reduce_accept_lang_utils.value().RemoveOriginTrialReducedAcceptLanguage(
-        commit_params_->reduced_accept_language, GetOriginToCommit().value(),
-        response(), frame_tree_node_);
+        commit_params_->reduced_accept_language, origin_to_commit, response(),
+        frame_tree_node_);
   }
 
   // Generate a UKM source and track it on NavigationRequest. This will be
@@ -5860,7 +5860,7 @@ void NavigationRequest::CommitNavigation() {
        (commit_params_->frame_policy.sandbox_flags &
         WebSandboxFlags::kTopNavigation) == WebSandboxFlags::kNone);
   const bool is_same_origin_to_top =
-      GetOriginToCommit() ==
+      origin_to_commit ==
       GetRenderFrameHost()->GetMainFrame()->GetLastCommittedOrigin();
   if (is_same_origin_to_top) {
     policy_container_builder_->SetAllowTopNavigationWithoutUserGesture(true);
