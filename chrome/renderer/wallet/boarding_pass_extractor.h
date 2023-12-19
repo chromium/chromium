@@ -9,6 +9,7 @@
 #include "chrome/common/wallet/boarding_pass_extractor.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
 namespace wallet {
@@ -40,6 +41,8 @@ class BoardingPassExtractor : public content::RenderFrameObserver,
                                base::TimeTicks start_time);
 
   mojo::Receiver<mojom::BoardingPassExtractor> receiver_{this};
+
+  std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
 };
 }  // namespace wallet
 

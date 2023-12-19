@@ -6,6 +6,8 @@
 
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_thread.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -108,6 +110,11 @@ BoardingPassExtractor::BoardingPassExtractor(
   // RenderFrame.
   registry->AddInterface(base::BindRepeating(
       &BoardingPassExtractor::BindReceiver, base::Unretained(this)));
+
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+  content::RenderThread::Get()->BindHostReceiver(
+      factory.BindNewPipeAndPassReceiver());
+  ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
 }
 
 BoardingPassExtractor::~BoardingPassExtractor() = default;
@@ -152,11 +159,17 @@ void BoardingPassExtractor::OnBoardingPassExtracted(
     ExtractBoardingPassCallback callback,
     absl::optional<base::Value> results,
     base::TimeTicks start_time) {
+  std::vector<std::string> boarding_passes;
   if (results.has_value()) {
-    std::move(callback).Run(ConvertResultsToStrings(*results));
-  } else {
-    std::move(callback).Run(std::vector<std::string>());
+    boarding_passes = ConvertResultsToStrings(*results);
   }
+
+  ukm::builders::Wallet_BoardingPassDetect(
+      render_frame()->GetWebFrame()->GetDocument().GetUkmSourceId())
+      .SetDetected(!boarding_passes.empty())
+      .Record(ukm_recorder_.get());
+
+  std::move(callback).Run(std::move(boarding_passes));
 }
 
 }  // namespace wallet

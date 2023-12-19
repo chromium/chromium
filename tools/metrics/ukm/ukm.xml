@@ -27933,6 +27933,18 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Wallet.BoardingPassDetect" singular="True">
+  <owner>hanfeng@google.com</owner>
+  <summary>
+    Records boarding pass barcode detection results.
+  </summary>
+  <metric name="Detected" enum="Boolean">
+    <summary>
+      Whether a boarding pass barocode is detected.
+    </summary>
+  </metric>
+</event>
+
 <event name="WebAPK.Install" singular="True">
   <owner>yfriedman@chromium.org</owner>
   <owner>hartmanng@chromium.org</owner>
