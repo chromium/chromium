@@ -800,21 +800,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "css-text-autospace",
-    "owners": [
-      "kojii@chromium.org",
-      "lingqi@chromium.org"
-    ],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/css/css-text/text-autospace/"
-    ],
-    "args": [
-      "--enable-blink-features=CSSTextAutoSpace",
-      "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "June 1, 2024"
-  },
-  {
     "prefix": "css-sign-related-functions-disabled",
     "owners": ["seokho@chromium.org", "sakhapov@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
