@@ -49,6 +49,8 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
@@ -4596,10 +4598,10 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyMatchesServerAuthNoTunnel) {
 
 // Test the no-tunnel HTTP auth case where proxy and server origins and realms
 // are the same, but the user/passwords are different, and with different
-// NetworkAnonymizationKeys. Sends one request with a NIK, response to both
-// proxy and auth challenges, sends another request with another NIK, expecting
+// NetworkAnonymizationKeys. Sends one request with a NAK, response to both
+// proxy and auth challenges, sends another request with another NAK, expecting
 // only the proxy credentials to be cached, and thus sees only a server auth
-// challenge. Then sends a request with the original NIK, expecting cached proxy
+// challenge. Then sends a request with the original NAK, expecting cached proxy
 // and auth credentials that match the ones used in the first request.
 //
 // Serves to verify credentials are correctly separated based on
@@ -4652,7 +4654,7 @@ TEST_P(HttpNetworkTransactionTest,
                 "Proxy-Connection: keep-alive\r\n"
                 "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n"
                 "Authorization: Basic Zm9vMjpiYXIy\r\n\r\n"),
-      // Another request to the same server and using the same NIK should
+      // Another request to the same server and using the same NAK should
       // preemptively send the correct cached proxy and server
       // auth headers.
       MockWrite("GET http://myproxy:70/ HTTP/1.1\r\n"
@@ -4918,7 +4920,7 @@ TEST_P(HttpNetworkTransactionTest,
                 "Host: myproxy:70\r\n"
                 "Connection: keep-alive\r\n"
                 "Authorization: Basic Zm9vMjpiYXIy\r\n\r\n"),
-      // Another request to the same server and using the same NIK should
+      // Another request to the same server and using the same NAK should
       // preemptively send the correct cached server
       // auth header. Since a tunnel was already established, the proxy headers
       // won't be sent again except when establishing another tunnel.
@@ -4969,7 +4971,7 @@ TEST_P(HttpNetworkTransactionTest,
                 "Proxy-Connection: keep-alive\r\n"
                 "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
       // Request over the tunnel, which gets a server auth challenge. Cached
-      // credentials cannot be used, since the NIK is different.
+      // credentials cannot be used, since the NAK is different.
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: myproxy:70\r\n"
                 "Connection: keep-alive\r\n\r\n"),

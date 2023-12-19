@@ -14,6 +14,7 @@
 #include "base/stl_util.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -382,7 +383,7 @@ void ReportingCacheImpl::OnParsedHeader(
     // Creates an endpoint group and sets its |last_used| to |now|.
     CachedReportingEndpointGroup new_group(parsed_endpoint_group, now);
 
-    // Consistency check: the new client should have the same NIK and origin as
+    // Consistency check: the new client should have the same NAK and origin as
     // all groups parsed from this header.
     DCHECK(new_group.group_key.network_anonymization_key ==
            new_client.network_anonymization_key);
@@ -1020,7 +1021,7 @@ void ReportingCacheImpl::ConsistencyCheckClients() const {
 
     auto inserted = nik_origin_pairs_in_cache.insert(
         std::make_pair(client.network_anonymization_key, client.origin));
-    // We have not seen a duplicate client with the same NIK and origin.
+    // We have not seen a duplicate client with the same NAK and origin.
     DCHECK(inserted.second);
   }
 
@@ -1179,7 +1180,7 @@ ReportingCacheImpl::ClientMap::iterator ReportingCacheImpl::AddOrUpdateClient(
   ClientMap::iterator client_it =
       FindClientIt(new_client.network_anonymization_key, new_client.origin);
 
-  // Add a new client for this NIK and origin.
+  // Add a new client for this NAK and origin.
   if (client_it == clients_.end()) {
     std::string domain = new_client.origin.host();
     client_it = clients_.insert(
@@ -1445,7 +1446,7 @@ void ReportingCacheImpl::EnforcePerClientAndGlobalEndpointLimits(
   DCHECK(client_it != clients_.end());
   size_t client_endpoint_count = client_it->second.endpoint_count;
   // TODO(chlily): This is actually a limit on the endpoints for a given client
-  // (for a NIK, origin pair). Rename this.
+  // (for a NAK, origin pair). Rename this.
   size_t max_endpoints_per_origin = context_->policy().max_endpoints_per_origin;
   if (client_endpoint_count > max_endpoints_per_origin) {
     EvictEndpointsFromClient(client_it,

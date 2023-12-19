@@ -1651,10 +1651,10 @@ TEST(HostCacheTest, SerializeForDebugging) {
 
   ASSERT_EQ(1u, serialized_cache.size());
   ASSERT_TRUE(serialized_cache[0].is_dict());
-  const std::string* nik_string =
+  const std::string* nak_string =
       serialized_cache[0].GetDict().FindString("network_anonymization_key");
-  ASSERT_TRUE(nik_string);
-  ASSERT_EQ(kNetworkAnonymizationKey.ToDebugString(), *nik_string);
+  ASSERT_TRUE(nak_string);
+  ASSERT_EQ(kNetworkAnonymizationKey.ToDebugString(), *nak_string);
 }
 
 TEST(HostCacheTest, SerializeAndDeserialize_Text) {

@@ -35,7 +35,7 @@ struct NET_EXPORT ReportingPolicy {
 
   // Maximum number of endpoints for a given origin before evicting
   // TODO(chlily): This is actually a limit on the endpoints for a given client
-  // (for a NIK, origin pair), so rename this.
+  // (for a NAK, origin pair), so rename this.
   size_t max_endpoints_per_origin = 40u;
 
   // Minimum interval at which to attempt delivery of queued reports.

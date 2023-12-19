@@ -718,13 +718,13 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   const raw_ptr<SSLConfigService> ssl_config_service_;
 
   // Whether NetworkAnonymizationKeys should be used for
-  // |active_crypto_config_map_|. If false, there will just be one config with
+  // `active_crypto_config_map_`. If false, there will just be one config with
   // an empty NetworkAnonymizationKey. Whether QuicSessionAliasKeys all have an
-  // empty NIK is based on whether socket pools are respecting NIKs, but whether
-  // those NIKs are also used when accessing |active_crypto_config_map_| is also
+  // empty NAK is based on whether socket pools are respecting NAKs, but whether
+  // those NAKs are also used when accessing `active_crypto_config_map_` is also
   // gated this, which is set based on whether HttpServerProperties is
-  // respecting NIKs, as that data is fed into the crypto config map using the
-  // corresponding NIK.
+  // respecting NAKs, as that data is fed into the crypto config map using the
+  // corresponding NAK.
   const bool use_network_anonymization_key_for_crypto_configs_;
 
   quic::DeterministicConnectionIdGenerator connection_id_generator_{

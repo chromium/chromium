@@ -28,6 +28,7 @@ namespace net {
 
 class ReportingContext;
 class IsolationInfo;
+class NetworkAnonymizationKey;
 
 // The cache holds undelivered reports and clients (per-origin endpoint
 // configurations) in memory. (It is not responsible for persisting them.)
@@ -184,7 +185,7 @@ class NET_EXPORT ReportingCache {
   // Gets all the origins of clients in the cache.
   virtual std::set<url::Origin> GetAllOrigins() const = 0;
 
-  // Remove client for the given (NIK, origin) pair, if it exists in the cache.
+  // Remove client for the given (NAK, origin) pair, if it exists in the cache.
   // All endpoint groups and endpoints for that client are also removed.
   virtual void RemoveClient(
       const NetworkAnonymizationKey& network_anonymization_key,
@@ -281,7 +282,7 @@ class NET_EXPORT ReportingCache {
       OriginSubdomains include_subdomains,
       base::Time expires) const = 0;
 
-  // Returns whether a client for the given (NIK, Origin) exists.
+  // Returns whether a client for the given (NAK, Origin) exists.
   virtual bool ClientExistsForTesting(
       const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin) const = 0;

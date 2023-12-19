@@ -31,7 +31,7 @@ class ReportingGarbageCollectorTest : public ReportingTestBase {
 
   const absl::optional<base::UnguessableToken> kReportingSource_ =
       base::UnguessableToken::Create();
-  const NetworkAnonymizationKey kNik_;
+  const NetworkAnonymizationKey kNak_;
   const IsolationInfo kIsolationInfo_;
   const GURL kUrl_ = GURL("https://origin/path");
   const std::string kUserAgent_ = "Mozilla/1.0";
@@ -48,7 +48,7 @@ TEST_F(ReportingGarbageCollectorTest, Created) {
 TEST_F(ReportingGarbageCollectorTest, Timer) {
   EXPECT_FALSE(garbage_collection_timer()->IsRunning());
 
-  cache()->AddReport(absl::nullopt, kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
+  cache()->AddReport(absl::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
                      base::Value::Dict(), 0, tick_clock()->NowTicks(), 0);
 
   EXPECT_TRUE(garbage_collection_timer()->IsRunning());
@@ -59,7 +59,7 @@ TEST_F(ReportingGarbageCollectorTest, Timer) {
 }
 
 TEST_F(ReportingGarbageCollectorTest, Report) {
-  cache()->AddReport(absl::nullopt, kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
+  cache()->AddReport(absl::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
                      base::Value::Dict(), 0, tick_clock()->NowTicks(), 0);
   garbage_collection_timer()->Fire();
 
@@ -67,7 +67,7 @@ TEST_F(ReportingGarbageCollectorTest, Report) {
 }
 
 TEST_F(ReportingGarbageCollectorTest, ExpiredReport) {
-  cache()->AddReport(absl::nullopt, kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
+  cache()->AddReport(absl::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
                      base::Value::Dict(), 0, tick_clock()->NowTicks(), 0);
   tick_clock()->Advance(2 * policy().max_report_age);
   garbage_collection_timer()->Fire();
@@ -76,7 +76,7 @@ TEST_F(ReportingGarbageCollectorTest, ExpiredReport) {
 }
 
 TEST_F(ReportingGarbageCollectorTest, FailedReport) {
-  cache()->AddReport(absl::nullopt, kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
+  cache()->AddReport(absl::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
                      base::Value::Dict(), 0, tick_clock()->NowTicks(), 0);
 
   std::vector<const ReportingReport*> reports;
@@ -91,7 +91,7 @@ TEST_F(ReportingGarbageCollectorTest, FailedReport) {
 }
 
 TEST_F(ReportingGarbageCollectorTest, ExpiredSource) {
-  ReportingEndpointGroupKey group_key(kNik_, kReportingSource_,
+  ReportingEndpointGroupKey group_key(kNak_, kReportingSource_,
                                       url::Origin::Create(kUrl_), kGroup_);
   cache()->SetV1EndpointForTesting(group_key, *kReportingSource_,
                                    kIsolationInfo_, kUrl_);
@@ -111,11 +111,11 @@ TEST_F(ReportingGarbageCollectorTest, ExpiredSource) {
 }
 
 TEST_F(ReportingGarbageCollectorTest, ExpiredSourceWithPendingReports) {
-  ReportingEndpointGroupKey group_key(kNik_, kReportingSource_,
+  ReportingEndpointGroupKey group_key(kNak_, kReportingSource_,
                                       url::Origin::Create(kUrl_), kGroup_);
   cache()->SetV1EndpointForTesting(group_key, *kReportingSource_,
                                    kIsolationInfo_, kUrl_);
-  cache()->AddReport(kReportingSource_, kNik_, kUrl_, kUserAgent_, kGroup_,
+  cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
                      kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
                      0);
   // Mark the source as expired. The source data should be removed as soon as

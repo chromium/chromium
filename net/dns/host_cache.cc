@@ -29,6 +29,7 @@
 #include "base/value_iterators.h"
 #include "net/base/address_family.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/trace_constants.h"
 #include "net/base/tracing.h"
 #include "net/dns/host_resolver.h"
@@ -921,7 +922,7 @@ void HostCache::GetList(base::Value::List& entry_list,
         continue;
       }
     } else {
-      // ToValue() fails for transient NIKs, since they should never be
+      // ToValue() fails for transient NAKs, since they should never be
       // serialized to disk in a restorable format, so use ToDebugString() when
       // serializing for debugging instead of for restoring from disk.
       network_anonymization_key_value =

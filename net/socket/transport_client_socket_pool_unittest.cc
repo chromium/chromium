@@ -23,6 +23,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -1848,7 +1849,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKey) {
             session_deps_.host_resolver->request_network_anonymization_key(1));
 }
 
-TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySsl) {
+TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeySsl) {
   const SchemefulSite kSite(GURL("https://foo.test/"));
   const auto kNetworkAnonymizationKey =
       NetworkAnonymizationKey::CreateSameSite(kSite);
@@ -1891,8 +1892,8 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySsl) {
 
 // Test that, in the case of an HTTP proxy, the same transient
 // NetworkAnonymizationKey is reused for resolving the proxy's host, regardless
-// of input NIK.
-TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpProxy) {
+// of input NAK.
+TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeyHttpProxy) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const auto kNetworkAnonymizationKey1 =
       NetworkAnonymizationKey::CreateSameSite(kSite1);
@@ -1964,8 +1965,8 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpProxy) {
 
 // Test that, in the case of an HTTPS proxy, the same transient
 // NetworkAnonymizationKey is reused for resolving the proxy's host, regardless
-// of input NIK.
-TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpsProxy) {
+// of input NAK.
+TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeyHttpsProxy) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const auto kNetworkAnonymizationKey1 =
       NetworkAnonymizationKey::CreateSameSite(kSite1);
@@ -2040,8 +2041,8 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpsProxy) {
 // Test that, in the case of a SOCKS5 proxy, the passed in
 // NetworkAnonymizationKey is used for the destination DNS lookup, and the same
 // transient NetworkAnonymizationKey is reused for resolving the proxy's host,
-// regardless of input NIK.
-TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks4Proxy) {
+// regardless of input NAK.
+TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeySocks4Proxy) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const auto kNetworkAnonymizationKey1 =
       NetworkAnonymizationKey::CreateSameSite(kSite1);
@@ -2110,7 +2111,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks4Proxy) {
       IsError(ERR_IO_PENDING));
 
   // First two lookups are for the proxy's hostname, and should use the same
-  // transient NIK.
+  // transient NAK.
   ASSERT_EQ(2u, session_deps_.host_resolver->last_id());
   EXPECT_EQ(kProxyChain.proxy_server().host_port_pair().host(),
             session_deps_.host_resolver->request_host(1));
@@ -2122,7 +2123,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks4Proxy) {
             session_deps_.host_resolver->request_network_anonymization_key(2));
 
   // First two lookups completes, starting the next two, which should be for the
-  // destination's hostname, and should use the passed in NIKs.
+  // destination's hostname, and should use the passed in NAKs.
   session_deps_.host_resolver->ResolveNow(1);
   session_deps_.host_resolver->ResolveNow(2);
   ASSERT_EQ(4u, session_deps_.host_resolver->last_id());
@@ -2136,8 +2137,8 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks4Proxy) {
 
 // Test that, in the case of a SOCKS5 proxy, the same transient
 // NetworkAnonymizationKey is reused for resolving the proxy's host, regardless
-// of input NIK.
-TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks5Proxy) {
+// of input NAK.
+TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeySocks5Proxy) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const auto kNetworkAnonymizationKey1 =
       NetworkAnonymizationKey::CreateSameSite(kSite1);

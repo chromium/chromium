@@ -216,7 +216,7 @@ TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
       context()->cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup_);
   EXPECT_TRUE(cached_endpoint);
 
-  // Ensure that the NIK is stored properly with the endpoint group.
+  // Ensure that the NAK is stored properly with the endpoint group.
   EXPECT_FALSE(cached_endpoint.group_key.network_anonymization_key.IsEmpty());
 }
 
@@ -244,7 +244,7 @@ TEST_P(ReportingServiceTest,
       context()->cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup_);
   EXPECT_TRUE(cached_endpoint);
 
-  // When isolation is disabled, cached endpoints should have a null NIK.
+  // When isolation is disabled, cached endpoints should have a null NAK.
   EXPECT_TRUE(cached_endpoint.group_key.network_anonymization_key.IsEmpty());
 }
 

@@ -702,8 +702,8 @@ SQLitePersistentReportingAndNelStore::Backend::DoMigrateDatabaseSchema() {
   //
   // For migration purposes, the NetworkAnonymizationKey field of the stored
   // policies will be populated with an empty list, which corresponds to an
-  // empty NIK. This matches the behavior when NIKs are disabled. This will
-  // result in effectively clearing all policies once NIKs are enabled, at
+  // empty NAK. This matches the behavior when NAKs are disabled. This will
+  // result in effectively clearing all policies once NAKs are enabled, at
   // which point the the migration code should just be switched to deleting
   // the old tables instead.
   if (cur_version == 1) {

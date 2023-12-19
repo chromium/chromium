@@ -282,12 +282,12 @@ class ReportingEndpointManagerTest : public testing::Test {
         ReportingEndpoint::EndpointInfo{endpoint, priority, weight}));
   }
 
-  const NetworkAnonymizationKey kNik;
+  const NetworkAnonymizationKey kNak;
   const url::Origin kOrigin = url::Origin::Create(GURL("https://origin/"));
   const SchemefulSite kSite = SchemefulSite(kOrigin);
   const std::string kGroup = "group";
   const ReportingEndpointGroupKey kGroupKey =
-      ReportingEndpointGroupKey(kNik, kOrigin, kGroup);
+      ReportingEndpointGroupKey(kNak, kOrigin, kGroup);
   const GURL kEndpoint = GURL("https://endpoint/");
 
   ReportingPolicy policy_;

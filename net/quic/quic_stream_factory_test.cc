@@ -12953,7 +12953,7 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCacheWithNetworkAnonymizationKey) {
   EXPECT_EQ(kUserAgentId1, crypto_config_handle1->GetConfig()->user_agent_id());
   EXPECT_EQ(kUserAgentId2, crypto_config_handle2->GetConfig()->user_agent_id());
 
-  // Creating handles with the same NIKs while the old handles are still alive
+  // Creating handles with the same NAKs while the old handles are still alive
   // should result in getting the same CryptoConfigs.
   std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_handle1_2 =
       QuicStreamFactoryPeer::GetCryptoConfig(factory_.get(),
@@ -12982,7 +12982,7 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCacheWithNetworkAnonymizationKey) {
   crypto_config_handle3.reset();
 
   // The old CryptoConfigs should be recovered when creating handles with the
-  // same NIKs as before.
+  // same NAKs as before.
   crypto_config_handle2 = QuicStreamFactoryPeer::GetCryptoConfig(
       factory_.get(), kNetworkAnonymizationKey2);
   crypto_config_handle1 = QuicStreamFactoryPeer::GetCryptoConfig(
@@ -13036,7 +13036,7 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCacheMRUWithNetworkAnonymizationKey) {
     EXPECT_EQ(base::NumberToString(i),
               crypto_config_handles[i]->GetConfig()->user_agent_id());
 
-    // A new handle for the same NIK returns the same crypto config.
+    // A new handle for the same NAK returns the same crypto config.
     std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_handle =
         QuicStreamFactoryPeer::GetCryptoConfig(factory_.get(),
                                                network_anonymization_keys[i]);
@@ -13044,7 +13044,7 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCacheMRUWithNetworkAnonymizationKey) {
               crypto_config_handle->GetConfig()->user_agent_id());
   }
 
-  // Destroying the only remaining handle for a NIK results in evicting entries,
+  // Destroying the only remaining handle for a NAK results in evicting entries,
   // until there are exactly |kMaxRecentCryptoConfigs| handles.
   for (int i = 0; i < kNumSessionsToMake; ++i) {
     SCOPED_TRACE(i);
@@ -13053,7 +13053,7 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCacheMRUWithNetworkAnonymizationKey) {
 
     crypto_config_handles[i].reset();
 
-    // A new handle for the same NIK will return a new config, if the config was
+    // A new handle for the same NAK will return a new config, if the config was
     // evicted. Otherwise, it will return the same one.
     std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_handle =
         QuicStreamFactoryPeer::GetCryptoConfig(factory_.get(),

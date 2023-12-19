@@ -35,6 +35,7 @@
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/trace_constants.h"
 #include "net/base/tracing.h"
 #include "net/cert/cert_verifier.h"

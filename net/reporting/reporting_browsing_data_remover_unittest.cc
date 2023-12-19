@@ -41,14 +41,14 @@ class ReportingBrowsingDataRemoverTest : public ReportingTestBase {
     }
   }
 
-  // TODO(chlily): Take NIK.
+  // TODO(chlily): Take NAK.
   void AddReport(const GURL& url) {
     cache()->AddReport(absl::nullopt, NetworkAnonymizationKey(), url,
                        kUserAgent_, kGroup_, kType_, base::Value::Dict(), 0,
                        tick_clock()->NowTicks(), 0);
   }
 
-  // TODO(chlily): Take NIK.
+  // TODO(chlily): Take NAK.
   void SetEndpoint(const url::Origin& origin) {
     SetEndpointInCache(
         ReportingEndpointGroupKey(NetworkAnonymizationKey(), origin, kGroup_),
