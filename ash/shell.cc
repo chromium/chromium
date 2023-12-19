@@ -36,6 +36,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_feature_usage_metrics.h"
 #include "ash/assistant/assistant_controller_impl.h"
+#include "ash/birch/birch_model.h"
 #include "ash/booting/booting_animation_controller.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -804,6 +805,8 @@ Shell::~Shell() {
   shelf_controller_->Shutdown();
   shelf_config_->Shutdown();
 
+  birch_model_.reset();
+
   // Depends on `app_list_controller_` and `tablet_mode_controller_`.
   app_list_feature_usage_metrics_.reset();
 
@@ -1564,6 +1567,11 @@ void Shell::Init(
   // |assistant_controller_| are put before |app_list_controller_| as they are
   // used in its constructor.
   app_list_controller_ = std::make_unique<AppListControllerImpl>();
+
+  if (features::IsBirchFeatureEnabled() &&
+      switches::IsBirchSecretKeyMatched()) {
+    birch_model_ = std::make_unique<BirchModel>();
+  }
 
   autoclick_controller_ = std::make_unique<AutoclickController>();
 
