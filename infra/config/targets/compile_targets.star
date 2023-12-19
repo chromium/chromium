@@ -80,11 +80,6 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "chrome_pkg",
-    label = "//chrome/app:chrome_pkg",
-)
-
-targets.compile_target(
     name = "chrome_public_apk",
     label = "//chrome/android:chrome_public_apk",
 )

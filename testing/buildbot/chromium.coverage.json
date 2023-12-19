@@ -8366,9 +8366,6 @@
     ]
   },
   "fuchsia-code-coverage": {
-    "additional_compile_targets": [
-      "chrome_pkg"
-    ],
     "gtest_tests": [
       {
         "args": [
