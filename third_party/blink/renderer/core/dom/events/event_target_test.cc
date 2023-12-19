@@ -144,10 +144,8 @@ TEST_F(EventTargetTest, EventTargetWithAbortSignalDestroyed) {
 // EventTarget-constructed Observables add an event listener for each
 // subscription. Ensure that when a subscription becomes inactive, the event
 // listener is removed.
-// TODO(crbug.com/1485981): Enable this test once https://crrev.com/c/5077347
-// lands. The last assertion currently fails.
 TEST_F(EventTargetTest,
-       DISABLED_ObservableSubscriptionBecomingInactiveRemovesEventListener) {
+       ObservableSubscriptionBecomingInactiveRemovesEventListener) {
   V8TestingScope scope;
   EventTarget* event_target = EventTarget::Create(scope.GetScriptState());
   Observable* observable = event_target->on(AtomicString("test"));

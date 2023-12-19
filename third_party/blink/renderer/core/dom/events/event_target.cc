@@ -250,20 +250,28 @@ ObservableEventListener::ObservableEventListener(Subscriber* subscriber,
   // be invoked with it.
   CHECK(event_target);
 
+  // `this` only gets constructed if `subscriber_` is active. If the subscriber
+  // becomes inactive immediately upon subscription (i.e., an already-aborted
+  // signal is passed into `Observable::subscribe()`, then `this` does not even
+  // get constructed, since we must not add an event listener to `event_target`
+  // in that case.
+  CHECK(subscriber_->active());
+
+  AddEventListenerOptionsResolved* options_resolved =
+      MakeGarbageCollected<AddEventListenerOptionsResolved>();
+  options_resolved->setSignal(subscriber->signal());
+
   event_target->addEventListener(
       event_type, this,
       // TODO(crbug.com/1485981): For now we're just using a default-constructed
-      // `AddEventListenerOptionsResolved` here. Eventually we'll consume an
-      // `ObservableEventListenerOptions` dictionary [1], and convert *this*
+      // `AddEventListenerOptionsResolved` here (with the `subscriber`'s
+      // AbortSignal. Eventually we'll consume an
+      // `ObservableEventListenerOptions` dictionary [1], and convert *that*
       // into a properly-resolved `AddEventListenerOptionsResolved`.
       //
       // [1]:
       // https://wicg.github.io/observable/#dictdef-observableeventlisteneroptions
-      MakeGarbageCollected<AddEventListenerOptionsResolved>());
-  // TODO(crbug.com/1485981): Introduce
-  // `ObservableRemoveEventListenerAbortAlgorithm` and use this AbortSignal
-  // algorithm to remove this event listener from `event_target_` when the
-  // subscription closes (observable via `subscriber_->signal()`).
+      options_resolved);
 }
 
 void ObservableEventListener::Invoke(ExecutionContext* execution_context,
