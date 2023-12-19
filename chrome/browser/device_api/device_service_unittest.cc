@@ -17,7 +17,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
@@ -137,11 +136,11 @@ TEST_F(DeviceAPIServiceTest, IncognitoProfile) {
 
 class DeviceAPIServiceRegularUserTest : public DeviceAPIServiceTest {
  public:
-  DeviceAPIServiceRegularUserTest()
-      : fake_user_manager_(new user_manager::FakeUserManager()),
-        scoped_user_manager_(base::WrapUnique(fake_user_manager_.get())) {}
+  DeviceAPIServiceRegularUserTest() = default;
 
   void LoginRegularUser(bool is_affiliated) {
+    fake_user_manager_ = static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
     const user_manager::User* user =
         fake_user_manager()->AddUserWithAffiliation(account_id(),
                                                     is_affiliated);
@@ -149,14 +148,13 @@ class DeviceAPIServiceRegularUserTest : public DeviceAPIServiceTest {
                                       user->username_hash(), false, false);
   }
 
-  user_manager::FakeUserManager* fake_user_manager() const {
+  ash::FakeChromeUserManager* fake_user_manager() const {
     return fake_user_manager_;
   }
 
  private:
-  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
       fake_user_manager_;
-  user_manager::ScopedUserManager scoped_user_manager_;
 };
 
 TEST_F(DeviceAPIServiceRegularUserTest, ReportErrorForUnaffiliatedUser) {
