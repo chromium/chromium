@@ -3171,6 +3171,20 @@ chromium-metrics-reviews@google.com.
       variants="Autofill.MandatoryReauth.AuthenticationMethod"/>
 </histogram>
 
+<histogram name="Autofill.PaymentMethods.CvcStorageIsEnabled.Startup"
+    enum="BooleanEnabled" expires_after="2024-07-01">
+  <owner>koulvipul@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Tracks the user opt-in rate for CVC storage. This histogram will be
+    populated during profile loadup for users who have enabled autofill for
+    payments. It is not reported for incognito profiles. A value of true denotes
+    that the CVC feature is enabled, while false denotes the feature is
+    disabled.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.PaymentMethods.MandatoryReauth.AuthEvent.SettingsPage.{ActionType}"
     enum="MandatoryReauthAuthEvent" expires_after="2024-07-01">

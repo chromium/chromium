@@ -78,6 +78,7 @@ class TestPersonalDataManager : public PersonalDataManager {
       const override;
   bool IsPaymentMethodsMandatoryReauthEnabled() override;
   void SetPaymentMethodsMandatoryReauthEnabled(bool enabled) override;
+  bool IsPaymentCvcStorageEnabled() override;
   void AddServerCvc(int64_t instrument_id, const std::u16string& cvc) override;
   void ClearServerCvcs() override;
   void ClearLocalCvcs() override;
@@ -161,6 +162,10 @@ class TestPersonalDataManager : public PersonalDataManager {
     account_info_ = account_info;
   }
 
+  void SetIsPaymentCvcStorageEnabled(bool enabled) {
+    payments_cvc_storage_enabled_ = enabled;
+  }
+
   void ClearCreditCardArtImages() { credit_card_art_images_.clear(); }
 
  private:
@@ -178,6 +183,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   absl::optional<bool> payment_methods_mandatory_reauth_enabled_;
   absl::optional<bool> payments_wallet_sync_transport_enabled_;
   CoreAccountInfo account_info_;
+  absl::optional<bool> payments_cvc_storage_enabled_;
 
   TestInMemoryStrikeDatabase inmemory_strike_database_;
   AutofillProfileMigrationStrikeDatabase
