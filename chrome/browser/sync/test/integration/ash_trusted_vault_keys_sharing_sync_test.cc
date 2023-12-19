@@ -233,8 +233,10 @@ IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
   EXPECT_THAT(FetchKeysThroughCrosapi(), ElementsAre(kTestTrustedVaultKey));
 }
 
-IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
-                       ShouldAcceptKeysFromTheWebAndFetchThemThroughCrosapi) {
+// TODO(https://crbug.com/1513038): Flaky on bots.
+IN_PROC_BROWSER_TEST_F(
+    AshTrustedVaultKeysSharingSyncTest,
+    DISABLED_ShouldAcceptKeysFromTheWebAndFetchThemThroughCrosapi) {
   // Mimic the account being already using a trusted vault passphrase.
   SetNigoriInFakeServer(
       syncer::BuildTrustedVaultNigoriSpecifics({kTestTrustedVaultKey}),
