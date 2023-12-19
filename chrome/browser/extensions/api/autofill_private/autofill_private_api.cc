@@ -386,6 +386,34 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
     if (existing_card && existing_card->Compare(credit_card) == 0)
       return RespondNow(NoArguments());
 
+    if (existing_card->cvc().empty()) {
+      if (credit_card.cvc().empty()) {
+        // Record when an existing card without CVC is edited and no CVC was
+        // added.
+        base::RecordAction(base::UserMetricsAction(
+            "AutofillCreditCardsEditedAndCvcWasLeftBlank"));
+      } else {
+        // Record when an existing card without CVC is edited and CVC was added.
+        base::RecordAction(
+            base::UserMetricsAction("AutofillCreditCardsEditedAndCvcWasAdded"));
+      }
+    } else {
+      if (credit_card.cvc().empty()) {
+        // Record when an existing card with CVC is edited and CVC was removed.
+        base::RecordAction(base::UserMetricsAction(
+            "AutofillCreditCardsEditedAndCvcWasRemoved"));
+      } else if (credit_card.cvc() != existing_card->cvc()) {
+        // Record when an existing card with CVC is edited and CVC was updated.
+        base::RecordAction(base::UserMetricsAction(
+            "AutofillCreditCardsEditedAndCvcWasUpdated"));
+      } else {
+        // Record when an existing card with CVC is edited and CVC was
+        // unchanged.
+        base::RecordAction(base::UserMetricsAction(
+            "AutofillCreditCardsEditedAndCvcWasUnchanged"));
+      }
+    }
+
     // Record when nickname is updated.
     if (credit_card.HasNonEmptyValidNickname() &&
         existing_card->nickname() != credit_card.nickname()) {

@@ -4389,6 +4389,51 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="AutofillCreditCardsEditedAndCvcWasAdded">
+  <owner>koulvipul@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user edits card via chrome://settings/payments page and CVC
+    was added.
+  </description>
+</action>
+
+<action name="AutofillCreditCardsEditedAndCvcWasLeftBlank">
+  <owner>koulvipul@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user edits card via chrome://settings/payments page and CVC
+    was left blank.
+  </description>
+</action>
+
+<action name="AutofillCreditCardsEditedAndCvcWasRemoved">
+  <owner>koulvipul@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user edits card via chrome://settings/payments page and CVC
+    was removed.
+  </description>
+</action>
+
+<action name="AutofillCreditCardsEditedAndCvcWasUnchanged">
+  <owner>koulvipul@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user edits card via chrome://settings/payments page and CVC
+    was unchanged.
+  </description>
+</action>
+
+<action name="AutofillCreditCardsEditedAndCvcWasUpdated">
+  <owner>koulvipul@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user edits card via chrome://settings/payments page and CVC
+    was updated.
+  </description>
+</action>
+
 <action name="AutofillCreditCardsEditedWithNickname">
   <owner>sujiezhu@google.com</owner>
   <owner>jsaul@google.com</owner>
