@@ -33,7 +33,8 @@
 @interface ManualFillAllPasswordCoordinator () <
     ManualFillPasswordMediatorDelegate,
     PasswordViewControllerDelegate,
-    ReauthenticationCoordinatorDelegate>
+    ReauthenticationCoordinatorDelegate,
+    UIAdaptivePresentationControllerDelegate>
 
 // Fetches and filters the passwords for the view controller.
 @property(nonatomic, strong) ManualFillPasswordMediator* passwordMediator;
@@ -107,6 +108,7 @@
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
   _navigationController.modalTransitionStyle =
       UIModalTransitionStyleCoverVertical;
+  _navigationController.presentationController.delegate = self;
 
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
@@ -182,6 +184,14 @@
 
 - (void)willPushReauthenticationViewController {
   // No-op.
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self.manualFillAllPasswordCoordinatorDelegate
+      manualFillAllPasswordCoordinatorWantsToBeDismissed:self];
 }
 
 #pragma mark - Private

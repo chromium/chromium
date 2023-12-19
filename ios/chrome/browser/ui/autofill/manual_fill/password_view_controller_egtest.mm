@@ -207,6 +207,34 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
   [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
 }
 
+// Opens the "Other Passwords" screen.
+- (void)openOtherPasswords {
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementUsername)];
+
+  // Tap on the passwords icon.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
+      performAction:grey_tap()];
+
+  // Tap the "Select Passwords..." action.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
+      performAction:grey_tap()];
+
+  std::u16string origin = base::ASCIIToUTF16(
+      password_manager::GetShownOrigin(url::Origin::Create(self.URL)));
+
+  NSString* message = l10n_util::GetNSStringF(
+      IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_MESSAGE, origin);
+
+  [[EarlGrey selectElementWithMatcher:grey_text(message)]
+      assertWithMatcher:grey_notNil()];
+
+  // Acknowledge concerns using other passwords on a website.
+  [[EarlGrey selectElementWithMatcher:ConfirmUsingOtherPasswordButton()]
+      performAction:grey_tap()];
+}
+
 // Tests that the passwords view controller appears on screen.
 - (void)testPasswordsViewControllerIsPresented {
   // Bring up the keyboard.
@@ -397,32 +425,8 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
 
 // Tests that the "Use Other Password..." action works.
 - (void)testUseOtherPasswordActionOpens {
-  // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementUsername)];
+  [self openOtherPasswords];
 
-  // Tap on the passwords icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      performAction:grey_tap()];
-
-  // Tap the "Manage Passwords..." action.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
-      performAction:grey_tap()];
-
-  std::u16string origin = base::ASCIIToUTF16(
-      password_manager::GetShownOrigin(url::Origin::Create(self.URL)));
-
-  NSString* message = l10n_util::GetNSStringF(
-      IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_MESSAGE, origin);
-
-  [[EarlGrey selectElementWithMatcher:grey_text(message)]
-      assertWithMatcher:grey_notNil()];
-
-  // Acknowledge concerns using other passwords on a website.
-  [[EarlGrey selectElementWithMatcher:ConfirmUsingOtherPasswordButton()]
-      performAction:grey_tap()];
-
-  // Verify the use other passwords opened.
   [[EarlGrey
       selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -452,39 +456,40 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       assertWithMatcher:grey_nil()];
 }
 
+- (void)testCloseOtherPasswordsViaSwipeDown {
+  [self openOtherPasswords];
+
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Dismiss Other Passwords via swipe.
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Open it again to make sure the old coordinator was properly cleaned up.
+  [self openOtherPasswords];
+
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 // Tests that the "Use Other Password..." UI is dismissed after failed local
 // authentication.
 - (void)testUseOtherPasswordUIDismissedAfterFailedAuth {
-  // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementUsername)];
-
-  // Tap on the passwords icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      performAction:grey_tap()];
-
-  // Tap the "Manage Passwords..." action.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
-      performAction:grey_tap()];
-
-  std::u16string origin = base::ASCIIToUTF16(
-      password_manager::GetShownOrigin(url::Origin::Create(self.URL)));
-
-  NSString* message = l10n_util::GetNSStringF(
-      IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_MESSAGE, origin);
-
-  [[EarlGrey selectElementWithMatcher:grey_text(message)]
-      assertWithMatcher:grey_notNil()];
-
   // Setup failed authentication.
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
   [PasswordSettingsAppInterface
       mockReauthenticationModuleShouldReturnSynchronously:NO];
 
-  // Acknowledge concerns using other passwords on a website.
-  [[EarlGrey selectElementWithMatcher:ConfirmUsingOtherPasswordButton()]
-      performAction:grey_tap()];
+  [self openOtherPasswords];
 
   // Validate reauth UI is visible until auth result is delivered.
   [[EarlGrey selectElementWithMatcher:password_manager_test_utils::
@@ -510,27 +515,8 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
 // Tests that returning from "Use Other Password..." leaves the view and icons
 // in the right state.
 - (void)testPasswordsStateAfterPresentingUseOtherPassword {
-  // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementUsername)];
+  [self openOtherPasswords];
 
-  // Tap on the passwords icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      performAction:grey_tap()];
-
-  // Verify the status of the icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      assertWithMatcher:grey_not(grey_userInteractionEnabled())];
-
-  // Tap the "Manage Passwords..." action.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
-      performAction:grey_tap()];
-
-  // Acknowledge concerns using other passwords on a website.
-  [[EarlGrey selectElementWithMatcher:ConfirmUsingOtherPasswordButton()]
-      performAction:grey_tap()];
-
-  // Verify the use other passwords opened.
   [[EarlGrey
       selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];

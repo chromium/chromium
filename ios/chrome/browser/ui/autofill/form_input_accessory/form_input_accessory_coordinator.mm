@@ -12,6 +12,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
@@ -213,7 +214,7 @@ const CGFloat kIPHVerticalOffset = -5;
 }
 
 - (void)stop {
-  [self stopChildren];
+  [self clearPresentedState];
   [self.formInputAccessoryTapRecognizer.view
       removeGestureRecognizer:self.formInputAccessoryTapRecognizer];
   self.formInputAccessoryViewController = nil;
@@ -223,7 +224,6 @@ const CGFloat kIPHVerticalOffset = -5;
   [self.formInputAccessoryMediator disconnect];
   self.formInputAccessoryMediator = nil;
 
-  [self stopManualFillAllPasswordCoordinator];
   [self.brandingCoordinator stop];
   self.brandingCoordinator = nil;
   [self.layoutGuide.owningView removeLayoutGuide:self.layoutGuide];
@@ -241,6 +241,14 @@ const CGFloat kIPHVerticalOffset = -5;
 }
 
 #pragma mark - Presenting Children
+
+- (void)clearPresentedState {
+  [self stopChildren];
+
+  [self stopManualFillAllPasswordCoordinator];
+
+  [self dismissAlertCoordinator];
+}
 
 - (void)stopChildren {
   for (ChromeCoordinator* coordinator in self.childCoordinators) {
@@ -561,6 +569,7 @@ const CGFloat kIPHVerticalOffset = -5;
 
 // Opens other passwords.
 - (void)showAllPasswords {
+  CHECK(!self.allPasswordCoordinator, base::NotFatalUntil::M124);
   [self reset];
   self.allPasswordCoordinator = [[ManualFillAllPasswordCoordinator alloc]
       initWithBaseViewController:self.baseViewController
