@@ -11463,6 +11463,8 @@ if (!is_android && !is_chromeos_device && !is_fuchsia) {
         "../browser/media/router/discovery/access_code/access_code_cast_sink_service_browsertest.cc",
         "../browser/ui/views/accessibility/caption_bubble_controller_views_browsertest.cc",
       ]
+
+      deps += [ "//components/soda:soda" ]
     }
 
     if (is_chromeos_lacros && !is_chromeos_device) {

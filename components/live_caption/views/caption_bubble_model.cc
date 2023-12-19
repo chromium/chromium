@@ -104,6 +104,21 @@ void CaptionBubbleModel::SetPartialText(const std::string& partial_text) {
   }
 }
 
+void CaptionBubbleModel::SetDownloadProgressText(
+    const std::u16string& download_progress_text) {
+  download_progress_text_ = download_progress_text;
+
+  if (observer_) {
+    observer_->OnDownloadProgressTextChanged();
+  }
+}
+
+void CaptionBubbleModel::OnLanguagePackInstalled() {
+  if (observer_) {
+    observer_->OnLanguagePackInstalled();
+  }
+}
+
 void CaptionBubbleModel::CloseButtonPressed() {
   caption_bubble_closed_callback_.Run(context_->GetSessionId());
   Close();

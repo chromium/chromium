@@ -68,6 +68,12 @@ class CaptionBubbleModel {
   // Set the partial text and alert the observer.
   void SetPartialText(const std::string& partial_text);
 
+  // Set the download progress label and alert the observer.
+  void SetDownloadProgressText(const std::u16string& download_progress_text);
+
+  // Notify the observer that a language pack was installed.
+  void OnLanguagePackInstalled();
+
   // Commits the partial text as final text.
   void CommitPartialText();
 
@@ -91,6 +97,9 @@ class CaptionBubbleModel {
   CaptionBubbleErrorType ErrorType() const { return error_type_; }
   std::string GetFullText() const { return final_text_ + partial_text_; }
   CaptionBubbleContext* GetContext() { return context_; }
+  std::u16string GetDownloadProgressText() const {
+    return download_progress_text_;
+  }
 
   // Returns the auto-detected language code or an empty string if the language
   // was not automatically switched.
@@ -117,6 +126,7 @@ class CaptionBubbleModel {
 
   std::string final_text_;
   std::string partial_text_;
+  std::u16string download_progress_text_;
 
   std::string auto_detected_language_code_ = std::string();
 

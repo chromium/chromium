@@ -678,6 +678,18 @@ void CaptionBubble::Init() {
   title_ = content_container->AddChildView(std::move(title));
   label_ = content_container->AddChildView(std::move(label));
 
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    auto download_progress_label = std::make_unique<views::Label>();
+    download_progress_label->SetBackgroundColor(SK_ColorTRANSPARENT);
+    download_progress_label->SetHorizontalAlignment(
+        gfx::HorizontalAlignment::ALIGN_CENTER);
+    download_progress_label->SetVerticalAlignment(
+        gfx::VerticalAlignment::ALIGN_MIDDLE);
+    download_progress_label->SetVisible(false);
+    download_progress_label_ =
+        content_container->AddChildView(std::move(download_progress_label));
+  }
+
   generic_error_icon_ =
       generic_error_message->AddChildView(std::move(generic_error_icon));
   generic_error_text_ =
@@ -772,6 +784,10 @@ void CaptionBubble::Init() {
     language_label_->SetPaintToLayer();
     language_label_->layer()->SetFillsBoundsOpaquely(false);
     language_label_->layer()->SetOpacity(0);
+
+    download_progress_label_->SetPaintToLayer();
+    download_progress_label_->layer()->SetFillsBoundsOpaquely(false);
+    download_progress_label_->layer()->SetOpacity(0);
   }
 
   UpdateContentSize();
@@ -959,6 +975,7 @@ void CaptionBubble::AnimationProgressed(const gfx::Animation* animation) {
   }
 
   language_label_->layer()->SetOpacity(animation->GetCurrentValue());
+  download_progress_label_->layer()->SetOpacity(animation->GetCurrentValue());
 }
 
 void CaptionBubble::OnTextChanged() {
@@ -969,6 +986,31 @@ void CaptionBubble::OnTextChanged() {
 
   if (GetWidget()->IsVisible())
     ResetInactivityTimer();
+}
+
+void CaptionBubble::OnDownloadProgressTextChanged() {
+  if (!base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    return;
+  }
+
+  DCHECK(model_);
+  download_progress_label_->SetText(model_->GetDownloadProgressText());
+  download_progress_label_->SetVisible(true);
+
+  // Do not display captions while language packs are downloading.
+  label_->SetVisible(false);
+
+  if (GetWidget()->IsVisible()) {
+    ResetInactivityTimer();
+    UpdateControlsVisibility(true);
+  }
+}
+
+void CaptionBubble::OnLanguagePackInstalled() {
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    download_progress_label_->SetVisible(false);
+    label_->SetVisible(true);
+  }
 }
 
 void CaptionBubble::OnAutoDetectedLanguageChanged() {
@@ -1095,8 +1137,10 @@ void CaptionBubble::UpdateBubbleVisibility() {
     return;
   }
 
-  // Show the widget if it has text or an error to display.
-  if (!model_->GetFullText().empty() || model_->HasError()) {
+  // Show the widget if it has text or an error or download progress to display.
+  if (!model_->GetFullText().empty() || model_->HasError() ||
+      (base::FeatureList::IsEnabled(media::kLiveTranslate) &&
+       download_progress_label_->GetVisible())) {
     ShowInactive();
     return;
   }
@@ -1168,6 +1212,10 @@ void CaptionBubble::SetTextSizeAndFontFamily() {
   if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
     language_label_->SetLineHeight(kLiveTranslateLabelLineHeightDip *
                                    textScaleFactor);
+    download_progress_label_->SetLineHeight(kLiveTranslateLabelLineHeightDip *
+                                            textScaleFactor);
+    download_progress_label_->SetFontList(
+        GetFontList(kLiveTranslateLabelFontSizePx));
   }
   generic_error_text_->SetLineHeight(kLineHeightDip * textScaleFactor);
   generic_error_icon_->SetImageSize(
@@ -1203,13 +1251,14 @@ void CaptionBubble::SetTextColor() {
 
   // Update Live Translate label style
   if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    SkColor secondary_text_color = color_provider->GetColor(
+        ui::kColorLiveCaptionBubbleForegroundSecondary);
     const gfx::FontList live_translate_font_list =
         GetFontList(kLiveTranslateLabelFontSizePx);
 
     views::StyledLabel::RangeStyleInfo language_label_style;
     language_label_style.custom_font = live_translate_font_list;
-    language_label_style.override_color = color_provider->GetColor(
-        ui::kColorLiveCaptionBubbleForegroundSecondary);
+    language_label_style.override_color = secondary_text_color;
 
     views::StyledLabel::RangeStyleInfo live_translate_language_style;
     live_translate_language_style.custom_font = live_translate_font_list;
@@ -1217,6 +1266,8 @@ void CaptionBubble::SetTextColor() {
 
     UpdateLiveTranslateLabelStyle(language_label_style,
                                   live_translate_language_style);
+
+    download_progress_label_->SetEnabledColor(secondary_text_color);
   }
 #if BUILDFLAG(IS_WIN)
 
@@ -1419,6 +1470,9 @@ void CaptionBubble::UpdateContentSize() {
     language_label_->SizeToFit(
         left_header_container_->GetPreferredSize().width() -
         button_size.width());
+
+    download_progress_label_->SetPreferredSize(
+        gfx::Size(width, content_height));
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -1530,11 +1584,17 @@ std::vector<views::View*> CaptionBubble::GetButtons() {
 bool CaptionBubble::HasActivity() {
   return model_ &&
          ((inactivity_timer_ && inactivity_timer_->IsRunning()) || HasFocus() ||
-          !model_->GetFullText().empty() || model_->HasError() || is_pinned_);
+          !model_->GetFullText().empty() || model_->HasError() || is_pinned_ ||
+          (base::FeatureList::IsEnabled(media::kLiveTranslate) &&
+           download_progress_label_->GetVisible()));
 }
 
 views::Label* CaptionBubble::GetLabelForTesting() {
   return static_cast<views::Label*>(label_);
+}
+
+views::Label* CaptionBubble::GetDownloadProgressLabelForTesting() {
+  return static_cast<views::Label*>(download_progress_label_);
 }
 
 views::StyledLabel* CaptionBubble::GetLanguageLabelForTesting() {

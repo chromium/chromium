@@ -105,6 +105,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   bool HasActivity();
 
   views::Label* GetLabelForTesting();
+  views::Label* GetDownloadProgressLabelForTesting();
   views::StyledLabel* GetLanguageLabelForTesting();
   bool IsGenericErrorMessageVisibleForTesting() const;
   base::RetainingOneShotTimer* GetInactivityTimerForTesting();
@@ -159,6 +160,13 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   // Called by CaptionBubbleModel to notify this object that the model's text
   // has changed. Sets the text of the caption bubble to the model's text.
   void OnTextChanged();
+
+  // Called by CaptionBubbleModel to notify this object that the model's
+  // download progress text has changed. Sets the text of the caption bubble to
+  // the model's download progress text.
+  void OnDownloadProgressTextChanged();
+
+  void OnLanguagePackInstalled();
 
   // Called by CaptionBubbleModel to notify this object that the model's
   // auto-detected language has changed.
@@ -241,6 +249,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   raw_ptr<CaptionBubbleLabel> label_;
   raw_ptr<views::Label> title_;
   raw_ptr<views::Label> generic_error_text_;
+  raw_ptr<views::Label> download_progress_label_;
   raw_ptr<views::StyledLabel> language_label_;
   raw_ptr<views::View> header_container_;
   raw_ptr<views::View> left_header_container_;
