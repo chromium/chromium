@@ -57,11 +57,6 @@ const char kPdfUseSkiaRendererDescription[] =
     "renderer choice is controlled by an enterprise policy.";
 #endif
 
-const char kAdvancedPeripheralsSupportName[] =
-    "Advanced peripherals support on Android.";
-const char kAdvancedPeripheralsSupportDescription[] =
-    "Advanced keyboard, mouse and trackpad support for increased productivity.";
-
 const char kAdvancedPeripheralsSupportTabStripName[] =
     "Advanced peripherals support for the tab strip on Android.";
 const char kAdvancedPeripheralsSupportTabStripDescription[] =

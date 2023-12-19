@@ -39,7 +39,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -1495,8 +1494,7 @@ class LocationBarMediator
         // the scrim on the web contents, which is not desirable.
         if (!mUrlFocusedWithoutAnimations
                 || mUrlCoordinator == null
-                || !TextUtils.isEmpty(mUrlCoordinator.getTextWithoutAutocomplete())
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT)) {
+                || !TextUtils.isEmpty(mUrlCoordinator.getTextWithoutAutocomplete())) {
             return;
         }
         handleUrlFocusAnimation(true);

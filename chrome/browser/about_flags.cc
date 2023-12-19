@@ -10482,11 +10482,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kHideIncognitoMediaMetadata)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"advanced-peripherals-support",
-     flag_descriptions::kAdvancedPeripheralsSupportName,
-     flag_descriptions::kAdvancedPeripheralsSupportDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAdvancedPeripheralsSupport)},
-
     {"advanced-peripherals-support-tab-strip",
      flag_descriptions::kAdvancedPeripheralsSupportTabStripName,
      flag_descriptions::kAdvancedPeripheralsSupportTabStripDescription,

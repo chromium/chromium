@@ -184,7 +184,6 @@ public class ToolbarTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT)
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     public void testNtpOmniboxFocusAndUnfocusWithHardwareKeyboardConnected() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
@@ -221,7 +220,6 @@ public class ToolbarTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT)
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     public void testMaybeShowUrlBarFocusIfHardwareKeyboardAvailable_newTabFromTabSwitcher() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();

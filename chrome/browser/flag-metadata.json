@@ -82,11 +82,6 @@
     "expiry_milestone": 124
   },
   {
-    "name": "advanced-peripherals-support",
-    "owners": [ "aishwaryarj@google.com", "zheliooo@google.com", "skavuluru@google.com", "clank-app-team@google.com" ],
-    "expiry_milestone": 124
-  },
-  {
     "name": "advanced-peripherals-support-tab-strip",
     "owners": [ "aishwaryarj@google.com", "zheliooo@google.com", "skavuluru@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 124
