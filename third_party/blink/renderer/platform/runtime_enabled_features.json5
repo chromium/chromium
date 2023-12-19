@@ -1247,8 +1247,11 @@
       origin_trial_type: "deprecation",
     },
     {
+      // Makes the default display value of date type <input> elements
+      // inline-block for cross-browser compatibility. Enabled in M122, should
+      // be safe to remove in M126.
       name: "DateInputInlineBlock",
-      status: "test",
+      status: "stable",
     },
     {
       // TODO(crbug.com/1396384) This is being disabled, very slowly, via
