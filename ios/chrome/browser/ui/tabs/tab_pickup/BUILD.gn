@@ -8,6 +8,7 @@ source_set("eg2_tests") {
   sources = [ "tab_pickup_egtest.mm" ]
   deps = [
     "//base",
+    "//components/search_engines",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
