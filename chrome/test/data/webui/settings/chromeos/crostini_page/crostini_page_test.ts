@@ -5,11 +5,11 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {CrostiniBrowserProxyImpl, GuestOsBrowserProxyImpl, SettingsCrostiniConfirmationDialogElement, SettingsCrostiniPageElement} from 'chrome://os-settings/lazy_load.js';
-import {Router} from 'chrome://os-settings/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestGuestOsBrowserProxy} from '../guest_os/test_guest_os_browser_proxy.js';
 
@@ -20,6 +20,34 @@ let guestOsBrowserProxy: TestGuestOsBrowserProxy;
 let crostiniBrowserProxy: TestCrostiniBrowserProxy;
 
 suite('<settings-crostini-page>', () => {
+  function setCrostiniPrefs(enabled: boolean, {
+    sharedPaths = {},
+    forwardedPorts = [],
+    micAllowed = false,
+    arcEnabled = false,
+    bruschettaInstalled = false,
+  } = {}): void {
+    crostiniPage.prefs = {
+      arc: {
+        enabled: {value: arcEnabled},
+      },
+      bruschetta: {
+        installed: {
+          value: bruschettaInstalled,
+        },
+      },
+      crostini: {
+        enabled: {value: enabled},
+        mic_allowed: {value: micAllowed},
+        port_forwarding: {ports: {value: forwardedPorts}},
+      },
+      guest_os: {
+        paths_shared_to_vms: {value: sharedPaths},
+      },
+    };
+    flush();
+  }
+
   setup(() => {
     loadTimeData.overrideValues({
       isCrostiniAllowed: true,
@@ -30,11 +58,10 @@ suite('<settings-crostini-page>', () => {
     guestOsBrowserProxy = new TestGuestOsBrowserProxy();
     GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
 
+    Router.getInstance().navigateTo(routes.CROSTINI);
     crostiniPage = document.createElement('settings-crostini-page');
     document.body.appendChild(crostiniPage);
     flush();
-
-    disableAnimationsAndTransitions();
   });
 
   teardown(() => {
@@ -104,4 +131,24 @@ suite('<settings-crostini-page>', () => {
       assertFalse(crDialogElement.open);
     });
   });
+
+  // Functionality is already tested in OSSettingsGuestOsSharedPathsTest,
+  // so just check that we correctly set up the page for our 'termina' VM.
+  test(
+      '<settings-guest-os-shared-paths> is correctly set up for termina VM',
+      async () => {
+        setCrostiniPrefs(
+            true,
+            {sharedPaths: {path1: ['termina'], path2: ['some-other-vm']}});
+        await flushTasks();
+
+        Router.getInstance().navigateTo(routes.CROSTINI_SHARED_PATHS);
+        await flushTasks();
+
+        const subpage = crostiniPage.shadowRoot!.querySelector(
+            'settings-guest-os-shared-paths');
+        assertTrue(!!subpage);
+        assertEquals(
+            1, subpage.shadowRoot!.querySelectorAll('.list-item').length);
+      });
 });

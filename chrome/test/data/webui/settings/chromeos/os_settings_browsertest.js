@@ -32,6 +32,7 @@ var OSSettingsBrowserTest = class extends PolymerTest {
       enabled: [
         'ash::features::kEnableHostnameSetting',
       ],
+      disabled: [],
     };
   }
 };
@@ -302,6 +303,16 @@ var OSSettingsCrostiniPageTest = class extends OSSettingsBrowserTest {
   testGenPreamble() {
     return crostiniTestGenPreamble();
   }
+
+  /** @override */
+  get featureList() {
+    return {
+      ...super.featureList.enabled,
+      disabled: super.featureList.disabled.concat([
+        'ash::features::kOsSettingsRevampWayfinding',
+      ]),
+    };
+  }
 };
 
 TEST_F('OSSettingsCrostiniPageTest', 'AllJsTests', () => {
@@ -429,25 +440,6 @@ var OSSettingsCrostiniPageCrostiniSubpageTest =
 TEST_F('OSSettingsCrostiniPageCrostiniSubpageTest', 'AllJsTests', () => {
   mocha.run();
 });
-
-var OSSettingsCrostiniPageGuestOsSharedPathsForCrostiniTest =
-    class extends OSSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page/guest_os_shared_paths_for_crostini_test.js';
-  }
-
-  /** @override */
-  testGenPreamble() {
-    return crostiniTestGenPreamble();
-  }
-};
-
-TEST_F(
-    'OSSettingsCrostiniPageGuestOsSharedPathsForCrostiniTest', 'AllJsTests',
-    () => {
-      mocha.run();
-    });
 
 [['AboutPage', 'os_about_page_tests.js'],
  ['ApnDetailDialog', 'apn_detail_dialog_test.js'],
