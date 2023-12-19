@@ -5356,7 +5356,7 @@ Press an assigned switch or key to remove assignment.
     <ph name="percentage">$1<ex>56</ex></ph>%
   </message>
   <message name="IDS_SETTINGS_POWER_BATTERY_SAVER_LABEL" desc="In Device Settings > Power, label for toggling battery saver mode">
-    Battery Saver
+    Battery saver
   </message>
   <message name="IDS_SETTINGS_POWER_BATTERY_SAVER_SUBTEXT" desc="In Device Settings > Power, description of the behavior of battery saver mode">
     Extends battery life by reducing brightness, limiting background activity and visual effects, delaying notifications, and turning on Chrome Energy Saver.
