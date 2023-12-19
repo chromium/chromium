@@ -83,7 +83,7 @@
 #import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_url_filter_tab_helper.h"
-#import "ios/chrome/browser/sync/model/ios_chrome_synced_tab_delegate.h"
+#import "ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/voice/model/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_tab_helper.h"

@@ -38,6 +38,7 @@ source_set("tabs_internal") {
   ]
   deps = [
     ":model",
+    ":synced_tabs",
     "//base",
     "//components/autofill/ios/form_util",
     "//components/breadcrumbs/core:status",
@@ -140,9 +141,41 @@ source_set("tabs_internal") {
   ]
 }
 
+source_set("synced_tabs") {
+  sources = [
+    "ios_chrome_local_session_event_router.h",
+    "ios_chrome_local_session_event_router.mm",
+    "ios_chrome_synced_tab_delegate.h",
+    "ios_chrome_synced_tab_delegate.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/sessions",
+    "//components/sessions:session_id",
+    "//components/sync/base:features",
+    "//components/sync/model",
+    "//components/sync_sessions",
+    "//ios/chrome/browser/complex_tasks/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/sync/model/glue",
+    "//ios/web/common:features",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
+    "//ios/web/public/navigation",
+    "//ios/web/public/session",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "ios_chrome_synced_tab_delegate_unittest.mm",
     "tab_helper_delegate_installer_unittest.mm",
     "tab_sync_util_unittest.mm",
     "tab_title_util_unittest.mm",
@@ -150,6 +183,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":model",
+    ":synced_tabs",
     ":tab_sync_util",
     ":tabs_internal",
     "//base",

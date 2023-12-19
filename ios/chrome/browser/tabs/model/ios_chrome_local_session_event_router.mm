@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/sync/model/sessions/ios_chrome_local_session_event_router.h"
+#import "ios/chrome/browser/tabs/model/ios_chrome_local_session_event_router.h"
 
 #import <stddef.h>
 
@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/sync/model/glue/sync_start_util.h"
-#import "ios/chrome/browser/sync/model/ios_chrome_synced_tab_delegate.h"
+#import "ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/tabs/model/tab_parenting_global_observer.h"
 
 namespace {
