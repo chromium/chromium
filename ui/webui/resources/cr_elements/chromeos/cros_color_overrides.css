@@ -225,6 +225,7 @@
 /* Input and Textarea */
 :host-context(body.jelly-enabled) cr-input,
 :host-context(body.jelly-enabled) cr-search-field::part(searchInput),
+:host-context(body.jelly-enabled) cr-searchable-drop-down::part(input),
 :host-context(body.jelly-enabled) cr-textarea {
   --cr-input-background-color: var(--cros-sys-input_field_on_base);
   --cr-input-error-color: var(--cros-sys-error);
@@ -374,6 +375,16 @@
   --cr-input-padding-end: 28px;
   --cr-input-padding-start: 8px;
   --cr-input-padding-top: 10px;
+}
+
+/* Searchable Dropdown */
+:host-context(body.jelly-enabled) cr-searchable-drop-down {
+  --cr-searchable-drop-down-bg-color: var(--cros-sys-base_elevated);
+  --cr-searchable-drop-down-icon-color-focus: var(--cros-sys-primary);
+  --cr-searchable-drop-down-list-bg-color-selected:
+      var(--cros-sys-base_highlight);
+  --cr-searchable-drop-down-list-item-color: var(--cros-sys-on_surface);
+  --cr-searchable-drop-down-shadow: var(--cros-elevation-3-shadow);
 }
 
 /* Slider */
