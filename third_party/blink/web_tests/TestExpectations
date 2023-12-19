@@ -5214,6 +5214,9 @@ crbug.com/1299948 [ Mac11 Release ] external/wpt/css/css-tables/crashtests/texta
 crbug.com/1299948 [ Mac12 ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
 crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-crash.html [ Failure Pass Timeout ]
 
+# Disabled temporarily to land https://crrev.com/c/5134807
+crbug.com/1509340 http/tests/inspector-protocol/side-effects/evaluate-embedder-side-effect-free-methods.js [ Failure Pass ]
+
 # Disable flaky test for further investigation
 crbug.com/1229801 http/tests/devtools/elements/css-rule-hover-highlights-selectors.js [ Failure Pass ]
 
