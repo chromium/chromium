@@ -315,7 +315,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (BOOL)isGridEmpty {
-  return self.items.count == 0;
+  return [self numberOfTabs] == 0;
 }
 
 - (BOOL)isContainedGridEmpty {
@@ -523,7 +523,8 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   [self updateSelectedCollectionViewItemRingAndBringIntoView:YES];
 
   // Update the delegate, in case it wasn't set when `items` was populated.
-  [self.delegate gridViewController:self didChangeItemCount:self.items.count];
+  [self.delegate gridViewController:self
+                 didChangeItemCount:[self numberOfTabs]];
   [self removeEmptyStateAnimated:NO];
   self.lastInsertedItemID = web::WebStateID();
 }
@@ -579,7 +580,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   if ([sectionIdentifier isEqualToString:kGridOpenTabsSectionIdentifier]) {
     gridHeader.title = l10n_util::GetNSString(
         IDS_IOS_TABS_SEARCH_OPEN_TABS_SECTION_HEADER_TITLE);
-    NSString* resultsCount = [@(self.items.count) stringValue];
+    NSString* resultsCount = [@([self numberOfTabs]) stringValue];
     gridHeader.value =
         l10n_util::GetNSStringF(IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT,
                                 base::SysNSStringToUTF16(resultsCount));
@@ -909,8 +910,9 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     // The sourceIndexPath is nil if the drop item is not from the same
     // collection view. Set the destinationIndex to reflect the addition of an
     // item.
+    NSInteger numberOfTabs = [self numberOfTabs];
     NSUInteger destinationIndex =
-        item.sourceIndexPath ? self.items.count - 1 : self.items.count;
+        item.sourceIndexPath ? numberOfTabs - 1 : numberOfTabs;
     if (coordinator.destinationIndexPath) {
       destinationIndex =
           base::checked_cast<NSUInteger>(coordinator.destinationIndexPath.item);
@@ -1295,6 +1297,12 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
                                 }
                               }];
 
+  if ([self shouldShowEmptyState]) {
+    [self animateEmptyStateIn];
+  } else {
+    [self removeEmptyStateAnimated:YES];
+  }
+
   [self updateVisibleCellIdentifiers];
 }
 
@@ -1320,8 +1328,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   self.selectedItemID = selectedItemID;
   self.lastInsertedItemID = item.identifier;
   [self.delegate gridViewController:self didChangeItemCount:self.items.count];
-
-  [self removeEmptyStateAnimated:YES];
 
   // TODO(crbug.com/1473625): There are crash reports that show there could be
   // cases where the open tabs section is not present in the snapshot. If so,
@@ -1352,7 +1358,8 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)modelAndViewUpdatesForInsertionDidCompleteAtIndex:(NSUInteger)index {
   [self updateSelectedCollectionViewItemRingAndBringIntoView:YES];
 
-  [self.delegate gridViewController:self didChangeItemCount:self.items.count];
+  NSInteger numberOfTabs = [self numberOfTabs];
+  [self.delegate gridViewController:self didChangeItemCount:numberOfTabs];
 
   // Check `index` boundaries in order to filter out possible race conditions
   // while mutating the collection.
@@ -1386,18 +1393,16 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   GridItemIdentifier* removedItemIdentifier =
       [GridItemIdentifier tabIdentifier:removedItem];
   [snapshot deleteItemsWithIdentifiers:@[ removedItemIdentifier ]];
-  if ([self shouldShowEmptyState]) {
-    [self animateEmptyStateIn];
-  }
 }
 
 // Makes the required changes when a new item has been removed.
 - (void)modelAndViewUpdatesForRemovalDidCompleteForItemWithID:
     (web::WebStateID)removedItemID {
-  if (self.items.count > 0) {
+  NSInteger numberOfTabs = [self numberOfTabs];
+  if (numberOfTabs > 0) {
     [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
   }
-  [self.delegate gridViewController:self didChangeItemCount:self.items.count];
+  [self.delegate gridViewController:self didChangeItemCount:numberOfTabs];
   [self.delegate gridViewController:self didRemoveItemWIthID:removedItemID];
 }
 
@@ -1743,7 +1748,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   if (self.showingSuggestedActions) {
     return NO;
   }
-  return self.items.count == 0;
+  return self.gridEmpty;
 }
 
 // Updates the number of results found on the search open tabs section header.
@@ -1757,7 +1762,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   if (!headerView) {
     return;
   }
-  NSString* resultsCount = [@(self.items.count) stringValue];
+  NSString* resultsCount = [@([self numberOfTabs]) stringValue];
   headerView.value =
       l10n_util::GetNSStringF(IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT,
                               base::SysNSStringToUTF16(resultsCount));
@@ -1777,6 +1782,13 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   }];
 
   return items;
+}
+
+// Returns the number of tabs in the collection view.
+- (NSInteger)numberOfTabs {
+  NSInteger sectionIndex = [self.diffableDataSource
+      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
+  return [self.collectionView numberOfItemsInSection:sectionIndex];
 }
 
 @end
