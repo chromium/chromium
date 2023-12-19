@@ -10718,13 +10718,22 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Tip:
       </message>
       <message name="IDS_TAB_ORGANIZATION_TIP_BODY" desc="The main text of the tip in the tab organization UI" translateable="false">
-        You can create your own tab group anytime.
+        You can create your own tab group.
       </message>
       <message name="IDS_TAB_ORGANIZATION_TIP_ACTION" desc="The actionable text of the tip in the tab organization UI" translateable="false">
         Show me how
       </message>
+      <message name="IDS_TAB_ORGANIZATION_TIP_ARIA_DESCRIPTION" desc="The a11y description of the tip in the tab organization UI" translateable="false" is_accessibility_with_no_ui="true">
+        Launch tab group tutorial
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_DISCLAIMER" desc="The disclaimer text in the tab organization UI results state for getting more information" translateable="false">
+        This is an experimental AI feature and won't always get it right.
+      </message>
       <message name="IDS_TAB_ORGANIZATION_LEARN_MORE" desc="The actionable text in the tab organization UI results state for getting more information" translateable="false">
-        Learn more about using AI tools
+        Learn more
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_CLOSE_TAB" desc="The accessible label in the tab organization UI results state for removing a tab" translateable="false" is_accessibility_with_no_ui="true">
+        Remove <ph name="TAB_TITLE">$1<ex>New Tab</ex></ph> from tab group
       </message>
       <message name="IDS_TAB_ORGANIZATION_REJECT_SUGGESTION" desc="The button text in the tab organization UI results state for rejecting the current suggestion" translateable="false">
         Refresh

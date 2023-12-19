@@ -12,8 +12,12 @@
     padding: 16px var(--mwb-list-item-horizontal-margin);
   }
 
-  .inline {
-    display: inline-block;
+  /* Explicitly provide a hard-coded width for each text block.
+   * This ensures accuracy in the tab-organization-page calculation for
+   * animating bubble height, as text wraps when rendered offscreen.
+   */
+  .tab-organization-body {
+    width: 280px;
   }
 </style>
 
@@ -22,10 +26,11 @@
     <div class="tab-organization-header">[[getTitle_(error)]]</div>
     <div class="tab-organization-body">
       [[getBodyPreLink_(error)]]
-      <div class="tab-organization-link inline"
+      <div class="tab-organization-link"
           role="link"
           tabindex="0"
-          on-click="onCheckNow_">
+          on-click="onCheckNow_"
+          on-keydown="onCheckNowKeyDown_">
         [[getBodyLink_(error)]]
       </div>
       [[getBodyPostLink_(error)]]
@@ -35,10 +40,12 @@
     <div class="footer">
       <div class="tab-organization-body">
         <b>$i18n{tipTitle}</b> $i18n{tipBody}
-        <div class="tab-organization-link inline"
+        <div class="tab-organization-link"
             role="link"
             tabindex="0"
-            on-click="onTipClick_">
+            on-click="onTipClick_"
+            on-keydown="onTipKeyDown_"
+            aria-description="$i18n{tipAriaDescription}">
           $i18n{tipAction}
         </div>
       </div>

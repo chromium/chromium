@@ -29,6 +29,7 @@
 .tab-organization-link {
   color: var(--color-link-foreground-on-bubble-footer);
   cursor: pointer;
+  display: inline-block;
   font-size: 13px;
   font-weight: 400;
   outline-color: var(--color-button-foreground);
