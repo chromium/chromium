@@ -798,6 +798,10 @@ std::unique_ptr<SSLClientSocket> MockClientSocketFactory::CreateSSLClientSocket(
         next_ssl_data->next_protos_expected_in_ssl_config.value(),
         ssl_config.alpn_protos));
   }
+  if (next_ssl_data->expected_application_settings) {
+    EXPECT_EQ(*next_ssl_data->expected_application_settings,
+              ssl_config.application_settings);
+  }
 
   // The protocol version used is a combination of the per-socket SSLConfig and
   // the SSLConfigService.

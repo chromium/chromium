@@ -270,6 +270,11 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
       data_vector_.push_back(data);
       if (ssl_provider->next_proto == kProtoUnknown)
         ssl_provider->next_proto = kProtoHTTP2;
+      // Even when next_protos only includes HTTP1, `application_settions`
+      // always includes the full list from the HttpNetworkSession. The
+      // SSLClientSocket layer, which is mocked out in these tests, is the layer
+      // responsible for only sending the relevant settings.
+      ssl_provider->expected_application_settings = {{{kProtoHTTP2, {}}}};
 
       session_deps_->socket_factory->AddSSLSocketDataProvider(
           ssl_provider.get());

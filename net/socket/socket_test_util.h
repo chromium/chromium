@@ -501,6 +501,7 @@ struct SSLSocketDataProvider {
   std::vector<uint8_t> ech_retry_configs;
 
   absl::optional<NextProtoVector> next_protos_expected_in_ssl_config;
+  absl::optional<SSLConfig::ApplicationSettings> expected_application_settings;
 
   uint16_t expected_ssl_version_min;
   uint16_t expected_ssl_version_max;
