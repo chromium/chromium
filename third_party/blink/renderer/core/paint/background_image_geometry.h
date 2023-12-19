@@ -12,6 +12,7 @@
 namespace blink {
 
 class FillLayer;
+class SVGBackgroundPaintContext;
 struct PaintInfo;
 
 class BackgroundImageGeometry {
@@ -25,6 +26,7 @@ class BackgroundImageGeometry {
                  const BoxBackgroundPaintContext&,
                  const PhysicalRect& paint_rect,
                  const PaintInfo& paint_info);
+  void Calculate(const FillLayer&, const SVGBackgroundPaintContext&);
 
   // Destination rects define the area into which the image will paint.
   // For cases where no explicit background size is requested, the destination
@@ -97,6 +99,13 @@ class BackgroundImageGeometry {
       const BoxBackgroundPaintContext&,
       const PhysicalRect& unsnapped_positioning_area,
       bool disallow_border_derived_adjustment) const;
+
+  // Positioning/painting area setup for SVG.
+  gfx::RectF ComputePositioningArea(const FillLayer&,
+                                    const SVGBackgroundPaintContext&) const;
+  gfx::RectF ComputePaintingArea(const FillLayer&,
+                                 const SVGBackgroundPaintContext&,
+                                 const gfx::RectF& positioning_area) const;
 
   void AdjustPositioningArea(const FillLayer&,
                              const BoxBackgroundPaintContext&,

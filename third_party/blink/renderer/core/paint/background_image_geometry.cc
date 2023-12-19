@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
 
 #include "third_party/blink/renderer/core/paint/paint_info.h"
+#include "third_party/blink/renderer/core/paint/svg_background_paint_context.h"
 
 namespace blink {
 
@@ -700,6 +701,87 @@ void BackgroundImageGeometry::Calculate(
   }
   // Re-snap the dest rect as we may have adjusted it with unsnapped values.
   snapped_dest_rect_ = PhysicalRect(ToPixelSnappedRect(snapped_dest_rect_));
+}
+
+gfx::RectF BackgroundImageGeometry::ComputePositioningArea(
+    const FillLayer& layer,
+    const SVGBackgroundPaintContext& paint_context) const {
+  switch (layer.Origin()) {
+    case EFillBox::kNoClip:
+    case EFillBox::kText:
+      NOTREACHED();
+      [[fallthrough]];
+    case EFillBox::kBorder:
+    case EFillBox::kContent:
+    case EFillBox::kFillBox:
+    case EFillBox::kPadding:
+      return paint_context.ReferenceBox(GeometryBox::kFillBox);
+    case EFillBox::kStrokeBox:
+      return paint_context.ReferenceBox(GeometryBox::kStrokeBox);
+    case EFillBox::kViewBox:
+      return paint_context.ReferenceBox(GeometryBox::kViewBox);
+  }
+}
+
+gfx::RectF BackgroundImageGeometry::ComputePaintingArea(
+    const FillLayer& layer,
+    const SVGBackgroundPaintContext& paint_context,
+    const gfx::RectF& positioning_area) const {
+  switch (layer.Clip()) {
+    case EFillBox::kText:
+    case EFillBox::kNoClip:
+      return paint_context.VisualOverflowRect();
+    case EFillBox::kContent:
+    case EFillBox::kFillBox:
+    case EFillBox::kPadding:
+      return positioning_area;
+    case EFillBox::kStrokeBox:
+    case EFillBox::kBorder:
+      return paint_context.ReferenceBox(GeometryBox::kStrokeBox);
+    case EFillBox::kViewBox:
+      return paint_context.ReferenceBox(GeometryBox::kViewBox);
+  }
+}
+
+void BackgroundImageGeometry::Calculate(
+    const FillLayer& fill_layer,
+    const SVGBackgroundPaintContext& paint_context) {
+  const gfx::RectF positioning_area =
+      ComputePositioningArea(fill_layer, paint_context);
+  const gfx::RectF painting_area =
+      ComputePaintingArea(fill_layer, paint_context, positioning_area);
+  // Unsnapped positioning area is used to derive quantities
+  // that reference source image maps and define non-integer values, such
+  // as phase and position.
+  PhysicalRect unsnapped_positioning_area =
+      PhysicalRect::EnclosingRect(positioning_area);
+  unsnapped_dest_rect_ = PhysicalRect::EnclosingRect(painting_area);
+
+  // Additional offset from the corner of the positioning_box_
+  PhysicalOffset unsnapped_box_offset =
+      unsnapped_positioning_area.offset - unsnapped_dest_rect_.offset;
+
+  snapped_dest_rect_ = unsnapped_dest_rect_;
+
+  // Sets the tile_size_.
+  CalculateFillTileSize(fill_layer, paint_context.Style(),
+                        unsnapped_positioning_area.size,
+                        unsnapped_positioning_area.size);
+
+  // Applies *-repeat and *-position.
+  CalculateRepeatAndPosition(fill_layer, PhysicalOffset(),
+                             unsnapped_positioning_area.size,
+                             unsnapped_positioning_area.size,
+                             unsnapped_box_offset, unsnapped_box_offset);
+
+  if (!paint_context.UsesZoomedCoordinates()) {
+    const float inv_zoom = 1 / paint_context.EffectiveZoom();
+    unsnapped_dest_rect_.Scale(inv_zoom);
+    snapped_dest_rect_.Scale(inv_zoom);
+    phase_.Scale(inv_zoom);
+    tile_size_.Scale(inv_zoom);
+    repeat_spacing_.Scale(inv_zoom);
+  }
 }
 
 PhysicalOffset BackgroundImageGeometry::ComputePhase() const {

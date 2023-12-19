@@ -10,8 +10,10 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
+#include "third_party/blink/renderer/core/paint/background_image_geometry.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
+#include "third_party/blink/renderer/core/paint/svg_background_paint_context.h"
 #include "third_party/blink/renderer/core/style/style_mask_source_image.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
@@ -69,311 +71,6 @@ LayoutSVGResourceMasker* ResolveElementReference(
                                  mask_source.GetSVGResourceClient(observer));
 }
 
-class SVGMaskGeometry {
-  STACK_ALLOCATED();
-
- public:
-  explicit SVGMaskGeometry(const LayoutObject& object) : object_(object) {}
-
-  void Calculate(const FillLayer&);
-
-  const gfx::RectF& DestRect() const { return dest_rect_; }
-  const absl::optional<gfx::RectF>& ClipRect() const { return clip_rect_; }
-  const gfx::SizeF& TileSize() const { return tile_size_; }
-  const gfx::SizeF& Spacing() const { return spacing_; }
-
-  gfx::Vector2dF ComputePhase() const;
-
- private:
-  absl::optional<gfx::RectF> ComputePaintingArea(const FillLayer&) const;
-  gfx::RectF ComputePositioningArea(const FillLayer&) const;
-  gfx::SizeF ComputeTileSize(const FillLayer&,
-                             const gfx::RectF& positioning_area) const;
-
-  const LayoutObject& object_;
-
-  gfx::RectF dest_rect_;
-  absl::optional<gfx::RectF> clip_rect_;
-  gfx::SizeF tile_size_;
-  gfx::PointF phase_;
-  gfx::SizeF spacing_;
-};
-
-absl::optional<gfx::RectF> SVGMaskGeometry::ComputePaintingArea(
-    const FillLayer& layer) const {
-  GeometryBox geometry_box = GeometryBox::kFillBox;
-  switch (layer.Clip()) {
-    case EFillBox::kText:
-    case EFillBox::kNoClip:
-      return absl::nullopt;
-    case EFillBox::kContent:
-    case EFillBox::kFillBox:
-    case EFillBox::kPadding:
-      break;
-    case EFillBox::kStrokeBox:
-    case EFillBox::kBorder:
-      geometry_box = GeometryBox::kStrokeBox;
-      break;
-    case EFillBox::kViewBox:
-      geometry_box = GeometryBox::kViewBox;
-      break;
-  }
-  gfx::RectF painting_area = SVGResources::ReferenceBoxForEffects(
-      object_, geometry_box, SVGResources::ForeignObjectQuirk::kDisabled);
-  painting_area.Scale(object_.StyleRef().EffectiveZoom());
-  return painting_area;
-}
-
-gfx::RectF SVGMaskGeometry::ComputePositioningArea(
-    const FillLayer& layer) const {
-  GeometryBox geometry_box = GeometryBox::kFillBox;
-  switch (layer.Origin()) {
-    case EFillBox::kBorder:
-    case EFillBox::kContent:
-    case EFillBox::kFillBox:
-    case EFillBox::kPadding:
-      break;
-    case EFillBox::kStrokeBox:
-      geometry_box = GeometryBox::kStrokeBox;
-      break;
-    case EFillBox::kViewBox:
-      geometry_box = GeometryBox::kViewBox;
-      break;
-    case EFillBox::kNoClip:
-    case EFillBox::kText:
-      NOTREACHED();
-      break;
-  }
-  gfx::RectF positioning_area = SVGResources::ReferenceBoxForEffects(
-      object_, geometry_box, SVGResources::ForeignObjectQuirk::kDisabled);
-  positioning_area.Scale(object_.StyleRef().EffectiveZoom());
-  return positioning_area;
-}
-
-gfx::Vector2dF SVGMaskGeometry::ComputePhase() const {
-  // Given the size that the whole image should draw at, and the input phase
-  // requested by the content, and the space between repeated tiles, compute a
-  // phase that is no more than one size + space in magnitude.
-  const gfx::SizeF step_per_tile = tile_size_ + spacing_;
-  return {std::fmod(-phase_.x(), step_per_tile.width()),
-          std::fmod(-phase_.y(), step_per_tile.height())};
-}
-
-float GetSpaceBetweenImageTiles(float area_size, float tile_size) {
-  const float number_of_tiles = std::floor(area_size / tile_size);
-  if (number_of_tiles < 1) {
-    return -1;
-  }
-  return (area_size - number_of_tiles * tile_size) / (number_of_tiles - 1);
-}
-
-float ComputeRoundedTileSize(float area_size, float tile_size) {
-  const float nr_tiles = std::max(1.0f, std::round(area_size / tile_size));
-  return area_size / nr_tiles;
-}
-
-float ComputeTilePhase(float position, float tile_extent) {
-  return tile_extent ? tile_extent - std::fmod(position, tile_extent) : 0;
-}
-
-gfx::SizeF FitToAspectRatio(const gfx::RectF& rect,
-                            const gfx::SizeF& aspect_ratio,
-                            bool grow) {
-  const float constrained_height =
-      ResolveHeightForRatio(rect.width(), aspect_ratio);
-  if ((grow && constrained_height < rect.height()) ||
-      (!grow && constrained_height > rect.height())) {
-    const float constrained_width =
-        ResolveWidthForRatio(rect.height(), aspect_ratio);
-    return {constrained_width, rect.height()};
-  }
-  return {rect.width(), constrained_height};
-}
-
-gfx::SizeF SVGMaskGeometry::ComputeTileSize(
-    const FillLayer& layer,
-    const gfx::RectF& positioning_area) const {
-  const StyleImage* image = layer.GetImage();
-  const IntrinsicSizingInfo sizing_info =
-      image->GetNaturalSizingInfo(object_.StyleRef().EffectiveZoom(),
-                                  object_.StyleRef().ImageOrientation());
-
-  switch (layer.SizeType()) {
-    case EFillSizeType::kSizeLength: {
-      const Length& layer_width = layer.SizeLength().Width();
-      const Length& layer_height = layer.SizeLength().Height();
-      gfx::SizeF tile_size(
-          FloatValueForLength(layer_width, positioning_area.width()),
-          FloatValueForLength(layer_height, positioning_area.height()));
-
-      // An auto value for one dimension is resolved by using the image's
-      // natural aspect ratio and the size of the other dimension, or failing
-      // that, using the image's natural size, or failing that, treating it as
-      // 100%.
-      // If both values are auto then the natural width and/or height of the
-      // image should be used, if any, the missing dimension (if any)
-      // behaving as auto as described above. If the image has neither
-      // natural size, its size is determined as for contain.
-      if (layer_width.IsAuto() && !layer_height.IsAuto()) {
-        if (!sizing_info.aspect_ratio.IsEmpty()) {
-          tile_size.set_width(ResolveWidthForRatio(tile_size.height(),
-                                                   sizing_info.aspect_ratio));
-        } else if (sizing_info.has_width) {
-          tile_size.set_width(sizing_info.size.width());
-        }
-      } else if (!layer_width.IsAuto() && layer_height.IsAuto()) {
-        if (!sizing_info.aspect_ratio.IsEmpty()) {
-          tile_size.set_height(ResolveHeightForRatio(tile_size.width(),
-                                                     sizing_info.aspect_ratio));
-        } else if (sizing_info.has_height) {
-          tile_size.set_height(sizing_info.size.height());
-        }
-      } else if (layer_width.IsAuto() && layer_height.IsAuto()) {
-        tile_size = image->ImageSize(object_.StyleRef().EffectiveZoom(),
-                                     positioning_area.size(),
-                                     object_.StyleRef().ImageOrientation());
-      }
-      return tile_size;
-    }
-    case EFillSizeType::kContain:
-    case EFillSizeType::kCover: {
-      if (sizing_info.aspect_ratio.IsEmpty()) {
-        return positioning_area.size();
-      }
-      return FitToAspectRatio(positioning_area, sizing_info.aspect_ratio,
-                              layer.SizeType() == EFillSizeType::kCover);
-    }
-    case EFillSizeType::kSizeNone:
-      // This value should only be used while resolving style.
-      NOTREACHED();
-      return gfx::SizeF();
-  }
-}
-
-void SVGMaskGeometry::Calculate(const FillLayer& layer) {
-  clip_rect_ = ComputePaintingArea(layer);
-  const gfx::RectF positioning_area = ComputePositioningArea(layer);
-  dest_rect_ = positioning_area;
-  tile_size_ = ComputeTileSize(layer, positioning_area);
-
-  const gfx::SizeF available_size = positioning_area.size() - tile_size_;
-  const gfx::PointF computed_position(
-      FloatValueForLength(layer.PositionX(), available_size.width()),
-      FloatValueForLength(layer.PositionY(), available_size.height()));
-  // Adjust position based on the specified edge origin.
-  const gfx::PointF offset(
-      layer.BackgroundXOrigin() == BackgroundEdgeOrigin::kRight
-          ? available_size.width() - computed_position.x()
-          : computed_position.x(),
-      layer.BackgroundYOrigin() == BackgroundEdgeOrigin::kBottom
-          ? available_size.height() - computed_position.y()
-          : computed_position.y());
-
-  const FillRepeat& repeat = layer.Repeat();
-  switch (repeat.x) {
-    case EFillRepeat::kRoundFill:
-      if (tile_size_.width() <= 0) {
-        break;
-      }
-      if (positioning_area.width() > 0) {
-        const float rounded_width = ComputeRoundedTileSize(
-            positioning_area.width(), tile_size_.width());
-        // Maintain aspect ratio if mask-size: auto is set
-        if (layer.SizeLength().Height().IsAuto() &&
-            repeat.y != EFillRepeat::kRoundFill) {
-          tile_size_.set_height(
-              ResolveHeightForRatio(rounded_width, tile_size_));
-        }
-        tile_size_.set_width(rounded_width);
-
-        // Force the first tile to line up with the edge of the positioning
-        // area.
-        phase_.set_x(ComputeTilePhase(offset.x(), tile_size_.width()));
-      }
-      break;
-    case EFillRepeat::kRepeatFill:
-      if (tile_size_.width() <= 0) {
-        break;
-      }
-      phase_.set_x(ComputeTilePhase(offset.x(), tile_size_.width()));
-      break;
-    case EFillRepeat::kSpaceFill: {
-      if (tile_size_.width() <= 0) {
-        break;
-      }
-      const float space = GetSpaceBetweenImageTiles(positioning_area.width(),
-                                                    tile_size_.width());
-      if (space >= 0) {
-        spacing_.set_width(space);
-        phase_.set_x(ComputeTilePhase(0, tile_size_.width() + space));
-        break;
-      }
-      // Handle as no-repeat.
-      [[fallthrough]];
-    }
-    case EFillRepeat::kNoRepeatFill:
-      dest_rect_.set_x(dest_rect_.x() + offset.x());
-      dest_rect_.set_width(tile_size_.width());
-      break;
-  }
-
-  switch (repeat.y) {
-    case EFillRepeat::kRoundFill:
-      if (tile_size_.height() <= 0) {
-        break;
-      }
-      if (positioning_area.height() > 0) {
-        const float rounded_height = ComputeRoundedTileSize(
-            positioning_area.height(), tile_size_.height());
-        // Maintain aspect ratio if mask-size: auto is set
-        if (layer.SizeLength().Width().IsAuto() &&
-            repeat.x != EFillRepeat::kRoundFill) {
-          tile_size_.set_width(
-              ResolveWidthForRatio(rounded_height, tile_size_));
-        }
-        tile_size_.set_height(rounded_height);
-
-        phase_.set_y(ComputeTilePhase(offset.y(), tile_size_.height()));
-      }
-      break;
-    case EFillRepeat::kRepeatFill:
-      if (tile_size_.height() <= 0) {
-        break;
-      }
-      phase_.set_y(ComputeTilePhase(offset.y(), tile_size_.height()));
-      break;
-    case EFillRepeat::kSpaceFill: {
-      if (tile_size_.height() <= 0) {
-        break;
-      }
-      const float space = GetSpaceBetweenImageTiles(positioning_area.height(),
-                                                    tile_size_.height());
-      if (space >= 0) {
-        spacing_.set_height(space);
-        phase_.set_y(ComputeTilePhase(0, tile_size_.height() + space));
-        break;
-      }
-      // Handle as no-repeat.
-      [[fallthrough]];
-    }
-    case EFillRepeat::kNoRepeatFill:
-      dest_rect_.set_y(dest_rect_.y() + offset.y());
-      dest_rect_.set_height(tile_size_.height());
-      break;
-  }
-
-  if (!object_.IsSVGForeignObject()) {
-    const float zoom = object_.StyleRef().EffectiveZoom();
-    if (clip_rect_) {
-      clip_rect_->InvScale(zoom);
-    }
-    dest_rect_.InvScale(zoom);
-    tile_size_.InvScale(zoom);
-    spacing_.InvScale(zoom);
-    phase_.InvScale(zoom);
-  }
-}
-
 void PaintSVGMask(LayoutSVGResourceMasker* masker,
                   const gfx::RectF& reference_box,
                   float zoom,
@@ -401,16 +98,6 @@ void PaintSVGMask(LayoutSVGResourceMasker* masker,
   }
 }
 
-struct FillInfo {
-  STACK_ALLOCATED();
-
- public:
-  const InterpolationQuality interpolation_quality;
-  const DynamicRangeLimit dynamic_range_limit;
-  const RespectImageOrientationEnum respect_orientation;
-  const LayoutObject& object;
-};
-
 class ScopedMaskLuminanceLayer {
   STACK_ALLOCATED();
 
@@ -435,8 +122,8 @@ const StyleMaskSourceImage* ToMaskSourceIfSVGMask(
 }
 
 void PaintMaskLayer(const FillLayer& layer,
-                    const FillInfo& info,
-                    SVGMaskGeometry& geometry,
+                    const LayoutObject& object,
+                    const SVGBackgroundPaintContext& bg_paint_context,
                     GraphicsContext& context) {
   const StyleImage* style_image = layer.GetImage();
   if (!style_image) {
@@ -456,49 +143,74 @@ void PaintMaskLayer(const FillLayer& layer,
     composite_op = SkBlendMode::kSrcOver;
   }
 
+  const ComputedStyle& style = bg_paint_context.Style();
+  const ImageResourceObserver& observer = object;
   GraphicsContextStateSaver saver(context, false);
 
   // If the "image" referenced by the FillLayer is an SVG <mask> reference (and
   // this is a layer for a mask), then repeat, position, clip, origin and size
   // should have no effect.
   if (const auto* mask_source = ToMaskSourceIfSVGMask(*style_image)) {
-    const ComputedStyle& style = info.object.StyleRef();
-    const float zoom =
-        info.object.IsSVGForeignObject() ? style.EffectiveZoom() : 1;
+    const float zoom = object.IsSVGForeignObject() ? style.EffectiveZoom() : 1;
     gfx::RectF reference_box = SVGResources::ReferenceBoxForEffects(
-        info.object, GeometryBox::kFillBox,
+        object, GeometryBox::kFillBox,
         SVGResources::ForeignObjectQuirk::kDisabled);
     reference_box.Scale(zoom);
 
     saver.Save();
     SVGMaskPainter::PaintSVGMaskLayer(
-        context, *mask_source, info.object, reference_box, zoom, composite_op,
+        context, *mask_source, observer, reference_box, zoom, composite_op,
         layer.MaskMode() == EFillMaskMode::kMatchSource);
     return;
   }
-  geometry.Calculate(layer);
+
+  BackgroundImageGeometry geometry;
+  geometry.Calculate(layer, bg_paint_context);
 
   if (geometry.TileSize().IsEmpty()) {
     return;
   }
 
-  scoped_refptr<Image> image =
-      style_image->GetImage(info.object, info.object.GetDocument(),
-                            info.object.StyleRef(), geometry.TileSize());
+  const Document& document = object.GetDocument();
+  scoped_refptr<Image> image = style_image->GetImage(
+      observer, document, style, gfx::SizeF(geometry.TileSize()));
   if (!image) {
     return;
   }
 
   ScopedImageRenderingSettings image_rendering_settings_context(
-      context, info.interpolation_quality, info.dynamic_range_limit);
+      context, style.GetInterpolationQuality(), style.GetDynamicRangeLimit());
 
-  if (auto clip_rect = geometry.ClipRect()) {
+  std::optional<GeometryBox> clip_box;
+  switch (layer.Clip()) {
+    case EFillBox::kText:
+    case EFillBox::kNoClip:
+      break;
+    case EFillBox::kContent:
+    case EFillBox::kFillBox:
+    case EFillBox::kPadding:
+      clip_box.emplace(GeometryBox::kFillBox);
+      break;
+    case EFillBox::kStrokeBox:
+    case EFillBox::kBorder:
+      clip_box.emplace(GeometryBox::kStrokeBox);
+      break;
+    case EFillBox::kViewBox:
+      clip_box.emplace(GeometryBox::kViewBox);
+      break;
+  }
+  if (clip_box) {
+    const float zoom = object.IsSVGForeignObject() ? style.EffectiveZoom() : 1;
+    gfx::RectF clip_rect = SVGResources::ReferenceBoxForEffects(
+        object, *clip_box, SVGResources::ForeignObjectQuirk::kDisabled);
+    clip_rect.Scale(zoom);
+
     saver.Save();
-    context.Clip(*clip_rect);
+    context.Clip(clip_rect);
   }
 
   const RespectImageOrientationEnum respect_orientation =
-      style_image->ForceOrientationIfNecessary(info.respect_orientation);
+      style_image->ForceOrientationIfNecessary(style.ImageOrientation());
 
   // Use the intrinsic size of the image if it has one, otherwise force the
   // generated image to be the tile size.
@@ -509,43 +221,37 @@ void PaintMaskLayer(const FillLayer& layer,
   const gfx::SizeF intrinsic_tile_size =
       image->SizeWithConfigAsFloat(size_config);
 
+  const gfx::RectF dest_rect(geometry.UnsnappedDestRect());
+
   // Note that this tile rect uses the image's pre-scaled size.
   ImageTilingInfo tiling_info;
   tiling_info.image_rect.set_size(intrinsic_tile_size);
-  tiling_info.phase = geometry.DestRect().origin() + geometry.ComputePhase();
-  tiling_info.spacing = geometry.Spacing();
+  tiling_info.phase =
+      dest_rect.origin() + gfx::Vector2dF(geometry.ComputePhase());
+  tiling_info.spacing = gfx::SizeF(geometry.SpaceSize());
   tiling_info.scale = {
-      geometry.TileSize().width() / tiling_info.image_rect.width(),
-      geometry.TileSize().height() / tiling_info.image_rect.height()};
+      geometry.TileSize().width / tiling_info.image_rect.width(),
+      geometry.TileSize().height / tiling_info.image_rect.height()};
 
   auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(
-      *info.object.GetFrame(), info.object.StyleRef(), geometry.DestRect(),
-      tiling_info.image_rect);
+      *document.GetFrame(), style, dest_rect, tiling_info.image_rect);
   // This call takes the unscaled image, applies the given scale, and paints it
   // into the dest rect using phase and the given repeat spacing. Note the
   // phase is already scaled.
   const ImagePaintTimingInfo paint_timing_info(false, false);
-  context.DrawImageTiled(*image, geometry.DestRect(), tiling_info,
-                         image_auto_dark_mode, paint_timing_info, composite_op,
-                         respect_orientation);
+  context.DrawImageTiled(*image, dest_rect, tiling_info, image_auto_dark_mode,
+                         paint_timing_info, composite_op, respect_orientation);
 }
 
 void PaintMaskLayers(GraphicsContext& context, const LayoutObject& object) {
-  const ComputedStyle& style = object.StyleRef();
   Vector<const FillLayer*, 8> layer_list;
-  for (const FillLayer* layer = &style.MaskLayers(); layer;
+  for (const FillLayer* layer = &object.StyleRef().MaskLayers(); layer;
        layer = layer->Next()) {
     layer_list.push_back(layer);
   }
-  const FillInfo fill_info = {
-      style.GetInterpolationQuality(),
-      style.GetDynamicRangeLimit(),
-      style.ImageOrientation(),
-      object,
-  };
-  SVGMaskGeometry geometry(object);
+  const SVGBackgroundPaintContext bg_paint_context(object);
   for (const auto* layer : base::Reversed(layer_list)) {
-    PaintMaskLayer(*layer, fill_info, geometry, context);
+    PaintMaskLayer(*layer, object, bg_paint_context, context);
   }
 }
 

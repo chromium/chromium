@@ -150,6 +150,8 @@ blink_core_sources_paint = [
   "selection_bounds_recorder.cc",
   "selection_bounds_recorder.h",
   "sparse_vector.h",
+  "svg_background_paint_context.cc",
+  "svg_background_paint_context.h",
   "svg_container_painter.cc",
   "svg_container_painter.h",
   "svg_foreign_object_painter.cc",
