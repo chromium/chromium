@@ -21,8 +21,6 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_positioning_utils.h"
-#include "ash/wm/window_restore/informed_restore_dialog.h"
-#include "ash/wm/window_restore/pine_contents_view.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -51,10 +49,6 @@ WindowRestoreController* g_instance = nullptr;
 // Callback for testing which is run when `SaveWindowImpl()` triggers a write to
 // file.
 WindowRestoreController::SaveWindowCallback g_save_window_callback_for_testing;
-
-// Temporary test widget brought up by a debug accelerator that hosts pine
-// contents widget.
-views::Widget* g_test_pine_contents_widget = nullptr;
 
 // The list of possible app window parents.
 constexpr ShellWindowId kAppParentContainers[19] = {
@@ -503,24 +497,28 @@ bool WindowRestoreController::IsRestoringWindow(aura::Window* window) const {
   return windows_observation_.IsObservingSource(window);
 }
 
-void WindowRestoreController::MaybeStartInformedRestore() {
-  if (!features::ArePostLoginGlanceablesEnabled() &&
-      !features::IsPineEnabled()) {
+void WindowRestoreController::MaybeStartPineOverviewSession() {
+  if (!features::IsPineEnabled()) {
     return;
   }
 
-  // TODO(sammiequon|zxdan): Need to check "Ask every time" preference, the pref
-  // needs to be moved to ash_pref_names.h.
-
-  if (g_test_pine_contents_widget) {
+  OverviewController* overview_controller = OverviewController::Get();
+  if (overview_controller->InOverviewSession()) {
     return;
   }
 
-  auto widget = PineContentsView::Create(Shell::GetPrimaryRootWindow());
-  g_test_pine_contents_widget = widget.release();
-  g_test_pine_contents_widget->widget_delegate()->RegisterWindowClosingCallback(
-      base::BindOnce([]() { g_test_pine_contents_widget = nullptr; }));
-  g_test_pine_contents_widget->Show();
+  // TODO(sammiequon|zxdan): Need to check "Ask every time" preference, the
+  // pref needs to be moved to ash_pref_names.h.
+
+  aura::Window::Windows windows =
+      Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk);
+  if (!windows.empty()) {
+    return;
+  }
+
+  // TODO(sammiequon): Add a new start action for this type of overview session.
+  overview_controller->StartOverview(OverviewStartAction::kAccelerator,
+                                     OverviewEnterExitType::kPine);
 }
 
 void WindowRestoreController::SaveWindowImpl(

@@ -5,10 +5,12 @@
 #include "ash/wm/window_restore/pine_contents_view.h"
 
 #include "ash/public/cpp/saved_desk_delegate.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/pill_button.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/window_properties.h"
 #include "base/barrier_callback.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/account_id/account_id.h"
@@ -325,7 +327,10 @@ std::unique_ptr<views::Widget> PineContentsView::Create(aura::Window* root) {
 
   views::Widget::InitParams params;
   params.bounds = contents_bounds;
+  params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
+  params.init_properties_container.SetProperty(kOverviewUiKey, true);
   params.name = "PineWidget";
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = desks_util::GetActiveDeskContainerForRoot(root);
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
 

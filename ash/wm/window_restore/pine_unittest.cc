@@ -6,6 +6,9 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_session.h"
+#include "ash/wm/overview/overview_types.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "base/test/scoped_feature_list.h"
 
@@ -23,7 +26,13 @@ class PineTest : public AshTestBase {
 };
 
 TEST_F(PineTest, Show) {
-  Shell::Get()->window_restore_controller()->MaybeStartInformedRestore();
+  Shell::Get()->window_restore_controller()->MaybeStartPineOverviewSession();
+
+  OverviewSession* overview_session =
+      OverviewController::Get()->overview_session();
+  ASSERT_TRUE(overview_session);
+  EXPECT_EQ(OverviewEnterExitType::kPine,
+            overview_session->enter_exit_overview_type());
 }
 
 }  // namespace ash

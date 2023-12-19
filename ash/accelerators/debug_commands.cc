@@ -251,7 +251,7 @@ void HandleToggleVirtualTrackpad() {
 }
 
 void HandleShowInformedRestore() {
-  Shell::Get()->window_restore_controller()->MaybeStartInformedRestore();
+  Shell::Get()->window_restore_controller()->MaybeStartPineOverviewSession();
 }
 
 // Toast debug shortcut constants.

@@ -60,6 +60,7 @@
 #include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
+#include "ash/wm/window_restore/pine_contents_view.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/workspace/backdrop_controller.h"
@@ -588,6 +589,13 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
 void OverviewGrid::PrepareForOverview() {
   if (ShouldImmediatelyInitDeskBar(this)) {
     MaybeInitDesksWidget();
+  }
+
+  if (root_window_ == Shell::GetPrimaryRootWindow() &&
+      overview_session_->enter_exit_overview_type() ==
+          OverviewEnterExitType::kPine) {
+    pine_widget_ = PineContentsView::Create(root_window_);
+    pine_widget_->ShowInactive();
   }
 
   for (const auto& item : item_list_) {
@@ -1971,6 +1979,12 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
           ? !RootWindowController::ForWindow(root_window())
                  ->split_view_overview_session()
           : !no_items || IsShowingSavedDeskLibrary()) {
+    no_windows_widget_.reset();
+    return;
+  }
+
+  if (overview_session_->enter_exit_overview_type() ==
+      OverviewEnterExitType::kPine) {
     no_windows_widget_.reset();
     return;
   }

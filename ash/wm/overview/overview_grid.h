@@ -654,6 +654,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // The widget that contains the view for all saved desks.
   std::unique_ptr<views::Widget> saved_desk_library_widget_;
 
+  // The widget that contains the `PineContentsView`.
+  std::unique_ptr<views::Widget> pine_widget_;
+
   // A widget that contains save desk buttons which save desk as template or for
   // later when pressed.
   std::unique_ptr<views::Widget> save_desk_button_container_widget_;

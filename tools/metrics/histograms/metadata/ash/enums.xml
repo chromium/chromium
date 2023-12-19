@@ -1348,6 +1348,8 @@ chromium-metrics-reviews@google.com.
       label="Entering overview during a switch desk trackpad animation"/>
   <int value="11" label="Entering overview via desk button on shelf"/>
   <int value="12" label="Entering overview with the faster split screen setup"/>
+  <int value="13"
+      label="After user login, if full restore settings is ask everytime"/>
 </enum>
 
 <enum name="PeripheralConnectivityResult">

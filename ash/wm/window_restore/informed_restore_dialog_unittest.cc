@@ -25,7 +25,7 @@ class InformedRestoreDialogTest : public AshTestBase {
 };
 
 TEST_F(InformedRestoreDialogTest, Show) {
-  Shell::Get()->window_restore_controller()->MaybeStartInformedRestore();
+  Shell::Get()->window_restore_controller()->MaybeStartPineOverviewSession();
 }
 
 }  // namespace ash

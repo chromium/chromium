@@ -1560,6 +1560,10 @@ void OverviewSession::OnSplitViewStateChanged(
     return;
   }
 
+  // Entering or exiting splitview is unexpected behavior in a pine overview
+  // session.
+  CHECK_NE(OverviewEnterExitType::kPine, enter_exit_overview_type_);
+
   RefreshNoWindowsWidgetBoundsOnEachGrid(/*animate=*/false);
 }
 
