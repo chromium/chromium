@@ -70,7 +70,7 @@ constexpr char kManifestStub[] = R"(
   "description": "Tests for the Automation API.",
   "background": { %s },
   "permissions": %s,
-  "automation": %s
+  "automation": { "desktop": true }
 }
 )";
 
@@ -78,10 +78,9 @@ constexpr char kPersistentBackground[] = R"("scripts": ["common.js"])";
 constexpr char kServiceWorkerBackground[] = R"("service_worker": "common.js")";
 constexpr char kPermissionsDefault[] = R"(["tabs", "http://a.com/"])";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    defined(USE_AURA)
+#if BUILDFLAG(IS_CHROMEOS) || !defined(USE_AURA)
 
-constexpr char kAutomationDesktop[] = R"({ "desktop": true })";
+constexpr char kPermissionsWindows[] = R"(["windows"])";
 
 #endif
 
@@ -283,14 +282,13 @@ class AutomationApiTestWithContextType
  protected:
   bool CreateExtensionAndRunTest(
       const char* script_path,
-      const char* automation_type,
       const char* permissions = kPermissionsDefault) {
     TestExtensionDir test_dir;
     const char* background_value = GetParam() == ContextType::kServiceWorker
                                        ? kServiceWorkerBackground
                                        : kPersistentBackground;
-    const std::string manifest = base::StringPrintf(
-        kManifestStub, background_value, permissions, automation_type);
+    const std::string manifest =
+        base::StringPrintf(kManifestStub, background_value, permissions);
     const std::string common_script =
         base::StringPrintf(kCommonScript, script_path);
     test_dir.WriteManifest(manifest);
@@ -299,6 +297,13 @@ class AutomationApiTestWithContextType
                             {.context_type = ContextType::kFromManifest});
   }
 };
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         AutomationApiTestWithContextType,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         AutomationApiTestWithContextType,
+                         ::testing::Values(ContextType::kServiceWorker));
 
 // Canvas tests rely on the harness producing pixel output in order to read back
 // pixels from a canvas element. So we have to override the setup function.
@@ -311,15 +316,6 @@ class AutomationApiCanvasTest : public AutomationApiTestWithContextType {
 };
 
 #if defined(USE_AURA)
-
-// TODO(crbug.com/1093066): This should be moved outside of the USE_AURA
-// block when tests are converted that are outside of this block.
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         AutomationApiTestWithContextType,
-                         ::testing::Values(ContextType::kPersistentBackground));
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         AutomationApiTestWithContextType,
-                         ::testing::Values(ContextType::kServiceWorker));
 
 namespace {
 static const char kDomain[] = "a.com";
@@ -371,9 +367,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, ServiceWorker) {
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, SanityCheck) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      CreateExtensionAndRunTest("tabs/sanity_check.js", kAutomationDesktop))
-      << message_;
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/sanity_check.js")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ImageLabels) {
@@ -412,40 +406,33 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ImageLabels) {
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Events) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/events.js", kAutomationDesktop))
-      << message_;
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/events.js")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Actions) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/actions.js", kAutomationDesktop))
-      << message_;
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/actions.js")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Location) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/location.js", kAutomationDesktop))
-      << message_;
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/location.js")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Location2) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      CreateExtensionAndRunTest("tabs/location2.js", kAutomationDesktop))
-      << message_;
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/location2.js")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, BoundsForRange) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      CreateExtensionAndRunTest("tabs/bounds_for_range.js", kAutomationDesktop))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/bounds_for_range.js"))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, LineStartOffsets) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/line_start_offsets.js",
-                                        kAutomationDesktop))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/line_start_offsets.js"))
       << message_;
 }
 
@@ -464,15 +451,12 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 #endif
 IN_PROC_BROWSER_TEST_P(AutomationApiCanvasTest, MAYBE_ImageData) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      CreateExtensionAndRunTest("tabs/image_data.js", kAutomationDesktop))
-      << message_;
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/image_data.js")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, TableProperties) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      CreateExtensionAndRunTest("tabs/table_properties.js", kAutomationDesktop))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/table_properties.js"))
       << message_;
 }
 
@@ -484,69 +468,55 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, TableProperties) {
 #endif
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, MAYBE_CloseTab) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      CreateExtensionAndRunTest("tabs/close_tab.js", kAutomationDesktop))
-      << message_;
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/close_tab.js")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Find) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/find.js", kAutomationDesktop))
-      << message_;
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/find.js")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Attributes) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      CreateExtensionAndRunTest("tabs/attributes.js", kAutomationDesktop))
-      << message_;
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/attributes.js")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ReverseRelations) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/reverse_relations.js",
-                                        kAutomationDesktop))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/reverse_relations.js"))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, TreeChange) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      CreateExtensionAndRunTest("tabs/tree_change.js", kAutomationDesktop))
-      << message_;
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/tree_change.js")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, TreeChangeIndirect) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/tree_change_indirect.js",
-                                        kAutomationDesktop))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/tree_change_indirect.js"))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, DocumentSelection) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/document_selection.js",
-                                        kAutomationDesktop))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/document_selection.js"))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, HitTest) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/hit_test.js", kAutomationDesktop))
-      << message_;
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/hit_test.js")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, WordBoundaries) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      CreateExtensionAndRunTest("tabs/word_boundaries.js", kAutomationDesktop))
-      << message_;
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/word_boundaries.js")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, SentenceBoundaries) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/sentence_boundaries.js",
-                                        kAutomationDesktop))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/sentence_boundaries.js"))
       << message_;
 }
 
@@ -570,45 +540,38 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithLanguageDetection,
                        DetectedLanguage) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/detected_language.js",
-                                        kAutomationDesktop))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/detected_language.js"))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
                        IgnoredNodesNotReturned) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/ignored_nodes_not_returned.js",
-                                        kAutomationDesktop))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/ignored_nodes_not_returned.js"))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ForceLayout) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      CreateExtensionAndRunTest("tabs/force_layout.js", kAutomationDesktop))
-      << message_;
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/force_layout.js")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Intents) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/intents.js", kAutomationDesktop))
-      << message_;
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/intents.js")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, EnumValidity) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      CreateExtensionAndRunTest("tabs/enum_validity.js", kAutomationDesktop))
-      << message_;
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/enum_validity.js")) << message_;
 }
 
 #endif  // defined(USE_AURA)
 
 #if !defined(USE_AURA)
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotSupported) {
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "desktop_not_supported.html"}))
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, DesktopNotSupported) {
+  ASSERT_TRUE(CreateExtensionAndRunTest("desktop/desktop_not_supported.js",
+                                        kPermissionsWindows))
       << message_;
 }
 #endif  // !defined(USE_AURA)
@@ -628,8 +591,6 @@ class AutomationApiFencedFrameTest : public AutomationApiTest {
   ~AutomationApiFencedFrameTest() override = default;
 
  public:
-  void SetUpOnMainThread() override { AutomationApiTest::SetUpOnMainThread(); }
-
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -640,53 +601,54 @@ IN_PROC_BROWSER_TEST_F(AutomationApiFencedFrameTest, DesktopFindInFencedframe) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, Desktop) {
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "desktop.html"}))
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Desktop) {
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("desktop/desktop.js", kPermissionsWindows))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopInitialFocus) {
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "initial_focus.html"}))
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, DesktopInitialFocus) {
+  ASSERT_TRUE(CreateExtensionAndRunTest("desktop/initial_focus.js",
+                                        kPermissionsWindows))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusWeb) {
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "focus_web.html"}))
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, DesktopFocusWeb) {
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("desktop/focus_web.js", kPermissionsWindows))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusIframe) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, DesktopFocusIframe) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "focus_iframe.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("desktop/focus_iframe.js", kPermissionsWindows))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestIframe) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, DesktopHitTestIframe) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "hit_test_iframe.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("desktop/hit_test_iframe.js",
+                                        kPermissionsWindows))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusViews) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, DesktopFocusViews) {
   AutomationManagerAura::GetInstance()->Enable();
   // Trigger the shelf subtree to be computed.
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
       ash::AcceleratorAction::kFocusShelf, {});
 
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "focus_views.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("desktop/focus_views.js", kPermissionsWindows))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopGetNextTextMatch) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
+                       DesktopGetNextTextMatch) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "get_next_text_match.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("desktop/get_next_text_match.js",
+                                        kPermissionsWindows))
       << message_;
 }
 
@@ -697,24 +659,26 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, LocationInWebView) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopActions) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, DesktopActions) {
   AutomationManagerAura::GetInstance()->Enable();
   // Trigger the shelf subtree to be computed.
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
       ash::AcceleratorAction::kFocusShelf, {});
 
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "actions.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("desktop/actions.js", kPermissionsWindows))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestOneDisplay) {
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "hit_test.html"}))
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
+                       DesktopHitTestOneDisplay) {
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("desktop/hit_test.js", kPermissionsWindows))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestPrimaryDisplay) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
+                       DesktopHitTestPrimaryDisplay) {
   ash::ShellTestApi shell_test_api;
   // Create two displays, both 800x750px, next to each other. The primary
   // display has top left corner at (0, 0), and the secondary display has
@@ -726,12 +690,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestPrimaryDisplay) {
   display::test::DisplayManagerTestApi display_manager_test_api(
       shell_test_api.display_manager());
   // The browser will open in the primary display.
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "hit_test.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("desktop/hit_test.js", kPermissionsWindows))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestSecondaryDisplay) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
+                       DesktopHitTestSecondaryDisplay) {
   ash::ShellTestApi shell_test_api;
   // Create two displays, both 800x750px, next to each other. The primary
   // display has top left corner at (0, 0), and the secondary display has
@@ -755,18 +720,19 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestSecondaryDisplay) {
   // was closed.
   SelectFirstBrowser();
   // The test will run in browser().
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "hit_test.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("desktop/hit_test.js", kPermissionsWindows))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopLoadTabs) {
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "load_tabs.html"}))
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, DesktopLoadTabs) {
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("desktop/load_tabs.js", kPermissionsWindows))
       << message_;
 }
 
-class AutomationApiTestWithDeviceScaleFactor : public AutomationApiTest {
+class AutomationApiTestWithDeviceScaleFactor
+    : public AutomationApiTestWithContextType {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     AutomationApiTest::SetUpCommandLine(command_line);
@@ -774,31 +740,46 @@ class AutomationApiTestWithDeviceScaleFactor : public AutomationApiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTestWithDeviceScaleFactor, LocationScaled) {
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         AutomationApiTestWithDeviceScaleFactor,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         AutomationApiTestWithDeviceScaleFactor,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+// Platform apps don't support service worker contexts.
+using AutomationApiPlatformAppTestWithDeviceScaleFactor =
+    AutomationApiTestWithDeviceScaleFactor;
+
+INSTANTIATE_TEST_SUITE_P(PlatformApp,
+                         AutomationApiPlatformAppTestWithDeviceScaleFactor,
+                         ::testing::Values(ContextType::kNone));
+
+IN_PROC_BROWSER_TEST_P(AutomationApiPlatformAppTestWithDeviceScaleFactor,
+                       LocationScaled) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/location_scaled",
                                {.launch_as_platform_app = true}))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTestWithDeviceScaleFactor, HitTest) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithDeviceScaleFactor, HitTest) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "hit_test.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("desktop/hit_test.js", kPermissionsWindows))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, Position) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Position) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "position.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("desktop/position.js", kPermissionsWindows))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, AccessibilityFocus) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/accessibility_focus.js",
-                                        kAutomationDesktop))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/accessibility_focus.js"))
       << message_;
 }
 
@@ -816,8 +797,7 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
     wait_for_tracing.Run();
   }
 
-  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/textarea_append_perf.js",
-                                        kAutomationDesktop))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/textarea_append_perf.js"))
       << message_;
 
   base::test::TestFuture<std::unique_ptr<std::string>> stop_tracing_future;
@@ -864,10 +844,10 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
   ASSERT_LT(automation_total_dur, renderer_total_dur * 2);
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, IframeNav) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, IframeNav) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "iframenav.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("desktop/iframenav.js", kPermissionsWindows))
       << message_;
 }
 
@@ -886,7 +866,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_AddRemoveEventListeners) {
 }
 
 class AutomationApiTestWithMockedSourceRenderer
-    : public AutomationApiTest,
+    : public AutomationApiTestWithContextType,
       public ui::AXActionHandlerObserver {
  protected:
   // This method is used to intercept AXActions dispatched from extensions.
@@ -911,7 +891,14 @@ class AutomationApiTestWithMockedSourceRenderer
   }
 };
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTestWithMockedSourceRenderer,
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         AutomationApiTestWithMockedSourceRenderer,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         AutomationApiTestWithMockedSourceRenderer,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithMockedSourceRenderer,
                        ActionResult) {
   StartEmbeddedTestServer();
 
@@ -921,8 +908,8 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTestWithMockedSourceRenderer,
   // result is true. This will make sure that the passing of messages between
   // processes is correct.
   InterceptAXActions();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.extension_url = "action_result.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("desktop/action_result.js",
+                                        kPermissionsWindows))
       << message_;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -935,11 +922,11 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTestWithMockedSourceRenderer,
 #define MAYBE_HitTestMultipleWindows HitTestMultipleWindows
 #endif
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_HitTestMultipleWindows) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
+                       MAYBE_HitTestMultipleWindows) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      RunExtensionTest("automation/tests/desktop",
-                       {.extension_url = "hit_test_multiple_windows.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("desktop/hit_test_multiple_windows.js",
+                                        kPermissionsWindows))
       << message_;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

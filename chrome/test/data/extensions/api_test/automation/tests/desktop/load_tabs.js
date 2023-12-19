@@ -53,4 +53,4 @@ var allTests = [
   }
 ];
 
-setUpAndRunTests(allTests);
+setUpAndRunDesktopTests(allTests);
