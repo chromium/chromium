@@ -2435,3 +2435,26 @@ TEST_F(HostContentSettingsMapTest, IncognitoInheritSaaAndRenew) {
                                ContentSetting::CONTENT_SETTING_ALLOW);
   EXPECT_EQ(CONTENT_SETTING_ASK, otr_map->GetContentSetting(host, host, type));
 }
+
+// File access is not implemented on Android. Luckily we don't need it for DevTools.
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(HostContentSettingsMapTest, DevToolsFileAccess) {
+  TestingProfile profile;
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  GURL devtools_host("devtools://devtools/bundled/devtools_app.html");
+  GURL example_host("https://example.com");
+
+  host_content_settings_map->SetDefaultContentSetting(
+      ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            host_content_settings_map->GetContentSetting(
+                devtools_host, devtools_host,
+                ContentSettingsType::FILE_SYSTEM_WRITE_GUARD));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            host_content_settings_map->GetContentSetting(
+                example_host, example_host,
+                ContentSettingsType::FILE_SYSTEM_WRITE_GUARD));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
