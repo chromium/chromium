@@ -944,6 +944,9 @@ int main(int argc, char** argv) {
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams ozone_param;
   ozone_param.single_process = true;
+#if BUILDFLAG(ENABLE_VULKAN)
+  ui::OzonePlatform::InitializeForUI(ozone_param);
+#endif
   ui::OzonePlatform::InitializeForGPU(ozone_param);
 #endif
 
