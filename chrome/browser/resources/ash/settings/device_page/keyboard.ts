@@ -46,7 +46,7 @@ enum ModifierKey {
 const SettingsKeyboardElementBase =
     DeepLinkingMixin(RouteOriginMixin(WebUiListenerMixin(PolymerElement)));
 
-class SettingsKeyboardElement extends SettingsKeyboardElementBase {
+export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   static get is() {
     return 'settings-keyboard' as const;
   }

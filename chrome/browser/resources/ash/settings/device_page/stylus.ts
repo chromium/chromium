@@ -29,7 +29,7 @@ import {Route, routes} from '../router.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, NoteAppInfo, NoteAppLockScreenSupport} from './device_page_browser_proxy.js';
 import {getTemplate} from './stylus.html.js';
 
-interface SettingsStylusElement {
+export interface SettingsStylusElement {
   $: {
     selectApp: HTMLSelectElement,
   };
@@ -41,7 +41,7 @@ const FIND_MORE_APPS_URL = 'https://play.google.com/store/apps/' +
 const SettingsStylusElementBase =
     DeepLinkingMixin(RouteObserverMixin(PolymerElement));
 
-class SettingsStylusElement extends SettingsStylusElementBase {
+export class SettingsStylusElement extends SettingsStylusElementBase {
   static get is() {
     return 'settings-stylus';
   }

@@ -30,7 +30,7 @@ interface StorageSizeStat {
   spaceState: StorageSpaceState;
 }
 
-interface SettingsStorageElement {
+export interface SettingsStorageElement {
   $: {
     availableLabelArea: HTMLElement,
     browsingDataSize: CrLinkRowElement,
@@ -42,7 +42,7 @@ interface SettingsStorageElement {
 const SettingsStorageElementBase =
     RouteOriginMixin(WebUiListenerMixin(PolymerElement));
 
-class SettingsStorageElement extends SettingsStorageElementBase {
+export class SettingsStorageElement extends SettingsStorageElementBase {
   static get is() {
     return 'settings-storage';
   }

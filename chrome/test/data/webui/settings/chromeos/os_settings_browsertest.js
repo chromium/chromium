@@ -40,7 +40,7 @@ var OSSettingsBrowserTest = class extends PolymerTest {
 var OSSettingsDevicePageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/device_page/device_page_tests.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/device_page/device_page_test.js';
   }
 
   /** @override */
@@ -539,6 +539,10 @@ TEST_F('OSSettingsCrostiniPageCrostiniSubpageRevampTest', 'AllJsTests', () => {
  ],
  ['DevicePageDisplayPage', 'device_page/display_page_test.js'],
  [
+   'DevicePageDisplaySettingsMojoInterfaceProvider',
+   'device_page/display_settings_mojo_interface_provider_test.js'
+ ],
+ [
    'DevicePageDragAndDropManager', 'device_page/drag_and_drop_manager_test.js',
    {
      enabled: [
@@ -555,13 +559,29 @@ TEST_F('OSSettingsCrostiniPageCrostiniSubpageRevampTest', 'AllJsTests', () => {
    'device_page/fake_input_device_settings_provider_test.js'
  ],
  [
+   'DevicePageFKeyRow',
+   'device_page/fkey_row_test.js',
+   {
+     enabled: [
+       'ash::features::kInputDeviceSettingsSplit',
+       'ash::features::kAltClickAndSixPackCustomization',
+       'features::kSupportF11AndF12KeyShortcuts',
+     ],
+   },
+ ],
+ [
+   'DevicePageGraphicsTabletSubpage',
+   'device_page/graphics_tablet_subpage_test.js', {
+     enabled: [
+       'ash::features::kInputDeviceSettingsSplit',
+       'ash::features::kPeripheralCustomization'
+     ],
+   }
+ ],
+ [
    'DevicePageInputDeviceMojoInterfaceProvider',
    'device_page/input_device_mojo_interface_provider_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
- ],
- [
-   'DevicePageDisplaySettingsMojoInterfaceProvider',
-   'device_page/display_settings_mojo_interface_provider_test.js'
  ],
  [
    'DevicePageKeyCombinationInputDialog',
@@ -570,6 +590,14 @@ TEST_F('OSSettingsCrostiniPageCrostiniSubpageRevampTest', 'AllJsTests', () => {
        'ash::features::kPeripheralCustomization',
        'ash::features::kInputDeviceSettingsSplit'
      ]
+   }
+ ],
+ [
+   'DevicePageKeyboard', 'device_page/keyboard_test.js', {
+     enabled: [
+       'ash::features::kInputDeviceSettingsSplit',
+       'ash::features::kPeripheralCustomization'
+     ],
    }
  ],
  [
@@ -619,6 +647,11 @@ TEST_F('OSSettingsCrostiniPageCrostiniSubpageRevampTest', 'AllJsTests', () => {
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
  [
+   'DevicePagePerDevicePointingStickSubsection',
+   'device_page/per_device_pointing_stick_subsection_test.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']},
+ ],
+ [
    'DevicePagePerDeviceTouchpad',
    'device_page/per_device_touchpad_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']},
@@ -629,25 +662,26 @@ TEST_F('OSSettingsCrostiniPageCrostiniSubpageRevampTest', 'AllJsTests', () => {
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
  [
-   'DevicePagePerDevicePointingStickSubsection',
-   'device_page/per_device_pointing_stick_subsection_test.js',
-   {enabled: ['ash::features::kInputDeviceSettingsSplit']},
- ],
- [
-   'DevicePageFKeyRow',
-   'device_page/fkey_row_test.js',
-   {
+   'DevicePagePointers', 'device_page/pointers_test.js', {
      enabled: [
        'ash::features::kInputDeviceSettingsSplit',
-       'ash::features::kAltClickAndSixPackCustomization',
-       'features::kSupportF11AndF12KeyShortcuts',
+       'ash::features::kPeripheralCustomization'
      ],
-   },
+   }
  ],
  [
    'DevicePagePower',
    'device_page/power_test.js',
    {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'DevicePagePowerForDevicePage', 'device_page/power_for_device_page_test.js',
+   {
+     enabled: [
+       'ash::features::kInputDeviceSettingsSplit',
+       'ash::features::kPeripheralCustomization'
+     ],
+   }
  ],
  [
    'DevicePagePowerRevamp',
@@ -667,6 +701,22 @@ TEST_F('OSSettingsCrostiniPageCrostiniSubpageRevampTest', 'AllJsTests', () => {
        'ash::features::kOsSettingsRevampWayfinding',
      ],
    },
+ ],
+ [
+   'DevicePageStorage', 'device_page/storage_test.js', {
+     enabled: [
+       'ash::features::kInputDeviceSettingsSplit',
+       'ash::features::kPeripheralCustomization'
+     ],
+   }
+ ],
+ [
+   'DevicePageStylus', 'device_page/stylus_test.js', {
+     enabled: [
+       'ash::features::kInputDeviceSettingsSplit',
+       'ash::features::kPeripheralCustomization'
+     ],
+   }
  ],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
  ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],

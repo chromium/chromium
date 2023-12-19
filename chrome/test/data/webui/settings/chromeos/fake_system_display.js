@@ -12,22 +12,27 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 
 /**
- * Fake of the chrome.settings.display API.
- * @constructor
- * @implements {SystemDisplay}
+ * Fake of the chrome.system.display API.
+ * @implements {chrome.system.display}
  */
-export function FakeSystemDisplay() {
-  /** @type {!Array<!chrome.system.display.DisplayUnitInfo>} */
-  this.fakeDisplays = [];
-  this.fakeLayouts = [];
-  this.getInfoCalled = new PromiseResolver();
-  this.getLayoutCalled = new PromiseResolver();
-  this.overscanCalibrationStartCalled = 0;
-  this.overscanCalibrationResetCalled = 0;
-  this.overscanCalibrationCompleteCalled = 0;
-}
+export class FakeSystemDisplay {
+  constructor() {
+    /** @type {!Array<!chrome.system.display.DisplayUnitInfo>} */
+    this.fakeDisplays = [];
+    /** @type {!Array<!chrome.system.display.DisplayLayout>} */
+    this.fakeLayouts = [];
+    this.getInfoCalled = new PromiseResolver();
+    this.getLayoutCalled = new PromiseResolver();
+    this.overscanCalibrationStartCalled = 0;
+    this.overscanCalibrationResetCalled = 0;
+    this.overscanCalibrationCompleteCalled = 0;
 
-FakeSystemDisplay.prototype = {
+    this.LayoutPosition = chrome.system.display.LayoutPosition;
+    this.ActiveState = chrome.system.display.ActiveState;
+    this.MirrorMode = chrome.system.display.MirrorMode;
+    this.onDisplayChanged = new FakeChromeEvent();
+  }
+
   // Public testing methods.
   /**
    * @param {!chrome.system.display.DisplayUnitInfo>} display
@@ -35,7 +40,7 @@ FakeSystemDisplay.prototype = {
   addDisplayForTest(display) {
     this.fakeDisplays.push(display);
     this.updateLayouts_();
-  },
+  }
 
   // SystemDisplay overrides.
   /** @override */
@@ -61,7 +66,7 @@ FakeSystemDisplay.prototype = {
         this.getInfoCalled = new PromiseResolver();
       });
     });
-  },
+  }
 
   /** @override */
   setDisplayProperties(id, info) {
@@ -95,7 +100,7 @@ FakeSystemDisplay.prototype = {
       display.rotation = info.rotation;
     }
     return Promise.resolve();
-  },
+  }
 
   /** @override */
   getDisplayLayout() {
@@ -108,18 +113,18 @@ FakeSystemDisplay.prototype = {
         this.getLayoutCalled = new PromiseResolver();
       });
     });
-  },
+  }
 
   /** @override */
   setDisplayLayout(layouts) {
     this.fakeLayouts = layouts;
     return Promise.resolve();
-  },
+  }
 
   /** @override */
   setMirrorMode(info) {
     let mirroringSourceId = '';
-    if (info.mode === chrome.system.display.MirrorMode.NORMAL) {
+    if (info.mode === this.MirrorMode.NORMAL) {
       // Select the primary display as the mirroring source.
       for (const d of this.fakeDisplays) {
         if (d.isPrimary) {
@@ -132,10 +137,35 @@ FakeSystemDisplay.prototype = {
       d.mirroringSourceId = mirroringSourceId;
     }
     return Promise.resolve();
-  },
+  }
+
+  // The below method is overridden to provide TS compatibility for tests.
+  // But this is an unused method and hence doesn't have any implementation.
+  /** @override */
+  overscanCalibrationAdjust(id) {}
 
   /** @override */
-  onDisplayChanged: new FakeChromeEvent(),
+  overscanCalibrationStart() {
+    this.overscanCalibrationStartCalled++;
+    return Promise.resolve();
+  }
+
+  /** @override */
+  overscanCalibrationReset() {
+    this.overscanCalibrationResetCalled++;
+    return Promise.resolve();
+  }
+
+  /** @override */
+  overscanCalibrationComplete() {
+    this.overscanCalibrationCompleteCalled++;
+    return Promise.resolve();
+  }
+
+  /** @override */
+  showNativeTouchCalibration(id) {
+    return Promise.resolve(true);
+  }
 
   /** @private */
   getFakeDisplay_(id) {
@@ -146,7 +176,7 @@ FakeSystemDisplay.prototype = {
       return this.fakeDisplays[idx];
     }
     return undefined;
-  },
+  }
 
   /** @private */
   updateLayouts_() {
@@ -162,27 +192,9 @@ FakeSystemDisplay.prototype = {
       this.fakeLayouts.push({
         id: d.id,
         parentId: d.isPrimary ? '' : primaryId,
-        position: chrome.system.display.LayoutPosition.RIGHT,
+        position: this.LayoutPosition.RIGHT,
         offset: 0,
       });
     }
-  },
-
-  /** @private */
-  overscanCalibrationStart() {
-    this.overscanCalibrationStartCalled++;
-    return Promise.resolve();
-  },
-
-  /** @private */
-  overscanCalibrationReset() {
-    this.overscanCalibrationResetCalled++;
-    return Promise.resolve();
-  },
-
-  /** @private */
-  overscanCalibrationComplete() {
-    this.overscanCalibrationCompleteCalled++;
-    return Promise.resolve();
-  },
-};
+  }
+}

@@ -174,7 +174,11 @@ export {SettingsCustomizePenButtonsSubpageElement} from './device_page/customize
 export {SettingsCustomizeTabletButtonsSubpageElement} from './device_page/customize_tablet_buttons_subpage.js';
 export {DragAndDropManager, getDataTransferOriginIndex, setDataTransferOriginIndex} from './device_page/drag_and_drop_manager.js';
 export {KeyCombinationInputDialogElement} from './device_page/key_combination_input_dialog.js';
+export {SettingsKeyboardElement} from './device_page/keyboard.js';
+export {SettingsPointersElement} from './device_page/pointers.js';
 export {SettingsPowerElement} from './device_page/power.js';
+export {SettingsStorageElement} from './device_page/storage.js';
+export {SettingsStylusElement} from './device_page/stylus.js';
 export {ContainerInfo, CROSTINI_TYPE, GuestId, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE, ShareableDevices} from './guest_os/guest_os_browser_proxy.js';
 export {ContainerSelectElement} from './guest_os/guest_os_container_select.js';
 export {SettingsGuestOsSharedPathsElement} from './guest_os/guest_os_shared_paths.js';
