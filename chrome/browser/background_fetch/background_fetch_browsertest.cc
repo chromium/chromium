@@ -734,16 +734,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
   ASSERT_TRUE(items[0].is_off_the_record);
 }
 
-// Flaky on Windows 7 (https://crbug.com/1039250)
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FetchesRunToCompletionAndUpdateTitle_Fetched \
-  DISABLED_FetchesRunToCompletionAndUpdateTitle_Fetched
-#else
-#define MAYBE_FetchesRunToCompletionAndUpdateTitle_Fetched \
-  FetchesRunToCompletionAndUpdateTitle_Fetched
-#endif
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
-                       MAYBE_FetchesRunToCompletionAndUpdateTitle_Fetched) {
+                       FetchesRunToCompletionAndUpdateTitle_Fetched) {
   ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
       "RunFetchTillCompletion()", "backgroundfetchsuccess"));
   EXPECT_EQ(offline_content_provider_observer_->latest_item().state,
@@ -755,16 +747,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
                        "New Fetched Title!", base::CompareCase::SENSITIVE));
 }
 
-// Flaky on Windows 7 (https://crbug.com/1039250)
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FetchesRunToCompletionAndUpdateTitle_Failed \
-  DISABLED_FetchesRunToCompletionAndUpdateTitle_Failed
-#else
-#define MAYBE_FetchesRunToCompletionAndUpdateTitle_Failed \
-  FetchesRunToCompletionAndUpdateTitle_Failed
-#endif
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
-                       MAYBE_FetchesRunToCompletionAndUpdateTitle_Failed) {
+                       FetchesRunToCompletionAndUpdateTitle_Failed) {
   ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
       "RunFetchTillCompletionWithMissingResource()", "backgroundfetchfail"));
   EXPECT_EQ(offline_content_provider_observer_->latest_item().state,
@@ -857,14 +841,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
       "This origin does not have permission to start a fetch."));
 }
 
-// Flaky on Windows 7 (https://crbug.com/1039250)
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FetchFromServiceWorker DISABLED_FetchFromServiceWorker
-#else
-#define MAYBE_FetchFromServiceWorker FetchFromServiceWorker
-#endif
-IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
-                       MAYBE_FetchFromServiceWorker) {
+IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, FetchFromServiceWorker) {
   auto* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   DCHECK(settings_map);
