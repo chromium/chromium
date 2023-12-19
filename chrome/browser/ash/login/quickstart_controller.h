@@ -136,6 +136,10 @@ class QuickStartController
   // Exit point to be used when the flow is cancelled.
   EntryPoint GetExitPoint();
 
+  // Exposes TargetDeviceBootstrapController::PrepareForUpdate() to the OOBE
+  // UpdateScreen.
+  void PrepareForUpdate();
+
  private:
   // Initializes the BootstrapController and starts to observe it.
   void InitTargetDeviceBootstrapController();

@@ -739,7 +739,6 @@ TEST_F(TargetDeviceBootstrapControllerTest, SessionContext) {
   // Start is resuming after an update.
   EXPECT_FALSE(GetSessionContext().is_resume_after_update());
 
-  GetLocalState()->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot, true);
   GetLocalState()->SetDict(prefs::kResumeQuickStartAfterRebootInfo,
                            GetSessionContext().GetPrepareForUpdateInfo());
 

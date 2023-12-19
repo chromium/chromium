@@ -27,11 +27,18 @@ constexpr char kPrepareForUpdateAdvertisingIdKey[] = "advertising_id";
 constexpr char kPrepareForUpdateSecondarySharedSecretKey[] =
     "secondary_shared_secret";
 
+bool IsResumeAfterUpdate() {
+  const base::Value::Dict& maybe_info =
+      g_browser_process->local_state()->GetDict(
+          prefs::kResumeQuickStartAfterRebootInfo);
+  return maybe_info.FindString(kPrepareForUpdateSessionIdKey) &&
+         maybe_info.FindString(kPrepareForUpdateAdvertisingIdKey);
+}
+
 }  // namespace
 
 SessionContext::SessionContext() {
-  is_resume_after_update_ = g_browser_process->local_state()->GetBoolean(
-      prefs::kShouldResumeQuickStartAfterReboot);
+  is_resume_after_update_ = IsResumeAfterUpdate();
   QS_LOG(INFO)
       << "Going to fetch/generate session context. is_resume_after_update_: "
       << is_resume_after_update_;
@@ -87,8 +94,6 @@ base::Value::Dict SessionContext::GetPrepareForUpdateInfo() {
 
 void SessionContext::FetchPersistedSessionContext() {
   PrefService* prefs = g_browser_process->local_state();
-  CHECK(prefs->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
-  prefs->ClearPref(prefs::kShouldResumeQuickStartAfterReboot);
   const base::Value::Dict& session_info =
       prefs->GetDict(prefs::kResumeQuickStartAfterRebootInfo);
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "ash/constants/ash_features.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/logging.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
@@ -55,6 +57,14 @@ constexpr const base::TimeDelta kDefaultShowDelay = base::Microseconds(400);
 
 // When battery percent is lower and DISCHARGING warn user about it.
 const double kInsufficientBatteryPercent = 50;
+
+// Passing "--quick-start-test-forced-update" on the command line will simulate
+// the "Forced Update" flow after the wifi credentials transfer is complete.
+// This is for testing only and will not install an actual update. If this
+// switch is present, the Chromebook reboots and attempts to automatically
+// resume the Quick Start connection after reboot.
+constexpr char kQuickStartTestForcedUpdateSwitch[] =
+    "quick-start-test-forced-update";
 
 void RecordDownloadingTime(base::TimeDelta duration) {
   base::UmaHistogramLongTimes("OOBE.UpdateScreen.UpdateDownloadingTime",
@@ -296,6 +306,22 @@ void UpdateScreen::UpdateInfoChanged(
     MakeSureScreenIsShown();
     return;
   }
+
+  // For testing resuming Quick Start after an update with the
+  // kQuickStartTestForcedUpdateSwitch only.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kQuickStartTestForcedUpdateSwitch) &&
+      context()->quick_start_setup_ongoing) {
+    WizardController::default_controller()
+        ->quick_start_controller()
+        ->PrepareForUpdate();
+    view_->SetUpdateState(UpdateView::UIState::kUpdateInProgress);
+    wait_reboot_timer_.Start(FROM_HERE, wait_before_reboot_time_,
+                             version_updater_.get(),
+                             &VersionUpdater::RebootAfterUpdate);
+    return;
+  }
+
   switch (status.current_operation()) {
     case update_engine::Operation::CHECKING_FOR_UPDATE:
       if (view_)
@@ -329,21 +355,31 @@ void UpdateScreen::UpdateInfoChanged(
       SetUpdateStatusMessage(update_info.better_update_progress,
                              update_info.total_time_left);
       MakeSureScreenIsShown();
-      if (!is_critical_checked_) {
-        // Because update engine doesn't send UPDATE_STATUS_UPDATE_AVAILABLE we
-        // need to check if update is critical on first downloading
-        // notification.
-        is_critical_checked_ = true;
-        if (!HasCriticalUpdate()) {
-          VLOG(1) << "Non-critical update available: " << status.new_version();
-          hide_progress_on_exit_ = true;
-          ExitUpdate(Result::UPDATE_NOT_REQUIRED);
-        } else {
-          check_time_ = tick_clock_->NowTicks() - start_update_stage_;
-          start_update_stage_ = start_update_downloading_ =
-              tick_clock_->NowTicks();
-          VLOG(1) << "Critical update available: " << status.new_version();
-        }
+
+      if (is_critical_checked_) {
+        break;
+      }
+
+      // Because update engine doesn't send UPDATE_STATUS_UPDATE_AVAILABLE we
+      // need to check if update is critical on first downloading
+      // notification.
+      is_critical_checked_ = true;
+
+      if (!HasCriticalUpdate()) {
+        VLOG(1) << "Non-critical update available: " << status.new_version();
+        hide_progress_on_exit_ = true;
+        ExitUpdate(Result::UPDATE_NOT_REQUIRED);
+        break;
+      }
+
+      check_time_ = tick_clock_->NowTicks() - start_update_stage_;
+      start_update_stage_ = start_update_downloading_ = tick_clock_->NowTicks();
+      VLOG(1) << "Critical update available: " << status.new_version();
+
+      if (context()->quick_start_setup_ongoing) {
+        WizardController::default_controller()
+            ->quick_start_controller()
+            ->PrepareForUpdate();
       }
       break;
     case update_engine::Operation::VERIFYING:

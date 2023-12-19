@@ -9,10 +9,12 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
+#include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -156,9 +158,24 @@ QuickStartController::EntryPoint QuickStartController::GetExitPoint() {
   return exit_point_.value();
 }
 
+void QuickStartController::PrepareForUpdate() {
+  // TODO(b/280308569): Investigate whether state should be reset here in case
+  // of error installing update.
+  bootstrap_controller_->PrepareForUpdate();
+}
+
 void QuickStartController::InitTargetDeviceBootstrapController() {
   CHECK(LoginDisplayHost::default_host());
   CHECK(!bootstrap_controller_);
+
+  if (g_browser_process->local_state()->GetBoolean(
+          prefs::kShouldResumeQuickStartAfterReboot)) {
+    g_browser_process->local_state()->ClearPref(
+        prefs::kShouldResumeQuickStartAfterReboot);
+    LoginDisplayHost::default_host()
+        ->GetWizardContext()
+        ->quick_start_setup_ongoing = true;
+  }
 
   StartObservingScreenTransitions();
   LoginDisplayHost::default_host()->GetWizardContext()->quick_start_enabled =
