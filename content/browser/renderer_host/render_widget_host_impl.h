@@ -931,6 +931,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     return view_is_frame_sink_id_owner_;
   }
 
+  base::TimeTicks create_frame_sink_timestamp() const {
+    return create_frame_sink_timestamp_;
+  }
+
  protected:
   // |routing_id| must not be MSG_ROUTING_NONE.
   // If this object outlives |delegate|, DetachDelegate() must be called when
@@ -1534,6 +1538,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // produce frames associated with `frame_sink_id_` only when it owns that
   // FrameSinkId.
   bool view_is_frame_sink_id_owner_{false};
+
+  // The timestamp of the last call to `MaybeDispatchBufferedFrameSinkRequest()`
+  // where we run `create_frame_sink_callback_`.
+  base::TimeTicks create_frame_sink_timestamp_;
 
   // The View associated with the RenderWidgetHost. The lifetime of this object
   // is associated with the lifetime of the Render process. If the Renderer

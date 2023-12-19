@@ -3023,6 +3023,15 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void NotifyWillCreateRenderWidgetOnCommit();
 
+  // If this RenderFrameHost is a local root (i.e., either the main frame or a
+  // subframe in a different process than its parent), this returns the
+  // RenderWidgetHost corresponding to this frame. Otherwise this returns null.
+  // See also GetRenderWidgetHost(), which walks up the tree to find the nearest
+  // local root.
+  // Main frame: RenderWidgetHost is owned by the RenderViewHost.
+  // Subframe: RenderWidgetHost is owned by this RenderFrameHost.
+  RenderWidgetHostImpl* GetLocalRenderWidgetHost() const;
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -3839,15 +3848,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       NavigationRequest* navigation_request,
       mojom::DidCommitProvisionalLoadParamsPtr* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params);
-
-  // If this RenderFrameHost is a local root (i.e., either the main frame or a
-  // subframe in a different process than its parent), this returns the
-  // RenderWidgetHost corresponding to this frame. Otherwise this returns null.
-  // See also GetRenderWidgetHost(), which walks up the tree to find the nearest
-  // local root.
-  // Main frame: RenderWidgetHost is owned by the RenderViewHost.
-  // Subframe: RenderWidgetHost is owned by this RenderFrameHost.
-  RenderWidgetHostImpl* GetLocalRenderWidgetHost() const;
 
   // Called after a new document commit. Every children of the previous document
   // are expected to be deleted or at least to be pending deletion waiting for

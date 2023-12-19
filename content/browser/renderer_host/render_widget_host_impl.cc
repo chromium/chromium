@@ -3701,6 +3701,8 @@ void RenderWidgetHostImpl::MaybeDispatchBufferedFrameSinkRequest() {
     return;
   }
 
+  create_frame_sink_timestamp_ = base::TimeTicks::Now();
+
   std::move(create_frame_sink_callback_).Run(view_->GetFrameSinkId());
 }
 

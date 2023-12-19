@@ -27,6 +27,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Subframe"/>
 </variants>
 
+<variants name="NavigationStage">
+  <variant name="Commit"/>
+  <variant name="SwapRFH"/>
+</variants>
+
 <variants name="NavigationThrottleEvents">
   <variant name="WillFailRequest"/>
   <variant name="WillProcessResponse"/>
@@ -574,6 +579,32 @@ chromium-metrics-reviews@google.com.
     <variant name="Resource"/>
     <variant name="Subframe"/>
   </token>
+</histogram>
+
+<histogram name="Navigation.CompositorCreationTo{Stage}" units="ms"
+    expires_after="2024-03-03">
+  <owner>rakina@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records the time duration between the creation of CompositorFrameSink for a
+    new RenderWidgetHost to when the navigation that uses that RenderWidgetHost
+    reaches {Stage}. Logged when the navigation that uses a new RenderFrameHost
+    and RenderWidgetHost reaches {Stage}.
+  </summary>
+  <token key="Stage" variants="NavigationStage"/>
+</histogram>
+
+<histogram name="Navigation.CompositorRequestedBefore{Stage}" enum="Boolean"
+    expires_after="2024-03-03">
+  <owner>rakina@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records whether the creation of CompositorFrameSink for a new
+    RenderWidgetHost is already requested when the navigation that uses it
+    reaches {Stage}. Logged when the navigation that uses the new
+    RenderFrameHost and RenderWidgetHost reaches {Stage}.
+  </summary>
+  <token key="Stage" variants="NavigationStage"/>
 </histogram>
 
 <histogram name="Navigation.DidCommitSameDocumentNavigation.Duration"

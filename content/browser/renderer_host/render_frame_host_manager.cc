@@ -4415,6 +4415,23 @@ void RenderFrameHostManager::CommitPending(
   //    renderer, so it must have a live connection to its renderer frame in
   //    order to receive the IPC.
   DCHECK(pending_rfh->IsRenderFrameLive());
+  if (RenderWidgetHostImpl* rwh = pending_rfh->GetLocalRenderWidgetHost()) {
+    // The navigation commits in a new local root RenderFrameHost. Log the time
+    // between the creation of its compositor frame sink to swapping in the new
+    // RenderFrameHost.
+    if (rwh->create_frame_sink_timestamp() == base::TimeTicks()) {
+      // The compositor frame sink hasn't been requested yet.
+      UMA_HISTOGRAM_BOOLEAN("Navigation.CompositorRequestedBeforeSwapRFH",
+                            false);
+    } else {
+      UMA_HISTOGRAM_BOOLEAN("Navigation.CompositorRequestedBeforeSwapRFH",
+                            true);
+      base::TimeDelta time =
+          base::TimeTicks::Now() - rwh->create_frame_sink_timestamp();
+      UMA_HISTOGRAM_CUSTOM_TIMES("Navigation.CompositorCreationToSwapRFH", time,
+                                 base::Milliseconds(1), base::Minutes(3), 50);
+    }
+  }
 
 #if BUILDFLAG(IS_MAC)
   // The old RenderWidgetHostView will be hidden before the new
