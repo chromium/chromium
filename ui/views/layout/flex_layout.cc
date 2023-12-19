@@ -839,6 +839,10 @@ NormalizedSize FlexLayout::ClampSizeToMinAndMax(FlexLayoutData& data,
                                                 const size_t view_index,
                                                 SizeBound size) const {
   FlexChildData& flex_child = data.child_data[view_index];
+  if (size.value() <= flex_child.miniumize_size.main()) {
+    return flex_child.miniumize_size;
+  }
+
   ChildLayout& child_layout = data.layout.child_layouts[view_index];
 
   // See how much space the child view wants within the reduced space
@@ -904,6 +908,10 @@ SizeBound FlexLayout::AllocateZeroWeightFlex(
     ChildIndices& child_list,
     FlexLayoutData& data,
     ChildViewSpacing& child_spacing) const {
+  if (!bounds.main().is_bounded()) {
+    return SizeBound();
+  }
+
   SizeBound remaining =
       std::max<SizeBound>(0, bounds.main() - data.total_size.main());
 
