@@ -65,7 +65,7 @@ struct GetSelectedFileInfoParams {
 
 // The callback type for GetFileNativeLocalPathFor{Opening,Saving}. It receives
 // the resolved local path when successful, and receives empty path for failure.
-typedef base::OnceCallback<void(const base::FilePath&)> LocalPathCallback;
+using LocalPathCallback = base::OnceCallback<void(const base::FilePath&)>;
 
 // Gets a resolved local file path of a non native |path| for file opening.
 void GetFileNativeLocalPathForOpening(Profile* profile,

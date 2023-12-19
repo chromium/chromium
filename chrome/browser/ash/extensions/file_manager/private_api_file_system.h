@@ -43,7 +43,7 @@ namespace file_manager {
 class EventRouter;
 namespace util {
 struct EntryDefinition;
-typedef std::vector<EntryDefinition> EntryDefinitionList;
+using EntryDefinitionList = std::vector<EntryDefinition>;
 }  // namespace util
 }  // namespace file_manager
 
@@ -477,11 +477,11 @@ class FileManagerPrivateInternalSearchFilesFunction
  public:
   // The type for matched files. The second element of the pair indicates if the
   // path is that of a directory (true) or a plain file (false).
-  typedef std::vector<std::pair<base::FilePath, bool>> FileSearchResults;
+  using FileSearchResults = std::vector<std::pair<base::FilePath, bool>>;
 
   // A callback on which the results are to be delivered. The results are
   // expected to be delivered in a single invocation.
-  typedef base::OnceCallback<void(FileSearchResults)> OnResultsReadyCallback;
+  using OnResultsReadyCallback = base::OnceCallback<void(FileSearchResults)>;
 
   FileManagerPrivateInternalSearchFilesFunction();
 

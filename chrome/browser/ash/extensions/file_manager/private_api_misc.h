@@ -28,12 +28,10 @@ enum class CrostiniResult;
 struct LinuxPackageInfo;
 }  // namespace crostini
 
-namespace file_manager {
-namespace util {
+namespace file_manager::util {
 struct EntryDefinition;
-typedef std::vector<EntryDefinition> EntryDefinitionList;
-}  // namespace util
-}  // namespace file_manager
+using EntryDefinitionList = std::vector<EntryDefinition>;
+}  // namespace file_manager::util
 
 namespace extensions {
 
