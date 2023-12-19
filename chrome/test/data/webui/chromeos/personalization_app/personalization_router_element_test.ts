@@ -58,8 +58,8 @@ suite('PersonalizationRouterElementTest', function() {
 
   test('returns to root page when wrong path is keyed in', async () => {
     loadTimeData.overrideValues({'isAmbientModeAllowed': true});
-    const routerElement = initElement(
-        PersonalizationRouterElement, {path: '/wrongpath', queryParams: {}});
+    const routerElement = initElement(PersonalizationRouterElement);
+    routerElement.goToRoute('/wrongpath' as Paths, {});
     await waitAfterNextRender(routerElement);
 
     // Due to the wrong path, only shows root page.
@@ -146,5 +146,56 @@ suite('PersonalizationRouterElementTest', function() {
     params = new URLSearchParams(location.search);
     assertFalse(params.has(isSharedParam), 'param no longer exists');
     assertEquals(null, params.get(isSharedParam), 'does not exist so null');
+  });
+
+  test('hides SeaPen from ineligible users', async () => {
+    loadTimeData.overrideValues({isSeaPenEnabled: false});
+
+    const routerElement = initElement(PersonalizationRouterElement);
+
+    for (const path of [Paths.SEA_PEN_COLLECTION, Paths.SEA_PEN_RESULTS]) {
+      PersonalizationRouterElement.instance().goToRoute(path);
+      await waitAfterNextRender(routerElement);
+
+      // Due to the forbidden path, only shows root page.
+      const mainElement =
+          routerElement.shadowRoot!.querySelector('personalization-main');
+      assertTrue(!!mainElement, 'main element exists');
+      assertNotEquals(
+          getComputedStyle(mainElement).display, 'none',
+          'main element is shown');
+
+      const seaPenRouterElement =
+          routerElement.shadowRoot!.querySelector('sea-pen-router');
+      assertFalse(!!seaPenRouterElement, 'sea-pen-router does not exist');
+    }
+  });
+
+  test('shows SeaPen for eligible users', async () => {
+    loadTimeData.overrideValues({isSeaPenEnabled: true});
+
+    const routerElement = initElement(PersonalizationRouterElement);
+    await waitAfterNextRender(routerElement);
+
+    let seaPenRouterElement =
+        routerElement.shadowRoot!.querySelector('sea-pen-router');
+    assertFalse(!!seaPenRouterElement, 'sea-pen-router does not exist');
+
+    routerElement.goToRoute(Paths.SEA_PEN_COLLECTION);
+    await waitAfterNextRender(routerElement);
+
+    const mainElement =
+        routerElement.shadowRoot!.querySelector('personalization-main');
+    assertTrue(!!mainElement);
+    assertEquals(
+        getComputedStyle(mainElement).display, 'none',
+        'main element is hidden');
+
+    seaPenRouterElement =
+        routerElement.shadowRoot!.querySelector('sea-pen-router');
+    assertTrue(!!seaPenRouterElement, 'sea-pen-router now exists');
+    assertNotEquals(
+        getComputedStyle(seaPenRouterElement).display, 'none',
+        'sea-pen-router is shown');
   });
 });

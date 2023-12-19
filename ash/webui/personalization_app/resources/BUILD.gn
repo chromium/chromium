@@ -89,6 +89,7 @@ build_webui("build") {
     "js/wallpaper/sea_pen/sea_pen_template_query_element.ts",
     "js/wallpaper/sea_pen/sea_pen_images_element.ts",
     "js/wallpaper/sea_pen/sea_pen_recent_wallpapers_element.ts",
+    "js/wallpaper/sea_pen/sea_pen_router_element.ts",
     "js/wallpaper/sea_pen/sea_pen_templates_element.ts",
     "js/wallpaper/sea_pen/sparkle_placeholder_element.ts",
     "js/wallpaper/time_of_day_wallpaper_dialog_element.ts",
@@ -100,7 +101,6 @@ build_webui("build") {
     "js/wallpaper/wallpaper_preview_element.ts",
     "js/wallpaper/wallpaper_selected_element.ts",
     "js/wallpaper/wallpaper_subpage_element.ts",
-    "js/wallpaper/wallpaper_subpage_top_element.ts",
   ]
 
   non_web_component_files = [

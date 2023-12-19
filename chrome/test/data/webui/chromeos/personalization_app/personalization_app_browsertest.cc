@@ -139,6 +139,11 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest,
       "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, SeaPenRouterElement) {
+  RunTest("chromeos/personalization_app/sea_pen_router_element_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, SeaPenTemplateQuery) {
   RunTest("chromeos/personalization_app/sea_pen_template_query_element_test.js",
           "mocha.run()");
@@ -194,10 +199,6 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, WallpaperSubpage) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, WallpaperSubpageTop) {
-  RunTest("chromeos/personalization_app/wallpaper_subpage_top_element_test.js",
-          "mocha.run()");
-}
 IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, ZoneCustomization) {
   RunTest("chromeos/personalization_app/zone_customization_element_test.js",
           "mocha.run()");

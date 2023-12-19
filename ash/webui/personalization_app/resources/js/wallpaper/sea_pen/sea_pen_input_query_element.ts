@@ -18,12 +18,13 @@ import '../../../css/cros_button_style.css.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES, SeaPenQuery} from '../../../sea_pen.mojom-webui.js';
-import {Paths, PersonalizationRouterElement} from '../../personalization_router_element.js';
 
 import {QUERY} from './constants.js';
+import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
+import {SeaPenPaths, SeaPenRouterElement} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 
 export class SeaPenInputQueryElement extends WithSeaPenStore {
@@ -54,6 +55,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   path: string;
 
   override connectedCallback() {
+    assert(isSeaPenTextInputEnabled(), 'sea pen text input must be enabled');
     super.connectedCallback();
     this.watch<SeaPenInputQueryElement['thumbnailsLoading_']>(
         'thumbnailsLoading_', state => state.loading.thumbnails);
@@ -62,22 +64,33 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
 
   private onClickInputQuerySearchButton_() {
     assert(this.textValue_, 'input query should not be empty.');
-    const query = {
+    const query: SeaPenQuery = {
       textQuery: this.textValue_,
-    } as SeaPenQuery;
+    };
     searchSeaPenThumbnails(query, getSeaPenProvider(), this.getStore());
-    PersonalizationRouterElement.instance().goToRoute(
-        Paths.SEA_PEN_RESULTS, {seaPenTemplateId: QUERY});
+    SeaPenRouterElement.instance().goToRoute(
+        SeaPenPaths.RESULTS, {seaPenTemplateId: QUERY});
   }
 
-  private getSearchButtonText_(path: string): string {
+  private getSearchButtonText_(path: string|null): string {
     // TODO(b/308200616) Add finalized text.
-    return path === Paths.SEA_PEN_COLLECTION ? 'Search' : 'Search again';
+    switch (path) {
+      case SeaPenPaths.RESULTS:
+        return 'Search again';
+      case SeaPenPaths.ROOT:
+      default:
+        return 'Search';
+    }
   }
 
-  private getSearchButtonIcon_(path: string): string {
-    return path === Paths.SEA_PEN_COLLECTION ? 'sea-pen:photo-spark' :
-                                               'personalization:refresh';
+  private getSearchButtonIcon_(path: string|null): string {
+    switch (path) {
+      case SeaPenPaths.RESULTS:
+        return 'personalization:refresh';
+      case SeaPenPaths.ROOT:
+      default:
+        return 'sea-pen:photo-spark';
+    }
   }
 }
 customElements.define(SeaPenInputQueryElement.is, SeaPenInputQueryElement);

@@ -1,0 +1,21 @@
+<div id="seaPenContainer">
+  <iron-location path="{{path_}}" query="{{query_}}" dwell-time="200">
+  </iron-location>
+  <iron-query-params params-object="{{queryParams_}}" params-string="{{query_}}">
+  </iron-query-params>
+  <template is="dom-if" if="[[shouldShowTextInputQuery_(relativePath_, queryParams_.seaPenTemplateId)]]">
+    <sea-pen-input-query path="[[relativePath_]]"></sea-pen-input-query>
+  </template>
+  <template is="dom-if" if="[[shouldShowTemplateQuery_(relativePath_, queryParams_.seaPenTemplateId)]]">
+    <sea-pen-template-query template-id="[[queryParams_.seaPenTemplateId]]" path="[[relativePath_]]">
+    </sea-pen-template-query>
+  </template>
+  <template is="dom-if" if="[[shouldShowSeaPenRoot_(relativePath_)]]">
+    <sea-pen-templates></sea-pen-templates>
+    <sea-pen-recent-wallpapers></sea-pen-recent-wallpapers>
+  </template>
+  <template is="dom-if" if="[[shouldShowSeaPenImages_(relativePath_)]]">
+    <sea-pen-images template-id="[[queryParams.seaPenTemplateId]]">
+    </sea-pen-images>
+  </template>
+</div>

@@ -13,11 +13,11 @@ import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_uti
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {SeaPenQuery, SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from '../../../sea_pen.mojom-webui.js';
-import {Paths, PersonalizationRouterElement} from '../../personalization_router_element.js';
 
 import {getSeaPenTemplates, parseTemplateText, SeaPenOption, SeaPenTemplate} from './constants.js';
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
+import {SeaPenPaths, SeaPenRouterElement} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_template_query_element.html.js';
 
@@ -240,18 +240,29 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   private onClickSearchButton_() {
     searchSeaPenThumbnails(
         this.getTemplateRequest_(), getSeaPenProvider(), this.getStore());
-    PersonalizationRouterElement.instance().goToRoute(
-        Paths.SEA_PEN_RESULTS, {seaPenTemplateId: this.templateId!.toString()});
+    SeaPenRouterElement.instance().goToRoute(
+        SeaPenPaths.RESULTS, {seaPenTemplateId: this.templateId!.toString()});
   }
 
-  private getSearchButtonText_(path: string): string {
+  private getSearchButtonText_(path: string|null): string {
     // TODO(b/308200616) Add finalized text.
-    return path === Paths.SEA_PEN_COLLECTION ? 'Search' : 'Search again';
+    switch (path) {
+      case SeaPenPaths.RESULTS:
+        return 'Search again';
+      case SeaPenPaths.ROOT:
+      default:
+        return 'Search';
+    }
   }
 
-  private getSearchButtonIcon_(path: string): string {
-    return path === Paths.SEA_PEN_COLLECTION ? 'sea-pen:photo-spark' :
-                                               'personalization:refresh';
+  private getSearchButtonIcon_(path: string|null): string {
+    switch (path) {
+      case SeaPenPaths.RESULTS:
+        return 'personalization:refresh';
+      case SeaPenPaths.ROOT:
+      default:
+        return 'sea-pen:photo-spark';
+    }
   }
 }
 
