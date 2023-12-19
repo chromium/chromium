@@ -611,13 +611,10 @@ class TestImporter:
         description += 'No-Export: true\n'
         description += 'Validate-Test-Flakiness: skip\n'
 
-        # Add the wptrunner MVP tryjobs as blocking trybots, to catch any test
-        # changes or infrastructure changes from upstream.
-        #
         # If this starts blocking the importer unnecessarily, revert
         # https://chromium-review.googlesource.com/c/chromium/src/+/2451504
         # Try linux-blink-rel to make sure no breakage in webdriver tests
-        for builder in ['linux-blink-rel', 'linux-wpt-chromium-rel']:
+        for builder in ['linux-blink-rel']:
             description += f'Cq-Include-Trybots: luci.chromium.try:{builder}\n'
 
         return description
