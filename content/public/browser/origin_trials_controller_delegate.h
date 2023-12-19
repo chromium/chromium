@@ -47,9 +47,10 @@ class CONTENT_EXPORT OriginTrialsControllerDelegate {
     // effectively disabled also disable the trial for that origin.
     virtual void OnStatusChanged(const url::Origin& origin,
                                  const std::string& partition_site,
-                                 bool enable) {}
+                                 bool match_subdomains,
+                                 bool enabled) = 0;
     // Called when all persisted tokens are removed.
-    virtual void OnPersistedTokensCleared() {}
+    virtual void OnPersistedTokensCleared() = 0;
     // The name of the persistent origin trial whose status changes `this`
     // is observing.
     virtual std::string trial_name() = 0;

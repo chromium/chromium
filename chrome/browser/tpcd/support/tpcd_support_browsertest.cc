@@ -49,6 +49,8 @@ const char kTrialEnabledSubdomain[] = "sub.example.test";
 const char kTrialEnabledIframePath[] = "origin-trial-iframe";
 const char kEmbeddedScriptPagePath[] =
     "tpcd/page_with_cross_site_tpcd_support_ot.html";
+const char kSubdomainMatchingEmbeddedScriptPagePath[] =
+    "tpcd/page_with_cross_site_tpcd_support_ot_with_subdomain_matching.html";
 // Origin Trials token for `kTrialEnabledSite` generated with:
 // tools/origin_trials/generate_token.py --expire-days 5000
 // https://example.test Tpcd
@@ -326,52 +328,47 @@ IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
     setting_observer.Wait();
   }
 
-  // Check that `kTrialEnabledSiteSubdomain` now has access to cookies as a
-  // third-party when embedded by `embedding_site`.
+  // Check that both `kTrialEnabledSiteSubdomain` and it's eTLD+1
+  // (`kTrialEnabledSite`) now has access to cookies as a third-party when
+  // embedded by `embedding_site`.
   EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSiteSubdomain,
                                        embedding_site, {}, nullptr),
             CONTENT_SETTING_ALLOW);
-
-  // Verify that the new cookie setting does not also apply to
-  // `kTrialEnabledSite`.
-  //
-  // TODO (crbug.com/1416840): Revisit this once subdomain matching is fully
-  // supported for persistent origin trial tokens and the observer method
-  // signatures have been updated accordingly.
   EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, embedding_site, {},
                                        nullptr),
-            CONTENT_SETTING_BLOCK);
+            CONTENT_SETTING_ALLOW);
 
   // TODO (crbug.com/1466156): Actually attempt to read cookies for
   // `kTrialEnabledSiteSubdomain` as a third-party.
 
   // Check cookie access for `kTrialEnabledSiteSubdomain` with a different path.
-  GURL enabled_site_diff_path =
-      GURL(kTrialEnabledSiteSubdomain.spec() + "iframe_blank.html");
-
-  EXPECT_EQ(settings->GetCookieSetting(enabled_site_diff_path, embedding_site,
-                                       {}, nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(
+                GURL(kTrialEnabledSiteSubdomain.spec() + "iframe_blank.html"),
+                embedding_site, {}, nullptr),
             CONTENT_SETTING_ALLOW);
 
+  GURL enabled_site_no_token =
+      GURL(kTrialEnabledSite.spec() + "iframe_blank.html");
   // Verify that a subsequent load of a resource from
-  // `kTrialEnabledSiteSubdomain` on the embedding site without the token
-  // (`enabled_site_diff_path`) removes the `TPCD_SUPPORT` content setting for
-  // it it.
+  // `kTrialEnabledSiteSubdomain`'s eTLD+1 (`kTrialEnabledSite`) on the
+  // embedding site without the token (`enabled_site_diff_path`) removes the
+  // `TPCD_SUPPORT` content setting for it.
   {
     ContentSettingChangeObserver setting_observer(
-        web_contents->GetBrowserContext(), enabled_site_diff_path,
+        web_contents->GetBrowserContext(), enabled_site_no_token,
         embedding_site, ContentSettingsType::TPCD_SUPPORT);
     ASSERT_TRUE(content::NavigateIframeToURL(web_contents, kIframeId,
-                                             enabled_site_diff_path));
+                                             enabled_site_no_token));
     setting_observer.Wait();
   }
 
-  // Verify `kTrialEnabledSiteSubdomain` no longer has cookie access.
+  // Verify `kTrialEnabledSiteSubdomain` and it's eTLD+1 (`kTrialEnabledSite`)
+  // no longer have cookie access.
   EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSiteSubdomain,
                                        embedding_site, {}, nullptr),
             CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(settings->GetCookieSetting(enabled_site_diff_path, embedding_site,
-                                       {}, nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, embedding_site, {},
+                                       nullptr),
             CONTENT_SETTING_BLOCK);
 }
 
@@ -402,6 +399,46 @@ IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest, EnabledAfterMetaTagAppend) {
             CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
                 kTrialEnabledSite, embedding_site, {}, nullptr),
+            content_settings::CookieSettingsBase::
+                ThirdPartyCookieAllowMechanism::kAllowBy3PCD);
+}
+
+IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
+                       EnabledAfterMetaTagAppendWithSubdomainToken) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL embedding_site{base::StrCat(
+      {"https://a.test/", kSubdomainMatchingEmbeddedScriptPagePath})};
+
+  // Navigate to a page with an embedded script (sourced from
+  // `kTrialEnabledSite`), that enables the trial for `kTrialEnabledSite` and
+  // subdomains of it by appending a meta tag containing `kTrialEnabledSite`'s
+  // subdomain-matching third-party origin trial token to the head of the page.
+  {
+    ContentSettingChangeObserver setting_observer(
+        web_contents->GetBrowserContext(), kTrialEnabledSite, embedding_site,
+        ContentSettingsType::TPCD_SUPPORT);
+
+    ASSERT_TRUE(content::NavigateToURL(web_contents, embedding_site));
+    setting_observer.Wait();
+  }
+
+  // Verify that `kTrialEnabledSite` and `kTrialEnabledSiteSubdomain` now have
+  // access to cookies as a third-party when embedded by `embedding_site`.
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(GetProfile()).get();
+  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, embedding_site, {},
+                                       nullptr),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSiteSubdomain,
+                                       embedding_site, {}, nullptr),
+            CONTENT_SETTING_ALLOW);
+
+  EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
+                kTrialEnabledSite, embedding_site, {}, nullptr),
+            content_settings::CookieSettingsBase::
+                ThirdPartyCookieAllowMechanism::kAllowBy3PCD);
+  EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
+                kTrialEnabledSiteSubdomain, embedding_site, {}, nullptr),
             content_settings::CookieSettingsBase::
                 ThirdPartyCookieAllowMechanism::kAllowBy3PCD);
 }

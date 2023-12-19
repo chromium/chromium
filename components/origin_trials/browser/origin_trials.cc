@@ -52,6 +52,7 @@ void OriginTrials::RemoveObserver(Observer* observer) {
 
 void OriginTrials::NotifyStatusChange(const url::Origin& origin,
                                       const std::string& partition_site,
+                                      bool match_subdomains,
                                       const std::string& trial,
                                       bool enabled) {
   const auto find_it = observer_map_.find(trial);
@@ -60,7 +61,7 @@ void OriginTrials::NotifyStatusChange(const url::Origin& origin,
   }
 
   for (Observer& observer : find_it->second) {
-    observer.OnStatusChanged(origin, partition_site, enabled);
+    observer.OnStatusChanged(origin, partition_site, match_subdomains, enabled);
   }
 }
 
@@ -70,6 +71,18 @@ void OriginTrials::NotifyPersistedTokensCleared() {
       observer.OnPersistedTokensCleared();
     }
   }
+}
+
+bool OriginTrials::MatchesTokenOrigin(const url::Origin& token_origin,
+                                      bool match_subdomains,
+                                      const url::Origin& origin) const {
+  if (match_subdomains) {
+    return origin.scheme() == token_origin.scheme() &&
+           origin.DomainIs(token_origin.host()) &&
+           origin.port() == token_origin.port();
+  }
+
+  return origin == token_origin;
 }
 
 base::flat_set<std::string> OriginTrials::GetPersistedTrialsForOrigin(
@@ -166,9 +179,7 @@ void OriginTrials::PersistTokensInternal(
             std::move(*parsed_token));
       }
     } else {
-      // First party tokens use the passed-in origin, since it could be a
-      // subdomain.
-      valid_tokens[origin].push_back(std::move(*parsed_token));
+      valid_tokens[parsed_token->origin()].push_back(std::move(*parsed_token));
     }
   }
   std::string partition_site = GetTokenPartitionSite(partition_origin);
@@ -187,30 +198,35 @@ base::flat_set<std::string> OriginTrials::GetPersistedTrialsForOriginWithMatch(
   if (origin.opaque())
     return {};
 
-  base::flat_set<PersistedTrialToken> saved_tokens =
-      persistence_provider_->GetPersistentTrialTokens(origin);
+  SiteOriginTrialTokens potential_tokens =
+      persistence_provider_->GetPotentialPersistentTrialTokens(origin);
 
   base::flat_set<std::string> enabled_trials;
-  for (const PersistedTrialToken& token : saved_tokens) {
-    if (trial_feature_match &&
-        // TODO(crbug.com/1227440): FeaturesEnabledByTrial should be part of
-        // general validation logic.
-        !base::Contains(
-            trial_token_validator_->FeaturesEnabledByTrial(token.trial_name),
-            trial_feature_match.value())) {
-      continue;
-    }
+  for (const auto& [token_origin, saved_tokens] : potential_tokens) {
+    for (const PersistedTrialToken& token : saved_tokens) {
+      if (trial_feature_match &&
+          // TODO(crbug.com/1227440): FeaturesEnabledByTrial should be part of
+          // general validation logic.
+          !base::Contains(
+              trial_token_validator_->FeaturesEnabledByTrial(token.trial_name),
+              trial_feature_match.value())) {
+        continue;
+      }
+      if (!MatchesTokenOrigin(token_origin, token.match_subdomains, origin)) {
+        continue;
+      }
 
-    bool valid = trial_token_validator_->RevalidateTokenAndTrial(
-        token.trial_name, token.token_expiry, token.usage_restriction,
-        token.token_signature, current_time);
-    bool persistent =
-        blink::origin_trials::IsTrialPersistentToNextResponse(token.trial_name);
-    if (valid && persistent &&
-        token.partition_sites.contains(
-            GetTokenPartitionSite(partition_origin))) {
-      // Move the string into the flat_set to avoid extra heap allocations
-      enabled_trials.insert(std::move(token.trial_name));
+      bool valid = trial_token_validator_->RevalidateTokenAndTrial(
+          token.trial_name, token.token_expiry, token.usage_restriction,
+          token.token_signature, current_time);
+      bool persistent = blink::origin_trials::IsTrialPersistentToNextResponse(
+          token.trial_name);
+      if (valid && persistent &&
+          token.partition_sites.contains(
+              GetTokenPartitionSite(partition_origin))) {
+        // Move the string into the flat_set to avoid extra heap allocations
+        enabled_trials.insert(std::move(token.trial_name));
+      }
     }
   }
 
@@ -257,7 +273,8 @@ void OriginTrials::UpdatePersistedTokenSet(
       // partition.
       if (new_token_iter == new_tokens.end()) {
         token.RemoveFromPartition(partition_site);
-        NotifyStatusChange(origin, partition_site, token.trial_name,
+        NotifyStatusChange(origin, partition_site, token.match_subdomains,
+                           token.trial_name,
                            /* enabled = */ false);
       }
     }
@@ -282,7 +299,9 @@ void OriginTrials::UpdatePersistedTokenSet(
       // NOTE: This is because `found_token` can "match" `new_token` without
       // `found_token->partition_sites` containing `partition_site`.
       if (!found_token->partition_sites.contains(partition_site)) {
-        NotifyStatusChange(origin, partition_site, found_token->trial_name,
+        NotifyStatusChange(origin, partition_site,
+                           found_token->match_subdomains,
+                           found_token->trial_name,
                            /* enabled = */ true);
       }
 
@@ -291,7 +310,8 @@ void OriginTrials::UpdatePersistedTokenSet(
       found_token->AddToPartition(partition_site);
     } else {
       token_set.emplace(new_token, partition_site);
-      NotifyStatusChange(origin, partition_site, new_token.feature_name(),
+      NotifyStatusChange(origin, partition_site, new_token.match_subdomains(),
+                         new_token.feature_name(),
                          /* enabled = */ true);
     }
   }

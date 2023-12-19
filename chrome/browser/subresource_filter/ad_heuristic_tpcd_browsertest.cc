@@ -448,6 +448,7 @@ IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestSupportGrant, CookieAllowed) {
   tpcd::support::TpcdSupportServiceFactory::GetForProfile(browser()->profile())
       ->Update3pcdSupportSettingsForTesting(
           url::Origin::Create(third_party_url), first_party_url.spec(),
+          /*match_subdomains=*/false,
           /*enabled=*/true);
 
   Verify3PCookieAccessAllowed(register_response.get());
@@ -490,6 +491,7 @@ IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestSkipSupportGrant,
   tpcd::support::TpcdSupportServiceFactory::GetForProfile(browser()->profile())
       ->Update3pcdSupportSettingsForTesting(
           url::Origin::Create(third_party_url), first_party_url.spec(),
+          /*match_subdomains=*/false,
           /*enabled=*/true);
 
   VerifyAdCookieAccessBlocked(register_response.get(), register_response2.get(),

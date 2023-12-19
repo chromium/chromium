@@ -17,19 +17,21 @@ namespace origin_trials {
 namespace {
 
 auto to_tuple(const PersistedTrialToken& token) {
-  return std::tie(token.trial_name, token.token_expiry, token.usage_restriction,
-                  token.token_signature);
+  return std::tie(token.match_subdomains, token.trial_name, token.token_expiry,
+                  token.usage_restriction, token.token_signature);
 }
 
 }  // namespace
 
 PersistedTrialToken::PersistedTrialToken(
+    bool match_subdomains,
     std::string name,
     base::Time expiry,
     blink::TrialToken::UsageRestriction usage,
     std::string signature,
     base::flat_set<std::string> partitions)
-    : trial_name(std::move(name)),
+    : match_subdomains(match_subdomains),
+      trial_name(std::move(name)),
       token_expiry(expiry),
       usage_restriction(usage),
       token_signature(std::move(signature)),
@@ -37,7 +39,8 @@ PersistedTrialToken::PersistedTrialToken(
 
 PersistedTrialToken::PersistedTrialToken(const blink::TrialToken& parsed_token,
                                          const std::string& partition_site)
-    : PersistedTrialToken(parsed_token.feature_name(),
+    : PersistedTrialToken(parsed_token.match_subdomains(),
+                          parsed_token.feature_name(),
                           parsed_token.expiry_time(),
                           parsed_token.usage_restriction(),
                           parsed_token.signature(),
@@ -68,7 +71,8 @@ bool PersistedTrialToken::InAnyPartition() const {
 }
 
 bool PersistedTrialToken::Matches(const blink::TrialToken& token) const {
-  return trial_name == token.feature_name() &&
+  return match_subdomains == token.match_subdomains() &&
+         trial_name == token.feature_name() &&
          token_expiry == token.expiry_time() &&
          token_signature == token.signature();
 }
@@ -87,6 +91,8 @@ bool operator!=(const PersistedTrialToken& a, const PersistedTrialToken& b) {
 
 std::ostream& operator<<(std::ostream& out, const PersistedTrialToken& token) {
   out << "{";
+  out << "match_subdomains: " << (token.match_subdomains ? "true" : "false")
+      << ", ";
   out << "trial: " << token.trial_name << ", ";
   out << "expiry: " << base::TimeToValue(token.token_expiry) << ", ";
   out << "usage: " << static_cast<int>(token.usage_restriction) << ", ";
