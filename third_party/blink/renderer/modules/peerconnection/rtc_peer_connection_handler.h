@@ -416,8 +416,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // detect any removals during rollback.
   Vector<uintptr_t> previous_transceiver_ids_;
 
-  // Keep persistently alive to ensure the peer connection will be unregistered.
-  Persistent<PeerConnectionTracker> peer_connection_tracker_;
+  WeakPersistent<PeerConnectionTracker> peer_connection_tracker_;
 
   MediaStreamTrackMetrics track_metrics_;
 

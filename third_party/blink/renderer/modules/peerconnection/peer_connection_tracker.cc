@@ -637,32 +637,21 @@ PeerConnectionTracker::PeerConnectionTracker(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     base::PassKey<PeerConnectionTracker>)
     : Supplement<LocalDOMWindow>(window),
-      // Do not set a lifecycle notifier for `peer_connection_tracker_host_` to
-      // ensure that its mojo pipe stays alive until the execution context is
-      // destroyed. `RTCPeerConnection` (which owns a `RTCPeerConnectionHandler`
-      // which persistently kepts `this` alive) will attempt to close and
-      // unregister the peer connection when the execution context is destroyed,
-      // for which this mojo pipe _must_ be alive to relay.
-      // See https://crbug.com/1426377 for details.
-      peer_connection_tracker_host_(nullptr),
       receiver_(this, &window),
       main_thread_task_runner_(std::move(main_thread_task_runner)) {
   window.GetBrowserInterfaceBroker().GetInterface(
-      peer_connection_tracker_host_.BindNewPipeAndPassReceiver(
-          main_thread_task_runner_));
+      peer_connection_tracker_host_.BindNewPipeAndPassReceiver());
 }
 
 // Constructor used for testing. Note that receiver_ doesn't have a context
 // notifier in this case.
 PeerConnectionTracker::PeerConnectionTracker(
-    mojo::PendingRemote<blink::mojom::blink::PeerConnectionTrackerHost> host,
+    mojo::Remote<blink::mojom::blink::PeerConnectionTrackerHost> host,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner)
     : Supplement(nullptr),
-      peer_connection_tracker_host_(nullptr),
+      peer_connection_tracker_host_(std::move(host)),
       receiver_(this, nullptr),
-      main_thread_task_runner_(std::move(main_thread_task_runner)) {
-  peer_connection_tracker_host_.Bind(std::move(host), main_thread_task_runner_);
-}
+      main_thread_task_runner_(std::move(main_thread_task_runner)) {}
 
 PeerConnectionTracker::~PeerConnectionTracker() {}
 
