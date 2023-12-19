@@ -18,77 +18,60 @@ import '../../components/common_styles/cr_card_radio_group_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
-import {Oobe} from '../../cr_ui.js';
 
 import {getTemplate} from './add_child.html.js';
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- */
 const AddChildScreenElementBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+    PolymerElement) as { new (): PolymerElement
+        & OobeI18nBehaviorInterface
+        & LoginScreenBehaviorInterface
+        & MultiStepBehaviorInterface,
+    };
 
 /**
  * Sign in method for setting up the device for child.
- * @enum {string}
  */
-const AddChildSignInMethod = {
-  CREATE: 'create',
-  SIGNIN: 'signin',
+enum AddChildSignInMethod {
+  CREATE = 'create',
+  SIGNIN = 'signin',
 
-};
+}
 
 /**
  * Available user actions.
- * @enum {string}
  */
-const UserAction = {
-  CREATE: 'child-account-create',
-  SIGNIN: 'child-signin',
-  BACK: 'child-back',
-};
+enum UserAction {
+  CREATE = 'child-account-create',
+  SIGNIN = 'child-signin',
+  BACK = 'child-back',
+}
 
 /**
  * UI mode for the dialog.
- * @enum {string}
  */
-const AddChildUIStep = {
-  OVERVIEW: 'overview',
-};
+enum AddChildUiStep {
+  OVERVIEW = 'overview',
+}
 
-/**
- * @typedef {{
- *   learnMoreDialog:  OobeModalDialog,
- *   learnMoreLink: HTMLAnchorElement,
- * }}
- */
-AddChildScreenElementBase.$;
-
-
-/**
- * @polymer
- */
-class AddChildScreen extends AddChildScreenElementBase {
+export class AddChildScreen extends AddChildScreenElementBase {
   static get is() {
-    return 'add-child-element';
+    return 'add-child-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * The currently selected sign in method.
@@ -99,47 +82,50 @@ class AddChildScreen extends AddChildScreenElementBase {
     };
   }
 
+  private selectedSignInMethod: string;
+
   constructor() {
     super();
     this.selectedSignInMethod = '';
   }
 
 
-  get EXTERNAL_API() {
+  override get EXTERNAL_API(): string[] {
     return [];
   }
 
-  onBeforeShow() {
+  onBeforeShow(): void {
     this.selectedSignInMethod = '';
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('AddChildScreen');
   }
 
-  get UI_STEPS() {
-    return AddChildUIStep;
+  override get UI_STEPS() {
+    return AddChildUiStep;
   }
 
-  defaultUIStep() {
-    return AddChildUIStep.OVERVIEW;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep() {
+    return AddChildUiStep.OVERVIEW;
   }
 
-  getOobeUIInitialState() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override getOobeUIInitialState() {
     return OOBE_UI_STATE.GAIA_SIGNIN;
   }
 
-  cancel() {
+  private cancel(): void {
     this.onBackClicked_();
   }
 
-  onBackClicked_() {
+  private onBackClicked_(): void {
     this.userActed(UserAction.BACK);
   }
 
-  onNextClicked_() {
+  private onNextClicked_(): void {
     if (this.selectedSignInMethod === AddChildSignInMethod.CREATE) {
       this.userActed(UserAction.CREATE);
     } else if (this.selectedSignInMethod === AddChildSignInMethod.SIGNIN) {
@@ -147,12 +133,20 @@ class AddChildScreen extends AddChildScreenElementBase {
     }
   }
 
-  onLearnMoreClicked_() {
-    this.$.learnMoreDialog.showDialog();
+  private onLearnMoreClicked_(): void {
+    this.shadowRoot!.querySelector<OobeModalDialog>('#learnMoreDialog')!
+      .showDialog();
   }
 
-  focusLearnMoreLink_() {
-    this.$.learnMoreLink.focus();
+  private focusLearnMoreLink_(): void {
+    this.shadowRoot!.querySelector<HTMLAnchorElement>('#learnMoreLink')!
+      .focus();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [AddChildScreen.is]: AddChildScreen;
   }
 }
 
