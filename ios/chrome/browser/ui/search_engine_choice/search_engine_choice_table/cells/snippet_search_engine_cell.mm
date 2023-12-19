@@ -26,7 +26,10 @@ constexpr CGFloat kVerticalMargin = 17.;
 // Horizontal margin between elements in SnippetSearchEngineCell.
 constexpr CGFloat kInnerHorizontalMargin = 12.;
 // Chevron button size.
-constexpr CGFloat kChevronButtonSize = 24.;
+constexpr CGFloat kChevronButtonSize = 44.;
+// Horizontal chevron margin with the separtor, the name label and the snippet
+// label.
+constexpr CGFloat kChevronButtonHorizontalMargin = 2.;
 // Thickness of the vertical separator.
 constexpr CGFloat kSeparatorThickness = 1.;
 // Duration of the snippet animation when changing state.
@@ -148,13 +151,13 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
                          constant:kVerticalMargin],
       [_nameLabel.trailingAnchor
           constraintLessThanOrEqualToAnchor:_chevronButton.leadingAnchor
-                                   constant:-kInnerHorizontalMargin],
+                                   constant:-kChevronButtonHorizontalMargin],
       [_nameLabel.bottomAnchor constraintEqualToAnchor:_snippetLabel.topAnchor],
       [_snippetLabel.leadingAnchor
           constraintEqualToAnchor:_nameLabel.leadingAnchor],
       [_snippetLabel.trailingAnchor
           constraintLessThanOrEqualToAnchor:_chevronButton.leadingAnchor
-                                   constant:-kInnerHorizontalMargin],
+                                   constant:-kChevronButtonHorizontalMargin],
       [_chevronButton.heightAnchor
           constraintEqualToConstant:kChevronButtonSize],
       [_chevronButton.widthAnchor constraintEqualToConstant:kChevronButtonSize],
@@ -162,7 +165,7 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
           constraintEqualToAnchor:_nameLabel.centerYAnchor],
       [_chevronButton.trailingAnchor
           constraintEqualToAnchor:separatorLine.leadingAnchor
-                         constant:-kInnerHorizontalMargin],
+                         constant:-kChevronButtonHorizontalMargin],
       [separatorLine.heightAnchor
           constraintEqualToAnchor:_nameLabel.heightAnchor],
       [separatorLine.centerYAnchor
