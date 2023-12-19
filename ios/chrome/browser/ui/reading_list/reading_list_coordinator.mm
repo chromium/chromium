@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_mediator.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_menu_provider.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -78,6 +79,7 @@
 // to the view.
 @interface ReadingListCoordinator () <AccountSettingsPresenter,
                                       IdentityManagerObserverBridgeDelegate,
+                                      ManageSyncSettingsCoordinatorDelegate,
                                       ReadingListMenuProvider,
                                       ReadingListListItemFactoryDelegate,
                                       ReadingListListViewControllerAudience,
@@ -118,6 +120,8 @@
   signin::IdentityManager* _identityManager;
   // Sync service.
   syncer::SyncService* _syncService;
+  // Coordinator of manage sync settings.
+  ManageSyncSettingsCoordinator* _manageSyncSettingsCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -329,7 +333,8 @@
       [_signinPromoViewMediator createConfigurator];
   [self.tableViewController promoStateChanged:YES
                             promoConfigurator:promoConfigurator
-                                promoDelegate:_signinPromoViewMediator];
+                                promoDelegate:_signinPromoViewMediator
+                                    promoText:[self promoTextForPromoAction]];
 }
 
 #pragma mark - URL Loading Helpers
@@ -571,7 +576,17 @@
 #pragma mark - AccountSettingsPresenter
 
 - (void)showAccountSettings {
-  NOTIMPLEMENTED();
+  CHECK(!_syncService->GetAccountInfo().IsEmpty())
+      << base::SysNSStringToUTF8([self description]);
+  SyncSettingsAccountState accountState =
+      _syncService->HasSyncConsent() ? SyncSettingsAccountState::kSyncing
+                                     : SyncSettingsAccountState::kSignedIn;
+  _manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
+      initWithBaseViewController:self.tableViewController
+                         browser:self.browser
+                    accountState:accountState];
+  _manageSyncSettingsCoordinator.delegate = self;
+  [_manageSyncSettingsCoordinator start];
 }
 
 #pragma mark - SigninPromoViewConsumer
@@ -641,10 +656,24 @@
   }
 
   if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    // If the user is signed-in with the promo (thus opted-in for Reading List
-    // account storage), the promo should stay visible during the initial sync
-    // and a spinner should be shown on it.
-    self.shouldShowSignInPromo = _signinPromoViewMediator.showSpinner;
+    syncer::UserSelectableTypeSet selected_types =
+        _syncService->GetUserSettings()->GetSelectedTypes();
+    if (base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos) &&
+        base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
+        !selected_types.Has(syncer::UserSelectableType::kReadingList)) {
+      // Should remove the promo section completely in case it was showing
+      // before with another action.
+      self.shouldShowSignInPromo = NO;
+      _signinPromoViewMediator.signinPromoAction =
+          SigninPromoAction::kReviewAccountSettings;
+      self.shouldShowSignInPromo = YES;
+    } else {
+      // If the user is signed-in with the promo (thus opted-in for Reading List
+      // account storage), the promo should stay visible during the initial sync
+      // and a spinner should be shown on it.
+      self.shouldShowSignInPromo = _signinPromoViewMediator.showSpinner;
+    }
   } else {
     const std::string lastSignedInGaiaId =
         _prefService->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
@@ -665,7 +694,8 @@
       [_signinPromoViewMediator createConfigurator];
   [self.tableViewController promoStateChanged:shouldShowSignInPromo
                             promoConfigurator:promoConfigurator
-                                promoDelegate:_signinPromoViewMediator];
+                                promoDelegate:_signinPromoViewMediator
+                                    promoText:[self promoTextForPromoAction]];
   if (shouldShowSignInPromo) {
     [_signinPromoViewMediator signinPromoViewIsVisible];
   } else {
@@ -702,6 +732,15 @@
   return syncDisabledPolicy || syncTypesDisabledPolicy;
 }
 
+- (NSString*)promoTextForPromoAction {
+  if (_signinPromoViewMediator.signinPromoAction ==
+      SigninPromoAction::kReviewAccountSettings) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SIGNIN_PROMO_REVIEW_READING_LIST_SETTINGS);
+  }
+  return l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_READING_LIST);
+}
+
 #pragma mark - ReadingListListItemFactoryDelegate
 
 - (BOOL)isIncognitoForced {
@@ -710,6 +749,24 @@
 
 - (BOOL)isIncognitoAvailable {
   return !IsIncognitoModeDisabled(_prefService);
+}
+
+#pragma mark - ManageSyncSettingsCoordinatorDelegate
+
+- (void)manageSyncSettingsCoordinatorWasRemoved:
+    (ManageSyncSettingsCoordinator*)coordinator {
+  DCHECK_EQ(_manageSyncSettingsCoordinator, coordinator);
+  [_manageSyncSettingsCoordinator stop];
+  _manageSyncSettingsCoordinator = nil;
+  // Should remove the promo section completely.
+  self.shouldShowSignInPromo = NO;
+  _signinPromoViewMediator.signinPromoAction =
+      SigninPromoAction::kInstantSignin;
+  [self updateSignInPromoVisibility];
+}
+
+- (NSString*)manageSyncSettingsCoordinatorTitle {
+  return l10n_util::GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TITLE);
 }
 
 @end

@@ -680,7 +680,8 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 - (void)promoStateChanged:(BOOL)promoEnabled
         promoConfigurator:(SigninPromoViewConfigurator*)promoConfigurator
-            promoDelegate:(id<SigninPromoViewDelegate>)promoDelegate {
+            promoDelegate:(id<SigninPromoViewDelegate>)promoDelegate
+                promoText:(NSString*)promoText {
   if (promoEnabled) {
     CHECK(![self.tableViewModel
         hasSectionForSectionIdentifier:kSectionIdentifierSignInPromo]);
@@ -690,8 +691,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     TableViewSigninPromoItem* signInPromoItem =
         [[TableViewSigninPromoItem alloc] initWithType:kItemTypeSignInPromo];
     signInPromoItem.configurator = promoConfigurator;
-    signInPromoItem.text =
-        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_READING_LIST);
+    signInPromoItem.text = promoText;
     signInPromoItem.delegate = promoDelegate;
     [self.tableViewModel addItem:signInPromoItem
          toSectionWithIdentifier:kSectionIdentifierSignInPromo];

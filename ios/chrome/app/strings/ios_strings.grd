@@ -4505,6 +4505,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SIGNIN_PROMO_REVIEW_BOOKMARKS_SETTINGS" desc="This string is on a promo intended to promote reviewing the user's Google Account settings page to enable bookmarks toggle. It appears on the Bookmarks page when the user is signed in not syncing.">
         To get your bookmarks on all your devices, turn on “Bookmarks” in settings.
       </message>
+      <message name="IDS_IOS_SIGNIN_PROMO_REVIEW_READING_LIST_SETTINGS" desc="This string is on a promo intended to promote reviewing the user's Google Account settings page to enable reading list toggle. It appears on the Reading List page when the user is signed in not syncing.">
+        To get your reading list on all your devices, turn on “Reading List” in settings.
+      </message>
       <message name="IDS_IOS_SIGNIN_PROMO_REVIEW_SETTINGS_BUTTON" desc="This string is on a promo button intended to promote reviewing the user's Google Account settings page to enable the type toggle. It appears on the Bookmarks or Reading List page when the user is signed in not syncing.">
         Open Settings
       </message>
