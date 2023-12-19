@@ -10,6 +10,7 @@ version.py -- Chromium version string substitution utility.
 
 import argparse
 import os
+import stat
 import sys
 
 import android_chrome_version
@@ -112,7 +113,8 @@ def WriteIfChanged(file_name, contents, mode):
   except EnvironmentError:
     pass
   else:
-    if contents == old_contents and mode == os.lstat(file_name).st_mode:
+    if contents == old_contents and mode == stat.S_IMODE(
+        os.lstat(file_name).st_mode):
       return
     os.unlink(file_name)
   with open(file_name, 'w') as f:
