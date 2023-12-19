@@ -2163,6 +2163,8 @@ bool AXObjectCacheImpl::PauseTreeUpdatesIfQueueFull() {
     // Clear updates from both documents.
     tree_update_callback_queue_main_.clear();
     tree_update_callback_queue_popup_.clear();
+    notifications_to_post_main_.clear();
+    notifications_to_post_popup_.clear();
     return true;
   }
 
@@ -2863,6 +2865,7 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
   CHECK(nodes_with_pending_children_changed_.empty());
   CHECK(tree_update_callback_queue_main_.empty());
   CHECK(tree_update_callback_queue_popup_.empty());
+  CHECK(!Root()->NeedsToUpdateCachedValues());
 
 #if DCHECK_IS_ON()
   // The following checks can make tests flaky if the tree being checked
@@ -2987,17 +2990,6 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
 
   CHECK(!processing_deferred_events_);
 
-  if (tree_updates_paused_) {
-    tree_updates_paused_ = false;
-    if (!force) {
-      LOG(INFO)
-          << "Accessibility tree updates will be resumed after rebuilding "
-             "the tree from root";
-      MarkDocumentDirty();
-      return;
-    }
-  }
-
   // Don't update the tree at an awkward time during page load.
   // Example: when the last node is whitespace, there is not yet enough context
   // to determine the relevance of the whitespace.
@@ -3007,6 +2999,17 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     }
     pause_tree_updates_until_more_loaded_content_ = false;
     node_to_parse_before_more_tree_updates_ = nullptr;
+  }
+
+  if (tree_updates_paused_) {
+    // Unpause tree updates and rebuild the tree from the root.
+    // TODO(accessibility): Add more testing for this feature.
+    // TODO(accessibility): Consider waiting until serialization batching timer
+    // fires, so that the pause is a bit longer.
+    LOG(INFO) << "Accessibility tree updates will be resumed after rebuilding "
+                 "the tree from root";
+    mark_all_dirty_ = true;
+    tree_updates_paused_ = false;
   }
 
   if (GetPopupDocumentIfShowing()) {
@@ -3182,6 +3185,12 @@ bool AXObjectCacheImpl::IsDirty() {
     return true;
   }
   if (Root()->NeedsToUpdateChildren() || Root()->HasDirtyDescendants()) {
+    return true;
+  }
+  // If tree updates are paused, consider the cache dirty. The next time
+  // ProcessDeferredAccessibilityEvents() is called, the entire tree will be
+  // rebuilt from the root.
+  if (tree_updates_paused_) {
     return true;
   }
   return false;

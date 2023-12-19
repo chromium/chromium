@@ -1127,6 +1127,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   bool mark_all_dirty_ = false;
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued);
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,
+                           UpdateAXForAllDocumentsAfterPausedUpdates);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, RemoveReferencesToAXID);
 
   // So we can ensure the serialization pipeline never stalls with dirty objects

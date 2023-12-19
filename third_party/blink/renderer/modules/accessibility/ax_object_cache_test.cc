@@ -191,6 +191,28 @@ TEST_F(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued) {
   ASSERT_EQ(0u, MockAXObject::num_children_changed_calls_);
 }
 
+TEST_F(AccessibilityTest, UpdateAXForAllDocumentsAfterPausedUpdates) {
+  auto& document = GetDocument();
+  auto* ax_object_cache =
+      To<AXObjectCacheImpl>(document.ExistingAXObjectCache());
+  DCHECK(ax_object_cache);
+
+  wtf_size_t max_updates = 1;
+  ax_object_cache->SetMaxPendingUpdatesForTesting(max_updates);
+
+  UpdateAllLifecyclePhasesForTest();
+  AXObject* root = ax_object_cache->Root();
+  // Queue one update too many.
+  ax_object_cache->DeferTreeUpdate(
+      AXObjectCacheImpl::TreeUpdateReason::kChildrenChanged, root);
+  ax_object_cache->DeferTreeUpdate(
+      AXObjectCacheImpl::TreeUpdateReason::kChildrenChanged, root);
+
+  ax_object_cache->UpdateAXForAllDocuments();
+  ScopedFreezeAXCache freeze(*ax_object_cache);
+  CHECK(!root->NeedsToUpdateCachedValues());
+}
+
 class AXViewTransitionTest : public testing::Test {
  public:
   AXViewTransitionTest() {}
