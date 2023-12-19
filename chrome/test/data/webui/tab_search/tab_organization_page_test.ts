@@ -150,7 +150,7 @@ suite('TabOrganizationPageTest', () => {
     assertEquals(1, testApiProxy.getCallCount('removeTabFromOrganization'));
   });
 
-  test('Arrow keys traverse focus', async () => {
+  test('Arrow keys traverse focus in results list', async () => {
     await tabOrganizationResultsSetup();
 
     const tabRows =
@@ -187,6 +187,36 @@ suite('TabOrganizationPageTest', () => {
     assertTrue(closeButton0.matches(':focus'));
     assertFalse(closeButton1.matches(':focus'));
     assertFalse(closeButton2.matches(':focus'));
+  });
+
+  test('Arrow keys traverse focus in footer', async () => {
+    await tabOrganizationResultsSetup();
+
+    const focusableElement0 = tabOrganizationResults.$.learnMore;
+    const focusableElement1 =
+        tabOrganizationResults.$.feedbackButtons.$.thumbsUp;
+    const focusableElement2 =
+        tabOrganizationResults.$.feedbackButtons.$.thumbsDown;
+    focusableElement0.focus();
+
+    assertTrue(focusableElement0.matches(':focus'));
+    assertFalse(focusableElement1.matches(':focus'));
+    assertFalse(focusableElement2.matches(':focus'));
+
+    const feedback =
+        tabOrganizationResults.shadowRoot!.querySelector('.feedback');
+    assertTrue(!!feedback);
+    feedback.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
+
+    assertFalse(focusableElement0.matches(':focus'));
+    assertFalse(focusableElement1.matches(':focus'));
+    assertTrue(focusableElement2.matches(':focus'));
+
+    feedback.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
+
+    assertTrue(focusableElement0.matches(':focus'));
+    assertFalse(focusableElement1.matches(':focus'));
+    assertFalse(focusableElement2.matches(':focus'));
   });
 
   test('Create group accepts organization', async () => {
