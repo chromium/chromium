@@ -8259,8 +8259,9 @@ Node* EventTargetNodeForDocument(Document* doc) {
 void Document::AdjustQuadsForScrollAndAbsoluteZoom(
     Vector<gfx::QuadF>& quads,
     const LayoutObject& layout_object) const {
-  if (!View())
+  if (!View()) {
     return;
+  }
 
   for (auto& quad : quads)
     AdjustForAbsoluteZoom::AdjustQuad(quad, layout_object);
@@ -8269,10 +8270,11 @@ void Document::AdjustQuadsForScrollAndAbsoluteZoom(
 void Document::AdjustRectForScrollAndAbsoluteZoom(
     gfx::RectF& rect,
     const LayoutObject& layout_object) const {
-  if (!View())
+  if (!View()) {
     return;
+  }
 
-  AdjustForAbsoluteZoom::AdjustRectF(rect, layout_object);
+  AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(rect, layout_object);
 }
 
 void Document::SetForceSynchronousParsingForTesting(bool enabled) {

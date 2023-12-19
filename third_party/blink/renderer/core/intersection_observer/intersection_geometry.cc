@@ -637,9 +637,11 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
   }
 
   if (flags_ & kShouldConvertToCSSPixels) {
-    AdjustForAbsoluteZoom::AdjustRectF(target_rect_, *target);
-    AdjustForAbsoluteZoom::AdjustRectF(intersection_rect_, *target);
-    AdjustForAbsoluteZoom::AdjustRectF(root_rect_, *root);
+    AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(target_rect_,
+                                                           *target);
+    AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(intersection_rect_,
+                                                           *target);
+    AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(root_rect_, *root);
   }
 
   if (cached_rects) {
