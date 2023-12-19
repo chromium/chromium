@@ -7,13 +7,14 @@ import './base_page.js';
 import '//resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './onboarding_choose_destination_page.html.js';
 import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {disableNextButton, enableNextButton, focusPageTitle} from './shimless_rma_util.js';
+import {OnSelectedChangedEvent} from './events.js';
 
 /**
  * @fileoverview
@@ -21,19 +22,12 @@ import {disableNextButton, enableNextButton, focusPageTitle} from './shimless_rm
  * the device for return to the original owner or refurbishing for a new owner.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const OnboardingChooseDestinationPageBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const OnboardingChooseDestinationPageBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class OnboardingChooseDestinationPageElement extends
     OnboardingChooseDestinationPageBase {
   static get is() {
-    return 'onboarding-choose-destination-page';
+    return 'onboarding-choose-destination-page' as const;
   }
 
   static get template() {
@@ -43,12 +37,10 @@ export class OnboardingChooseDestinationPageElement extends
   static get properties() {
     return {
       /**
-       * Set by shimless_rma.js.
-       * @type {boolean}
+       * Set by shimless_rma.ts.
        */
       allButtonsDisabled: Boolean,
 
-      /** @protected */
       destinationOwner: {
         type: String,
         value: '',
@@ -56,24 +48,17 @@ export class OnboardingChooseDestinationPageElement extends
     };
   }
 
-  constructor() {
-    super();
-    /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService = getShimlessRmaService();
-  }
+  allButtonsDisabled: boolean;
+  shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
+  protected destinationOwner: string;
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     focusPageTitle(this);
   }
 
-  /**
-   * @param {!CustomEvent<{value: string}>} event
-   * @protected
-   */
-  onDestinationSelectionChanged(event) {
+  protected onDestinationSelectionChanged(event: OnSelectedChangedEvent): void {
     this.destinationOwner = event.detail.value;
     const disabled = !this.destinationOwner;
     if (disabled) {
@@ -83,8 +68,7 @@ export class OnboardingChooseDestinationPageElement extends
     }
   }
 
-  /** @return {!Promise<!{stateResult: !StateResult}>} */
-  onNextButtonClick() {
+  onNextButtonClick(): Promise<{stateResult: StateResult}> {
     if (this.destinationOwner === 'originalOwner') {
       return this.shimlessRmaService.setSameOwner();
     } else if (
@@ -94,6 +78,12 @@ export class OnboardingChooseDestinationPageElement extends
     } else {
       return Promise.reject(new Error('No destination selected'));
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OnboardingChooseDestinationPageElement.is]: OnboardingChooseDestinationPageElement;
   }
 }
 

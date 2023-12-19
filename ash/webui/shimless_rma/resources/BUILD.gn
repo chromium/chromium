@@ -39,7 +39,7 @@ build_webui("build") {
     "calibration_component_chip.ts",
     "critical_error_page.ts",
     "hardware_error_page.ts",
-    "onboarding_choose_destination_page.js",
+    "onboarding_choose_destination_page.ts",
     "onboarding_choose_wp_disable_method_page.js",
     "onboarding_choose_wipe_device_page.js",
     "onboarding_enter_rsu_wp_disable_code_page.js",

@@ -21,6 +21,8 @@ export type TransitionStateEvent =
 export const CLICK_NEXT_BUTTON = 'click-next-button';
 export type ClickNextButtonEvent = CustomEvent;
 
+export type OnSelectedChangedEvent = CustomEvent<{value: string}>;
+
 type ExtractDetail<T> = T extends CustomEvent<infer U>? U : never;
 
 /**
