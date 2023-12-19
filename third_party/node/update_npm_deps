@@ -25,10 +25,11 @@ echo 'Step 2: Downloading dependencies not listed in packages.json, manually...'
 ./download_npm_deps_manually.sh
 
 echo 'Step 3: Applying local patches...'
-patch -d node_modules/chai/ -p1 < chai.patch
-patch -d node_modules/@types/d3/ -p1 < chromium_d3_types_index.patch
-patch -d node_modules/html-minifier/ -p1 < html_minifier.patch
-patch -p1 < typescript.patch
+patch -d node_modules/chai/ -p1 < patches/chai.patch
+patch -d node_modules/@types/d3/ -p1 < patches/chromium_d3_types_index.patch
+patch -d node_modules/html-minifier/ -p1 < patches/html_minifier.patch
+patch -p1 < patches/typescript.patch
+patch -p1 < patches/lit_html.patch
 
 echo 'Step 4: Filtering out unnecessary files...'
 rsync -c --delete -r -q --include-from="npm_include.txt" \
