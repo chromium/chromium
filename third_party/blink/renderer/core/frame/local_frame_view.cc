@@ -670,12 +670,7 @@ void LocalFrameView::PerformLayout() {
 
   has_pending_layout_ = false;
 
-  // TODO(crbug.com/460956): The notion of a single root for layout is no
-  // longer applicable. Remove or update this code.
-  LayoutObject* root_for_this_layout = GetLayoutView();
-
   FontCachePurgePreventer font_cache_purge_preventer;
-  bool in_subtree_layout = false;
   base::AutoReset<bool> change_scheduling_enabled(&layout_scheduling_enabled_,
                                                   false);
   // If the layout view was marked as needing layout after we added items in
@@ -685,18 +680,7 @@ void LocalFrameView::PerformLayout() {
     ClearLayoutSubtreeRootsAndMarkContainingBlocks();
   GetLayoutView()->ClearHitTestCache();
 
-  in_subtree_layout = IsSubtreeLayout();
-
-  // TODO(crbug.com/460956): The notion of a single root for layout is no
-  // longer applicable. Remove or update this code.
-  if (in_subtree_layout)
-    root_for_this_layout = layout_subtree_root_list_.RandomRoot();
-
-  if (!root_for_this_layout) {
-    // FIXME: Do we need to set m_size here?
-    NOTREACHED();
-    return;
-  }
+  const bool in_subtree_layout = IsSubtreeLayout();
 
   Document* document = GetFrame().GetDocument();
   if (!in_subtree_layout) {

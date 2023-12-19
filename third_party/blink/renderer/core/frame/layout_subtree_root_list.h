@@ -32,10 +32,6 @@ class LayoutSubtreeRootList : public DepthOrderedLayoutObjectList {
 
   void ClearAndMarkContainingBlocksForLayout();
 
-  // TODO(leviw): Remove this once we stop exposing to DevTools one root
-  // for a layout crbug.com/460596
-  LayoutObject* RandomRoot();
-
   void CountObjectsNeedingLayout(unsigned& needs_layout_objects,
                                  unsigned& total_objects);
 
