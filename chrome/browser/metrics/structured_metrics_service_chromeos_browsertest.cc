@@ -312,7 +312,9 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsServiceDisabled,
   EXPECT_THAT(sm_service->scheduler_.get(), testing::IsNull());
 }
 
-IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, PurgeForceRecordedEvents) {
+// TODO(https://crbug.com/1513143): Flaky on linux-chromeos-rel.
+IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
+                       DISABLED_PurgeForceRecordedEvents) {
   // This feature is intended only for events that are recorded before user
   // consent.
   auto* sm_service = GetSMService();
