@@ -87,6 +87,7 @@ public class AdaptiveToolbarSettingsFragmentTest {
         AdaptiveToolbarFeatures.setProfile(mProfile);
 
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
+        UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);
 
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
     }
@@ -357,7 +358,6 @@ public class AdaptiveToolbarSettingsFragmentTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.READALOUD)
     public void testReadAloudOption_Enabled() {
-        UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);
         FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
                 FragmentScenario.launchInContainer(
                         AdaptiveToolbarSettingsFragment.class,

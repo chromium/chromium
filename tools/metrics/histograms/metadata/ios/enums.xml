@@ -26,11 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BooleanEligible">
-  <int value="0" label="Not elibible"/>
-  <int value="1" label="Eligible"/>
-</enum>
-
 <enum name="CaptivePortalStatus">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="OFFLINE"/>

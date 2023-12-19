@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.readaloud.ReadAloudMetrics.IneligibilityReason;
 import org.chromium.chrome.browser.search_engines.SearchEngineType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -20,6 +21,8 @@ import org.chromium.components.user_prefs.UserPrefs;
 public final class ReadAloudFeatures {
     private static final String API_KEY_OVERRIDE_PARAM_NAME = "api_key_override";
     private static final String VOICES_OVERRIDE_PARAM_NAME = "voices_override";
+
+    private static @IneligibilityReason int sIneligibilityReason = IneligibilityReason.UNKNOWN;
 
     /**
      * Returns true if Read Aloud is allowed. All must be true:
@@ -33,25 +36,53 @@ public final class ReadAloudFeatures {
      * </ul>
      */
     public static boolean isAllowed(Profile profile) {
-        if (profile == null || profile.isOffTheRecord()) {
+        sIneligibilityReason = IneligibilityReason.UNKNOWN;
+        if (profile == null) {
             return false;
         }
+
+        if (profile.isOffTheRecord()) {
+            sIneligibilityReason = IneligibilityReason.INCOGNITO_MODE;
+            return false;
+        }
+
+        // Check whether the user has enabled anonymous URL-keyed data collection.
+        // This is surfaced on the relatively new "Make searches and browsing
+        // better" user setting.
+        if (!UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile)) {
+            sIneligibilityReason = IneligibilityReason.MSBB_DISABLED;
+            return false;
+        }
+
         TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         TemplateUrl currentSearchEngine = templateUrlService.getDefaultSearchEngineTemplateUrl();
         if (currentSearchEngine == null) {
+            sIneligibilityReason = IneligibilityReason.DEFAULT_SEARCH_ENGINE_GOOGLE_FALSE;
             return false;
         }
         int searchEngineType =
                 templateUrlService.getSearchEngineTypeFromTemplateUrl(
                         currentSearchEngine.getKeyword());
+        if (searchEngineType != SearchEngineType.SEARCH_ENGINE_GOOGLE) {
+            sIneligibilityReason = IneligibilityReason.DEFAULT_SEARCH_ENGINE_GOOGLE_FALSE;
+            return false;
+        }
 
-        return searchEngineType == SearchEngineType.SEARCH_ENGINE_GOOGLE
-                && UserPrefs.get(profile).getBoolean(Pref.LISTEN_TO_THIS_PAGE_ENABLED)
-                // Check whether the user has enabled anonymous URL-keyed data collection.
-                // This is surfaced on the relatively new "Make searches and browsing
-                // better" user setting.
-                && UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD);
+        if (!UserPrefs.get(profile).getBoolean(Pref.LISTEN_TO_THIS_PAGE_ENABLED)) {
+            sIneligibilityReason = IneligibilityReason.POLICY_DISABLED;
+            return false;
+        }
+
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
+            sIneligibilityReason = IneligibilityReason.FEATURE_FLAG_DISABLED;
+            return false;
+        }
+
+        return true;
+    }
+
+    public static @IneligibilityReason int getIneligibilityReason() {
+        return sIneligibilityReason;
     }
 
     /** Returns true if playback is enabled. */

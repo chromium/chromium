@@ -391,6 +391,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/quick_delete:java",
       "//chrome/browser/readaloud/android:java",
+      "//chrome/browser/readaloud/android:metrics_java",
       "//chrome/browser/recent_tabs:factory_java",
       "//chrome/browser/recent_tabs:helper_java",
       "//chrome/browser/recent_tabs:java",

@@ -30,4 +30,32 @@ public class ReadAloudMetricsUnitTest {
         ReadAloudMetrics.recordIsPageReadable(false);
         histogram.assertExpected();
     }
+
+    @Test
+    @SmallTest
+    public void testRecordUserEligibility() {
+        final String histogramName = ReadAloudMetrics.IS_USER_ELIGIBLE;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        ReadAloudMetrics.recordIsUserEligible(true);
+        histogram.assertExpected();
+
+        histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+        ReadAloudMetrics.recordIsUserEligible(false);
+        histogram.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordIneligibilityReason() {
+        final String histogramName = ReadAloudMetrics.INELIGIBILITY_REASON;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, 1);
+        ReadAloudMetrics.recordIneligibilityReason(1);
+        histogram.assertExpected();
+
+        histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, 4);
+        ReadAloudMetrics.recordIneligibilityReason(4);
+        histogram.assertExpected();
+    }
 }

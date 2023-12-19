@@ -6294,6 +6294,11 @@ Called by update_autofill_enums.py.-->
       label="Predicted direction was not the same as real trajectory"/>
 </enum>
 
+<enum name="BooleanEligible">
+  <int value="0" label="Not elibible"/>
+  <int value="1" label="Eligible"/>
+</enum>
+
 <enum name="BooleanEmpty">
   <int value="0" label="Not Empty"/>
   <int value="1" label="Empty"/>

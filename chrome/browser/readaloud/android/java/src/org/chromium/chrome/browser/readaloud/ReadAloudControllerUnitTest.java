@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.readaloud.ReadAloudMetrics.IneligibilityReason;
 import org.chromium.chrome.browser.search_engines.SearchEngineType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -1151,6 +1152,42 @@ public class ReadAloudControllerUnitTest {
         mController.onApplicationStateChange(ApplicationState.HAS_RUNNING_ACTIVITIES);
         verify(mPlaybackHooks, never()).createPlayback(any(), mPlaybackCallbackCaptor.capture());
         verify(mPlayback, never()).release();
+    }
+
+    @Test
+    public void testMetricRecorded_eligibility() {
+        final String histogramName = ReadAloudMetrics.IS_USER_ELIGIBLE;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, mTab.getUrl());
+        histogram.assertExpected();
+
+        histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+        when(mPrefService.getBoolean("readaloud.listen_to_this_page_enabled")).thenReturn(false);
+        mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, mTab.getUrl());
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testMetricRecorded_ineligibilityReason() {
+        final String histogramName = ReadAloudMetrics.INELIGIBILITY_REASON;
+
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        histogramName, IneligibilityReason.POLICY_DISABLED);
+        when(mPrefService.getBoolean("readaloud.listen_to_this_page_enabled")).thenReturn(false);
+        mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, mTab.getUrl());
+        histogram.assertExpected();
+        when(mPrefService.getBoolean("readaloud.listen_to_this_page_enabled")).thenReturn(true);
+
+        histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        histogramName, IneligibilityReason.DEFAULT_SEARCH_ENGINE_GOOGLE_FALSE);
+        doReturn(SearchEngineType.SEARCH_ENGINE_OTHER)
+                .when(mTemplateUrlService)
+                .getSearchEngineTypeFromTemplateUrl(anyString());
+        mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, mTab.getUrl());
+        histogram.assertExpected();
     }
 
     private void onPlaybackSuccess(Playback playback) {

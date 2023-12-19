@@ -164,6 +164,7 @@ tools/metrics/histograms/metadata/quickoffice/histograms.xml
 tools/metrics/histograms/metadata/quickstart/enums.xml
 tools/metrics/histograms/metadata/quickstart/histograms.xml
 tools/metrics/histograms/metadata/quota/histograms.xml
+tools/metrics/histograms/metadata/readaloud/enums.xml
 tools/metrics/histograms/metadata/readaloud/histograms.xml
 tools/metrics/histograms/metadata/renderer/histograms.xml
 tools/metrics/histograms/metadata/renderer4/histograms.xml

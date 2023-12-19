@@ -8,24 +8,21 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudController.java",
-    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMetrics.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayer.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPrefs.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonController.java",
   ]
   deps = [
     ":hooks_java",
+    ":metrics_java",
     "//base:base_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android/modules/readaloud/public:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/device:java",
-    "//chrome/browser/flags:java",
     "//chrome/browser/language/android:base_module_java",
     "//chrome/browser/language/android:java",
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/search_engines/android:java",
-    "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/layouts:java",
@@ -33,14 +30,11 @@ android_library("java") {
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/user_education:java",
     "//components/browser_ui/bottomsheet/android:java",
-    "//components/browser_ui/bottomsheet/android:java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement/public:public_java",
     "//components/prefs/android:java",
-    "//components/search_engines/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -57,11 +51,22 @@ generate_jni("jni_headers") {
   ]
 }
 
+android_library("metrics_java") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMetrics.java" ]
+
+  deps = [
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
 android_library("features_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudFeatures.java",
   ]
   deps = [
+    ":metrics_java",
     "//base:base_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",

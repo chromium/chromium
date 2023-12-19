@@ -22,11 +22,34 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="ReadAloud.Eligibility.IneligiblityReason"
+    enum="ReadAloudIneligibilityReason" expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Histogram for recording why a user is not eligible for the ReadAloud
+    feature. Emitted when the user profile is available and the user is
+    ineligible. Conditions are checked in ReadAloudFeatures.
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.Eligibility.IsUserEligible" enum="BooleanEligible"
+    expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Histogram for recording if a user is eligible for ReadAloud. Emitted when
+    the user profile is available.
+  </summary>
+</histogram>
+
 <histogram name="ReadAloud.IsPageReadable" enum="BooleanSuccess"
     expires_after="2024-06-02">
   <owner>andreaxg@google.com</owner>
   <owner>basiaz@google.com</owner>
-  <owner>iwells@google.com</owner>
+  <owner>iwells@chromium.org</owner>
   <summary>
     Histogram for recording if a page readability check comes back successful or
     not. The readability check is run on each page load for Android clients who

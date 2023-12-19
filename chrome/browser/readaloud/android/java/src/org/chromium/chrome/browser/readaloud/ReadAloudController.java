@@ -285,6 +285,12 @@ public class ReadAloudController
                             maybeCheckReadability(url);
                             maybeHandleTabReload(tab, url);
                             maybeStopPlayback(tab);
+                            boolean isAllowed = ReadAloudFeatures.isAllowed(mProfileSupplier.get());
+                            ReadAloudMetrics.recordIsUserEligible(isAllowed);
+                            if (!isAllowed) {
+                                ReadAloudMetrics.recordIneligibilityReason(
+                                        ReadAloudFeatures.getIneligibilityReason());
+                            }
                         }
 
                         @Override
