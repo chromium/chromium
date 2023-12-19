@@ -5147,6 +5147,10 @@ crbug.com/1284572 virtual/threaded/http/tests/devtools/isolated-code-cache/same-
 # Incomplete support for mouse wheel in test_driver.
 crbug.com/1285411 external/wpt/css/css-scroll-snap/input/mouse-wheel.html [ Timeout ]
 
+# Temporarily disable tests to land https://crrev.com/c/5131512
+crbug.com/1509336 http/tests/devtools/har-importer.js [ Failure Pass ]
+crbug.com/1509336 http/tests/devtools/network/json-preview.js [ Failure Pass ]
+crbug.com/1509336 http/tests/devtools/network/network-choose-preview-view.js [ Failure Pass ]
 
 # Interop PE 2022-2023 investigation
 crbug.com/269917 external/wpt/uievents/mouse/cancel-mousedown-in-subframe.html [ Timeout ]
