@@ -301,8 +301,9 @@ void Event::SetSkipped() {
 
 std::string Event::ToString() const {
   return base::StrCat(
-      {GetName(), " time_stamp ",
-       base::NumberToString(time_stamp_.since_origin().InSecondsF())});
+      {GetName(), " time_stamp=",
+       base::NumberToString(time_stamp_.since_origin().InSecondsF()),
+       " source_device_id=", base::NumberToString(source_device_id_)});
 }
 
 Event::Event(EventType type, base::TimeTicks time_stamp, int flags)
@@ -422,8 +423,8 @@ void LocatedEvent::UpdateForRootTransform(
 }
 
 std::string LocatedEvent::ToString() const {
-  return base::StrCat({Event::ToString(), " location ", location_.ToString(),
-                       " root_location ", root_location_.ToString()});
+  return base::StrCat({Event::ToString(), " location=", location_.ToString(),
+                       " root_location=", root_location_.ToString()});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -592,10 +593,12 @@ void MouseEvent::SetClickCount(int click_count) {
 }
 
 std::string MouseEvent::ToString() const {
-  return base::StrCat(
-      {LocatedEvent::ToString(), " flags ",
-       base::JoinString(base::make_span(MouseEventFlagsNames(flags())),
-                        " | ")});
+  return base::StrCat({
+      LocatedEvent::ToString(),
+      " flags=",
+      base::JoinString(base::make_span(MouseEventFlagsNames(flags())), "|"),
+      base::StringPrintf("(0x%04x)", flags()),
+  });
 }
 
 std::unique_ptr<Event> MouseEvent::Clone() const {
@@ -1157,10 +1160,25 @@ void KeyEvent::NormalizeFlags() {
 }
 
 std::string KeyEvent::ToString() const {
-  return base::StrCat(
-      {Event::ToString(), " key ", base::StringPrintf("(0x%.4x)", key_code_),
-       " flags ",
-       base::JoinString(base::make_span(KeyEventFlagsNames(flags())), " | ")});
+  auto dom_key = GetDomKey();
+  return base::StrCat({
+      Event::ToString(),
+      " code=",
+      KeycodeConverter::DomCodeToCodeString(code()),
+      base::StringPrintf("(0x%04x)", static_cast<uint32_t>(code_)),
+      " key=",
+      KeycodeConverter::DomKeyToKeyString(dom_key),
+      base::StringPrintf("(0x%04x)", static_cast<uint32_t>(dom_key)),
+      " keycode=",
+      base::StringPrintf("(0x%04x)", key_code_),
+#if BUILDFLAG(IS_OZONE)
+      " scan_code=",
+      base::StringPrintf("(0x%04x)", scan_code_),
+#endif  // BUILDFLAG(IS_OZONE)
+      " flags=",
+      base::JoinString(base::make_span(KeyEventFlagsNames(flags())), "|"),
+      base::StringPrintf("(0x%04x)", flags()),
+  });
 }
 
 std::unique_ptr<Event> KeyEvent::Clone() const {
@@ -1272,11 +1290,16 @@ void ScrollEvent::Scale(const float factor) {
 }
 
 std::string ScrollEvent::ToString() const {
-  return base::StringPrintf(
-      "%s offset %g,%g offset_ordinal %g,%g momentum_phase %s event_phase %s",
-      MouseEvent::ToString().c_str(), x_offset_, y_offset_, x_offset_ordinal_,
-      y_offset_ordinal_, MomentumPhaseToString(momentum_phase_).c_str(),
-      ScrollEventPhaseToString(scroll_event_phase_).c_str());
+  return base::StrCat({
+      MouseEvent::ToString(),
+      base::StringPrintf(" offset=%g,%g", x_offset_, y_offset_),
+      base::StringPrintf(" offset_ordinal=%g,%g", x_offset_ordinal_,
+                         y_offset_ordinal_),
+      " momentum_phase=",
+      MomentumPhaseToString(momentum_phase_),
+      " event_phase=",
+      ScrollEventPhaseToString(scroll_event_phase_),
+  });
 }
 
 std::unique_ptr<Event> ScrollEvent::Clone() const {
@@ -1312,9 +1335,11 @@ GestureEvent::GestureEvent(const GestureEvent& other) = default;
 GestureEvent::~GestureEvent() = default;
 
 std::string GestureEvent::ToString() const {
-  return base::StringPrintf("%s touch_event_id %d",
-                            LocatedEvent::ToString().c_str(),
-                            unique_touch_event_id_);
+  return base::StrCat({
+      LocatedEvent::ToString(),
+      " touch_event_id=",
+      base::NumberToString(unique_touch_event_id_),
+  });
 }
 
 std::unique_ptr<Event> GestureEvent::Clone() const {
