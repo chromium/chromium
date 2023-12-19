@@ -4,8 +4,12 @@
 
 #include "components/metrics/structured/key_data_provider_file.h"
 
+#include <memory>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "components/metrics/structured/key_data.h"
+#include "components/metrics/structured/key_data_file_delegate.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_metrics_validator.h"
 
@@ -14,10 +18,10 @@ namespace metrics::structured {
 KeyDataProviderFile::KeyDataProviderFile(const base::FilePath& file_path,
                                          base::TimeDelta write_delay)
     : file_path_(file_path), write_delay_(write_delay) {
-  key_data_ =
-      std::make_unique<KeyData>(file_path_, write_delay_,
-                                base::BindOnce(&KeyDataProviderFile::OnKeyReady,
-                                               weak_ptr_factory_.GetWeakPtr()));
+  key_data_ = std::make_unique<KeyData>(std::make_unique<KeyDataFileDelegate>(
+      file_path_, write_delay_,
+      base::BindOnce(&KeyDataProviderFile::OnKeyReady,
+                     weak_ptr_factory_.GetWeakPtr())));
 }
 
 KeyDataProviderFile::~KeyDataProviderFile() = default;

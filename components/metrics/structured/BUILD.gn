@@ -14,10 +14,14 @@ static_library("structured") {
     "event_storage.h",
     "key_data.cc",
     "key_data.h",
+    "key_data_file_delegate.cc",
+    "key_data_file_delegate.h",
     "key_data_provider.cc",
     "key_data_provider.h",
     "key_data_provider_file.cc",
     "key_data_provider_file.h",
+    "key_util.cc",
+    "key_util.h",
     "persistent_proto.cc",
     "persistent_proto.h",
     "reporting/structured_metrics_log_metrics.cc",
@@ -239,7 +243,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "key_data_unittest.cc",
+    "key_data_file_delegate_unittest.cc",
     "persistent_proto_unittest.cc",
     "structured_metrics_provider_unittest.cc",
     "structured_metrics_recorder_unittest.cc",

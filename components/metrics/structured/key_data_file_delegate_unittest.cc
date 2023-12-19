@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/structured/key_data.h"
+#include "components/metrics/structured/key_data_file_delegate.h"
 
 #include <memory>
 #include <string>
@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -67,17 +68,26 @@ std::string HashToHex(const uint64_t hash) {
 
 }  // namespace
 
-class KeyDataTest : public testing::Test {
+class KeyDataFileDelegateTest : public testing::Test {
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    // Move the mock date forward from day 0, because KeyData assumes that day 0
-    // is a bug.
+    // Move the mock date forward from day 0, because KeyDataFileDelegate
+    // assumes that day 0 is a bug.
     task_environment_.AdvanceClock(base::Days(1000));
   }
 
-  void ResetState() {
+  void TearDown() override { ResetKeyData(); }
+
+  void ResetKeyData() {
+    // Manually deconstruct objects in the right order to avoid dangling raw
+    // pointer.
+    key_data_file_ = nullptr;
     key_data_.reset();
+  }
+
+  void ResetState() {
+    ResetKeyData();
     base::DeleteFile(GetPath());
     ASSERT_FALSE(base::PathExists(GetPath()));
   }
@@ -86,14 +96,16 @@ class KeyDataTest : public testing::Test {
     return temp_dir_.GetPath().Append(FILE_PATH_LITERAL("keys"));
   }
 
-  void MakeKeyData() {
-    key_data_ = std::make_unique<KeyData>(GetPath(), base::Seconds(0),
-                                          base::DoNothing());
+  void MakeKeyDataFileDelegate() {
+    auto key_data_file = std::make_unique<KeyDataFileDelegate>(
+        GetPath(), base::Seconds(0), base::DoNothing());
+    key_data_file_ = key_data_file.get();
+    key_data_ = std::make_unique<KeyData>(std::move(key_data_file));
     Wait();
   }
 
   void SaveKeyData() {
-    key_data_->WriteNowForTest();
+    key_data_file_->WriteNowForTest();
     Wait();
     ASSERT_TRUE(base::PathExists(GetPath()));
   }
@@ -113,7 +125,8 @@ class KeyDataTest : public testing::Test {
     return it->second;
   }
 
-  // Write a KeyDataProto to disk with a single key described by the arguments.
+  // Write a KeyDataProto to disk with a single key described by the
+  // arguments.
   void SetupKey(const uint64_t project_name_hash,
                 const std::string& key,
                 const int last_rotation,
@@ -159,14 +172,15 @@ class KeyDataTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<KeyData> key_data_;
+  raw_ptr<KeyDataFileDelegate> key_data_file_;
 };
 
 // If there is no key store file present, check that new keys are generated for
 // each project, and those keys are of the right length and different from each
 // other.
-TEST_F(KeyDataTest, GeneratesKeysForProjects) {
+TEST_F(KeyDataFileDelegateTest, GeneratesKeysForProjects) {
   // Make key data and use two keys, in order to generate them.
-  MakeKeyData();
+  MakeKeyDataFileDelegate();
   key_data_->Id(kProjectOneHash, kKeyRotationPeriod);
   key_data_->Id(kProjectTwoHash, kKeyRotationPeriod);
   SaveKeyData();
@@ -184,14 +198,14 @@ TEST_F(KeyDataTest, GeneratesKeysForProjects) {
 
 // When repeatedly initialized with no key store file present, ensure the keys
 // generated each time are distinct.
-TEST_F(KeyDataTest, GeneratesDistinctKeys) {
+TEST_F(KeyDataFileDelegateTest, GeneratesDistinctKeys) {
   base::flat_set<std::string> keys;
 
   for (int i = 1; i <= 10; ++i) {
     // Reset on-disk and in-memory state, regenerate the key, and save it to
     // disk.
     ResetState();
-    MakeKeyData();
+    MakeKeyDataFileDelegate();
     key_data_->Id(kProjectOneHash, kKeyRotationPeriod);
     SaveKeyData();
 
@@ -204,22 +218,22 @@ TEST_F(KeyDataTest, GeneratesDistinctKeys) {
 }
 
 // If there is an existing key store file, check that its keys are not replaced.
-TEST_F(KeyDataTest, ReuseExistingKeys) {
+TEST_F(KeyDataFileDelegateTest, ReuseExistingKeys) {
   // Create a file with one key.
-  MakeKeyData();
+  MakeKeyDataFileDelegate();
   const uint64_t id_one = key_data_->Id(kProjectOneHash, kKeyRotationPeriod);
   SaveKeyData();
   ExpectKeyValidation(/*valid=*/0, /*created=*/1, /*rotated=*/0);
   const std::string key_one = GetKey(kProjectOneHash).key();
 
   // Reset the in-memory state, leave the on-disk state intact.
-  key_data_.reset();
+  ResetKeyData();
 
   // Open the file again and check we use the same key.
-  MakeKeyData();
+  MakeKeyDataFileDelegate();
   const uint64_t id_two = key_data_->Id(kProjectOneHash, kKeyRotationPeriod);
-  ExpectKeyValidation(/*valid=*/1, /*created=*/1, /*rotated=*/0);
   SaveKeyData();
+  ExpectKeyValidation(/*valid=*/1, /*created=*/1, /*rotated=*/0);
   const std::string key_two = GetKey(kProjectOneHash).key();
 
   EXPECT_EQ(id_one, id_two);
@@ -228,8 +242,8 @@ TEST_F(KeyDataTest, ReuseExistingKeys) {
 
 // Check that different events have different hashes for the same metric and
 // value.
-TEST_F(KeyDataTest, DifferentEventsDifferentHashes) {
-  MakeKeyData();
+TEST_F(KeyDataFileDelegateTest, DifferentEventsDifferentHashes) {
+  MakeKeyDataFileDelegate();
   EXPECT_NE(key_data_->HmacMetric(kProjectOneHash, kMetricOneHash, "value",
                                   kKeyRotationPeriod),
             key_data_->HmacMetric(kProjectTwoHash, kMetricOneHash, "value",
@@ -239,8 +253,8 @@ TEST_F(KeyDataTest, DifferentEventsDifferentHashes) {
 
 // Check that an event has different hashes for different metrics with the same
 // value.
-TEST_F(KeyDataTest, DifferentMetricsDifferentHashes) {
-  MakeKeyData();
+TEST_F(KeyDataFileDelegateTest, DifferentMetricsDifferentHashes) {
+  MakeKeyDataFileDelegate();
   EXPECT_NE(key_data_->HmacMetric(kProjectOneHash, kMetricOneHash, "value",
                                   kKeyRotationPeriod),
             key_data_->HmacMetric(kProjectOneHash, kMetricTwoHash, "value",
@@ -250,8 +264,8 @@ TEST_F(KeyDataTest, DifferentMetricsDifferentHashes) {
 
 // Check that an event has different hashes for different values of the same
 // metric.
-TEST_F(KeyDataTest, DifferentValuesDifferentHashes) {
-  MakeKeyData();
+TEST_F(KeyDataFileDelegateTest, DifferentValuesDifferentHashes) {
+  MakeKeyDataFileDelegate();
   EXPECT_NE(key_data_->HmacMetric(kProjectOneHash, kMetricOneHash, "first",
                                   kKeyRotationPeriod),
             key_data_->HmacMetric(kProjectOneHash, kMetricOneHash, "second",
@@ -259,11 +273,11 @@ TEST_F(KeyDataTest, DifferentValuesDifferentHashes) {
   ExpectNoErrors();
 }
 
-// Ensure that KeyData::UserId is the expected value of SHA256(key).
-TEST_F(KeyDataTest, CheckUserIDs) {
+// Ensure that KeyDataFileDelegate::UserId is the expected value of SHA256(key).
+TEST_F(KeyDataFileDelegateTest, CheckUserIDs) {
   SetupKey(kProjectOneHash, kKey, Today(), kKeyRotationPeriod);
 
-  MakeKeyData();
+  MakeKeyDataFileDelegate();
   EXPECT_EQ(HashToHex(key_data_->Id(kProjectOneHash, kKeyRotationPeriod)),
             kUserId);
   EXPECT_NE(HashToHex(key_data_->Id(kProjectTwoHash, kKeyRotationPeriod)),
@@ -272,11 +286,12 @@ TEST_F(KeyDataTest, CheckUserIDs) {
   ExpectNoErrors();
 }
 
-// Ensure that KeyData::Hash returns expected values for a known key and value.
-TEST_F(KeyDataTest, CheckHashes) {
+// Ensure that KeyDataFileDelegate::Hash returns expected values for a known key
+// and value.
+TEST_F(KeyDataFileDelegateTest, CheckHashes) {
   SetupKey(kProjectOneHash, kKey, Today(), kKeyRotationPeriod);
 
-  MakeKeyData();
+  MakeKeyDataFileDelegate();
   EXPECT_EQ(HashToHex(key_data_->HmacMetric(kProjectOneHash, kMetricOneHash,
                                             kValueOne, kKeyRotationPeriod)),
             kValueOneHash);
@@ -289,11 +304,11 @@ TEST_F(KeyDataTest, CheckHashes) {
 
 // Check that keys for a event are correctly rotated after a given rotation
 // period.
-TEST_F(KeyDataTest, KeysRotated) {
+TEST_F(KeyDataFileDelegateTest, KeysRotated) {
   const int start_day = Today();
   SetupKey(kProjectOneHash, kKey, start_day, kKeyRotationPeriod);
 
-  MakeKeyData();
+  MakeKeyDataFileDelegate();
   const uint64_t first_id = key_data_->Id(kProjectOneHash, kKeyRotationPeriod);
   EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash), start_day);
   ExpectKeyValidation(/*valid=*/1, /*created=*/0, /*rotated=*/0);
@@ -344,13 +359,13 @@ TEST_F(KeyDataTest, KeysRotated) {
 }
 
 // Check that keys with updated rotations are correctly rotated.
-TEST_F(KeyDataTest, KeysWithUpdatedRotations) {
+TEST_F(KeyDataFileDelegateTest, KeysWithUpdatedRotations) {
   int first_key_rotation_period = 60;
 
   const int start_day = Today();
   SetupKey(kProjectOneHash, kKey, start_day, first_key_rotation_period);
 
-  MakeKeyData();
+  MakeKeyDataFileDelegate();
   const uint64_t first_id =
       key_data_->Id(kProjectOneHash, first_key_rotation_period);
   EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash), start_day);
