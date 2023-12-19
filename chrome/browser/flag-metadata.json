@@ -920,6 +920,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "borealis-zink-gl-driver",
+    "owners": [ "justonli@google.com", "cros-gfx-virtualization-team@google.com", "buganizer-system+961348@google.com" ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "bottom-omnibox-default-setting",
     "owners": [ "christianxu@google.com", "bling-flags@google.com"],
     "expiry_milestone": 122

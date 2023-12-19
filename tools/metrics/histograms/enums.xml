@@ -30301,6 +30301,7 @@ from previous Chrome versions.
       label="ExperimentalAccessibilityDictationHints:disabled"/>
   <int value="-1349532167" label="enable-wifi-credential-sync"/>
   <int value="-1349146355" label="Win11StyleMenus:disabled"/>
+  <int value="-1348232601" label="BorealisZinkGlDriver:disabled"/>
   <int value="-1348040371" label="ScanAppStickySettings:disabled"/>
   <int value="-1346817340" label="EarlyBodyLoad:disabled"/>
   <int value="-1346722635" label="gesture-selection"/>
@@ -33481,6 +33482,7 @@ from previous Chrome versions.
   <int value="155879687" label="ShimlessRMAEnableStandalone:disabled"/>
   <int value="155977192" label="EnableFileManagerFormatDialog:disabled"/>
   <int value="156285060" label="UseMultipleOverlays:disabled"/>
+  <int value="156345797" label="BorealisZinkGlDriver:enabled"/>
   <int value="157217034" label="enable-tab-for-desktop-share"/>
   <int value="157318016" label="AutomaticTabDiscarding:enabled"/>
   <int value="158490417" label="PhoneHubCameraRoll:enabled"/>

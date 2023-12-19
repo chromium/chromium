@@ -975,6 +975,16 @@ const FeatureEntry::FeatureVariation kArcRoundedWindowCompatVariation[] = {
      &kArcRoundedWindowCompatStrategyBottomOnlyGesture, 1, nullptr},
 };
 
+const FeatureEntry::FeatureParam kZinkEnableRecommended[] = {
+    {"BorealisZinkGlDriverParam", "ZinkEnableRecommended"}};
+const FeatureEntry::FeatureParam kZinkEnableAll[] = {
+    {"BorealisZinkGlDriverParam", "ZinkEnableAll"}};
+
+const FeatureEntry::FeatureVariation kBorealisZinkGlDriverVariations[] = {
+    {"for recommended apps", kZinkEnableRecommended,
+     std::size(kZinkEnableRecommended), nullptr},
+    {"for all apps", kZinkEnableAll, std::size(kZinkEnableAll), nullptr}};
+
 const FeatureEntry::FeatureParam kHibernate6 = {"HibernateAfterTimeHours", "6"};
 const FeatureEntry::FeatureParam kHibernate8 = {"HibernateAfterTimeHours", "8"};
 const FeatureEntry::FeatureParam kHibernate12 = {"HibernateAfterTimeHours",
@@ -2965,6 +2975,7 @@ constexpr char kBorealisScaleClientByDPIInternalName[] =
     "borealis-scale-client-by-dpi";
 constexpr char kBorealisWebUIInstallerInternalName[] =
     "borealis-web-ui-installer";
+constexpr char kBorealisZinkGlDriverInternalName[] = "borealis-zink-gl-driver";
 constexpr char kClipboardHistoryLongpressInternalName[] =
     "clipboard-history-longpress";
 constexpr char kClipboardHistoryRefreshInternalName[] =
@@ -9055,6 +9066,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBorealisWebUIInstallerName,
      flag_descriptions::kBorealisWebUIInstallerDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBorealisWebUIInstaller)},
+    {kBorealisZinkGlDriverInternalName,
+     flag_descriptions::kBorealisZinkGlDriverName,
+     flag_descriptions::kBorealisZinkGlDriverDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kBorealisZinkGlDriver,
+                                    kBorealisZinkGlDriverVariations,
+                                    "BorealisZinkGlDriver")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"https-first-mode-v2-for-engaged-sites",
@@ -11137,6 +11154,10 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   if (!strcmp(kBorealisWebUIInstallerInternalName, entry.internal_name)) {
+    return !base::FeatureList::IsEnabled(features::kBorealis);
+  }
+
+  if (!strcmp(kBorealisZinkGlDriverInternalName, entry.internal_name)) {
     return !base::FeatureList::IsEnabled(features::kBorealis);
   }
 

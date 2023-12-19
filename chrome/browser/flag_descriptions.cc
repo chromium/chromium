@@ -726,6 +726,11 @@ const char kBorealisWebUIInstallerName[] = "Borealis WebUI Installer";
 const char kBorealisWebUIInstallerDescription[] =
     "Use the new WebUI installer instead of views installer.";
 
+const char kBorealisZinkGlDriverName[] = "Borealis Zink GL Driver";
+const char kBorealisZinkGlDriverDescription[] =
+    "Enables zink driver for GL rendering in Borealis. Can be enabled for "
+    "recommended GL apps only or for all GL apps. Defaults to recommended.";
+
 const char kBypassAppBannerEngagementChecksName[] =
     "Bypass user engagement checks";
 const char kBypassAppBannerEngagementChecksDescription[] =

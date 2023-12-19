@@ -355,6 +355,20 @@ BASE_FEATURE(kBorealisWebUIInstaller,
              "BorealisWebUIInstaller",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBorealisZinkGlDriver,
+             "BorealisZinkGlDriver",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<BorealisZinkGlDriverParam>::Option
+    borealis_zink_gl_driver_options[] = {
+        {BorealisZinkGlDriverParam::kZinkEnableRecommended,
+         "ZinkEnableRecommended"},
+        {BorealisZinkGlDriverParam::kZinkEnableAll, "ZinkEnableAll"}};
+const base::FeatureParam<BorealisZinkGlDriverParam> kBorealisZinkGlDriverParam{
+    &kBorealisZinkGlDriver, "BorealisZinkGlDriverParam",
+    BorealisZinkGlDriverParam::kZinkEnableRecommended,
+    &borealis_zink_gl_driver_options};
+
 // Controls whether the camera effects are supported by hardware.
 // Note that this feature can be overridden by login_manager based on
 // whether a per-board build sets the USE camera_feature_effects flag.
