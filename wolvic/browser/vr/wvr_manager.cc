@@ -434,6 +434,11 @@ static void PopulateProfiles(
           "oculus-touch-v3", "oculus-touch-v2", "oculus-touch",
           "generic-trigger-squeeze-thumbstick"};
       break;
+    case mozilla::gfx::VRControllerType::MetaQuest3:
+      input_source->description->profiles = {
+          "meta-quest-touch-plus", "oculus-touch-v3", "oculus-touch",
+          "generic-trigger-squeeze-thumbstick"};
+      break;
     case mozilla::gfx::VRControllerType::PicoG2:
       input_source->description->profiles = {
           "pico-g2", "generic-trigger-squeeze-thumbstick"};
