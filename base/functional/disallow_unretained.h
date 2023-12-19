@@ -62,7 +62,7 @@
 //   lifetimes and avoid the need to write `base::Unretained()` at all.
 #define DISALLOW_UNRETAINED()                                        \
  public:                                                             \
-  using DisallowBaseUnretainedMarker = void;                         \
+  using DisallowBaseUnretainedMarker [[maybe_unused]] = void;        \
                                                                      \
  private:                                                            \
   /* No-op statement so use of this macro can be followed by `;`. */ \

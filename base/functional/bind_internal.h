@@ -19,7 +19,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback_internal.h"
-#include "base/functional/disallow_unretained.h"
 #include "base/functional/unretained_traits.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_asan_bound_arg_tracker.h"
@@ -127,26 +126,31 @@ class UnretainedWrapper {
       DanglingRawPtrType,
       T*>;
 
-  static_assert(TypeSupportsUnretainedV<T>,
-                "Callback cannot capture an unprotected C++ pointer since this "
-                "type is annotated with DISALLOW_UNRETAINED(). Please see "
-                "base/functional/disallow_unretained.h for alternatives.");
-
   // Raw pointer makes sense only if there are no `PtrTrait`s. If there are,
   // it means that a `raw_ptr` is being passed, so use the ctors below instead.
-
   explicit UnretainedWrapper(T* o)
     requires(PtrTraits == RawPtrTraits::kEmpty)
-      : ptr_(o) {}
+      : ptr_(o) {
+    VerifyPreconditions();
+  }
 
   explicit UnretainedWrapper(const raw_ptr<T, PtrTraits>& o)
     requires(raw_ptr_traits::IsSupportedType<T>::value)
-      : ptr_(o) {}
+      : ptr_(o) {
+    VerifyPreconditions();
+  }
+
   explicit UnretainedWrapper(raw_ptr<T, PtrTraits>&& o)
     requires(raw_ptr_traits::IsSupportedType<T>::value)
-      : ptr_(std::move(o)) {}
+      : ptr_(std::move(o)) {
+    VerifyPreconditions();
+  }
 
   GetPtrType get() const { return GetInternal(ptr_); }
+
+  // True if this type is valid. When this is false, a `static_assert` will have
+  // been fired explaining why.
+  static constexpr bool value = SupportsUnretained<T>;
 
  private:
   // `ptr_` is either a `raw_ptr` or a regular C++ pointer.
@@ -183,6 +187,16 @@ class UnretainedWrapper {
   // direction. See the comment by `GetPtrType` describing for more details.
   static_assert(std::is_pointer_v<GetPtrType> ||
                 std::same_as<GetPtrType, StorageType>);
+
+  // Forces `value` to be materialized, performing a compile-time check of the
+  // preconditions if it hasn't already occurred. This is called from every
+  // constructor so the wrappers in bind.h don't have to each check it, and so
+  // no one can go around them and construct this underlying type directly.
+  static constexpr void VerifyPreconditions() {
+    // Using `static_assert(value);` here would work but fire an extra error.
+    std::ignore = value;
+  }
+
   StorageType ptr_;
 };
 
@@ -199,28 +213,31 @@ template <typename T,
           RawPtrTraits PtrTraits = RawPtrTraits::kEmpty>
 class UnretainedRefWrapper {
  public:
-  static_assert(
-      TypeSupportsUnretainedV<T>,
-      "Callback cannot capture an unprotected C++ reference since this "
-      "type is annotated with DISALLOW_UNRETAINED(). Please see "
-      "base/functional/disallow_unretained.h for alternatives.");
-
   // Raw reference makes sense only if there are no `PtrTrait`s. If there are,
   // it means that a `raw_ref` is being passed, so use the ctors below instead.
-
   explicit UnretainedRefWrapper(T& o)
     requires(PtrTraits == RawPtrTraits::kEmpty)
-      : ref_(o) {}
+      : ref_(o) {
+    VerifyPreconditions();
+  }
 
   explicit UnretainedRefWrapper(const raw_ref<T, PtrTraits>& o)
     requires(raw_ptr_traits::IsSupportedType<T>::value)
-      : ref_(o) {}
-  explicit UnretainedRefWrapper(raw_ref<T, PtrTraits>&& o)
+      : ref_(o) {
+    VerifyPreconditions();
+  }
 
+  explicit UnretainedRefWrapper(raw_ref<T, PtrTraits>&& o)
     requires(raw_ptr_traits::IsSupportedType<T>::value)
-      : ref_(std::move(o)) {}
+      : ref_(std::move(o)) {
+    VerifyPreconditions();
+  }
 
   T& get() const { return GetInternal(ref_); }
+
+  // See comments in `UnretainedWrapper` regarding this and
+  // `VerifyPreconditions()`.
+  static constexpr bool value = SupportsUnretained<T>;
 
  private:
   // `ref_` is either a `raw_ref` or a regular C++ reference.
@@ -262,6 +279,8 @@ class UnretainedRefWrapper {
       std::conditional_t<raw_ptr_traits::IsSupportedType<T>::value,
                          raw_ref<T, DisableDanglingPtrDetection>,
                          T&>;
+
+  static constexpr void VerifyPreconditions() { std::ignore = value; }
 
   StorageType ref_;
 };
