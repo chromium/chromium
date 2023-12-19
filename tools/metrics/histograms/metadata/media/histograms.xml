@@ -3237,6 +3237,18 @@ chromium-metrics-reviews@google.com.
   <token key="EmeApi" variants="EmeApi"/>
 </histogram>
 
+<histogram name="Media.EME.{KeySystem}.WaitingForKey" enum="Boolean"
+    expires_after="2024-04-11">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Reports whether a playback with a CDM attached has been blocked waiting for
+    the CDM to be set or waiting for decryption key. Reported once per playback
+    when a CDM attached.
+  </summary>
+  <token key="KeySystem" variants="KeySystemWithRobustness"/>
+</histogram>
+
 <histogram name="Media.EME.{KeySystem}.{EmeApi}" enum="CdmPromiseResult"
     expires_after="2024-06-16">
   <owner>xhwang@chromium.org</owner>

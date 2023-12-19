@@ -893,6 +893,10 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // |video_decode_stats_reporter_|.
   absl::optional<media::CdmConfig> cdm_config_;
 
+  // Whether the EME playback has been blocked waiting for the CDM to be set
+  // or waiting for decryption key.
+  bool has_waiting_for_key_ = false;
+
   // Tracks if we are currently flinging a video (e.g. in a RemotePlayback
   // session). Used to prevent videos from being paused when hidden.
   // TODO(https://crbug.com/839651): remove or rename this flag, when removing

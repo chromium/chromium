@@ -39,6 +39,7 @@
 #include "media/base/cdm_context.h"
 #include "media/base/demuxer.h"
 #include "media/base/encryption_scheme.h"
+#include "media/base/key_systems.h"
 #include "media/base/limits.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_log.h"
@@ -2270,6 +2271,7 @@ void WebMediaPlayerImpl::OnWaiting(media::WaitingReason reason) {
   switch (reason) {
     case media::WaitingReason::kNoCdm:
     case media::WaitingReason::kNoDecryptionKey:
+      has_waiting_for_key_ = true;
       encrypted_client_->DidBlockPlaybackWaitingForKey();
       // TODO(jrummell): didResumePlaybackBlockedForKey() should only be called
       // when a key has been successfully added (e.g. OnSessionKeysChange() with
@@ -3961,6 +3963,14 @@ void WebMediaPlayerImpl::ReportSessionUMAs() const {
     uma_name = kFrameReadBackUmaPrefix;
     uma_name += GetRendererName(renderer_type_);
     base::UmaHistogramCounts10M(uma_name, video_frame_readback_count_);
+  }
+
+  if (cdm_config_) {
+    // Report the `Media.EME.{KeySystem}.{Robustness}.WaitingForKey` UMA.
+    auto key_system_name_for_uma = media::GetKeySystemNameForUMA(
+        cdm_config_->key_system, cdm_config_->use_hw_secure_codecs);
+    uma_name = "Media.EME." + key_system_name_for_uma + ".WaitingForKey";
+    base::UmaHistogramBoolean(uma_name, has_waiting_for_key_);
   }
 }
 
