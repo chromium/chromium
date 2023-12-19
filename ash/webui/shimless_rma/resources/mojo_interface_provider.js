@@ -45,17 +45,17 @@ function setupFakeShimlessRmaService() {
 
   service.setAbortRmaResult(RmadErrorCode.kRmaNotRequired);
 
-  service.automaticallyTriggerHardwareVerificationStatusObservation();
+  service.enableAutomaticallyTriggerHardwareVerificationStatusObservation();
 
   service.setGetCurrentOsVersionResult(fakeChromeVersion[0]);
   service.setCheckForOsUpdatesResult('99.0.4844.74');
   service.setUpdateOsResult(true);
-  service.automaticallyTriggerOsUpdateObservation();
+  service.enableAutomaticallyTriggerOsUpdateObservation();
 
   service.setGetComponentListResult(fakeComponents);
-  service.automaticallyTriggerUpdateRoFirmwareObservation();
-  service.automaticallyTriggerDisableWriteProtectionObservation();
-  service.automaticallyTriggerCalibrationObservation();
+  service.enableAautomaticallyTriggerUpdateRoFirmwareObservation();
+  service.enableAutomaticallyTriggerDisableWriteProtectionObservation();
+  service.enableAutomaticallyTriggerCalibrationObservation();
 
   service.setGetRsuDisableWriteProtectChallengeResult(fakeRsuChallengeCode);
   service.setGetRsuDisableWriteProtectHwidResult('SAMUSTEST_2082');
@@ -81,10 +81,10 @@ function setupFakeShimlessRmaService() {
   service.setGetCalibrationComponentListResult(
       fakeCalibrationComponentsWithFails);
 
-  service.automaticallyTriggerProvisioningObservation();
-  service.automaticallyTriggerFinalizationObservation();
+  service.enableAutomaticallyTriggerProvisioningObservation();
+  service.enableAutomaticallyTriggerFinalizationObservation();
 
-  service.automaticallyTriggerPowerCableStateObservation();
+  service.enableAutomaticallyTriggerPowerCableStateObservation();
   service.setGetLogResult(fakeLog);
   service.setSaveLogResult({'path': fakeLogSavePath});
   service.setGetPowerwashRequiredResult(true);
