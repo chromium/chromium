@@ -382,6 +382,14 @@ void DecoderWrapper::OnFrameReadyTask(scoped_refptr<VideoFrame> video_frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
   DCHECK(video_frame->metadata().power_efficient);
 
+  // Technically VideoDecoder clients shouldn't care about |video_frame|'s'
+  // timestamps but we do because we feed non-zeros in DecodeNextFragmentTask().
+  // Note that we cannot enforce non-strictly monotonically increasing time
+  // deltas because the feeding order might not be the same as the output order
+  // (e.g. in H.264 with B-frames the output order would be the "presentation"
+  // order and not the "decode" or "transmission" order).
+  DCHECK_NE(video_frame->timestamp(), base::TimeDelta());
+
   frame_renderer_->RenderFrame(video_frame);
 
   for (auto& frame_processor : frame_processors_)

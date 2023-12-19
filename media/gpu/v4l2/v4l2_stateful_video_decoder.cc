@@ -454,7 +454,7 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                       DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsInitialized()) << "V4L2StatefulVideoDecoder must be Initialize()d";
-  DVLOGF(3) << buffer->AsHumanReadableString(/*verbose=*/false);
+  VLOGF(3) << buffer->AsHumanReadableString(/*verbose=*/false);
 
   if (buffer->end_of_stream()) {
     if (!event_task_runner_) {
@@ -1166,7 +1166,7 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
         base::checked_cast<size_t>(nalu_info->nalu_size);
 
     if (nalu_info->is_start_of_new_frame && HasFragments()) {
-      VLOGF(3) << frame_fragments_.size()
+      VLOGF(4) << frame_fragments_.size()
                << " currently stored frame fragment(s) can be reassembled.";
       whole_frames.emplace_back(std::make_pair(
           ReassembleFragments(frame_fragments_), base::DoNothing()));
@@ -1184,9 +1184,10 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
       continue;
     }
 
-    VLOGF(3) << "This was a frame fragment; storing it for later reassembly.";
+    VLOGF(4) << "This was a frame fragment; storing it for later reassembly.";
     frame_fragments_.emplace_back(
         DecoderBuffer::CopyFrom(buffer_pointer, found_nalu_size));
+    frame_fragments_.back()->set_timestamp(buffer->timestamp());
 
     buffer_pointer += found_nalu_size;
     remaining_buffer_size -= found_nalu_size;
