@@ -794,6 +794,10 @@
       base_feature: "none",
     },
     {
+      name: "CounterStyleChangeShouleCollectInlines",
+      status: "stable",
+    },
+    {
       name: "CrossFramePerformanceTimeline",
       status: "experimental",
     },

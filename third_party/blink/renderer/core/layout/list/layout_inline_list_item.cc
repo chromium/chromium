@@ -86,6 +86,9 @@ void LayoutInlineListItem::UpdateCounterStyle() {
     return;
   }
   list_marker->CounterStyleChanged(*marker);
+  if (RuntimeEnabledFeatures::CounterStyleChangeShouleCollectInlinesEnabled()) {
+    SetNeedsCollectInlines();
+  }
 }
 
 int LayoutInlineListItem::Value() const {
