@@ -35,9 +35,7 @@ class TabOrganizationTest : public testing::Test {
   struct StoredOnResponseCallback {
     bool was_called = false;
 
-    void OnResponse(const TabOrganizationResponse* response) {
-      was_called = true;
-    }
+    void OnResponse(TabOrganizationResponse* response) { was_called = true; }
   };
 
   TabOrganizationTest()
@@ -775,6 +773,51 @@ TEST_F(TabOrganizationTest,
   const TabOrganization* const organization_2 =
       session->GetNextTabOrganization();
   EXPECT_EQ(organization_2, nullptr);
+}
+
+TEST_F(TabOrganizationTest,
+       SessionPopulateOrganizationsFromRequestSetsOrganizationID) {
+  // Create a request
+  std::unique_ptr<TabOrganizationRequest> request =
+      std::make_unique<TabOrganizationRequest>();
+  TabOrganizationRequest* request_ptr = request.get();
+
+  // Add 2 tabs for organization
+  std::vector<TabData::TabID> ids_to_group;
+
+  for (int i = 0; i < kMinimumValidTabs; i++) {
+    content::WebContents* tab_to_group = AddTab();
+    TabData* tab_to_group_data = request->AddTabData(
+        std::make_unique<TabData>(tab_strip_model(), tab_to_group));
+    ids_to_group.emplace_back(tab_to_group_data->tab_id());
+  }
+
+  std::unique_ptr<TabOrganizationSession> session =
+      std::make_unique<TabOrganizationSession>(std::move(request));
+
+  // Start and complete the request so that the organizations are populated
+  session->StartRequest();
+
+  // Create a response
+  std::vector<TabOrganizationResponse::Organization> response_organizations;
+  TabOrganizationResponse::Organization organization(u"title",
+                                                     std::move(ids_to_group));
+  response_organizations.emplace_back(std::move(organization));
+  std::unique_ptr<TabOrganizationResponse> response =
+      std::make_unique<TabOrganizationResponse>(
+          std::move(response_organizations));
+
+  request_ptr->CompleteRequestForTesting(std::move(response));
+
+  // Check that the organizations were populated.
+  EXPECT_EQ(session->tab_organizations().size(), 1u);
+  EXPECT_EQ(session->tab_organizations().size(),
+            session->request()->response()->organizations.size());
+
+  // Check that the organization_id has been populated in the response
+  // organization.
+  EXPECT_EQ(session->tab_organizations()[0]->organization_id(),
+            session->request()->response()->organizations[0].organization_id);
 }
 
 TEST_F(TabOrganizationTest,
