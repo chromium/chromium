@@ -133,7 +133,7 @@ class BluetoothGattCharacteristicClientImpl
         bluetooth_gatt_characteristic::kBluetoothGattCharacteristicInterface,
         bluetooth_gatt_characteristic::kWriteValue);
     dbus::MessageWriter writer(&method_call);
-    writer.AppendArrayOfBytes(value.data(), value.size());
+    writer.AppendArrayOfBytes(value);
 
     // Append option dict
     base::Value::Dict dict;
@@ -168,7 +168,7 @@ class BluetoothGattCharacteristicClientImpl
         bluetooth_gatt_characteristic::kBluetoothGattCharacteristicInterface,
         bluetooth_gatt_characteristic::kPrepareWriteValue);
     dbus::MessageWriter writer(&method_call);
-    writer.AppendArrayOfBytes(value.data(), value.size());
+    writer.AppendArrayOfBytes(value);
 
     dbus::AppendValueData(&writer, base::Value::Dict());
 

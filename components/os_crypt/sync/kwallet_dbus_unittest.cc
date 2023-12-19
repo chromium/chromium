@@ -48,7 +48,7 @@ std::unique_ptr<dbus::Response> RespondBytes(
     const std::vector<uint8_t>& bytes) {
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
   dbus::MessageWriter writer(response.get());
-  writer.AppendArrayOfBytes(bytes.data(), bytes.size());
+  writer.AppendArrayOfBytes(bytes);
   return response;
 }
 

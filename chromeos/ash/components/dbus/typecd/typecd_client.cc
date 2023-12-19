@@ -128,7 +128,7 @@ void TypecdClientImpl::SetTypeCPortsUsingDisplays(
   dbus::MethodCall method_call(typecd::kTypecdServiceInterface,
                                typecd::kTypecdSetPortsUsingDisplaysMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfUint32s(port_nums.data(), port_nums.size());
+  writer.AppendArrayOfUint32s(port_nums);
 
   typecd_proxy_->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, base::DoNothing());

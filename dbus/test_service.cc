@@ -394,7 +394,7 @@ void TestService::GetProperty(MethodCall* method_call,
 
     writer.OpenVariant("ay", &variant_writer);
     const uint8_t bytes[] = {0x54, 0x65, 0x73, 0x74};
-    variant_writer.AppendArrayOfBytes(bytes, sizeof(bytes));
+    variant_writer.AppendArrayOfBytes(bytes);
     writer.CloseContainer(&variant_writer);
 
     std::move(response_sender).Run(std::move(response));
@@ -596,7 +596,7 @@ void TestService::AddPropertiesToWriter(MessageWriter* writer) {
   dict_entry_writer.AppendString("Bytes");
   dict_entry_writer.OpenVariant("ay", &variant_writer);
   const uint8_t bytes[] = {0x54, 0x65, 0x73, 0x74};
-  variant_writer.AppendArrayOfBytes(bytes, sizeof(bytes));
+  variant_writer.AppendArrayOfBytes(bytes);
   dict_entry_writer.CloseContainer(&variant_writer);
   array_writer.CloseContainer(&dict_entry_writer);
 

@@ -122,7 +122,7 @@ class CryptohomePkcs11ClientTest : public testing::Test {
       // a very large value so the parsing will fail.
       constexpr uint8_t invalid_protobuf[] = {0x02, 0xFF, 0xFF, 0xFF,
                                               0xFF, 0xFF, 0xFF};
-      writer.AppendArrayOfBytes(invalid_protobuf, sizeof(invalid_protobuf));
+      writer.AppendArrayOfBytes(invalid_protobuf);
     } else if (method_call->GetMember() ==
                ::user_data_auth::kPkcs11IsTpmTokenReady) {
       writer.AppendProtoAsArrayOfBytes(

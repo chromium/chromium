@@ -1084,8 +1084,7 @@ TEST_F(FlossAdapterClientTest, GenericMethodGetRemoteUuids) {
         dbus::MessageWriter writer(response.get());
         dbus::MessageWriter array_writer(nullptr);
         writer.OpenArray("ay", &array_writer);
-        array_writer.AppendArrayOfBytes(kFakeUuidByteArray,
-                                        sizeof(kFakeUuidByteArray));
+        array_writer.AppendArrayOfBytes(kFakeUuidByteArray);
         writer.CloseContainer(&array_writer);
         std::move(*cb).Run(response.get(), /*err=*/nullptr);
       });

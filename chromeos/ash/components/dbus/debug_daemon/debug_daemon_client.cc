@@ -539,9 +539,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     writer.AppendString(name);
     writer.AppendString(uri);
     writer.AppendString(language);
-    writer.AppendArrayOfBytes(
-        reinterpret_cast<const uint8_t*>(ppd_contents.data()),
-        ppd_contents.size());
+    writer.AppendArrayOfBytes(base::as_byte_span(ppd_contents));
 
     debugdaemon_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,

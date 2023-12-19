@@ -261,7 +261,7 @@ void ChapsClientImpl::GetSlotList(bool token_present,
   dbus::MethodCall method_call(chaps::kChapsInterface,
                                chaps::kGetSlotListMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendBool(token_present);
 
   proxy_->CallMethod(
@@ -277,7 +277,7 @@ void ChapsClientImpl::GetMechanismList(uint64_t slot_id,
   dbus::MethodCall method_call(chaps::kChapsInterface,
                                chaps::kGetMechanismListMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(slot_id);
 
   proxy_->CallMethod(
@@ -294,7 +294,7 @@ void ChapsClientImpl::OpenSession(uint64_t slot_id,
   dbus::MethodCall method_call(chaps::kChapsInterface,
                                chaps::kOpenSessionMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(slot_id);
   writer.AppendUint64(flags);
 
@@ -311,7 +311,7 @@ void ChapsClientImpl::CloseSession(uint64_t session_id,
   dbus::MethodCall method_call(chaps::kChapsInterface,
                                chaps::kCloseSessionMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
 
   proxy_->CallMethod(
@@ -328,9 +328,9 @@ void ChapsClientImpl::CreateObject(uint64_t session_id,
   dbus::MethodCall method_call(chaps::kChapsInterface,
                                chaps::kCreateObjectMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
-  writer.AppendArrayOfBytes(attributes.data(), attributes.size());
+  writer.AppendArrayOfBytes(attributes);
 
   proxy_->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -346,7 +346,7 @@ void ChapsClientImpl::DestroyObject(uint64_t session_id,
   dbus::MethodCall method_call(chaps::kChapsInterface,
                                chaps::kDestroyObjectMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
   writer.AppendUint64(object_handle);
 
@@ -366,10 +366,10 @@ void ChapsClientImpl::GetAttributeValue(
   dbus::MethodCall method_call(chaps::kChapsInterface,
                                chaps::kGetAttributeValueMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
   writer.AppendUint64(object_handle);
-  writer.AppendArrayOfBytes(attributes_query.data(), attributes_query.size());
+  writer.AppendArrayOfBytes(attributes_query);
 
   proxy_->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -411,10 +411,10 @@ void ChapsClientImpl::SetAttributeValue(uint64_t session_id,
   dbus::MethodCall method_call(chaps::kChapsInterface,
                                chaps::kSetAttributeValueMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
   writer.AppendUint64(object_handle);
-  writer.AppendArrayOfBytes(attributes.data(), attributes.size());
+  writer.AppendArrayOfBytes(attributes);
 
   proxy_->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -430,9 +430,9 @@ void ChapsClientImpl::FindObjectsInit(uint64_t session_id,
   dbus::MethodCall method_call(chaps::kChapsInterface,
                                chaps::kFindObjectsInitMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
-  writer.AppendArrayOfBytes(attributes.data(), attributes.size());
+  writer.AppendArrayOfBytes(attributes);
 
   proxy_->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -448,7 +448,7 @@ void ChapsClientImpl::FindObjects(uint64_t session_id,
   dbus::MethodCall method_call(chaps::kChapsInterface,
                                chaps::kFindObjectsMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
   writer.AppendUint64(max_object_count);
 
@@ -465,7 +465,7 @@ void ChapsClientImpl::FindObjectsFinal(uint64_t session_id,
   dbus::MethodCall method_call(chaps::kChapsInterface,
                                chaps::kFindObjectsFinalMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
 
   proxy_->CallMethod(
@@ -485,11 +485,10 @@ void ChapsClientImpl::EncryptInit(
   dbus::MethodCall method_call(chaps::kChapsInterface,
                                chaps::kEncryptInitMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
   writer.AppendUint64(mechanism_type);
-  writer.AppendArrayOfBytes(mechanism_parameter.data(),
-                            mechanism_parameter.size());
+  writer.AppendArrayOfBytes(mechanism_parameter);
   writer.AppendUint64(key_handle);
 
   proxy_->CallMethod(
@@ -506,9 +505,9 @@ void ChapsClientImpl::Encrypt(uint64_t session_id,
 
   dbus::MethodCall method_call(chaps::kChapsInterface, chaps::kEncryptMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
-  writer.AppendArrayOfBytes(data.data(), data.size());
+  writer.AppendArrayOfBytes(data);
   writer.AppendUint64(max_out_length);
 
   proxy_->CallMethod(
@@ -528,11 +527,10 @@ void ChapsClientImpl::DecryptInit(
   dbus::MethodCall method_call(chaps::kChapsInterface,
                                chaps::kDecryptInitMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
   writer.AppendUint64(mechanism_type);
-  writer.AppendArrayOfBytes(mechanism_parameter.data(),
-                            mechanism_parameter.size());
+  writer.AppendArrayOfBytes(mechanism_parameter);
   writer.AppendUint64(key_handle);
 
   proxy_->CallMethod(
@@ -549,9 +547,9 @@ void ChapsClientImpl::Decrypt(uint64_t session_id,
 
   dbus::MethodCall method_call(chaps::kChapsInterface, chaps::kDecryptMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
-  writer.AppendArrayOfBytes(data.data(), data.size());
+  writer.AppendArrayOfBytes(data);
   writer.AppendUint64(max_out_length);
 
   proxy_->CallMethod(
@@ -569,11 +567,10 @@ void ChapsClientImpl::SignInit(uint64_t session_id,
 
   dbus::MethodCall method_call(chaps::kChapsInterface, chaps::kSignInitMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
   writer.AppendUint64(mechanism_type);
-  writer.AppendArrayOfBytes(mechanism_parameter.data(),
-                            mechanism_parameter.size());
+  writer.AppendArrayOfBytes(mechanism_parameter);
   writer.AppendUint64(key_handle);
 
   proxy_->CallMethod(
@@ -590,9 +587,9 @@ void ChapsClientImpl::Sign(uint64_t session_id,
 
   dbus::MethodCall method_call(chaps::kChapsInterface, chaps::kSignMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
-  writer.AppendArrayOfBytes(data.data(), data.size());
+  writer.AppendArrayOfBytes(data);
   writer.AppendUint64(max_out_length);
 
   proxy_->CallMethod(
@@ -613,14 +610,12 @@ void ChapsClientImpl::GenerateKeyPair(
   dbus::MethodCall method_call(chaps::kChapsInterface,
                                chaps::kGenerateKeyPairMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
   writer.AppendUint64(mechanism_type);
-  writer.AppendArrayOfBytes(mechanism_parameter.data(),
-                            mechanism_parameter.size());
-  writer.AppendArrayOfBytes(public_attributes.data(), public_attributes.size());
-  writer.AppendArrayOfBytes(private_attributes.data(),
-                            private_attributes.size());
+  writer.AppendArrayOfBytes(mechanism_parameter);
+  writer.AppendArrayOfBytes(public_attributes);
+  writer.AppendArrayOfBytes(private_attributes);
 
   proxy_->CallMethod(
       &method_call, kDbusLongTimeoutMillis,
@@ -664,11 +659,10 @@ void ChapsClientImpl::WrapKey(uint64_t session_id,
 
   dbus::MethodCall method_call(chaps::kChapsInterface, chaps::kWrapKeyMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
   writer.AppendUint64(mechanism_type);
-  writer.AppendArrayOfBytes(mechanism_parameter.data(),
-                            mechanism_parameter.size());
+  writer.AppendArrayOfBytes(mechanism_parameter);
   writer.AppendUint64(wrapping_key_handle);
   writer.AppendUint64(key_handle);
   writer.AppendUint64(max_out_length);
@@ -690,14 +684,13 @@ void ChapsClientImpl::UnwrapKey(uint64_t session_id,
 
   dbus::MethodCall method_call(chaps::kChapsInterface, chaps::kUnwrapKeyMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
   writer.AppendUint64(mechanism_type);
-  writer.AppendArrayOfBytes(mechanism_parameter.data(),
-                            mechanism_parameter.size());
+  writer.AppendArrayOfBytes(mechanism_parameter);
   writer.AppendUint64(wrapping_key_handle);
-  writer.AppendArrayOfBytes(wrapped_key.data(), wrapped_key.size());
-  writer.AppendArrayOfBytes(attributes.data(), attributes.size());
+  writer.AppendArrayOfBytes(wrapped_key);
+  writer.AppendArrayOfBytes(attributes);
 
   proxy_->CallMethod(
       &method_call, kDbusLongTimeoutMillis,
@@ -715,13 +708,12 @@ void ChapsClientImpl::DeriveKey(uint64_t session_id,
 
   dbus::MethodCall method_call(chaps::kChapsInterface, chaps::kDeriveKeyMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendArrayOfBytes(kIsolateCredential, sizeof(kIsolateCredential));
+  writer.AppendArrayOfBytes(kIsolateCredential);
   writer.AppendUint64(session_id);
   writer.AppendUint64(mechanism_type);
-  writer.AppendArrayOfBytes(mechanism_parameter.data(),
-                            mechanism_parameter.size());
+  writer.AppendArrayOfBytes(mechanism_parameter);
   writer.AppendUint64(base_key_handle);
-  writer.AppendArrayOfBytes(attributes.data(), attributes.size());
+  writer.AppendArrayOfBytes(attributes);
 
   proxy_->CallMethod(
       &method_call, kDbusLongTimeoutMillis,

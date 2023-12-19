@@ -85,9 +85,7 @@ class HibermanClientImpl : public HibermanClient {
                                  ::hiberman::kResumeFromHibernateASMethod);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(account_id);
-    writer.AppendArrayOfBytes(
-        reinterpret_cast<const uint8_t*>(&auth_session_id[0]),
-        auth_session_id.length());
+    writer.AppendArrayOfBytes(base::as_byte_span(auth_session_id));
     // Bind with the weak pointer of |this| so the response is not
     // handled once |this| is already destroyed.
     proxy_->CallMethod(&method_call, kHibermanResumeTimeoutMs,

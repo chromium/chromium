@@ -135,7 +135,7 @@ class BluetoothGattDescriptorClientImpl
         bluetooth_gatt_descriptor::kBluetoothGattDescriptorInterface,
         bluetooth_gatt_descriptor::kWriteValue);
     dbus::MessageWriter writer(&method_call);
-    writer.AppendArrayOfBytes(value.data(), value.size());
+    writer.AppendArrayOfBytes(value);
 
     // Append empty option dict
     dbus::AppendValueData(&writer, base::Value::Dict());

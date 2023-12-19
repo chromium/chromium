@@ -52,7 +52,7 @@ std::unique_ptr<dbus::Response> CreateResponse(std::vector<uint8_t> bytes,
                                                uint32_t result_code) {
   auto response = dbus::Response::CreateEmpty();
   dbus::MessageWriter writer(response.get());
-  writer.AppendArrayOfBytes(bytes.data(), bytes.size());
+  writer.AppendArrayOfBytes(bytes);
   writer.AppendUint32(result_code);
   return response;
 }
@@ -80,7 +80,7 @@ std::unique_ptr<dbus::Response> CreateResponse(uint64_t uint64_value,
   auto response = dbus::Response::CreateEmpty();
   dbus::MessageWriter writer(response.get());
   writer.AppendUint64(uint64_value);
-  writer.AppendArrayOfBytes(bytes.data(), bytes.size());
+  writer.AppendArrayOfBytes(bytes);
   writer.AppendUint32(result_code);
   return response;
 }

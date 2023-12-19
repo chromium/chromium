@@ -379,7 +379,7 @@ TEST(PropertyTestStatic, ReadWriteNetAddressArray) {
   for (uint16_t i = 0; i < 5; ++i) {
     variant_array_writer.OpenStruct(&struct_entry_writer);
     ip_bytes[4] = 0x30 + i;
-    struct_entry_writer.AppendArrayOfBytes(ip_bytes, std::size(ip_bytes));
+    struct_entry_writer.AppendArrayOfBytes(ip_bytes);
     struct_entry_writer.AppendUint16(i);
     variant_array_writer.CloseContainer(&struct_entry_writer);
   }
@@ -442,7 +442,7 @@ TEST(PropertyTestStatic, ReadWriteStringToByteVectorMapVariantWrapped) {
 
     MessageWriter value_varient_writer(nullptr);
     entry_writer.OpenVariant("ay", &value_varient_writer);
-    value_varient_writer.AppendArrayOfBytes(values[i].data(), values[i].size());
+    value_varient_writer.AppendArrayOfBytes(values[i]);
     entry_writer.CloseContainer(&value_varient_writer);
 
     dict_writer.CloseContainer(&entry_writer);
@@ -476,7 +476,7 @@ TEST(PropertyTestStatic, ReadWriteStringToByteVectorMap) {
     dict_writer.OpenDictEntry(&entry_writer);
 
     entry_writer.AppendString(keys[i]);
-    entry_writer.AppendArrayOfBytes(values[i].data(), values[i].size());
+    entry_writer.AppendArrayOfBytes(values[i]);
 
     dict_writer.CloseContainer(&entry_writer);
   }
@@ -530,7 +530,7 @@ TEST(PropertyTestStatic, ReadWriteUInt16ToByteVectorMapVariantWrapped) {
 
     MessageWriter value_varient_writer(nullptr);
     entry_writer.OpenVariant("ay", &value_varient_writer);
-    value_varient_writer.AppendArrayOfBytes(values[i].data(), values[i].size());
+    value_varient_writer.AppendArrayOfBytes(values[i]);
     entry_writer.CloseContainer(&value_varient_writer);
 
     dict_writer.CloseContainer(&entry_writer);
@@ -564,7 +564,7 @@ TEST(PropertyTestStatic, ReadWriteUInt16ToByteVectorMap) {
     dict_writer.OpenDictEntry(&entry_writer);
 
     entry_writer.AppendUint16(keys[i]);
-    entry_writer.AppendArrayOfBytes(values[i].data(), values[i].size());
+    entry_writer.AppendArrayOfBytes(values[i]);
 
     dict_writer.CloseContainer(&entry_writer);
   }

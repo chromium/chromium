@@ -151,7 +151,7 @@ bool DbusByteArray::IsEqual(const DbusType& other_type) const {
 }
 
 void DbusByteArray::Write(dbus::MessageWriter* writer) const {
-  writer->AppendArrayOfBytes(value_->front(), value_->size());
+  writer->AppendArrayOfBytes(*value_);
 }
 
 // static

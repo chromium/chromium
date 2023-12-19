@@ -88,7 +88,7 @@ class SmbProviderClientImpl final : public SmbProviderClient {
     dbus::MethodCall method_call(smbprovider::kSmbProviderInterface,
                                  smbprovider::kParseNetBiosPacketMethod);
     dbus::MessageWriter writer(&method_call);
-    writer.AppendArrayOfBytes(packet.data(), packet.size());
+    writer.AppendArrayOfBytes(packet);
     writer.AppendUint16(transaction_id);
     CallMethod(&method_call,
                &SmbProviderClientImpl::HandleParseNetBiosPacketCallback,

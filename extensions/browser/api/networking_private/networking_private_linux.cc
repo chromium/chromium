@@ -419,8 +419,7 @@ void NetworkingPrivateLinux::ConnectToNetwork(const std::string& guid,
 
   dbus::MessageWriter variant_writer(&method_call);
   wifi_dict_writer.OpenVariant("ay", &variant_writer);
-  variant_writer.AppendArrayOfBytes(
-      reinterpret_cast<const uint8_t*>(ssid.c_str()), ssid.size());
+  variant_writer.AppendArrayOfBytes(base::as_byte_span(ssid));
 
   // Close all the arrays and dicts.
   wifi_dict_writer.CloseContainer(&variant_writer);

@@ -590,47 +590,58 @@ void MessageWriter::CloseContainer(MessageWriter* writer) {
   container_is_open_ = false;
 }
 
-void MessageWriter::AppendArrayOfBytes(const uint8_t* values, size_t length) {
+void MessageWriter::AppendArrayOfBytes(base::span<const uint8_t> values) {
   DCHECK(!container_is_open_);
   MessageWriter array_writer(message_);
   OpenArray("y", &array_writer);
+  // dbus_message_iter_append_fixed_array takes a pointer to a pointer to the
+  // data.
+  const uint8_t* ptr = values.data();
   const bool success = dbus_message_iter_append_fixed_array(
-      &(array_writer.raw_message_iter_), DBUS_TYPE_BYTE, &values,
-      static_cast<int>(length));
+      &(array_writer.raw_message_iter_), DBUS_TYPE_BYTE, &ptr,
+      base::checked_cast<int>(values.size()));
   CHECK(success) << "Unable to allocate memory";
   CloseContainer(&array_writer);
 }
 
-void MessageWriter::AppendArrayOfInt32s(const int32_t* values, size_t length) {
+void MessageWriter::AppendArrayOfInt32s(base::span<const int32_t> values) {
   DCHECK(!container_is_open_);
   MessageWriter array_writer(message_);
   OpenArray("i", &array_writer);
+  // dbus_message_iter_append_fixed_array takes a pointer to a pointer to the
+  // data.
+  const int32_t* ptr = values.data();
   const bool success = dbus_message_iter_append_fixed_array(
-      &(array_writer.raw_message_iter_), DBUS_TYPE_INT32, &values,
-      static_cast<int>(length));
+      &(array_writer.raw_message_iter_), DBUS_TYPE_INT32, &ptr,
+      base::checked_cast<int>(values.size()));
   CHECK(success) << "Unable to allocate memory";
   CloseContainer(&array_writer);
 }
 
-void MessageWriter::AppendArrayOfUint32s(const uint32_t* values,
-                                         size_t length) {
+void MessageWriter::AppendArrayOfUint32s(base::span<const uint32_t> values) {
   DCHECK(!container_is_open_);
   MessageWriter array_writer(message_);
   OpenArray("u", &array_writer);
+  // dbus_message_iter_append_fixed_array takes a pointer to a pointer to the
+  // data.
+  const uint32_t* ptr = values.data();
   const bool success = dbus_message_iter_append_fixed_array(
-      &(array_writer.raw_message_iter_), DBUS_TYPE_UINT32, &values,
-      static_cast<int>(length));
+      &(array_writer.raw_message_iter_), DBUS_TYPE_UINT32, &ptr,
+      base::checked_cast<int>(values.size()));
   CHECK(success) << "Unable to allocate memory";
   CloseContainer(&array_writer);
 }
 
-void MessageWriter::AppendArrayOfDoubles(const double* values, size_t length) {
+void MessageWriter::AppendArrayOfDoubles(base::span<const double> values) {
   DCHECK(!container_is_open_);
   MessageWriter array_writer(message_);
   OpenArray("d", &array_writer);
+  // dbus_message_iter_append_fixed_array takes a pointer to a pointer to the
+  // data.
+  const double* ptr = values.data();
   const bool success = dbus_message_iter_append_fixed_array(
-      &(array_writer.raw_message_iter_), DBUS_TYPE_DOUBLE, &values,
-      static_cast<int>(length));
+      &(array_writer.raw_message_iter_), DBUS_TYPE_DOUBLE, &ptr,
+      base::checked_cast<int>(values.size()));
   CHECK(success) << "Unable to allocate memory";
   CloseContainer(&array_writer);
 }
@@ -664,8 +675,7 @@ bool MessageWriter::AppendProtoAsArrayOfBytes(
     LOG(ERROR) << "Unable to serialize supplied protocol buffer";
     return false;
   }
-  AppendArrayOfBytes(reinterpret_cast<const uint8_t*>(serialized_proto.data()),
-                     serialized_proto.size());
+  AppendArrayOfBytes(base::as_byte_span(serialized_proto));
   return true;
 }
 
