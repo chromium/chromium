@@ -5,7 +5,7 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PaymentsManagerImpl, SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
-import {CrButtonElement, loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {CrButtonElement, CvcDeletionUserAction, loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createCreditCardEntry, TestPaymentsManager} from './autofill_fake_data.js';
@@ -610,6 +610,8 @@ suite('PaymentsSection', function() {
           loadTimeData.overrideValues({
             cvcStorageAvailable: true,
           });
+          const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+          MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
           const creditCard = createCreditCardEntry();
           creditCard.cvc = '•••';
@@ -655,8 +657,19 @@ suite('PaymentsSection', function() {
               PaymentsManagerImpl.getInstance() as TestPaymentsManager;
           const expectations = getDefaultExpectations();
 
+          assertEquals(2, testMetricsBrowserProxy.getCallCount('recordAction'));
+          assertEquals(
+              CvcDeletionUserAction.HYPERLINK_CLICKED,
+              testMetricsBrowserProxy.getArgs('recordAction')[0]);
           if (shouldTriggerBulkDelete) {
             expectations.bulkDeleteAllCvcs = 1;
+            assertEquals(
+                CvcDeletionUserAction.DIALOG_ACCEPTED,
+                testMetricsBrowserProxy.getArgs('recordAction')[1]);
+          } else {
+            assertEquals(
+                CvcDeletionUserAction.DIALOG_CANCELLED,
+                testMetricsBrowserProxy.getArgs('recordAction')[1]);
           }
           paymentsManagerProxy.assertExpectations(expectations);
         });

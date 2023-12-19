@@ -276,6 +276,16 @@ export enum SafetyHubSurfaces {
   MAX_VALUE = 2,
 }
 
+/**
+ * This enum contains the possible user actions for the bulk CVC deletion
+ * operation on the payments settings page.
+ */
+export enum CvcDeletionUserAction {
+  HYPERLINK_CLICKED = 'BulkCvcDeletionHyperlinkClicked',
+  DIALOG_ACCEPTED = 'BulkCvcDeletionConfirmationDialogAccepted',
+  DIALOG_CANCELLED = 'BulkCvcDeletionConfirmationDialogCancelled',
+}
+
 export interface MetricsBrowserProxy {
   /**
    * Helper function that calls recordAction with one action from
