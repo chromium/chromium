@@ -22,7 +22,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
-#include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "chromeos/ash/components/fwupd/fake_fwupd_download_client.h"
 #include "chromeos/ash/components/fwupd/histogram_util.h"
 #include "dbus/message.h"
@@ -235,11 +234,6 @@ class FirmwareUpdateManagerTest : public testing::Test {
 
   void RequestDevices() {
     firmware_update_manager_->RequestDevices();
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void TriggerOnDeviceRequestResponse(FwupdRequest* request) {
-    firmware_update_manager_->OnDeviceRequestResponse(request);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -1086,37 +1080,6 @@ TEST_F(FirmwareUpdateManagerTest, SetupDeviceRequestObserver) {
   EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
   FakeDeviceRequestObserver device_request_observer;
   SetupDeviceRequestObserver(&device_request_observer);
-}
-
-TEST_F(FirmwareUpdateManagerTest, DeviceRequestObserver) {
-  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
-  FakeDeviceRequestObserver device_request_observer;
-  SetupDeviceRequestObserver(&device_request_observer);
-
-  // For each combination of DeviceRequestId and DeviceRequestKind, call
-  // OnDeviceRequestResponse on firmware_update_manager and then verify that the
-  // observer received the correct DeviceRequest.
-  int device_request_id_size =
-      static_cast<int>(firmware_update::mojom::DeviceRequestId::kMaxValue) + 1;
-  int device_request_kind_size =
-      static_cast<int>(firmware_update::mojom::DeviceRequestKind::kMaxValue) +
-      1;
-
-  for (int id_index = 0; id_index < device_request_id_size; id_index++) {
-    for (int kind_index = 0; kind_index < device_request_kind_size;
-         kind_index++) {
-      firmware_update::mojom::DeviceRequestId id =
-          static_cast<firmware_update::mojom::DeviceRequestId>(id_index);
-      firmware_update::mojom::DeviceRequestKind kind =
-          static_cast<firmware_update::mojom::DeviceRequestKind>(kind_index);
-
-      TriggerOnDeviceRequestResponse(new FwupdRequest(
-          static_cast<uint32_t>(id), static_cast<uint32_t>(kind)));
-
-      EXPECT_EQ(id, device_request_observer.GetLatestRequest()->id);
-      EXPECT_EQ(kind, device_request_observer.GetLatestRequest()->kind);
-    }
-  }
 }
 
 }  // namespace ash
