@@ -5,6 +5,7 @@
 #include "chrome/browser/wallet/android/boarding_pass_detector.h"
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/render_frame_host.h"
@@ -20,17 +21,21 @@ mojo::Remote<mojom::BoardingPassExtractor> GetBoardingPassExtractorRemote(
       remote.BindNewPipeAndPassReceiver());
   return remote;
 }
+
+const std::vector<std::string>& GetAllowlist() {
+  static base::NoDestructor<std::vector<std::string>> allowed_urls([] {
+    std::string param_val = base::GetFieldTrialParamValueByFeature(
+        features::kBoardingPassDetector,
+        features::kBoardingPassDetectorUrlParam.name);
+    return base::SplitString(std::move(param_val), ",", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
+  }());
+  return *allowed_urls;
+}
 }  // namespace
 
 bool BoardingPassDetector::ShouldDetect(const std::string& url) {
-  std::string param_val = base::GetFieldTrialParamValueByFeature(
-      features::kBoardingPassDetector,
-      features::kBoardingPassDetectorUrlParam.name);
-
-  std::vector<std::string> allowed_urls =
-      base::SplitString(std::move(param_val), ",", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
-  for (const auto& allowed_url : allowed_urls) {
+  for (const auto& allowed_url : GetAllowlist()) {
     if (url.starts_with(allowed_url)) {
       return true;
     }
