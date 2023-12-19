@@ -133,7 +133,7 @@ void PickerView::StartSearch(const std::u16string& query) {
 }
 
 void PickerView::PublishSearchResults(const PickerSearchResults& results) {
-  // TODO(b/310088338): Show results.
+  search_results_view_->SetSearchResults(results);
 }
 
 void PickerView::SelectSearchResult(const PickerSearchResult& result) {

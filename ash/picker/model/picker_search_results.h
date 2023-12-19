@@ -6,6 +6,7 @@
 #define ASH_PICKER_MODEL_PICKER_SEARCH_RESULTS_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -17,6 +18,8 @@ namespace ash {
 class ASH_EXPORT PickerSearchResult {
  public:
   explicit PickerSearchResult(const std::u16string& text);
+
+  std::u16string_view text() const;
 
  private:
   std::u16string text_;
@@ -34,13 +37,15 @@ class ASH_EXPORT PickerSearchResults {
     Section& operator=(const Section& other);
     ~Section();
 
+    base::span<const PickerSearchResult> results() const;
+
    private:
     std::u16string heading_;
 
     std::vector<PickerSearchResult> results_;
   };
 
-  explicit PickerSearchResults(base::span<const Section> sections);
+  explicit PickerSearchResults(base::span<const Section> sections = {});
   PickerSearchResults(const PickerSearchResults& other);
   PickerSearchResults& operator=(const PickerSearchResults& other);
   ~PickerSearchResults();

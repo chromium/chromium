@@ -3401,6 +3401,7 @@ test("ash_unittests") {
     "picker/picker_session_metrics_unittest.cc",
     "picker/views/picker_contents_view_unittest.cc",
     "picker/views/picker_search_field_view_unittest.cc",
+    "picker/views/picker_search_results_view_unittest.cc",
     "picker/views/picker_view_unittest.cc",
     "policy/policy_recommendation_restorer_unittest.cc",
     "power/hid_battery_util_unittest.cc",

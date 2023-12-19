@@ -4,6 +4,8 @@
 
 #include "ash/picker/views/picker_view.h"
 
+#include <optional>
+
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
@@ -12,6 +14,8 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view.h"
 #include "ash/test/test_ash_web_view_factory.h"
+#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -22,6 +26,8 @@ namespace ash {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Optional;
 using ::testing::Property;
 using ::testing::Truly;
 
@@ -29,20 +35,39 @@ using PickerViewTest = AshTestBase;
 
 class FakePickerViewDelegate : public PickerView::Delegate {
  public:
+  using FakeSearchFunction =
+      base::RepeatingCallback<PickerSearchResults(std::u16string_view query)>;
+
+  FakePickerViewDelegate()
+      : search_function_(base::BindRepeating(
+            [](std::u16string_view query) { return PickerSearchResults(); })) {}
+  explicit FakePickerViewDelegate(FakeSearchFunction search_function)
+      : search_function_(search_function) {}
+
   std::unique_ptr<AshWebView> CreateWebView(
       const AshWebView::InitParams& params) override {
     return ash_web_view_factory_.Create(params);
   }
 
   void StartSearch(const std::u16string& query,
-                   SearchResultsCallback callback) override {}
+                   SearchResultsCallback callback) override {
+    callback.Run(search_function_.Run(query));
+  }
 
-  void InsertResult(const PickerSearchResult& result) override {}
+  void InsertResult(const PickerSearchResult& result) override {
+    last_inserted_result_ = result;
+  }
 
   bool ShouldPaint() override { return true; }
 
+  std::optional<PickerSearchResult> last_inserted_result() const {
+    return last_inserted_result_;
+  }
+
  private:
   TestAshWebViewFactory ash_web_view_factory_;
+  FakeSearchFunction search_function_;
+  std::optional<PickerSearchResult> last_inserted_result_;
 };
 
 PickerView* GetPickerViewFromWidget(views::Widget& widget) {
@@ -132,6 +157,33 @@ TEST_F(PickerViewTest, EmptySearchFieldContentsSwitchesToZeroStateView) {
               Property(&views::View::GetVisible, true));
   EXPECT_THAT(view->search_results_view_for_testing(),
               Property(&views::View::GetVisible, false));
+}
+
+TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
+  base::test::TestFuture<void> future;
+  // TODO(b/317111483): Change the delegate a raw pointer to make this less
+  // awkward.
+  auto delegate = std::make_unique<FakePickerViewDelegate>(
+      base::BindLambdaForTesting([&](std::u16string_view query) {
+        future.SetValue();
+        return PickerSearchResults({{
+            PickerSearchResults::Section(u"section",
+                                         {{PickerSearchResult(u"result")}}),
+        }});
+      }));
+  auto* delegate_ptr = delegate.get();
+  auto widget = PickerView::CreateWidget(std::move(delegate));
+  widget->Show();
+  PickerView* view = GetPickerViewFromWidget(*widget);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+
+  // TODO(b/316935667): Actually click on a result item instead of the whole
+  // view.
+  LeftClickOn(&view->search_results_view_for_testing());
+
+  EXPECT_THAT(delegate_ptr->last_inserted_result(),
+              Optional(Property(&PickerSearchResult::text, Eq(u"result"))));
 }
 
 }  // namespace
