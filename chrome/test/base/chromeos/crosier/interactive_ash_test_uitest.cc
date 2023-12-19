@@ -10,8 +10,7 @@ namespace {
 
 using InteractiveAshTestUITest = InteractiveAshTest;
 
-// TODO(crbug.com/1511507): Re-enable this test
-IN_PROC_BROWSER_TEST_F(InteractiveAshTestUITest, DISABLED_Basics) {
+IN_PROC_BROWSER_TEST_F(InteractiveAshTestUITest, Basics) {
   SetupContextWidget();
 
   // Verify that installing system apps doesn't crash or flake.
