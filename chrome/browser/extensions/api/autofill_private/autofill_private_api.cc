@@ -459,6 +459,17 @@ ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
 
   if (personal_data->GetIbanByGUID(parameters->guid)) {
     base::RecordAction(base::UserMetricsAction("AutofillIbanDeleted"));
+  } else if (autofill::CreditCard* credit_card =
+                 personal_data->GetCreditCardByGUID(parameters->guid)) {
+    base::RecordAction(base::UserMetricsAction("AutofillCreditCardDeleted"));
+    if (!credit_card->cvc().empty()) {
+      base::RecordAction(
+          base::UserMetricsAction("AutofillCreditCardDeletedAndHadCvc"));
+    }
+    if (credit_card->HasNonEmptyValidNickname()) {
+      base::RecordAction(
+          base::UserMetricsAction("AutofillCreditCardDeletedAndHadNickname"));
+    }
   }
   personal_data->RemoveByGUID(parameters->guid);
   return RespondNow(NoArguments());

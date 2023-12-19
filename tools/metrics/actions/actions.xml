@@ -4357,6 +4357,32 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="AutofillCreditCardDeleted">
+  <owner>koulvipul@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user deletes a card via chrome://settings/payments page.
+  </description>
+</action>
+
+<action name="AutofillCreditCardDeletedAndHadCvc">
+  <owner>koulvipul@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user deletes card via chrome://settings/payments page and CVC
+    was not empty.
+  </description>
+</action>
+
+<action name="AutofillCreditCardDeletedAndHadNickname">
+  <owner>koulvipul@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user deletes card via chrome://settings/payments page and
+    nickname was not empty.
+  </description>
+</action>
+
 <action name="AutofillCreditCardsAdded">
   <owner>battre@chromium.org</owner>
   <owner>jsaul@google.com</owner>

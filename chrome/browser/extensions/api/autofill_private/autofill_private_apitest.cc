@@ -221,6 +221,23 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, removeExistingIban) {
   EXPECT_EQ(1, user_action_tester.GetActionCount("AutofillIbanDeleted"));
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, removeExistingCard) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("removeExistingCard")) << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount("AutofillCreditCardDeleted"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       removeExistingCard_WithCvcAndNickname) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("removeExistingCard_WithCvcAndNickname"))
+      << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "AutofillCreditCardDeletedAndHadCvc"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "AutofillCreditCardDeletedAndHadNickname"));
+}
+
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, isValidIban) {
   base::UserActionTester user_action_tester;
   EXPECT_TRUE(RunAutofillSubtest("isValidIban")) << message_;

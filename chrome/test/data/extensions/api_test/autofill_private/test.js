@@ -24,7 +24,8 @@ var NUMBER = '4111 1111 1111 1111';
 var EXP_MONTH = '02';
 var EXP_YEAR = '2999';
 var CVC = '987';
-MASKED_CVC = '•••';
+var MASKED_CVC = '•••';
+var NICKNAME = 'nickname';
 var IBAN_VALUE = 'AD1400080001001234567890';
 var INVALID_IBAN_VALUE = 'AD14000800010012345678900';
 
@@ -397,7 +398,7 @@ var availableTests = [
                       cardNumber: MASKED_NUMBER,
                       expirationMonth: EXP_MONTH,
                       expirationYear: EXP_YEAR,
-                      nickname: undefined,
+                      nickname: NICKNAME,
                       cvc: MASKED_CVC
                     }],
                     filterCardProperties(cardList));
@@ -408,6 +409,7 @@ var availableTests = [
             cardNumber: NUMBER,
             expirationMonth: EXP_MONTH,
             expirationYear: EXP_YEAR,
+            nickname: NICKNAME,
             cvc: CVC
           });
         }));
@@ -607,6 +609,26 @@ var availableTests = [
     }));
   },
 
+  function removeExistingCard() {
+    chrome.autofillPrivate.getCreditCardList(chrome.test.callbackPass(function(
+        cardList) {
+      // The card from the addNewCreditCard function should still be there.
+      chrome.test.assertEq(1, cardList.length);
+      var cardGuid = cardList[0].guid;
+
+      // Set up the callback that verifies that the card was correctly
+      // deleted.
+      chrome.test.listenOnce(
+          chrome.autofillPrivate.onPersonalDataChanged,
+          chrome.test.callbackPass(function(addressList, cardList, ibanList) {
+            chrome.test.assertEq(0, cardList.length);
+          }));
+
+      // Remove the card with the given guid.
+      chrome.autofillPrivate.removeEntry(cardGuid);
+    }));
+  },
+
   function removeEntry() {
     var guid;
 
@@ -723,6 +745,9 @@ var TESTS_FOR_CONFIG = {
   'updateExistingIbanWithNickname':
       ['addNewIbanNoNickname', 'updateExistingIban_WithNickname'],
   'removeExistingIban': ['addNewIbanNoNickname', 'removeExistingIban'],
+  'removeExistingCard': ['addNewCreditCardWithoutCvc', 'removeExistingCard'],
+  'removeExistingCard_WithCvcAndNickname':
+      ['addNewCreditCard', 'removeExistingCard'],
   'isValidIban': ['isValidIban'],
   'authenticateUserAndFlipMandatoryAuthToggle':
       ['authenticateUserAndFlipMandatoryAuthToggle'],
