@@ -260,7 +260,7 @@
 <translation id="5545693483061321551">Les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités de certains sites peuvent ne pas fonctionner.</translation>
 <translation id="5553374991681107062">Les plus récents</translation>
 <translation id="5556459405103347317">Actualiser</translation>
-<translation id="5591840828808741583">Autorisation refusée : <ph name="SITE_NAME" /></translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> bloquée</translation>
 <translation id="5649053991847567735">Téléchargements automatiques</translation>
 <translation id="5668404140385795438">Ignore la demande d'un site d'empêcher les zooms avant</translation>
 <translation id="5677928146339483299">Bloqué</translation>

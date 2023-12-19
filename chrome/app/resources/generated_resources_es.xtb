@@ -2637,7 +2637,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3007410324195400631">Añadir notas sobre de esta página</translation>
 <translation id="3007771295016901659">Duplicar pestaña</translation>
 <translation id="3008232374986381779">Ejecuta IDEs, editores y herramientas de Linux en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
-<translation id="3008272652534848354">Borrar permisos</translation>
+<translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que te conectes a una red Wi‑Fi hoy para descargar una actualización. También puedes descargarla con una conexión de uso medido (sujeto a cargos).}other{<ph name="MANAGER" /> requiere que te conectes a una red Wi‑Fi y descargues una actualización antes de la fecha límite. También puedes descargarla con una conexión de uso medido (sujeto a cargos).}}</translation>
 <translation id="3009178788565917040">Salida</translation>
 <translation id="3009300415590184725">¿Seguro que quieres cancelar el proceso de configuración del servicio de datos para móviles?</translation>
@@ -3992,7 +3992,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4089235344645910861">Se ha guardado la configuración y se ha iniciado la sincronización.</translation>
 <translation id="4089817585533500276">Mayús + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">Habilitar acceso verificado</translation>
-<translation id="4090947011087001172">¿Quieres borrar los permisos del sitio web <ph name="SITE" />?</translation>
+<translation id="4090947011087001172">¿Quieres restablecer los permisos del sitio web <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Puedes consultar y gestionar las contraseñas guardadas en el <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="4093865285251893588">Imagen de perfil</translation>
 <translation id="4093955363990068916">Archivo local:</translation>

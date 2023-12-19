@@ -942,7 +942,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2922792708490674">{0,plural, =1{Fail disekat daripada dimuat turun}other{<ph name="FILE_COUNT" /> fail disekat daripada dimuat turun}}</translation>
 <translation id="2923275635648511531">Produk Perlindungan Matahari &amp; Persamakan</translation>
 <translation id="292371311537977079">Tetapan Chrome</translation>
-<translation id="2925454999967523701">Butang buat dokumen, aktifkan untuk membuat Dokumen Google baharu dengan pantas</translation>
+<translation id="2925454999967523701">Butang buat dokumen, aktifkan untuk membuat Google Docs baharu dengan pantas</translation>
 <translation id="2925673989565098301">Kaedah Penghantaran</translation>
 <translation id="2928426578619531300">Gabungan pengguna</translation>
 <translation id="2928905813689894207">Alamat Pengebilan</translation>
@@ -1811,7 +1811,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4673460618347856347">Permainan Dino, main</translation>
 <translation id="467662567472608290">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya mengandungi ralat. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintas sambungan anda.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> ingin menjawab acara kebolehaksesan</translation>
-<translation id="467809019005607715">Slaid Google</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4682496302933121474">Terjemahkan halaman?</translation>
 <translation id="468314109939257734">Lihat nombor kad maya anda</translation>
 <translation id="4687718960473379118">Iklan yang dicadangkan laman</translation>
@@ -2886,7 +2886,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6873456682041376666">Dulang Atas</translation>
 <translation id="6874604403660855544">&amp;Buat semula tambahkan</translation>
 <translation id="6880941331070119097">Pilihan harga mahal</translation>
-<translation id="6881240511396774766">Buat Dokumen Google baharu dengan pantas</translation>
+<translation id="6881240511396774766">Buat Google Docs baharu dengan pantas</translation>
 <translation id="6882210908253838664">Jika laman tidak berfungsi, anda boleh cuba memberikan kebenaran sementara untuk menggunakan kuki pihak ketiga. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Helaian pengesahan bukti kelayakan pembayaran selamat ditutup</translation>
 <translation id="6884662655240309489">Saiz 1</translation>
@@ -4075,7 +4075,7 @@ Butiran tambahan:
 <translation id="9177283544810807743">PDF ini tidak boleh diakses. Mengektrak teks, dikuasakan oleh Google AI</translation>
 <translation id="9179703756951298733">Urus maklumat pembayaran dan kad kredit anda dalam tetapan Chrome</translation>
 <translation id="9179907736442194268">Dapatkan makluman e-mel sekiranya harga turun pada mana-mana laman</translation>
-<translation id="9183302530794969518">Dokumen Google</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> menggunakan protokol yang tidak disokong.</translation>
 <translation id="918454845714257218">Semak kod pada <ph name="SIDE_OF_CARD" /> dan cuba lagi</translation>
 <translation id="9186203289258525843">Butang tetapkan Chrome sebagai penyemak imbas lalai, aktifkan untuk menetapkan Chrome sebagai penyemak imbas lalai sistem</translation>

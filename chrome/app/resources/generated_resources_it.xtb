@@ -3243,7 +3243,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3518866566087677312">Aggiungi ai preferiti i contenuti a cui vuoi tornare in un secondo momento</translation>
 <translation id="3518985090088779359">Accetta e continua</translation>
 <translation id="3519564332031442870">Servizio di backend di stampa</translation>
-<translation id="3519938335881974273">Salva pagina con nome…</translation>
+<translation id="3519938335881974273">Salva pagina come…</translation>
 <translation id="3520824492621090923">Vuoi confermare la registrazione dei dispositivi kiosk e segnaletica?</translation>
 <translation id="3521388823983121502">Impossibile continuare con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3521405806571557477">Elimina i dati salvati per <ph name="SITE_NAME" /></translation>
@@ -3484,7 +3484,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3711931198657368127">I&amp;ncolla e vai all'indirizzo <ph name="URL" /></translation>
 <translation id="3711945201266135623"><ph name="NUM_PRINTERS" /> stampanti trovate sul server di stampa</translation>
 <translation id="3712050472459130149">Aggiornamento dell'account obbligatorio</translation>
-<translation id="3712897371525859903">Salva pagina &amp;con nome...</translation>
+<translation id="3712897371525859903">Salva pagina &amp;come...</translation>
 <translation id="371300529209814631">Indietro/Avanti</translation>
 <translation id="3713047097299026954">Nessun dato di accesso memorizzato sul token di sicurezza</translation>
 <translation id="3713091615825314967">Gli aggiornamenti automatici sono attivi.</translation>
@@ -4831,7 +4831,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Rinomina rete mobile eSIM</translation>
-<translation id="4780321648949301421">Salva pagina con nome...</translation>
+<translation id="4780321648949301421">Salva pagina come...</translation>
 <translation id="4781443161433589743">Stai usando la funzionalità di sicurezza più efficace di Chrome</translation>
 <translation id="4785719467058219317">Stai usando un token di sicurezza non registrato su questo sito web</translation>
 <translation id="4785914069240823137">Annulla ritaglio</translation>
@@ -6100,7 +6100,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5828545842856466741">Aggiungi profilo…</translation>
 <translation id="5828633471261496623">Stampa in corso...</translation>
 <translation id="5830205393314753525">Impossibile aprire <ph name="APP_NAME" /></translation>
-<translation id="5830720307094128296">S&amp;alva pagina con nome...</translation>
+<translation id="5830720307094128296">S&amp;alva pagina come...</translation>
 <translation id="5831950941058843834">Vuoi eliminare le autorizzazioni e i dati del sito <ph name="SITE_NAME" />, di tutti i siti secondari e della relativa app installata?</translation>
 <translation id="5832813618714645810">Profili</translation>
 <translation id="583281660410589416">Sconosciuto</translation>
