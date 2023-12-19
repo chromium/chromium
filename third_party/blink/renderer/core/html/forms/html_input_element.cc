@@ -420,12 +420,12 @@ void HTMLInputElement::InitializeTypeInParsing() {
   }
 }
 
-void HTMLInputElement::UpdateType(const AtomicString& typeAttributeValue) {
+void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
   DCHECK(input_type_);
   DCHECK(input_type_view_);
 
   const AtomicString& new_type_name =
-      InputType::NormalizeTypeName(typeAttributeValue);
+      InputType::NormalizeTypeName(type_attribute_value);
   if (input_type_->FormControlTypeAsString() == new_type_name) {
     return;
   }
