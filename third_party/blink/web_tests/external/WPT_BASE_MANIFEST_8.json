@@ -155415,6 +155415,19 @@
         {}
        ]
       ],
+      "clip-path-url-reference-svg-foreignobject-zoomed.html": [
+       "df8d0cc89cc2211a29245797f135b98ed49e5cdc",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/green-100x100.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "clip-path-viewBox-1a.html": [
        "5b029e1ef7cfea200416bd99314c7288e44e3f60",
        [
@@ -158522,6 +158535,19 @@
         [
          [
           "/css/css-masking/mask-image/mask-position-7-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "mask-position-8.html": [
+       "cb99135fa1df5d8caa7cfec928a55bf738d78b8e",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/green-100x100.html",
           "=="
          ]
         ],
@@ -259754,6 +259780,19 @@
        {}
       ]
      ],
+     "has-style-sharing-007.html": [
+      "494ff15796af6bc0e112a51ffe1f4a0e43a06ef3",
+      [
+       null,
+       [
+        [
+         "/css/selectors/has-style-sharing-007-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "has-visited.html": [
       "8fe322c8b1751b2f4232e9898fa71bab5e203cde",
       [
@@ -284310,6 +284349,35 @@
     },
     "pservers": {
      "reftests": {
+      "gradient-color-interpolation.svg": [
+       "f7959437734230d394197d1837be2ba6ffaa7d3c",
+       [
+        null,
+        [
+         [
+          "/svg/pservers/reftests/reference/gradient-color-interpolation-ref.svg",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             20
+            ],
+            [
+             0,
+             29200
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "meshgradient-basic-001.svg": [
        "24290d40d6c37583d86aae4a098293c6cb8a6653",
        [
@@ -345367,6 +345435,10 @@
       "4c03f2150ad15fdf08b49a2dee138d25e6e91aa1",
       []
      ],
+     "has-style-sharing-007-ref.html": [
+      "0f26fb2987e0dbc25573f53c5c37d8676f7db8ec",
+      []
+     ],
      "has-visited-ref.html": [
       "3f54e2e3914f62a81c3199bbe3d8c0339b9c2ba8",
       []
@@ -371346,6 +371418,12 @@
        "3195b8671c55d4e8f5c7b449b73d4581028d5f40",
        []
       ],
+      "case-sensitivity": {
+       "values.window-expected.txt": [
+        "f44db709c3806decfb2088663b40686f99ffdd83",
+        []
+       ]
+      },
       "pseudo-classes": {
        "checked-indeterminate.window-expected.txt": [
         "15e63a9a7ad831ff201eb05ee60f1c6b2ce189ee",
@@ -372885,6 +372963,26 @@
       "35449ec5bab7c3e8ac3c61fa50a8207e667eabe2",
       []
      ],
+     "activation-trigger-keyboard-enter-expected.txt": [
+      "07edbf06dc1093051753fc4aa343be936afa463e",
+      []
+     ],
+     "activation-trigger-keyboard-escape-expected.txt": [
+      "57e8ff4711e5b7755672b875ce4c51cb8e8f705d",
+      []
+     ],
+     "activation-trigger-mouse-left-expected.txt": [
+      "18ce0222ceedcdecd35493453f2c6aab8354e640",
+      []
+     ],
+     "activation-trigger-mouse-right-expected.txt": [
+      "404856b7dbeb66a4be578ed7dde49d88e0c571b6",
+      []
+     ],
+     "activation-trigger-pointerevent_mouse-expected.txt": [
+      "1f796f76ec179759cb192d4d9404fe1958d3fbe2",
+      []
+     ],
      "propagation-sameorigin-expected.txt": [
       "6e8e5d65d08e3d1f78029107de443f94a1f1befb",
       []
@@ -372919,7 +373017,7 @@
        []
       ],
       "utils.js": [
-       "5d3302583fbd968f990c7fd58a84bdc11f31993c",
+       "8cca6654e7f3968ca540e04ccbe11faa60baa5cf",
        []
       ]
      }
@@ -390233,6 +390331,10 @@
        []
       ],
       "reference": {
+       "gradient-color-interpolation-ref.svg": [
+        "e7e475eeb16692d7e1e6c4a84c413ada74542665",
+        []
+       ],
        "green-100x100.svg": [
         "120941444a4898197d6b6001f9908a6cd48b62ba",
         []
@@ -468413,7 +468515,7 @@
       ]
      ],
      "progress-computed.tentative.html": [
-      "2f564fa14e9e1ba1cb083d00fa64ae5029d9be3b",
+      "2ef09996d55a758f17cf33987c21ca9f26e36e7f",
       [
        null,
        {}
@@ -574885,6 +574987,15 @@
       }
      },
      "selectors": {
+      "case-sensitivity": {
+       "values.window.js": [
+        "1973398bff89b62e8bd644fe8a1e5f35bf5c6ed7",
+        [
+         "html/semantics/selectors/case-sensitivity/values.window.html",
+         {}
+        ]
+       ]
+      },
       "pseudo-classes": {
        "active-disabled.html": [
         "a75a157c58f57814f421bd19aa588eaf75270f73",
@@ -618554,6 +618665,15 @@
        null,
        {}
       ]
+     ],
+     "move-around-contenteditable-false.html": [
+      "256804f17a774aa66b2da877d59e586b0648b839",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
      ]
     },
     "collapse-00.html": [
@@ -653224,7 +653344,7 @@
    },
    "webauthn": {
     "conditional-mediation.https.html": [
-     "0bec08ce45eddb1a336f421da4ed9a29b268453f",
+     "1eb2ba3b1e750b261b2ae71fbf6172c624503cb2",
      [
       null,
       {

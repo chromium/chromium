@@ -1,0 +1,96 @@
+This is a testharness.js-based test.
+Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] accept's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] accept-charset's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] align's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] alink's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] axis's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] bgcolor's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] charset's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] checked's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] clear's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] codetype's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] color's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] compact's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] declare's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] defer's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] dir's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] direction's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] disabled's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] enctype's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] face's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] frame's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] hreflang's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] http-equiv's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] lang's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] language's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] link's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] media's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] method's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] multiple's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] nohref's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] noresize's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] noshade's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] nowrap's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] readonly's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] rel's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] rev's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] rules's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] scope's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] scrolling's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] selected's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] shape's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] target's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] text's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] type's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] valign's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] valuetype's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+[FAIL] vlink's value is properly ASCII-case-insensitive for <:unknown> in HTML
+  assert_equals: ^=hey expected false but got true
+Harness: the test ran to completion.
+
