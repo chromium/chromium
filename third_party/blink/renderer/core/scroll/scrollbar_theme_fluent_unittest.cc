@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_test_suite.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/native_theme/native_theme_features.h"
 
@@ -90,6 +91,7 @@ class ScrollbarThemeFluentTest : public ::testing::TestWithParam<float> {
     return mock_scrollable_area_;
   }
 
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<ScrollbarThemeFluentMock> theme_;
 
  private:
