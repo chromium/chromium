@@ -55,18 +55,10 @@ public class PriceChangeModuleView extends FrameLayout {
     }
 
     void setCurrentPrice(String price) {
-        // TODO(crbug.com/1501138): Add the color to pre-defined text appearance styles when it's
-        // finalized.
-        mPreviousPriceView.setTextColor(
-                getContext().getColor(R.color.price_drop_annotation_text_green));
         mCurrentPriceView.setText(price);
     }
 
     void setPreviousPrice(String price) {
-        // TODO(crbug.com/1501138): Add the color to pre-defined text appearance styles when it's
-        // finalized.
-        mPreviousPriceView.setTextColor(
-                getContext().getColor(R.color.chip_text_color_secondary_list));
         mPreviousPriceView.setPaintFlags(
                 mPreviousPriceView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         mPreviousPriceView.setText(price);

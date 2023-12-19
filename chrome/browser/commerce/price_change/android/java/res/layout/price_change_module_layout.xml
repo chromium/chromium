@@ -19,7 +19,7 @@ found in the LICENSE file.
         android:layout_height="match_parent"
         android:layout_margin="@dimen/price_change_module_margin"
         android:orientation="vertical"
-        android:background="@drawable/price_change_module_background">
+        android:background="@drawable/home_surface_ui_background">
         <TextView
             android:id="@+id/header_text"
             android:layout_width="wrap_content"
@@ -40,8 +40,12 @@ found in the LICENSE file.
             <RelativeLayout
                 android:layout_height="@dimen/price_change_module_product_image_size"
                 android:layout_width="@dimen/price_change_module_product_image_size">
-                <org.chromium.ui.widget.ChromeImageView
+                <org.chromium.components.browser_ui.widget.RoundedCornerImageView
                     android:id="@+id/product_image"
+                    app:cornerRadiusBottomEnd="@dimen/price_change_module_product_image_corner_radius"
+                    app:cornerRadiusBottomStart="@dimen/price_change_module_product_image_corner_radius"
+                    app:cornerRadiusTopEnd="@dimen/price_change_module_product_image_corner_radius"
+                    app:cornerRadiusTopStart="@dimen/price_change_module_product_image_corner_radius"
                     android:layout_height="@dimen/price_change_module_product_image_size"
                     android:layout_width="@dimen/price_change_module_product_image_size"
                     android:scaleType="centerCrop" />
@@ -58,10 +62,9 @@ found in the LICENSE file.
                     android:padding="4dp" />
             </RelativeLayout>
             <LinearLayout
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/price_change_module_product_image_size"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="20dp"
                 android:orientation="vertical">
                 <LinearLayout
                     android:id="@+id/price_info_box"
@@ -78,7 +81,7 @@ found in the LICENSE file.
                         android:layout_marginEnd="4dp"
                         android:layout_marginBottom="2dp"
                         android:singleLine="true"
-                        android:textAppearance="@style/TextAppearance.TextMediumThick"
+                        android:textAppearance="@style/TextAppearance.ShoppingPriceDropText"
                         android:textAlignment="viewStart" />
                     <TextView
                         android:id="@+id/previous_price"
@@ -88,7 +91,7 @@ found in the LICENSE file.
                         android:layout_marginEnd="8dp"
                         android:layout_marginBottom="2dp"
                         android:singleLine="true"
-                        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Dark"
+                        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
                         android:textAlignment="viewStart" />
                 </LinearLayout>
                 <TextView
@@ -99,19 +102,20 @@ found in the LICENSE file.
                     android:layout_marginTop="8dp"
                     android:textAppearance="@style/TextAppearance.TextLarge.Primary"
                     android:maxLines="2"
-                    android:ellipsize="end"
-                    app:tint="@color/default_icon_color_secondary_tint_list"/>
-                <TextView
-                    android:id="@+id/price_drop_domain"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="viewStart"
-                    android:layout_marginTop="16dp"
-                    android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-                    android:layout_gravity="bottom|start"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    app:tint="@color/default_icon_color_secondary_tint_list"/>
+                    android:ellipsize="end" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/price_drop_domain"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+                </RelativeLayout>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

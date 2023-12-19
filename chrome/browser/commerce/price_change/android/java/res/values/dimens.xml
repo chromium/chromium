@@ -6,10 +6,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedResources">
   <!-- Price change module dimens -->
-    <dimen name="price_change_module_background_color_elevation">@dimen/default_elevation_0</dimen>
-    <dimen name="price_change_module_background_radius">24dp</dimen>
     <dimen name="price_change_module_favicon_background_radius">4dp</dimen>
     <dimen name="price_change_module_favicon_image_size">24dp</dimen>
     <dimen name="price_change_module_margin">20dp</dimen>
     <dimen name="price_change_module_product_image_size">116dp</dimen>
+    <dimen name="price_change_module_product_image_corner_radius">12dp</dimen>
 </resources>

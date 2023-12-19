@@ -10,6 +10,6 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedResources"
     android:shape="rectangle"
-    app:surfaceElevation="@dimen/price_change_module_background_color_elevation">
+    app:surfaceElevation="@dimen/home_surface_ui_background_color_elevation">
   <corners android:radius="@dimen/price_change_module_favicon_background_radius"/>
 </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
