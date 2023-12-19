@@ -65,6 +65,7 @@ enum class ImageCapture::MediaTrackConstraintSetType {
 namespace {
 
 using BackgroundBlurMode = media::mojom::blink::BackgroundBlurMode;
+using EyeGazeCorrectionMode = media::mojom::blink::EyeGazeCorrectionMode;
 using FillLightMode = media::mojom::blink::FillLightMode;
 using MeteringMode = media::mojom::blink::MeteringMode;
 using RedEyeReduction = media::mojom::blink::RedEyeReduction;
@@ -196,6 +197,9 @@ void CopyCommonMembers(const T* source,
   }
   if (source->hasBackgroundBlur()) {
     destination->setBackgroundBlur(source->backgroundBlur());
+  }
+  if (source->hasEyeGazeCorrection()) {
+    destination->setEyeGazeCorrection(source->eyeGazeCorrection());
   }
   if (source->hasFaceFraming()) {
     destination->setFaceFraming(source->faceFraming());
@@ -514,6 +518,10 @@ BackgroundBlurMode ParseBackgroundBlur(bool blink_mode) {
   return blink_mode ? BackgroundBlurMode::BLUR : BackgroundBlurMode::OFF;
 }
 
+EyeGazeCorrectionMode ParseEyeGazeCorrection(bool blink_mode) {
+  return blink_mode ? EyeGazeCorrectionMode::ON : EyeGazeCorrectionMode::OFF;
+}
+
 MeteringMode ParseFaceFraming(bool blink_mode) {
   return blink_mode ? MeteringMode::CONTINUOUS : MeteringMode::NONE;
 }
@@ -545,6 +553,17 @@ bool ToBooleanMode(BackgroundBlurMode mode) {
     case BackgroundBlurMode::OFF:
       return false;
     case BackgroundBlurMode::BLUR:
+      return true;
+  }
+  NOTREACHED_NORETURN();
+}
+
+bool ToBooleanMode(EyeGazeCorrectionMode mode) {
+  switch (mode) {
+    case EyeGazeCorrectionMode::OFF:
+      return false;
+    case EyeGazeCorrectionMode::ON:
+    case EyeGazeCorrectionMode::STARE:
       return true;
   }
   NOTREACHED_NORETURN();
@@ -2130,6 +2149,18 @@ void ImageCapture::ApplyMediaTrackConstraintSetToSettings(
       settings->background_blur_mode = ParseBackgroundBlur(setting);
     }
   }
+  if (constraint_set->hasEyeGazeCorrection() &&
+      effective_capabilities->hasEyeGazeCorrection()) {
+    bool has_setting = false;
+    bool setting;
+    effective_capabilities->setEyeGazeCorrection(ApplyValueConstraint(
+        &has_setting, &setting, effective_capabilities->eyeGazeCorrection(),
+        constraint_set->eyeGazeCorrection(), constraint_set_type));
+    if (has_setting) {
+      settings->eye_gaze_correction_mode.emplace(
+          ParseEyeGazeCorrection(setting));
+    }
+  }
   if (constraint_set->hasFaceFraming() &&
       effective_capabilities->hasFaceFraming()) {
     bool has_setting = false;
@@ -2312,6 +2343,16 @@ bool ImageCapture::CheckMediaTrackConstraintSet(
     MaybeRejectWithOverconstrainedError(
         resolver, "backgroundBlur",
         "backgroundBlur setting value not supported");
+    return false;
+  }
+  if (constraint_set->hasEyeGazeCorrection() &&
+      effective_capabilities->hasEyeGazeCorrection() &&
+      !CheckValueConstraint(effective_capabilities->eyeGazeCorrection(),
+                            constraint_set->eyeGazeCorrection(),
+                            constraint_set_type)) {
+    MaybeRejectWithOverconstrainedError(
+        resolver, "eyeGazeCorrection",
+        "eyeGazeCorrection setting value not supported");
     return false;
   }
   if (constraint_set->hasFaceFraming() &&
@@ -2591,12 +2632,31 @@ void ImageCapture::UpdateMediaTrackSettingsAndCapabilities(
   if (photo_state->supported_background_blur_modes &&
       !photo_state->supported_background_blur_modes->empty()) {
     Vector<bool> supported_background_blur_modes;
-    for (auto mode : *photo_state->supported_background_blur_modes)
-      supported_background_blur_modes.push_back(ToBooleanMode(mode));
+    for (auto mode : *photo_state->supported_background_blur_modes) {
+      bool boolean_mode = ToBooleanMode(mode);
+      if (!base::Contains(supported_background_blur_modes, boolean_mode)) {
+        supported_background_blur_modes.push_back(boolean_mode);
+      }
+    }
     capabilities_->setBackgroundBlur(
         std::move(supported_background_blur_modes));
     settings_->setBackgroundBlur(
         ToBooleanMode(photo_state->background_blur_mode));
+  }
+
+  if (photo_state->supported_eye_gaze_correction_modes &&
+      !photo_state->supported_eye_gaze_correction_modes->empty()) {
+    Vector<bool> supported_eye_gaze_correction_modes;
+    for (const auto& mode : *photo_state->supported_eye_gaze_correction_modes) {
+      bool boolean_mode = ToBooleanMode(mode);
+      if (!base::Contains(supported_eye_gaze_correction_modes, boolean_mode)) {
+        supported_eye_gaze_correction_modes.push_back(boolean_mode);
+      }
+    }
+    capabilities_->setEyeGazeCorrection(
+        std::move(supported_eye_gaze_correction_modes));
+    settings_->setEyeGazeCorrection(
+        ToBooleanMode(photo_state->current_eye_gaze_correction_mode));
   }
 
   if (photo_state->supported_face_framing_modes &&
@@ -2788,6 +2848,13 @@ ImageCapture::GetConstraintWithCapabilityExistenceMismatch(
           CapabilityExists(capabilities_->hasBackgroundBlur()),
           constraint_set_type)) {
     return "backgroundBlur";
+  }
+  if (constraint_set->hasEyeGazeCorrection() &&
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->eyeGazeCorrection(),
+          CapabilityExists(capabilities_->hasEyeGazeCorrection()),
+          constraint_set_type)) {
+    return "eyeGazeCorrection";
   }
   if (constraint_set->hasFaceFraming() &&
       !CheckIfCapabilityExistenceSatisfiesConstraint(

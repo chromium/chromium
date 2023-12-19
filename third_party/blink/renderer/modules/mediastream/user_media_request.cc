@@ -419,6 +419,8 @@ UserMediaRequest* UserMediaRequest::Create(
           &video_basic.tilt,
           &video_basic.zoom,
           &video_basic.background_blur,
+          &video_basic.eye_gaze_correction,
+          &video_basic.face_framing,
       };
       for (const BaseConstraint* constraint : constraints) {
         if (constraint->HasMandatory()) {

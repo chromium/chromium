@@ -352,6 +352,9 @@ void CheckExactValues(
   EXPECT_TRUE(settings->has_background_blur_mode);
   EXPECT_EQ(settings->background_blur_mode,
             media::mojom::blink::BackgroundBlurMode::BLUR);
+  EXPECT_TRUE(settings->eye_gaze_correction_mode.has_value());
+  EXPECT_EQ(settings->eye_gaze_correction_mode.value(),
+            media::mojom::blink::EyeGazeCorrectionMode::OFF);
   EXPECT_TRUE(settings->has_face_framing_mode);
   EXPECT_EQ(settings->face_framing_mode,
             media::mojom::blink::MeteringMode::CONTINUOUS);
@@ -425,6 +428,7 @@ void CheckMaxValues(const media::mojom::blink::PhotoSettingsPtr& settings,
   }
   EXPECT_FALSE(settings->has_torch);
   EXPECT_FALSE(settings->has_background_blur_mode);
+  EXPECT_FALSE(settings->eye_gaze_correction_mode.has_value());
   EXPECT_FALSE(settings->has_face_framing_mode);
 }
 
@@ -496,6 +500,7 @@ void CheckMinValues(const media::mojom::blink::PhotoSettingsPtr& settings,
   }
   EXPECT_FALSE(settings->has_torch);
   EXPECT_FALSE(settings->has_background_blur_mode);
+  EXPECT_FALSE(settings->eye_gaze_correction_mode.has_value());
   EXPECT_FALSE(settings->has_face_framing_mode);
 }
 
@@ -520,6 +525,7 @@ void CheckNoValues(const media::mojom::blink::PhotoSettingsPtr& settings,
   EXPECT_FALSE(settings->has_zoom);
   EXPECT_FALSE(settings->has_torch);
   EXPECT_FALSE(settings->has_background_blur_mode);
+  EXPECT_FALSE(settings->eye_gaze_correction_mode.has_value());
   EXPECT_FALSE(settings->has_face_framing_mode);
 }
 
@@ -604,6 +610,9 @@ void PopulateConstraintSet(
   constraint_set->setBackgroundBlur(
       MakeGarbageCollected<V8UnionBooleanOrConstrainBooleanParameters>(
           ConstraintCreator::Create(all_capabilities->backgroundBlur()[0])));
+  constraint_set->setEyeGazeCorrection(
+      MakeGarbageCollected<V8UnionBooleanOrConstrainBooleanParameters>(
+          ConstraintCreator::Create(all_capabilities->eyeGazeCorrection()[0])));
   constraint_set->setFaceFraming(
       MakeGarbageCollected<V8UnionBooleanOrConstrainBooleanParameters>(
           ConstraintCreator::Create(all_capabilities->faceFraming()[0])));
@@ -726,8 +735,10 @@ class ImageCaptureConstraintTest : public ImageCaptureTest {
     all_capabilities_->setZoom(CreateMediaSettingsRange("zo"));
     all_capabilities_->setTorch(true);
     all_capabilities_->setBackgroundBlur({true});
+    all_capabilities_->setEyeGazeCorrection({false});
     all_capabilities_->setFaceFraming({true, false});
     all_non_capabilities_->setBackgroundBlur({false});
+    all_non_capabilities_->setEyeGazeCorrection({true});
     default_settings_ = MediaTrackSettings::Create();
     default_settings_->setWhiteBalanceMode(
         all_capabilities_->whiteBalanceMode()[0]);
@@ -752,7 +763,8 @@ class ImageCaptureConstraintTest : public ImageCaptureTest {
     default_settings_->setTilt(RangeMean(all_capabilities_->tilt()));
     default_settings_->setZoom(RangeMean(all_capabilities_->zoom()));
     default_settings_->setTorch(false);
-    default_settings_->setBackgroundBlur(false);
+    default_settings_->setBackgroundBlur(true);
+    default_settings_->setEyeGazeCorrection(false);
     default_settings_->setFaceFraming(false);
     // Capabilities and default settings must be chosen so that at least
     // the constraint set {exposureCompensation: {max: ...}} with

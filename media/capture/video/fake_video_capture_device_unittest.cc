@@ -367,6 +367,15 @@ TEST_F(FakeVideoCaptureDeviceTest, GetAndSetCapabilities) {
                                    mojom::BackgroundBlurMode::BLUR));
   EXPECT_EQ(mojom::BackgroundBlurMode::OFF, state->background_blur_mode);
 
+  ASSERT_TRUE(state->supported_eye_gaze_correction_modes);
+  EXPECT_EQ(2u, state->supported_eye_gaze_correction_modes->size());
+  EXPECT_EQ(1, base::ranges::count(*state->supported_eye_gaze_correction_modes,
+                                   mojom::EyeGazeCorrectionMode::OFF));
+  EXPECT_EQ(1, base::ranges::count(*state->supported_eye_gaze_correction_modes,
+                                   mojom::EyeGazeCorrectionMode::ON));
+  EXPECT_EQ(mojom::EyeGazeCorrectionMode::OFF,
+            state->current_eye_gaze_correction_mode);
+
   // Set options: zoom to the maximum value.
   const int max_zoom_value = state->zoom->max;
   VideoCaptureDevice::SetPhotoOptionsCallback scoped_set_callback =

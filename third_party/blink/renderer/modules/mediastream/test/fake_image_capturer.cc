@@ -41,10 +41,12 @@ void FakeImageCapture::GetPhotoState(const WTF::String& source_id,
   photo_capabilities->tilt = media::mojom::blink::Range::New();
   photo_capabilities->zoom = media::mojom::blink::Range::New();
   photo_capabilities->focus_distance = media::mojom::blink::Range::New();
-  photo_capabilities->torch = false;
+  photo_capabilities->supports_torch = false;
   photo_capabilities->red_eye_reduction =
       media::mojom::blink::RedEyeReduction::NEVER;
   photo_capabilities->supported_background_blur_modes = {};
+  photo_capabilities->supported_eye_gaze_correction_modes = {};
+  photo_capabilities->supported_face_framing_modes = {};
   std::move(callback).Run(std::move(photo_capabilities));
 }
 
