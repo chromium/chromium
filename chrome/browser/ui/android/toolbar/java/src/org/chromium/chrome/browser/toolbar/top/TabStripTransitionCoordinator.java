@@ -254,6 +254,19 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
             observer.onHeightTransitionRequested(newHeight);
         }
 
+        // If the browser control is performing an browser initiated animation,
+        // we should update the view margins right away. This will make sure the
+        // toolbar stays in the same place with changes in control container's Y
+        // translation.
+        //
+        // For cc initiated transition, we'll defer the view updates until the first
+        // #onControlsOffsetChanged is called. This avoid the toolbar margins gets
+        // updated too fast before the cc layer respond, in which the Android views
+        // in the browser control are still visible.
+        if (mBrowserControlsVisibilityManager.offsetOverridden()) {
+            updateTabStripHeightImpl();
+        }
+
         if (mBrowserControlsObserver != null) return;
         mBrowserControlsObserver =
                 new BrowserControlsStateProvider.Observer() {
@@ -272,23 +285,6 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
                         // Update the margin when browser control turns into invisible. This can
                         // happen before onControlsOffsetChanged.
                         updateTabStripHeightImpl();
-                    }
-
-                    @Override
-                    public void onTopControlsHeightChanged(
-                            int topControlsHeight, int topControlsMinHeight) {
-                        // If the browser control is performing an browser initiated animation,
-                        // we should update the view margins right away. This will make sure the
-                        // toolbar stays in the same place with changes in control container's Y
-                        // translation.
-                        //
-                        // For cc initiated transition, we'll defer the view updates until the first
-                        // #onControlsOffsetChanged is called. This avoid the toolbar margins gets
-                        // updated too fast before the cc layer respond, in which the Android views
-                        // in the browser control are still visible.
-                        if (mBrowserControlsVisibilityManager.offsetOverridden()) {
-                            updateTabStripHeightImpl();
-                        }
                     }
                 };
         mBrowserControlsVisibilityManager.addObserver(mBrowserControlsObserver);

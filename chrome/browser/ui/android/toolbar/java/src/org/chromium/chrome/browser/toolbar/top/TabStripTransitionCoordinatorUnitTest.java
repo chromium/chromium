@@ -146,11 +146,9 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     @Test
     public void hideTabStripWithOffsetOverride() {
-        setDeviceWidthDp(480);
-
         // Simulate top controls size change from browser.
         doReturn(true).when(mBrowserControlsVisibilityManager).offsetOverridden();
-        getBrowserControlsObserver().onTopControlsHeightChanged(TEST_TOOLBAR_HEIGHT, 0);
+        setDeviceWidthDp(480);
         assertTabStripHeightForMargins(0);
         assertObservedHeight(0);
     }
@@ -169,10 +167,9 @@ public class TabStripTransitionCoordinatorUnitTest {
     @Test
     @Config(qualifiers = "w480dp")
     public void showTabStripWithOffsetOverride() {
-        setDeviceWidthDp(600);
         // Simulate top controls size change from browser.
         doReturn(true).when(mBrowserControlsVisibilityManager).offsetOverridden();
-        getBrowserControlsObserver().onTopControlsHeightChanged(TEST_TOOLBAR_HEIGHT, 0);
+        setDeviceWidthDp(600);
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
         assertObservedHeight(TEST_TAB_STRIP_HEIGHT);
     }
