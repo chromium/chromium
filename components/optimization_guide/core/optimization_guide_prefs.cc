@@ -64,6 +64,12 @@ const char kModelExecutionMainToggleSettingState[] =
 const char kModelQualityLogggingClientId[] =
     "optimization_guide.model_quality_logging_client_id";
 
+// A dictionary pref that stores optimization types that had filter associated
+// with this type. The entry is the OptimizationType enum. The value of the
+// key-value pair will not be used.
+const char kPreviousOptimizationTypesWithFilter[] =
+    "optimization_guide.previous_optimization_types_with_filter";
+
 // Pref that contains user opt-in state for different features.
 std::string GetSettingEnabledPrefName(proto::ModelExecutionFeature feature) {
   switch (feature) {
@@ -170,6 +176,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                    PrefRegistry::LOSSY_PREF);
   registry->RegisterInt64Pref(kModelQualityLogggingClientId, 0,
                               PrefRegistry::LOSSY_PREF);
+  registry->RegisterDictionaryPref(kPreviousOptimizationTypesWithFilter,
+                                   PrefRegistry::LOSSY_PREF);
 
   RegisterSettingsEnabledPrefs(registry);
 }

@@ -35,6 +35,7 @@
 #include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -567,6 +568,15 @@ TEST_F(HintsManagerTest, ProcessHintsWithValidCommandLineOverride) {
       proto::LITE_PAGE_REDIRECT));
   EXPECT_FALSE(hints_manager()->HasLoadedOptimizationAllowlist(
       proto::PERFORMANCE_HINTS));
+  const base::Value::Dict& previous_opt_types_with_filter =
+      pref_service()->GetDict(prefs::kPreviousOptimizationTypesWithFilter);
+  EXPECT_EQ(2u, previous_opt_types_with_filter.size());
+  EXPECT_TRUE(previous_opt_types_with_filter.contains(
+      optimization_guide::proto::OptimizationType_Name(
+          proto::LITE_PAGE_REDIRECT)));
+  EXPECT_TRUE(previous_opt_types_with_filter.contains(
+      optimization_guide::proto::OptimizationType_Name(
+          proto::PERFORMANCE_HINTS)));
 
   // Now register a new type with an allowlist that has not yet been loaded.
   hints_manager()->RegisterOptimizationTypes({proto::PERFORMANCE_HINTS});
@@ -819,6 +829,46 @@ TEST_F(HintsManagerTest, ProcessHintsWithInvalidPref) {
                                         ProcessHintsComponentResult::kSuccess,
                                         1);
   }
+}
+
+TEST_F(HintsManagerTest, ProcessHintsUpdatePreviousOptTypesWithFilter) {
+  proto::Configuration config_one;
+  BloomFilter bloom_filter_one(kDefaultHostBloomFilterNumHashFunctions,
+                               kDefaultHostBloomFilterNumBits);
+  PopulateBloomFilterWithDefaultHost(&bloom_filter_one);
+  AddBloomFilterToConfig(proto::LITE_PAGE_REDIRECT, bloom_filter_one,
+                         kDefaultHostBloomFilterNumHashFunctions,
+                         kDefaultHostBloomFilterNumBits,
+                         /*is_allowlist=*/false, &config_one);
+  AddBloomFilterToConfig(proto::PERFORMANCE_HINTS, bloom_filter_one,
+                         kDefaultHostBloomFilterNumHashFunctions,
+                         kDefaultHostBloomFilterNumBits,
+                         /*is_allowlist=*/true, &config_one);
+  ProcessHints(config_one, "1.0.0.0");
+
+  const base::Value::Dict& dic_one =
+      pref_service()->GetDict(prefs::kPreviousOptimizationTypesWithFilter);
+  EXPECT_EQ(2u, dic_one.size());
+  EXPECT_TRUE(dic_one.contains(optimization_guide::proto::OptimizationType_Name(
+      proto::LITE_PAGE_REDIRECT)));
+  EXPECT_TRUE(dic_one.contains(optimization_guide::proto::OptimizationType_Name(
+      proto::PERFORMANCE_HINTS)));
+
+  proto::Configuration config_two;
+  BloomFilter bloom_filter_two(kDefaultHostBloomFilterNumHashFunctions,
+                               kDefaultHostBloomFilterNumBits);
+  PopulateBloomFilterWithDefaultHost(&bloom_filter_two);
+  AddBloomFilterToConfig(proto::LITE_PAGE_REDIRECT, bloom_filter_two,
+                         kDefaultHostBloomFilterNumHashFunctions,
+                         kDefaultHostBloomFilterNumBits,
+                         /*is_allowlist=*/false, &config_two);
+  ProcessHints(config_two, "2.0.0.0");
+
+  const base::Value::Dict& dic_two =
+      pref_service()->GetDict(prefs::kPreviousOptimizationTypesWithFilter);
+  EXPECT_EQ(1u, dic_two.size());
+  EXPECT_TRUE(dic_two.contains(optimization_guide::proto::OptimizationType_Name(
+      proto::LITE_PAGE_REDIRECT)));
 }
 
 TEST_F(HintsManagerTest,
@@ -1099,7 +1149,10 @@ TEST_F(HintsManagerTest, CanApplyOptimizationUrlWithNoHost) {
   EXPECT_EQ(OptimizationTypeDecision::kInvalidURL, optimization_type_decision);
 }
 
-TEST_F(HintsManagerTest, CanApplyOptimizationHasFilterForTypeButNotLoadedYet) {
+TEST_F(HintsManagerTest,
+       CanApplyOptimizationHasFilterForTypeButNotLoadedYet_ComponentReady) {
+  // Simulate a situation where the component is ready, but the filter has not
+  // been loaded yet.
   proto::Configuration config;
   BloomFilter blocklist_bloom_filter(kDefaultHostBloomFilterNumHashFunctions,
                                      kDefaultHostBloomFilterNumBits);
@@ -1126,6 +1179,27 @@ TEST_F(HintsManagerTest, CanApplyOptimizationHasFilterForTypeButNotLoadedYet) {
   // Run until idle to ensure we don't crash because the test object has gone
   // away.
   RunUntilIdle();
+}
+
+TEST_F(HintsManagerTest,
+       CanApplyOptimizationHasFilterForTypeButNotLoadedYet_ComponentNotReady) {
+  // Simulate a situation where the component not ready, but we know from
+  // previous sessions that LITE_PAGE_REDIRECT type has a filter.
+  ScopedDictPrefUpdate previous_opt_types_with_filter(
+      pref_service(), prefs::kPreviousOptimizationTypesWithFilter);
+  previous_opt_types_with_filter->Set(
+      optimization_guide::proto::OptimizationType_Name(
+          proto::LITE_PAGE_REDIRECT),
+      true);
+
+  hints_manager()->RegisterOptimizationTypes({proto::LITE_PAGE_REDIRECT});
+  OptimizationTypeDecision optimization_type_decision =
+      hints_manager()->CanApplyOptimization(GURL("https://whatever.com/123"),
+                                            proto::LITE_PAGE_REDIRECT,
+                                            /*optimization_metadata=*/nullptr);
+
+  EXPECT_EQ(OptimizationTypeDecision::kHadOptimizationFilterButNotLoadedInTime,
+            optimization_type_decision);
 }
 
 TEST_F(HintsManagerTest,
