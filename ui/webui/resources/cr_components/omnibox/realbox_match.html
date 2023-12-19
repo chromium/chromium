@@ -192,18 +192,18 @@
   }
 
   #remove {
+    --cr-icon-button-fill-color:
+        var(--color-realbox-results-icon-selected);
+    display: none;
     margin-inline-end: 1px;
-    opacity: 0; /* Hides the button while keeping it in tab order. */
   }
 
-  :host-context(cr-realbox-match:hover) #remove {
-    opacity: 1;
+  .container:hover #remove {
+    display: inline-flex;
   }
 
   :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])) #remove {
-    --cr-icon-button-fill-color:
-        var(--color-realbox-results-icon-selected);
-    opacity: 1;
+    display: inline-flex;
   }
 
   .selected {
