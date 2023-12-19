@@ -553,48 +553,6 @@ TEST_F(AutofillPopupControllerImplTest,
 }
 
 TEST_F(AutofillPopupControllerImplTest,
-       RemoveAddressSuggestion_NoMetricsEmitted) {
-  base::HistogramTester histogram_tester;
-  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
-  test::GenerateTestAutofillPopup(&manager().external_delegate());
-  EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(_, PopupItemId::kAddressEntry, _))
-      .WillOnce(Return(true));
-
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
-      0,
-      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod",
-      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed,
-      0);
-  histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
-      AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
-}
-
-TEST_F(AutofillPopupControllerImplTest,
-       RemoveCreditCardSuggestion_NoMetricsEmitted) {
-  base::HistogramTester histogram_tester;
-  ShowSuggestions(manager(), {PopupItemId::kCreditCardEntry});
-  test::GenerateTestAutofillPopup(&manager().external_delegate());
-  EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(_, PopupItemId::kCreditCardEntry, _))
-      .WillOnce(Return(true));
-
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
-      0,
-      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod",
-      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed,
-      0);
-  histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
-      AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
-}
-
-TEST_F(AutofillPopupControllerImplTest,
        RemoveAutocompleteSuggestion_NoMetricsEmittedOnFail) {
   base::HistogramTester histogram_tester;
   ShowSuggestions(manager(), {PopupItemId::kAutocompleteEntry});
@@ -634,6 +592,87 @@ TEST_F(AutofillPopupControllerImplTest,
   histogram_tester.ExpectUniqueSample(
       "Autocomplete.Events2",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 1);
+  // Also no autofill metrics are emitted.
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 0);
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       RemoveAddressSuggestion_NoMetricsEmittedOnFail) {
+  base::HistogramTester histogram_tester;
+  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+  EXPECT_CALL(manager().external_delegate(),
+              RemoveSuggestion(_, PopupItemId::kAddressEntry, _))
+      .WillOnce(Return(false));
+
+  EXPECT_FALSE(client().popup_controller(manager()).RemoveSuggestion(
+      0,
+      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 0);
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       RemoveAddressSuggestion_NoMetricsEmittedOnKeyboardAccessory) {
+  base::HistogramTester histogram_tester;
+  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+  EXPECT_CALL(manager().external_delegate(),
+              RemoveSuggestion(_, PopupItemId::kAddressEntry, _))
+      .WillOnce(Return(true));
+
+  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
+      0, AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 0);
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       RemoveAddressSuggestion_MetricsEmittedOnSuccess) {
+  base::HistogramTester histogram_tester;
+  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+  EXPECT_CALL(manager().external_delegate(),
+              RemoveSuggestion(_, PopupItemId::kAddressEntry, _))
+      .WillOnce(Return(true));
+
+  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
+      0,
+      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 1);
+  // Also no autocomplete metrics are emitted.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Autocomplete.SingleEntryRemovalMethod",
+      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed,
+      0);
+  histogram_tester.ExpectUniqueSample(
+      "Autocomplete.Events2",
+      AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       RemoveCreditCardSuggestion_NoMetricsEmitted) {
+  base::HistogramTester histogram_tester;
+  ShowSuggestions(manager(), {PopupItemId::kCreditCardEntry});
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+  EXPECT_CALL(manager().external_delegate(),
+              RemoveSuggestion(_, PopupItemId::kCreditCardEntry, _))
+      .WillOnce(Return(true));
+
+  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
+      0,
+      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Autocomplete.SingleEntryRemovalMethod",
+      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed,
+      0);
+  histogram_tester.ExpectUniqueSample(
+      "Autocomplete.Events2",
+      AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 0);
 }
 
 TEST_F(AutofillPopupControllerImplTest,

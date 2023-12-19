@@ -3184,6 +3184,14 @@ std::string AutofillMetrics::GetHistogramStringForCardType(
 }
 
 // static
+void AutofillMetrics::LogDeleteAddressProfileFromPopup() {
+  base::UmaHistogramBoolean("Autofill.ProfileDeleted.Popup",
+                            /*delete_confirmed=*/true);
+  base::UmaHistogramBoolean("Autofill.ProfileDeleted.Any",
+                            /*delete_confirmed=*/true);
+}
+
+// static
 uint64_t AutofillMetrics::FormGlobalIdToHash64Bit(
     const FormGlobalId& form_global_id) {
   return StrToHash64Bit(

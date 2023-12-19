@@ -1371,6 +1371,10 @@ class AutofillMetrics {
       const FormStructure& form,
       const base::TimeTicks& form_submitted_timestamp);
 
+  // This metric is recorded when an address is deleted from a first-level popup
+  // using shift+delete.
+  static void LogDeleteAddressProfileFromPopup();
+
  private:
   static void Log(AutocompleteEvent event);
 };

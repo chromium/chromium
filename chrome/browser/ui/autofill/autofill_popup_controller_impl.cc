@@ -25,6 +25,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
@@ -643,13 +644,38 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
           suggestions_[list_index].GetPayload<Suggestion::BackendId>())) {
     return false;
   }
-  if (suggestion_type == PopupItemId::kAutocompleteEntry) {
-    AutofillMetrics::OnAutocompleteSuggestionDeleted(removal_method);
-    if (view_) {
-      view_->AxAnnounce(l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_AUTOCOMPLETE_ENTRY_DELETED_A11Y_HINT,
-          suggestions_[list_index].main_text.value));
-    }
+  switch (GetFillingProductFromPopupItemId(suggestion_type)) {
+    case FillingProduct::kAddress:
+      switch (removal_method) {
+        case AutofillMetrics::SingleEntryRemovalMethod::
+            kKeyboardShiftDeletePressed:
+          AutofillMetrics::LogDeleteAddressProfileFromPopup();
+          break;
+        case AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory:
+          // TODO(1509457): Add metrics for keyboard accessory deletion.
+          break;
+        case AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked:
+          NOTREACHED_NORETURN();
+      }
+      break;
+    case FillingProduct::kAutocomplete:
+      AutofillMetrics::OnAutocompleteSuggestionDeleted(removal_method);
+      if (view_) {
+        view_->AxAnnounce(l10n_util::GetStringFUTF16(
+            IDS_AUTOFILL_AUTOCOMPLETE_ENTRY_DELETED_A11Y_HINT,
+            suggestions_[list_index].main_text.value));
+      }
+      break;
+    case FillingProduct::kCreditCard:
+      // TODO(1509457): Add metrics for credit cards.
+      break;
+    case FillingProduct::kNone:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kIban:
+    case FillingProduct::kPasswordManager:
+    case FillingProduct::kCompose:
+    case FillingProduct::kPlusAddresses:
+      break;
   }
 
   // Remove the deleted element.
