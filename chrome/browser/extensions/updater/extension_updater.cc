@@ -58,8 +58,8 @@
 
 using base::RandDouble;
 using base::UnguessableToken;
-typedef extensions::ExtensionDownloaderDelegate::Error Error;
-typedef extensions::ExtensionDownloaderDelegate::PingResult PingResult;
+using Error = extensions::ExtensionDownloaderDelegate::Error;
+using PingResult = extensions::ExtensionDownloaderDelegate::PingResult;
 
 namespace {
 
