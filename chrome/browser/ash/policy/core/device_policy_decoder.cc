@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -19,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/policy/handlers/device_dlc_predownload_list_policy_handler.h"
 #include "chrome/browser/ash/policy/off_hours/off_hours_proto_parser.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -76,30 +76,20 @@ void SetJsonDevicePolicy(
   }
 }
 
-base::Value::List ProtoToList(const RepeatedPtrField<std::string>& strings) {
-  base::Value::List result = base::Value::List::with_capacity(strings.size());
-  for (const auto& value : strings) {
-    result.Append(value);
-  }
-  return result;
-}
-
 void SetDeviceDlcPredownloadListPolicy(
     const RepeatedPtrField<std::string>& raw_policy_value,
     PolicyMap* policies) {
-  std::string error;
-  std::optional<base::Value::List> decoded_dlc_list =
-      DecodeDeviceDlcPredownloadListPolicy(raw_policy_value, &error);
-  base::Value::List value_to_set = decoded_dlc_list.has_value()
-                                       ? std::move(decoded_dlc_list.value())
-                                       : ProtoToList(raw_policy_value);
+  std::string warning;
+  base::Value::List decoded_dlc_list =
+      policy::DeviceDlcPredownloadListPolicyHandler::
+          DecodeDeviceDlcPredownloadListPolicy(raw_policy_value, warning);
   policies->Set(key::kDeviceDlcPredownloadList, POLICY_LEVEL_MANDATORY,
                 POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                base::Value(std::move(value_to_set)), nullptr);
-  if (!error.empty()) {
+                base::Value(std::move(decoded_dlc_list)), nullptr);
+  if (!warning.empty()) {
     policies->AddMessage(
-        key::kDeviceDlcPredownloadList, PolicyMap::MessageType::kError,
-        IDS_POLICY_PROTO_PARSING_ERROR, {base::UTF8ToUTF16(error)});
+        key::kDeviceDlcPredownloadList, PolicyMap::MessageType::kWarning,
+        IDS_POLICY_PROTO_PARSING_ERROR, {base::UTF8ToUTF16(warning)});
   }
 }
 
@@ -2315,34 +2305,6 @@ std::optional<base::Value> DecodeJsonStringAndNormalize(
   }
 
   return root;
-}
-
-// TODO (b/297008279): move this function to the class that will manage pre
-// downloading DLCs.
-std::optional<base::Value::List> DecodeDeviceDlcPredownloadListPolicy(
-    const RepeatedPtrField<std::string>& raw_policy_value,
-    std::string* error) {
-  constexpr auto policy_value_to_dlc_id =
-      base::MakeFixedFlatMap<absl::string_view, absl::string_view>(
-          {{"scanner_drivers", "sane-backends-extras-dlc"}});
-
-  base::Value::List dlcs_to_predownload =
-      base::Value::List::with_capacity(raw_policy_value.size());
-  for (const auto& dlc_to_predownload : raw_policy_value) {
-    // TODO (b/297008279): handle case when there is an invalid value. In this
-    // case we should return an info message and skip this particular DLC
-    // without failing.
-    if (policy_value_to_dlc_id.contains(dlc_to_predownload)) {
-      const absl::string_view& dlc_id =
-          policy_value_to_dlc_id.at(dlc_to_predownload);
-      if (!base::Contains(dlcs_to_predownload, dlc_id)) {
-        // Silently ignore duplicate values.
-        dlcs_to_predownload.Append(dlc_id);
-      }
-    }
-  }
-
-  return dlcs_to_predownload;
 }
 
 void DecodeDevicePolicy(

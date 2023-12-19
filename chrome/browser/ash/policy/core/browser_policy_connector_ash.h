@@ -40,6 +40,7 @@ class BluetoothPolicyHandler;
 class CrdAdminSessionController;
 class DeviceCloudExternalDataPolicyHandler;
 class DeviceCloudPolicyInitializer;
+class DeviceDlcPredownloadListPolicyHandler;
 class DeviceDockMacAddressHandler;
 class DeviceLocalAccountPolicyService;
 class DeviceNamePolicyHandler;
@@ -275,6 +276,8 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   std::unique_ptr<RebootNotificationsScheduler> reboot_notifications_scheduler_;
   std::unique_ptr<DeviceScheduledRebootHandler>
       device_scheduled_reboot_handler_;
+  std::unique_ptr<DeviceDlcPredownloadListPolicyHandler>
+      device_dlc_predownload_list_policy_handler_;
 
   // This policy provider is used on Chrome OS to feed user policy into the
   // global PolicyService instance. This works by installing the cloud policy
