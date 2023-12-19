@@ -10185,7 +10185,6 @@
 <translation id="8999027165951679951">უმოქმედო ჩანართი: გათავისუფლებულია <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">სექციის სინტაქსის შეცდომა: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">შეეხეთ თითის ანაბეჭდის სენსორს, რომელიც მდებარეობს თქვენი <ph name="DEVICE_TYPE" />-ის მარჯვენა მხარეს. თქვენი თითის ანაბეჭდის მონაცემები უსაფრთხოდ შეინახება მხოლოდ და მხოლოდ თქვენს <ph name="DEVICE_TYPE" />-ზე.</translation>
-<translation id="9000532564152265066">ყველა ჩანართი</translation>
 <translation id="9003185744423389627">მოწყობილობათა მართვის სერვერთან კავშირი ვერ შედგა სტატუსით „<ph name="STATUS_TEXT" />“, <ph name="FAILURE_TIME" />-ზე</translation>
 <translation id="90033698482696970">გსურთ, ხელმისაწვდომი eSIM პროფილები ავტომატურად დასკანირდეს?</translation>
 <translation id="9003647077635673607">ყველა ვებსაიტზე დაშვება</translation>

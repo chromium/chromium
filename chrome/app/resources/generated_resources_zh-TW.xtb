@@ -1348,7 +1348,7 @@
 <translation id="2020183425253392403">顯示網路位址設定</translation>
 <translation id="2020225359413970060">掃描檔案</translation>
 <translation id="2020779321517562133">移除副本</translation>
-<translation id="2022953316617983419">QR 圖碼</translation>
+<translation id="2022953316617983419">QR code</translation>
 <translation id="2023042679320690325"><ph name="BRAND" />無法檢查你的密碼是否在資料侵害事件中外洩，請過 24 小時後再試一次。</translation>
 <translation id="2023167225947895179">你所輸入的 PIN 碼可能很容易被別人猜到</translation>
 <translation id="202352106777823113">下載時間過長，網路已中止下載。</translation>
@@ -1557,7 +1557,7 @@
 <translation id="2173801458090845390">新增這部裝置的申請 ID</translation>
 <translation id="2175384018164129879">管理搜尋引擎和站內搜尋</translation>
 <translation id="217576141146192373">無法新增印表機。請檢查你的印表機設定，然後再試一次。</translation>
-<translation id="2175927920773552910">QR 圖碼</translation>
+<translation id="2175927920773552910">QR code</translation>
 <translation id="2177306523871626993">正在下載文字辨識檔案… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">無痕式分頁：<ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -6608,6 +6608,7 @@
 <translation id="6195155925303302899">置中對齊</translation>
 <translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6195693561221576702">這個裝置無法設為離線示範模式。</translation>
+<translation id="6196607555925437199">重新建立</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6196854373336333322">您的 Proxy 設定已受到擴充功能「<ph name="EXTENSION_NAME" />」控制，該擴充功能可變更、中斷、或監視您在網路上的行為。如果您不確定這項變更的發生原因，建議您停用該擴充功能。</translation>
 <translation id="6197128521826316819">為這個頁面建立 QR 圖碼</translation>
@@ -10182,7 +10183,6 @@
 <translation id="8999027165951679951">閒置分頁：已釋出 <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">區段語法錯誤：<ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">請輕觸「<ph name="DEVICE_TYPE" />」右側的指紋感應器。你的指紋資料會安全地儲存在「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>
-<translation id="9000532564152265066">所有分頁</translation>
 <translation id="9003185744423389627">連線至裝置管理工具伺服器失敗，狀態顯示為「<ph name="STATUS_TEXT" />」在「<ph name="FAILURE_TIME" />」的時候</translation>
 <translation id="90033698482696970">要自動掃描可用的 eSIM 卡設定檔嗎？</translation>
 <translation id="9003647077635673607">允許在所有網站上執行</translation>

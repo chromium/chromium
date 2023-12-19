@@ -511,7 +511,7 @@
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 टैब}one{# टैब}other{# टैब}}</translation>
 <translation id="3795154175078851242">लिंक के साथ इमेज कॉपी करें</translation>
 <translation id="3810838688059735925">वीडियो</translation>
-<translation id="3810973564298564668">प्रबंधित करें</translation>
+<translation id="3810973564298564668">मैनेज करें</translation>
 <translation id="381861209280417772">पासवर्ड मिटाएं</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड हटाए गए</translation>
 <translation id="3819183753496523827">आप ऑफ़लाइन हैं. अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें.</translation>
@@ -629,6 +629,7 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> टैब बंद करें</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> में बुकमार्क किया गया</translation>
 <translation id="4461614516424362539">क्यूआर कोड की मदद से किसी दूसरे डिवाइस को लिंक करने पर, इस फ़ोन का इस्तेमाल सुरक्षा कुंजी के तौर पर किया जा सकता है. इसे हटाने पर, डिवाइस को लिंक करने के लिए आपको फिर से कोई क्यूआर कोड स्कैन करना पड़ेगा.</translation>
+<translation id="4478161224666880173">इस साइट पर, अपने <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> खाते का इस्तेमाल किया जा सकता है. जारी रखने के लिए, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> खाते में साइन इन करें.</translation>
 <translation id="4479972344484327217">Chrome के लिए <ph name="MODULE" /> इंस्टॉल किया जा रहा है…</translation>
 <translation id="4484496141267039529">इंटरनेट कनेक्शन नहीं है. कुछ देर बाद कोशिश करें.</translation>
 <translation id="4487967297491345095">Chrome का सभी ऐप्लिकेशन डेटा हमेशा केे लिए हटा दिया जाएगा. इसमें सभी फ़ाइलें, सेटिंग, खाते, डेटाबेस वगैरह शामिल हैं.</translation>
@@ -1241,7 +1242,7 @@
 <translation id="749294055653435199">इस डिवाइस पर Google Lens नहीं है</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> अपडेट किया गया)</translation>
 <translation id="7497755084107113646">इस विषय को संभावित विषयों में वापस जोड़ा गया</translation>
-<translation id="7498271377022651285">कृपया प्रतीक्षा करें...</translation>
+<translation id="7498271377022651285">कृपया इंतज़ार करें...</translation>
 <translation id="7502234197872745058">सभी वेबसाइटों पर अपने Google खाते से साइन आउट करने के लिए, <ph name="BEGIN_LINK1" />Chrome से साइन आउट करें<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">कोई अपडेट उपलब्ध नहीं है</translation>
 <translation id="7507207699631365376">इस सेवा देने वाले की <ph name="BEGIN_LINK" />निजता नीति<ph name="END_LINK" /> देखें</translation>

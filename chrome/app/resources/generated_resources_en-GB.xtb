@@ -6629,6 +6629,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6195155925303302899">Align centre</translation>
 <translation id="6195163219142236913">Third-party cookies limited</translation>
 <translation id="6195693561221576702">This device cannot be set up in offline demo mode.</translation>
+<translation id="6196607555925437199">Recreate</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
 <translation id="6196854373336333322">The extension "<ph name="EXTENSION_NAME" />" has taken control of your proxy settings, which means it can change, break or eavesdrop on anything you do online. If you aren't sure why this change happened, you probably don't want it.</translation>
 <translation id="6197128521826316819">Create QR code for this page</translation>
@@ -10203,7 +10204,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8999027165951679951">Inactive tab: <ph name="MEMORY_SAVINGS" /> freed up</translation>
 <translation id="8999560016882908256">Section syntax error: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Touch the fingerprint sensor at the right hand side of your <ph name="DEVICE_TYPE" />. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
-<translation id="9000532564152265066">All tabs</translation>
 <translation id="9003185744423389627">Connection to Device Management Server failed with status ‘<ph name="STATUS_TEXT" />’ at <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Automatically scan for available eSIM profiles?</translation>
 <translation id="9003647077635673607">Allow on all websites</translation>

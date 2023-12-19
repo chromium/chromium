@@ -4497,7 +4497,7 @@
 <translation id="4470957202018033307">Параметри зовнішньої пам'яті</translation>
 <translation id="4471354919263203780">Завантажуються файли для розпізнавання мовлення… <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Ви можете використовувати мову облікового запису Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
-<translation id="447252321002412580">Допоможіть покращити функції й ефективність Chrome</translation>
+<translation id="447252321002412580">Допоможіть покращити функції і ефективність Chrome</translation>
 <translation id="4472575034687746823">Початок роботи</translation>
 <translation id="4473996011558324141">визначення часу</translation>
 <translation id="4474155171896946103">Додати всі вкладки в закладки…</translation>
@@ -6629,6 +6629,7 @@
 <translation id="6195155925303302899">Вирівняти по центру</translation>
 <translation id="6195163219142236913">Сторонні файли cookie обмежено</translation>
 <translation id="6195693561221576702">Не вдається налаштувати пристрій у демо-режимі офлайн.</translation>
+<translation id="6196607555925437199">Повторно створити</translation>
 <translation id="6196640612572343990">Блокувати сторонні файли cookie</translation>
 <translation id="6196854373336333322">Розширення "<ph name="EXTENSION_NAME" />" керує налаштуваннями проксі-сервера, тобто може змінювати та переривати будь-які ваші дії онлайн, а також стежити за ними. Якщо ви не знаєте причини такої зміни, імовірно, вона небажана.</translation>
 <translation id="6197128521826316819">Створити QR-код для цієї сторінки</translation>
@@ -10211,7 +10212,6 @@
 <translation id="8999027165951679951">Неактивна вкладка: звільнено <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">Синтаксична помилка в розділі: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Торкніться сканера відбитків пальців на правому боці пристрою <ph name="DEVICE_TYPE" />. <ph name="DEVICE_TYPE" /> надійно зберігає дані про відбиток і нікуди не надсилає їх.</translation>
-<translation id="9000532564152265066">Усі вкладки</translation>
 <translation id="9003185744423389627">Не вдалося підключитися до сервера керування пристроями. Статус станом на <ph name="FAILURE_TIME" />: "<ph name="STATUS_TEXT" />".</translation>
 <translation id="90033698482696970">Автоматично сканувати доступні профілі eSIM?</translation>
 <translation id="9003647077635673607">Дозволити на всіх веб-сайтах</translation>
