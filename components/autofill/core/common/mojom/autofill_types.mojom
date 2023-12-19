@@ -137,12 +137,13 @@ enum SubmissionIndicatorEvent {
   XHR_SUCCEEDED = 3,
   FRAME_DETACHED = 4,
   // DEPRECATED_MANUAL_SAVE,
-  DOM_MUTATION_AFTER_XHR = 6,
+  // DEPRECATED_DOM_MUTATION_AFTER_XHR = 6,
   // DEPRECATED_PROVISIONALLY_SAVED_FORM_ON_START_PROVISIONAL_LOAD,
   // DEPRECATED_FILLED_FORM_ON_START_PROVISIONAL_LOAD,
   // DEPRECATED_FILLED_INPUT_ELEMENTS_ON_START_PROVISIONAL_LOAD,
   PROBABLE_FORM_SUBMISSION = 10,
   CHANGE_PASSWORD_FORM_CLEARED = 11,
+  DOM_MUTATION_AFTER_AUTOFILL = 12,
 };
 
 enum SubmissionSource {
@@ -156,9 +157,6 @@ enum SubmissionSource {
   XHR_SUCCEEDED,
   // The subframe or non-primary main frame containing the form was detached.
   FRAME_DETACHED,
-  // After a successful XHR, the last interacted form became inaccessible or was
-  // removed (this is an asynchronous sibling of XHR_SUCCEEDED).
-  DOM_MUTATION_AFTER_XHR,
   // A mainframe navigation was started which was initiated in the content area
   // (i.e. not clicking on a bookmark or typing a URL in the omnibar), not by
   // a link click. Only observed after the user interacted with a form.
@@ -166,6 +164,8 @@ enum SubmissionSource {
   // Normal form submission (i.e. user presses the submit button and no
   // JavaScript is involved). Observed via RenderFrameObserver::WillSubmitForm.
   FORM_SUBMISSION,
+  // The form or field was hidden or removed after autofilling it.
+  DOM_MUTATION_AFTER_AUTOFILL,
 };
 
 enum FocusedFieldType {

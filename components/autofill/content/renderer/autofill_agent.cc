@@ -1620,6 +1620,9 @@ void AutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
     // This source is handled by `AutofillAgent::OnProbablyFormSubmitted`.
     case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
       NOTREACHED_NORETURN();
+    // This source is only interesting for PasswordManager.
+    case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
+      return;
     case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
       // TODO(crbug.com/1483242): Investigate if discarding subframe same
       // document navigation is necessary: if it is, document the reason, if
@@ -1648,7 +1651,6 @@ void AutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
       }
       break;
     case mojom::SubmissionSource::XHR_SUCCEEDED:
-    case mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR:
       if (std::optional<FormData> form_data = GetSubmittedForm()) {
         FireHostSubmitEvents(*form_data, /*known_success=*/true, source);
       }

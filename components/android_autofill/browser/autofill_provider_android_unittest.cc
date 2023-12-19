@@ -500,12 +500,11 @@ TEST_F(AutofillProviderAndroidTest, FormSubmissionHappensOnReset) {
 
   EXPECT_CALL(provider_bridge(), OnFormSubmitted).Times(0);
   android_autofill_manager().SimulateOnFormSubmitted(
-      form, /*known_success=*/false,
-      mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR);
+      form, /*known_success=*/false, mojom::SubmissionSource::XHR_SUCCEEDED);
   Mock::VerifyAndClearExpectations(&provider_bridge());
 
   EXPECT_CALL(provider_bridge(),
-              OnFormSubmitted(mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR));
+              OnFormSubmitted(mojom::SubmissionSource::XHR_SUCCEEDED));
   android_autofill_manager().Reset();
 }
 
@@ -535,12 +534,11 @@ TEST_F(AutofillProviderAndroidTest, FormSubmissionHappensOnFrameDestruction) {
 
   EXPECT_CALL(provider_bridge(), OnFormSubmitted).Times(0);
   android_autofill_manager(child_rfh).SimulateOnFormSubmitted(
-      form, /*known_success=*/false,
-      mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR);
+      form, /*known_success=*/false, mojom::SubmissionSource::XHR_SUCCEEDED);
   Mock::VerifyAndClearExpectations(&provider_bridge());
 
   EXPECT_CALL(provider_bridge(),
-              OnFormSubmitted(mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR));
+              OnFormSubmitted(mojom::SubmissionSource::XHR_SUCCEEDED));
   content::RenderFrameHostTester::For(std::exchange(child_rfh, nullptr))
       ->Detach();
 }

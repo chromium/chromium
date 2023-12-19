@@ -2417,13 +2417,13 @@ TEST_F(FormStructureTestImpl,
                     static_cast<int>(SubmissionIndicatorEvent::FRAME_DETACHED),
                 "FRAME_DETACHED enumerator does not match!");
   static_assert(
-      AutofillUploadContents::DOM_MUTATION_AFTER_XHR ==
-          static_cast<int>(SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR),
-      "DOM_MUTATION_AFTER_XHR enumerator does not match!");
-  static_assert(
       AutofillUploadContents::PROBABLE_FORM_SUBMISSION ==
           static_cast<int>(SubmissionIndicatorEvent::PROBABLE_FORM_SUBMISSION),
       "PROBABLE_FORM_SUBMISSION enumerator does not match!");
+  static_assert(AutofillUploadContents::DOM_MUTATION_AFTER_AUTOFILL ==
+                    static_cast<int>(
+                        SubmissionIndicatorEvent::DOM_MUTATION_AFTER_AUTOFILL),
+                "DOM_MUTATION_AFTER_AUTOFILL enumerator does not match!");
 }
 
 TEST_F(FormStructureTestImpl, ButtonTitleType_Match) {

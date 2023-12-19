@@ -9,6 +9,7 @@
 #include "base/observer_list.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/features.h"
@@ -219,7 +220,7 @@ void FormTracker::TrackAutofilledElement(const WebFormControlElement& element) {
     last_interacted_form_ = FormRef(element.Form());
   // TODO(crbug.com/1483242): Investigate if this is necessary: if it is,
   // document the reason, if not, remove.
-  TrackElement();
+  TrackElement(mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
 }
 
 void FormTracker::FormControlDidChangeImpl(
@@ -351,7 +352,7 @@ void FormTracker::FireSubmissionIfFormDisappear(SubmissionSource source) {
     FireInferredFormSubmission(source);
     return;
   }
-  TrackElement();
+  TrackElement(source);
 }
 
 bool FormTracker::CanInferFormSubmitted() {
@@ -374,12 +375,12 @@ bool FormTracker::CanInferFormSubmitted() {
   return false;
 }
 
-void FormTracker::TrackElement() {
+void FormTracker::TrackElement(mojom::SubmissionSource source) {
   // Already has observer for last interacted element.
   if (form_element_observer_)
     return;
   auto callback = base::BindOnce(&FormTracker::ElementWasHiddenOrRemoved,
-                                 base::Unretained(this));
+                                 base::Unretained(this), source);
 
   if (WebFormElement last_interacted_form = last_interacted_form_.GetForm();
       !last_interacted_form.IsNull()) {
@@ -402,8 +403,8 @@ void FormTracker::ResetLastInteractedElements() {
   }
 }
 
-void FormTracker::ElementWasHiddenOrRemoved() {
-  FireInferredFormSubmission(SubmissionSource::DOM_MUTATION_AFTER_XHR);
+void FormTracker::ElementWasHiddenOrRemoved(mojom::SubmissionSource source) {
+  FireInferredFormSubmission(source);
 }
 
 }  // namespace autofill

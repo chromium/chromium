@@ -494,12 +494,12 @@ const char* SubmissionSourceToString(SubmissionSource source) {
       return "XHR_SUCCEEDED";
     case SubmissionSource::FRAME_DETACHED:
       return "FRAME_DETACHED";
-    case SubmissionSource::DOM_MUTATION_AFTER_XHR:
-      return "DOM_MUTATION_AFTER_XHR";
     case SubmissionSource::PROBABLY_FORM_SUBMITTED:
       return "PROBABLY_FORM_SUBMITTED";
     case SubmissionSource::FORM_SUBMISSION:
       return "FORM_SUBMISSION";
+    case SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
+      return "DOM_MUTATION_AFTER_AUTOFILL";
   }
   return "Unknown";
 }

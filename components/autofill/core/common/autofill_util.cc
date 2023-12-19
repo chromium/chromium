@@ -175,12 +175,12 @@ SubmissionIndicatorEvent ToSubmissionIndicatorEvent(SubmissionSource source) {
       return SubmissionIndicatorEvent::XHR_SUCCEEDED;
     case SubmissionSource::FRAME_DETACHED:
       return SubmissionIndicatorEvent::FRAME_DETACHED;
-    case SubmissionSource::DOM_MUTATION_AFTER_XHR:
-      return SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR;
     case SubmissionSource::PROBABLY_FORM_SUBMITTED:
       return SubmissionIndicatorEvent::PROBABLE_FORM_SUBMISSION;
     case SubmissionSource::FORM_SUBMISSION:
       return SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
+    case SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
+      return SubmissionIndicatorEvent::DOM_MUTATION_AFTER_AUTOFILL;
   }
 
   NOTREACHED();

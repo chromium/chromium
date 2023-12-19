@@ -394,10 +394,7 @@ succeeded):
   (`AutofillAgent::AjaxSucceeded()`), the last interacted form is/becomes
   unfocusable or removed.
   * Triggers `SubmissionSource::XHR_SUCCEEDED` if the form is already
-    inaccessible or removed when the XHR succeeds (`known_success=true`).
-  * Triggers `SubmissionSource::DOM_MUTATION_AFTER_XHR` if the form becomes
-    inaccessible or removed after a successful XHR and the user does not
-    interact with any other forms in between (`known_success=true`).
+    inaccessible or removed and the XHR succeeds (`known_success=true`).
 * The **subframe** or non-primary main frame containing the form was
   **detached** (`FormTracker::WillDetach()`)
   * Triggers `SubmissionSource::FRAME_DETACHED` with `known_success=true`.

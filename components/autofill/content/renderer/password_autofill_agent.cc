@@ -1927,9 +1927,9 @@ void PasswordAutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
       }
       CleanupOnDocumentShutdown();
       return;
-    case mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR:
     case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
     case mojom::SubmissionSource::XHR_SUCCEEDED:
+    case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
       if (FrameCanAccessPasswordManager()) {
         GetPasswordManagerDriver().DynamicFormSubmission(
             ToSubmissionIndicatorEvent(source));

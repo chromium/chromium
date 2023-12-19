@@ -2090,12 +2090,12 @@ const char* AutofillMetrics::SubmissionSourceToUploadEventMetric(
       return "Autofill.UploadEvent.XhrSucceeded";
     case SubmissionSource::FRAME_DETACHED:
       return "Autofill.UploadEvent.FrameDetached";
-    case SubmissionSource::DOM_MUTATION_AFTER_XHR:
-      return "Autofill.UploadEvent.DomMutationAfterXhr";
     case SubmissionSource::PROBABLY_FORM_SUBMITTED:
       return "Autofill.UploadEvent.ProbablyFormSubmitted";
     case SubmissionSource::FORM_SUBMISSION:
       return "Autofill.UploadEvent.FormSubmission";
+    case SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
+      return "Autofill.UploadEvent.DomMutationAfterAutofill";
   }
   // Unit tests exercise this path, so do not put NOTREACHED() here.
   return "Autofill.UploadEvent.Unknown";

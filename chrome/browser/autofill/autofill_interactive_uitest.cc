@@ -4071,11 +4071,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 
   // Ensure that only expected form submissions are recorded.
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
-  EXPECT_CALL(
-      *autofill_manager(),
-      OnFormSubmittedImpl(HasExpectedValues(),
-                          /*known_success=*/true,
-                          mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR))
+  EXPECT_CALL(*autofill_manager(),
+              OnFormSubmittedImpl(HasExpectedValues(),
+                                  /*known_success=*/true,
+                                  mojom::SubmissionSource::XHR_SUCCEEDED))
       .Times(1)
       .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
 
@@ -4085,13 +4084,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
       const xhr = new XMLHttpRequest();
       xhr.open('GET', '/xhr', true);
       xhr.onload = () => {
-        // SubmissionSource::DOM_MUTATION_AFTER_XHR is triggered if a form
+        // SubmissionSource::XHR_SUCCEEDED is triggered if a form
         // is hidden an XHR was observed.
-        // The DOM modification has to happen asynchronously. Otherwise this
-        // is reported as an XHR_SUCCEEDED event.
-        setTimeout(() => {
-            document.getElementById('shipping').style.display = 'none';
-          }, 50);
+        document.getElementById('shipping').style.display = 'none';
       }
       xhr.send(null);
       )");

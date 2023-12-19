@@ -5154,7 +5154,8 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="AutofillUploadEvents">
     <variant name=""/>
-    <variant name=".DomMutationAfterXhr" summary="DOM Mutation After XHR"/>
+    <variant name=".DomMutationAfterAutofill"
+        summary="DOM Mutation After Autofill"/>
     <variant name=".FormSubmission" summary="Form Submission"/>
     <variant name=".FrameDetached" summary="Frame Detached"/>
     <variant name=".None" summary="None"/>

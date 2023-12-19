@@ -1097,9 +1097,9 @@ TEST_F(FormAutocompleteTest, FormSubmittedByDOMMutationAfterXHR) {
   ExecuteJavaScriptForTests(hide_elements.c_str());
   base::RunLoop().RunUntilIdle();
 
-  VerifyReceivedAddressRendererMessages(
-      fake_driver_, "City", true /* expect_known_success */,
-      SubmissionSource::DOM_MUTATION_AFTER_XHR);
+  VerifyReceivedAddressRendererMessages(fake_driver_, "City",
+                                        true /* expect_known_success */,
+                                        SubmissionSource::XHR_SUCCEEDED);
 }
 
 TEST_F(FormAutocompleteTest, FormSubmittedBySameDocumentNavigation) {

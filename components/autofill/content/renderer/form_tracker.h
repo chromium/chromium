@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -177,20 +178,26 @@ class FormTracker : public content::RenderFrameObserver,
   bool CanInferFormSubmitted();
 
   // Tracks the cached element, as well as its ancestors, until it disappears
-  // (removed or hidden), then directly infers submission.
-  void TrackElement();
+  // (removed or hidden), then directly infers submission. `source` is the type
+  // of submission to fire when the tracked element disappears.
+  // TODO(crbug.com/1483242): Remove.
+  void TrackElement(mojom::SubmissionSource source);
 
   void ResetLastInteractedElements();
 
   // Invoked when the observed element was either removed from the DOM or it's
-  // computed style changed to display: none.
-  void ElementWasHiddenOrRemoved();
+  // computed style changed to display: none. `source` is the type of submission
+  // to be inferred in case this function is called.
+  // TODO(crbug.com/1483242): Remove.
+  void ElementWasHiddenOrRemoved(mojom::SubmissionSource source);
 
   base::ObserverList<Observer>::Unchecked observers_;
   bool ignore_control_changes_ = false;
   bool user_gesture_required_ = true;
   FormRef last_interacted_form_;
   FieldRef last_interacted_formless_element_;
+
+  // TODO(crbug.com/1483242): Remove.
   raw_ptr<blink::WebFormElementObserver, ExperimentalRenderer>
       form_element_observer_ = nullptr;
 
