@@ -122,8 +122,8 @@ CreateWebGPUGraphicsContext3DProvider(const KURL& url) {
 void CreateWebGPUGraphicsContext3DProviderAsync(
     const KURL& url,
     scoped_refptr<base::SingleThreadTaskRunner> current_thread_task_runner,
-    base::OnceCallback<void(std::unique_ptr<WebGraphicsContext3DProvider>)>
-        callback) {
+    WTF::CrossThreadOnceFunction<
+        void(std::unique_ptr<WebGraphicsContext3DProvider>)> callback) {
   if (IsMainThread()) {
     std::move(callback).Run(
         Platform::Current()->CreateWebGPUGraphicsContext3DProvider(url));
@@ -141,8 +141,7 @@ void CreateWebGPUGraphicsContext3DProviderAsync(
             AccessMainThreadForWebGraphicsContext3DProvider()),
         FROM_HERE,
         CrossThreadBindOnce(&CreateWebGPUGraphicsContextOnMainThreadAsync, url,
-                            current_thread_task_runner,
-                            CrossThreadBindOnce(std::move(callback))));
+                            current_thread_task_runner, std::move(callback)));
   }
 }
 
