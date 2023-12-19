@@ -706,6 +706,11 @@ VulkanImageProcessor::VulkanDeviceQueueWrapper::Create(
       implementation,
       gpu::VulkanDeviceQueue::DeviceQueueOption::GRAPHICS_QUEUE_FLAG);
 
+  if (!vulkan_device_queue) {
+    LOG(ERROR) << "Could not create VulkanDeviceQueue";
+    return nullptr;
+  }
+
   return base::WrapUnique(
       new VulkanDeviceQueueWrapper(std::move(vulkan_device_queue)));
 }
@@ -761,7 +766,12 @@ VulkanImageProcessor::~VulkanImageProcessor() {
 std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create() {
   auto vulkan_implementation = gpu::CreateVulkanImplementation(
       /*use_swiftshader=*/false, /*allow_protected_memory=*/false);
-  vulkan_implementation->InitializeVulkanInstance(/*using_surface=*/false);
+
+  if (!vulkan_implementation->InitializeVulkanInstance(
+          /*using_surface=*/false)) {
+    LOG(ERROR) << "Error initializing Vulkan instance";
+    return nullptr;
+  }
 
   auto vulkan_device_queue =
       VulkanDeviceQueueWrapper::Create(vulkan_implementation.get());
