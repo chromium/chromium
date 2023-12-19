@@ -7,13 +7,12 @@ import './shimless_rma_shared.css.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {getTemplate} from './hardware_error_page.html.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ShimlessRmaServiceInterface} from './shimless_rma.mojom-webui.js';
-import {disableAllButtons, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
+import {disableAllButtons, focusPageTitle} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -21,63 +20,54 @@ import {disableAllButtons, executeThenTransitionState, focusPageTitle} from './s
  * continuing.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const HardwareErrorPageBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const HardwareErrorPageBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class HardwareErrorPage extends HardwareErrorPageBase {
   static get is() {
-    return 'hardware-error-page';
+    return 'hardware-error-page' as const;
   }
 
   static get template() {
     return getTemplate();
   }
+
   static get properties() {
     return {
       /**
        * Set by shimless_rma.js.
-       * @type {boolean}
        */
       allButtonsDisabled: Boolean,
 
       /**
        * Set by shimless_rma.js.
-       * @type {number}
        */
       errorCode: Number,
     };
   }
 
-  constructor() {
-    super();
-    /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService = getShimlessRmaService();
-  }
+  shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
+  errorCode: number;
+  allButtonsDisabled: boolean;
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     focusPageTitle(this);
   }
 
-  /** @protected */
-  onShutDownButtonClicked() {
+  protected onShutDownButtonClicked(): void {
     this.shimlessRmaService.shutDownAfterHardwareError();
     disableAllButtons(this, /* showBusyStateOverlay= */ true);
   }
 
-  /**
-   * @return {string}
-   * @protected
-   */
-  getErrorCodeString() {
+  protected getErrorCodeString(): string {
     return this.i18n('hardwareErrorCode', this.errorCode);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [HardwareErrorPage.is]: HardwareErrorPage;
   }
 }
 
