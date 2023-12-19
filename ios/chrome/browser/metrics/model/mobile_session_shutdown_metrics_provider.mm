@@ -210,11 +210,6 @@ void LogBatteryCharge(float battery_level) {
                                      battery_charge);
 }
 
-// Logs the device's `available_storage` as a UTE stability metric.
-void LogAvailableStorage(NSInteger available_storage) {
-  UMA_STABILITY_HISTOGRAM_CUSTOM_COUNTS("Stability.iOS.UTE.AvailableStorage",
-                                        available_storage, 1, 200000, 100);
-}
 
 // Logs the OS version change between `os_version` and the current os version.
 // Records whether the version is the same, if a minor version change occurred,
@@ -312,9 +307,6 @@ void MobileSessionShutdownMetricsProvider::ProvidePreviousSessionData(
 
     if (session_info.deviceBatteryState == DeviceBatteryState::kUnplugged) {
       LogBatteryCharge(session_info.deviceBatteryLevel);
-    }
-    if (session_info.availableDeviceStorage >= 0) {
-      LogAvailableStorage(session_info.availableDeviceStorage);
     }
     if (session_info.OSVersion) {
       LogOSVersionChange(base::SysNSStringToUTF8(session_info.OSVersion));

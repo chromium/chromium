@@ -398,19 +398,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.iOS.UTE.AvailableStorage" units="KB"
-    expires_after="2021-10-10">
-  <owner>michaeldo@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
-  <summary>
-    Number of kilobytes available for &quot;important&quot; data. When an iOS
-    device is critically low on space, actions generally assumed to succeed can
-    fail. In extreme cases, this could potentially include writing the
-    &quot;unclean shutdown&quot; bit to signal a clean shutdown. Logged on
-    application launch if the last session terminated in an unclean state.
-  </summary>
-</histogram>
-
 <histogram name="Stability.iOS.UTE.BatteryCharge" units="%"
     expires_after="2024-05-01">
   <owner>michaeldo@chromium.org</owner>
