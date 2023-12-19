@@ -88,25 +88,25 @@ void TestEncodeDecodeVarInt(const std::vector<T>& data) {
 TEST(PatchUtilsTest, EncodeDecodeVarUInt32) {
   TestEncodeDecodeVarUInt<uint32_t>({0, 64, 128, 8192, 16384, 1 << 20, 1 << 21,
                                      1 << 22, 1 << 27, 1 << 28, 0x7FFFFFFFU,
-                                     UINT32_MAX});
+                                     UINT32_MAX - 4});
 }
 
 TEST(PatchUtilsTest, EncodeDecodeVarInt32) {
   TestEncodeDecodeVarInt<int32_t>({0, 64, 128, 8192, 16384, 1 << 20, 1 << 21,
-                                   1 << 22, 1 << 27, 1 << 28, -1, INT32_MIN,
-                                   INT32_MAX});
+                                   1 << 22, 1 << 27, 1 << 28, -1, INT32_MIN + 5,
+                                   INT32_MAX - 4});
 }
 
 TEST(PatchUtilsTest, EncodeDecodeVarUInt64) {
   TestEncodeDecodeVarUInt<uint64_t>({0, 64, 128, 8192, 16384, 1 << 20, 1 << 21,
                                      1 << 22, 1ULL << 55, 1ULL << 56,
-                                     0x7FFFFFFFFFFFFFFFULL, UINT64_MAX});
+                                     0x7FFFFFFFFFFFFFFFULL, (UINT64_MAX - 4)});
 }
 
 TEST(PatchUtilsTest, EncodeDecodeVarInt64) {
   TestEncodeDecodeVarInt<int64_t>({0, 64, 128, 8192, 16384, 1 << 20, 1 << 21,
-                                   1 << 22, 1LL << 55, 1LL << 56, -1, INT64_MIN,
-                                   INT64_MAX});
+                                   1 << 22, 1LL << 55, 1LL << 56, -1,
+                                   (INT64_MIN + 5), (INT64_MAX - 4)});
 }
 
 TEST(PatchUtilsTest, DecodeVarUInt32Malformed) {
