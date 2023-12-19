@@ -79,15 +79,12 @@ const float kBottomStackViewExtraPadding = 14.0f;
 const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
 
 // The spacing between modules in the Magic Stack.
-const float kMagicStackSpacing = 10.0f;
+constexpr CGFloat kMagicStackSpacing = 12.0f;
 
 // The reduction in width of MagicStack modules from NTP modules. This
 // reduction allows the next module to peek in from the side.
-const float kMagicStackPeekInset = 16.0f;
-
-// Controls the size of the view that masks/clips the MagicStack on wide
-// screens. Defined as a multiplier of the NTP module width.
-const CGFloat kMagicStackMaskWidth = 1.05;
+constexpr CGFloat kMagicStackPeekInset = kMagicStackSpacing;
+constexpr CGFloat kMagicStackPeekInsetLandscape = kMagicStackSpacing * 2 + 18;
 
 // The corner radius of the Magic Stack.
 const float kMagicStackCornerRadius = 16.0f;
@@ -175,9 +172,11 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 @implementation ContentSuggestionsViewController {
   UIScrollView* _magicStackScrollView;
   UIStackView* _magicStack;
-  // View that masks the MagicStack in landscape, allowing the next module to
-  // peek in.
-  UIView* _magicStackMask;
+  // A layout guide used to define the width of MagicStack modules.
+  UILayoutGuide* _magicStackModuleLayoutGuide;
+  // The constraint that controls the width of the
+  // `_magicStackModuleLayoutGuide`.
+  NSLayoutConstraint* _magicStackModuleWidth;
   BOOL _magicStackRankReceived;
   NSMutableArray<NSNumber*>* _magicStackModuleOrder;
   NSArray<SetUpListItemViewData*>* _savedSetUpListItems;
@@ -303,6 +302,15 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+
+  // Now that `view.window` is available, it is possible to tell whether the
+  // window is Landscape, which affects whether the MagicStack should be
+  // masked.
+  [self updateMagicStackMasking];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
   [self.audience viewWillDisappear];
@@ -310,7 +318,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)moduleWidthDidUpdate {
   if (_magicStackScrollView) {
-    _magicStackMask.clipsToBounds = [self shouldMaskMagicStack];
+    [self updateMagicStackMasking];
     [self snapToNearestMagicStackModule];
   }
 }
@@ -1203,30 +1211,17 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   _magicStackScrollView = [[UIScrollView alloc] init];
   [_magicStackScrollView setShowsHorizontalScrollIndicator:NO];
   _magicStackScrollView.clipsToBounds = NO;
+  _magicStackScrollView.layer.cornerRadius = kMagicStackCornerRadius;
   _magicStackScrollView.delegate = self;
   _magicStackScrollView.decelerationRate = UIScrollViewDecelerationRateFast;
   _magicStackScrollView.accessibilityIdentifier =
       kMagicStackScrollViewAccessibilityIdentifier;
-  // Allow MagicStack modules to peek in from the sides, when scrolled.
-  _magicStackMask = [[UIView alloc] init];
-  [_magicStackMask addSubview:_magicStackScrollView];
-  _magicStackMask.clipsToBounds = [self shouldMaskMagicStack];
-  _magicStackMask.layer.cornerRadius = kMagicStackCornerRadius;
-  _magicStackMask.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [_magicStackMask.topAnchor
-        constraintEqualToAnchor:_magicStackScrollView.topAnchor],
-    [_magicStackMask.bottomAnchor
-        constraintEqualToAnchor:_magicStackScrollView.bottomAnchor],
-    [_magicStackMask.centerXAnchor
-        constraintEqualToAnchor:_magicStackScrollView.centerXAnchor],
-    [_magicStackMask.widthAnchor
-        constraintEqualToAnchor:_magicStackScrollView.widthAnchor
-                     multiplier:kMagicStackMaskWidth],
-  ]];
-  [self.verticalStackView addSubview:_magicStackMask];
+  _magicStackModuleLayoutGuide = [[UILayoutGuide alloc] init];
+  [self.view addLayoutGuide:_magicStackModuleLayoutGuide];
+
   [self addUIElement:_magicStackScrollView
       withCustomBottomSpacing:kMostVisitedBottomMargin];
+  [self updateMagicStackMasking];
 
   _magicStackPage = 0;
   _magicStack = [[UIStackView alloc] init];
@@ -1445,7 +1440,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 // Returns the current width of MagicStack modules.
 - (CGFloat)magicStackModuleWidth {
-  return _magicStackScrollView.frame.size.width - kMagicStackPeekInset;
+  return _magicStackModuleLayoutGuide.layoutFrame.size.width;
 }
 
 // Returns the `ContentSuggestionsModuleType` type of the module being currently
@@ -1624,10 +1619,10 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     return 0;
   } else if (page == [_magicStackModuleOrder count] - 1) {
     // The last module should be trailing aligned so the previous module peeks.
-    return kMagicStackPeekInset;
+    return [self magicStackPeekInset];
   } else {
     // Modules in the middle should show peek on both sides.
-    return kMagicStackPeekInset / 2;
+    return [self magicStackPeekInset] / 2.0;
   }
 }
 
@@ -1681,13 +1676,32 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
          IsLandscape(self.view.window);
 }
 
+// Returns the amount that MagicStack modules are narrower than the ScrollView,
+// in order to allow peeking at the sides.
+- (CGFloat)magicStackPeekInset {
+  return [self shouldMaskMagicStack] ? kMagicStackPeekInsetLandscape
+                                     : kMagicStackPeekInset;
+}
+
+// In landscape and iPad the MagicStack masks content outside of its
+// ScrollView, and the module peeking at the sides happens inside that width.
+// In portrait on iPhone, the ScrollView doesn't mask the content, and peeking
+// happens outside to the edge of the screen.
+- (void)updateMagicStackMasking {
+  _magicStackModuleWidth.active = NO;
+  _magicStackModuleWidth = [_magicStackModuleLayoutGuide.widthAnchor
+      constraintEqualToAnchor:_magicStackScrollView.widthAnchor
+                     constant:-[self magicStackPeekInset]];
+  _magicStackScrollView.clipsToBounds = [self shouldMaskMagicStack];
+  _magicStackModuleWidth.active = YES;
+}
+
 // Adds a layout constraint on the width of the given MagicStack module
 // `container`.
 - (void)addWidthConstraintToMagicStackModule:
     (MagicStackModuleContainer*)container {
   [container.widthAnchor
-      constraintEqualToAnchor:_magicStackScrollView.widthAnchor
-                     constant:-kMagicStackPeekInset]
+      constraintEqualToAnchor:_magicStackModuleLayoutGuide.widthAnchor]
       .active = YES;
 }
 @end

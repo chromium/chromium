@@ -44,8 +44,6 @@ const CGFloat kShiftTilesDownAnimationDuration = 0.2;
 const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // The minimum height of the feed container.
 const CGFloat kFeedContainerMinimumHeight = 1000;
-// The width of NTP modules, as a multiplier of the view width.
-const CGFloat kModuleWidth = 0.92;
 }  // namespace
 
 @interface NewTabPageViewController () <UICollectionViewDelegate,
@@ -1633,7 +1631,7 @@ const CGFloat kModuleWidth = 0.92;
   _moduleWidth.active = NO;
   CGFloat width;
   if (IsFeedContainmentEnabled()) {
-    width = MIN(self.view.frame.size.width * kModuleWidth,
+    width = MIN(self.view.frame.size.width * content_suggestions::kModuleWidth,
                 kDiscoverFeedContentMaxWidth);
   } else {
     width = content_suggestions::SearchFieldWidth(self.view.frame.size.width,
