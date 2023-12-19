@@ -111,7 +111,8 @@ PrivateAggregationHost::PrivateAggregationHost(
       on_report_request_details_received_(
           std::move(on_report_request_details_received)),
       browser_context_(*browser_context) {
-  DCHECK(!on_report_request_details_received_.is_null());
+  CHECK(browser_context);
+  CHECK(!on_report_request_details_received_.is_null());
 
   // `base::Unretained()` is safe as `receiver_set_` is owned by `this`.
   receiver_set_.set_disconnect_handler(base::BindRepeating(
