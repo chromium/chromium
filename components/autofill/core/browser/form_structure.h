@@ -44,6 +44,7 @@ namespace autofill {
 
 class LogBuffer;
 class LogManager;
+struct ParsingContext;
 
 // Password attributes (whether a password has special symbols, numeric, etc.)
 enum class PasswordAttribute {
@@ -262,7 +263,7 @@ class FormStructure {
   bool SetSectionsFromAutocompleteOrReset();
 
   // Classifies each field in |fields_| using the regular expressions.
-  void ParseFieldTypesWithPatterns(PatternSource pattern_source,
+  void ParseFieldTypesWithPatterns(ParsingContext& context,
                                    LogManager* log_manager);
 
   // Returns the values that can be filled into the form structure for the

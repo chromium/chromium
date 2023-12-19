@@ -489,9 +489,17 @@ void FormStructure::DetermineHeuristicTypes(
 
   client_country_ = client_country;
 
+  const LanguageCode& page_language =
+      base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
+          ? current_page_language_
+          : LanguageCode();
+  ParsingContext context(client_country_, page_language,
+                         PatternSource::kLegacy);
+
   // The active heuristic source might not be a pattern source.
   if (std::optional<PatternSource> pattern_source = GetActivePatternSource()) {
-    ParseFieldTypesWithPatterns(*pattern_source, log_manager);
+    context.pattern_source = *pattern_source;
+    ParseFieldTypesWithPatterns(context, log_manager);
   }
 
   if (!base::FeatureList::IsEnabled(
@@ -499,7 +507,8 @@ void FormStructure::DetermineHeuristicTypes(
     for (HeuristicSource heuristic_source : GetNonActiveHeuristicSources()) {
       if (auto shadow_source =
               HeuristicSourceToPatternSource(heuristic_source)) {
-        ParseFieldTypesWithPatterns(*shadow_source, log_manager);
+        context.pattern_source = *shadow_source;
+        ParseFieldTypesWithPatterns(context, log_manager);
       }
     }
   }
@@ -1350,14 +1359,10 @@ bool FormStructure::SetSectionsFromAutocompleteOrReset() {
   return has_autocomplete;
 }
 
-void FormStructure::ParseFieldTypesWithPatterns(PatternSource pattern_source,
+void FormStructure::ParseFieldTypesWithPatterns(ParsingContext& context,
                                                 LogManager* log_manager) {
   FieldCandidatesMap field_type_map;
-  const LanguageCode& page_language =
-      base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
-          ? current_page_language_
-          : LanguageCode();
-  ParsingContext context(client_country_, page_language, pattern_source);
+
   if (ShouldRunHeuristics()) {
     FormField::ParseFormFields(context, fields_, is_form_tag_, field_type_map,
                                log_manager);
@@ -1390,16 +1395,18 @@ void FormStructure::ParseFieldTypesWithPatterns(PatternSource pattern_source,
       continue;
 
     const FieldCandidates& candidates = iter->second;
-    field->set_heuristic_type(PatternSourceToHeuristicSource(pattern_source),
-                              candidates.BestHeuristicType());
+    field->set_heuristic_type(
+        PatternSourceToHeuristicSource(context.pattern_source),
+        candidates.BestHeuristicType());
 
     ++field_rank_map[field->GetFieldSignature()];
     // Log the field type predicted from local heuristics.
     field->AppendLogEventIfNotRepeated(HeuristicPredictionFieldLogEvent{
         .field_type = field->heuristic_type(
-            PatternSourceToHeuristicSource(pattern_source)),
-        .pattern_source = pattern_source,
-        .is_active_pattern_source = GetActivePatternSource() == pattern_source,
+            PatternSourceToHeuristicSource(context.pattern_source)),
+        .pattern_source = context.pattern_source,
+        .is_active_pattern_source =
+            GetActivePatternSource() == context.pattern_source,
         .rank_in_field_signature_group =
             field_rank_map[field->GetFieldSignature()],
     });

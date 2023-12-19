@@ -108,7 +108,8 @@ struct ParsingContext {
 
   const GeoIpCountryCode client_country;
   const LanguageCode page_language;
-  const PatternSource pattern_source;
+  // Mutable so that the caches can be reused across different pattern sources.
+  PatternSource pattern_source;
 
   // Cache for autofill features that are tested on hot code paths. Testing
   // whether a feature is enabled is pretty expensive. Caching the status of two

@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
+#include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
@@ -6733,7 +6734,9 @@ TEST_F(FormStructureTestImpl, ExperimentalServerPredictionsAreSeparate) {
 TEST_P(FormStructureTest_ForPatternSource, ParseFieldTypesWithPatterns) {
   FormData form = test::CreateTestAddressFormData();
   FormStructure form_structure(form);
-  test_api(form_structure).ParseFieldTypesWithPatterns(pattern_source());
+  ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
+                         pattern_source());
+  test_api(form_structure).ParseFieldTypesWithPatterns(context);
   ASSERT_THAT(form_structure.fields(), Not(IsEmpty()));
 
   auto get_heuristic_type = [&](const AutofillField& field) {

@@ -96,9 +96,8 @@ class FormStructureTestApi {
     return base::Contains(form_structure_->phone_rationalized_, section);
   }
 
-  void ParseFieldTypesWithPatterns(PatternSource pattern_source) {
-    return form_structure_->ParseFieldTypesWithPatterns(pattern_source,
-                                                        nullptr);
+  void ParseFieldTypesWithPatterns(ParsingContext& context) {
+    return form_structure_->ParseFieldTypesWithPatterns(context, nullptr);
   }
 
  private:
