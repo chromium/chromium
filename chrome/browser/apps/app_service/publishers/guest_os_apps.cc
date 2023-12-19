@@ -233,7 +233,7 @@ apps::IntentFilters CreateIntentFilterForAppService(
   // them with a single "text/*" mime type.
   if (base::Contains(mime_types, "text/plain")) {
     base::EraseIf(mime_types, [](const std::string& s) {
-        return base::StartsWith(s, "text/");
+      return base::StartsWith(s, "text/");
     });
     mime_types.push_back("text/*");
   }

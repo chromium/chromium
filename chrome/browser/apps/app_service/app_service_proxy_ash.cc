@@ -500,8 +500,9 @@ void AppServiceProxyAsh::LaunchAppWithIntent(const std::string& app_id,
           files_controller->CheckIfLaunchAllowed(update, std::move(intent_copy),
                                                  std::move(launch_callback));
         });
-    if (!app_found)
+    if (!app_found) {
       std::move(launch_callback).Run(/*is_allowed=*/true);
+    }
   } else {
     std::move(launch_callback).Run(/*is_allowed=*/true);
   }
@@ -1203,8 +1204,9 @@ bool AppServiceProxyAsh::CanRunLaunchCallback(
     InstanceRegistry().ForOneInstance(
         instance_id,
         [&exists](const apps::InstanceUpdate& update) { exists = true; });
-    if (!exists)
+    if (!exists) {
       return false;
+    }
   }
 
   return true;

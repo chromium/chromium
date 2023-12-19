@@ -117,8 +117,7 @@ struct TestInstance {
 bool operator==(const TestInstance& e1, const TestInstance& e2) {
   return e1.name == e2.name && e1.id == e2.id && e1.type == e2.type &&
          e1.app_id == e2.app_id && e1.window == e2.window &&
-         e1.title == e2.title &&
-         e1.is_browser_active == e2.is_browser_active &&
+         e1.title == e2.title && e1.is_browser_active == e2.is_browser_active &&
          e1.is_web_contents_active == e2.is_web_contents_active;
 }
 

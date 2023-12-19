@@ -310,8 +310,9 @@ void WebAppsCrosapi::ExecuteContextMenuCommand(const std::string& app_id,
 }
 
 void WebAppsCrosapi::OnApps(std::vector<AppPtr> deltas) {
-  if (!web_app::IsWebAppsCrosapiEnabled())
+  if (!web_app::IsWebAppsCrosapiEnabled()) {
     return;
+  }
 
   on_initial_apps_received_ = true;
 

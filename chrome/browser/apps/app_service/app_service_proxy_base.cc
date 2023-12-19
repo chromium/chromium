@@ -345,44 +345,43 @@ void AppServiceProxyBase::LaunchAppWithIntent(const std::string& app_id,
                                               WindowInfoPtr window_info,
                                               LaunchCallback callback) {
   CHECK(intent);
-  app_registry_cache_.ForOneApp(
-      app_id,
-      [this, event_flags, &intent, launch_source, &window_info,
-       callback = std::move(callback)](const AppUpdate& update) mutable {
-        auto* publisher = GetPublisher(update.AppType());
-        if (!publisher) {
-          std::unique_ptr<LaunchParams> params =
-              std::make_unique<LaunchParams>();
-          params->event_flags_ = event_flags;
-          params->intent_ = std::move(intent);
-          params->launch_source_ = launch_source;
-          params->window_info_ = std::move(window_info);
-          params->call_back_ = std::move(callback);
-          OnPublisherNotReadyForLaunch(update.AppId(), std::move(params));
-          return;
-        }
+  app_registry_cache_.ForOneApp(app_id, [this, event_flags, &intent,
+                                         launch_source, &window_info,
+                                         callback = std::move(callback)](
+                                            const AppUpdate& update) mutable {
+    auto* publisher = GetPublisher(update.AppType());
+    if (!publisher) {
+      std::unique_ptr<LaunchParams> params = std::make_unique<LaunchParams>();
+      params->event_flags_ = event_flags;
+      params->intent_ = std::move(intent);
+      params->launch_source_ = launch_source;
+      params->window_info_ = std::move(window_info);
+      params->call_back_ = std::move(callback);
+      OnPublisherNotReadyForLaunch(update.AppId(), std::move(params));
+      return;
+    }
 
-        if (MaybeShowLaunchPreventionDialog(update)) {
-          std::move(callback).Run(LaunchResult(State::FAILED));
-          return;
-        }
+    if (MaybeShowLaunchPreventionDialog(update)) {
+      std::move(callback).Run(LaunchResult(State::FAILED));
+      return;
+    }
 
-        // TODO(crbug/1117655): File manager records metrics for apps it
-        // launched. So we only record launches from other places. We should
-        // eventually move those metrics here, after AppService supports all
-        // app types launched by file manager.
-        if (launch_source != LaunchSource::kFromFileManager) {
-          RecordAppLaunch(update.AppId(), launch_source);
-        }
-        RecordAppPlatformMetrics(profile_, update, launch_source,
-                                 LaunchContainer::kLaunchContainerNone);
+    // TODO(crbug/1117655): File manager records metrics for apps it
+    // launched. So we only record launches from other places. We should
+    // eventually move those metrics here, after AppService supports all
+    // app types launched by file manager.
+    if (launch_source != LaunchSource::kFromFileManager) {
+      RecordAppLaunch(update.AppId(), launch_source);
+    }
+    RecordAppPlatformMetrics(profile_, update, launch_source,
+                             LaunchContainer::kLaunchContainerNone);
 
-        publisher->LaunchAppWithIntent(
-            update.AppId(), event_flags, std::move(intent), launch_source,
-            std::move(window_info), std::move(callback));
+    publisher->LaunchAppWithIntent(update.AppId(), event_flags,
+                                   std::move(intent), launch_source,
+                                   std::move(window_info), std::move(callback));
 
-        PerformPostLaunchTasks(launch_source);
-      });
+    PerformPostLaunchTasks(launch_source);
+  });
 }
 
 void AppServiceProxyBase::LaunchAppWithUrl(const std::string& app_id,

@@ -45,8 +45,9 @@ void AppServiceTest::UninstallAllApps(Profile* profile) {
 
 std::string AppServiceTest::GetAppName(const std::string& app_id) const {
   std::string name;
-  if (!app_service_proxy_)
+  if (!app_service_proxy_) {
     return name;
+  }
   app_service_proxy_->AppRegistryCache().ForOneApp(
       app_id, [&name](const AppUpdate& update) { name = update.Name(); });
   return name;

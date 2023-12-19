@@ -61,8 +61,9 @@ bool HaveSameWindowTreeHostLacros(aura::Window* window1,
 
 Browser* GetBrowserWithTabStripModel(TabStripModel* tab_strip_model) {
   for (auto* browser : *BrowserList::GetInstance()) {
-    if (browser->tab_strip_model() == tab_strip_model)
+    if (browser->tab_strip_model() == tab_strip_model) {
       return browser;
+    }
   }
   return nullptr;
 }
@@ -122,8 +123,9 @@ std::string GetAppIdForBrowser(Browser* browser) {
   auto* registry = extensions::ExtensionRegistry::Get(browser->profile());
   auto* extension = registry->GetInstalledExtension(app_id);
   // This is a web-app.
-  if (!extension)
+  if (!extension) {
     return app_id;
+  }
 
   if (extension->is_hosted_app() || extension->is_legacy_packaged_app()) {
     return app_id;

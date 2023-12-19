@@ -85,8 +85,9 @@ void AppIconSource::StartDataRequest(
   // Check whether data is of correct type, load default image if not.
   std::string size_param = base::ToLowerASCII(path_parts[1]);
   size_t query_position = size_param.find("?");
-  if (query_position != std::string::npos)
+  if (query_position != std::string::npos) {
     size_param = size_param.substr(0, query_position);
+  }
   int size_in_dip = 0;
   if (!base::StringToInt(size_param, &size_in_dip) || size_in_dip < 1) {
     LoadDefaultImage(std::move(callback));

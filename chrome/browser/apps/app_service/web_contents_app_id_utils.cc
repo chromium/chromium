@@ -125,8 +125,9 @@ std::optional<std::string> GetInstanceAppIdForWebContents(
 std::string GetAppIdForWebContents(content::WebContents* web_contents) {
   const webapps::AppId* app_id =
       web_app::WebAppTabHelper::GetAppId(web_contents);
-  if (app_id)
+  if (app_id) {
     return *app_id;
+  }
 
   extensions::TabHelper* extensions_tab_helper =
       extensions::TabHelper::FromWebContents(web_contents);

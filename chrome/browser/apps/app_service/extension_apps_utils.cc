@@ -29,8 +29,9 @@ namespace apps {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool ShouldHostedAppsRunInLacros() {
-  if (g_enable_hosted_apps_in_lacros_for_testing)
+  if (g_enable_hosted_apps_in_lacros_for_testing) {
     return true;
+  }
 
   return chromeos::BrowserParamsProxy::Get()->PublishHostedApps();
 }

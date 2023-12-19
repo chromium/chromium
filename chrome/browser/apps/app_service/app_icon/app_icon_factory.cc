@@ -320,8 +320,9 @@ gfx::ImageSkia LoadMaskImage(const ScaleToSize& scale_to_size) {
 
 gfx::ImageSkia ApplyBackgroundAndMask(const gfx::ImageSkia& image) {
   TRACE_EVENT0("ui", "apps::ApplyBackgroundAndMask");
-  if (image.isNull())
+  if (image.isNull()) {
     return gfx::ImageSkia();
+  }
   return gfx::ImageSkiaOperations::CreateButtonBackground(
       SK_ColorWHITE, image, LoadMaskImage(GetScaleToSize(image)));
 }

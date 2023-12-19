@@ -44,9 +44,8 @@ WebAppsCrosapiFactory::WebAppsCrosapiFactory()
 std::unique_ptr<KeyedService>
 WebAppsCrosapiFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<WebAppsCrosapi>(
-      AppServiceProxyFactory::GetForProfile(
-          Profile::FromBrowserContext(context)));
+  return std::make_unique<WebAppsCrosapi>(AppServiceProxyFactory::GetForProfile(
+      Profile::FromBrowserContext(context)));
 }
 
 }  // namespace apps

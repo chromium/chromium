@@ -25,7 +25,7 @@
 namespace arc {
 class ArcIntentHelperBridge;
 class IntentFilter;
-}
+}  // namespace arc
 #endif
 
 class Profile;
