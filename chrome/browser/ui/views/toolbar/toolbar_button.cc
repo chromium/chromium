@@ -62,6 +62,32 @@ namespace {
 constexpr int kBorderThicknessDpWithLabel = 1;
 constexpr int kBorderThicknessDpWithoutLabel = 2;
 
+class ToolbarButtonHighlightPathGenerator
+    : public views::HighlightPathGenerator {
+ public:
+  explicit ToolbarButtonHighlightPathGenerator(ToolbarButton* toolbar_button)
+      : toolbar_button_(toolbar_button) {}
+
+  // HighlightPathGenerator:
+  SkPath GetHighlightPath(const views::View* view) override {
+    gfx::Rect rect(view->size());
+
+    SkPath path;
+    const SkScalar left_radius =
+        toolbar_button_->GetCornerRadiusFor(ToolbarButton::Edge::kLeft);
+    const SkScalar right_radius =
+        toolbar_button_->GetCornerRadiusFor(ToolbarButton::Edge::kRight);
+    const SkScalar radii[8] = {left_radius,  left_radius,  right_radius,
+                               right_radius, right_radius, right_radius,
+                               left_radius,  left_radius};
+    path.addRoundRect(gfx::RectToSkRect(rect), radii);
+    return path;
+  }
+
+ private:
+  raw_ptr<ToolbarButton> toolbar_button_;
+};
+
 }  // namespace
 
 ToolbarButton::ToolbarButton(PressedCallback callback)
@@ -78,7 +104,8 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
       tab_strip_model_(tab_strip_model),
       trigger_menu_on_long_press_(trigger_menu_on_long_press),
       highlight_color_animation_(this) {
-  ConfigureInkDropForToolbar(this);
+  ConfigureInkDropForToolbar(
+      this, std::make_unique<ToolbarButtonHighlightPathGenerator>(this));
 
   set_context_menu_controller(this);
 
@@ -133,24 +160,22 @@ void ToolbarButton::ClearHighlight() {
   ShrinkDownThenClearText();
 }
 
+int ToolbarButton::GetRoundedCornerRadius() const {
+  return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kMaximum, GetTargetSize());
+}
+
+float ToolbarButton::GetCornerRadiusFor(ToolbarButton::Edge edge) const {
+  // Toolbar buttons always have rounded corners for all its edges.
+  return GetRoundedCornerRadius();
+}
+
 void ToolbarButton::UpdateColorsAndInsets() {
   // First, calculate new border insets assuming CalculatePreferredSize()
   // accurately reflects the desired content size.
-
-  const gfx::Size current_preferred_size = CalculatePreferredSize();
-  const gfx::Insets current_insets = GetInsets();
-  const gfx::Size target_contents_size =
-      current_preferred_size - current_insets.size();
-
-  const gfx::Insets target_insets =
-      layout_insets_.value_or(::GetLayoutInsets(TOOLBAR_BUTTON)) +
-      layout_inset_delta_ + *GetProperty(views::kInternalPaddingKey);
-
-  const gfx::Size target_size = target_contents_size + target_insets.size();
-
-  const int highlight_radius =
-      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-          views::Emphasis::kMaximum, target_size);
+  const gfx::Insets target_insets = GetTargetInsets();
+  const gfx::Size target_size = GetTargetSize();
+  const int highlight_radius = GetRoundedCornerRadius();
 
   SetEnabledTextColors(highlight_color_animation_.GetTextColor());
 
@@ -178,7 +203,7 @@ void ToolbarButton::UpdateColorsAndInsets() {
 
   std::optional<SkColor> border_color =
       highlight_color_animation_.GetBorderColor();
-  if (!GetBorder() || target_insets != current_insets ||
+  if (!GetBorder() || target_insets != GetInsets() ||
       last_border_color_ != border_color ||
       last_paint_insets_ != paint_insets) {
     if (ShouldPaintBorder() && border_color) {
@@ -354,6 +379,21 @@ void ToolbarButton::SetLayoutInsets(const std::optional<gfx::Insets>& insets) {
     return;
   layout_insets_ = insets;
   UpdateColorsAndInsets();
+}
+
+const gfx::Insets ToolbarButton::GetTargetInsets() const {
+  return layout_insets_.value_or(::GetLayoutInsets(TOOLBAR_BUTTON)) +
+         layout_inset_delta_ + *GetProperty(views::kInternalPaddingKey);
+}
+
+const gfx::Size ToolbarButton::GetTargetSize() const {
+  const gfx::Size current_preferred_size = CalculatePreferredSize();
+  const gfx::Insets current_insets = GetInsets();
+  const gfx::Size target_contents_size =
+      current_preferred_size - current_insets.size();
+  const gfx::Insets target_insets = GetTargetInsets();
+
+  return target_contents_size + target_insets.size();
 }
 
 void ToolbarButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -713,6 +753,6 @@ void ToolbarButtonActionViewInterface::ActionItemChangedImpl(
   }
 }
 
-BEGIN_METADATA(ToolbarButton, views::LabelButton)
+BEGIN_METADATA(ToolbarButton)
 ADD_PROPERTY_METADATA(std::optional<gfx::Insets>, LayoutInsets)
 END_METADATA

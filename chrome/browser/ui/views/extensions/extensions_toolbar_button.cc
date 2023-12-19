@@ -47,7 +47,7 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
     Browser* browser,
     ExtensionsToolbarContainer* extensions_container,
     ExtensionsMenuCoordinator* extensions_menu_coordinator)
-    : ToolbarButton(PressedCallback()),
+    : ToolbarChipButton(PressedCallback()),
       browser_(browser),
       extensions_container_(extensions_container),
       extensions_menu_coordinator_(extensions_menu_coordinator) {
@@ -198,7 +198,7 @@ std::u16string ExtensionsToolbarButton::GetTooltipText(
   return l10n_util::GetStringUTF16(message_id);
 }
 
-BEGIN_METADATA(ExtensionsToolbarButton, ToolbarButton)
+BEGIN_METADATA(ExtensionsToolbarButton)
 ADD_READONLY_PROPERTY_METADATA(bool, ExtensionsMenuShowing)
 ADD_READONLY_PROPERTY_METADATA(int, IconSize)
 END_METADATA

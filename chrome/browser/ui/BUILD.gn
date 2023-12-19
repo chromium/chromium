@@ -5999,6 +5999,8 @@ static_library("ui") {
       "views/toolbar/toolbar_actions_bar_bubble_views.h",
       "views/toolbar/toolbar_button.cc",
       "views/toolbar/toolbar_button.h",
+      "views/toolbar/toolbar_chip_button.cc",
+      "views/toolbar/toolbar_chip_button.h",
       "views/toolbar/toolbar_controller.cc",
       "views/toolbar/toolbar_controller.h",
       "views/toolbar/toolbar_icon_container_view.cc",

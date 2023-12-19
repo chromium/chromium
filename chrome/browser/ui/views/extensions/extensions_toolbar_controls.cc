@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/permissions_manager.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -43,15 +44,6 @@ void ExtensionsToolbarControls::UpdateControls(
   UpdateExtensionsButton(actions, site_setting, current_web_contents,
                          is_restricted_url);
   UpdateRequestAccessButton(actions, site_setting, current_web_contents);
-
-  // Display background only when multiple buttons are visible. Since
-  // the extensions button is always visible, check if the request access
-  // button is too.
-  SetBackground(request_access_button_->GetVisible()
-                    ? views::CreateThemedRoundedRectBackground(
-                          kColorExtensionsToolbarControlsBackground,
-                          extensions_button_->GetPreferredSize().height())
-                    : nullptr);
 
   // Resets the layout since layout animation does not handle host view
   // visibility changing. This should be called after any visibility changes.
@@ -109,6 +101,14 @@ void ExtensionsToolbarControls::UpdateRequestAccessButton(
   }
 
   request_access_button_->Update(extensions);
+
+  // Extensions button has left flat edge iff request access button is visible.
+  // This will also update the button's background.
+  absl::optional<ToolbarButton::Edge> extensions_button_edge =
+      request_access_button_->GetVisible()
+          ? absl::optional<ToolbarButton::Edge>(ToolbarButton::Edge::kLeft)
+          : absl::nullopt;
+  extensions_button_->SetFlatEdge(extensions_button_edge);
 }
 
 void ExtensionsToolbarControls::ResetConfirmation() {

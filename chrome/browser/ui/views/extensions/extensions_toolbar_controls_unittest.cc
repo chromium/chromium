@@ -159,17 +159,31 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   auto extension_a =
       InstallExtensionWithHostPermissions("Extension A", {url_a.spec()});
   WithholdHostPermissions(extension_a.get());
+
+  // Verify only extensions button is visible and has no flat edge.
+  EXPECT_TRUE(extensions_button()->GetVisible());
+  EXPECT_EQ(extensions_button()->GetFlatEdge(), absl::nullopt);
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 
   // Navigate to an url the extension requests access to.
   NavigateAndCommit(url_a);
+
+  // Verify both buttons are visible and have the correct flat edges.
+  EXPECT_TRUE(extensions_button()->GetVisible());
+  EXPECT_EQ(extensions_button()->GetFlatEdge(), ToolbarButton::Edge::kLeft);
   EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_EQ(request_access_button()->GetFlatEdge(),
+            ToolbarButton::Edge::kRight);
   EXPECT_EQ(
       request_access_button()->GetText(),
       l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 1));
 
   // Navigate to an url the extension does not request access to.
   NavigateAndCommit(url_b);
+
+  // Verify only extensions button is visible and has no flat edge.
+  EXPECT_TRUE(extensions_button()->GetVisible());
+  EXPECT_EQ(extensions_button()->GetFlatEdge(), absl::nullopt);
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 
