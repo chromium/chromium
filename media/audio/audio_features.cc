@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "media/media_buildflags.h"
 
 namespace features {
 
@@ -35,3 +36,17 @@ BASE_FEATURE(kAllowIAudioClient3,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 }  // namespace features
+
+namespace media {
+
+#if BUILDFLAG(IS_LINUX)
+bool IsPulseaudioLoopbackCaptureSupported() {
+#if defined(USE_PULSEAUDIO)
+  return true;
+#else
+  return false;
+#endif  // defined(USE_PULSEAUDIO)
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
+}  // namespace media

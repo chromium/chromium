@@ -7454,12 +7454,31 @@ const char kPreferSoftwareMT21Description[] =
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-const char kZeroCopyVideoCaptureName[] = "Enable Zero-Copy Video Capture";
-const char kZeroCopyVideoCaptureDescription[] =
-    "Camera produces a gpu friendly buffer on capture and, if there is, "
-    "hardware accelerated video encoder consumes the buffer";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Linux -----------------------------------------------------------------------
+
+#if BUILDFLAG(IS_LINUX)
+const char kOzonePlatformHintChoiceDefault[] = "Default";
+const char kOzonePlatformHintChoiceAuto[] = "Auto";
+const char kOzonePlatformHintChoiceX11[] = "X11";
+const char kOzonePlatformHintChoiceWayland[] = "Wayland";
+
+const char kOzonePlatformHintName[] = "Preferred Ozone platform";
+const char kOzonePlatformHintDescription[] =
+    "Selects the preferred platform backend used on Linux. The default one is "
+    "\"X11\". \"Auto\" selects Wayland if possible, X11 otherwise. ";
+
+const char kPulseaudioLoopbackForCastName[] =
+    "Linux System Audio Loopback for Cast (pulseaudio)";
+const char kPulseaudioLoopbackForCastDescription[] =
+    "Enable system audio mirroring when casting a screen on Linux with "
+    "pulseaudio.";
+
+const char kPulseaudioLoopbackForScreenShareName[] =
+    "Linux System Audio Loopback for Screen Sharing (pulseaudio)";
+const char kPulseaudioLoopbackForScreenShareDescription[] =
+    "Enable system audio sharing when screen sharing on Linux with pulseaudio.";
+
+#endif  // BUILDFLAG(IS_LINUX)
 
 // All views-based platforms --------------------------------------------------
 
@@ -7476,6 +7495,13 @@ const char kSearchWebInSidePanelDescription[] =
 #endif  // defined(TOOLKIT_VIEWS)
 
 // Random platform combinations -----------------------------------------------
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+const char kZeroCopyVideoCaptureName[] = "Enable Zero-Copy Video Capture";
+const char kZeroCopyVideoCaptureDescription[] =
+    "Camera produces a gpu friendly buffer on capture and, if there is, "
+    "hardware accelerated video encoder consumes the buffer";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
@@ -7525,18 +7551,6 @@ const char kWebShareDescription[] =
     "Enables the Web Share (navigator.share) APIs on experimentally supported "
     "platforms.";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
-const char kOzonePlatformHintChoiceDefault[] = "Default";
-const char kOzonePlatformHintChoiceAuto[] = "Auto";
-const char kOzonePlatformHintChoiceX11[] = "X11";
-const char kOzonePlatformHintChoiceWayland[] = "Wayland";
-
-const char kOzonePlatformHintName[] = "Preferred Ozone platform";
-const char kOzonePlatformHintDescription[] =
-    "Selects the preferred platform backend used on Linux. The default one is "
-    "\"X11\". \"Auto\" selects Wayland if possible, X11 otherwise. ";
-#endif  // BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 const char kWebBluetoothConfirmPairingSupportName[] =

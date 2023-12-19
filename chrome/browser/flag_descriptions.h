@@ -4284,10 +4284,22 @@ extern const char kPreferSoftwareMT21Description[];
 #endif  // defined(ARCH_CPU_ARM_FAMILY
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-extern const char kZeroCopyVideoCaptureName[];
-extern const char kZeroCopyVideoCaptureDescription[];
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Linux ---------------------------------------------------------------------
+
+#if BUILDFLAG(IS_LINUX)
+extern const char kOzonePlatformHintChoiceDefault[];
+extern const char kOzonePlatformHintChoiceAuto[];
+extern const char kOzonePlatformHintChoiceX11[];
+extern const char kOzonePlatformHintChoiceWayland[];
+
+extern const char kOzonePlatformHintName[];
+extern const char kOzonePlatformHintDescription[];
+
+extern const char kPulseaudioLoopbackForCastName[];
+extern const char kPulseaudioLoopbackForCastDescription[];
+extern const char kPulseaudioLoopbackForScreenShareName[];
+extern const char kPulseaudioLoopbackForScreenShareDescription[];
+#endif  // BUILDFLAG(IS_LINUX)
 
 // All views-based platforms --------------------------------------------------
 
@@ -4300,6 +4312,11 @@ extern const char kSearchWebInSidePanelDescription[];
 #endif  // defined(TOOLKIT_VIEWS)
 
 // Random platform combinations -----------------------------------------------
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+extern const char kZeroCopyVideoCaptureName[];
+extern const char kZeroCopyVideoCaptureDescription[];
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
@@ -4318,16 +4335,6 @@ extern const char kWebShareDescription[];
 extern const char kWebBluetoothConfirmPairingSupportName[];
 extern const char kWebBluetoothConfirmPairingSupportDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_LINUX)
-extern const char kOzonePlatformHintChoiceDefault[];
-extern const char kOzonePlatformHintChoiceAuto[];
-extern const char kOzonePlatformHintChoiceX11[];
-extern const char kOzonePlatformHintChoiceWayland[];
-
-extern const char kOzonePlatformHintName[];
-extern const char kOzonePlatformHintDescription[];
-#endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 extern const char kSkipUndecryptablePasswordsName[];

@@ -5006,6 +5006,16 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX)
+    {"pulseaudio-loopback-for-cast",
+     flag_descriptions::kPulseaudioLoopbackForCastName,
+     flag_descriptions::kPulseaudioLoopbackForCastDescription, kOsLinux,
+     FEATURE_VALUE_TYPE(media::kPulseaudioLoopbackForCast)},
+
+    {"pulseaudio-loopback-for-screen-share",
+     flag_descriptions::kPulseaudioLoopbackForScreenShareName,
+     flag_descriptions::kPulseaudioLoopbackForScreenShareDescription, kOsLinux,
+     FEATURE_VALUE_TYPE(media::kPulseaudioLoopbackForScreenShare)},
+
     {"ozone-platform-hint", flag_descriptions::kOzonePlatformHintName,
      flag_descriptions::kOzonePlatformHintDescription, kOsLinux,
      MULTI_VALUE_TYPE(kOzonePlatformHintRuntimeChoices)},

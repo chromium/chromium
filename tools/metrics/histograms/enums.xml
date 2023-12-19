@@ -33941,6 +33941,7 @@ from previous Chrome versions.
   <int value="373275338" label="AndroidPartnerCustomizationPhenotype:disabled"/>
   <int value="373531060" label="MacCoreLocationBackend:enabled"/>
   <int value="373578344" label="SafeBrowsingSecuritySectionUIAndroid:enabled"/>
+  <int value="373617942" label="PulseaudioLoopbackForCast:disabled"/>
   <int value="373805498" label="OmniboxExpandedStateShape:enabled"/>
   <int value="375032683" label="CellularAllowPerNetworkRoaming:enabled"/>
   <int value="375485858" label="EnableZeroStateMixedTypesRanker:disabled"/>
@@ -34496,6 +34497,7 @@ from previous Chrome versions.
   <int value="649384106" label="FailFastQuietChip:disabled"/>
   <int value="649508040" label="AutofillEnableCompanyName:enabled"/>
   <int value="650013099" label="PrivacySandboxSettings2:disabled"/>
+  <int value="650168383" label="PulseaudioLoopbackForScreenShare:enabled"/>
   <int value="651421878" label="VideoRotateToFullscreen:enabled"/>
   <int value="651471603" label="MediaFoundationD3D11VideoCapture:enabled"/>
   <int value="651562604" label="RawClipboard:enabled"/>
@@ -36205,6 +36207,7 @@ from previous Chrome versions.
   <int value="1458583431" label="arc-use-auth-endpoint"/>
   <int value="1459529277" label="disable-text-input-focus-manager"/>
   <int value="1459803015" label="WebRtcEnableCaptureMultiChannelApm:enabled"/>
+  <int value="1460266536" label="PulseaudioLoopbackForScreenShare:disabled"/>
   <int value="1460747747" label="GdiTextPrinting:enabled"/>
   <int value="1460958818" label="NTPForeignSessionsSuggestions:enabled"/>
   <int value="1461581256" label="MovablePartialScreenshot:enabled"/>
@@ -36384,6 +36387,7 @@ from previous Chrome versions.
   <int value="1547049944" label="ScalableIph:enabled"/>
   <int value="1548776701" label="AllBookmarks:disabled"/>
   <int value="1548942246" label="PassiveDocumentEventListeners:disabled"/>
+  <int value="1550193978" label="PulseaudioLoopbackForCast:enabled"/>
   <int value="1550865563" label="AnimatedImageDragShadow:enabled"/>
   <int value="1551743170"
       label="WebAuthenticationNewDiscoverableCredentialsUi:disabled"/>
