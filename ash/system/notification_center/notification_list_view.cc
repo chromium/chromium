@@ -788,6 +788,14 @@ void NotificationListView::OnNotificationRemoved(const std::string& id,
   InterruptClearAll();
   ResetBounds();
 
+  // `child` Can be deleted by either `InterruptClearAll` or `ResetBounds` since
+  // both call `DeleteRemovedNotifications`. Therefore, we need to check if it
+  // exists again. See https://b/315187548
+  child = GetNotificationById(id);
+  if (!child) {
+    return;
+  }
+
   child->set_is_removed();
 
   // If the MessageView is slid out, then do nothing here. The MOVE_DOWN
