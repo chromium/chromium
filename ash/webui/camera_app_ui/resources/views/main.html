@@ -105,7 +105,9 @@
           </div>
         </div>
         <div id="barcode-chip-url-container"
-             class="invisible barcode-chip-container">
+             class="invisible barcode-chip-container"
+             role="dialog"
+             i18n-label="label_barcode_url">
           <button id="barcode-chip-url" tabindex="0">
             <svg-wrapper name="barcode_url.svg"></svg-wrapper>
             <span id="barcode-chip-url-content"></span>
@@ -118,7 +120,7 @@
         <div id="barcode-chip-text-container"
              class="invisible barcode-chip-container"
              role="dialog"
-             aria-describedby="barcode-chip-text-content">
+             i18n-label="label_barcode_text">
           <div class="barcode-chip-text">
             <span id="barcode-chip-text-content"></span>
             <button id="barcode-chip-text-expand"

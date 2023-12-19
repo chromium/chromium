@@ -224,7 +224,6 @@ function showUrl(url: string) {
 function showText(text: string) {
   const container = dom.get('#barcode-chip-text-container', HTMLDivElement);
   activate(container);
-  container.classList.remove('expanded');
 
   const textEl = dom.get('#barcode-chip-text-content', HTMLSpanElement);
   textEl.textContent = text;

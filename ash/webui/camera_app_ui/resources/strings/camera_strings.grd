@@ -286,8 +286,14 @@
       <message desc="Label for the copy button of the barcode text chip." name="IDS_BARCODE_COPY_TEXT_BUTTON">
         Copy text <ph name="text">$1<ex>example text</ex></ph>
       </message>
+      <message desc="Label for the barcode container when text is detected under scan mode." name="IDS_LABEL_BARCODE_TEXT">
+        Text detected.
+      </message>
       <message desc="Text showing on the barcode chip when link is detected under scan mode." name="IDS_BARCODE_LINK_CHIPTEXT">
         Open <ph name="url">$1<ex>https://www.google.com</ex></ph>
+      </message>
+      <message desc="Label for the barcode container when url is detected under scan mode." name="IDS_LABEL_BARCODE_URL">
+        URL detected.
       </message>
       <message desc="Text showing on the barcode chip when wifi is detected under scan mode." name="IDS_BARCODE_WIFI_CHIPTEXT">
         Join "<ph name="wifiname">$1<ex>wifi network name</ex></ph>" Network
