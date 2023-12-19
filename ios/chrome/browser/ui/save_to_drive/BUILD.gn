@@ -9,7 +9,14 @@ source_set("save_to_drive") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/account_picker",
+    "//ios/chrome/browser/ui/account_picker:account_picker_configuration",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

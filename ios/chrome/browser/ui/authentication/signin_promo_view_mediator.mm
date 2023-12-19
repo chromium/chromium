@@ -109,6 +109,7 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
@@ -191,6 +192,7 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
@@ -275,6 +277,7 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
@@ -359,6 +362,7 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
@@ -432,6 +436,7 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
@@ -503,6 +508,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:

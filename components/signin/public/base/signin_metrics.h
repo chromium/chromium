@@ -192,6 +192,8 @@ enum class AccessPoint : int {
   ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD = 55,
   // Access point for the tab organization UI within the tab search bubble.
   ACCESS_POINT_TAB_ORGANIZATION = 56,
+  // Access point for the Save to Drive feature on iOS.
+  ACCESS_POINT_SAVE_TO_DRIVE_IOS = 57,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml
