@@ -186,7 +186,9 @@ public class NativePageFactory {
         protected NativePage buildNewTabPage(Tab tab, String url) {
             NativePageHost nativePageHost =
                     new TabShim(tab, mBrowserControlsManager, mTabModelSelector);
-            if (tab.isIncognito()) return new IncognitoNewTabPage(mActivity, nativePageHost);
+            if (tab.isIncognito()) {
+                return new IncognitoNewTabPage(mActivity, nativePageHost, tab.getProfile());
+            }
 
             return new NewTabPage(
                     mActivity,
