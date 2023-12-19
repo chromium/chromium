@@ -120,6 +120,7 @@ include_rules = [
   "+components/device_signals/core/browser",
   "+components/device_signals/core/common",
   "+components/content_relationship_verification",
+  "+components/data_sharing/public",
   "+components/digital_goods",
   "+components/domain_reliability",
   "+components/dom_distiller/content/browser",

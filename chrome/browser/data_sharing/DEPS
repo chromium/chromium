@@ -1,0 +1,5 @@
+include_rules = [
+  # Minimize dependencies on internal code, but allow service construction.
+  "+components/data_sharing/internal/data_sharing_service_impl.h",
+  "+components/data_sharing/internal/empty_data_sharing_service.h",
+]

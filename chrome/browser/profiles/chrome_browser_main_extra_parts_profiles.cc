@@ -45,6 +45,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/dips/dips_cleanup_service_factory.h"
@@ -741,6 +742,7 @@ void ChromeBrowserMainExtraPartsProfiles::
     CrosAppsKeyEventHandlerFactory::GetInstance();
   }
 #endif
+  data_sharing::DataSharingServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   DevToolsAndroidBridge::Factory::GetInstance();
 #endif

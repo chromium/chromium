@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+
+group("unit_tests") {
+  testonly = true
+
+  deps = [ "//components/data_sharing/internal:unit_tests" ]
+
+  data_deps = [ ":components_unittests_gtest_filter" ]
+}
+
+source_set("components_unittests_gtest_filter") {
+  testonly = true
+
+  data = [ "components_unittests.filter" ]
+}
