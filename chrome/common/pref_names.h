@@ -3992,6 +3992,12 @@ inline constexpr char kListenToThisPageEnabled[] =
 // A list of base64 encoded certificates that are to be trusted as root certs.
 // Only specifiable as an enterprise policy.
 inline constexpr char kCACertificates[] = "certificates.ca_certificates";
+
+// A list of base64 encoded certificates containing SPKIs that are not to be
+// trusted.
+// Only specifiable as an enterprise policy.
+inline constexpr char kCADistrustedCertificates[] =
+    "certificates.ca_distrusted_certificates";
 #endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 
 }  // namespace prefs

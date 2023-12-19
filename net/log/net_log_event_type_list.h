@@ -3320,10 +3320,12 @@ EVENT_TYPE(CERT_VERIFY_PROC_CHROME_ROOT_STORE_VERSION)
 // The event parameters are:
 //   {
 //      "certificate": <The PEM encoded certificate.>
+//      "spki": <The SPKI that this applies to>
 //      "trust": <The trust setting used for this certificate.>
 //      "errors": <Optionally, a string describing any errors or warnings
 //                 encountered while parsing the certificate.>
 //   }
+// Only one of certificate or spki will be provided, never both.
 EVENT_TYPE(CERT_VERIFY_PROC_ADDITIONAL_CERT)
 
 // This event is created for each path building attempt performed by

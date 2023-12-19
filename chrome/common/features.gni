@@ -39,6 +39,7 @@ declare_args() {
   # components/policy/resources/templates/policy_definitions/:
   #
   # * CertificateManagement/CACertificates.yaml
+  # * CertificateManagement/CADistrustedCertificates.yaml
   #
   chrome_certificate_policies_supported = is_mac || is_win || is_linux
 

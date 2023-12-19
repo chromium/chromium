@@ -532,7 +532,19 @@ CertVerifyProcBuiltin::CertVerifyProcBuiltin(
       NetLogWithSource::Make(net::NetLogSourceType::CERT_VERIFY_PROC_CREATED);
   net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC_CREATED);
 
-  // Parse the additional trust anchors and setup trust store.
+  for (const auto& spki : instance_params.additional_distrusted_spkis) {
+    additional_trust_store_.AddDistrustedCertificateBySPKI(
+        std::string(spki.begin(), spki.end()));
+    net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_CERT, [&] {
+      base::Value::Dict results;
+      results.Set("spki", NetLogBinaryValue(base::make_span(spki)));
+      results.Set("trust",
+                  bssl::CertificateTrust::ForDistrusted().ToDebugString());
+      return results;
+    });
+  }
+
+  // Parse the additional certificates and setup trust store.
   for (const auto& x509_cert : instance_params.additional_trust_anchors) {
     bssl::CertErrors parsing_errors;
     std::shared_ptr<const bssl::ParsedCertificate> cert =

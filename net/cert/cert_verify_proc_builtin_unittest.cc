@@ -25,6 +25,7 @@
 #include "net/cert/internal/system_trust_store.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/time_conversions.h"
+#include "net/cert/x509_util.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_with_source.h"
@@ -200,10 +201,30 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   void TearDown() override { cert_net_fetcher_->Shutdown(); }
 
   void InitializeVerifyProc(const CertificateList& additional_trust_anchors) {
+    InitializeVerifyProc(/*additional_trust_anchors=*/additional_trust_anchors,
+                         /*additional_distrusted_certificates=*/{});
+  }
+
+  void InitializeVerifyProc(
+      const CertificateList& additional_trust_anchors,
+      const CertificateList& additional_distrusted_certificates) {
     auto mock_system_trust_store = std::make_unique<MockSystemTrustStore>();
     mock_system_trust_store_ = mock_system_trust_store.get();
     CertVerifyProc::InstanceParams instance_params;
     instance_params.additional_trust_anchors = additional_trust_anchors;
+    std::vector<std::vector<uint8_t>> distrusted_spkis;
+    for (const auto& x509_cert : additional_distrusted_certificates) {
+      std::shared_ptr<const bssl::ParsedCertificate> cert =
+          bssl::ParsedCertificate::Create(
+              bssl::UpRef(x509_cert->cert_buffer()),
+              net::x509_util::DefaultParseCertificateOptions(),
+              /*errors=*/nullptr);
+      EXPECT_TRUE(cert);
+      std::string spki_string = cert->tbs().spki_tlv.AsString();
+      distrusted_spkis.push_back(
+          std::vector<uint8_t>(spki_string.begin(), spki_string.end()));
+    }
+    instance_params.additional_distrusted_spkis = distrusted_spkis;
     auto mock_ct_verifier = std::make_unique<MockCTVerifier>();
     mock_ct_verifier_ = mock_ct_verifier.get();
     mock_ct_policy_enforcer_ = base::MakeRefCounted<MockCTPolicyEnforcer>();
@@ -455,6 +476,31 @@ TEST_F(CertVerifyProcBuiltinTest, DoesNotCallsCtVerifierOnFailedPaths) {
   int error = callback.WaitForResult();
   EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
   EXPECT_EQ(verify_result.scts.size(), 0u);
+}
+
+TEST_F(CertVerifyProcBuiltinTest, DistrustedIntermediate) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  InitializeVerifyProc(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()},
+      /*additional_distrusted_certificates=*/{
+          intermediate->GetX509Certificate()});
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  base::HistogramTester histogram_tester;
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+         &verify_net_log_source, callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  EXPECT_EQ(1u, verify_result.verified_cert->intermediate_buffers().size());
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Net.CertVerifier.PathBuilderIterationCount"),
+              testing::ElementsAre(base::Bucket(/*min=*/2, /*count=*/1)));
 }
 
 TEST_F(CertVerifyProcBuiltinTest, CRLNotCheckedForKnownRoots) {

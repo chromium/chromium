@@ -68,6 +68,7 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServiceCACertificatesPolicyTest,
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.SetSSLConfig(
       net::test_server::EmbeddedTestServer::CERT_AUTO);
+  https_test_server.ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(https_test_server.Start());
 
   // Clear test roots so that cert validation only happens with
@@ -83,6 +84,97 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServiceCACertificatesPolicyTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          CertVerifierServiceCACertificatesPolicyTest,
                          ::testing::Bool());
+
+// Testing the CADistrutedCertificates policy
+class CertVerifierServiceCADistrustedCertificatesPolicyTest
+    : public policy::PolicyTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+
+    scoped_refptr<net::X509Certificate> root_cert =
+        net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+    ASSERT_TRUE(root_cert);
+
+    std::string b64_cert = base::Base64Encode(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
+    base::Value certs_value(base::Value::Type::LIST);
+    certs_value.GetList().Append(b64_cert);
+    policy::PolicyMap policies;
+    // Distrust the test server certificate
+    SetPolicy(&policies, policy::key::kCADistrustedCertificates,
+              absl::make_optional(std::move(certs_value)));
+    UpdateProviderPolicy(policies);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CertVerifierServiceCADistrustedCertificatesPolicyTest,
+                       TestPolicy) {
+  net::EmbeddedTestServer https_test_server(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server.SetSSLConfig(
+      net::test_server::EmbeddedTestServer::CERT_AUTO);
+  https_test_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_test_server.Start());
+
+  // We don't clear the test roots but the cert should still be distrusted based
+  // on the enterprise policy.
+
+  ASSERT_TRUE(NavigateToUrl(https_test_server.GetURL("/simple.html"), this));
+
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
+      chrome_test_utils::GetActiveWebContents(this)));
+}
+
+class CertVerifierServiceCATrustedDistrustedCertificatesPolicyTest
+    : public policy::PolicyTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+
+    scoped_refptr<net::X509Certificate> root_cert =
+        net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+    ASSERT_TRUE(root_cert);
+
+    std::string b64_cert = base::Base64Encode(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
+    policy::PolicyMap policies;
+    // Distrust the test server certificate
+    {
+      base::Value certs_value(base::Value::Type::LIST);
+      certs_value.GetList().Append(b64_cert);
+      SetPolicy(&policies, policy::key::kCADistrustedCertificates,
+                absl::make_optional(std::move(certs_value)));
+    }
+    // Trust the test server certificate
+    {
+      base::Value certs_value(base::Value::Type::LIST);
+      certs_value.GetList().Append(b64_cert);
+      SetPolicy(&policies, policy::key::kCACertificates,
+                absl::make_optional(std::move(certs_value)));
+    }
+    UpdateProviderPolicy(policies);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    CertVerifierServiceCATrustedDistrustedCertificatesPolicyTest,
+    TestDistrustOverridesTrust) {
+  net::EmbeddedTestServer https_test_server(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server.SetSSLConfig(
+      net::test_server::EmbeddedTestServer::CERT_AUTO);
+  https_test_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_test_server.Start());
+
+  // We don't clear the test roots but the cert should still be distrusted based
+  // on the enterprise policy.
+
+  ASSERT_TRUE(NavigateToUrl(https_test_server.GetURL("/simple.html"), this));
+
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
+      chrome_test_utils::GetActiveWebContents(this)));
+}
 
 #endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 

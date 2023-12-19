@@ -72,6 +72,8 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
         creation_params->initial_additional_certificates->trust_anchors;
     instance_params.additional_untrusted_authorities =
         creation_params->initial_additional_certificates->all_certificates;
+    instance_params.additional_distrusted_spkis =
+        creation_params->initial_additional_certificates->distrusted_spkis;
   }
 
   std::unique_ptr<net::CertVerifierWithUpdatableProc> cert_verifier =

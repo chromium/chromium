@@ -123,6 +123,9 @@ class NET_EXPORT CertVerifyProc
     // certs from the configured system store. This is implementation-specific
     // plumbing for passing additional intermediates through.
     CertificateList additional_untrusted_authorities;
+
+    //  Additional SPKIs to consider as distrusted during path validation.
+    std::vector<std::vector<uint8_t>> additional_distrusted_spkis;
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

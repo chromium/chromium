@@ -38,6 +38,9 @@ struct AdditionalCertificates {
 
   // List of additional trust anchors.
   array<network.mojom.X509Certificate> trust_anchors;
+
+  // List of SPKIs that are explicitly distrusted.
+  array<array<uint8>> distrusted_spkis;
 };
 
 // Allows the CertVerifierService to connect a new URLLoaderFactory if its

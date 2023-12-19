@@ -84,6 +84,10 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/features.h"
 
+#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+#include "net/cert/asn1_util.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
@@ -307,6 +311,11 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
           &ProfileNetworkContextService::ScheduleUpdateCertificatePolicy,
           base::Unretained(this)));
 
+  pref_change_registrar_.Add(
+      prefs::kCADistrustedCertificates,
+      base::BindRepeating(
+          &ProfileNetworkContextService::ScheduleUpdateCertificatePolicy,
+          base::Unretained(this)));
 #endif
 
   pref_change_registrar_.Add(
@@ -380,6 +389,7 @@ void ProfileNetworkContextService::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kHSTSPolicyBypassList);
 #if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
   registry->RegisterListPref(prefs::kCACertificates);
+  registry->RegisterListPref(prefs::kCADistrustedCertificates);
 #endif
 }
 
@@ -535,6 +545,7 @@ cert_verifier::mojom::AdditionalCertificatesPtr
 ProfileNetworkContextService::GetCertificatePolicy() {
   net::CertificateList additional_untrusted_anchors;
   net::CertificateList additional_trust_anchors;
+  std::vector<std::vector<uint8_t>> additional_distrusted_spkis;
   auto* prefs = profile_->GetPrefs();
 
   for (const base::Value& cert_b64 : prefs->GetList(prefs::kCACertificates)) {
@@ -556,9 +567,24 @@ ProfileNetworkContextService::GetCertificatePolicy() {
     }
   }
 
+  for (const base::Value& cert_b64 :
+       prefs->GetList(prefs::kCADistrustedCertificates)) {
+    std::string decoded;
+    if (!base::Base64Decode(cert_b64.GetString(), &decoded)) {
+      continue;
+    }
+    base::StringPiece spki_piece;
+    bool success = net::asn1::ExtractSPKIFromDERCert(decoded, &spki_piece);
+    if (success) {
+      additional_distrusted_spkis.push_back(
+          std::vector<uint8_t>(spki_piece.begin(), spki_piece.end()));
+    }
+  }
+
   return cert_verifier::mojom::AdditionalCertificates::New(
       std::move(additional_untrusted_anchors),
-      std::move(additional_trust_anchors));
+      std::move(additional_trust_anchors),
+      std::move(additional_distrusted_spkis));
 }
 
 void ProfileNetworkContextService::UpdateCertificatePolicy() {

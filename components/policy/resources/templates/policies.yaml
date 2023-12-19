@@ -1190,6 +1190,7 @@ policies:
   1189: ListenToThisPageEnabled
   1190: AlwaysOnVpnPreConnectUrlAllowlist
   1191: CACertificates
+  1192: CADistrustedCertificates
 atomic_groups:
   1: Homepage
   2: RemoteAccess

@@ -136,6 +136,8 @@ void CertVerifierServiceImpl::UpdateAdditionalCertificates(
       additional_certificates->trust_anchors;
   instance_params_.additional_untrusted_authorities =
       additional_certificates->all_certificates;
+  instance_params_.additional_distrusted_spkis =
+      additional_certificates->distrusted_spkis;
 
   verifier_->UpdateVerifyProcData(cert_net_fetcher_,
                                   service_factory_impl_->get_impl_params(),
