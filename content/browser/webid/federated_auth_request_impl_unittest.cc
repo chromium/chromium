@@ -977,10 +977,11 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
     test_network_request_manager_->SetTestConfig(configuration);
 
-    std::vector<blink::mojom::IdentityProviderGetParametersPtr> idp_get_params;
+    // If multiple IdPs are received, add them to a single get call. Unittests
+    // for multiple get calls can be added later as needed.
+    std::vector<blink::mojom::IdentityProviderPtr> idp_ptrs;
     for (const auto& identity_provider :
          request_parameters.identity_providers) {
-      std::vector<blink::mojom::IdentityProviderPtr> idp_ptrs;
       blink::mojom::IdentityProviderRequestOptionsPtr options =
           blink::mojom::IdentityProviderRequestOptions::New();
       options->config = blink::mojom::IdentityProviderConfig::New();
@@ -993,12 +994,13 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       blink::mojom::IdentityProviderPtr idp_ptr =
           blink::mojom::IdentityProvider::NewFederated(std::move(options));
       idp_ptrs.push_back(std::move(idp_ptr));
-      blink::mojom::IdentityProviderGetParametersPtr get_params =
-          blink::mojom::IdentityProviderGetParameters::New(
-              std::move(idp_ptrs), request_parameters.rp_context,
-              request_parameters.rp_mode);
-      idp_get_params.push_back(std::move(get_params));
     }
+    blink::mojom::IdentityProviderGetParametersPtr get_params =
+        blink::mojom::IdentityProviderGetParameters::New(
+            std::move(idp_ptrs), request_parameters.rp_context,
+            request_parameters.rp_mode);
+    std::vector<blink::mojom::IdentityProviderGetParametersPtr> idp_get_params;
+    idp_get_params.push_back(std::move(get_params));
 
     PerformAuthRequest(std::move(idp_get_params),
                        configuration.mediation_requirement);
@@ -2384,7 +2386,7 @@ TEST_F(FederatedAuthRequestImplTest,
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorSilentMediationFailure,
       /*standalone_console_message=*/
-      "Silent mediation failed reason: the user has not used FedCM on this "
+      "Silent mediation issue: the user has not used FedCM on this "
       "site with this identity provider.",
       /*selected_idp_config_url=*/absl::nullopt};
   MockConfiguration configuration = kConfigurationValid;
@@ -2428,7 +2430,7 @@ TEST_F(FederatedAuthRequestImplTest,
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorSilentMediationFailure,
       /*standalone_console_message=*/
-      "Silent mediation failed reason: auto re-authn is in quiet period "
+      "Silent mediation issue: auto re-authn is in quiet period "
       "because "
       "it was recently used on this site.",
       /*selected_idp_config_url=*/absl::nullopt};
@@ -2472,7 +2474,7 @@ TEST_F(FederatedAuthRequestImplTest,
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorSilentMediationFailure,
       /*standalone_console_message=*/
-      "Silent mediation failed reason: preventSilentAccess() has been invoked "
+      "Silent mediation issue: preventSilentAccess() has been invoked "
       "on the site.",
       /*selected_idp_config_url=*/absl::nullopt};
   MockConfiguration configuration = kConfigurationValid;
@@ -2515,7 +2517,7 @@ TEST_F(FederatedAuthRequestImplTest,
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorSilentMediationFailure,
       /*standalone_console_message=*/
-      "Silent mediation failed reason: the user has disabled auto re-authn.",
+      "Silent mediation issue: the user has disabled auto re-authn.",
       /*selected_idp_config_url=*/absl::nullopt};
   MockConfiguration configuration = kConfigurationValid;
   configuration.mediation_requirement = MediationRequirement::kSilent;
@@ -2584,7 +2586,7 @@ TEST_F(FederatedAuthRequestImplTest,
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorSilentMediationFailure,
       /*standalone_console_message=*/
-      "Silent mediation failed reason: the user has used FedCM with multiple "
+      "Silent mediation issue: the user has used FedCM with multiple "
       "accounts on this site.",
       /*selected_idp_config_url=*/absl::nullopt};
   MockConfiguration configuration = kConfigurationValid;
@@ -4202,6 +4204,174 @@ TEST_F(FederatedAuthRequestImplTest, DuplicateIdpMultiIdpRequest) {
   RunAuthTest(request_parameters, expectations, kConfigurationMultiIdpValid);
   EXPECT_FALSE(DidFetchAnyEndpoint());
   EXPECT_FALSE(did_show_accounts_dialog());
+}
+
+// Test that API can succeed with multiple IdPs, if one IdP is signed out but
+// the other isn't.
+TEST_F(FederatedAuthRequestImplTest, MultiIdpWithOneIdpSignedOut) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
+
+  RequestExpectations expectations = kExpectationSuccess;
+  expectations.selected_idp_config_url = kProviderTwoUrlFull;
+
+  RunAuthTest(kDefaultMultiIdpRequestParameters, expectations,
+              kConfigurationMultiIdpValid);
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
+  EXPECT_TRUE(did_show_accounts_dialog());
+  EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+}
+
+// Test that API can succeed with multiple IdPs, if silent mediation is used but
+// only one IdP has a returning account.
+TEST_F(FederatedAuthRequestImplTest,
+       MultiIdpWithSilentMediationAndReturningAccountInSecondIdp) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
+
+  // Pretend the sharing permission has not been granted for any account for the
+  // first IdP.
+  EXPECT_CALL(*test_permission_delegate_,
+              HasSharingPermission(
+                  OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                  OriginFromString(kProviderUrlFull), Eq(absl::nullopt)))
+      .WillOnce(Return(false));
+
+  // Pretend the sharing permission has been granted for exactly one account for
+  // the second IdP.
+  EXPECT_CALL(*test_permission_delegate_,
+              HasSharingPermission(
+                  OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                  OriginFromString(kProviderTwoUrlFull), Eq(absl::nullopt)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderTwoUrlFull),
+                           Optional(std::string(kAccountIdPeter))))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderTwoUrlFull),
+                           Optional(std::string(kAccountIdNicolas))))
+      .WillOnce(Return(false));
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderTwoUrlFull),
+                           Optional(std::string(kAccountIdZach))))
+      .WillOnce(Return(false));
+
+  // Ensure auto reauthn is not considered as disabled.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnSettingEnabled())
+      .Times(3)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .Times(3)
+      .WillRepeatedly(Return(false));
+
+  RequestExpectations expectations = kExpectationSuccess;
+  expectations.selected_idp_config_url = kProviderTwoUrlFull;
+  expectations.is_auto_selected = true;
+  // There will be a console message due to using mediation:silent and having an
+  // IdP that does not have a returning account.
+  expectations.standalone_console_message =
+      "Silent mediation issue: the user has not used FedCM on this site with "
+      "this identity provider.";
+
+  MockConfiguration configuration = kConfigurationMultiIdpValid;
+  configuration.mediation_requirement = MediationRequirement::kSilent;
+
+  RunAuthTest(kDefaultMultiIdpRequestParameters, expectations, configuration);
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
+  EXPECT_TRUE(did_show_accounts_dialog());
+  EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+}
+
+// Test that API fails with multiple IdPs, if silent mediation is used and two
+// IdPs have a single returning account.
+TEST_F(FederatedAuthRequestImplTest,
+       MultiIdpWithSilentMediationAndReturningAccountInTwoIdps) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
+
+  // Pretend the sharing permission has been granted for exactly one account for
+  // the first IdP.
+  EXPECT_CALL(*test_permission_delegate_,
+              HasSharingPermission(
+                  OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                  OriginFromString(kProviderUrlFull), Eq(absl::nullopt)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull),
+                           Optional(std::string(kAccountId))))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+
+  // Pretend the sharing permission has been granted for exactly one account for
+  // the second IdP.
+  EXPECT_CALL(*test_permission_delegate_,
+              HasSharingPermission(
+                  OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                  OriginFromString(kProviderTwoUrlFull), Eq(absl::nullopt)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderTwoUrlFull),
+                           Optional(std::string(kAccountIdPeter))))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderTwoUrlFull),
+                           Optional(std::string(kAccountIdNicolas))))
+      .WillOnce(Return(false));
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderTwoUrlFull),
+                           Optional(std::string(kAccountIdZach))))
+      .WillOnce(Return(false));
+
+  // Ensure auto reauthn is not considered as disabled.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnSettingEnabled())
+      .Times(3)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .Times(3)
+      .WillRepeatedly(Return(false));
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorSilentMediationFailure,
+      /*standalone_console_message=*/absl::nullopt,
+      /*selected_idp_config_url=*/absl::nullopt};
+
+  MockConfiguration configuration = kConfigurationMultiIdpValid;
+  configuration.mediation_requirement = MediationRequirement::kSilent;
+
+  RunAuthTest(kDefaultMultiIdpRequestParameters, expectations, configuration);
+
+  // Accounts still need to be fetched since there could have been a single
+  // returning account.
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
+  EXPECT_FALSE(did_show_accounts_dialog());
+  EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
 }
 
 TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {

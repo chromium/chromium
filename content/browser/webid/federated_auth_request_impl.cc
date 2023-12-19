@@ -931,19 +931,31 @@ void FederatedAuthRequestImpl::RequestToken(
                                  /*should_delay_callback=*/false);
         return;
       }
+    }
+  }
 
-      // TODO(crbug.com/1382545): Handle
-      // ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp in the multi
-      // IDP use case.
+  for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
+    for (auto& idp_ptr : idp_get_params_ptr->providers) {
+      idp_order_.push_back(idp_ptr->get_federated()->config->config_url);
+
       bool has_failing_idp_signin_status =
           webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
               render_frame_host(), idp_ptr->get_federated()->config->config_url,
               permission_delegate_);
 
+      url::Origin idp_origin =
+          url::Origin::Create(idp_ptr->get_federated()->config->config_url);
       if (has_failing_idp_signin_status &&
           webid::GetIdpSigninStatusMode(render_frame_host(), idp_origin) ==
               FedCmIdpSigninStatusMode::ENABLED) {
         if (idp_get_params_ptr->mode == blink::mojom::RpMode::kWidget) {
+          if (IsFedCmMultipleIdentityProvidersEnabled()) {
+            // In the multi IDP case, we do not want to complete the request
+            // right away as there are other IDPs which may be logged in. But we
+            // also do not want to fetch this IDP.
+            unique_idps.erase(idp_ptr->get_federated()->config->config_url);
+            continue;
+          }
           // If the user is known to be signed-out and the RP is request
           // a widget, we fail the request early before fetching anything.
           CompleteRequestWithError(
@@ -971,9 +983,15 @@ void FederatedAuthRequestImpl::RequestToken(
           }
         }
       }
-      // TODO(crbug.com/1383384): Handle auto_reauthn_ for multi IDP.
       if (ShouldFailBeforeFetchingAccounts(
               idp_ptr->get_federated()->config->config_url)) {
+        if (IsFedCmMultipleIdentityProvidersEnabled()) {
+          // In the multi IDP case, we do not want to complete the request right
+          // away as there are other IDPs which may be logged in. But we also do
+          // not want to fetch this IDP.
+          unique_idps.erase(idp_ptr->get_federated()->config->config_url);
+          continue;
+        }
         CompleteRequestWithError(
             FederatedAuthRequestResult::kErrorSilentMediationFailure,
             TokenStatus::kSilentMediationFailure,
@@ -981,12 +999,7 @@ void FederatedAuthRequestImpl::RequestToken(
             /*should_delay_callback=*/false);
         return;
       }
-    }
-  }
 
-  for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
-    for (auto& idp_ptr : idp_get_params_ptr->providers) {
-      idp_order_.push_back(idp_ptr->get_federated()->config->config_url);
       blink::mojom::RpContext rp_context = idp_get_params_ptr->context;
       blink::mojom::RpMode rp_mode = idp_get_params_ptr->mode;
       const GURL& idp_config_url = idp_ptr->get_federated()->config->config_url;
@@ -997,6 +1010,16 @@ void FederatedAuthRequestImpl::RequestToken(
     }
   }
 
+  if (IsFedCmMultipleIdentityProvidersEnabled() && unique_idps.empty()) {
+    // At this point either all IDPs are signed out or mediation:silent was used
+    // and there are no returning accounts. For now reject with a generic error.
+    // TODO(crbug.com/1307709): Handle FedCmMetrics properly for multiple IDPs.
+    CompleteRequestWithError(
+        FederatedAuthRequestResult::kError, TokenStatus::kNotSignedInWithIdp,
+        /*token_error=*/absl::nullopt, /*should_delay_callback=*/false);
+    return;
+  }
+  CHECK(!unique_idps.empty());
   FetchEndpointsForIdps(std::move(unique_idps), /*for_idp_signin=*/false);
 }
 
@@ -1463,9 +1486,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       // TODO(crbug.com/1441436): validate the statement above with stakeholders
       render_frame_host().AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
-          "Silent mediation failed reason: the user has used FedCM with "
-          "multiple accounts on "
-          "this site.");
+          "Silent mediation issue: the user has used FedCM with multiple "
+          "accounts on this site.");
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorSilentMediationFailure,
           TokenStatus::kSilentMediationFailure,
@@ -2685,7 +2707,7 @@ bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
   if (!is_auto_reauthn_setting_enabled) {
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
-        "Silent mediation failed reason: the user has disabled auto re-authn.");
+        "Silent mediation issue: the user has disabled auto re-authn.");
   }
 
   bool is_auto_reauthn_embargoed =
@@ -2699,9 +2721,8 @@ bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
             GetEmbeddingOrigin());
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
-        "Silent mediation failed reason: auto re-authn is in quiet period "
-        "because "
-        "it was recently used on this site.");
+        "Silent mediation issue: auto re-authn is in quiet period because it "
+        "was recently used on this site.");
   }
 
   bool has_sharing_permission_for_any_account =
@@ -2713,16 +2734,16 @@ bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
   if (!has_sharing_permission_for_any_account) {
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
-        "Silent mediation failed reason: the user has not used FedCM on this "
-        "site with this identity provider.");
+        "Silent mediation issue: the user has not used FedCM on this site with "
+        "this identity provider.");
   }
 
   bool requires_user_mediation = RequiresUserMediation();
   if (requires_user_mediation) {
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
-        "Silent mediation failed reason: preventSilentAccess() has been "
-        "invoked on the site.");
+        "Silent mediation issue: preventSilentAccess() has been invoked on the "
+        "site.");
   }
 
   if (requires_user_mediation || !is_auto_reauthn_setting_enabled ||
