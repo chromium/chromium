@@ -23,12 +23,14 @@ namespace {
 GURL GeneralizeURL(const GURL& url, const download::DownloadItem& item) {
   // data: urls cannot be matched against dlp rules. We use the embedding tab
   // url as source.
+  GURL generalized_url = url;
   if (url.SchemeIs(url::kDataScheme)) {
-    return item.GetTabUrl();
-  } else if (url.SchemeIs(url::kBlobScheme)) {
-    return url::Origin::Create(url).GetURL();
+    generalized_url = item.GetTabUrl();
   }
-  return url;
+  if (generalized_url.SchemeIs(url::kBlobScheme)) {
+    return url::Origin::Create(generalized_url).GetURL();
+  }
+  return generalized_url;
 }
 
 }  // namespace

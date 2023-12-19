@@ -91,8 +91,17 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
   }
 #endif
 
-  const GURL caller = download::BaseFile::GetEffectiveAuthorityURL(
+  GURL caller = download::BaseFile::GetEffectiveAuthorityURL(
       download_item_->GetURL(), download_item_->GetReferrerUrl());
+  // Blob URLs are not set as referrer of downloads of them. If the download url
+  // itself has no authority part, their is no authority url. For dlp we want to
+  // use the blob's origin in that case.
+  auto* render_frame_host =
+      content::DownloadItemUtils::GetRenderFrameHost(download_item_);
+  if (!caller.is_valid() && render_frame_host &&
+      render_frame_host->GetLastCommittedURL().SchemeIsBlob()) {
+    caller = render_frame_host->GetLastCommittedOrigin().GetURL();
+  }
 
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
