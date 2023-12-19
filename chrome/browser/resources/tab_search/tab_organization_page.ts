@@ -21,7 +21,7 @@ import {getTemplate} from './tab_organization_page.html.js';
 import {Tab, TabOrganization, TabOrganizationError, TabOrganizationSession, TabOrganizationState, UserFeedback} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
-const BODY_VERTICAL_MARGIN: number = 32;
+const BODY_VERTICAL_MARGIN: number = 40;
 const HEIGHT_ANIMATION_LENGTH: number = 250;
 
 export interface TabOrganizationPageElement {

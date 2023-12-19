@@ -153,7 +153,8 @@
 
   :host-context([chrome-refresh-2023]) #iconContainer {
     align-items: center;
-    background: var(--color-list-item-url-favicon-background);
+    background: var(--tab-search-favicon-background,
+        var(--color-list-item-url-favicon-background));
     border-radius: 8px;
     display: flex;
     flex-shrink: 0;
