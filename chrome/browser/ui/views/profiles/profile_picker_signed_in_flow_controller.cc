@@ -92,15 +92,15 @@ void ProfilePickerSignedInFlowController::SwitchToSyncConfirmation() {
                                    base::Unretained(this)));
 }
 
-void ProfilePickerSignedInFlowController::SwitchToEnterpriseProfileWelcome(
+void ProfilePickerSignedInFlowController::SwitchToManagedUserProfileNotice(
     ManagedUserProfileNoticeUI::ScreenType type,
     signin::SigninChoiceCallback proceed_callback) {
   DCHECK(IsInitialized());
   host_->ShowScreen(contents(),
-                    GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL),
+                    GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
                     /*navigation_finished_closure=*/
                     base::BindOnce(&ProfilePickerSignedInFlowController::
-                                       SwitchToEnterpriseProfileWelcomeFinished,
+                                       SwitchToManagedUserProfileNoticeFinished,
                                    // Unretained is enough as the callback is
                                    // called by the owner of this instance.
                                    base::Unretained(this), type,
@@ -170,7 +170,7 @@ void ProfilePickerSignedInFlowController::SwitchToSyncConfirmationFinished() {
 }
 
 void ProfilePickerSignedInFlowController::
-    SwitchToEnterpriseProfileWelcomeFinished(
+    SwitchToManagedUserProfileNoticeFinished(
         ManagedUserProfileNoticeUI::ScreenType type,
         signin::SigninChoiceCallback proceed_callback) {
   DCHECK(IsInitialized());

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://enterprise-profile-welcome/enterprise_profile_welcome_app.js';
+import 'chrome://managed-user-profile-notice/managed_user_profile_notice_app.js';
 
-import {EnterpriseProfileWelcomeAppElement} from 'chrome://enterprise-profile-welcome/enterprise_profile_welcome_app.js';
-import {EnterpriseProfileInfo, EnterpriseProfileWelcomeBrowserProxyImpl} from 'chrome://enterprise-profile-welcome/enterprise_profile_welcome_browser_proxy.js';
+import {ManagedUserProfileNoticeAppElement} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_app.js';
+import {ManagedUserProfileInfo, ManagedUserProfileNoticeBrowserProxyImpl} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_browser_proxy.js';
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -13,16 +13,17 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestEnterpriseProfileWelcomeBrowserProxy} from './test_enterprise_profile_welcome_browser_proxy.js';
+import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_profile_notice_browser_proxy.js';
 
-suite('EnterpriseProfileWelcomeTest', function() {
-  let app: EnterpriseProfileWelcomeAppElement;
-  let browserProxy: TestEnterpriseProfileWelcomeBrowserProxy;
+
+suite('ManagedUserProfileNoticeTest', function() {
+  let app: ManagedUserProfileNoticeAppElement;
+  let browserProxy: TestManagedUserProfileNoticeBrowserProxy;
 
   const AVATAR_URL_1: string = 'chrome://theme/IDR_PROFILE_AVATAR_1';
   const AVATAR_URL_2: string = 'chrome://theme/IDR_PROFILE_AVATAR_2';
 
-  const testEnterpriseInfo: EnterpriseProfileInfo = {
+  const testManagedUserProfileInfo: ManagedUserProfileInfo = {
     pictureUrl: AVATAR_URL_1,
     showEnterpriseBadge: false,
     title: 'title',
@@ -35,10 +36,10 @@ suite('EnterpriseProfileWelcomeTest', function() {
 
   setup(async function() {
     browserProxy =
-        new TestEnterpriseProfileWelcomeBrowserProxy(testEnterpriseInfo);
-    EnterpriseProfileWelcomeBrowserProxyImpl.setInstance(browserProxy);
+        new TestManagedUserProfileNoticeBrowserProxy(testManagedUserProfileInfo);
+    ManagedUserProfileNoticeBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    app = document.createElement('enterprise-profile-welcome-app');
+    app = document.createElement('managed-user-profile-notice-app');
     document.body.appendChild(app);
     await waitAfterNextRender(app);
     return browserProxy.whenCalled('initialized');
@@ -76,7 +77,7 @@ suite('EnterpriseProfileWelcomeTest', function() {
     loadTimeData.overrideValues({'showLinkDataCheckbox': true});
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    app = document.createElement('enterprise-profile-welcome-app');
+    app = document.createElement('managed-user-profile-notice-app');
     document.body.appendChild(app);
     await waitAfterNextRender(app);
     await browserProxy.whenCalled('initialized');
@@ -103,11 +104,10 @@ suite('EnterpriseProfileWelcomeTest', function() {
   test('linkDataCheckedByDefault', async function() {
     assertTrue(isChildVisible(app, '#proceedButton'));
     assertFalse(isChildVisible(app, '#linkData'));
-
     loadTimeData.overrideValues({'showLinkDataCheckbox': true});
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    app = document.createElement('enterprise-profile-welcome-app');
+    app = document.createElement('managed-user-profile-notice-app');
     document.body.appendChild(app);
     await waitAfterNextRender(app);
     await browserProxy.whenCalled('initialized');

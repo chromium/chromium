@@ -545,14 +545,14 @@ const char kChromeUISandboxHost[] = "sandbox";
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 const char kChromeUIBrowserSwitchHost[] = "browser-switch";
 const char kChromeUIBrowserSwitchURL[] = "chrome://browser-switch/";
-const char kChromeUIEnterpriseProfileWelcomeHost[] =
-    "enterprise-profile-welcome";
-const char kChromeUIEnterpriseProfileWelcomeURL[] =
-    "chrome://enterprise-profile-welcome/";
 const char kChromeUIIntroHost[] = "intro";
 const char kChromeUIIntroURL[] = "chrome://intro";
 const char kChromeUIIntroDefaultBrowserSubPage[] = "default-browser";
 const char kChromeUIIntroDefaultBrowserURL[] = "chrome://intro/default-browser";
+const char kChromeUIManagedUserProfileNoticeHost[] =
+    "managed-user-profile-notice";
+const char kChromeUIManagedUserProfileNoticeUrl[] =
+    "chrome://managed-user-profile-notice/";
 const char kChromeUIProfileCustomizationHost[] = "profile-customization";
 const char kChromeUIProfileCustomizationURL[] =
     "chrome://profile-customization";

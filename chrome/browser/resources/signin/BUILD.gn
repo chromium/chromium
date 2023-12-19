@@ -29,7 +29,7 @@ build_webui("build") {
   ]
   if (!is_chromeos_ash) {
     static_files += [
-      "enterprise_profile_welcome/enterprise_profile_welcome.html",
+      "managed_user_profile_notice/managed_user_profile_notice.html",
       "profile_customization/profile_customization.html",
       "signin_email_confirmation/signin_email_confirmation.html",
       "signin_error/signin_error.html",
@@ -53,7 +53,7 @@ build_webui("build") {
 
   if (!is_chromeos_ash) {
     web_component_files += [
-      "enterprise_profile_welcome/enterprise_profile_welcome_app.ts",
+      "managed_user_profile_notice/managed_user_profile_notice_app.ts",
       "profile_customization/profile_customization_app.ts",
       "signin_email_confirmation/signin_email_confirmation_app.ts",
       "signin_error/signin_error_app.ts",
@@ -74,7 +74,7 @@ build_webui("build") {
 
   if (!is_chromeos_ash) {
     non_web_component_files += [
-      "enterprise_profile_welcome/enterprise_profile_welcome_browser_proxy.ts",
+      "managed_user_profile_notice/managed_user_profile_notice_browser_proxy.ts",
       "profile_customization/profile_customization_browser_proxy.ts",
       "signin_error/signin_error.ts",
       "signin_reauth/signin_reauth_browser_proxy.ts",

@@ -467,7 +467,7 @@ static constexpr const char* const kChromeUrls[] = {
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // Note: Disabled because a DCHECK fires when directly visiting the URL.
-    // "chrome://enterprise-profile-welcome",
+    // "chrome://managed-user-profile-notice",
     "chrome://intro",
     "chrome://profile-customization/?debug",
     "chrome://signin-email-confirmation",

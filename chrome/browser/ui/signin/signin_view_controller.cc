@@ -247,7 +247,7 @@ void SigninViewController::ShowModalSyncConfirmationDialog(
       GetOnModalDialogClosedCallback());
 }
 
-void SigninViewController::ShowModalEnterpriseConfirmationDialog(
+void SigninViewController::ShowModalManagedUserNoticeDialog(
     const AccountInfo& account_info,
     bool force_new_profile,
     bool show_link_data_option,
@@ -256,12 +256,12 @@ void SigninViewController::ShowModalEnterpriseConfirmationDialog(
     BUILDFLAG(IS_CHROMEOS_LACROS)
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
-      SigninViewControllerDelegate::CreateEnterpriseConfirmationDelegate(
+      SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
           browser_, account_info, force_new_profile, show_link_data_option,
           std::move(callback)),
       GetOnModalDialogClosedCallback());
 #else
-  NOTREACHED() << "Enterprise confirmation dialog modal not supported";
+  NOTREACHED() << "Managed user notice dialog modal not supported";
 #endif
 }
 

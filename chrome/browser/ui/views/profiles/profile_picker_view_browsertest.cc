@@ -2242,7 +2242,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   // actually start which would add overhead in mocking further stuff.
   // Enterprise domain needed for this profile being detected as Work.
   Profile* profile_being_created =
-      SignInForNewProfile(GURL("chrome://enterprise-profile-welcome/"),
+      SignInForNewProfile(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
                           "joe.enterprise@gmail.com", "Joe", "enterprise.com");
 
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
@@ -2306,7 +2306,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in managed user
   // notice screen getting displayed.
-  WaitForLoadStop(GURL("chrome://enterprise-profile-welcome/"));
+  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
 
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
       /*expected_type=*/
@@ -2360,12 +2360,12 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   // actually start which would add overhead in mocking further stuff.
   // Enterprise domain needed for this profile being detected as Work.
   Profile* profile_being_created =
-      SignInForNewProfile(GURL("chrome://enterprise-profile-welcome/"),
+      SignInForNewProfile(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
                           "joe.enterprise@gmail.com", "Joe", "enterprise.com");
 
   // Wait for the sign-in to propagate to the flow, resulting in managed user
   // notice screen getting displayed.
-  WaitForLoadStop(GURL("chrome://enterprise-profile-welcome/"));
+  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
 
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
       /*expected_type=*/
@@ -2419,13 +2419,13 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest, Cancel) {
   // actually start which would add overhead in mocking further stuff.
   // Enterprise domain needed for this profile being detected as Work.
   Profile* profile_being_created =
-      SignInForNewProfile(GURL("chrome://enterprise-profile-welcome/"),
+      SignInForNewProfile(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
                           "joe.enterprise@gmail.com", "Joe", "enterprise.com");
   base::FilePath profile_being_created_path = profile_being_created->GetPath();
 
   // Wait for the sign-in to propagate to the flow, resulting in managed user
   // notice screen getting displayed.
-  WaitForLoadStop(GURL("chrome://enterprise-profile-welcome/"));
+  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
 
   ProfileDeletionObserver observer;
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
@@ -2454,14 +2454,15 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   // Consumer-looking gmail address avoids code that forces the sync service to
   // actually start which would add overhead in mocking further stuff.
   // Enterprise domain needed for this profile being detected as Work.
-  Profile* profile_being_created = SignInForNewProfile(
-      GURL("chrome://enterprise-profile-welcome/"), "joe.enterprise@gmail.com",
-      "Joe", "enterprise.com", /*start_on_management_page=*/true);
+  Profile* profile_being_created =
+      SignInForNewProfile(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
+                          "joe.enterprise@gmail.com", "Joe", "enterprise.com",
+                          /*start_on_management_page=*/true);
   base::FilePath profile_being_created_path = profile_being_created->GetPath();
 
   // Wait for the sign-in to propagate to the flow, resulting in managed user
   // notice screen getting displayed.
-  WaitForLoadStop(GURL("chrome://enterprise-profile-welcome/"));
+  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
 
   ProfileDeletionObserver observer;
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(

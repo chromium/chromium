@@ -61,7 +61,7 @@ class ForcedEnterpriseSigninInterceptionHandle
         callback_(std::move(callback)) {
     DCHECK(browser_);
     DCHECK(callback_);
-    browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
+    browser_->signin_view_controller()->ShowModalManagedUserNoticeDialog(
         bubble_parameters.intercepted_account,
         profile_creation_required_by_policy_, show_link_data_option_,
         base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::

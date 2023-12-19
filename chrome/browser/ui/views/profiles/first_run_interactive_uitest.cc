@@ -68,7 +68,7 @@ const DeepQuery kSignInButton{"intro-app", "sign-in-promo",
                               "#acceptSignInButton"};
 const DeepQuery kDontSignInButton{"intro-app", "sign-in-promo",
                                   "#declineSignInButton"};
-const DeepQuery kDeclineManagementButton{"enterprise-profile-welcome-app",
+const DeepQuery kDeclineManagementButton{"managed-user-profile-notice-app",
                                          "#cancelButton"};
 const DeepQuery kOptInSyncButton{"sync-confirmation-app", "#confirmButton"};
 const DeepQuery kDontSyncButton{"sync-confirmation-app", "#notNowButton"};
@@ -800,7 +800,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       // The FakeUserPolicySigninService resolves, indicating the the account
       // is managed and requiring to show the enterprise management opt-in.
       WaitForWebContentsNavigation(
-          kWebContentsId, GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL)),
+          kWebContentsId, GURL(chrome::kChromeUIManagedUserProfileNoticeUrl)),
 
       EnsurePresent(kWebContentsId, kDeclineManagementButton),
       PressJsButton(kWebContentsId, kDeclineManagementButton),

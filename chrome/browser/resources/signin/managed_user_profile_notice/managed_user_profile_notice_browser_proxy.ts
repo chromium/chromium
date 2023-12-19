@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview A helper object used by the enterprise profile welcome screen
+ * @fileoverview A helper object used by the managed user profile notice screen
  * to interact with the browser.
  */
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-// Enterprise profile info sent from C++.
-export interface EnterpriseProfileInfo {
+// Managed user profile info sent from C++.
+export interface ManagedUserProfileInfo {
   pictureUrl: string;
   showEnterpriseBadge: boolean;
   title: string;
@@ -21,9 +21,9 @@ export interface EnterpriseProfileInfo {
   checkLinkDataCheckboxByDefault: boolean;
 }
 
-export interface EnterpriseProfileWelcomeBrowserProxy {
+export interface ManagedUserProfileNoticeBrowserProxy {
   // Called when the page is ready
-  initialized(): Promise<EnterpriseProfileInfo>;
+  initialized(): Promise<ManagedUserProfileInfo>;
 
   initializedWithSize(height: number): void;
 
@@ -38,8 +38,8 @@ export interface EnterpriseProfileWelcomeBrowserProxy {
   cancel(): void;
 }
 
-export class EnterpriseProfileWelcomeBrowserProxyImpl implements
-    EnterpriseProfileWelcomeBrowserProxy {
+export class ManagedUserProfileNoticeBrowserProxyImpl implements
+  ManagedUserProfileNoticeBrowserProxy {
   initialized() {
     return sendWithPromise('initialized');
   }
@@ -56,14 +56,14 @@ export class EnterpriseProfileWelcomeBrowserProxyImpl implements
     chrome.send('cancel');
   }
 
-  static getInstance(): EnterpriseProfileWelcomeBrowserProxy {
+  static getInstance(): ManagedUserProfileNoticeBrowserProxy {
     return instance ||
-        (instance = new EnterpriseProfileWelcomeBrowserProxyImpl());
+        (instance = new ManagedUserProfileNoticeBrowserProxyImpl());
   }
 
-  static setInstance(obj: EnterpriseProfileWelcomeBrowserProxy) {
+  static setInstance(obj: ManagedUserProfileNoticeBrowserProxy) {
     instance = obj;
   }
 }
 
-let instance: EnterpriseProfileWelcomeBrowserProxy|null = null;
+let instance: ManagedUserProfileNoticeBrowserProxy|null = null;

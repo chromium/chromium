@@ -56,8 +56,8 @@ namespace {
 const int kModalDialogWidth = 448;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
-const int kEnterpriseConfirmationDialogWidth = 512;
-const int kEnterpriseConfirmationDialogHeight = 576;
+const int kManagedUserNoticeConfirmationDialogWidth = 512;
+const int kManagedUserNoticeConfirmationDialogHeight = 576;
 #endif
 const int kSyncConfirmationDialogWidth = 512;
 const int kSyncConfirmationDialogHeight = 487;
@@ -184,15 +184,16 @@ SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
     BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
 std::unique_ptr<views::WebView>
-SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
+SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
     Browser* browser,
     const AccountInfo& account_info,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
     signin::SigninChoiceCallback callback) {
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
-      browser, GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL),
-      kEnterpriseConfirmationDialogHeight, kEnterpriseConfirmationDialogWidth,
+      browser, GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
+      kManagedUserNoticeConfirmationDialogHeight,
+      kManagedUserNoticeConfirmationDialogWidth,
       InitializeSigninWebDialogUI(false));
 
   ManagedUserProfileNoticeUI* web_dialog_ui =
@@ -492,16 +493,17 @@ SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
     BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
 SigninViewControllerDelegate*
-SigninViewControllerDelegate::CreateEnterpriseConfirmationDelegate(
+SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
     Browser* browser,
     const AccountInfo& account_info,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
     signin::SigninChoiceCallback callback) {
   return new SigninViewControllerDelegateViews(
-      SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
-          browser, account_info, profile_creation_required_by_policy,
-          show_link_data_option, std::move(callback)),
+      SigninViewControllerDelegateViews::
+          CreateManagedUserNoticeConfirmationWebView(
+              browser, account_info, profile_creation_required_by_policy,
+              show_link_data_option, std::move(callback)),
       browser, ui::MODAL_TYPE_WINDOW, true, false);
 }
 #endif

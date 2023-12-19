@@ -694,10 +694,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-  // TODO(b/301931584): Rename url/host to naming pattern
-  // ManagedUserProfileNotice*.
-  if (url.host_piece() == chrome::kChromeUIEnterpriseProfileWelcomeHost)
+  if (url.host_piece() == chrome::kChromeUIManagedUserProfileNoticeHost) {
     return &NewWebUI<ManagedUserProfileNoticeUI>;
+  }
   if (url.host_piece() == chrome::kChromeUIIntroHost &&
       base::FeatureList::IsEnabled(kForYouFre))
     return &NewWebUI<IntroUI>;

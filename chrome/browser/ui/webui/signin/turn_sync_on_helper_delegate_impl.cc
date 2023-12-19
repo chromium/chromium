@@ -201,7 +201,7 @@ void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
   bool show_link_data_option = signin_util::
       ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
           browser_->profile(), profile_separation_policies);
-  browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
+  browser_->signin_view_controller()->ShowModalManagedUserNoticeDialog(
       account_info, profile_creation_required_by_policy, show_link_data_option,
 
       base::BindOnce(
@@ -245,7 +245,7 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
   }
 #endif
   DCHECK(!prompt_for_new_profile);
-  browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
+  browser_->signin_view_controller()->ShowModalManagedUserNoticeDialog(
       account_info, /*profile_creation_required_by_policy=*/false,
       /*show_link_data_option=*/false,
       base::BindOnce(
@@ -253,9 +253,10 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
              signin::SigninChoice choice) {
             browser->signin_view_controller()->CloseModalSignin();
             // When `show_link_data_option` is false,
-            // `ShowModalEnterpriseConfirmationDialog()` calls back with either
-            // `SIGNIN_CHOICE_CANCEL` or `SIGNIN_CHOICE_NEW_PROFILE`.
-            // The profile is clean here, no need to create a new one.
+            // `ShowModalManagedUserNoticeDialog()` calls back
+            // with either `SIGNIN_CHOICE_CANCEL` or
+            // `SIGNIN_CHOICE_NEW_PROFILE`. The profile is clean here, no
+            // need to create a new one.
             std::move(callback).Run(
                 choice == signin::SigninChoice::SIGNIN_CHOICE_CANCEL
                     ? signin::SigninChoice::SIGNIN_CHOICE_CANCEL

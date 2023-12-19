@@ -34,15 +34,15 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui),
-      chrome::kChromeUIEnterpriseProfileWelcomeHost);
+      chrome::kChromeUIManagedUserProfileNoticeHost);
 
   static constexpr webui::ResourcePath kResources[] = {
-      {"enterprise_profile_welcome_app.js",
-       IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_ENTERPRISE_PROFILE_WELCOME_APP_JS},
-      {"enterprise_profile_welcome_app.html.js",
-       IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_ENTERPRISE_PROFILE_WELCOME_APP_HTML_JS},
-      {"enterprise_profile_welcome_browser_proxy.js",
-       IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_ENTERPRISE_PROFILE_WELCOME_BROWSER_PROXY_JS},
+      {"managed_user_profile_notice_app.js",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_APP_JS},
+      {"managed_user_profile_notice_app.html.js",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_APP_HTML_JS},
+      {"managed_user_profile_notice_browser_proxy.js",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_BROWSER_PROXY_JS},
       {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
       {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
       {"tangible_sync_style_shared.css.js",
@@ -51,7 +51,7 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kResources),
-      IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_ENTERPRISE_PROFILE_WELCOME_HTML);
+      IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_HTML);
 
   source->AddResourcePath("images/left-banner.svg",
                           IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
@@ -107,7 +107,7 @@ void ManagedUserProfileNoticeUI::Initialize(
 
     content::WebUIDataSource::Update(
         Profile::FromWebUI(web_ui()),
-        chrome::kChromeUIEnterpriseProfileWelcomeHost, std::move(update_data));
+        chrome::kChromeUIManagedUserProfileNoticeHost, std::move(update_data));
   }
 
   web_ui()->AddMessageHandler(std::move(handler));

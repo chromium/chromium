@@ -28,8 +28,8 @@
 #error Platform not supported
 #endif
 
-// Tests for the chrome://enterprise-profile-welcome/ WebUI page. They live here
-// and not in the webui directory because they manipulate views.
+// Tests for the chrome://managed-user-profile-notice/ WebUI page. They
+// live here and not in the webui directory because they manipulate views.
 
 namespace {
 struct ManagedUserNoticeTestParam {
@@ -73,7 +73,7 @@ const ManagedUserNoticeTestParam kDialogTestParams[] = {
                           .use_chrome_refresh_2023_style = true}},
 };
 
-// Creates a step to represent the enterprise-profile-welcome
+// Creates a step to represent the managed-user-profile-notice
 class ManagedUserNoticeStepControllerForTest
     : public ProfileManagementStepController {
  public:
@@ -83,7 +83,7 @@ class ManagedUserNoticeStepControllerForTest
       const AccountInfo& account_info)
       : ProfileManagementStepController(host),
         managed_user_notice_url_(
-            GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL)),
+            GURL(chrome::kChromeUIManagedUserProfileNoticeUrl)),
         profile_(profile),
         account_info_(&account_info) {}
 
@@ -217,7 +217,7 @@ class ManagedUserNoticeUIDialogPixelTest
 
     AccountInfo account_info =
         SignInWithAccount(AccountManagementStatus::kManaged);
-    auto url = GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL);
+    auto url = GURL(chrome::kChromeUIManagedUserProfileNoticeUrl);
 
     // Wait for the web content to load to be able to properly render the
     // modal dialog.
@@ -232,7 +232,7 @@ class ManagedUserNoticeUIDialogPixelTest
         "SigninViewControllerDelegateViews");
 
     auto* controller = browser()->signin_view_controller();
-    controller->ShowModalEnterpriseConfirmationDialog(
+    controller->ShowModalManagedUserNoticeDialog(
         account_info, GetParam().profile_creation_required_by_policy,
         GetParam().show_link_data_checkbox, base::DoNothing());
 

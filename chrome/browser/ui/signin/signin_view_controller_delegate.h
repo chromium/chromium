@@ -83,9 +83,9 @@ class SigninViewControllerDelegate {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
   // Returns a platform-specific SigninViewContolllerDelegate instance that
-  // displays the enterprise confirmation modal dialog. The returned object
+  // displays the managed user notice modal dialog. The returned object
   // should delete itself when the window it's managing is closed.
-  static SigninViewControllerDelegate* CreateEnterpriseConfirmationDelegate(
+  static SigninViewControllerDelegate* CreateManagedUserNoticeDelegate(
       Browser* browser,
       const AccountInfo& account_info,
       bool force_new_profile,

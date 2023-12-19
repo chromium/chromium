@@ -18,16 +18,16 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './enterprise_profile_welcome_app.html.js';
-import {EnterpriseProfileInfo, EnterpriseProfileWelcomeBrowserProxy, EnterpriseProfileWelcomeBrowserProxyImpl} from './enterprise_profile_welcome_browser_proxy.js';
+import {getTemplate} from './managed_user_profile_notice_app.html.js';
+import {ManagedUserProfileInfo, ManagedUserProfileNoticeBrowserProxy, ManagedUserProfileNoticeBrowserProxyImpl} from './managed_user_profile_notice_browser_proxy.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  const enterpriseProfileWelcomeBrowserProxyImpl =
-      EnterpriseProfileWelcomeBrowserProxyImpl.getInstance();
+  const managedUserProfileNoticeBrowserProxyImpl =
+      ManagedUserProfileNoticeBrowserProxyImpl.getInstance();
   // Prefer using |document.body.offsetHeight| instead of
   // |document.body.scrollHeight| as it returns the correct height of the
   // page even when the page zoom in Chrome is different than 100%.
-  enterpriseProfileWelcomeBrowserProxyImpl.initializedWithSize(
+  managedUserProfileNoticeBrowserProxyImpl.initializedWithSize(
       document.body.offsetHeight);
   // The web dialog size has been initialized, so reset the body width to
   // auto. This makes sure that the body only takes up the viewable width,
@@ -35,20 +35,20 @@ document.addEventListener('DOMContentLoaded', () => {
   document.body.style.width = 'auto';
 });
 
-export interface EnterpriseProfileWelcomeAppElement {
+export interface ManagedUserProfileNoticeAppElement {
   $: {
     cancelButton: CrButtonElement,
     proceedButton: CrButtonElement,
   };
 }
 
-const EnterpriseProfileWelcomeAppElementBase =
+const ManagedUserProfileNoticeAppElementBase =
     WebUiListenerMixin(I18nMixin(PolymerElement));
 
-export class EnterpriseProfileWelcomeAppElement extends
-    EnterpriseProfileWelcomeAppElementBase {
+export class ManagedUserProfileNoticeAppElement extends
+    ManagedUserProfileNoticeAppElementBase {
   static get is() {
-    return 'enterprise-profile-welcome-app';
+    return 'managed-user-profile-notice-app';
   }
 
   static get template() {
@@ -128,17 +128,17 @@ export class EnterpriseProfileWelcomeAppElement extends
   private linkData_: boolean;
   private showCancelButton_: boolean;
   private defaultProceedLabel_: string;
-  private enterpriseProfileWelcomeBrowserProxy_:
-      EnterpriseProfileWelcomeBrowserProxy =
-          EnterpriseProfileWelcomeBrowserProxyImpl.getInstance();
+  private managedUserProfileNoticeBrowserProxy_:
+      ManagedUserProfileNoticeBrowserProxy =
+          ManagedUserProfileNoticeBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();
 
     this.addWebUiListener(
         'on-profile-info-changed',
-        (info: EnterpriseProfileInfo) => this.setProfileInfo_(info));
-    this.enterpriseProfileWelcomeBrowserProxy_.initialized().then(
+        (info: ManagedUserProfileInfo) => this.setProfileInfo_(info));
+    this.managedUserProfileNoticeBrowserProxy_.initialized().then(
         info => this.setProfileInfo_(info));
   }
 
@@ -150,15 +150,15 @@ export class EnterpriseProfileWelcomeAppElement extends
   /** Called when the proceed button is clicked. */
   private onProceed_() {
     this.disableProceedButton_ = true;
-    this.enterpriseProfileWelcomeBrowserProxy_.proceed(this.linkData_);
+    this.managedUserProfileNoticeBrowserProxy_.proceed(this.linkData_);
   }
 
   /** Called when the cancel button is clicked. */
   private onCancel_() {
-    this.enterpriseProfileWelcomeBrowserProxy_.cancel();
+    this.managedUserProfileNoticeBrowserProxy_.cancel();
   }
 
-  private setProfileInfo_(info: EnterpriseProfileInfo) {
+  private setProfileInfo_(info: ManagedUserProfileInfo) {
     this.pictureUrl_ = info.pictureUrl;
     this.showEnterpriseBadge_ = info.showEnterpriseBadge;
     this.title_ = info.title;
@@ -184,9 +184,9 @@ export class EnterpriseProfileWelcomeAppElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'enterprise-profile-welcome-app': EnterpriseProfileWelcomeAppElement;
+    'managed-user-profile-notice-app': ManagedUserProfileNoticeAppElement;
   }
 }
 
 customElements.define(
-    EnterpriseProfileWelcomeAppElement.is, EnterpriseProfileWelcomeAppElement);
+  ManagedUserProfileNoticeAppElement.is, ManagedUserProfileNoticeAppElement);
