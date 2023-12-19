@@ -1381,24 +1381,18 @@ bool NavigationControllerImpl::RendererDidNavigate(
   }
   details->previous_main_frame_url = GetLastCommittedEntry()->GetURL();
   details->previous_entry_index = GetLastCommittedEntryIndex();
-  if (PendingEntryMatchesRequest(navigation_request) &&
-      pending_entry_->GetIsOverridingUserAgent() !=
-          GetLastCommittedEntry()->GetIsOverridingUserAgent()) {
-    overriding_user_agent_changed = true;
-  }
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1266277): Clean up the logic of setting
-  // |overriding_user_agent_changed| post-launch.
   // Must honor user agent overrides in the |navigation_request|, such as
   // from things like RequestDesktopSiteWebContentsObserverAndroid. As a
   // result, besides comparing |pending_entry_|'s user agent against
   // LastCommittedEntry's, also need to compare |navigation_request|'s user
   // agent against LastCommittedEntry's.
   if (navigation_request->is_overriding_user_agent() !=
-      GetLastCommittedEntry()->GetIsOverridingUserAgent()) {
+          GetLastCommittedEntry()->GetIsOverridingUserAgent() ||
+      (PendingEntryMatchesRequest(navigation_request) &&
+       pending_entry_->GetIsOverridingUserAgent() !=
+           GetLastCommittedEntry()->GetIsOverridingUserAgent())) {
     overriding_user_agent_changed = true;
   }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   bool is_main_frame_navigation = !rfh->GetParent();
 
