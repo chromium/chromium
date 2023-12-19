@@ -34,7 +34,6 @@ static_js_files = [
   "file_manager/foreground/js/ui/default_task_dialog.js",
   "file_manager/foreground/js/ui/dialog_footer.js",
   "file_manager/foreground/js/ui/directory_tree.js",
-  "file_manager/foreground/js/ui/install_linux_package_dialog.js",
   "file_manager/foreground/js/ui/tree.js",
 ]
 
@@ -179,6 +178,7 @@ ts_files = [
   "file_manager/foreground/js/ui/gear_menu.ts",
   "file_manager/foreground/js/ui/grid.ts",
   "file_manager/foreground/js/ui/import_crostini_image_dialog.ts",
+  "file_manager/foreground/js/ui/install_linux_package_dialog.ts",
   "file_manager/foreground/js/ui/list.ts",
   "file_manager/foreground/js/ui/list_container.ts",
   "file_manager/foreground/js/ui/list_item.ts",
