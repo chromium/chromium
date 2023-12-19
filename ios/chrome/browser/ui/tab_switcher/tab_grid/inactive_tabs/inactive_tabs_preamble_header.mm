@@ -62,7 +62,6 @@ const CGFloat kHorizontalPadding = 16;
 }
 
 - (void)setDaysThreshold:(NSInteger)daysThreshold {
-  DCHECK_NE(daysThreshold, kInactiveTabsDisabledByUser);
   _daysThreshold = daysThreshold;
 
   // Update the text view's attributed text.

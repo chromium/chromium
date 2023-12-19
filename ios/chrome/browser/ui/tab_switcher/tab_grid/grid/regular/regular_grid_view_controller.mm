@@ -378,6 +378,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
     [weakSelf didTapInactiveTabsSettingsLink];
   };
   header.daysThreshold = _inactiveTabsDaysThreshold;
+  header.hidden = !IsInactiveTabsEnabled();
 }
 
 @end
