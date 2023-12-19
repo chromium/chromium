@@ -88,7 +88,6 @@
 #include "third_party/blink/public/common/switches.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/base_paths_win.h"
 #include "base/win/win_util.h"
 #endif
 
@@ -360,14 +359,6 @@ class ExtensionPolicyTest : public ExtensionPolicyTestBase {
 
  private:
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
-#if BUILDFLAG(IS_WIN)
-  // This is needed to stop
-  // ExtensionPolicyTest.ExtensionInstallBlocklistSharedModules from creating a
-  // shortcut in the Windows start menu. The override needs to last until the
-  // test is destroyed, because Windows shortcut tasks which create the shortcut
-  // can run after the test body returns.
-  base::ScopedPathOverride override_start_dir{base::DIR_START_MENU};
-#endif  // BUILDFLAG(IS_WIN
 };
 
 // Allows tests to wait for renderer process creation.
