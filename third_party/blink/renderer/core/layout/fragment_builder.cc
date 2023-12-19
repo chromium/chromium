@@ -423,6 +423,10 @@ void FragmentBuilder::SwapOutOfFlowPositionedCandidates(
   std::swap(oof_positioned_candidates_, *candidates);
 }
 
+void FragmentBuilder::ClearOutOfFlowPositionedCandidates() {
+  oof_positioned_candidates_.clear();
+}
+
 void FragmentBuilder::AddMulticolWithPendingOOFs(
     const BlockNode& multicol,
     MulticolWithPendingOofs<LogicalOffset>* multicol_info) {

@@ -225,6 +225,7 @@ class CORE_EXPORT FragmentBuilder {
 
   void SwapOutOfFlowPositionedCandidates(
       HeapVector<LogicalOofPositionedNode>* candidates);
+  void ClearOutOfFlowPositionedCandidates();
 
   // Out-of-flow positioned elements inside a nested fragmentation context
   // are laid out once they've reached the outermost fragmentation context.

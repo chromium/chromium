@@ -1058,8 +1058,6 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
   // the remaining OOFs.
   limited_multicol_container_builder.SetFragmentsTotalBlockSize(LayoutUnit());
 
-  limited_multicol_container_builder.SetDisableOOFDescendantsPropagation();
-
   WritingDirectionMode writing_direction =
       multicol.Style().GetWritingDirection();
   const PhysicalBoxFragment* last_fragment_with_fragmentainer = nullptr;
@@ -1128,9 +1126,10 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
 
     // Convert the OOF fragmentainer descendants to the logical coordinate space
     // and store the resulting nodes inside |oof_nodes_to_layout|.
-    for (const auto& descendant :
-         FragmentedOofData::OutOfFlowPositionedFragmentainerDescendants(
-             *multicol_box_fragment)) {
+    HeapVector<LogicalOofNodeForFragmentation> oof_fragmentainer_descendants;
+    limited_multicol_container_builder.SwapOutOfFlowFragmentainerDescendants(
+        &oof_fragmentainer_descendants);
+    for (const auto& descendant : oof_fragmentainer_descendants) {
       if (oof_nodes_to_layout.empty() &&
           multicol_info->fixedpos_containing_block.Fragment() &&
           previous_multicol_break_token) {
@@ -1142,74 +1141,16 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
         multicol_offset.block_offset -=
             previous_multicol_break_token->ConsumedBlockSize();
       }
-      const PhysicalFragment* containing_block_fragment =
-          descendant.containing_block.Fragment();
+
       // If the containing block is not set, that means that the inner multicol
       // was its containing block, and the OOF will be laid out elsewhere. Also
       // skip descendants whose containing block is a column spanner, because
       // those need to be laid out further up in the tree.
-      if (!containing_block_fragment ||
+      if (!descendant.containing_block.Fragment() ||
           descendant.containing_block.IsInsideColumnSpanner()) {
         continue;
       }
-      LogicalOffset containing_block_offset =
-          converter.ToLogical(descendant.containing_block.Offset(),
-                              containing_block_fragment->Size());
-      LogicalOffset containing_block_rel_offset =
-          converter.ToLogical(descendant.containing_block.RelativeOffset(),
-                              containing_block_fragment->Size());
-
-      const PhysicalFragment* fixedpos_containing_block_fragment =
-          descendant.fixedpos_containing_block.Fragment();
-      LogicalOffset fixedpos_containing_block_offset;
-      LogicalOffset fixedpos_containing_block_rel_offset;
-      if (fixedpos_containing_block_fragment) {
-        fixedpos_containing_block_offset =
-            converter.ToLogical(descendant.fixedpos_containing_block.Offset(),
-                                fixedpos_containing_block_fragment->Size());
-        fixedpos_containing_block_rel_offset = RelativeInsetToLogical(
-            descendant.fixedpos_containing_block.RelativeOffset(),
-            writing_direction);
-      }
-
-      OofInlineContainer<LogicalOffset> inline_container(
-          descendant.inline_container.container,
-          converter.ToLogical(descendant.inline_container.relative_offset,
-                              PhysicalSize()));
-
-      OofInlineContainer<LogicalOffset> fixedpos_inline_container(
-          descendant.fixedpos_inline_container.container,
-          converter.ToLogical(
-              descendant.fixedpos_inline_container.relative_offset,
-              PhysicalSize()));
-
-      // The static position should remain relative to its containing block
-      // fragment.
-      const WritingModeConverter containing_block_converter(
-          writing_direction, containing_block_fragment->Size());
-      LogicalStaticPosition static_position =
-          descendant.StaticPosition().ConvertToLogical(
-              containing_block_converter);
-
-      LogicalOofNodeForFragmentation node = {
-          descendant.Node(),
-          static_position,
-          !!descendant.requires_content_before_breaking,
-          inline_container,
-          OofContainingBlock<LogicalOffset>(
-              containing_block_offset, containing_block_rel_offset,
-              containing_block_fragment,
-              descendant.containing_block.ClippedContainerBlockOffset(),
-              descendant.containing_block.IsInsideColumnSpanner()),
-          OofContainingBlock<LogicalOffset>(
-              fixedpos_containing_block_offset,
-              fixedpos_containing_block_rel_offset,
-              fixedpos_containing_block_fragment,
-              descendant.fixedpos_containing_block
-                  .ClippedContainerBlockOffset(),
-              descendant.fixedpos_containing_block.IsInsideColumnSpanner()),
-          fixedpos_inline_container};
-      oof_nodes_to_layout.push_back(node);
+      oof_nodes_to_layout.push_back(descendant);
     }
     previous_multicol_break_token = break_token;
   }
@@ -1223,6 +1164,15 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
 
   DCHECK(!limited_multicol_container_builder
               .HasOutOfFlowFragmentainerDescendants());
+
+  // Any candidates in the children of the inner multicol have already been
+  // propagated properly when the inner multicol was laid out.
+  //
+  // During layout of the OOF positioned descendants, which is about to take
+  // place, new candidates may be discovered (when there's a fixedpos inside an
+  // abspos, for instance), that will be transferred to the actual fragment
+  // builder further below.
+  limited_multicol_container_builder.ClearOutOfFlowPositionedCandidates();
 
   wtf_size_t old_fragment_count =
       limited_multicol_container_builder.Children().size();
