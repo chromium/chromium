@@ -72,7 +72,7 @@ struct ManifestCommandTestParameters {
 
 namespace extensions {
 
-typedef ExtensionApiTest CommandServiceTest;
+using CommandServiceTest = ExtensionApiTest;
 // Test class for testing keybinding changes across MV2->MV3 reloads/updates.
 class CommandServiceMv3UpgradeTest
     : public ExtensionApiTest,
