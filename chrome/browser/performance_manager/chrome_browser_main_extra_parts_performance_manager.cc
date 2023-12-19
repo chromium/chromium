@@ -234,13 +234,9 @@ ChromeBrowserMainExtraPartsPerformanceManager::GetFeatureObserverClient() {
 }
 
 void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
-  auto graph_features = performance_manager::GraphFeatures::WithDefault();
-  if (performance_manager::features::kUseResourceAttributionCPUMonitor.Get()) {
-    graph_features.EnableResourceAttributionScheduler();
-  }
   performance_manager_lifetime_ =
       std::make_unique<performance_manager::PerformanceManagerLifetime>(
-          graph_features,
+          performance_manager::GraphFeatures::WithDefault(),
           base::BindOnce(&ChromeBrowserMainExtraPartsPerformanceManager::
                              CreatePoliciesAndDecorators));
 

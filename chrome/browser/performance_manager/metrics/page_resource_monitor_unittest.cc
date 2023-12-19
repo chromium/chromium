@@ -33,6 +33,8 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
+#include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
+#include "components/performance_manager/public/resource_attribution/memory_measurement_delegate.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "components/performance_manager/test_support/resource_attribution/measurement_delegates.h"
@@ -50,6 +52,16 @@ namespace {
 using PageMeasurementAlgorithm = PageResourceMonitor::PageMeasurementAlgorithm;
 using PageMeasurementBackgroundState =
     PageResourceMonitor::PageMeasurementBackgroundState;
+
+using CPUMeasurementDelegate = resource_attribution::CPUMeasurementDelegate;
+using FakeMemoryMeasurementDelegateFactory =
+    resource_attribution::FakeMemoryMeasurementDelegateFactory;
+using MemoryMeasurementDelegate =
+    resource_attribution::MemoryMeasurementDelegate;
+using SimulatedCPUMeasurementDelegate =
+    resource_attribution::SimulatedCPUMeasurementDelegate;
+using SimulatedCPUMeasurementDelegateFactory =
+    resource_attribution::SimulatedCPUMeasurementDelegateFactory;
 
 // Helper class to repeatedly test a HistogramTester for histograms with a
 // common naming pattern. The default pattern is
@@ -172,27 +184,35 @@ class PatternedHistogramTester {
 
 class PageResourceMonitorUnitTest : public GraphTestHarness {
  public:
-  PageResourceMonitorUnitTest() = default;
+  PageResourceMonitorUnitTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        performance_manager::features::kCPUInterventionEvaluationLogging,
+        {{"threshold_chrome_cpu_percent", "50"}});
+  }
+
   ~PageResourceMonitorUnitTest() override = default;
-  PageResourceMonitorUnitTest(const PageResourceMonitorUnitTest& other) =
-      delete;
+
+  PageResourceMonitorUnitTest(const PageResourceMonitorUnitTest&) = delete;
   PageResourceMonitorUnitTest& operator=(const PageResourceMonitorUnitTest&) =
       delete;
 
   void SetUp() override {
+    GetGraphFeatures().EnableResourceAttributionScheduler();
     GraphTestHarness::SetUp();
 
     // Return 50% CPU used by default.
     cpu_delegate_factory_.SetDefaultCPUUsage(0.5);
+    CPUMeasurementDelegate::SetDelegateFactoryForTesting(
+        graph(), &cpu_delegate_factory_);
+    MemoryMeasurementDelegate::SetDelegateFactoryForTesting(
+        graph(), &memory_delegate_factory_);
 
     std::unique_ptr<PageResourceMonitor> monitor =
         std::make_unique<PageResourceMonitor>(enable_system_cpu_probe_);
     monitor_ = monitor.get();
-    monitor_->SetCPUMeasurementDelegateFactoryForTesting(
-        graph(), &cpu_delegate_factory_);
-    last_collection_time_ = base::TimeTicks::Now();
     graph()->PassToGraph(std::move(monitor));
     ResetUkmRecorder();
+    last_collection_time_ = base::TimeTicks::Now();
   }
 
   void TearDown() override {
@@ -200,23 +220,23 @@ class PageResourceMonitorUnitTest : public GraphTestHarness {
     GraphTestHarness::TearDown();
   }
 
-  // To allow tests to call its methods and view its state.
-  raw_ptr<PageResourceMonitor> monitor_;
-
-  // Factory to return CPUMeasurementDelegates. This must be deleted after
-  // `monitor_` to ensure that it outlives all delegates it creates.
-  resource_attribution::SimulatedCPUMeasurementDelegateFactory
-      cpu_delegate_factory_;
-
  protected:
   ukm::TestUkmRecorder* test_ukm_recorder() { return test_ukm_recorder_.get(); }
   PageResourceMonitor* monitor() { return monitor_; }
+
+  SimulatedCPUMeasurementDelegate& GetCPUDelegate(const ProcessNode* node) {
+    return cpu_delegate_factory_.GetDelegate(node);
+  }
+
+  FakeMemoryMeasurementDelegateFactory& GetMemoryDelegate() {
+    return memory_delegate_factory_;
+  }
 
   // Advances the clock to trigger the PageResourceUsage UKM.
   void TriggerCollectPageResourceUsage();
 
   // Advances the mock clock slightly to give enough time to make asynchronous
-  // measurements after CollectPageResourceUsage is triggered. If
+  // measurements after TriggerCollectPageResourceUsage(). If
   // `include_system_cpu` is true, also waits for some real time to let the
   // system CpuProbe collect data.
   void WaitForMetrics(bool include_system_cpu = false);
@@ -248,10 +268,19 @@ class PageResourceMonitorUnitTest : public GraphTestHarness {
     task_env().FastForwardBy(target_time - base::TimeTicks::Now());
   }
 
+  raw_ptr<PageResourceMonitor> monitor_;
+
   std::unique_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
 
-  // The last time CollectPageResourceUsage() was triggered.
+  // The last time TriggerCollectPageResourceUsage() was called.
   base::TimeTicks last_collection_time_;
+
+  // Factories to return fake measurement delegates. These must be deleted after
+  // `monitor_` to ensure that they outlive all delegates they create.
+  SimulatedCPUMeasurementDelegateFactory cpu_delegate_factory_;
+  FakeMemoryMeasurementDelegateFactory memory_delegate_factory_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 void PageResourceMonitorUnitTest::TriggerCollectPageResourceUsage() {
@@ -295,72 +324,10 @@ void PageResourceMonitorUnitTest::WaitForMetricsAndTestBackgroundStates(
   ResetUkmRecorder();
 }
 
-// A test that runs with various values of the kUseResourceAttributionCPUMonitor
-// feature flag.
-class PageResourceMonitorWithFeatureTest
-    : public PageResourceMonitorUnitTest,
-      public ::testing::WithParamInterface<
-          std::tuple<bool, PageMeasurementAlgorithm>> {
- public:
-  PageResourceMonitorWithFeatureTest() {
-    std::tie(use_resource_attribution_, expected_measurement_algorithm_) =
-        GetParam();
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::kPageTimelineMonitor,
-             {{"use_resource_attribution_cpu_monitor",
-               use_resource_attribution_ ? "true" : "false"}}},
-            {performance_manager::features::kCPUInterventionEvaluationLogging,
-             {{"threshold_chrome_cpu_percent", "50"}}},
-        },
-        {});
-  }
-
-  void SetUp() override {
-    if (features::kUseResourceAttributionCPUMonitor.Get()) {
-      GetGraphFeatures().EnableResourceAttributionScheduler();
-    }
-    PageResourceMonitorUnitTest::SetUp();
-  }
-
-  void TearDown() override {
-    // Destroy `monitor_` before `scoped_feature_list_` so that the feature flag
-    // doesn't change during its destructor.
-    graph()->TakeFromGraph(monitor_.ExtractAsDangling());
-    PageResourceMonitorUnitTest::TearDown();
-  }
-
- protected:
-  bool use_resource_attribution_;
-  PageMeasurementAlgorithm expected_measurement_algorithm_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PageResourceMonitorWithFeatureTest,
-    ::testing::Values(
-        std::make_tuple(false, PageMeasurementAlgorithm::kLegacy),
-        std::make_tuple(true,
-                        PageMeasurementAlgorithm::kEvenSplitAndAggregate)));
-
 // A test of CPU intervention logging when the system CPUProbe is not available.
 class PageResourceMonitorNoCPUProbeTest : public PageResourceMonitorUnitTest {
  public:
-  PageResourceMonitorNoCPUProbeTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {performance_manager::features::kCPUInterventionEvaluationLogging,
-             {{"threshold_chrome_cpu_percent", "50"}}},
-        },
-        {});
-    enable_system_cpu_probe_ = false;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  PageResourceMonitorNoCPUProbeTest() { enable_system_cpu_probe_ = false; }
 };
 
 TEST_F(PageResourceMonitorUnitTest, TestPageResourceUsage) {
@@ -423,19 +390,25 @@ TEST_F(PageResourceMonitorUnitTest, TestOnlyRecordTabs) {
   EXPECT_EQ(entries2.size(), 0UL);
 }
 
-TEST_P(PageResourceMonitorWithFeatureTest, TestResourceUsage) {
+TEST_F(PageResourceMonitorUnitTest, TestResourceUsage) {
   MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
+
+  // Register fake memory results. Make sure they're divisible by 2 for easier
+  // matching when divided between frames.
+  MemoryMeasurementDelegate::MemorySummaryMap& memory_summaries =
+      GetMemoryDelegate().memory_summaries();
+  memory_summaries[mock_graph.process->GetResourceContext()] = {
+      .resident_set_size_kb = 1230};
+  memory_summaries[mock_graph.other_process->GetResourceContext()] = {
+      .resident_set_size_kb = 4560, .private_footprint_kb = 7890};
+
   const ukm::SourceId mock_source_id = ukm::AssignNewSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
   mock_graph.page->SetUkmSourceId(mock_source_id);
-  mock_graph.frame->SetResidentSetKbEstimate(123);
 
   const ukm::SourceId mock_source_id2 = ukm::AssignNewSourceId();
   mock_graph.other_page->SetType(performance_manager::PageType::kTab);
   mock_graph.other_page->SetUkmSourceId(mock_source_id2);
-  mock_graph.other_frame->SetResidentSetKbEstimate(456);
-  mock_graph.other_frame->SetPrivateFootprintKbEstimate(789);
-  mock_graph.child_frame->SetPrivateFootprintKbEstimate(1000);
 
   TriggerCollectPageResourceUsage();
   WaitForMetrics();
@@ -445,16 +418,21 @@ TEST_P(PageResourceMonitorWithFeatureTest, TestResourceUsage) {
   // Expect 1 entry per page.
   EXPECT_EQ(entries.size(), 2UL);
 
+  // `page` gets its memory from `frame`, which is 1/2 the memory from
+  // `process`.
+  // `other_page` gets its memory from `other_frame` (1/2 of `process`) +
+  // `child_frame` (all of `other_process`).
+  // See the diagram in
+  // components/performance_manager/test_support/mock_graphs.h.
   const auto kExpectedResidentSetSize =
       base::MakeFixedFlatMap<ukm::SourceId, int64_t>({
-          {mock_source_id, 123},
-          {mock_source_id2, 456},
+          {mock_source_id, 1230 / 2},
+          {mock_source_id2, 1230 / 2 + 4560},
       });
   const auto kExpectedPrivateFootprint =
       base::MakeFixedFlatMap<ukm::SourceId, int64_t>({
           {mock_source_id, 0},
-          // `other_page` is the sum of `other_frame` and `child_frame`
-          {mock_source_id2, 1789},
+          {mock_source_id2, 7890},
       });
   // The SimulatedCPUMeasurementDelegate returns 50% of the CPU is used.
   // `process` contains `frame` and `other_frame` -> each gets 25%
@@ -480,7 +458,7 @@ TEST_P(PageResourceMonitorWithFeatureTest, TestResourceUsage) {
                                            kExpectedAllCPUUsage);
     test_ukm_recorder()->ExpectEntryMetric(
         entry, "MeasurementAlgorithm",
-        static_cast<int64_t>(expected_measurement_algorithm_));
+        static_cast<int64_t>(PageMeasurementAlgorithm::kEvenSplitAndAggregate));
   }
 }
 
@@ -543,7 +521,7 @@ TEST_F(PageResourceMonitorUnitTest, TestResourceUsageBackgroundState) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_P(PageResourceMonitorWithFeatureTest, TestCPUInterventionMetrics) {
+TEST_F(PageResourceMonitorUnitTest, TestCPUInterventionMetrics) {
   MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
 
   // Foreground page.
@@ -557,9 +535,8 @@ TEST_P(PageResourceMonitorWithFeatureTest, TestCPUInterventionMetrics) {
   // Set CPU usage to near-0, so only the .Baseline metrics should be logged.
   // 0 is used as an error value by base::ProcessMetrics so it will cause no
   // results at all for the process to be returned.
-  cpu_delegate_factory_.GetDelegate(mock_graph.process.get()).SetCPUUsage(0.01);
-  cpu_delegate_factory_.GetDelegate(mock_graph.other_process.get())
-      .SetCPUUsage(0.01);
+  GetCPUDelegate(mock_graph.process.get()).SetCPUUsage(0.01);
+  GetCPUDelegate(mock_graph.other_process.get()).SetCPUUsage(0.01);
 
   {
     PatternedHistogramTester histograms;
@@ -572,9 +549,9 @@ TEST_P(PageResourceMonitorWithFeatureTest, TestCPUInterventionMetrics) {
     // The intervention metrics measure total CPU, not percentage of each core,
     // so set the measurement delegates to return half of the total available
     // CPU (100% per processor).
-    cpu_delegate_factory_.GetDelegate(mock_graph.process.get())
+    GetCPUDelegate(mock_graph.process.get())
         .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 2.0);
-    cpu_delegate_factory_.GetDelegate(mock_graph.other_process.get())
+    GetCPUDelegate(mock_graph.other_process.get())
         .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 2.0);
 
     WaitForMetrics(/*include_system_cpu=*/true);
@@ -697,40 +674,26 @@ TEST_P(PageResourceMonitorWithFeatureTest, TestCPUInterventionMetrics) {
     immediate.ExpectNone("SystemCPUError");
 
     auto delayed = histograms.WithSuffix("Delayed");
-    if (use_resource_attribution_) {
-      delayed.ExpectUniqueSample("AverageBackgroundCPU", 75);
-      delayed.ExpectUniqueSample("TotalBackgroundCPU", 75);
-      delayed.ExpectUniqueSample("TotalBackgroundTabCount", 1);
-      delayed.ExpectUniqueSample("AverageForegroundCPU", 25);
-      delayed.ExpectUniqueSample("TotalForegroundCPU", 25);
-      delayed.ExpectUniqueSample("TotalForegroundTabCount", 1);
-      delayed.ExpectUniqueSample("BackgroundTabsToGetUnderCPUThreshold", 1);
-      delayed.ExpectUniqueSample("TopNBackgroundCPU.1", 75);
-      delayed.ExpectUniqueSample("TopNBackgroundCPU.2", 75);
-      delayed.ExpectSystemCPUHistograms();
-    } else {
-      delayed.ExpectNone("AverageBackgroundCPU");
-      delayed.ExpectNone("TotalBackgroundCPU");
-      delayed.ExpectNone("TotalBackgroundTabCount");
-      delayed.ExpectNone("AverageForegroundCPU");
-      delayed.ExpectNone("TotalForegroundCPU");
-      delayed.ExpectNone("TotalForegroundTabCount");
-      delayed.ExpectNone("BackgroundTabsToGetUnderCPUThreshold");
-      delayed.ExpectNone("TopNBackgroundCPU.1");
-      delayed.ExpectNone("TopNBackgroundCPU.2");
-      delayed.ExpectNone("System");
-      delayed.ExpectNone("NonChrome");
-      delayed.ExpectNone("SystemCPUError");
-    }
+    delayed.ExpectUniqueSample("AverageBackgroundCPU", 75);
+    delayed.ExpectUniqueSample("TotalBackgroundCPU", 75);
+    delayed.ExpectUniqueSample("TotalBackgroundTabCount", 1);
+    delayed.ExpectUniqueSample("AverageForegroundCPU", 25);
+    delayed.ExpectUniqueSample("TotalForegroundCPU", 25);
+    delayed.ExpectUniqueSample("TotalForegroundTabCount", 1);
+    delayed.ExpectUniqueSample("BackgroundTabsToGetUnderCPUThreshold", 1);
+    delayed.ExpectUniqueSample("TopNBackgroundCPU.1", 75);
+    delayed.ExpectUniqueSample("TopNBackgroundCPU.2", 75);
+    delayed.ExpectSystemCPUHistograms();
+
     histograms.ExpectNone("DurationOverThreshold");
   }
 
   // Finish this measurement interval, then lower the CPU measurement so the
   // average CPU usage over the next interval is under the threshold.
   TriggerCollectPageResourceUsage();
-  cpu_delegate_factory_.GetDelegate(mock_graph.process.get())
+  GetCPUDelegate(mock_graph.process.get())
       .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 8.0);
-  cpu_delegate_factory_.GetDelegate(mock_graph.other_process.get())
+  GetCPUDelegate(mock_graph.other_process.get())
       .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 8.0);
 
   {
@@ -786,11 +749,10 @@ TEST_P(PageResourceMonitorWithFeatureTest, TestCPUInterventionMetrics) {
   }
 }
 
-TEST_P(PageResourceMonitorWithFeatureTest,
-       CPUInterventionMetricsNoForegroundTabs) {
+TEST_F(PageResourceMonitorUnitTest, CPUInterventionMetricsNoForegroundTabs) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   mock_graph.page->SetType(performance_manager::PageType::kTab);
-  cpu_delegate_factory_.GetDelegate(mock_graph.process.get())
+  GetCPUDelegate(mock_graph.process.get())
       .SetCPUUsage(base::SysInfo::NumberOfProcessors());
 
   // Put the only tab in the background.
@@ -822,11 +784,10 @@ TEST_P(PageResourceMonitorWithFeatureTest,
   immediate.ExpectUniqueSample("TopNBackgroundCPU.2", 100);
 }
 
-TEST_P(PageResourceMonitorWithFeatureTest,
-       CPUInterventionMetricsNoBackgroundTabs) {
+TEST_F(PageResourceMonitorUnitTest, CPUInterventionMetricsNoBackgroundTabs) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   mock_graph.page->SetType(performance_manager::PageType::kTab);
-  cpu_delegate_factory_.GetDelegate(mock_graph.process.get())
+  GetCPUDelegate(mock_graph.process.get())
       .SetCPUUsage(base::SysInfo::NumberOfProcessors());
 
   // Put the only tab in the foreground.
@@ -866,7 +827,7 @@ TEST_F(PageResourceMonitorNoCPUProbeTest,
   mock_graph.page->SetType(performance_manager::PageType::kTab);
   mock_graph.page->SetIsVisible(false);
 
-  cpu_delegate_factory_.GetDelegate(mock_graph.process.get())
+  GetCPUDelegate(mock_graph.process.get())
       .SetCPUUsage(base::SysInfo::NumberOfProcessors());
 
   PatternedHistogramTester histograms;

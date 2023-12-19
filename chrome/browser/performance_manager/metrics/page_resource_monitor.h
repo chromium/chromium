@@ -5,30 +5,25 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_RESOURCE_MONITOR_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_RESOURCE_MONITOR_H_
 
+#include <map>
 #include <memory>
-#include <utility>
-#include <vector>
 
-#include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/performance_manager/metrics/page_resource_cpu_monitor.h"
 #include "components/performance_manager/public/graph/graph.h"
-#include "components/performance_manager/public/resource_attribution/page_context.h"
+#include "components/performance_manager/public/resource_attribution/queries.h"
+#include "components/performance_manager/public/resource_attribution/query_results.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/system_cpu/pressure_sample.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace system_cpu {
-class CpuProbe;
-}
 
 namespace performance_manager::metrics {
 
 // Periodically reports tab resource usage via UKM.
-class PageResourceMonitor : public GraphOwned {
+class PageResourceMonitor : public resource_attribution::QueryResultObserver,
+                            public GraphOwnedDefaultImpl {
  public:
   // These values are logged to UKM. Entries should not be renumbered and
   // numeric values should never be reused. Please keep in sync with
@@ -59,24 +54,19 @@ class PageResourceMonitor : public GraphOwned {
   PageResourceMonitor(const PageResourceMonitor& other) = delete;
   PageResourceMonitor& operator=(const PageResourceMonitor&) = delete;
 
-  // GraphOwned:
-  void OnPassedToGraph(Graph* graph) override;
-  void OnTakenFromGraph(Graph* graph) override;
+  // QueryResultObserver:
+  void OnResourceUsageUpdated(
+      const resource_attribution::QueryResultMap& results) override;
 
-  // Returns the time between calls to CollectPageResourceUsage(). Tests can
+  // Returns the time between calls to OnResourceUsageUpdated(). Tests can
   // advance the mock clock by this amount to trigger metrics collection.
   base::TimeDelta GetCollectionDelayForTesting() const;
 
   // Returns the delay before logging
   // PerformanceManager.PerformanceInterventions.CPU.*.Delayed. Tests can
-  // advance the mock clock by this amount after CollectPageResourceUsage() to
+  // advance the mock clock by this amount after OnResourceUsageUpdated() to
   // trigger the delayed metrics logging.
   base::TimeDelta GetDelayedMetricsTimeoutForTesting() const;
-
-  // Passes the given `factory` to PageResourceCPUMonitor.
-  void SetCPUMeasurementDelegateFactoryForTesting(
-      Graph* graph,
-      PageResourceCPUMonitor::CPUMeasurementDelegate::Factory* factory);
 
  private:
   // Suffix for CPU intervention histograms.
@@ -87,65 +77,46 @@ class PageResourceMonitor : public GraphOwned {
   };
 
   // The percent CPU usage for each PageNode that was measured. This stores a
-  // PageContext instead of a node pointer in case the PageNode is deleted while
-  // taking asynchronous system CPU measurements.
-  using PageCPUUsageVector =
-      std::vector<std::pair<resource_attribution::PageContext, double>>;
+  // ResourceContext instead of a node pointer in case the PageNode is deleted
+  // while taking asynchronous system CPU measurements.
+  using PageCPUUsageMap =
+      std::map<resource_attribution::ResourceContext, double>;
 
-  // Asynchronously collects the PageResourceUsage UKM.
-  void CollectPageResourceUsage();
+  // Helper class that converts CPUTimeResult to proportion of CPU used over a
+  // fixed interval, and adds system CPU to the result.
+  class CPUResultConverter;
 
-  // Invoked asynchronously from CollectPageResourceUsage() when measurements
-  // are ready.
+  // Invoked asynchronously from OnResourceUsageUpdate() when both page and
+  // system CPU measurements are ready. `results` contains the original query
+  // results, with both CPU and memory measurements. `page_cpu_usage` is the
+  // proportion of CPU usage calculated for each page from the original results,
+  // and `system_cpu` is the overall system CPU usage.
   void OnPageResourceUsageResult(
-      const PageCPUUsageVector& page_cpu_usage,
+      const resource_attribution::QueryResultMap& results,
+      const PageCPUUsageMap& page_cpu_usage,
       absl::optional<system_cpu::PressureSample> system_cpu);
 
   // Asynchronously checks if the CPU metrics are still above the threshold
   // after a delay.
   void CheckDelayedCPUInterventionMetrics();
 
-  // Invoked asynchronously from CheckDelayedCPUInterventionMetrics() when
-  // measurements are ready.
+  // Invoked asynchronously from CheckDelayedCPUInterventionMetrics() when both
+  // page and system CPU measurements are ready.
   void OnDelayedCPUInterventionMetricsResult(
-      const PageCPUUsageVector& page_cpu_usage,
+      const PageCPUUsageMap& page_cpu_usage,
       absl::optional<system_cpu::PressureSample> system_cpu);
 
   // Log CPU intervention metrics with the provided suffix.
   void LogCPUInterventionMetrics(
-      const PageCPUUsageVector& page_cpu_usage,
+      const PageCPUUsageMap& page_cpu_usage,
       const absl::optional<system_cpu::PressureSample>& system_cpu,
       const base::TimeTicks now,
       CPUInterventionSuffix histogram_suffix);
 
-  // Asynchronously calculates per-PageNode CPU usage, converts the results to a
-  // vector, and passes them to `callback`. Also queries either
-  // `system_cpu_probe_` or `delayed_system_cpu_probe_`, depending on the value
-  // of `use_delayed_system_cpu_probe`, for a PressureSample to pass to
-  // `callback`.
-  void CalculatePageCPUUsage(
-      bool use_delayed_system_cpu_probe,
-      base::OnceCallback<void(const PageCPUUsageVector&,
-                              absl::optional<system_cpu::PressureSample>)>
-          callback);
-
-  // Invoked asynchronously from CalculatePageCPUUsage() when page CPU
-  // measurements are ready. Converts the measurements in `cpu_usage_map`
-  // to a vector, collects system CPU from either `system_cpu_probe_` or
-  // `delayed_system_cpu_probe_` (depending on the value of
-  // `use_delayed_system_cpu_probe`) and passes both page and system results to
-  // `callback`.
-  void OnPageCPUUsageResult(
-      bool use_delayed_system_cpu_probe,
-      base::OnceCallback<void(const PageCPUUsageVector&,
-                              absl::optional<system_cpu::PressureSample>)>
-          callback,
-      const PageResourceCPUMonitor::CPUUsageMap& cpu_usage_map);
-
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Timer which is used to trigger CollectPageResourceUsage().
-  base::RepeatingTimer collect_page_resource_usage_timer_
+  // Repeating query that triggers OnResourceUsageUpdated on a timer.
+  resource_attribution::ScopedResourceUsageQuery resource_query_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Timer which handles logging high CPU after a potential delay.
@@ -156,23 +127,16 @@ class PageResourceMonitor : public GraphOwned {
   absl::optional<base::TimeTicks> time_of_last_cpu_threshold_exceeded_
       GUARDED_BY_CONTEXT(sequence_checker_) = absl::nullopt;
 
-  // Pointer to this process' graph.
-  raw_ptr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
-
   // Time of last PageResourceUsage collection.
   base::TimeTicks time_of_last_resource_usage_
       GUARDED_BY_CONTEXT(sequence_checker_) = base::TimeTicks::Now();
 
-  // Helper to take CPU measurements for the UKM.
-  PageResourceCPUMonitor cpu_monitor_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Helpers to take system CPU measurements for UMA.
-  std::unique_ptr<system_cpu::CpuProbe> system_cpu_probe_
+  // Helpers to convert CPU measurements for UMA.
+  std::unique_ptr<CPUResultConverter> cpu_result_converter_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unique_ptr<system_cpu::CpuProbe> delayed_system_cpu_probe_
+  std::unique_ptr<CPUResultConverter> delayed_cpu_result_converter_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // WeakPtrFactory for the RepeatingTimer to call a method on this object.
   base::WeakPtrFactory<PageResourceMonitor> weak_factory_{this};
 };
 

@@ -156,6 +156,7 @@ class GraphFeatures {
     EnablePageLoadTrackerDecorator();
     EnablePriorityTracking();
     EnableProcessHostedContentTypesAggregator();
+    EnableResourceAttributionScheduler();
     EnableSiteDataRecorder();
     EnableTabConnectednessDecorator();
     EnableTabPageDecorator();
