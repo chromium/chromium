@@ -393,7 +393,7 @@ void FastPairDiscoverableScannerImpl::DefaultNetworkChanged(
             /*address=*/it->first,
             /*model_id=*/it->second));
 
-    pending_devices_address_to_model_id_.erase(it);
+    it = pending_devices_address_to_model_id_.erase(it);
   }
 }
 
