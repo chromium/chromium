@@ -543,6 +543,15 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="kShare"/>
 </enum>
 
+<enum name="EnterpriseDlpPolicyLevel">
+  <summary>Restriction level enforced by Data Leak Prevention policy.</summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Report"/>
+  <int value="2" label="Warn"/>
+  <int value="3" label="Block"/>
+  <int value="4" label="Allow"/>
+</enum>
+
 <enum name="EnterpriseDlpPolicyRestriction">
   <summary>
     Type of restriction enforced by Data Leak Prevention policy.
