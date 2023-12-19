@@ -5,37 +5,48 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/ash_notification_view.h"
+#include "ash/system/message_center/message_popup_animation_waiter.h"
+#include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/view_drawn_waiter.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/mock_download_status_updater_client.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/profile_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/ash_test_util.h"
+#include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/browser/ui/ash/download_status/display_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "content/public/test/browser_test.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/view_utils.h"
 
 namespace ash::download_status {
 
@@ -73,6 +84,18 @@ class MockNotificationDisplayServiceObserver
 
 // Helpers ---------------------------------------------------------------------
 
+// Returns the text ID for the given `command_type`.
+int GetCommandTextId(CommandType command_type) {
+  switch (command_type) {
+    case CommandType::kCancel:
+      return IDS_ASH_DOWNLOAD_COMMAND_TEXT_CANCEL;
+    case CommandType::kPause:
+      return IDS_ASH_DOWNLOAD_COMMAND_TEXT_PAUSE;
+    case CommandType::kResume:
+      return IDS_ASH_DOWNLOAD_COMMAND_TEXT_RESUME;
+  }
+}
+
 NotificationDisplayService* GetNotificationDisplayService() {
   return NotificationDisplayServiceFactory::GetInstance()->GetForProfile(
       ProfileManager::GetActiveUserProfile());
@@ -86,6 +109,32 @@ std::set<std::string> GetDisplayedNotificationIds() {
         future.SetValue(std::move(ids));
       }));
   return future.Get();
+}
+
+// Returns the notification popup view specified by 'notification_id'. Returns
+// `nullptr` if such a view cannot be found.
+AshNotificationView* GetPopupView(Profile* profile,
+                                  const std::string& notification_id) {
+  // Wait until `popup_collection` becomes idle.
+  AshMessagePopupCollection* const popup_collection =
+      Shell::GetPrimaryRootWindowController()
+          ->shelf()
+          ->GetStatusAreaWidget()
+          ->notification_center_tray()
+          ->popup_collection();
+  if (!popup_collection) {
+    return nullptr;
+  }
+  MessagePopupAnimationWaiter(popup_collection).Wait();
+
+  // NOTE: The notification ID associated with the view differs from
+  // `notification_id` as it incorporates the profile ID.
+  auto* const popup_view = NotificationCenterTestApi().GetPopupViewForId(
+      ProfileNotification::GetProfileNotificationId(
+          notification_id, ProfileNotification::GetProfileID(profile)));
+  return popup_view ? views::AsViewClass<AshNotificationView>(
+                          popup_view->message_view())
+                    : nullptr;
 }
 
 }  // namespace
@@ -103,6 +152,10 @@ class NotificationDisplayClientBrowserTest : public InProcessBrowserTest {
     download_status_updater_remote_.FlushForTesting();
   }
 
+  crosapi::MockDownloadStatusUpdaterClient& download_status_updater_client() {
+    return download_status_updater_client_;
+  }
+
   MockNotificationDisplayServiceObserver& service_observer() {
     return service_observer_;
   }
@@ -114,6 +167,11 @@ class NotificationDisplayClientBrowserTest : public InProcessBrowserTest {
 
     crosapi::CrosapiManager::Get()->crosapi_ash()->BindDownloadStatusUpdater(
         download_status_updater_remote_.BindNewPipeAndPassReceiver());
+    download_status_updater_remote_->BindClient(
+        download_status_updater_client_receiver_
+            .BindNewPipeAndPassRemoteWithVersion());
+    download_status_updater_remote_.FlushForTesting();
+
     service_observation_.Observe(GetNotificationDisplayService());
   }
 
@@ -129,25 +187,90 @@ class NotificationDisplayClientBrowserTest : public InProcessBrowserTest {
   base::ScopedObservation<NotificationDisplayService,
                           NotificationDisplayService::Observer>
       service_observation_{&service_observer_};
+
+  // The client bound to the download status updater under test.
+  crosapi::MockDownloadStatusUpdaterClient download_status_updater_client_;
+  mojo::Receiver<crosapi::mojom::DownloadStatusUpdaterClient>
+      download_status_updater_client_receiver_{
+          &download_status_updater_client_};
 };
 
 // Verifies that when an in-progress download is cancelled, its notification
 // should be removed.
 IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CancelDownload) {
+  // Add a download that is not cancellable. Cache the notification ID.
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
   std::string notification_id;
   EXPECT_CALL(service_observer(), OnNotificationDisplayed)
       .WillOnce(WithArg<0>(
           [&notification_id](const message_center::Notification& notification) {
             notification_id = notification.id();
           }));
-  crosapi::mojom::DownloadStatusPtr download = CreateInProgressDownloadStatus(
-      ProfileManager::GetActiveUserProfile(), /*received_bytes=*/0,
-      /*target_bytes=*/1024);
-  Update(download->Clone());
+  crosapi::mojom::DownloadStatusPtr uncancellable_download =
+      CreateInProgressDownloadStatus(profile,
+                                     /*received_bytes=*/0,
+                                     /*target_bytes=*/1024);
+  uncancellable_download->cancellable = false;
+  Update(uncancellable_download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
 
-  download->state = crosapi::mojom::DownloadState::kCancelled;
-  Update(download->Clone());
+  // Check that the notification view of `uncancellable_download` does not have
+  // a cancel button.
+  AshNotificationView* const uncancellable_download_notification =
+      GetPopupView(profile, notification_id);
+  ASSERT_TRUE(uncancellable_download_notification);
+  std::vector<views::LabelButton*> action_buttons =
+      uncancellable_download_notification->GetActionButtonsForTest();
+  const std::u16string cancel_button_text =
+      l10n_util::GetStringUTF16(GetCommandTextId(CommandType::kCancel));
+  auto cancel_button_iter = base::ranges::find(
+      action_buttons, cancel_button_text, &views::LabelButton::GetText);
+  EXPECT_EQ(cancel_button_iter, action_buttons.end());
+
+  // Add a cancellable download. Cache the notification ID.
+  EXPECT_CALL(service_observer(), OnNotificationDisplayed)
+      .WillOnce(WithArg<0>(
+          [&notification_id](const message_center::Notification& notification) {
+            notification_id = notification.id();
+          }));
+  crosapi::mojom::DownloadStatusPtr cancellable_download =
+      CreateInProgressDownloadStatus(profile,
+                                     /*received_bytes=*/0,
+                                     /*target_bytes=*/1024);
+  cancellable_download->cancellable = true;
+  Update(cancellable_download->Clone());
+  Mock::VerifyAndClearExpectations(&service_observer());
+
+  // Implement download cancellation for the mock client.
+  base::RunLoop run_loop;
+  ON_CALL(download_status_updater_client(),
+          Cancel(cancellable_download->guid, _))
+      .WillByDefault(
+          [&](const std::string& guid,
+              crosapi::MockDownloadStatusUpdaterClient::CancelCallback
+                  callback) {
+            cancellable_download->cancellable = false;
+            cancellable_download->state =
+                crosapi::mojom::DownloadState::kCancelled;
+            Update(cancellable_download->Clone());
+            std::move(callback).Run(/*handled=*/true);
+            run_loop.Quit();
+          });
+
+  // Get the cancel button.
+  AshNotificationView* const cancellable_download_notification =
+      GetPopupView(profile, notification_id);
+  ASSERT_TRUE(cancellable_download_notification);
+  action_buttons = cancellable_download_notification->GetActionButtonsForTest();
+  cancel_button_iter = base::ranges::find(action_buttons, cancel_button_text,
+                                          &views::LabelButton::GetText);
+  ASSERT_NE(cancel_button_iter, action_buttons.end());
+
+  // Click on the cancel button and wait until download is cancelled.
+  test::Click(*cancel_button_iter, ui::EF_NONE);
+  run_loop.Run();
+
+  // After download cancellation, the associated notification should be removed.
   EXPECT_THAT(GetDisplayedNotificationIds(), Not(Contains(notification_id)));
 }
 
@@ -252,35 +375,16 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
 
-  // Wait until `popup_collection` becomes idle.
-  AshMessagePopupCollection* const popup_collection =
-      Shell::GetPrimaryRootWindowController()
-          ->shelf()
-          ->GetStatusAreaWidget()
-          ->notification_center_tray()
-          ->popup_collection();
-  base::test::TestFuture<void> future;
-  popup_collection->SetAnimationIdleClosureForTest(future.GetCallback());
-  future.Get();
+  AshNotificationView* const notification_view =
+      GetPopupView(profile, notification_id);
+  ASSERT_TRUE(notification_view);
 
-  // NOTE: The notification ID associated with the view differs from
-  // `notification_id` as it incorporates the profile ID.
-  message_center::MessagePopupView* const popup_view =
-      popup_collection->GetPopupViewForNotificationID(
-          ProfileNotification::GetProfileNotificationId(
-              notification_id, ProfileNotification::GetProfileID(profile)));
-  ASSERT_TRUE(popup_view);
-  message_center::MessageView* const message_view = popup_view->message_view();
-  ASSERT_TRUE(message_view);
-
-  // Move mouse to `message_view` until `close_button` shows and then click
+  // Move mouse to `notification_view` until `close_button` shows and then click
   // `close_button` to remove the notification associated with
   // `notification_id`.
-  test::MoveMouseTo(message_view);
+  test::MoveMouseTo(notification_view);
   views::View* const close_button =
-      views::AsViewClass<AshNotificationView>(message_view)
-          ->control_buttons_view_for_test()
-          ->close_button();
+      notification_view->control_buttons_view_for_test()->close_button();
   ViewDrawnWaiter().Wait(close_button);
   test::Click(close_button, ui::EF_NONE);
 

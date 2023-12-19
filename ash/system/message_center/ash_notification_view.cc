@@ -1643,6 +1643,11 @@ views::View* AshNotificationView::FindGroupNotificationView(
              : *notification;
 }
 
+std::vector<views::LabelButton*>
+AshNotificationView::GetActionButtonsForTest() {
+  return action_buttons();
+}
+
 views::Label* AshNotificationView::GetTitleRowLabelForTest() {
   return title_row_->title_view();
 }

@@ -147,6 +147,8 @@ class ASH_EXPORT AshNotificationView
     return control_buttons_view_;
   }
 
+  std::vector<views::LabelButton*> GetActionButtonsForTest();
+
   views::Label* GetTitleRowLabelForTest();
 
   // View containing all grouped notifications, propagates size changes
