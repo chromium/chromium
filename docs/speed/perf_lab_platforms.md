@@ -45,6 +45,7 @@
  * [win-10-perf](https://ci.chromium.org/p/chrome/builders/ci/win-10-perf): Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, 16GB RAM, Intel Kaby Lake HD Graphics 630.
  * [win-10_amd_laptop-perf](https://ci.chromium.org/p/chrome/builders/ci/win-10_amd_laptop-perf): Windows 10 Laptop with AMD chipset..
  * [win-10_laptop_low_end-perf](https://ci.chromium.org/p/chrome/builders/ci/win-10_laptop_low_end-perf): Low end windows 10 HP laptops. HD Graphics 5500, x86-64-i3-5005U, SSD, 4GB RAM..
+ * [win-11-perf](https://ci.chromium.org/p/chrome/builders/ci/win-11-perf): Windows Dell PowerEdge R350.
 
 ## Pinpoint-Only Platforms
 
@@ -75,6 +76,7 @@
  * win-10-perf-pgo: Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, 16GB RAM, Intel Kaby Lake HD Graphics 630.
  * win-10_amd_laptop-perf-pgo: Windows 10 Laptop with AMD chipset..
  * win-10_laptop_low_end-perf-pgo: Low end windows 10 HP laptops. HD Graphics 5500, x86-64-i3-5005U, SSD, 4GB RAM..
+ * win-11-perf-pgo: Windows Dell PowerEdge R350.
 
 ## FYI Platforms
 

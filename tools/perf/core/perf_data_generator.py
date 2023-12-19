@@ -104,6 +104,7 @@ LIGHTWEIGHT_TESTERS = [
     'linux-perf',
     'win-10-perf',
     'win-10_laptop_low_end-perf',
+    'win-11-perf',
     'mac-laptop_high_end-perf',
     'mac-laptop_low_end-perf',
 ]
@@ -956,6 +957,54 @@ BUILDERS = {
             'synthetic_product_name': 'OMEN by HP Laptop 16-c0xxx [ ] (HP)',
         },
     },
+    'win-11-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            # Explicitly set GPU driver version and Windows OS version such
+            # that we can be informed if this
+            # version ever changes or becomes inconsistent. It is important
+            # that bots are homogeneous. See crbug.com/988045 for history.
+            'os': 'Windows-11-22631.2428',
+            'gpu': '102b:0536-4.5.0.5',
+            'synthetic_product_name': 'PowerEdge R350 (Dell Inc.)'
+        },
+    },
+    'win-11-perf-pgo': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            # Explicitly set GPU driver version and Windows OS version such
+            # that we can be informed if this
+            # version ever changes or becomes inconsistent. It is important
+            # that bots are homogeneous. See crbug.com/988045 for history.
+            'os': 'Windows-11-22631.2428',
+            'gpu': '102b:0536-4.5.0.5',
+            'synthetic_product_name': 'PowerEdge R350 (Dell Inc.)'
+        },
+    },
     'mac-laptop_low_end-perf': {
         'tests': [
             {
@@ -1199,6 +1248,10 @@ BUILDERS = {
         'perf_processor': True,
     },
     'win-10_laptop_low_end-processor-perf': {
+        'platform': 'linux',
+        'perf_processor': True,
+    },
+    'win-11-processor-perf': {
         'platform': 'linux',
         'perf_processor': True,
     },

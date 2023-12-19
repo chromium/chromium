@@ -2161,6 +2161,106 @@
       "script": "//tools/perf/process_perf_results.py"
     }
   },
+  "win-11-perf": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "--browser=release_x64",
+          "--upload-results",
+          "--test-shard-map-filename=win-11-perf_map.json",
+          "--ignore-benchmark-exit-code",
+          "--assert-gpu-compositing"
+        ],
+        "merge": {
+          "args": [
+            "--lightweight",
+            "--skip-perf"
+          ],
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_test_suite",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimensions": {
+            "gpu": "102b:0536-4.5.0.5",
+            "os": "Windows-11-22631.2428",
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "PowerEdge R350 (Dell Inc.)"
+          },
+          "expiration": 7200,
+          "hard_timeout": 21600,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 20
+        },
+        "test": "performance_test_suite",
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
+  "win-11-perf-pgo": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "--browser=release_x64",
+          "--upload-results",
+          "--test-shard-map-filename=win-11-perf-pgo_map.json",
+          "--ignore-benchmark-exit-code",
+          "--assert-gpu-compositing"
+        ],
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_test_suite",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimensions": {
+            "gpu": "102b:0536-4.5.0.5",
+            "os": "Windows-11-22631.2428",
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "PowerEdge R350 (Dell Inc.)"
+          },
+          "expiration": 7200,
+          "hard_timeout": 21600,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 26
+        },
+        "test": "performance_test_suite",
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
+  "win-11-processor-perf": {
+    "merge": {
+      "args": [
+        "--lightweight"
+      ],
+      "script": "//tools/perf/process_perf_results.py"
+    }
+  },
   "win64-builder-perf": {
     "additional_compile_targets": [
       "chromedriver"

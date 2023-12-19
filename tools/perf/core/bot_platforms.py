@@ -488,6 +488,16 @@ _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('octane'),
     _GetBenchmarkConfig('speedometer2'),
 ])
+_WIN_11_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
+    'blink_perf.display_locking',
+    'v8.runtime_stats.top_25',
+])
+_WIN_11_EXECUTABLE_CONFIGS = frozenset([
+    _base_perftests(200),
+    _components_perftests(125),
+    _dawn_perf_tests(600),
+    _views_perftests(),
+])
 _ANDROID_GO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.memory_mobile'),
     _GetBenchmarkConfig('system_health.common_mobile'),
@@ -704,6 +714,19 @@ WIN_10_AMD_LAPTOP_PGO = PerfPlatform('win-10_amd_laptop-perf-pgo',
                                      3,
                                      'win',
                                      pinpoint_only=True)
+WIN_11 = PerfPlatform('win-11-perf',
+                      'Windows Dell PowerEdge R350',
+                      _WIN_11_BENCHMARK_CONFIGS,
+                      20,
+                      'win',
+                      executables=_WIN_11_EXECUTABLE_CONFIGS)
+WIN_11_PGO = PerfPlatform('win-11-perf-pgo',
+                          'Windows Dell PowerEdge R350',
+                          _WIN_11_BENCHMARK_CONFIGS,
+                          26,
+                          'win',
+                          executables=_WIN_11_EXECUTABLE_CONFIGS,
+                          pinpoint_only=True)
 
 # Android
 ANDROID_GO = PerfPlatform('android-go-perf', 'Android O (gobo)',
