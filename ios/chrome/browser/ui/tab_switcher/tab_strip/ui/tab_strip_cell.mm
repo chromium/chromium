@@ -18,11 +18,8 @@ const CGFloat kCloseButtonSize = 16;
 // The alpha of the close button background color.
 const CGFloat kCloseButtonBackgroundAlpha = 0.2;
 
-// Corner radius of the top left and right corner of the content view.
-const CGFloat kTopCornerRadius = 16;
-
-// Size of the decoration tails when the cell is selected.
-const CGFloat kTailSize = 16;
+// Size of the decoration corner when the cell is selected.
+const CGFloat kCornerSize = 16;
 
 // Content view constants.
 const CGFloat kFaviconLeadingMargin = 16;
@@ -44,15 +41,14 @@ UIImage* DefaultFavicon() {
   UILabel* _titleLabel;
   UIImageView* _faviconView;
 
-  // Decoration tails, visible when the cell is selected.
+  // Rounded decoration views, visible when the cell is selected.
   UIView* _leftTailView;
   UIView* _rightTailView;
+  UIView* _topLeftCornerView;
+  UIView* _topRightCornerView;
 
-  // Width of the cell.
-  CGFloat _cellWidth;
-
-  // Wether the tail layers have been updated.
-  BOOL _tailLayersUpdated;
+  // Wether the decoration layers have been updated.
+  BOOL _decorationLayersUpdated;
 
   // Circular spinner that shows the loading state of the tab.
   MDCActivityIndicator* _activityIndicator;
@@ -61,10 +57,15 @@ UIImage* DefaultFavicon() {
 - (instancetype)initWithFrame:(CGRect)frame {
   if ((self = [super initWithFrame:frame])) {
     self.layer.masksToBounds = NO;
-    _cellWidth = 0;
-    _tailLayersUpdated = NO;
+    _decorationLayersUpdated = NO;
 
     UIView* contentView = self.contentView;
+
+    _topLeftCornerView = [self createTopCornerView];
+    [contentView addSubview:_topLeftCornerView];
+
+    _topRightCornerView = [self createTopCornerView];
+    [contentView addSubview:_topRightCornerView];
 
     _faviconView = [self createFaviconView];
     [contentView addSubview:_faviconView];
@@ -85,6 +86,7 @@ UIImage* DefaultFavicon() {
     [self addSubview:_rightTailView];
 
     [self setupConstraints];
+    [self setupDecorationLayers];
 
     self.selected = NO;
   }
@@ -120,20 +122,6 @@ UIImage* DefaultFavicon() {
   }
 }
 
-- (void)layoutSubviews {
-  [super layoutSubviews];
-
-  CGFloat cellWidth = self.frame.size.width;
-  if (cellWidth != _cellWidth) {
-    [self updateContentViewLayer];
-    _cellWidth = cellWidth;
-  }
-
-  if (!_tailLayersUpdated) {
-    [self updateTailLayers];
-  }
-}
-
 #pragma mark - Accessor
 
 - (void)setSelected:(BOOL)selected {
@@ -154,9 +142,11 @@ UIImage* DefaultFavicon() {
   _titleLabel.textColor = selected ? [UIColor colorNamed:kTextPrimaryColor]
                                    : [UIColor colorNamed:kGrey600Color];
 
-  // Update decoration tails visibility.
+  // Update decoration views visibility.
   _leftTailView.hidden = !selected;
   _rightTailView.hidden = !selected;
+  _topLeftCornerView.hidden = !selected;
+  _topRightCornerView.hidden = !selected;
 }
 
 #pragma mark - UICollectionViewCell
@@ -170,67 +160,43 @@ UIImage* DefaultFavicon() {
 
 #pragma mark - Private
 
-/// Updates the `contentView` layer for the `selected` state of the cell.
-- (void)updateContentViewLayer {
-  // Round the top corners of the content view.
-  UIBezierPath* path = [UIBezierPath
-      bezierPathWithRoundedRect:self.bounds
-              byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight
-                    cornerRadii:CGSizeMake(kTopCornerRadius, 0.0)];
-  CAShapeLayer* maskLayer = [CAShapeLayer layer];
-  maskLayer.path = path.CGPath;
-  self.contentView.layer.mask = maskLayer;
-}
-
-/// Updates the tail layers for the `selected` state of the cell.
-- (void)updateTailLayers {
-  CGRect leftTailRect = _leftTailView.bounds;
-  if (leftTailRect.size.width == 0) {
-    return;
-  }
-
-  CGFloat radius = kTailSize;
+/// Sets the decoration layers for the `selected` state of the cell.
+- (void)setupDecorationLayers {
+  // Bottom left corner path.
+  UIBezierPath* cornerPath = [UIBezierPath bezierPath];
+  [cornerPath moveToPoint:CGPointMake(kCornerSize, kCornerSize)];
+  [cornerPath addLineToPoint:CGPointMake(kCornerSize, 0)];
+  [cornerPath addArcWithCenter:CGPointMake(0, 0)
+                        radius:kCornerSize
+                    startAngle:0
+                      endAngle:M_PI_2
+                     clockwise:YES];
+  [cornerPath closePath];
 
   // Round the left tail.
-  UIBezierPath* leftTailPath = [UIBezierPath bezierPath];
-  [leftTailPath moveToPoint:CGPointMake(CGRectGetMaxX(leftTailRect),
-                                        CGRectGetMaxY(leftTailRect))];
-  [leftTailPath
-      addLineToPoint:CGPointMake(CGRectGetMaxX(leftTailRect),
-                                 CGRectGetMaxY(leftTailRect) - radius)];
-  [leftTailPath
-      addArcWithCenter:CGPointMake(CGRectGetMaxX(leftTailRect) - radius,
-                                   CGRectGetMaxY(leftTailRect) - radius)
-                radius:radius
-            startAngle:0
-              endAngle:M_PI_2
-             clockwise:YES];
-  [leftTailPath closePath];
   CAShapeLayer* leftTailMaskLayer = [CAShapeLayer layer];
-  leftTailMaskLayer.path = leftTailPath.CGPath;
+  leftTailMaskLayer.path = cornerPath.CGPath;
   _leftTailView.layer.mask = leftTailMaskLayer;
 
   // Round the right tail.
-  CGRect rightTailRect = _rightTailView.bounds;
-  UIBezierPath* rightTailpath = [UIBezierPath bezierPath];
-  [rightTailpath moveToPoint:CGPointMake(CGRectGetMinX(rightTailRect),
-                                         CGRectGetMaxY(rightTailRect))];
-  [rightTailpath
-      addLineToPoint:CGPointMake(CGRectGetMinX(rightTailRect),
-                                 CGRectGetMaxY(rightTailRect) - radius)];
-  [rightTailpath
-      addArcWithCenter:CGPointMake(CGRectGetMinX(rightTailRect) + radius,
-                                   CGRectGetMaxY(rightTailRect) - radius)
-                radius:radius
-            startAngle:M_PI
-              endAngle:M_PI_2
-             clockwise:NO];
-  [rightTailpath closePath];
   CAShapeLayer* rightTailMaskLayer = [CAShapeLayer layer];
-  rightTailMaskLayer.path = rightTailpath.CGPath;
+  rightTailMaskLayer.path = cornerPath.CGPath;
   _rightTailView.layer.mask = rightTailMaskLayer;
+  _rightTailView.layer.transform = CATransform3DMakeScale(-1, 1, 1);
 
-  _tailLayersUpdated = YES;
+  // Round the top left corner.
+  CAShapeLayer* topLeftCornerLayer = [CAShapeLayer layer];
+  topLeftCornerLayer.path = cornerPath.CGPath;
+  _topLeftCornerView.layer.mask = topLeftCornerLayer;
+  _topLeftCornerView.layer.transform = CATransform3DMakeScale(-1, -1, 1);
+
+  // Round the top right corner.
+  CAShapeLayer* topRightCornerLayer = [CAShapeLayer layer];
+  topRightCornerLayer.path = cornerPath.CGPath;
+  _topRightCornerView.layer.mask = topRightCornerLayer;
+  _topRightCornerView.layer.transform = CATransform3DMakeScale(1, -1, 1);
+
+  _decorationLayersUpdated = YES;
 }
 
 // Sets the cell constraints.
@@ -280,21 +246,38 @@ UIImage* DefaultFavicon() {
         constraintEqualToAnchor:contentView.centerYAnchor],
   ]];
 
+  /// `_topLeftCornerView` and `_topRightCornerView` constraints.
+  [NSLayoutConstraint activateConstraints:@[
+    [_topLeftCornerView.leadingAnchor
+        constraintEqualToAnchor:contentView.leadingAnchor],
+    [_topLeftCornerView.topAnchor
+        constraintEqualToAnchor:contentView.topAnchor],
+    [_topLeftCornerView.widthAnchor constraintEqualToConstant:kCornerSize],
+    [_topLeftCornerView.heightAnchor constraintEqualToConstant:kCornerSize],
+
+    [_topRightCornerView.trailingAnchor
+        constraintEqualToAnchor:contentView.trailingAnchor],
+    [_topRightCornerView.topAnchor
+        constraintEqualToAnchor:contentView.topAnchor],
+    [_topRightCornerView.widthAnchor constraintEqualToConstant:kCornerSize],
+    [_topRightCornerView.heightAnchor constraintEqualToConstant:kCornerSize],
+  ]];
+
   /// `_leftTailView` and `_rightTailView` constraints.
   [NSLayoutConstraint activateConstraints:@[
     [_leftTailView.trailingAnchor
         constraintEqualToAnchor:contentView.leadingAnchor],
     [_leftTailView.bottomAnchor
         constraintEqualToAnchor:contentView.bottomAnchor],
-    [_leftTailView.widthAnchor constraintEqualToConstant:kTailSize],
-    [_leftTailView.heightAnchor constraintEqualToConstant:kTailSize],
+    [_leftTailView.widthAnchor constraintEqualToConstant:kCornerSize],
+    [_leftTailView.heightAnchor constraintEqualToConstant:kCornerSize],
 
     [_rightTailView.leadingAnchor
         constraintEqualToAnchor:contentView.trailingAnchor],
     [_rightTailView.bottomAnchor
         constraintEqualToAnchor:contentView.bottomAnchor],
-    [_rightTailView.widthAnchor constraintEqualToConstant:kTailSize],
-    [_rightTailView.heightAnchor constraintEqualToConstant:kTailSize],
+    [_rightTailView.widthAnchor constraintEqualToConstant:kCornerSize],
+    [_rightTailView.heightAnchor constraintEqualToConstant:kCornerSize],
   ]];
 }
 
@@ -357,6 +340,16 @@ UIImage* DefaultFavicon() {
   tailView.translatesAutoresizingMaskIntoConstraints = NO;
   tailView.hidden = YES;
   return tailView;
+}
+
+// Returns a new top corner view.
+- (UIView*)createTopCornerView {
+  UIView* topCornerView = [[UIView alloc] init];
+  topCornerView.backgroundColor = [UIColor colorNamed:kGrey200Color];
+  topCornerView.translatesAutoresizingMaskIntoConstraints = NO;
+  topCornerView.hidden = YES;
+
+  return topCornerView;
 }
 
 @end
