@@ -28,6 +28,10 @@ namespace syncer {
 
 namespace {
 
+BASE_FEATURE(kSyncPollIfTimerNotRunning,
+             "SyncPollIfTimerNotRunning",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 constexpr base::TimeDelta kLocalChangeNudgeDelayForTest = base::Milliseconds(1);
 
 bool IsConfigRelatedUpdateOriginValue(
@@ -645,12 +649,22 @@ void SyncSchedulerImpl::TrySyncCycleJobImpl(
     if (nudge_tracker_.IsSyncRequired(GetEnabledAndUnblockedTypes())) {
       SDVLOG(2) << "Found pending nudge job";
       DoNudgeSyncCycleJob();
-    } else if (((TimeTicks::Now() - last_poll_reset_) >= GetPollInterval())) {
-      // TODO(crbug.com/1497926): When using a WallClockTimer to schedule
-      // polling, use Time instead of TimeTicks for the above computation for
-      // consistency.
-      SDVLOG(2) << "Found pending poll";
-      DoPollSyncCycleJob();
+    } else {
+      bool should_poll = false;
+      if (base::FeatureList::IsEnabled(kSyncPollIfTimerNotRunning)) {
+        // If the `poll_timer_` isn't running, that means a poll is pending.
+        // Most likely this was called from PollTimerCallback(), but it's also
+        // possible that the poll was triggered earlier while the scheduler was
+        // in an error state, and now it has exited the error state.
+        should_poll = !poll_timer_.IsRunning();
+      } else {
+        should_poll =
+            (TimeTicks::Now() - last_poll_reset_) >= GetPollInterval();
+      }
+      if (should_poll) {
+        SDVLOG(2) << "Found pending poll";
+        DoPollSyncCycleJob();
+      }
     }
   } else {
     // We must be in an error state. Transitioning out of each of these
