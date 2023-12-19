@@ -32,7 +32,6 @@ class UserCreationScreen
     CANCEL,
     SKIPPED,
     KIOSK_ENTERPRISE_ENROLL,
-    CONTINUE_QUICK_START_FLOW,
     SIGNIN_SCHOOL,
   };
 

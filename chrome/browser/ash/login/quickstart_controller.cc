@@ -337,10 +337,10 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
     CHECK(entry_point.has_value()) << "Unknown entry point!";
     exit_point_ = entry_point_ = entry_point;
   } else {
-    // The flow must be resuming after reaching the UserCreation screen. Note
-    // the the UserCreationScreen is technically never shown when it switches
-    // to QuickStart, so |previous_screen_| is one of the many screens that
-    // may have appeared up to this point.
+    // The flow must be resuming after reaching the GaiaInfoScreen or
+    // GaiaScreen. Note the the GaiaInfoScreen/GaiaScreen is technically never
+    // shown when it switches to QuickStart, so |previous_screen_| is one of the
+    // many screens that may have appeared up to this point.
     // TODO(b:283965994) - Imrpve the resume logic.
     CHECK(controller_state_ == ControllerState::CONNECTED);
     CHECK(LoginDisplayHost::default_host()
@@ -348,7 +348,7 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
               ->quick_start_setup_ongoing);
 
     // OOBE flow cannot go back after enrollment checks, update exit point.
-    exit_point_ = QuickStartController::EntryPoint::GAIA_SCREEN;
+    exit_point_ = QuickStartController::EntryPoint::GAIA_INFO_SCREEN;
 
     StartAccountTransfer();
   }
@@ -375,7 +375,7 @@ void QuickStartController::OnPhoneConnectionEstablished() {
       bootstrap_controller_->AttemptWifiCredentialTransfer();
     }
   } else {
-    // We are after the 'User Creation' screen. Transfer credentials.
+    // We are after the 'Gaia Info' screen. Transfer credentials.
     StartAccountTransfer();
   }
 }

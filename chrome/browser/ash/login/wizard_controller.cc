@@ -1302,12 +1302,6 @@ void WizardController::OnUserCreationScreenExit(
     case UserCreationScreen::Result::SKIPPED:
       AdvanceToScreen(GaiaView::kScreenId);
       break;
-    case UserCreationScreen::Result::CONTINUE_QUICK_START_FLOW:
-      // TODO(b:283965994) - Improve this logic.
-      CHECK(wizard_context_->quick_start_enabled &&
-            wizard_context_->quick_start_setup_ongoing);
-      AdvanceToScreen(QuickStartView::kScreenId);
-      break;
     case UserCreationScreen::Result::ADD_CHILD:
       if (features::IsOobeSoftwareUpdateEnabled()) {
         StartupUtils::SaveScreenAfterConsumerUpdate(
@@ -1417,7 +1411,9 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
     case GaiaScreen::Result::START_CONSUMER_KIOSK:
       LoginDisplayHost::default_host()->AttemptShowEnableConsumerKioskScreen();
       break;
-    case GaiaScreen::Result::QUICK_START:
+    case GaiaScreen::Result::ENTER_QUICK_START:
+      [[fallthrough]];
+    case GaiaScreen::Result::QUICK_START_ONGOING:
       ShowQuickStartScreen();
       break;
   }
@@ -1443,12 +1439,15 @@ void WizardController::OnGaiaInfoScreenExit(GaiaInfoScreen::Result result) {
       AdvanceToScreen(UserCreationView::kScreenId);
       break;
     case GaiaInfoScreen::Result::kManual:
+      [[fallthrough]];
     case GaiaInfoScreen::Result::kNotApplicable:
       AdvanceToScreen(GaiaView::kScreenId);
       break;
-    case GaiaInfoScreen::Result::kQuickstart:
+    case GaiaInfoScreen::Result::kEnterQuickStart:
+      [[fallthrough]];
+    case GaiaInfoScreen::Result::kQuickStartOngoing:
       ShowQuickStartScreen();
-      return;
+      break;
   }
 }
 

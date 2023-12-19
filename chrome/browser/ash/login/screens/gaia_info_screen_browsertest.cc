@@ -17,26 +17,25 @@
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "content/public/test/browser_test.h"
-#include "gaia_info_screen.h"
 
 namespace ash {
 namespace {
 
 constexpr char kBackButton[] = "backButton";
 constexpr char kManualButton[] = "manualButton";
-constexpr char kQuickstartButton[] = "quickstartButton";
+constexpr char kQuickStartButton[] = "quickstartButton";
 constexpr char kNextButton[] = "nextButton";
 constexpr test::UIPath kBackButtonPath = {GaiaInfoScreenView::kScreenId.name,
                                           kBackButton};
 constexpr test::UIPath kManualButtonPath = {GaiaInfoScreenView::kScreenId.name,
                                             kManualButton};
-constexpr test::UIPath kQuickstartButtonPath = {
-    GaiaInfoScreenView::kScreenId.name, kQuickstartButton};
+constexpr test::UIPath kQuickStartButtonPath = {
+    GaiaInfoScreenView::kScreenId.name, kQuickStartButton};
 constexpr test::UIPath kNextButtonPath = {GaiaInfoScreenView::kScreenId.name,
                                           kNextButton};
 
 constexpr char kCancelButton[] = "cancelButton";
-constexpr test::UIPath kQuickstartCancelButtonPath = {
+constexpr test::UIPath kQuickStartCancelButtonPath = {
     QuickStartView::kScreenId.name, kCancelButton};
 
 class GaiaInfoScreenTest : public OobeBaseTest {
@@ -89,16 +88,16 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTest, BackFlow) {
   EXPECT_EQ(WaitForScreenExitResult(), GaiaInfoScreen::Result::kBack);
 }
 
-class GaiaInfoScreenTestQuickstartEnabled : public GaiaInfoScreenTest {
+class GaiaInfoScreenTestQuickStartEnabled : public GaiaInfoScreenTest {
  public:
-  GaiaInfoScreenTestQuickstartEnabled() {
+  GaiaInfoScreenTestQuickStartEnabled() {
     feature_list_.InitAndEnableFeature(features::kOobeQuickStart);
     connection_broker_factory_.set_initial_feature_support_status(
         quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
             kUndetermined);
   }
 
-  ~GaiaInfoScreenTestQuickstartEnabled() override = default;
+  ~GaiaInfoScreenTestQuickStartEnabled() override = default;
 
   void ShowGaiaInfoScreen() {
     WizardController::default_controller()->AdvanceToScreen(
@@ -118,7 +117,7 @@ class GaiaInfoScreenTestQuickstartEnabled : public GaiaInfoScreenTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickstartEnabled, ForwardFlowManual) {
+IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickStartEnabled, ForwardFlowManual) {
   ShowGaiaInfoScreen();
   OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
 
@@ -134,8 +133,8 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickstartEnabled, ForwardFlowManual) {
   EXPECT_EQ(WaitForScreenExitResult(), GaiaInfoScreen::Result::kManual);
 }
 
-IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickstartEnabled,
-                       ForwardFlowQuickstart) {
+IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickStartEnabled,
+                       ForwardFlowUserEntersQuickStart) {
   ShowGaiaInfoScreen();
   OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
 
@@ -145,17 +144,33 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickstartEnabled,
 
   test::OobeJS().ExpectDisabledPath(kNextButtonPath);
 
-  test::OobeJS().TapOnPath(kQuickstartButtonPath);
-  test::OobeJS().ExpectHasAttribute("checked", kQuickstartButtonPath);
+  test::OobeJS().TapOnPath(kQuickStartButtonPath);
+  test::OobeJS().ExpectHasAttribute("checked", kQuickStartButtonPath);
   test::OobeJS().TapOnPath(kNextButtonPath);
-  EXPECT_EQ(WaitForScreenExitResult(), GaiaInfoScreen::Result::kQuickstart);
+  EXPECT_EQ(WaitForScreenExitResult(),
+            GaiaInfoScreen::Result::kEnterQuickStart);
   OobeScreenWaiter(QuickStartView::kScreenId).Wait();
 
   test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true, kQuickstartCancelButtonPath)
+      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartCancelButtonPath)
       ->Wait();
-  test::OobeJS().TapOnPath(kQuickstartCancelButtonPath);
+  test::OobeJS().TapOnPath(kQuickStartCancelButtonPath);
   OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickStartEnabled,
+                       ForwardFlowQuickStartOngoing) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->quick_start_setup_ongoing = true;
+  connection_broker_factory_.instances().front()->set_feature_support_status(
+      quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
+          kSupported);
+  ShowGaiaInfoScreen();
+
+  EXPECT_EQ(WaitForScreenExitResult(),
+            GaiaInfoScreen::Result::kQuickStartOngoing);
+  OobeScreenWaiter(QuickStartView::kScreenId).Wait();
 }
 
 }  // namespace

@@ -46,7 +46,8 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
     CANCEL,
     ENTERPRISE_ENROLL,
     START_CONSUMER_KIOSK,
-    QUICK_START,
+    ENTER_QUICK_START,
+    QUICK_START_ONGOING,
   };
 
   static std::string GetResultString(Result result);

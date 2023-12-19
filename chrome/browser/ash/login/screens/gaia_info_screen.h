@@ -20,7 +20,13 @@ class GaiaInfoScreen : public BaseScreen {
  public:
   using TView = GaiaInfoScreenView;
 
-  enum class Result { kManual = 0, kQuickstart, kBack, kNotApplicable };
+  enum class Result {
+    kManual = 0,
+    kEnterQuickStart,
+    kQuickStartOngoing,
+    kBack,
+    kNotApplicable
+  };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 

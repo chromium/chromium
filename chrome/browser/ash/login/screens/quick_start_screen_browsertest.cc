@@ -221,6 +221,14 @@ class QuickStartBrowserTest : public OobeBaseTest {
         ->Wait();
   }
 
+  void WaitForUserCreationAndTriggerPersonalFlow() {
+    test::WaitForUserCreationScreen();
+    test::TapForPersonalUseCrRadioButton();
+    test::TapUserCreationNext();
+    test::WaitForConsumerUpdateScreen();
+    test::ExitConsumerUpdateScreenNoUpdate();
+  }
+
   // Advertise, Initiate Connection, Authenticate
   void SimulatePhoneConnection() {
     connection_broker()->on_start_advertising_callback().Run(true);
@@ -567,14 +575,16 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEndWithMetrics) {
 
   test::WaitForNetworkSelectionScreen();
   SkipUpdateScreenOnBrandedBuilds();
+  WaitForUserCreationAndTriggerPersonalFlow();
 
-  // The flow continues to QuickStart upon reaching the UserCreationScreen.
+  // The flow continues to QuickStart upon reaching the GaiaInfoScreen or
+  // GaiaScreen.
   OobeScreenWaiter(QuickStartView::kScreenId).Wait();
 }
 
 // Simulates the phone cancelling the flow after the WiFi credentials are sent
-// and while OOBE is performing its update and enrollment checks.
-IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PhoneAbortsFlowDuringUpdate) {
+// and while OOBE continues in between Quick Start screens.
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PhoneAbortsFlowOnUpdateScreen) {
   // Force branded so that the update screen is shown.
   LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
 
@@ -587,10 +597,64 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PhoneAbortsFlowDuringUpdate) {
   // Simulate the phone aborting the flow during update and enrollment checks.
   test::WaitForUpdateScreen();
   AbortFlowFromPhoneSide();
+
   test::ExitUpdateScreenNoUpdate();
+  WaitForUserCreationAndTriggerPersonalFlow();
+  test::WaitForGaiaInfoScreen();
 
   // Abort should be handled gracefully and the standard OOBE flow is expected.
+  EnsureFlowNotActive();
+}
+
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
+                       PhoneAbortsFlowOnUserCreationScreen) {
+  // Force branded so that the update screen is shown.
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
+
+  EnterQuickStartFlowFromWelcomeScreen();
+
+  SimulatePhoneConnection();
+  SimulateUserVerification();
+  SimulateWiFiTransfer();
+
+  test::WaitForUpdateScreen();
+  test::ExitUpdateScreenNoUpdate();
   test::WaitForUserCreationScreen();
+  AbortFlowFromPhoneSide();
+
+  test::TapForPersonalUseCrRadioButton();
+  test::TapUserCreationNext();
+  test::WaitForConsumerUpdateScreen();
+  test::ExitConsumerUpdateScreenNoUpdate();
+  test::WaitForGaiaInfoScreen();
+
+  // Abort should be handled gracefully and the standard OOBE flow is expected.
+  EnsureFlowNotActive();
+}
+
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
+                       PhoneAbortsFlowOnConsumerUpdateScreen) {
+  // Force branded so that the update screen is shown.
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
+
+  EnterQuickStartFlowFromWelcomeScreen();
+
+  SimulatePhoneConnection();
+  SimulateUserVerification();
+  SimulateWiFiTransfer();
+
+  test::WaitForUpdateScreen();
+  test::ExitUpdateScreenNoUpdate();
+  test::WaitForUserCreationScreen();
+  test::TapForPersonalUseCrRadioButton();
+  test::TapUserCreationNext();
+  test::WaitForConsumerUpdateScreen();
+  AbortFlowFromPhoneSide();
+
+  test::ExitConsumerUpdateScreenNoUpdate();
+  test::WaitForGaiaInfoScreen();
+
+  // Abort should be handled gracefully and the standard OOBE flow is expected.
   EnsureFlowNotActive();
 }
 
@@ -619,8 +683,10 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEndWithEmptyWifiCreds) {
   ClickOnWifiNetwork(kWifiNetworkName);
 
   SkipUpdateScreenOnBrandedBuilds();
+  WaitForUserCreationAndTriggerPersonalFlow();
 
-  // The flow continues to QuickStart upon reaching the UserCreationScreen.
+  // The flow continues to QuickStart upon reaching the GaiaInfoScreen or
+  // GaiaScreen.
   OobeScreenWaiter(QuickStartView::kScreenId).Wait();
   EnsureFlowActive();
 }
@@ -658,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PhoneAbortOnManualNetworkNeeded) {
   SkipUpdateScreenOnBrandedBuilds();
 
   // Abort should be handled gracefully and the standard OOBE flow is expected.
-  test::WaitForUserCreationScreen();
+  WaitForUserCreationAndTriggerPersonalFlow();
   EnsureFlowNotActive();
 }
 

@@ -97,8 +97,10 @@ std::string GaiaScreen::GetResultString(Result result) {
       return "EnterpriseEnroll";
     case Result::START_CONSUMER_KIOSK:
       return "StartConsumerKiosk";
-    case Result::QUICK_START:
-      return "QuickStart";
+    case Result::ENTER_QUICK_START:
+      return "EnterQuickStart";
+    case Result::QUICK_START_ONGOING:
+      return "QuickStartOngoing";
   }
 }
 
@@ -192,6 +194,11 @@ const std::string& GaiaScreen::EnrollmentNudgeEmail() {
 void GaiaScreen::ShowImpl() {
   if (!view_)
     return;
+
+  // Continue QuickStart flow if there is an ongoing setup.
+  if (context()->quick_start_setup_ongoing) {
+    exit_callback_.Run(Result::QUICK_START_ONGOING);
+  }
 
   if (!backlights_forced_off_observation_.IsObserving()) {
     backlights_forced_off_observation_.Observe(
@@ -413,7 +420,7 @@ bool GaiaScreen::ShouldFetchEnrollmentNudgePolicy(
 
 void GaiaScreen::OnQuickStartButtonClicked() {
   CHECK(context()->quick_start_enabled);
-  exit_callback_.Run(Result::QUICK_START);
+  exit_callback_.Run(Result::ENTER_QUICK_START);
 }
 
 void GaiaScreen::SetQuickStartButtonVisibility(bool visible) {
