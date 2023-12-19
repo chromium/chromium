@@ -1668,6 +1668,8 @@ static_library("ui") {
       "webui/downloads/downloads_ui.h",
       "webui/extension_control_handler.cc",
       "webui/extension_control_handler.h",
+      "webui/extensions/extensions_hats_handler.cc",
+      "webui/extensions/extensions_hats_handler.h",
       "webui/extensions/extensions_internals_source.cc",
       "webui/extensions/extensions_internals_source.h",
       "webui/extensions/extensions_ui.cc",
