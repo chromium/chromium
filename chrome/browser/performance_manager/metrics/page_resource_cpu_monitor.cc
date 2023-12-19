@@ -9,13 +9,8 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "base/types/optional_ref.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
@@ -23,20 +18,16 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
-#include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "content/public/common/process_type.h"
 
 namespace performance_manager::metrics {
 
-using resource_attribution::PageContext;
 using resource_attribution::ResourceContext;
 
 PageResourceCPUMonitor::PageResourceCPUMonitor()
     : cpu_measurement_delegate_factory_(
-          CPUMeasurementDelegate::GetDefaultFactory()),
-      cpu_proportion_tracker_(
-          base::BindRepeating(&resource_attribution::ContextIs<PageContext>)) {}
+          CPUMeasurementDelegate::GetDefaultFactory()) {}
 
 PageResourceCPUMonitor::~PageResourceCPUMonitor() = default;
 
@@ -44,11 +35,6 @@ void PageResourceCPUMonitor::SetCPUMeasurementDelegateFactoryForTesting(
     Graph* graph,
     CPUMeasurementDelegate::Factory* factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (features::kUseResourceAttributionCPUMonitor.Get()) {
-    CPUMeasurementDelegate::SetDelegateFactoryForTesting(  // IN_TEST
-        graph, factory);
-    return;
-  }
   // Ensure that all CPU measurements use the same delegate.
   CHECK(cpu_measurement_map_.empty());
   CHECK(factory);
@@ -60,14 +46,6 @@ void PageResourceCPUMonitor::StartMonitoring(Graph* graph) {
 
   CHECK(last_measurement_time_.is_null());
   last_measurement_time_ = base::TimeTicks::Now();
-
-  if (features::kUseResourceAttributionCPUMonitor.Get()) {
-    cpu_query_ = std::make_unique<resource_attribution::ScopedCPUQuery>();
-    cpu_query_->QueryOnce(base::BindOnce(
-        &PageResourceCPUMonitor::StartResourceAttributionCPUMeasurements,
-        weak_factory_.GetWeakPtr(), last_measurement_time_));
-    return;
-  }
 
   graph->AddProcessNodeObserver(this);
 
@@ -84,50 +62,30 @@ void PageResourceCPUMonitor::StopMonitoring(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!last_measurement_time_.is_null());
   last_measurement_time_ = base::TimeTicks();
-
-  if (features::kUseResourceAttributionCPUMonitor.Get()) {
-    cpu_query_.reset();
-    cpu_proportion_tracker_.Stop();
-  } else {
-    cpu_measurement_map_.clear();
-    graph->RemoveProcessNodeObserver(this);
-  }
+  cpu_measurement_map_.clear();
+  graph->RemoveProcessNodeObserver(this);
 }
 
-void PageResourceCPUMonitor::UpdateCPUMeasurements(
-    base::OnceCallback<void(const CPUUsageMap&)> callback) {
+PageResourceCPUMonitor::CPUUsageMap
+PageResourceCPUMonitor::UpdateCPUMeasurements() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Update CPU metrics, attributing the cumulative CPU of each process to its
   // frames and workers.
   CHECK(!last_measurement_time_.is_null());
   const base::TimeTicks now = base::TimeTicks::Now();
-  if (features::kUseResourceAttributionCPUMonitor.Get()) {
-    cpu_query_->QueryOnce(base::BindOnce(
-        &PageResourceCPUMonitor::UpdateResourceAttributionCPUMeasurements,
-        weak_factory_.GetWeakPtr(), std::move(callback), now));
-  } else {
-    CPUUsageMap cpu_usage_map;
-    for (auto& [process_node, cpu_measurement] : cpu_measurement_map_) {
-      cpu_measurement.MeasureAndDistributeCPUUsage(
-          process_node, last_measurement_time_, now, cpu_usage_map);
-    }
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(cpu_usage_map)));
+  CPUUsageMap cpu_usage_map;
+  for (auto& [process_node, cpu_measurement] : cpu_measurement_map_) {
+    cpu_measurement.MeasureAndDistributeCPUUsage(
+        process_node, last_measurement_time_, now, cpu_usage_map);
   }
   last_measurement_time_ = now;
+  return cpu_usage_map;
 }
 
 // static
 double PageResourceCPUMonitor::EstimatePageCPUUsage(
     const PageNode* page_node,
     const CPUUsageMap& cpu_usage_map) {
-  if (features::kUseResourceAttributionCPUMonitor.Get()) {
-    // Page estimates are stored directly in `cpu_usage_map`.
-    const auto it = cpu_usage_map.find(page_node->GetResourceContext());
-    return it == cpu_usage_map.end() ? 0.0 : it->second;
-  }
-
   double page_cpu_usage = 0.0;
   auto accumulate_cpu_usage = [&page_cpu_usage,
                                &cpu_usage_map](const ResourceContext& context) {
@@ -155,7 +113,6 @@ double PageResourceCPUMonitor::EstimatePageCPUUsage(
 void PageResourceCPUMonitor::OnProcessLifetimeChange(
     const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!features::kUseResourceAttributionCPUMonitor.Get());
   if (last_measurement_time_.is_null()) {
     // Not monitoring CPU usage yet.
     CHECK(cpu_measurement_map_.empty());
@@ -174,13 +131,11 @@ void PageResourceCPUMonitor::OnProcessLifetimeChange(
 void PageResourceCPUMonitor::OnBeforeProcessNodeRemoved(
     const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!features::kUseResourceAttributionCPUMonitor.Get());
   cpu_measurement_map_.erase(process_node);
 }
 
 void PageResourceCPUMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!features::kUseResourceAttributionCPUMonitor.Get());
   // Only measure renderers.
   if (process_node->GetProcessType() != content::PROCESS_TYPE_RENDERER) {
     return;
@@ -191,32 +146,6 @@ void PageResourceCPUMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
           cpu_measurement_delegate_factory_->CreateDelegateForProcess(
               process_node)));
   CHECK(was_inserted);
-}
-
-void PageResourceCPUMonitor::StartResourceAttributionCPUMeasurements(
-    base::TimeTicks measurement_interval_start,
-    const resource_attribution::QueryResultMap& results) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(features::kUseResourceAttributionCPUMonitor.Get());
-  CHECK(!cpu_proportion_tracker_.IsTracking());
-  cpu_proportion_tracker_.StartFirstInterval(measurement_interval_start,
-                                             results);
-}
-
-void PageResourceCPUMonitor::UpdateResourceAttributionCPUMeasurements(
-    base::OnceCallback<void(const CPUUsageMap&)> callback,
-    base::TimeTicks measurement_interval_end,
-    const resource_attribution::QueryResultMap& results) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(features::kUseResourceAttributionCPUMonitor.Get());
-  if (!cpu_proportion_tracker_.IsTracking()) {
-    // StopMonitoring() was called while waiting for update. Ignore the results.
-    std::move(callback).Run({});
-    return;
-  }
-  CPUUsageMap cpu_usage_map = cpu_proportion_tracker_.StartNextInterval(
-      measurement_interval_end, results);
-  std::move(callback).Run(std::move(cpu_usage_map));
 }
 
 PageResourceCPUMonitor::CPUMeasurement::CPUMeasurement(

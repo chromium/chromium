@@ -15175,28 +15175,6 @@
             ]
         }
     ],
-    "ResourceAttributionCPUMonitorLaunch": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230925",
-                    "params": {
-                        "use_resource_attribution_cpu_monitor": "true"
-                    },
-                    "enable_features": [
-                        "PageTimelineMonitor"
-                    ]
-                }
-            ]
-        }
-    ],
     "ResponsiveToolbar": [
         {
             "platforms": [

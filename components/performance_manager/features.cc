@@ -203,13 +203,6 @@ BASE_FEATURE(kUrgentPageDiscarding,
              "UrgentPageDiscarding",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPageTimelineMonitor,
-             "PageTimelineMonitor",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kUseResourceAttributionCPUMonitor{
-    &kPageTimelineMonitor, "use_resource_attribution_cpu_monitor", false};
-
 BASE_FEATURE(kCPUInterventionEvaluationLogging,
              "CPUInterventionEvaluationLogging",
              base::FEATURE_DISABLED_BY_DEFAULT);

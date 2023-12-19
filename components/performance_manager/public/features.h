@@ -191,14 +191,6 @@ BASE_DECLARE_FEATURE(kBFCachePerformanceManagerPolicy);
 // Whether tabs are discarded under high memory pressure.
 BASE_DECLARE_FEATURE(kUrgentPageDiscarding);
 
-// Enable PageResourceMonitor timer and by extension, PageResourceUsage event
-// collection.
-BASE_DECLARE_FEATURE(kPageTimelineMonitor);
-
-// Whether to use the resource_attribution::CPUMeasurementMonitor for logging
-// UKM.
-extern const base::FeatureParam<bool> kUseResourceAttributionCPUMonitor;
-
 // This enables logging to evaluate the efficacy of potential CPU interventions.
 BASE_DECLARE_FEATURE(kCPUInterventionEvaluationLogging);
 
