@@ -279,8 +279,10 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 }
 
 - (void)hideInactiveTabsButtonHeader {
-  NSIndexPath* indexPath =
-      [NSIndexPath indexPathForItem:0 inSection:kGridOpenTabsSectionIndex];
+  NSInteger tabSectionIndex = [self.diffableDataSource
+      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
+  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
+                                               inSection:tabSectionIndex];
   InactiveTabsButtonHeader* header =
       ObjCCast<InactiveTabsButtonHeader>([self.collectionView
           supplementaryViewForElementKind:UICollectionElementKindSectionHeader
@@ -328,8 +330,10 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 
 // Reconfigures the Inactive Tabs button header.
 - (void)updateInactiveTabsButtonHeader {
-  NSIndexPath* indexPath =
-      [NSIndexPath indexPathForItem:0 inSection:kGridOpenTabsSectionIndex];
+  NSInteger tabSectionIndex = [self.diffableDataSource
+      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
+  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
+                                               inSection:tabSectionIndex];
   InactiveTabsButtonHeader* header =
       ObjCCast<InactiveTabsButtonHeader>([self.collectionView
           supplementaryViewForElementKind:UICollectionElementKindSectionHeader
@@ -341,8 +345,10 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 
 // Reconfigures the Inactive Tabs preamble header.
 - (void)updateInactiveTabsPreambleHeader {
-  NSIndexPath* indexPath =
-      [NSIndexPath indexPathForItem:0 inSection:kGridOpenTabsSectionIndex];
+  NSInteger tabSectionIndex = [self.diffableDataSource
+      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
+  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
+                                               inSection:tabSectionIndex];
   InactiveTabsPreambleHeader* header =
       ObjCCast<InactiveTabsPreambleHeader>([self.collectionView
           supplementaryViewForElementKind:UICollectionElementKindSectionHeader

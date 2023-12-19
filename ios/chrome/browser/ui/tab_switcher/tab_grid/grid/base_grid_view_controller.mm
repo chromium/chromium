@@ -67,13 +67,9 @@ class ScopedScrollingTimeLogger {
 };
 
 // Needed for subclassing.
-constexpr int kGridOpenTabsSectionIndex = 0;
 NSString* const kGridOpenTabsSectionIdentifier = @"OpenTabsSectionIdentifier";
 
 namespace {
-// TODO(crbug.com/1466000): Remove hard-coding of sections.
-constexpr int kSuggestedActionsSectionIndex = 1;
-
 NSString* const kSuggestedActionsSectionIdentifier =
     @"SuggestedActionsSectionIdentifier";
 NSString* const kCellIdentifier = @"GridCellIdentifier";
@@ -359,9 +355,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   NSUInteger selectedIndex = self.selectedIndex;
   if (previousMode != TabGridModeSelection && mode == TabGridModeNormal &&
       selectedIndex != NSNotFound &&
-      static_cast<NSInteger>(selectedIndex) <
-          [self.collectionView
-              numberOfItemsInSection:kGridOpenTabsSectionIndex]) {
+      static_cast<NSInteger>(selectedIndex) < [self numberOfTabs]) {
     // Scroll to the selected item here, so the action of reloading and
     // scrolling happens at once.
     [self.collectionView
@@ -433,8 +427,10 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
       [[NSMutableArray alloc] init];
   LegacyGridTransitionActiveItem* activeItem;
   LegacyGridTransitionItem* selectionItem;
+  NSInteger tabSectionIndex = [self.diffableDataSource
+      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
   for (NSIndexPath* path in self.collectionView.indexPathsForVisibleItems) {
-    if (path.section != kGridOpenTabsSectionIndex) {
+    if (path.section != tabSectionIndex) {
       continue;
     }
     GridCell* cell = ObjCCastStrict<GridCell>(
@@ -677,7 +673,9 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   }
 
   // No context menu on suggested actions section.
-  if (indexPath.section == kSuggestedActionsSectionIndex) {
+  if (indexPath.section ==
+      [self.diffableDataSource
+          indexForSectionIdentifier:kSuggestedActionsSectionIdentifier]) {
     return nil;
   }
 
@@ -730,7 +728,9 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   // `prepareLayout` of the layout class. For that specific cell calculate the
   // anticipated size from the layout section insets and the content view insets
   // and return it.
-  if (indexPath.section == kSuggestedActionsSectionIndex) {
+  if (indexPath.section ==
+      [self.diffableDataSource
+          indexForSectionIdentifier:kSuggestedActionsSectionIdentifier]) {
     UIEdgeInsets sectionInset = layout.sectionInset;
     UIEdgeInsets contentInset = layout.collectionView.adjustedContentInset;
     CGFloat width = layout.collectionView.frame.size.width - sectionInset.left -
@@ -834,7 +834,9 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     // TODO(crbug.com/1300369): Enable dragging items from search results.
     return @[];
   }
-  if (indexPath.section == kSuggestedActionsSectionIndex) {
+  if (indexPath.section ==
+      [self.diffableDataSource
+          indexForSectionIdentifier:kSuggestedActionsSectionIdentifier]) {
     // Return an empty array because ther suggested actions cell should not be
     // dragged.
     return @[];
@@ -864,7 +866,9 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (UIDragPreviewParameters*)collectionView:(UICollectionView*)collectionView
     dragPreviewParametersForItemAtIndexPath:(NSIndexPath*)indexPath {
-  if (indexPath.section == kSuggestedActionsSectionIndex) {
+  if (indexPath.section ==
+      [self.diffableDataSource
+          indexForSectionIdentifier:kSuggestedActionsSectionIdentifier]) {
     // Return nil so that the suggested actions cell doesn't superpose the
     // dragged cell.
     return nil;
@@ -1364,9 +1368,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   // Check `index` boundaries in order to filter out possible race conditions
   // while mutating the collection.
   if (index == NSNotFound || index >= self.items.count ||
-      static_cast<NSInteger>(index) >=
-          [self.collectionView
-              numberOfItemsInSection:kGridOpenTabsSectionIndex]) {
+      static_cast<NSInteger>(index) >= [self numberOfTabs]) {
     return;
   }
 
@@ -1520,8 +1522,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   // conditions while mutating the collection.
   if (selectedIndex == NSNotFound ||
       selectedIndex >= static_cast<NSInteger>(self.items.count) ||
-      selectedIndex >= [self.collectionView
-                           numberOfItemsInSection:kGridOpenTabsSectionIndex]) {
+      selectedIndex >= [self numberOfTabs]) {
     return;
   }
   NSIndexPath* selectedIndexPath = CreateIndexPath(selectedIndex);
@@ -1753,12 +1754,13 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
 // Updates the number of results found on the search open tabs section header.
 - (void)updateSearchResultsHeader {
+  NSInteger tabSectionIndex = [self.diffableDataSource
+      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
   GridHeader* headerView = (GridHeader*)[self.collectionView
       supplementaryViewForElementKind:UICollectionElementKindSectionHeader
-                          atIndexPath:
-                              [NSIndexPath
-                                  indexPathForRow:0
-                                        inSection:kGridOpenTabsSectionIndex]];
+                          atIndexPath:[NSIndexPath
+                                          indexPathForRow:0
+                                                inSection:tabSectionIndex]];
   if (!headerView) {
     return;
   }

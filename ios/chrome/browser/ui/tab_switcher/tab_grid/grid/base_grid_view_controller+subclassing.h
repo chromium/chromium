@@ -8,8 +8,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 
-// TODO(crbug.com/1466000): Remove hard-coding of sections.
-extern const int kGridOpenTabsSectionIndex;
 extern NSString* const kGridOpenTabsSectionIdentifier;
 
 // To ease the use of generics with the diffable data source, define a Snapshot
