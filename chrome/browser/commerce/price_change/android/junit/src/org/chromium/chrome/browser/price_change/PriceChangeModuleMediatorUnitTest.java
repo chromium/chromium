@@ -102,12 +102,16 @@ public class PriceChangeModuleMediatorUnitTest {
     private static final String PRODUCT_URL_DOMAIN = "foo.com";
     private static final String CURRENT_PRICE = "$100";
     private static final String PREVIOUS_PRICE = "$150";
+    private static final String MODULE_TITLE_SINGULAR = "singular title";
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         doReturn(mResources).when(mContext).getResources();
+        doReturn(MODULE_TITLE_SINGULAR)
+                .when(mResources)
+                .getQuantityString(eq(R.plurals.price_change_module_title), eq(1));
         doReturn(FAVICON_SIZE).when(mResources).getDimensionPixelSize(R.dimen.default_favicon_size);
         doReturn(mTabModel).when(mTabModelSelector).getModel(false);
         ShoppingPersistedTabDataService.setServiceForTesting(mService);
@@ -182,6 +186,7 @@ public class PriceChangeModuleMediatorUnitTest {
         dataCallbackCaptor.getValue().onResult(new ArrayList<>(Arrays.asList(item)));
 
         verify(mService, times(0)).initialize(any(Set.class));
+        assertEquals(MODULE_TITLE_SINGULAR, mModel.get(PriceChangeModuleProperties.MODULE_TITLE));
         assertEquals(
                 PRODUCT_TITLE, mModel.get(PriceChangeModuleProperties.MODULE_PRODUCT_NAME_STRING));
         assertEquals(

@@ -28,7 +28,6 @@ found in the LICENSE file.
             android:layout_marginBottom="12dp"
             android:layout_marginHorizontal="20dp"
             android:height="20dp"
-            android:text="@string/price_change_module_title"
             android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"/>
         <LinearLayout

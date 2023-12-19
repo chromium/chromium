@@ -11,6 +11,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Properties for the price change module. */
 interface PriceChangeModuleProperties {
+    PropertyModel.WritableObjectPropertyKey<String> MODULE_TITLE =
+            new PropertyModel.WritableObjectPropertyKey<>();
     PropertyModel.WritableObjectPropertyKey<Bitmap> MODULE_FAVICON_BITMAP =
             new PropertyModel.WritableObjectPropertyKey<>();
     PropertyModel.WritableObjectPropertyKey<String> MODULE_PRODUCT_NAME_STRING =
@@ -26,6 +28,7 @@ interface PriceChangeModuleProperties {
 
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
+                MODULE_TITLE,
                 MODULE_FAVICON_BITMAP,
                 MODULE_PRODUCT_NAME_STRING,
                 MODULE_DOMAIN_STRING,

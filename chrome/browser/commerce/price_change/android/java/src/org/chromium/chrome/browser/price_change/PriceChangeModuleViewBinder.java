@@ -15,7 +15,9 @@ class PriceChangeModuleViewBinder implements ViewBinder<PropertyModel, View, Pro
     @Override
     public void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         PriceChangeModuleView moduleView = (PriceChangeModuleView) view;
-        if (PriceChangeModuleProperties.MODULE_PRODUCT_NAME_STRING == propertyKey) {
+        if (PriceChangeModuleProperties.MODULE_TITLE == propertyKey) {
+            moduleView.setModuleTitle(model.get(PriceChangeModuleProperties.MODULE_TITLE));
+        } else if (PriceChangeModuleProperties.MODULE_PRODUCT_NAME_STRING == propertyKey) {
             moduleView.setProductTitle(
                     model.get(PriceChangeModuleProperties.MODULE_PRODUCT_NAME_STRING));
         } else if (PriceChangeModuleProperties.MODULE_FAVICON_BITMAP == propertyKey) {

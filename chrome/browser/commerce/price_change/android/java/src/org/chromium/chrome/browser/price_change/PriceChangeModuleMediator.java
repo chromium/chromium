@@ -29,6 +29,7 @@ import java.util.Set;
  */
 public class PriceChangeModuleMediator {
 
+    private final Context mContext;
     private final ShoppingPersistedTabDataService mShoppingPersistedTabDataService;
     private final FaviconHelper mFaviconHelper;
     private final TabModelSelector mTabModelSelector;
@@ -44,6 +45,7 @@ public class PriceChangeModuleMediator {
             TabModelSelector tabModelSelector,
             FaviconHelper faviconHelper,
             ImageFetcher imageFetcher) {
+        mContext = context;
         mModel = model;
         mProfile = profile;
         mShoppingPersistedTabDataService = ShoppingPersistedTabDataService.getForProfile(profile);
@@ -74,6 +76,13 @@ public class PriceChangeModuleMediator {
                         return;
                     }
                     ShoppingPersistedTabData data = res.get(0).getData();
+                    mModel.set(
+                            PriceChangeModuleProperties.MODULE_TITLE,
+                            mContext.getResources()
+                                    .getQuantityString(
+                                            org.chromium.chrome.browser.price_change.R.plurals
+                                                    .price_change_module_title,
+                                            1));
                     mModel.set(
                             PriceChangeModuleProperties.MODULE_PRODUCT_NAME_STRING,
                             data.getProductTitle());

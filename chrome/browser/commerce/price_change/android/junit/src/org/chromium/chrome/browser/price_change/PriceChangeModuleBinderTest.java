@@ -37,6 +37,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class PriceChangeModuleBinderTest {
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
+    private static final String MODULE_TITLE = "module title";
     private static final String PRODUCT_TITLE = "product foo";
     private static final String CURRENT_PRICE = "$100";
     private static final String PREVIOUS_PRICE = "$150";
@@ -68,6 +69,17 @@ public class PriceChangeModuleBinderTest {
     @After
     public void tearDown() throws Exception {
         mPropertyModelChangeProcessor.destroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testSetModuleTitle() {
+        TextView moduleTitleView = mView.findViewById(R.id.header_text);
+        assertEquals("", moduleTitleView.getText());
+
+        mModel.set(PriceChangeModuleProperties.MODULE_TITLE, MODULE_TITLE);
+
+        assertEquals(MODULE_TITLE, moduleTitleView.getText());
     }
 
     @Test

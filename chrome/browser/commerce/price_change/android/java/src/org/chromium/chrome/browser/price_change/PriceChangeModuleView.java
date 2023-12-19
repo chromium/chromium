@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 /** View for the price change module. */
 public class PriceChangeModuleView extends FrameLayout {
+    private TextView mModuleTitleView;
     private TextView mProductTitleView;
     private TextView mPriceChangeDomainView;
     private ImageView mProductImageView;
@@ -30,6 +31,7 @@ public class PriceChangeModuleView extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mModuleTitleView = findViewById(R.id.header_text);
         mProductTitleView = findViewById(R.id.product_title);
         mProductImageView = findViewById(R.id.product_image);
         mPriceChangeDomainView = findViewById(R.id.price_drop_domain);
@@ -38,8 +40,12 @@ public class PriceChangeModuleView extends FrameLayout {
         mCurrentPriceView = findViewById(R.id.current_price);
     }
 
-    void setProductTitle(String header) {
-        mProductTitleView.setText(header);
+    void setModuleTitle(String title) {
+        mModuleTitleView.setText(title);
+    }
+
+    void setProductTitle(String title) {
+        mProductTitleView.setText(title);
     }
 
     void setPriceChangeDomain(String domain) {
