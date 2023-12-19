@@ -297,6 +297,7 @@
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "never"
   },
+  "This suite tests some android features on Linux and should never expire.",
   {
     "prefix": "android",
     "platforms": ["Linux"],
@@ -308,7 +309,10 @@
              "--enable-viewport",
              "--disable-canvas-aa",
              "--disable-composited-antialiasing"],
-    "expires": "Jul 1, 2023"
+    "owners": ["takumif@chromium.org",
+               "muyaoxu@google.com",
+               "fullscreen-experience@google.com"],
+    "expires": "never"
   },
   {
     "prefix": "media-foundation-for-clear-dcomp",
