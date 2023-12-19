@@ -34,6 +34,8 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     super.init(nibName: nil, bundle: nil)
 
     collectionView.delegate = self
+    collectionView.showsHorizontalScrollIndicator = false
+
     createRegistrations()
     diffableDataSource = UICollectionViewDiffableDataSource<Section, TabSwitcherItem>(
       collectionView: collectionView
@@ -55,6 +57,9 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     view.backgroundColor = UIColor(named: kGrey200Color)
 
     collectionView.translatesAutoresizingMaskIntoConstraints = false
+    collectionView.clipsToBounds = false
+    view.layer.masksToBounds = true
+
     collectionView.backgroundColor = .clear
     view.addSubview(collectionView)
 
@@ -95,7 +100,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   func selectItem(_ item: TabSwitcherItem?) {
     if let indexPaths = collectionView.indexPathsForSelectedItems {
       for indexPath in indexPaths {
-        collectionView.deselectItem(at: indexPath, animated: true)
+        collectionView.deselectItem(at: indexPath, animated: false)
       }
     }
     guard
@@ -108,7 +113,10 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     let scrollPosition: UICollectionView.ScrollPosition =
       collectionView.cellForItem(at: indexPath) != nil
       ? .centeredVertically : .centeredHorizontally
-    collectionView.selectItem(at: indexPath, animated: true, scrollPosition: scrollPosition)
+    collectionView.selectItem(at: indexPath, animated: false, scrollPosition: scrollPosition)
+
+    /// Invalidate the layout to correctly recalculate the frame of the `selected` cell.
+    collectionView.collectionViewLayout.invalidateLayout()
   }
 
   func reloadItem(_ item: TabSwitcherItem?) {
