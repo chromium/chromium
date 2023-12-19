@@ -12,6 +12,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo_data.h"
@@ -88,7 +90,13 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromo(
 
 FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromo(
     FeaturePromoParams params) {
-  return MaybeShowPromoCommon(std::move(params), /* for_demo =*/false);
+  const char* feature_name = params.feature.get().name;
+  auto result = MaybeShowPromoCommon(std::move(params), /* for_demo =*/false);
+  auto failure = result.failure();
+  if (failure.has_value()) {
+    RecordPromoNotShown(feature_name, failure.value());
+  }
+  return result;
 }
 
 bool FeaturePromoControllerCommon::MaybeShowStartupPromo(
@@ -836,6 +844,70 @@ FeaturePromoControllerCommon::CreateTutorialButtons(
 const base::Feature* FeaturePromoControllerCommon::GetCurrentPromoFeature()
     const {
   return current_promo_ ? current_promo_->iph_feature() : nullptr;
+}
+
+void FeaturePromoControllerCommon::RecordPromoNotShown(
+    const char* feature_name,
+    FeaturePromoResult::Failure failure) const {
+  // Record Promo not shown.
+  std::string action_name = "UserEducation.MessageNotShown";
+  base::RecordComputedAction(action_name);
+
+  // Record Failure as histogram.
+  base::UmaHistogramEnumeration(action_name, failure);
+
+  // Record Promo feature ID.
+  action_name.append(".");
+  action_name.append(feature_name);
+  base::RecordComputedAction(action_name);
+
+  // Record Failure as histogram with feature ID.
+  base::UmaHistogramEnumeration(action_name, failure);
+
+  // Record Failure as user action
+  std::string failure_action_name = "UserEducation.MessageNotShown";
+  failure_action_name.append(".");
+  switch (failure) {
+    case FeaturePromoResult::kCanceled:
+      failure_action_name.append("Canceled");
+      break;
+    case FeaturePromoResult::kError:
+      failure_action_name.append("Error");
+      break;
+    case FeaturePromoResult::kBlockedByUi:
+      failure_action_name.append("BlockedByUi");
+      break;
+    case FeaturePromoResult::kBlockedByPromo:
+      failure_action_name.append("BlockedByPromo");
+      break;
+    case FeaturePromoResult::kBlockedByConfig:
+      failure_action_name.append("BlockedByConfig");
+      break;
+    case FeaturePromoResult::kSnoozed:
+      failure_action_name.append("Snoozed");
+      break;
+    case FeaturePromoResult::kBlockedByContext:
+      failure_action_name.append("BlockedByContext");
+      break;
+    case FeaturePromoResult::kFeatureDisabled:
+      failure_action_name.append("FeatureDisabled");
+      break;
+    case FeaturePromoResult::kPermanentlyDismissed:
+      failure_action_name.append("PermanentlyDismissed");
+      break;
+    case FeaturePromoResult::kBlockedByGracePeriod:
+      failure_action_name.append("BlockedByGracePeriod");
+      break;
+    case FeaturePromoResult::kBlockedByCooldown:
+      failure_action_name.append("BlockedByCooldown");
+      break;
+    case FeaturePromoResult::kRecentlyAborted:
+      failure_action_name.append("RecentlyAborted");
+      break;
+    default:
+      NOTREACHED();
+  }
+  base::RecordComputedAction(failure_action_name);
 }
 
 // static

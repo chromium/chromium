@@ -39163,6 +39163,7 @@ should be able to be added at any place in this file.
 
 <action name="UserEducation.MessageAction.Abort.IPH">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>
     The In-Product Help Bubble was aborted due to leaving the flow of the
     feature promotion. This is specific to the IPH implementation and could mean
@@ -39172,6 +39173,7 @@ should be able to be added at any place in this file.
 
 <action name="UserEducation.MessageAction.Action.IPH">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>
     The In-Product Help Bubble was closed after the user selected the action in
     the IPH. For a Custom Action IPH, this means the custom action was
@@ -39181,6 +39183,7 @@ should be able to be added at any place in this file.
 
 <action name="UserEducation.MessageAction.Cancel.IPH">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>
     The In-Product Help Bubble was closed after the user pressed Escape or
     clicked &quot;X&quot; in the IPH.
@@ -39189,11 +39192,13 @@ should be able to be added at any place in this file.
 
 <action name="UserEducation.MessageAction.Dismiss.IPH">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>The user dismissed the In-Product Help Bubble.</description>
 </action>
 
 <action name="UserEducation.MessageAction.FeatureEngaged.IPH">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>
     The user engaged with the promoted feature outside the In-Product Help
     Bubble in a way that obviated the need for this IPH.
@@ -39203,6 +39208,7 @@ should be able to be added at any place in this file.
 <action name="UserEducation.MessageAction.OverrideForPrecedence.IPH"
     not_user_triggered="true">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>
     The In-Product Help Bubble was closed to allow showing a message with higher
     priority.
@@ -39211,6 +39217,7 @@ should be able to be added at any place in this file.
 
 <action name="UserEducation.MessageAction.OverrideForUIRegionConflict.IPH">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>
     The In-Product Help Bubble was closed to avoid overlap with an important UI
     element.
@@ -39219,38 +39226,157 @@ should be able to be added at any place in this file.
 
 <action name="UserEducation.MessageAction.Snooze.IPH">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>The user snoozed the In-Product Help Bubble.</description>
 </action>
 
 <action name="UserEducation.MessageAction.Timeout.IPH">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>
     The In-Product Help Bubble spontaneously timed out after some time interval.
   </description>
 </action>
 
+<action name="UserEducation.MessageNotShown">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user due to a starving condition.
+  </description>
+</action>
+
+<action name="UserEducation.MessageNotShown.BlockedByConfig">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user due to being blocked by configuration.
+  </description>
+</action>
+
+<action name="UserEducation.MessageNotShown.BlockedByContext">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user due to being blocked by context.
+  </description>
+</action>
+
+<action name="UserEducation.MessageNotShown.BlockedByCooldown">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user due to being blocked by the cooldown
+    period.
+  </description>
+</action>
+
+<action name="UserEducation.MessageNotShown.BlockedByGracePeriod">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user due to being blocked by the grace period.
+  </description>
+</action>
+
+<action name="UserEducation.MessageNotShown.BlockedByPromo">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user due to being block by another promo.
+  </description>
+</action>
+
+<action name="UserEducation.MessageNotShown.BlockedByUi">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user due to being blocked by UI.
+  </description>
+</action>
+
+<action name="UserEducation.MessageNotShown.Canceled">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user due to being canceled.
+  </description>
+</action>
+
+<action name="UserEducation.MessageNotShown.Error">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>An IPH was not shown to the user due to an error.</description>
+</action>
+
+<action name="UserEducation.MessageNotShown.FeatureDisabled">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user due to the feature being disabled .
+  </description>
+</action>
+
+<action name="UserEducation.MessageNotShown.IPH">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    This IPH was not shown to the user due to a starving condition.
+  </description>
+</action>
+
+<action name="UserEducation.MessageNotShown.PermanentlyDismissed">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user due to being permanently dismissed.
+  </description>
+</action>
+
+<action name="UserEducation.MessageNotShown.RecentlyAborted">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown because it was aborted by a UI change and is not yet
+    allowed to be shown again.
+  </description>
+</action>
+
+<action name="UserEducation.MessageNotShown.Snoozed">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user due to being snoozed.
+  </description>
+</action>
+
 <action name="UserEducation.MessageShown">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>An IPH was shown to the user.</description>
 </action>
 
 <action name="UserEducation.MessageShown.CustomAction">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>A Custom Action IPH was shown to the user.</description>
 </action>
 
 <action name="UserEducation.MessageShown.IPH">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>The IPH was shown to the user.</description>
 </action>
 
 <action name="UserEducation.MessageShown.Legacy">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>A Legacy IPH was shown to the user.</description>
 </action>
 
 <action name="UserEducation.MessageShown.LegalNotice.CustomAction">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>
     A Legal Notice Custom Action IPH was shown to the user.
   </description>
@@ -39258,61 +39384,73 @@ should be able to be added at any place in this file.
 
 <action name="UserEducation.MessageShown.LegalNotice.Legacy">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>A Legal Notice Legacy IPH was shown to the user.</description>
 </action>
 
 <action name="UserEducation.MessageShown.LegalNotice.Snooze">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>A Legal Notice Snooze IPH was shown to the user.</description>
 </action>
 
 <action name="UserEducation.MessageShown.LegalNotice.Toast">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>A Legal Notice Toast IPH was shown to the user.</description>
 </action>
 
 <action name="UserEducation.MessageShown.LegalNotice.Tutorial">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>A Legal Notice Tutorial IPH was shown to the user.</description>
 </action>
 
 <action name="UserEducation.MessageShown.PerApp.CustomAction">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>A Per App Custom Action IPH was shown to the user.</description>
 </action>
 
 <action name="UserEducation.MessageShown.PerApp.Legacy">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>A Per App Legacy IPH was shown to the user.</description>
 </action>
 
 <action name="UserEducation.MessageShown.PerApp.Snooze">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>A Per App Snooze IPH was shown to the user.</description>
 </action>
 
 <action name="UserEducation.MessageShown.PerApp.Toast">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>A Per App Toast IPH was shown to the user.</description>
 </action>
 
 <action name="UserEducation.MessageShown.PerApp.Tutorial">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>A Per App Tutorial IPH was shown to the user.</description>
 </action>
 
 <action name="UserEducation.MessageShown.Snooze">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>A Snooze IPH was shown to the user.</description>
 </action>
 
 <action name="UserEducation.MessageShown.Toast">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>A Toast IPH was shown to the user.</description>
 </action>
 
 <action name="UserEducation.MessageShown.Tutorial">
   <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
   <description>A Tutorial IPH was shown to the user.</description>
 </action>
 
@@ -40923,6 +41061,7 @@ should be able to be added at any place in this file.
       name="UserEducation.MessageAction.OverrideForUIRegionConflict.IPH"/>
   <affected-action name="UserEducation.MessageAction.Snooze.IPH"/>
   <affected-action name="UserEducation.MessageAction.Timeout.IPH"/>
+  <affected-action name="UserEducation.MessageNotShown.IPH"/>
   <affected-action name="UserEducation.MessageShown.IPH"/>
 </action-suffix>
 

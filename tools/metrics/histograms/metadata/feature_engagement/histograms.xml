@@ -678,6 +678,30 @@ chromium-metrics-reviews@google.com.
   <token key="IPHFeature" variants="IPHFeature"/>
 </histogram>
 
+<histogram name="UserEducation.MessageNotShown" enum="PromoFailure"
+    expires_after="2024-12-01">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records what failure prevented an In-Product Help from being shown to the
+    user. The failure defines the state of the User Education system, which can
+    be many varieties (e.g. snoozed, disabled blocked by another promo, etc.).
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.MessageNotShown.{IPHFeature}"
+    enum="PromoFailure" expires_after="2024-12-01">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records what failure prevented a particular In-Product Help from being shown
+    to the user. The failure defines the state of the User Education system,
+    which can be many varieties (e.g. snoozed, disabled blocked by another
+    promo, etc.).
+  </summary>
+  <token key="IPHFeature" variants="IPHFeature"/>
+</histogram>
+
 <histogram name="UserEducation.MessageShown.Subtype" enum="PromoSubtype"
     expires_after="2024-09-01">
   <owner>mickeyburks@chromium.org</owner>

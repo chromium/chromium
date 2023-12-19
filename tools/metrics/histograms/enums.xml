@@ -45726,6 +45726,21 @@ Called by update_net_error_codes.py.-->
   <int value="10" label="Start Password Manager Tutorial"/>
 </enum>
 
+<enum name="PromoFailure">
+  <int value="0" label="Canceled"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="BlockedByUi"/>
+  <int value="3" label="BlockedByPromo"/>
+  <int value="4" label="BlockedByConfig"/>
+  <int value="5" label="Snoozed"/>
+  <int value="6" label="BlockedByContext"/>
+  <int value="7" label="FeatureDisabled"/>
+  <int value="8" label="PermanentlyDismissed"/>
+  <int value="9" label="BlockedByGracePeriod"/>
+  <int value="10" label="BlockedByCooldown"/>
+  <int value="11" label="RecentlyAborted"/>
+</enum>
+
 <enum name="PromoSubtype">
   <int value="0" label="Normal"/>
   <int value="1" label="Per App"/>

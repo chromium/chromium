@@ -187,6 +187,11 @@ class FeaturePromoController {
 
   // Called when FeaturePromoHandle is destroyed to finish the promo.
   virtual void FinishContinuedPromo(const base::Feature& iph_feature) = 0;
+
+  // Records when and why an IPH was not shown.
+  virtual void RecordPromoNotShown(
+      const char* feature_name,
+      FeaturePromoResult::Failure failure) const = 0;
 };
 
 // Manages display of in-product help promos. All IPH displays in Top
@@ -444,7 +449,11 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       bool custom_action_is_default,
       int custom_action_dismiss_string_id);
 
-  const base::Feature* GetCurrentPromoFeature() const override;
+  // Records when and why an IPH was not shown.
+  void RecordPromoNotShown(const char* feature_name,
+                           FeaturePromoResult::Failure failure) const final;
+
+  const base::Feature* GetCurrentPromoFeature() const final;
 
   // Whether the IPH Demo Mode flag has been set at startup.
   const bool in_iph_demo_mode_;
