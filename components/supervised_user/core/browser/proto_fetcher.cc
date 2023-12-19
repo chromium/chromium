@@ -574,25 +574,6 @@ using PermissionRequestFetcher = DeferredProtoFetcher<
     kids_chrome_management::CreatePermissionRequestResponse>;
 }  // namespace
 
-// Constructs a fetcher that needs to be launched with ::Start(). The fetcher
-// will be either one shot or retryable, depending on the
-// FetcherConfig::backoff_policy setting.
-template <typename Response>
-std::unique_ptr<DeferredProtoFetcher<Response>> CreateFetcher(
-    IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const google::protobuf::MessageLite& request,
-    const FetcherConfig& fetcher_config) {
-  if (fetcher_config.backoff_policy.has_value()) {
-    return std::make_unique<RetryingFetcherImpl<Response>>(
-        identity_manager, url_loader_factory, request, fetcher_config,
-        *fetcher_config.backoff_policy);
-  } else {
-    return std::make_unique<DeferredFetcherImpl<Response>>(
-        identity_manager, url_loader_factory, request, fetcher_config);
-  }
-}
-
 // Main constructor, referenced by the rest.
 ProtoFetcherStatus::ProtoFetcherStatus(
     State state,
@@ -689,6 +670,25 @@ ProtoFetcherStatus::http_status_or_net_error() const {
 const GoogleServiceAuthError& ProtoFetcherStatus::google_service_auth_error()
     const {
   return google_service_auth_error_;
+}
+
+// Constructs a fetcher that needs to be launched with ::Start(). The fetcher
+// will be either one shot or retryable, depending on the
+// FetcherConfig::backoff_policy setting.
+template <typename Response>
+std::unique_ptr<DeferredProtoFetcher<Response>> CreateFetcher(
+    IdentityManager& identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const google::protobuf::MessageLite& request,
+    const FetcherConfig& fetcher_config) {
+  if (fetcher_config.backoff_policy.has_value()) {
+    return std::make_unique<RetryingFetcherImpl<Response>>(
+        identity_manager, url_loader_factory, request, fetcher_config,
+        *fetcher_config.backoff_policy);
+  } else {
+    return std::make_unique<DeferredFetcherImpl<Response>>(
+        identity_manager, url_loader_factory, request, fetcher_config);
+  }
 }
 
 template <typename Request, typename Response>
