@@ -592,6 +592,8 @@ class LacrosThreadTypeDelegate : public base::LaunchOptions::PreExecDelegate {
     // base::ScopedAllowBlocking allow_blocking;
     // base::PlatformThread::SetCurrentThreadType(
     //     base::ThreadType::kDefault);
+    // When this class becomes usable, `options.pre_exec_delegate` should be
+    // assigned an object  of this class in `StartWithLogFile`.
   }
 };
 
@@ -1197,8 +1199,9 @@ void BrowserManager::StartWithLogFile(
   }
 
   // Lacros-chrome starts with kNormal type
-  LacrosThreadTypeDelegate thread_type_delegate;
-  options.pre_exec_delegate = &thread_type_delegate;
+  // TODO(crbug.com/1289736):When `LacrosThreadTypeDelegate` becomes usable,
+  // `options.pre_exec_delegate` should be assigned a `LacrosThreadTypeDelegate`
+  // object.
 
   // Set up Mojo channel.
   // Prepare to invite lacros-chrome to the Mojo universe of Crosapi.
