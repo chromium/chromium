@@ -127,7 +127,15 @@ class AppServiceProxyBase : public KeyedService,
   // Convenience method that calls app_icon_loader()->LoadIcon to load app icons
   // with `app_id`. `callback` may be dispatched synchronously if it's possible
   // to quickly return a result.
-  // TODO(crbug.com/1412708): Remove app_type from interface.
+  std::unique_ptr<IconLoader::Releaser> LoadIcon(
+      const std::string& app_id,
+      const IconType& icon_type,
+      int32_t size_hint_in_dip,
+      bool allow_placeholder_icon,
+      apps::LoadIconCallback callback);
+
+  // DEPRECATED: Use the version without `app_type` instead.
+  // TODO(b/316965167): Remove this.
   std::unique_ptr<IconLoader::Releaser> LoadIcon(
       AppType app_type,
       const std::string& app_id,
@@ -145,7 +153,16 @@ class AppServiceProxyBase : public KeyedService,
   // `allow_placeholder_icon` indicate whether we allow loading placeholder icon
   // from the in memory cache and do not attempt to retry to load the actual
   // icon.
-  // TODO(crbug.com/1412708): Remove app_type from interface.
+  std::unique_ptr<IconLoader::Releaser> LoadIconWithIconEffects(
+      const std::string& app_id,
+      uint32_t icon_effects,
+      IconType icon_type,
+      int32_t size_hint_in_dip,
+      bool allow_placeholder_icon,
+      LoadIconCallback callback);
+
+  // DEPRECATED: Use the version without `app_type` instead.
+  // TODO(b/316965167): Remove this.
   std::unique_ptr<IconLoader::Releaser> LoadIconWithIconEffects(
       AppType app_type,
       const std::string& app_id,

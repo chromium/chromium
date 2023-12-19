@@ -224,15 +224,25 @@ void AppServiceProxyBase::OnSupportedLinksPreferenceChanged(
 }
 
 std::unique_ptr<IconLoader::Releaser> AppServiceProxyBase::LoadIcon(
+    const std::string& app_id,
+    const IconType& icon_type,
+    int32_t size_hint_in_dip,
+    bool allow_placeholder_icon,
+    apps::LoadIconCallback callback) {
+  return app_icon_loader()->LoadIcon(app_id, icon_type, size_hint_in_dip,
+                                     allow_placeholder_icon,
+                                     std::move(callback));
+}
+
+std::unique_ptr<IconLoader::Releaser> AppServiceProxyBase::LoadIcon(
     AppType app_type,
     const std::string& app_id,
     const IconType& icon_type,
     int32_t size_hint_in_dip,
     bool allow_placeholder_icon,
     apps::LoadIconCallback callback) {
-  return app_icon_loader()->LoadIcon(app_type, app_id, icon_type,
-                                     size_hint_in_dip, allow_placeholder_icon,
-                                     std::move(callback));
+  return LoadIcon(app_id, icon_type, size_hint_in_dip, allow_placeholder_icon,
+                  std::move(callback));
 }
 
 uint32_t AppServiceProxyBase::GetIconEffects(const std::string& app_id) {
@@ -244,8 +254,7 @@ uint32_t AppServiceProxyBase::GetIconEffects(const std::string& app_id) {
 }
 
 std::unique_ptr<apps::IconLoader::Releaser>
-AppServiceProxyBase::LoadIconWithIconEffects(AppType app_type,
-                                             const std::string& app_id,
+AppServiceProxyBase::LoadIconWithIconEffects(const std::string& app_id,
                                              uint32_t icon_effects,
                                              IconType icon_type,
                                              int32_t size_hint_in_dip,
@@ -262,6 +271,19 @@ AppServiceProxyBase::LoadIconWithIconEffects(AppType app_type,
   return app_icon_loader()->LoadIconFromIconKey(
       app_id, icon_key.value(), icon_type, size_hint_in_dip,
       allow_placeholder_icon, std::move(callback));
+}
+
+std::unique_ptr<apps::IconLoader::Releaser>
+AppServiceProxyBase::LoadIconWithIconEffects(AppType app_type,
+                                             const std::string& app_id,
+                                             uint32_t icon_effects,
+                                             IconType icon_type,
+                                             int32_t size_hint_in_dip,
+                                             bool allow_placeholder_icon,
+                                             LoadIconCallback callback) {
+  return LoadIconWithIconEffects(app_id, icon_effects, icon_type,
+                                 size_hint_in_dip, allow_placeholder_icon,
+                                 std::move(callback));
 }
 
 void AppServiceProxyBase::Launch(const std::string& app_id,

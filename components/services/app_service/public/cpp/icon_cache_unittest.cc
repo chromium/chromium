@@ -64,9 +64,9 @@ class AppsIconCacheTest : public testing::Test {
     int before = fake->NumLoadIconFromIconKeyCalls();
 
     UniqueReleaser releaser;
-    releaser = loader->LoadIcon(
-        apps::AppType::kWeb, app_id, apps::IconType::kUncompressed,
-        /*size_hint_in_dip=*/1, allow_placeholder_icon, base::DoNothing());
+    releaser = loader->LoadIcon(app_id, apps::IconType::kUncompressed,
+                                /*size_hint_in_dip=*/1, allow_placeholder_icon,
+                                base::DoNothing());
 
     int after = fake->NumLoadIconFromIconKeyCalls();
     HitOrMiss actual_hom = (after == before) ? kHit : kMiss;
