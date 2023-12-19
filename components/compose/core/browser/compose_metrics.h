@@ -24,8 +24,11 @@ extern const char kComposeSessionUndoCount[];
 extern const char kComposeSessionUpdateInputCount[];
 extern const char kComposeShowStatus[];
 extern const char kComposeConsentSessionCloseReason[];
+extern const char kComposeMSBBSessionCloseReason[];
 extern const char kComposeConsentSessionDialogShownCount[];
+extern const char kComposeMSBBSessionDialogShownCount[];
 extern const char kComposeSessionConsentGivenInSession[];
+extern const char kComposeSessionMSBBEnabledInSession[];
 
 // Enum for calculating the CTR of the Compose context menu item.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -49,6 +52,16 @@ enum class ComposeConsentSessionCloseReason {
   kPageContentConsentGivenWithInsert = 5,
   kNewSessionWithSelectedText = 6,
   kMaxValue = kNewSessionWithSelectedText,
+};
+
+// Keep in sync with ComposeMSBBSessionCloseReasonType in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
+enum class ComposeMSBBSessionCloseReason {
+  kMSBBEndedImplicitly = 0,
+  kMSBBCloseButtonPressed = 1,
+  kMSBBAcceptedWithoutInsert = 2,
+  kMSBBAcceptedWithInsert = 3,
+  kMaxValue = kMSBBAcceptedWithInsert,
 };
 
 // Keep in sync with ComposeSessionCloseReasonType in
@@ -91,10 +104,16 @@ void LogComposeRequestDuration(base::TimeDelta duration, bool is_ok);
 void LogComposeConsentSessionCloseReason(
     ComposeConsentSessionCloseReason reason);
 
+void LogComposeMSBBSessionCloseReason(ComposeMSBBSessionCloseReason reason);
+
 // Log session based metrics when a consent session ends.
 void LogComposeConsentSessionDialogShownCount(
     ComposeConsentSessionCloseReason reason,
     int dialog_shown_count);
+
+// Log session based metrics when a consent session ends.
+void LogComposeMSBBSessionDialogShownCount(ComposeMSBBSessionCloseReason reason,
+                                           int dialog_shown_count);
 
 // Log session based metrics when a session ends.
 void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,

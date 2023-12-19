@@ -140,8 +140,13 @@ ComposeSession::ComposeSession(
     ComposeCallback callback)
     : executor_(executor),
       handler_receiver_(this),
+      current_msbb_state_(false),
+      msbb_intilially_off_(false),
+      msbb_enabled_during_session_(false),
       consent_close_reason_(
           compose::ComposeConsentSessionCloseReason::kEndedImplicitly),
+      msbb_close_reason_(
+          compose::ComposeMSBBSessionCloseReason::kMSBBEndedImplicitly),
       close_reason_(compose::ComposeSessionCloseReason::kEndedImplicitly),
       final_status_(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED),
       web_contents_(web_contents),
@@ -161,12 +166,20 @@ ComposeSession::ComposeSession(
 ComposeSession::~ComposeSession() {
   // Log separate metrics for sessions that only display consent/disclaimer
   // dialogs.
-  if (initial_consent_state_ != compose::mojom::ConsentState::kConsented &&
+  if (current_consent_state_ != compose::mojom::ConsentState::kConsented &&
       !consent_given_or_acknowledged_) {
     compose::LogComposeConsentSessionCloseReason(consent_close_reason_);
     compose::LogComposeConsentSessionDialogShownCount(consent_close_reason_,
                                                       dialog_shown_count_);
     return;
+  }
+  if (!current_msbb_state_ || msbb_enabled_during_session_) {
+    compose::LogComposeMSBBSessionDialogShownCount(msbb_close_reason_,
+                                                   dialog_shown_count_);
+    compose::LogComposeMSBBSessionCloseReason(msbb_close_reason_);
+    if (!current_msbb_state_) {
+      return;
+    }
   }
 
   // Log whether or not the user inserted text after having
@@ -393,9 +406,10 @@ void ComposeSession::RequestInitialState(RequestInitialStateCallback callback) {
     current_state_->response->undo_available = !undo_states_.empty();
   }
   auto compose_config = compose::GetComposeConfig();
+
   std::move(callback).Run(compose::mojom::OpenMetadata::New(
-      initial_consent_state_, initial_input_, text_selected_,
-      current_state_->Clone(),
+      current_consent_state_, current_msbb_state_, initial_input_,
+      text_selected_, current_state_->Clone(),
       compose::mojom::ConfigurableParams::New(compose_config.input_min_words,
                                               compose_config.input_max_words,
                                               compose_config.input_max_chars)));
@@ -544,7 +558,7 @@ void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
 
   if (!IsValidComposePrompt(initial_input_) ||
       !compose::GetComposeConfig().auto_submit_with_selection ||
-      initial_consent_state_ != compose::mojom::ConsentState::kConsented) {
+      current_consent_state_ != compose::mojom::ConsentState::kConsented) {
     return;
   }
 
@@ -644,6 +658,11 @@ void ComposeSession::SetConsentCloseReason(
   consent_close_reason_ = close_reason;
 }
 
+void ComposeSession::SetMSBBCloseReason(
+    compose::ComposeMSBBSessionCloseReason close_reason) {
+  msbb_close_reason_ = close_reason;
+}
+
 void ComposeSession::SetCloseReason(
     compose::ComposeSessionCloseReason close_reason) {
   close_reason_ = close_reason;
@@ -683,5 +702,16 @@ void ComposeSession::SetQualityLogEntryUponError(
         ->set_was_generated_via_edit(was_input_edited);
 
     most_recent_error_log_ = std::move(log_entry);
+  }
+}
+
+void ComposeSession::set_current_msbb_state(bool msbb_enabled) {
+  current_msbb_state_ = msbb_enabled;
+  if (!msbb_enabled) {
+    msbb_intilially_off_ = true;
+  } else if (msbb_intilially_off_) {
+    msbb_enabled_during_session_ = true;
+    SetMSBBCloseReason(
+        compose::ComposeMSBBSessionCloseReason::kMSBBAcceptedWithoutInsert);
   }
 }

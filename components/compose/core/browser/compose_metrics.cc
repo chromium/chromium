@@ -30,6 +30,10 @@ const char kComposeConsentSessionCloseReason[] =
     "Compose.Session.Consent.CloseReason";
 const char kComposeConsentSessionDialogShownCount[] =
     "Compose.Session.Consent.DialogShownCount";
+const char kComposeMSBBSessionCloseReason[] =
+    "Compose.Session.FRE.MSBB.CloseReason";
+const char kComposeMSBBSessionDialogShownCount[] =
+    "Compose.Session.FRE.MSBB.DialogShownCount";
 const char kComposeSessionConsentGivenInSession[] =
     "Compose.Session.Consent.GivenInSession";
 
@@ -52,6 +56,10 @@ void LogComposeConsentSessionCloseReason(
   base::UmaHistogramEnumeration(kComposeConsentSessionCloseReason, reason);
 }
 
+void LogComposeMSBBSessionCloseReason(ComposeMSBBSessionCloseReason reason) {
+  base::UmaHistogramEnumeration(kComposeMSBBSessionCloseReason, reason);
+}
+
 void LogComposeConsentSessionDialogShownCount(
     ComposeConsentSessionCloseReason reason,
     int dialog_shown_count) {
@@ -71,6 +79,22 @@ void LogComposeConsentSessionDialogShownCount(
       status = ".Ignored";
   }
   base::UmaHistogramCounts1000(kComposeConsentSessionDialogShownCount + status,
+                               dialog_shown_count);
+}
+
+void LogComposeMSBBSessionDialogShownCount(ComposeMSBBSessionCloseReason reason,
+                                           int dialog_shown_count) {
+  std::string status;
+  switch (reason) {
+    case ComposeMSBBSessionCloseReason::kMSBBAcceptedWithoutInsert:
+    case ComposeMSBBSessionCloseReason::kMSBBAcceptedWithInsert:
+      status = ".Accepted";
+      break;
+    case ComposeMSBBSessionCloseReason::kMSBBEndedImplicitly:
+    case ComposeMSBBSessionCloseReason::kMSBBCloseButtonPressed:
+      status = ".Ignored";
+  }
+  base::UmaHistogramCounts1000(kComposeMSBBSessionDialogShownCount + status,
                                dialog_shown_count);
 }
 
@@ -122,4 +146,5 @@ void LogComposeDialogSelectionLength(int length) {
   base::UmaHistogramCustomCounts(kComposeDialogSelectionLength, length, 1,
                                  max_selection_size + 1, 100);
 }
+
 }  // namespace compose

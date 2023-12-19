@@ -131,6 +131,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
          optimization_guide::features::kOptimizationGuideModelExecution},
         {});
     SetPrefsForComposeConsentState(compose::mojom::ConsentState::kConsented);
+    SetPrefsForComposeMSBBState(true);
     AddTab(browser(), GetPageUrl());
     client_ = ChromeComposeClient::FromWebContents(web_contents());
     client_->SetModelExecutorForTest(&model_executor_);
@@ -175,6 +176,12 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     }
   }
 
+  void SetPrefsForComposeMSBBState(bool msbb_state) {
+    PrefService* prefs = GetProfile()->GetPrefs();
+    prefs->SetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+        msbb_state);
+  }
   void EnableAutoCompose() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -1139,8 +1146,10 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
       compose::kComposeSessionConsentGivenInSession,
       0,  // Consent was already given when this session was created.
       1);
+
   // No consent related close reasons should have been recorded.
   histograms().ExpectTotalCount(compose::kComposeConsentSessionCloseReason, 0);
+  histograms().ExpectTotalCount(compose::kComposeMSBBSessionCloseReason, 0);
 }
 
 TEST_F(ChromeComposeClientTest, ConsentUICloseDialogHistogramTest) {

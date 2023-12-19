@@ -32,6 +32,7 @@
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
+#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/page.h"
@@ -158,6 +159,11 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
                                        kPageContentConsentDeclined);
       RemoveActiveSession();
       break;
+    case compose::mojom::CloseReason::kMSBBCloseButton:
+      SetMSBBSessionCloseReason(
+          compose::ComposeMSBBSessionCloseReason::kMSBBCloseButtonPressed);
+      RemoveActiveSession();
+      break;
     case compose::mojom::CloseReason::kCloseButton:
       SetSessionCloseReason(
           compose::ComposeSessionCloseReason::kCloseButtonPressed);
@@ -168,6 +174,8 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
           compose::ComposeSessionCloseReason::kAcceptedSuggestion);
       SetConsentSessionCloseReason(compose::ComposeConsentSessionCloseReason::
                                        kPageContentConsentGivenWithInsert);
+      SetMSBBSessionCloseReason(
+          compose::ComposeMSBBSessionCloseReason::kMSBBAcceptedWithInsert);
       RemoveActiveSession();
       break;
   }
@@ -246,7 +254,7 @@ void ChromeComposeClient::CreateOrUpdateSession(
       // consent state.
       auto it = sessions_.find(active_compose_field_id_.value());
       current_session = it->second.get();
-      if (current_session->get_initial_consent_state() !=
+      if (current_session->get_current_consent_state() !=
           compose::mojom::ConsentState::kConsented) {
         SetConsentSessionCloseReason(compose::ComposeConsentSessionCloseReason::
                                          kNewSessionWithSelectedText);
@@ -266,7 +274,8 @@ void ChromeComposeClient::CreateOrUpdateSession(
         utf8_chars.has_value() ? utf8_chars.value() : 0);
   }
 
-  current_session->set_initial_consent_state(GetConsentStateFromPrefs());
+  current_session->set_current_consent_state(GetConsentStateFromPrefs());
+  current_session->set_current_msbb_state(GetMSBBStateFromPrefs());
 
   // If we are resuming then don't send the selected text - we want to keep the
   // prior selection and not trigger another Compose.
@@ -285,6 +294,18 @@ void ChromeComposeClient::RemoveActiveSession() {
       << "Attempted to remove compose session that doesn't exist.";
   sessions_.erase(active_compose_field_id_.value());
   active_compose_field_id_.reset();
+}
+
+void ChromeComposeClient::SetMSBBSessionCloseReason(
+    compose::ComposeMSBBSessionCloseReason close_reason) {
+  if (debug_session_) {
+    return;
+  }
+
+  ComposeSession* active_session = GetSessionForActiveComposeField();
+  if (active_session) {
+    active_session->SetMSBBCloseReason(close_reason);
+  }
 }
 
 void ChromeComposeClient::SetConsentSessionCloseReason(
@@ -346,6 +367,13 @@ compose::mojom::ConsentState ChromeComposeClient::GetConsentStateFromPrefs() {
                         : compose::mojom::ConsentState::kExternalConsented;
   }
   return consent_state;
+}
+
+bool ChromeComposeClient::GetMSBBStateFromPrefs() {
+  std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper> helper =
+      unified_consent::UrlKeyedDataCollectionConsentHelper::
+          NewAnonymizedDataCollectionConsentHelper(profile_->GetPrefs());
+  return !(helper != nullptr && !helper->IsEnabled());
 }
 
 compose::ComposeManager& ChromeComposeClient::GetManager() {

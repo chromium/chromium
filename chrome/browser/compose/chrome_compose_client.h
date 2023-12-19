@@ -78,6 +78,7 @@ class ChromeComposeClient
   void UpdateAllSessionsWithConsentApproved();
 
   compose::mojom::ConsentState GetConsentStateFromPrefs();
+  bool GetMSBBStateFromPrefs();
 
   virtual bool ShouldTriggerContextMenu(content::RenderFrameHost* rfh,
                                         content::ContextMenuParams& params);
@@ -142,6 +143,11 @@ class ChromeComposeClient
   // consent/disclaimer UI.
   void SetConsentSessionCloseReason(
       compose::ComposeConsentSessionCloseReason close_reason);
+
+  // Set the exit reason for a session that does not progress past the
+  // MSBB UI.
+  void SetMSBBSessionCloseReason(
+      compose::ComposeMSBBSessionCloseReason close_reason);
 
   // Set the exit reason for a session.
   void SetSessionCloseReason(compose::ComposeSessionCloseReason close_reason);

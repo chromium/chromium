@@ -16,6 +16,7 @@ import {isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
 
 class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
   private initialConsentState_: ConsentState = ConsentState.kConsented;
+  private initialMSBBState_: boolean = true;
   private initialInput_: string = '';
   private textSelected_: boolean = false;
   private initialState_: ComposeState = {
@@ -87,6 +88,7 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
     this.methodCalled('requestInitialState');
     return Promise.resolve({
       consentState: this.initialConsentState_,
+      msbbState: this.initialMSBBState_,
       composeState: this.initialState_,
       initialInput: this.initialInput_,
       textSelected: this.textSelected_,

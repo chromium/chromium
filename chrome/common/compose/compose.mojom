@@ -108,6 +108,7 @@ struct ConfigurableParams {
 // compose dialog.
 struct OpenMetadata {
   ConsentState consent_state;
+  bool msbb_state;
   // Renderer provided text selection.
   string initial_input;
   // Whether or not the user selected text when opening the dialog.
@@ -126,6 +127,8 @@ enum CloseReason {
   kCloseButton,
   // The Insert button of the dialog.
   kInsertButton,
+  // The MSBB dialog was shown and dismissed.
+  kMSBBCloseButton,
 };
 
 //TODO(b/311697865) move this to a common location.

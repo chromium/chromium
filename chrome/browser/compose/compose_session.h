@@ -134,12 +134,16 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
     skip_inner_text_ = skip_inner_text;
   }
 
-  void set_initial_consent_state(compose::mojom::ConsentState consent_state) {
-    initial_consent_state_ = consent_state;
+  void set_current_consent_state(compose::mojom::ConsentState consent_state) {
+    current_consent_state_ = consent_state;
   }
 
-  compose::mojom::ConsentState get_initial_consent_state() {
-    return initial_consent_state_;
+  bool get_current_msbb_state() { return current_msbb_state_; }
+
+  void set_current_msbb_state(bool current_msbb_state);
+
+  compose::mojom::ConsentState get_current_consent_state() {
+    return current_consent_state_;
   }
 
   // Set the first time the user progresses through the consent/disclaimer
@@ -158,6 +162,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   void SetConsentCloseReason(
       compose::ComposeConsentSessionCloseReason close_reason);
+
+  void SetMSBBCloseReason(compose::ComposeMSBBSessionCloseReason close_reason);
 
   void SetCloseReason(compose::ComposeSessionCloseReason close_reason);
 
@@ -219,14 +225,20 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   bool text_selected_;
 
   // The state of consent-related prefs when the session is first created.
-  compose::mojom::ConsentState initial_consent_state_ =
+  compose::mojom::ConsentState current_consent_state_ =
       compose::mojom::ConsentState::kUnset;
   // True if the user either gave consent or acknowledged given consent in this
   // session.
   bool consent_given_or_acknowledged_ = false;
 
+  // The state of the MSBB preference
+  bool current_msbb_state_;
+  bool msbb_intilially_off_;
+  bool msbb_enabled_during_session_;
   // Reason that a compose consent session was exited, used for metrics.
   compose::ComposeConsentSessionCloseReason consent_close_reason_;
+  // Reason that a compose msbb session was exited, used for metrics.
+  compose::ComposeMSBBSessionCloseReason msbb_close_reason_;
   // Reason that a compose session was exited, used for metrics.
   compose::ComposeSessionCloseReason close_reason_;
   // Reason that a compose session was exited, used for quality logging.
