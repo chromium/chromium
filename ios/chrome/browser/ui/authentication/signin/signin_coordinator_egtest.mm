@@ -390,14 +390,16 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests signing in with one account, switching sync account to a second and
 // choosing to keep the browsing data separate during the switch.
-// kReplaceSyncPromosWithSignInPromos is disabled.
+// kReplaceSyncPromosWithSignInPromos is disabled as there is no option to keep
+// data on sign-out.
 - (void)testSignInSwitchAccountsAndKeepDataSeparate {
   ChooseImportOrKeepDataSepareteDialog(SettingsImportDataKeepSeparateButton());
 }
 
 // Tests signing in with one account, switching sync account to a second and
 // choosing to import the browsing data during the switch.
-// kReplaceSyncPromosWithSignInPromos is disabled.
+// kReplaceSyncPromosWithSignInPromos is disabled as there is no option to keep
+// data on sign-out.
 - (void)testSignInSwitchAccountsAndImportData {
   ChooseImportOrKeepDataSepareteDialog(SettingsImportDataImportButton());
 }
@@ -556,7 +558,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests to dismiss sign-in by opening an URL from another app.
 // Sign-in opened from: setting menu.
 // Interrupted at: advanced sign-in.
-// kReplaceSyncPromosWithSignInPromos is disabled.
+// kReplaceSyncPromosWithSignInPromos is disabled as there is no advanced
+// sign-in anymore.
 - (void)testDismissAdvancedSigninSettingsFromAdvancedSigninSettings {
   [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromSettings
                         tapSettingsLink:YES];
@@ -573,7 +576,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests to dismiss sign-in by opening an URL from another app.
 // Sign-in opened from: recent tabs.
 // Interrupted at: advanced sign-in.
-// kReplaceSyncPromosWithSignInPromos is disabled.
+// kReplaceSyncPromosWithSignInPromos is disabled as there is no advanced
+// sign-in anymore.
 - (void)testDismissSigninFromRecentTabsFromAdvancedSigninSettings {
   [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromRecentTabs
                         tapSettingsLink:YES];
@@ -590,7 +594,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests to dismiss sign-in by opening an URL from another app.
 // Sign-in opened from: tab switcher.
 // Interrupted at: advanced sign-in.
-// kReplaceSyncPromosWithSignInPromos is disabled.
+// kReplaceSyncPromosWithSignInPromos is disabled as there is no advanced
+// sign-in anymore.
 - (void)testDismissSigninFromTabSwitcherFromAdvancedSigninSettings {
   [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromTabSwitcher
                         tapSettingsLink:YES];
@@ -631,7 +636,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Verifies that the user is signed in when selecting "Yes I'm In", after the
 // advanced settings were swiped to dismiss.
-// kReplaceSyncPromosWithSignInPromos is disabled.
+// kReplaceSyncPromosWithSignInPromos is disabled as there is no advanced
+// sign-in anymore.
 - (void)MAYBE_testSwipeDownInAdvancedSettings {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -1174,9 +1180,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that opening the sign-in screen from the Sync Off tab and canceling the
 // sign-in flow will leave a signed-in with sync off user in the same state.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
+// kReplaceSyncPromosWithSignInPromos is disabled as Sync Off does not exists
+// when it is enabled.
 - (void)testCancelFromSyncOffLink {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
