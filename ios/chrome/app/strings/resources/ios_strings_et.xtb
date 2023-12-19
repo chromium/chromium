@@ -540,6 +540,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3909222758573607742">Salvestage kontole paroole ja muid üksusi</translation>
 <translation id="3915450441834151894">Saiditeave</translation>
 <translation id="3918585468378680136">Saadetise oleku hankimine</translation>
+<translation id="3921585859122905677">Aadressiriba asukoht</translation>
 <translation id="3922310737605261887">Otsi kopeeritud teksti</translation>
 <translation id="3928666092801078803">Minu andmete kombineerimine</translation>
 <translation id="3929457972718048006">Aadressid</translation>
@@ -1402,6 +1403,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8613883225817609844">Peida valik „Hiljutised vahelehed“</translation>
 <translation id="8620640915598389714">Muuda</translation>
 <translation id="8624447588354561276">Saadetise jälgimisnumber</translation>
+<translation id="8624753446837753970">Määra asukoht</translation>
 <translation id="8626393685701737946">Saidi vaikevaate saate lauaarvuti versiooniks muuta valikutega Seaded &gt; Sisu seaded</translation>
 <translation id="8636825310635137004">Vahelehtede hankimiseks oma teistest seadmetest lülitage sünkroonimine sisse.</translation>
 <translation id="8637431369725868556">Kaitske end ohtlike veebisaitide eest.</translation>
@@ -1443,6 +1445,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8820817407110198400">Järjehoidjad</translation>
 <translation id="8825562130641217944">Pääsege oma järjehoidjatele, paroolidele ja paljule muule juurde.</translation>
 <translation id="882557203579758546">Lehelt otsimine …</translation>
+<translation id="8838250347763484641">Kohandatud sirvimiskogemuse jaoks paigutage aadressiriba ülaserva või allserva.</translation>
 <translation id="8840513115188359703">Teid ei logita teie Google'i kontolt välja.</translation>
 <translation id="8843129975935593190">Teie organisatsioon piirab sünkroonimist.</translation>
 <translation id="8849001918648564819">Peidetud</translation>
@@ -1515,6 +1518,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="9188680907066685419">Hallatud kontolt väljalogimine</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> p tagasi</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9203951165704618409">Kohandatud sirvimiskogemuse jaoks teisaldage aadressiriba ülaservast allserva.</translation>
 <translation id="9206887540681440657">Kiirus</translation>
 <translation id="9219154867334666734">Otsimine vahelehtedelt …</translation>
 <translation id="9223358826628549784">Krahhiaruanne on saadetud.</translation>

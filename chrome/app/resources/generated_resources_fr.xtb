@@ -573,7 +573,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1448779317883494811">Outil Pinceau</translation>
 <translation id="1449191289887455076">Appuyez de nouveau sur <ph name="CURRENTKEY" /> pour confirmer cette association et <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Page Web, un seul fichier</translation>
-<translation id="145280054552001290">Ajouter et supprimer des langues pour les sous-titres</translation>
 <translation id="1453561711872398978">Envoyer les <ph name="BEGIN_LINK" />journaux de débogage<ph name="END_LINK" /> (recommandé)</translation>
 <translation id="1454223536435069390">F&amp;aire une capture d'écran</translation>
 <translation id="145432137617179457">Langues du correcteur orthographique</translation>
@@ -2461,7 +2460,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="285033512555869047">Fermé</translation>
 <translation id="2850541429955027218">Ajouter un thème</translation>
 <translation id="2850672011315104382">Style de ponctuation</translation>
-<translation id="285241945869362924">Crée automatiquement des sous-titres pour les contenus audio et vidéo. Les contenus audio et les sous-titres ne quittent pas votre appareil.</translation>
 <translation id="2853121255651601031">Mot de passe enregistré</translation>
 <translation id="2856776373509145513">Créer un conteneur</translation>
 <translation id="2856907950922663165">Désactiver le chiffrement des URL ?</translation>

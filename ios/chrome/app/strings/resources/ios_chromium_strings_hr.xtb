@@ -66,6 +66,7 @@
         Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
 <translation id="3256316712990552818">Kopirano na Chromium</translation>
 <translation id="3344973607274501920">Chromium nije uspio provjeriti vaše zaporke. Provjerite internetsku vezu.</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{To se događa kada se Chromium ne koristi {THRESHOLD} minutu. To može uključivati povijest i automatsko popunjavanje.}one{To se događa kada se Chromium ne koristi {THRESHOLD} minutu. To može uključivati povijest i automatsko popunjavanje.}few{To se događa kada se Chromium ne koristi {THRESHOLD} minute. To može uključivati povijest i automatsko popunjavanje.}other{To se događa kada se Chromium ne koristi {THRESHOLD} minuta. To može uključivati povijest i automatsko popunjavanje.}}</translation>
 <translation id="3472200483164753384">Nije podržano u Chromium Canaryju</translation>
 <translation id="3478750326643748149">Sakrij "Iskoristite sve prednosti Chromiuma"</translation>
 <translation id="3554027294407525061">Brisanje podataka o pregledavanju u Chromiumu.</translation>
@@ -231,6 +232,7 @@ Važne napomene:
 <translation id="88376265765385899">Otvara Chromiumove oznake.</translation>
 <translation id="8924617840944134898">Otvori anonimnu karticu u Chromiumu</translation>
 <translation id="894437814105052438">Kad se odjavite, Chromium neće sinkronizirati nove podatke s vašim Google računom. Ranije sinkronizirani podaci ostat će na računu.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{To se događa kada se Chromium ne koristi {THRESHOLD} minutu}one{To se događa kada se Chromium ne koristi {THRESHOLD} minutu}few{To se događa kada se Chromium ne koristi {THRESHOLD} minute}other{To se događa kada se Chromium ne koristi {THRESHOLD} minuta}}</translation>
 <translation id="8963279154877372067">Dopustite obavijesti Chromiuma da biste primali upozorenja o sniženju cijena</translation>
 <translation id="9022552996538154597">Prijava na Chromium</translation>
 <translation id="9050790730841755540">Upotrebljavajte Chromium svaki put kad dodirnete veze u drugim aplikacijama.</translation>

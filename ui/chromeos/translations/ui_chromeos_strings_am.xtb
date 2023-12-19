@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">የጋንዛኒያ አበባ</translation>
 <translation id="4943368462779413526">የአሜሪካ እግር ኳስ</translation>
 <translation id="4961158930123534723">1 አቃፊ ለParallels ዴስክቶፕ ተጋርቷል</translation>
+<translation id="4965874878399872778">ፋይሎችን ከድርጅትዎ የደህንነት መመሪያዎች ጋር በመፈተሽ ላይ…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> ወደነበረበት ተመልሷል</translation>
 <translation id="4969785127455456148">አልበም</translation>
 <translation id="4972330214479971536">ፋይል ስምረትን አዋቅሮ መጨረስ አልተቻለም</translation>
@@ -710,6 +711,7 @@
 <translation id="6430271654280079150">1 ቀሪ ሙከራ አለዎት።</translation>
 <translation id="643243556292470964">የተሰረዙ ፋይሎች አሁን ወደ መጣያ ተወስደዋል</translation>
 <translation id="6438480100790416671">የማከማቻ ቦታን በመፈተሽ ላይ…</translation>
+<translation id="6451527188465304418">ፋይሎችን ከድርጅትዎ የደህንነት መመሪያዎች ጋር በመፈተሽ ላይ…</translation>
 <translation id="6485131920355264772">የቦታ መረጃን ማምጣት አልተቻለም</translation>
 <translation id="6495925982925244349">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="SECURITY_STATUS" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ በእርስዎ አስተዳዳሪ የሚተዳደር፣ ዝርዝሮች</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" />ን ወደ <ph name="FOLDER_NAME" /> በማውጣት ላይ</translation>

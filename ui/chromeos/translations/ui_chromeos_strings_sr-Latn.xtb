@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Cvet gazanije</translation>
 <translation id="4943368462779413526">Fudbalska lopta</translation>
 <translation id="4961158930123534723">1 folder se deli sa Parallels Desktop-om</translation>
+<translation id="4965874878399872778">Proverava se da li su fajlovi u skladu sa bezbednosnim smernicama organizacije…</translation>
 <translation id="496656650103537022">Vraćen je fajl <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Završavanje podešavanja sinhronizacije fajlova nije uspelo</translation>
@@ -710,6 +711,7 @@
 <translation id="6430271654280079150">Imate još 1 pokušaj.</translation>
 <translation id="643243556292470964">Izbrisani fajlovi su sada premešteni u otpad</translation>
 <translation id="6438480100790416671">Proverava se memorijski prostor…</translation>
+<translation id="6451527188465304418">Proverava se da li je fajl u skladu sa bezbednosnim smernicama organizacije…</translation>
 <translation id="6485131920355264772">Preuzimanje informacija o prostoru nije uspelo</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja administrator, detalji</translation>
 <translation id="649877868557234318">Izdvaja se <ph name="FILE_NAME" /> u <ph name="FOLDER_NAME" /></translation>

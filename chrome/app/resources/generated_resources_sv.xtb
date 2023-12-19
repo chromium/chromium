@@ -574,7 +574,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1448779317883494811">Penselverktyg</translation>
 <translation id="1449191289887455076">Tryck på <ph name="CURRENTKEY" /> igen för att bekräfta tilldelningen och <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Webbsida, en enda fil</translation>
-<translation id="145280054552001290">Lägg till och ta bort språk för textning</translation>
 <translation id="1453561711872398978">Skicka <ph name="BEGIN_LINK" />
     felsökningsloggar<ph name="END_LINK" /> (rekommenderas)</translation>
 <translation id="1454223536435069390">T&amp;a en skärmbild</translation>
@@ -2475,7 +2474,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="285033512555869047">Stängd</translation>
 <translation id="2850541429955027218">Lägg till tema</translation>
 <translation id="2850672011315104382">Skiljeteckenformat</translation>
-<translation id="285241945869362924">Ljud- och videouppspelning textas automatiskt. Ljudet och textningen lämnar aldrig enheten.</translation>
 <translation id="2853121255651601031">Lösenordet sparades</translation>
 <translation id="2856776373509145513">Skapa en ny behållare</translation>
 <translation id="2856907950922663165">Vill du inaktivera kryptering av webbadresser?</translation>

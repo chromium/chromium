@@ -575,7 +575,6 @@
 <translation id="1448779317883494811">Алатка за четка</translation>
 <translation id="1449191289887455076">Притиснете „<ph name="CURRENTKEY" />“ повторно за да го потврдите назначувањето и <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Веб-страница, единечна датотека</translation>
-<translation id="145280054552001290">Додајте или отстранете јазици за титлови</translation>
 <translation id="1453561711872398978">Испраќај <ph name="BEGIN_LINK" />
     евиденција за отстранување грешки<ph name="END_LINK" /> (препорачано)</translation>
 <translation id="1454223536435069390">&amp;Сними слика од екранот</translation>
@@ -2476,7 +2475,6 @@
 <translation id="285033512555869047">Затворено</translation>
 <translation id="2850541429955027218">Додај тема</translation>
 <translation id="2850672011315104382">Стил на интерпункција</translation>
-<translation id="285241945869362924">Автоматски создава титлови за аудио и видеосодржини. Аудиото и титловите никогаш не го напуштаат уредот.</translation>
 <translation id="2853121255651601031">Лозинката е зачувана</translation>
 <translation id="2856776373509145513">Создајте нов контејнер</translation>
 <translation id="2856907950922663165">Да се исклучи шифрирањето URL-адреси?</translation>

@@ -5111,6 +5111,11 @@ No se admiten comodines de host generales (por ejemplo, "*" ni "[*]"). En su lug
 Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
 <translation id="5297948043665200363">Permitir que el usuario mantenga la sesión iniciada después de que su cuenta deje de estar autenticada</translation>
 <translation id="5298949392804966105">Sin restricciones en las cuentas gestionadas</translation>
+<translation id="5300770793658186741">Si se define esta política, se especificará una lista de orígenes (URLs) o de patrones de nombre de host (como *.example.com) para los que no se aplicarán las restricciones de seguridad de orígenes no seguros. Las organizaciones pueden especificar orígenes para aplicaciones antiguas que no pueden implementar TLS o configurar un servidor staging para el desarrollo web interno, de manera que los desarrolladores puedan probar las funciones que necesiten contextos seguros sin tener que implementar TLS en el servidor provisional. Esta política también evita que el origen aparezca con la etiqueta "No es seguro" en la barra de direcciones.
+
+Definir la lista de URLs de esta política tiene el mismo resultado que asignar la marca de línea de comandos --unsafely-treat-insecure-origin-as-secure a una lista con las mismas URL separadas por comas. Esta política anula tanto la marca de línea de comandos como UnsafelyTreatInsecureOriginAsSecure si está presente.
+
+Para obtener más información sobre contextos seguros, consulta la página Secure Contexts (https://www.w3.org/TR/secure-contexts).</translation>
 <translation id="530134925949808452">La hora del día (en la zona horaria local) en la que se renovará la cuota de uso.</translation>
 <translation id="5303080953475303561">Esta política controla la frecuencia con la que la pantalla de bloqueo solicita la contraseña para el desbloqueo rápido. Cuando aparece la pantalla de bloqueo, si el tiempo transcurrido desde la última vez que se introdujo la contraseña es mayor al del valor elegido, el desbloqueo rápido no estará disponible. Si los usuarios permanecen en la pantalla de bloqueo pasado ese tiempo, la próxima vez que introduzcan un código incorrecto o vuelvan a acceder a la pantalla de bloqueo (lo que suceda primero), se les pedirá la contraseña.
 
@@ -5322,6 +5327,7 @@ Si se inhabilita la política o no se establece, la configuración de restauraci
 <translation id="547601067149622666">No permitir anuncios en sitios web con anuncios invasivos</translation>
 <translation id="5476152378885134514">Bloquear portapapeles en estos sitios</translation>
 <translation id="5480380613778757009">Si se inhabilita esta política o no se establece, todos los ajustes de pantalla que se hayan definido en la sesión de invitado gestionada se borrarán en cuanto finalice la sesión. Si se le asigna el valor True a esta política, las propiedades de pantalla se conservarán después de salir de la sesión de invitado gestionada.</translation>
+<translation id="5483012943408894695">Orígenes o patrones de nombres de host en los que no se deben aplicar restricciones de orígenes no seguros</translation>
 <translation id="5483065054530244863">Permite certificados SHA-1 firmados emitidos por anclajes de veracidad locales</translation>
 <translation id="5487758664517243511">Si se habilita esta opción, los usuarios que ya usen la función Mi teléfono podrán continuar tareas (como ver las páginas web de su teléfono) en ChromeOS.
 
@@ -9741,6 +9747,17 @@ Esta política solo tendrá efecto si se le asigna el valor true a la política 
 <translation id="9135095804754272364">Mostrar una notificación cuando se detecte un dispositivo USB</translation>
 <translation id="9136212796239682721">Inhabilitar la interfaz del cuadro de descargas</translation>
 <translation id="9136399279941091445">Intervalos fuera del horario en los que se publican las políticas de dispositivos especificadas</translation>
+<translation id="9140064482233876338">Obsoleta en la versión M69. Usa en su lugar OverrideSecurityRestrictionsOnInsecureOrigin.
+
+La política define una lista de orígenes (URLs) o de patrones de nombres de host (como *.example.com) a los que no se aplican las restricciones de seguridad de los orígenes no seguros.
+
+El objetivo es dejar que las organizaciones permitan orígenes para aplicaciones antiguas que no pueden implementar TLS, o configurar un servidor provisional para desarrollo web interno y que los desarrolladores puedan probar las funciones que necesiten contextos seguros sin tener que implementar TLS en el servidor provisional. Esta política también evita que el origen aparezca con la etiqueta "No es seguro" en el omnibox.
+
+Definir la lista de URLs de esta política tiene el mismo resultado que asignar la marca de línea de comandos --unsafely-treat-insecure-origin-as-secure a una lista con las mismas URL separadas por comas. Si se define la política, se anulará la marca de línea de comandos.
+
+Esta política ha quedado obsoleta en la versión M69 y ha sido sustituida por OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están presentes, OverrideSecurityRestrictionsOnInsecureOrigin anulará esta política.
+
+Para obtener más información sobre contextos seguros, consulta la página https://www.w3.org/TR/secure-contexts/</translation>
 <translation id="9142561920976791097">Se usará el nuevo comportamiento de envío de eventos en controles de formulario inhabilitados.</translation>
 <translation id="91459503271584213">Iniciar los hosts de mensajería nativa ejecutables directamente en Windows</translation>
 <translation id="9148720248753722892">No permitir certificados SHA-1 firmados</translation>

@@ -574,7 +574,6 @@
 <translation id="1448779317883494811">브러시 도구</translation>
 <translation id="1449191289887455076">할당을 확인하고 <ph name="RESPONSE" />하려면 “<ph name="CURRENTKEY" />” 키를 다시 누르세요.</translation>
 <translation id="1451375123200651445">웹페이지, 단일 파일</translation>
-<translation id="145280054552001290">자막을 추가할 언어 추가 및 삭제</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />디버그 로그
     <ph name="END_LINK" /> 보내기(권장)</translation>
 <translation id="1454223536435069390">스크린샷 캡쳐하기(&amp;A)</translation>
@@ -2477,7 +2476,6 @@
 <translation id="285033512555869047">닫힘</translation>
 <translation id="2850541429955027218">테마 추가</translation>
 <translation id="2850672011315104382">구두점 스타일</translation>
-<translation id="285241945869362924">오디오 및 동영상 자막을 자동으로 생성합니다. 오디오와 자막은 기기 외부로 유출되지 않습니다.</translation>
 <translation id="2853121255651601031">비밀번호 저장됨</translation>
 <translation id="2856776373509145513">새 컨테이너 만들기</translation>
 <translation id="2856907950922663165">URL 암호화를 사용 중지하시겠습니까?</translation>
@@ -6822,6 +6820,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6347010704471250799">알림 표시</translation>
 <translation id="6348805481186204412">오프라인 스토리지</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> 설치</translation>
+<translation id="6350821834561350243">가능한 경우 문제를 명확하게 설명하고 문제를 재현하기 위한 단계를 제공합니다.</translation>
 <translation id="6354918092619878358">SECG 타원 곡선 secp256r1(또는 ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Google 계정 정보 가져오는 중...</translation>
 <translation id="635609604405270300">기기를 계속 켜두세요.</translation>
@@ -7754,6 +7753,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{앱 삭제}other{앱 삭제}}</translation>
 <translation id="7099337801055912064">큰 PPD를 로드할 수 없습니다. 최대 크기는 250KB입니다.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{유출된 비밀번호 없음}=1{유출된 비밀번호 {COUNT}개}other{유출된 비밀번호 {COUNT}개}}</translation>
+<translation id="7100379916748214860">Chrome에서 위험한 파일 다운로드를 차단했습니다. 향상된 보호 모드로 보안을 더욱 강화하세요.</translation>
 <translation id="710047887584828070">이 탭의 콘텐츠를 공유 중입니다</translation>
 <translation id="710224247908684995">확장 프로그램에서 세이프 브라우징을 사용 중지했습니다</translation>
 <translation id="7102832101143475489">요청 제한 시간 초과</translation>
@@ -9244,6 +9244,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8256319818471787266">멍멍이</translation>
 <translation id="8257950718085972371">카메라 액세스 계속 차단</translation>
 <translation id="8258027225380843424">가져오기 완료</translation>
+<translation id="8260177673299865994">다운로드 보호 개선</translation>
 <translation id="8260864402787962391">마우스</translation>
 <translation id="8261378640211443080">이 확장 프로그램은 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않으며 사용자 모르게 추가되었을 수 있습니다.</translation>
 <translation id="8261506727792406068">삭제</translation>

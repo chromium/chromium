@@ -66,6 +66,7 @@
         请尝试等待几分钟，然后再退出账号。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="3256316712990552818">已复制到 Chromium</translation>
 <translation id="3344973607274501920">Chromium 无法检查您的密码。请尝试检查您的互联网连接。</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况。清除的数据可能包括历史记录和自动填充数据。}other{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况。清除的数据可能包括历史记录和自动填充数据。}}</translation>
 <translation id="3472200483164753384">在 Chromium Canary 版中不受支持</translation>
 <translation id="3478750326643748149">隐藏“充分利用 Chromium”</translation>
 <translation id="3554027294407525061">清除 Chromium 中的浏览数据。</translation>
@@ -231,6 +232,7 @@
 <translation id="88376265765385899">打开 Chromium 书签。</translation>
 <translation id="8924617840944134898">打开 Chromium 无痕式标签页</translation>
 <translation id="894437814105052438">当您退出登录后，Chromium 不会将任何新数据同步到您的 Google 账号。先前已同步的数据将会保留在账号中。</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况}other{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况}}</translation>
 <translation id="8963279154877372067">开启 Chromium 通知功能后才能接收降价提醒</translation>
 <translation id="9022552996538154597">登录 Chromium</translation>
 <translation id="9050790730841755540">每次点按其他应用中的链接时，都使用 Chromium 打开。</translation>

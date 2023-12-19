@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">Киргизүү түпкүчү</translation>
 <translation id="1975584088563498795">10-электрондук каттар кутусу</translation>
 <translation id="1978555033938440688">Орнотулган программанын версиясы</translation>
+<translation id="1979156660928743046">Медиа маалыматы</translation>
 <translation id="1988881251331415125">Эгер туура жазылса, <ph name="BEGIN_LINK" />Байланыштагы мүчүлүштүктөрдү аныктоону<ph name="END_LINK" /> иштетип көрүңүз.</translation>
 <translation id="1991453785879639515">Альпинизм жана тоого чыгуу</translation>
 <translation id="1991830984769263878">Авто камсыздандыруу</translation>
@@ -1523,6 +1524,7 @@
 <translation id="4050599136622776556">Chromium төлөм ыкмаларын түзөтүүгө аракет кылууда.</translation>
 <translation id="405399507749852140">Кандайдыр бир сайтта баасы төмөндөсө, эскертүүлөрдү алыңыз</translation>
 <translation id="4056223980640387499">Sepia</translation>
+<translation id="4059523390906550209">Купуя маалыматты коргоо жөнүндө кеңири маалымат алыңыз</translation>
 <translation id="4063063121357725926">Google'га себеттериңиздеги товарларга арзандатууларды табууга уруксат бериңиз</translation>
 <translation id="406358100705415968">Жумуштун коопсуздугу үчүн коргоо каражаттары</translation>
 <translation id="4063924980214801036">Карталарды тезирээк ырастоо үчүн түзмөктүн кулпусун колдонуңуз</translation>
@@ -1681,6 +1683,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Бөгөттөө (демейки)</translation>
 <translation id="4314815835985389558">Шайкештирүүнү башкаруу</translation>
+<translation id="4316057107946726368"><ph name="MAX_CHAR_COUNT" /> символдон ашпаган түздөө билдирүүсүн киргизиңиз. <ph name="ACTUAL_CHAR_COUNT" /> символдун ичинен <ph name="MAX_CHAR_COUNT" /> символ колдонулду.</translation>
 <translation id="4318213823155573975">Баш кийим</translation>
 <translation id="4318312030194671742">Сүрөттү алдын ала көрүп курамалоо кызматы</translation>
 <translation id="4318566738941496689">Түзмөгүңүздүн аты жана тармактын дареги</translation>
@@ -2353,6 +2356,7 @@
 <translation id="5695542892312572833">Ырастоо жана сатып алууну бүтүрүү үчүн Window Hello функциясын колдоносузбу?</translation>
 <translation id="5699628521141772782">Сүт азыктары жана жумуртка</translation>
 <translation id="5700761515355162635">Үчүнчү тараптын cookie файлдарына уруксат берилди</translation>
+<translation id="5701023235904684227"><ph name="READERNAME" /> тескеп, аны менен иштей турган акылдуу картаны пайдалануу мүмкүнчүлүгүн алыш керекпи?</translation>
 <translation id="5701381305118179107">Борбор</translation>
 <translation id="5707154300732650394">Саякатты улантуу</translation>
 <translation id="57094364128775171">Татаал сырсөз сунушталсын…</translation>
@@ -2667,6 +2671,7 @@
 <translation id="6355392890578844978">Бул серепчи компанияңыз же башка уюм тарабынан башкарылбайт. Бул түзмөктө аткарылган аракеттер Chromium'дан тышкары башкарылышы мүмкүн. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">төлөм ыкмаларын түзөтүү</translation>
 <translation id="6358450015545214790">Бул эмнени билдирет?</translation>
+<translation id="6360213755783740931">Кесепеттүү программалардан коргоо жөнүндө кеңири маалымат алыңыз</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Таржымалдарды көрүү</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Прокси, брандауэр жана DNS конфигурациясын текшерип көрүңүз<ph name="END_LINK" /></translation>
@@ -2724,6 +2729,7 @@
 <translation id="6443406338865242315">Кайсы кеңейтүүлөрдү жана плагиндерди орнотуп алдыңыз</translation>
 <translation id="6446608382365791566">Көбүрөөк маалымат кошуу</translation>
 <translation id="6447842834002726250">Кукилер</translation>
+<translation id="6448371595882710519">Маалыматты тескөө жөнүндө кеңири маалымат алыңыз</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Конверт Чоу 40</translation>
 <translation id="6451458296329894277">Форманы кайра тапшырууну ырастоо</translation>

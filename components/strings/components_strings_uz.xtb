@@ -515,6 +515,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1975457531113383421">Kiritish tarnovi</translation>
 <translation id="1975584088563498795">Pochta qutisi 10</translation>
 <translation id="1978555033938440688">Mikrodastur versiyasi</translation>
+<translation id="1979156660928743046">Media axborot</translation>
 <translation id="1988881251331415125">Xatosiz kiritilgan boʻlsa, <ph name="BEGIN_LINK" />Ulanish diagnostikasini<ph name="END_LINK" /> ishga tushiring.</translation>
 <translation id="1991453785879639515">Alpinizm va toqqa chiqish</translation>
 <translation id="1991830984769263878">Avtosugʻurta</translation>
@@ -1519,6 +1520,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4050599136622776556">Chromium toʻlov usullarini oʻzgartirishga urinmoqda.</translation>
 <translation id="405399507749852140">Har qaysi saytda narxi tushganda xabar olish</translation>
 <translation id="4056223980640387499">Sepiya</translation>
+<translation id="4059523390906550209">Maxfiy maʼlumotlar himoyasi haqida batafsil</translation>
 <translation id="4063063121357725926">Googlega savatchalar uchun chegirmalarni topishga yordam bering</translation>
 <translation id="406358100705415968">Himoya kiyimlari va jihozlari</translation>
 <translation id="4063924980214801036">Kartalarni tezroq tasdiqlash uchun qurilma kalitidan foydalaning</translation>
@@ -1677,6 +1679,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloklansin (standart parametr)</translation>
 <translation id="4314815835985389558">Sinxronizatsiyani boshqarish</translation>
+<translation id="4316057107946726368">Ikki tarafga tekislash xabari <ph name="MAX_CHAR_COUNT" /> ta belgidan oshmasin. <ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /> ta belgi kiritildi.</translation>
 <translation id="4318213823155573975">Bosh kiyimlar</translation>
 <translation id="4318312030194671742">Paint Preview bastalash xizmati</translation>
 <translation id="4318566738941496689">Qurilma nomi va tarmoq manzili</translation>
@@ -2349,6 +2352,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5695542892312572833">Xaridingiz Windows Hello orqali tasdiqlansin va bajarilsinmi?</translation>
 <translation id="5699628521141772782">Sut mahsulotlari va tuxumlar</translation>
 <translation id="5700761515355162635">Tashqi cookie fayllarga ruxsat berilgan</translation>
+<translation id="5701023235904684227"><ph name="READERNAME" /> qurilmasini boshqarish va u bilan ishlaydigan smart kartaga ruxsat olish kerakmi?</translation>
 <translation id="5701381305118179107">Markaz bo‘yicha tartiblash</translation>
 <translation id="5707154300732650394">Tarixni qaytarish</translation>
 <translation id="57094364128775171">Ishonchli parol yaratish…</translation>
@@ -2662,6 +2666,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6355392890578844978">Bu brauzer kompaniya yoki tashkilot boshqaruvida emas. Bu qurilmadagi amallar Chromiumdan tashqarida boshqarilishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">toʻlov usullarini oʻzgartirishga urinmoqda</translation>
 <translation id="6358450015545214790">Bu nima degani?</translation>
+<translation id="6360213755783740931">Zararli dasturlardan himoya haqida batafsil</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Jurnallarni ochish</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Proksi-server, himoya devori va DNS sozlamalarini tekshirish<ph name="END_LINK" /></translation>
@@ -2719,6 +2724,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6443406338865242315">Oʻrnatilgan kengaytma va plaginlar</translation>
 <translation id="6446608382365791566">Batafsil qo‘shing</translation>
 <translation id="6447842834002726250">Cookie fayllari</translation>
+<translation id="6448371595882710519">Maʼlumotlar boshqaruvi haqida batafsil</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Envelope Chou 40</translation>
 <translation id="6451458296329894277">Forma qayta jo‘natilishini tasdiqlang</translation>

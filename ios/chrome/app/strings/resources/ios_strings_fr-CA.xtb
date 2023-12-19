@@ -540,6 +540,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3909222758573607742">Enregistrez les mots de passe et les autres éléments dans le compte</translation>
 <translation id="3915450441834151894">Information sur le site</translation>
 <translation id="3918585468378680136">Consultez l'état du colis</translation>
+<translation id="3921585859122905677">Position de la barre d'adresse</translation>
 <translation id="3922310737605261887">Rechercher le texte copié</translation>
 <translation id="3928666092801078803">Combiner mes données</translation>
 <translation id="3929457972718048006">Adresses</translation>
@@ -1402,6 +1403,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8613883225817609844">Masquer les onglets récents</translation>
 <translation id="8620640915598389714">Modifier</translation>
 <translation id="8624447588354561276">Numéro de colis</translation>
+<translation id="8624753446837753970">Définir la position</translation>
 <translation id="8626393685701737946">Vous pouvez modifier l'affichage du site par défaut pour le mode Bureau dans Paramètres &gt; Paramètres de contenu</translation>
 <translation id="8636825310635137004">Pour synchroniser vos onglets sur vos autres appareils, activez la synchronisation.</translation>
 <translation id="8637431369725868556">Protégez-vous contre les sites Web dangereux.</translation>
@@ -1443,6 +1445,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8825562130641217944">Accédez à vos favoris, à vos mots de passe et autres.</translation>
 <translation id="882557203579758546">Rechercher dans la page…</translation>
+<translation id="8838250347763484641">Placez votre barre d'adresse en haut de l'écran ou en bas de l'écran pour une expérience de navigation personnalisée.</translation>
 <translation id="8840513115188359703">Vous ne serez pas déconnecté(e) de votre compte Google.</translation>
 <translation id="8843129975935593190">Votre organisation impose une limite quant à ce que vous pouvez synchroniser.</translation>
 <translation id="8849001918648564819">Caché</translation>
@@ -1515,6 +1518,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9188680907066685419">Se déconnecter du compte géré</translation>
 <translation id="9200875785104711666">il y a <ph name="TIME" /> j</translation>
 <translation id="9203116392574189331">Transférer</translation>
+<translation id="9203951165704618409">Changez la position de votre barre d'adresse du haut de l'écran au bas de l'écran pour une expérience de navigation personnalisée.</translation>
 <translation id="9206887540681440657">Vitesse</translation>
 <translation id="9219154867334666734">Rechercher des onglets…</translation>
 <translation id="9223358826628549784">Rapport de plantage envoyé.</translation>

@@ -572,7 +572,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1448779317883494811">Eina de pinzell</translation>
 <translation id="1449191289887455076">Torna a prémer <ph name="CURRENTKEY" /> per confirmar l'assignació i <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Pàgina web, un únic fitxer</translation>
-<translation id="145280054552001290">Afegeix i suprimeix idiomes als subtítols</translation>
 <translation id="1453561711872398978">Envia <ph name="BEGIN_LINK" />registres de depuració<ph name="END_LINK" /> (opció recomanada)</translation>
 <translation id="1454223536435069390">Fes una c&amp;aptura de pantalla</translation>
 <translation id="145432137617179457">Idiomes del corrector ortogràfic</translation>
@@ -918,6 +917,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1695510246756136088">No es pot connectar a Internet. Torna-ho a provar.</translation>
 <translation id="1696555181932908973">Pots provar altres maneres de continuar a <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">El dispositiu té configurat un servidor SSH. No iniciïs la sessió amb comptes relacionats amb informació sensible.</translation>
+<translation id="1697122132646041614">El botó No m'agrada obre un formulari per enviar comentaris detallats sobre per què no t'agraden aquests resultats.</translation>
 <translation id="1697150536837697295">Art</translation>
 <translation id="1697686431566694143">Edita el fitxer</translation>
 <translation id="1698796500103229697">Formes de pagament</translation>
@@ -2296,6 +2296,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2731700343119398978">Espereu...</translation>
 <translation id="2731971182069536520">La propera vegada que reiniciïs el dispositiu, l'administrador durà a terme una actualització amb què se suprimiran les teves dades locals.</translation>
 <translation id="2732134891301408122">Contingut addicional, <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">El botó M'agrada indica que aquests resultats t'agraden.</translation>
 <translation id="2733992589856193783">Has creat una clau d'accés per a aquest lloc web. Necessites el dispositiu mòbil per iniciar la sessió.</translation>
 <translation id="27349076983469322">Fons clar</translation>
 <translation id="2735712963799620190">Programació</translation>
@@ -2460,7 +2461,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="285033512555869047">tancat</translation>
 <translation id="2850541429955027218">Afegeix el tema</translation>
 <translation id="2850672011315104382">Estil de puntuació</translation>
-<translation id="285241945869362924">Crea subtítols automàticament per a àudios i vídeos. L'àudio i els subtítols no surten mai del dispositiu.</translation>
 <translation id="2853121255651601031">S'ha desat la contrasenya</translation>
 <translation id="2856776373509145513">Crea un contenidor nou</translation>
 <translation id="2856907950922663165">Vols desactivar l'encriptació d'URL?</translation>
@@ -5659,6 +5659,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5431318178759467895">Color</translation>
 <translation id="5432145523462851548">Mostra <ph name="FILE_NAME" /> a la carpeta</translation>
 <translation id="5432223177001837288">Per compartir l'àudio, comparteix una pestanya</translation>
+<translation id="5432872710261597882">La icona M'agrada indica que això t'agrada.</translation>
 <translation id="543338862236136125">Edita la contrasenya</translation>
 <translation id="5434065355175441495">PKCS #1 amb encriptació RSA</translation>
 <translation id="5435274640623994081">Activa el registre d'icones sonores</translation>
@@ -5694,6 +5695,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notes a la pantalla de bloqueig</translation>
 <translation id="5459864179070366255">Continua per instal·lar</translation>
+<translation id="5460861858595506978">Inspiració</translation>
 <translation id="5461050611724244538">S'ha perdut la connexió amb el telèfon</translation>
 <translation id="5463275305984126951">Índex de <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Registra't per rebre correus electrònics de <ph name="DEVICE_TYPE" /></translation>
@@ -7737,6 +7739,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Suprimeix l'aplicació}other{Suprimeix les aplicacions}}</translation>
 <translation id="7099337801055912064">No es poden carregar fitxers PPD grans. La mida màxima és de 250 kB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Cap contrasenya en perill}=1{{COUNT} contrasenya en perill}other{{COUNT} contrasenyes en perill}}</translation>
+<translation id="7100379916748214860">Chrome acaba de bloquejar la baixada d'un fitxer perillós. Obtén encara més seguretat amb la protecció millorada.</translation>
 <translation id="710047887584828070">El contingut d'aquesta pestanya s'està compartint</translation>
 <translation id="710224247908684995">Una extensió ha desactivat Navegació segura</translation>
 <translation id="7102832101143475489">S'ha esgotat el temps d'espera de la sol·licitud</translation>
@@ -8865,6 +8868,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7969046989155602842">Ordre</translation>
 <translation id="7970673414865679092">Detalls d'Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 amb encriptació RSA</translation>
+<translation id="7973149423217802477">La icona No m'agrada indica que això no t'agrada.</translation>
 <translation id="7973776233567882054">Quina de les opcions següents descriu millor la teva xarxa?</translation>
 <translation id="797394244396603170">Selecciona el dispositiu amb què vols compartir fitxers</translation>
 <translation id="7974566588408714340">Torna-ho a provar amb <ph name="EXTENSIONNAME" /></translation>
@@ -9227,6 +9231,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8256319818471787266">Gosset</translation>
 <translation id="8257950718085972371">Continua bloquejant l'accés a la càmera</translation>
 <translation id="8258027225380843424">La importació s'ha completat correctament</translation>
+<translation id="8260177673299865994">Millora la protecció de les baixades</translation>
 <translation id="8260864402787962391">Ratolí</translation>
 <translation id="8261378640211443080">Aquesta extensió no apareix a <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i és possible que s'hagi afegit sense que ho sapigueu.</translation>
 <translation id="8261506727792406068">Suprimeix</translation>

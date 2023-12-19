@@ -572,7 +572,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1448779317883494811">Strumento Pennello</translation>
 <translation id="1449191289887455076">Premi di nuovo "<ph name="CURRENTKEY" />" per confermare l'assegnazione e <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Pagina web, fine singolo</translation>
-<translation id="145280054552001290">Aggiungi e rimuovi lingue per i sottotitoli codificati</translation>
 <translation id="1453561711872398978">Invia <ph name="BEGIN_LINK" />log di debug<ph name="END_LINK" /> (opzione consigliata)</translation>
 <translation id="1454223536435069390">&amp;Acquisisci screenshot</translation>
 <translation id="145432137617179457">Lingue controllo ortografico</translation>
@@ -1858,6 +1857,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2408018932941436077">Salvataggio della carta</translation>
 <translation id="2408955596600435184">Inserisci il codice PIN</translation>
 <translation id="2409268599591722235">Iniziamo</translation>
+<translation id="2409378541210421746">Modifica selezione della lingua</translation>
 <translation id="2409709393952490731">Usa un telefono o tablet</translation>
 <translation id="2410079346590497630">dettagli build</translation>
 <translation id="2410298923485357543">Usa voce naturale quando il dispositivo è online</translation>
@@ -2460,7 +2460,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="285033512555869047">Chiuso</translation>
 <translation id="2850541429955027218">Aggiungi tema</translation>
 <translation id="2850672011315104382">Stile punteggiatura</translation>
-<translation id="285241945869362924">Vengono creati automaticamente i sottotitoli per i contenuti audio e video. Audio e sottotitoli non possono essere trasferiti dal dispositivo.</translation>
 <translation id="2853121255651601031">Password salvata</translation>
 <translation id="2856776373509145513">Crea un nuovo container</translation>
 <translation id="2856907950922663165">Disattivare la crittografia degli URL?</translation>
@@ -3823,6 +3822,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3937640725563832867">Nome alternativo dell'autorità emittente del certificato</translation>
 <translation id="3937734102568271121">Traduci sempre <ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626">Dispositivi del fornitore <ph name="VENDOR_ID" /></translation>
+<translation id="3939622756852381766">I sottotitoli codificati per i contenuti audio e video vengono creati automaticamente</translation>
 <translation id="3941565636838060942">Per impedire l'accesso a questo programma, è necessario disinstallarlo utilizzando
   <ph name="CONTROL_PANEL_APPLET_NAME" /> nel Pannello di controllo.
 
@@ -4331,6 +4331,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="435527878592612277">Seleziona la foto</translation>
 <translation id="4356100841225547054">Disattiva il volume</translation>
 <translation id="4358302248024731679">Per meglio diagnosticare i problemi del Bluetooth, i Googler possono includere log Bluetooth aggiuntivi nei loro report di feedback. Quando questa opzione è selezionata, il report includerà i log btsnoop e HCI relativi alla tua sessione corrente, sottoposti a sanitizzazione per rimuovere il maggior numero possibile di PII. L'accesso a questi log verrà limitato ai gestori del gruppo di prodotti ChromeOS in Listnr. I log verranno eliminati definitivamente dopo 90 giorni.</translation>
+<translation id="4358361163731478742">Nessuna app supporta la selezione della lingua dell'app</translation>
 <translation id="4358643842961018282">Il dispositivo è aggiornato</translation>
 <translation id="4359408040881008151">Installata a causa di estensioni dipendenti.</translation>
 <translation id="4359717112757026264">Cityscape</translation>
@@ -4588,6 +4589,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> ha condiviso una password con te per <ph name="WEBSITE_NAME" />. Puoi utilizzarla nel modulo di accesso.</translation>
 <translation id="4558426062282641716">Autorizzazione di avvio automatico richiesta</translation>
 <translation id="4558542033859106586">Apertura in <ph name="TARGET_APP" /> in corso…</translation>
+<translation id="4558946868955275132">Qui vengono mostrate soltanto le app che supportano la selezione della lingua</translation>
 <translation id="4559617833001311418">Questo sito ha accesso ai sensori di movimento o della luce.</translation>
 <translation id="4560728518401799797">Altre opzioni per il preferito <ph name="FOLDER_TITLE" /></translation>
 <translation id="4561893854334016293">Nessuna autorizzazione modificata di recente</translation>
@@ -7026,6 +7028,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6535331821390304775">Consenti sempre a <ph name="ORIGIN" /> di aprire link di questo tipo nell'app associata</translation>
 <translation id="653659894138286600">Scansiona documenti e immagini</translation>
 <translation id="6537613839935722475">Il nome può contenere lettere, numeri e trattini (-)</translation>
+<translation id="6538036594527795020">Cambia la lingua di <ph name="APP" />. La lingua corrente è <ph name="LANGUAGE" />.</translation>
 <translation id="6538098297809675636">Errore durante il rilevamento del codice</translation>
 <translation id="653920215766444089">Ricerca del dispositivo di puntamento in corso…</translation>
 <translation id="6539674013849300372">Aumenta la sicurezza online con una password efficace. Verrà salvata in <ph name="GOOGLE_PASSWORD_MANAGER" /> per <ph name="EMAIL" />.</translation>
@@ -7270,6 +7273,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6737663862851963468">Rimuovere richiesta di Kerberos</translation>
 <translation id="6738180164164974883">Consenti l'impostazione di cookie di terze parti</translation>
 <translation id="6738430949033571771">Verifica dell'account in corso…</translation>
+<translation id="6739266861259291931">Reimposta lingua del dispositivo</translation>
 <translation id="6739923123728562974">Mostra collegamento sul desktop</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> in pausa</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />L'amministratore<ph name="END_LINK" /> ha disattivato Navigazione sicura</translation>
@@ -7743,6 +7747,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Rimuovi app}other{Rimuovi app}}</translation>
 <translation id="7099337801055912064">Impossibile caricare il file PPD. Dimensioni massime: 250 kB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Nessuna password compromessa}=1{{COUNT} password compromessa}other{{COUNT} password compromesse}}</translation>
+<translation id="7100379916748214860">Chrome ha appena bloccato il download di un file pericoloso. Ottieni una sicurezza ancora più efficace con la Protezione avanzata.</translation>
 <translation id="710047887584828070">I contenuti di questa scheda vengono condivisi</translation>
 <translation id="710224247908684995">Un'estensione ha disattivato Navigazione sicura</translation>
 <translation id="7102832101143475489">La richiesta è scaduta</translation>
@@ -9236,6 +9241,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8256319818471787266">Fido</translation>
 <translation id="8257950718085972371">Continua a impedire l'accesso alla webcam</translation>
 <translation id="8258027225380843424">Importazione riuscita.</translation>
+<translation id="8260177673299865994">Migliora la protezione dei download</translation>
 <translation id="8260864402787962391">Mouse</translation>
 <translation id="8261378640211443080">Questa estensione non è elencata nel <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e potrebbe essere stata aggiunta a tua insaputa.</translation>
 <translation id="8261506727792406068">Elimina</translation>
@@ -10443,6 +10449,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9186963452600581158">Accedi con l'Account Google di un bambino</translation>
 <translation id="9187967020623675250">I tasti non corrispondono. Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Invia dati diagnostici e sull'utilizzo. Questo dispositivo attualmente invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità di app e sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, ad esempio agli sviluppatori Android. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google. <ph name="BEGIN_LINK2" />Ulteriori informazioni<ph name="END_LINK2" /></translation>
+<translation id="9191638749941292185">Invia i sottotitoli codificati a Google per tradurli automaticamente</translation>
 <translation id="9192019773545828776">Attiva la funzione di lettura vocale per usare il dispositivo senza dover guardare lo schermo. Il feedback braille è disponibile con un dispositivo connesso. Premi Ctrl + Alt + Z per attivare e disattivare ChromeVox. Utilizza il tasto per la ricerca + Freccia sinistra o Freccia destra per spostarti. Utilizza il tasto per la ricerca + Barra spaziatrice per selezionare (attivare).</translation>
 <translation id="919686179725692564">Scopri di più sul backup delle tue app</translation>
 <translation id="9199503643457729322">Fai clic per uscire dalla Guida alla privacy.</translation>
@@ -10553,6 +10560,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="98515147261107953">Orizzontale</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Generali</translation>
+<translation id="987475089238841621">I language pack vengono utilizzati per la funzionalità Sottotitoli in tempo reale e vengono memorizzati sul dispositivo</translation>
 <translation id="988320949174893488">Interruzioni occasionali</translation>
 <translation id="988978206646512040">Non è consentita una passphrase vuota</translation>
 <translation id="992032470292211616">Estensioni, app e temi possono danneggiare il tuo dispositivo. Vuoi continuare?</translation>

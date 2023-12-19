@@ -515,6 +515,7 @@
 <translation id="1975457531113383421">ಇನ್‌ಪುಟ್ ಟ್ರೇ</translation>
 <translation id="1975584088563498795">ಮೇಲ್‌ಬಾಕ್ಸ್ 10</translation>
 <translation id="1978555033938440688">ಫರ್ಮ್‌ವೇರ್ ಆವೃತ್ತಿ</translation>
+<translation id="1979156660928743046">ಮಾಧ್ಯಮ ಮಾಹಿತಿ</translation>
 <translation id="1988881251331415125">ಕಾಗುಣಿತ ಸರಿಯಾಗಿದ್ದರೆ, <ph name="BEGIN_LINK" />ಕನೆಕ್ಟಿವಿಟಿ ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್‌‌ ರನ್ ಮಾಡಿ ನೋಡಿ<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">ಏರುವಿಕೆ ಮತ್ತು ಪರ್ವತಾರೋಹಣ</translation>
 <translation id="1991830984769263878">ಆಟೋ ವಿಮೆ</translation>
@@ -1521,6 +1522,7 @@
 <translation id="4050599136622776556">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು Chromium ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
 <translation id="405399507749852140">ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಾದರೆ ಅಲರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="4056223980640387499">ಸೆಪಿಯಾ</translation>
+<translation id="4059523390906550209">ಸೂಕ್ಷ್ಮವಾದ ವೈಯಕ್ತಿಕ ಡೇಟಾ ರಕ್ಷಣೆಯ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="4063063121357725926">ನಿಮ್ಮ ಕಾರ್ಟ್‌ಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ರಿಯಾಯಿತಿಗಳನ್ನು ಹುಡುಕುವ ಸಲುವಾಗಿ ನಿಮಗೆ ಸಹಾಯ ಮಾಡಲು Google ಗೆ ಅನುಮತಿಸಿ</translation>
 <translation id="406358100705415968">ಕೆಲಸದ ಸುರಕ್ಷತಾ ರಕ್ಷಣಾತ್ಮಕ ಗೇರ್</translation>
 <translation id="4063924980214801036">ಕಾರ್ಡ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ದೃಢೀಕರಿಸಲು ಸಾಧನದ ಅನ್‌ಲಾಕ್ ಬಳಸಿ</translation>
@@ -1679,6 +1681,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">ನಿರ್ಬಂಧಿಸು (ಡಿಫಾಲ್ಟ್)</translation>
 <translation id="4314815835985389558">ಸಿಂಕ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="4316057107946726368">ಗರಿಷ್ಠ <ph name="MAX_CHAR_COUNT" /> ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿರುವ ಸಮರ್ಥನೆ ಸಂದೇಶವೊಂದನ್ನು ನಮೂದಿಸಿ. ಗರಿಷ್ಠ <ph name="MAX_CHAR_COUNT" /> ಅಕ್ಷರಗಳಲ್ಲಿ <ph name="ACTUAL_CHAR_COUNT" />ಅಕ್ಷರಗಳನ್ನು ಬಳಸಲಾಗಿದೆ.</translation>
 <translation id="4318213823155573975">ತಲೆಯ ತೊಡುಗೆ</translation>
 <translation id="4318312030194671742">ಪ್ರಿಂಟ್ ಪೂರ್ವವೀಕ್ಷಣೆ ಸಂಯೋಜಕ ಸೇವೆ</translation>
 <translation id="4318566738941496689">ನಿಮ್ಮ ಸಾಧನದ ಹೆಸರು ಮತ್ತು ನೆಟ್‌ವರ್ಕ್ ವಿಳಾಸ</translation>
@@ -2351,6 +2354,7 @@
 <translation id="5695542892312572833">ನಿಮ್ಮ ಖರೀದಿಯನ್ನು ಖಚಿತಪಡಿಸಲು ಮತ್ತು ಪೂರ್ಣಗೊಳಿಸಲು Windows Hello ಬಳಸಬೇಕೆ?</translation>
 <translation id="5699628521141772782">ಡೈರಿ ಮತ್ತು ಮೊಟ್ಟೆಗಳು</translation>
 <translation id="5700761515355162635">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
+<translation id="5701023235904684227"><ph name="READERNAME" /> ಅನ್ನು ನಿಯಂತ್ರಿಸಿ ಅದಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಇರುವ ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್‌ಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಪಡೆಯಬೇಕೇ?</translation>
 <translation id="5701381305118179107">ಮಧ್ಯಕ್ಕೆ</translation>
 <translation id="5707154300732650394">ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="57094364128775171">ಸದೃಢವಾದ ಪಾಸ್‌ವರ್ಡ್ ಸೂಚಿಸಿ…</translation>
@@ -2664,6 +2668,7 @@
 <translation id="6355392890578844978">ಈ ಬ್ರೌಸರ್ ಅನ್ನು ಕಂಪನಿ ಅಥವಾ ಇತರ ಸಂಸ್ಥೆಯು ನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ. ಈ ಸಾಧನದಲ್ಲಿನ ಚಟುವಟಿಕೆಯನ್ನು Chromium ನಿಂದ ಹೊರಗೆ ನಿರ್ವಹಿಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6358450015545214790">ಇವುಗಳ ಅರ್ಥವೇನು?</translation>
+<translation id="6360213755783740931">ಮಾಲ್‌ವೇರ್ ರಕ್ಷಣೆಯ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">ಲಾಗ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ಪ್ರಾಕ್ಸಿ, ಫೈರ್‌ವಾಲ್ ಮತ್ತು ಸುರಕ್ಷಿತ DNS ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ<ph name="END_LINK" /></translation>
@@ -2721,6 +2726,7 @@
 <translation id="6443406338865242315">ನೀವು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿರುವ ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು ಮತ್ತು ಪ್ಲಗ್‌ಇನ್‌ಗಳು</translation>
 <translation id="6446608382365791566">ಇನ್ನಷ್ಟು ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="6447842834002726250">ಕುಕೀಸ್</translation>
+<translation id="6448371595882710519">ಡೇಟಾ ನಿಯಂತ್ರಣಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">ಎನ್ವಲಪ್ ಚೌ 40</translation>
 <translation id="6451458296329894277">ಮರುಸಲ್ಲಿಕೆ ಫಾರ್ಮ್ ಅನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>

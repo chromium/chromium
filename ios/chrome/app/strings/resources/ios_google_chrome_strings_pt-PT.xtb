@@ -63,6 +63,7 @@ Aspetos a considerar:
 <translation id="2427791862912929107">O Chrome inclui funcionalidades que ajudam a gerir os seus dados de Internet e a velocidade com que as páginas Web são carregadas.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />.</translation>
 <translation id="2444854139071078915">Para obter facilmente as palavras-passe guardadas nas outras apps, use o Chrome para o preenchimento automático</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Isto acontece quando o Chrome não é usado durante {THRESHOLD} minuto. Estas informações podem incluir o histórico e o preenchimento automático.}other{Isto acontece quando o Chrome não é usado durante {THRESHOLD} minutos. Estas informações podem incluir o histórico e o preenchimento automático.}}</translation>
 <translation id="2561231791489583059">Utilize o Chrome como o navegador predefinido para obter proteção contra sites perigosos e manter as suas palavras-passe protegidas</translation>
 <translation id="2574249610672786438">Para ver os seus separadores onde quer que esteja a utilizar o Chrome, inicie sessão em todos os seus dispositivos.</translation>
 <translation id="2576431527583832481">O Chrome ficou ainda melhor! Está disponível uma nova versão.</translation>
@@ -91,6 +92,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3282568296779691940">Iniciar sessão no Chrome</translation>
 <translation id="3340938510625667914">Ações do Chrome</translation>
 <translation id="3345341804167540816">Usar o Chrome em todas as plataformas</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Isto acontece quando o Chrome não é usado durante {THRESHOLD} minuto}other{Isto acontece quando o Chrome não é usado durante {THRESHOLD} minutos}}</translation>
 <translation id="3399930248910934354">Abrir definições do Chrome</translation>
 <translation id="3472587960215700950">O Chrome usa o Google Maps para lhe dar direções e informações locais sobre moradas detetadas.</translation>
 <translation id="3503014945441706099">Obtenha também a Navegação segura melhorada para este perfil do Chrome</translation>

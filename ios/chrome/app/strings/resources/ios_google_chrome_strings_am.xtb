@@ -63,6 +63,7 @@
 <translation id="2427791862912929107">Chrome እርስዎ የበይነመረብ ውሂብዎን እና ድረ-ገጾችን በምን ያህል ፍጥነት መጫን እንደሚችሉ እንዲያቀናብሩ የሚያስችሉዎት ባህሪያት አሉት።
 <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">በሌሎች መተግበሪያዎችዎ ውስጥ የተቀመጡ የይለፍ ቃላትዎን በቀላሉ ለማግኘት Chrome ለራስ-ሙላን ይጠቀሙ።</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{ይህ የሚሆነው Chrome ለ{THRESHOLD} ደቂቃ ጥቅም ላይ ሳይውል ሲቀር ነው። ይህ ታሪክን እና ራስ-ሙላን ሊያካትት ይችላል።}one{ይህ የሚሆነው Chrome ለ{THRESHOLD} ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር ነው። ይህ ታሪክን እና ራስ-ሙላን ሊያካትት ይችላል።}other{ይህ የሚሆነው Chrome ለ{THRESHOLD} ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር ነው። ይህ ታሪክን እና ራስ-ሙላን ሊያካትት ይችላል።}}</translation>
 <translation id="2561231791489583059">ከአደገኛ ጣቢያዎች እንዲጠበቁ እና የይለፍ ቃላትዎን ደህንነት ለመጠበቅ Chromeን እንደ ነባሪ አሳሽዎ ይጠቀሙ</translation>
 <translation id="2574249610672786438">Chromeን ከሚጠቀሙበት የትኛዉም ቦታ ትሮችን ለማየት በሁሉም መሣሪያዎችዎ ላይ ይግቡ</translation>
 <translation id="2576431527583832481">Chrome አሁን ተሻሽሏል! አዲስ ስሪት አለ።</translation>
@@ -91,6 +92,7 @@
 <translation id="3282568296779691940">Chrome ውስጥ ይግቡ</translation>
 <translation id="3340938510625667914">Chrome እርምጃዎች</translation>
 <translation id="3345341804167540816">Chromeን በየትኛውም ቦታ ይጠቀሙበት</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{ይህ የሚሆነው Chrome ለ{THRESHOLD} ደቂቃ ጥቅም ላይ ሳይውል ሲቀር ነው}one{ይህ የሚሆነው Chrome ለ{THRESHOLD} ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር ነው}other{ይህ የሚሆነው Chrome ለ{THRESHOLD} ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር ነው}}</translation>
 <translation id="3399930248910934354">የChrome ቅንብሮችን ይክፈቱ</translation>
 <translation id="3472587960215700950">Chrome በታወቁ አድራሻዎች ላይ አቅጣጫዎችን እና አካባቢያዊ መረጃን ለእርስዎ ለመስጠት Google ካርታዎችን ይጠቀማል።</translation>
 <translation id="3503014945441706099">ለዚህ የChrome መገለጫ የተሻሻለ የደህንነት አሰሳንም ያግኙ</translation>

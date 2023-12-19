@@ -40,6 +40,7 @@
 <translation id="1153356358378277386">Упарени уређаји</translation>
 <translation id="1155734730463845512">Актуелни ниво батерије <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">укључено и у употреби</translation>
+<translation id="1163437384438183174">Уклони Phone Hub са полице</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">USB-C кабл се не повезује правилно са екранима</translation>
 <translation id="1175572348579024023">Померај</translation>
@@ -70,6 +71,7 @@
 <translation id="1239161794459865856">Функција <ph name="FEATURE_NAME" /> је повезана.</translation>
 <translation id="1240638468526743569">Апликација</translation>
 <translation id="1242883863226959074">уређају</translation>
+<translation id="1245644940275736236">Иди у Помоћник</translation>
 <translation id="124678866338384709">Затварање актуелне картице</translation>
 <translation id="1246890715821376239">Неподржане апликације</translation>
 <translation id="1247372569136754018">Микрофон (интерни)</translation>
@@ -692,6 +694,7 @@
 <translation id="383629559565718788">Прегледајте подешавања тастатуре</translation>
 <translation id="384082539148746321">Желите да избришете шаблон?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, па <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> или <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Нису доступне информације о мрежи</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">Почетак</translation>
@@ -927,6 +930,7 @@
 <translation id="4759238208242260848">Преузимања</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + стрелица нагоре</translation>
 <translation id="4762573482154983647">Сакријте апликације</translation>
+<translation id="4762802395013012237">5 ft у m</translation>
 <translation id="4763885921995354846">Ово омогућава приступ камери за све апликације и веб-сајтове са дозволом за камеру. Можда ћете морати да освежите веб-страницу или рестартујете апликацију.</translation>
 <translation id="4774338217796918551">Вратите се сутра у <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Верификација лозинке још увек није успела. Пробајте поново.</translation>
@@ -969,6 +973,7 @@
 <translation id="491504982845934899">Активирајте мрежу <ph name="NETWORK_NAME" /> после подешавања уређаја</translation>
 <translation id="4917385247580444890">Јак</translation>
 <translation id="4918086044614829423">Прихвати</translation>
+<translation id="491907188205944472">Потражите оно што вам треба директно у Покретачу</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> тренутно користи камеру</translation>
 <translation id="492453977506755176">Тастер за режим снимања</translation>
 <translation id="4925542575807923399">Администратор за овај налог захтева да овај налог буде први пријављени налог у сесији са вишеструким пријављивањем.</translation>
@@ -1119,6 +1124,7 @@
 <translation id="5518068085000130971">То су биле основне ствари! Наставите у апликацији Истражите, уграђеној апликацији за савете и помоћ. Пронаћи ћете савете за почетне кораке, препоручене апликације, специјалне понуде и најновије функције Chromebook-а.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Администратор је уклонио све eSIM профиле. Додатне информације потражите од администратора.</translation>
+<translation id="5520909879404821039">Здраво на француском</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> се повезује.</translation>
 <translation id="5529587891732734495">Паузирај пребацивање</translation>
 <translation id="5532994612895037630">Додирните било где да бисте снимили цео екран</translation>
@@ -1697,6 +1703,7 @@
 <translation id="7886277072580235377">Интернет сесија ће бити обрисана када се одјавите. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Пошаљи имејл</translation>
 <translation id="7893503627044934815">Не желим да ми се приказује овај фајл</translation>
+<translation id="7893547474469215105">Дефиниши зенит</translation>
 <translation id="7895348134893321514">Држач</translation>
 <translation id="7897375687985782769">Притиснули сте тастерску пречицу за ротацију екрана. Желите ли да ротирате екран?</translation>
 <translation id="7897626842031123113">Статусна трака, време <ph name="TIME" />,
@@ -1712,6 +1719,7 @@
 <translation id="7904094684485781019">Администратор за овај налог је забранио вишеструко пријављивање.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Повезаних уређаја: <ph name="DEVICECOUNT" /></translation>
+<translation id="7923534281713082605">Време</translation>
 <translation id="7926080067315048321">Погледајте све задатке у Google задацима на вебу</translation>
 <translation id="7930731167419639574">Говор се сада локално обрађује и диктирање ради офлајн</translation>
 <translation id="7932451802722951285">Отвори у Google календару</translation>
@@ -1858,6 +1866,7 @@
 <translation id="8555757996376137129">Уклони актуелну радну површину</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> препоручује да ажурирате <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Подешавања обавештења</translation>
+<translation id="8569751806372591456">Ево пар предлога које можете да испробате</translation>
 <translation id="857201607579416096">Мени је премештен у доњи десни угао екрана.</translation>
 <translation id="8581946341807941670">Притисните <ph name="MODIFIER_1" /> <ph name="MODIFIER_2" /> и кликните на линк</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1901,6 +1910,7 @@
 <translation id="875593634123171288">Прегледајте подешавања VPN-а</translation>
 <translation id="8759408218731716181">Није могуће подесити вишеструко пријављивање</translation>
 <translation id="8763883995157866248">Пребаците уређај у режим спавања</translation>
+<translation id="877404052021108314">90 °F у C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, инсталирана апликација, блокирана</translation>
 <translation id="8785070478575117577">Повежите са уређајем <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1909,6 +1919,7 @@
 <translation id="8806053966018712535">Фолдер <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">„Помоћ“</translation>
 <translation id="8814190375133053267">WiFi</translation>
+<translation id="8815390544836110344">Притисните пречицу за снимак екрана, Ctrl + Shift и тастер за режим прегледа</translation>
 <translation id="881757059229893486">Подешавања метода уноса</translation>
 <translation id="8819728065740986820">Адаптивно пуњење је укључено</translation>
 <translation id="8825863694328519386">Превуците са леве стране да бисте се вратили</translation>

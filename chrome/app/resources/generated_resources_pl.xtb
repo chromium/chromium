@@ -574,7 +574,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1448779317883494811">Narzędzie Pędzel</translation>
 <translation id="1449191289887455076">Naciśnij jeszcze raz „<ph name="CURRENTKEY" />”, aby potwierdzić przypisanie i <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Strona internetowa, pojedynczy plik</translation>
-<translation id="145280054552001290">Dodawanie i usuwanie języków napisów</translation>
 <translation id="1453561711872398978">Wyślij <ph name="BEGIN_LINK" />dzienniki debugowania<ph name="END_LINK" /> (zalecane)</translation>
 <translation id="1454223536435069390">Wykon&amp;aj zrzut ekranu</translation>
 <translation id="145432137617179457">Języki sprawdzania pisowni</translation>
@@ -2444,7 +2443,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="285033512555869047">Zamknięta</translation>
 <translation id="2850541429955027218">Dodaj motyw</translation>
 <translation id="2850672011315104382">Styl znaków przestankowych</translation>
-<translation id="285241945869362924">Automatycznie tworzy napisy dla dźwięku i wideo. Dźwięk ani napisy nie są wysyłane poza urządzenie.</translation>
 <translation id="2853121255651601031">Hasło zostało zapisane</translation>
 <translation id="2856776373509145513">Utwórz nowy kontener</translation>
 <translation id="2856907950922663165">Wyłączyć szyfrowanie adresów URL?</translation>
@@ -6787,6 +6785,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6347010704471250799">Pokaż powiadomienie</translation>
 <translation id="6348805481186204412">Miejsce na dane offline</translation>
 <translation id="6349101878882523185">Zainstaluj aplikację <ph name="APP_NAME" /></translation>
+<translation id="6350821834561350243">Opisz jasno problem i czynności prowadzące do jego odtworzenia (jeśli to możliwe)</translation>
 <translation id="6354918092619878358">Kryptografia krzywych eliptycznych SECG secp256r1 (inne nazwy: ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Pobieram informacje o koncie Google…</translation>
 <translation id="635609604405270300">Nie wyłączaj urządzenia</translation>
@@ -7721,6 +7720,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Usuń aplikację}few{Usuń aplikacje}many{Usuń aplikacje}other{Usuń aplikacje}}</translation>
 <translation id="7099337801055912064">Nie można załadować pliku PPD, bo jest zbyt duży. Maksymalny rozmiar to 250 kB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Brak przejętych haseł}=1{{COUNT} przejęte hasło}few{{COUNT} przejęte hasła}many{{COUNT} przejętych haseł}other{{COUNT} przejętego hasła}}</translation>
+<translation id="7100379916748214860">Przeglądarka Chrome zablokowała możliwość pobrania niebezpiecznego pliku. Zapewnij sobie jeszcze większe bezpieczeństwo dzięki silniejszej ochronie.</translation>
 <translation id="710047887584828070">Treść tej karty jest udostępniana</translation>
 <translation id="710224247908684995">Bezpieczne przeglądanie zostało wyłączone przez rozszerzenie</translation>
 <translation id="7102832101143475489">Żądanie przekroczyło limit czasu</translation>
@@ -9210,6 +9210,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8256319818471787266">Tofik</translation>
 <translation id="8257950718085972371">Nadal blokuj dostęp do kamery</translation>
 <translation id="8258027225380843424">Ukończono importowanie</translation>
+<translation id="8260177673299865994">Wzmocnij ochronę pobierania</translation>
 <translation id="8260864402787962391">Mysz</translation>
 <translation id="8261378640211443080">To rozszerzenie nie jest oferowane w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i mogło zostać dodane bez Twojej wiedzy.</translation>
 <translation id="8261506727792406068">Usuń</translation>

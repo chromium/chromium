@@ -540,6 +540,7 @@
 <translation id="3909222758573607742">એકાઉન્ટમાં પાસવર્ડ અને અન્ય આઇટમ સાચવો</translation>
 <translation id="3915450441834151894">સાઇટ માહિતી</translation>
 <translation id="3918585468378680136">પૅકેજનું સ્ટેટસ મેળવી રહ્યાં છીએ</translation>
+<translation id="3921585859122905677">ઍડ્રેસ બારની સ્થિતિ</translation>
 <translation id="3922310737605261887">કૉપિ કરેલી ટેક્સ્ટ માટે શોધ કરો</translation>
 <translation id="3928666092801078803">મારા ડેટાને સંયોજિત કરો</translation>
 <translation id="3929457972718048006">સરનામાં</translation>
@@ -1402,6 +1403,7 @@
 <translation id="8613883225817609844">તાજેતરના ટૅબ છુપાવો</translation>
 <translation id="8620640915598389714">ફેરફાર કરો</translation>
 <translation id="8624447588354561276">પૅકેજ નંબર</translation>
+<translation id="8624753446837753970">સ્થિતિ સેટ કરો</translation>
 <translation id="8626393685701737946">તમે સેટિંગ &gt; કન્ટેન્ટ સેટિંગમાં જઈને ડિફૉલ્ટ સાઇટ વ્યૂ બદલીને ડેસ્કટૉપ વ્યૂ મોડ કરી શકો છો</translation>
 <translation id="8636825310635137004">તમારા અન્ય ઉપકરણો પરથી તમારા ટૅબ્સ મેળવવા માટે, સમન્વયન ચાલુ કરો.</translation>
 <translation id="8637431369725868556">જોખમી સાઇટથી સુરક્ષા મેળવો.</translation>
@@ -1443,6 +1445,7 @@
 <translation id="8820817407110198400">બુકમાર્ક</translation>
 <translation id="8825562130641217944">તમારા બુકમાર્ક, પાસવર્ડ અને બીજી ઘણી બાબતો મેળવો.</translation>
 <translation id="882557203579758546">પેજમાં શોધો…</translation>
+<translation id="8838250347763484641">કસ્ટમાઇઝ કરેલા બ્રાઉઝિંગ અનુભવ માટે, તમારા ઍડ્રેસ બારને સૌથી ઉપર કે તળિયાની સ્થિતિ પર સ્વિચ કરો.</translation>
 <translation id="8840513115188359703">તમે તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ થશો નહિ.</translation>
 <translation id="8843129975935593190">તમે શું સિંક કરી શકો, તે તમારી સંસ્થા નિયંત્રિત કરે છે.</translation>
 <translation id="8849001918648564819">છુપાવેલી</translation>
@@ -1515,6 +1518,7 @@
 <translation id="9188680907066685419">મેનેજ થયેલા એકાઉન્ટમાંથી સાઇન આઉટ કરો</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> દિવસ પહેલાં</translation>
 <translation id="9203116392574189331">હેન્ડઓફ</translation>
+<translation id="9203951165704618409">કસ્ટમાઇઝ કરેલા બ્રાઉઝિંગ અનુભવ માટે, તમારા ઍડ્રેસ બારને સૌથી ઉપરથી ખસેડીને તળિયાની સ્થિતિ પર સ્વિચ કરો.</translation>
 <translation id="9206887540681440657">ઝડપ</translation>
 <translation id="9219154867334666734">ટૅબ શોધો…</translation>
 <translation id="9223358826628549784">ક્રૅશ રિપોર્ટ મોકલ્યો.</translation>

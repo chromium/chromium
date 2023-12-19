@@ -574,7 +574,6 @@
 <translation id="1448779317883494811">أداة الفرشاة</translation>
 <translation id="1449191289887455076">يمكنك الضغط على مفتاح "<ph name="CURRENTKEY" />" مرة أخرى لتأكيد التخصيص، واختيار <ph name="RESPONSE" /> بعد ذلك.</translation>
 <translation id="1451375123200651445">صفحة ويب، ملف واحد</translation>
-<translation id="145280054552001290">إضافة اللغات إلى الشرح وإزالتها</translation>
 <translation id="1453561711872398978">إرسال <ph name="BEGIN_LINK" />سجلات تصحيح الأخطاء<ph name="END_LINK" /> (ننصح بذلك)</translation>
 <translation id="1454223536435069390">الت&amp;قاط لقطة شاشة</translation>
 <translation id="145432137617179457">لغات التدقيق الإملائي</translation>
@@ -2464,7 +2463,6 @@
 <translation id="285033512555869047">مغلقة</translation>
 <translation id="2850541429955027218">إضافة مظهر</translation>
 <translation id="2850672011315104382">نمط علامات الترقيم</translation>
-<translation id="285241945869362924">تعمل هذه الميزة على إنشاء مقاطع الشرح تلقائيًا لملفات الصوت والفيديو. وتظل ملفات الصوت ومقاطع الشرح محفوظة على جهازك.</translation>
 <translation id="2853121255651601031">تم حفظ كلمة المرور.</translation>
 <translation id="2856776373509145513">إنشاء حاوية جديدة</translation>
 <translation id="2856907950922663165">‏هل تريد إيقاف تشفير عناوين URL؟</translation>
@@ -6808,6 +6806,7 @@
 <translation id="6347010704471250799">عرض إشعار</translation>
 <translation id="6348805481186204412">مساحة التخزين بلا اتصال بالإنترنت</translation>
 <translation id="6349101878882523185">تثبيت "<ph name="APP_NAME" />"</translation>
+<translation id="6350821834561350243">يُرجى تقديم وصف واضح للمشكلة وخطوات إعادة إنتاجها (إن أمكن ذلك).</translation>
 <translation id="6354918092619878358">‏منحنى SECG ناقص المقطع secp256r1‏ (aka ANSI X9.62 prime256v1‏، NIST P-256)</translation>
 <translation id="6355395056805388423">‏يجري الحصول على معلومات حساب Google…</translation>
 <translation id="635609604405270300">يُرجى إبقاء الجهاز مشغَّلاً</translation>
@@ -7748,6 +7747,7 @@
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{إزالة التطبيق}zero{إزالة التطبيقات}two{إزالة التطبيقَين}few{إزالة التطبيقات}many{إزالة التطبيقات}other{إزالة التطبيقات}}</translation>
 <translation id="7099337801055912064">‏يتعذّر تحميل ملف PPD كبير الحجم. الحد الأقصى للحجم هو 250 كيلوبايت.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{ما مِن كلمات مرور محتمَل تعرّضها للاختراق}=1{كلمة مرور واحدة ({COUNT}) محتمَل تعرّضها للاختراق}two{كلمتا مرور ({COUNT}) محتمَل تعرّضهما للاختراق}few{{COUNT} كلمات مرور محتمَل تعرّضها للاختراق}many{{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}other{{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}}</translation>
+<translation id="7100379916748214860">‏حَظَر Chrome تنزيل ملف خطير للتو. يمكنك تعزيز مستوى الأمان من خلال تفعيل ميزة "الحماية المحسَّنة".</translation>
 <translation id="710047887584828070">تجري حاليًا مشاركة محتوى علامة التبويب هذه.</translation>
 <translation id="710224247908684995">أوقفت إحدى الإضافات ميزة "التصفُّح الآمن".</translation>
 <translation id="7102832101143475489">انتهت مهلة الطلب</translation>
@@ -9239,6 +9239,7 @@
 <translation id="8256319818471787266">اللامع</translation>
 <translation id="8257950718085972371">متابعة حظر الدخول إلى الكاميرا</translation>
 <translation id="8258027225380843424">تم الاستيراد</translation>
+<translation id="8260177673299865994">تحسين حماية عمليات التنزيل</translation>
 <translation id="8260864402787962391">الماوس</translation>
 <translation id="8261378640211443080">هذه الإضافة غير مدرجة في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> وربما تمت إضافتها بدون علمك.</translation>
 <translation id="8261506727792406068">حذف</translation>

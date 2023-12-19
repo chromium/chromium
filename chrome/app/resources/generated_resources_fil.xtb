@@ -575,7 +575,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1448779317883494811">Brush Tool</translation>
 <translation id="1449191289887455076">Pindutin ulit ang “<ph name="CURRENTKEY" />” para kumpirmahin ang pagtatalaga at <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Webpage, Iisang File</translation>
-<translation id="145280054552001290">Magdagdag at mag-alis ng mga wika sa caption</translation>
 <translation id="1453561711872398978">Magpadala ng <ph name="BEGIN_LINK" />
     mga log ng debug<ph name="END_LINK" /> (inirerekomenda)</translation>
 <translation id="1454223536435069390">Kumuha ng screenshot</translation>
@@ -2476,7 +2475,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="285033512555869047">Sarado</translation>
 <translation id="2850541429955027218">Magdagdag ng tema</translation>
 <translation id="2850672011315104382">Istilo ng Bantas</translation>
-<translation id="285241945869362924">Awtomatikong gumagawa ng mga caption para sa audio at video. Hindi kailanman lumalabas sa iyong device ang audio at mga caption.</translation>
 <translation id="2853121255651601031">Na-save ang Password</translation>
 <translation id="2856776373509145513">Gumawa ng bagong container</translation>
 <translation id="2856907950922663165">I-off ang pag-encrypt ng URL?</translation>
@@ -6823,6 +6821,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6347010704471250799">Ipakita ang notification</translation>
 <translation id="6348805481186204412">Offline na storage</translation>
 <translation id="6349101878882523185">I-install ang <ph name="APP_NAME" /></translation>
+<translation id="6350821834561350243">Magbigay ng malinaw na paglalarawan ng isyu at mga hakbang para makita ang isyu (kung posible)</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (na tinatawag ding ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Kinukuha ang impormasyon ng Google Account...</translation>
 <translation id="635609604405270300">Panatilihing naka-on ang device</translation>
@@ -7757,6 +7756,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Alisin ang App}one{Mag-alis ng mga App}other{Mag-alis ng mga App}}</translation>
 <translation id="7099337801055912064">Hindi makapag-load ng malaking PPD. 250kB ang maximum na laki.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Walang nakompromisong password}=1{{COUNT} nakompromisong password}one{{COUNT} nakompromisong password}other{{COUNT} na nakompromisong password}}</translation>
+<translation id="7100379916748214860">Kaka-block lang ng Chrome sa pag-download ng mapanganib na file. Makakuha ng mas mahigpit na seguridad sa pamamagitan ng pinaigting na proteksyon.</translation>
 <translation id="710047887584828070">Shine-share ang content ng tab na ito</translation>
 <translation id="710224247908684995">Na-off ng isang extension ang Ligtas na Pag-browse</translation>
 <translation id="7102832101143475489">Nag-time out ang kahilingan</translation>
@@ -9247,6 +9247,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8256319818471787266">Bantay</translation>
 <translation id="8257950718085972371">Ipagpatuloy ang pag-block ng access sa camera</translation>
 <translation id="8258027225380843424">Matagumpay ang pag-import!</translation>
+<translation id="8260177673299865994">Pahusayin ang proteksyon sa pag-download</translation>
 <translation id="8260864402787962391">Mouse</translation>
 <translation id="8261378640211443080">Hindi nakalista ang extension na ito sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> at maaaring naidagdag nang hindi mo nalalaman.</translation>
 <translation id="8261506727792406068">I-delete</translation>

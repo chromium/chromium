@@ -63,6 +63,7 @@ Važne napomene:
 <translation id="2427791862912929107">Chrome ima značajke koje vam mogu pomoći u upravljanju internetskim podacima i brzinom kojom se učitavaju web-stranice.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Da biste jednostavno dohvatili spremljene zaporke u drugim aplikacijama, upotrebljavajte Chrome za Automatsko popunjavanje</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{To se događa kad se Chrome ne koristi {THRESHOLD} minutu. To može uključivati povijest i automatsko popunjavanje.}one{To se događa kada se Chrome ne koristi {THRESHOLD} minutu. To može uključivati povijest i automatsko popunjavanje.}few{To se događa kada se Chrome ne koristi {THRESHOLD} minute. To može uključivati povijest i automatsko popunjavanje.}other{To se događa kada se Chrome ne koristi {THRESHOLD} minuta. To može uključivati povijest i automatsko popunjavanje.}}</translation>
 <translation id="2561231791489583059">Koristite Chrome kao zadani preglednik da biste se zaštitili od opasnih web-lokacija i očuvali sigurnost svojih zaporki</translation>
 <translation id="2574249610672786438">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chrome, prijavite se na svim svojim uređajima</translation>
 <translation id="2576431527583832481">Chrome je postao još bolji! Dostupna je nova verzija.</translation>
@@ -91,6 +92,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3282568296779691940">Prijavite se u Chrome</translation>
 <translation id="3340938510625667914">Radnje u Chromeu</translation>
 <translation id="3345341804167540816">Upotrebljavajte Chrome svugdje</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{To se događa kad se Chrome ne koristi {THRESHOLD} minutu}one{To se događa kad se Chrome ne koristi {THRESHOLD} minutu}few{To se događa kad se Chrome ne koristi {THRESHOLD} minute}other{To se događa kad se Chrome ne koristi {THRESHOLD} minuta}}</translation>
 <translation id="3399930248910934354">Otvorite postavke Chromea</translation>
 <translation id="3472587960215700950">Chrome koristi Google karte kako bi vam pružio upute i lokalne informacije o otkrivenim adresama.</translation>
 <translation id="3503014945441706099">Nabavite poboljšano sigurno pregledavanje i za ovaj profil u Chromeu</translation>

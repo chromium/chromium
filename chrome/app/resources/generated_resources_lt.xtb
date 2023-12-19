@@ -577,7 +577,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1448779317883494811">Teptuko įrankis</translation>
 <translation id="1449191289887455076">Dar kartą paspauskite klavišą „<ph name="CURRENTKEY" />“, kad patvirtintumėte priskyrimą ir atliktumėte veiksmą „<ph name="RESPONSE" />“</translation>
 <translation id="1451375123200651445">Tinklalapis, vienas failas</translation>
-<translation id="145280054552001290">Subtitrų kalbų pridėjimas ir pašalinimas</translation>
 <translation id="1453561711872398978">Siųsti <ph name="BEGIN_LINK" />
     derinimo žurnalus<ph name="END_LINK" /> (rekomenduojama)</translation>
 <translation id="1454223536435069390">S&amp;ukurti ekrano kopiją</translation>
@@ -2478,7 +2477,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="285033512555869047">Uždaryta</translation>
 <translation id="2850541429955027218">Pridėti temą</translation>
 <translation id="2850672011315104382">Skyrybos ženklų stilius</translation>
-<translation id="285241945869362924">Automatiškai kuriami garso ir vaizdo įrašų subtitrai. Garso įrašai ir subtitrai visada lieka įrenginyje.</translation>
 <translation id="2853121255651601031">Slaptažodis išsaugotas</translation>
 <translation id="2856776373509145513">Naujo sudėtinio failo kūrimas</translation>
 <translation id="2856907950922663165">Išjungti URL šifruotę?</translation>
@@ -6826,6 +6824,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6347010704471250799">Pranešimo rodymas</translation>
 <translation id="6348805481186204412">Saugykla neprisijungus</translation>
 <translation id="6349101878882523185">Įdiegti <ph name="APP_NAME" /></translation>
+<translation id="6350821834561350243">Pateikite aiškų problemos aprašą ir problemos atkūrimo veiksmus (jei įmanoma)</translation>
 <translation id="6354918092619878358">SECG elipsės formos kreivės secp256r1 (taip pat vadinama ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Gaunama „Google“ paskyros informacija...</translation>
 <translation id="635609604405270300">Neišjunkite įrenginio</translation>
@@ -7764,6 +7763,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Pašalinti programą}one{Pašalinti programas}few{Pašalinti programas}many{Pašalinti programas}other{Pašalinti programas}}</translation>
 <translation id="7099337801055912064">Nepavyko įkelti didelio PPD. Didžiausias galimas dydis yra 250 KB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Pažeistų slaptažodžių nėra}=1{{COUNT} pažeistas slaptažodis}one{{COUNT} pažeistas slaptažodis}few{{COUNT} pažeisti slaptažodžiai}many{{COUNT} pažeisto slaptažodžio}other{{COUNT} pažeistų slaptažodžių}}</translation>
+<translation id="7100379916748214860">„Chrome“ ką tik užblokavo pavojingo failo atsisiuntimą. Užtikrinkite dar patikimesnę apsaugą naudodami sustiprintą apsaugą.</translation>
 <translation id="710047887584828070">Šio skirtuko lapo turinys bendrinamas</translation>
 <translation id="710224247908684995">Plėtinys išjungė Saugaus naršymo funkciją</translation>
 <translation id="7102832101143475489">Baigėsi skirtasis užklausos laikas</translation>
@@ -9254,6 +9254,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8256319818471787266">Žaismingasis</translation>
 <translation id="8257950718085972371">Ir toliau blokuoti prieigą prie fotoaparato</translation>
 <translation id="8258027225380843424">Importuota sėkmingai!</translation>
+<translation id="8260177673299865994">Sustiprinkite atsisiuntimo apsaugą</translation>
 <translation id="8260864402787962391">Pelė</translation>
 <translation id="8261378640211443080">Šio plėtinio nėra „<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />“ sąraše. Jis galėjo būti pridėtas be jūsų žinios.</translation>
 <translation id="8261506727792406068">Ištrinti</translation>

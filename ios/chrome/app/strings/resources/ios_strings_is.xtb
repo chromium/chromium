@@ -540,6 +540,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3909222758573607742">Vista aðgangsorð og önnur atriði á reikningi</translation>
 <translation id="3915450441834151894">Upplýsingar um vefsvæði</translation>
 <translation id="3918585468378680136">Sækir stöðu pakka</translation>
+<translation id="3921585859122905677">Staða veffangastiku</translation>
 <translation id="3922310737605261887">Leita að afrituðum texta</translation>
 <translation id="3928666092801078803">Sameina gögnin mín</translation>
 <translation id="3929457972718048006">Heimilisföng</translation>
@@ -1402,6 +1403,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8613883225817609844">Fela „Nýlegir flipar“</translation>
 <translation id="8620640915598389714">Breyta</translation>
 <translation id="8624447588354561276">Pakkanúmer</translation>
+<translation id="8624753446837753970">Stilla stöðu</translation>
 <translation id="8626393685701737946">Þú getur breytt sjálfgefinni birtingu vefsvæðis í skjáborð í „Stillingar &gt; Efnisstillingar"</translation>
 <translation id="8636825310635137004">Kveiktu á samstillingu til að fá aðgang að flipunum þínum í öðrum tækjum.</translation>
 <translation id="8637431369725868556">Verðu þig fyrir hættulegum vefsvæðum.</translation>
@@ -1443,6 +1445,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8820817407110198400">Bókamerki</translation>
 <translation id="8825562130641217944">Sæktu bókamerkin þín, aðgangsorðin og fleira.</translation>
 <translation id="882557203579758546">Finna á síðu…</translation>
+<translation id="8838250347763484641">Færðu veffangastikuna neðst eða efst á skjáinn fyrir sérsniðna vafraupplifun.</translation>
 <translation id="8840513115188359703">Þú verður ekki skráð(ur) út af Google reikningnum þínum.</translation>
 <translation id="8843129975935593190">Fyrirtækið takmarkar hvað þú getur samstillt.</translation>
 <translation id="8849001918648564819">Falið</translation>
@@ -1515,6 +1518,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9188680907066685419">Skrá út af stýrðum reikningi</translation>
 <translation id="9200875785104711666">fyrir <ph name="TIME" /> dögum</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9203951165704618409">Færðu veffangastikuna neðst á skjáinn fyrir sérsniðna vafraupplifun.</translation>
 <translation id="9206887540681440657">Hraði</translation>
 <translation id="9219154867334666734">Leita í flipum…</translation>
 <translation id="9223358826628549784">Hrunskýrsla send.</translation>

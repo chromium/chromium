@@ -574,7 +574,6 @@
 <translation id="1448779317883494811">筆刷工具</translation>
 <translation id="1449191289887455076">再次按下「<ph name="CURRENTKEY" />」鍵即可確認指派設定並<ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">另存為單一檔案網頁</translation>
-<translation id="145280054552001290">新增和移除字幕語言</translation>
 <translation id="1453561711872398978">傳送<ph name="BEGIN_LINK" />
     偵錯記錄<ph name="END_LINK" /> (建議)</translation>
 <translation id="1454223536435069390">擷取螢幕擷圖</translation>
@@ -1657,7 +1656,7 @@
 <translation id="2249111429176737533">在分頁視窗中開啟</translation>
 <translation id="2249605167705922988">例如：1-5、8、11-13</translation>
 <translation id="2249635629516220541">自訂網站可用來顯示廣告的資料</translation>
-<translation id="2250624716625396929">這個分頁正在使用攝影機和麥克風</translation>
+<translation id="2250624716625396929">此分頁正在使用攝錄機和麥克風</translation>
 <translation id="2251218783371366160">使用系統檢視器開啟</translation>
 <translation id="225163402930830576">重新整理網絡</translation>
 <translation id="2251809247798634662">新無痕式視窗</translation>
@@ -2475,7 +2474,6 @@
 <translation id="285033512555869047">已關閉</translation>
 <translation id="2850541429955027218">新增主題</translation>
 <translation id="2850672011315104382">標點符號樣式</translation>
-<translation id="285241945869362924">自動建立音訊和影片字幕。音訊和字幕絕不會外洩。</translation>
 <translation id="2853121255651601031">密碼已儲存</translation>
 <translation id="2856776373509145513">建立新容器</translation>
 <translation id="2856907950922663165">要關閉網址加密功能嗎？</translation>
@@ -3110,6 +3108,7 @@
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">分隔符號</translation>
 <translation id="3387023983419383865">、</translation>
+<translation id="3387588771342841525">開啟時，密碼將會儲存在 <ph name="EMAIL" /> 中。關閉後，密碼只會儲存在此裝置上。</translation>
 <translation id="3387614642886316601">使用進階拼字檢查功能</translation>
 <translation id="3387829698079331264">不允許偵測您使用裝置的時間</translation>
 <translation id="3388094447051599208">輸出紙匣將滿</translation>
@@ -3298,6 +3297,7 @@
 <translation id="3532521178906420528">正在建立網絡連線…</translation>
 <translation id="3532852121563960103">{NUM_OF_FILES,plural, =1{正在將 1 個檔案移至「<ph name="CLOUD_PROVIDER" />」}other{正在將 {NUM_OF_FILES} 個檔案移至「<ph name="CLOUD_PROVIDER" />」}}</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - 靜音</translation>
+<translation id="3537099313456411235">連結 <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> 即可透過「檔案」應用程式存取「雲端硬碟」檔案</translation>
 <translation id="3537881477201137177">您可稍後在「設定」再作修改</translation>
 <translation id="3538066758857505094">解除安裝 Linux 時發生錯誤。請再試一次。</translation>
 <translation id="3540173484406326944">沒有經由 <ph name="HOST_DEVICE_NAME" /> 連接的網絡</translation>
@@ -5377,6 +5377,7 @@
 <translation id="5185359571430619712">睇下擴充程式</translation>
 <translation id="5185386675596372454">由於最新版本的「<ph name="EXTENSION_NAME" />」需要更多權限，因此已經停用。</translation>
 <translation id="5185500136143151980">沒有互聯網連線</translation>
+<translation id="5186381005592669696">自訂支援應用程式的顯示語言</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869">儲存空間使用量：<ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">啟用連接埠</translation>
@@ -6153,6 +6154,7 @@
 <translation id="5828633471261496623">列印中…</translation>
 <translation id="5830205393314753525">無法開啟「<ph name="APP_NAME" />」</translation>
 <translation id="5830720307094128296">另存網頁(&amp;A)…</translation>
+<translation id="583179300286794292">以 <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> 的身份登入</translation>
 <translation id="5831950941058843834">要刪除 <ph name="SITE_NAME" />、當中所有網站，以及網站已安裝的應用程式的網站資料和權限嗎？</translation>
 <translation id="5832813618714645810">設定檔</translation>
 <translation id="583281660410589416">不明</translation>
@@ -6226,6 +6228,7 @@
 <translation id="5883356647197510494">已自動封鎖<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">自訂每個擴充程式</translation>
 <translation id="5885314688092915589">您的機構將管理此設定檔</translation>
+<translation id="5885470467814103868">開始掃瞄</translation>
 <translation id="5885631909150054232">複製憑證</translation>
 <translation id="5886009770935151472">手指 1</translation>
 <translation id="5886112770923972514">連接並快速設定附近的「快速配對」裝置</translation>
@@ -6628,7 +6631,7 @@
 <translation id="6202304368170870640">您可使用 PIN 登入或解鎖裝置。</translation>
 <translation id="6203247599828309566">你儲存咗呢個網站某個密碼嘅備註。如要查看該備註，請按一下鎖匙圖示。</translation>
 <translation id="6205314730813004066">廣告私隱權</translation>
-<translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> - 麥克風正在錄音</translation>
+<translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> - 麥克風錄製緊內容</translation>
 <translation id="6206199626856438589">您將會從已顯示的網站 (包括已開啟的分頁) 中登出</translation>
 <translation id="6206311232642889873">複製圖片(&amp;Y)</translation>
 <translation id="6207200176136643843">重設為預設縮放等級</translation>
@@ -6816,6 +6819,8 @@
 <translation id="6347010704471250799">顯示通知</translation>
 <translation id="6348805481186204412">離線儲存空間</translation>
 <translation id="6349101878882523185">安裝「<ph name="APP_NAME" />」</translation>
+<translation id="6350821834561350243">請清楚描述問題，並盡量提供重現問題的步驟</translation>
+<translation id="6351178441572658285">應用程式語言</translation>
 <translation id="6354918092619878358">SECG 橢圓曲線 secp256r1 (亦稱為 ANSI X9.62 prime256v1、NIST P-256)</translation>
 <translation id="6355395056805388423">正在取得 Google 帳戶資料…</translation>
 <translation id="635609604405270300">保持裝置開啟</translation>
@@ -7180,7 +7185,7 @@
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659213950629089752">「<ph name="NAME" />」擴充功能已調整這個專頁的大小</translation>
 <translation id="6659594942844771486">分頁</translation>
-<translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - 攝影機正在錄影</translation>
+<translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - 攝錄機錄製緊內容</translation>
 <translation id="6660819301598582123">狐狗大鬥法。</translation>
 <translation id="666099631117081440">列印伺服器</translation>
 <translation id="6662931079349804328">企業政策改咗，已經喺工具列度移除咗實驗掣。</translation>
@@ -7419,6 +7424,7 @@
 <translation id="6833479554815567477">分頁已經由包含「<ph name="GROUP_CONTENTS" />」嘅「<ph name="GROUP_NAME" />」群組度移除</translation>
 <translation id="6833996806551876956">私隱沙箱試用</translation>
 <translation id="6835762382653651563">請連接互聯網以更新 <ph name="DEVICE_TYPE" />。</translation>
+<translation id="683630338945552556">將密碼儲存至 Google 帳戶並自動填入</translation>
 <translation id="6839225236531462745">憑證刪除錯誤</translation>
 <translation id="6839916869147598086">登入方式已變更</translation>
 <translation id="6840155290835956714">傳送前先詢問</translation>
@@ -7748,6 +7754,7 @@
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{移除應用程式}other{移除應用程式}}</translation>
 <translation id="7099337801055912064">無法載入大型 PPD。檔案上限為 250KB。</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{沒有被盜用的密碼}=1{{COUNT} 個被盜用的密碼}other{{COUNT} 個被盜用的密碼}}</translation>
+<translation id="7100379916748214860">Chrome 剛才已禁止下載危險的檔案。強化保護功能，讓網上安全再升級。</translation>
 <translation id="710047887584828070">正在分享此分頁的內容</translation>
 <translation id="710224247908684995">某個擴充程式已將「安全瀏覽」功能關閉</translation>
 <translation id="7102832101143475489">要求逾時</translation>
@@ -8036,6 +8043,7 @@
 <translation id="7347943691222276892">撳一下就可以離開<ph name="SUBPAGE_TITLE" />。</translation>
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
 <translation id="7349010927677336670">影片流暢度</translation>
+<translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} 個密碼只會儲存至此裝置。}other{{COUNT} 個密碼只會儲存至此裝置。}}</translation>
 <translation id="7352651011704765696">發生問題</translation>
 <translation id="7352664183151911163">涵蓋所有應用程式和 Chrome 瀏覽器</translation>
 <translation id="7353261921908507769">聯絡人在附近時可與您分享內容。您必須選擇接受，系統才能傳送檔案。</translation>
@@ -8275,6 +8283,7 @@
 <translation id="7523117833414447032">在讀出大寫字母時</translation>
 <translation id="7523585675576642403">重新命名設定檔</translation>
 <translation id="7525067979554623046">建立</translation>
+<translation id="7525879597899798851">已在 OS 偏好設定中關閉位置功能</translation>
 <translation id="7526989658317409655">佔位符</translation>
 <translation id="7528224636098571080">不要開啟</translation>
 <translation id="7529411698175791732">請檢查您的互聯網連線。如果問題持續，請嘗試登出，然後再次登入。</translation>
@@ -8469,6 +8478,7 @@
 <translation id="7670483791111801022">字幕</translation>
 <translation id="7671130400130574146">使用系統標題列及邊界</translation>
 <translation id="767127784612208024">輕觸即可確認重設</translation>
+<translation id="7671472752213333268">「<ph name="EXTENSION_NAME" />」要求使用「<ph name="SCANNER_NAME" />」掃瞄。</translation>
 <translation id="7672504401554182757">選擇哪一部裝置有 <ph name="APP_NAME" /> 的密鑰</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> (在 <ph name="PAGE_TITLE" /> 中)。</translation>
 <translation id="7673313156293624327">ChromeOS Shill (連線管理員) 記錄</translation>
@@ -8992,7 +9002,7 @@
 <translation id="8059417245945632445">檢查裝置 (&amp;I)</translation>
 <translation id="8059456211585183827">冇可以儲存嘅打印機。</translation>
 <translation id="8061091456562007989">還原設定</translation>
-<translation id="8061244502316511332">這個分頁正在使用麥克風</translation>
+<translation id="8061244502316511332">此分頁正在使用麥克風</translation>
 <translation id="8061970399284390013">拼字和文法檢查</translation>
 <translation id="8061991877177392872">您似乎已在另一部裝置上透過「Google 助理」設定了 Voice Match 功能。系統已使用先前的錄音在此裝置上建立語音模型。</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 張紙}other{{COUNT} 張紙}}</translation>
@@ -9237,6 +9247,7 @@
 <translation id="8256319818471787266">小黃</translation>
 <translation id="8257950718085972371">繼續封鎖存取相機</translation>
 <translation id="8258027225380843424">匯入成功！</translation>
+<translation id="8260177673299865994">改善下載保護功能</translation>
 <translation id="8260864402787962391">滑鼠</translation>
 <translation id="8261378640211443080">這個擴充功能未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中，可能是在您不知情的情況下加入瀏覽器。</translation>
 <translation id="8261506727792406068">刪除</translation>
@@ -9474,7 +9485,7 @@
 <translation id="844063558976952706">一律在此網站上允許</translation>
 <translation id="8441313165929432954">啟用/停用網絡共享</translation>
 <translation id="8443986842926457191">網址超過 2048 個字元</translation>
-<translation id="8445281870900174108">這個分頁正在使用攝影機</translation>
+<translation id="8445281870900174108">此分頁正在使用攝錄機</translation>
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8447409163267621480">必須以 Ctrl 或 Alt 鍵開頭</translation>
 <translation id="844850004779619592">找不到指令</translation>
@@ -10548,7 +10559,7 @@
 <translation id="981121421437150478">離線</translation>
 <translation id="983192555821071799">關閉所有分頁</translation>
 <translation id="983511809958454316">無法在 VR 狀態下使用此功能</translation>
-<translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - 攝影機和麥克風正在錄影和錄音</translation>
+<translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - 攝錄機同麥克風錄製緊內容</translation>
 <translation id="984275831282074731">付款方法</translation>
 <translation id="984705303330760860">新增拼字檢查語言</translation>
 <translation id="98515147261107953">橫向</translation>

@@ -40,6 +40,7 @@
 <translation id="1153356358378277386">دستگاه‌های مرتبط‌شده</translation>
 <translation id="1155734730463845512">میزان شارژ فعلی باتری <ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="1160215328209699296">روشن و درحال استفاده</translation>
+<translation id="1163437384438183174">برداشتن «مرکز کنترل تلفن» از قفسه</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />،<ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">‏کابل USB-C شما ممکن است نتواند درست به نمایشگرها وصل شود</translation>
 <translation id="1175572348579024023">پیمایش</translation>
@@ -70,6 +71,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> متصل است.</translation>
 <translation id="1240638468526743569">برنامه‌ای</translation>
 <translation id="1242883863226959074">دستگاه</translation>
+<translation id="1245644940275736236">رفتن به «دستیار»</translation>
 <translation id="124678866338384709">بستن برگه کنونی</translation>
 <translation id="1246890715821376239">برنامه‌های پشتیبانی‌نشده</translation>
 <translation id="1247372569136754018">میکروفون (داخلی)</translation>
@@ -692,6 +694,7 @@
 <translation id="383629559565718788">نمایش تنظیمات صفحه‌کلید</translation>
 <translation id="384082539148746321">الگو حذف شود؟</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> سپس <ph name="KEY_ONE" /> یا <ph name="KEY_TWO" /> یا <ph name="KEY_THREE" /> یا <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">۵۰+۹۴٫۵</translation>
 <translation id="3846575436967432996">اطلاعات شبکه در دسترس نیست</translation>
 <translation id="385051799172605136">بازگشت</translation>
 <translation id="385300504083504382">آغاز</translation>
@@ -926,6 +929,7 @@
 <translation id="4759238208242260848">بارگیری‌ها</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + بالابر</translation>
 <translation id="4762573482154983647">پنهان کردن برنامه‌ها</translation>
+<translation id="4762802395013012237">‫۵ فوت به متر</translation>
 <translation id="4763885921995354846">با این کار، دسترسی به دوربین برای همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین مجاز می‌شود. ممکن است لازم باشد صفحه وب را بازآوری کنید یا برنامه را دوباره راه‌اندازی کنید.</translation>
 <translation id="4774338217796918551">فردا ساعت <ph name="COME_BACK_TIME" /> برگردید.</translation>
 <translation id="4776584068981882959">همچنان نمی‌توان گذرواژه شما را تأیید کرد. دوباره امتحان کنید.</translation>
@@ -968,6 +972,7 @@
 <translation id="491504982845934899">فعال‌سازی بعداز راه‌اندازی دستگاه <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">قوی</translation>
 <translation id="4918086044614829423">می‌پذیرم</translation>
+<translation id="491907188205944472">آنچه را نیاز دارید مستقیماً در «راه‌انداز» جستجو کنید</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> درحال استفاده از دوربین است</translation>
 <translation id="492453977506755176">کلید حالت ضبط</translation>
 <translation id="4925542575807923399">سرپرست این حساب لازم می‌داند که این حساب اولین حسابی باشد که در جلسه چندگانه ورود به سیستم وارد سیستم شده باشد.</translation>
@@ -1118,6 +1123,7 @@
 <translation id="5518068085000130971">‏این اصول اولیه بود! کارتان را در «کاوش»، برنامه داخلی ما برای نکته‌ها و راهنمایی، ادامه دهید. نکته‌هایی برای شروع، برنامه‌های توصیه‌شده، پیشنهادهای ویژه، و جدیدترین ویژگی‌های Chromebook را خواهید دید.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">سرپرستتان همه نمایه‌های سیم‌کارت داخلی را برداشته است. برای اطلاعات بیشتر، با سرپرست تماس بگیرید.</translation>
+<translation id="5520909879404821039">سلام به فرانسوی</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> درحال اتصال است.</translation>
 <translation id="5529587891732734495">مکث پخش محتوا</translation>
 <translation id="5532994612895037630">برای ضبط تمام‌صفحه، روی هرجایی از صفحه ضربه بزنید</translation>
@@ -1695,6 +1701,7 @@
 <translation id="7886277072580235377">وقتی از سیستم خارج شوید، جلسه اینترنت پاک خواهد شد. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">‏Send an email (ایمیل ارسال کن)</translation>
 <translation id="7893503627044934815">نمی‌خواهم این فایل نشان داده شود</translation>
+<translation id="7893547474469215105">تعریف سمت‌الرأس</translation>
 <translation id="7895348134893321514">نگهدارنده</translation>
 <translation id="7897375687985782769">میان‌بر صفحه‌کلید مربوط به چرخش صفحه را فشار دادید. می‌خواهید صفحه را بچرخانید؟</translation>
 <translation id="7897626842031123113">سینی وضعیت، زمان <ph name="TIME" />،
@@ -1710,6 +1717,7 @@
 <translation id="7904094684485781019">سرپرست این حساب اجازه ورود چندگانه به سیستم را نمی‌دهد.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> دستگاه متصل است</translation>
+<translation id="7923534281713082605">آب‌وهوا</translation>
 <translation id="7926080067315048321">‏همه تکلیف‌های موجود در Google Tasks را در وب مشاهده کنید</translation>
 <translation id="7930731167419639574">اکنون گفتار در دستگاه پردازش می‌شود و «تایپ صوتی» به‌صورت آفلاین کار می‌کند</translation>
 <translation id="7932451802722951285">‏باز کردن در «تقویم Google»</translation>
@@ -1856,6 +1864,7 @@
 <translation id="8555757996376137129">حذف میزکار کنونی</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> توصیه می‌کند <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید</translation>
 <translation id="8563862697512465947">تنظیمات اعلام</translation>
+<translation id="8569751806372591456">چند پیشنهاد برای امتحان کردن:</translation>
 <translation id="857201607579416096">منو به گوشه چپ پایین صفحه منتقل شد.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> را فشار دهید و روی پیوندی کلیک کنید</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1898,6 +1907,7 @@
 <translation id="875593634123171288">‏نمایش تنظیمات VPN</translation>
 <translation id="8759408218731716181">تنظیم ورود چندگانه به سیستم ممکن نیست</translation>
 <translation id="8763883995157866248">قرار دادن دستگاه در حالت خواب</translation>
+<translation id="877404052021108314">‫۹۰ درجه فارنهایت به سلسیوس</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />، برنامه نصب‌شده، مسدودشده</translation>
 <translation id="8785070478575117577">اتصال به <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1906,6 +1916,7 @@
 <translation id="8806053966018712535">پوشه <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">«راهنمایی»</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">میان‌بر نماگرفت (مهار به‌علاوه تبدیل به‌علاوه کلید حالت نمای کلی) را فشار دهید</translation>
 <translation id="881757059229893486">تنظیمات روش‌های ورودی</translation>
 <translation id="8819728065740986820">«شارژ تطبیقی» روشن است</translation>
 <translation id="8825863694328519386">برای برگشتن به عقب از سمت راست تند بکشید</translation>

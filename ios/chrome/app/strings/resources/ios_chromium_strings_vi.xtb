@@ -66,6 +66,7 @@
         Hãy đợi một vài phút rồi mới đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này sẽ bị xoá.</translation>
 <translation id="3256316712990552818">Đã sao chép vào Chromium</translation>
 <translation id="3344973607274501920">Chromium không thể kiểm tra mật khẩu của bạn. Hãy thử kiểm tra kết nối Internet.</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chromium. Phạm vi tác động có thể bao gồm nhật ký và tính năng tự động điền.}other{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chromium. Phạm vi tác động có thể bao gồm nhật ký và tính năng tự động điền.}}</translation>
 <translation id="3472200483164753384">Chưa hỗ trợ trên Chromium Canary</translation>
 <translation id="3478750326643748149">Ẩn "Khai thác tối đa Chromium"</translation>
 <translation id="3554027294407525061">Xoá dữ liệu duyệt web trong Chromium.</translation>
@@ -228,6 +229,7 @@ Những yếu tố cần xem xét:
 <translation id="88376265765385899">Mở dấu trang trên Chromium.</translation>
 <translation id="8924617840944134898">Mở thẻ ẩn danh trên Chromium</translation>
 <translation id="894437814105052438">Khi bạn đăng xuất, Chromium sẽ không đồng bộ hóa bất cứ dữ liệu mới nào với Tài khoản Google của bạn. Dữ liệu đã đồng bộ hóa trước đó sẽ vẫn có trong tài khoản này.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chromium}other{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chromium}}</translation>
 <translation id="8963279154877372067">Cho phép thông báo của Chromium để nhận thông báo giảm giá</translation>
 <translation id="9022552996538154597">Đăng nhập vào Chromium</translation>
 <translation id="9050790730841755540">Dùng Chromium mỗi khi bạn nhấn vào đường liên kết trong các ứng dụng khác.</translation>

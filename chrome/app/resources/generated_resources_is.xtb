@@ -575,7 +575,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1448779317883494811">Pensilverkfæri</translation>
 <translation id="1449191289887455076">Ýttu aftur á „<ph name="CURRENTKEY" />“ til að staðfesta úthlutun og <ph name="RESPONSE" />.</translation>
 <translation id="1451375123200651445">Vefsíða, stök skrá</translation>
-<translation id="145280054552001290">Bæta við og fjarlægja tungumál skjátexta</translation>
 <translation id="1453561711872398978">Senda <ph name="BEGIN_LINK" />
     villuleitarskrár<ph name="END_LINK" /> (mælt með)</translation>
 <translation id="1454223536435069390">T&amp;aka skjámynd</translation>
@@ -2476,7 +2475,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="285033512555869047">Lokað</translation>
 <translation id="2850541429955027218">Bæta þema við</translation>
 <translation id="2850672011315104382">Greinarmerkjastíll</translation>
-<translation id="285241945869362924">Býr sjálfkrafa til skjátexta fyrir hljóð- og myndefni. Hljóð og skjátextar fara aldrei úr tækinu.</translation>
 <translation id="2853121255651601031">Aðgangsorð vistað</translation>
 <translation id="2856776373509145513">Búa til nýjan geymi</translation>
 <translation id="2856907950922663165">Slökkva á dulkóðun vefslóða?</translation>
@@ -6823,6 +6821,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6347010704471250799">Sýna tilkynningu</translation>
 <translation id="6348805481186204412">Geymslurými án nettengingar</translation>
 <translation id="6349101878882523185">Setja upp <ph name="APP_NAME" /></translation>
+<translation id="6350821834561350243">Gefðu skýra lýsingu á vandamálinu og skrefum til að kalla það aftur fram (ef hægt er)</translation>
 <translation id="6354918092619878358">SECG sporger ferill secp256r1 (e.þ.s. ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Sækir upplýsingar um Google-reikning...</translation>
 <translation id="635609604405270300">Hafðu kveikt á tækinu</translation>
@@ -7756,6 +7755,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Fjarlægja forrit}one{Fjarlægja forrit}other{Fjarlægja forrit}}</translation>
 <translation id="7099337801055912064">Ekki er hægt að hlaða inn stórri PPD-skrá. Hámarksstærð er 250 kB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Engin aðgangsorð í hættu}=1{{COUNT} aðgangsorð í hættu}one{{COUNT} aðgangsorð í hættu}other{{COUNT} aðgangsorð í hættu}}</translation>
+<translation id="7100379916748214860">Chrome stöðvaði hættulega skrá úr niðurhali. Fáðu enn meira öryggi með aukinni vörn.</translation>
 <translation id="710047887584828070">Verið er að deila efni þessa flipa</translation>
 <translation id="710224247908684995">Viðbót slökkti á öruggri vefskoðun</translation>
 <translation id="7102832101143475489">Beiðnin rann út á tíma</translation>
@@ -9245,6 +9245,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8256319818471787266">Lúkas</translation>
 <translation id="8257950718085972371">Halda áfram að loka á aðgang að myndavél</translation>
 <translation id="8258027225380843424">Innflutningur tókst!</translation>
+<translation id="8260177673299865994">Bæta niðurhalsvörn</translation>
 <translation id="8260864402787962391">Mús</translation>
 <translation id="8261378640211443080">Þessi viðbót er ekki á skrá í <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og kann að hafa verið bætt við án þinnar vitneskju.</translation>
 <translation id="8261506727792406068">Eyða</translation>

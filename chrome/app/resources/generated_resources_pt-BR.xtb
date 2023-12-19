@@ -575,7 +575,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1448779317883494811">Ferramenta de pincel</translation>
 <translation id="1449191289887455076">Pressione "<ph name="CURRENTKEY" />" novamente para confirmar a atribuição e <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Página da Web, arquivo único</translation>
-<translation id="145280054552001290">Adicione e remova idiomas de legenda</translation>
 <translation id="1453561711872398978">Enviar <ph name="BEGIN_LINK" />
     registros de depuração<ph name="END_LINK" /> (recomendado)</translation>
 <translation id="1454223536435069390">T&amp;irar captura de tela</translation>
@@ -2475,7 +2474,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="285033512555869047">Fechado</translation>
 <translation id="2850541429955027218">Adicionar tema</translation>
 <translation id="2850672011315104382">Estilo da pontuação</translation>
-<translation id="285241945869362924">Cria legendas automaticamente para conteúdo de áudio e vídeo. O áudio e as legendas nunca deixam o dispositivo.</translation>
 <translation id="2853121255651601031">Senha salva</translation>
 <translation id="2856776373509145513">Criar um novo contêiner</translation>
 <translation id="2856907950922663165">Desativar a criptografia de URL?</translation>
@@ -3111,6 +3109,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">Separador</translation>
 <translation id="3387023983419383865">,</translation>
+<translation id="3387588771342841525">Quando essa configuração está ativada, as senhas são salvas em <ph name="EMAIL" />. Quando está desativada, elas são salvas apenas neste dispositivo.</translation>
 <translation id="3387614642886316601">Usar a verificação ortográfica aprimorada</translation>
 <translation id="3387829698079331264">Sem autorização para saber quando você está usando o dispositivo ativamente</translation>
 <translation id="3388094447051599208">A bandeja de saída está quase cheia</translation>
@@ -3299,6 +3298,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3532521178906420528">Conectando à rede…</translation>
 <translation id="3532852121563960103">{NUM_OF_FILES,plural, =1{Transferindo 1 arquivo para o <ph name="CLOUD_PROVIDER" />}one{Transferindo {NUM_OF_FILES} arquivo para o <ph name="CLOUD_PROVIDER" />}other{Transferindo {NUM_OF_FILES} arquivos para o <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - Áudio desativado</translation>
+<translation id="3537099313456411235">Conecte-se à conta <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> para acessar seus arquivos do Drive no app Arquivos</translation>
 <translation id="3537881477201137177">Você pode mudar isso mais tarde nas Configurações</translation>
 <translation id="3538066758857505094">Erro ao instalar o Linux. Tente novamente.</translation>
 <translation id="3540173484406326944">Sem rede no dispositivo <ph name="HOST_DEVICE_NAME" /></translation>
@@ -5382,6 +5382,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5185359571430619712">Revisar extensões</translation>
 <translation id="5185386675596372454">A versão mais recente de "<ph name="EXTENSION_NAME" />" foi desativada porque requer mais permissões.</translation>
 <translation id="5185500136143151980">Sem Internet</translation>
+<translation id="5186381005592669696">Personalizar o idioma de exibição dos apps com suporte</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869">Como usar o <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Ativar porta</translation>
@@ -6161,6 +6162,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5828633471261496623">Imprimindo...</translation>
 <translation id="5830205393314753525">Não foi possível abrir o app <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">Salvar página &amp;como...</translation>
+<translation id="583179300286794292">Login feito como <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Excluir permissões e dados do site <ph name="SITE_NAME" />, todos os sites relacionados e o app instalado?</translation>
 <translation id="5832813618714645810">Perfis</translation>
 <translation id="583281660410589416">Desconhecido</translation>
@@ -6234,6 +6236,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5883356647197510494">Bloqueados automaticamente: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Personalizar para cada extensão</translation>
 <translation id="5885314688092915589">Sua organização vai gerenciar este perfil</translation>
+<translation id="5885470467814103868">Iniciar busca</translation>
 <translation id="5885631909150054232">Copiar token</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
 <translation id="5886112770923972514">Conectar e configurar rapidamente os dispositivos próximos com Pareamento rápido</translation>
@@ -6824,6 +6827,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6347010704471250799">Mostrar notificação</translation>
 <translation id="6348805481186204412">Armazenamento off-line</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
+<translation id="6351178441572658285">Idiomas do app</translation>
 <translation id="6354918092619878358">Curva elíptica SECG secp256r1 (também conhecida como ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Acessando informações da Conta do Google…</translation>
 <translation id="635609604405270300">Mantenha o dispositivo ligado</translation>
@@ -7429,6 +7433,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6833479554815567477">A guia foi removida do grupo <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833996806551876956">Teste da Privacy Sandbox</translation>
 <translation id="6835762382653651563">Conecte-se à Internet para atualizar seu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="683630338945552556">Usar e salvar senhas na sua Conta do Google</translation>
 <translation id="6839225236531462745">Erro de exclusão do certificado</translation>
 <translation id="6839916869147598086">O login mudou</translation>
 <translation id="6840155290835956714">Perguntar antes de enviar</translation>
@@ -8046,6 +8051,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7347943691222276892">Clique para sair de <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Teclado virtual</translation>
 <translation id="7349010927677336670">Suavidade da reprodução do vídeo</translation>
+<translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} senha foi salva apenas neste dispositivo}one{{COUNT} senha foi salva apenas neste dispositivo}other{{COUNT} senhas foram salvas apenas neste dispositivo}}</translation>
 <translation id="7352651011704765696">Algo deu errado</translation>
 <translation id="7352664183151911163">Em todos os seus apps e no navegador Chrome</translation>
 <translation id="7353261921908507769">Seus contatos podem compartilhar itens com você quando estão por perto. As transferências só são iniciadas depois que você as aceita.</translation>
@@ -8286,6 +8292,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7523117833414447032">Ao ler letras maiúsculas</translation>
 <translation id="7523585675576642403">Renomear perfil</translation>
 <translation id="7525067979554623046">Criar</translation>
+<translation id="7525879597899798851">A localização está desativada nas preferências do SO</translation>
 <translation id="7526989658317409655">Marcador</translation>
 <translation id="7528224636098571080">Não abrir</translation>
 <translation id="7529411698175791732">Verifique sua conexão com a Internet. Se o problema continuar, tente sair e fazer login novamente.</translation>
@@ -8480,6 +8487,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7670483791111801022">Legendas</translation>
 <translation id="7671130400130574146">Usar barra de título e bordas do sistema</translation>
 <translation id="767127784612208024">Toque para confirmar a redefinição</translation>
+<translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" quer digitalizar usando "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">Escolha qual dispositivo tem a senha de acesso para o app <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, neste site: <ph name="PAGE_TITLE" />.</translation>
 <translation id="7673313156293624327">Registros do ChromeOS Shill (gerenciador de conexões)</translation>

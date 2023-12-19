@@ -63,6 +63,7 @@ Những yếu tố cần xem xét:
 <translation id="2427791862912929107">Chrome có tính năng giúp bạn quản lý dữ liệu Internet của mình và tốc độ mà bạn có thể tải trang web.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Để dễ dàng sử dụng mật khẩu đã lưu trong các ứng dụng khác, hãy dùng Chrome làm dịch vụ tự động điền</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome. Phạm vi tác động có thể bao gồm nhật ký và tính năng tự động điền.}other{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome. Phạm vi tác động có thể bao gồm nhật ký và tính năng tự động điền.}}</translation>
 <translation id="2561231791489583059">Hãy đặt Chrome làm trình duyệt mặc định để luôn được bảo vệ khỏi các trang web nguy hiểm và giữ cho mật khẩu của bạn an toàn</translation>
 <translation id="2574249610672786438">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập trên tất cả thiết bị.</translation>
 <translation id="2576431527583832481">Chrome được cải tiến hơn! Đã có phiên bản mới.</translation>
@@ -91,6 +92,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3282568296779691940">Đăng nhập vào Chrome</translation>
 <translation id="3340938510625667914">Thao tác trên Chrome</translation>
 <translation id="3345341804167540816">Sử dụng Chrome ở mọi nơi</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome}other{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome}}</translation>
 <translation id="3399930248910934354">Mở phần Cài đặt của Chrome</translation>
 <translation id="3472587960215700950">Chrome sử dụng Google Maps để chỉ đường và cung cấp cho bạn thông tin địa phương về các địa chỉ phát hiện được.</translation>
 <translation id="3503014945441706099">Bạn có thể dùng tính năng Duyệt web an toàn có tăng cường bảo vệ cho cả hồ sơ Chrome này</translation>

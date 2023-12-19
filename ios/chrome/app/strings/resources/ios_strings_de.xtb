@@ -540,6 +540,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3909222758573607742">Die Passwörter und anderen Elemente werden im Konto gespeichert</translation>
 <translation id="3915450441834151894">Websitein­formationen</translation>
 <translation id="3918585468378680136">Warten auf Paketstatus</translation>
+<translation id="3921585859122905677">Position der Adressleiste</translation>
 <translation id="3922310737605261887">Nach kopiertem Text suchen</translation>
 <translation id="3928666092801078803">Daten zusammenführen</translation>
 <translation id="3929457972718048006">Adressen</translation>
@@ -1402,6 +1403,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8613883225817609844">„Letzte Tabs“ ausblenden</translation>
 <translation id="8620640915598389714">Bearbeiten</translation>
 <translation id="8624447588354561276">Sendungsnummer</translation>
+<translation id="8624753446837753970">Position festlegen</translation>
 <translation id="8626393685701737946">Du kannst unter Einstellungen &gt; Inhaltseinstellungen die Desktop-Ansicht als Standardeinstellung festlegen</translation>
 <translation id="8636825310635137004">Aktiviere die Synchronisierung, um Tabs von deinen anderen Geräten abzurufen.</translation>
 <translation id="8637431369725868556">Schütze dich bestmöglich vor gefährlichen Websites.</translation>
@@ -1443,6 +1445,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8820817407110198400">Lesezeichen</translation>
 <translation id="8825562130641217944">Du kannst Lesezeichen, Passwörter und mehr abrufen.</translation>
 <translation id="882557203579758546">Auf Seite suchen…</translation>
+<translation id="8838250347763484641">Verschiebe die Adressleiste nach oben oder unten, um den Browser an deine Bedürfnisse anzupassen.</translation>
 <translation id="8840513115188359703">Du wirst nicht von deinem Google-Konto abgemeldet.</translation>
 <translation id="8843129975935593190">Deine Organisation legt fest, was du synchronisieren kannst.</translation>
 <translation id="8849001918648564819">Verborgen</translation>
@@ -1515,6 +1518,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9188680907066685419">Von verwaltetem Konto abmelden</translation>
 <translation id="9200875785104711666">vor <ph name="TIME" /> Tg.</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9203951165704618409">Verschiebe die Adressleiste von oben nach unten, um den Browser an deine Bedürfnisse anzupassen.</translation>
 <translation id="9206887540681440657">Geschwindigkeit</translation>
 <translation id="9219154867334666734">Auf Tabs suchen…</translation>
 <translation id="9223358826628549784">Absturzbericht wurde gesendet.</translation>

@@ -40,6 +40,7 @@
 <translation id="1153356358378277386">జత చేసిన పరికరాలు</translation>
 <translation id="1155734730463845512">ప్రస్తుత బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">ఆన్ చేసి, వినియోగించబడుతోంది</translation>
+<translation id="1163437384438183174">షెల్ఫ్ నుండి ఫోన్ హబ్‌ను తీసివేయండి</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">మీ USB-C కేబుల్, డిస్‌ప్లేలకు సరిగ్గా కనెక్ట్ కాకపోవచ్చు</translation>
 <translation id="1175572348579024023">స్క్రోల్ చేస్తుంది</translation>
@@ -70,6 +71,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> కనెక్ట్ చేయబడింది.</translation>
 <translation id="1240638468526743569">ఒక యాప్</translation>
 <translation id="1242883863226959074">పరికరం</translation>
+<translation id="1245644940275736236">అసిస్టెంట్ పేజీకి వెళ్ళండి</translation>
 <translation id="124678866338384709">ప్రస్తుత ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="1246890715821376239">సపోర్ట్ చేయని యాప్‌లు</translation>
 <translation id="1247372569136754018">మైక్రోఫోన్ (అంతర్గతం)</translation>
@@ -693,6 +695,7 @@
 <translation id="383629559565718788">కీబోర్డ్ సెట్టింగ్‌లను చూపుతుంది</translation>
 <translation id="384082539148746321">టెంప్లేట్‌ను తొలగించాలా?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> తర్వాత <ph name="KEY_ONE" /> లేదా <ph name="KEY_TWO" /> లేదా <ph name="KEY_THREE" /> లేదా <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">నెట్‌వర్క్ సమాచారం అందుబాటులో లేదు</translation>
 <translation id="385051799172605136">వెనుకకు</translation>
 <translation id="385300504083504382">ప్రారంభం</translation>
@@ -927,6 +930,7 @@
 <translation id="4759238208242260848">డౌన్‌లోడ్‌లు</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + పై వైపు బాణం గుర్తు</translation>
 <translation id="4762573482154983647">యాప్‌లను దాచండి</translation>
+<translation id="4762802395013012237">మీటర్లలో 5 అడుగులు</translation>
 <translation id="4763885921995354846">కెమెరా అనుమతితో ఇది అన్ని యాప్‌లు, వెబ్‌సైట్‌లకు యాక్సెస్‌ను అనుమతిస్తుంది. మీరు వెబ్ పేజీని రిఫ్రెష్ చేయాల్సి రావచ్చు లేదా యాప్‌ను రీస్టార్ట్ చేయాల్సి రావచ్చు.</translation>
 <translation id="4774338217796918551">రేపు <ph name="COME_BACK_TIME" />కి తిరిగి రండి.</translation>
 <translation id="4776584068981882959">మీ పాస్‌వర్డ్‌ను వెరిఫై చేయడం ఇంకా సాధ్యం కాలేదు. మళ్లీ ట్రై చేయండి.</translation>
@@ -969,6 +973,7 @@
 <translation id="491504982845934899">పరికరాన్ని సెటప్ చేసిన తర్వాత <ph name="NETWORK_NAME" />ను యాక్టివేట్ చేయండి</translation>
 <translation id="4917385247580444890">బలమైన</translation>
 <translation id="4918086044614829423">ఆమోదించు</translation>
+<translation id="491907188205944472">లాంచర్‌లో మీకు కావాల్సిన వాటి కోసం నేరుగా సెర్చ్ చేయండి</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> ప్రస్తుతం మీ కెమెరాను ఉపయోగిస్తోంది</translation>
 <translation id="492453977506755176">క్యాప్చర్ మోడ్ కీ</translation>
 <translation id="4925542575807923399">బహుళ సైన్-ఇన్ సెషన్‌లో ఈ ఖాతా మొదటిగా సైన్-ఇన్ చేసిన ఖాతాగా ఉండటం ఈ ఖాతా నిర్వాహకులకు అవసరం.</translation>
@@ -1119,6 +1124,7 @@
 <translation id="5518068085000130971">అవే ప్రాథమిక అంశాలు! చిట్కాలు, సహాయం కోసం మా బిల్ట్-ఇన్ యాప్‌ను, అన్వేషించడం కొనసాగించండి. మీరు ప్రారంభించడానికి చిట్కాలు, సిఫార్సు చేసిన యాప్‌లు, ప్రత్యేక ఆఫర్‌లు, అలాగే సరికొత్త Chromebook ఫీచర్‌లను కనుగొంటారు.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">మీ అడ్మినిస్ట్రేటర్ అన్ని eSIM ప్రొఫైళ్లను తీసివేశారు. మరింత సమాచారం కోసం మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
+<translation id="5520909879404821039">ఫ్రెంచ్‌లో హాయ్</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> కనెక్ట్ అవుతోంది.</translation>
 <translation id="5529587891732734495">ప్రసారాన్ని పాజ్ చేయండి</translation>
 <translation id="5532994612895037630">ఫుల్ స్క్రీన్‌ను రికార్డ్ చేయడానికి ఎక్కడైనా ట్యాప్ చేయండి</translation>
@@ -1696,6 +1702,7 @@
 <translation id="7886277072580235377">మీరు సైన్ అవుట్ చేసినప్పుడు మీ ఇంటర్నెట్ సెషన్ క్లియర్ చేయబడుతుంది. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ఈమెయిల్‌ పంపు</translation>
 <translation id="7893503627044934815">ఈ ఫైల్‌ను చూపవద్దు</translation>
+<translation id="7893547474469215105">జెనీత్‌ను నిర్వచించండి</translation>
 <translation id="7895348134893321514">టోటి</translation>
 <translation id="7897375687985782769">మీరు స్క్రీన్‌ని తిప్పడం కోసం కీబోర్డ్ షార్ట్‌కట్‌ని నొక్కారు. మీరు స్క్రీన్‌ని తిప్పాలనుకుంటున్నారా?</translation>
 <translation id="7897626842031123113">స్టేటస్ ట్రే, సమయం <ph name="TIME" />,
@@ -1711,6 +1718,7 @@
 <translation id="7904094684485781019">ఈ ఖాతా నిర్వాహకులు బహుళ సైన్-ఇన్‌కు అనుమతించలేదు.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> పరికరాలు కనెక్ట్ అయ్యాయి</translation>
+<translation id="7923534281713082605">వాతావరణం</translation>
 <translation id="7926080067315048321">వెబ్‌లోని Google టాస్క్‌లలో అన్ని టాస్క్‌లను చూడండి</translation>
 <translation id="7930731167419639574">స్పీచ్ ఇప్పుడు పరికరంలోనే ప్రాసెస్ చేయబడింది, డిక్టేషన్ ఆఫ్‌లైన్‌లో పని చేస్తుంది</translation>
 <translation id="7932451802722951285">Google Calendarలో తెరవండి</translation>
@@ -1857,6 +1865,7 @@
 <translation id="8555757996376137129">ప్రస్తుత డెస్క్‌ను తీసివేయండి</translation>
 <translation id="856298576161209842">ఈ <ph name="DEVICE_TYPE" />ను అప్‌డేట్ చేయమని <ph name="MANAGER" /> మీకు సిఫార్సు చేస్తోంది</translation>
 <translation id="8563862697512465947">నోటిఫికేషన్ సెట్టింగ్‌లు</translation>
+<translation id="8569751806372591456">ట్రై చేయడానికి ఇక్కడ కొన్ని సూచనలు ఉన్నాయి</translation>
 <translation id="857201607579416096">స్క్రీన్‌లో కింద కుడి వైపు మూలకు మెనూ తరలించబడింది.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" />ను నొక్కి, లింక్‌ను క్లిక్ చేయండి</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1900,6 +1909,7 @@
 <translation id="875593634123171288">VPN సెట్టింగ్‌లను చూపుతుంది</translation>
 <translation id="8759408218731716181">బహుళ సైన్-ఇన్‌ను సెటప్ చేయలేరు</translation>
 <translation id="8763883995157866248">పరికరాన్ని స్లీప్ మోడ్‌లో ఉంచండి</translation>
+<translation id="877404052021108314">సెంటీగ్రేడ్లలో 90°F</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, ఇన్‌స్టాల్ చేయబడిన యాప్, బ్లాక్ చేయబడింది</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />కు కనెక్ట్ చేయండి</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1908,6 +1918,7 @@
 <translation id="8806053966018712535">ఫోల్డర్ <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"సహాయం"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">స్క్రీన్‌షాట్ షార్ట్‌కట్, Ctrl ప్లస్ Shift ప్లస్ ఓవర్‌వ్యూ మోడ్ కీ‌ని నొక్కండి</translation>
 <translation id="881757059229893486">ఇన్‌పుట్ విధానాల సెట్టింగ్‌లు</translation>
 <translation id="8819728065740986820">అనుకూల ఛార్జింగ్ ఆన్‌లో ఉంది</translation>
 <translation id="8825863694328519386">వెనుకకు వెళ్లడానికి ఎడమ వైపు నుండి స్వైప్ చేయండి</translation>

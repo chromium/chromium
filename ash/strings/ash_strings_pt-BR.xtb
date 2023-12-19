@@ -40,6 +40,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1153356358378277386">Dispositivos pareados</translation>
 <translation id="1155734730463845512">Nível atual de bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">ativado e em uso</translation>
+<translation id="1163437384438183174">Remover o recurso "Seu smartphone" da estante</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Seu cabo USB-C pode não se conectar a telas corretamente</translation>
 <translation id="1175572348579024023">Rolar</translation>
@@ -70,6 +71,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1239161794459865856">O recurso <ph name="FEATURE_NAME" /> está conectado.</translation>
 <translation id="1240638468526743569">Um app</translation>
 <translation id="1242883863226959074">dispositivo</translation>
+<translation id="1245644940275736236">Ir para o Assistente</translation>
 <translation id="124678866338384709">Fechar a guia atual</translation>
 <translation id="1246890715821376239">Apps sem suporte</translation>
 <translation id="1247372569136754018">Microfone (interno)</translation>
@@ -692,6 +694,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="383629559565718788">Mostrar configurações do teclado</translation>
 <translation id="384082539148746321">Excluir modelo?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> e depois <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> ou <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Não há informações de rede disponíveis</translation>
 <translation id="385051799172605136">Voltar</translation>
 <translation id="385300504083504382">Começo</translation>
@@ -926,6 +929,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + seta para cima</translation>
 <translation id="4762573482154983647">Ocultar apps</translation>
+<translation id="4762802395013012237">5 pés em m</translation>
 <translation id="4763885921995354846">Essa ação libera o acesso à câmera para todos os apps e sites com essa permissão. Talvez seja necessário atualizar a página da Web ou reiniciar o app.</translation>
 <translation id="4774338217796918551">Volte amanhã, neste horário: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Ainda não foi possível verificar sua senha. Tente de novo.</translation>
@@ -968,6 +972,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="491504982845934899">Ativar <ph name="NETWORK_NAME" /> após a configuração do dispositivo</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Aceitar</translation>
+<translation id="491907188205944472">Pesquise o que você precisa diretamente no acesso rápido</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> está usando sua câmera</translation>
 <translation id="492453977506755176">Tecla do modo de captura</translation>
 <translation id="4925542575807923399">O administrador dessa conta exige que ela seja a primeira conta a fazer o login em uma sessão de login múltiplo.</translation>
@@ -1118,6 +1123,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="5518068085000130971">Esses são os princípios básicos. Continue em nosso app integrado Explorar, que inclui dicas e ajuda. Você vai encontrar dicas para começar, apps recomendados, ofertas especiais e os recursos mais recentes do Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Seu administrador removeu todos os perfis de eSIM. Entre em contato com ele para saber mais.</translation>
+<translation id="5520909879404821039">"Oi" em francês</translation>
 <translation id="5523434445161341166">O recurso <ph name="FEATURE_NAME" /> está se conectando.</translation>
 <translation id="5529587891732734495">Pausar transmissão</translation>
 <translation id="5532994612895037630">Toque em qualquer lugar para gravar em tela cheia</translation>
@@ -1695,6 +1701,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7886277072580235377">Sua sessão de Internet será limpa quando você sair. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Enviar um e-mail</translation>
 <translation id="7893503627044934815">Não quero ver este arquivo</translation>
+<translation id="7893547474469215105">Definir zênite</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Você pressionou o atalho de teclado para a rotação da tela. Gostaria de girar a tela?</translation>
 <translation id="7897626842031123113">Bandeja de status, horário <ph name="TIME" />,
@@ -1710,6 +1717,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7904094684485781019">O administrador desta conta bloqueou o login múltiplo.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivos conectados</translation>
+<translation id="7923534281713082605">Previsão do tempo</translation>
 <translation id="7926080067315048321">Mostrar todas as tarefas no Google Tarefas na Web</translation>
 <translation id="7930731167419639574">As falas agora são processadas localmente, e o Ditado funciona off-line</translation>
 <translation id="7932451802722951285">Abrir no Google Agenda</translation>
@@ -1856,6 +1864,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8555757996376137129">Remover o espaço de trabalho atual</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> recomenda que você atualize seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Configurações de notificação</translation>
+<translation id="8569751806372591456">Confira algumas sugestões</translation>
 <translation id="857201607579416096">O menu foi movido para o canto inferior direito da tela.</translation>
 <translation id="8581946341807941670">Pressione <ph name="MODIFIER_1" /> + <ph name="MODIFIER_2" /> e clique em um link</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1899,6 +1908,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="875593634123171288">Mostrar configurações de VPN</translation>
 <translation id="8759408218731716181">Não é possível configurar o login múltiplo</translation>
 <translation id="8763883995157866248">Colocar o dispositivo no modo de espera</translation>
+<translation id="877404052021108314">90 °F em C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, app instalado, bloqueado</translation>
 <translation id="8785070478575117577">Conectar-se a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1907,6 +1917,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8806053966018712535">Pasta <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Ajuda"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">Pressione o atalho de captura de tela, Ctrl + Shift e a tecla do modo Visão geral</translation>
 <translation id="881757059229893486">Configurações de métodos de entrada</translation>
 <translation id="8819728065740986820">O Carregamento adaptável está ativado</translation>
 <translation id="8825863694328519386">Deslize da esquerda para voltar</translation>

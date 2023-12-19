@@ -572,7 +572,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1448779317883494811">Brotxaren tresna</translation>
 <translation id="1449191289887455076">Esleipena berresteko eta <ph name="RESPONSE" />, sakatu "<ph name="CURRENTKEY" />" berriro</translation>
 <translation id="1451375123200651445">Webgunea, fitxategi bakarra</translation>
-<translation id="145280054552001290">Gehitu eta kendu azpitituluetarako hizkuntzak</translation>
 <translation id="1453561711872398978">Bidali <ph name="BEGIN_LINK" />arazketa-erregistroak<ph name="END_LINK" /> (gomendatua)</translation>
 <translation id="1454223536435069390">&amp;Atera pantaila-argazkia</translation>
 <translation id="145432137617179457">Ortografia-zuzentzailearen hizkuntzak</translation>
@@ -738,7 +737,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1571304935088121812">Kopiatu erabiltzaile-izena</translation>
 <translation id="1571738973904005196">Ikusi fitxa: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gonbidatua)</translation>
-<translation id="1572266655485775982">Gaitu Wi-Fi konexioa</translation>
+<translation id="1572266655485775982">Gaitu wifi-konexioa</translation>
 <translation id="1572876035008611720">Idatzi zure helbide elektronikoa</translation>
 <translation id="1573127087832371028">Azaldu arazoa</translation>
 <translation id="1575036763505533001">Chrome pertsonalizatzeko alboko panela</translation>
@@ -1542,7 +1541,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2158475082070321257">Kopiatu nabarmendutako testurako esteka</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" /> luzapenaren <ph name="SHORTCUT" /> lasterbidearen esparrua</translation>
-<translation id="216169395504480358">Gehitu Wi-Fi konexioa…</translation>
+<translation id="216169395504480358">Gehitu wifi-konexioa…</translation>
 <translation id="2162155940152307086">Sinkronizazio-ezarpenetatik irteten zarenean hasiko da edukia sinkronizatzen</translation>
 <translation id="2162705204091149050">Arakatzaileari, sistema eragileari, gailuari, instalatutako softwareari eta fitxategiei buruzko informazioa irakurri.</translation>
 <translation id="2163470535490402084">Konektatu Internetera <ph name="DEVICE_TYPE" /> gailuan saioa hasteko.</translation>
@@ -2460,7 +2459,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="285033512555869047">Itxita</translation>
 <translation id="2850541429955027218">Gehitu gaia</translation>
 <translation id="2850672011315104382">Puntuazio-estiloa</translation>
-<translation id="285241945869362924">Automatikoki sortzen ditu audioaren eta bideoen azpitituluak. Audioa eta azpitituluak ez dira beste inora bidaltzen.</translation>
 <translation id="2853121255651601031">Gorde da pasahitza</translation>
 <translation id="2856776373509145513">Sortu edukiontzi bat</translation>
 <translation id="2856907950922663165">URLak enkriptatzeko aukera desaktibatu nahi duzu?</translation>
@@ -2600,7 +2598,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="2961210776189273067">Trataera</translation>
 <translation id="2961695502793809356">Sakatu aurrera joateko; eduki sakatuta historia ikusteko</translation>
 <translation id="2963151496262057773"><ph name="PLUGIN_NAME" /> pluginak ez du erantzuten. Gelditu egin nahi duzu?</translation>
-<translation id="2964193600955408481">Desgaitu Wi-Fi konexioa</translation>
+<translation id="2964193600955408481">Desgaitu wifi-konexioa</translation>
 <translation id="2964245677645334031">Nearby Share-ren ikusgaitasuna</translation>
 <translation id="2966705348606485669">Laster-marken "<ph name="FOLDER_TITLE" />" karpetaren aukera gehiago</translation>
 <translation id="2966937470348689686">Kudeatu Android-eko hobespenak</translation>
@@ -3494,7 +3492,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3705722231355495246">-</translation>
 <translation id="3706366828968376544">Berrekin pantaila <ph name="DEVICE_NAME" /> gailura igortzeari</translation>
 <translation id="3706463572498736864">Orri bakoitzeko orrialde kopurua</translation>
-<translation id="370649949373421643">Gaitu Wi-Fi konexioa</translation>
+<translation id="370649949373421643">Gaitu wifi-konexioa</translation>
 <translation id="370665806235115550">Kargatzen…</translation>
 <translation id="3707034683772193706">Bisitatzen dituzun webguneek informazio pixka bat gorde dezakete Chrome-rekin, batez ere robot bat ez zarela egiaztatzeko.</translation>
 <translation id="3707163604290651814"><ph name="NAME" /> gisa hasi duzu saioa</translation>
@@ -9787,7 +9785,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8703346390800944767">Saltatu iragarkia</translation>
 <translation id="8704662571571150811">Domeinuak</translation>
 <translation id="8705331520020532516">Serie-zenbakia</translation>
-<translation id="8705580154597116082">Telefonoaren bidez erabil dezakezu Wi-Fi konexioa</translation>
+<translation id="8705580154597116082">Telefonoaren bidez erabil dezakezu wifi-konexioa</translation>
 <translation id="8705629851992224300">Ezin izan da irakurri segurtasun-giltza</translation>
 <translation id="8706111173576263877">Eskaneatu da QR kodea.</translation>
 <translation id="8707318721234217615">Hizkien arteko tartea</translation>
@@ -9929,7 +9927,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8813698869395535039">Ezin da hasi saioa <ph name="USERNAME" /> kontuan</translation>
 <translation id="8813872945700551674">Eskatu guraso bati "<ph name="EXTENSION_NAME" />" onartzeko</translation>
 <translation id="8813937837706331325">Aurrezte ertaina</translation>
-<translation id="8814190375133053267">Wi-Fi konexioa</translation>
+<translation id="8814190375133053267">Wifi-konexioa</translation>
 <translation id="8814319344131658221">Hobetsitako hizkuntzan oinarritzen dira ortografia-zuzentzailea erabil dezaketen hizkuntzak</translation>
 <translation id="8814644416678422095">Disko gogorra</translation>
 <translation id="881782782501875829">Gehitu ataka-zenbakia</translation>

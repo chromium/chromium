@@ -572,7 +572,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1448779317883494811">Ferramenta de pincel</translation>
 <translation id="1449191289887455076">Preme de novo <ph name="CURRENTKEY" /> para confirmar a asignación e <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Páxina web (nun só ficheiro)</translation>
-<translation id="145280054552001290">Engade e quita idiomas dos subtítulos</translation>
 <translation id="1453561711872398978">Enviar <ph name="BEGIN_LINK" />rexistros de depuración<ph name="END_LINK" /> (recomendado)</translation>
 <translation id="1454223536435069390">F&amp;acer captura de pantalla</translation>
 <translation id="145432137617179457">Idiomas do corrector ortográfico</translation>
@@ -2459,7 +2458,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="285033512555869047">Pechado</translation>
 <translation id="2850541429955027218">Engadir tema</translation>
 <translation id="2850672011315104382">Estilo de puntuación</translation>
-<translation id="285241945869362924">Crea subtítulos automaticamente para o contido de audio e de vídeo. O audio e os subtítulos nunca saen do dispositivo.</translation>
 <translation id="2853121255651601031">Gardouse o contrasinal</translation>
 <translation id="2856776373509145513">Crear un contedor novo</translation>
 <translation id="2856907950922663165">Queres desactivar a encriptación dos URL?</translation>

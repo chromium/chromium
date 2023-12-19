@@ -516,6 +516,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1975457531113383421">Bandeja de entrada</translation>
 <translation id="1975584088563498795">Caixa de e-mails 10</translation>
 <translation id="1978555033938440688">Versão do firmware</translation>
+<translation id="1979156660928743046">Informações de mídia</translation>
 <translation id="1988881251331415125">Se o endereço estiver correto, <ph name="BEGIN_LINK" />tente executar o Diagnóstico de Conectividade<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">Escalada e montanhismo</translation>
 <translation id="1991830984769263878">Seguro de automóveis</translation>
@@ -1524,6 +1525,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4050599136622776556">O Chromium está tentando editar formas de pagamento.</translation>
 <translation id="405399507749852140">Receba alertas se houver uma redução no preço em algum site</translation>
 <translation id="4056223980640387499">Sépia</translation>
+<translation id="4059523390906550209">Saiba mais sobre a Proteção de Dados Sensíveis</translation>
 <translation id="4063063121357725926">Deixe o Google ajudar você a encontrar descontos para seus carrinhos</translation>
 <translation id="406358100705415968">Equipamentos de proteção individual</translation>
 <translation id="4063924980214801036">Usar o desbloqueio do dispositivo para confirmar os cartões mais rapidamente</translation>
@@ -1682,6 +1684,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquear (padrão)</translation>
 <translation id="4314815835985389558">Gerenciar sincronização</translation>
+<translation id="4316057107946726368">Insira uma mensagem de justificativa com no máximo <ph name="MAX_CHAR_COUNT" /> caracteres. Foram usados <ph name="ACTUAL_CHAR_COUNT" /> de <ph name="MAX_CHAR_COUNT" /> caracteres.</translation>
 <translation id="4318213823155573975">Acessórios para cabeça</translation>
 <translation id="4318312030194671742">Serviço de criação de prévias de visualização</translation>
 <translation id="4318566738941496689">O nome do seu dispositivo e o endereço da rede</translation>
@@ -2354,6 +2357,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5695542892312572833">Usar o Windows Hello para verificar e concluir a compra?</translation>
 <translation id="5699628521141772782">Laticínios e ovos</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidos</translation>
+<translation id="5701023235904684227">Controlar <ph name="READERNAME" /> e ter acesso ao cartão inteligente que pode ser acessado?</translation>
 <translation id="5701381305118179107">Centralizar</translation>
 <translation id="5707154300732650394">Retomar a jornada</translation>
 <translation id="57094364128775171">Sugerir senha forte…</translation>
@@ -2668,6 +2672,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6355392890578844978">Este navegador não é gerenciado por uma empresa ou outra organização. A atividade deste dispositivo pode ser gerenciada fora do Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">editar formas de pagamento</translation>
 <translation id="6358450015545214790">O que são essas informações?</translation>
+<translation id="6360213755783740931">Saiba mais sobre a proteção contra malware</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Ver registros</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />verificar o proxy, o firewall e a configuração de DNS seguro<ph name="END_LINK" /></translation>
@@ -2725,6 +2730,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6443406338865242315">quais extensões e plug-ins você instalou;</translation>
 <translation id="6446608382365791566">Adicionar mais informações</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6448371595882710519">Saiba mais sobre os controles de dados</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Envelope Chou 40</translation>
 <translation id="6451458296329894277">Confirmar reenvio do formulário</translation>

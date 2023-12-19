@@ -573,7 +573,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1448779317883494811">Pinceau</translation>
 <translation id="1449191289887455076">Appuyez de nouveau sur la touche « <ph name="CURRENTKEY" /> » pour confirmer l'attribution et <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Page Web, fichier unique</translation>
-<translation id="145280054552001290">Ajouter et supprimer des langues dans la légende</translation>
 <translation id="1453561711872398978">Envoyer les <ph name="BEGIN_LINK" />journaux de débogage<ph name="END_LINK" /> (recommandé)</translation>
 <translation id="1454223536435069390">Faire une s&amp;aisie d'écran</translation>
 <translation id="145432137617179457">Langues du correcteur orthographique</translation>
@@ -2463,7 +2462,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="285033512555869047">Fermé</translation>
 <translation id="2850541429955027218">Ajouter un thème</translation>
 <translation id="2850672011315104382">Style de ponctuation</translation>
-<translation id="285241945869362924">Génère automatiquement des sous-titres pour les contenus audio et vidéo. L'audio et les sous-titres ne quittent jamais votre appareil.</translation>
 <translation id="2853121255651601031">Mot de passe enregistré</translation>
 <translation id="2856776373509145513">Créer un conteneur</translation>
 <translation id="2856907950922663165">Désactiver le chiffrement des URL?</translation>
@@ -6809,6 +6807,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6347010704471250799">Afficher une notification</translation>
 <translation id="6348805481186204412">Stockage hors ligne</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
+<translation id="6350821834561350243">Décrivez clairement le problème et indiquez les étapes à suivre pour reproduire le problème (si possible)</translation>
 <translation id="6354918092619878358">Courbe elliptique SECG secp256r1 (aussi appelée ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Obtention des informations du compte Google...</translation>
 <translation id="635609604405270300">Laissez l'appareil allumé</translation>
@@ -7742,6 +7741,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Retirer l'application}one{Retirer l'application}other{Retirer les applications}}</translation>
 <translation id="7099337801055912064">Impossible de charger un PPD volumineux. La taille maximale est de 250 k.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Aucun mot de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
+<translation id="7100379916748214860">Chrome vient de bloquer le téléchargement d'un fichier dangereux. Bénéficiez d'une sécurité encore plus élevée grâce à la protection renforcée.</translation>
 <translation id="710047887584828070">Le contenu de cet onglet est en cours de partage</translation>
 <translation id="710224247908684995">Une extension a désactivé la Navigation sécurisée</translation>
 <translation id="7102832101143475489">Le délai de traitement de la demande a expiré</translation>
@@ -9231,6 +9231,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8256319818471787266">Fido</translation>
 <translation id="8257950718085972371">Continuer de bloquer l'accès à la caméra</translation>
 <translation id="8258027225380843424">Importation réussie!</translation>
+<translation id="8260177673299865994">Améliorer la protection des téléchargements</translation>
 <translation id="8260864402787962391">Souris</translation>
 <translation id="8261378640211443080">Cette extension ne figure pas dans la boutique <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et peut avoir été ajoutée à votre insu.</translation>
 <translation id="8261506727792406068">Supprimer</translation>

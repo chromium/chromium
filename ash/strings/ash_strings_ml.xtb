@@ -40,6 +40,7 @@
 <translation id="1153356358378277386">ജോടിയാക്കിയ ഉപകരണങ്ങൾ</translation>
 <translation id="1155734730463845512">നിലവിലെ ബാറ്ററി നില <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">ഓണാണ്, ഉപയോഗത്തിലുമാണ്</translation>
+<translation id="1163437384438183174">ഷെൽഫിൽ നിന്ന് ഫോൺ ഹബ് നീക്കം ചെയ്യുക</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">നിങ്ങളുടെ USB-C കേബിൾ, ഡിസ്‌പ്ലേകളിലേക്ക് ശരിയായി കണക്റ്റ് ആയേക്കില്ല</translation>
 <translation id="1175572348579024023">സ്‌ക്രോൾ ചെയ്യുക</translation>
@@ -70,6 +71,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> കണക്‌റ്റ് ചെയ്‌തു.</translation>
 <translation id="1240638468526743569">ഒരു ആപ്പ്</translation>
 <translation id="1242883863226959074">ഉപകരണം</translation>
+<translation id="1245644940275736236">Assistant-ലേക്ക് പോകുക</translation>
 <translation id="124678866338384709">നിലവിലെ ടാബ് അടയ്‌ക്കുക</translation>
 <translation id="1246890715821376239">പിന്തുണയില്ലാത്ത ആപ്പുകൾ</translation>
 <translation id="1247372569136754018">മൈക്രോഫോൺ (ഇന്റേണൽ)</translation>
@@ -692,6 +694,7 @@
 <translation id="383629559565718788">കീബോഡ് ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="384082539148746321">ടെം‌പ്ലേറ്റ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, തുടർന്ന് <ph name="KEY_ONE" /> അല്ലെങ്കിൽ <ph name="KEY_TWO" /> അല്ലെങ്കിൽ <ph name="KEY_THREE" /> അല്ലെങ്കിൽ <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">നെറ്റ്‌വർക്ക് വിവരങ്ങളൊന്നും ലഭ്യമല്ല</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="385300504083504382">ആരംഭം</translation>
@@ -926,6 +929,7 @@
 <translation id="4759238208242260848">ഡൌണ്‍ലോഡുകള്‍</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + മുകളിലേയ്ക്കുള്ള അമ്പടയാളം</translation>
 <translation id="4762573482154983647">ആപ്പുകൾ മറയ്ക്കുക</translation>
+<translation id="4762802395013012237">5 അടി, മീറ്ററിൽ</translation>
 <translation id="4763885921995354846">ക്യാമറ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള മുഴുവൻ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ക്യാമറയിലേക്ക് ആക്‌സസ് അനുവദിക്കുന്നു. നിങ്ങൾക്ക് വെബ് പേജ് റീഫ്രഷ് ചെയ്യേണ്ടതായോ ആപ്പ് റീസ്റ്റാർട്ട് ചെയ്യേണ്ടതായോ വന്നേക്കാം.</translation>
 <translation id="4774338217796918551">നാളെ <ph name="COME_BACK_TIME" />-ന് തിരികെ വരിക.</translation>
 <translation id="4776584068981882959">നിങ്ങളുടെ പാസ്‌വേഡ് ഇപ്പോഴും പരിശോധിച്ചുറപ്പിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -968,6 +972,7 @@
 <translation id="491504982845934899">ഉപകരണം സജ്ജീകരിച്ച് <ph name="NETWORK_NAME" /> സജീവമാക്കൂ</translation>
 <translation id="4917385247580444890">ശക്തം</translation>
 <translation id="4918086044614829423">സ്വീകരിക്കുക</translation>
+<translation id="491907188205944472">നിങ്ങൾക്ക് ആവശ്യമുള്ളത് ലോഞ്ചറിൽ നേരിട്ട് തിരയുക</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> നിലവിൽ നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുന്നു</translation>
 <translation id="492453977506755176">ക്യാപ്‌ചർ മോഡ് കീ</translation>
 <translation id="4925542575807923399">ഈ അക്കൗണ്ട് ഒന്നിലധികം സൈൻ ഇൻ സെഷനിൽ സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്ന ആദ്യ അക്കൗണ്ട് ആയിരിക്കാൻ ഈ അക്കൗണ്ടിനായുള്ള അഡ്‌മിനിസ്‌ട്രേറ്റർ ആവശ്യപ്പെടുന്നു.</translation>
@@ -1118,6 +1123,7 @@
 <translation id="5518068085000130971">അവയായിരുന്നു അടിസ്ഥാനകാര്യങ്ങൾ! നുറുങ്ങുകൾക്കും സഹായത്തിനുമായി ഞങ്ങളുടെ ബിൽറ്റ് ഇൻ ആപ്പായ Explore-ൽ തുടരുക. ആരംഭിക്കുന്നതിനുള്ള നുറുങ്ങുകൾ, നിർദ്ദേശിക്കുന്ന ആപ്പുകൾ, പ്രത്യേക ഓഫറുകൾ, ഏറ്റവും പുതിയ Chromebook ഫീച്ചറുകൾ എന്നിവ നിങ്ങൾ കണ്ടെത്തും.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">നിങ്ങളുടെ അഡ്‌മിൻ എല്ലാ eSIM പ്രൊഫൈലുകളും നീക്കം ചെയ്തു. കൂടുതൽ വിവരങ്ങൾക്ക് നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
+<translation id="5520909879404821039">ഹായ് എന്നത് ഫ്രഞ്ചിൽ</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> കണക്റ്റ് ചെയ്യുന്നു.</translation>
 <translation id="5529587891732734495">കാസ്റ്റ് ചെയ്യൽ താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="5532994612895037630">പൂർണ്ണ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യാൻ എവിടെയെങ്കിലും ടാപ്പ് ചെയ്യുക</translation>
@@ -1696,6 +1702,7 @@
 <translation id="7886277072580235377">സൈൻ ഔട്ട് ചെയ്യുമ്പോൾ നിങ്ങളുടെ ഇന്റർനെറ്റ് സെഷൻ മായ്ക്കപ്പെടും. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ഒരു ഇമെയിൽ അയയ്ക്കുക</translation>
 <translation id="7893503627044934815">ഈ ഫയൽ കാണിക്കാൻ ആഗ്രഹിക്കുന്നില്ല</translation>
+<translation id="7893547474469215105">Zenith എന്നത് നിർവ്വചിക്കുക</translation>
 <translation id="7895348134893321514">ടോട്ട്</translation>
 <translation id="7897375687985782769">നിങ്ങൾ സ്‌ക്രീൻ തിരിക്കുന്നതിനായി കീബോഡ് കുറുക്കുവഴി അമർത്തി. സ്‌ക്രീൻ തിരിക്കണോ?</translation>
 <translation id="7897626842031123113">സ്റ്റാറ്റസ് ട്രേ, സമയം <ph name="TIME" />,
@@ -1711,6 +1718,7 @@
 <translation id="7904094684485781019">ഈ അക്കൗണ്ടിന്റെ അഡ്‌മിനിസ്‌ട്രേറ്റർ ഒന്നിലധികം സൈൻ-ഇൻ അനുവദിക്കുന്നില്ല.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> ഉപകരണങ്ങൾ കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു</translation>
+<translation id="7923534281713082605">കാലാവസ്ഥ</translation>
 <translation id="7926080067315048321">Google Tasks-ലെ എല്ലാ ടാസ്‌ക്കുകളും വെബിൽ കാണുക</translation>
 <translation id="7930731167419639574">സംഭാഷണം ഇപ്പോൾ ലോക്കലായി പ്രോസസ് ചെയ്‌ത് കേട്ടെഴുത്ത് ഓഫ്‌ലൈനിൽ പ്രവർത്തിക്കുന്നു</translation>
 <translation id="7932451802722951285">Google Calendar-ൽ തുറക്കുക</translation>
@@ -1857,6 +1865,7 @@
 <translation id="8555757996376137129">നിലവിലെ ഡെസ്‌ക് നീക്കം ചെയ്യുക</translation>
 <translation id="856298576161209842">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> അപ്‌ഡേറ്റ് ചെയ്യാൻ <ph name="MANAGER" /> നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="8563862697512465947">വിജ്ഞാപന ക്രമീകരണങ്ങള്‍‌</translation>
+<translation id="8569751806372591456">പരീക്ഷിക്കാവുന്ന ചില നിർദ്ദേശങ്ങൾ ഇതാ</translation>
 <translation id="857201607579416096">സ്‌ക്രീനിന്റെ ചുവടെ വലത് കോണിലേക്ക് മെനു നീക്കിയിരിക്കുന്നു.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> അമർത്തി ഒരു ലിങ്ക് ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1900,6 +1909,7 @@
 <translation id="875593634123171288">VPN ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="8759408218731716181">ഒന്നിലധികം സൈൻ ഇൻ സജ്ജമാക്കാനാവില്ല</translation>
 <translation id="8763883995157866248">ഉപകരണം ഉറക്ക മോഡിൽ ഇടുക</translation>
+<translation id="877404052021108314">90° ഫാരൻഹീറ്റ്, സെൽഷ്യസിൽ</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, ഇൻസ്‌റ്റാൾ ചെയ്‌ത ആപ്പ്, ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> എന്നതിലേക്ക് കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1908,6 +1918,7 @@
 <translation id="8806053966018712535">ഫോൾഡർ <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"സഹായം"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">Ctrl പ്ലസ് Shift പ്ലസ് ഓവർവ്യൂ മോഡ് കീ എന്ന, സ്ക്രീന്‍ഷോട്ടെടുക്കാനുള്ള കുറുക്കുവഴി അമർത്തുക</translation>
 <translation id="881757059229893486">ഇൻപുട്ട് രീതികളുടെ ക്രമീകരണം</translation>
 <translation id="8819728065740986820">അഡാപ്റ്റീവ് ചാർജിംഗ് ഓണാണ്</translation>
 <translation id="8825863694328519386">തിരികെ പോകാൻ ഇടതുഭാഗത്ത് നിന്ന് സ്വൈപ്പ് ചെയ്യുക</translation>

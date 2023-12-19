@@ -61,6 +61,7 @@
 <translation id="2427791862912929107">Chrome 的某些功能可帮助您管理您的互联网数据和网页加载速度。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">若要在其他应用中轻松获取您已保存的密码，请使用 Chrome 的自动填充功能</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{当 Chrome 闲置 {THRESHOLD} 分钟后，就会发生这种情况。清除的数据可能包括历史记录和自动填充数据。}other{当 Chrome 闲置 {THRESHOLD} 分钟后，就会发生这种情况。清除的数据可能包括历史记录和自动填充数据。}}</translation>
 <translation id="2561231791489583059">使用 Chrome 作为默认浏览器不仅可让您免受危险网站的侵害，还可保护您的密码</translation>
 <translation id="2574249610672786438">要查看您在其他设备上用 Chrome 打开的标签页，请在所有设备上登录</translation>
 <translation id="2576431527583832481">Chrome 浏览器刚刚经过了改进！新版本已推出。</translation>
@@ -89,6 +90,7 @@
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3340938510625667914">Chrome 操作</translation>
 <translation id="3345341804167540816">随时随地使用 Chrome</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{当 Chrome 闲置 {THRESHOLD} 分钟后，就会发生这种情况}other{当 Chrome 闲置 {THRESHOLD} 分钟后，就会发生这种情况}}</translation>
 <translation id="3399930248910934354">打开 Chrome 设置</translation>
 <translation id="3472587960215700950">Chrome 会使用 Google 地图针对检测到的地址为您提供路线和当地信息。</translation>
 <translation id="3503014945441706099">同时也为这份 Chrome 个人资料启用“增强型安全浏览”功能</translation>

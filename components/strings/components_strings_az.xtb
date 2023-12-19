@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">Daxiletmə Qabı</translation>
 <translation id="1975584088563498795">Poçt qutusu 10</translation>
 <translation id="1978555033938440688">Firmware Versiyası</translation>
+<translation id="1979156660928743046">Media məlumatı</translation>
 <translation id="1988881251331415125">Yazılış doğrudursa, <ph name="BEGIN_LINK" />Bağlantı Diaqnostikasını icra edin<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">Dırmanma və alpinizm</translation>
 <translation id="1991830984769263878">Avtomobil sığortası</translation>
@@ -1520,6 +1521,7 @@
 <translation id="4050599136622776556">Chromium ödəniş metodlarını redaktə etməyə çalışır.</translation>
 <translation id="405399507749852140">Hər hansı bir saytda qiymət enərsə, bildiriş alın</translation>
 <translation id="4056223980640387499">Sepia</translation>
+<translation id="4059523390906550209">Həssas datanın qorunması haqqında ətraflı məlumat</translation>
 <translation id="4063063121357725926">Endirimlər tapmaqda Google'un yardım etməsinə icazə verin</translation>
 <translation id="406358100705415968">İşdə təhlükəsizlik üçün qoruyucu vasitələr</translation>
 <translation id="4063924980214801036">Kartları daha sürətli təsdiqləmək üçün cihazın kiliddən çıxarılmasından istifadə edin</translation>
@@ -1678,6 +1680,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blok edin (defolt)</translation>
 <translation id="4314815835985389558">Sinxronizasiyanı idarə edin</translation>
+<translation id="4316057107946726368">Maksimum <ph name="MAX_CHAR_COUNT" /> simvoldan ibarət əsaslandırma mesajı daxil edin. <ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /> simvol istifadə edildi.</translation>
 <translation id="4318213823155573975">Baş geyimi</translation>
 <translation id="4318312030194671742">Boyama Önbaxış Düzücü Xidməti</translation>
 <translation id="4318566738941496689">Cihaz adı və şəbəkə ünvanı</translation>
@@ -2350,6 +2353,7 @@
 <translation id="5695542892312572833">Doğrulamaq və alışı tamamlamaq üçün Windows Hello istifadə edilsin?</translation>
 <translation id="5699628521141772782">Süd məhsulları və yumurta</translation>
 <translation id="5700761515355162635">Üçüncü tərəf kukilərinə icazə verildi</translation>
+<translation id="5701023235904684227"><ph name="READERNAME" /> idarə edilməklə əlçatan smart karta giriş əldə edilsin?</translation>
 <translation id="5701381305118179107">Mərkəzi edin</translation>
 <translation id="5707154300732650394">Baxışı davam etdirin</translation>
 <translation id="57094364128775171">Güclü parol təklif edin…</translation>
@@ -2664,6 +2668,7 @@
 <translation id="6355392890578844978">Bu brauzer şirkət və ya başqa təşkilat tərəfindən idarə edilmir. Bu cihazdakı fəaliyyət Chromium'dan kənarda idarə edilə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">ödəniş metodlarını redaktə etməyə çalışır</translation>
 <translation id="6358450015545214790">Bunun mənası nədir?</translation>
+<translation id="6360213755783740931">Zərərli proqram qoruması haqqında ətraflı məlumat</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Baxış jurnalı</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Proksi, qoruyucu divar və DNS konfiqurasiyası yoxlanılır<ph name="END_LINK" /></translation>
@@ -2721,6 +2726,7 @@
 <translation id="6443406338865242315">Quraşdırdığınız artırmalar və qoşmalar</translation>
 <translation id="6446608382365791566">Ətraflı məlumat əlavə edin</translation>
 <translation id="6447842834002726250">Kukilər</translation>
+<translation id="6448371595882710519">Data nizamlayıcıları haqqında ətraflı məlumat</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Zərf Çou 40</translation>
 <translation id="6451458296329894277">Formanın yenidən təqdim edilməsini təsdiq edin</translation>

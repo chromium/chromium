@@ -64,6 +64,7 @@ Bularni hisobga olish kerak:
 <translation id="2427791862912929107">Google Chrome brauzerida Internet maʼlumotlarini qayta ishlash parametrlari va sahifalarning yuklanish tezligini belgilash mumkin.
 <ph name="BEGIN_LINK" />Batafsil axborot<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Saqlangan parollarni boshqa ilovalarda ishlatish uchun Chrome va Avtomatik kiritish funksiyasidan foydalaning</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Chrome {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Bunga tarix va avtomatik kiritish maʼlumotlari kirishi mumkin.}other{Chrome {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Bunga tarix va avtomatik kiritish maʼlumotlari kirishi mumkin.}}</translation>
 <translation id="2561231791489583059">Internetni xavfsiz kezish va parollaringizni himoyalashda Chrome birlamchi brauzer sifatida ishlatilsin</translation>
 <translation id="2574249610672786438">Boshqa qurilmalardagi Chrome varaqlarini koʻrish uchun barcha qurilmalarda hisobingizga kiring</translation>
 <translation id="2576431527583832481">Chrome ancha yaxshilandi! Uning yangi versiyasi chiqdi.</translation>
@@ -92,6 +93,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3282568296779691940">Chrome hisobiga kirish</translation>
 <translation id="3340938510625667914">Chrome amallari</translation>
 <translation id="3345341804167540816">Chrome’ni o‘zingiz bilan olib yuring</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi}other{Chrome {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi}}</translation>
 <translation id="3399930248910934354">Chrome sozlamalarini oching</translation>
 <translation id="3472587960215700950">Manzillar aniqlanganda Chrome marshrut va mahalliy axborotlarni Google Xaritalar orqali ochadi.</translation>
 <translation id="3503014945441706099">Bu Chrome profili orqali xavfsiz qidiruvni ham kuchaytirilgan rejimda himoyalang</translation>

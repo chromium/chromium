@@ -66,6 +66,7 @@
         Prova d'esperar uns quants minuts abans de tancar la sessió. Si la tanques ara, aquestes dades se suprimiran.</translation>
 <translation id="3256316712990552818">Copiada a Chromium</translation>
 <translation id="3344973607274501920">Chromium no ha pogut comprovar les teves contrasenyes. Comprova la connexió a Internet.</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minut. Això pot incloure l'historial i la funció Emplenament automàtic.}other{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minuts. Això pot incloure l'historial i la funció Emplenament automàtic.}}</translation>
 <translation id="3472200483164753384">No s'admeten a Chromium Canary</translation>
 <translation id="3478750326643748149">Amaga "Treu el màxim profit de Chromium"</translation>
 <translation id="3554027294407525061">Esborra les dades de navegació a Chromium.</translation>
@@ -229,6 +230,7 @@ Aspectes que cal tenir en compte:
 <translation id="88376265765385899">Obre les adreces d'interès de Chromium.</translation>
 <translation id="8924617840944134898">Obre una pestanya d'incògnit de Chromium</translation>
 <translation id="894437814105052438">Quan tanquis la sessió, Chromium no sincronitzarà cap dada nova amb el teu Compte de Google. Les dades sincronitzades prèviament romandran al compte.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minut}other{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minuts}}</translation>
 <translation id="8963279154877372067">Permet que les notificacions de Chromium incloguin alertes de baixada de preu</translation>
 <translation id="9022552996538154597">Inicia la sessió a Chromium</translation>
 <translation id="9050790730841755540">Utilitza Chromium cada vegada que toquis enllaços en altres aplicacions.</translation>

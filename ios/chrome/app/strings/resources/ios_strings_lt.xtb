@@ -540,6 +540,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3909222758573607742">Išsaugoti slaptažodžius ir kitus elementus paskyroje</translation>
 <translation id="3915450441834151894">Svetainės informacija</translation>
 <translation id="3918585468378680136">Gaunama siuntinio būsena</translation>
+<translation id="3921585859122905677">Adreso juostos pozicija</translation>
 <translation id="3922310737605261887">Ieškoti nukopijuoto teksto</translation>
 <translation id="3928666092801078803">Sujungti duomenis</translation>
 <translation id="3929457972718048006">Adresai</translation>
@@ -1402,6 +1403,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8613883225817609844">Slėpti naujausius skirtukus</translation>
 <translation id="8620640915598389714">Redaguoti</translation>
 <translation id="8624447588354561276">Siuntinio numeris</translation>
+<translation id="8624753446837753970">Nustatyti poziciją</translation>
 <translation id="8626393685701737946">Galite pakeisti numatytąjį svetainės rodinį į stalinį kompiuterį skiltyje „Nustatymai“ &gt; „Turinio nustatymai“</translation>
 <translation id="8636825310635137004">Jei norite pasiekti skirtukus iš kitų įrenginių, įjunkite sinchronizavimą.</translation>
 <translation id="8637431369725868556">Pasinaudokite apsauga nuo pavojingų svetainių.</translation>
@@ -1443,6 +1445,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8820817407110198400">Žymės</translation>
 <translation id="8825562130641217944">Gaukite žymes, slaptažodžius ir kt.</translation>
 <translation id="882557203579758546">Rasti puslapyje…</translation>
+<translation id="8838250347763484641">Perjunkite adreso juostos poziciją į viršutinę arba apatinę, kad galėtumėte naršyti naudodami tinkintas naršymo funkcijas.</translation>
 <translation id="8840513115188359703">Nebūsite atjungti nuo „Google“ paskyros.</translation>
 <translation id="8843129975935593190">Jūsų organizacija riboja, ką galite sinchronizuoti.</translation>
 <translation id="8849001918648564819">Paslėpta</translation>
@@ -1515,6 +1518,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="9188680907066685419">Atsijungimas nuo valdomos paskyros</translation>
 <translation id="9200875785104711666">Prieš <ph name="TIME" /> d.</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9203951165704618409">Perjunkite adreso juostos poziciją iš viršutinės į apatinę, kad galėtumėte tinkinti naršymo funkcijas.</translation>
 <translation id="9206887540681440657">Sparta</translation>
 <translation id="9219154867334666734">Ieškoti skirtukų…</translation>
 <translation id="9223358826628549784">Strigties ataskaita išsiųsta.</translation>

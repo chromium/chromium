@@ -40,6 +40,7 @@
 <translation id="1153356358378277386">جوڑا بنائے ہوئے آلات</translation>
 <translation id="1155734730463845512">موجودہ بیٹری لیول <ph name="BATTERY_PERCENTAGE" /> فیصد ہے</translation>
 <translation id="1160215328209699296">آن ہے اور استعمال میں ہے</translation>
+<translation id="1163437384438183174">فون ہب کو شیلف سے ہٹایں</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />، <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">‏ہو سکتا ہے کہ آپ کی USB-C کیبل مناسب طریقے سے ڈسپلیز سے منسلک نہ ہو</translation>
 <translation id="1175572348579024023">اسکرول کریں</translation>
@@ -70,6 +71,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> منسلک ہے۔</translation>
 <translation id="1240638468526743569">ایک ایپ</translation>
 <translation id="1242883863226959074">آلہ</translation>
+<translation id="1245644940275736236">اسسٹنٹ پر جائیں</translation>
 <translation id="124678866338384709">موجودہ ٹیب بند کریں</translation>
 <translation id="1246890715821376239">غیر تعاون یافتہ ایپس</translation>
 <translation id="1247372569136754018">مائیکروفون (داخلی)</translation>
@@ -692,6 +694,7 @@
 <translation id="383629559565718788">کی بورڈ کی ترتیبات دکھائیں</translation>
 <translation id="384082539148746321">تمثیل حذف کریں؟</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> پھر <ph name="KEY_ONE" /> یا <ph name="KEY_TWO" /> یا <ph name="KEY_THREE" /> یا <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">نیٹ ورک کی کوئی معلومات دستیاب نہیں ہے</translation>
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="385300504083504382">شروعات</translation>
@@ -926,6 +929,7 @@
 <translation id="4759238208242260848">ڈاؤن لوڈز</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + اوپر تیر کا نشان</translation>
 <translation id="4762573482154983647">ایپس چھپائیں</translation>
+<translation id="4762802395013012237">5 فٹ میٹر میں</translation>
 <translation id="4763885921995354846">اس سے کیمرے کی اجازت کے ساتھ تمام ایپس اور ویب سائٹس کے لیے کیمرے تک رسائی کی اجازت ملتی ہے۔ آپ کو ویب صفحہ کو ریفریش کرنے یا ایپ کو دوبارہ شروع کرنے کی ضرورت پڑ سکتی ہے۔</translation>
 <translation id="4774338217796918551">کل <ph name="COME_BACK_TIME" /> پر پھر استعمال کریں۔</translation>
 <translation id="4776584068981882959">آپ کے پاس ورڈ کی اب بھی تصدیق نہیں ہو سکی۔ دوبارہ کوشش کریں۔</translation>
@@ -968,6 +972,7 @@
 <translation id="491504982845934899">آلہ سیٹ اپ کرنے کے بعد <ph name="NETWORK_NAME" /> کو فعال کریں</translation>
 <translation id="4917385247580444890">مضبوط</translation>
 <translation id="4918086044614829423">قبول کریں</translation>
+<translation id="491907188205944472">آپ کو براہ راست لانچر میں جس چیز کی ضرورت ہے اسے تلاش کریں</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> فی الحال آپ کا کیمرا استعمال کر رہی ہے</translation>
 <translation id="492453977506755176">وضع کی کلید کیپچر کریں</translation>
 <translation id="4925542575807923399">اس اکاؤنٹ کے منتظم کا تقاضہ ہے کہ یہ اکاؤنٹ متعدد سائن سیشن میں پہلا سائن ان کردہ اکاؤنٹ ہو۔</translation>
@@ -1118,6 +1123,7 @@
 <translation id="5518068085000130971">‏وہ بنیادی باتیں تھیں! تجاویز اور مدد کے لیے ہماری پہلے سے شامل ایپ ایکسپلور میں جاری رکھیں۔ آپ کو شروع کرنے کے لیے تجاویز، تجویز کردہ ایپس، خصوصی پیشکشیں اور Chromebook کی جدید ترین خصوصیات ملیں گی۔</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">‏آپ کے منتظم نے تمام eSIM پروفائلز کو ہٹا دیا ہے۔ مزید معلومات کیلئے اپنے منتظم سے رابطہ کریں۔</translation>
+<translation id="5520909879404821039">فرانسیسی میں آداب</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> منسلک ہو رہی ہے۔</translation>
 <translation id="5529587891732734495">کاسٹ کرنا موقوف کریں</translation>
 <translation id="5532994612895037630">فُل اسکرین ریکارڈ کرنے کے لیے کہیں بھی تھپتھپائیں</translation>
@@ -1694,6 +1700,7 @@
 <translation id="7886277072580235377">آپ کے سائن آؤٹ ہونے پر آپ کا انٹرنیٹ سیشن صاف ہو جائے گا۔ <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ای میل بھیجیں</translation>
 <translation id="7893503627044934815">نہیں چاہتے کہ یہ فائل دکھائی جائے</translation>
+<translation id="7893547474469215105">زینتھ کی وضاحت کریں</translation>
 <translation id="7895348134893321514">ٹوٹ</translation>
 <translation id="7897375687985782769">آپ نے اسکرین کو گھمانے کیلئے کی بورڈ شارٹ کٹ دبایا ہے۔ کیا آپ اسکرین کو گھمانا چاہتے ہیں؟</translation>
 <translation id="7897626842031123113">صورتحال کی ٹرے، وقت <ph name="TIME" />,
@@ -1709,6 +1716,7 @@
 <translation id="7904094684485781019">اس اکاؤنٹ کے منتظم نے متعدد سائن ان کی اجازت ختم کر دی ہے۔</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> آلات منسلک ہیں</translation>
+<translation id="7923534281713082605">موسم</translation>
 <translation id="7926080067315048321">‏ویب پر Google Tasks کے تمام ٹاسکس دیکھیں</translation>
 <translation id="7930731167419639574">اسپیچ اب مقامی طور پر پروسیس کی جاتی ہے اور ڈکٹیشن آف لائن کام کرتا ہے</translation>
 <translation id="7932451802722951285">‏Google کیلنڈر میں کھولیں</translation>
@@ -1855,6 +1863,7 @@
 <translation id="8555757996376137129">حالیہ ڈیسک کو ہٹائیں</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> کی تجویز ہے کہ آپ اپنے <ph name="DEVICE_TYPE" /> کو اپ ڈیٹ کریں</translation>
 <translation id="8563862697512465947">اطلاع کی ترتیبات</translation>
+<translation id="8569751806372591456">کوشش کرنے کے لیے یہاں کچھ تجاویز ہیں</translation>
 <translation id="857201607579416096">مینیو کو اسکرین کے نچلے دائیں کونے میں منتقل کر دیا گیا۔</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> دبائیں اور کسی لنک پر کلک کریں</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1898,6 +1907,7 @@
 <translation id="875593634123171288">‏VPN کی ترتیبات دکھائیں</translation>
 <translation id="8759408218731716181">متعدد سائن ان ترتیب نہیں دے سکتے</translation>
 <translation id="8763883995157866248">آلہ کو سلیپ وضع میں بھیجیں</translation>
+<translation id="877404052021108314">‏C میں 90‎°F</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />، انسٹال کردہ ایپ، مسدود ہے</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> سے منسلک کریں</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />۔ <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1906,6 +1916,7 @@
 <translation id="8806053966018712535">فولڈر <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"مدد"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">‏اسکرین شاٹ لینے کا شارٹ کٹ، Ctrl پلس شفٹ پلس مجموعی جائزہ وضع کلید دبائیں</translation>
 <translation id="881757059229893486">اندراج کے طریقے کی ترتیبات</translation>
 <translation id="8819728065740986820">اڈاپٹیو چارجنگ آن ہے</translation>
 <translation id="8825863694328519386">پیچھے جانے کیلئے بائیں سے سوائپ کریں</translation>

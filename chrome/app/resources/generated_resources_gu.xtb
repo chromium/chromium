@@ -573,7 +573,6 @@
 <translation id="1448779317883494811">બ્રશ ટૂલ</translation>
 <translation id="1449191289887455076">સોંપણી કન્ફર્મ કરવા માટે, ફરી “<ph name="CURRENTKEY" />” દબાવો અને <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">વેબપેજ, એકલ ફાઇલ</translation>
-<translation id="145280054552001290">કૅપ્શનમાં ભાષા ઉમેરો અને કાઢી નાખો</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />ડીબગ લૉગ<ph name="END_LINK" /> મોકલો (ભલામણ કરવામાં આવે છે)</translation>
 <translation id="1454223536435069390">સ્ક્રીનશોટ &amp;લો</translation>
 <translation id="145432137617179457">જોડણીની તપાસ ધરાવતી ભાષાઓ</translation>
@@ -2458,7 +2457,6 @@
 <translation id="285033512555869047">બંધ</translation>
 <translation id="2850541429955027218">થીમ ઉમેરો</translation>
 <translation id="2850672011315104382">વિરામ ચિહ્નની શૈલી</translation>
-<translation id="285241945869362924">ઑડિયો અને વીડિયો માટે ઑટોમૅટિક રીતે કૅપ્શન બનાવે છે. ઑડિયો અને કૅપ્શન તમારા ડિવાઇસમાં હંમેશાં રહે છે.</translation>
 <translation id="2853121255651601031">પાસવર્ડ સાચવ્યો</translation>
 <translation id="2856776373509145513">નવું કન્ટેનર બનાવો</translation>
 <translation id="2856907950922663165">URLને એન્ક્રિપ્ટ કરવાની સુવિધા બંધ કરીએ?</translation>
@@ -6806,6 +6804,7 @@ USB ડિવાઇસ</translation>
 <translation id="6347010704471250799">નોટિફિકેશન બતાવો</translation>
 <translation id="6348805481186204412">ઑફલાઇન સ્ટોરેજ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ઇન્સ્ટૉલ કરો</translation>
+<translation id="6350821834561350243">(શક્ય હોય તો) સમસ્યાનું સ્પષ્ટ વર્ણન તથા સમસ્યાની પુન:પ્રસ્તુતિ કરવા માટેના પગલાં આપો</translation>
 <translation id="6354918092619878358">SECG એલિપ્ટિક કર્વ secp256r1 (ઉર્ફ ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Google એકાઉન્ટની માહિતી મેળવાઈ રહી છે...</translation>
 <translation id="635609604405270300">ડિવાઇસને ચાલુ રાખો</translation>
@@ -7740,6 +7739,7 @@ USB ડિવાઇસ</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ઍપ કાઢી નાખો}one{ઍપ કાઢી નાખો}other{ઍપ કાઢી નાખો}}</translation>
 <translation id="7099337801055912064">વિશાળ PPD લોડ કરી શકતાં નથી. મહત્તમ કદ 250 kB છે.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{ચેડાં કરાયેલો કોઈ પાસવર્ડ નથી}=1{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}one{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}other{ચેડાં કરાયેલા {COUNT} પાસવર્ડ}}</translation>
+<translation id="7100379916748214860">Chrome દ્વારા હમણાં જ એક હાનિકારક ફાઇલ ડાઉનલોડ થતી બ્લૉક કરવામાં આવી. વધારેલા સંરક્ષણની સુવિધા દ્વારા હજી બહેતર સુરક્ષા મેળવો.</translation>
 <translation id="710047887584828070">આ ટૅબનું કન્ટેન્ટ શેર કરવામાં આવી રહ્યું છે</translation>
 <translation id="710224247908684995">કોઈ એક્સ્ટેન્શન દ્વારા Safe Browsingની સુવિધા બંધ કરવામાં આવી</translation>
 <translation id="7102832101143475489">વિનંતીનો સમય સમાપ્ત થઈ ગયો</translation>
@@ -9224,6 +9224,7 @@ USB ડિવાઇસ</translation>
 <translation id="8256319818471787266">સ્પાર્કી</translation>
 <translation id="8257950718085972371">કૅમેરાના ઍક્સેસને બ્લૉક કરવાનું ચાલુ રાખો</translation>
 <translation id="8258027225380843424">આયાત કરવું સફળ થયું!</translation>
+<translation id="8260177673299865994">ડાઉનલોડની પ્રક્રિયા સંબંધિત સંરક્ષણ બહેતર બનાવો</translation>
 <translation id="8260864402787962391">માઉસ</translation>
 <translation id="8261378640211443080">આ એક્સટેન્શન <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યું હોઈ શકે છે.</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>

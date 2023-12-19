@@ -542,6 +542,7 @@
 <translation id="3909222758573607742">حفظ كلمات المرور والعناصر الأخرى في الحساب</translation>
 <translation id="3915450441834151894">معلومات الموقع الإلكتروني</translation>
 <translation id="3918585468378680136">جارٍ تحديد حالة الطرد</translation>
+<translation id="3921585859122905677">موضع شريط العناوين</translation>
 <translation id="3922310737605261887">البحث عن النص الذي نسخته</translation>
 <translation id="3928666092801078803">دمج البيانات التابعة لي</translation>
 <translation id="3929457972718048006">العناوين</translation>
@@ -1404,6 +1405,7 @@
 <translation id="8613883225817609844">إخفاء علامات التبويب الأخيرة</translation>
 <translation id="8620640915598389714">تعديل</translation>
 <translation id="8624447588354561276">رقم الطرد</translation>
+<translation id="8624753446837753970">ضبط الموضع</translation>
 <translation id="8626393685701737946">يمكنك تغيير طريقة العرض التلقائية للمواقع الإلكترونية على الكمبيوتر المكتبي في الإعدادات &gt; إعدادات المحتوى.</translation>
 <translation id="8636825310635137004">للحصول على علامات التبويب من أجهزتك الأخرى، فعِّل المزامنة.</translation>
 <translation id="8637431369725868556">يمكنك حماية متصفّحك من المواقع الإلكترونية الخطيرة.</translation>
@@ -1445,6 +1447,7 @@
 <translation id="8820817407110198400">الإشارات المرجعية</translation>
 <translation id="8825562130641217944">الحصول على الإشارات المرجعية وكلمات المرور وإعدادات أخرى</translation>
 <translation id="882557203579758546">البحث في الصفحة…</translation>
+<translation id="8838250347763484641">يمكنك نقل شريط العناوين إلى أعلى الشاشة أو أسفلها لتخصيص تجربة التصفُّح.</translation>
 <translation id="8840513115188359703">‏لن يتم تسجيل خروجك من حساب Google.</translation>
 <translation id="8843129975935593190">تفرض مؤسستك قيودًا على أنواع البيانات التي يمكنك مزامنتها.</translation>
 <translation id="8849001918648564819">مخفي</translation>
@@ -1517,6 +1520,7 @@
 <translation id="9188680907066685419">تسجيل الخروج من الحساب المُدار</translation>
 <translation id="9200875785104711666">قبل <ph name="TIME" /> يوم</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9203951165704618409">يمكنك نقل شريط العناوين من أعلى الشاشة إلى أسفلها لتخصيص تجربة التصفُّح.</translation>
 <translation id="9206887540681440657">السرعة</translation>
 <translation id="9219154867334666734">البحث في علامات التبويب…</translation>
 <translation id="9223358826628549784">تم إرسال تقرير الأعطال.</translation>

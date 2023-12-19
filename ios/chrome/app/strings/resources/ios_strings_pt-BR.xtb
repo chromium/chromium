@@ -259,6 +259,7 @@
 
 Eles também não podem usar cookies para ver sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="2381405137052800939">Conceitos básicos</translation>
+<translation id="23824747102827308">Acompanhe notícias, esportes e muito mais com base nos seus interesses</translation>
 <translation id="2386793615875593361">Uma selecionada</translation>
 <translation id="2390457533592708044">Ocultar "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Não foi possível entregar seu pacote</translation>
@@ -299,6 +300,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2604176749896001318">Atualizar seu navegador</translation>
 <translation id="2609008503159898744">Fechar todas as guias?</translation>
 <translation id="2617210333344098964">Transferir o endereço para a conta</translation>
+<translation id="261739049332372104">Para receber atualizações sobre conteúdos importantes para você, ative as notificações nas configurações do iOS.</translation>
 <translation id="2625189173221582860">Senha copiada</translation>
 <translation id="2626236249646841566">Verifique sua conexão e tente fazer login novamente.</translation>
 <translation id="2637313651144986786">Pesquisar guias…</translation>
@@ -558,6 +560,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4042870976416480368">Buscar na página</translation>
 <translation id="4045648459118332842">Acesse suas senhas salvas em qualquer app com um toque</translation>
 <translation id="4049507953662678203">Verifique se você tem uma conexão de rede e tente novamente.</translation>
+<translation id="4054572406751135230">Acompanhe as notícias, esportes e muito mais.</translation>
 <translation id="4066639687323968621">Faça login com sua Conta do Google para sincronizar favoritos, histórico e muito mais.</translation>
 <translation id="4092655288299341041">Mostrar "Ajuda"</translation>
 <translation id="4105841739161771091">{count,plural, =1{Excluir endereço}one{Excluir endereço}other{Excluir endereços}}</translation>
@@ -737,6 +740,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5016420433031926653">Enviar para <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Lembrar mais tarde</translation>
 <translation id="5037676449506322593">Selecionar tudo</translation>
+<translation id="5038113048373546701">Receba notificações de notícias, esportes e muito mais com base nos seus interesses</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5050294464480863218">Considerações</translation>
 <translation id="5050810143224996149">Compartilhar senha</translation>
@@ -792,6 +796,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Salvar</translation>
 <translation id="5318298563956633672">Você já está acompanhando este produto.</translation>
+<translation id="5327753393331509826">Receber notificações de conteúdo</translation>
 <translation id="5329451663851195956">Puxe para baixo para atualizar.</translation>
 <translation id="5339316356165661760">Ativar a sincronização</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Rastrear pacote?}one{Rastrear {COUNT} pacote?}other{Rastrear {COUNT} pacotes?}}</translation>
@@ -1151,6 +1156,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7192050974311852563">Iniciar registro</translation>
 <translation id="7203585745079012652">Falar as respostas</translation>
 <translation id="7207023858769244910">Sincronize para receber conteúdo com base nos seus interesses.</translation>
+<translation id="7210568419880432164">Ativar notificações.</translation>
 <translation id="721597782417389033">Apelido do cartão inválido</translation>
 <translation id="7221173315674413369">Conheça os novos recursos e dicas em "Novidades"</translation>
 <translation id="7223102419539744003">Fechar guia</translation>
@@ -1188,6 +1194,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7454057999980797137">Estado/Prov.</translation>
 <translation id="745899714366929493">O dia todo</translation>
 <translation id="7459628154744868585">A proteção reforçada está ativa</translation>
+<translation id="7465351360025415755">Receba conteúdo importante para você</translation>
 <translation id="7472734401283673885">Nome da empresa</translation>
 <translation id="7473891865547856676">Agora não</translation>
 <translation id="7488874549363591659">Entregue</translation>
@@ -1355,6 +1362,8 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8343993175958086504">Faça backup e use seus dados em qualquer dispositivo.</translation>
 <translation id="834783239627985533">Sites mais visitados</translation>
 <translation id="8364841868226993049">Salvando imagem no Google Fotos de <ph name="USER_EMAIL" />…</translation>
+<translation id="8370406443343902172">Acessar as configurações…</translation>
+<translation id="8374977641764177587">Ativar notificações?</translation>
 <translation id="8378714024927312812">Gerenciado pela sua organização</translation>
 <translation id="8386068868580335421">Redefinir</translation>
 <translation id="838867811594159347">Digite a senha longa…</translation>

@@ -572,7 +572,6 @@
 <translation id="1448779317883494811">ブラシツール</translation>
 <translation id="1449191289887455076">割り当てを確定して<ph name="RESPONSE" />には、もう一度「<ph name="CURRENTKEY" />」キーを押してください</translation>
 <translation id="1451375123200651445">ウェブページ、1 つのファイル</translation>
-<translation id="145280054552001290">字幕の言語を追加、削除する</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />デバッグログ<ph name="END_LINK" />を送信する（推奨）</translation>
 <translation id="1454223536435069390">スクリーンショットを撮る(&amp;A)</translation>
 <translation id="145432137617179457">スペルチェックの言語</translation>
@@ -2454,7 +2453,6 @@
 <translation id="285033512555869047">閉じています</translation>
 <translation id="2850541429955027218">テーマを追加</translation>
 <translation id="2850672011315104382">句読点</translation>
-<translation id="285241945869362924">音声と動画の字幕を自動的に作成します。音声と字幕がデバイスの外部に送信されることはありません。</translation>
 <translation id="2853121255651601031">パスワードが保存されました</translation>
 <translation id="2856776373509145513">新しいコンテナの作成</translation>
 <translation id="2856907950922663165">URL の暗号化をオフにしますか？</translation>
@@ -6796,6 +6794,7 @@
 <translation id="6347010704471250799">通知を表示</translation>
 <translation id="6348805481186204412">オフライン ストレージ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> をインストールします</translation>
+<translation id="6350821834561350243">問題の明確な説明と再現手順（可能な場合）を入力してください</translation>
 <translation id="6354918092619878358">SECG 楕円曲線 secp256r1（別名 ANSI X9.62 prime256v1、NIST P-256）</translation>
 <translation id="6355395056805388423">Google アカウント情報の取得中...</translation>
 <translation id="635609604405270300">デバイスの電源を切らないでください</translation>
@@ -7726,6 +7725,7 @@
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{アプリを削除}other{アプリを削除}}</translation>
 <translation id="7099337801055912064">サイズの大きい PPD は読み込めません。最大サイズは 250 KB です。</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{不正使用されたパスワードはありません}=1{不正使用されたパスワード: {COUNT} 件}other{不正使用されたパスワード: {COUNT} 件}}</translation>
+<translation id="7100379916748214860">Chrome で危険なファイルのダウンロードがブロックされました。保護強化機能を使用すると。セキュリティを強化できます。</translation>
 <translation id="710047887584828070">このタブのコンテンツは共有されています</translation>
 <translation id="710224247908684995">セーフ ブラウジングは拡張機能によってオフにされています</translation>
 <translation id="7102832101143475489">リクエストがタイムアウトになりました</translation>
@@ -9214,6 +9214,7 @@
 <translation id="8256319818471787266">スパーキー</translation>
 <translation id="8257950718085972371">カメラへのアクセスを引き続きブロックする</translation>
 <translation id="8258027225380843424">インポートが完了しました。</translation>
+<translation id="8260177673299865994">ダウンロード保護を強化する</translation>
 <translation id="8260864402787962391">マウス</translation>
 <translation id="8261378640211443080">この拡張機能は <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供されていません。知らないうちに追加された可能性があります。</translation>
 <translation id="8261506727792406068">削除</translation>

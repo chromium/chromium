@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">سینی ورودی</translation>
 <translation id="1975584088563498795">صندوق پست ۱۰</translation>
 <translation id="1978555033938440688">نسخه سفت‌افزار</translation>
+<translation id="1979156660928743046">اطلاعات رسانه</translation>
 <translation id="1988881251331415125">اگر املا صحیح است، <ph name="BEGIN_LINK" />«عیب‌یابی اتصال» را اجرا کنید<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">صخره‌نوردی و کوهنوردی</translation>
 <translation id="1991830984769263878">بیمه خودرو</translation>
@@ -1524,6 +1525,7 @@
 <translation id="4050599136622776556">‏Chromium می‌خواهد روش‌های پرداخت را ویرایش کند.</translation>
 <translation id="405399507749852140">اگر قیمت در هر سایتی کاهش پیدا کرد، هشدار دریافت می‌کنید</translation>
 <translation id="4056223980640387499">سپیا</translation>
+<translation id="4059523390906550209">درباره «حفاظت از داده‌های حساس» بیشتر بدانید</translation>
 <translation id="4063063121357725926">‏به Google اجازه دهید در پیدا کردن تخفیف‌های مربوط به سبدهای خریدتان به شما کمک کند</translation>
 <translation id="406358100705415968">لوازم حفاظتی و ایمنی کار</translation>
 <translation id="4063924980214801036">استفاده از باز کردن قفل دستگاه برای تأیید سریع‌تر کارت‌ها</translation>
@@ -1682,6 +1684,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">مسدود کردن (پیش‌فرض)</translation>
 <translation id="4314815835985389558">مدیریت همگام‌سازی</translation>
+<translation id="4316057107946726368">لطفاً یک پیام توجیهی با حداکثر <ph name="MAX_CHAR_COUNT" /> نویسه وارد کنید. ‫<ph name="ACTUAL_CHAR_COUNT" /> نویسه از <ph name="MAX_CHAR_COUNT" /> نویسه استفاده شده است.</translation>
 <translation id="4318213823155573975">پوشش سر</translation>
 <translation id="4318312030194671742">سرویس ترکیب‌کننده پیش‌نمایش نقاشی</translation>
 <translation id="4318566738941496689">نام دستگاه و نشانی شبکه شما</translation>
@@ -2354,6 +2357,7 @@
 <translation id="5695542892312572833">‏برای تأیید و تکمیل خریدتان از Windows Hello استفاده شود؟</translation>
 <translation id="5699628521141772782">لبنیات و تخم‌مرغ</translation>
 <translation id="5700761515355162635">کوکی‌های شخص ثالث مجاز هستند</translation>
+<translation id="5701023235904684227">‫<ph name="READERNAME" /> کنترل شود و دسترسی به کارت هوشمند دردسترس آن مجاز شود؟</translation>
 <translation id="5701381305118179107">مرکز</translation>
 <translation id="5707154300732650394">ازسرگیری سفر جستجو</translation>
 <translation id="57094364128775171">پیشنهاد گذرواژه قوی…</translation>
@@ -2668,6 +2672,7 @@
 <translation id="6355392890578844978">‏شرکت یا سازمان دیگری این مرورگر را مدیریت نمی‌کند. ممکن است فعالیت‌های انجام‌شده در این دستگاه خارج از Chromium مدیریت شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">روش‌های پرداخت را ویرایش کند</translation>
 <translation id="6358450015545214790">معنی این‌ها چیست؟</translation>
+<translation id="6360213755783740931">درباره «حفاظت دربرابر بدافزار» بیشتر بدانید</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">مشاهده گزارش‌ها</translation>
 <translation id="6364095313648930329">‏<ph name="BEGIN_LINK" />بررسی پیکربندی پراکسی، دیوار آتش و DNS امن<ph name="END_LINK" /></translation>
@@ -2725,6 +2730,7 @@
 <translation id="6443406338865242315">افزونه‌ها و افزایه‌هایی که نصب کرده‌اید</translation>
 <translation id="6446608382365791566">افزودن اطلاعات بیشتر</translation>
 <translation id="6447842834002726250">کوکی‌ها</translation>
+<translation id="6448371595882710519">درباره «کنترل‌های داده» بیشتر بدانید</translation>
 <translation id="6450077999570164268">رحلی</translation>
 <translation id="6450212216969386944">پاکت چو ۴۰</translation>
 <translation id="6451458296329894277">تأیید ارسال مجدد فرم</translation>

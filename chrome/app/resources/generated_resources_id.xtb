@@ -574,7 +574,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1448779317883494811">Alat Kuas</translation>
 <translation id="1449191289887455076">Tekan "<ph name="CURRENTKEY" />" lagi untuk mengonfirmasi penetapan dan <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Halaman web, File Tunggal</translation>
-<translation id="145280054552001290">Menambahkan dan menghapus bahasa teks</translation>
 <translation id="1453561711872398978">Kirim <ph name="BEGIN_LINK" />
     log debug<ph name="END_LINK" /> (direkomendasikan)</translation>
 <translation id="1454223536435069390">Ambil screenshot</translation>
@@ -2475,7 +2474,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="285033512555869047">Ditutup</translation>
 <translation id="2850541429955027218">Tambahkan tema</translation>
 <translation id="2850672011315104382">Gaya Tanda Baca</translation>
-<translation id="285241945869362924">Otomatis membuat teks untuk audio dan video. Audio dan teks hanya ada di perangkat Anda.</translation>
 <translation id="2853121255651601031">Sandi Sudah Disimpan</translation>
 <translation id="2856776373509145513">Buat penampung baru</translation>
 <translation id="2856907950922663165">Nonaktifkan enkripsi URL?</translation>
@@ -6822,6 +6820,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6347010704471250799">Tampilkan notifikasi</translation>
 <translation id="6348805481186204412">Penyimpanan offline</translation>
 <translation id="6349101878882523185">Instal <ph name="APP_NAME" /></translation>
+<translation id="6350821834561350243">Berikan deskripsi masalah yang jelas dan langkah-langkah untuk mereproduksi masalah (jika memungkinkan)</translation>
 <translation id="6354918092619878358">Kurva eliptis SECG secp256r1 (alias ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Mendapatkan info Akun Google...</translation>
 <translation id="635609604405270300">Jaga perangkat tetap menyala</translation>
@@ -7754,6 +7753,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Hapus Aplikasi}other{Hapus Aplikasi}}</translation>
 <translation id="7099337801055912064">Tidak dapat memuat PPD yang besar. Ukuran maksimumnya adalah 250 kB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Tidak ada sandi yang telah dibobol}=1{{COUNT} sandi telah dibobol}other{{COUNT} sandi telah dibobol}}</translation>
+<translation id="7100379916748214860">Chrome baru saja memblokir download file berbahaya. Dapatkan keamanan yang lebih kuat dengan perlindungan yang ditingkatkan.</translation>
 <translation id="710047887584828070">Konten tab ini sedang dibagikan</translation>
 <translation id="710224247908684995">Sebuah ekstensi menonaktifkan Safe Browsing</translation>
 <translation id="7102832101143475489">Waktu permintaan habis</translation>
@@ -9243,6 +9243,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8256319818471787266">Bleki</translation>
 <translation id="8257950718085972371">Terus blokir akses kamera</translation>
 <translation id="8258027225380843424">Impor berhasil!</translation>
+<translation id="8260177673299865994">Tingkatkan perlindungan download</translation>
 <translation id="8260864402787962391">Mouse</translation>
 <translation id="8261378640211443080">Ekstensi ini tidak tercantum dalam <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa sepengetahuan Anda.</translation>
 <translation id="8261506727792406068">Hapus</translation>

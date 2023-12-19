@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Flor Gazânia</translation>
 <translation id="4943368462779413526">Futebol americano</translation>
 <translation id="4961158930123534723">1 pasta compartilhada com o Parallels Desktop</translation>
+<translation id="4965874878399872778">Verificando arquivos com base nas políticas de segurança da sua organização…</translation>
 <translation id="496656650103537022">Arquivo <ph name="FILE_NAME" /> restaurado</translation>
 <translation id="4969785127455456148">Álbum</translation>
 <translation id="4972330214479971536">Não foi possível concluir a configuração da sincronização de arquivos</translation>
@@ -710,6 +711,7 @@
 <translation id="6430271654280079150">Você tem 1 tentativa restante.</translation>
 <translation id="643243556292470964">Os arquivos excluídos agora são movidos para a lixeira</translation>
 <translation id="6438480100790416671">Verificando o espaço de armazenamento…</translation>
+<translation id="6451527188465304418">Verificando o arquivo com as políticas de segurança da sua organização…</translation>
 <translation id="6485131920355264772">Falha ao recuperar informações sobre espaço</translation>
 <translation id="6495925982925244349">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, gerenciada pelo seu administrador, detalhes</translation>
 <translation id="649877868557234318">Extraindo <ph name="FILE_NAME" /> para a pasta "<ph name="FOLDER_NAME" />"</translation>

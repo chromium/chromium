@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">ইনপুট ট্ৰে’</translation>
 <translation id="1975584088563498795">মেইলবক্স ১০</translation>
 <translation id="1978555033938440688">ফাৰ্মৱেৰৰ সংস্কৰণ</translation>
+<translation id="1979156660928743046">মিডিয়াৰ তথ্য</translation>
 <translation id="1988881251331415125">যদি বানান ঠিকে আছে, <ph name="BEGIN_LINK" />সংযোগ সম্পৰ্কীয় ডায়গন’ষ্টিক্স চলাই চাওক<ph name="END_LINK" />।</translation>
 <translation id="1991453785879639515">বগোৱা আৰু পৰ্বতাৰোহন</translation>
 <translation id="1991830984769263878">বাহন বীমা</translation>
@@ -1521,6 +1522,7 @@
 <translation id="4050599136622776556">Chromiumএ পৰিশোধ পদ্ধতি সম্পাদনা কৰিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="405399507749852140">কোনো ছাইটত মূল্য কমিলে সতৰ্কবাৰ্তা পাওক</translation>
 <translation id="4056223980640387499">ছেপিয়া</translation>
+<translation id="4059523390906550209">সংবেদনশীল ডেটা সুৰক্ষাৰ বিষয়ে অধিক জানক</translation>
 <translation id="4063063121357725926">আপোনাৰ কাৰ্টৰ বাবে ৰেহাইৰ সন্ধান কৰিবলৈ Googleক আপোনাক সহায় কৰিবলৈ দিয়ক</translation>
 <translation id="406358100705415968">কৰ্মস্থানত সুৰক্ষাৰ বাবে ব্যৱহাৰ কৰা সুৰক্ষামূলক আহিলা</translation>
 <translation id="4063924980214801036">কাৰ্ডসমূহ দ্ৰুততাৰে নিশ্চিত কৰিবলৈ ডিভাইচ আনলক কৰাৰ সুবিধাটো ব্যৱহাৰ কৰক</translation>
@@ -1678,6 +1680,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">অৱৰোধ কৰক (ডিফ’ল্ট)</translation>
 <translation id="4314815835985389558">ছিংক পৰিচালনা কৰক</translation>
+<translation id="4316057107946726368">অনুগ্ৰহ কৰি সৰ্বাধিক <ph name="MAX_CHAR_COUNT" /> টা বৰ্ণ থকা এটা যুক্তিযুক্ততা বাৰ্তা দিয়ক। <ph name="MAX_CHAR_COUNT" /> টা বৰ্ণৰ ভিতৰত <ph name="ACTUAL_CHAR_COUNT" /> টা ব্যৱহাৰ কৰা হৈছে।</translation>
 <translation id="4318213823155573975">মূৰত পিন্ধা বস্তু</translation>
 <translation id="4318312030194671742">পেইণ্ট প্ৰিভিউ কম্প’জিটৰ সেৱা</translation>
 <translation id="4318566738941496689">আপোনাৰ ডিভাইচৰ নাম আৰু নেটৱৰ্ক ঠিকনা</translation>
@@ -2350,6 +2353,7 @@
 <translation id="5695542892312572833">আপোনাৰ ক্ৰয়টো সত্যাপন আৰু সম্পূৰ্ণ কৰিবলৈ Windows Hello ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="5699628521141772782">দুগ্ধজাত খাদ্যবস্তু আৰু কণী</translation>
 <translation id="5700761515355162635">তৃতীয় পক্ষৰ কুকিসমূহক অনুমতি দিয়া হৈছে</translation>
+<translation id="5701023235904684227"><ph name="READERNAME" />ৰ নিয়ন্ত্ৰণ আৰু ই এক্সেছ কৰিব পৰা স্মাৰ্ট কাৰ্ডৰ এক্সেছ লাভ কৰিবনে?</translation>
 <translation id="5701381305118179107">কেন্দ্ৰ</translation>
 <translation id="5707154300732650394">আপোনাৰ যাত্ৰা পুনৰ আৰম্ভ কৰক</translation>
 <translation id="57094364128775171">জটিল পাছৱৰ্ডৰ পৰামৰ্শ দিয়ক…</translation>
@@ -2663,6 +2667,7 @@
 <translation id="6355392890578844978">এই ব্ৰাউজাৰটো কোনো কোম্পানী অথবা অন্য প্ৰতিষ্ঠানৰ দ্বাৰা পৰিচালিত। এই ডিভাইচটোৰ কাৰ্যকলাপ Chromiumৰ বাহিৰত পৰিচালনা কৰা হৈ থাকিব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">পৰিশোধ পদ্ধতি সম্পাদনা কৰক</translation>
 <translation id="6358450015545214790">এইটোৱে কি বুজায়?</translation>
+<translation id="6360213755783740931">মালৱেৰৰ পৰা সুৰক্ষাৰ বিষয়ে অধিক জানক</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">লগসমূহ চাওক</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />প্ৰক্সি, ফায়াৰৱাল আৰু সুৰক্ষিত DNS কনফিগাৰেশ্বন পৰীক্ষা কৰি থকা হৈছে<ph name="END_LINK" /></translation>
@@ -2720,6 +2725,7 @@
 <translation id="6443406338865242315">আপুনি ইনষ্টল কৰা এক্সটেনশ্বন আৰু প্লাগইনসমূহ</translation>
 <translation id="6446608382365791566">অধিক তথ্য যোগ দিয়ক</translation>
 <translation id="6447842834002726250">কুকীসমূহ</translation>
+<translation id="6448371595882710519">ডেটা নিয়ন্ত্ৰণৰ বিষয়ে অধিক জানক</translation>
 <translation id="6450077999570164268">কুৱাৰ্ট’</translation>
 <translation id="6450212216969386944">এনভেল’প শ্বু ৪০</translation>
 <translation id="6451458296329894277">ফৰ্ম পুনৰ দাখিল কৰিবলৈ নিশ্চিত কৰক</translation>

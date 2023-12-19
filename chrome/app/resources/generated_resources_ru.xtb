@@ -575,7 +575,6 @@
 <translation id="1448779317883494811">Инструмент "Кисть"</translation>
 <translation id="1449191289887455076">Чтобы подтвердить назначение и <ph name="RESPONSE" />, нажмите клавишу "<ph name="CURRENTKEY" />" ещё раз.</translation>
 <translation id="1451375123200651445">Веб-страница, один файл</translation>
-<translation id="145280054552001290">Добавляйте и удаляйте языки для субтитров</translation>
 <translation id="1453561711872398978">Отправить <ph name="BEGIN_LINK" />журналы отладки<ph name="END_LINK" /> (рекомендуется)</translation>
 <translation id="1454223536435069390">С&amp;делать снимок экрана</translation>
 <translation id="145432137617179457">Языки с поддержкой проверки правописания</translation>
@@ -2462,7 +2461,6 @@
 <translation id="285033512555869047">Закрытая</translation>
 <translation id="2850541429955027218">Добавить тему</translation>
 <translation id="2850672011315104382">Стиль пунктуации</translation>
-<translation id="285241945869362924">Субтитры к медиаконтенту создаются автоматически. Аудиофайлы и субтитры хранятся только на вашем устройстве.</translation>
 <translation id="2853121255651601031">Пароль сохранен</translation>
 <translation id="2856776373509145513">Создайте контейнер</translation>
 <translation id="2856907950922663165">Отключить шифрование URL?</translation>

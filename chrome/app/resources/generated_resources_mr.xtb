@@ -574,7 +574,6 @@
 <translation id="1448779317883494811">ब्रश टूल</translation>
 <translation id="1449191289887455076">असाइनमेंट कंफर्म करण्यासाठी, “<ph name="CURRENTKEY" />” प्रेस करा आणि <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">वेबपेज, एकल फाइल</translation>
-<translation id="145280054552001290">कॅप्शनमध्ये भाषा जोडा आणि काढून टाका</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />
     डीबग लॉग<ph name="END_LINK" /> पाठवा (शिफारस केलेले)</translation>
 <translation id="1454223536435069390">स्क्रीनशॉट घ्या</translation>
@@ -2474,7 +2473,6 @@
 <translation id="285033512555869047">बंद आहे</translation>
 <translation id="2850541429955027218">थीम जोडा</translation>
 <translation id="2850672011315104382">विरामचिन्हाची शैली</translation>
-<translation id="285241945869362924">ऑडिओ आणि व्हिडिओसाठी आपोआप कॅप्शन तयार करते. ऑडिओ आणि कॅप्शन तुमच्या डिव्हाइसमध्येच राहतात.</translation>
 <translation id="2853121255651601031">पासवर्ड सेव्ह केला</translation>
 <translation id="2856776373509145513">नवीन कंटेनर तयार करा</translation>
 <translation id="2856907950922663165">URL एन्क्रिप्शन बंद करायचे आहे का?</translation>
@@ -3109,6 +3107,7 @@
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">विभाजक</translation>
 <translation id="3387023983419383865">,</translation>
+<translation id="3387588771342841525">सुरू असल्यास, पासवर्ड <ph name="EMAIL" /> मध्ये सेव्ह केले जातात. बंद असल्यास, पासवर्ड फक्त या डिव्हाइसवर सेव्ह केले जातात.</translation>
 <translation id="3387614642886316601">वर्धित केलेले स्पेल चेक वापरा</translation>
 <translation id="3387829698079331264">तुम्ही तुमचे डिव्हाइस सक्रियपणे केव्हा वापरता हे जाणून घेण्याची अनुमती नाही</translation>
 <translation id="3388094447051599208">आउटपुट ट्रे जवळजवळ पूर्ण भरला आहे</translation>
@@ -3297,6 +3296,7 @@
 <translation id="3532521178906420528">नेटवर्क कनेक्शन स्थापित करत आहे ...</translation>
 <translation id="3532852121563960103">{NUM_OF_FILES,plural, =1{१ फाइल <ph name="CLOUD_PROVIDER" /> वर हलवत आहे}other{{NUM_OF_FILES} फाइल <ph name="CLOUD_PROVIDER" /> वर हलवत आहे}}</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - ऑडिओ म्यूट केला</translation>
+<translation id="3537099313456411235">Files ॲपमध्ये तुमच्या Drive फाइल अ‍ॅक्सेस करण्यासाठी <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> कनेक्ट करा</translation>
 <translation id="3537881477201137177">हे नंतर सेटिंग्जमध्ये बदलले जाऊ शकते</translation>
 <translation id="3538066758857505094">Linux अनइंस्टॉल करताना एरर आली. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" /> द्वारे नेटवर्क उपलब्ध नाही</translation>
@@ -5378,6 +5378,7 @@
 <translation id="5185359571430619712">एक्स्टेंशनचे पुनरावलोकन करा</translation>
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" ची नवीनतम आवृत्ती अक्षम केली गेली कारण यासाठी अधिक परवानग्या आवश्यक आहेत.</translation>
 <translation id="5185500136143151980">इंटरनेट नाही</translation>
+<translation id="5186381005592669696">सपोर्ट असणाऱ्या अ‍ॅप्ससाठी प्रदर्शनाची भाषा कस्टमाइझ करा</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> वापरत आहे</translation>
 <translation id="5190926251776387065">पोर्ट सुरू करा</translation>
@@ -6156,6 +6157,7 @@
 <translation id="5828633471261496623">प्रिंट करत आहे...</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> उघडू शकत नाही</translation>
 <translation id="5830720307094128296">पेज या फॉरमॅटमध्ये सेव्ह करा...</translation>
+<translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> म्हणून साइन इन केले आहे</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" /> साठी, त्याच्या अंतर्गत येणाऱ्या सर्व साइट आणि त्याचे इंस्टॉल केलेले अ‍ॅप यांच्याकरिता साइट डेटा व परवानग्या हटवायच्या आहेत का?</translation>
 <translation id="5832813618714645810">प्रोफाइल</translation>
 <translation id="583281660410589416">अज्ञात</translation>
@@ -6229,6 +6231,7 @@
 <translation id="5883356647197510494">आपोआप ब्लॉक केलेले <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">प्रत्येक एक्स्टेंशनसाठी कस्टमाइझ करा</translation>
 <translation id="5885314688092915589">तुमची संस्था ही प्रोफाइल व्यवस्थापित करेल</translation>
+<translation id="5885470467814103868">स्कॅन सुरू करा</translation>
 <translation id="5885631909150054232">टोकन कॉपी करा</translation>
 <translation id="5886009770935151472">पहिले बोट</translation>
 <translation id="5886112770923972514">जवळची जलद पेअर डिव्हाइस कनेक्ट करा आणि झटपट सेट करा</translation>
@@ -6820,6 +6823,8 @@
 <translation id="6347010704471250799">सूचना दाखवा</translation>
 <translation id="6348805481186204412">ऑफलाइन स्टोरेज</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करा</translation>
+<translation id="6350821834561350243">समस्या रीप्रोड्यूस करण्यासाठी समस्येचे स्पष्ट वर्णन आणि पायऱ्या द्या (शक्य असल्यास)</translation>
+<translation id="6351178441572658285">ॲपच्या भाषा</translation>
 <translation id="6354918092619878358">SECG एल्लिपटिक कर्व्ह secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Google खाते शी संबंधित माहिती मिळवत आहे...</translation>
 <translation id="635609604405270300">डिव्हाइस सुरू ठेवा</translation>
@@ -7423,6 +7428,7 @@
 <translation id="6833479554815567477">टॅब गट <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> यामधून काढून टाकला आहे</translation>
 <translation id="6833996806551876956">गोपनीयता सॅंडबॉक्स याची चाचणी</translation>
 <translation id="6835762382653651563">कृपया तुमचे <ph name="DEVICE_TYPE" /> अपडेट करण्‍यासाठी इंटरनेटशी कनेक्ट करा.</translation>
+<translation id="683630338945552556">तुमच्या Google खाते मधील पासवर्ड वापरा आणि त्यामध्ये ते सेव्ह करा</translation>
 <translation id="6839225236531462745">सर्टिफिकेट हटविणे एरर</translation>
 <translation id="6839916869147598086">साइन इन बदलले आहे</translation>
 <translation id="6840155290835956714">पाठविण्यापूर्वी विचारा</translation>
@@ -7752,6 +7758,7 @@
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ॲप काढून टाका}other{ॲप्‍स काढून टाका}}</translation>
 <translation id="7099337801055912064">मोठ्या PPD लोड करू शकत नाही. कमाल आकार 250kB आहे.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} धोक्यात असलेला पासवर्ड}other{{COUNT} धोक्यात असलेले पासवर्ड}}</translation>
+<translation id="7100379916748214860">Chrome ने आताच धोकादायक फाइल या डाउनलोड करण्यापासून ब्लॉक केल्या आहेत. वर्धित संरक्षणासह आणखी मजबूत सुरक्षा मिळवा.</translation>
 <translation id="710047887584828070">या टॅबचा आशय शेअर केला जात आहे</translation>
 <translation id="710224247908684995">एक्स्टेंशनने सुरक्षित ब्राउझिंग बंद केले</translation>
 <translation id="7102832101143475489">विनंतीची वेळ संपली</translation>
@@ -8040,6 +8047,7 @@
 <translation id="7347943691222276892"><ph name="SUBPAGE_TITLE" /> वरून बाहेर नेव्हिगेट करण्यासाठी क्लिक करा.</translation>
 <translation id="7348093485538360975">ऑन-स्क्रीन कीबोर्ड</translation>
 <translation id="7349010927677336670">व्‍हिडिओची अखंडता</translation>
+<translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे}other{{COUNT} पासवर्ड फक्त या डिव्हाइसवर सेव्ह केले आहेत}}</translation>
 <translation id="7352651011704765696">काहीतरी चूक झाली</translation>
 <translation id="7352664183151911163">तुमची सर्व अ‍ॅप्स आणि Chrome ब्राउझरवर</translation>
 <translation id="7353261921908507769">तुमचे संपर्क जवळपास असतील तेव्हा ते तुमच्यासोबत शेअर करू शकतात. तुम्ही स्वीकारेपर्यंत ट्रान्सफर सुरू होणार नाहीत.</translation>
@@ -8280,6 +8288,7 @@
 <translation id="7523117833414447032">कॅपिटल अक्षरे वाचताना</translation>
 <translation id="7523585675576642403">प्रोफाइलचे नाव बदला</translation>
 <translation id="7525067979554623046">तयार करा</translation>
+<translation id="7525879597899798851">OS प्राधान्यांमध्ये स्थान बंद केले आहे</translation>
 <translation id="7526989658317409655">प्लेसहोल्डर</translation>
 <translation id="7528224636098571080">उघडू नका</translation>
 <translation id="7529411698175791732">तुमचे इंटरनेट कनेक्शन तपासा. समस्या कायम राहिल्यास, साइन आउट करून आणि पुन्हा साइन इन करून पहा.</translation>
@@ -8474,6 +8483,7 @@
 <translation id="7670483791111801022">सबटायटल</translation>
 <translation id="7671130400130574146">सिस्टम शीर्षक बार आणि किनारी वापरा</translation>
 <translation id="767127784612208024">रीसेटची खात्री करण्यासाठी स्पर्श करा</translation>
+<translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" ला "<ph name="SCANNER_NAME" />" मधून स्कॅन करायचे आहे.</translation>
 <translation id="7672504401554182757"><ph name="APP_NAME" /> साठी कोणत्या डिव्हाइसकडे पासकी असावी ते निवडा</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" /> मध्ये <ph name="HUNG_IFRAME_URL" />.</translation>
 <translation id="7673313156293624327">ChromeOS शिल (कनेक्शन व्यवस्थापक) लॉग</translation>
@@ -9240,6 +9250,7 @@
 <translation id="8256319818471787266">चमचमते</translation>
 <translation id="8257950718085972371">कॅमेरा ॲक्सेस ब्लॉक करणे सुरू ठेवा</translation>
 <translation id="8258027225380843424">इंपोर्ट यशस्वी!</translation>
+<translation id="8260177673299865994">डाउनलोडशी संबंधित संरक्षणामध्ये सुधारणा करा</translation>
 <translation id="8260864402787962391">माउस</translation>
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> मध्ये हे एक्स्टेंशन सूचीबद्ध केले नाही आणि कदाचित तुमच्या माहिती शिवाय जोडले गेले आहे.</translation>
 <translation id="8261506727792406068">हटवा</translation>

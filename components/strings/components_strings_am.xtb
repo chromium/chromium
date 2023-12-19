@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">የግቤት መሳቢያ</translation>
 <translation id="1975584088563498795">የመልዕክት ሳጥን 10</translation>
 <translation id="1978555033938440688">የጽኑ ትዕዛዝ ስሪት</translation>
+<translation id="1979156660928743046">የሚዲያ መረጃ</translation>
 <translation id="1988881251331415125">የፊደል አጻጻፉ ትክክል ከሆነ <ph name="BEGIN_LINK" />የተገናኝነት ምርመራን ለማስኬድ ይሞክሩ<ph name="END_LINK" />።</translation>
 <translation id="1991453785879639515">መውጣት እና ተራራ መውጣት</translation>
 <translation id="1991830984769263878">የመኪና መድህን</translation>
@@ -1523,6 +1524,7 @@
 <translation id="4050599136622776556">Chromium የመክፈያ ዘዴዎችን ለማርትዕ እየሞከረ ነው።</translation>
 <translation id="405399507749852140">በማንኛውም ጣቢያ ላይ ዋጋው ቢቀንስ ማንቂያዎችን ያግኙ</translation>
 <translation id="4056223980640387499">ቀይ ቡናማ</translation>
+<translation id="4059523390906550209">ስለ አደጋ ሊያስከትል የሚችል ውሂብ ጥበቃ የበለጠ ለመረዳት</translation>
 <translation id="4063063121357725926">Google ለተሳቢዎችዎ ቅናሾችን ለማግኘት እንዲያግዝዎ ይፍቀዱለት</translation>
 <translation id="406358100705415968">የስራ ደህንነት መከላከያ መሳሪያ</translation>
 <translation id="4063924980214801036">ካርዶችን በበለጠ ፍጥነት ለማረጋገጥ የመሣሪያ መክፈቻን ይጠቀሙ</translation>
@@ -1681,6 +1683,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">አግድ (ነባሪ)</translation>
 <translation id="4314815835985389558">ስምረትን ያቀናብሩ</translation>
+<translation id="4316057107946726368">እባክዎን ከ<ph name="MAX_CHAR_COUNT" /> ቁምፊዎች ያልበለጠ የመስተካከል መልዕክት ያስገቡ። <ph name="ACTUAL_CHAR_COUNT" /> ከ<ph name="MAX_CHAR_COUNT" /> ቁምፊዎች ተጠቅሟል</translation>
 <translation id="4318213823155573975">ጭንቅላት ላይ የሚለበስ</translation>
 <translation id="4318312030194671742">የመሣያ ቅድመ ዕይታ አቀናባሪ አገልግሎት</translation>
 <translation id="4318566738941496689">የእርስዎ መሣሪያ ስም እና የአውታረ መረብ አድራሻ</translation>
@@ -2353,6 +2356,7 @@
 <translation id="5695542892312572833">ግዢዎን ለማረጋገጥ እና ለማጠናቀቅ Windowsን ይጠቀሙ?</translation>
 <translation id="5699628521141772782">የወተት ምርት እና እንቁላሎች</translation>
 <translation id="5700761515355162635">የሦስተኛ ወገን ኩኪዎች ተፈቅደዋል</translation>
+<translation id="5701023235904684227"><ph name="READERNAME" />ን ይቆጣጠሩ እና ሊደረስበት የሚችል ዘመናዊ ካርድ መዳረሻ ያግኙ?</translation>
 <translation id="5701381305118179107">መሃከል</translation>
 <translation id="5707154300732650394">ጉዞዎን ከቆመበት ይቀጥሉ</translation>
 <translation id="57094364128775171">ጠንካራ የይለፍ ቃል ጠቁም...</translation>
@@ -2667,6 +2671,7 @@
 <translation id="6355392890578844978">ይህ አሳሽ በኩባንያ ወይም በሌላ ድርጅት አይተዳደርም። በዚህ መሣሪያ ላይ ያለ እንቅስቃሴ ከChromium ውጭ ሊተዳደር ይችላል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">የመክፈያ ዘዴዎችን አርትዕ ያድርጉ።</translation>
 <translation id="6358450015545214790">እነዚህ ምን ማለት ናቸው?</translation>
+<translation id="6360213755783740931">ስለ ተንኮል አዘል ዌር የበለጠ ይወቁ</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">ምዝግብ ማስታወሻ ይመልከቱ</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ተኪውን፣ ኬላውን እና ደህንነቱ የተጠበቀ የዲኤንኤስ ውቅረትን በመፈተሽ ላይ<ph name="END_LINK" /></translation>
@@ -2724,6 +2729,7 @@
 <translation id="6443406338865242315">የትኛዎቹ ቅጥያዎች እና ተሰኪዎች ናቸው እርስዎ የጫኑት</translation>
 <translation id="6446608382365791566">ተጨማሪ መረጃ ያክሉ</translation>
 <translation id="6447842834002726250">ኩኪዎች</translation>
+<translation id="6448371595882710519">ስለ ውሂብ መቆጣጠሪያዎች የበለጠ ይወቁ</translation>
 <translation id="6450077999570164268">ኳርቶ</translation>
 <translation id="6450212216969386944">ቹው 40 ፖስታ</translation>
 <translation id="6451458296329894277">እንደገና ለማስገባት የማረጋገጫ ቅጽ</translation>

@@ -40,6 +40,7 @@
 <translation id="1153356358378277386">已配對的裝置</translation>
 <translation id="1155734730463845512">目前電量 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">已開啟且正在使用中</translation>
+<translation id="1163437384438183174">將 Phone Hub 從檔案櫃中移除</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />，<ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">您的 USB-C 連接線可能未妥善連接顯示屏</translation>
 <translation id="1175572348579024023">捲動</translation>
@@ -70,6 +71,7 @@
 <translation id="1239161794459865856">「<ph name="FEATURE_NAME" />」已連線。</translation>
 <translation id="1240638468526743569">有應用程式</translation>
 <translation id="1242883863226959074">裝置</translation>
+<translation id="1245644940275736236">前往「Google 助理」</translation>
 <translation id="124678866338384709">關閉目前分頁</translation>
 <translation id="1246890715821376239">不支援的應用程式</translation>
 <translation id="1247372569136754018">麥克風 (內置)</translation>
@@ -692,6 +694,7 @@
 <translation id="383629559565718788">顯示鍵盤設定</translation>
 <translation id="384082539148746321">要刪除範本嗎？</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />，然後按<ph name="KEY_ONE" />、<ph name="KEY_TWO" />、<ph name="KEY_THREE" />或者<ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">沒有可用的網絡資料</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="385300504083504382">開頭</translation>
@@ -926,6 +929,7 @@
 <translation id="4759238208242260848">下載</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" />鍵 + 向上箭咀鍵</translation>
 <translation id="4762573482154983647">隱藏應用程式</translation>
+<translation id="4762802395013012237">將 5 英呎換算成米</translation>
 <translation id="4763885921995354846">此操作會允許所有具備相機權限的應用程式和網站存取相機。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="4774338217796918551">明天<ph name="COME_BACK_TIME" /> 後才可使用。</translation>
 <translation id="4776584068981882959">系統仍然無法驗證您的密碼。請再試一次。</translation>
@@ -968,6 +972,7 @@
 <translation id="491504982845934899">喺裝置設定完 <ph name="NETWORK_NAME" /> 之後啟用</translation>
 <translation id="4917385247580444890">強</translation>
 <translation id="4918086044614829423">接受</translation>
+<translation id="491907188205944472">直接在「啟動器」中搜尋所需功能或資訊</translation>
 <translation id="4919841137949306064">「<ph name="APP_NAME" />」目前正在使用您的相機</translation>
 <translation id="492453977506755176">擷取模式鍵</translation>
 <translation id="4925542575807923399">這個帳戶的管理員要求這個帳戶必須是多重登入工作階段中第一個登入的帳戶。</translation>
@@ -1117,6 +1122,7 @@
 <translation id="5518068085000130971">這些都是基本概念！如需其他使用提示和說明，歡迎使用內置的「探索」應用程式，瞭解新手入門提示、建議的應用程式、特別優惠和最新的 Chromebook 功能。</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">管理員已移除所有 eSIM 設定檔。如需更多資訊，請聯絡管理員。</translation>
+<translation id="5520909879404821039">「你好」的法文</translation>
 <translation id="5523434445161341166">「<ph name="FEATURE_NAME" />」正在連線。</translation>
 <translation id="5529587891732734495">暫停投放</translation>
 <translation id="5532994612895037630">輕按任何一處即可錄影全螢幕畫面</translation>
@@ -1693,6 +1699,7 @@
 <translation id="7886277072580235377">登出帳戶後，系統將清除您的互聯網工作階段。<ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">傳送電郵</translation>
 <translation id="7893503627044934815">不想顯示此檔案</translation>
+<translation id="7893547474469215105">「天頂」的定義</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">您已按下螢幕旋轉的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
 <translation id="7897626842031123113">狀態列，時間 <ph name="TIME" />，
@@ -1708,6 +1715,7 @@
 <translation id="7904094684485781019">這個帳戶的管理員已禁止多重登入。</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">已連接 <ph name="DEVICECOUNT" /> 部裝置</translation>
+<translation id="7923534281713082605">天氣</translation>
 <translation id="7926080067315048321">前往 Google Tasks 網頁版查看所有工作</translation>
 <translation id="7930731167419639574">語音處理程序已在本機執行，語音輸入功能會離線運作</translation>
 <translation id="7932451802722951285">在「Google 日曆」中開啟</translation>
@@ -1854,6 +1862,7 @@
 <translation id="8555757996376137129">移除目前的桌面</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> 建議您更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">通知設定</translation>
+<translation id="8569751806372591456">試試以下幾項建議</translation>
 <translation id="857201607579416096">已經將選單移去螢幕右下角。</translation>
 <translation id="8581946341807941670">按 <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> 鍵，然後按一下連結</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1897,6 +1906,7 @@
 <translation id="875593634123171288">顯示 VPN 設定</translation>
 <translation id="8759408218731716181">無法設定多重登入</translation>
 <translation id="8763883995157866248">讓裝置進入休眠模式</translation>
+<translation id="877404052021108314">將華氏 90° 換算成攝氏</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />，已經安裝嘅應用程式，已經封鎖</translation>
 <translation id="8785070478575117577">連接去<ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
@@ -1905,6 +1915,7 @@
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" />資料夾</translation>
 <translation id="880709030178078220">「說明」</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">㩒一下螢幕截圖快速鍵：Ctrl 加 Shift 加概覽模式鍵</translation>
 <translation id="881757059229893486">輸入方法設定</translation>
 <translation id="8819728065740986820">自動調節充電速度功能已開啟</translation>
 <translation id="8825863694328519386">從螢幕左側向右滑動即可返回</translation>

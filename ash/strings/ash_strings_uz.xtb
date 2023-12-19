@@ -40,6 +40,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1153356358378277386">Juftlangan qurilmalar</translation>
 <translation id="1155734730463845512">Joriy batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">yoniq va foydalanilmoqda</translation>
+<translation id="1163437384438183174">Paneldan Phone Hubni olib tashlash</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">USB-C kabelingiz displeylarga toʻgʻri ulanmasligi mumkin</translation>
 <translation id="1175572348579024023">Aylantirish</translation>
@@ -70,6 +71,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ulandi.</translation>
 <translation id="1240638468526743569">Ilova</translation>
 <translation id="1242883863226959074">qurilma</translation>
+<translation id="1245644940275736236">Assistentni ochish</translation>
 <translation id="124678866338384709">Joriy varaqni yopish</translation>
 <translation id="1246890715821376239">Ishlamaydigan ilovalar</translation>
 <translation id="1247372569136754018">Mikrofon (ichki)</translation>
@@ -692,6 +694,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="383629559565718788">Klaviatura sozlamalarini ochish</translation>
 <translation id="384082539148746321">Andoza oʻchirilsinmi?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, keyin <ph name="KEY_ONE" /> yoki <ph name="KEY_TWO" /> yoki <ph name="KEY_THREE" /> yoki <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Tarmoqqa oid ma’lumot mavjud emas</translation>
 <translation id="385051799172605136">Orqaga</translation>
 <translation id="385300504083504382">Boshi</translation>
@@ -926,6 +929,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4759238208242260848">Yuklanmalar</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + tepaga strelka</translation>
 <translation id="4762573482154983647">Ilovalarni berkitish</translation>
+<translation id="4762802395013012237">5 fut necha metr</translation>
 <translation id="4763885921995354846">Bunda kameraga ruxsat beriladi. Barcha ilovalar va saytlar kameradan foydalana oladi Sayt yoki sahifani yangilash yoki ilovani qayta ochish talab etilishi mumkin.</translation>
 <translation id="4774338217796918551">Ertaga soat <ph name="COME_BACK_TIME" /> da qayting.</translation>
 <translation id="4776584068981882959">Parol hali ham tasdiqlanmadi. Qayta urining.</translation>
@@ -968,6 +972,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="491504982845934899">Qurilma sozlangandan keyin <ph name="NETWORK_NAME" /> faollashtiriladi</translation>
 <translation id="4917385247580444890">Kuchli</translation>
 <translation id="4918086044614829423">Qabul qilish</translation>
+<translation id="491907188205944472">Istalgan narsani bevosita Launcher orqali qidiring</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> hozir kameradan foydalanmoqda</translation>
 <translation id="492453977506755176">Tasvirga olish rejimi kaliti</translation>
 <translation id="4925542575807923399">Bu hisobning administratori ko‘plab tizimga kirish seanslarida birinchi bo‘lib shu hisobga kirishni talab qiladi.</translation>
@@ -1118,6 +1123,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="5518068085000130971">Bular asosiy narsalar! Maslahatlar va yordam uchun oldindan oʻrnatilgan ilovamiz Exploreʼda davom eting. Boshlash uchun maslahatlar, tavsiya etilgan ilovalar, maxsus takliflar va eng yangi Chromebook funksiyalarini topasiz.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administrator barcha eSIM profillarni olib tashladi. Batafsil axborot uchun administratorga murojaat qiling.</translation>
+<translation id="5520909879404821039">Fransuz tilida Salom</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> ulanmoqda.</translation>
 <translation id="5529587891732734495">Translatsiyani pauza qilish</translation>
 <translation id="5532994612895037630">Butun ekranni yozib olish uchun istalgan joyga bosing</translation>
@@ -1695,6 +1701,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7886277072580235377">Hisobingizdan chiqishingiz bilan seansdagi jarayonlar tozalanadi. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Xat yuborish</translation>
 <translation id="7893503627044934815">Bu fayl chiqishini istamayman</translation>
+<translation id="7893547474469215105">Zenit nima</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Ekranni burish tugmasi bosildi. Ekranni burmoqchimisiz?</translation>
 <translation id="7897626842031123113">Holat qatori, vaqt: <ph name="TIME" />,
@@ -1710,6 +1717,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7904094684485781019">Administrator bu hisobga boshqa hisoblar bilan birdaniga kirishni taqiqlab qo‘ygan.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> ta qurilma ulangan</translation>
+<translation id="7923534281713082605">Ob-havo</translation>
 <translation id="7926080067315048321">Barcha vazifalarni vebdagi Google vazifalarida koʻring</translation>
 <translation id="7930731167419639574">Nutq qurilmada qayta ishlanadi va ovoz bilan yozish internetsiz ishlaydi</translation>
 <translation id="7932451802722951285">Google Taqvim orqali ochish</translation>
@@ -1856,6 +1864,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8555757996376137129">Joriy ish stolini olib tashlash</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> tizimini eski versiyasiga qaytarishni tavsiya etadi</translation>
 <translation id="8563862697512465947">Bildirishnoma sozlamalari</translation>
+<translation id="8569751806372591456">Quyidagi takliflarni sinang</translation>
 <translation id="857201607579416096">Menyu ekranning quyi oʻng burchagiga surildi.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> bilan havola ustiga bosing</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1899,6 +1908,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="875593634123171288">VPN sozlamalarini ochish</translation>
 <translation id="8759408218731716181">Bir nechta hisobdan kirish sozlanmadi</translation>
 <translation id="8763883995157866248">Qurilmani uyqu rejimiga qoʻyish</translation>
+<translation id="877404052021108314">90°F necha C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, Ilova oʻrnatildi, Bloklandi</translation>
 <translation id="8785070478575117577">Bunga ulanish: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1907,6 +1917,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> jildi</translation>
 <translation id="880709030178078220">“Yordam”</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">Skrinshot tezkor tugmasini, Ctrl+Shift+Umumiy rejim tugmalarini bosing.</translation>
 <translation id="881757059229893486">Matn kiritish sozlamalari</translation>
 <translation id="8819728065740986820">Moslashuvchan quvvatlash yoniq</translation>
 <translation id="8825863694328519386">Orqaga qaytish uchun chapdan suring</translation>

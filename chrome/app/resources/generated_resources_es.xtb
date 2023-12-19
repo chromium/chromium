@@ -572,7 +572,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1448779317883494811">Herramienta de pincel</translation>
 <translation id="1449191289887455076">Pulsa <ph name="CURRENTKEY" /> otra vez para confirmar la asignación y <ph name="RESPONSE" />.</translation>
 <translation id="1451375123200651445">Página web (un único archivo)</translation>
-<translation id="145280054552001290">Añadir y quitar idiomas de subtítulos</translation>
 <translation id="1453561711872398978">Enviar <ph name="BEGIN_LINK" />registros de depuración<ph name="END_LINK" /> (recomendado)</translation>
 <translation id="1454223536435069390">H&amp;acer captura de pantalla</translation>
 <translation id="145432137617179457">Idiomas de la revisión ortográfica</translation>
@@ -2461,7 +2460,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="285033512555869047">Cerrado</translation>
 <translation id="2850541429955027218">Añadir tema</translation>
 <translation id="2850672011315104382">Estilo de puntuación</translation>
-<translation id="285241945869362924">Crea subtítulos de forma automática para contenido de audio y vídeo. El audio y los subtítulos no saldrán de tu dispositivo en ningún momento.</translation>
 <translation id="2853121255651601031">Contraseña guardada</translation>
 <translation id="2856776373509145513">Crear un contenedor</translation>
 <translation id="2856907950922663165">¿Desactivar cifrado de URLs?</translation>
@@ -2657,7 +2655,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3007410324195400631">Añadir notas sobre de esta página</translation>
 <translation id="3007771295016901659">Duplicar pestaña</translation>
 <translation id="3008232374986381779">Ejecuta IDEs, editores y herramientas de Linux en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
-<translation id="3008272652534848354">Borrar permisos</translation>
+<translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que te conectes a una red Wi‑Fi hoy para descargar una actualización. También puedes descargarla con una conexión de uso medido (sujeto a cargos).}other{<ph name="MANAGER" /> requiere que te conectes a una red Wi‑Fi y descargues una actualización antes de la fecha límite. También puedes descargarla con una conexión de uso medido (sujeto a cargos).}}</translation>
 <translation id="3009178788565917040">Salida</translation>
 <translation id="3009300415590184725">¿Seguro que quieres cancelar el proceso de configuración del servicio de datos para móviles?</translation>
@@ -3096,6 +3094,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="338583716107319301">Separador</translation>
 <translation id="3387023983419383865">,</translation>
+<translation id="3387588771342841525">Si esta opción está activada, las contraseñas se guardan en <ph name="EMAIL" />. Si está desactivada, las contraseñas solo se guardan en este dispositivo.</translation>
 <translation id="3387614642886316601">Usar la revisión ortográfica mejorada</translation>
 <translation id="3387829698079331264">No permitir que sepan cuándo usas activamente tu dispositivo</translation>
 <translation id="3388094447051599208">La bandeja de salida está casi llena</translation>
@@ -3284,6 +3283,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3532521178906420528">Estableciendo conexión de red...</translation>
 <translation id="3532852121563960103">{NUM_OF_FILES,plural, =1{Moviendo 1 archivo a <ph name="CLOUD_PROVIDER" />}other{Moviendo {NUM_OF_FILES} archivos a <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" />: audio silenciado</translation>
+<translation id="3537099313456411235">Conecta <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> para acceder a tus archivos de Drive en la aplicación Archivos</translation>
 <translation id="3537881477201137177">Se puede modificar en otro momento en Configuración.</translation>
 <translation id="3538066758857505094">No se ha podido desinstalar Linux. Inténtalo de nuevo.</translation>
 <translation id="3540173484406326944">Ninguna red mediante <ph name="HOST_DEVICE_NAME" /></translation>
@@ -4013,7 +4013,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4089235344645910861">Se ha guardado la configuración y se ha iniciado la sincronización.</translation>
 <translation id="4089817585533500276">Mayús + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">Habilitar acceso verificado</translation>
-<translation id="4090947011087001172">¿Quieres borrar los permisos del sitio web <ph name="SITE" />?</translation>
+<translation id="4090947011087001172">¿Quieres restablecer los permisos del sitio web <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Puedes consultar y gestionar las contraseñas guardadas en el <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="4093865285251893588">Imagen de perfil</translation>
 <translation id="4093955363990068916">Archivo local:</translation>
@@ -5365,6 +5365,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5185359571430619712">Revisar extensiones</translation>
 <translation id="5185386675596372454">Se ha inhabilitado la versión más reciente de "<ph name="EXTENSION_NAME" />" porque requiere más permisos.</translation>
 <translation id="5185500136143151980">Sin conexión a Internet</translation>
+<translation id="5186381005592669696">Personaliza el idioma de visualización de las aplicaciones compatibles</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869">Usando <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Activar puerto</translation>
@@ -6143,6 +6144,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5828633471261496623">Imprimiendo...</translation>
 <translation id="5830205393314753525">No se puede abrir <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">Guardar página &amp;como...</translation>
+<translation id="583179300286794292">Has iniciado sesión como <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">¿Eliminar datos del sitio y permisos de <ph name="SITE_NAME" />, todos los sitios que incluya y su aplicación instalada?</translation>
 <translation id="5832813618714645810">Perfiles</translation>
 <translation id="583281660410589416">Desconocido</translation>
@@ -6216,6 +6218,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5883356647197510494">Con bloqueo automático: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Personalizar para cada extensión</translation>
 <translation id="5885314688092915589">Tu organización gestionará este perfil</translation>
+<translation id="5885470467814103868">Iniciar escaneo</translation>
 <translation id="5885631909150054232">Copiar token</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
 <translation id="5886112770923972514">Conecta y configura rápidamente dispositivos con Emparejamiento rápido cercanos</translation>
@@ -6806,6 +6809,8 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6347010704471250799">Mostrar notificación</translation>
 <translation id="6348805481186204412">Almacenamiento offline</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
+<translation id="6350821834561350243">Proporciona una descripción clara del problema y los pasos para reproducirlo (si es posible)</translation>
+<translation id="6351178441572658285">Idiomas de las aplicaciones</translation>
 <translation id="6354918092619878358">Curva elíptica SECG secp256r1 (también denominada ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Obteniendo información de la cuenta de Google…</translation>
 <translation id="635609604405270300">No apagues el dispositivo</translation>
@@ -7409,6 +7414,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6833479554815567477">Pestaña quitada del grupo <ph name="GROUP_NAME" /> (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="6833996806551876956">Demostración del entorno aislado de privacidad</translation>
 <translation id="6835762382653651563">Conéctate a Internet para actualizar tu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="683630338945552556">Usar y guardar contraseñas en tu cuenta de Google</translation>
 <translation id="6839225236531462745">Error de eliminación de certificado</translation>
 <translation id="6839916869147598086">El proceso de inicio de sesión ha cambiado</translation>
 <translation id="6840155290835956714">Preguntar antes de enviar</translation>
@@ -7738,6 +7744,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Quitar aplicación}other{Quitar aplicaciones}}</translation>
 <translation id="7099337801055912064">No se pueden cargar archivos PPD grandes. El tamaño máximo es 250 kB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{No hay contraseñas vulneradas}=1{{COUNT} contraseña vulnerada}other{{COUNT} contraseñas vulneradas}}</translation>
+<translation id="7100379916748214860">Chrome acaba de bloquear la descarga de un archivo peligroso. Refuerza tu seguridad con la protección mejorada.</translation>
 <translation id="710047887584828070">El contenido de esta pestaña se está compartiendo</translation>
 <translation id="710224247908684995">Una extensión ha desactivado Navegación segura</translation>
 <translation id="7102832101143475489">Se ha agotado el tiempo de espera de la solicitud</translation>
@@ -8026,6 +8033,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7347943691222276892">Haz clic para salir de <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Teclado en pantalla</translation>
 <translation id="7349010927677336670">Fluidez del vídeo</translation>
+<translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} contraseña está guardada solo en este dispositivo}other{{COUNT} contraseñas están guardadas solo en este dispositivo}}</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
 <translation id="7352664183151911163">En tus aplicaciones y el navegador Chrome</translation>
 <translation id="7353261921908507769">Tus contactos pueden compartir archivos contigo cuando estén cerca de ti. Las transferencias no se iniciarán hasta que las aceptes.</translation>
@@ -8266,6 +8274,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7523117833414447032">Al leer mayúsculas</translation>
 <translation id="7523585675576642403">Cambiar nombre del perfil</translation>
 <translation id="7525067979554623046">Crear</translation>
+<translation id="7525879597899798851">La ubicación está desactivada en las preferencias del SO</translation>
 <translation id="7526989658317409655">Marcador de posición</translation>
 <translation id="7528224636098571080">No abrir</translation>
 <translation id="7529411698175791732">Comprueba tu conexión a Internet. Si el problema persiste, prueba a cerrar sesión y volver a iniciarla.</translation>
@@ -8460,6 +8469,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7670483791111801022">Subtítulos</translation>
 <translation id="7671130400130574146">Utilizar bordes y barra de título</translation>
 <translation id="767127784612208024">Tocar para confirmar el borrado</translation>
+<translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" quiere escanear desde "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">Elige qué dispositivo tiene la llave de acceso de <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> en <ph name="PAGE_TITLE" />.</translation>
 <translation id="7673313156293624327">Registros de Shill (administrador de conexión) de ChromeOS</translation>
@@ -9228,6 +9238,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8256319818471787266">Perrito</translation>
 <translation id="8257950718085972371">Seguir bloqueando el acceso a la cámara</translation>
 <translation id="8258027225380843424">Importación finalizada correctamente.</translation>
+<translation id="8260177673299865994">Mejora la protección de las descargas</translation>
 <translation id="8260864402787962391">Ratón</translation>
 <translation id="8261378640211443080">Esta extensión no aparece en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> y se podría haber añadido sin tu conocimiento.</translation>
 <translation id="8261506727792406068">Eliminar</translation>

@@ -259,6 +259,7 @@
 
 Los sitios no pueden usar cookies para ver tu actividad de navegación en otros sitios con el objetivo de, por ejemplo, personalizar anuncios.</translation>
 <translation id="2381405137052800939">Configuración básica</translation>
+<translation id="23824747102827308">Mantente al día de las noticias, los deportes y más según tus intereses</translation>
 <translation id="2386793615875593361">1 foto seleccionada</translation>
 <translation id="2390457533592708044">Oculta "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Tu paquete no se puede entregar</translation>
@@ -299,6 +300,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2604176749896001318">Actualiza tu navegador</translation>
 <translation id="2609008503159898744">¿Cerrar todas las pestañas?</translation>
 <translation id="2617210333344098964">Mover dirección a la cuenta</translation>
+<translation id="261739049332372104">Para recibir novedades sobre el contenido que te interesa, activa las notificaciones en los ajustes de iOS.</translation>
 <translation id="2625189173221582860">Se ha copiado la contraseña</translation>
 <translation id="2626236249646841566">Comprueba tu conexión y prueba a iniciar sesión de nuevo.</translation>
 <translation id="2637313651144986786">Buscar en pestañas...</translation>
@@ -540,6 +542,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3909222758573607742">Guarda las contraseñas y otros elementos en la cuenta</translation>
 <translation id="3915450441834151894">Información del sitio web</translation>
 <translation id="3918585468378680136">Obteniendo estado del paquete</translation>
+<translation id="3921585859122905677">Posición de la barra de direcciones</translation>
 <translation id="3922310737605261887">Buscar el texto copiado</translation>
 <translation id="3928666092801078803">Combinar mis datos</translation>
 <translation id="3929457972718048006">Direcciones</translation>
@@ -549,6 +552,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3968505803272650567">Gestionar intereses</translation>
 <translation id="3989635538409502728">Cerrar sesión</translation>
 <translation id="3995521777587992544">Barra de progreso de carga de la página: <ph name="EMAIL" /> cargado.</translation>
+<translation id="3997522473364371632">Tu administrador ha inhabilitado el uso compartido de contraseñas.</translation>
 <translation id="4002019827078931033">Mover barra de direcciones a la parte superior</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4004204301268239848">Las contraseñas se guardan en tu cuenta de Google para que puedas utilizarlas en cualquier dispositivo.</translation>
@@ -558,6 +562,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4042870976416480368">Buscar en página</translation>
 <translation id="4045648459118332842">Obtén tus contraseñas guardadas en cualquier aplicación con un toque</translation>
 <translation id="4049507953662678203">Comprueba que tienes una conexión de red y vuelve a intentarlo.</translation>
+<translation id="4054572406751135230">Mantente al día de las noticias, los deportes y más.</translation>
 <translation id="4066639687323968621">Inicia sesión con tu cuenta de Google para sincronizar tus marcadores, tu historial y más.</translation>
 <translation id="4092655288299341041">Mostrar ayuda</translation>
 <translation id="4105841739161771091">{count,plural, =1{Eliminar dirección}other{Eliminar direcciones}}</translation>
@@ -737,6 +742,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5016420433031926653">Enviar a <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Recordar más tarde</translation>
 <translation id="5037676449506322593">Seleccionar todo</translation>
+<translation id="5038113048373546701">Recibe notificaciones de noticias, deportes y más según tus intereses</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5050294464480863218">Notas importantes</translation>
 <translation id="5050810143224996149">Compartir contraseña</translation>
@@ -792,6 +798,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318298563956633672">Ya estás siguiendo este producto.</translation>
+<translation id="5327753393331509826">Recibe notificaciones de contenido</translation>
 <translation id="5329451663851195956">Puedes deslizar la pantalla hacia abajo para actualizar la página.</translation>
 <translation id="5339316356165661760">Activar sincronización</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{¿Hacer seguimiento de este paquete?}other{¿Hacer seguimiento de {COUNT} paquetes?}}</translation>
@@ -1151,6 +1158,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7192050974311852563">Iniciar registro</translation>
 <translation id="7203585745079012652">Decir las respuestas</translation>
 <translation id="7207023858769244910">Habilita la sincronización para ver contenido basado en tus intereses.</translation>
+<translation id="7210568419880432164">Activar notificaciones…</translation>
 <translation id="721597782417389033">Nombre de la tarjeta no válido</translation>
 <translation id="7221173315674413369">Descubre nuevas funciones y consejos en Novedades</translation>
 <translation id="7223102419539744003">Cerrar pestaña</translation>
@@ -1188,6 +1196,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7454057999980797137">Región</translation>
 <translation id="745899714366929493">Todo el día</translation>
 <translation id="7459628154744868585">La protección mejorada está activada</translation>
+<translation id="7465351360025415755">Recibe el contenido que te interesa</translation>
 <translation id="7472734401283673885">Nombre de empresa</translation>
 <translation id="7473891865547856676">No, gracias</translation>
 <translation id="7488874549363591659">Entregado</translation>
@@ -1355,6 +1364,8 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8343993175958086504">Crea una copia de seguridad de tus cosas y úsala en cualquier dispositivo.</translation>
 <translation id="834783239627985533">Sitios más visitados</translation>
 <translation id="8364841868226993049">Guardando imagen de <ph name="USER_EMAIL" /> en Google Fotos...</translation>
+<translation id="8370406443343902172">Ir a Configuración…</translation>
+<translation id="8374977641764177587">¿Activar notificaciones?</translation>
 <translation id="8378714024927312812">Gestionado por tu organización</translation>
 <translation id="8386068868580335421">Restablecer</translation>
 <translation id="838867811594159347">Introducir frase de contraseña…</translation>
@@ -1402,6 +1413,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8613883225817609844">Ocultar Pestañas recientes</translation>
 <translation id="8620640915598389714">Editar</translation>
 <translation id="8624447588354561276">Número de paquete</translation>
+<translation id="8624753446837753970">Establecer posición</translation>
 <translation id="8626393685701737946">Puedes cambiar la vista predeterminada de los sitios a Ordenador en Configuración &gt; Configuración de contenido</translation>
 <translation id="8636825310635137004">Activa la sincronización para ver las pestañas de tus otros dispositivos.</translation>
 <translation id="8637431369725868556">Protégete frente a sitios peligrosos.</translation>
@@ -1443,6 +1455,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8825562130641217944">Accede a tus marcadores, contraseñas y más.</translation>
 <translation id="882557203579758546">Buscar en la página…</translation>
+<translation id="8838250347763484641">Cambia la posición de la barra de direcciones a arriba o abajo para personalizar tu experiencia de navegación.</translation>
 <translation id="8840513115188359703">No se cerrará la sesión en tu cuenta de Google.</translation>
 <translation id="8843129975935593190">Tu organización limita lo que puedes sincronizar.</translation>
 <translation id="8849001918648564819">Oculto</translation>
@@ -1515,6 +1528,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="9188680907066685419">Cierra sesión en la cuenta gestionada</translation>
 <translation id="9200875785104711666">Hace <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9203951165704618409">Mueve la barra de direcciones de la parte superior a la parte inferior para personalizar tu experiencia de navegación.</translation>
 <translation id="9206887540681440657">Velocidad</translation>
 <translation id="9219154867334666734">Buscar pestañas…</translation>
 <translation id="9223358826628549784">Informe sobre fallos enviado.</translation>

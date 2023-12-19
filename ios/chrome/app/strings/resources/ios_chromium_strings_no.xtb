@@ -5,16 +5,20 @@
 <translation id="1047130070405668746">Velg Chromium</translation>
 <translation id="1091252999271033193">Dette betyr at Chromium kommer til å forespørre mobilnettstedet hver gang.</translation>
 <translation id="1115463765356382667">Fullfør de foreslåtte handlingene under for å få mest mulig ut av Chromium.</translation>
+<translation id="1141230343006904201">1. Åpne Chromium-innstillingene</translation>
 <translation id="1171824629317156389">Åpne Chromium-innstillingene i iOS, trykk på «Standard nettleserapp», og velg Chromium.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">For å lagre bilder, trykk på Innstillinger for å la Chromium legge dem til i bildene dine</translation>
+<translation id="12739128458173458">For å sende denne fanen til en annen enhet, logg på Chromium på begge enhetene</translation>
 <translation id="1289216811211435351">Bytt til Chromium</translation>
 <translation id="1361748954329991663">Chromium er utdatert. Hvis ingen oppdatering er tilgjengelig i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det hende at enheten din ikke støtter nye versjoner av Chromium lenger.</translation>
+<translation id="1423007117030725713">Start et søk på en ny Chromium-fane.</translation>
 <translation id="1431818719585918472">La Chromium låse inkognitofanene dine.</translation>
 <translation id="1472013873724362412">Kontoen din fungerer ikke i Chromium. Kontakt domeneadministratoren din, eller logg på med en vanlig Google-konto.</translation>
 <translation id="1507010443238049608">Bidra til å gjøre Chromium bedre og raskere</translation>
 <translation id="1513122820609681462">Angi Chromium som standardnettleser</translation>
 <translation id="1531155317299575425">Viser vinduer som ber deg logge på Chromium.</translation>
+<translation id="1561849081734670621">For å deaktivere låsingsmodus i Chromium, slå den av på iPhone.</translation>
 <translation id="159029779861043703">Chromium beskytter de sensitive dataene dine med Face ID.</translation>
 <translation id="1591119736686995611">Åpner Chromium-fanerutenettet.</translation>
 <translation id="1611584326765829247">La Chromium hjelpe deg med å spore pakkene dine</translation>
@@ -35,16 +39,20 @@
 <translation id="2052320862053429062">Chromium sjekker passordene dine regelmessig opp mot lister som er lagt ut på nett. Når dette gjøres, er passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
 <translation id="2054703085270098503">Hold deg trygg med Chromium</translation>
 <translation id="2098023844024447022">Åpne den nyligste fanen min i Chromium.</translation>
+<translation id="2109439615198500433">Chromium-tips</translation>
 <translation id="2168108852149185974">Noen tillegg fører til at Chrome krasjer. Avinstaller dette:</translation>
 <translation id="2178608107313874732">Chromium kan ikke bruke kameraet akkurat nå</translation>
 <translation id="2195025571279539885">Vil du at Chromium skal tilby å oversette sider på <ph name="LANGUAGE_NAME" /> på dette nettstedet neste gang?</translation>
 <translation id="2218146227246548550">Organisasjonen din krever at du logger på for å bruke Chromium. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="22313767259766852">Denne adressen er for øyeblikket lagret i Chromium. For å bruke den i alle Google-produkter må du lagre den i Google-kontoen din, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Dette betyr at Chromium kommer til å forespørre nettstedet for datamaskiner hver gang.</translation>
 <translation id="2313870531055795960">Kontrollerer nettadresser opp mot en liste i Chromium over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chromium også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="2374627437126809292">Chromium bruker Google Maps for å gi deg veibeskrivelser og lokal informasjon om registrerte adresser.</translation>
+<translation id="2386292341327187942">I feltet Søkemoduler skriver du inn Chromium</translation>
 <translation id="2426113998523353159">Organisasjonen din krever at du logger på for å bruke Chromium.</translation>
 <translation id="2450140762465183767">Nå kan du bruke Chromium hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="2478931088402984578">Velg <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="252374538254180121">Angi Chromium som standardnettleser</translation>
 <translation id="2574528844022712255">Se Chromium-bokmerker</translation>
 <translation id="2590893390871230428">Synkroniser Chromium-dataene dine</translation>
 <translation id="2592940277904433508">Fortsett å bruke Chromium</translation>
@@ -65,13 +73,18 @@
 <translation id="3228349498066165585">Noen av Chromium-dataene dine er ikke lagret i Google-kontoen din ennå.
         Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="3256316712990552818">Kopiert til Chromium</translation>
+<translation id="328933489847748230">{count,plural, =1{Viser nå 1 Chromium-vindu}other{Viser nå {count} Chromium-vinduer}}</translation>
 <translation id="3344973607274501920">Chromium kunne ikke sjekke passordene dine. Se om du er koblet til internett.</translation>
+<translation id="3366305173356742781">Chromium-data i kontoen din</translation>
 <translation id="3472200483164753384">Støttes ikke i Chromium Canary</translation>
 <translation id="3478750326643748149">Skjul «Få mest mulig ut av Chromium»</translation>
+<translation id="3512168799938877162">Passordet ble ikke delt. Sjekk internettilkoblingen din, og kontroller at du er logget på Chromium. Prøv deretter på nytt.</translation>
 <translation id="3554027294407525061">Slett nettlesingsdata i Chromium.</translation>
 <translation id="3567399274263440288">For å få mest mulig ut av Chromium, logg på Chromium med Google-kontoen din.</translation>
+<translation id="3634039384458740619">Åpne Chromium-innstillingene</translation>
 <translation id="3639997914391704523">Chromium kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> har brukt Chromium og etterlatt seg bokmerker, passord og andre innstillinger på denne enheten.</translation>
+<translation id="3688710892786762883">Chromium registrerer pakkesporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Dataene dine blir delt med Google, slik at vi kan tilby denne funksjonen og gjøre Shopping enda bedre for alle.</translation>
 <translation id="372658070733623520">For å bruke og lagre Chromium-data i Google-kontoen din, bekreft at det er deg.</translation>
 <translation id="3780779443901618967">Advarer deg om farlige nettsteder, også nettsteder som Google ikke kjenner til fra før, ved å analysere mer data fra nettsteder enn ved standardbeskyttelse. Du kan velge å hoppe over Chromium-advarsler.</translation>
 <translation id="3784369638459513223">Åpner en ny inkognitofane i Chromium.</translation>
@@ -83,12 +96,20 @@
 
 For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Åpne Chromium fra hvilken som helst app</translation>
+<translation id="4002314982058020967">Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Åpner og kjører sikkerhetssjekken i Chromium.</translation>
 <translation id="4043291146360695975">Passord lagres i Passordlagring kun på denne enheten.</translation>
 <translation id="4099085513035183040">Støttes ikke i Chromium Beta</translation>
+<translation id="4106512142782407609">Logget på som <ph name="EMAIL" />.
+
+Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og lagre Chromium-data i Google-kontoen din.</translation>
 <translation id="4195557071150719219">Se nylige faner fra Chromium</translation>
+<translation id="4200712796753248893">Bruk Chromium-handlinger i iOS</translation>
+<translation id="420541179527342563">For å deaktivere låsingsmodus i Chromium, slå den av på iPad.</translation>
 <translation id="4408912345039114853">Kjør Chromium-sikkerhetssjekk</translation>
 <translation id="4432744876818348753">Logg på for å få mest mulig ut av Chromium.</translation>
+<translation id="4445228361214254027">Organisasjonen din har slått av muligheten til å bruke og lagre Chromium-data i Google-kontoen din. Nye bokmerker, passord med mer lagres bare på denne enheten.</translation>
+<translation id="4485517920713468480">Chromium registrerer sporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Dataene dine blir delt med Google, slik at vi kan tilby denne funksjonen og gjøre Shopping enda bedre for alle. Du kan endre dette i <ph name="BEGIN_LINK" />innstillingene for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Legger til de angitte nettadressene på leselisten i Chromium.</translation>
 <translation id="452436063477828504">Sørg for at du alltid kan bruke Chromium-dataene i Google-kontoen din</translation>
 <translation id="4555020257205549924">Når denne funksjonen er slått på, tilbyr Chromium å oversette sider som er skrevet på andre språk, ved hjelp av Google Oversetter. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -96,12 +117,14 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene
 <translation id="4585809515399340748">Nå kan du bruke Chromium hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="459080529287102949">Søk i visuelle elementer i Chromium</translation>
 <translation id="4633738821577273991">Få Safe Browsing med økt beskyttelse for denne Chromium-profilen også</translation>
+<translation id="4638625642619341392">Last ned Chromium her.</translation>
 <translation id="4654936625574199632">For å bidra til å gjøre appen bedre sender Chrome bruks- og programstopprapporter til Google. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Slå på Chromium-skanneren</translation>
 <translation id="4736424910885271643">Kontoen din administreres av <ph name="HOSTED_DOMAIN" />, så Chromium-dataene dine blir slettet fra denne enheten</translation>
 <translation id="4773487571745795781">Du har slått av Chromium-pålogging.</translation>
 <translation id="4790638144988730920">Fortsett å bruke Chromium-dataene i Google-kontoen din.</translation>
 <translation id="4828317641996116749">Chromium kunne ikke sjekke alle passordene. Prøv på nytt senere.</translation>
+<translation id="4962295957157529683">Gjør deg ferdig med det du holdt på med i det andre åpne Chromium-vinduet.</translation>
 <translation id="4985291216379576555">Uten nett – Chromium kan ikke se etter oppdateringer</translation>
 <translation id="4996471330284142407">Få mer gjort med Chromium-nettleseren, som er enkel, sikker og raskere enn noensinne.</translation>
 <translation id="4999538639245140991">Fordi du logger av en konto som er administrert av <ph name="SIGNOUT_MANAGED_DOMAIN" />, blir Chromium-dataene dine slettet fra denne enheten, men de blir værende i Google-kontoen din.</translation>
@@ -109,6 +132,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene
 <translation id="5044871537677053278">Chromium registrerer adresser og bruker Google Maps for å gi deg veibeskrivelser og lokal informasjon.</translation>
 <translation id="5048795749726991615">Bruk Chromium for autofyll for å enkelt få tilgang til de lagrede passordene dine i de andre appene dine.</translation>
 <translation id="5076601183701536878">Slett nettlesingsdata i Chromium</translation>
+<translation id="5124429847818367226">Nå kan du bruke Chromium når du blar gjennom eller trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="5131565040785979529">Organisasjonen din, <ph name="DOMAIN" />, administrerer kontoen du er logget på, og hvordan Chromium brukes.</translation>
 <translation id="5146749061471423558">Legg til bokmerker i Chromium</translation>
 <translation id="5171868502429358653">Logg på Chromium</translation>
@@ -120,14 +144,17 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene
 <translation id="5308226104666789935">Chromium kan ikke se etter oppdateringer</translation>
 <translation id="5311557153294205270">Legger til de angitte nettadressene i bokmerkene dine i Chromium.</translation>
 <translation id="5396916991083608703">Vil du angi Chromium som standard?</translation>
+<translation id="5434562575369834882">Åpne i Chromium Inkognito</translation>
 <translation id="5453478652154926037">Chromium kan ikke sjekke passordene dine.</translation>
 <translation id="5521125884468363740">For å se fanene dine overalt hvor du bruker Chromium, logg på og slå på synkronisering</translation>
 <translation id="5522297504975449419">Enkelte Chromium-funksjoner kommer ikke til å være tilgjengelige lenger.</translation>
+<translation id="5534584691915394889">Dette brukes til å opprette hendelser i Apple-kalenderen din fra Chromium og Google Lens.</translation>
 <translation id="5571094606370987472">Åpner nylige faner fra Chromium.</translation>
 <translation id="5623083843656850677">Lås inkognitofanene dine når du går ut av Chromium eller bytter til en annen app.</translation>
 <translation id="5688047395118852662">På dette kortet ser du forslag til hvordan du får mest mulig ut av Chromium.</translation>
 <translation id="5700709190537129682">Chromium kan ikke sjekke passordene dine</translation>
 <translation id="5777187867430702742">Chromium-side</translation>
+<translation id="584550191241316896">Logget på Chromium</translation>
 <translation id="5889847953983052353">Når dette er på,
 <ph name="BEGIN_INDENT" /> • bidrar du til å gjøre Chromium bedre for folk som bruker nettleseren slik du gjør.<ph name="END_INDENT" />
 
@@ -143,12 +170,15 @@ Du bør tenke på følgende:
 <translation id="5985102273857091344">Velg «Chromium».</translation>
 <translation id="6062449165341879460">Organisasjonen din, <ph name="DOMAIN" />, får tilgang til data, bokmerker, logg, passord og andre innstillinger for Chromium som du lagrer i denne kontoen. Når du logger av, slettes dataene dine fra denne enheten.  Dataene forblir imidlertid lagret i den administrerte Google-kontoen og er tilgjengelige for organisasjonen din. Organisasjonen din kan også angi spesifikke brukerinnstillinger for den aktuelle kontoen. Disse kan endre virkemåten til Chromium.</translation>
 <translation id="6093744543579359059">Administrer passord i Chromium</translation>
+<translation id="6104024151682120539">Åpne i Chromium</translation>
 <translation id="61109258320235597">For å bruke og lagre Chromium-data i Google-kontoen din, skriv inn passordfrasen din.</translation>
 <translation id="6119647025869519954">Slik velger du Chromium som standardnettleser:
 1. Åpne Innstillinger.
 2. Trykk på Standard nettleserapp.
 3. Velg Chromium.</translation>
 <translation id="6154098560469640583">Bruk Chromium hver gang du klikker på linker i meldinger, dokumenter og andre apper.</translation>
+<translation id="6170619162539716595">La Chromium bruke Google Maps for å gi deg veibeskrivelser og lokal informasjon om registrerte adresser.</translation>
+<translation id="6175967839221456271">Del Chromium</translation>
 <translation id="6197255575340902638">Hvis du skjuler «<ph name="MODULE_NAME" />», slutter Chromium å spore fremtidige pakker automatisk, og alle tidligere pakkesporingsdata slettes.</translation>
 <translation id="6247557882553405851">Google Passordlagring</translation>
 <translation id="6268381023930128611">Vil du logge av Chromium?</translation>
@@ -156,10 +186,12 @@ Du bør tenke på følgende:
 <translation id="6325378625795868881">Bruk Chromium hver gang du trykker på linker i meldinger og andre apper.</translation>
 <translation id="632825460376924298">Tillat Chromium-pålogging</translation>
 <translation id="6337530241089703714">Velg om du vil slette Chromium-dataene dine fra denne enheten eller beholde dem</translation>
+<translation id="6348483005826990855">3. Velg Chromium</translation>
 <translation id="6407399265324739055">Betalingsmåter og adresser krypteres ikke. Nettleserloggen fra Chromium synkroniseres ikke.
 
 Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium har blitt enda bedre. En ny versjon er nå tilgjengelig.</translation>
+<translation id="6502321914804101924">Chromium er logget av</translation>
 <translation id="6563921047760808519">Finn ut mer om <ph name="BEGIN_LINK" />hvordan Chromium holder dataene dine private<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium støtter nå brukerinnstillinger for den administrerte kontoen din</translation>
 <translation id="6728350288669261079">Åpner innstillingene i Chromium.</translation>
@@ -167,6 +199,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="6794054469102824109">Åpner Chromium Dino-spillet.</translation>
 <translation id="6820823224820483452">Chromium kunne ikke sjekke alle passordene. Prøv på nytt i morgen.</translation>
 <translation id="6852799557929001644">Få tilgang til Chromium-passord med mer i andre apper på denne enheten.</translation>
+<translation id="6887138405044152640">For å sende denne fanen til en annen enhet, logg på Chromium der.</translation>
 <translation id="6911341667534646387">Fortsett å bruke Chromium-dataene i Google-kontoen din</translation>
 <translation id="7006920032187763988">Du kan bruke passordene du har lagret i Passordlagring, i andre apper på iPaden din.</translation>
 <translation id="7018284295775193585">Kan ikke oppdatere Chromium</translation>
@@ -177,6 +210,8 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7165402419892018581">Velg Chromium for autofyll</translation>
 <translation id="7175400662502680481">Passordet ditt har vært avdekket i et databrudd. Passordlagring anbefaler at du endrer det nå.</translation>
 <translation id="7192111075364461693">Chromium-varsler er nå slått av i enhetsinnstillingene.</translation>
+<translation id="7198580735512160509">For å gi Discover-feeden og Chromium et personlig preg, slå på synkronisering.</translation>
+<translation id="7222001353246886083">Søk etter ${searchPhrase} i Chromium</translation>
 <translation id="725427773388857052">Chromium kan beskytte deg mot databrudd, utrygge nettsteder med mer.</translation>
 <translation id="7269362888766543920">Noen tillegg fører til at Chromium krasjer. Prøv å avinstallere dem.</translation>
 <translation id="7285031092584344905">Få tilgang til Chromium-passord med mer i andre apper.</translation>
@@ -187,19 +222,27 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7395825497086981028">Passordet blir lagret i Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Bruk Chromium overalt</translation>
 <translation id="7523464085759699266">Slå på «Lås inkognitofaner når du lukker Chromium».</translation>
+<translation id="7601597633134889942">Besøk et nettsted, og klikk på Følg på Chromium-menyen</translation>
 <translation id="7674213385180944843">Åpne Innstillinger &gt; Personvern &gt; Kamera &gt; Chromium, og slå på kameraet.</translation>
 <translation id="7710137812207066069">Åpner en ny fane i Chromium.</translation>
+<translation id="7747820849741499258">Søk i Chromium</translation>
 <translation id="7763454117143368771">Bruk Chromium som standardnettleser for å holde deg beskyttet mot farlige nettsteder og holde passordene dine trygge</translation>
+<translation id="78025249032851484">Chromium er utdatert.</translation>
 <translation id="7859018312476869945">Når du skriver i adressefeltet eller søkefeltet, sender Chromium det du skriver til standardsøkemotoren din, for å gi deg bedre forslag. Dette er av i Inkognito.</translation>
 <translation id="786327964234957808">Du bytter synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. De eksisterende Chromium-dataene dine administreres av <ph name="DOMAIN" />. Dette fører til at dataene dine slettes fra denne enheten, men de blir værende i <ph name="USER_EMAIL1" />.</translation>
+<translation id="7865408467687426957">Passord du lagrer når du er logget på Chromium, lagres i Google-kontoen din. For å slå dette av, <ph name="BEGIN_LINK" />gå til innstillingene<ph name="END_LINK" />.</translation>
 <translation id="7890287942691234100">Begynn å bruke Chromium-skanneren</translation>
 <translation id="7905064834449738336">Når du bruker et passord, advarer Chromium deg hvis passordet er publisert på nettet. Denne funksjonen holder passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
+<translation id="7911732829884437264">Bruk Chromium som standard</translation>
 <translation id="7917424453593305610">Bruk Chromium i andre apper.</translation>
 <translation id="7928628054454574139">Åpne alltid Chromium når du trykker på linker i andre apper</translation>
 <translation id="7931842119211730154">Lås inkognitofaner når du lukker Chromium</translation>
 <translation id="7934404985878918282">Se Chromium-leselisten</translation>
 <translation id="7971753607796745700">Legg til elementet på leselisten i Chromium</translation>
 <translation id="7980860476903281594">Chromium deler posisjonen din med nettsteder du tillater.</translation>
+<translation id="7990085102929105708">Betalingsmåter og adresser fra Google Pay krypteres ikke. Nettleserloggen fra Chromium synkroniseres ikke.
+
+Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="7995166854192397899">Forslagene er basert på nettleseraktiviteten din på de andre enhetene dine. For å få forslag, logg på Chromium på alle enhetene dine.</translation>
 <translation id="800195749539500647">Få mest mulig ut av Chromium</translation>
 <translation id="8013573822802650211">For å se fanene dine overalt hvor du bruker Chromium, logg på alle enhetene dine</translation>
@@ -207,12 +250,19 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="8073677936375100957">Vil du fjerne Chromium-dataene dine fra denne enheten?</translation>
 <translation id="8115308261377517697">Bruk Chromium som standard nettleser</translation>
 <translation id="8197822717502700527">Nå får du mest mulig ut av Chromium på enheten din.</translation>
+<translation id="8234150821523419638">Åpne Chromium-menyen</translation>
 <translation id="8235427517854598594">Vil du gjøre Chromium til standardnettleseren din?</translation>
 <translation id="8240981428553046115">Chromium kunne ikke se etter oppdateringer. Prøv på nytt senere.</translation>
 <translation id="8303579360494576778">Administrer betalingsmåter i Chromium</translation>
+<translation id="830951810931292870">Åpner de angitte nettadressene i Chromium i Inkognito.</translation>
+<translation id="8386869251364507178">Chromium-handlinger</translation>
 <translation id="8409374867500149834">Du har den sterkeste sikkerheten i Chromium mot skadelige nettsteder</translation>
+<translation id="8458950033462118672">Du kan åpne linker i Chromium automatisk ved å angi Chromium som standard nettleserapp.</translation>
 <translation id="858114650497379505">Du kan bruke passordene du har lagret i Passordlagring, i andre apper på iPhonen din.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
+<translation id="8618440443578628179">Kryptering med passordfrase inkluderer ikke betalingsmåter og adresser fra Google Pay.
+
+For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Holder deg trygg i Chromium og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>
 <translation id="8663480472502753423">Hold Chromium oppdatert</translation>
 <translation id="8685813584220679697">Logg på dette nettstedet og Chromium.</translation>
@@ -227,16 +277,23 @@ Dette bør du tenke over:
   • Hvis Chromium krasjer, kan detaljene om krasjet inneholde enkelte personopplysninger.
 
   • Hvis du slår på synkronisering, kan verdiene også inneholde informasjon om nettadressene du besøker.<ph name="END_INDENT" /></translation>
+<translation id="8759037115129007407">Familiemedlemmet ditt kan ikke motta passord akkurat nå. Be vedkommende om å oppdatere Chromium og synkronisere passordene sine. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Denne kontoen og eventuelle ulagrede data blir fjernet fra Chromium.</translation>
 <translation id="88376265765385899">Åpner Chromium-bokmerkene.</translation>
+<translation id="8860548555286245440">Åpne nettadresser i Chromium i Inkognito</translation>
+<translation id="8909995017390087892">Chromium for iOS</translation>
 <translation id="8924617840944134898">Åpne en inkognitofane i Chromium</translation>
 <translation id="894437814105052438">Når du logger av, synkroniserer ikke Chromium nye data med Google-kontoen din. Tidligere synkroniserte data blir værende på kontoen.</translation>
 <translation id="8963279154877372067">Tillat at Chromium-varsler får varsler om prisavslag</translation>
+<translation id="900560297598578021">Logget på som <ph name="EMAIL" />.
+
+Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den inn for å bruke og lagre Chromium-data i Google-kontoen din.</translation>
 <translation id="9022552996538154597">Logg på Chromium</translation>
 <translation id="9050790730841755540">Bruk Chromium hver gang du trykker på linker i andre apper.</translation>
 <translation id="9059693977935746710">Du trenger ikke å huske dette passordet. Det blir lagret i Passordlagring for <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium er utdatert</translation>
 <translation id="9110075932708282655">Bruk Chromium som standard</translation>
+<translation id="9137114218472648150">Chromium er utdatert. Oppdater til den nyeste versjonen for å holde deg sikker.</translation>
 <translation id="921174536258924340">Chromium kunne ikke sjekke alle passordene. Prøv på nytt i morgen, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
 <translation id="971488683725792095">Bruk Chromium automatisk når du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="981812233959540767">Spill Chromium Dino-spillet</translation>

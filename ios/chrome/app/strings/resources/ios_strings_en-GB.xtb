@@ -540,6 +540,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3909222758573607742">Save passwords and other items in account</translation>
 <translation id="3915450441834151894">Site information</translation>
 <translation id="3918585468378680136">Getting package status</translation>
+<translation id="3921585859122905677">Address bar position</translation>
 <translation id="3922310737605261887">Search for copied text</translation>
 <translation id="3928666092801078803">Combine my data</translation>
 <translation id="3929457972718048006">Addresses</translation>
@@ -1402,6 +1403,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8613883225817609844">Hide Recent Tabs</translation>
 <translation id="8620640915598389714">Edit</translation>
 <translation id="8624447588354561276">Package number</translation>
+<translation id="8624753446837753970">Set position</translation>
 <translation id="8626393685701737946">You can change the default site view to desktop in Settings &gt; Content Settings</translation>
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
 <translation id="8637431369725868556">Get protection from dangerous sites.</translation>
@@ -1443,6 +1445,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8825562130641217944">Get your bookmarks, passwords and more.</translation>
 <translation id="882557203579758546">Find in page…</translation>
+<translation id="8838250347763484641">Switch your address bar to the top or bottom for a customised browsing experience.</translation>
 <translation id="8840513115188359703">You won't be signed out of your Google Account.</translation>
 <translation id="8843129975935593190">Your organisation limits what you can sync.</translation>
 <translation id="8849001918648564819">Hidden</translation>
@@ -1515,6 +1518,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9188680907066685419">Sign out of managed account</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d ago</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9203951165704618409">Switch your address bar from the top to the bottom for a customised browsing experience.</translation>
 <translation id="9206887540681440657">Speed</translation>
 <translation id="9219154867334666734">Search Tabs…</translation>
 <translation id="9223358826628549784">Crash report sent.</translation>

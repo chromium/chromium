@@ -259,6 +259,7 @@
 
 網站不可使用 Cookie 來查看您在各網站的瀏覽活動，例如放送個人化廣告。</translation>
 <translation id="2381405137052800939">基本</translation>
+<translation id="23824747102827308">緊貼你感興趣的新聞、體育賽事等內容</translation>
 <translation id="2386793615875593361">已選取 1 個</translation>
 <translation id="2390457533592708044">隱藏「<ph name="MODULE_NAME" />」</translation>
 <translation id="2403129868389095715">包裹無法送達</translation>
@@ -299,6 +300,7 @@
 <translation id="2604176749896001318">更新瀏覽器</translation>
 <translation id="2609008503159898744">要關閉所有分頁嗎？</translation>
 <translation id="2617210333344098964">將地址移至帳戶</translation>
+<translation id="261739049332372104">如要取得你關注內容的最新消息，請在 iOS 設定中開啟通知功能。</translation>
 <translation id="2625189173221582860">已複製密碼</translation>
 <translation id="2626236249646841566">請檢查您的連線，然後再次嘗試登入。</translation>
 <translation id="2637313651144986786">搜尋分頁…</translation>
@@ -540,6 +542,7 @@
 <translation id="3909222758573607742">將密碼和其他項目儲存至帳戶</translation>
 <translation id="3915450441834151894">網站資料</translation>
 <translation id="3918585468378680136">正在取得包裹狀態</translation>
+<translation id="3921585859122905677">網址列位置</translation>
 <translation id="3922310737605261887">搜尋複製的文字</translation>
 <translation id="3928666092801078803">合併我的資料</translation>
 <translation id="3929457972718048006">地址</translation>
@@ -558,6 +561,7 @@
 <translation id="4042870976416480368">在網頁中搜尋</translation>
 <translation id="4045648459118332842">輕按一下即可在任何應用程式中取得已儲存的密碼</translation>
 <translation id="4049507953662678203">請確定您已連接網絡，然後再試一次。</translation>
+<translation id="4054572406751135230">緊貼新聞、體育賽事等內容。</translation>
 <translation id="4066639687323968621">登入 Google 帳戶便可同步處理書籤、記錄等等。</translation>
 <translation id="4092655288299341041">顯示說明</translation>
 <translation id="4105841739161771091">{count,plural, =1{刪除地址}other{刪除地址}}</translation>
@@ -737,6 +741,7 @@
 <translation id="5016420433031926653">傳送至 <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">稍後提醒我</translation>
 <translation id="5037676449506322593">全部選取</translation>
+<translation id="5038113048373546701">接收你感興趣的新聞、體育賽事等通知</translation>
 <translation id="5039804452771397117">允許</translation>
 <translation id="5050294464480863218">考慮因素</translation>
 <translation id="5050810143224996149">分享密碼</translation>
@@ -792,6 +797,7 @@
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5318298563956633672">您已追蹤此產品。</translation>
+<translation id="5327753393331509826">取得內容通知</translation>
 <translation id="5329451663851195956">如要重新整理分頁，請將頁面往下拉。</translation>
 <translation id="5339316356165661760">開啟同步處理功能</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{要追蹤此包裹嗎？}other{要追蹤 {COUNT} 個包裹嗎？}}</translation>
@@ -1151,6 +1157,7 @@
 <translation id="7192050974311852563">開始記錄</translation>
 <translation id="7203585745079012652">讀出搜尋結果</translation>
 <translation id="7207023858769244910">啟用同步功能，以便系統根據您的興趣提供內容。</translation>
+<translation id="7210568419880432164">啟用通知。</translation>
 <translation id="721597782417389033">無效的信用卡暱稱</translation>
 <translation id="7221173315674413369">在「最新功能」中探索新功能和提示</translation>
 <translation id="7223102419539744003">關閉分頁</translation>
@@ -1188,6 +1195,7 @@
 <translation id="7454057999980797137">州/省/郡/縣</translation>
 <translation id="745899714366929493">全日</translation>
 <translation id="7459628154744868585">已開啟「強化保護功能」</translation>
+<translation id="7465351360025415755">取得你關注的內容</translation>
 <translation id="7472734401283673885">公司名稱</translation>
 <translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7488874549363591659">已送達</translation>
@@ -1355,6 +1363,8 @@
 <translation id="8343993175958086504">備份資料即可在任何裝置上使用。</translation>
 <translation id="834783239627985533">最常瀏覽的網站</translation>
 <translation id="8364841868226993049">正在將圖片儲存至 <ph name="USER_EMAIL" /> 的「Google 相片」…</translation>
+<translation id="8370406443343902172">前往「設定」…</translation>
+<translation id="8374977641764177587">要啟用通知嗎？</translation>
 <translation id="8378714024927312812">由您的機構管理</translation>
 <translation id="8386068868580335421">重設</translation>
 <translation id="838867811594159347">輸入密碼短語…</translation>
@@ -1402,6 +1412,7 @@
 <translation id="8613883225817609844">隱藏「最近開啟的分頁」</translation>
 <translation id="8620640915598389714">編輯</translation>
 <translation id="8624447588354561276">包裹編號</translation>
+<translation id="8624753446837753970">設定位置</translation>
 <translation id="8626393685701737946">如要將預設的網站檢視模式變更為桌面模式，請前往 [設定] &gt; [內容設定]</translation>
 <translation id="8636825310635137004">如要取得其他裝置上的分頁，請開啟同步處理功能。</translation>
 <translation id="8637431369725868556">防範危險網站。</translation>
@@ -1443,6 +1454,7 @@
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8825562130641217944">取得書籤、密碼和其他資料。</translation>
 <translation id="882557203579758546">在網頁中搜尋…</translation>
+<translation id="8838250347763484641">你可將網址列放在頂端或移至底部，享受自訂瀏覽體驗。</translation>
 <translation id="8840513115188359703">您不會因此登出 Google 帳戶。</translation>
 <translation id="8843129975935593190">您的機構已限制您可同步的內容。</translation>
 <translation id="8849001918648564819">隱藏</translation>
@@ -1515,6 +1527,7 @@
 <translation id="9188680907066685419">登出受管理的帳戶</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> 天前</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9203951165704618409">你可將網址列從頂端移至底部，享受自訂瀏覽體驗。</translation>
 <translation id="9206887540681440657">速度</translation>
 <translation id="9219154867334666734">搜尋分頁…</translation>
 <translation id="9223358826628549784">已傳送當機報告。</translation>

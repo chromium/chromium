@@ -572,7 +572,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1448779317883494811">Pinseltool</translation>
 <translation id="1449191289887455076">Drücke zum Bestätigen der Zuweisung und <ph name="RESPONSE" /> noch einmal „<ph name="CURRENTKEY" />“</translation>
 <translation id="1451375123200651445">Webseite, Einzeldatei</translation>
-<translation id="145280054552001290">Sprachen für Untertitel hinzufügen und entfernen</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />Fehlerbehebungsprotokolle<ph name="END_LINK" /> senden (empfohlen)</translation>
 <translation id="1454223536435069390">Screenshot &amp;erstellen</translation>
 <translation id="145432137617179457">Sprachen für die Rechtschreibprüfung</translation>
@@ -2457,7 +2456,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="285033512555869047">Geschlossen</translation>
 <translation id="2850541429955027218">Design hinzufügen</translation>
 <translation id="2850672011315104382">Satzzeichenstil</translation>
-<translation id="285241945869362924">Erstellt automatisch Untertitel für Audioinhalte und Videos. Audioinhalte und Untertitel werden ausschließlich auf dem Gerät verarbeitet.</translation>
 <translation id="2853121255651601031">Passwort gespeichert</translation>
 <translation id="2856776373509145513">Neuen Container erstellen</translation>
 <translation id="2856907950922663165">URL-Verschlüsselung deaktivieren?</translation>
@@ -6800,6 +6798,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6347010704471250799">Benachrichtigung einblenden</translation>
 <translation id="6348805481186204412">Offlinespeicher</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> installieren</translation>
+<translation id="6350821834561350243">Beschreibe so gut wie möglich das Problem und die Schritte, mit denen es reproduziert werden kann</translation>
 <translation id="6354918092619878358">Elliptische SECG-Kurve secp256r1 (ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Google-Kontoinformationen werden abgerufen...</translation>
 <translation id="635609604405270300">Gerät eingeschaltet lassen</translation>
@@ -7732,6 +7731,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{App entfernen}other{Apps entfernen}}</translation>
 <translation id="7099337801055912064">Große PPD-Datei kann nicht geladen werden. Die Maximalgröße beträgt 250 KB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Keine gehackten Passwörter}=1{{COUNT} gehacktes Passwort}other{{COUNT} gehackte Passwörter}}</translation>
+<translation id="7100379916748214860">Chrome hat gerade den Download einer gefährlichen Datei blockiert. Mit dem erweiterten Schutz kannst du noch mehr Sicherheit erhalten.</translation>
 <translation id="710047887584828070">Der Inhalt dieses Tabs wird geteilt</translation>
 <translation id="710224247908684995">Safe Browsing wurde durch eine Erweiterung deaktiviert</translation>
 <translation id="7102832101143475489">Zeitüberschreitung bei der Anfrage</translation>
@@ -9222,6 +9222,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8256319818471787266">Bello</translation>
 <translation id="8257950718085972371">Zugriff auf die Kamera weiter blockieren</translation>
 <translation id="8258027225380843424">Import erfolgreich.</translation>
+<translation id="8260177673299865994">Downloadschutz verbessern</translation>
 <translation id="8260864402787962391">Maus</translation>
 <translation id="8261378640211443080">Diese Erweiterung ist nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt und wurde möglicherweise ohne dein Wissen hinzugefügt.</translation>
 <translation id="8261506727792406068">Löschen</translation>

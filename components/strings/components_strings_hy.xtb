@@ -520,6 +520,7 @@
 <translation id="1975457531113383421">Մուտքային դարակ</translation>
 <translation id="1975584088563498795">Փոստարկղ 10</translation>
 <translation id="1978555033938440688">Ներկառուցված ծրագրի տարբերակը</translation>
+<translation id="1979156660928743046">Մուլտիմեդիա տվյալներ</translation>
 <translation id="1988881251331415125">Եթե տառասխալ չկա, <ph name="BEGIN_LINK" />գործարկեք կապի դիագնոստիկան<ph name="END_LINK" />։</translation>
 <translation id="1991453785879639515">Ժայռամագլցում և ալպինիզմ</translation>
 <translation id="1991830984769263878">Ավտոմեքենաների ապահովագրություն</translation>
@@ -1532,6 +1533,7 @@
 <translation id="4050599136622776556">Chromium-ը փորձում է փոփոխել վճարման եղանակները։</translation>
 <translation id="405399507749852140">Դուք ծանուցում կստանաք, երբ որևէ կայքում գնիջեցում լինի</translation>
 <translation id="4056223980640387499">Սեպիա</translation>
+<translation id="4059523390906550209">Իմանալ ավելին Զգայուն տվյալների պաշտպանության մասին</translation>
 <translation id="4063063121357725926">Թույլ տվեք Google-ին օգնել ձեզ զեղչեր գտնել ձեր զամբյուղներում ավելացված ապրանքների համար</translation>
 <translation id="406358100705415968">Աշխատանքային անվտանգության պաշտպանության միջոցներ</translation>
 <translation id="4063924980214801036">Օգտագործել սարքի ապակողպումը՝ քարտերն ավելի արագ հաստատելու համար</translation>
@@ -1690,6 +1692,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Արգելափակել (կանխադրված)</translation>
 <translation id="4314815835985389558">Համաժամացման կառավարում</translation>
+<translation id="4316057107946726368">Գրեք առավելագույնը <ph name="MAX_CHAR_COUNT" /> նիշ երկարությամբ հիմնավորում։ Օգտագործված է <ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /> նիշ։</translation>
 <translation id="4318213823155573975">Գլխարկներ</translation>
 <translation id="4318312030194671742">Paint-ի նախադիտումների գրաշարման ծառայություն</translation>
 <translation id="4318566738941496689">Ձեր սարքի անունը և ցանցի հասցեն</translation>
@@ -2365,6 +2368,7 @@
 <translation id="5695542892312572833">Հաստատե՞լ և ավարտել ձեր գնումը Windows Hello-ի միջոցով</translation>
 <translation id="5699628521141772782">Կաթնամթերք և ձու</translation>
 <translation id="5700761515355162635">Երրորդ կողմի քուքիները թույլատրված են</translation>
+<translation id="5701023235904684227">Կառավարե՞լ <ph name="READERNAME" /> ընթերցիչը և ստանալ դրան հասանելի խելացի քարտից օգտվելու թույլտվություն</translation>
 <translation id="5701381305118179107">Կենտրոնաբերել</translation>
 <translation id="5707154300732650394">Շարունակել որոնումը</translation>
 <translation id="57094364128775171">Ստեղծել հուսալի գաղտնաբառ…</translation>
@@ -2679,6 +2683,7 @@
 <translation id="6355392890578844978">Ձեր դիտարկիչը չի կառավարվում որևէ ընկերության կամ կազմակերպության կողմից։ Սարքում արվող գործողությունները կարող են կառավարվել Chromium-ից դուրս։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">փոփոխել վճարման եղանակները</translation>
 <translation id="6358450015545214790">Ի՞նչ է սա նշանակում:</translation>
+<translation id="6360213755783740931">Իմանալ ավելին Վնասագրերից պաշտպանության մասին</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Դիտել մատյանները</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Ստուգել պրոքսի-սերվերի, հրապատի և ապահով DNS-ի կազմաձևումը<ph name="END_LINK" /></translation>
@@ -2736,6 +2741,7 @@
 <translation id="6443406338865242315">Ինչ ընդլայնումներ և փլագիններ եք դուք տեղադրել</translation>
 <translation id="6446608382365791566">Ավելացրեք լրացուցիչ տեղեկություններ</translation>
 <translation id="6447842834002726250">Cookie ֆայլեր</translation>
+<translation id="6448371595882710519">Իմանալ ավելին Տվյալների կառավարման տարրերի մասին</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Envelope Chou 40</translation>
 <translation id="6451458296329894277">Հաստատեք ձևի վերաուղարկումը</translation>

@@ -573,7 +573,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1448779317883494811">Instrument pensulă</translation>
 <translation id="1449191289887455076">Apasă din nou pe <ph name="CURRENTKEY" /> pentru confirmarea atribuirii și <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Pagină web, un singur fișier</translation>
-<translation id="145280054552001290">Adaugă și elimină limbi pentru subtitrări</translation>
 <translation id="1453561711872398978">Trimite <ph name="BEGIN_LINK" />jurnale de remediere a erorilor<ph name="END_LINK" /> (recomandat)</translation>
 <translation id="1454223536435069390">F&amp;aceți o captură de ecran</translation>
 <translation id="145432137617179457">Limbi pentru care se verifică ortografia</translation>
@@ -2461,7 +2460,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="285033512555869047">Închis</translation>
 <translation id="2850541429955027218">Adaugă o temă</translation>
 <translation id="2850672011315104382">Stilul de punctuație</translation>
-<translation id="285241945869362924">Creează automat subtitrări pentru conținut audio și video. Conținutul audio și subtitrările nu părăsesc niciodată dispozitivul.</translation>
 <translation id="2853121255651601031">Parola a fost salvată</translation>
 <translation id="2856776373509145513">Creează un container nou</translation>
 <translation id="2856907950922663165">Dezactivezi criptarea adreselor URL?</translation>
@@ -6807,6 +6805,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6347010704471250799">Se afișează o notificare</translation>
 <translation id="6348805481186204412">Stocare offline</translation>
 <translation id="6349101878882523185">Instalează <ph name="APP_NAME" /></translation>
+<translation id="6350821834561350243">Introdu o descriere clară a problemei și pașii pentru reproducerea problemei (dacă este posibil)</translation>
 <translation id="6354918092619878358">Curbură eliptică SECG secp256r1 (cunoscută și sub numele de ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Se preiau informațiile Contului Google...</translation>
 <translation id="635609604405270300">Păstrează dispozitivul activat</translation>
@@ -7741,6 +7740,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Elimină aplicația}few{Elimină aplicații}other{Elimină aplicații}}</translation>
 <translation id="7099337801055912064">Nu se poate încărca fișierul PPD mare. Dimensiunea maximă este 250 KB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Nicio parolă compromisă}=1{{COUNT} parolă compromisă}few{{COUNT} parole compromise}other{{COUNT} de parole compromise}}</translation>
+<translation id="7100379916748214860">Chrome tocmai a blocat descărcarea unui fișier periculos. Beneficiază de securitate sporită cu protecție îmbunătățită.</translation>
 <translation id="710047887584828070">Se permite accesul la conținutul acestei file</translation>
 <translation id="710224247908684995">O extensie a dezactivat Navigarea sigură</translation>
 <translation id="7102832101143475489">Solicitarea a expirat</translation>
@@ -9231,6 +9231,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8256319818471787266">Lăbuș</translation>
 <translation id="8257950718085972371">Blocați în continuare accesul la cameră</translation>
 <translation id="8258027225380843424">Importul s-a finalizat!</translation>
+<translation id="8260177673299865994">Îmbunătățește protecția descărcării</translation>
 <translation id="8260864402787962391">Mouse</translation>
 <translation id="8261378640211443080">Această extensie nu este inclusă în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și este posibil să fi fost adăugată fără știrea dvs.</translation>
 <translation id="8261506727792406068">Șterge</translation>

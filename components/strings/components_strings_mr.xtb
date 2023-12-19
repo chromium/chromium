@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">इनपुट ट्रे</translation>
 <translation id="1975584088563498795">मेलबॉक्स १०</translation>
 <translation id="1978555033938440688">फर्मवेयर आवृत्ती</translation>
+<translation id="1979156660928743046">मीडिया माहिती</translation>
 <translation id="1988881251331415125">शब्दलेखन योग्य असल्यास, <ph name="BEGIN_LINK" />कनेक्टिव्हिटी निदान रन करून पहा<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">आरोहण आणि पर्वतारोहण</translation>
 <translation id="1991830984769263878">वाहन विमा</translation>
@@ -1523,6 +1524,7 @@
 <translation id="4050599136622776556">Chromium हे पेमेंट पद्धती संपादित करण्याचा प्रयत्‍न करत आहे.</translation>
 <translation id="405399507749852140">कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा</translation>
 <translation id="4056223980640387499">सेपिया</translation>
+<translation id="4059523390906550209">संवेदनशील डेटा संरक्षणाबद्दल अधिक जाणून घ्या</translation>
 <translation id="4063063121357725926">Google ला तुमच्या कार्टसाठी सवलती शोधण्याकरिता तुम्हाला मदत करू द्या</translation>
 <translation id="406358100705415968">कामाच्या ठिकाणी सुरक्षिततेसाठी संरक्षणात्मक गिअर</translation>
 <translation id="4063924980214801036">कार्डची झटपट खात्री करण्यासाठी डिव्हाइस अनलॉक वापरा</translation>
@@ -1681,6 +1683,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">ब्लॉक करा (डीफॉल्ट)</translation>
 <translation id="4314815835985389558">सिंक व्यवस्थापित करा</translation>
+<translation id="4316057107946726368">कृपया जास्तीत जास्त <ph name="MAX_CHAR_COUNT" /> वर्ण असलेला कारण देणारा मेसेज एंटर करा. <ph name="MAX_CHAR_COUNT" /> पैकी <ph name="ACTUAL_CHAR_COUNT" /> वर्ण वापरले आहेत.</translation>
 <translation id="4318213823155573975">हेडवेअर</translation>
 <translation id="4318312030194671742">पेंट पूर्वावलोकन कंपोझिटर सेवा</translation>
 <translation id="4318566738941496689">तुमच्या डिव्हाइसचे नाव आणि नेटवर्कचा पत्ता</translation>
@@ -2353,6 +2356,7 @@
 <translation id="5695542892312572833">तुमच्या खरेदीची पडताळणी करण्यासाठी आणि ती पूर्ण करण्यासाठी Windows Hello वापरायचे आहे का?</translation>
 <translation id="5699628521141772782">डेअरी आणि अंडी</translation>
 <translation id="5700761515355162635">तृतीय पक्ष कुकीना अनुमती दिली</translation>
+<translation id="5701023235904684227"><ph name="READERNAME" /> त्यावर नियंत्रण ठेवायचे आहे का आणि स्मार्ट कार्डवर अ‍ॅक्सेस करण्यायोग्य अ‍ॅक्सेस मिळवायचा आहे का?</translation>
 <translation id="5701381305118179107">मध्यभागी</translation>
 <translation id="5707154300732650394">तुमचा प्रवास पुन्हा सुरू करा</translation>
 <translation id="57094364128775171">क्लिष्ट पासवर्ड सुचवा…</translation>
@@ -2668,6 +2672,7 @@
 <translation id="6355392890578844978">हा ब्राउझर कंपनी किंवा इतर संस्थेद्वारे व्यवस्थापित केला जात नाही. या डिव्हाइसवरील अ‍ॅक्टिव्हिटी Chromium च्या बाहेर व्यवस्थापित केली जाऊ शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">पेमेंट पद्धती संपादित करा</translation>
 <translation id="6358450015545214790">याचा अर्थ काय आहे?</translation>
+<translation id="6360213755783740931">मालवेअर संरक्षणाबद्दल अधिक जाणून घ्या</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">लॉग पहा</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />प्रॉक्सी, फायरवॉल आणि सुरक्षित DNS कॉंफिगरेशन तपासत आहे<ph name="END_LINK" /></translation>
@@ -2725,6 +2730,7 @@
 <translation id="6443406338865242315">तुम्ही कोणती एक्स्टेंशन आणि प्लग-इन इंस्टॉल केली आहेत</translation>
 <translation id="6446608382365791566">अधिक माहिती जोडा</translation>
 <translation id="6447842834002726250">कुकीज</translation>
+<translation id="6448371595882710519">डेटा नियंत्रणांबद्दल अधिक जाणून घ्या</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">एन्व्हलप चोउ ४०</translation>
 <translation id="6451458296329894277">फॉर्म रीसबमिशनची पुष्टी करा</translation>

@@ -516,6 +516,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1975457531113383421">Innmatingsskuff</translation>
 <translation id="1975584088563498795">Postkasse 10</translation>
 <translation id="1978555033938440688">Fastvareversjon</translation>
+<translation id="1979156660928743046">Medieinformasjon</translation>
 <translation id="1988881251331415125">Hvis stavemåten er korrekt, kan du <ph name="BEGIN_LINK" />prøve å kjøre Tilkoblingsdiagnostikk<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">Klatring og fjellklatring</translation>
 <translation id="1991830984769263878">Bilforsikring</translation>
@@ -1524,6 +1525,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4050599136622776556">Chromium prøver å redigere betalingsmåter.</translation>
 <translation id="405399507749852140">Få varsler hvis prisen settes ned på noe nettsted</translation>
 <translation id="4056223980640387499">Sepia</translation>
+<translation id="4059523390906550209">Finn ut mer om beskyttelse av sensitive data</translation>
 <translation id="4063063121357725926">La Google hjelpe deg med å finne rabatter for handlekurvene dine</translation>
 <translation id="406358100705415968">Personlig verneutstyr</translation>
 <translation id="4063924980214801036">Bruk enhetsopplåsing til å bekrefte kort raskere</translation>
@@ -1682,6 +1684,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokkér (standard)</translation>
 <translation id="4314815835985389558">Administrer synkronisering</translation>
+<translation id="4316057107946726368">Skriv inn en begrunnelsesmelding på maksimalt <ph name="MAX_CHAR_COUNT" /> tegn. <ph name="ACTUAL_CHAR_COUNT" /> av <ph name="MAX_CHAR_COUNT" /> tegn er brukt.</translation>
 <translation id="4318213823155573975">Hodeplagg</translation>
 <translation id="4318312030194671742">Paint Preview-komposisjonstjeneste</translation>
 <translation id="4318566738941496689">Navnet og nettverksadressen til enheten din</translation>
@@ -2354,6 +2357,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5695542892312572833">Vil du bruke Windows Hello for å verifisere og fullføre kjøpet?</translation>
 <translation id="5699628521141772782">Meierivarer og egg</translation>
 <translation id="5700761515355162635">Informasjonskapsler fra tredjeparter tillates</translation>
+<translation id="5701023235904684227">Vil du la nettstedet styre <ph name="READERNAME" /> og få tilgang til det tilknyttede smartkortet?</translation>
 <translation id="5701381305118179107">Midtstill</translation>
 <translation id="5707154300732650394">Fortsett reisen</translation>
 <translation id="57094364128775171">Foreslå et sterkt passord…</translation>
@@ -2668,6 +2672,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6355392890578844978">Denne nettleseren administreres ikke av et selskap eller en annen organisasjon. Aktiviteten på denne enheten kan bli administrert utenfor Chromium. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">redigere betalingsmåter</translation>
 <translation id="6358450015545214790">Hva innebærer dette?</translation>
+<translation id="6360213755783740931">Finn ut mer om beskyttelse mot skadelig programvare</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Se loggene</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />å sjekke konfigurasjonen for proxy-tjener, brannmur og sikker DNS<ph name="END_LINK" /></translation>
@@ -2725,6 +2730,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6443406338865242315">hvilke utvidelser og programtillegg du har installert</translation>
 <translation id="6446608382365791566">Legg til mer informasjon</translation>
 <translation id="6447842834002726250">Informasjonskapsler</translation>
+<translation id="6448371595882710519">Finn ut mer om datakontroller</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Chou 40-konvolutt</translation>
 <translation id="6451458296329894277">Bekreft ny innsending av skjema</translation>

@@ -63,6 +63,7 @@ Aspectes que cal tenir en compte:
 <translation id="2427791862912929107">Chrome té funcions que t'ajuden a gestionar les teves dades d'Internet i la rapidesa amb què pots carregar pàgines web.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Per obtenir fàcilment les contrasenyes desades en altres aplicacions, utilitza Chrome per a Emplenament automàtic</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Es produeix quan Chrome no s'utilitza durant {THRESHOLD} minut. Això pot incloure l'historial i la funció Emplenament automàtic.}other{Es produeix quan Chrome no s'utilitza durant {THRESHOLD} minuts. Això pot incloure l'historial i la funció Emplenament automàtic.}}</translation>
 <translation id="2561231791489583059">Utilitza Chrome com a navegador predeterminat per protegir-te de llocs web perillosos i mantenir les teves contrasenyes segures</translation>
 <translation id="2574249610672786438">Per veure les pestanyes des de tots els llocs on facis servir Chrome, inicia la sessió en tots els dispositius</translation>
 <translation id="2576431527583832481">Chrome ara és millor. Hi ha una versió nova disponible.</translation>
@@ -91,6 +92,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3282568296779691940">Inicia la sessió a Chrome</translation>
 <translation id="3340938510625667914">Accions de Chrome</translation>
 <translation id="3345341804167540816">Utilitzeu Chrome a tot arreu</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Es produeix quan Chrome no s'utilitza durant {THRESHOLD} minut}other{Es produeix quan Chrome no s'utilitza durant {THRESHOLD} minuts}}</translation>
 <translation id="3399930248910934354">Obre la configuració de Chrome</translation>
 <translation id="3472587960215700950">Chrome utilitza Google Maps per oferir-te indicacions i informació local sobre les adreces detectades.</translation>
 <translation id="3503014945441706099">Obtén també Navegació segura millorada per a aquest perfil de Chrome</translation>

@@ -574,7 +574,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1448779317883494811">Nástroj Štětec</translation>
 <translation id="1449191289887455076">Pokud chcete potvrdit přiřazení a <ph name="RESPONSE" />, znovu stiskněte klávesu <ph name="CURRENTKEY" /></translation>
 <translation id="1451375123200651445">Webová stránka, jeden soubor</translation>
-<translation id="145280054552001290">Přidat nebo odebrat jazyky popisků</translation>
 <translation id="1453561711872398978">Odeslat <ph name="BEGIN_LINK" />protokoly ladění<ph name="END_LINK" /> (doporučeno)</translation>
 <translation id="1454223536435069390">&amp;Pořídit snímek obrazovky</translation>
 <translation id="145432137617179457">Jazyky kontroly pravopisu</translation>
@@ -2462,7 +2461,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="285033512555869047">Zavřeno</translation>
 <translation id="2850541429955027218">Přidat motiv</translation>
 <translation id="2850672011315104382">Styl interpunkce</translation>
-<translation id="285241945869362924">Automatické vytváření titulků pro zvuk a videa. Zvuk ani titulky nikdy neopouštějí zařízení.</translation>
 <translation id="2853121255651601031">Heslo uloženo</translation>
 <translation id="2856776373509145513">Vytvoření nového kontejneru</translation>
 <translation id="2856907950922663165">Vypnout šifrování adres URL?</translation>
@@ -6804,6 +6802,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6347010704471250799">Zobrazit oznámení</translation>
 <translation id="6348805481186204412">Offline úložiště</translation>
 <translation id="6349101878882523185">Nainstalovat aplikaci <ph name="APP_NAME" /></translation>
+<translation id="6350821834561350243">Jasně problém popište a uveďte, jak jej vyvolat (pokud je to možné)</translation>
 <translation id="6354918092619878358">Eliptická křivka SECG secp256r1 (neboli ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Načítání informací o účtu Google…</translation>
 <translation id="635609604405270300">Ponechat zařízení zapnuté</translation>
@@ -7740,6 +7739,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Odstranit aplikaci}few{Odstranit aplikace}many{Odstranit aplikace}other{Odstranit aplikace}}</translation>
 <translation id="7099337801055912064">Soubor PPD nelze načíst, protože je příliš velký. Maximální povolená velikost je 250 kB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Nebyla nalezena žádná prolomená hesla}=1{Bylo nalezeno {COUNT} prolomené heslo}few{Byla nalezena {COUNT} prolomená hesla}many{Bylo nalezeno {COUNT} prolomeného hesla}other{Bylo nalezeno {COUNT} prolomených hesel}}</translation>
+<translation id="7100379916748214860">Chrome právě zablokoval stažení nebezpečného souboru. S vylepšenou ochranou získáte ještě silnější zabezpečení.</translation>
 <translation id="710047887584828070">Obsah této karty je sdílen</translation>
 <translation id="710224247908684995">Bezpečné prohlížení bylo vypnuto rozšířením</translation>
 <translation id="7102832101143475489">Časový limit požadavku vypršel</translation>
@@ -9229,6 +9229,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8256319818471787266">Štěně</translation>
 <translation id="8257950718085972371">Blokovat přístup ke kameře i nadále</translation>
 <translation id="8258027225380843424">Import byl úspěšný!</translation>
+<translation id="8260177673299865994">Získejte lepší ochranu při stahování</translation>
 <translation id="8260864402787962391">Myš</translation>
 <translation id="8261378640211443080">Toto rozšíření není uvedeno na webu <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a mohlo být přidáno bez vašeho vědomí.</translation>
 <translation id="8261506727792406068">Smazat</translation>

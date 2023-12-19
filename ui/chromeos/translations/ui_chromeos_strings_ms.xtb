@@ -250,7 +250,7 @@
 <translation id="3003189754374775221">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Sambung</translation>
 <translation id="3003633581067744647">Tukar kepada paparan lakaran kecil</translation>
 <translation id="3016566519832145558">Awas: Fail ini bersifat sementara dan mungkin dipadamkan secara automatik untuk mengosongkan ruang cakera.</translation>
-<translation id="3029114385395636667">Dayakan Dokumen Google Luar Talian untuk menjadikan Dokumen, Helaian dan Slaid tersedia di luar talian.</translation>
+<translation id="3029114385395636667">Dayakan Google Docs Luar Talian untuk menjadikan Docs, Sheets dan Slides tersedia di luar talian.</translation>
 <translation id="303198083543495566">Geografi</translation>
 <translation id="3044404008258011032">Untuk memulihkan item ini, seret item ke folder baharu di luar sampah. Folder asal "<ph name="PARENT_FOLDER_NAME" />" untuk item ini telah dipadamkan.</translation>
 <translation id="3047197340186497470">Dayi Cina</translation>
@@ -460,7 +460,7 @@
 <translation id="4656777537938206294">Jadikan fail tersedia di luar talian</translation>
 <translation id="4658782175094886150">Orang dalam salji</translation>
 <translation id="4669606053856530811">Ahli '<ph name="SOURCE_NAME" />' akan kehilangan akses melainkan item ini dikongsi dengan mereka.</translation>
-<translation id="467809019005607715">Slaid Google</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Sweden</translation>
 <translation id="4693155481716051732">Susyi</translation>
 <translation id="4694604912444486114">Monyet</translation>
@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Bunga Gazania</translation>
 <translation id="4943368462779413526">Bola Sepak</translation>
 <translation id="4961158930123534723">1 folder dikongsi dengan Parallels Desktop</translation>
+<translation id="4965874878399872778">Menyemak fail berdasarkan dasar keselamatan organisasi anda...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> dipulihkan</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Tidak dapat menyelesaikan persediaan penyegerakan fail</translation>
@@ -710,6 +711,7 @@
 <translation id="6430271654280079150">Anda mempunyai 1 percubaan lagi.</translation>
 <translation id="643243556292470964">Fail yang dipadamkan kini dialihkan ke sampah</translation>
 <translation id="6438480100790416671">Menyemak ruang storan…</translation>
+<translation id="6451527188465304418">Menyemak fail berdasarkan dasar keselamatan organisasi anda...</translation>
 <translation id="6485131920355264772">Gagal mendapatkan maklumat ruang</translation>
 <translation id="6495925982925244349">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Diurus oleh Pentadbir anda, Butiran</translation>
 <translation id="649877868557234318">Mengekstrak <ph name="FILE_NAME" /> ke <ph name="FOLDER_NAME" /></translation>
@@ -1075,7 +1077,7 @@
 <translation id="9171921933192916600">Ulat buku</translation>
 <translation id="9172592259078059678">Alih Huruf Gujerat</translation>
 <translation id="9173120999827300720">Inggeris (AS) dengan papan kekunci Antarabangsa</translation>
-<translation id="9183302530794969518">Dokumen Google</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kazakhstan</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> item diekstrak.</translation>
 <translation id="9213073329713032541">Pemasangan berjaya dimulakan.</translation>

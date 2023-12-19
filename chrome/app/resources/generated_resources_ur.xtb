@@ -572,7 +572,6 @@
 <translation id="1448779317883494811">برش کا ٹول</translation>
 <translation id="1449191289887455076">تفویض اور <ph name="RESPONSE" /> کی تصدیق کرنے کے لیے "<ph name="CURRENTKEY" />" دوبارہ دبائيں</translation>
 <translation id="1451375123200651445">ویب صفحہ، واحد فائل</translation>
-<translation id="145280054552001290">کیپشن پر زبانیں شامل کریں یا ان کو ہٹائیں</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />ڈیبگ لاگز<ph name="END_LINK" /> بھیجیں (تجویز کردہ)</translation>
 <translation id="1454223536435069390">اسکرین شاٹ &amp;لیں</translation>
 <translation id="145432137617179457">املا کی جانچ کو سپورٹ کرنے والی زبانیں</translation>
@@ -2462,7 +2461,6 @@
 <translation id="285033512555869047">بند</translation>
 <translation id="2850541429955027218">تھیم شامل کریں</translation>
 <translation id="2850672011315104382">رموز و اوقاف کی طرز</translation>
-<translation id="285241945869362924">یہ خصوصیت آڈیو اور ویڈیو کیلئے خودکار طور پر کیپشنز تخلیق کرتی ہے۔ آڈیو اور کیپشنز ہمیشہ آلے پر ہی رہتے ہیں۔</translation>
 <translation id="2853121255651601031">پاس ورڈ محفوظ ہو گیا</translation>
 <translation id="2856776373509145513">ایک نیا کنٹینر تخلیق کریں</translation>
 <translation id="2856907950922663165">‏URL کی مرموز کاری کو آف کریں؟</translation>
@@ -3097,6 +3095,7 @@
 <translation id="3385092118218578224">%‎<ph name="DISPLAY_ZOOM" /></translation>
 <translation id="338583716107319301">فاصل</translation>
 <translation id="3387023983419383865">،</translation>
+<translation id="3387588771342841525">آن ہونے پر پاس ورڈز <ph name="EMAIL" /> میں محفوظ ہوتے ہیں- آف ہونے پر پاس ورڈز صرف اس آلے پر محفوظ ہوتے ہیں۔</translation>
 <translation id="3387614642886316601">املا کی بہتر جانچ استعمال کریں</translation>
 <translation id="3387829698079331264">آپ اپنے آلے کا فعال طور پر استعمال کب کر رہے ہیں یہ جاننے کی اجازت نہیں ہے</translation>
 <translation id="3388094447051599208">آؤٹ پٹ ٹرے تقریباً بھر گیا ہے</translation>
@@ -3285,6 +3284,7 @@
 <translation id="3532521178906420528">نیٹ ورک کنکشن تشکیل دیا جا رہا ہے…</translation>
 <translation id="3532852121563960103">{NUM_OF_FILES,plural, =1{1 فائل <ph name="CLOUD_PROVIDER" /> میں منتقل ہو رہی ہے}other{{NUM_OF_FILES} فائلز <ph name="CLOUD_PROVIDER" /> میں منتقل ہو رہی ہیں}}</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - آڈیو خاموش ہے</translation>
+<translation id="3537099313456411235">‏Files ایپ میں اپنی Drive فائلز تک رسائی حاصل کرنے کے لیے <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> کو منسلک کریں</translation>
 <translation id="3537881477201137177">اس کو بعد میں ترتیبات میں تبدیل کیا جا سکتا ہے</translation>
 <translation id="3538066758857505094">‏Linux ان انسٹال کرنے میں خرابی پیش آ گئی ہے۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" /> کے ذریعے کوئی نیٹ ورک نہیں</translation>
@@ -5367,6 +5367,7 @@
 <translation id="5185359571430619712">ایکسٹینشنز کا جائزہ لیں</translation>
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" کا جدید ترین ورژن غیر فعال کر دیا گیا ہے کیونکہ اس کیلئے مزید اجازتیں مطلوب ہیں۔</translation>
 <translation id="5185500136143151980">انٹرنیٹ نہیں ہے</translation>
+<translation id="5186381005592669696">تعاون یافتہ ایپس کے لیے ڈسپلے کی زبان کو حسب ضرورت بنائیں</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> استعمال کر کے</translation>
 <translation id="5190926251776387065">پورٹ فعال کریں</translation>
@@ -6144,6 +6145,7 @@
 <translation id="5828633471261496623">پرنٹ کیا جا رہا ہے…</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> نہیں کھل سکتی</translation>
 <translation id="5830720307094128296">صفحہ محفوظ کریں &amp;بطور…</translation>
+<translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> کے بطور سائن ان کردہ</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" /> اور اس کے ماتحت سبھی سائٹس، اور انسٹال کردہ ایپ کے لیے سائٹ کا ڈیٹا اور اجازتیں حذف کریں؟</translation>
 <translation id="5832813618714645810">پروفائلز</translation>
 <translation id="583281660410589416">نامعلوم</translation>
@@ -6217,6 +6219,7 @@
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> کو خودکار طور پر مسدود کر دیا گیا</translation>
 <translation id="5884447826201752041">ہر ایکسٹینشن کے لیے حسب ضرورت بنائیں</translation>
 <translation id="5885314688092915589">آپ کی تنظیم اس پروفائل کا نظم کرے گی</translation>
+<translation id="5885470467814103868">اسکین شروع کریں</translation>
 <translation id="5885631909150054232">ٹوکن کاپی کریں</translation>
 <translation id="5886009770935151472">انگلی 1</translation>
 <translation id="5886112770923972514">قریبی فاسٹ پئیر آلات سے منسلک ہوں اور آسانی سے سیٹ اپ کریں</translation>
@@ -6807,6 +6810,7 @@
 <translation id="6347010704471250799">اطلاع دکھائیں</translation>
 <translation id="6348805481186204412">آف لائن اسٹوریج</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> انسٹال کریں</translation>
+<translation id="6351178441572658285">ایپ کی زبانیں</translation>
 <translation id="6354918092619878358">‏SECG elliptic curve secp256r1 (المعروف ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">‏Google اکاؤنٹ کی معلومات حاصل کی جا رہی ہے...</translation>
 <translation id="635609604405270300">آلے کو آن رکھیں</translation>
@@ -7410,6 +7414,7 @@
 <translation id="6833479554815567477">ٹیب گروپ سے ہٹا دیا گیا <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833996806551876956">رازداری سینڈ باکس کا ٹرائل</translation>
 <translation id="6835762382653651563">براہ کرم اپنا <ph name="DEVICE_TYPE" /> اپ ڈیٹ کرنے کیلئے انٹرنیٹ سے منسلک ہوں۔</translation>
+<translation id="683630338945552556">‏اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کریں اور انہیں محفوظ کریں</translation>
 <translation id="6839225236531462745">سرٹیفکیٹ حذف کرنے میں خرابی</translation>
 <translation id="6839916869147598086">سائن ان تبدیل ہو چکا ہے</translation>
 <translation id="6840155290835956714">بھیجنے سے پہلے پوچھیں</translation>
@@ -8026,6 +8031,7 @@
 <translation id="7347943691222276892"><ph name="SUBPAGE_TITLE" /> سے دور نیویگیٹ کرنے کے لیے کلک کریں۔</translation>
 <translation id="7348093485538360975">آن اسکرین کی بورڈ</translation>
 <translation id="7349010927677336670">ویڈیو کا بغیر کسی رکاوٹ کے چلنا</translation>
+<translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} پاس ورڈ صرف اس آلے پر محفوظ ہے}other{{COUNT} پاس ورڈز صرف اس آلے پر محفوظ ہیں}}</translation>
 <translation id="7352651011704765696">کچھ غلط ہو گیا</translation>
 <translation id="7352664183151911163">‏آپ کی ایپس اور Chrome براؤزر پر</translation>
 <translation id="7353261921908507769">ان کے قریب ہونے پر آپ کے رابطے آپ کے ساتھ اشتراک کر سکتے ہیں۔ آپ کے قبول کئے بغیر منتقلیاں شروع نہیں ہوں گی۔</translation>
@@ -8266,6 +8272,7 @@
 <translation id="7523117833414447032">بڑے حروف پڑھتے ہوئے</translation>
 <translation id="7523585675576642403">پروفائل کا نام تبدیل کریں</translation>
 <translation id="7525067979554623046">بنائیں</translation>
+<translation id="7525879597899798851">‏OS کی ترجیحات میں مقام آف ہے</translation>
 <translation id="7526989658317409655">پلیس ہولڈر</translation>
 <translation id="7528224636098571080">نہ کھولیں</translation>
 <translation id="7529411698175791732">اپنا انٹرنیٹ کنکشن چیک کریں۔ اگر مسئلہ برقرار رہتا ہے تو سائن آؤٹ اور دوبارہ سائن ان کر کے دیکھیں۔</translation>
@@ -8460,6 +8467,7 @@
 <translation id="7670483791111801022">سب ٹائٹلز</translation>
 <translation id="7671130400130574146">سسٹم کا ٹائٹل بار اور بارڈرز استعمال کریں</translation>
 <translation id="767127784612208024">دوبارہ ترتیب دینے کی تصدیق کرنے کے لیے ٹچ کریں</translation>
+<translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" "<ph name="SCANNER_NAME" />" سے اسکین کرنا چاہتے ہیں۔</translation>
 <translation id="7672504401554182757">منتخب کریں کہ کس آلہ میں <ph name="APP_NAME" /> کے لئے پاس کی ہو</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />، <ph name="PAGE_TITLE" /> میں۔</translation>
 <translation id="7673313156293624327">‏ChromeOS Shill (کنکشن مینیجر) لاگز</translation>

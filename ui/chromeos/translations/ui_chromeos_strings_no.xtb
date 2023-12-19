@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Gazania-blomst</translation>
 <translation id="4943368462779413526">Fotball</translation>
 <translation id="4961158930123534723">1 mappe er delt med Parallels Desktop</translation>
+<translation id="4965874878399872778">Sjekker filene opp mot organisasjonens sikkerhetsregler …</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> er gjenopprettet</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Kunne ikke fullføre konfigureringen av filsynkronisering</translation>
@@ -710,6 +711,7 @@
 <translation id="6430271654280079150">Du har ett forsøk igjen.</translation>
 <translation id="643243556292470964">Slettede filer flyttes nå til papirkurven</translation>
 <translation id="6438480100790416671">Kontrollerer lagringsplass …</translation>
+<translation id="6451527188465304418">Sjekker filen opp mot organisasjonens sikkerhetsregler …</translation>
 <translation id="6485131920355264772">Kunne ikke hente informasjon om lagringsplass</translation>
 <translation id="6495925982925244349">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – administreres av administratoren din – detaljer</translation>
 <translation id="649877868557234318">Pakker ut <ph name="FILE_NAME" /> i <ph name="FOLDER_NAME" /></translation>

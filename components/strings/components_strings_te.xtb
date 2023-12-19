@@ -511,6 +511,7 @@
 <translation id="1975457531113383421">ఇన్‌పుట్ ట్రే</translation>
 <translation id="1975584088563498795">మెయిల్‌బాక్స్ 10</translation>
 <translation id="1978555033938440688">ఫర్మ్‌వేర్ వెర్షన్</translation>
+<translation id="1979156660928743046">మీడియా సమాచారం</translation>
 <translation id="1988881251331415125">స్పెల్లింగ్ సరైనది అయితే, <ph name="BEGIN_LINK" />కనెక్టివిటీ సమస్య విశ్లేషణలను రన్ చేయడానికి ట్రై చేయండి<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">క్లయింబింగ్ &amp; మౌంటెయినీరింగ్</translation>
 <translation id="1991830984769263878">ఆటోమొబైల్ బీమా</translation>
@@ -1519,6 +1520,7 @@
 <translation id="4050599136622776556">పేమెంట్ ఆప్షన్‌లను ఎడిట్ చేయడానికి Chromium ట్రై చేస్తోంది.</translation>
 <translation id="405399507749852140">ఏదైనా సైట్‌లో ధర తగ్గితే అలర్ట్‌లు పొందండి</translation>
 <translation id="4056223980640387499">సెపియా</translation>
+<translation id="4059523390906550209">సున్నితమైన డేటా సంరక్షణ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="4063063121357725926">మీ కార్ట్‌ల కోసం డిస్కౌంట్‌లను కనుగొనడంలో మీకు సహాయపడటానికి Googleకు అనుమతినివ్వండి</translation>
 <translation id="406358100705415968">పని చేసేటప్పుడు రక్షణ కల్పించే దుస్తులు లేదా వస్తువులు</translation>
 <translation id="4063924980214801036">కార్డ్‌లను వేగంగా నిర్ధారించడానికి పరికర అన్‌లాక్‌ను ఉపయోగించండి</translation>
@@ -1677,6 +1679,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">బ్లాక్ చేయండి (డిఫాల్ట్)</translation>
 <translation id="4314815835985389558">సింక్‌ను నిర్వహించండి</translation>
+<translation id="4316057107946726368">దయచేసి గరిష్టంగా <ph name="MAX_CHAR_COUNT" /> అక్షరాలను కలిగి ఉన్న సమర్థన మెసేజ్‌ను ఎంటర్ చేయండి. <ph name="MAX_CHAR_COUNT" /> అక్షరాలకు గానూ <ph name="ACTUAL_CHAR_COUNT" /> అక్షరాలు ఉపయోగించబడ్డాయి.</translation>
 <translation id="4318213823155573975">తలకు ధరించేవి</translation>
 <translation id="4318312030194671742">పెయింట్ ప్రివ్యూ కంపోజిటర్ సర్వీస్</translation>
 <translation id="4318566738941496689">మీ పరికరం పేరు, నెట్‌వర్క్ అడ్రస్‌</translation>
@@ -2349,6 +2352,7 @@
 <translation id="5695542892312572833">మీ కొనుగోలును వెరిఫై చేసి, పూర్తి చేయడానికి Windows Helloను ఉపయోగించాలా?</translation>
 <translation id="5699628521141772782">పాల ఉత్పత్తులు &amp; గుడ్లు</translation>
 <translation id="5700761515355162635">థర్డ్-పార్టీ కుక్కీలు అనుమతించబడతాయి</translation>
+<translation id="5701023235904684227"><ph name="READERNAME" />‌ను కంట్రోల్ చేసి, దానికి యాక్సెస్ చేయగల స్మార్ట్ కార్డ్‌‌కు యాక్సెస్ పొందాలా?</translation>
 <translation id="5701381305118179107">మధ్యకు</translation>
 <translation id="5707154300732650394">మీ సెర్చ్‌ను కొనసాగించండి</translation>
 <translation id="57094364128775171">బలమైన పాస్‌వర్డ్‌ను సూచించండి…</translation>
@@ -2663,6 +2667,7 @@
 <translation id="6355392890578844978">ఈ బ్రౌజర్ కంపెనీ లేదా ఇతర సంస్థ ద్వారా మేనేజ్ చేయబడదు. ఈ పరికరంలోని యాక్టివిటీని Chromium వెలుపల మేనేజ్ చేస్తుండవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">పేమెంట్ ఆప్షన్‌లను ఎడిట్ చేయండి</translation>
 <translation id="6358450015545214790">దీని అర్ధం ఏమిటి?</translation>
+<translation id="6360213755783740931">మాల్‌వేర్ రక్షణ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">లాగ్‌లను చూడండి</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ప్రాక్సీ, ఫైర్‌వాల్ మరియు సెక్యూర్ DNS కాన్ఫిగరేషన్‌ను చెక్ చేయడం<ph name="END_LINK" /></translation>
@@ -2720,6 +2725,7 @@
 <translation id="6443406338865242315">ఏ ఎక్స్‌టెన్షన్‌లు మరియు ప్లగిన్‌లను మీరు ఇన్‌స్టాల్ చేశారు</translation>
 <translation id="6446608382365791566">మరింత సమాచారాన్ని జోడించండి</translation>
 <translation id="6447842834002726250">కుక్కీలు</translation>
+<translation id="6448371595882710519">డేటా కంట్రోల్స్ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="6450077999570164268">క్వార్టో</translation>
 <translation id="6450212216969386944">ఎన్వలప్ చౌ 40</translation>
 <translation id="6451458296329894277">ఫారమ్ పునఃసమర్పణను నిర్థారించండి</translation>

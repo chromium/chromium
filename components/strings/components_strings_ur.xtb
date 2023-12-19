@@ -517,6 +517,7 @@
 <translation id="1975457531113383421">ان پٹ ٹرے</translation>
 <translation id="1975584088563498795">میل باکس 10</translation>
 <translation id="1978555033938440688">فرم ویئر ورژن</translation>
+<translation id="1979156660928743046">میڈیا کی معلومات</translation>
 <translation id="1988881251331415125">اگر ہجے درست ہیں تو <ph name="BEGIN_LINK" />کنیکٹوٹی کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="1991453785879639515">چڑھائی چڑھنا اور پہاڑ پر چڑھنا</translation>
 <translation id="1991830984769263878">آٹو انشورنس</translation>
@@ -1526,6 +1527,7 @@
 <translation id="4050599136622776556">‏Chromium ادائیگی کے طریقوں میں ترمیم کرنے کی کوشش کر رہا ہے۔</translation>
 <translation id="405399507749852140">کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر الرٹس حاصل کریں</translation>
 <translation id="4056223980640387499">سیپیا</translation>
+<translation id="4059523390906550209">حساس ڈیٹا کے تحفظ کے بارے میں مزید جانیں</translation>
 <translation id="4063063121357725926">‏Google کو اپنی کارٹس کے لیے رعایتیں تلاش کرنے میں آپ کی مدد کرنے دیں</translation>
 <translation id="406358100705415968">کام سے متعلق حفاظتی ساز و سامان</translation>
 <translation id="4063924980214801036">تیزی سے کارڈز کی تصدیق کرنے کے لیے آلے کو غیر مقفل کرنے کی خصوصیت کا استعمال کریں</translation>
@@ -1684,6 +1686,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">مسدود کریں (ڈیفالٹ)</translation>
 <translation id="4314815835985389558">مطابقت پذیری کا نظم کريں</translation>
+<translation id="4316057107946726368">زیادہ سے <ph name="MAX_CHAR_COUNT" /> حروف کا جسٹیفیکیشن پیغام درج کریں۔ <ph name="MAX_CHAR_COUNT" /> حروف میں سے <ph name="ACTUAL_CHAR_COUNT" /> استعمال کیا گیا ہے۔</translation>
 <translation id="4318213823155573975">سرپوش</translation>
 <translation id="4318312030194671742">پینٹ پیش منظر کے کمپوزیٹر کی سروس</translation>
 <translation id="4318566738941496689">آپ کے آلے کا نام اور نیٹ ورک پتہ</translation>
@@ -2356,6 +2359,7 @@
 <translation id="5695542892312572833">‏آپ کی خریداری کی توثیق اور اسے مکمل کرنے کیلئے Windows Hello کا استعمال کریں؟</translation>
 <translation id="5699628521141772782">ڈیری اور انڈے</translation>
 <translation id="5700761515355162635">فریق ثالث کوکیز کی اجازت ہے</translation>
+<translation id="5701023235904684227"><ph name="READERNAME" /> کو کنٹرول کر کے قابل رسائی اسمارٹ کارڈ تک رسائی حاصل کریں؟</translation>
 <translation id="5701381305118179107">مرکز</translation>
 <translation id="5707154300732650394">اپنا صارف کا تجربہ دوبارہ شروع کریں</translation>
 <translation id="57094364128775171">مضبوط پاس ورڈ تجویز کریں…</translation>
@@ -2671,6 +2675,7 @@
 <translation id="6355392890578844978">‏یہ براؤزر کسی کمپنی یا دوسری تنظیم کے زیر انتظام نہیں ہے۔ اس آلے پر ہونے والی سرگرمی کا نظم Chromium سے باہر کیا جا سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">ادائیگی کے طریقوں میں ترمیم کریں</translation>
 <translation id="6358450015545214790">ان کا کیا مطلب ہے؟</translation>
+<translation id="6360213755783740931">مالویئر تحفظ کے بارے میں مزید جانیں</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">لاگز دیکھیں</translation>
 <translation id="6364095313648930329">‏<ph name="BEGIN_LINK" />پراکسی، فائروال اور محفوظ DNS کنفیگریشن کو چیک کرنے کی کوشش کریں<ph name="END_LINK" /></translation>
@@ -2728,6 +2733,7 @@
 <translation id="6443406338865242315">آپ نے کن ایکسٹینشنز اور پلگ انز کو انسٹال کیا ہے</translation>
 <translation id="6446608382365791566">مزید معلومات شامل کریں</translation>
 <translation id="6447842834002726250">کوکیز</translation>
+<translation id="6448371595882710519">ڈیٹا کنٹرولز کے بارے میں مزید جانیں۔</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">‏Chou 40 لفافہ</translation>
 <translation id="6451458296329894277">فارم دوبارہ جمع کرانے کی توثیق کریں</translation>

@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">ຖາດປ້ອນເຂົ້າ</translation>
 <translation id="1975584088563498795">ກ່ອງຈົດໝາຍ 10</translation>
 <translation id="1978555033938440688">ເວີຊັນເຟີມແວ</translation>
+<translation id="1979156660928743046">ຂໍ້ມູນມີເດຍ</translation>
 <translation id="1988881251331415125">ຖ້າການສະກົດຄຳຖືກຕ້ອງ, <ph name="BEGIN_LINK" />ລອງເປີດໃຊ້ Connectivity Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">ການປີນ ແລະ ຂຶ້ນພູ</translation>
 <translation id="1991830984769263878">ປະກັນໄພລົດໃຫຍ່</translation>
@@ -1524,6 +1525,7 @@
 <translation id="4050599136622776556">Chromium ກຳລັງພະຍາຍາມແກ້ໄຂວິທີການຈ່າຍເງິນ.</translation>
 <translation id="405399507749852140">ຮັບການແຈ້ງເຕືອນຫາກມີການຫຼຸດລາຄາຢູ່ເວັບໄຊໃດກໍຕາມ</translation>
 <translation id="4056223980640387499">ສີນໍ້າຕານດໍາ</translation>
+<translation id="4059523390906550209">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການປົກປ້ອງຂໍ້ມູນທີ່ລະອຽດອ່ອນ</translation>
 <translation id="4063063121357725926">ໃຫ້ Google ຊ່ວຍທ່ານຊອກຫາສ່ວນຫຼຸດສຳລັບກະຕ່າຂອງທ່ານ</translation>
 <translation id="406358100705415968">ອຸປະກອນປ້ອງກັນຄວາມປອດໄພຢູ່ບ່ອນເຮັດວຽກ</translation>
 <translation id="4063924980214801036">ໃຊ້ການປົດລັອກອຸປະກອນເພື່ອຢືນຢັນບັນໄວຂຶ້ນ</translation>
@@ -1682,6 +1684,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">ບລັອກ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="4314815835985389558">ຈັດການການຊິ້ງຂໍ້ມູນ</translation>
+<translation id="4316057107946726368">ກະລຸນາລະບຸຂໍ້ຄວາມອະທິບາຍທີ່ມີບໍ່ເກີນ <ph name="MAX_CHAR_COUNT" /> ຕົວອັກສອນ. ໃຊ້ໄປແລ້ວ <ph name="ACTUAL_CHAR_COUNT" /> ຈາກທັງໝົດ <ph name="MAX_CHAR_COUNT" /> ຕົວອັກສອນ.</translation>
 <translation id="4318213823155573975">ເຄື່ອງປະດັບຫົວ</translation>
 <translation id="4318312030194671742">ການບໍລິການຈັດວາງຕົວຢ່າງຮູບແຕ້ມ</translation>
 <translation id="4318566738941496689">ຊື່ອຸປະກອນ ແລະ ທີ່ຢູ່ເຄືອຂ່າຍຂອງທ່ານ</translation>
@@ -1742,6 +1745,7 @@
 <translation id="443673843213245140">ການໃຊ້ພຣັອກຊີປິດໃຊ້ງານແລ້ວ ແຕ່ການປັບຕັ້ງພຣັອກຊີຈະແຈ້ງໄດ້ຮັບການລະບຸ.</translation>
 <translation id="4438821706955556403">ລາຄາປົກກະຕິ</translation>
 <translation id="4441832193888514600">ຖືກເພີກເສີຍເນື່ອງຈາກສາມາດຕັ້ງນະໂຍບາຍເປັນນະໂຍບາຍຜູ້ໃຊ້ຄລາວເທົ່ານັ້ນ.</translation>
+<translation id="4445133368066241428">ຫົວຂໍ້ຍອດນິຍົມ</translation>
 <translation id="4449116177348980384">ປຸ່ມຈັດການການຕັ້ງຄ່າເວັບໄຊ, ເປີດນຳໃຊ້ເພື່ອຈັດການການອະນຸຍາດ ແລະ ຂໍ້ມູນທີ່ຈັດເກັບໃນທົ່ວເວັບໄຊໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="4451135742916150903">ສາມາດຂໍເຊື່ອມຕໍ່ຫາອຸປະກອນ HID ໄດ້</translation>
 <translation id="4451684391620232683">ຂໍ້ຄວາມທີ່ສະແດງຕໍ່ຜູ້ໃຊ້:</translation>
@@ -2354,6 +2358,7 @@
 <translation id="5695542892312572833">ໃຊ້ Windows Hello ເພື່ອຢັ້ງຢືນ ແລະ ເຮັດສຳເລັດການຊື້ຂອງທ່ານບໍ?</translation>
 <translation id="5699628521141772782">ນົມ ແລະ ໄຂ່</translation>
 <translation id="5700761515355162635">ອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມແລ້ວ</translation>
+<translation id="5701023235904684227">ຄວບຄຸມ <ph name="READERNAME" /> ແລະ ໄດ້ສິດເຂົ້າເຖິງຫາສະມາດກາດທີ່ມັນເຂົ້າເຖິງໄດ້ບໍ?</translation>
 <translation id="5701381305118179107">ໃຈກາງ</translation>
 <translation id="5707154300732650394">ສືບຕໍ່ບັນທຶກຂອງທ່ານ</translation>
 <translation id="57094364128775171">ແນະນຳລະຫັດຜ່ານທີ່ເດົາຍາກ…</translation>
@@ -2668,6 +2673,7 @@
 <translation id="6355392890578844978">ໂປຣແກຣມທ່ອງເວັບນີ້ບໍ່ໄດ້ຖືກຈັດການໂດຍບໍລິສັດ ຫຼື ອົງການອື່ນ. ການເຄື່ອນໄຫວຢູ່ອຸປະກອນນີ້ອາດຖືກຈັດການຢູ່ນອກ Chromium ໄດ້. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">ແກ້ໄຂວິທີການຈ່າຍເງິນ</translation>
 <translation id="6358450015545214790">ສິ່ງ​ທີ່​ເຫຼົ່າ​ນີ້​ຫມາຍ​ຄວາມ​ວ່າ​ແນວໃດ?</translation>
+<translation id="6360213755783740931">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການປົກປ້ອງເມົາແວ</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">ເບິ່ງບັນທຶກ</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ກຳລັງກວດເບິ່ງການຕັ້ງຄ່າພຣັອກຊີ, ໄຟລ໌ວໍ ແລະ DNS ທີ່ປອດໄພ<ph name="END_LINK" /></translation>
@@ -2725,6 +2731,7 @@
 <translation id="6443406338865242315">ສ່ວນຂະຫຍາຍ ແລະ ປລັກອິນທີ່ທ່ານຕິດຕັ້ງ</translation>
 <translation id="6446608382365791566">ເພີ່ມຂໍ້ມູນເພີ່ມເຕີມ</translation>
 <translation id="6447842834002726250">ຄຸກກີ້</translation>
+<translation id="6448371595882710519">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການຄວບຄຸມຂໍ້ມູນ</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Envelope Chou 40</translation>
 <translation id="6451458296329894277">ຢືນຢັນການສົ່ງແບບຟອມຄືນໃໝ່</translation>

@@ -5256,6 +5256,11 @@ políticas específicas correspondentes.
 Observação: esta política não se aplica a HSTS Upgrades.</translation>
 <translation id="5297948043665200363">Permitir que o usuário permaneça conectado depois que a conta perder a autenticação</translation>
 <translation id="5298949392804966105">Nenhuma restrição em contas gerenciadas</translation>
+<translation id="5300770793658186741">Se a política for definida, será possível especificar uma lista de origens (URLs) ou padrões de nome do host (como *.example.com) aos quais as restrições de segurança de origens inseguras não serão aplicadas. As organizações podem especificar origens para aplicativos legados que não possam implantar TLS ou configurar um servidor de preparo para desenvolvimento da Web interno. Dessa forma, os desenvolvedores podem testar recursos que necessitam de contextos seguros sem precisar implantar o TLS no servidor de preparo. Essa política também impede que origens sejam marcadas como "Não seguras" na barra de endereço.
+
+A definição de uma lista de URLs nesta política tem o mesmo efeito que configurar a flag de linha de comando --unsafely-treat-insecure-origin-as-secure para uma lista dos mesmos URLs separados por vírgulas. A política modificará a flag de linha de comando e UnsafelyTreatInsecureOriginAsSecure, se estiver presente.
+
+Para mais informações sobre contextos seguros, consulte "Secure Contexts" (https://www.w3.org/TR/secure-contexts) (em inglês).</translation>
 <translation id="530134925949808452">A hora do dia, no horário local, em que a cota de uso é renovada.</translation>
 <translation id="5303080953475303561">Se a política for definida, ela controlará a frequência com que a tela de bloqueio solicita a senha para o desbloqueio rápido. Quando a tela de bloqueio aparece, se a última senha digitada tiver sido inserida antes da janela de tempo especificada pelo valor escolhido, o desbloqueio rápido não ficará disponível. Se os usuários continuarem na tela de bloqueio após esse período, uma senha será solicitada na próxima vez que o código errado for digitado ou que eles acessarem a tela de bloqueio, o que ocorrer primeiro.
 
@@ -5466,6 +5471,7 @@ Se a política for desativada ou deixada sem definição, as configurações de 
 <translation id="547601067149622666">Não permitir anúncios em sites com anúncios invasivos</translation>
 <translation id="5476152378885134514">Bloquear a área de transferência nesses sites</translation>
 <translation id="5480380613778757009">Se a política for desativada ou deixada sem definição, todas as configurações de tela que foram definidas em Sessões de visitante gerenciadas serão redefinidas assim que a sessão for encerrada. Se a política for definida como "Verdadeira", as propriedades de tela permanecerão após a Sessão de visitante gerenciada ser encerrada.</translation>
+<translation id="5483012943408894695">Origens ou padrões de nome do host aos quais as restrições sobre origens não seguras não se aplicam</translation>
 <translation id="5483065054530244863">Permitir certificados SHA-1 assinados emitidos pelas âncoras de confiança locais</translation>
 <translation id="5487758664517243511">Se esta configuração estiver ativada, os usuários que já ativaram o recurso "Seu smartphone" poderão continuar tarefas no ChromeOS, como visualizar as páginas da Web do smartphone.
 
@@ -9981,6 +9987,17 @@ Esta política só tem efeito quando a <ph name="FULL_RESTORE_ENABLED_NAME" /> e
 <translation id="9135095804754272364">Mostrar uma notificação quando um dispositivo USB for detectado</translation>
 <translation id="9136212796239682721">Desativar a interface de download em balão</translation>
 <translation id="9136399279941091445">Intervalos de horas de inatividade quando as políticas do dispositivo específicas são lançadas</translation>
+<translation id="9140064482233876338">Descontinuada no M69. Use a OverrideSecurityRestrictionsOnInsecureOrigin.
+
+A política especifica uma lista de origens (URLs) ou padrões de nome do host (como "*.example.com") a que as restrições de segurança sobre origens não seguras não se aplicam.
+
+O objetivo é permitir que organizações autorizem origens para aplicativos legados que não implantam TLS, ou que elas configurem um servidor de preparo para o desenvolvimento interno da Web, de modo que os desenvolvedores possam testar recursos que exigem contextos seguros sem precisar implantar TLS no servidor de preparo. Esta política também impedirá que a origem seja rotulada como "Não segura" na omnibox.
+
+Definir uma lista de URLs nesta política tem o mesmo efeito que definir a flag de linha de comando "--unsafely-treat-insecure-origin-as-secure" para uma lista com os mesmos URLs separados por vírgula. Se a política for definida, ela substituirá a flag de linha de comando.
+
+Esta política foi descontinuada no M69 para implementar a OverrideSecurityRestrictionsOnInsecureOrigin. Se as duas políticas estiverem presentes, OverrideSecurityRestrictionsOnInsecureOrigin substituirá esta.
+
+Para mais informações sobre contextos seguros, acesse https://www.w3.org/TR/secure-contexts/ (link em inglês).</translation>
 <translation id="9142561920976791097">O novo comportamento para envio de eventos em controles de formulário desativados vai ser usado.</translation>
 <translation id="91459503271584213">Iniciar hosts executáveis de mensagens nativas diretamente no Windows</translation>
 <translation id="9148720248753722892">Não permitir certificados assinados SHA-1</translation>

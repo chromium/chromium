@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">მიმწოდებელი ლანგარი</translation>
 <translation id="1975584088563498795">საფოსტო ყუთი 10</translation>
 <translation id="1978555033938440688">ჩაშენებული პროგრამული უზრუნველყოფის ვერსია</translation>
+<translation id="1979156660928743046">ინფორმაცია მედიის შესახებ</translation>
 <translation id="1988881251331415125">თუ სწორად არის აკრეფილი, <ph name="BEGIN_LINK" />ცადეთ კავშირის დიაგნოსტიკა<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">ცოცვა და ალპინიზმი</translation>
 <translation id="1991830984769263878">საავტომობილო დაზღვევა</translation>
@@ -1524,6 +1525,7 @@
 <translation id="4050599136622776556">Chromium ცდილობს გადახდის მეთოდების რედაქტირებას.</translation>
 <translation id="405399507749852140">მიიღეთ გაფრთხილებები, როცა ფასი დაიკლებს რომელიმე საიტზე</translation>
 <translation id="4056223980640387499">სეპია</translation>
+<translation id="4059523390906550209">შეიტყვეთ მეტი სენსიტიური მონაცემების დაცვის შესახებ</translation>
 <translation id="4063063121357725926">მიეცით უფლება Google-ს, დაგეხმაროთ ფასდაკლებების პოვნაში თქვენს კალათებში არსებული პროდუქტებისთვის</translation>
 <translation id="406358100705415968">დამცავი აღჭურვილობა შრომის უსაფრთხოებისთვის</translation>
 <translation id="4063924980214801036">მოწყობილობის განბლოკვის მეთოდის გამოყენება ბარათების უფრო სწრაფად დასადასტურებლად</translation>
@@ -1682,6 +1684,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">დაბლოკვა (ნაგულისხმევი)</translation>
 <translation id="4314815835985389558">სინქრონიზაციის მართვა</translation>
+<translation id="4316057107946726368">შეიყვანეთ ორმხრივად გასასწორებელი შეტყობინება, რომლის სიგრძეც მაქსიმუმ <ph name="MAX_CHAR_COUNT" /> სიმბოლოა. გამოყენებულია <ph name="MAX_CHAR_COUNT" />-დან <ph name="ACTUAL_CHAR_COUNT" /> სიმბოლო.</translation>
 <translation id="4318213823155573975">ქუდები და თავსაბურავები</translation>
 <translation id="4318312030194671742">Paint Preview Compositor Service</translation>
 <translation id="4318566738941496689">თქვენი მოწყობილობის სახელი და ქსელის მისამართი</translation>
@@ -2354,6 +2357,7 @@
 <translation id="5695542892312572833">გსურთ, გამოიყენოთ Windows Hello შენაძენების დასადასტურებლად და განსახორციელებლად?</translation>
 <translation id="5699628521141772782">რძის პროდუქტები და კვერცხი</translation>
 <translation id="5700761515355162635">მესამე მხარის ქუქი-ჩანაწერები დაშვებულია</translation>
+<translation id="5701023235904684227">მართოს <ph name="READERNAME" /> და მიიღოს წვდომა მისთვის ხელმისაწვდომ გონიერ ბარათზე?</translation>
 <translation id="5701381305118179107">ცენტრირება</translation>
 <translation id="5707154300732650394">თქვენი პროცესის გაგრძელება</translation>
 <translation id="57094364128775171">ძლიერი პაროლის შემოთავაზება…</translation>
@@ -2668,6 +2672,7 @@
 <translation id="6355392890578844978">ამ ბრაუზერს არ მართავს კომპანია და არც სხვა ორგანიზაცია. ამ მოწყობილობაზე აქტივობა შეიძლება იმართებოდეს Chromium-ს მიღმა. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">გადახდის მეთოდების რედაქტირება</translation>
 <translation id="6358450015545214790">რას ნიშნავს ეს?</translation>
+<translation id="6360213755783740931">შეიტყვეთ მეტი მავნე პროგრამებისგან დაცვის შესახებ</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">ჟურნალების ნახვა</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />პროქსის, ქსელის დაცვისა და დაცული DNS-ის კონფიგურაციის შემოწმება<ph name="END_LINK" /></translation>
@@ -2725,6 +2730,7 @@
 <translation id="6443406338865242315">თქვენ მიერ დაინსტალირებული გაფართოებები და დანამატები</translation>
 <translation id="6446608382365791566">დამატებითი ინფორმაციის მითითება</translation>
 <translation id="6447842834002726250">ქუქი ფაილები</translation>
+<translation id="6448371595882710519">შეიტყვეთ მეტი მონაცემთა მართვის საშუალებების შესახებ</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">კონვერტი Chou 40</translation>
 <translation id="6451458296329894277">დაადასტურეთ ფორმოს ხელმეორედ ჩაბარება</translation>

@@ -574,7 +574,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1448779317883494811">Ecset eszköz</translation>
 <translation id="1449191289887455076">Nyomja le újra a(z) „<ph name="CURRENTKEY" />” billentyűt a hozzárendelés megerősítéséhez és <ph name="RESPONSE" />.</translation>
 <translation id="1451375123200651445">Weboldal, egyetlen fájl</translation>
-<translation id="145280054552001290">Feliratnyelvek hozzáadása és eltávolítása</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />Hibakeresési naplók<ph name="END_LINK" />
     küldése (javasolt)</translation>
 <translation id="1454223536435069390">&amp;Képernyőkép készítése</translation>
@@ -2474,7 +2473,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="285033512555869047">Zárva</translation>
 <translation id="2850541429955027218">Téma hozzáadása</translation>
 <translation id="2850672011315104382">Központozási stílus</translation>
-<translation id="285241945869362924">Automatikus feliratkészítés az audio- és videótartalmakhoz. A hanganyagok és a feliratok sosem kerülnek ki az eszközről.</translation>
 <translation id="2853121255651601031">A jelszó mentése megtörtént</translation>
 <translation id="2856776373509145513">Új tároló létrehozása</translation>
 <translation id="2856907950922663165">Kikapcsolja az URL-ek titkosítását?</translation>
@@ -6821,6 +6819,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6347010704471250799">Értesítés megjelenítése</translation>
 <translation id="6348805481186204412">Offline tárhely</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> telepítése</translation>
+<translation id="6350821834561350243">Adja meg a probléma egyértelmű leírását és a probléma reprodukálásának lépéseit (ha lehetséges).</translation>
 <translation id="6354918092619878358">SECG elliptikus görbe secp256r1 (vagyis ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Google-fiókadatok lekérése…</translation>
 <translation id="635609604405270300">Az eszköz bekapcsolva tartása</translation>
@@ -7753,6 +7752,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Alkalmazás eltávolítása}other{Alkalmazások eltávolítása}}</translation>
 <translation id="7099337801055912064">Nem használható túl nagy PPD. A maximális méret 250 kB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Nincsenek olyan jelszavak, amelyekhez illetéktelenül hozzáfértek}=1{{COUNT} olyan jelszó van, amelyhez illetéktelenül hozzáfértek}other{{COUNT} olyan jelszó van, amelyhez illetéktelenül hozzáfértek}}</translation>
+<translation id="7100379916748214860">A Chrome megakadályozta egy veszélyes fájl letöltését. A Speciális védelemmel még nagyobb biztonságban lehet.</translation>
 <translation id="710047887584828070">A lap tartalma megosztás alatt van</translation>
 <translation id="710224247908684995">Az egyik bővítmény kikapcsolta a Biztonságos Böngészést</translation>
 <translation id="7102832101143475489">A kérelem lejárt</translation>
@@ -9242,6 +9242,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8256319818471787266">Bundi</translation>
 <translation id="8257950718085972371">Kamera-hozzáférés tiltásának fenntartása</translation>
 <translation id="8258027225380843424">Sikeres importálás.</translation>
+<translation id="8260177673299865994">A letöltésvédelem javítása</translation>
 <translation id="8260864402787962391">Egér</translation>
 <translation id="8261378640211443080">A bővítmény nem a(z) <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> szolgáltatásból származik, és előfordulhat, hogy az Ön tudta nélkül lett telepítve.</translation>
 <translation id="8261506727792406068">Törlés</translation>

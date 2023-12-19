@@ -572,7 +572,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1448779317883494811">Herramienta de pincel</translation>
 <translation id="1449191289887455076">Vuelve a presionar "<ph name="CURRENTKEY" />" para confirmar la asignación y presiona <ph name="RESPONSE" />.</translation>
 <translation id="1451375123200651445">Página web (un único archivo)</translation>
-<translation id="145280054552001290">Agrega y quita idiomas para subtítulos</translation>
 <translation id="1453561711872398978">Enviar <ph name="BEGIN_LINK" />registros de depuración<ph name="END_LINK" /> (recomendado)</translation>
 <translation id="1454223536435069390">Tomar captura de pantalla</translation>
 <translation id="145432137617179457">Idiomas del corrector ortográfico</translation>
@@ -2457,7 +2456,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="285033512555869047">Cerrado</translation>
 <translation id="2850541429955027218">Agregar tema</translation>
 <translation id="2850672011315104382">Estilo de puntuación</translation>
-<translation id="285241945869362924">Crea subtítulos de forma automática para audio y video. El audio y los subtítulos permanecen en el dispositivo.</translation>
 <translation id="2853121255651601031">Se guardó la contraseña</translation>
 <translation id="2856776373509145513">Crea un contenedor nuevo</translation>
 <translation id="2856907950922663165">¿Quieres desactivar la encriptación de URLs?</translation>

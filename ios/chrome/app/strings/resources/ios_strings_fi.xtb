@@ -506,6 +506,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="371398631992790800">Piilota "Kirjanmerkit"</translation>
 <translation id="37207012422556617">Trendaavat haut</translation>
 <translation id="3725081662140949903">Jos haluat estää muita käyttämästä salasanaasi, avaa <ph name="APP" />-sovellus, niin voit vaihtaa salasanan</translation>
+<translation id="3738428049780661523">Luotu <ph name="DATE" /></translation>
 <translation id="374357899112510277">Piilota "Lataukset"</translation>
 <translation id="3745190878148784130">Piilota Zoomaa tekstiä</translation>
 <translation id="3762232513783804601">Suunniteltu iPadille</translation>
@@ -1183,6 +1184,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7425346204213733349">Kirjanmerkkeihin, historiaan, salasanoihin ja muihin asetuksiin tehtäviä muutoksia ei enää synkronoida Google-tilillesi. Olemassa olevia tietojasi säilytetään kuitenkin Google-tililläsi.</translation>
 <translation id="7431991332293347422">Määritä, miten selaushistoria personoi Hakua ja muita</translation>
 <translation id="7435356471928173109">Järjestelmänvalvojasi on ottanut tämän pois päältä</translation>
+<translation id="7436239899443308800">{count,plural, =1{1 välilehti}other{{count} välilehteä}}</translation>
 <translation id="7438481509621345350">Näet nyt tarinoita täältä avatessasi uuden välilehden: <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Kirjanmerkin tallennuspaikka on "{title}"}other{Kirjanmerkkien tallennuspaikka on "{title}"}}</translation>
 <translation id="7454057999980797137">Alue/maa</translation>

@@ -572,7 +572,6 @@
 <translation id="1448779317883494811">เครื่องมือแปรง</translation>
 <translation id="1449191289887455076">กด "<ph name="CURRENTKEY" />" อีกครั้งเพื่อยืนยันการกำหนดและ<ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">หน้าเว็บ ไฟล์เดียว</translation>
-<translation id="145280054552001290">เพิ่มและนําภาษาออกจากคําบรรยาย</translation>
 <translation id="1453561711872398978">ส่ง<ph name="BEGIN_LINK" />บันทึกการแก้ไขข้อบกพร่อง<ph name="END_LINK" /> (แนะนำ)</translation>
 <translation id="1454223536435069390">จับ&amp;ภาพหน้าจอ</translation>
 <translation id="145432137617179457">ภาษาที่ใช้การตรวจตัวสะกดได้</translation>
@@ -1858,6 +1857,7 @@
 <translation id="2408018932941436077">กำลังบันทึกบัตร</translation>
 <translation id="2408955596600435184">ป้อน PIN ของคุณ</translation>
 <translation id="2409268599591722235">เริ่มเลย</translation>
+<translation id="2409378541210421746">แก้ไขการเลือกภาษา</translation>
 <translation id="2409709393952490731">ใช้โทรศัพท์หรือแท็บเล็ต</translation>
 <translation id="2410079346590497630">รายละเอียดบิลด์</translation>
 <translation id="2410298923485357543">ใช้เสียงที่เป็นธรรมชาติเมื่ออุปกรณ์ออนไลน์</translation>
@@ -2460,7 +2460,6 @@
 <translation id="285033512555869047">ปิดอยู่</translation>
 <translation id="2850541429955027218">เพิ่มธีม</translation>
 <translation id="2850672011315104382">รูปแบบเครื่องหมายวรรคตอน</translation>
-<translation id="285241945869362924">สร้างคำบรรยายแทนเสียงสำหรับเสียงและวิดีโอโดยอัตโนมัติ ระบบจะไม่ส่งเสียงและคำบรรยายแทนเสียงออกไปจากอุปกรณ์</translation>
 <translation id="2853121255651601031">บันทึกรหัสผ่านแล้ว</translation>
 <translation id="2856776373509145513">สร้างคอนเทนเนอร์ใหม่</translation>
 <translation id="2856907950922663165">ปิดการเข้ารหัส URL ใช่ไหม</translation>
@@ -3821,6 +3820,7 @@
 <translation id="3937640725563832867">ชื่อสำรองของผู้ออกใบรับรอง</translation>
 <translation id="3937734102568271121">แปลภาษา<ph name="LANGUAGE" />ทุกครั้ง</translation>
 <translation id="3938128855950761626">อุปกรณ์จากผู้ให้บริการ <ph name="VENDOR_ID" /></translation>
+<translation id="3939622756852381766">สร้างคำบรรยายสำหรับเสียงและวิดีโอโดยอัตโนมัติ</translation>
 <translation id="3941565636838060942">หากต้องการซ่อนการเข้าถึงโปรแกรมนี้ คุณต้องถอนการติดตั้งโปรแกรมโดยใช้
   <ph name="CONTROL_PANEL_APPLET_NAME" /> ในแผงควบคุม
 
@@ -4329,6 +4329,7 @@
 <translation id="435527878592612277">เลือกรูปภาพของคุณ</translation>
 <translation id="4356100841225547054">ปิดระดับเสียง</translation>
 <translation id="4358302248024731679">Googler จะช่วยรวมบันทึกเพิ่มเติมเกี่ยวกับบลูทูธไว้กับรายงานความคิดเห็นเพื่อการวินิจฉัยปัญหาบลูทูธที่แม่นยำยิ่งขึ้นได้ เมื่อคุณเลือกตัวเลือกนี้ รายงานจะรวมบันทึก btsnoop และ HCI จากเซสชันปัจจุบัน ซึ่งได้รับการปรับแต่งเพื่อนำ PII ออกไปให้ได้มากที่สุด จะมีเพียงผู้จัดการกลุ่มผลิตภัณฑ์ Chrome OS ใน Listnr เท่านั้นที่มีสิทธิ์เข้าถึงบันทึกเหล่านี้ และระบบจะลบบันทึกออกโดยถาวรหลังผ่านไป 90 วัน</translation>
+<translation id="4358361163731478742">ไม่มีแอปที่รองรับการเลือกภาษาของแอป</translation>
 <translation id="4358643842961018282">อุปกรณ์ของคุณเป็นเวอร์ชันล่าสุดแล้ว</translation>
 <translation id="4359408040881008151">ติดตั้งแล้วเนื่องจากมีส่วนขยายที่ต้องพึ่งพา</translation>
 <translation id="4359717112757026264">ทิวทัศน์ของเมือง</translation>
@@ -4586,6 +4587,7 @@
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> ได้แชร์รหัสผ่านกับคุณสำหรับ <ph name="WEBSITE_NAME" /> คุณสามารถใช้รหัสผ่านดังกล่าวในแบบฟอร์มลงชื่อเข้าใช้ได้</translation>
 <translation id="4558426062282641716">ขอสิทธิ์การเปิดอัตโนมัติแล้ว</translation>
 <translation id="4558542033859106586">กำลังเปิดใน <ph name="TARGET_APP" /></translation>
+<translation id="4558946868955275132">ส่วนนี้แสดงเฉพาะแอปที่รองรับการเลือกภาษา</translation>
 <translation id="4559617833001311418">เว็บไซต์นี้เข้าถึงเซ็นเซอร์ตรวจจับการเคลื่อนไหวหรือแสงอยู่</translation>
 <translation id="4560728518401799797">ตัวเลือกเพิ่มเติมสำหรับบุ๊กมาร์ก <ph name="FOLDER_TITLE" /></translation>
 <translation id="4561893854334016293">ไม่มีการเปลี่ยนแปลงสิทธิ์เมื่อเร็วๆ นี้</translation>
@@ -6803,6 +6805,7 @@
 <translation id="6347010704471250799">แสดงการแจ้งเตือน</translation>
 <translation id="6348805481186204412">พื้นที่เก็บข้อมูลออฟไลน์</translation>
 <translation id="6349101878882523185">ติดตั้ง <ph name="APP_NAME" /></translation>
+<translation id="6350821834561350243">ระบุคำอธิบายปัญหาอย่างชัดเจนและขั้นตอนการสร้างปัญหาซ้ำ (หากเป็นไปได้)</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (เรียกอีกอย่างว่า ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">กำลังรับข้อมูลบัญชี Google...</translation>
 <translation id="635609604405270300">โปรดเปิดอุปกรณ์ไว้</translation>
@@ -7019,6 +7022,7 @@
 <translation id="6535331821390304775">อนุญาตให้ <ph name="ORIGIN" /> เปิดลิงก์ประเภทนี้ในแอปที่เชื่อมโยงทุกครั้ง</translation>
 <translation id="653659894138286600">สแกนเอกสารและรูปภาพ</translation>
 <translation id="6537613839935722475">ชื่อมีตัวอักษร ตัวเลข และขีดกลาง (-) ได้</translation>
+<translation id="6538036594527795020">เปลี่ยนภาษาของ <ph name="APP" /> ปัจจุบันใช้ภาษา<ph name="LANGUAGE" /></translation>
 <translation id="6538098297809675636">เกิดข้อผิดพลาดขณะตรวจหารหัส</translation>
 <translation id="653920215766444089">กำลังค้นหาอุปกรณ์ชี้ตำแหน่ง</translation>
 <translation id="6539674013849300372">ออนไลน์อย่างปลอดภัยยิ่งขึ้นด้วยรหัสผ่านที่รัดกุม โดยระบบจะบันทึกรหัสผ่านดังกล่าวไว้ใน<ph name="GOOGLE_PASSWORD_MANAGER" /> สำหรับ <ph name="EMAIL" /></translation>
@@ -7263,6 +7267,7 @@
 <translation id="6737663862851963468">นำตั๋ว Kerberos ออก</translation>
 <translation id="6738180164164974883">อนุญาตให้ตั้งค่าคุกกี้ของบุคคลที่สาม</translation>
 <translation id="6738430949033571771">กำลังยืนยันบัญชี...</translation>
+<translation id="6739266861259291931">รีเซ็ตเป็นภาษาของอุปกรณ์</translation>
 <translation id="6739923123728562974">แสดงทางลัดในเดสก์ท็อป</translation>
 <translation id="6740234557573873150">หยุด <ph name="FILE_NAME" /> ชั่วคราว</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />ผู้ดูแลระบบของคุณ<ph name="END_LINK" />ปิด Google Safe Browsing</translation>
@@ -7735,6 +7740,7 @@
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{นำแอปออก}other{นำแอปออก}}</translation>
 <translation id="7099337801055912064">โหลด PPD ขนาดใหญ่ไม่ได้ ขนาดต้องไม่เกิน 250 KB</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{ไม่มีรหัสผ่านที่ถูกละเมิด}=1{มีรหัสผ่านที่ถูกละเมิด {COUNT} รายการ}other{มีรหัสผ่านที่ถูกละเมิด {COUNT} รายการ}}</translation>
+<translation id="7100379916748214860">Chrome เพิ่งบล็อกไฟล์อันตรายไม่ให้ดาวน์โหลด รักษาความปลอดภัยให้รัดกุมยิ่งขึ้นด้วยการปกป้องที่ดียิ่งขึ้น</translation>
 <translation id="710047887584828070">กำลังแชร์เนื้อหาของแท็บนี้อยู่</translation>
 <translation id="710224247908684995">ส่วนขยายหนึ่งปิด Google Safe Browsing</translation>
 <translation id="7102832101143475489">คำขอหมดเวลาแล้ว</translation>
@@ -9224,6 +9230,7 @@
 <translation id="8256319818471787266">สปาร์กกี้</translation>
 <translation id="8257950718085972371">บล็อกการเข้าถึงกล้องต่อไป</translation>
 <translation id="8258027225380843424">นำเข้าเสร็จเรียบร้อย</translation>
+<translation id="8260177673299865994">ปรับปรุงการป้องกันการดาวน์โหลด</translation>
 <translation id="8260864402787962391">เมาส์</translation>
 <translation id="8261378640211443080">ส่วนขยายนี้ไม่ได้ระบุไว้ใน <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> และอาจถูกเพิ่มเข้ามาโดยที่คุณไม่รู้ตัว</translation>
 <translation id="8261506727792406068">ลบ</translation>
@@ -10431,6 +10438,7 @@
 <translation id="9186963452600581158">ลงชื่อเข้าใช้ด้วยบัญชี Google ของบุตรหลาน</translation>
 <translation id="9187967020623675250">แป้นไม่ตรงกัน กดแป้นใดก็ได้เพื่อ<ph name="RESPONSE" /></translation>
 <translation id="9188732951356337132">ส่งข้อมูลการใช้งานและการวินิจฉัย ปัจจุบันอุปกรณ์นี้ส่งข้อมูลการวินิจฉัย อุปกรณ์ และการใช้งานแอปไปยัง Google โดยอัตโนมัติ โดยจะไม่มีการใช้ข้อมูลนี้ในการระบุชื่อบุตรหลานของคุณ และจะช่วยให้แอปและระบบมีความเสถียร พร้อมทั้งปรับปรุงด้านอื่นๆ ข้อมูลที่รวบรวมมาบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาแอป Android หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปสำหรับบุตรหลาน ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของบุตรหลาน <ph name="BEGIN_LINK2" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK2" /></translation>
+<translation id="9191638749941292185">ส่งคำบรรยายไปที่ Google เพื่อแปลโดยอัตโนมัติ</translation>
 <translation id="9192019773545828776">ฟังการอธิบายและอ่านออกเสียงเพื่อให้คุณใช้อุปกรณ์ได้โดยไม่ต้องมองหน้าจอ การอธิบายและอ่านออกเสียงอักษรเบรลล์จะพร้อมใช้งานกับอุปกรณ์ที่เชื่อมต่อ ใช้แป้น Ctrl + Alt + Z เพื่อเปิดและปิด ChromeVox ใช้แป้นค้นหา + ลูกศรซ้ายหรือลูกศรขวาเพื่อไปยังส่วนต่างๆ ใช้แป้นค้นหา + เว้นวรรคเพื่อเลือก (เปิดใช้งาน)</translation>
 <translation id="919686179725692564">ดูข้อมูลเพิ่มเติมเกี่ยวกับการสำรองข้อมูลแอป</translation>
 <translation id="9199503643457729322">คลิกเพื่อออกจากคู่มือความเป็นส่วนตัว</translation>
@@ -10541,6 +10549,7 @@
 <translation id="98515147261107953">แนวนอน</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">ทั่วไป</translation>
+<translation id="987475089238841621">ระบบจะใช้แพ็กภาษาในคำบรรยายสดและโดยจะจัดเก็บไว้ในอุปกรณ์</translation>
 <translation id="988320949174893488">กระตุกเป็นบางครั้ง</translation>
 <translation id="988978206646512040">ต้องระบุรหัสผ่าน</translation>
 <translation id="992032470292211616">ส่วนขยาย แอป และธีมอาจเป็นอันตรายต่ออุปกรณ์ของคุณ คุณแน่ใจไหมว่าต้องการดำเนินการต่อ</translation>

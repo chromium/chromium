@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Ծաղիկ</translation>
 <translation id="4943368462779413526">Ֆուտբոլ</translation>
 <translation id="4961158930123534723">Parallels Desktop-ին հասանելի է դարձել 1 պանակ</translation>
+<translation id="4965874878399872778">Ստուգվում է՝ արդյոք ֆայլերը համապատասխանում են ձեր կազմակերպության անվտանգության կանոններին...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> ֆայլը վերականգնվեց</translation>
 <translation id="4969785127455456148">Ալբոմ</translation>
 <translation id="4972330214479971536">Չհաջողվեց ավարտել ֆայլերի համաժամացման կարգավորումը</translation>
@@ -710,6 +711,7 @@
 <translation id="6430271654280079150">Մնաց 1 փորձ։</translation>
 <translation id="643243556292470964">Ջնջված ֆայլերն այժմ աղբարկղում են</translation>
 <translation id="6438480100790416671">Ստուգվում է ազատ տարածքի առկայությունը…</translation>
+<translation id="6451527188465304418">Ստուգվում է՝ արդյոք ֆայլը համապատասխանում է ձեր կազմակերպության անվտանգության կանոններին...</translation>
 <translation id="6485131920355264772">Չհաջողվեց առբերել ազատ տարածքի մասին տեղեկությունները</translation>
 <translation id="6495925982925244349">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="649877868557234318">Ֆայլը (<ph name="FILE_NAME" />) արտահանվում է <ph name="FOLDER_NAME" /> պանակ</translation>

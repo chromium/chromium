@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">Улазна фиока</translation>
 <translation id="1975584088563498795">10. поштанско сандуче</translation>
 <translation id="1978555033938440688">Верзија фирмвера</translation>
+<translation id="1979156660928743046">Информације о медијима</translation>
 <translation id="1988881251331415125">Ако нема грешака, <ph name="BEGIN_LINK" />покрените дијагностику повезивања<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">Алпинизам и планинарење</translation>
 <translation id="1991830984769263878">Осигурање аутомобила</translation>
@@ -632,6 +633,7 @@
 <translation id="219906046732893612">Уређење дома</translation>
 <translation id="2202627062836089804">полеђини картице</translation>
 <translation id="2204482073374652408">Ажурирање је завршено!</translation>
+<translation id="2207770355672215546">Увек дозволи, помоћу било које картице</translation>
 <translation id="2208053750671792556">Нисте добили кôд? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">3. фиока</translation>
 <translation id="2210794033760923560">Отпреми извештај</translation>
@@ -1524,6 +1526,7 @@
 <translation id="4050599136622776556">Chromium покушава да измени начине плаћања.</translation>
 <translation id="405399507749852140">Добијајте обавештења када се цена снизи на било ком сајту</translation>
 <translation id="4056223980640387499">Сепија</translation>
+<translation id="4059523390906550209">Сазнајте више о заштити од осетљивих података</translation>
 <translation id="4063063121357725926">Дозволите Google-у да вам помогне у проналажењу попуста за корпе</translation>
 <translation id="406358100705415968">Заштитна опрема за безбедност на раду</translation>
 <translation id="4063924980214801036">Користите откључавање уређаја да бисте брже потврђивали картице</translation>
@@ -1682,6 +1685,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блокирај (подразумевано)</translation>
 <translation id="4314815835985389558">Управљајте синхронизацијом</translation>
+<translation id="4316057107946726368">Унесите поруку са образложењем која има највише <ph name="MAX_CHAR_COUNT" /> знакова. Искористили сте <ph name="ACTUAL_CHAR_COUNT" /> од <ph name="MAX_CHAR_COUNT" /> знакова.</translation>
 <translation id="4318213823155573975">Капе и шешири</translation>
 <translation id="4318312030194671742">Услуга слагања за приказ у Paint-у</translation>
 <translation id="4318566738941496689">Назив и мрежна адреса уређаја</translation>
@@ -1742,6 +1746,7 @@
 <translation id="443673843213245140">Коришћење проксија је онемогућено, али је наведена експлицитна конфигурација проксија.</translation>
 <translation id="4438821706955556403">Уобичајена цена</translation>
 <translation id="4441832193888514600">Игнорише се јер смернице могу да се подесе само као смернице за корисника у клауду.</translation>
+<translation id="4445133368066241428">Популарне теме</translation>
 <translation id="4449116177348980384">Дугме Управљај подешавањима сајта, активирајте га да бисте управљали дозволама и подацима сачуваним на различитим сајтовима у подешавањима Chrome-а</translation>
 <translation id="4451135742916150903">Може да тражи да се повезује са HID уређајима</translation>
 <translation id="4451684391620232683">Текст представљен кориснику:</translation>
@@ -2354,6 +2359,7 @@
 <translation id="5695542892312572833">Желите да користите Windows Hello да бисте потврдили и завршили куповину?</translation>
 <translation id="5699628521141772782">Млечни производи и јаја</translation>
 <translation id="5700761515355162635">Колачићи трећих страна су дозвољени</translation>
+<translation id="5701023235904684227">Желите ли да контролишете уређај <ph name="READERNAME" /> и добијете приступ паметној картици којој приступа?</translation>
 <translation id="5701381305118179107">Центрирај</translation>
 <translation id="5707154300732650394">Наставите пут</translation>
 <translation id="57094364128775171">Предложи јаку лозинку…</translation>
@@ -2667,6 +2673,7 @@
 <translation id="6355392890578844978">Овим прегледачем не управља компанија нити друга организација. Активностима на овом уређају се можда управља ван Chromium-а. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">да измени начине плаћања</translation>
 <translation id="6358450015545214790">Шта ово значи?</translation>
+<translation id="6360213755783740931">Сазнајте више о заштити од малвера</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Прегледајте евиденције</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />да проверите конфигурацију проксија, заштитног зида и безбедног DNS-а<ph name="END_LINK" /></translation>
@@ -2724,6 +2731,7 @@
 <translation id="6443406338865242315">додатке и додатне компонента које сте инсталирали</translation>
 <translation id="6446608382365791566">Додајте још информација</translation>
 <translation id="6447842834002726250">Колачићи</translation>
+<translation id="6448371595882710519">Сазнајте више о контролама података</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Коверта Chou 40</translation>
 <translation id="6451458296329894277">Потврђивање поновног слања обрасца</translation>

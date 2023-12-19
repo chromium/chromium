@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{A mostrar 1 janela do Chromium agora}other{A mostrar {count} janelas do Chromium agora}}</translation>
 <translation id="3344973607274501920">O Chromium não conseguiu verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="3366305173356742781">Dados do Chromium na sua conta</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minuto. Estas informações podem incluir o histórico e o preenchimento automático.}other{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minutos. Estas informações podem incluir o histórico e o preenchimento automático.}}</translation>
 <translation id="3472200483164753384">Opção não suportada no Chromium Canary.</translation>
 <translation id="3478750326643748149">Oculte a mensagem "Tire o máximo partido do Chromium"</translation>
 <translation id="3512168799938877162">A sua palavra-passe não foi partilhada. Verifique a ligação à Internet e certifique-se de que tem sessão iniciada no Chromium. Em seguida, tente novamente.</translation>
@@ -284,6 +285,7 @@ Aspetos a considerar:
 <translation id="8909995017390087892">Chromium para iOS</translation>
 <translation id="8924617840944134898">Abra um separador anónimo do Chromium</translation>
 <translation id="894437814105052438">Quando terminar sessão, o Chromium não irá sincronizar quaisquer dados novos com a sua Conta Google. Os dados anteriormente sincronizados mantêm-se na conta.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minuto}other{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minutos}}</translation>
 <translation id="8963279154877372067">Permita que as notificações do Chromium recebam alertas de descida do preço</translation>
 <translation id="900560297598578021">Com sessão iniciada como <ph name="EMAIL" />.
 

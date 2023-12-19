@@ -259,6 +259,7 @@
 
 Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser.</translation>
 <translation id="2381405137052800939">Grunninnstillinger</translation>
+<translation id="23824747102827308">Hold deg oppdatert om nyheter, sport med mer basert på interessene dine</translation>
 <translation id="2386793615875593361">1 er valgt</translation>
 <translation id="2390457533592708044">Skjul «<ph name="MODULE_NAME" />»</translation>
 <translation id="2403129868389095715">Pakken kan ikke leveres</translation>
@@ -299,6 +300,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2604176749896001318">Oppdater nettleseren</translation>
 <translation id="2609008503159898744">Vil du lukke alle faner?</translation>
 <translation id="2617210333344098964">Flytt adressen til kontoen</translation>
+<translation id="261739049332372104">For å få oppdateringer om innhold du er interessert i, slå på varsler i iOS-innstillingene.</translation>
 <translation id="2625189173221582860">Passordet er kopiert</translation>
 <translation id="2626236249646841566">Kontroller tilkoblingen din, og prøv å logge på igjen.</translation>
 <translation id="2637313651144986786">Søk i faner…</translation>
@@ -559,6 +561,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4042870976416480368">Finn på siden</translation>
 <translation id="4045648459118332842">Se de lagrede passordene dine i hvilken som helst app med ett trykk</translation>
 <translation id="4049507953662678203">Sørg for at du er koblet til et nettverk, og prøv igjen.</translation>
+<translation id="4054572406751135230">Hold deg oppdatert om nyheter, sport med mer.</translation>
 <translation id="4066639687323968621">Logg på med Google-kontoen din for å synkronisere blant annet bokmerker og loggen.</translation>
 <translation id="4092655288299341041">Vis Hjelp</translation>
 <translation id="4105841739161771091">{count,plural, =1{Slett adresse}other{Slett adresser}}</translation>
@@ -738,6 +741,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5016420433031926653">Send til <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Påminn meg senere</translation>
 <translation id="5037676449506322593">Velg alle</translation>
+<translation id="5038113048373546701">Motta varsler om nyheter, sport med mer basert på interessene dine</translation>
 <translation id="5039804452771397117">Tillat</translation>
 <translation id="5050294464480863218">Ting å tenke på</translation>
 <translation id="5050810143224996149">Del passord</translation>
@@ -793,6 +797,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5318298563956633672">Du sporer allerede dette produktet.</translation>
+<translation id="5327753393331509826">Få innholdsvarsler</translation>
 <translation id="5329451663851195956">Du kan trekke nedover for å laste inn på nytt.</translation>
 <translation id="5339316356165661760">Slå på synkronisering</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Vil du spore denne pakken?}other{Vil du spore {COUNT} pakker?}}</translation>
@@ -1152,6 +1157,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7192050974311852563">Start loggføring</translation>
 <translation id="7203585745079012652">Svar med tale</translation>
 <translation id="7207023858769244910">Synkroniser for å få innhold basert på interessene dine.</translation>
+<translation id="7210568419880432164">Slå på varsler…</translation>
 <translation id="721597782417389033">Ugyldig kallenavn på kortet</translation>
 <translation id="7221173315674413369">Utforsk nye funksjoner og tips i Nyheter</translation>
 <translation id="7223102419539744003">Lukk fane</translation>
@@ -1189,6 +1195,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7454057999980797137">Fylke/kommune</translation>
 <translation id="745899714366929493">Hele dagen</translation>
 <translation id="7459628154744868585">Økt beskyttelse er på</translation>
+<translation id="7465351360025415755">Få innholdet du er interessert i</translation>
 <translation id="7472734401283673885">Bedriftsnavn</translation>
 <translation id="7473891865547856676">Nei takk</translation>
 <translation id="7488874549363591659">Levert</translation>
@@ -1356,6 +1363,8 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8343993175958086504">Sikkerhetskopier tingene dine, og bruk dem på alle enheter.</translation>
 <translation id="834783239627985533">Mest besøkte nettsteder</translation>
 <translation id="8364841868226993049">Lagrer bildet i Google Foto for <ph name="USER_EMAIL" /> …</translation>
+<translation id="8370406443343902172">Gå til Innstillinger…</translation>
+<translation id="8374977641764177587">Vil du slå på varsler?</translation>
 <translation id="8378714024927312812">Administreres av organisasjonen din</translation>
 <translation id="8386068868580335421">Tilbakestill</translation>
 <translation id="838867811594159347">Angi en passordfrase …</translation>

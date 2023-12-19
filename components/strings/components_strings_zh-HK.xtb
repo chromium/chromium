@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">輸入紙匣</translation>
 <translation id="1975584088563498795">出紙槽 10</translation>
 <translation id="1978555033938440688">韌體版本</translation>
+<translation id="1979156660928743046">媒體資料</translation>
 <translation id="1988881251331415125">如果拼字正確，請<ph name="BEGIN_LINK" />嘗試執行連線診斷<ph name="END_LINK" />。</translation>
 <translation id="1991453785879639515">攀岩和登山運動</translation>
 <translation id="1991830984769263878">汽車保險</translation>
@@ -1523,6 +1524,7 @@
 <translation id="4050599136622776556">Chromium 正嘗試編輯付款方法。</translation>
 <translation id="405399507749852140">如果產品在任何網站上降價，系統將通知您</translation>
 <translation id="4056223980640387499">棕褐色</translation>
+<translation id="4059523390906550209">進一步了解敏感資料保護功能</translation>
 <translation id="4063063121357725926">讓 Google 協助您為購物車中的項目尋找折扣</translation>
 <translation id="406358100705415968">職業安全防護裝備</translation>
 <translation id="4063924980214801036">使用裝置解鎖功能即可加快確認付款卡</translation>
@@ -1681,6 +1683,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">封鎖 (預設)</translation>
 <translation id="4314815835985389558">管理同步資料</translation>
+<translation id="4316057107946726368">請輸入理由訊息，長度不得超過 <ph name="MAX_CHAR_COUNT" /> 個字元。已輸入 <ph name="ACTUAL_CHAR_COUNT" /> 個字元 (上限：<ph name="MAX_CHAR_COUNT" /> 個字元)。</translation>
 <translation id="4318213823155573975">頭飾</translation>
 <translation id="4318312030194671742">繪圖預覽建立服務</translation>
 <translation id="4318566738941496689">您的裝置名稱和網絡地址</translation>
@@ -2353,6 +2356,7 @@
 <translation id="5695542892312572833">要使用 Windows Hello 驗證並完成購買嗎？</translation>
 <translation id="5699628521141772782">奶製品和雞蛋</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
+<translation id="5701023235904684227">要控制 <ph name="READERNAME" /> 並存取該裝置可存取的智能卡嗎？</translation>
 <translation id="5701381305118179107">置中</translation>
 <translation id="5707154300732650394">恢復瀏覽過程</translation>
 <translation id="57094364128775171">建議安全性強的密碼…</translation>
@@ -2667,6 +2671,7 @@
 <translation id="6355392890578844978">此瀏覽器未受任何公司或其他機構管理。此裝置上的活動可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">編輯付款方法</translation>
 <translation id="6358450015545214790">我需要進一步資料</translation>
+<translation id="6360213755783740931">進一步了解惡意軟件防護功能</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">查看記錄</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />檢查 Proxy、防火牆和安全 DNS 設定<ph name="END_LINK" /></translation>
@@ -2724,6 +2729,7 @@
 <translation id="6443406338865242315">您已安裝的擴充程式和外掛程式</translation>
 <translation id="6446608382365791566">新增更多資料</translation>
 <translation id="6447842834002726250">Cookie</translation>
+<translation id="6448371595882710519">進一步了解「資料控制項」</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Chou 40 信封</translation>
 <translation id="6451458296329894277">確認重新提交表格</translation>

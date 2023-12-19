@@ -259,6 +259,7 @@
 
 वेगवेगळ्या साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट कुकी वापरू शकत नाहीत, उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्यासाठी.</translation>
 <translation id="2381405137052800939">मूलतत्त्वे</translation>
+<translation id="23824747102827308">तुमच्या स्वारस्यांवर आधारित बातम्या, क्रीडा आणि आणखी बऱ्याच गोष्टींसंबंधित अपडेट मिळवा</translation>
 <translation id="2386793615875593361">1 निवडले</translation>
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />" लपवा</translation>
 <translation id="2403129868389095715">तुमचे पॅकेज डिलिव्हर केले जाऊ शकत नाही</translation>
@@ -299,6 +300,7 @@
 <translation id="2604176749896001318">तुमचा ब्राउझर अपडेट करा</translation>
 <translation id="2609008503159898744">सर्व टॅब बंद करायचे आहेत का?</translation>
 <translation id="2617210333344098964">पत्ता खाते वर हलवा</translation>
+<translation id="261739049332372104">तुमच्यासाठी महत्त्वाच्या आशयाबद्दल अपडेट मिळवण्यासाठी, तुमच्या iOS सेटिंग्जमध्ये सूचना सुरू करा.</translation>
 <translation id="2625189173221582860">पासवर्ड कॉपी केला</translation>
 <translation id="2626236249646841566">तुमचे कनेक्‍शन तपासा आणि साइन इन करण्याचा पुन्हा प्रयत्न करा.</translation>
 <translation id="2637313651144986786">टॅब शोधा...</translation>
@@ -540,6 +542,7 @@
 <translation id="3909222758573607742">खात्यामध्ये पासवर्ड आणि इतर आयटम सेव्ह करा</translation>
 <translation id="3915450441834151894">साइट माहिती</translation>
 <translation id="3918585468378680136">पॅकेजचे स्टेटस मिळवत आहे</translation>
+<translation id="3921585859122905677">अ‍ॅड्रेस बारचे स्थान</translation>
 <translation id="3922310737605261887">कॉपी केलेला मजकूर शोधा</translation>
 <translation id="3928666092801078803">माझा डेटा एकत्र करा</translation>
 <translation id="3929457972718048006">पत्ते</translation>
@@ -558,6 +561,7 @@
 <translation id="4042870976416480368">पेजमध्ये शोधा</translation>
 <translation id="4045648459118332842">एका टॅपसह तुमचे पासवर्ड कोणत्याही अ‍ॅपमध्ये सेव्ह करा</translation>
 <translation id="4049507953662678203">आपल्याकडे नेटवर्क कनेक्शन आहे हे सुनिश्चित करा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="4054572406751135230">बातम्या, क्रीडा आणि आणखी बऱ्याच गोष्टींसंबंधित अपडेट मिळवा.</translation>
 <translation id="4066639687323968621">तुमचे बुकमार्क, इतिहास आणि आणखी बरेच काही सिंक करण्यासाठी तुमचे Google खाते वापरून साइन इन करा.</translation>
 <translation id="4092655288299341041">मदत दाखवा</translation>
 <translation id="4105841739161771091">{count,plural, =1{पत्ता हटवा}other{पत्ते हटवा}}</translation>
@@ -737,6 +741,7 @@
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> ला पाठवा</translation>
 <translation id="5017828934289857214">मला नंतर आठवण करून द्या</translation>
 <translation id="5037676449506322593">सर्व निवडा</translation>
+<translation id="5038113048373546701">तुमच्या स्वारस्यांवर आधारित बातम्या, क्रीडा आणि आणखी बऱ्याच गोष्टींसाठी सूचना मिळवा</translation>
 <translation id="5039804452771397117">परवानगी द्या</translation>
 <translation id="5050294464480863218">विचारात घेण्याच्या गोष्टी</translation>
 <translation id="5050810143224996149">पासवर्ड शेअर करा</translation>
@@ -792,6 +797,7 @@
 <translation id="5300589172476337783">दर्शवा</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5318298563956633672">तुम्ही आधीच या उत्पादनाचा माग ठेवत आहात.</translation>
+<translation id="5327753393331509826">आशयाशी संबंधित सूचना मिळवा</translation>
 <translation id="5329451663851195956">तुम्ही रिफ्रेश करण्यासाठी खाली ओढू शकता.</translation>
 <translation id="5339316356165661760">सिंक सुरू करा</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{या पॅकेजचा माग ठेवायचा आहे का?}other{{COUNT} पॅकेजचा माग ठेवायचा आहे का?}}</translation>
@@ -1152,6 +1158,7 @@
 <translation id="7192050974311852563">लॉग इन करणे सुरू करा</translation>
 <translation id="7203585745079012652">उत्तरे वाचून सांगा</translation>
 <translation id="7207023858769244910">तुमच्या स्वारस्यांनुसार आशय मिळवण्यासाठी सिंक करा.</translation>
+<translation id="7210568419880432164">सूचना सुरू करा.</translation>
 <translation id="721597782417389033">कार्डाचे चुकीचे टोपणनाव</translation>
 <translation id="7221173315674413369">नवीन काय आहे मधील नवीन वैशिष्ट्ये आणि टिपा एक्सप्लोर करा</translation>
 <translation id="7223102419539744003">टॅब बंद करा</translation>
@@ -1189,6 +1196,7 @@
 <translation id="7454057999980797137">राज्य / विभाग</translation>
 <translation id="745899714366929493">संपूर्ण दिवस</translation>
 <translation id="7459628154744868585">वर्धित संरक्षण सुरू आहे</translation>
+<translation id="7465351360025415755">तुमच्यासाठी महत्त्वाचा असलेला आशय मिळवा</translation>
 <translation id="7472734401283673885">कंपनीचे नाव</translation>
 <translation id="7473891865547856676">नाही, नको</translation>
 <translation id="7488874549363591659">डिलिव्हर केले</translation>
@@ -1356,6 +1364,8 @@
 <translation id="8343993175958086504">तुमच्या आशयाचा बॅकअप घ्या आणि तो कोणत्याही डिव्हाइसवर वापरा.</translation>
 <translation id="834783239627985533">सर्वाधिक भेट दिलेल्या साइट</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" /> साठी Google Photos मध्ये इमेज सेव्ह करत आहे...</translation>
+<translation id="8370406443343902172">सेटिंग्ज वर जा...</translation>
+<translation id="8374977641764177587">सूचना सुरू करायच्या आहेत का?</translation>
 <translation id="8378714024927312812">तुमच्या संस्थेकडून व्यवस्थापित केलेले</translation>
 <translation id="8386068868580335421">रीसेट करा</translation>
 <translation id="838867811594159347">पासफ्रेझ एंटर करा…</translation>
@@ -1403,6 +1413,7 @@
 <translation id="8613883225817609844">अलीकडील टॅब लपवा</translation>
 <translation id="8620640915598389714">संपादित करा</translation>
 <translation id="8624447588354561276">पॅकेज क्रमांक</translation>
+<translation id="8624753446837753970">स्थान सेट करा</translation>
 <translation id="8626393685701737946">तुम्ही सेटिंग्ज &gt; आशय सेटिंग्ज मधून डीफॉल्ट साइट दृश्य डेस्कटॉप मोडमध्ये बदलू शकता</translation>
 <translation id="8636825310635137004">आपल्या इतर डिव्हाइसेस मधून तुमचे टॅब प्राप्त करण्यासाठी, सिंक सुरू करा</translation>
 <translation id="8637431369725868556">धोकादायक साइटपासून संरक्षण मिळवा.</translation>
@@ -1444,6 +1455,7 @@
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="8825562130641217944">तुमचे बुकमार्क, पासवर्ड आणि आणखी बरेच काही मिळवा.</translation>
 <translation id="882557203579758546">पेजमध्ये शोधा…</translation>
+<translation id="8838250347763484641">कस्टमाइझ केलेल्या ब्राउझिंग अनुभवासाठी तुमचा ॲड्रेस बार वर किंवा तळाशी स्विच करा.</translation>
 <translation id="8840513115188359703">तुम्हाला आपल्या Google खात्यामधून साइन आउट केले जाणार नाही.</translation>
 <translation id="8843129975935593190">तुम्ही काय सिंक करू शकता यावर तुमच्या संस्थेने मर्यादा घातल्या आहेत.</translation>
 <translation id="8849001918648564819">लपवलेली</translation>
@@ -1516,6 +1528,7 @@
 <translation id="9188680907066685419">व्यवस्थापित केलेल्या खात्यामधून साइन आउट करा</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> दिवसांपूर्वी</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9203951165704618409">कस्टमाइझ केलेल्या ब्राउझिंग अनुभवासाठी तुमचा ॲड्रेस बार वरपासून खालपर्यंत स्विच करा.</translation>
 <translation id="9206887540681440657">वेग</translation>
 <translation id="9219154867334666734">टॅब शोधा…</translation>
 <translation id="9223358826628549784">क्रॅश अहवाल पाठवला.</translation>
