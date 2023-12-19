@@ -270,11 +270,6 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<enum name="TapDelayType">
-  <int value="0" label="Delayed Tap"/>
-  <int value="1" label="Undelayed Tap"/>
-</enum>
-
 <enum name="UIEventType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Touch released"/>

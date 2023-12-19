@@ -1042,19 +1042,6 @@ chromium-metrics-reviews@google.com.
   <token key="Length" variants="ScrollLength"/>
 </histogram>
 
-<histogram name="Event.SingleTapType" enum="TapDelayType" expires_after="M97">
-  <owner>flackr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    On non-mobile sites, gesture taps are delayed to prevent double taps from
-    sending a click event. This stat counts the number of taps that are delayed
-    by the double-tap delay versus those that are sent immediately on mobile
-    sites.
-
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
 <histogram name="Event.Touch.TimedOutOnDesktopSite" enum="BooleanTimedOut"
     expires_after="2023-10-31">
   <owner>flackr@chromium.org</owner>
