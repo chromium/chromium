@@ -205,6 +205,37 @@ class OOFCandidateStyleIterator {
     return auto_anchor_style_ ? *auto_anchor_style_ : *style_;
   }
 
+  const ComputedStyle& GetBaseStyle() const {
+    if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
+        UsesFallbackStyle()) {
+      return *GetStyle().GetBaseComputedStyleOrThis();
+    }
+    return GetStyle();
+  }
+
+  const ComputedStyle& ActivateBaseStyleForTryAttempt() {
+    if (!RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() ||
+        !UsesFallbackStyle()) {
+      return GetStyle();
+    }
+    const ComputedStyle& base_style = GetBaseStyle();
+    if (&base_style != &GetStyle()) {
+      element_->GetLayoutObject()->SetStyle(
+          &base_style, LayoutObject::ApplyStyleChanges::kNo);
+    }
+    return base_style;
+  }
+
+  const ComputedStyle& ActivateStyleForChosenFallback() {
+    DCHECK(
+        RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled());
+    DCHECK(UsesFallbackStyle());
+    const ComputedStyle& style = GetStyle();
+    element_->GetLayoutObject()->SetStyle(&style,
+                                          LayoutObject::ApplyStyleChanges::kNo);
+    return style;
+  }
+
   absl::optional<wtf_size_t> PositionFallbackIndex() const {
     return position_fallback_index_;
   }
@@ -1771,11 +1802,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     NonOverflowingScrollRange non_overflowing_range;
     // Do @try placement decisions on the *base style* to avoid interference
     // from animations and transitions.
-    const ComputedStyle& style =
-        RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
-                iter.UsesFallbackStyle()
-            ? *iter.GetStyle().GetBaseComputedStyleOrThis()
-            : iter.GetStyle();
+    const ComputedStyle& style = iter.ActivateBaseStyleForTryAttempt();
     offset_info = TryCalculateOffset(node_info, style, anchor_queries,
                                      implicit_anchor, has_next_fallback_style,
                                      is_first_run, &non_overflowing_range);
@@ -1799,9 +1826,10 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     // Once the @try placement has been decided, calculate the offset again,
     // using the non-base style.
     NonOverflowingScrollRange non_overflowing_range_unused;
-    offset_info = TryCalculateOffset(
-        node_info, iter.GetStyle(), anchor_queries, implicit_anchor,
-        iter.HasNextStyle(), is_first_run, &non_overflowing_range_unused);
+    offset_info =
+        TryCalculateOffset(node_info, iter.ActivateStyleForChosenFallback(),
+                           anchor_queries, implicit_anchor, iter.HasNextStyle(),
+                           is_first_run, &non_overflowing_range_unused);
   }
 
   if (iter.UsesFallbackStyle()) {
