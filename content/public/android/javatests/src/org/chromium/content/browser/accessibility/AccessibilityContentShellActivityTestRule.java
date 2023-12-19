@@ -50,7 +50,8 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     protected static final String NODE_ERROR =
             "Generated AccessibilityNodeInfo tree did not match expectations.";
     protected static final String EXPECTATIONS_NULL =
-            "Test expectations were null, perhaps the file is missing?";
+            "Test expectations were null, perhaps the file is missing? Create an empty file for "
+                    + "both the -external and -assist-data tests.";
     protected static final String RESULTS_NULL =
             "Test results were null, did you add the tracker to WebContentsAccessibilityImpl?";
     protected static final String MISSING_FILE_ERROR =

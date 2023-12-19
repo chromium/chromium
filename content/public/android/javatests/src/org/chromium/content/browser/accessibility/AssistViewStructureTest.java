@@ -35,7 +35,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Tests for the implementation of onProvideVirtualStructure in WebContentsAccessibility. */
 @RunWith(BaseJUnit4ClassRunner.class)
-// TODO(mschillaci): Migrate all these tests to the WebContentsAccessibilityTreeTest suite.
 public class AssistViewStructureTest {
     @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
