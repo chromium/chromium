@@ -52,22 +52,34 @@ TEST(EncounteredSurfaceTrackerTest, NeverDropsNewSource) {
   }
 }
 
-TEST(EncounteredSurfaceTrackerTest, SizeLimit) {
+TEST(EncounteredSurfaceTrackerTest, SizeLimitForSources) {
   EncounteredSurfaceTracker t;
-  for (uint64_t i = 0; i < EncounteredSurfaceTracker::kMaxTrackedSurfaces;
-       i++) {
-    EXPECT_TRUE(t.IsNewEncounter(0, metric(i))) << ": 0," << i;
+  for (uint64_t i = 0; i < EncounteredSurfaceTracker::kMaxTrackedEntries; i++) {
+    EXPECT_TRUE(t.IsNewEncounter(i, metric(0)));
   }
-  // Now the tracker should be full, but we will still allow new sources.
-  for (uint64_t i = 0; i < EncounteredSurfaceTracker::kMaxTrackedSurfaces;
-       i++) {
-    EXPECT_FALSE(t.IsNewEncounter(0, metric(i))) << ": 0," << i;
-    EXPECT_TRUE(t.IsNewEncounter(1, metric(i))) << ": 1," << i;
+  for (uint64_t i = 0; i < EncounteredSurfaceTracker::kMaxTrackedEntries; i++) {
+    EXPECT_FALSE(t.IsNewEncounter(i, metric(0)));
   }
 
-  // Add an extra one. This should bump one of the surfaces out.
-  EXPECT_TRUE(
-      t.IsNewEncounter(0, EncounteredSurfaceTracker::kMaxTrackedSurfaces + 1));
+  // Adding a new one should bump the first one out.
+  EXPECT_TRUE(t.IsNewEncounter(EncounteredSurfaceTracker::kMaxTrackedEntries,
+                               metric(0)));
+  EXPECT_TRUE(t.IsNewEncounter(0, metric(0)));
+}
+
+TEST(EncounteredSurfaceTrackerTest, SizeLimitForSurfaces) {
+  EncounteredSurfaceTracker t;
+  for (uint64_t i = 0; i < EncounteredSurfaceTracker::kMaxTrackedEntries; i++) {
+    EXPECT_TRUE(t.IsNewEncounter(0, metric(i)));
+  }
+  for (uint64_t i = 0; i < EncounteredSurfaceTracker::kMaxTrackedEntries; i++) {
+    EXPECT_FALSE(t.IsNewEncounter(0, metric(i)));
+  }
+
+  // Adding a new one should bump the first one out.
+  EXPECT_TRUE(t.IsNewEncounter(
+      0, metric(EncounteredSurfaceTracker::kMaxTrackedEntries)));
+  EXPECT_TRUE(t.IsNewEncounter(0, metric(0)));
 }
 
 TEST(EncounteredSurfaceTrackerTest, Reset) {

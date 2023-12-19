@@ -4,25 +4,22 @@
 
 #include "chrome/browser/privacy_budget/encountered_surface_tracker.h"
 
-#include <set>
-#include <vector>
+#include <stdint.h>
+#include <utility>
 
-#include "base/rand_util.h"
-#include "base/time/time.h"
-#include "chrome/browser/privacy_budget/identifiability_study_state.h"
+#include "base/containers/lru_cache.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
-const unsigned EncounteredSurfaceTracker::kMaxTrackedSurfaces;
-const unsigned EncounteredSurfaceTracker::kMaxTrackedSources;
+const unsigned EncounteredSurfaceTracker::kMaxTrackedEntries;
 
-EncounteredSurfaceTracker::EncounteredSurfaceTracker() {
-  Reset();
-}
+EncounteredSurfaceTracker::EncounteredSurfaceTracker()
+    : surfaces_(base::LRUCacheSet<std::pair<uint64_t, uint64_t>>(
+          kMaxTrackedEntries)) {}
 
 EncounteredSurfaceTracker::~EncounteredSurfaceTracker() = default;
 
 void EncounteredSurfaceTracker::Reset() {
-  surfaces_.clear();
+  surfaces_.Clear();
 }
 
 bool EncounteredSurfaceTracker::IsNewEncounter(uint64_t source_id,
@@ -31,24 +28,9 @@ bool EncounteredSurfaceTracker::IsNewEncounter(uint64_t source_id,
       blink::IdentifiableSurface::Type::kReservedInternal)
     return false;
 
-  auto it = surfaces_.find(surface);
-  if (it == surfaces_.end()) {
-    // We need to add an entry for this surface, possibly bumping an entry out.
-    surfaces_.insert(std::make_pair(surface, std::set<uint64_t>{source_id}));
-    if (surfaces_.size() > kMaxTrackedSurfaces) {
-      // Remove a random one.
-      surfaces_.erase(base::RandInt(0, kMaxTrackedSurfaces));
-    }
-    return true;
-  }
-
-  if (it->second.contains(source_id))
+  if (surfaces_.Get(std::make_pair(source_id, surface)) != surfaces_.end()) {
     return false;
-
-  it->second.insert(source_id);
-  if (it->second.size() > kMaxTrackedSources) {
-    // Remove a random one.
-    it->second.erase(base::RandInt(0, kMaxTrackedSources));
   }
+  surfaces_.Put(std::make_pair(source_id, surface));
   return true;
 }

@@ -7,18 +7,13 @@
 
 #include <stdint.h>
 
-#include <map>
-#include <set>
+#include "base/containers/lru_cache.h"
 
 class EncounteredSurfaceTracker {
  public:
-  // Maximum number of surfaces that this class can track. Prevents unbounded
-  // memory growth.
-  static constexpr unsigned kMaxTrackedSurfaces = 1000;
-
-  // Maximum number of sources that every surface can track. Prevents unbounded
-  // memory growth.
-  static constexpr unsigned kMaxTrackedSources = 1000;
+  // Maximum number of (source, surface) pairs that this class can track.
+  // Prevents unbounded memory growth.
+  static constexpr unsigned kMaxTrackedEntries = 10000;
 
   EncounteredSurfaceTracker();
   ~EncounteredSurfaceTracker();
@@ -30,7 +25,7 @@ class EncounteredSurfaceTracker {
  private:
   // We use std::map and std::set since these containers are small and we need
   // to insert and erase frequently.
-  std::map<uint64_t, std::set<uint64_t>> surfaces_;
+  base::LRUCacheSet<std::pair<uint64_t, uint64_t>> surfaces_;
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_BUDGET_ENCOUNTERED_SURFACE_TRACKER_H_
