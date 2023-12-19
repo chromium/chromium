@@ -827,10 +827,17 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
     // EmbeddedContentView entered a modal event loop.  The capturing should be
     // done only when the result indicates it has been handled. See
     // crbug.com/269917
+    //
+    // TODO(mustaq): The only user of `MouseEventManager::captures_dragging_` is
+    // the following `if` condition.  After shipping the feature
+    // MouseDragFromIframeOnCancelledMouseDown, remove `captures_dragging_` plus
+    // the old comment block above.
     mouse_event_manager_->SetCapturesDragging(
         subframe->GetEventHandler().mouse_event_manager_->CapturesDragging());
     if (mouse_event_manager_->MousePressed() &&
-        mouse_event_manager_->CapturesDragging()) {
+        (RuntimeEnabledFeatures::
+             MouseDragFromIframeOnCancelledMouseDownEnabled() ||
+         mouse_event_manager_->CapturesDragging())) {
       capturing_mouse_events_element_ = mev.InnerElement();
       capturing_subframe_element_ = mev.InnerElement();
     }
@@ -1113,8 +1120,8 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
 
   WebInputEventResult event_result = WebInputEventResult::kNotHandled;
   bool is_remote_frame = false;
-  LocalFrame* current_subframe = event_handling_util::GetTargetSubframe(
-      mev, capturing_mouse_events_element_, &is_remote_frame);
+  LocalFrame* current_subframe =
+      event_handling_util::GetTargetSubframe(mev, &is_remote_frame);
 
   // We want mouseouts to happen first, from the inside out.  First send a
   // move event to the last subframe so that it will fire mouseouts.
@@ -1257,8 +1264,7 @@ WebInputEventResult EventHandler::HandleMouseReleaseEvent(
   HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kRelease;
   HitTestRequest request(hit_type);
   MouseEventWithHitTestResults mev = GetMouseEventTarget(request, mouse_event);
-  LocalFrame* subframe = event_handling_util::GetTargetSubframe(
-      mev, capturing_mouse_events_element_.Get());
+  LocalFrame* subframe = event_handling_util::GetTargetSubframe(mev);
   capturing_mouse_events_element_ = nullptr;
   if (subframe)
     return PassMouseReleaseEventToSubframe(mev, subframe);

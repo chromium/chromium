@@ -196,7 +196,6 @@ LocalFrame* SubframeForTargetNode(Node* node, bool* is_remote_frame) {
 
 LocalFrame* GetTargetSubframe(
     const MouseEventWithHitTestResults& hit_test_result,
-    Node* capturing_node,
     bool* is_remote_frame) {
   if (!hit_test_result.IsOverEmbeddedContentView())
     return nullptr;
