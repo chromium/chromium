@@ -1837,11 +1837,18 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     yuv_cache_.raster_context_provider = raster_context_provider;
     yuv_cache_.size = video_frame->coded_size();
 
-    uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                     gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+    // We read out the contents of the intermediate SI into the destination GL
+    // texture via the GLES2 interface.
+    uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+
+    // We copy the contents of the source VideoFrame *into* the
+    // intermediate SI over the raster interface - the usage bits depend on
+    // whether OOP-Raster is enabled.
     if (raster_context_provider->ContextCapabilities().gpu_rasterization) {
       usage |= gpu::SHARED_IMAGE_USAGE_RASTER |
                gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+    } else {
+      usage |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
     }
 
     yuv_cache_.shared_image = sii->CreateSharedImage(
