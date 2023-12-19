@@ -485,7 +485,8 @@ function testRecordWithTransparency(mimeType) {
   const NUMBER_OF_EVENTS_TO_RECORD = 5;
 
   var canvas = document.createElement('canvas');
-  canvas.width = canvas.height = 64;
+  canvas.width = 640;
+  canvas.height = 480;
   var stream = canvas.captureStream();
   assertTrue(stream, 'Error creating MediaStream');
   assertEquals(1, stream.getVideoTracks().length);
