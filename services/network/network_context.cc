@@ -1455,15 +1455,14 @@ void NetworkContext::SetCTPolicy(mojom::CTPolicyPtr ct_policy) {
 
 int NetworkContext::CheckCTRequirementsForSignedExchange(
     net::CertVerifyResult& cert_verify_result,
-    const net::X509Certificate& certificate,
     const net::HostPortPair& host_port_pair) {
   net::X509Certificate* verified_cert = cert_verify_result.verified_cert.get();
 
   net::TransportSecurityState::CTRequirementsStatus ct_requirement_status =
       url_request_context_->transport_security_state()->CheckCTRequirements(
           host_port_pair, cert_verify_result.is_issued_by_known_root,
-          cert_verify_result.public_key_hashes, verified_cert, &certificate,
-          cert_verify_result.scts, cert_verify_result.policy_compliance);
+          cert_verify_result.public_key_hashes, verified_cert,
+          cert_verify_result.policy_compliance);
 
   if (url_request_context_->sct_auditing_delegate()) {
     url_request_context_->sct_auditing_delegate()->MaybeEnqueueReport(
@@ -2897,7 +2896,7 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
   if (result == net::OK) {
 #if BUILDFLAG(IS_CT_SUPPORTED)
     int ct_result = CheckCTRequirementsForSignedExchange(
-        *pending_cert_verify->result, *pending_cert_verify->certificate,
+        *pending_cert_verify->result,
         net::HostPortPair::FromURL(pending_cert_verify->url));
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
     net::TransportSecurityState::PKPStatus pin_validity =

@@ -1303,8 +1303,7 @@ int SSLClientSocketImpl::CheckCTRequirements() {
       context_->transport_security_state()->CheckCTRequirements(
           host_and_port_, server_cert_verify_result_.is_issued_by_known_root,
           server_cert_verify_result_.public_key_hashes,
-          server_cert_verify_result_.verified_cert.get(), server_cert_.get(),
-          server_cert_verify_result_.scts,
+          server_cert_verify_result_.verified_cert.get(),
           server_cert_verify_result_.policy_compliance);
 
   if (context_->sct_auditing_delegate()) {

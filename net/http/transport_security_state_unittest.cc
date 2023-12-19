@@ -1126,7 +1126,6 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
     const TransportSecurityState::CTRequirementsStatus original_status =
         state.CheckCTRequirements(
             HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            cert.get(), SignedCertificateTimestampAndStatusList(),
             ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS);
 
     MockRequireCTDelegate always_require_delegate;
@@ -1137,25 +1136,21 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
         TransportSecurityState::CT_REQUIREMENTS_NOT_MET,
         state.CheckCTRequirements(
             HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            cert.get(), SignedCertificateTimestampAndStatusList(),
             ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
     EXPECT_EQ(
         TransportSecurityState::CT_REQUIREMENTS_NOT_MET,
         state.CheckCTRequirements(
             HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            cert.get(), SignedCertificateTimestampAndStatusList(),
             ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
     EXPECT_EQ(
         TransportSecurityState::CT_REQUIREMENTS_MET,
         state.CheckCTRequirements(
             HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            cert.get(), SignedCertificateTimestampAndStatusList(),
             ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
     EXPECT_EQ(
         TransportSecurityState::CT_REQUIREMENTS_MET,
         state.CheckCTRequirements(
             HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            cert.get(), SignedCertificateTimestampAndStatusList(),
             ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY));
 
     state.SetRequireCTDelegate(nullptr);
@@ -1163,7 +1158,6 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
         original_status,
         state.CheckCTRequirements(
             HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            cert.get(), SignedCertificateTimestampAndStatusList(),
             ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
   }
 
@@ -1174,7 +1168,6 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
     const TransportSecurityState::CTRequirementsStatus original_status =
         state.CheckCTRequirements(
             HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            cert.get(), SignedCertificateTimestampAndStatusList(),
             ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS);
 
     MockRequireCTDelegate never_require_delegate;
@@ -1185,13 +1178,11 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
         TransportSecurityState::CT_NOT_REQUIRED,
         state.CheckCTRequirements(
             HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            cert.get(), SignedCertificateTimestampAndStatusList(),
             ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
     EXPECT_EQ(
         TransportSecurityState::CT_NOT_REQUIRED,
         state.CheckCTRequirements(
             HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            cert.get(), SignedCertificateTimestampAndStatusList(),
             ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
 
     state.SetRequireCTDelegate(nullptr);
@@ -1199,7 +1190,6 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
         original_status,
         state.CheckCTRequirements(
             HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            cert.get(), SignedCertificateTimestampAndStatusList(),
             ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
   }
 }
@@ -1260,29 +1250,24 @@ TEST_P(CTEmergencyDisableTest, CTEmergencyDisable) {
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
             state_.CheckCTRequirements(
                 HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-                cert.get(), SignedCertificateTimestampAndStatusList(),
                 ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
             state_.CheckCTRequirements(
                 HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-                cert.get(), SignedCertificateTimestampAndStatusList(),
                 ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
             state_.CheckCTRequirements(
                 HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-                cert.get(), SignedCertificateTimestampAndStatusList(),
                 ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
             state_.CheckCTRequirements(
                 HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-                cert.get(), SignedCertificateTimestampAndStatusList(),
                 ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY));
 
   state_.SetRequireCTDelegate(nullptr);
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
             state_.CheckCTRequirements(
                 HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-                cert.get(), SignedCertificateTimestampAndStatusList(),
                 ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
 }
 

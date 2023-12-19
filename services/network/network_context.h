@@ -745,7 +745,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // in //net.
   int CheckCTRequirementsForSignedExchange(
       net::CertVerifyResult& cert_verify_result,
-      const net::X509Certificate& certificate,
       const net::HostPortPair& host_port_pair);
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
