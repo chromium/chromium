@@ -15,7 +15,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -40,14 +39,6 @@ class EyeDropperView : public content::EyeDropper,
   EyeDropperView(const EyeDropperView&) = delete;
   EyeDropperView& operator=(const EyeDropperView&) = delete;
   ~EyeDropperView() override;
-
-  // Called regularly to notify what the current cursor position is. Cursor
-  // position may not have changed between calls.
-  void OnCursorPositionUpdate(gfx::Point cursor_position);
-
-  ui::EventHandler* GetEventHandlerForTesting() {
-    return pre_dispatch_handler_.get();
-  }
 
  protected:
   // views::WidgetDelegateView:
@@ -93,7 +84,7 @@ class EyeDropperView : public content::EyeDropper,
   // Moves the view to the specified position.
   void UpdatePosition(gfx::Point position);
 
-  void CaptureInput();
+  void CaptureInputIfNeeded();
 
   void HideCursor();
   void ShowCursor();
@@ -113,8 +104,6 @@ class EyeDropperView : public content::EyeDropper,
   std::unique_ptr<ScreenCapturer> screen_capturer_;
   absl::optional<SkColor> selected_color_;
   base::TimeTicks ignore_selection_time_;
-  gfx::Point last_cursor_position_ =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // When the widget moves across displays we update the screenshot.
