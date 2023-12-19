@@ -133,10 +133,15 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
       return object->SetWrapper(isolate, wrapper_type_info, wrapper);
 
     auto result = wrapper_map_.insert(
-        object, TraceWrapperV8Reference<v8::Object>(isolate, wrapper));
-    if (LIKELY(result.is_new_entry)) {
-      wrapper_type_info->ConfigureWrapper(&result.stored_value->value);
-    } else {
+        object, wrapper_type_info->SupportsDroppingWrapper()
+                    ? TraceWrapperV8Reference<v8::Object>(
+                          isolate, wrapper,
+                          TraceWrapperV8Reference<v8::Object>::IsDroppable{})
+                    : TraceWrapperV8Reference<v8::Object>(isolate, wrapper));
+    // TODO(mlippautz): Check whether there's still recursive cases of
+    // Wrap()/AssociateWithWrapper() that can run into the case of an existing
+    // entry.
+    if (UNLIKELY(!result.is_new_entry)) {
       DCHECK(!result.stored_value->value.IsEmpty());
       wrapper = result.stored_value->value.Get(isolate);
     }

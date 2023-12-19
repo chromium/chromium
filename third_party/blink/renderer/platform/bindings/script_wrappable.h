@@ -181,9 +181,13 @@ class PLATFORM_EXPORT ScriptWrappable
       wrapper = MainWorldWrapper(isolate);
       return false;
     }
-    main_world_wrapper_.Reset(isolate, wrapper);
+    if (wrapper_type_info->SupportsDroppingWrapper()) {
+      main_world_wrapper_.Reset(
+          isolate, wrapper, TraceWrapperV8Reference<v8::Object>::IsDroppable{});
+    } else {
+      main_world_wrapper_.Reset(isolate, wrapper);
+    }
     DCHECK(ContainsWrapper());
-    wrapper_type_info->ConfigureWrapper(&main_world_wrapper_);
     return true;
   }
 
