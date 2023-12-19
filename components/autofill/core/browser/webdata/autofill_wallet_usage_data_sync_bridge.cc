@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -68,7 +69,7 @@ std::unique_ptr<syncer::MetadataChangeList>
 AutofillWalletUsageDataSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetAutofillTable(), syncer::AUTOFILL_WALLET_USAGE,
+      GetSyncMetadataStore(), syncer::AUTOFILL_WALLET_USAGE,
       base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
@@ -201,16 +202,23 @@ AutofillTable* AutofillWalletUsageDataSyncBridge::GetAutofillTable() {
   return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
 
+AutofillSyncMetadataTable*
+AutofillWalletUsageDataSyncBridge::GetSyncMetadataStore() {
+  return AutofillSyncMetadataTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
+}
+
 void AutofillWalletUsageDataSyncBridge::LoadMetadata() {
-  if (!web_data_backend_->GetDatabase() || !GetAutofillTable()) {
+  if (!web_data_backend_->GetDatabase() || !GetAutofillTable() ||
+      !GetSyncMetadataStore()) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load Autofill table."});
     return;
   }
 
   auto batch = std::make_unique<syncer::MetadataBatch>();
-  if (!GetAutofillTable()->GetAllSyncMetadata(syncer::AUTOFILL_WALLET_USAGE,
-                                              batch.get())) {
+  if (!GetSyncMetadataStore()->GetAllSyncMetadata(syncer::AUTOFILL_WALLET_USAGE,
+                                                  batch.get())) {
     change_processor()->ReportError(
         {FROM_HERE,
          "Failed reading Autofill Wallet usage metadata from WebDatabase."});

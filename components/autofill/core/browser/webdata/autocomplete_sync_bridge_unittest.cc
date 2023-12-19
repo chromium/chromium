@@ -21,7 +21,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autocomplete_table.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
@@ -304,7 +304,9 @@ class AutocompleteSyncBridgeTest : public testing::Test {
   }
 
   AutocompleteTable* table() { return &table_; }
-  AutofillTable* sync_metadata_table() { return &sync_metadata_table_; }
+  AutofillSyncMetadataTable* sync_metadata_table() {
+    return &sync_metadata_table_;
+  }
 
   MockAutofillWebDataBackend* backend() { return &backend_; }
 
@@ -313,7 +315,7 @@ class AutocompleteSyncBridgeTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
   AutocompleteTable table_;
-  AutofillTable sync_metadata_table_;
+  AutofillSyncMetadataTable sync_metadata_table_;
   WebDatabase db_;
   std::unique_ptr<AutocompleteSyncBridge> bridge_;
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;

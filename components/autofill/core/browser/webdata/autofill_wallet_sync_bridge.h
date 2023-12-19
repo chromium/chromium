@@ -20,6 +20,7 @@
 
 namespace autofill {
 
+class AutofillSyncMetadataTable;
 class AutofillTable;
 class AutofillWebDataBackend;
 class AutofillWebDataService;
@@ -112,6 +113,8 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
 
   // Returns the table associated with the |web_data_backend_|.
   AutofillTable* GetAutofillTable();
+
+  AutofillSyncMetadataTable* GetSyncMetadataStore();
 
   // Synchronously load sync metadata from the autofill table and pass it to the
   // processor so that it can start tracking changes.

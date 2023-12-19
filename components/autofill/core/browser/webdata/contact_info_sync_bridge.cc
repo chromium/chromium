@@ -278,8 +278,9 @@ AddressAutofillTable* ContactInfoSyncBridge::GetAutofillTable() {
       web_data_backend_->GetDatabase());
 }
 
-AutofillTable* ContactInfoSyncBridge::GetSyncMetadataStore() {
-  return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
+AutofillSyncMetadataTable* ContactInfoSyncBridge::GetSyncMetadataStore() {
+  return AutofillSyncMetadataTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
 }
 
 std::unique_ptr<syncer::MutableDataBatch>

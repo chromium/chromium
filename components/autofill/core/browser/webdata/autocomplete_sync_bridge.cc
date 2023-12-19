@@ -19,8 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
-#include "components/autofill/core/browser/webdata/autocomplete_table.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_change_processor.h"
@@ -528,8 +527,9 @@ AutocompleteTable* AutocompleteSyncBridge::GetAutocompleteTable() {
   return AutocompleteTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
 
-AutofillTable* AutocompleteSyncBridge::GetSyncMetadataStore() {
-  return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
+AutofillSyncMetadataTable* AutocompleteSyncBridge::GetSyncMetadataStore() {
+  return AutofillSyncMetadataTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
 }
 
 }  // namespace autofill

@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -81,7 +82,7 @@ std::unique_ptr<syncer::MetadataChangeList>
 AutofillWalletOfferSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetAutofillTable(), syncer::AUTOFILL_WALLET_OFFER,
+      GetSyncMetadataStore(), syncer::AUTOFILL_WALLET_OFFER,
       base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
@@ -207,16 +208,23 @@ AutofillTable* AutofillWalletOfferSyncBridge::GetAutofillTable() {
   return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
 
+AutofillSyncMetadataTable*
+AutofillWalletOfferSyncBridge::GetSyncMetadataStore() {
+  return AutofillSyncMetadataTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
+}
+
 void AutofillWalletOfferSyncBridge::LoadAutofillOfferMetadata() {
-  if (!web_data_backend_->GetDatabase() || !GetAutofillTable()) {
+  if (!web_data_backend_->GetDatabase() || !GetAutofillTable() ||
+      !GetSyncMetadataStore()) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load Autofill table."});
     return;
   }
 
   auto batch = std::make_unique<syncer::MetadataBatch>();
-  if (!GetAutofillTable()->GetAllSyncMetadata(syncer::AUTOFILL_WALLET_OFFER,
-                                              batch.get())) {
+  if (!GetSyncMetadataStore()->GetAllSyncMetadata(syncer::AUTOFILL_WALLET_OFFER,
+                                                  batch.get())) {
     change_processor()->ReportError(
         {FROM_HERE,
          "Failed reading autofill offer metadata from WebDatabase."});

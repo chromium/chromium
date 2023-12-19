@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/sync/model/metadata_batch.h"
@@ -173,7 +174,7 @@ void GetModelTypeStateOnDBSequence(syncer::ModelType model_type,
                                    sync_pb::ModelTypeState* model_type_state) {
   DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
   syncer::MetadataBatch metadata_batch;
-  AutofillTable::FromWebDatabase(wds->GetDatabase())
+  autofill::AutofillSyncMetadataTable::FromWebDatabase(wds->GetDatabase())
       ->GetAllSyncMetadata(model_type, &metadata_batch);
   *model_type_state = metadata_batch.GetModelTypeState();
 }

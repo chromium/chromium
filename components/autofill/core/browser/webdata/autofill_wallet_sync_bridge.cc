@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -170,7 +171,7 @@ std::unique_ptr<syncer::MetadataChangeList>
 AutofillWalletSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetAutofillTable(), syncer::AUTOFILL_WALLET_DATA,
+      GetSyncMetadataStore(), syncer::AUTOFILL_WALLET_DATA,
       base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
@@ -464,17 +465,22 @@ AutofillTable* AutofillWalletSyncBridge::GetAutofillTable() {
   return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
 
+AutofillSyncMetadataTable* AutofillWalletSyncBridge::GetSyncMetadataStore() {
+  return AutofillSyncMetadataTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
+}
+
 void AutofillWalletSyncBridge::LoadMetadata() {
   if (!web_data_backend_ || !web_data_backend_->GetDatabase() ||
-      !GetAutofillTable()) {
+      !GetAutofillTable() || !GetSyncMetadataStore()) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load AutofillWebDatabase."});
     return;
   }
 
   auto batch = std::make_unique<syncer::MetadataBatch>();
-  if (!GetAutofillTable()->GetAllSyncMetadata(syncer::AUTOFILL_WALLET_DATA,
-                                              batch.get())) {
+  if (!GetSyncMetadataStore()->GetAllSyncMetadata(syncer::AUTOFILL_WALLET_DATA,
+                                                  batch.get())) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed reading autofill metadata from WebDatabase."});
     return;

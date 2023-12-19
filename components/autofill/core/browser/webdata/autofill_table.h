@@ -17,17 +17,12 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/payment_instrument.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model/sync_metadata_store.h"
 #include "components/webdata/common/web_database_table.h"
 
 class WebDatabase;
 
 namespace base {
 class Time;
-}
-
-namespace syncer {
-class MetadataBatch;
 }
 
 namespace autofill {
@@ -240,24 +235,6 @@ struct PaymentInstrumentFields {
 //   use_date           The date this IBAN was last used to fill a form,
 //                      in time_t.
 //
-// autofill_sync_metadata
-//                      Sync-specific metadata for autofill records.
-//
-//   model_type         An int value corresponding to syncer::ModelType enum.
-//                      Added in version 78.
-//   storage_key        A string that uniquely identifies the metadata record
-//                      as well as the corresponding autofill record.
-//   value              The serialized EntityMetadata record.
-//
-// autofill_model_type_state
-//                      Contains sync ModelTypeStates for autofill model types.
-//
-//   model_type         An int value corresponding to syncer::ModelType enum.
-//                      Added in version 78. Previously, the table was used only
-//                      for one model type, there was an id column with value 1
-//                      for the single entry.
-//   value              The serialized ModelTypeState record.
-//
 // payments_customer_data
 //                      Contains Google Payments customer data.
 //
@@ -435,8 +412,7 @@ struct PaymentInstrumentFields {
 //   merchant_domain    Origin for merchant websites on which this benefit
 //                      would apply.
 //
-class AutofillTable : public WebDatabaseTable,
-                      public syncer::SyncMetadataStore {
+class AutofillTable : public WebDatabaseTable {
  public:
   AutofillTable();
 
@@ -649,25 +625,6 @@ class AutofillTable : public WebDatabaseTable,
   // Clear all local payment methods (credit cards and IBANs).
   void ClearLocalPaymentMethodsData();
 
-  // Read all the stored metadata for |model_type| and fill |metadata_batch|
-  // with it.
-  bool GetAllSyncMetadata(syncer::ModelType model_type,
-                          syncer::MetadataBatch* metadata_batch);
-
-  // Deletes all metadata for |model_type|.
-  bool DeleteAllSyncMetadata(syncer::ModelType model_type);
-
-  // syncer::SyncMetadataStore implementation.
-  bool UpdateEntityMetadata(syncer::ModelType model_type,
-                            const std::string& storage_key,
-                            const sync_pb::EntityMetadata& metadata) override;
-  bool ClearEntityMetadata(syncer::ModelType model_type,
-                           const std::string& storage_key) override;
-  bool UpdateModelTypeState(
-      syncer::ModelType model_type,
-      const sync_pb::ModelTypeState& model_type_state) override;
-  bool ClearModelTypeState(syncer::ModelType model_type) override;
-
   // Table migration functions. NB: These do not and should not rely on other
   // functions in this class. The implementation of a function such as
   // GetCreditCard may change over time, but MigrateToVersionXX should never
@@ -696,15 +653,6 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion123AddProductTermsUrlColumnAndAddCardBenefitsTables();
 
  private:
-  bool SupportsMetadataForModelType(syncer::ModelType model_type) const;
-  int GetKeyValueForModelType(syncer::ModelType model_type) const;
-
-  bool GetAllSyncEntityMetadata(syncer::ModelType model_type,
-                                syncer::MetadataBatch* metadata_batch);
-
-  bool GetModelTypeState(syncer::ModelType model_type,
-                         sync_pb::ModelTypeState* state);
-
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.
   // Must already be in a transaction.
   void AddMaskedCreditCards(const std::vector<CreditCard>& credit_cards);
@@ -751,8 +699,6 @@ class AutofillTable : public WebDatabaseTable,
   bool InitMaskedIbansMetadataTable();
   bool InitUnmaskedCreditCardsTable();
   bool InitServerCardMetadataTable();
-  bool InitAutofillSyncMetadataTable();
-  bool InitModelTypeStateTable();
   bool InitPaymentsCustomerDataTable();
   bool InitServerCreditCardCloudTokenDataTable();
   bool InitStoredCvcTable();

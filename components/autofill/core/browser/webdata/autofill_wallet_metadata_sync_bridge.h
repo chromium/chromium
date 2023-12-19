@@ -27,6 +27,7 @@ struct EntityData;
 
 namespace autofill {
 
+class AutofillSyncMetadataTable;
 class AutofillTable;
 class AutofillWebDataService;
 
@@ -85,6 +86,8 @@ class AutofillWalletMetadataSyncBridge
  private:
   // Returns the table associated with the |web_data_backend_|.
   AutofillTable* GetAutofillTable();
+
+  AutofillSyncMetadataTable* GetSyncMetadataStore();
 
   // Synchronously load the sync data into |cache_| and sync metadata from the
   // autofill table and pass the latter to the processor so that it can start

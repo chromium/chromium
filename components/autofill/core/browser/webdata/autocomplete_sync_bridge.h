@@ -24,7 +24,7 @@
 
 namespace autofill {
 
-class AutofillTable;
+class AutofillSyncMetadataTable;
 class AutofillWebDataService;
 
 class AutocompleteSyncBridge
@@ -71,9 +71,7 @@ class AutocompleteSyncBridge
   // Returns the table associated with the |web_data_backend_|.
   AutocompleteTable* GetAutocompleteTable();
 
-  // AutofillTable acts as the metadata storage for all components/autofill-
-  // related sync code.
-  AutofillTable* GetSyncMetadataStore();
+  AutofillSyncMetadataTable* GetSyncMetadataStore();
 
   // Respond to local autocomplete entries changing by notifying sync of the
   // changes.

@@ -41,9 +41,6 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
-#include "components/sync/model/metadata_batch.h"
-#include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,10 +48,6 @@
 #include "url/origin.h"
 
 using base::Time;
-using sync_pb::EntityMetadata;
-using sync_pb::ModelTypeState;
-using syncer::EntityMetadataMap;
-using syncer::MetadataBatch;
 using testing::ElementsAre;
 using testing::UnorderedElementsAre;
 
@@ -1543,129 +1536,6 @@ TEST_F(AutofillTableTest, GetCreditCardCloudData_NoData) {
   ASSERT_TRUE(table_->GetCreditCardCloudTokenData(output));
   EXPECT_TRUE(output.empty());
 }
-
-class AutofillTableTestPerModelType
-    : public AutofillTableTest,
-      public testing::WithParamInterface<syncer::ModelType> {
- public:
-  AutofillTableTestPerModelType() = default;
-  AutofillTableTestPerModelType(const AutofillTableTestPerModelType&) = delete;
-  AutofillTableTestPerModelType& operator=(
-      const AutofillTableTestPerModelType&) = delete;
-  ~AutofillTableTestPerModelType() override = default;
-};
-
-TEST_P(AutofillTableTestPerModelType, AutofillNoMetadata) {
-  syncer::ModelType model_type = GetParam();
-  MetadataBatch metadata_batch;
-  EXPECT_TRUE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
-  EXPECT_EQ(0u, metadata_batch.TakeAllMetadata().size());
-  EXPECT_EQ(ModelTypeState().SerializeAsString(),
-            metadata_batch.GetModelTypeState().SerializeAsString());
-}
-
-TEST_P(AutofillTableTestPerModelType, AutofillGetAllSyncMetadata) {
-  syncer::ModelType model_type = GetParam();
-  EntityMetadata metadata;
-  std::string storage_key = "storage_key";
-  std::string storage_key2 = "storage_key2";
-  metadata.set_sequence_number(1);
-
-  EXPECT_TRUE(table_->UpdateEntityMetadata(model_type, storage_key, metadata));
-
-  ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-
-  EXPECT_TRUE(table_->UpdateModelTypeState(model_type, model_type_state));
-
-  metadata.set_sequence_number(2);
-  EXPECT_TRUE(table_->UpdateEntityMetadata(model_type, storage_key2, metadata));
-
-  MetadataBatch metadata_batch;
-  EXPECT_TRUE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
-
-  EXPECT_EQ(metadata_batch.GetModelTypeState().initial_sync_state(),
-            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-
-  EntityMetadataMap metadata_records = metadata_batch.TakeAllMetadata();
-
-  EXPECT_EQ(metadata_records.size(), 2u);
-  EXPECT_EQ(metadata_records[storage_key]->sequence_number(), 1);
-  EXPECT_EQ(metadata_records[storage_key2]->sequence_number(), 2);
-
-  // Now check that a model type state update replaces the old value
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
-  EXPECT_TRUE(table_->UpdateModelTypeState(model_type, model_type_state));
-
-  EXPECT_TRUE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
-  EXPECT_EQ(
-      metadata_batch.GetModelTypeState().initial_sync_state(),
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
-}
-
-TEST_P(AutofillTableTestPerModelType, AutofillWriteThenDeleteSyncMetadata) {
-  syncer::ModelType model_type = GetParam();
-  EntityMetadata metadata;
-  MetadataBatch metadata_batch;
-  std::string storage_key = "storage_key";
-  ModelTypeState model_type_state;
-
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-
-  metadata.set_client_tag_hash("client_hash");
-
-  // Write the data into the store.
-  EXPECT_TRUE(table_->UpdateEntityMetadata(model_type, storage_key, metadata));
-  EXPECT_TRUE(table_->UpdateModelTypeState(model_type, model_type_state));
-  // Delete the data we just wrote.
-  EXPECT_TRUE(table_->ClearEntityMetadata(model_type, storage_key));
-  // It shouldn't be there any more.
-  EXPECT_TRUE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
-
-  EntityMetadataMap metadata_records = metadata_batch.TakeAllMetadata();
-  EXPECT_EQ(metadata_records.size(), 0u);
-
-  // Now delete the model type state.
-  EXPECT_TRUE(table_->ClearModelTypeState(model_type));
-  EXPECT_TRUE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
-  EXPECT_EQ(ModelTypeState().SerializeAsString(),
-            metadata_batch.GetModelTypeState().SerializeAsString());
-}
-
-TEST_P(AutofillTableTestPerModelType, AutofillCorruptSyncMetadata) {
-  syncer::ModelType model_type = GetParam();
-  MetadataBatch metadata_batch;
-  sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(
-      "INSERT OR REPLACE INTO autofill_sync_metadata "
-      "(model_type, storage_key, value) VALUES(?, ?, ?)"));
-  s.BindInt(0, syncer::ModelTypeToStableIdentifier(model_type));
-  s.BindString(1, "storage_key");
-  s.BindString(2, "unparseable");
-  EXPECT_TRUE(s.Run());
-
-  EXPECT_FALSE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
-}
-
-TEST_P(AutofillTableTestPerModelType, AutofillCorruptModelTypeState) {
-  syncer::ModelType model_type = GetParam();
-  MetadataBatch metadata_batch;
-  sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(
-      "INSERT OR REPLACE INTO autofill_model_type_state "
-      "(model_type, value) VALUES(?, ?)"));
-  s.BindInt(0, syncer::ModelTypeToStableIdentifier(model_type));
-  s.BindString(1, "unparseable");
-  EXPECT_TRUE(s.Run());
-
-  EXPECT_FALSE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
-}
-
-INSTANTIATE_TEST_SUITE_P(AutofillTableTest,
-                         AutofillTableTestPerModelType,
-                         testing::Values(syncer::AUTOFILL,
-                                         syncer::AUTOFILL_PROFILE));
 
 TEST_F(AutofillTableTest, SetAndGetCreditCardOfferData) {
   // Set Offer ID.

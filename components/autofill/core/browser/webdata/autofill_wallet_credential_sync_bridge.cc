@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/sync/base/model_type.h"
@@ -72,7 +73,7 @@ std::unique_ptr<syncer::MetadataChangeList>
 AutofillWalletCredentialSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetAutofillTable(), syncer::AUTOFILL_WALLET_CREDENTIAL,
+      GetSyncMetadataStore(), syncer::AUTOFILL_WALLET_CREDENTIAL,
       base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
@@ -241,8 +242,14 @@ void AutofillWalletCredentialSyncBridge::ServerCvcChanged(
   ActOnLocalChange(change);
 }
 
-AutofillTable* AutofillWalletCredentialSyncBridge::GetAutofillTable() const {
+AutofillTable* AutofillWalletCredentialSyncBridge::GetAutofillTable() {
   return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
+}
+
+AutofillSyncMetadataTable*
+AutofillWalletCredentialSyncBridge::GetSyncMetadataStore() {
+  return AutofillSyncMetadataTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
 }
 
 void AutofillWalletCredentialSyncBridge::ActOnLocalChange(
@@ -276,10 +283,10 @@ void AutofillWalletCredentialSyncBridge::ActOnLocalChange(
 
 void AutofillWalletCredentialSyncBridge::LoadMetadata() {
   CHECK(web_data_backend_->GetDatabase()) << "Failed to get database.";
-  CHECK(GetAutofillTable()) << "Failed to load Autofill table.";
+  CHECK(GetSyncMetadataStore()) << "Failed to load metadata table.";
 
   auto batch = std::make_unique<syncer::MetadataBatch>();
-  if (!GetAutofillTable()->GetAllSyncMetadata(
+  if (!GetSyncMetadataStore()->GetAllSyncMetadata(
           syncer::AUTOFILL_WALLET_CREDENTIAL, batch.get())) {
     change_processor()->ReportError(
         {FROM_HERE,

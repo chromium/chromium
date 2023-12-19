@@ -27,7 +27,7 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -373,7 +373,7 @@ class AutofillProfileSyncBridgeTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
   AddressAutofillTable table_;
-  AutofillTable sync_metadata_table_;
+  AutofillSyncMetadataTable sync_metadata_table_;
   WebDatabase db_;
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;

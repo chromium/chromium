@@ -13,7 +13,6 @@
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -24,6 +23,7 @@
 
 namespace autofill {
 
+class AutofillSyncMetadataTable;
 class AutofillTable;
 class AutofillWebDataBackend;
 class AutofillWebDataService;
@@ -83,7 +83,9 @@ class AutofillWalletCredentialSyncBridge
   const raw_ptr<AutofillWebDataBackend> web_data_backend_;
 
   // Returns the table associated with the `web_data_backend_`.
-  AutofillTable* GetAutofillTable() const;
+  AutofillTable* GetAutofillTable();
+
+  AutofillSyncMetadataTable* GetSyncMetadataStore();
 
   // Syncing the changes on the local storage related to Wallet credentials aka
   // CVC to the Chrome Sync server. `change` has the data which was updated in

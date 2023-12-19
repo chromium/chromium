@@ -52,10 +52,6 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/metadata_batch.h"
-#include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -129,6 +125,8 @@ constexpr std::string_view kLocalIbansTable = "local_ibans";
 // kUseCount = "use_count"
 // kUseDate = "use_date"
 constexpr std::string_view kValueEncrypted = "value_encrypted";
+// In an older version of the table, the value used to be unencrypted.
+constexpr std::string_view kValue = "value";
 // kNickname = "nickname"
 
 constexpr std::string_view kMaskedIbansTable = "masked_ibans";
@@ -142,17 +140,6 @@ constexpr std::string_view kMaskedIbansMetadataTable = "masked_ibans_metadata";
 // kInstrumentId = "instrument_id"
 // kUseCount = "use_count"
 // kUseDate = "use_date"
-
-constexpr std::string_view kAutofillSyncMetadataTable =
-    "autofill_sync_metadata";
-constexpr std::string_view kModelType = "model_type";
-constexpr std::string_view kStorageKey = "storage_key";
-constexpr std::string_view kValue = "value";
-
-constexpr std::string_view kAutofillModelTypeStateTable =
-    "autofill_model_type_state";
-// kModelType = "model_type"
-// kValue = "value"
 
 constexpr std::string_view kPaymentsCustomerDataTable =
     "payments_customer_data";
@@ -512,8 +499,7 @@ WebDatabaseTable::TypeKey AutofillTable::GetTypeKey() const {
 bool AutofillTable::CreateTablesIfNecessary() {
   return InitCreditCardsTable() && InitLocalIbansTable() &&
          InitMaskedCreditCardsTable() && InitUnmaskedCreditCardsTable() &&
-         InitServerCardMetadataTable() && InitAutofillSyncMetadataTable() &&
-         InitModelTypeStateTable() && InitPaymentsCustomerDataTable() &&
+         InitServerCardMetadataTable() && InitPaymentsCustomerDataTable() &&
          InitServerCreditCardCloudTokenDataTable() && InitOfferDataTable() &&
          InitOfferEligibleInstrumentTable() && InitOfferMerchantDomainTable() &&
          InitVirtualCardUsageDataTable() && InitStoredCvcTable() &&
@@ -1963,88 +1949,6 @@ void AutofillTable::ClearLocalPaymentMethodsData() {
   Delete(db_, kLocalIbansTable);
 }
 
-bool AutofillTable::GetAllSyncMetadata(syncer::ModelType model_type,
-                                       syncer::MetadataBatch* metadata_batch) {
-  DCHECK(SupportsMetadataForModelType(model_type))
-      << "Model type " << model_type << " not supported for metadata";
-  DCHECK(metadata_batch);
-  if (!GetAllSyncEntityMetadata(model_type, metadata_batch)) {
-    return false;
-  }
-
-  sync_pb::ModelTypeState model_type_state;
-  if (!GetModelTypeState(model_type, &model_type_state))
-    return false;
-
-  metadata_batch->SetModelTypeState(model_type_state);
-  return true;
-}
-
-bool AutofillTable::DeleteAllSyncMetadata(syncer::ModelType model_type) {
-  return DeleteWhereColumnEq(db_, kAutofillSyncMetadataTable, kModelType,
-                             GetKeyValueForModelType(model_type));
-}
-
-bool AutofillTable::UpdateEntityMetadata(
-    syncer::ModelType model_type,
-    const std::string& storage_key,
-    const sync_pb::EntityMetadata& metadata) {
-  DCHECK(SupportsMetadataForModelType(model_type))
-      << "Model type " << model_type << " not supported for metadata";
-
-  sql::Statement s;
-  InsertBuilder(db_, s, kAutofillSyncMetadataTable,
-                {kModelType, kStorageKey, kValue},
-                /*or_replace=*/true);
-  s.BindInt(0, GetKeyValueForModelType(model_type));
-  s.BindString(1, storage_key);
-  s.BindString(2, metadata.SerializeAsString());
-
-  return s.Run();
-}
-
-bool AutofillTable::ClearEntityMetadata(syncer::ModelType model_type,
-                                        const std::string& storage_key) {
-  DCHECK(SupportsMetadataForModelType(model_type))
-      << "Model type " << model_type << " not supported for metadata";
-
-  sql::Statement s;
-  DeleteBuilder(db_, s, kAutofillSyncMetadataTable,
-                "model_type=? AND storage_key=?");
-  s.BindInt(0, GetKeyValueForModelType(model_type));
-  s.BindString(1, storage_key);
-
-  return s.Run();
-}
-
-bool AutofillTable::UpdateModelTypeState(
-    syncer::ModelType model_type,
-    const sync_pb::ModelTypeState& model_type_state) {
-  DCHECK(SupportsMetadataForModelType(model_type))
-      << "Model type " << model_type << " not supported for metadata";
-
-  // Hardcode the id to force a collision, ensuring that there remains only a
-  // single entry.
-  sql::Statement s;
-  InsertBuilder(db_, s, kAutofillModelTypeStateTable, {kModelType, kValue},
-                /*or_replace=*/true);
-  s.BindInt(0, GetKeyValueForModelType(model_type));
-  s.BindString(1, model_type_state.SerializeAsString());
-
-  return s.Run();
-}
-
-bool AutofillTable::ClearModelTypeState(syncer::ModelType model_type) {
-  DCHECK(SupportsMetadataForModelType(model_type))
-      << "Model type " << model_type << " not supported for metadata";
-
-  sql::Statement s;
-  DeleteBuilder(db_, s, kAutofillModelTypeStateTable, "model_type=?");
-  s.BindInt(0, GetKeyValueForModelType(model_type));
-
-  return s.Run();
-}
-
 bool AutofillTable::MigrateToVersion83RemoveServerCardTypeColumn() {
   sql::Transaction transaction(db_);
   return transaction.Begin() &&
@@ -2305,67 +2209,6 @@ bool AutofillTable::
          transaction.Commit();
 }
 
-bool AutofillTable::SupportsMetadataForModelType(
-    syncer::ModelType model_type) const {
-  return (model_type == syncer::AUTOFILL ||
-          model_type == syncer::AUTOFILL_PROFILE ||
-          model_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
-          model_type == syncer::AUTOFILL_WALLET_DATA ||
-          model_type == syncer::AUTOFILL_WALLET_METADATA ||
-          model_type == syncer::AUTOFILL_WALLET_OFFER ||
-          model_type == syncer::AUTOFILL_WALLET_USAGE ||
-          model_type == syncer::CONTACT_INFO);
-}
-
-int AutofillTable::GetKeyValueForModelType(syncer::ModelType model_type) const {
-  return syncer::ModelTypeToStableIdentifier(model_type);
-}
-
-bool AutofillTable::GetAllSyncEntityMetadata(
-    syncer::ModelType model_type,
-    syncer::MetadataBatch* metadata_batch) {
-  DCHECK(SupportsMetadataForModelType(model_type))
-      << "Model type " << model_type << " not supported for metadata";
-  DCHECK(metadata_batch);
-
-  sql::Statement s;
-  SelectBuilder(db_, s, kAutofillSyncMetadataTable, {kStorageKey, kValue},
-                "WHERE model_type=?");
-  s.BindInt(0, GetKeyValueForModelType(model_type));
-
-  while (s.Step()) {
-    std::string storage_key = s.ColumnString(0);
-    std::string serialized_metadata = s.ColumnString(1);
-    auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
-    if (entity_metadata->ParseFromString(serialized_metadata)) {
-      metadata_batch->AddMetadata(storage_key, std::move(entity_metadata));
-    } else {
-      DLOG(WARNING) << "Failed to deserialize AUTOFILL model type "
-                       "sync_pb::EntityMetadata.";
-      return false;
-    }
-  }
-  return true;
-}
-
-bool AutofillTable::GetModelTypeState(syncer::ModelType model_type,
-                                      sync_pb::ModelTypeState* state) {
-  DCHECK(SupportsMetadataForModelType(model_type))
-      << "Model type " << model_type << " not supported for metadata";
-
-  sql::Statement s;
-  SelectBuilder(db_, s, kAutofillModelTypeStateTable, {kValue},
-                "WHERE model_type=?");
-  s.BindInt(0, GetKeyValueForModelType(model_type));
-
-  if (!s.Step()) {
-    return true;
-  }
-
-  std::string serialized_state = s.ColumnString(0);
-  return state->ParseFromString(serialized_state);
-}
-
 void AutofillTable::AddMaskedCreditCards(
     const std::vector<CreditCard>& credit_cards) {
   DCHECK_GT(db_->transaction_nesting(), 0);
@@ -2509,20 +2352,6 @@ bool AutofillTable::InitServerCardMetadataTable() {
                                  {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                                  {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
                                  {kBillingAddressId, "VARCHAR"}});
-}
-
-bool AutofillTable::InitAutofillSyncMetadataTable() {
-  return CreateTableIfNotExists(db_, kAutofillSyncMetadataTable,
-                                {{kModelType, "INTEGER NOT NULL"},
-                                 {kStorageKey, "VARCHAR NOT NULL"},
-                                 {kValue, "BLOB"}},
-                                {kModelType, kStorageKey});
-}
-
-bool AutofillTable::InitModelTypeStateTable() {
-  return CreateTableIfNotExists(
-      db_, kAutofillModelTypeStateTable,
-      {{kModelType, "INTEGER NOT NULL PRIMARY KEY"}, {kValue, "BLOB"}});
 }
 
 bool AutofillTable::InitPaymentsCustomerDataTable() {

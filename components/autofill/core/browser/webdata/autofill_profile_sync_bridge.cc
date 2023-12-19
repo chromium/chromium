@@ -17,7 +17,7 @@
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_difference_tracker.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -304,8 +304,9 @@ AddressAutofillTable* AutofillProfileSyncBridge::GetAutofillTable() {
       web_data_backend_->GetDatabase());
 }
 
-AutofillTable* AutofillProfileSyncBridge::GetSyncMetadataStore() {
-  return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
+AutofillSyncMetadataTable* AutofillProfileSyncBridge::GetSyncMetadataStore() {
+  return AutofillSyncMetadataTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
 }
 
 }  // namespace autofill

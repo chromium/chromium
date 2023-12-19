@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/webdata/autocomplete_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_credential_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_metadata_sync_bridge.h"
@@ -121,6 +122,8 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   profile_database_->AddTable(
       std::make_unique<autofill::AddressAutofillTable>());
   profile_database_->AddTable(std::make_unique<autofill::AutocompleteTable>());
+  profile_database_->AddTable(
+      std::make_unique<autofill::AutofillSyncMetadataTable>());
   profile_database_->AddTable(std::make_unique<autofill::AutofillTable>());
   profile_database_->AddTable(std::make_unique<KeywordTable>());
   profile_database_->AddTable(std::make_unique<TokenServiceTable>());
@@ -186,6 +189,8 @@ WebDataServiceWrapper::WebDataServiceWrapper(
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   account_database_ = base::MakeRefCounted<WebDatabaseService>(
       account_storage_path, ui_task_runner, db_task_runner);
+  account_database_->AddTable(
+      std::make_unique<autofill::AutofillSyncMetadataTable>());
   account_database_->AddTable(std::make_unique<autofill::AutofillTable>());
   account_database_->LoadDatabase();
 

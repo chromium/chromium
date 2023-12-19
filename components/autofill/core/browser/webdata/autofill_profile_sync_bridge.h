@@ -28,7 +28,7 @@ namespace autofill {
 
 class AddressAutofillTable;
 class AutofillProfileSyncDifferenceTracker;
-class AutofillTable;
+class AutofillSyncMetadataTable;
 class AutofillWebDataService;
 enum class AutofillProfileSyncChangeOrigin;
 
@@ -90,9 +90,7 @@ class AutofillProfileSyncBridge
   // Returns the table associated with the |web_data_backend_|.
   AddressAutofillTable* GetAutofillTable();
 
-  // AutofillTable acts as the metadata storage for all components/autofill-
-  // related sync code.
-  AutofillTable* GetSyncMetadataStore();
+  AutofillSyncMetadataTable* GetSyncMetadataStore();
 
   // Respond to local autofill profile entry changing by notifying sync of the
   // changes.

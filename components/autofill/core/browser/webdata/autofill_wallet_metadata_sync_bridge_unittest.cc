@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_test_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -232,6 +233,7 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
     test_clock_.SetNow(kDefaultTime);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&table_);
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
     ON_CALL(*backend(), GetDatabase()).WillByDefault(Return(&db_));
@@ -255,8 +257,8 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
     model_type_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromModelType(syncer::AUTOFILL_WALLET_METADATA));
     model_type_state.set_cache_guid(kDefaultCacheGuid);
-    EXPECT_TRUE(table()->UpdateModelTypeState(syncer::AUTOFILL_WALLET_METADATA,
-                                              model_type_state));
+    EXPECT_TRUE(sync_metadata_table_.UpdateModelTypeState(
+        syncer::AUTOFILL_WALLET_METADATA, model_type_state));
     bridge_ = std::make_unique<AutofillWalletMetadataSyncBridge>(
         mock_processor_.CreateForwardingProcessor(), &backend_);
   }
@@ -390,10 +392,9 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
 
   std::vector<std::string> GetLocalSyncMetadataStorageKeys() {
     std::vector<std::string> storage_keys;
-
-    AutofillTable* table = AutofillTable::FromWebDatabase(&db_);
     syncer::MetadataBatch batch;
-    if (table->GetAllSyncMetadata(syncer::AUTOFILL_WALLET_METADATA, &batch)) {
+    if (sync_metadata_table_.GetAllSyncMetadata(
+            syncer::AUTOFILL_WALLET_METADATA, &batch)) {
       for (const auto& [storage_key, metadata] : batch.GetAllMetadata()) {
         storage_keys.push_back(storage_key);
       }
@@ -425,6 +426,7 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
   ScopedTempDir temp_dir_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
+  AutofillSyncMetadataTable sync_metadata_table_;
   AutofillTable table_;
   WebDatabase db_;
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;

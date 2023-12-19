@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -333,7 +334,7 @@ std::unique_ptr<syncer::MetadataChangeList>
 AutofillWalletMetadataSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetAutofillTable(), syncer::AUTOFILL_WALLET_METADATA,
+      GetSyncMetadataStore(), syncer::AUTOFILL_WALLET_METADATA,
       base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
@@ -435,9 +436,15 @@ AutofillTable* AutofillWalletMetadataSyncBridge::GetAutofillTable() {
   return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
 
+AutofillSyncMetadataTable*
+AutofillWalletMetadataSyncBridge::GetSyncMetadataStore() {
+  return AutofillSyncMetadataTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
+}
+
 void AutofillWalletMetadataSyncBridge::LoadDataCacheAndMetadata() {
   if (!web_data_backend_ || !web_data_backend_->GetDatabase() ||
-      !GetAutofillTable()) {
+      !GetAutofillTable() || !GetSyncMetadataStore()) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load AutofillWebDatabase."});
     return;
@@ -457,8 +464,8 @@ void AutofillWalletMetadataSyncBridge::LoadDataCacheAndMetadata() {
 
   // Load the metadata and send to the processor.
   auto batch = std::make_unique<syncer::MetadataBatch>();
-  if (!GetAutofillTable()->GetAllSyncMetadata(syncer::AUTOFILL_WALLET_METADATA,
-                                              batch.get())) {
+  if (!GetSyncMetadataStore()->GetAllSyncMetadata(
+          syncer::AUTOFILL_WALLET_METADATA, batch.get())) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed reading autofill metadata from WebDatabase."});
     return;
