@@ -1782,7 +1782,8 @@ EVENT_TYPE(HTTP2_PROXY_CLIENT_SESSION)
 // This event is emitted whenever a platform notification is received that
 // could possibly trigger connection migration.
 //   {
-//     "signal": <Type of the platform notification>
+//     "signal": <Type of the platform notification>,
+//     "network": <The network that triggered the notification>,
 //   }
 EVENT_TYPE(QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION)
 

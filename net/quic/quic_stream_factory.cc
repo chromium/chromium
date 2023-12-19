@@ -1615,9 +1615,13 @@ void QuicStreamFactory::OnIPAddressChanged() {
 void QuicStreamFactory::OnNetworkConnected(handles::NetworkHandle network) {
   CollectDataOnPlatformNotification(NETWORK_CONNECTED, network);
   if (params_.migrate_sessions_on_network_change_v2) {
-    net_log_.AddEventWithStringParams(
-        NetLogEventType::QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION, "signal",
-        "OnNetworkConnected");
+    net_log_.AddEvent(
+        NetLogEventType::QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION, [&] {
+          base::Value::Dict dict;
+          dict.Set("signal", "OnNetworkConnected");
+          dict.Set("network", base::NumberToString(network));
+          return dict;
+        });
   }
   // Broadcast network connected to all sessions.
   // If migration is not turned on, session will not migrate but collect data.
@@ -1633,9 +1637,13 @@ void QuicStreamFactory::OnNetworkConnected(handles::NetworkHandle network) {
 void QuicStreamFactory::OnNetworkDisconnected(handles::NetworkHandle network) {
   CollectDataOnPlatformNotification(NETWORK_DISCONNECTED, network);
   if (params_.migrate_sessions_on_network_change_v2) {
-    net_log_.AddEventWithStringParams(
-        NetLogEventType::QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION, "signal",
-        "OnNetworkDisconnected");
+    net_log_.AddEvent(
+        NetLogEventType::QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION, [&] {
+          base::Value::Dict dict;
+          dict.Set("signal", "OnNetworkDisconnected");
+          dict.Set("network", base::NumberToString(network));
+          return dict;
+        });
   }
   // Broadcast network disconnected to all sessions.
   // If migration is not turned on, session will not migrate but collect data.
@@ -1671,9 +1679,13 @@ void QuicStreamFactory::OnNetworkMadeDefault(handles::NetworkHandle network) {
   default_network_ = network;
 
   if (params_.migrate_sessions_on_network_change_v2) {
-    net_log_.AddEventWithStringParams(
-        NetLogEventType::QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION, "signal",
-        "OnNetworkMadeDefault");
+    net_log_.AddEvent(
+        NetLogEventType::QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION, [&] {
+          base::Value::Dict dict;
+          dict.Set("signal", "OnNetworkMadeDefault");
+          dict.Set("network", base::NumberToString(network));
+          return dict;
+        });
   }
 
   auto it = all_sessions_.begin();
