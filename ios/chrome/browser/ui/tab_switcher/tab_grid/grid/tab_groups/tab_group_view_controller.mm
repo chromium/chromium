@@ -9,9 +9,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -49,12 +51,20 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
 
 #pragma mark - UIViewController
 
-- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler {
+- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
+                     lightTheme:(BOOL)lightTheme {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a tab group view controller outside "
          "the Tab Groups experiment.";
   if (self = [super init]) {
     _handler = handler;
+    _gridViewController = [[BaseGridViewController alloc] init];
+    if (lightTheme) {
+      _gridViewController.theme = GridThemeLight;
+    } else {
+      _gridViewController.theme = GridThemeDark;
+    }
+    _gridViewController.mode = TabGridModeGroup;
   }
   return self;
 }
@@ -79,22 +89,37 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   UIView* primaryTitle = [self configuredPrimaryTitle];
   UIView* secondaryTitle = [self configuredSubTitle];
 
+  UIView* gridView = _gridViewController.view;
+  gridView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self addChildViewController:_gridViewController];
+  [self.view addSubview:gridView];
+  [_gridViewController didMoveToParentViewController:self];
+
   [self.view addSubview:primaryTitle];
   [self.view addSubview:secondaryTitle];
 
   [NSLayoutConstraint activateConstraints:@[
-    [primaryTitle.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
-                                               constant:kHorizontalMargin],
+    [primaryTitle.leadingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
+                       constant:kHorizontalMargin],
     [primaryTitle.topAnchor constraintEqualToAnchor:_navigationBar.bottomAnchor
                                            constant:kPrimaryTitleMargin],
     [secondaryTitle.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
                        constant:kHorizontalMargin],
     [secondaryTitle.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
                        constant:-kHorizontalMargin],
     [secondaryTitle.topAnchor constraintEqualToAnchor:primaryTitle.bottomAnchor
-                                             constant:kPrimaryTitleMargin],
+                                             constant:kTitleVerticalMargin],
+    [gridView.topAnchor constraintEqualToAnchor:secondaryTitle.bottomAnchor
+                                       constant:kTitleVerticalMargin],
+    [gridView.leadingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
+    [gridView.trailingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
+    [gridView.bottomAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
   ]];
 }
 
@@ -174,9 +199,9 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
     [_navigationBar.topAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
     [_navigationBar.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
     [_navigationBar.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
   ]];
 }
 

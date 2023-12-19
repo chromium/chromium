@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
@@ -72,22 +73,6 @@
 using PinnedState = WebStateSearchCriteria::PinnedState;
 
 namespace {
-
-// Constructs an array of TabSwitcherItems from a `web_state_list`.
-NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
-  NSMutableArray<TabSwitcherItem*>* items = [[NSMutableArray alloc] init];
-
-  int first_index = web_state_list->pinned_tabs_count();
-  DCHECK(first_index == 0 || IsPinnedTabsEnabled());
-
-  for (int i = first_index; i < web_state_list->count(); i++) {
-    DCHECK(!web_state_list->IsWebStatePinnedAt(i));
-    web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    [items
-        addObject:[[WebStateTabSwitcherItem alloc] initWithWebState:web_state]];
-  }
-  return items;
-}
 
 void LogPriceDropMetrics(web::WebState* web_state) {
   ShoppingPersistedDataTabHelper* shopping_helper =

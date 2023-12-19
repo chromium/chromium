@@ -192,10 +192,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   UICollectionView* collectionView =
       [[UICollectionView alloc] initWithFrame:CGRectZero
                          collectionViewLayout:self.gridLayout];
-  // During deletion (in horizontal layout) the backgroundView can resize,
-  // revealing temporarily the collectionView background. This makes sure
-  // both are the same color.
-  collectionView.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
   // If this stays as the default `YES`, then cells aren't highlighted
   // immediately on touch, but after a short delay.
   collectionView.delaysContentTouches = NO;
@@ -229,8 +225,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
   collectionView.delegate = self;
   collectionView.backgroundView = [[UIView alloc] init];
-  collectionView.backgroundView.backgroundColor =
-      [UIColor colorNamed:kGridBackgroundColor];
+  collectionView.backgroundColor = [UIColor clearColor];
   collectionView.backgroundView.accessibilityIdentifier =
       kGridBackgroundIdentifier;
 
@@ -754,8 +749,8 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   CHECK(!IsTabGridCompositionalLayoutEnabled());
   switch (_mode) {
     case TabGridModeNormal:
-      return CGSizeZero;
     case TabGridModeSelection:
+    case TabGridModeGroup:
       return CGSizeZero;
     case TabGridModeSearch: {
       if (_searchText.length == 0) {
@@ -1492,6 +1487,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     case TabGridModeInactive:
       NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
     case TabGridModeSelection:
+    case TabGridModeGroup:
       NOTREACHED();
       break;
     case TabGridModeSearch:
@@ -1544,6 +1540,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   switch (mode) {
     case TabGridModeNormal:
     case TabGridModeSelection:
+    case TabGridModeGroup:
       return TabsSectionHeaderType::kNone;
     case TabGridModeSearch:
       if (_searchText.length == 0) {

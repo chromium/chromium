@@ -17,6 +17,7 @@ source_set("grid") {
     ":grid_mediator_item_provider",
     ":grid_toolbars_mutator",
     ":grid_ui",
+    ":grid_utils",
     ":grid_view_controller_mutator",
     "//base",
     "//components/bookmarks/browser",
@@ -70,6 +71,20 @@ source_set("grid_ui_constants") {
   sources = [
     "grid_constants.h",
     "grid_constants.mm",
+  ]
+}
+
+source_set("grid_utils") {
+  sources = [
+    "grid_utils.h",
+    "grid_utils.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/tabs/model:features",
+    "//ios/chrome/browser/ui/tab_switcher",
   ]
 }
 
@@ -187,12 +202,14 @@ source_set("unit_tests") {
   sources = [
     "base_grid_mediator_unittest.mm",
     "grid_item_identifier_unittest.mm",
+    "grid_utils_unittest.mm",
     "grid_view_controller_unittest.mm",
   ]
 
   deps = [
     ":grid",
     ":grid_ui",
+    ":grid_utils",
     ":test_fixture",
     "//base",
     "//base/test:test_support",
@@ -201,6 +218,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito",
@@ -210,6 +228,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/tab_switcher/test:fakes",
     "//ios/chrome/test:test_support",
     "//ios/web/public",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//third_party/ocmock",
   ]
