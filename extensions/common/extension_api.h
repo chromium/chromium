@@ -190,7 +190,7 @@ class ExtensionAPI {
   SchemaMap schemas_ GUARDED_BY(lock_);
 
   // FeatureProviders used for resolving dependencies.
-  typedef std::map<std::string, const FeatureProvider*> FeatureProviderMap;
+  using FeatureProviderMap = std::map<std::string, const FeatureProvider*>;
   FeatureProviderMap dependency_providers_;
 };
 

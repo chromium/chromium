@@ -150,7 +150,7 @@ class APIPermissionInfo {
   using APIPermissionConstructor =
       std::unique_ptr<APIPermission> (*)(const APIPermissionInfo*);
 
-  typedef std::set<mojom::APIPermissionID> IDSet;
+  using IDSet = std::set<mojom::APIPermissionID>;
 
   // This exists to allow aggregate initialization, so that default values
   // for flags, etc. can be omitted.

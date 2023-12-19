@@ -298,6 +298,6 @@ class URLPattern {
 
 std::ostream& operator<<(std::ostream& out, const URLPattern& url_pattern);
 
-typedef std::vector<URLPattern> URLPatternList;
+using URLPatternList = std::vector<URLPattern>;
 
 #endif  // EXTENSIONS_COMMON_URL_PATTERN_H_

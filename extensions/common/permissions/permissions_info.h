@@ -74,12 +74,11 @@ class PermissionsInfo {
   void RegisterPermission(std::unique_ptr<APIPermissionInfo> permission);
 
   // Maps permission ids to permissions. Owns the permissions.
-  typedef base::flat_map<mojom::APIPermissionID,
-                         std::unique_ptr<APIPermissionInfo>>
-      IDMap;
+  using IDMap = base::flat_map<mojom::APIPermissionID,
+                               std::unique_ptr<APIPermissionInfo>>;
 
   // Maps names and aliases to permissions. Doesn't own the permissions.
-  typedef std::map<std::string, APIPermissionInfo*> NameMap;
+  using NameMap = std::map<std::string, APIPermissionInfo*>;
 
   IDMap id_map_;
   NameMap name_map_;

@@ -24,8 +24,8 @@ namespace extensions {
 // Represents the set of URLs an extension uses for web content.
 class URLPatternSet {
  public:
-  typedef std::set<URLPattern>::const_iterator const_iterator;
-  typedef std::set<URLPattern>::iterator iterator;
+  using const_iterator = std::set<URLPattern>::const_iterator;
+  using iterator = std::set<URLPattern>::iterator;
 
   // Returns |set1| - |set2|.
   static URLPatternSet CreateDifference(const URLPatternSet& set1,

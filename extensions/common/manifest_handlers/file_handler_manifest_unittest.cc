@@ -21,7 +21,7 @@ namespace extensions {
 
 namespace errors = manifest_errors;
 
-typedef ManifestTest FileHandlersManifestTest;
+using FileHandlersManifestTest = ManifestTest;
 
 TEST_F(FileHandlersManifestTest, InvalidFileHandlers) {
   Testcase testcases[] = {

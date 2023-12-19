@@ -27,7 +27,7 @@ class ExtensionIconSet {
   };
 
   // Access to the underlying map from icon size->{path, bitmap}.
-  typedef base::flat_map<int, std::string> IconMap;
+  using IconMap = base::flat_map<int, std::string>;
 
   ExtensionIconSet();
   ExtensionIconSet(const ExtensionIconSet& other);

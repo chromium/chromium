@@ -22,7 +22,7 @@ class Extension;
 
 namespace extensions {
 
-typedef std::set<SocketPermissionEntry> SocketPermissionEntrySet;
+using SocketPermissionEntrySet = std::set<SocketPermissionEntry>;
 
 class SocketsManifestPermission : public ManifestPermission {
  public:

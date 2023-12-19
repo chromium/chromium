@@ -463,7 +463,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   base::Uuid guid_;
 };
 
-typedef std::vector<scoped_refptr<const Extension>> ExtensionList;
+using ExtensionList = std::vector<scoped_refptr<const Extension>>;
 
 // Handy struct to pass core extension info around.
 struct ExtensionInfo {

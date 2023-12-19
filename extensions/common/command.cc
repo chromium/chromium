@@ -432,7 +432,7 @@ bool Command::Parse(const base::Value::Dict& command,
   }
 
   // We'll build up a map of platform-to-shortcut suggestions.
-  typedef std::map<const std::string, std::string> SuggestionMap;
+  using SuggestionMap = std::map<const std::string, std::string>;
   SuggestionMap suggestions;
 
   // First try to parse the |suggested_key| as a dictionary.

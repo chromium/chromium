@@ -71,7 +71,7 @@ class Command {
 };
 
 // A mapping of command name (std::string) to a command object.
-typedef std::map<std::string, Command> CommandMap;
+using CommandMap = std::map<std::string, Command>;
 
 }  // namespace extensions
 

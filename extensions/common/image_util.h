@@ -7,7 +7,7 @@
 
 class SkBitmap;
 
-typedef unsigned int SkColor;
+using SkColor = unsigned int;
 
 namespace base {
 class FilePath;
