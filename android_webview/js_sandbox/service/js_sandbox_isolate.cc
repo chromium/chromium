@@ -355,7 +355,7 @@ jboolean JsSandboxIsolate::EvaluateJavascript(
   std::string code = ConvertJavaStringToUTF8(env, jcode);
   scoped_refptr<JsSandboxIsolateCallback> callback =
       base::MakeRefCounted<JsSandboxIsolateCallback>(
-          base::android::ScopedJavaGlobalRef(j_callback), false);
+          base::android::ScopedJavaGlobalRef<jobject>(j_callback), false);
   control_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&JsSandboxIsolate::PostEvaluationToIsolateThread,
@@ -377,13 +377,13 @@ jboolean JsSandboxIsolate::EvaluateJavascriptWithFd(
     const base::android::JavaParamRef<jobject>& j_pfd) {
   scoped_refptr<JsSandboxIsolateCallback> callback =
       base::MakeRefCounted<JsSandboxIsolateCallback>(
-          base::android::ScopedJavaGlobalRef(j_callback), true);
+          base::android::ScopedJavaGlobalRef<jobject>(j_callback), true);
 
   control_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&JsSandboxIsolate::PostFileDescriptorReadToIsolateThread,
                      base::Unretained(this), fd, length, offset,
-                     base::android::ScopedJavaGlobalRef(j_pfd),
+                     base::android::ScopedJavaGlobalRef<jobject>(j_pfd),
                      std::move(callback)));
 
   return true;

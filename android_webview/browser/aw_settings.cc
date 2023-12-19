@@ -42,6 +42,7 @@
 #include "url/origin.h"
 
 using base::android::ConvertJavaStringToUTF16;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -228,8 +229,7 @@ void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
       Java_AwSettings_getHasUserAgentMetadataOverridesLocked(env, obj);
 
   if (ua_overidden) {
-    std::string ua_string_override =
-        base::android::ConvertJavaStringToUTF8(str);
+    std::string ua_string_override = ConvertJavaStringToUTF8(str);
     std::string ua_default = GetUserAgent();
     blink::UserAgentOverride override_ua_with_metadata;
     override_ua_with_metadata.ua_string_override = ua_string_override;

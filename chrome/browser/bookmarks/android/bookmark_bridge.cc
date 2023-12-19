@@ -166,7 +166,7 @@ ScopedJavaLocalRef<jobject> JNI_BookmarkBridge_GetForProfile(
                        base::WrapUnique(bookmark_bridge));
   }
 
-  return ScopedJavaLocalRef(bookmark_bridge->GetJavaBookmarkModel());
+  return ScopedJavaLocalRef<jobject>(bookmark_bridge->GetJavaBookmarkModel());
 }
 
 // TODO(crbug.com/1510547): Support the account reading list availability

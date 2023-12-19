@@ -109,7 +109,7 @@ static void JNI_PrivacySandboxBridge_GetFledgeJoiningEtldPlusOneForDisplay(
             base::android::RunObjectCallbackAndroid(
                 j_callback, base::android::ToJavaArrayOfStrings(env, strings));
           },
-          base::android::ScopedJavaGlobalRef(j_callback)));
+          base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
 static base::android::ScopedJavaLocalRef<jobjectArray>
@@ -169,7 +169,7 @@ JNI_PrivacySandboxBridge_GetFirstPartySetOwner(
     JNIEnv* env,
     const JavaParamRef<jstring>& memberOrigin) {
   auto fpsOwner = GetPrivacySandboxService()->GetFirstPartySetOwner(
-      GURL(ConvertJavaStringToUTF8(env, memberOrigin)));
+      GURL(base::android::ConvertJavaStringToUTF8(env, memberOrigin)));
 
   if (!fpsOwner.has_value()) {
     return nullptr;
@@ -181,8 +181,8 @@ JNI_PrivacySandboxBridge_GetFirstPartySetOwner(
 static jboolean JNI_PrivacySandboxBridge_IsPartOfManagedFirstPartySet(
     JNIEnv* env,
     const JavaParamRef<jstring>& origin) {
-  auto schemefulSite =
-      net::SchemefulSite(GURL(ConvertJavaStringToUTF8(env, origin)));
+  auto schemefulSite = net::SchemefulSite(
+      GURL(base::android::ConvertJavaStringToUTF8(env, origin)));
 
   return GetPrivacySandboxService()->IsPartOfManagedFirstPartySet(
       schemefulSite);

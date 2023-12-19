@@ -25,9 +25,9 @@ PasswordForm ConvertJavaObjectToPasswordForm(
   form.url = *url::GURLAndroid::ToNativeGURL(
       env, Java_PasswordStoreCredential_getUrl(env, credential));
   form.signon_realm = password_manager::GetSignonRealm(form.url);
-  form.username_value = ConvertJavaStringToUTF16(
+  form.username_value = base::android::ConvertJavaStringToUTF16(
       env, Java_PasswordStoreCredential_getUsername(env, credential));
-  form.password_value = ConvertJavaStringToUTF16(
+  form.password_value = base::android::ConvertJavaStringToUTF16(
       env, Java_PasswordStoreCredential_getPassword(env, credential));
 
   return form;
@@ -80,7 +80,8 @@ bool PasswordStoreBridge::EditPassword(
   password_manager::CredentialUIEntry original_credential(
       ConvertJavaObjectToPasswordForm(env, credential));
   password_manager::CredentialUIEntry updated_credential = original_credential;
-  updated_credential.password = ConvertJavaStringToUTF16(env, new_password);
+  updated_credential.password =
+      base::android::ConvertJavaStringToUTF16(env, new_password);
   return saved_passwords_presenter_.EditSavedCredentials(original_credential,
                                                          updated_credential) ==
          password_manager::SavedPasswordsPresenter::EditResult::kSuccess;

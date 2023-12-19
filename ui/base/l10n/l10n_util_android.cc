@@ -91,7 +91,7 @@ std::u16string GetDisplayNameForLocale(const std::string& locale,
   ScopedJavaLocalRef<jstring> java_result(
       Java_LocalizationUtils_getDisplayNameForLocale(env, java_locale,
                                                      java_display_locale));
-  return ConvertJavaStringToUTF16(java_result);
+  return base::android::ConvertJavaStringToUTF16(java_result);
 }
 
 ScopedJavaLocalRef<jstring> JNI_LocalizationUtils_GetNativeUiLocale(

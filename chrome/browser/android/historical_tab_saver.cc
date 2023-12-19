@@ -251,7 +251,7 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
     const JavaParamRef<jintArray>& jsaved_state_versions) {
   std::u16string title = base::android::ConvertJavaStringToUTF16(env, jtitle);
   auto tabs_android = TabAndroid::GetAllNativeTabs(
-      env, base::android::ScopedJavaLocalRef(jtabs_android));
+      env, base::android::ScopedJavaLocalRef<jobjectArray>(jtabs_android));
   int tabs_android_count = env->GetArrayLength(jtabs_android);
   DCHECK_EQ(tabs_android_count, env->GetArrayLength(jbyte_buffers));
   DCHECK_EQ(tabs_android_count, env->GetArrayLength(jsaved_state_versions));
@@ -297,7 +297,7 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
       std::move(android_group_ids), std::move(group_titles),
       std::move(per_tab_android_group_id),
       TabAndroid::GetAllNativeTabs(
-          env, base::android::ScopedJavaLocalRef(jtabs_android)),
+          env, base::android::ScopedJavaLocalRef<jobjectArray>(jtabs_android)),
       std::move(web_contents_states));
 }
 

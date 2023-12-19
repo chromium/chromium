@@ -148,7 +148,7 @@ void AuxiliarySearchProvider::GetNonSensitiveTabs(
     const base::android::JavaParamRef<jobjectArray>& j_tabs_android,
     const base::android::JavaParamRef<jobject>& j_callback_obj) const {
   std::vector<TabAndroid*> all_tabs = TabAndroid::GetAllNativeTabs(
-      env, base::android::ScopedJavaLocalRef(j_tabs_android));
+      env, base::android::ScopedJavaLocalRef<jobjectArray>(j_tabs_android));
 
   GetNonSensitiveTabsInternal(
       all_tabs, base::BindOnce(&callJavaCallbackWithTabList, env,

@@ -46,7 +46,7 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
     const std::u16string& hint,
     const std::u16string& accessibility_hint,
     OmniboxPedalId pedal_id) {
-  return base::android::ScopedJavaGlobalRef(
+  return base::android::ScopedJavaGlobalRef<jobject>(
       Java_OmniboxActionFactory_buildOmniboxPedal(
           env, g_java_factory.Get(), instance,
           base::android::ConvertUTF16ToJavaString(env, hint),
@@ -60,7 +60,7 @@ base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
     const std::u16string& hint,
     const std::u16string& accessibility_hint,
     const std::string& query) {
-  return base::android::ScopedJavaGlobalRef(
+  return base::android::ScopedJavaGlobalRef<jobject>(
       Java_OmniboxActionFactory_buildHistoryClustersAction(
           env, g_java_factory.Get(), instance,
           base::android::ConvertUTF16ToJavaString(env, hint),
@@ -75,7 +75,7 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     const std::u16string& accessibility_hint,
     int action_type,
     const std::string& action_uri) {
-  return base::android::ScopedJavaGlobalRef(
+  return base::android::ScopedJavaGlobalRef<jobject>(
       Java_OmniboxActionFactory_buildActionInSuggest(
           env, g_java_factory.Get(), instance,
           base::android::ConvertUTF16ToJavaString(env, hint),

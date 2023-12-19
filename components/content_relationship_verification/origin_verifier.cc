@@ -22,7 +22,7 @@
 #include "url/origin.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
-using base::android::ConvertJavaStringToUTF16;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using content_relationship_verification::RelationshipCheckResult;
