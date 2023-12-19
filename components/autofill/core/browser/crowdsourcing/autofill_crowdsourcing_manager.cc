@@ -991,24 +991,16 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
     return;
   }
 
-  switch (request_data.request_type) {
-    case REQUEST_QUERY: {
-      CacheQueryRequest(request_data.form_signatures, *response_body);
-      base::UmaHistogramBoolean(kUmaWasInCache,
-                                simple_loader->LoadedFromCache());
-      if (request_data.observer) {
-        request_data.observer->OnLoadedServerPredictions(
-            std::move(*response_body), request_data.form_signatures);
-      }
-      return;
-    }
-    case REQUEST_UPLOAD:
-      if (request_data.observer) {
-        request_data.observer->OnUploadedPossibleFieldTypes();
-      }
-      return;
+  if (request_data.request_type != REQUEST_QUERY) {
+    return;
   }
-  NOTREACHED_NORETURN();
+
+  CacheQueryRequest(request_data.form_signatures, *response_body);
+  base::UmaHistogramBoolean(kUmaWasInCache, simple_loader->LoadedFromCache());
+  if (request_data.observer) {
+    request_data.observer->OnLoadedServerPredictions(
+        std::move(*response_body), request_data.form_signatures);
+  }
 }
 
 }  // namespace autofill

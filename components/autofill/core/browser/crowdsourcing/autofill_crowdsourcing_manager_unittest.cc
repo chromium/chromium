@@ -245,12 +245,6 @@ class AutofillCrowdsourcingManagerTest
     responses().push_back(response);
   }
 
-  void OnUploadedPossibleFieldTypes() override {
-    ResponseData response;
-    response.type_of_response = ResponseType::kUploadSuccessful;
-    responses().push_back(response);
-  }
-
   TestAutofillClient& client() { return client_; }
   TestAutofillDriver& driver() { return driver_; }
   AutofillCrowdsourcingManager& crowdsourcing_manager() {
@@ -382,20 +376,11 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
   request = url_loader_factory().GetPendingRequest(0);
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
       request, response_contents[0]);
-  EXPECT_THAT(responses(), SizeIs(2));
+  EXPECT_THAT(responses(), SizeIs(1));
   histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaWasInCache,
                               CACHE_MISS, 1);
   histogram.ExpectBucketCount("Autofill.Query.HttpResponseOrErrorCode",
                               net::HTTP_OK, 1);
-
-  // Check Request 1.
-  EXPECT_EQ(ResponseType::kUploadSuccessful,
-            responses().front().type_of_response);
-  EXPECT_EQ(std::string(), responses().front().signature);
-  // Expected response on non-query request is an empty string.
-  EXPECT_EQ(std::string(), responses().front().response);
-  responses().pop_front();
-
 
   // Check Request 0.
   EXPECT_EQ(responses().front().type_of_response,
@@ -688,15 +673,6 @@ TEST_F(AutofillCrowdsourcingManagerTest, UploadToAPITest) {
   // Trigger an upload response from the API and assert upload response content.
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(request,
                                                                       "");
-  // Upon reception of a suggestions query, we expect
-  // OnUploadedPossibleFieldTypes  to be called back from the observer and some
-  // histograms be incremented.
-  EXPECT_EQ(1U, responses().size());
-  // Request should be upload and successful.
-  EXPECT_EQ(ResponseType::kUploadSuccessful,
-            responses().front().type_of_response);
-  // We expect the request to be OK and corresponding response code to be
-  // counted.
   histogram.ExpectBucketCount("Autofill.Upload.HttpResponseOrErrorCode",
                               net::HTTP_OK, 1);
 }
@@ -780,16 +756,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
   request = url_loader_factory().GetPendingRequest(1);
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(request,
                                                                       "");
-
-  // Check success of response.
-  EXPECT_EQ(ResponseType::kUploadSuccessful,
-            responses().front().type_of_response);
-  EXPECT_EQ(std::string(), responses().front().signature);
-  // Expected response on non-query request is an empty string.
-  EXPECT_EQ(std::string(), responses().front().response);
-  responses().pop_front();
-
-  // Validate no retry on sending a bad request.
+  // Validate that there is no retry on sending a bad request.
   form_structure.set_submission_source(SubmissionSource::XHR_SUCCEEDED);
   base::HistogramTester histogram;
   std::vector<AutofillUploadContents> upload_contents_2 =
@@ -1151,11 +1118,6 @@ class AutofillServerCommunicationTest
     run_loop_->QuitWhenIdle();
   }
 
-  void OnUploadedPossibleFieldTypes() override {
-    ASSERT_TRUE(run_loop_);
-    run_loop_->QuitWhenIdle();
-  }
-
   // Helper to extract the value passed to a lookup in the URL. Returns "*** not
   // found ***" if the the data cannot be decoded.
   std::string GetLookupContent(const std::string& query_path) {
@@ -1200,6 +1162,7 @@ class AutofillServerCommunicationTest
       payloads().push_back(request.content);
       auto response = std::make_unique<BasicHttpResponse>();
       response->set_code(net::HTTP_OK);
+      run_loop_->QuitWhenIdle();
       return response;
     }
 

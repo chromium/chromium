@@ -67,11 +67,6 @@ class AutofillCrowdsourcingManager {
         std::string response,
         const std::vector<FormSignature>& queried_form_signatures) = 0;
 
-    // These notifications are used to help with testing.
-    // Called when heuristic either successfully considered for upload and
-    // not send or uploaded.
-    virtual void OnUploadedPossibleFieldTypes() {}
-
    protected:
     virtual ~Observer() = default;
   };
