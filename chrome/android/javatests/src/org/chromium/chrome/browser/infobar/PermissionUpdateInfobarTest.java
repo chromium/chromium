@@ -32,6 +32,7 @@ import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -93,7 +94,11 @@ public class PermissionUpdateInfobarTest {
                             @Override
                             public PermissionInfo call() {
                                 return new PermissionInfo(
-                                        ContentSettingsType.GEOLOCATION, locationUrl, null, false);
+                                        ContentSettingsType.GEOLOCATION,
+                                        locationUrl,
+                                        null,
+                                        /* isEmbargoed= */ false,
+                                        SessionModel.DURABLE);
                             }
                         });
 

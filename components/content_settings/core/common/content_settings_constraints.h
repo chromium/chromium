@@ -23,7 +23,9 @@ namespace content_settings {
 //              a crash or update related restart.
 // OneTime:     Settings will persist for the current "tab session", meaning
 //              until the last tab from the origin is closed.
-enum class SessionModel {
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: SessionModel
+enum class SessionModel : int32_t {
   Durable = 0,
   UserSession = 1,
   NonRestorableUserSession = 2,

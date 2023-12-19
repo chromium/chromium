@@ -35,6 +35,7 @@ import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
@@ -71,6 +72,34 @@ public class GeolocationHeaderTest {
     @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
     public void testConsistentHeader() {
         setPermission(ContentSettingValues.ALLOW);
+        long now = setMockLocationNow();
+
+        // X-Geo should be sent for Google search results page URLs.
+        assertNonNullHeader(SEARCH_URL_1, false, now);
+
+        // But only the current CCTLD.
+        assertNullHeader(SEARCH_URL_2, false);
+
+        // X-Geo shouldn't be sent in incognito mode.
+        assertNullHeader(SEARCH_URL_1, true);
+        assertNullHeader(SEARCH_URL_2, true);
+
+        // X-Geo shouldn't be sent with URLs that aren't the Google search results page.
+        assertNullHeader("invalid$url", false);
+        assertNullHeader("https://www.chrome.fr/", false);
+        assertNullHeader("https://www.google.com/", false);
+
+        // X-Geo shouldn't be sent over HTTP.
+        assertNullHeader("http://www.google.com/search?q=potatoes", false);
+        assertNullHeader("http://www.google.com/webhp?#q=dinosaurs", false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Location"})
+    @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
+    public void testConsistentHeaderForOneTimeGrant() {
+        setOneTimeGrant();
         long now = setMockLocationNow();
 
         // X-Geo should be sent for Google search results page URLs.
@@ -209,7 +238,11 @@ public class GeolocationHeaderTest {
                 () -> {
                     PermissionInfo infoHttps =
                             new PermissionInfo(
-                                    ContentSettingsType.GEOLOCATION, SEARCH_URL_1, null, false);
+                                    ContentSettingsType.GEOLOCATION,
+                                    SEARCH_URL_1,
+                                    null,
+                                    /* isEmbargo= */ false,
+                                    SessionModel.DURABLE);
                     infoHttps.setContentSetting(
                             Profile.getLastUsedRegularProfile(), httpsPermission);
                     String header =
@@ -327,8 +360,22 @@ public class GeolocationHeaderTest {
     }
 
     private void setPermission(final @ContentSettingValues int setting) {
+        setPermission(setting, SessionModel.DURABLE);
+    }
+
+    private void setOneTimeGrant() {
+        setPermission(ContentSettingValues.ALLOW, SessionModel.ONE_TIME);
+    }
+
+    private void setPermission(
+            final @ContentSettingValues int setting, @SessionModel int sessionModel) {
         PermissionInfo infoHttps =
-                new PermissionInfo(ContentSettingsType.GEOLOCATION, SEARCH_URL_1, null, false);
+                new PermissionInfo(
+                        ContentSettingsType.GEOLOCATION,
+                        SEARCH_URL_1,
+                        /* embedder= */ null,
+                        /* isEmbargo= */ false,
+                        sessionModel);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

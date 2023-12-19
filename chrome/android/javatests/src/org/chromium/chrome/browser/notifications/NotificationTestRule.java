@@ -19,6 +19,7 @@ import org.chromium.components.browser_ui.notifications.MockNotificationManagerP
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -62,7 +63,11 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
                     // The notification content setting does not consider the embedder origin.
                     PermissionInfo notificationInfo =
                             new PermissionInfo(
-                                    ContentSettingsType.NOTIFICATIONS, origin, "", false);
+                                    ContentSettingsType.NOTIFICATIONS,
+                                    origin,
+                                    "",
+                                    /* isEmbargoed= */ false,
+                                    SessionModel.DURABLE);
                     notificationInfo.setContentSetting(
                             Profile.getLastUsedRegularProfile(), setting);
                 });

@@ -40,6 +40,7 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -208,7 +209,8 @@ public class SiteChannelsManagerTest {
                         ContentSettingsType.NOTIFICATIONS,
                         "https://example-incognito.com",
                         null,
-                        true);
+                        /* isEmbargo= */ true,
+                        SessionModel.DURABLE);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     info.setContentSetting(
@@ -228,7 +230,8 @@ public class SiteChannelsManagerTest {
                         ContentSettingsType.NOTIFICATIONS,
                         "https://example-incognito.com",
                         null,
-                        true);
+                        /* isEmbargo= */ true,
+                        SessionModel.DURABLE);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");

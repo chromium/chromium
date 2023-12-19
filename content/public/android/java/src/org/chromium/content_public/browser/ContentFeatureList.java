@@ -28,6 +28,8 @@ public class ContentFeatureList {
 
     public static final String OPTIMIZE_IMM_HIDE_CALLS = "OptimizeImmHideCalls";
 
+    public static final String ONE_TIME_PERMISSION = "OneTimePermission";
+
     public static final String PROCESS_SHARING_WITH_STRICT_SITE_INSTANCES =
             "ProcessSharingWithStrictSiteInstances";
 

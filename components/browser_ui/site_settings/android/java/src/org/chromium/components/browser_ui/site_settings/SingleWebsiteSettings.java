@@ -37,6 +37,7 @@ import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
@@ -427,7 +428,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 for (var exception : exceptionList) {
                     boolean matchesOrigin =
                             other.getEmbedder() != null
-                                    && WebsitePreferenceBridgeJni.get()
+                                    && org.chromium.components.browser_ui.site_settings
+                                            .WebsitePreferenceBridgeJni.get()
                                             .urlMatchesContentSettingsPattern(
                                                     origin, exception.getSecondaryPattern());
                     if (matchesOrigin) {
@@ -561,7 +563,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                         preference,
                         mSite.getContentSetting(
                                 getSiteSettingsDelegate().getBrowserContextHandle(), type),
-                        mSite.isEmbargoed(type));
+                        mSite.isEmbargoed(type),
+                        isOneTime(type));
             }
         }
     }
@@ -680,15 +683,12 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     }
 
     private void setUpNotificationsPreference(Preference preference, boolean isEmbargoed) {
+        @ContentSettingsType int notificationType = ContentSettingsType.NOTIFICATIONS;
         final @ContentSettingValues @Nullable Integer value =
                 mSite.getContentSetting(
-                        getSiteSettingsDelegate().getBrowserContextHandle(),
-                        ContentSettingsType.NOTIFICATIONS);
+                        getSiteSettingsDelegate().getBrowserContextHandle(), notificationType);
         if (setupAppDelegatePreference(
-                preference,
-                R.string.website_notification_settings,
-                ContentSettingsType.NOTIFICATIONS,
-                value)) {
+                preference, R.string.website_notification_settings, notificationType, value)) {
             return;
         }
 
@@ -706,7 +706,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             overrideSummary =
                     isEmbargoed
                             ? getString(R.string.automatically_blocked)
-                            : getString(ContentSettingsResources.getCategorySummary(value));
+                            : getString(
+                                    ContentSettingsResources.getCategorySummary(
+                                            value, isOneTime(notificationType)));
 
             // On Android O this preference is read-only, so we replace the existing pref with a
             // regular Preference that takes users to OS settings on click.
@@ -725,7 +727,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                         return true;
                     });
         } else {
-            setupContentSettingsPreference(preference, value, isEmbargoed);
+            setupContentSettingsPreference(
+                    preference, value, isEmbargoed, isOneTime(notificationType));
         }
     }
 
@@ -799,7 +802,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             // for changes each time Chrome becomes active.
             if (mPreviousNotificationPermission == ContentSettingValues.ALLOW
                     && newPermission != ContentSettingValues.ALLOW) {
-                WebsitePreferenceBridgeJni.get()
+                org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
                         .reportNotificationRevokedForOrigin(
                                 getSiteSettingsDelegate().getBrowserContextHandle(),
                                 mSite.getAddress().getOrigin(),
@@ -1060,7 +1063,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     private void setupContentSettingsPreference(
             Preference preference,
             @ContentSettingValues @Nullable Integer value,
-            boolean isEmbargoed) {
+            boolean isEmbargoed,
+            boolean isOneTime) {
         if (value == null) return;
         setUpPreferenceCommon(preference, value);
 
@@ -1069,7 +1073,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         switchPreference.setSummary(
                 isEmbargoed
                         ? getString(R.string.automatically_blocked)
-                        : getString(ContentSettingsResources.getCategorySummary(value)));
+                        : getString(ContentSettingsResources.getCategorySummary(value, isOneTime)));
         switchPreference.setOnPreferenceChangeListener(this);
         @ContentSettingsType
         int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
@@ -1129,7 +1133,10 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         }
 
         setupContentSettingsPreference(
-                preference, permission, mSite.isEmbargoed(ContentSettingsType.GEOLOCATION));
+                preference,
+                permission,
+                mSite.isEmbargoed(ContentSettingsType.GEOLOCATION),
+                isOneTime(ContentSettingsType.GEOLOCATION));
     }
 
     private void setUpSoundPreference(Preference preference) {
@@ -1153,7 +1160,11 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                             : ContentSettingValues.BLOCK;
         }
         // Not possible to embargo SOUND.
-        setupContentSettingsPreference(preference, currentValue, /* isEmbargoed= */ false);
+        setupContentSettingsPreference(
+                preference,
+                currentValue,
+                /* isEmbargoed= */ false,
+                isOneTime(ContentSettingsType.SOUND));
     }
 
     private void setUpJavascriptPreference(Preference preference) {
@@ -1171,7 +1182,11 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             currentValue = ContentSettingValues.BLOCK;
         }
         // Not possible to embargo JAVASCRIPT.
-        setupContentSettingsPreference(preference, currentValue, /* isEmbargoed= */ false);
+        setupContentSettingsPreference(
+                preference,
+                currentValue,
+                /* isEmbargoed= */ false,
+                isOneTime(ContentSettingsType.JAVASCRIPT));
     }
 
     /**
@@ -1186,7 +1201,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 getSiteSettingsDelegate().getBrowserContextHandle();
         // Do not show the setting if the category is not enabled.
         if (!SiteSettingsCategory.adsCategoryEnabled()) {
-            setupContentSettingsPreference(preference, null, false);
+            setupContentSettingsPreference(
+                    preference, null, false, isOneTime(ContentSettingsType.ADS));
             return;
         }
         // If the ad blocker is activated, then this site will have ads blocked unless there is an
@@ -1202,7 +1218,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         // If the site is not considered a candidate for blocking, do the standard thing and remove
         // the preference.
         if (permission == null && !activated) {
-            setupContentSettingsPreference(preference, null, false);
+            setupContentSettingsPreference(
+                    preference, null, false, isOneTime(ContentSettingsType.ADS));
             return;
         }
 
@@ -1216,7 +1233,11 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                             : ContentSettingValues.BLOCK;
         }
         // Not possible to embargo ADS.
-        setupContentSettingsPreference(preference, permission, /* isEmbargoed= */ false);
+        setupContentSettingsPreference(
+                preference,
+                permission,
+                /* isEmbargoed= */ false,
+                isOneTime(ContentSettingsType.ADS));
     }
 
     private String getDSECategorySummary(@ContentSettingValues int value) {
@@ -1269,7 +1290,10 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         }
 
         mSite.setContentSetting(browserContextHandle, type, permission);
-        preference.setSummary(getString(ContentSettingsResources.getCategorySummary(permission)));
+        // In Clank, one time grants are only possible via prompt, not via page
+        // info.
+        preference.setSummary(
+                getString(ContentSettingsResources.getCategorySummary(permission, false)));
         preference.setIcon(getContentSettingsIcon(type, permission));
 
         if (mWebsiteSettingsObserver != null) {
@@ -1331,6 +1355,11 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 if (groupActivity != null) groupActivity.finish();
             }
         }
+    }
+
+    public boolean isOneTime(@ContentSettingsType int type) {
+        PermissionInfo permissionInfo = mSite.getPermissionInfo(type);
+        return permissionInfo != null && permissionInfo.getSessionModel() == SessionModel.ONE_TIME;
     }
 
     /**

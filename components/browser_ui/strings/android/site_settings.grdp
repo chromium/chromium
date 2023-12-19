@@ -127,6 +127,9 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ALLOWED" desc="Summary text explaining that a permission is allowed, e.g. JavaScript: allowed.">
     Allowed
   </message>
+    <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ALLOWED_THIS_TIME" desc="Summary text explaining that a permission is allowed ephemerally, e.g. JavaScript: allowed.">
+    Allowed this time
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ALLOWED_EXCEPT_THIRD_PARTY" desc="Summary text for when only third-party cookies are blocked.">
     Allowed, except third-party
   </message>

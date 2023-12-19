@@ -115,7 +115,10 @@ public class SiteSettings extends BaseSiteSettingsFragment
                                     prefCategory)
                             .showPermissionBlockedMessage(getContext())) {
                 // Show 'disabled' message when permission is not granted in Android.
-                p.setSummary(ContentSettingsResources.getCategorySummary(contentType, false));
+                p.setSummary(
+                        ContentSettingsResources.getCategorySummary(
+                                ContentSettingsResources.getDefaultDisabledValue(contentType),
+                                /* isOneTime= */ false));
             } else if (Type.SITE_DATA == prefCategory) {
                 p.setSummary(ContentSettingsResources.getSiteDataListSummary(checked));
             } else if (Type.THIRD_PARTY_COOKIES == prefCategory) {
@@ -140,9 +143,18 @@ public class SiteSettings extends BaseSiteSettingsFragment
                 // Don't want to set a summary for Zoom because we don't want any message to display
                 // under the Zoom row on site settings.
             } else if (requiresTriStateSetting) {
-                p.setSummary(ContentSettingsResources.getCategorySummary(setting));
+                p.setSummary(
+                        ContentSettingsResources.getCategorySummary(
+                                setting, /* isOneTime= */ false));
             } else {
-                p.setSummary(ContentSettingsResources.getCategorySummary(contentType, checked));
+                @ContentSettingValues
+                int defaultForToggle =
+                        checked
+                                ? ContentSettingsResources.getDefaultEnabledValue(contentType)
+                                : ContentSettingsResources.getDefaultDisabledValue(contentType);
+                p.setSummary(
+                        ContentSettingsResources.getCategorySummary(
+                                defaultForToggle, /* isOneTime= */ false));
             }
 
             if (prefCategory != Type.THIRD_PARTY_COOKIES) {
