@@ -132,7 +132,7 @@ class SigninFatalScreen extends SigninFatalErrorBase {
    * Returns the control which should receive initial focus.
    */
   get defaultControl() {
-    return this.$.actionButton;
+    return /** @type {HTMLElement} */ (this.$.actionButton);
   }
 
   /**

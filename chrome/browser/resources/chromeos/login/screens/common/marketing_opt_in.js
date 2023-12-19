@@ -173,7 +173,7 @@ class MarketingOptIn extends MarketingScreenElementBase {
   }
 
   get defaultControl() {
-    return this.$.marketingOptInOverviewDialog;
+    return /** @type {HTMLElement} */ (this.$.marketingOptInOverviewDialog);
   }
 
   /**

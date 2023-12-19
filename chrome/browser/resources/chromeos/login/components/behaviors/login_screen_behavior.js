@@ -133,7 +133,7 @@ export class LoginScreenBehaviorInterface {
   getOobeUIInitialState() {}
   /** @return {!Array<string>} */
   get EXTERNAL_API() {}
-  /** @return {Object} */
+  /** @return {HTMLElement|null} */
   get defaultControl() {}
   /** @param {boolean} isInTabletMode */
   setTabletModeState(isInTabletMode) {}

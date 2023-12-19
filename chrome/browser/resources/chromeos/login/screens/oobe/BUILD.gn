@@ -19,7 +19,6 @@ js_type_check("closure_compile") {
   deps = [
     ":auto_enrollment_check",
     ":consumer_update",
-    ":enable_debugging",
     ":enterprise_enrollment",
     ":hid_detection",
     ":oobe_network",
@@ -53,18 +52,6 @@ js_library("consumer_update") {
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("enable_debugging") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/enable_debugging.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog",
   ]
   extra_deps = [ ":web_components" ]
 }

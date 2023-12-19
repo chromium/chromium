@@ -18,6 +18,7 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/buttons/oobe_text_button.js';
 
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
@@ -26,55 +27,42 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
 
 import {getTemplate} from './enable_debugging.html.js';
 
-
 /**
  * Possible UI states of the enable debugging screen.
  * These values must be kept in sync with EnableDebuggingScreenHandler::UIState
  * in C++ code and the order of the enum must be the same.
- * @enum {string}
  */
-const EnableDebuggingState = {
-  ERROR: 'error',
-  NONE: 'none',
-  REMOVE_PROTECTION: 'remove-protection',
-  SETUP: 'setup',
-  WAIT: 'wait',
-  DONE: 'done',
-};
+enum EnableDebuggingState {
+  ERROR = 'error',
+  NONE = 'none',
+  REMOVE_PROTECTION = 'remove-protection',
+  SETUP = 'setup',
+  WAIT = 'wait',
+  DONE = 'done',
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- */
-const EnableDebuggingBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
+const EnableDebuggingBase =
+    mixinBehaviors(
+        [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+        PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
+    };
 
-/**
- * @typedef {{
- *   password:  CrInputElement,
- * }}
- */
- EnableDebuggingBase.$;
-
-/**
- * @polymer
- */
-class EnableDebugging extends EnableDebuggingBase {
+export class EnableDebugging extends EnableDebuggingBase {
   static get is() {
-    return 'enable-debugging-element';
+    return 'enable-debugging-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  get EXTERNAL_API() {
+  override get EXTERNAL_API(): string[] {
     return ['updateState'];
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * Current value of password input field.
@@ -96,31 +84,36 @@ class EnableDebugging extends EnableDebuggingBase {
     };
   }
 
-  ready() {
+  private password_: string;
+  private passwordRepeat_: string;
+  private passwordsMatch_: boolean;
+
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('EnableDebuggingScreen');
   }
 
-  defaultUIStep() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep() {
     return EnableDebuggingState.NONE;
   }
 
-  get UI_STEPS() {
+  override get UI_STEPS() {
     return EnableDebuggingState;
   }
 
   /**
    * Returns a control which should receive an initial focus.
    */
-  get defaultControl() {
+  override get defaultControl(): HTMLElement|null {
     if (this.uiStep == EnableDebuggingState.REMOVE_PROTECTION) {
-      return this.$.removeProtectionProceedButton;
+      return this.shadowRoot!.querySelector('#removeProtectionProceedButton');
     } else if (this.uiStep == EnableDebuggingState.SETUP) {
-      return this.$.password;
+      return this.shadowRoot!.querySelector('#password');
     } else if (this.uiStep == EnableDebuggingState.DONE) {
-      return this.$.okButton;
+      return this.shadowRoot!.querySelector('#okButton');
     } else if (this.uiStep == EnableDebuggingState.ERROR) {
-      return this.$.errorOkButton;
+      return this.shadowRoot!.querySelector('#errorOkButton');
     } else {
       return null;
     }
@@ -130,15 +123,14 @@ class EnableDebugging extends EnableDebuggingBase {
    * Cancels the enable debugging screen and drops the user back to the
    * network settings.
    */
-  cancel() {
+  cancel(): void {
     this.userActed('cancel');
   }
 
   /**
    * Update UI for corresponding state of the screen.
-   * @param {number} state
    */
-  updateState(state) {
+  updateState(state: number): void {
     // Use `state + 1` as index to locate the corresponding EnableDebuggingState
     this.setUIStep(Object.values(EnableDebuggingState)[state + 1]);
 
@@ -147,27 +139,33 @@ class EnableDebugging extends EnableDebuggingBase {
     }
   }
 
-  computePasswordsMatch_(password, password2) {
+  private computePasswordsMatch_(password: string, password2: string): boolean {
     return (password.length == 0 && password2.length == 0) ||
         (password == password2 && password.length >= 4);
   }
 
-  onHelpLinkClicked_() {
+  private onHelpLinkClicked_(): void {
     this.userActed('learnMore');
   }
 
-  onRemoveButtonClicked_() {
+  private onRemoveButtonClicked_(): void {
     this.userActed('removeRootFSProtection');
   }
 
-  onEnableButtonClicked_() {
+  private onEnableButtonClicked_(): void {
     this.userActed(['setup', this.password_]);
     this.password_ = '';
     this.passwordRepeat_ = '';
   }
 
-  onOKButtonClicked_() {
+  private onOkButtonClicked_(): void {
     this.userActed('done');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [EnableDebugging.is]: EnableDebugging;
   }
 }
 

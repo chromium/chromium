@@ -66,7 +66,7 @@ class PackagedLicenseScreen extends PackagedLicenseScreenBase {
    * Returns the control which should receive initial focus.
    */
   get defaultControl() {
-    return this.$.packagedLicenseDialog;
+    return /** @type {HTMLElement} */ (this.$.packagedLicenseDialog);
   }
 
   /**

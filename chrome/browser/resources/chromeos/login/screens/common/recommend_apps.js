@@ -123,7 +123,7 @@ class RecommendAppsElement extends RecommendAppsElementBase {
    * Returns the control which should receive initial focus.
    */
   get defaultControl() {
-    return this.$.appsDialog;
+    return /** @type {HTMLElement} */ (this.$.appsDialog);
   }
 
   defaultUIStep() {
