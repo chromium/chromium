@@ -6592,32 +6592,29 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplCredentiallessIframeBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   base::UnguessableToken first_nonce =
-      web_contents()->GetPrimaryMainFrame()->credentialless_iframes_nonce();
+      web_contents()->GetPrimaryPage().credentialless_iframes_nonce();
   EXPECT_TRUE(first_nonce);
 
   // Same-document navigation does not change the nonce.
   EXPECT_TRUE(NavigateToURL(shell(), main_url.Resolve("#here")));
-  EXPECT_EQ(
-      first_nonce,
-      web_contents()->GetPrimaryMainFrame()->credentialless_iframes_nonce());
+  EXPECT_EQ(first_nonce,
+            web_contents()->GetPrimaryPage().credentialless_iframes_nonce());
 
   // Cross-document same-site navigation creates a new nonce.
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
   base::UnguessableToken second_nonce =
-      web_contents()->GetPrimaryMainFrame()->credentialless_iframes_nonce();
+      web_contents()->GetPrimaryPage().credentialless_iframes_nonce();
   EXPECT_TRUE(second_nonce);
   EXPECT_NE(first_nonce, second_nonce);
 
   // Cross-document cross-site navigation creates a new nonce.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
-  EXPECT_NE(
-      first_nonce,
-      web_contents()->GetPrimaryMainFrame()->credentialless_iframes_nonce());
-  EXPECT_NE(
-      second_nonce,
-      web_contents()->GetPrimaryMainFrame()->credentialless_iframes_nonce());
+  EXPECT_NE(first_nonce,
+            web_contents()->GetPrimaryPage().credentialless_iframes_nonce());
+  EXPECT_NE(second_nonce,
+            web_contents()->GetPrimaryPage().credentialless_iframes_nonce());
 }
 
 class RenderFrameHostImplCredentiallessIframeNikBrowserTest

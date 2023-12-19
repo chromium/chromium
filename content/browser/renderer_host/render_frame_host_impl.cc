@@ -4185,11 +4185,7 @@ absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
   // fenced frame tree to maintain the guarantee that a credentialless frame
   // tree has a unique nonce.
   if (is_credentialless) {
-    RenderFrameHostImpl* main_rfh = this;
-    while (main_rfh->parent_ && !main_rfh->IsFencedFrameRoot()) {
-      main_rfh = main_rfh->parent_;
-    }
-    return main_rfh->credentialless_iframes_nonce();
+    return GetPage().credentialless_iframes_nonce();
   }
 
   // Otherwise, use the fenced frame nonce for this navigation.
@@ -4198,14 +4194,6 @@ absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
   // passed in `fenced_frame_nonce_for_navigation`. If there is no navigation
   // associated with this call, then we get the nonce from this RFHI's
   // FrameTreeNode with FrameTreeNode::GetFencedFrameNonce().
-  //
-  // Note that MPArch will ensure that fenced frame tree within an
-  // credentialless iframe does not have `is_credentialless` set to true. The
-  // nonce was moved from PageImpl to RenderFrameHostImpl to fix
-  // crbug.com/1287458. In the case of a credentialless iframe embedded in a
-  // fenced frame, we get the `credentialless_iframes_nonce_` of the fenced
-  // frame root to prevent credentialless iframes embedded inside a fenced frame
-  // from sharing nonce with credentialless iframes outside the fenced frame.
   if (fenced_frame_nonce_for_navigation.has_value()) {
     return fenced_frame_nonce_for_navigation;
   }
@@ -13348,12 +13336,6 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   }
 
   navigation_id_ = navigation_request->GetNavigationId();
-
-  // The nonce to use in credentialless iframe is a page scoped attribute. So it
-  // needs to change every time the top-level document change.
-  // TODO(https://crbug.com1287458): Once the ShadowDom implementation of
-  // FencedFrame is gone, move this attribute back to PageImpl.
-  credentialless_iframes_nonce_ = base::UnguessableToken::Create();
 
   // When the embedder navigates a fenced frame root, the navigation
   // stores a new set of fenced frame properties.

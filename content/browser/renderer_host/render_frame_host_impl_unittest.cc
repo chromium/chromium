@@ -445,7 +445,7 @@ TEST_F(RenderFrameHostImplTest, ChildOfCredentiallessIsCredentialless) {
 
   // A credentialless document sets a nonce on its network isolation key.
   EXPECT_TRUE(child_frame->GetNetworkIsolationKey().GetNonce().has_value());
-  EXPECT_EQ(main_test_rfh()->credentialless_iframes_nonce(),
+  EXPECT_EQ(main_test_rfh()->GetPage().credentialless_iframes_nonce(),
             child_frame->GetNetworkIsolationKey().GetNonce().value());
 
   // A child of a credentialless RFH is credentialless.
@@ -463,7 +463,7 @@ TEST_F(RenderFrameHostImplTest, ChildOfCredentiallessIsCredentialless) {
   // isolation key.
   EXPECT_TRUE(
       grandchild_frame->GetNetworkIsolationKey().GetNonce().has_value());
-  EXPECT_EQ(main_test_rfh()->credentialless_iframes_nonce(),
+  EXPECT_EQ(main_test_rfh()->GetPage().credentialless_iframes_nonce(),
             grandchild_frame->GetNetworkIsolationKey().GetNonce().value());
 }
 

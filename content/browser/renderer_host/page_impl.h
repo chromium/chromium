@@ -199,6 +199,11 @@ class CONTENT_EXPORT PageImpl : public Page {
   bool CheckAndMaybeDebitSelectURLBudgets(const net::SchemefulSite& site,
                                           double bits_to_charge);
 
+  // See documentation for |credentialless_iframes_nonce_|.
+  const base::UnguessableToken& credentialless_iframes_nonce() const {
+    return credentialless_iframes_nonce_;
+  }
+
  private:
   void DidActivateAllRenderViewsForPrerenderingOrPreview(
       base::OnceCallback<void(base::TimeTicks)> completion_callback);
@@ -320,6 +325,12 @@ class CONTENT_EXPORT PageImpl : public Page {
   std::string last_reported_encoding_;
   // The canonicalized character encoding.
   std::string canonical_encoding_;
+
+  // Nonce to be used for initializing the storage key and the network isolation
+  // key of credentialless iframes which are children of this page's main
+  // document.
+  const base::UnguessableToken credentialless_iframes_nonce_ =
+      base::UnguessableToken::Create();
 
   base::WeakPtrFactory<PageImpl> weak_factory_{this};
 };

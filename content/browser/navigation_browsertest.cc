@@ -6863,7 +6863,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
   // A credentialless document has a storage key with a nonce.
   EXPECT_TRUE(child->current_frame_host()->GetStorageKey().nonce().has_value());
   base::UnguessableToken credentialless_nonce =
-      current_frame_host()->credentialless_iframes_nonce();
+      current_frame_host()->GetPage().credentialless_iframes_nonce();
   EXPECT_EQ(credentialless_nonce,
             child->current_frame_host()->GetStorageKey().nonce().value());
 
@@ -6968,7 +6968,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
   EXPECT_TRUE(
       child_b->current_frame_host()->GetStorageKey().nonce().has_value());
   base::UnguessableToken credentialless_nonce_b =
-      current_frame_host()->credentialless_iframes_nonce();
+      current_frame_host()->GetPage().credentialless_iframes_nonce();
   EXPECT_NE(credentialless_nonce, credentialless_nonce_b);
   EXPECT_EQ(credentialless_nonce_b,
             child_b->current_frame_host()->GetStorageKey().nonce().value());

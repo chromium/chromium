@@ -865,11 +865,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return renderer_url_info_.was_loaded_from_load_data_with_base_url;
   }
 
-  const base::UnguessableToken& credentialless_iframes_nonce() const {
-    DCHECK(is_main_frame() || IsFencedFrameRoot());
-    return credentialless_iframes_nonce_;
-  }
-
   // Saves the URLs and other URL-related information used in the renderer.
   // These values can be used to know the current state of URLs in the renderer.
   // Currently these values are used to simulate calculations in the renderer
@@ -5100,14 +5095,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Emit a DumpWithoutCrashing() when |this| is deleted and this flag is reset.
   bool check_deletion_for_bug_1276535_ = false;
-
-  // Nonce to be used for initializing the storage key and the network isolation
-  // key of credentialless iframes which are children of this page's document.
-  // TODO(https://crbug.com/1287458): Once the ShadowDom implementation of
-  // FencedFrame is gone, move this attribute back to PageImpl. See also:
-  // https://crbug.com/1262022
-  base::UnguessableToken credentialless_iframes_nonce_ =
-      base::UnguessableToken::Create();
 
   // Used for devtools instrumentation and trace-ability. Do not use for
   // anything else, especially to look up the RenderFrameHost
