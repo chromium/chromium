@@ -29,7 +29,7 @@ namespace {
 
 const base::FeatureParam<double> kTemperature{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-    "on_device_model_temperature", 0.8};
+    "on_device_model_temperature", 0.2};
 
 const base::FeatureParam<int> kTopK{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
