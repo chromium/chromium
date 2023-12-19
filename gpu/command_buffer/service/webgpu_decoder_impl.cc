@@ -1691,13 +1691,24 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
         adapter_properties.vendorID == 0x1AE0 &&
         adapter_properties.deviceID == 0xC0DE;
 
-    // The adapter must be able to import external images, or it must be a
+    // The adapter must be able to import external textures, or it must be a
     // SwiftShader adapter. For SwiftShader, we will perform a manual
     // upload/readback to/from shared images.
-    // TODO(crbug.com/1493854): Switch this check to be on the
-    // availability of SharedTextureMemory on Mac once we switch Mac to using
-    // SharedTextureMemory rather than WrapIOSurface().
-    if (!(adapter.SupportsExternalImages() || is_swiftshader)) {
+    bool supports_external_textures = false;
+#if BUILDFLAG(IS_APPLE)
+    // On Apple, Chromium uses SharedTextureMemory to import IOSurfaces.
+    wgpu::Adapter adapter_obj(adapter.Get());
+    supports_external_textures =
+        adapter_obj.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface);
+#else
+    // On all other platforms, Chromium currently uses the platform-specific
+    // ExternalImage API surfaces.
+    // NOTE: These platforms should be switched to the corresponding
+    // SharedTextureMemory feature check as they are converted to using
+    // SharedTextureMemory.
+    supports_external_textures = adapter.SupportsExternalImages();
+#endif
+    if (!(supports_external_textures || is_swiftshader)) {
       return false;
     }
 
