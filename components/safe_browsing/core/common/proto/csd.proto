@@ -1709,6 +1709,8 @@ message ClientSafeBrowsingReportRequest {
       // Applicable actions: DISCARD, KEEP, PROCEED
       DOWNLOADS_PAGE = 3;
       // Applicable actions: PROCEED, CANCEL, CLOSE
+      // TODO(chlily): Remove CLOSE option once ImprovedDownloadPageWarnings
+      // launches.
       DOWNLOAD_PROMPT = 4;
     }
     optional Surface surface = 1;

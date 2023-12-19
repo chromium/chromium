@@ -95,6 +95,9 @@ enum DownloadsDOMEvent {
   DOWNLOADS_DOM_EVENT_DEEP_SCAN = 15,
   DOWNLOADS_DOM_EVENT_BYPASS_DEEP_SCAN = 16,
   DOWNLOADS_DOM_EVENT_SAVE_SUSPICIOUS = 17,
+  DOWNLOADS_DOM_EVENT_OPEN_BYPASS_WARNING_PROMPT = 18,
+  DOWNLOADS_DOM_EVENT_SAVE_DANGEROUS_FROM_PROMPT = 19,
+  DOWNLOADS_DOM_EVENT_CANCEL_BYPASS_WARNING_PROMPT = 20,
   DOWNLOADS_DOM_EVENT_MAX
 };
 
@@ -129,10 +132,10 @@ void MaybeReportBypassAction(download::DownloadItem* file,
   CHECK(surface == WarningSurface::DOWNLOADS_PAGE ||
         surface == WarningSurface::DOWNLOAD_PROMPT);
   CHECK(action == WarningAction::PROCEED || action == WarningAction::CANCEL ||
-        action == WarningAction::DISCARD);
-  // If this is called from the DOWNLOADS_PAGE, the action must be proceed or
-  // discard. There is no cancellation action on the page, because there's no
-  // prompt to cancel.
+        action == WarningAction::DISCARD || action == WarningAction::KEEP);
+  // If this is called from the DOWNLOADS_PAGE, the action must be proceed,
+  // discard, or keep. There is no cancellation action on the page, because
+  // there's no prompt to cancel.
   CHECK(surface != WarningSurface::DOWNLOADS_PAGE ||
         action != WarningAction::CANCEL);
 
@@ -148,7 +151,7 @@ void MaybeReportBypassAction(download::DownloadItem* file,
       browser_context && browser_context->IsOffTheRecord()) {
     return;
   }
-  // Do not send cancel report since it's not a terminal action.
+  // Do not send cancel or keep report since it's not a terminal action.
   if (action != WarningAction::PROCEED && action != WarningAction::DISCARD) {
     return;
   }
@@ -314,6 +317,64 @@ void DownloadsDOMHandler::SaveSuspiciousRequiringGesture(
     // `file` is potentially deleted.
     file->ValidateDangerousDownload();
   }
+}
+
+void DownloadsDOMHandler::RecordOpenBypassWarningPrompt(const std::string& id) {
+  CHECK(base::FeatureList::IsEnabled(
+      safe_browsing::kImprovedDownloadPageWarnings));
+
+  CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_OPEN_BYPASS_WARNING_PROMPT);
+  download::DownloadItem* file = GetDownloadByStringId(id);
+  if (!file || !file->IsDangerous() || file->IsDone()) {
+    return;
+  }
+
+  RecordDownloadDangerPromptHistogram("Shown", *file);
+
+  MaybeReportBypassAction(file, WarningSurface::DOWNLOADS_PAGE,
+                          WarningAction::KEEP);
+}
+
+void DownloadsDOMHandler::SaveDangerousFromPromptRequiringGesture(
+    const std::string& id) {
+  CHECK(base::FeatureList::IsEnabled(
+      safe_browsing::kImprovedDownloadPageWarnings));
+  if (!GetWebUIWebContents()->HasRecentInteraction()) {
+    LOG(ERROR) << "SaveDangerousFromPromptRequiringGesture received without "
+                  "recent user interaction";
+    return;
+  }
+
+  CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_SAVE_DANGEROUS_FROM_PROMPT);
+  download::DownloadItem* file = GetDownloadByStringId(id);
+  if (!file || !file->IsDangerous() || file->IsDone()) {
+    return;
+  }
+
+  RecordDownloadDangerPromptHistogram("Proceed", *file);
+
+  MaybeReportBypassAction(file, WarningSurface::DOWNLOAD_PROMPT,
+                          WarningAction::PROCEED);
+  MaybeTriggerTrustSafetySurvey(file, WarningSurface::DOWNLOAD_PROMPT,
+                                WarningAction::PROCEED);
+
+  // `file` is potentially deleted.
+  file->ValidateDangerousDownload();
+}
+
+void DownloadsDOMHandler::RecordCancelBypassWarningPrompt(
+    const std::string& id) {
+  CHECK(base::FeatureList::IsEnabled(
+      safe_browsing::kImprovedDownloadPageWarnings));
+
+  CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_CANCEL_BYPASS_WARNING_PROMPT);
+  download::DownloadItem* file = GetDownloadByStringId(id);
+  if (!file || !file->IsDangerous() || file->IsDone()) {
+    return;
+  }
+
+  MaybeReportBypassAction(file, WarningSurface::DOWNLOAD_PROMPT,
+                          WarningAction::CANCEL);
 }
 
 void DownloadsDOMHandler::DiscardDangerous(const std::string& id) {

@@ -37,6 +37,10 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
     // opening the prompt, for a "dangerous" download.
     DOWNLOADS_PAGE = 3,
     // Applicable actions: PROCEED, CANCEL, CLOSE
+    // Under ImprovedDownloadPageWarnings: CLOSE is no longer a separate option
+    // because the new dialog only has PROCEED and CANCEL buttons, and we treat
+    // dismissing it with Escape the same as pressing cancel.
+    // TODO(chlily): Clean this comment up once the feature launches.
     DOWNLOAD_PROMPT = 4,
     kMaxValue = DOWNLOAD_PROMPT
   };

@@ -24,28 +24,39 @@ export class TestDownloadsProxy {
 class FakePageHandler implements PageHandlerInterface {
   private callbackRouterRemote_: PageRemote;
   private callTracker_: TestBrowserProxy = new TestBrowserProxy([
+    'recordCancelBypassWarningPrompt',
+    'recordOpenBypassWarningPrompt',
     'remove',
+    'saveDangerousFromPromptRequiringGesture',
     'saveDangerousRequiringGesture',
     'saveSuspiciousRequiringGesture',
   ]);
 
   constructor(callbackRouterRemote: PageRemote) {
     this.callbackRouterRemote_ = callbackRouterRemote;
-    this.callTracker_ = new TestBrowserProxy([
-      'remove',
-      'saveDangerousRequiringGesture',
-      'saveSuspiciousRequiringGesture',
-    ]);
   }
 
   whenCalled(methodName: string): Promise<void> {
     return this.callTracker_.whenCalled(methodName);
   }
 
+  recordCancelBypassWarningPrompt(id: string) {
+    this.callTracker_.methodCalled('recordCancelBypassWarningPrompt', id);
+  }
+
+  recordOpenBypassWarningPrompt(id: string) {
+    this.callTracker_.methodCalled('recordOpenBypassWarningPrompt', id);
+  }
+
   async remove(id: string) {
     this.callbackRouterRemote_.removeItem(0);
     await this.callbackRouterRemote_.$.flushForTesting();
     this.callTracker_.methodCalled('remove', id);
+  }
+
+  saveDangerousFromPromptRequiringGesture(id: string) {
+    this.callTracker_.methodCalled(
+        'saveDangerousFromPromptRequiringGesture', id);
   }
 
   saveDangerousRequiringGesture(id: string) {

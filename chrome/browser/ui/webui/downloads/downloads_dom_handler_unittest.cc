@@ -382,6 +382,61 @@ TEST_F(DownloadsDOMHandlerTestImprovedDownloadPageWarnings,
   handler.SaveSuspiciousRequiringGesture("1");
 }
 
+TEST_F(DownloadsDOMHandlerTestImprovedDownloadPageWarnings,
+       SaveDangerousFromPromptRequiringGesture) {
+  SetUpDangerousDownload();
+
+  TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
+                                  web_ui());
+
+  SimulateMouseGestureOnWebUI();
+
+  EXPECT_CALL(dangerous_download_, ValidateDangerousDownload());
+  handler.SaveDangerousFromPromptRequiringGesture("1");
+
+  // Verify that dangerous download report is sent.
+  safe_browsing::ClientSafeBrowsingReportRequest expected_report;
+  std::string expected_serialized_report;
+  expected_report.set_url(GURL(kTestDangerousDownloadUrl).spec());
+  expected_report.set_type(safe_browsing::ClientSafeBrowsingReportRequest::
+                               DANGEROUS_DOWNLOAD_RECOVERY);
+  expected_report.set_did_proceed(true);
+  expected_report.set_download_verdict(
+      safe_browsing::ClientDownloadResponse::DANGEROUS);
+  expected_report.set_token("token");
+  expected_report.SerializeToString(&expected_serialized_report);
+  EXPECT_EQ(expected_serialized_report,
+            test_safe_browsing_factory_->test_safe_browsing_service()
+                ->serialized_download_report());
+}
+
+TEST_F(DownloadsDOMHandlerTestImprovedDownloadPageWarnings,
+       SaveDangerousFromPromptRequiringGesture_NoRecentInteraction) {
+  SetUpDangerousDownload();
+
+  TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
+                                  web_ui());
+
+  EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
+  handler.SaveDangerousFromPromptRequiringGesture("1");
+}
+
+TEST_F(DownloadsDOMHandlerTestImprovedDownloadPageWarnings,
+       RecordCancelBypassWarningPrompt) {
+  SetUpDangerousDownload();
+
+  TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
+                                  web_ui());
+
+  EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
+  handler.RecordCancelBypassWarningPrompt("1");
+
+  // Verify no cancel report is sent, since it's not a terminal action.
+  EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
+                  ->serialized_download_report()
+                  .empty());
+}
+
 class DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService
     : public DownloadsDOMHandlerWithFakeSafeBrowsingTest {
  public:
@@ -437,4 +492,21 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService,
 
   EXPECT_CALL(dangerous_download_, ValidateDangerousDownload());
   handler.SaveSuspiciousRequiringGesture("1");
+}
+
+TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService,
+       SaveDangerousFromPrompt_CallsTrustSafetySentimentService) {
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, true);
+  SetUpDangerousDownload();
+  ExpectTrustSafetySentimentServiceCall(
+      DownloadItemWarningData::WarningSurface::DOWNLOAD_PROMPT,
+      DownloadItemWarningData::WarningAction::PROCEED);
+
+  TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
+                                  web_ui());
+
+  SimulateMouseGestureOnWebUI();
+
+  EXPECT_CALL(dangerous_download_, ValidateDangerousDownload());
+  handler.SaveDangerousFromPromptRequiringGesture("1");
 }

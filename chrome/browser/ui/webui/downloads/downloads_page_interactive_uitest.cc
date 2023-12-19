@@ -291,6 +291,37 @@ class DownloadsPageInteractiveUitestWithDangerType
     danger_caption_visibility.event = kReadyEvent;
     return WaitForStateChange(kDownloadsPageTabId, danger_caption_visibility);
   }
+
+  auto WaitForBypassWarningPrompt() {
+    DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadyEvent);
+    const DeepQuery kPathToDialog{
+        "downloads-manager",
+        "download-bypass-warning-confirmation-dialog",
+    };
+    StateChange dialog_visible;
+    dialog_visible.type = StateChange::Type::kExists;
+    dialog_visible.where = kPathToDialog;
+    dialog_visible.event = kReadyEvent;
+    return WaitForStateChange(kDownloadsPageTabId, dialog_visible);
+  }
+
+  auto ClickBypassWarningPromptButton(const std::string& button_selector) {
+    DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadyEvent);
+    const DeepQuery path_to_button{
+        "downloads-manager",
+        "download-bypass-warning-confirmation-dialog",
+        button_selector,
+    };
+    StateChange button_visible;
+    button_visible.type = StateChange::Type::kExists;
+    button_visible.where = path_to_button;
+    button_visible.event = kReadyEvent;
+    return Steps(WaitForStateChange(kDownloadsPageTabId, button_visible),
+                 // Use mouse input instead of JavaScript click() to satisfy the
+                 // user gesture requirement for saving a dangerous file.
+                 MoveMouseTo(kDownloadsPageTabId, path_to_button),
+                 ClickMouse());
+  }
 };
 
 // Uncommon downloads follow the "suspicious" pattern and show up with grey
@@ -318,6 +349,47 @@ IN_PROC_BROWSER_TEST_F(DownloadsPageInteractiveUitestSuspicious,
                   WaitForTopmostItemDanger(true, "grey"),    //
                   TakeTopmostItemAction("#save-dangerous"),  //
                   WaitForTopmostItemDanger(false));
+}
+
+// Dangerous downloads follow the "dangerous" pattern and show up with red
+// icons and text. They can be validated only from the confirmation dialog.
+using DownloadsPageInteractiveUitestDangerous =
+    DownloadsPageInteractiveUitestWithDangerType<
+        download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT>;
+
+IN_PROC_BROWSER_TEST_F(DownloadsPageInteractiveUitestDangerous,
+                       DiscardDangerousFile) {
+  RunTestSequence(OpenDownloadsPage(),                          //
+                  DownloadDangerousTestFile(),                  //
+                  WaitForDownloadItems(1),                      //
+                  WaitForTopmostItemDanger(true, "red"),        //
+                  TakeTopmostItemAction("#discard-dangerous"),  //
+                  WaitForNoDownloads());
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadsPageInteractiveUitestDangerous,
+                       ValidateDangerousFileFromPrompt) {
+  RunTestSequence(
+      OpenDownloadsPage(),                                           //
+      DownloadDangerousTestFile(),                                   //
+      WaitForDownloadItems(1),                                       //
+      WaitForTopmostItemDanger(true, "red"),                         //
+      TakeTopmostItemAction("#save-dangerous"),                      //
+      WaitForBypassWarningPrompt(),                                  //
+      ClickBypassWarningPromptButton("#download-dangerous-button"),  //
+      WaitForTopmostItemDanger(false));
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadsPageInteractiveUitestDangerous,
+                       CancelValidateDangerousFile) {
+  RunTestSequence(OpenDownloadsPage(),                               //
+                  DownloadDangerousTestFile(),                       //
+                  WaitForDownloadItems(1),                           //
+                  WaitForTopmostItemDanger(true, "red"),             //
+                  TakeTopmostItemAction("#save-dangerous"),          //
+                  WaitForBypassWarningPrompt(),                      //
+                  ClickBypassWarningPromptButton("#cancel-button"),  //
+                  WaitForTopmostItemDanger(true, "red"));
 }
 
 }  // namespace

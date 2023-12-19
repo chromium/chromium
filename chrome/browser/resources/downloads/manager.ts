@@ -182,6 +182,8 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     const bypassItem = this.items_.find(item => item.id === e.detail.id);
     if (bypassItem) {
       this.bypassDialogItemId_ = bypassItem.id;
+      assert(!!this.mojoHandler_);
+      this.mojoHandler_.recordOpenBypassWarningPrompt(this.bypassDialogItemId_);
     }
   }
 
@@ -204,8 +206,14 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
         'download-bypass-warning-confirmation-dialog');
     assert(dialog);
     assert(this.bypassDialogItemId_ !== '');
+    assert(!!this.mojoHandler_);
     if (dialog.wasConfirmed()) {
-      this.mojoHandler_!.saveDangerousRequiringGesture(
+      this.mojoHandler_.saveDangerousFromPromptRequiringGesture(
+          this.bypassDialogItemId_);
+    } else {
+      // Closing the dialog by clicking cancel is treated the same as closing
+      // the dialog by pressing Esc. Both are treated as CANCEL, not CLOSE.
+      this.mojoHandler_.recordCancelBypassWarningPrompt(
           this.bypassDialogItemId_);
     }
     this.hideBypassWarningDialog_();
