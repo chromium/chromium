@@ -19,6 +19,7 @@ include_rules = [
   "+third_party/dav1d",
   "+third_party/ffmpeg",
   "+third_party/flac",
+  "+third_party/fuzztest",
   "+third_party/libaom",
   "+third_party/libdrm",
   "+third_party/libgav1",
