@@ -241,8 +241,10 @@ export class ModeSelector extends LitElement {
         repeat(shownModes, (mode) => mode, (mode) => this.renderModeItem(mode));
     return html`
       <div id="modes-group"
+          role="radiogroup"
           @click=${this.handleClick}
-          @change=${this.handleChange}>
+          @change=${this.handleChange}
+          aria-label=${getI18nMessage(I18nString.ARIA_CAMERA_MODE_GROUP)}>
         ${modeItems}
       </div>
     `;
