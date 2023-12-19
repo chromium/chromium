@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabDragSource.TabDragShadowBuilder;
+import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.DragDropGlobalState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -573,7 +574,11 @@ public class TabDragSourceTest {
                 mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY));
         mSourceInstance.onDrag(
                 mTabsToolbarView,
-                mockDragEvent(DragEvent.ACTION_DROP, POS_X, mPosY, TAB_ID_NOT_DRAGGED));
+                mockDragEvent(
+                        DragEvent.ACTION_DROP,
+                        POS_X,
+                        mPosY,
+                        MockTab.createAndInitialize(TAB_ID_NOT_DRAGGED, mProfile)));
         mSourceInstance.onDrag(
                 mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_ENDED, POS_X, mPosY));
 
@@ -669,17 +674,21 @@ public class TabDragSourceTest {
     }
 
     private DragEvent mockDragEvent(int action, float x, float y) {
-        return mockDragEvent(action, x, y, TAB_ID);
+        return mockDragEvent(action, x, y, mTabBeingDragged);
     }
 
-    private DragEvent mockDragEvent(int action, float x, float y, int tabId) {
+    private DragEvent mockDragEvent(int action, float x, float y, Tab tab) {
+        ChromeDropDataAndroid dropData = new ChromeDropDataAndroid.Builder().withTab(tab).build();
         DragEvent event = mock(DragEvent.class);
         when(event.getAction()).thenReturn(action);
         when(event.getX()).thenReturn(x);
         when(event.getY()).thenReturn(y);
         when(event.getClipData())
                 .thenReturn(
-                        new ClipData(null, SUPPORTED_MIME_TYPES, new Item("TabId=" + tabId, null)));
+                        new ClipData(
+                                null,
+                                SUPPORTED_MIME_TYPES,
+                                new Item(dropData.buildTabClipDataText(), null)));
         when(event.getClipDescription()).thenReturn(new ClipDescription("", SUPPORTED_MIME_TYPES));
         return event;
     }

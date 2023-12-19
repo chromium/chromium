@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.dragdrop;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipData.Item;
+import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
 import android.view.DragAndDropPermissions;
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragAndDropBrowserDelegate;
 import org.chromium.ui.dragdrop.DropDataAndroid;
 import org.chromium.ui.dragdrop.DropDataProviderImpl;
@@ -31,8 +33,12 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     /** The MIME type for a tab object dragged from Chrome. */
     public static final String CHROME_MIMETYPE_TAB = "chrome/tab";
 
-    public static final String[] SUPPORTED_MIME_TYPES = {CHROME_MIMETYPE_TAB};
-
+    private static final String[] SUPPORTED_MIME_TYPES = {
+        CHROME_MIMETYPE_TAB,
+        ClipDescription.MIMETYPE_TEXT_PLAIN,
+        ClipDescription.MIMETYPE_TEXT_INTENT,
+        MimeTypeUtils.CHROME_MIMETYPE_LINK
+    };
     private static final String PARAM_CLEAR_CACHE_DELAYED_MS = "ClearCacheDelayedMs";
     @VisibleForTesting static final String PARAM_DROP_IN_CHROME = "DropInChrome";
 
@@ -102,14 +108,10 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     public ClipData buildClipData(@NonNull DropDataAndroid dropData) {
         assert dropData instanceof ChromeDropDataAndroid;
         ChromeDropDataAndroid chromeDropDataAndroid = (ChromeDropDataAndroid) dropData;
+        Intent intent = createLinkIntent(chromeDropDataAndroid.mTab.getUrl().getSpec());
         return new ClipData(
                 null,
                 SUPPORTED_MIME_TYPES,
-                new Item(getTextForBrowserData(chromeDropDataAndroid), null));
-    }
-
-    private String getTextForBrowserData(ChromeDropDataAndroid dropData) {
-        assert dropData.hasTab();
-        return "TabId=" + dropData.mTabId;
+                new Item(chromeDropDataAndroid.buildTabClipDataText(), intent, null));
     }
 }

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -44,6 +45,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.DragAndDropLauncherActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -155,10 +160,18 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     }
 
     @Test
+    @Config(sdk = 30)
     public void testBuildClipData() {
-        ClipData data =
-                mDelegate.buildClipData(new ChromeDropDataAndroid.Builder().withTabId(1).build());
+        mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        Profile profile = mock(Profile.class);
+        Tab tab = MockTab.createAndInitialize(1, profile);
+        ChromeDropDataAndroid dropData = new ChromeDropDataAndroid.Builder().withTab(tab).build();
+        ClipData data = mDelegate.buildClipData(dropData);
         assertEquals(
-                "The browser clip data is not as expected", "TabId=1", data.getItemAt(0).getText());
+                "The browser clip data is not as expected",
+                dropData.buildTabClipDataText(),
+                data.getItemAt(0).getText());
+        assertNotNull("The clip data should have intent set.", data.getItemAt(0).getIntent());
     }
 }

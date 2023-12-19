@@ -146,7 +146,7 @@ public class TabDragSource implements View.OnDragListener {
         updateShadowView(tabBeingDragged, dragSourceView);
 
         DropDataAndroid dropData =
-                new ChromeDropDataAndroid.Builder().withTabId(tabBeingDragged.getId()).build();
+                new ChromeDropDataAndroid.Builder().withTab(tabBeingDragged).build();
         DragShadowBuilder builder = createDragShadowBuilder(dragSourceView, startPoint);
         DragDropGlobalState.getInstance().dragShadowBuilder = builder;
         return mDragAndDropDelegate.startDragAndDrop(dragSourceView, builder, dropData);
@@ -353,9 +353,7 @@ public class TabDragSource implements View.OnDragListener {
     private int getTabIdFromClipData(ClipData.Item item) {
         // TODO(b/285585036): Expand the ClipData definition to support dropping of the Tab info to
         // be used by SysUI that can parse this format.
-        String[] itemTexts = item.getText().toString().split(";");
-        String numberText = itemTexts[0].replaceAll("[^0-9]", "");
-        return numberText.isEmpty() ? Tab.INVALID_TAB_ID : Integer.parseInt(numberText);
+        return ChromeDropDataAndroid.extractTabId(item.getText().toString());
     }
 
     private int getTabPositionIndex(float dropXDp, boolean isDraggedTabIncognito) {
