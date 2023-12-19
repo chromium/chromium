@@ -99,6 +99,16 @@ chromium-metrics-reviews@google.com.
 <variants name="OptimizationType">
   <variant name="AboutThisSite"
       summary="Provides 'About this site' data about the site being visited"/>
+  <variant name="AmericanExpressCreditCardFlightBenefits"
+      summary="This optimization provides information about whether a
+               merchant url is eligible for flight credit card benefits.
+               Applies to only American Express credit cards that support
+               benefits on Chrome."/>
+  <variant name="AmericanExpressCreditCardSubscriptionBenefits"
+      summary="This optimization provides information about whether a
+               merchant url is eligible for subscription credit card
+               benefits. Applies to only American Express credit cards that
+               support benefits on Chrome."/>
   <variant name="AutofillSamplingRate"
       summary="This optimization provides information about a sampling rate
                of Autofill UKM metrics per origin based on origin popularity."/>
