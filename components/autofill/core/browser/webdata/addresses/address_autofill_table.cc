@@ -26,9 +26,34 @@ namespace autofill {
 
 namespace {
 
-constexpr std::string_view kAutofillProfilesTable = "autofill_profiles";
+constexpr std::string_view kContactInfoTable = "contact_info";
+constexpr std::string_view kLocalAddressesTable = "local_addresses";
 constexpr std::string_view kGuid = "guid";
+constexpr std::string_view kUseCount = "use_count";
+constexpr std::string_view kUseDate = "use_date";
+constexpr std::string_view kDateModified = "date_modified";
+constexpr std::string_view kLanguageCode = "language_code";
 constexpr std::string_view kLabel = "label";
+constexpr std::string_view kInitialCreatorId = "initial_creator_id";
+constexpr std::string_view kLastModifierId = "last_modifier_id";
+
+constexpr std::string_view kContactInfoTypeTokensTable =
+    "contact_info_type_tokens";
+constexpr std::string_view kLocalAddressesTypeTokensTable =
+    "local_addresses_type_tokens";
+// kGuid = "guid"
+constexpr std::string_view kType = "type";
+constexpr std::string_view kValue = "value";
+constexpr std::string_view kVerificationStatus = "verification_status";
+constexpr std::string_view kObservations = "observations";
+
+// Historically, a different schema was used and addresses were stored in a set
+// of tables named autofill_profiles*. These tables are no longer used in
+// production and only referenced in the migration logic. Do not add to them.
+// Use the contact_info* and local_addresses* tables instead.
+constexpr std::string_view kAutofillProfilesTable = "autofill_profiles";
+// kGuid = "guid"
+// kLabel = "label"
 constexpr std::string_view kCompanyName = "company_name";
 constexpr std::string_view kStreetAddress = "street_address";
 constexpr std::string_view kDependentLocality = "dependent_locality";
@@ -37,11 +62,10 @@ constexpr std::string_view kState = "state";
 constexpr std::string_view kZipcode = "zipcode";
 constexpr std::string_view kSortingCode = "sorting_code";
 constexpr std::string_view kCountryCode = "country_code";
-constexpr std::string_view kUseCount = "use_count";
-constexpr std::string_view kUseDate = "use_date";
-constexpr std::string_view kDateModified = "date_modified";
-constexpr std::string_view kOrigin = "origin";
-constexpr std::string_view kLanguageCode = "language_code";
+// kUseCount = "use_count"
+// kUseDate = "use_date"
+// kDateModified = "date_modified"
+// kLanguageCode = "language_code"
 constexpr std::string_view kDisallowSettingsVisibleUpdates =
     "disallow_settings_visible_updates";
 
@@ -119,29 +143,8 @@ constexpr std::string_view kDay = "day";
 constexpr std::string_view kMonth = "month";
 constexpr std::string_view kYear = "year";
 
-constexpr std::string_view kContactInfoTable = "contact_info";
-constexpr std::string_view kLocalAddressesTable = "local_addresses";
-// kGuid = "guid"
-// kUseCount = "use_count"
-// kUseDate = "use_date"
-// kDateModified = "date_modified"
-// kLanguageCode = "language_code"
-// kLabel = "label"
-constexpr std::string_view kInitialCreatorId = "initial_creator_id";
-constexpr std::string_view kLastModifierId = "last_modifier_id";
-
-constexpr std::string_view kContactInfoTypeTokensTable =
-    "contact_info_type_tokens";
-constexpr std::string_view kLocalAddressesTypeTokensTable =
-    "local_addresses_type_tokens";
-// kGuid = "guid"
-constexpr std::string_view kType = "type";
-constexpr std::string_view kValue = "value";
-constexpr std::string_view kVerificationStatus = "verification_status";
-constexpr std::string_view kObservations = "observations";
-
-void AddAutofillProfileDetailsFromStatement(sql::Statement& s,
-                                            AutofillProfile* profile) {
+void AddLegacyAutofillProfileDetailsFromStatement(sql::Statement& s,
+                                                  AutofillProfile* profile) {
   int index = 0;
   for (FieldType type :
        {COMPANY_NAME, ADDRESS_HOME_STREET_ADDRESS,
@@ -156,8 +159,8 @@ void AddAutofillProfileDetailsFromStatement(sql::Statement& s,
   profile->set_profile_label(s.ColumnString(index++));
 }
 
-bool AddAutofillProfileNamesToProfile(sql::Database* db,
-                                      AutofillProfile* profile) {
+bool AddLegacyAutofillProfileNamesToProfile(sql::Database* db,
+                                            AutofillProfile* profile) {
   if (!db->DoesTableExist(kAutofillProfileNamesTable)) {
     return false;
   }
@@ -186,8 +189,8 @@ bool AddAutofillProfileNamesToProfile(sql::Database* db,
   return s.Succeeded();
 }
 
-bool AddAutofillProfileAddressesToProfile(sql::Database* db,
-                                          AutofillProfile* profile) {
+bool AddLegacyAutofillProfileAddressesToProfile(sql::Database* db,
+                                                AutofillProfile* profile) {
   if (!db->DoesTableExist(kAutofillProfileAddressesTable)) {
     return false;
   }
@@ -271,8 +274,8 @@ bool AddAutofillProfileAddressesToProfile(sql::Database* db,
   return s.Succeeded();
 }
 
-bool AddAutofillProfileEmailsToProfile(sql::Database* db,
-                                       AutofillProfile* profile) {
+bool AddLegacyAutofillProfileEmailsToProfile(sql::Database* db,
+                                             AutofillProfile* profile) {
   if (!db->DoesTableExist(kAutofillProfileEmailsTable)) {
     return false;
   }
@@ -287,8 +290,8 @@ bool AddAutofillProfileEmailsToProfile(sql::Database* db,
   return s.Succeeded();
 }
 
-bool AddAutofillProfilePhonesToProfile(sql::Database* db,
-                                       AutofillProfile* profile) {
+bool AddLegacyAutofillProfilePhonesToProfile(sql::Database* db,
+                                             AutofillProfile* profile) {
   if (!db->DoesTableExist(kAutofillProfilePhonesTable)) {
     return false;
   }
@@ -300,22 +303,6 @@ bool AddAutofillProfilePhonesToProfile(sql::Database* db,
                    profile->guid())) {
     DCHECK_EQ(profile->guid(), s.ColumnString(0));
     profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, s.ColumnString16(1));
-  }
-  return s.Succeeded();
-}
-
-bool AddAutofillProfileBirthdateToProfile(sql::Database* db,
-                                          AutofillProfile* profile) {
-  if (!db->DoesTableExist(kAutofillProfileBirthdatesTable)) {
-    return false;
-  }
-  sql::Statement s;
-  if (SelectByGuid(db, s, kAutofillProfileBirthdatesTable,
-                   {kGuid, kDay, kMonth, kYear}, profile->guid())) {
-    DCHECK_EQ(profile->guid(), s.ColumnString(0));
-    profile->SetRawInfoAsInt(BIRTHDATE_DAY, s.ColumnInt(1));
-    profile->SetRawInfoAsInt(BIRTHDATE_MONTH, s.ColumnInt(2));
-    profile->SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR, s.ColumnInt(3));
   }
   return s.Succeeded();
 }
@@ -727,25 +714,22 @@ AddressAutofillTable::GetAutofillProfileFromLegacyTable(
   DCHECK(base::Uuid::ParseCaseInsensitive(profile->guid()).is_valid());
 
   // Get associated name info using guid.
-  AddAutofillProfileNamesToProfile(db_, profile.get());
+  AddLegacyAutofillProfileNamesToProfile(db_, profile.get());
 
   // Get associated email info using guid.
-  AddAutofillProfileEmailsToProfile(db_, profile.get());
+  AddLegacyAutofillProfileEmailsToProfile(db_, profile.get());
 
   // Get associated phone info using guid.
-  AddAutofillProfilePhonesToProfile(db_, profile.get());
-
-  // Get associated birthdate info using guid.
-  AddAutofillProfileBirthdateToProfile(db_, profile.get());
+  AddLegacyAutofillProfilePhonesToProfile(db_, profile.get());
 
   // The details should be added after the other info to make sure they don't
   // change when we change the names/emails/phones.
-  AddAutofillProfileDetailsFromStatement(s, profile.get());
+  AddLegacyAutofillProfileDetailsFromStatement(s, profile.get());
 
   // The structured address information should be added after the street_address
   // from the query above was  written because this information is used to
   // detect changes by a legacy client.
-  AddAutofillProfileAddressesToProfile(db_, profile.get());
+  AddLegacyAutofillProfileAddressesToProfile(db_, profile.get());
 
   // For more-structured profiles, the profile must be finalized to fully
   // populate the name fields.
@@ -862,7 +846,7 @@ bool AddressAutofillTable::MigrateToVersion92AddNewPrefixedNameColumn() {
 }
 
 bool AddressAutofillTable::MigrateToVersion90AddNewStructuredAddressColumns() {
-  if (!db_->DoesTableExist("autofill_profile_addresses")) {
+  if (!db_->DoesTableExist(kAutofillProfileAddressesTable)) {
     InitLegacyProfileAddressesTable();
   }
 
@@ -1055,53 +1039,6 @@ bool AddressAutofillTable::MigrateToVersion121DropServerAddressTables() {
          transaction.Commit();
 }
 
-bool AddressAutofillTable::InitLegacyProfilesTable() {
-  return CreateTableIfNotExists(
-      db_, kAutofillProfilesTable,
-      {{kGuid, "VARCHAR PRIMARY KEY"},
-       {kCompanyName, "VARCHAR"},
-       {kStreetAddress, "VARCHAR"},
-       {kDependentLocality, "VARCHAR"},
-       {kCity, "VARCHAR"},
-       {kState, "VARCHAR"},
-       {kZipcode, "VARCHAR"},
-       {kSortingCode, "VARCHAR"},
-       {kCountryCode, "VARCHAR"},
-       {kDateModified, "INTEGER NOT NULL DEFAULT 0"},
-       {kOrigin, "VARCHAR DEFAULT ''"},
-       {kLanguageCode, "VARCHAR"},
-       {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
-       {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
-       {kLabel, "VARCHAR"},
-       {kDisallowSettingsVisibleUpdates, "INTEGER NOT NULL DEFAULT 0"}});
-}
-
-bool AddressAutofillTable::InitLegacyProfileNamesTable() {
-  // The default value of 0 corresponds to the verification status
-  // |kNoStatus|.
-  return CreateTableIfNotExists(
-      db_, kAutofillProfileNamesTable,
-      {{kGuid, "VARCHAR"},
-       {kFirstName, "VARCHAR"},
-       {kMiddleName, "VARCHAR"},
-       {kLastName, "VARCHAR"},
-       {kFullName, "VARCHAR"},
-       {kHonorificPrefix, "VARCHAR"},
-       {kFirstLastName, "VARCHAR"},
-       {kConjunctionLastName, "VARCHAR"},
-       {kSecondLastName, "VARCHAR"},
-       {kHonorificPrefixStatus, "INTEGER DEFAULT 0"},
-       {kFirstNameStatus, "INTEGER DEFAULT 0"},
-       {kMiddleNameStatus, "INTEGER DEFAULT 0"},
-       {kLastNameStatus, "INTEGER DEFAULT 0"},
-       {kFirstLastNameStatus, "INTEGER DEFAULT 0"},
-       {kConjunctionLastNameStatus, "INTEGER DEFAULT 0"},
-       {kSecondLastNameStatus, "INTEGER DEFAULT 0"},
-       {kFullNameStatus, "INTEGER DEFAULT 0"},
-       {kFullNameWithHonorificPrefix, "VARCHAR"},
-       {kFullNameWithHonorificPrefixStatus, "INTEGER DEFAULT 0"}});
-}
-
 bool AddressAutofillTable::InitLegacyProfileAddressesTable() {
   // The default value of 0 corresponds to the verification status
   // |kNoStatus|.
@@ -1136,24 +1073,6 @@ bool AddressAutofillTable::InitLegacyProfileAddressesTable() {
        {kFloor, "VARCHAR"},
        {kApartmentNumberStatus, "INTEGER DEFAULT 0"},
        {kFloorStatus, "INTEGER DEFAULT 0"}});
-}
-
-bool AddressAutofillTable::InitLegacyProfileEmailsTable() {
-  return CreateTableIfNotExists(db_, kAutofillProfileEmailsTable,
-                                {{kGuid, "VARCHAR"}, {kEmail, "VARCHAR"}});
-}
-
-bool AddressAutofillTable::InitLegacyProfilePhonesTable() {
-  return CreateTableIfNotExists(db_, kAutofillProfilePhonesTable,
-                                {{kGuid, "VARCHAR"}, {kNumber, "VARCHAR"}});
-}
-
-bool AddressAutofillTable::InitLegacyProfileBirthdatesTable() {
-  return CreateTableIfNotExists(db_, kAutofillProfileBirthdatesTable,
-                                {{kGuid, "VARCHAR"},
-                                 {kDay, "INTEGER DEFAULT 0"},
-                                 {kMonth, "INTEGER DEFAULT 0"},
-                                 {kYear, "INTEGER DEFAULT 0"}});
 }
 
 bool AddressAutofillTable::InitProfileMetadataTable(
