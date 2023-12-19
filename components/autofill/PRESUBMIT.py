@@ -47,10 +47,10 @@ def _CheckNoBaseTimeCalls(input_api, output_api):
         files) ]
   return []
 
-def _CheckNoServerFieldTypeCasts(input_api, output_api):
-  """Checks that no files cast (e.g., raw integers to) ServerFieldTypes."""
+def _CheckNoFieldTypeCasts(input_api, output_api):
+  """Checks that no files cast (e.g., raw integers to) FieldTypes."""
   pattern = input_api.re.compile(
-      r'_cast<\s*ServerFieldType\b',
+      r'_cast<\s*FieldType\b',
       input_api.re.MULTILINE)
   files = []
   for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
@@ -62,9 +62,9 @@ def _CheckNoServerFieldTypeCasts(input_api, output_api):
 
   if len(files):
     return [ output_api.PresubmitPromptWarning(
-        'Do not cast raw integers to ServerFieldType to prevent values that ' +
+        'Do not cast raw integers to FieldType to prevent values that ' +
         'have no corresponding enum constant or are deprecated. Use '+
-        'ToSafeServerFieldType() instead.',
+        'ToSafeFieldType() instead.',
         files) ]
   return []
 
@@ -175,7 +175,7 @@ def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   results = []
   results.extend(_CheckNoBaseTimeCalls(input_api, output_api))
-  results.extend(_CheckNoServerFieldTypeCasts(input_api, output_api))
+  results.extend(_CheckNoFieldTypeCasts(input_api, output_api))
   results.extend(_CheckFeatureNames(input_api, output_api))
   results.extend(_CheckWebViewExposedExperiments(input_api, output_api))
   results.extend(_CheckModificationOfLegacyRegexPatterns(input_api, output_api))

@@ -19,7 +19,7 @@ message AutofillFieldClassificationModelMetadata {
   repeated string input_token = 1;
 
   // The mapping from the model's outputs to the (integer representation of) the
-  // corresponding `autofill::ServerFieldType`.
+  // corresponding `autofill::FieldType`.
   repeated fixed32 output_type = 2;
 
   // For every field, the model outputs a list of confidences for every

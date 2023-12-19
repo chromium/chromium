@@ -540,7 +540,7 @@ message AutofillUploadContents {
 message ProfileValidityMap {
   // Map from autofill type to the validity of its value in the profile.
   //
-  // Key should be one of the enum values from ServerFieldType. Values should be
+  // Key should be one of the enum values from FieldType. Values should be
   // from the AutofillProfile::ValidityState. Plain integers are used
   // instead of enums because proto2 treats unknown enum values as unknown
   // fields, which is confusing when the enums are in maps.
