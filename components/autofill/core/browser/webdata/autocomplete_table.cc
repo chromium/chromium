@@ -33,8 +33,8 @@ namespace autofill {
 
 namespace {
 
-// TODO(crbug.com/1508865): Rename to `kAutocompleteTable`.
-constexpr std::string_view kAutofillTable = "autofill";
+// For historical reasons, the table in the SQLite database is named "autofill".
+constexpr std::string_view kAutocompleteTable = "autofill";
 constexpr std::string_view kName = "name";
 constexpr std::string_view kValue = "value";
 constexpr std::string_view kValueLower = "value_lower";
@@ -44,7 +44,7 @@ constexpr std::string_view kCount = "count";
 
 // Helper struct for AutocompleteTable::RemoveFormElementsAddedBetween().
 // Contains all the necessary fields to update a row in the 'autofill' table.
-struct AutofillUpdate {
+struct AutocompleteUpdate {
   std::u16string name;
   std::u16string value;
   time_t date_created;
@@ -124,7 +124,7 @@ bool AutocompleteTable::GetFormValuesForElementName(
     int limit,
     std::vector<AutocompleteEntry>& entries) {
   sql::Statement s;
-  SelectBuilder(db_, s, kAutofillTable,
+  SelectBuilder(db_, s, kAutocompleteTable,
                 {kName, kValue, kDateCreated, kDateLastUsed},
                 "WHERE name = ? AND value_lower LIKE ? "
                 "ORDER BY count DESC LIMIT ?");
@@ -154,7 +154,7 @@ bool AutocompleteTable::RemoveFormElementsAddedBetween(
   // Query for the name, value, count, and access dates of all form elements
   // that were used between the given times.
   sql::Statement s;
-  SelectBuilder(db_, s, kAutofillTable,
+  SelectBuilder(db_, s, kAutocompleteTable,
                 {kName, kValue, kCount, kDateCreated, kDateLastUsed},
                 "WHERE (date_created >= ? AND date_created < ?) OR "
                 "      (date_last_used >= ? AND date_last_used < ?)");
@@ -163,7 +163,7 @@ bool AutocompleteTable::RemoveFormElementsAddedBetween(
   s.BindInt64(2, delete_begin_time_t);
   s.BindInt64(3, delete_end_time_t);
 
-  std::vector<AutofillUpdate> updates;
+  std::vector<AutocompleteUpdate> updates;
   std::vector<AutocompleteChange> tentative_changes;
   while (s.Step()) {
     std::u16string name = s.ColumnString16(0);
@@ -198,7 +198,7 @@ bool AutocompleteTable::RemoveFormElementsAddedBetween(
       // Interpolating might not give a result that completely accurately
       // reflects the user's history, but it's the best that can be done given
       // the information in the database.
-      AutofillUpdate updated_entry;
+      AutocompleteUpdate updated_entry;
       updated_entry.name = name;
       updated_entry.value = value;
       updated_entry.date_created = date_created_time_t < delete_begin_time_t
@@ -223,7 +223,7 @@ bool AutocompleteTable::RemoveFormElementsAddedBetween(
 
   // As a single transaction, remove or update the elements appropriately.
   sql::Statement s_delete;
-  DeleteBuilder(db_, s_delete, kAutofillTable,
+  DeleteBuilder(db_, s_delete, kAutocompleteTable,
                 "date_created >= ? AND date_last_used < ?");
   s_delete.BindInt64(0, delete_begin_time_t);
   s_delete.BindInt64(1, delete_end_time_t);
@@ -236,7 +236,7 @@ bool AutocompleteTable::RemoveFormElementsAddedBetween(
   }
   for (const auto& update : updates) {
     sql::Statement s_update;
-    UpdateBuilder(db_, s_update, kAutofillTable,
+    UpdateBuilder(db_, s_update, kAutocompleteTable,
                   {kDateCreated, kDateLastUsed, kCount},
                   "name = ? AND value = ?");
     s_update.BindInt64(0, update.date_created);
@@ -266,7 +266,7 @@ bool AutocompleteTable::RemoveExpiredFormElements(
   // Query for the name and value of all form elements that were last used
   // before the |expiration_time|.
   sql::Statement select_for_delete;
-  SelectBuilder(db_, select_for_delete, kAutofillTable, {kName, kValue},
+  SelectBuilder(db_, select_for_delete, kAutocompleteTable, {kName, kValue},
                 "WHERE date_last_used < ?");
   select_for_delete.BindInt64(0, expiration_time.ToTimeT());
   std::vector<AutocompleteChange> tentative_changes;
@@ -281,7 +281,7 @@ bool AutocompleteTable::RemoveExpiredFormElements(
   }
 
   sql::Statement delete_data_statement;
-  DeleteBuilder(db_, delete_data_statement, kAutofillTable,
+  DeleteBuilder(db_, delete_data_statement, kAutocompleteTable,
                 "date_last_used < ?");
   delete_data_statement.BindInt64(0, expiration_time.ToTimeT());
   if (!delete_data_statement.Run()) {
@@ -295,7 +295,7 @@ bool AutocompleteTable::RemoveExpiredFormElements(
 bool AutocompleteTable::RemoveFormElement(const std::u16string& name,
                                           const std::u16string& value) {
   sql::Statement s;
-  DeleteBuilder(db_, s, kAutofillTable, "name = ? AND value= ?");
+  DeleteBuilder(db_, s, kAutocompleteTable, "name = ? AND value= ?");
   s.BindString16(0, name);
   s.BindString16(1, value);
   return s.Run();
@@ -326,7 +326,7 @@ int AutocompleteTable::GetCountOfValuesContainedBetween(base::Time begin,
 bool AutocompleteTable::GetAllAutocompleteEntries(
     std::vector<AutocompleteEntry>* entries) {
   sql::Statement s;
-  SelectBuilder(db_, s, kAutofillTable,
+  SelectBuilder(db_, s, kAutocompleteTable,
                 {kName, kValue, kDateCreated, kDateLastUsed});
 
   while (s.Step()) {
@@ -345,7 +345,7 @@ std::optional<AutocompleteEntry> AutocompleteTable::GetAutocompleteEntry(
     const std::u16string& name,
     const std::u16string& value) {
   sql::Statement s;
-  SelectBuilder(db_, s, kAutofillTable, {kDateCreated, kDateLastUsed},
+  SelectBuilder(db_, s, kAutocompleteTable, {kDateCreated, kDateLastUsed},
                 "WHERE name = ? AND value = ?");
   s.BindString16(0, name);
   s.BindString16(1, value);
@@ -368,7 +368,7 @@ bool AutocompleteTable::UpdateAutocompleteEntries(
   // Remove all existing entries.
   for (const auto& entry : entries) {
     sql::Statement s;
-    DeleteBuilder(db_, s, kAutofillTable, "name = ? AND value = ?");
+    DeleteBuilder(db_, s, kAutocompleteTable, "name = ? AND value = ?");
     s.BindString16(0, entry.key().name());
     s.BindString16(1, entry.key().value());
     if (!s.Run()) {
@@ -439,7 +439,7 @@ bool AutocompleteTable::InsertAutocompleteEntry(
     const AutocompleteEntry& entry) {
   sql::Statement s;
   InsertBuilder(
-      db_, s, kAutofillTable,
+      db_, s, kAutocompleteTable,
       {kName, kValue, kValueLower, kDateCreated, kDateLastUsed, kCount});
   s.BindString16(0, entry.key().name());
   s.BindString16(1, entry.key().value());
@@ -455,8 +455,8 @@ bool AutocompleteTable::InsertAutocompleteEntry(
 }
 
 bool AutocompleteTable::InitMainTable() {
-  if (!db_->DoesTableExist(kAutofillTable)) {
-    return CreateTable(db_, kAutofillTable,
+  if (!db_->DoesTableExist(kAutocompleteTable)) {
+    return CreateTable(db_, kAutocompleteTable,
                        {{kName, "VARCHAR"},
                         {kValue, "VARCHAR"},
                         {kValueLower, "VARCHAR"},
@@ -464,8 +464,8 @@ bool AutocompleteTable::InitMainTable() {
                         {kDateLastUsed, "INTEGER DEFAULT 0"},
                         {kCount, "INTEGER DEFAULT 1"}},
                        {kName, kValue}) &&
-           CreateIndex(db_, kAutofillTable, {kName}) &&
-           CreateIndex(db_, kAutofillTable, {kName, kValueLower});
+           CreateIndex(db_, kAutocompleteTable, {kName}) &&
+           CreateIndex(db_, kAutocompleteTable, {kName, kValueLower});
   }
   return true;
 }

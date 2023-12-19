@@ -59,20 +59,21 @@ class AutocompleteTable : public WebDatabaseTable {
   bool MigrateToVersion(int version, bool* update_compatible_version) override;
 
   // Records the form elements in |elements| in the database in the
-  // autofill table.  A list of all added and updated autocomplete entries
+  // autocomplete table.  A list of all added and updated autocomplete entries
   // is returned in the changes out parameter.
   bool AddFormFieldValues(const std::vector<FormFieldData>& elements,
                           std::vector<AutocompleteChange>* changes);
 
-  // Retrieves a vector of all values which have been recorded in the autofill
-  // table as the value in a form element with name |name| and which start with
-  // |prefix|. The comparison of the prefix is case insensitive.
+  // Retrieves a vector of all values which have been recorded in the
+  // autocomplete table as the value in a form element with name |name| and
+  // which start with |prefix|. The comparison of the prefix is case
+  // insensitive.
   bool GetFormValuesForElementName(const std::u16string& name,
                                    const std::u16string& prefix,
                                    int limit,
                                    std::vector<AutocompleteEntry>& entries);
 
-  // Removes rows from the autofill table if they were created on or after
+  // Removes rows from the autocomplete table if they were created on or after
   // |delete_begin| and last used strictly before |delete_end|. For rows where
   // the time range [date_created, date_last_used] overlaps with [delete_begin,
   // delete_end), but is not entirely contained within the latter range, updates
@@ -84,11 +85,12 @@ class AutocompleteTable : public WebDatabaseTable {
                                       const base::Time& delete_end,
                                       std::vector<AutocompleteChange>& changes);
 
-  // Removes rows from the autofill table if they were last accessed strictly
-  // before |AutocompleteEntry::ExpirationTime()|.
+  // Removes rows from the autocomplete table if they were last accessed
+  // strictly before |AutocompleteEntry::ExpirationTime()|.
   bool RemoveExpiredFormElements(std::vector<AutocompleteChange>& changes);
 
-  // Removes the row from the autofill table for the given |name| |value| pair.
+  // Removes the row from the autocomplete table for the given |name| |value|
+  // pair.
   bool RemoveFormElement(const std::u16string& name,
                          const std::u16string& value);
 
@@ -97,10 +99,10 @@ class AutocompleteTable : public WebDatabaseTable {
   // entirely contained between [|begin|, |end|).
   int GetCountOfValuesContainedBetween(base::Time begin, base::Time end);
 
-  // Retrieves all of the entries in the autofill table.
+  // Retrieves all of the entries in the autocomplete table.
   bool GetAllAutocompleteEntries(std::vector<AutocompleteEntry>* entries);
 
-  // Retrieves a single entry from the autofill table.
+  // Retrieves a single entry from the autocomplete table.
   std::optional<AutocompleteEntry> GetAutocompleteEntry(
       const std::u16string& name,
       const std::u16string& value);
@@ -114,7 +116,7 @@ class AutocompleteTable : public WebDatabaseTable {
                              base::Time time,
                              std::vector<AutocompleteChange>* changes);
 
-  // Insert a single AutocompleteEntry into the autofill table.
+  // Insert a single AutocompleteEntry into the autocomplete table.
   bool InsertAutocompleteEntry(const AutocompleteEntry& entry);
 
   bool InitMainTable();
