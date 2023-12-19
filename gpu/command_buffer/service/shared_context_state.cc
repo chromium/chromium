@@ -119,7 +119,7 @@ void SharedContextState::compileError(const char* shader,
     static crash_reporter::CrashKeyString<2048> error_key("skia-compile-error");
     error_key.Set(errors);
 
-    if (shaderWasCached) {
+    if (shaderWasCached && use_shader_cache_shm_count_ != nullptr) {
       // https://crbug.com/1442633 Sometimes we would fail to compile a cached
       // GLSL shader because of GL driver change. Increase shader cache shm
       // count and crash the GPU process so that the browser process would clear
