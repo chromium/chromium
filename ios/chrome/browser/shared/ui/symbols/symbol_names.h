@@ -200,6 +200,7 @@ extern NSString* const kRulerSymbol;
 extern NSString* const kLaptopAndIphoneSymbol;
 extern NSString* const kNewTabGroupActionSymbol;
 extern NSString* const kRemoveTabFromGroupActionSymbol;
+extern NSString* const kMoveTabToGroupActionSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
