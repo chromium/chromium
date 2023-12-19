@@ -7,16 +7,12 @@ import("//build/config/features.gni")
 import("//chrome/browser/resources/accessibility/tools/manifest.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
-import("//tools/typescript/ts_library.gni")
 import("strings/accessibility_strings.gni")
 import("tools/run_jsbundler.gni")
 
 assert(is_chromeos_ash)
 
 accessibility_out_dir = "$root_out_dir/resources/chromeos/accessibility/"
-tsc_out_dir = "$target_gen_dir/tsc"
-
-loader_files = [ "switch_access_loader.ts" ]
 
 group("build") {
   deps = [
@@ -48,30 +44,10 @@ group("build") {
   }
 }
 
-ts_library("ts_build") {
-  out_dir = tsc_out_dir
-  definitions = [
-    "definitions/automation.d.ts",
-    "definitions/command_line_private.d.ts",
-    "definitions/extension_types.d.ts",
-    "definitions/extensions.d.ts",
-    "definitions/runtime.d.ts",
-    "definitions/tabs.d.ts",
-    "//tools/typescript/definitions/windows.d.ts",
-  ]
-
-  in_files = loader_files
-  tsconfig_base = "tsconfig.base.json"
-}
-
 run_jsbundler("copied_loader_files") {
   mode = "copy"
-  deps = [ ":ts_build" ]
   dest_dir = accessibility_out_dir
-  sources = []
-  foreach(_ts_file, loader_files) {
-    sources += [ "$tsc_out_dir/" + get_path_info(_ts_file, "name") + ".js" ]
-  }
+  sources = [ "switch_access_loader.js" ]
   rewrite_rules = [ rebase_path(".", root_build_dir) + ":" ]
 }
 
