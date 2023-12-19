@@ -1050,6 +1050,18 @@ constexpr auto LeakedDanglingUntriaged = base::RawPtrTraits::kMayDangle;
 // DO NOT ADD new occurrences of this.
 constexpr auto ExperimentalRenderer = base::RawPtrTraits::kMayDangle;
 
+// Temporary introduced alias in the context of rewriting std::vector<T*> into
+// std::vector<raw_ptr<T>> and in order to temporarily bypass the dangling ptr
+// checks on the CQ. This alias will be removed gradually after the cl lands and
+// will be replaced by DanglingUntriaged where necessary.
+constexpr inline auto VectorExperimental = base::RawPtrTraits::kMayDangle;
+
+// Temporary workaround needed when using vector<raw_ptr<T, ExperimentalVector>
+// in Mocked method signatures as the macros don't allow commas within.
+template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+using vector_experimental_raw_ptr =
+    base::raw_ptr<T, Traits | VectorExperimental>;
+
 // Public verson used in callbacks arguments when it is known that they might
 // receive dangling pointers. In any other cases, please
 // use one of:
