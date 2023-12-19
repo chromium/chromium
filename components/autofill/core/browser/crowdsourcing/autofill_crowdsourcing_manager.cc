@@ -863,8 +863,8 @@ bool AutofillCrowdsourcingManager::StartRequest(FormRequestData request_data) {
 
   if (method == "POST") {
     static constexpr char content_type[] = "application/x-protobuf";
-    std::optional<std::string> payload = GetAPIBodyPayload(
-        std::move(request_data.payload), request_data.request_type);
+    std::optional<std::string> payload =
+        GetAPIBodyPayload(request_data.payload, request_data.request_type);
     if (!payload) {
       return false;
     }
