@@ -300,18 +300,18 @@ class UnretainedRefWrapperReceiver {
   UnretainedRefWrapper<T, UnretainedTrait, PtrTraits> obj_;
 };
 
-// MethodReceiverStorageType converts the current receiver type to its stored
+// MethodReceiverStorage converts the current receiver type to its stored
 // type. For instance, it converts pointers to `scoped_refptr`, and wraps
 // `UnretainedRefWrapper` to make it compliant with the internal callback
 // invocation mechanism.
 template <typename T>
-struct MethodReceiverStorageType {
+struct MethodReceiverStorage {
   using Type =
       std::conditional_t<IsPointerV<T>, scoped_refptr<RemovePointerT<T>>, T>;
 };
 
 template <typename T, typename UnretainedTrait, RawPtrTraits PtrTraits>
-struct MethodReceiverStorageType<
+struct MethodReceiverStorage<
     UnretainedRefWrapper<T, UnretainedTrait, PtrTraits>> {
   // We can't use UnretainedRefWrapper as a receiver directly (see
   // UnretainedRefWrapperReceiver for why).
@@ -1119,8 +1119,8 @@ struct BindState final : BindStateBase {
   }
 };
 
-// Used to implement MakeBindStateType. The specializations below cover all
-// cases. Each has the following public members:
+// Used to determine and validate the appropriate `BindState`. The
+// specializations below cover all cases. Each has the following public members:
 //   // The appropriate `BindState` specialization for the given params.
 //   using Type = BindState<std::decay_t<Functor>,
 //                          MakeStorageType<BoundArgs>...>;
@@ -1131,10 +1131,10 @@ struct BindState final : BindStateBase {
 //   // struct with a lambda that asserts" pattern used to do this.
 //   static constexpr bool value = false;
 template <bool is_method, typename Functor, typename... BoundArgs>
-struct MakeBindStateTypeImpl;
+struct ValidateBindStateType;
 
 template <typename Functor, typename... BoundArgs>
-struct MakeBindStateTypeImpl<false, Functor, BoundArgs...> {
+struct ValidateBindStateType<false, Functor, BoundArgs...> {
  private:
   // This "templated struct with a lambda that asserts" pattern is used
   // repeatedly in Bind/Callback code to verify compile-time preconditions. The
@@ -1183,17 +1183,17 @@ struct MakeBindStateTypeImpl<false, Functor, BoundArgs...> {
 };
 
 template <typename Functor>
-struct MakeBindStateTypeImpl<true, Functor> {
+struct ValidateBindStateType<true, Functor> {
   using Type = BindState<std::decay_t<Functor>>;
   static constexpr bool value = true;
 };
 
 template <typename Functor, typename Receiver, typename... BoundArgs>
-struct MakeBindStateTypeImpl<true, Functor, Receiver, BoundArgs...> {
+struct ValidateBindStateType<true, Functor, Receiver, BoundArgs...> {
  private:
   using DecayedReceiver = std::decay_t<Receiver>;
   using ReceiverStorageType =
-      typename MethodReceiverStorageType<DecayedReceiver>::Type;
+      typename MethodReceiverStorage<DecayedReceiver>::Type;
 
   template <bool v = !std::is_array_v<std::remove_reference_t<Receiver>>>
   struct FirstBoundArgIsNotArray {
@@ -1245,12 +1245,6 @@ struct MakeBindStateTypeImpl<true, Functor, Receiver, BoundArgs...> {
                          NoRawPtrsToRefCountedTypes<>>;
 };
 
-template <typename Functor, typename... BoundArgs>
-using MakeBindStateType =
-    MakeBindStateTypeImpl<MakeFunctorTraits<Functor>::is_method,
-                          Functor,
-                          BoundArgs...>;
-
 // Transform |T| into `Unwrapped` type, which is passed to the target function.
 // Example:
 //   In is_once == true case,
@@ -1274,7 +1268,7 @@ using TransformToUnwrappedType =
 //   `std::unique_ptr<int>` -> `int*`
 //   `int` -> (assertion failure; `this` must be a pointer-like object)
 template <typename T>
-struct UnderlyingReceiverType {
+struct ValidateReceiverType {
  private:
   // Pointer-like receivers use a different specialization, so this never
   // succeeds.
@@ -1297,7 +1291,7 @@ struct UnderlyingReceiverType {
 
 template <typename T>
   requires requires(T&& t) { std::to_address(t); }
-struct UnderlyingReceiverType<T> {
+struct ValidateReceiverType<T> {
   using Type = decltype(std::to_address(std::declval<T>()));
   static constexpr bool value = true;
 };
@@ -1306,7 +1300,7 @@ struct UnderlyingReceiverType<T> {
 // If |is_method| is true, tries to dereference the first argument to support
 // smart pointers.
 template <bool is_once, bool is_method, typename... Args>
-struct MakeUnwrappedTypeList {
+struct ValidateUnwrappedTypeList {
   // These members are similar in intent to those in `MakeBindStateTypeImpl`;
   // see comments there.
   using Type = TypeList<TransformToUnwrappedType<is_once, Args>...>;
@@ -1318,18 +1312,18 @@ struct MakeUnwrappedTypeList {
 //   int* -> int*,
 //   std::unique_ptr<int> -> int*.
 template <bool is_once, typename Receiver, typename... Args>
-struct MakeUnwrappedTypeList<is_once, true, Receiver, Args...> {
+struct ValidateUnwrappedTypeList<is_once, true, Receiver, Args...> {
  private:
   using ReceiverStorageType =
-      typename MethodReceiverStorageType<std::decay_t<Receiver>>::Type;
+      typename MethodReceiverStorage<std::decay_t<Receiver>>::Type;
   using UnwrappedReceiver =
       TransformToUnwrappedType<is_once, ReceiverStorageType>;
-  using UnderlyingReceiver = UnderlyingReceiverType<UnwrappedReceiver>;
+  using ValidatedReceiver = ValidateReceiverType<UnwrappedReceiver>;
 
  public:
-  using Type = TypeList<typename UnderlyingReceiver::Type,
+  using Type = TypeList<typename ValidatedReceiver::Type,
                         TransformToUnwrappedType<is_once, Args>...>;
-  static constexpr bool value = UnderlyingReceiver::value;
+  static constexpr bool value = ValidatedReceiver::value;
 };
 
 // IsUnretainedMayDangle is true if StorageType is of type
@@ -1658,14 +1652,14 @@ struct BindHelper {
     //     static constexpr bool is_stateless = true;
     //     ...
     //   };
-    //   using UnwrappedArgsList = struct {
+    //   using ValidatedUnwrappedTypes = struct {
     //     using Type = TypeList<S*, int16_t>;
     //     static constexpr bool value = true;
     //   };
     //   using BoundArgsList = TypeList<S*, int16_t>;
     //   using RunParamsList = TypeList<S*, int, const std::string&>;
     //   using BoundParamsList = TypeList<S*, int>;
-    //   using BindStateType = struct {
+    //   using ValidatedBindState = struct {
     //     using Type =
     //         BindState<double (S::*)(int, const std::string&),
     //                   UnretainedWrapper<S, unretained_traits::MayNotDangle>,
@@ -1680,24 +1674,25 @@ struct BindHelper {
     static constexpr bool kIsOnce =
         is_instantiation<OnceCallback, CallbackT<void()>>;
     using FunctorTraits = MakeFunctorTraits<Functor>;
-    using UnwrappedArgsList =
-        MakeUnwrappedTypeList<kIsOnce, FunctorTraits::is_method, Args&&...>;
+    using ValidatedUnwrappedTypes =
+        ValidateUnwrappedTypeList<kIsOnce, FunctorTraits::is_method, Args&&...>;
     using BoundArgsList = TypeList<Args...>;
     using RunParamsList = ExtractArgs<typename FunctorTraits::RunType>;
     using BoundParamsList = TakeTypeListItem<sizeof...(Args), RunParamsList>;
-    using BindStateType = MakeBindStateType<Functor, Args...>;
+    using ValidatedBindState =
+        ValidateBindStateType<FunctorTraits::is_method, Functor, Args...>;
     // This conditional checks if each of the `args` matches to the
     // corresponding param of the target function. This check does not affect
     // the behavior of `Bind()`, but its error message should be more readable.
     if constexpr (std::conjunction_v<
                       NotFunctionRef<Functor>, IsStateless<Functor>,
-                      UnwrappedArgsList,
+                      ValidatedUnwrappedTypes,
                       ParamsCanBeBound<
                           FunctorTraits::is_method,
                           std::make_index_sequence<sizeof...(Args)>,
-                          BoundArgsList, typename UnwrappedArgsList::Type,
+                          BoundArgsList, typename ValidatedUnwrappedTypes::Type,
                           BoundParamsList>,
-                      BindStateType>) {
+                      ValidatedBindState>) {
       using UnboundRunType =
           MakeFunctionType<ExtractReturnType<typename FunctorTraits::RunType>,
                            DropTypeListItem<sizeof...(Args), RunParamsList>>;
@@ -1706,7 +1701,8 @@ struct BindHelper {
       // Store the invoke func into PolymorphicInvoke before casting it to
       // InvokeFuncStorage, so that we can ensure its type matches to
       // PolymorphicInvoke, to which CallbackType will cast back.
-      using Invoker = Invoker<typename BindStateType::Type, UnboundRunType>;
+      using Invoker =
+          Invoker<typename ValidatedBindState::Type, UnboundRunType>;
       using PolymorphicInvoke = typename CallbackType::PolymorphicInvoke;
       PolymorphicInvoke invoke_func;
       if constexpr (kIsOnce) {
@@ -1716,7 +1712,7 @@ struct BindHelper {
       }
 
       using InvokeFuncStorage = BindStateBase::InvokeFuncStorage;
-      return CallbackType(BindStateType::Type::Create(
+      return CallbackType(ValidatedBindState::Type::Create(
           reinterpret_cast<InvokeFuncStorage>(invoke_func),
           std::forward<Functor>(functor), std::forward<Args>(args)...));
     }
