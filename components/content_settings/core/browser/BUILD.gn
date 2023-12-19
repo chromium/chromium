@@ -24,6 +24,7 @@ static_library("browser") {
     "content_settings_pref.h",
     "content_settings_pref_provider.cc",
     "content_settings_pref_provider.h",
+    "content_settings_provider.cc",
     "content_settings_provider.h",
     "content_settings_registry.cc",
     "content_settings_registry.h",
