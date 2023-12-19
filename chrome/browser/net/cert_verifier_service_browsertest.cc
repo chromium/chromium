@@ -176,6 +176,59 @@ IN_PROC_BROWSER_TEST_F(
       chrome_test_utils::GetActiveWebContents(this)));
 }
 
+// Testing the CAHintCertificate policy
+class CertVerifierServiceCAHintCertificatesPolicyTest
+    : public policy::PolicyTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+
+    // Don't serve the intermediate either via AIA or as part of the handshake.
+    net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+    cert_config.intermediate =
+        net::EmbeddedTestServer::IntermediateType::kMissing;
+    https_test_server_.SetSSLConfig(cert_config);
+    https_test_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(https_test_server_.Start());
+
+    if (add_cert_to_policy()) {
+      // Add the intermediate as a hint.
+      scoped_refptr<net::X509Certificate> intermediate_cert =
+          https_test_server_.GetGeneratedIntermediate();
+      ASSERT_TRUE(intermediate_cert);
+
+      std::string b64_cert =
+          base::Base64Encode(net::x509_util::CryptoBufferAsStringPiece(
+              intermediate_cert->cert_buffer()));
+      base::Value certs_value(base::Value::Type::LIST);
+      certs_value.GetList().Append(b64_cert);
+      policy::PolicyMap policies;
+      SetPolicy(&policies, policy::key::kCAHintCertificates,
+                absl::make_optional(std::move(certs_value)));
+      UpdateProviderPolicy(policies);
+    }
+  }
+
+  net::EmbeddedTestServer https_test_server_{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+
+  bool add_cert_to_policy() const { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(CertVerifierServiceCAHintCertificatesPolicyTest,
+                       TestPolicy) {
+  ASSERT_TRUE(NavigateToUrl(https_test_server_.GetURL("/simple.html"), this));
+
+  EXPECT_NE(add_cert_to_policy(),
+            chrome_browser_interstitials::IsShowingInterstitial(
+                chrome_test_utils::GetActiveWebContents(this)));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CertVerifierServiceCAHintCertificatesPolicyTest,
+                         ::testing::Bool());
+
 #endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)

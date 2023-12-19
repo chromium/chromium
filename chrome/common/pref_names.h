@@ -3998,6 +3998,11 @@ inline constexpr char kCACertificates[] = "certificates.ca_certificates";
 // Only specifiable as an enterprise policy.
 inline constexpr char kCADistrustedCertificates[] =
     "certificates.ca_distrusted_certificates";
+
+// A list of base64 certificates that are to be used as hints for path
+// building. Only specifiable as an enterprise policy.
+inline constexpr char kCAHintCertificates[] =
+    "certificates.ca_hint_certificates";
 #endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 
 }  // namespace prefs

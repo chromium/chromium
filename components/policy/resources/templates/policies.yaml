@@ -1191,6 +1191,7 @@ policies:
   1190: AlwaysOnVpnPreConnectUrlAllowlist
   1191: CACertificates
   1192: CADistrustedCertificates
+  1193: CAHintCertificates
 atomic_groups:
   1: Homepage
   2: RemoteAccess

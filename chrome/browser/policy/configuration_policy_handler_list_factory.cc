@@ -2072,6 +2072,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kCADistrustedCertificates,
     prefs::kCADistrustedCertificates,
     base::Value::Type::LIST },
+  { key::kCAHintCertificates,
+    prefs::kCAHintCertificates,
+    base::Value::Type::LIST },
 #endif // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 };
 // clang-format on

@@ -299,9 +299,13 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
       base::BindRepeating(
           &ProfileNetworkContextService::ScheduleUpdateCertificatePolicy,
           base::Unretained(this)));
-
   pref_change_registrar_.Add(
       prefs::kCADistrustedCertificates,
+      base::BindRepeating(
+          &ProfileNetworkContextService::ScheduleUpdateCertificatePolicy,
+          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kCAHintCertificates,
       base::BindRepeating(
           &ProfileNetworkContextService::ScheduleUpdateCertificatePolicy,
           base::Unretained(this)));
@@ -379,6 +383,7 @@ void ProfileNetworkContextService::RegisterProfilePrefs(
 #if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
   registry->RegisterListPref(prefs::kCACertificates);
   registry->RegisterListPref(prefs::kCADistrustedCertificates);
+  registry->RegisterListPref(prefs::kCAHintCertificates);
 #endif
 }
 
@@ -532,10 +537,26 @@ void ProfileNetworkContextService::ScheduleUpdateCTPolicy() {
 #if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 cert_verifier::mojom::AdditionalCertificatesPtr
 ProfileNetworkContextService::GetCertificatePolicy() {
-  net::CertificateList additional_untrusted_anchors;
+  net::CertificateList additional_untrusted_certificates;
   net::CertificateList additional_trust_anchors;
   std::vector<std::vector<uint8_t>> additional_distrusted_spkis;
   auto* prefs = profile_->GetPrefs();
+
+  for (const base::Value& cert_b64 :
+       prefs->GetList(prefs::kCAHintCertificates)) {
+    std::string decoded;
+    if (!base::Base64Decode(cert_b64.GetString(), &decoded)) {
+      continue;
+    }
+
+    scoped_refptr<net::X509Certificate> x509_cert =
+        net::X509Certificate::CreateFromBytes(
+            base::as_bytes(base::make_span(decoded)));
+
+    if (x509_cert) {
+      additional_untrusted_certificates.push_back(std::move(x509_cert));
+    }
+  }
 
   for (const base::Value& cert_b64 : prefs->GetList(prefs::kCACertificates)) {
     std::string decoded;
@@ -571,7 +592,7 @@ ProfileNetworkContextService::GetCertificatePolicy() {
   }
 
   return cert_verifier::mojom::AdditionalCertificates::New(
-      std::move(additional_untrusted_anchors),
+      std::move(additional_untrusted_certificates),
       std::move(additional_trust_anchors),
       std::move(additional_distrusted_spkis));
 }
