@@ -4,17 +4,91 @@
 
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
 
+#include <memory>
+#include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/string_compare.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/i18n/unicode/coll.h"
+#include "third_party/icu/source/i18n/unicode/ucol.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/table_model_observer.h"
+
+namespace {
+
+// Allows sorting site search engines by group (either created by the
+// SiteSearchSettings policy, or not created by policy) and alphabetically
+// inside each group.
+//
+// Alphabetical comparison is case-insensitive according to the current locale.
+// In case of loading errors for ICU, fallback to regular string comparison.
+class OrderByManagedAndAlphabetically {
+ public:
+  OrderByManagedAndAlphabetically();
+
+  bool operator()(const TemplateURL* lhs, const TemplateURL* rhs) const;
+
+ private:
+  std::string GetShortNameSortKey(const std::u16string& short_name) const;
+
+  std::unique_ptr<icu::Collator> collator_;
+};
+
+OrderByManagedAndAlphabetically::OrderByManagedAndAlphabetically() {
+  UErrorCode error_code = U_ZERO_ERROR;
+  collator_.reset(
+      icu::Collator::createInstance(icu::Locale::getDefault(), error_code));
+  if (!U_SUCCESS(error_code)) {
+    collator_.reset();
+  }
+  if (collator_) {
+    // Case-insensitive, ignoring diacriticals.
+    collator_->setStrength(icu::Collator::PRIMARY);
+  }
+}
+
+bool OrderByManagedAndAlphabetically::operator()(const TemplateURL* lhs,
+                                                 const TemplateURL* rhs) const {
+  auto get_sort_key = [this](const TemplateURL* engine) {
+    return std::make_tuple(
+        // Enterprise site search engines are shown before other engines.
+        engine->created_by_policy() !=
+            TemplateURLData::CreatedByPolicy::kSiteSearch,
+        // Try to compare short names ignoring case and diacriticals.
+        collator_ ? GetShortNameSortKey(engine->short_name()) : std::string(),
+        // If a collator is not available, fallback to regular string
+        // comparison.
+        engine->short_name());
+  };
+  return get_sort_key(lhs) < get_sort_key(rhs);
+}
+
+std::string OrderByManagedAndAlphabetically::GetShortNameSortKey(
+    const std::u16string& short_name) const {
+  CHECK(collator_);
+
+  constexpr int32_t kBufferSize = 1000;
+  uint8_t buffer[kBufferSize];
+  icu::UnicodeString icu_str(short_name.c_str(), short_name.length());
+  // Sort keys may be truncated for very long names, but that is expected to
+  // happen so rarely that simply ignoring those cases seems to be a
+  // reasonable compromise.
+  collator_->getSortKey(icu_str, buffer, kBufferSize);
+  return std::string(reinterpret_cast<const char*>(buffer));
+}
+
+}  // namespace
 
 TemplateURLTableModel::TemplateURLTableModel(
     TemplateURLService* template_url_service)
@@ -39,15 +113,19 @@ void TemplateURLTableModel::Reload() {
   for (auto* template_url : urls) {
     if (template_url_service_->ShowInDefaultList(template_url)) {
       default_entries.push_back(template_url);
-    } else if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
-      extension_entries.push_back(template_url);
-    } else if (template_url->is_active() ==
-               TemplateURLData::ActiveStatus::kTrue) {
-      active_entries.push_back(template_url);
-    } else {
-      other_entries.push_back(template_url);
+    } else if (!template_url_service_->HiddenFromLists(template_url)) {
+      if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
+        extension_entries.push_back(template_url);
+      } else if (template_url_service_->ShowInActivesList(template_url)) {
+        active_entries.push_back(template_url);
+      } else {
+        other_entries.push_back(template_url);
+      }
     }
   }
+
+  base::ranges::sort(active_entries, OrderByManagedAndAlphabetically());
+  base::ranges::sort(other_entries, OrderByManagedAndAlphabetically());
 
   last_search_engine_index_ = default_entries.size();
   last_active_engine_index_ = last_search_engine_index_ + active_entries.size();

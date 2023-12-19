@@ -501,6 +501,22 @@ bool TemplateURLService::ShowInDefaultList(const TemplateURL* t_url) const {
          IsPrepopulatedOrDefaultProviderByPolicy(t_url);
 }
 
+bool TemplateURLService::ShowInActivesList(const TemplateURL* t_url) const {
+  return t_url->is_active() == TemplateURLData::ActiveStatus::kTrue ||
+         (t_url->created_by_policy() ==
+              TemplateURLData::CreatedByPolicy::kSiteSearch &&
+          t_url->keyword()[0] != u'@');
+}
+
+bool TemplateURLService::HiddenFromLists(const TemplateURL* t_url) const {
+  // Hide synthetic entries created by SiteSearchSettings policy, since they
+  // are only used for discoverability and the corresponding entry that doesn't
+  // start with "@" is already shown in the actives list.
+  return t_url->created_by_policy() ==
+             TemplateURLData::CreatedByPolicy::kSiteSearch &&
+         t_url->keyword()[0] == u'@';
+}
+
 void TemplateURLService::AddMatchingKeywords(const std::u16string& prefix,
                                              bool supports_replacement_only,
                                              TemplateURLVector* matches) {

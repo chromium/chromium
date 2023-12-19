@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/search_engines/keyword_editor_controller.h"
 
+#include <memory>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -330,4 +331,134 @@ TEST_F(KeywordEditorControllerTest, MutateTemplateURLService) {
   // And should contain the newly added TemplateURL.
   ASSERT_EQ(original_row_count + 1, table_model()->RowCount());
   ASSERT_TRUE(table_model()->IndexOfTemplateURL(turl).has_value());
+}
+
+// Specifies examples for tests that verify ordering of search engines.
+struct SearchEngineOrderingTestCase {
+  const char16_t* keyword;
+  const char16_t* short_name;
+  bool is_active;
+  bool created_by_site_search_policy = false;
+};
+
+std::unique_ptr<TemplateURL> CreateTemplateUrlForSortingTest(
+    SearchEngineOrderingTestCase test_case) {
+  TemplateURLData data;
+  data.SetKeyword(test_case.keyword);
+  data.SetShortName(test_case.short_name);
+  data.is_active = test_case.is_active ? TemplateURLData::ActiveStatus::kTrue
+                                       : TemplateURLData::ActiveStatus::kFalse;
+  data.created_by_policy = test_case.created_by_site_search_policy
+                               ? TemplateURLData::CreatedByPolicy::kSiteSearch
+                               : TemplateURLData::CreatedByPolicy::kNoPolicy;
+  return std::make_unique<TemplateURL>(data);
+}
+
+TEST_F(KeywordEditorControllerTest, EnginesSortedByName) {
+  const SearchEngineOrderingTestCase kTestCases[] = {
+      {
+          .keyword = u"kw1",
+          .short_name = u"Active 3",
+          .is_active = true,
+      },
+      {
+          .keyword = u"kw2",
+          .short_name = u"Active 1",
+          .is_active = true,
+      },
+      {
+          .keyword = u"kw3",
+          .short_name = u"inactive 1",
+          .is_active = false,
+      },
+      {
+          .keyword = u"kw4",
+          .short_name = u"active 2",
+          .is_active = true,
+      },
+      {
+          .keyword = u"kw5",
+          .short_name = u"Inactive 2",
+          .is_active = false,
+      },
+  };
+
+  const std::u16string kExpectedShortNamesOrder[] = {
+      u"Active 1", u"active 2", u"Active 3", u"inactive 1", u"Inactive 2"};
+
+  std::vector<TemplateURL*> engines;
+  for (SearchEngineOrderingTestCase test_case : kTestCases) {
+    engines.push_back(
+        util()->model()->Add(CreateTemplateUrlForSortingTest(test_case)));
+    // Table model should have updated.
+    VerifyChanged();
+  }
+
+  ASSERT_EQ(table_model()->last_active_engine_index(),
+            table_model()->last_search_engine_index() + 3);
+  ASSERT_EQ(table_model()->last_other_engine_index(),
+            table_model()->last_active_engine_index() + 2);
+
+  for (size_t i = 0; i < std::size(kExpectedShortNamesOrder); ++i) {
+    const TemplateURL* template_url = table_model()->GetTemplateURL(
+        table_model()->last_search_engine_index() + i);
+    ASSERT_TRUE(template_url);
+    EXPECT_EQ(template_url->short_name(), kExpectedShortNamesOrder[i]);
+  }
+}
+
+TEST_F(KeywordEditorControllerTest, EnginesSortedByNameWithManagedSiteSearch) {
+  const SearchEngineOrderingTestCase kTestCases[] = {
+      {
+          .keyword = u"kw1",
+          .short_name = u"Non-managed 3",
+          .is_active = true,
+      },
+      {
+          .keyword = u"kw2",
+          .short_name = u"Non-managed 1",
+          .is_active = true,
+      },
+      {
+          .keyword = u"kw3",
+          .short_name = u"policy 1",
+          .is_active = true,
+          .created_by_site_search_policy = true,
+      },
+      {
+          .keyword = u"kw4",
+          .short_name = u"non-managed 2",
+          .is_active = true,
+      },
+      {
+          .keyword = u"kw5",
+          .short_name = u"Policy 2",
+          .is_active = true,
+          .created_by_site_search_policy = true,
+      },
+  };
+
+  const std::u16string kExpectedShortNamesOrder[] = {
+      u"policy 1", u"Policy 2", u"Non-managed 1", u"non-managed 2",
+      u"Non-managed 3"};
+
+  std::vector<TemplateURL*> engines;
+  for (SearchEngineOrderingTestCase test_case : kTestCases) {
+    engines.push_back(
+        util()->model()->Add(CreateTemplateUrlForSortingTest(test_case)));
+    // Table model should have updated.
+    VerifyChanged();
+  }
+
+  ASSERT_EQ(table_model()->last_active_engine_index(),
+            table_model()->last_search_engine_index() + 5);
+  ASSERT_EQ(table_model()->last_other_engine_index(),
+            table_model()->last_active_engine_index());
+
+  for (size_t i = 0; i < std::size(kExpectedShortNamesOrder); ++i) {
+    const TemplateURL* template_url = table_model()->GetTemplateURL(
+        table_model()->last_search_engine_index() + i);
+    ASSERT_TRUE(template_url);
+    EXPECT_EQ(template_url->short_name(), kExpectedShortNamesOrder[i]);
+  }
 }
