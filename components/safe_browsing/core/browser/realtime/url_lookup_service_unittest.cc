@@ -326,6 +326,21 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
     return token;
   }
 
+  void RunSimpleFailingRequest(const GURL& url) {
+    SetUpFailureResponse(net::HTTP_INTERNAL_SERVER_ERROR);
+    base::MockCallback<network::TestURLLoaderFactory::Interceptor>
+        request_callback;
+    test_url_loader_factory_.SetInterceptor(request_callback.Get());
+    base::MockCallback<RTLookupResponseCallback> response_callback;
+    EXPECT_CALL(request_callback, Run(_)).Times(1);
+    EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ false,
+                                       /* is_cached_response */ false, _));
+    rt_service()->StartLookup(url, last_committed_url_, is_mainframe_,
+                              response_callback.Get(),
+                              base::SequencedTaskRunner::GetCurrentDefault());
+    task_environment_.RunUntilIdle();
+  }
+
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<RealTimeUrlLookupService> rt_service_;
@@ -1218,7 +1233,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
   EXPECT_TRUE(CanSendRTSampleRequest());
 }
 
-TEST_F(RealTimeUrlLookupServiceTest, TestBackoffMode) {
+TEST_F(RealTimeUrlLookupServiceTest, TestBackoffModeSet) {
   EnableMbb();
   auto perform_lookup = [this](bool make_fail) {
     GURL url(kTestUrl);
@@ -1268,7 +1283,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestBackoffMode) {
   EXPECT_FALSE(IsInBackoffMode());
 }
 
-TEST_F(RealTimeUrlLookupServiceTest, TestBackoffMode_UnparseableResponse) {
+TEST_F(RealTimeUrlLookupServiceTest, TestBackoffModeSet_UnparseableResponse) {
   EnableMbb();
   auto perform_failing_lookup = [this]() {
     GURL url(kTestUrl);
@@ -1293,6 +1308,67 @@ TEST_F(RealTimeUrlLookupServiceTest, TestBackoffMode_UnparseableResponse) {
   EXPECT_FALSE(IsInBackoffMode());
   perform_failing_lookup();
   EXPECT_TRUE(IsInBackoffMode());
+}
+
+TEST_F(RealTimeUrlLookupServiceTest, TestBackoffModeRespected_Cached) {
+  EnableMbb();
+
+  // Cache a response for |cached_url|.
+  GURL cached_url = GURL("https://example.cached.url");
+  MayBeCacheRealTimeUrlVerdict(RTLookupResponse::ThreatInfo::DANGEROUS,
+                               RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
+                               60, "example.cached.url/",
+                               RTLookupResponse::ThreatInfo::COVERING_MATCH);
+  task_environment_.RunUntilIdle();
+
+  // Enable backoff mode by running 3 failing requests.
+  GURL url(kTestUrl);
+  RunSimpleFailingRequest(url);
+  RunSimpleFailingRequest(url);
+  RunSimpleFailingRequest(url);
+  EXPECT_TRUE(IsInBackoffMode());
+
+  // Run a request for the original |cached_url|. In spite of being in backoff
+  // mode, the cached response should apply before the lookup decides to quit
+  // due to backoff.
+  base::MockCallback<network::TestURLLoaderFactory::Interceptor>
+      request_callback;
+  base::MockCallback<RTLookupResponseCallback> response_callback;
+  EXPECT_CALL(request_callback, Run(_)).Times(0);
+  EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
+                                     /* is_cached_response */ true, _));
+  test_url_loader_factory_.SetInterceptor(request_callback.Get());
+  rt_service()->StartLookup(cached_url, last_committed_url_, is_mainframe_,
+                            response_callback.Get(),
+                            base::SequencedTaskRunner::GetCurrentDefault());
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(RealTimeUrlLookupServiceTest, TestBackoffModeRespected_NotCached) {
+  EnableMbb();
+
+  // Enable backoff mode by running 3 failing requests.
+  GURL url(kTestUrl);
+  RunSimpleFailingRequest(url);
+  RunSimpleFailingRequest(url);
+  RunSimpleFailingRequest(url);
+  EXPECT_TRUE(IsInBackoffMode());
+
+  // Since the response is not already cached, the lookup will fail since the
+  // service is in backoff mode.
+  base::MockCallback<network::TestURLLoaderFactory::Interceptor>
+      request_callback;
+  base::MockCallback<RTLookupResponseCallback> response_callback;
+  EXPECT_CALL(request_callback, Run(_)).Times(0);
+  EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ false,
+                                     /* is_cached_response */ false, _));
+  test_url_loader_factory_.SetInterceptor(request_callback.Get());
+  rt_service()->StartLookup(url, last_committed_url_, is_mainframe_,
+                            response_callback.Get(),
+                            base::SequencedTaskRunner::GetCurrentDefault());
+
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, TestRetriableErrors) {

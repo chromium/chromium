@@ -249,7 +249,7 @@ RealTimeUrlLookupServiceBase::GetWeakPtr() {
 bool RealTimeUrlLookupServiceBase::IsInBackoffMode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool in_backoff = backoff_operator_->IsInBackoffMode();
-  RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.Backoff.State",
+  RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.BackoffState",
                                     GetMetricSuffix(), in_backoff);
   return in_backoff;
 }
@@ -326,6 +326,15 @@ void RealTimeUrlLookupServiceBase::StartLookup(
                                   /* is_rt_lookup_successful */ true,
                                   /* is_cached_response */ true,
                                   std::move(cache_response)));
+    return;
+  }
+
+  if (IsInBackoffMode()) {
+    callback_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(response_callback),
+                                  /* is_rt_lookup_successful */ false,
+                                  /* is_cached_response */ false,
+                                  /* response */ nullptr));
     return;
   }
 

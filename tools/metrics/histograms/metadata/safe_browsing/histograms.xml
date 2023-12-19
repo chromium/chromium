@@ -2083,14 +2083,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.Backoff.State" enum="BooleanBackoff"
+<histogram name="SafeBrowsing.RT.BackoffState" enum="BooleanBackoff"
     expires_after="2024-04-28">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs if the real time URL lookup service is currently in backoff state due
-    to previous errors. Logged each time a top frame URL navigation happens in
-    non-incognito mode for users who have real time URL lookups enabled.
+    to previous errors. Logs whenever a real time URL request is about to be
+    attempted, which will not go through if the service is in backoff mode.
   </summary>
 </histogram>
 
@@ -2206,15 +2206,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.IsLookupServiceAvailable"
-    enum="BooleanAvailable" expires_after="2024-04-28">
+<histogram name="SafeBrowsing.RT.IsLookupServiceFound" enum="BooleanFound"
+    expires_after="2024-04-28">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Logs whether the real time URL lookup service is available when a real time
-    URL check is needed. The real time URL lookup service is available if it is
-    not nullptr and it is not in backoff mode. Logged when real time URL check
-    is enabled and the URL doesn't match the allowlist.
+    Logs whether the real time URL lookup service is found when a real time URL
+    check is needed. The real time URL lookup service is available if it is not
+    nullptr. Logged when real time URL check is enabled and the URL doesn't
+    match the allowlist.
   </summary>
 </histogram>
 

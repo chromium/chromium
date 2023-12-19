@@ -3852,7 +3852,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Enterprise"
       label="Records metrics for enterprise real time URL lookup service."/>
   <affected-histogram name="SafeBrowsing.PageLoadToken.RealTimeCheckHasToken"/>
-  <affected-histogram name="SafeBrowsing.RT.Backoff.State"/>
+  <affected-histogram name="SafeBrowsing.RT.BackoffState"/>
   <affected-histogram name="SafeBrowsing.RT.GetCache.Time"/>
   <affected-histogram name="SafeBrowsing.RT.GetCacheResult"/>
   <affected-histogram name="SafeBrowsing.RT.HasTokenInRequest"/>

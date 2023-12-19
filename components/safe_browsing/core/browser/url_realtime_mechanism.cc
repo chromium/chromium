@@ -142,11 +142,10 @@ void UrlRealTimeMechanism::StartLookupOnUIThread(
     bool is_mainframe,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
-  bool is_lookup_service_available =
-      url_lookup_service_on_ui && !url_lookup_service_on_ui->IsInBackoffMode();
-  base::UmaHistogramBoolean("SafeBrowsing.RT.IsLookupServiceAvailable",
-                            is_lookup_service_available);
-  if (!is_lookup_service_available) {
+  bool is_lookup_service_found = !!url_lookup_service_on_ui;
+  base::UmaHistogramBoolean("SafeBrowsing.RT.IsLookupServiceFound",
+                            is_lookup_service_found);
+  if (!is_lookup_service_found) {
     io_task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(&UrlRealTimeMechanism::PerformHashBasedCheck,
