@@ -326,6 +326,7 @@ dist_aar("content_aar") {
     "org/jetbrains/*.class",
   ]
   srcjar_deps = [ ":build_config_gen" ]
+  proguard_configs = [ "//wolvic/java/proguard-rules.pro" ]
 
   generate_final_jni = true
   android_manifest = "$root_gen_dir/wolvic/AndroidManifest.xml"
