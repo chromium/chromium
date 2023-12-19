@@ -199,7 +199,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
   }
 }
 
-TEST(FormPredictionsTest, DeriveFromServerFieldType) {
+TEST(FormPredictionsTest, DeriveFromFieldType) {
   struct TestCase {
     const char* name;
     // Input.
@@ -224,7 +224,7 @@ TEST(FormPredictionsTest, DeriveFromServerFieldType) {
   for (const TestCase& test_case : test_cases) {
     SCOPED_TRACE(test_case.name);
     EXPECT_EQ(test_case.expected_result,
-              DeriveFromServerFieldType(test_case.server_type));
+              DeriveFromFieldType(test_case.server_type));
   }
 }
 

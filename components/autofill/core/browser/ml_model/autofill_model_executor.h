@@ -35,7 +35,7 @@ class AutofillModelExecutor
   // One element per `ModelInput::size()`, representing the raw model outputs
   // for the different field types. They don't have any meaning per-se, but
   // higher means more confidence. Since the model might not support all
-  // ServerFieldTypes, the indices don't map to field types directly. See
+  // FieldTypes, the indices don't map to field types directly. See
   // `AutofillMlPredictionModelHandler`.
   using ModelOutput = std::vector<std::vector<float>>;
 

@@ -26,8 +26,8 @@ namespace {
 
 // Converts a string (from the test recipe) to the autofill FieldType it
 // represents.
-autofill::FieldType ServerFieldTypeFromString(const std::string& str,
-                                              NSError** error) {
+autofill::FieldType FieldTypeFromString(const std::string& str,
+                                        NSError** error) {
   static std::map<const std::string, autofill::FieldType>
       string_to_field_type_map;
 
@@ -105,7 +105,7 @@ NSError* PrepareAutofillProfileWithValues(
 
     const std::string field_type = type_container->GetString();
     NSError* error = nil;
-    autofill::FieldType type = ServerFieldTypeFromString(field_type, &error);
+    autofill::FieldType type = FieldTypeFromString(field_type, &error);
     if (error) {
       return error;
     }

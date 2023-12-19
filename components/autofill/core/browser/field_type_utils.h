@@ -10,7 +10,7 @@
 
 namespace autofill {
 
-// All ServerFieldTypes stored for an AutofillProfile in the local_addresses or
+// All FieldTypes stored for an AutofillProfile in the local_addresses or
 // contact_info table (depending on the profile source) in AutofillTable.
 // When introducing a new field type, it suffices to add it here. When removing
 // a field type, removing it from the list suffices (no additional clean-up in

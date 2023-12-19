@@ -169,7 +169,7 @@ class AutofillSuggestionGenerator {
   // Dedupes the given profiles based on if one is a subset of the other for
   // suggestions represented by `field_types`. The function returns at most
   // `kMaxUniqueSuggestedProfilesCount` profiles. `field_types` stores all of
-  // the ServerFieldTypes relevant for the current suggestions, including that
+  // the FieldTypes relevant for the current suggestions, including that
   // of the field on which the user is currently focused.
   std::vector<const AutofillProfile*> DeduplicatedProfilesForSuggestions(
       const std::vector<const AutofillProfile*>& matched_profiles,

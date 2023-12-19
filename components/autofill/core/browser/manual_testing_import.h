@@ -47,7 +47,7 @@ namespace autofill {
 // The "initial_creator_id" is an optional int value which sets the profile's
 // property of the same name.
 // The "nickname" in credit cards optional as well.
-// "field-type" corresponds to ServerFieldTypes like "NAME_FULL". For profiles
+// "field-type" corresponds to FieldTypes like "NAME_FULL". For profiles
 // and credit cards, only field types valid for AutofillProfile or CreditCard
 // are accepted.
 // All profiles and credit cards specified in the file are imported. They

@@ -49,7 +49,7 @@ TEST(AutofillDataUtilTest, DetermineGroupsForHomeNamePhoneAndEmail) {
   EXPECT_EQ(expected_group_bitmask, group_bitmask);
 }
 
-TEST(AutofillDataUtilTest, DetermineGroupsForUnknownServerFieldType) {
+TEST(AutofillDataUtilTest, DetermineGroupsForUnknownFieldType) {
   const FieldTypeSet field_types{UNKNOWN_TYPE, NAME_FULL, ADDRESS_HOME_ZIP};
 
   const uint32_t expected_group_bitmask = kName | kAddress;
@@ -57,7 +57,7 @@ TEST(AutofillDataUtilTest, DetermineGroupsForUnknownServerFieldType) {
   EXPECT_EQ(expected_group_bitmask, group_bitmask);
 }
 
-TEST(AutofillDataUtilTest, DetermineGroupsForNoServerFieldTypes) {
+TEST(AutofillDataUtilTest, DetermineGroupsForNoFieldTypes) {
   const FieldTypeSet field_types;
   const uint32_t expected_group_bitmask = 0;
   const uint32_t group_bitmask = data_util::DetermineGroups(field_types);

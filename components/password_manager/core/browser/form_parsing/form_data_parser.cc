@@ -413,7 +413,7 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
   for (const PasswordFieldPrediction& prediction : predictions.fields) {
     ProcessedField* processed_field = nullptr;
 
-    CredentialFieldType field_type = DeriveFromServerFieldType(prediction.type);
+    CredentialFieldType field_type = DeriveFromFieldType(prediction.type);
     bool is_password_prediction = IsPasswordPrediction(field_type);
     if (mode == FormDataParser::Mode::kSaving && is_password_prediction &&
         !base::FeatureList::IsEnabled(

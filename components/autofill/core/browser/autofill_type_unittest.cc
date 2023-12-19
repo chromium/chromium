@@ -49,7 +49,7 @@ TEST_F(AutofillTypeServerPredictionTest, PredictionFromAutofillField) {
   EXPECT_TRUE(prediction.may_use_prefilled_placeholder);
 }
 
-TEST(AutofillTypeTest, ServerFieldTypes) {
+TEST(AutofillTypeTest, FieldTypes) {
   // No server data.
   AutofillType none(NO_SERVER_DATA);
   EXPECT_EQ(NO_SERVER_DATA, none.GetStorableType());

@@ -43,7 +43,7 @@ FieldType GetServerType(const AutofillType::ServerPrediction& prediction) {
   for (const auto& server_predictions : prediction.server_predictions) {
     FieldType type =
         ToSafeFieldType(server_predictions.type(), FieldType::NO_SERVER_DATA);
-    if (DeriveFromServerFieldType(type) != CredentialFieldType::kNone) {
+    if (DeriveFromFieldType(type) != CredentialFieldType::kNone) {
       return type;
     }
   }
@@ -53,7 +53,7 @@ FieldType GetServerType(const AutofillType::ServerPrediction& prediction) {
 }
 }  // namespace
 
-CredentialFieldType DeriveFromServerFieldType(FieldType type) {
+CredentialFieldType DeriveFromFieldType(FieldType type) {
   switch (type) {
     case autofill::USERNAME:
     case autofill::USERNAME_AND_EMAIL_ADDRESS:
