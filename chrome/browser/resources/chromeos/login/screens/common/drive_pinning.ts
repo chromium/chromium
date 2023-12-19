@@ -1,6 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 /**
  * @fileoverview Polymer element for drive pinning screen.
  */
@@ -13,7 +14,8 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
@@ -22,62 +24,49 @@ import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 
 import {getTemplate} from './drive_pinning.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- */
-const DrivePinningScreenElementBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
+export const DrivePinningScreenElementBase =
+  mixinBehaviors(
+      [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+      PolymerElement) as {
+    new (): PolymerElement & OobeI18nBehaviorInterface &
+        LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
+  };
 
-/**
- * Data that is passed to the screen during onBeforeShow.
- * @typedef {{
- *   shouldShowReturn: boolean,
- * }}
- */
-let DrivePinningScreenData;
+interface DrivePinningScreenData {
+  shouldShowReturn: boolean;
+}
 
 /**
  * Enum to represent steps on the drive pinning screen.
  * Currently there is only one step, but we still use
  * MultiStepBehavior because it provides implementation of
  * things like processing 'focus-on-show' class
- * @enum {string}
  */
-const DrivePinningStep = {
-  OVERVIEW: 'overview',
-};
-
+enum DrivePinningStep {
+  OVERVIEW = 'overview',
+}
 
 /**
  * Available user actions.
- * @enum {string}
  */
-const UserAction = {
-  ACCEPT: 'driveNext',
-  RETURN: 'return',
-};
+enum UserAction {
+  ACCEPT = 'driveNext',
+  RETURN = 'return',
+}
 
-/**
- * @polymer
- */
 class DrivePinningScreen extends DrivePinningScreenElementBase {
   static get is() {
-    return 'drive-pinning-element';
+    return 'drive-pinning-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * Available free space in the disk.
-       * @private {String}
        */
       freeSpace_: {
         type: String,
@@ -85,7 +74,6 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
 
       /**
        * Required space by the drive for pinning.
-       * @private {String}
        */
       requiredSpace_: {
         type: String,
@@ -98,7 +86,6 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
 
       /**
        * Whether the button to return to CHOOBE screen should be shown.
-       * @private
        */
       shouldShowReturn_: {
         type: Boolean,
@@ -107,37 +94,40 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
     };
   }
 
-  get EXTERNAL_API() {
+  private freeSpace_: string;
+  private requiredSpace_: string;
+  private enableDrivePinning_: boolean;
+  private shouldShowReturn_: boolean;
+
+  override get EXTERNAL_API(): string[] {
     return ['setRequiredSpaceInfo'];
   }
 
-  get UI_STEPS() {
+  override get UI_STEPS() {
     return DrivePinningStep;
   }
 
-  defaultUIStep() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep() {
     return DrivePinningStep.OVERVIEW;
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('DrivePinningScreen');
   }
 
-  getOobeUIInitialState() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override getOobeUIInitialState(): OOBE_UI_STATE {
     return OOBE_UI_STATE.ONBOARDING;
   }
 
-  /**
-   * @param {DrivePinningScreenData} data Screen init payload
-   */
-  onBeforeShow(data) {
+  private onBeforeShow(data: DrivePinningScreenData): void {
     this.shouldShowReturn_ = data['shouldShowReturn'];
   }
 
-
-  getSpaceDescription_(locale, requiredSpace, freeSpace) {
+  private getSpaceDescription_(
+      locale: string, requiredSpace: string, freeSpace: string): string {
     if (requiredSpace && freeSpace) {
       return this.i18nDynamic(
           locale, 'DevicePinningScreenToggleSubtitle', requiredSpace,
@@ -149,17 +139,23 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
   /**
    * Set the required space and free space information.
    */
-  setRequiredSpaceInfo(requiredSpace, freeSpace) {
+  setRequiredSpaceInfo(requiredSpace: string, freeSpace: string): void {
     this.requiredSpace_ = requiredSpace;
     this.freeSpace_ = freeSpace;
   }
 
-  onNextButtonClicked_() {
+  private onNextButtonClicked_(): void {
     this.userActed([UserAction.ACCEPT, this.enableDrivePinning_]);
   }
 
-  onReturnClicked_() {
+  private onReturnClicked_(): void {
     this.userActed([UserAction.RETURN, this.enableDrivePinning_]);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [DrivePinningScreen.is]: DrivePinningScreen;
   }
 }
 
