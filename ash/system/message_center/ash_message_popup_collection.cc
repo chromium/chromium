@@ -326,12 +326,15 @@ int AshMessagePopupCollection::GetPopupOriginX(
 
 int AshMessagePopupCollection::GetBaseline() const {
   gfx::Insets tray_bubble_insets = GetTrayBubbleInsets(shelf_->GetWindow());
+  int notifier_collision_offset =
+      notifier_collision_handler_
+          ? notifier_collision_handler_->CalculateBaselineOffset()
+          : 0;
 
   // Decrease baseline by `kShelfDisplayOffset` to compensate for the adjustment
   // of edges in `Shelf::GetSystemTrayAnchorRect()`.
   return work_area_.bottom() - tray_bubble_insets.bottom() -
-         notifier_collision_handler_->CalculateBaselineOffset() -
-         kShelfDisplayOffset;
+         notifier_collision_offset - kShelfDisplayOffset;
 }
 
 gfx::Rect AshMessagePopupCollection::GetWorkArea() const {
@@ -416,6 +419,10 @@ void AshMessagePopupCollection::NotifySilentNotification(
 }
 
 void AshMessagePopupCollection::NotifyPopupCollectionHeightChanged() {
+  if (!notifier_collision_handler_) {
+    return;
+  }
+
   notifier_collision_handler_->OnPopupCollectionHeightChanged();
 }
 
