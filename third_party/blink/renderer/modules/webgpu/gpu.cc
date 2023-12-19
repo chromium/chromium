@@ -39,11 +39,13 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -300,9 +302,19 @@ void GPU::RequestAdapterImpl(ScriptState* script_state,
     CreateWebGPUGraphicsContext3DProviderAsync(
         execution_context->Url(),
         execution_context->GetTaskRunner(TaskType::kWebGPU),
-        WTF::BindOnce(
-            [](GPU* gpu, ExecutionContext* execution_context,
+        CrossThreadBindOnce(
+            [](CrossThreadHandle<GPU> gpu_handle,
+               CrossThreadHandle<ExecutionContext> execution_context_handle,
                std::unique_ptr<WebGraphicsContext3DProvider> context_provider) {
+              auto unwrap_gpu = MakeUnwrappingCrossThreadHandle(gpu_handle);
+              auto unwrap_execution_context =
+                  MakeUnwrappingCrossThreadHandle(execution_context_handle);
+              if (!unwrap_gpu || !unwrap_execution_context) {
+                return;
+              }
+              auto* gpu = unwrap_gpu.GetOnCreationThread();
+              auto* execution_context =
+                  unwrap_execution_context.GetOnCreationThread();
               const KURL& url = execution_context->Url();
               context_provider =
                   CheckContextProvider(url, std::move(context_provider));
@@ -324,7 +336,8 @@ void GPU::RequestAdapterImpl(ScriptState* script_state,
                 std::move(callback).Run();
               }
             },
-            WrapPersistent(this), WrapPersistent(execution_context)));
+            MakeCrossThreadHandle(this),
+            MakeCrossThreadHandle(execution_context)));
     return;
   }
 
