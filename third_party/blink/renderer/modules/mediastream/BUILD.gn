@@ -111,13 +111,13 @@ blink_modules_sources("mediastream") {
     "video_track_adapter.h",
     "video_track_adapter_settings.cc",
     "video_track_adapter_settings.h",
+    "web_media_player_ms.cc",
+    "web_media_player_ms_compositor.cc",
+    "web_media_player_ms_compositor.h",
     "web_media_stream_device_observer.cc",
     "web_media_stream_utils.cc",
     "webaudio_media_stream_audio_sink.cc",
     "webaudio_media_stream_audio_sink.h",
-    "webmediaplayer_ms.cc",
-    "webmediaplayer_ms_compositor.cc",
-    "webmediaplayer_ms_compositor.h",
   ]
   deps = [
     "//build:chromecast_buildflags",

@@ -17,7 +17,7 @@ blink_modules_sources("media") {
     "audio/mojo_audio_input_ipc.h",
     "audio/mojo_audio_output_ipc.cc",
     "audio/mojo_audio_output_ipc.h",
-    "webmediaplayer_util.cc",
+    "web_media_player_util.cc",
   ]
 
   deps = [

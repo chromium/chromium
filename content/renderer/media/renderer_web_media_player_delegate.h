@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_MEDIA_RENDERER_WEBMEDIAPLAYER_DELEGATE_H_
-#define CONTENT_RENDERER_MEDIA_RENDERER_WEBMEDIAPLAYER_DELEGATE_H_
+#ifndef CONTENT_RENDERER_MEDIA_RENDERER_WEB_MEDIA_PLAYER_DELEGATE_H_
+#define CONTENT_RENDERER_MEDIA_RENDERER_WEB_MEDIA_PLAYER_DELEGATE_H_
 
 #include <map>
 #include <memory>
@@ -19,7 +19,7 @@
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
+#include "third_party/blink/public/platform/media/web_media_player_delegate.h"
 #include "third_party/blink/public/web/web_view_observer.h"
 
 namespace blink {
@@ -156,4 +156,4 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
 
 }  // namespace media
 
-#endif  // CONTENT_RENDERER_MEDIA_RENDERER_WEBMEDIAPLAYER_DELEGATE_H_
+#endif  // CONTENT_RENDERER_MEDIA_RENDERER_WEB_MEDIA_PLAYER_DELEGATE_H_

@@ -11,7 +11,7 @@ include_rules = [
     "+base/threading/sequenced_task_runner_handle.h",
     "+base/threading/thread_task_runner_handle.h",
 
-    # webmediaplayer_ms{_compositor}.cc includes.
+    # web_media_player_ms{_compositor}.cc includes.
     "+base/values.h",
     "+cc/layers/surface_layer.h",
     "+cc/layers/video_frame_provider_client_impl.h",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_WEBMEDIAPLAYER_UTIL_H_
-#define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_WEBMEDIAPLAYER_UTIL_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_WEB_MEDIA_PLAYER_UTIL_H_
+#define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_WEB_MEDIA_PLAYER_UTIL_H_
 
 #include "base/time/time.h"
 #include "media/base/audio_renderer_sink.h"
@@ -46,4 +46,4 @@ BLINK_MODULES_EXPORT media::OutputDeviceStatusCB ConvertToOutputDeviceStatusCB(
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_WEBMEDIAPLAYER_UTIL_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_WEB_MEDIA_PLAYER_UTIL_H_

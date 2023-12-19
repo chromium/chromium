@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/media/renderer_webmediaplayer_delegate.h"
+#include "content/renderer/media/renderer_web_media_player_delegate.h"
 
 #include <stdint.h>
 

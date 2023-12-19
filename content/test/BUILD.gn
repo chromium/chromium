@@ -1620,7 +1620,7 @@ test("content_browsertests") {
     "../renderer/blink_platform_audio_hardware_browsertest.cc",
     "../renderer/fluent_scrollbar_browsertest.cc",
     "../renderer/gin_browsertest.cc",
-    "../renderer/media/renderer_webmediaplayer_delegate_browsertest.cc",
+    "../renderer/media/renderer_web_media_player_delegate_browsertest.cc",
     "../renderer/media/too_many_web_media_players_intervention_browsertest.cc",
     "../renderer/render_frame_impl_browsertest.cc",
     "../renderer/render_thread_impl_browsertest.cc",

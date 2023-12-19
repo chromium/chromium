@@ -23,8 +23,8 @@ const LearningTask& GetWillPlayTask() {
 
 // Add some features to |task| that WMPI knows how to add.
 void PushWMPIFeatures(LearningTask& task) {
-  // NOTE: Be sure to update webmediaplayer_impl if you change these, since it
-  // memorizes them.
+  // NOTE: Be sure to update web_media_player_impl.cc if you change these, since
+  // it memorizes them.
   task.feature_descriptions.push_back(
       {"codec", LearningTask::Ordering::kUnordered});
   task.feature_descriptions.push_back(
