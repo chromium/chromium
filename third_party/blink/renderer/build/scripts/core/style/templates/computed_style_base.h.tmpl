@@ -57,7 +57,7 @@ namespace {{property.namespace}} { class {{property.classname}}; }
 {% endfor %}
 
 // The generated portion of ComputedStyle. For more info, see the header comment
-// in ComputedStyle.h.
+// in computed_style.h.
 //
 // ComputedStyleBase is a generated class that stores data members or 'fields'
 // used in ComputedStyle. These fields can represent CSS properties or internal
@@ -71,8 +71,8 @@ namespace {{property.namespace}} { class {{property.classname}}; }
 // the root node:
 //
 // ComputedStyleBase (fields: display, vertical-align, ...)
-//  |- StyleSurroundData (fields: padding, border, ...)
-//  |- StyleBoxData (fields: width, height, ...)
+//  |- StyleSurroundData (fields: border-color, left/right/top/bottom, ...)
+//  |- StyleBoxData (fields: width, height, padding, ...)
 //  |- ...
 //  |- StyleRareNonInheritedData (fields: box-shadow, text-overflow, ...)
 //      |- StyleFlexibleBoxData (fields: flex-direction, flex-wrap, ...)
@@ -85,6 +85,9 @@ namespace {{property.namespace}} { class {{property.classname}}; }
 // of all the flex box fields for every ComputedStyleBase. Similarly, when an
 // element inherits from its parent, its ComputedStyleBase can simply share all
 // of its subgroups with the parent's.
+//
+// Most of these groupings are done manually, although there have been some
+// adjustments based on statistics.
 //
 // INTERFACE:
 //
