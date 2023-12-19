@@ -94,6 +94,7 @@ namespace ash {
 
 class AcceleratorControllerImpl;
 class AcceleratorKeycodeLookupCache;
+class AcceleratorLookup;
 class AcceleratorPrefs;
 class AcceleratorTracker;
 class AccessibilityController;
@@ -430,6 +431,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   AshAcceleratorConfiguration* ash_accelerator_configuration() {
     return ash_accelerator_configuration_.get();
   }
+  AcceleratorLookup* accelerator_lookup() { return accelerator_lookup_.get(); }
   AssistantControllerImpl* assistant_controller() {
     return assistant_controller_.get();
   }
@@ -968,6 +970,7 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   std::unique_ptr<AcceleratorPrefs> accelerator_prefs_;
   std::unique_ptr<AshAcceleratorConfiguration> ash_accelerator_configuration_;
+  std::unique_ptr<AcceleratorLookup> accelerator_lookup_;
   std::unique_ptr<AcceleratorControllerImpl> accelerator_controller_;
   std::unique_ptr<AcceleratorKeycodeLookupCache>
       accelerator_keycode_lookup_cache_;

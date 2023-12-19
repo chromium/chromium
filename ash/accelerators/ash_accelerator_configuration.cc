@@ -223,11 +223,13 @@ void AshAcceleratorConfiguration::OnActiveUserPrefServiceChanged(
   }
 }
 
-const std::vector<ui::Accelerator>&
+base::optional_ref<const std::vector<ui::Accelerator>>
 AshAcceleratorConfiguration::GetAcceleratorsForAction(
     AcceleratorActionId action_id) {
   const auto accelerator_iter = id_to_accelerators_.find(action_id);
-  CHECK(accelerator_iter != id_to_accelerators_.end());
+  if (accelerator_iter == id_to_accelerators_.end()) {
+    return std::nullopt;
+  }
 
   return accelerator_iter->second;
 }

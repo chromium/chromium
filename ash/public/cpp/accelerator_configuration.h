@@ -12,6 +12,7 @@
 #include "ash/public/mojom/accelerator_configuration.mojom.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "base/functional/callback.h"
+#include "base/types/optional_ref.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace ash {
@@ -38,8 +39,8 @@ class ASH_PUBLIC_EXPORT AcceleratorConfiguration {
   void RemoveAcceleratorsUpdatedCallback(AcceleratorsUpdatedCallback callback);
 
   // Get the accelerators for a single action.
-  virtual const std::vector<ui::Accelerator>& GetAcceleratorsForAction(
-      AcceleratorActionId action_id) = 0;
+  virtual base::optional_ref<const std::vector<ui::Accelerator>>
+  GetAcceleratorsForAction(AcceleratorActionId action_id) = 0;
 
   // Whether this source of shortcuts can be modified. If this returns false
   // then any of the Add/Remove/Replace class will DCHECK. The two Restore

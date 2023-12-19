@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/accelerators/ash_accelerator_configuration.h"
+#include "ash/accelerators/accelerator_lookup.h"
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
@@ -89,6 +89,7 @@ using ::user_education::HelpBubbleArrow;
 using ::user_education::TutorialDescription;
 using ::views::test::WidgetDestroyedWaiter;
 
+using AcceleratorDetails = AcceleratorLookup::AcceleratorDetails;
 using ContextMode = TutorialDescription::ContextMode;
 using ElementSpecifier = TutorialDescription::ElementSpecifier;
 
@@ -1167,14 +1168,14 @@ class WelcomeTourAcceleratorHandlerRunTest
   // received as expected.
   void PerformActionAndCheckKeyEvents(AcceleratorAction action, bool received) {
     // Get the accelerators corresponding to `action`.
-    const std::vector<ui::Accelerator>& accelerators =
-        Shell::Get()->ash_accelerator_configuration()->GetAcceleratorsForAction(
-            action);
-    ASSERT_FALSE(accelerators.empty());
+    const std::vector<AcceleratorDetails>& accelerators_details =
+        Shell::Get()->accelerator_lookup()->GetAcceleratorsForAction(action);
+    ASSERT_FALSE(accelerators_details.empty());
 
-    for (const ui::Accelerator& accelerator : accelerators) {
+    for (const AcceleratorDetails& accelerator_details : accelerators_details) {
       // If `received` is true, then `accelerator` should be received;
       // otherwise, `accelerator` should NOT be received.
+      const ui::Accelerator accelerator = accelerator_details.accelerator;
       EXPECT_CALL(
           *mock_pretarget_event_handler_,
           OnKeyEvent(AllOf(
