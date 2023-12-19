@@ -75,6 +75,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void SetNativeToolbarVisible(bool visible) override;
+  bool IsNativeToolbarVisibleForTesting() const;
   SkColor GetPreferredBackgroundColor() const override;
 #endif
 

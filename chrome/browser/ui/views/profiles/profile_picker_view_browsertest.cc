@@ -672,6 +672,12 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
 #endif
   }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  bool IsNativeToolbarVisible() {
+    return view()->IsNativeToolbarVisibleForTesting();
+  }
+#endif
+
  protected:
   const GURL kLocalProfileCreationUrl = AppendProfileCustomizationQueryParams(
       GURL("chrome://profile-customization"),
@@ -1149,9 +1155,10 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
 
   // Opening the locked profile from the profile picker should trigger the
-  // reauth.
+  // reauth, and the back button toolbar should be visible.
   OpenProfileFromPicker(entry->GetPath(), false);
   WaitForLoadStop(GetChromeReauthURL(email));
+  EXPECT_TRUE(IsNativeToolbarVisible());
 
   // Simulate a redirect within the reauth page (requesting a password for
   // example), the actual URL is not important for the testing purposes.
@@ -1171,9 +1178,10 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   SimulateNavigateBack();
 
   // Expect the profile picker to be opened since it was the last step before
-  // reauth, and the profile to be still locked.
+  // reauth, toolbar should be hidden, and the profile to be still locked.
   WaitForLoadStop(GURL("chrome://profile-picker"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_FALSE(IsNativeToolbarVisible());
   EXPECT_EQ(BrowserList::GetInstance()->size(), initial_browser_count);
   EXPECT_TRUE(entry->IsSigninRequired());
 }
@@ -1439,9 +1447,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileDiceReenter) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   Profile* profile_being_created = StartDiceSignIn();
+  EXPECT_TRUE(IsNativeToolbarVisible());
 
   // Navigate back from the sign in step.
   SimulateNavigateBack();
+  EXPECT_FALSE(IsNativeToolbarVisible());
 
   // Simulate the sign-in screen get re-entered with a different color
   // (configured on the local profile screen).

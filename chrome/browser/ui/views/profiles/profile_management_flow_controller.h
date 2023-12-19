@@ -104,9 +104,10 @@ class ProfileManagementFlowController {
   // (which is the default), the host will choose itself some generic title.
   virtual std::u16string GetFallbackAccessibleWindowTitle() const;
 
-  // A helper method to create a pop callback that will switch to the existing
-  // step (prior to the actual switch that this pop closure should be part of).
-  base::OnceClosure CreateSwitchToCurrentStepPopCallback();
+  // A helper method to create a pop callback that will switch to the given
+  // step (can be used with `current_step()` to facilitate switching back to the
+  // current active step).
+  base::OnceClosure CreateSwitchToStepPopCallback(Step step);
 
  protected:
   void RegisterStep(Step step,

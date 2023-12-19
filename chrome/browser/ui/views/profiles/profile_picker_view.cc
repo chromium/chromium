@@ -526,6 +526,10 @@ void ProfilePickerView::SetNativeToolbarVisible(bool visible) {
   toolbar_->SetVisible(true);
 }
 
+bool ProfilePickerView::IsNativeToolbarVisibleForTesting() const {
+  return toolbar_->GetVisible();
+}
+
 SkColor ProfilePickerView::GetPreferredBackgroundColor() const {
   return GetColorProvider()->GetColor(kColorToolbar);
 }

@@ -76,7 +76,7 @@ void ProfileManagementFlowControllerImpl::
   SwitchToStep(Step::kAccountSelection,
                /*reset_state=*/step_needs_registration,
                std::move(step_switch_finished_callback),
-               CreateSwitchToCurrentStepPopCallback());
+               CreateSwitchToStepPopCallback(current_step()));
 }
 #endif
 

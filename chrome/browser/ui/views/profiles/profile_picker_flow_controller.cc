@@ -280,6 +280,7 @@ class ProfileCreationSignedInFlowController
       step_completed_callback_;
 };
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class ReauthFlowStepController : public ProfileManagementStepController {
  public:
   explicit ReauthFlowStepController(
@@ -296,6 +297,8 @@ class ReauthFlowStepController : public ProfileManagementStepController {
     reauth_provider_->SwitchToReauth();
   }
 
+  void OnHidden() override { host()->SetNativeToolbarVisible(false); }
+
   void OnNavigateBackRequested() override {
     NavigateBackInternal(reauth_provider_->contents());
   }
@@ -304,7 +307,6 @@ class ReauthFlowStepController : public ProfileManagementStepController {
   std::unique_ptr<ProfilePickerDiceReauthProvider> reauth_provider_;
 };
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 std::unique_ptr<ProfileManagementStepController> CreateReauthtep(
     ProfilePickerWebContentsHost* host,
     Profile* profile,
@@ -375,7 +377,12 @@ void ProfilePickerFlowController::SwitchToReauth(
 
   // if the step was already initialized, unregister to make sure the new
   // reauth is properly initialised and the current reauth step is cleaned.
-  if (!IsStepInitialized(Step::kReauth)) {
+  //
+  // TODO(crbug.com/1478217): Cleanup the unregistration of the step with a
+  // proper resetable state within the `ProfilePickerDiceReauthProvider`, and
+  // using the `ProfileManagementFlowController::SwitchToStep()` `reset_state`
+  // value to trigger the reset.
+  if (IsStepInitialized(Step::kReauth)) {
     UnregisterStep(Step::kReauth);
   }
 
@@ -386,14 +393,10 @@ void ProfilePickerFlowController::SwitchToReauth(
           base::BindOnce(&ProfilePickerFlowController::OnReauthCompleted,
                          base::Unretained(this), profile,
                          std::move(on_error_callback))));
-  // Popping this step should first unregister it (specific to the reauth step),
-  // then switch back to the current step.
-  auto pop_closure =
-      base::BindOnce(&ProfilePickerFlowController::UnregisterStep,
-                     base::Unretained(this), Step::kReauth)
-          .Then(CreateSwitchToCurrentStepPopCallback());
-  SwitchToStep(Step::kReauth, true, StepSwitchFinishedCallback(),
-               std::move(pop_closure));
+
+  SwitchToStep(
+      Step::kReauth, true, StepSwitchFinishedCallback(),
+      /*pop_step_callback=*/CreateSwitchToStepPopCallback(current_step()));
 }
 
 void ProfilePickerFlowController::OnReauthCompleted(
