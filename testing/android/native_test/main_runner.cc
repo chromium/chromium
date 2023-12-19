@@ -25,7 +25,8 @@ static jint JNI_MainRunner_RunMain(
   alreadyRun = true;
 
   std::vector<std::string> cpp_command_line;
-  AppendJavaStringArrayToStringVector(env, command_line, &cpp_command_line);
+  base::android::AppendJavaStringArrayToStringVector(env, command_line,
+                                                     &cpp_command_line);
 
   std::vector<char*> argv;
   int argc = ArgsToArgv(cpp_command_line, &argv);

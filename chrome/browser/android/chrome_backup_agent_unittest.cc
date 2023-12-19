@@ -28,10 +28,11 @@ namespace android {
 
 using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
+using base::android::JavaBooleanArrayToBoolVector;
+using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
 using base::android::ToJavaBooleanArray;
-using base::android::JavaParamRef;
 
 class ChromeBackupAgentTest : public ::testing::Test {
  protected:
