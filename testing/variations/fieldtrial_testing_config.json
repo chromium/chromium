@@ -5570,6 +5570,22 @@
             ]
         }
     ],
+    "DeskProfiles": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240214",
+                    "enable_features": [
+                        "DeskProfiles"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopLinkCapturingPWAExperiment": [
         {
             "platforms": [
