@@ -47,7 +47,7 @@ namespace content {
 
 namespace {
 
-using blink::mojom::CapturedSurfaceControlResult;
+using ::blink::mojom::CapturedSurfaceControlResult;
 
 void BindMediaStreamDeviceObserverReceiver(
     GlobalRenderFrameHostId render_frame_host_id,
@@ -691,20 +691,8 @@ void MediaStreamDispatcherHost::SendWheel(
     return;
   }
 
-  const GlobalRenderFrameHostId captured_id =
-      media_stream_manager_->video_capture_manager()
-          ->GetGlobalRenderFrameHostId(device_id);
-  if (!captured_id) {
-    // Either the capture session has ended, or the capture was not of a tab.
-    // Note that this is not a BadMessage, because the session might have
-    // ended asynchronously.
-    std::move(callback).Run(
-        CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
-    return;
-  }
-
-  // TODO(crbug.com/1466247): Implement (with a permission prompt).
-  std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
+  media_stream_manager_->SendWheel(render_frame_host_id_, device_id,
+                                   std::move(action), std::move(callback));
 }
 
 void MediaStreamDispatcherHost::GetZoomLevel(

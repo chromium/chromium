@@ -624,6 +624,8 @@ static_library("test_support") {
     ]
   } else {
     sources += [
+      "../browser/renderer_host/media/mock_captured_surface_controller.cc",
+      "../browser/renderer_host/media/mock_captured_surface_controller.h",
       "../browser/serial/serial_test_utils.cc",
       "../browser/serial/serial_test_utils.h",
     ]
@@ -3166,6 +3168,8 @@ test("content_unittests") {
       ]
       sources += [
         "../browser/media/capture/desktop_capture_device_unittest.cc",
+        "../browser/renderer_host/media/captured_surface_controller_permission_manager_unittest.cc",
+        "../browser/renderer_host/media/captured_surface_controller_unittest.cc",
         "../browser/renderer_host/media/sub_capture_target_id_web_contents_helper_unittest.cc",
       ]
     }

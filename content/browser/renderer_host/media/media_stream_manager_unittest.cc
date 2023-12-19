@@ -26,6 +26,7 @@
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
+#include "content/browser/renderer_host/media/mock_captured_surface_controller.h"
 #include "content/browser/renderer_host/media/mock_video_capture_provider.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/common/features.h"
@@ -66,12 +67,23 @@
 #include "media/audio/fake_audio_manager.h"
 #endif
 
-using blink::mojom::MediaStreamType;
-using blink::mojom::StreamSelectionInfo;
-using blink::mojom::StreamSelectionInfoPtr;
-using blink::mojom::StreamSelectionStrategy;
-using testing::_;
-using testing::Invoke;
+using ::blink::mojom::CapturedSurfaceControlResult;
+using ::blink::mojom::MediaStreamType;
+using ::blink::mojom::StreamSelectionInfo;
+using ::blink::mojom::StreamSelectionInfoPtr;
+using ::blink::mojom::StreamSelectionStrategy;
+using ::testing::_;
+using ::testing::Invoke;
+
+#if !BUILDFLAG(IS_ANDROID)
+using CapturedWheelAction = ::blink::mojom::CapturedWheelAction;
+using CapturedWheelActionPtr = ::blink::mojom::CapturedWheelActionPtr;
+using CapturedSurfaceControllerFactoryCallback =
+    ::content::MediaStreamManager::CapturedSurfaceControllerFactoryCallback;
+#endif
+
+using DeviceStoppedCallback =
+    ::content::MediaStreamManager::DeviceStoppedCallback;
 
 namespace content {
 
@@ -338,6 +350,22 @@ class TestVideoCaptureHost : public media::mojom::VideoCaptureHost {
              const std::string& reason) override {}
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/1466247): Add other APIs (setZoomLevel, getZoomLevel).
+enum class CapturedSurfaceControlAPI {
+  kSendWheel,
+};
+
+// Make an arbitrary valid CapturedWheelAction.
+CapturedWheelActionPtr MakeCapturedWheelActionPtr() {
+  return CapturedWheelAction::New(
+      /*x=*/0,
+      /*y=*/0,
+      /*wheel_delta_x=*/0,
+      /*wheel_delta_y=*/0);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 class MediaStreamManagerTest : public ::testing::Test
@@ -361,6 +389,14 @@ class MediaStreamManagerTest : public ::testing::Test
     video_capture_provider_ = video_capture_provider.get();
     media_stream_manager_ = std::make_unique<MediaStreamManager>(
         audio_system_.get(), std::move(video_capture_provider));
+#if !BUILDFLAG(IS_ANDROID)
+    media_stream_manager_->SetCapturedSurfaceControllerFactoryForTesting(
+        base::BindRepeating(
+            [](GlobalRenderFrameHostId, WebContentsMediaCaptureId) {
+              ADD_FAILURE() << "Unexpected MakeCapturedSurfaceController().";
+              return base::WrapUnique<CapturedSurfaceController>(nullptr);
+            }));
+#endif
     media_observer_ = std::make_unique<MockMediaObserver>();
     browser_content_client_ = std::make_unique<TestBrowserClient>(
         media_observer_.get(), &screen_count_);
@@ -467,6 +503,38 @@ class MediaStreamManagerTest : public ::testing::Test
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetMediaObserverExpectations(bool app_requested_audio,
+                                    bool user_shared_audio) {
+    EXPECT_CALL(*media_observer_,
+                OnMediaRequestStateChanged(
+                    _, _, _, _, MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                    MEDIA_REQUEST_STATE_PENDING_APPROVAL));
+    EXPECT_CALL(*media_observer_,
+                OnMediaRequestStateChanged(
+                    _, _, _, _, MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                    MEDIA_REQUEST_STATE_OPENING));
+    EXPECT_CALL(*media_observer_,
+                OnMediaRequestStateChanged(
+                    _, _, _, _, MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                    MEDIA_REQUEST_STATE_DONE));
+    if (app_requested_audio) {
+      EXPECT_CALL(*media_observer_,
+                  OnMediaRequestStateChanged(
+                      _, _, _, _, MediaStreamType::DISPLAY_AUDIO_CAPTURE,
+                      MEDIA_REQUEST_STATE_PENDING_APPROVAL));
+      if (user_shared_audio) {
+        EXPECT_CALL(*media_observer_,
+                    OnMediaRequestStateChanged(
+                        _, _, _, _, MediaStreamType::DISPLAY_AUDIO_CAPTURE,
+                        MEDIA_REQUEST_STATE_OPENING));
+        EXPECT_CALL(*media_observer_,
+                    OnMediaRequestStateChanged(
+                        _, _, _, _, MediaStreamType::DISPLAY_AUDIO_CAPTURE,
+                        MEDIA_REQUEST_STATE_DONE));
+      }
+    }
+  }
+
   void RequestAndStopGetDisplayMedia(bool app_requested_audio,
                                      bool user_shared_audio) {
     DCHECK(app_requested_audio || !user_shared_audio);
@@ -508,34 +576,8 @@ class MediaStreamManagerTest : public ::testing::Test
     MediaStreamManager::DeviceCaptureHandleChangeCallback
         capture_handle_change_callback;
 
-    EXPECT_CALL(*media_observer_,
-                OnMediaRequestStateChanged(
-                    _, _, _, _, MediaStreamType::DISPLAY_VIDEO_CAPTURE,
-                    MEDIA_REQUEST_STATE_PENDING_APPROVAL));
-    EXPECT_CALL(*media_observer_,
-                OnMediaRequestStateChanged(
-                    _, _, _, _, MediaStreamType::DISPLAY_VIDEO_CAPTURE,
-                    MEDIA_REQUEST_STATE_OPENING));
-    EXPECT_CALL(*media_observer_,
-                OnMediaRequestStateChanged(
-                    _, _, _, _, MediaStreamType::DISPLAY_VIDEO_CAPTURE,
-                    MEDIA_REQUEST_STATE_DONE));
-    if (app_requested_audio) {
-      EXPECT_CALL(*media_observer_,
-                  OnMediaRequestStateChanged(
-                      _, _, _, _, MediaStreamType::DISPLAY_AUDIO_CAPTURE,
-                      MEDIA_REQUEST_STATE_PENDING_APPROVAL));
-      if (user_shared_audio) {
-        EXPECT_CALL(*media_observer_,
-                    OnMediaRequestStateChanged(
-                        _, _, _, _, MediaStreamType::DISPLAY_AUDIO_CAPTURE,
-                        MEDIA_REQUEST_STATE_OPENING));
-        EXPECT_CALL(*media_observer_,
-                    OnMediaRequestStateChanged(
-                        _, _, _, _, MediaStreamType::DISPLAY_AUDIO_CAPTURE,
-                        MEDIA_REQUEST_STATE_DONE));
-      }
-    }
+    SetMediaObserverExpectations(app_requested_audio, user_shared_audio);
+
     media_stream_manager_->GenerateStreams(
         render_frame_host_id, requester_id, page_request_id, controls,
         MediaDeviceSaltAndOrigin::Empty(), false /* user_gesture */,
@@ -1572,6 +1614,217 @@ TEST_F(MediaStreamManagerTestForTransfers,
   EXPECT_EQ(result_, blink::mojom::MediaStreamRequestResult::INVALID_STATE);
 }
 
-// TODO(crbug.com/1300883): Add test cases for multi stream generation.
+#if !BUILDFLAG(IS_ANDROID)
+class MediaStreamManagerCapturedSurfaceControlTest
+    : public MediaStreamManagerTest,
+      public testing::WithParamInterface<CapturedSurfaceControlAPI> {
+ public:
+  MediaStreamManagerCapturedSurfaceControlTest() : tested_api_(GetParam()) {}
+
+  ~MediaStreamManagerCapturedSurfaceControlTest() override = default;
+
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kUseFakeDeviceForMediaStream,
+        base::StringPrintf("display-media-type=browser"));
+  }
+
+  void SimulateGetDisplayMedia(
+      GlobalRenderFrameHostId rfhid = GlobalRenderFrameHostId{1, 2},
+      absl::optional<WebContentsMediaCaptureId> captured_tab_id =
+          absl::nullopt) {
+    media_stream_manager_->UseFakeUIFactoryForTests(
+        base::BindRepeating([]() {
+          auto fake_ui = std::make_unique<FakeMediaStreamUIProxy>(
+              /*tests_use_fake_render_frame_hosts=*/true);
+          fake_ui->SetAudioShare(true);
+          return std::unique_ptr<FakeMediaStreamUIProxy>(std::move(fake_ui));
+        }),
+        /*use_for_gum_desktop_capture=*/false, captured_tab_id);
+
+    SetMediaObserverExpectations(/*app_requested_audio=*/true,
+                                 /*user_shared_audio=*/true);
+
+    base::RunLoop run_loop;
+
+    blink::StreamControls controls(/*request_audio=*/true,
+                                   /*request_video=*/true);
+    controls.audio.stream_type =
+        blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE;
+    controls.video.stream_type =
+        blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+
+    MediaStreamManager::GenerateStreamsCallback generate_stream_callback =
+        base::BindOnce(GenerateStreamsCallback, &run_loop,
+                       /*request_audio=*/true,
+                       /*request_video=*/true, &audio_device_, &video_device_,
+                       /*audio_share=*/true);
+
+    media_stream_manager_->GenerateStreams(
+        rfhid, /*requester_id=*/1,
+        /*page_request_id=*/1, controls, MediaDeviceSaltAndOrigin::Empty(),
+        /*user_gesture=*/true,
+        StreamSelectionInfo::New(
+            blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
+            absl::nullopt),
+        std::move(generate_stream_callback),
+        /*device_stopped_cb=*/base::DoNothing(),
+        /*device_changed_cb=*/base::DoNothing(),
+        /*device_request_state_change_cb=*/base::DoNothing(),
+        /*device_capture_configuration_change_cb=*/base::DoNothing(),
+        /*device_capture_handle_change_cb=*/base::DoNothing());
+    run_loop.Run();
+  }
+
+  void SetCapturedSurfaceControllerFactory(
+      GlobalRenderFrameHostId gdm_rfhid,
+      WebContentsMediaCaptureId captured_wc_id) {
+    media_stream_manager_->SetCapturedSurfaceControllerFactoryForTesting(
+        base::BindRepeating([](GlobalRenderFrameHostId gdm_rfhid,
+                               WebContentsMediaCaptureId captured_wc_id) {
+          auto captured_surface_controller =
+              std::make_unique<MockCapturedSurfaceController>(gdm_rfhid,
+                                                              captured_wc_id);
+          captured_surface_controller->SetSendWheelResponse(
+              CapturedSurfaceControlResult::kSuccess);
+          return base::WrapUnique<CapturedSurfaceController>(
+              captured_surface_controller.release());
+        }));
+  }
+
+  base::OnceCallback<void(CapturedSurfaceControlResult)> MakeCallback() {
+    return base::BindOnce(
+        [](absl::optional<CapturedSurfaceControlResult>* result_opt,
+           CapturedSurfaceControlResult result) {
+          CHECK(result_opt);
+          EXPECT_FALSE(result_opt->has_value());
+          *result_opt = result;
+        },
+        &result_);
+  }
+
+  void SendWheel(
+      GlobalRenderFrameHostId gdm_rfhid,
+      absl::optional<base::UnguessableToken> session_id = absl::nullopt) {
+    media_stream_manager_->SendWheel(
+        gdm_rfhid, session_id.value_or(video_device_.session_id()),
+        MakeCapturedWheelActionPtr(), MakeCallback());
+  }
+
+  void RunTestedAction(
+      GlobalRenderFrameHostId gdm_rfhid,
+      absl::optional<base::UnguessableToken> session_id = absl::nullopt) {
+    switch (tested_api_) {
+      case CapturedSurfaceControlAPI::kSendWheel: {
+        SendWheel(gdm_rfhid, session_id);
+        return;
+      }
+    }
+    NOTREACHED_NORETURN();
+  }
+
+  const CapturedSurfaceControlAPI tested_api_;
+
+  blink::MediaStreamDevice video_device_;
+  blink::MediaStreamDevice audio_device_;
+
+  absl::optional<CapturedSurfaceControlResult> result_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    MediaStreamManagerCapturedSurfaceControlTest,
+    testing::Values(CapturedSurfaceControlAPI::kSendWheel));
+
+TEST_P(MediaStreamManagerCapturedSurfaceControlTest, SuccessfulIfValid) {
+  SCOPED_TRACE("SuccessfulIfValid");
+  const GlobalRenderFrameHostId gdm_rfhid{1, 2};
+  const WebContentsMediaCaptureId captured_wc_id{3, 4};
+
+  SetCapturedSurfaceControllerFactory(gdm_rfhid, captured_wc_id);
+  SimulateGetDisplayMedia(gdm_rfhid, captured_wc_id);
+
+  RunTestedAction(gdm_rfhid);
+  EXPECT_EQ(result_, CapturedSurfaceControlResult::kSuccess);
+}
+
+TEST_P(MediaStreamManagerCapturedSurfaceControlTest, FailsIfInvalidSessionId) {
+  SCOPED_TRACE("FailsIfInvalidSessionId");
+  const GlobalRenderFrameHostId gdm_rfhid{1, 2};
+  const WebContentsMediaCaptureId captured_wc_id{3, 4};
+
+  SetCapturedSurfaceControllerFactory(gdm_rfhid, captured_wc_id);
+  SimulateGetDisplayMedia(gdm_rfhid, captured_wc_id);
+
+  RunTestedAction(gdm_rfhid, base::UnguessableToken::Create());
+  EXPECT_EQ(result_,
+            CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
+}
+
+TEST_P(MediaStreamManagerCapturedSurfaceControlTest, FailsIfNotCapturerRfhId) {
+  SCOPED_TRACE("FailsIfNotCapturerRfhId");
+  const GlobalRenderFrameHostId gdm_rfhid{1, 2};
+  const GlobalRenderFrameHostId other_rfhid{11, 22};
+  const WebContentsMediaCaptureId captured_wc_id{3, 4};
+
+  SetCapturedSurfaceControllerFactory(gdm_rfhid, captured_wc_id);
+  SimulateGetDisplayMedia(gdm_rfhid, captured_wc_id);
+
+  RunTestedAction(other_rfhid);
+  EXPECT_EQ(result_, CapturedSurfaceControlResult::kUnknownError);
+}
+
+// This test is currently disabled because the code that ensures that Captured
+// Surface Control APIs are disallowed for self-capture has not yet been
+// authored.
+// TODO(crbug.com/1511754): Enable this test.
+TEST_P(MediaStreamManagerCapturedSurfaceControlTest,
+       DISABLED_FailsIfSelfCapture) {
+  SCOPED_TRACE("FailsIfSelfCapture");
+  const GlobalRenderFrameHostId gdm_rfhid{1, 2};
+  const WebContentsMediaCaptureId captured_wc_id{1, 2};
+
+  SetCapturedSurfaceControllerFactory(gdm_rfhid, captured_wc_id);
+  SimulateGetDisplayMedia(gdm_rfhid, captured_wc_id);
+
+  RunTestedAction(gdm_rfhid);
+  // TODO(crbug.com/1512926): Use a dedicated error.
+  EXPECT_EQ(result_, CapturedSurfaceControlResult::kUnknownError);
+}
+
+TEST_P(MediaStreamManagerCapturedSurfaceControlTest, FailsIfCapturingWindow) {
+  SCOPED_TRACE("FailsIfCapturingWindow");
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kUseFakeDeviceForMediaStream,
+      base::StringPrintf("display-media-type=window"));
+
+  const GlobalRenderFrameHostId gdm_rfhid{1, 2};
+  const WebContentsMediaCaptureId captured_wc_id{3, 4};
+
+  SetCapturedSurfaceControllerFactory(gdm_rfhid, captured_wc_id);
+  SimulateGetDisplayMedia(gdm_rfhid, captured_wc_id);
+
+  RunTestedAction(gdm_rfhid);
+  // TODO(crbug.com/1512926): Use a dedicated error.
+  EXPECT_EQ(result_, CapturedSurfaceControlResult::kUnknownError);
+}
+
+TEST_P(MediaStreamManagerCapturedSurfaceControlTest, FailsIfCapturingScreen) {
+  SCOPED_TRACE("FailsIfCapturingScreen");
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kUseFakeDeviceForMediaStream,
+      base::StringPrintf("display-media-type=monitor"));
+
+  const GlobalRenderFrameHostId gdm_rfhid{1, 2};
+  const WebContentsMediaCaptureId captured_wc_id{3, 4};
+
+  SetCapturedSurfaceControllerFactory(gdm_rfhid, captured_wc_id);
+  SimulateGetDisplayMedia(gdm_rfhid, captured_wc_id);
+
+  RunTestedAction(gdm_rfhid);
+  // TODO(crbug.com/1512926): Use a dedicated error.
+  EXPECT_EQ(result_, CapturedSurfaceControlResult::kUnknownError);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

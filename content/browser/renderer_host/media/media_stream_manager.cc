@@ -104,23 +104,28 @@
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
-using blink::mojom::MediaDeviceType;
+#if !BUILDFLAG(IS_ANDROID)
+#include "content/browser/renderer_host/media/captured_surface_controller.h"
+#endif
+
+using ::blink::mojom::MediaDeviceType;
 
 namespace content {
 
 ABSL_CONST_INIT thread_local MediaStreamManager* media_stream_manager = nullptr;
 
-using blink::MediaStreamDevice;
-using blink::MediaStreamDevices;
-using blink::MediaStreamRequestType;
-using blink::StreamControls;
-using blink::TrackControls;
-using blink::mojom::GetOpenDeviceResponse;
-using blink::mojom::MediaStreamRequestResult;
-using blink::mojom::MediaStreamType;
-using blink::mojom::StreamSelectionInfo;
-using blink::mojom::StreamSelectionInfoPtr;
-using blink::mojom::StreamSelectionStrategy;
+using ::blink::MediaStreamDevice;
+using ::blink::MediaStreamDevices;
+using ::blink::MediaStreamRequestType;
+using ::blink::StreamControls;
+using ::blink::TrackControls;
+using ::blink::mojom::CapturedSurfaceControlResult;
+using ::blink::mojom::GetOpenDeviceResponse;
+using ::blink::mojom::MediaStreamRequestResult;
+using ::blink::mojom::MediaStreamType;
+using ::blink::mojom::StreamSelectionInfo;
+using ::blink::mojom::StreamSelectionInfoPtr;
+using ::blink::mojom::StreamSelectionStrategy;
 
 namespace {
 // Turns off available audio effects (removes the flag) if the options
@@ -372,12 +377,20 @@ void SendVideoCaptureLogMessage(const std::string& message) {
 // If |kUseFakeDeviceForMediaStream| specifies a
 // browser window, use |render_process_id| and |render_frame_id| as the browser
 // window identifier.
+//
+// When the result of the configuration results in tab-capture,
+// if `captured_tab_id` is non-null, it represents the tab that
+// will be captured. Otherwise, the capturer ends up capturing
+// their own tab.
+//
+// TODO(crbug.com/1512911): Refactor this function.
 MediaStreamDevices DisplayMediaDevicesFromFakeDeviceConfig(
     blink::mojom::MediaStreamType media_type,
     bool request_audio,
     GlobalRenderFrameHostId render_frame_host_id,
     blink::mojom::PreferredDisplaySurface preferred_display_surface,
-    bool exclude_monitor_type_surfaces) {
+    bool exclude_monitor_type_surfaces,
+    absl::optional<WebContentsMediaCaptureId> captured_tab_id) {
   MediaStreamDevices devices;
   DesktopMediaID::Type desktop_media_type = DesktopMediaID::TYPE_SCREEN;
   DesktopMediaID::Id desktop_media_id_id = DesktopMediaID::kNullId;
@@ -410,8 +423,9 @@ MediaStreamDevices DisplayMediaDevicesFromFakeDeviceConfig(
         case media::FakeVideoCaptureDevice::DisplayMediaType::BROWSER:
           desktop_media_type = DesktopMediaID::TYPE_WEB_CONTENTS;
           display_surface = media::mojom::DisplayCaptureSurfaceType::BROWSER;
-          web_contents_id = {render_frame_host_id.child_id,
-                             render_frame_host_id.frame_routing_id};
+          web_contents_id = captured_tab_id.value_or(
+              WebContentsMediaCaptureId{render_frame_host_id.child_id,
+                                        render_frame_host_id.frame_routing_id});
           break;
       }
     }
@@ -434,8 +448,9 @@ MediaStreamDevices DisplayMediaDevicesFromFakeDeviceConfig(
     case blink::mojom::PreferredDisplaySurface::BROWSER:
       desktop_media_type = DesktopMediaID::TYPE_WEB_CONTENTS;
       display_surface = media::mojom::DisplayCaptureSurfaceType::BROWSER;
-      web_contents_id = {render_frame_host_id.child_id,
-                         render_frame_host_id.frame_routing_id};
+      web_contents_id = captured_tab_id.value_or(
+          WebContentsMediaCaptureId{render_frame_host_id.child_id,
+                                    render_frame_host_id.frame_routing_id});
       break;
   }
   DesktopMediaID media_id(desktop_media_type, desktop_media_id_id,
@@ -516,6 +531,15 @@ base::TimeDelta GetConditionalFocusWindow() {
   // If this value is changed, some of the histograms associated with
   // Conditional Focus should also change.
   return base::Seconds(1);
+}
+
+MediaStreamManager::CapturedSurfaceControllerFactoryCallback
+MakeDefaultCapturedSurfaceControllerFactory() {
+  return base::BindRepeating([](GlobalRenderFrameHostId capturer_rfh_id,
+                                WebContentsMediaCaptureId captured_wc_id) {
+    return std::make_unique<CapturedSurfaceController>(capturer_rfh_id,
+                                                       captured_wc_id);
+  });
 }
 #endif
 
@@ -857,6 +881,55 @@ class MediaStreamManager::DeviceRequest {
       blink::mojom::MediaStreamType type,
       media::mojom::CaptureHandlePtr capture_handle) {}
 
+#if !BUILDFLAG(IS_ANDROID)
+  // If capturing a tab, returns the tab's |WebContentsMediaCaptureId|.
+  // Otherwise, returns an empty |WebContentsMediaCaptureId|.
+  WebContentsMediaCaptureId GetCapturedTabId() const {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+    WebContentsMediaCaptureId captured_wc_id;
+
+    // Tab-capture will always have `size() == 1` here. A size greater than 1
+    // indicates getAllScreensMedia() - those devices can be skipped.
+    if (stream_devices_set.stream_devices.size() != 1 ||
+        !stream_devices_set.stream_devices[0]->video_device.has_value()) {
+      return captured_wc_id;
+    }
+
+    // Ignore Parse()'s return value. If it fails, `captured_wc_id` is left with
+    // the null ID, which is the value we need to return in that case.
+    WebContentsMediaCaptureId::Parse(
+        stream_devices_set.stream_devices[0]->video_device->id,
+        &captured_wc_id);
+
+    return captured_wc_id;
+  }
+
+  bool HasCapturedSurfaceController() const {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+    return captured_surface_controller_ != nullptr;
+  }
+
+  CapturedSurfaceController* GetCapturedSurfaceController() {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+    // If a controller is absent, attempt to produce one.
+    // (Fails if the captured surface is not a tab.)
+    if (!captured_surface_controller_) {
+      const WebContentsMediaCaptureId captured_tab_id = GetCapturedTabId();
+      if (!captured_tab_id.is_null()) {
+        CHECK(media_stream_manager);  // Note - this is the global singleton.
+        captured_surface_controller_ =
+            media_stream_manager->MakeCapturedSurfaceController(
+                requesting_render_frame_host_id, captured_tab_id);
+      }
+    }
+
+    return captured_surface_controller_.get();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // The render frame host id that requested this stream to be generated and
   // that will receive a handle to the MediaStream. This may be different from
   // MediaStreamRequest::render_process_id which in the tab capture case
@@ -960,6 +1033,11 @@ class MediaStreamManager::DeviceRequest {
   MediaStreamType video_type_;
   GlobalRenderFrameHostId target_render_frame_host_id_;
   std::string label_;
+#if !BUILDFLAG(IS_ANDROID)
+  // If an attempt to access any of the Captured Surface Control APIs is made,
+  // a controller is instantiated to manage state.
+  std::unique_ptr<CapturedSurfaceController> captured_surface_controller_;
+#endif
 };
 
 class MediaStreamManager::MediaAccessRequest
@@ -1434,6 +1512,8 @@ MediaStreamManager::MediaStreamManager(
     :
 #if !BUILDFLAG(IS_ANDROID)
       conditional_focus_window_(GetConditionalFocusWindow()),
+      captured_surface_controller_factory_(
+          MakeDefaultCapturedSurfaceControllerFactory()),
 #endif
       audio_system_(audio_system) {
   bool use_fake_ui_factory = false;
@@ -2207,6 +2287,32 @@ MediaStreamManager::DeviceRequest* MediaStreamManager::FindRequest(
       FindRequestIterator(label);
   return (it != requests_.end()) ? it->second.get() : nullptr;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+MediaStreamManager::DeviceRequest*
+MediaStreamManager::FindRequestByVideoSessionId(
+    const base::UnguessableToken& session_id) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  for (const LabeledDeviceRequest& labeled_request : requests_) {
+    DeviceRequest* const request = labeled_request.second.get();
+    if (!request) {
+      continue;
+    }
+    for (const blink::mojom::StreamDevicesPtr& stream_devices_ptr :
+         request->stream_devices_set.stream_devices) {
+      const absl::optional<blink::MediaStreamDevice>& video_device =
+          stream_devices_ptr->video_device;
+      if (video_device && video_device->serializable_session_id().has_value() &&
+          video_device->serializable_session_id().value() == session_id) {
+        return request;
+      }
+    }
+  }
+
+  return nullptr;
+}
+#endif
 
 absl::optional<MediaStreamDevice> MediaStreamManager::CloneExistingOpenDevice(
     const base::UnguessableToken& existing_device_session_id,
@@ -3232,10 +3338,12 @@ void MediaStreamManager::Aborted(
 void MediaStreamManager::UseFakeUIFactoryForTests(
     base::RepeatingCallback<std::unique_ptr<FakeMediaStreamUIProxy>(void)>
         fake_ui_factory,
-    bool use_for_gum_desktop_capture) {
+    bool use_for_gum_desktop_capture,
+    absl::optional<WebContentsMediaCaptureId> captured_tab_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   fake_ui_factory_ = std::move(fake_ui_factory);
   use_fake_ui_for_gum_desktop_capture_ = use_for_gum_desktop_capture;
+  fake_ui_factory_captured_tab_id_ = captured_tab_id;
 }
 
 // static
@@ -3475,6 +3583,15 @@ void MediaStreamManager::HandleChangeSourceRequestResponse(
   request->SetAudioType(devices.audio_device.has_value()
                             ? request->stream_controls().audio.stream_type
                             : MediaStreamType::NO_SERVICE);
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (request->HasCapturedSurfaceController()) {
+    // Either inform the controller that it's now controlling a new tab,
+    // or neutralize it if it's no longer capturing a tab.
+    request->GetCapturedSurfaceController()->UpdateCaptureTarget(
+        request->GetCapturedTabId());
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void MediaStreamManager::StopMediaStreamFromBrowser(const std::string& label) {
@@ -3775,6 +3892,23 @@ void MediaStreamManager::SetStateForTesting(
   requests_iterator->second->SetState(stream_type, new_state);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void MediaStreamManager::SetCapturedSurfaceControllerFactoryForTesting(
+    CapturedSurfaceControllerFactoryCallback factory) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  captured_surface_controller_factory_ = std::move(factory);
+}
+
+std::unique_ptr<CapturedSurfaceController>
+MediaStreamManager::MakeCapturedSurfaceController(
+    GlobalRenderFrameHostId capturer_rfh_id,
+    WebContentsMediaCaptureId captured_wc_id) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  return captured_surface_controller_factory_.Run(capturer_rfh_id,
+                                                  captured_wc_id);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 void MediaStreamManager::SetGenerateStreamsCallbackForTesting(
     GenerateStreamTestCallback test_callback) {
   generate_stream_test_callback_ = std::move(test_callback);
@@ -3959,7 +4093,35 @@ void MediaStreamManager::SetCapturedDisplaySurfaceFocus(
   request->ui_proxy->SetFocus(media_id, focus, is_from_microtask,
                               is_from_timer);
 }
-#endif
+
+void MediaStreamManager::SendWheel(
+    GlobalRenderFrameHostId capturer_rfh_id,
+    const base::UnguessableToken& session_id,
+    blink::mojom::CapturedWheelActionPtr action,
+    base::OnceCallback<void(CapturedSurfaceControlResult)> callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  DeviceRequest* const request = FindRequestByVideoSessionId(session_id);
+  if (!request) {
+    std::move(callback).Run(
+        CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
+    return;
+  }
+  if (request->requesting_render_frame_host_id != capturer_rfh_id) {
+    std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
+    return;
+  }
+
+  CapturedSurfaceController* const controller =
+      request->GetCapturedSurfaceController();
+  if (!controller) {
+    std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
+    return;
+  }
+
+  controller->SendWheel(std::move(action), std::move(callback));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void MediaStreamManager::RegisterDispatcherHost(
     std::unique_ptr<blink::mojom::MediaStreamDispatcherHost> host,
@@ -4238,7 +4400,8 @@ std::unique_ptr<MediaStreamUIProxy> MediaStreamManager::MakeFakeUIProxy(
         request->audio_type() == MediaStreamType::DISPLAY_AUDIO_CAPTURE,
         request->requesting_render_frame_host_id,
         request->stream_controls().preferred_display_surface,
-        request->stream_controls().exclude_monitor_type_surfaces);
+        request->stream_controls().exclude_monitor_type_surfaces,
+        fake_ui_factory_captured_tab_id_);
   } else if (request->video_type() ==
              MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE) {
     // Cache the |label| in the device name field, for unit test purpose only.

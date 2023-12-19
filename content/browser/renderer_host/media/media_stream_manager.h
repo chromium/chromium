@@ -49,6 +49,10 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "content/browser/renderer_host/media/captured_surface_controller.h"
+#endif
+
 namespace media {
 class AudioSystem;
 }
@@ -127,6 +131,13 @@ class CONTENT_EXPORT MediaStreamManager
   // Callback for testing.
   using GenerateStreamTestCallback =
       base::OnceCallback<bool(const blink::StreamControls&)>;
+
+#if !BUILDFLAG(IS_ANDROID)
+  using CapturedSurfaceControllerFactoryCallback =
+      ::base::RepeatingCallback<std::unique_ptr<CapturedSurfaceController>(
+          GlobalRenderFrameHostId,
+          WebContentsMediaCaptureId)>;
+#endif
 
   // Adds |message| to native logs for outstanding device requests, for use by
   // render processes hosts whose corresponding render processes are requesting
@@ -313,7 +324,9 @@ class CONTENT_EXPORT MediaStreamManager
   void UseFakeUIFactoryForTests(
       base::RepeatingCallback<std::unique_ptr<FakeMediaStreamUIProxy>(void)>
           fake_ui_factory,
-      bool use_for_gum_desktop_capture = true);
+      bool use_for_gum_desktop_capture = true,
+      absl::optional<WebContentsMediaCaptureId> captured_tab_id =
+          absl::nullopt);
 
   // Register and unregister a new callback for receiving native log entries.
   // Called on the IO thread.
@@ -352,6 +365,15 @@ class CONTENT_EXPORT MediaStreamManager
                           blink::mojom::MediaStreamType stream_type,
                           MediaRequestState new_state);
 
+#if !BUILDFLAG(IS_ANDROID)
+  void SetCapturedSurfaceControllerFactoryForTesting(
+      CapturedSurfaceControllerFactoryCallback factory);
+
+  std::unique_ptr<CapturedSurfaceController> MakeCapturedSurfaceController(
+      GlobalRenderFrameHostId capturer_rfh_id,
+      WebContentsMediaCaptureId captured_wc_id) const;
+#endif
+
   // This method is called when all tracks are started.
   void OnStreamStarted(const std::string& label);
 
@@ -384,7 +406,15 @@ class CONTENT_EXPORT MediaStreamManager
                                       bool focus,
                                       bool is_from_microtask,
                                       bool is_from_timer);
-#endif
+
+  // Captured Surface Control APIs.
+  void SendWheel(
+      GlobalRenderFrameHostId capturer_rfh_id,
+      const base::UnguessableToken& session_id,
+      blink::mojom::CapturedWheelActionPtr action,
+      base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
+          callback);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   void RegisterDispatcherHost(
       std::unique_ptr<blink::mojom::MediaStreamDispatcherHost> host,
@@ -486,6 +516,15 @@ class CONTENT_EXPORT MediaStreamManager
   DeviceRequests::const_iterator FindRequestIterator(
       const std::string& label) const;
   DeviceRequest* FindRequest(const std::string& label) const;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Find a request by the session-ID of its video device.
+  // (In case of multiple video devices - any of them would fit.)
+  // TOOD(crbug.com/1466247): Remove this after making the Captured Surface
+  // Control APIs pass the label instead.
+  DeviceRequest* FindRequestByVideoSessionId(
+      const base::UnguessableToken& session_id) const;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Clones an existing device identified by |existing_device_session_id| and
   // returns it. If no such device is found, it returns absl::nullopt.
@@ -706,6 +745,8 @@ class CONTENT_EXPORT MediaStreamManager
   // from Web-applications, thereby preventing applications from changing
   // focus at an arbitrary time.
   const base::TimeDelta conditional_focus_window_;
+
+  CapturedSurfaceControllerFactoryCallback captured_surface_controller_factory_;
 #endif
 
   const raw_ptr<media::AudioSystem, DanglingUntriaged>
@@ -739,6 +780,12 @@ class CONTENT_EXPORT MediaStreamManager
   // and NOT for any form of screen-capture, regardless if that screen-capture
   // is getDisplayMedia-driven or getUserMedia-driven.
   bool use_fake_ui_only_for_camera_and_microphone_ = false;
+
+  // If `fake_ui_factory_` is set, then when its use results in tab-capture:
+  // * If `fake_ui_factory_captured_tab_id_` is also set, it determines the ID
+  //   of the tab that will be captured.
+  // * Otherwise, the capturing tab will capture itself.
+  absl::optional<WebContentsMediaCaptureId> fake_ui_factory_captured_tab_id_;
 
   // Observes changes of captured tabs' CaptureHandleConfig and reports
   // this changes back to their capturers. This object lives on the UI thread
