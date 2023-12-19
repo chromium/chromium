@@ -15,7 +15,7 @@ build_webui_tests("build_webui_tests") {
   ]
 
   files = [
-    "confirmation_page_test.js",
+    "confirmation_page_test.ts",
     "feedback_flow_test.js",
     "file_attachment_test.js",
     "help_content_test.js",

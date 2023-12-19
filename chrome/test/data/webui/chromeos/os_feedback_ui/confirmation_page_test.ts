@@ -9,85 +9,62 @@ import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_se
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {setFeedbackServiceProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {FeedbackAppPostSubmitAction, SendReportStatus} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {eventToPromise, isVisible} from '../test_util.js';
-
-/** @type {string} */
 const ONLINE_TITLE = 'Thanks for your feedback';
-/** @type {string} */
 const OFFLINE_TITLE = 'You\'re offline. Feedback will be sent later.';
 
-/** @type {string} */
 const ONLINE_MESSAGE =
     'Your feedback helps us improve the Chromebook experience and will be ' +
     'reviewed by our team. Because of the large number of reports, ' +
     'we won’t be able to send a reply.';
 
-/** @type {string} */
 const OFFLINE_MESSAGE =
     'Thanks for your feedback. Your feedback helps us improve the Chromebook ' +
     'experience and will be reviewed by our team. Because of the large ' +
     'number of reports, we won’t be able to send a reply.';
 
 suite('confirmationPageTest', () => {
-  /** @type {?ConfirmationPageElement} */
-  let page = null;
+  let page: ConfirmationPageElement|null = null;
+  let feedbackServiceProvider: FakeFeedbackServiceProvider|null = null;
+  let openWindowProxy: TestOpenWindowProxy;
 
-  /** @type {?FakeFeedbackServiceProvider} */
-  let feedbackServiceProvider = null;
+  suiteSetup(function() {
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+  });
 
   setup(() => {
-    document.body.innerHTML = trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     feedbackServiceProvider = new FakeFeedbackServiceProvider();
     setFeedbackServiceProviderForTesting(feedbackServiceProvider);
   });
 
-  teardown(() => {
-    page.remove();
-    page = null;
-  });
-
   function initializePage() {
-    assertFalse(!!page);
-    page = /** @type {!ConfirmationPageElement} */ (
-        document.createElement('confirmation-page'));
-    assertTrue(!!page);
+    page = document.createElement('confirmation-page');
+    assert(page);
     page.isUserLoggedIn = true;
     document.body.appendChild(page);
     return flushTasks();
   }
 
-  /**
-   * @param {?Element} host
-   * @param {string} selector
-   * @returns {!Element}
-   */
-  function getElement(host, selector) {
-    const element = host.shadowRoot.querySelector(selector);
-    assertTrue(!!element);
-    return element;
+  function getElementContent(host: Element|null, selector: string): string {
+    const element = host!.shadowRoot!.querySelector(selector);
+    return element!.textContent!.trim();
   }
 
-  /**
-   * @param {?Element} host
-   * @param {string} selector
-   * @returns {string}
-   */
-  function getElementContent(host, selector) {
-    const element = getElement(host, selector);
-    return element.textContent.trim();
-  }
+  function verifyRecordPostSubmitActionCalled(
+      isCalled: boolean, action: FeedbackAppPostSubmitAction) {
+    assert(feedbackServiceProvider);
 
-  /**
-   * @param {boolean} isCalled
-   * @param {FeedbackAppPostSubmitAction} action
-   * @private
-   */
-  function verifyRecordPostSubmitActionCalled(isCalled, action) {
     isCalled ?
         assertTrue(
             feedbackServiceProvider.isRecordPostSubmitActionCalled(action)) :
@@ -95,11 +72,9 @@ suite('confirmationPageTest', () => {
             feedbackServiceProvider.isRecordPostSubmitActionCalled(action));
   }
 
-  /**
-   * @param {boolean} isOnline
-   * @private
-   */
-  function verifyElementsByStatus(isOnline) {
+  function verifyElementsByStatus(isOnline: boolean) {
+    assert(page);
+
     if (isOnline) {
       assertEquals(ONLINE_TITLE, getElementContent(page, '.page-title'));
       assertEquals(ONLINE_MESSAGE, getElementContent(page, '#message'));
@@ -111,8 +86,9 @@ suite('confirmationPageTest', () => {
       assertTrue(page.i18nExists('thankYouNoteOffline'));
     }
 
-    // verify help resources exist
-    const helpResourcesSection = getElement(page, '#helpResources');
+    // verify help resources exist.
+    const helpResourcesSection =
+        strictQuery('#helpResources', page.shadowRoot, HTMLElement);
     assertEquals(
         'Here are some other helpful resources:',
         getElementContent(page, '#helpResourcesLabel'));
@@ -123,9 +99,9 @@ suite('confirmationPageTest', () => {
 
     // Verify the explore app link.
     const exploreLink = helpLinks[0];
+    assert(exploreLink);
     assertTrue(isVisible(exploreLink));
-    assertEquals(
-        'help-resources:explore', getElement(exploreLink, '#startIcon').icon);
+    assertEquals('help-resources:explore', exploreLink.startIcon);
     assertEquals('Explore app', getElementContent(page, '#explore > .label'));
     assertTrue(page.i18nExists('exploreAppLabel'));
     assertEquals(
@@ -135,10 +111,9 @@ suite('confirmationPageTest', () => {
 
     // Verify the diagnostics app link.
     const diagnosticsLink = helpLinks[1];
+    assert(diagnosticsLink);
     assertTrue(isVisible(diagnosticsLink));
-    assertEquals(
-        'help-resources:diagnostics',
-        getElement(diagnosticsLink, '#startIcon').icon);
+    assertEquals('help-resources:diagnostics', diagnosticsLink.startIcon);
     assertEquals(
         'Diagnostics app', getElementContent(page, '#diagnostics > .label'));
     assertTrue(page.i18nExists('diagnosticsAppLabel'));
@@ -149,14 +124,14 @@ suite('confirmationPageTest', () => {
 
     // Verify the community link.
     const communityLink = helpLinks[2];
+    assert(communityLink);
     if (isOnline && page.isUserLoggedIn) {
       assertTrue(isVisible(communityLink));
     } else {
       assertFalse(isVisible(communityLink));
     }
     assertEquals(
-        'help-resources2:chromebook-community',
-        getElement(communityLink, '#startIcon').icon);
+        'help-resources2:chromebook-community', communityLink.startIcon);
     assertEquals(
         'Chromebook community',
         getElementContent(page, '#chromebookCommunity > .label'));
@@ -180,6 +155,7 @@ suite('confirmationPageTest', () => {
   // message are being used. The community link should be visible,
   test('onlineModeStatusSuccess', async () => {
     await initializePage();
+    assert(page);
 
     page.sendReportStatus = SendReportStatus.kSuccess;
     verifyElementsByStatus(/**isOnline=*/ true);
@@ -189,6 +165,7 @@ suite('confirmationPageTest', () => {
   // message are being used. The community link should be visible,
   test('offlineModeStatusUnknown', async () => {
     await initializePage();
+    assert(page);
 
     page.sendReportStatus = SendReportStatus.kUnknown;
     verifyElementsByStatus(/**isOnline=*/ true);
@@ -198,6 +175,7 @@ suite('confirmationPageTest', () => {
   // message are being used. The community link should be invisible,
   test('offlineModeStatusDelayed', async () => {
     await initializePage();
+    assert(page);
 
     page.sendReportStatus = SendReportStatus.kDelayed;
     verifyElementsByStatus(/**isOnline=*/ false);
@@ -209,9 +187,11 @@ suite('confirmationPageTest', () => {
    */
   test('userNotLoggedIn_ShouldHideHelpResourcesSection', async () => {
     await initializePage();
+    assert(page);
     page.isUserLoggedIn = false;
 
-    const helpResourcesSection = getElement(page, '#helpResources');
+    const helpResourcesSection =
+        strictQuery('#helpResources', page.shadowRoot, HTMLElement);
     assertFalse(isVisible(helpResourcesSection));
   });
 
@@ -221,9 +201,11 @@ suite('confirmationPageTest', () => {
    */
   test('userLoggedIn_ShouldShowHelpResourcesSection', async () => {
     await initializePage();
+    assert(page);
     page.isUserLoggedIn = true;
 
-    const helpResourcesSection = getElement(page, '#helpResources');
+    const helpResourcesSection =
+        strictQuery('#helpResources', page.shadowRoot, HTMLElement);
     assertTrue(isVisible(helpResourcesSection));
   });
 
@@ -233,6 +215,8 @@ suite('confirmationPageTest', () => {
    */
   test('SendNewReport', async () => {
     await initializePage();
+    assert(page);
+
     verifyRecordPostSubmitActionCalled(
         false, FeedbackAppPostSubmitAction.kSendNewReport);
 
@@ -244,7 +228,8 @@ suite('confirmationPageTest', () => {
       actualCurrentState = event.detail.currentState;
     });
 
-    const buttonNewReport = getElement(page, '#buttonNewReport');
+    const buttonNewReport =
+        strictQuery('#buttonNewReport', page.shadowRoot, HTMLElement);
     buttonNewReport.click();
 
     await clickPromise;
@@ -257,6 +242,8 @@ suite('confirmationPageTest', () => {
   // Test clicking done button should close the window.
   test('ClickDoneButtonShouldCloseWindow', async () => {
     await initializePage();
+    assert(page);
+
     verifyRecordPostSubmitActionCalled(
         false, FeedbackAppPostSubmitAction.kClickDoneButton);
 
@@ -269,7 +256,7 @@ suite('confirmationPageTest', () => {
     };
     window.close = closeMock;
 
-    const doneButton = getElement(page, '#buttonDone');
+    const doneButton = strictQuery('#buttonDone', page.shadowRoot, HTMLElement);
     doneButton.click();
     await flushTasks();
 
@@ -281,12 +268,15 @@ suite('confirmationPageTest', () => {
   // Test clicking diagnostics app link.
   test('openDiagnosticsApp', async () => {
     await initializePage();
+    assert(page);
+    assert(feedbackServiceProvider);
+
     verifyRecordPostSubmitActionCalled(
         false, FeedbackAppPostSubmitAction.kOpenDiagnosticsApp);
 
     assertEquals(0, feedbackServiceProvider.getOpenDiagnosticsAppCallCount());
 
-    const link = getElement(page, '#diagnostics');
+    const link = strictQuery('#diagnostics', page.shadowRoot, HTMLElement);
     link.click();
 
     assertEquals(1, feedbackServiceProvider.getOpenDiagnosticsAppCallCount());
@@ -294,11 +284,13 @@ suite('confirmationPageTest', () => {
         true, FeedbackAppPostSubmitAction.kOpenDiagnosticsApp);
 
     // Make sure that the label and the sub-label are clickable too.
-    const label = link.querySelector('.label');
+    const label = link.querySelector<HTMLElement>('.label');
+    assert(label);
     label.click();
     assertEquals(2, feedbackServiceProvider.getOpenDiagnosticsAppCallCount());
 
-    const subLabel = link.querySelector('.sub-label');
+    const subLabel = link.querySelector<HTMLElement>('.sub-label');
+    assert(subLabel);
     subLabel.click();
     assertEquals(3, feedbackServiceProvider.getOpenDiagnosticsAppCallCount());
   });
@@ -306,12 +298,15 @@ suite('confirmationPageTest', () => {
   // Test clicking explore app link.
   test('openExploreApp', async () => {
     await initializePage();
+    assert(page);
+    assert(feedbackServiceProvider);
+
     verifyRecordPostSubmitActionCalled(
         false, FeedbackAppPostSubmitAction.kOpenExploreApp);
 
     assertEquals(0, feedbackServiceProvider.getOpenExploreAppCallCount());
 
-    const link = getElement(page, '#explore');
+    const link = strictQuery('#explore', page.shadowRoot, HTMLElement);
     link.click();
 
     assertEquals(1, feedbackServiceProvider.getOpenExploreAppCallCount());
@@ -319,11 +314,13 @@ suite('confirmationPageTest', () => {
         true, FeedbackAppPostSubmitAction.kOpenExploreApp);
 
     // Make sure that the label and the sub-label are clickable too.
-    const label = link.querySelector('.label');
+    const label = link.querySelector<HTMLElement>('.label');
+    assert(label);
     label.click();
     assertEquals(2, feedbackServiceProvider.getOpenExploreAppCallCount());
 
-    const subLabel = link.querySelector('.sub-label');
+    const subLabel = link.querySelector<HTMLElement>('.sub-label');
+    assert(subLabel);
     subLabel.click();
     assertEquals(3, feedbackServiceProvider.getOpenExploreAppCallCount());
   });
@@ -331,47 +328,45 @@ suite('confirmationPageTest', () => {
   // Test clicking openChromebookHelp link.
   test('openChromebookHelp', async () => {
     await initializePage();
+    assert(page);
     verifyRecordPostSubmitActionCalled(
         false, FeedbackAppPostSubmitAction.kOpenChromebookCommunity);
-    const resolver = new PromiseResolver();
-    let windowOpenCalled = 0;
+
+    const expectedUrl =
+        'https://support.google.com/chromebook/?hl=en#topic=3399709';
     let url = '';
-    let target = '';
 
-    const openMock = (urlArg, targetArg) => {
-      windowOpenCalled++;
-      url = urlArg;
-      target = targetArg;
-      return resolver.promise;
-    };
-
-    window.open = /** @type {!function()} */ (openMock);
-
-    const link = getElement(page, '#chromebookCommunity');
+    const link =
+        strictQuery('#chromebookCommunity', page.shadowRoot, HTMLElement);
     link.click();
 
-    await flushTasks();
-
-    assertEquals(1, windowOpenCalled);
-    assertEquals(target, '_blank');
-    assertEquals(
-        url, 'https://support.google.com/chromebook/?hl=en#topic=3399709');
+    url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, expectedUrl);
     verifyRecordPostSubmitActionCalled(
         true, FeedbackAppPostSubmitAction.kOpenChromebookCommunity);
 
     // Make sure that the label and the sub-label are clickable too.
-    const label = link.querySelector('.label');
-    label.click();
-    assertEquals(2, windowOpenCalled);
+    const label = link.querySelector<HTMLElement>('.label');
+    assert(label);
+    openWindowProxy.resetResolver('openUrl');
 
-    const subLabel = link.querySelector('.sub-label');
+    label.click();
+    url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, expectedUrl);
+
+    const subLabel = link.querySelector<HTMLElement>('.sub-label');
+    assert(subLabel);
+    openWindowProxy.resetResolver('openUrl');
+
     subLabel.click();
-    assertEquals(3, windowOpenCalled);
+    url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, expectedUrl);
   });
 
   // Test that we only record the user's first action on confirmation page.
   test('recordFirstPostCompleteAction', async () => {
     await initializePage();
+    assert(page);
 
     verifyRecordPostSubmitActionCalled(
         false, FeedbackAppPostSubmitAction.kOpenExploreApp);
@@ -380,9 +375,10 @@ suite('confirmationPageTest', () => {
 
     // Open explore app first then open diagnostics app, should only record
     // the first user action.
-    const exploreLink = getElement(page, '#explore');
+    const exploreLink = strictQuery('#explore', page.shadowRoot, HTMLElement);
     exploreLink.click();
-    const diagnosticsLink = getElement(page, '#diagnostics');
+    const diagnosticsLink =
+        strictQuery('#diagnostics', page.shadowRoot, HTMLElement);
     diagnosticsLink.click();
     await flushTasks();
 

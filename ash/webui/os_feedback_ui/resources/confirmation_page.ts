@@ -10,6 +10,7 @@ import './help_resources_icons.html.js';
 import './os_feedback_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './confirmation_page.html.js';
@@ -119,10 +120,9 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
         break;
       case 'chromebookCommunity':
         // If app locale is not available, default to en.
-        window.open(
+        OpenWindowProxyImpl.getInstance().openUrl(
             `https://support.google.com/chromebook/?hl=${
-                this.i18n('language') || 'en'}#topic=3399709`,
-            '_blank');
+                this.i18n('language') || 'en'}#topic=3399709`);
         this.handleEmitMetrics(
             FeedbackAppPostSubmitAction.kOpenChromebookCommunity);
         break;
