@@ -243,8 +243,21 @@ ChromeOsLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
   }
 
   // Don't capture if already inside the target app scope.
+  // TODO(b/313518305): Query App Service intent filters instead, so that this
+  // check also covers ARC apps.
   if (app_type == AppType::kWeb &&
       base::ValuesEquivalent(web_app::WebAppTabHelper::GetAppId(web_contents),
+                             &launch_app_id.value())) {
+    return absl::nullopt;
+  }
+
+  // Don't capture if already inside a window for the target app. If the
+  // previous early return didn't trigger, this means we are in an app window
+  // but out of scope of the original app, and navigating will put us back in
+  // scope.
+  if (base::ValuesEquivalent(web_app::WebAppProvider::GetForWebApps(profile)
+                                 ->ui_manager()
+                                 .GetAppIdForWindow(web_contents),
                              &launch_app_id.value())) {
     return absl::nullopt;
   }

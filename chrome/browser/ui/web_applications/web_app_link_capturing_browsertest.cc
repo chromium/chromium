@@ -496,6 +496,22 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
+                       NoLinkCaptureOutOfScopeInAppWindow) {
+  const auto [app_id, in_scope_1, _, scope] =
+      InstallTestApp("/web_apps/basic.html");
+
+  TurnOnLinkCapturing(app_id);
+
+  content::WebContents* test_app = OpenApplication(app_id);
+
+  ClickLinkAndWait(test_app, out_of_scope_, LinkTarget::SELF, /*rel=*/"");
+
+  ClickLinkAndWait(test_app, in_scope_1, LinkTarget::SELF, /*rel=*/"");
+
+  ExpectTabs(chrome::FindBrowserWithTab(test_app), {in_scope_1});
+}
+
 // TODO: Run these tests on Chrome OS with both Ash and Lacros processes active.
 class WebAppTabStripLinkCapturingBrowserTest
     : public WebAppLinkCapturingBrowserTest {
