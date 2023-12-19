@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
 
 namespace autofill {
@@ -45,6 +46,7 @@ class IbanAccessManager {
   // Called when an UnmaskIban call is completed. The full IBAN value will be
   // returned via `value`.
   void OnUnmaskResponseReceived(OnIbanFetchedCallback on_iban_fetched,
+                                base::TimeTicks unmask_request_timestamp,
                                 AutofillClient::PaymentsRpcResult result,
                                 const std::u16string& value);
 

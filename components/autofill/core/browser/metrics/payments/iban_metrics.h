@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_IBAN_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_IBAN_METRICS_H_
 
+#include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -139,6 +140,9 @@ void LogServerIbanLinkClicked(AutofillMetrics::PaymentsSigninState sync_state);
 void LogIbanUploadEnabledMetric(
     IbanUploadEnabledStatus metric,
     AutofillMetrics::PaymentsSigninState sync_state);
+
+// Logs the latency for fetching a server IBAN in IbanAccessManager.
+void LogServerIbanUnmaskLatency(base::TimeDelta latency, bool is_successful);
 
 }  // namespace autofill::autofill_metrics
 

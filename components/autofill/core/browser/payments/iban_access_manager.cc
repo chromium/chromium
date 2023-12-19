@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 
+#include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
@@ -54,20 +55,25 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
       payments::GetBillingCustomerId(client_->GetPersonalDataManager());
   request_details.instrument_id =
       suggestion.GetBackendId<Suggestion::InstrumentId>().value();
+  base::TimeTicks unmask_request_timestamp = AutofillTickClock::NowTicks();
   client_->GetPaymentsNetworkInterface()->UnmaskIban(
       request_details,
       base::BindOnce(&IbanAccessManager::OnUnmaskResponseReceived,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(on_iban_fetched)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(on_iban_fetched),
+                     unmask_request_timestamp));
 }
 
 void IbanAccessManager::OnUnmaskResponseReceived(
     OnIbanFetchedCallback on_iban_fetched,
+    base::TimeTicks unmask_request_timestamp,
     AutofillClient::PaymentsRpcResult result,
     const std::u16string& value) {
   client_->CloseAutofillProgressDialog(
       /*show_confirmation_before_closing=*/false);
-  if (result == AutofillClient::PaymentsRpcResult::kSuccess && !value.empty()) {
+  bool is_successful = result == AutofillClient::PaymentsRpcResult::kSuccess;
+  autofill_metrics::LogServerIbanUnmaskLatency(
+      AutofillTickClock::NowTicks() - unmask_request_timestamp, is_successful);
+  if (is_successful) {
     std::move(on_iban_fetched).Run(value);
     return;
   }

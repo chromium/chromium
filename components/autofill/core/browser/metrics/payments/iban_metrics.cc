@@ -114,4 +114,11 @@ void LogIbanUploadEnabledMetric(
   base::UmaHistogramEnumeration(sync_subhistogram_metric, metric);
 }
 
+void LogServerIbanUnmaskLatency(base::TimeDelta latency, bool is_successful) {
+  base::UmaHistogramTimes(base::StrCat({"Autofill.Iban.UnmaskIbanDuration.",
+                                        is_successful ? "Success" : "Failure"}),
+                          latency);
+  base::UmaHistogramTimes("Autofill.Iban.UnmaskIbanDuration", latency);
+}
+
 }  // namespace autofill::autofill_metrics

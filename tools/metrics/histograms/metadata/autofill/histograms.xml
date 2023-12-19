@@ -2344,6 +2344,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Iban.UnmaskIbanDuration{UnmaskIbanResult}" units="ms"
+    expires_after="2024-07-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Recorded at a successful return of an unmask server IBAN call. This metric
+    tracks the duration from the user's click on a server IBAN suggestion to the
+    successful reception of a response of unmasking a server IBAN.
+  </summary>
+  <token key="UnmaskIbanResult">
+    <variant name="" summary="UnmaskIban request overall"/>
+    <variant name=".Failure" summary="UnmaskIban request failed"/>
+    <variant name=".Success" summary="UnmaskIban request succeeded"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.IbanUploadEnabled" enum="IbanUploadEnabledStatus"
     expires_after="2024-07-01">
   <owner>qihuizhao@google.com</owner>
