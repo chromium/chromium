@@ -84,13 +84,6 @@ class AndroidAutofillManager : public AutofillManager,
                          const FieldTypeGroup field_type_group,
                          const url::Origin& triggered_origin);
 
-  void FillOrPreviewField(mojom::ActionPersistence action_persistence,
-                          mojom::TextReplacement text_replacement,
-                          const FormData& form,
-                          const FormFieldData& field,
-                          const std::u16string& value,
-                          PopupItemId popup_item_id) override;
-
  protected:
   friend void AndroidDriverInitHook(AutofillClient* client,
                                     ContentAutofillDriver* driver);

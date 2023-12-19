@@ -76,15 +76,6 @@ class MockAutofillManager : public AutofillManager {
 
   MOCK_METHOD(bool, ShouldClearPreviewedForm, (), (override));
   MOCK_METHOD(void,
-              FillOrPreviewField,
-              (mojom::ActionPersistence action_persistence,
-               mojom::TextReplacement text_replacement,
-               const FormData& form,
-               const FormFieldData& field,
-               const std::u16string& value,
-               PopupItemId popup_item_id),
-              (override));
-  MOCK_METHOD(void,
               OnFocusNoLongerOnFormImpl,
               (bool had_interacted_form),
               (override));

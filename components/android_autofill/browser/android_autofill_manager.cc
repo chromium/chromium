@@ -238,16 +238,6 @@ void AndroidAutofillManager::FillOrPreviewForm(
   }
 }
 
-void AndroidAutofillManager::FillOrPreviewField(
-    mojom::ActionPersistence action_persistence,
-    mojom::TextReplacement text_replacement,
-    const FormData& form,
-    const FormFieldData& field,
-    const std::u16string& value,
-    PopupItemId popup_item_id) {
-  NOTIMPLEMENTED();
-}
-
 void AndroidAutofillManager::StartNewLoggingSession() {
   address_logger_ = std::make_unique<FormEventLoggerWeblayerAndroid>("Address");
   payments_logger_ =

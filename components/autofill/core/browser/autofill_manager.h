@@ -208,15 +208,6 @@ class AutofillManager
   // Returns true only if the previewed form should be cleared.
   virtual bool ShouldClearPreviewedForm() = 0;
 
-  // Records filling information and routes the filling back to the driver.
-  // TODO(crbug.com/1331312): Replace FormFieldData parameter by FieldGlobalId.
-  virtual void FillOrPreviewField(mojom::ActionPersistence action_persistence,
-                                  mojom::TextReplacement text_replacement,
-                                  const FormData& form,
-                                  const FormFieldData& field,
-                                  const std::u16string& value,
-                                  PopupItemId popup_item_id) = 0;
-
   // Invoked when the value of textfield is changed.
   // |bounding_box| are viewport coordinates.
   // Virtual for testing.

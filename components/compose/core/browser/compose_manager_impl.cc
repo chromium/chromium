@@ -12,11 +12,13 @@
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
 
 namespace {
+
 // Passes the autofill `text` back into the `field` the dialog was opened on.
 // Called upon insertion.
 void FillTextWithAutofill(base::WeakPtr<autofill::AutofillManager> manager,
@@ -28,10 +30,11 @@ void FillTextWithAutofill(base::WeakPtr<autofill::AutofillManager> manager,
   if (!manager) {
     return;
   }
-  manager->FillOrPreviewField(
-      autofill::mojom::ActionPersistence::kFill,
-      autofill::mojom::TextReplacement::kReplaceSelection, form, field,
-      trimmed_text, autofill::PopupItemId::kCompose);
+  static_cast<autofill::BrowserAutofillManager*>(manager.get())
+      ->FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
+                           autofill::mojom::TextReplacement::kReplaceSelection,
+                           form, field, trimmed_text,
+                           autofill::PopupItemId::kCompose);
 }
 
 }  // namespace

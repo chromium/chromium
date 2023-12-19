@@ -143,13 +143,14 @@ class BrowserAutofillManager : public AutofillManager {
       const AutofillTriggerDetails& trigger_details);
 
   // Records filling information and routes the filling back to the driver.
+  // Virtual for testing.
   // TODO(crbug.com/1331312): Replace FormFieldData parameter by FieldGlobalId.
-  void FillOrPreviewField(mojom::ActionPersistence action_persistence,
-                          mojom::TextReplacement text_replacement,
-                          const FormData& form,
-                          const FormFieldData& field,
-                          const std::u16string& value,
-                          PopupItemId popup_item_id) override;
+  virtual void FillOrPreviewField(mojom::ActionPersistence action_persistence,
+                                  mojom::TextReplacement text_replacement,
+                                  const FormData& form,
+                                  const FormFieldData& field,
+                                  const std::u16string& value,
+                                  PopupItemId popup_item_id);
 
   // Reverts the last autofill operation on `form` that affected
   // `trigger_field`, virtual for testing. `renderer_action` denotes whether

@@ -659,17 +659,18 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           plus_addresses::PlusAddressMetrics::
               PlusAddressAutofillSuggestionEvent::kCreateNewPlusAddressChosen);
       plus_addresses::PlusAddressCallback callback = base::BindOnce(
-          [](base::WeakPtr<AutofillManager> manager, const FormData& form,
-             const FormFieldData& field, const std::string& plus_address) {
-            if (manager) {
-              manager->FillOrPreviewField(mojom::ActionPersistence::kFill,
-                                          mojom::TextReplacement::kReplaceAll,
-                                          form, field,
-                                          base::UTF8ToUTF16(plus_address),
-                                          PopupItemId::kCreateNewPlusAddress);
+          [](base::WeakPtr<AutofillExternalDelegate> delegate,
+             const FormData& form, const FormFieldData& field,
+             const std::string& plus_address) {
+            if (delegate) {
+              delegate->manager_->FillOrPreviewField(
+                  mojom::ActionPersistence::kFill,
+                  mojom::TextReplacement::kReplaceAll, form, field,
+                  base::UTF8ToUTF16(plus_address),
+                  PopupItemId::kCreateNewPlusAddress);
             }
           },
-          manager_->GetWeakPtr(), query_form_, query_field_);
+          GetWeakPtr(), query_form_, query_field_);
       manager_->client().OfferPlusAddressCreation(
           manager_->client().GetLastCommittedPrimaryMainFrameOrigin(),
           std::move(callback));
