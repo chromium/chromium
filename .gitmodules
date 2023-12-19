@@ -683,6 +683,10 @@
 	path = components/optimization_guide/internal
 	url = https://chrome-internal.googlesource.com/chrome/components/optimization_guide.git
 	gclient-condition = checkout_src_internal
+[submodule "components/plus_addresses/resources/internal"]
+	path = components/plus_addresses/resources/internal
+	url = https://chrome-internal.googlesource.com/chrome/components/plus_addresses/resources.git
+	gclient-condition = checkout_src_internal
 [submodule "components/resources/default_100_percent/google_chrome"]
 	path = components/resources/default_100_percent/google_chrome
 	url = https://chrome-internal.googlesource.com/chrome/components/default_100_percent/google_chrome.git
