@@ -10,9 +10,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/push_notification/prefs/push_notification_prefs.h"
 #include "chrome/browser/push_notification/push_notification_service_desktop_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -79,10 +82,14 @@ PushNotificationServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   VLOG(1) << __func__ << ": creating PushNotificationService.";
-  return std::make_unique<PushNotificationServiceDesktopImpl>();
+
+  return std::make_unique<PushNotificationServiceDesktopImpl>(
+      Profile::FromBrowserContext(context)->GetPrefs());
 }
 
 void PushNotificationServiceFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {}
+    user_prefs::PrefRegistrySyncable* registry) {
+  RegisterPushNotificationPrefs(registry);
+}
 
 }  // namespace push_notification

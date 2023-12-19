@@ -4,6 +4,8 @@
 
 #include "chrome/browser/push_notification/push_notification_service_desktop_impl.h"
 
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include <memory>
@@ -17,10 +19,12 @@ class PushNotificationServiceDesktopImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     push_notification_service_ =
-        std::make_unique<PushNotificationServiceDesktopImpl>();
+        std::make_unique<PushNotificationServiceDesktopImpl>(
+            pref_service_.get());
   }
-
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<PushNotificationServiceDesktopImpl>
       push_notification_service_;
 };

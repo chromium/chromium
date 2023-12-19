@@ -4,11 +4,15 @@
 
 #include "chrome/browser/push_notification/push_notification_service_desktop_impl.h"
 #include "base/check.h"
+#include "components/prefs/pref_service.h"
 
 namespace push_notification {
 
-PushNotificationServiceDesktopImpl::PushNotificationServiceDesktopImpl() =
-    default;
+PushNotificationServiceDesktopImpl::PushNotificationServiceDesktopImpl(
+    PrefService* pref_service)
+    : pref_service_(pref_service) {
+  CHECK(pref_service_);
+}
 PushNotificationServiceDesktopImpl::~PushNotificationServiceDesktopImpl() =
     default;
 

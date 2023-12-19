@@ -5,15 +5,18 @@
 #ifndef CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_SERVICE_DESKTOP_IMPL_H_
 #define CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_SERVICE_DESKTOP_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/push_notification/push_notification_service.h"
+
+class PrefService;
 
 namespace push_notification {
 
 class PushNotificationServiceDesktopImpl : public PushNotificationService,
                                            public KeyedService {
  public:
-  PushNotificationServiceDesktopImpl();
+  explicit PushNotificationServiceDesktopImpl(PrefService* pref_service);
   PushNotificationServiceDesktopImpl(
       const PushNotificationServiceDesktopImpl&) = delete;
   PushNotificationServiceDesktopImpl& operator=(
@@ -23,6 +26,8 @@ class PushNotificationServiceDesktopImpl : public PushNotificationService,
  private:
   // KeyedService:
   void Shutdown() override;
+
+  const raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace push_notification

@@ -4,6 +4,8 @@
 
 source_set("push_notification") {
   sources = [
+    "prefs/push_notification_prefs.cc",
+    "prefs/push_notification_prefs.h",
     "push_notification_service_desktop_impl.cc",
     "push_notification_service_desktop_impl.h",
   ]
