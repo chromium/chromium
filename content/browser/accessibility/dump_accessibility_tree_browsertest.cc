@@ -891,16 +891,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-hidden-labelled-by.html"));
 }
 
-// TODO(https://crbug.com/1227569): This test is flaky on linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_AccessibilityAriaHiddenIframeBody \
-  DISABLED_AccessibilityAriaHiddenIframeBody
-#else
-#define MAYBE_AccessibilityAriaHiddenIframeBody \
-  AccessibilityAriaHiddenIframeBody
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityAriaHiddenIframeBody) {
+                       AccessibilityAriaHiddenIframeBody) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-hidden-iframe-body.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityAriaHiddenIframeBody) {
   RunAriaTest(FILE_PATH_LITERAL("aria-hidden-iframe-body.html"));
 }
 
