@@ -485,7 +485,7 @@ PhysicalFragment::OutOfFlowPositionedDescendants() const {
           oof_data_->oof_positioned_descendants.size()};
 }
 
-FragmentedOofData* PhysicalFragment::GetFragmentedOofData() const {
+const FragmentedOofData* PhysicalFragment::GetFragmentedOofData() const {
   if (!has_fragmented_out_of_flow_data_)
     return nullptr;
   auto* oof_data = reinterpret_cast<FragmentedOofData*>(oof_data_.Get());

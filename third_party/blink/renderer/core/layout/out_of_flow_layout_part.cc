@@ -1145,9 +1145,13 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
       const PhysicalFragment* containing_block_fragment =
           descendant.containing_block.Fragment();
       // If the containing block is not set, that means that the inner multicol
-      // was its containing block, and the OOF will be laid out elsewhere.
-      if (!containing_block_fragment)
+      // was its containing block, and the OOF will be laid out elsewhere. Also
+      // skip descendants whose containing block is a column spanner, because
+      // those need to be laid out further up in the tree.
+      if (!containing_block_fragment ||
+          descendant.containing_block.IsInsideColumnSpanner()) {
         continue;
+      }
       LogicalOffset containing_block_offset =
           converter.ToLogical(descendant.containing_block.Offset(),
                               containing_block_fragment->Size());
