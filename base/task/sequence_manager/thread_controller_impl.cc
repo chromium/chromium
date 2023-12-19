@@ -252,10 +252,9 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
   LazyNow lazy_now_after_work(time_source_);
   absl::optional<WakeUp> next_wake_up =
       sequence_->GetPendingWakeUp(&lazy_now_after_work);
-  // The OnSystemIdle callback allows the TimeDomains to advance virtual time
-  // in which case we now have immediate work to do.
-  if ((next_wake_up && next_wake_up->is_immediate()) ||
-      sequence_->OnSystemIdle()) {
+  // The OnIdle() callback allows the TimeDomains to advance virtual time in
+  // which case we now have immediate work to do.
+  if ((next_wake_up && next_wake_up->is_immediate()) || sequence_->OnIdle()) {
     // The next task needs to run immediately, post a continuation if
     // another thread didn't get there first.
     if (work_deduplicator_.DidCheckForMoreWork(

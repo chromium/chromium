@@ -181,7 +181,7 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
     has_pending_high_resolution_tasks = state;
   }
 
-  bool OnSystemIdle() override { return false; }
+  bool OnIdle() override { return false; }
 
   void MaybeEmitTaskDetails(perfetto::EventContext& ctx,
                             const SelectedTask& selected_task) const override {}

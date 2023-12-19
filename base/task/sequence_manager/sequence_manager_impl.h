@@ -141,7 +141,7 @@ class BASE_EXPORT SequenceManagerImpl
       LazyNow* lazy_now,
       SelectTaskOption option = SelectTaskOption::kDefault) override;
   bool HasPendingHighResolutionTasks() override;
-  bool OnSystemIdle() override;
+  bool OnIdle() override;
   void MaybeEmitTaskDetails(
       perfetto::EventContext& ctx,
       const SequencedTaskSource::SelectedTask& selected_task) const override;
@@ -342,8 +342,8 @@ class BASE_EXPORT SequenceManagerImpl
     ObserverList<CurrentThread::DestructionObserver>::Unchecked
         destruction_observers;
 
-    // If non-null, invoked the next time OnSystemIdle() completes without
-    // scheduling additional work.
+    // If non-null, invoked the next time OnIdle() completes without scheduling
+    // additional work.
     OnceClosure on_next_idle_callback;
   };
 

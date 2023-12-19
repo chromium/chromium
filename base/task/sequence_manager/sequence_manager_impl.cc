@@ -763,7 +763,7 @@ bool SequenceManagerImpl::HasPendingHighResolutionTasks() {
   return main_thread_only().wake_up_queue->has_pending_high_resolution_tasks();
 }
 
-bool SequenceManagerImpl::OnSystemIdle() {
+bool SequenceManagerImpl::OnIdle() {
   bool have_work_to_do = false;
   if (main_thread_only().time_domain) {
     auto wakeup = main_thread_only().wake_up_queue->GetNextDelayedWakeUp();

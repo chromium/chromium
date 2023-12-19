@@ -78,7 +78,7 @@ class SequencedTaskSource {
   // Called when we have run out of immediate work.  If more immediate work
   // becomes available as a result of any processing done by this callback,
   // return true to schedule a future DoWork.
-  virtual bool OnSystemIdle() = 0;
+  virtual bool OnIdle() = 0;
 
   // Called prior to running `selected_task` to emit trace event data for it.
   virtual void MaybeEmitTaskDetails(

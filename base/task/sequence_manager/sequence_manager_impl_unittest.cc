@@ -4771,20 +4771,20 @@ class MockTimeDomain : public TimeDomain {
 
 }  // namespace
 
-TEST_P(SequenceManagerTest, OnSystemIdleTimeDomainNotification) {
+TEST_P(SequenceManagerTest, OnIdleTimeDomainNotification) {
   if (GetUnderlyingRunnerType() != RunnerType::kMessagePump)
     return;
 
   auto queue = CreateTaskQueue();
 
-  // If we call OnSystemIdle, we expect registered TimeDomains to receive a call
-  // to MaybeFastForwardToWakeUp.  If no run loop has requested quit on idle,
-  // the parameter passed in should be false.
+  // If we call OnIdle, we expect registered TimeDomains to receive a call to
+  // MaybeFastForwardToWakeUp.  If no run loop has requested quit on idle, the
+  // parameter passed in should be false.
   StrictMock<MockTimeDomain> mock_time_domain;
   sequence_manager()->SetTimeDomain(&mock_time_domain);
   EXPECT_CALL(mock_time_domain, MaybeFastForwardToWakeUp(false))
       .WillOnce(Return(false));
-  sequence_manager()->OnSystemIdle();
+  sequence_manager()->OnIdle();
   sequence_manager()->ResetTimeDomain();
   Mock::VerifyAndClearExpectations(&mock_time_domain);
 
@@ -4795,7 +4795,7 @@ TEST_P(SequenceManagerTest, OnSystemIdleTimeDomainNotification) {
         EXPECT_CALL(mock_time_domain, MaybeFastForwardToWakeUp(true))
             .WillOnce(Return(false));
         sequence_manager()->SetTimeDomain(&mock_time_domain);
-        sequence_manager()->OnSystemIdle();
+        sequence_manager()->OnIdle();
         sequence_manager()->ResetTimeDomain();
       }));
 

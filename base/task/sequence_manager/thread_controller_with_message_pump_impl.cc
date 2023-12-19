@@ -573,9 +573,9 @@ bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  if (main_thread_only().task_source->OnSystemIdle()) {
-    // The OnSystemIdle() callback resulted in more immediate work, so schedule
-    // a DoWork callback. For some message pumps returning true from here is
+  if (main_thread_only().task_source->OnIdle()) {
+    // The OnIdle() callback resulted in more immediate work, so schedule a
+    // DoWork callback. For some message pumps returning true from here is
     // sufficient to do that but not on mac.
     pump_->ScheduleWork();
     return false;
