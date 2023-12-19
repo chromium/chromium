@@ -47,9 +47,16 @@ void CheckForOverRealization() {
   if ((now - g_last_creation_time) < kWindowSize) {
     g_last_realized_count++;
     if (g_last_realized_count >= kMaxEvents) {
-      base::debug::DumpWithoutCrashing();
       g_has_reported_once = true;
-      NOTREACHED();
+      // Don't use an assertion primitive (e.g. NOTREACHED) because
+      // sometimes this is not detected until stable release, and while
+      // this is a memory and performance regression, this does not need
+      // to be fatal for official.
+#if defined(OFFICIAL_BUILD)
+      base::debug::DumpWithoutCrashing();
+#else
+      base::ImmediateCrash();
+#endif  // defined(OFFICIAL_BUILD)
     }
   } else {
     g_last_creation_time = now;
