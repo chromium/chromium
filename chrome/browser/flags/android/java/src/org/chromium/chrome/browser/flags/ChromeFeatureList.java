@@ -158,8 +158,6 @@ public abstract class ChromeFeatureList {
     public static final String BACK_GESTURE_ACTIVITY_TAB_PROVIDER =
             "BackGestureActivityTabProvider";
     public static final String BACK_GESTURE_REFACTOR = "BackGestureRefactorAndroid";
-    public static final String BACK_GESTURE_REFACTOR_ACTIVITY =
-            "BackGestureRefactorActivityAndroid";
     public static final String BLOCK_INTENTS_WHILE_LOCKED = "BlockIntentsWhileLocked";
     public static final String BOARDING_PASS_DETECTOR = "BoardingPassDetector";
     public static final String CACHE_ACTIVITY_TASKID = "CacheActivityTaskID";
@@ -469,8 +467,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sArchiveTabService = new CachedFlag(ARCHIVE_TAB_SERVICE, false);
     public static final CachedFlag sBackGestureActivityTabProvider =
             new CachedFlag(BACK_GESTURE_ACTIVITY_TAB_PROVIDER, false);
-    public static final CachedFlag sBackGestureRefactorActivityAndroid =
-            new CachedFlag(BACK_GESTURE_REFACTOR_ACTIVITY, false);
     public static final CachedFlag sBackGestureRefactorAndroid =
             new CachedFlag(BACK_GESTURE_REFACTOR, false);
     public static final CachedFlag sBlockIntentsWhileLocked =
@@ -594,7 +590,6 @@ public abstract class ChromeFeatureList {
                     sAndroidHub,
                     sArchiveTabService,
                     sBackGestureActivityTabProvider,
-                    sBackGestureRefactorActivityAndroid,
                     sBackGestureRefactorAndroid,
                     sBlockIntentsWhileLocked,
                     sCctAutoTranslate,

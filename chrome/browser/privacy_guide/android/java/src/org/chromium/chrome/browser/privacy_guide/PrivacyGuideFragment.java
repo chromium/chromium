@@ -26,7 +26,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.CustomTabIntentHelper;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -48,7 +47,6 @@ import java.util.List;
  */
 public class PrivacyGuideFragment extends Fragment
         implements BackPressHandler,
-                BackPressHelper.ObsoleteBackPressedHandler,
                 ProfileDependentSetting,
                 FragmentSettingsLauncher {
     /**
@@ -257,6 +255,15 @@ public class PrivacyGuideFragment extends Fragment
                 mPagerAdapter.getFragmentType(followingStepIdx));
     }
 
+    private boolean onBackPressed() {
+        if (shouldHandleBackPress()) {
+            previousStep();
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public void onAttachFragment(@NonNull Fragment childFragment) {
         if (childFragment instanceof ProfileDependentSetting) {
@@ -299,16 +306,6 @@ public class PrivacyGuideFragment extends Fragment
     public void onSaveInstanceState(@NonNull Bundle outState) {
         mPrivacyGuideMetricsDelegate.saveState(outState);
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        if (shouldHandleBackPress()) {
-            previousStep();
-            return true;
-        }
-
-        return false;
     }
 
     @Override

@@ -12,11 +12,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.app.Dialog;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
@@ -998,13 +1001,16 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testAdvancedSyncFlowFromSyncConsentBackPressDoesNotEnableUKM() throws Exception {
+    public void testAdvancedSyncFlowFromSyncConsentBackToHomeDoesNotEnableUKM() throws Exception {
         mSyncTestRule.setUpTestAccountAndSignInWithSyncSetupAsIncomplete();
         final ManageSyncSettings fragment = startManageSyncPreferencesFromSyncConsentFlow();
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    fragment.onBackPressed();
+                    PopupMenu p = new PopupMenu(mSettingsActivity, null);
+                    Menu menu = p.getMenu();
+                    MenuItem menuItem = menu.add(0, android.R.id.home, 0, "");
+                    fragment.onOptionsItemSelected(menuItem);
                 });
 
         verifyUrlKeyedAnonymizedDataCollectionNotSet();

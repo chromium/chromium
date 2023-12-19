@@ -165,12 +165,6 @@ class DownloadManagerCoordinatorImpl
     }
 
     @Override
-    public boolean onBackPressed() {
-        if (mListCoordinator.handleBackPressed()) return true;
-        return mToolbarCoordinator.handleBackPressed();
-    }
-
-    @Override
     public BackPressHandler[] getBackPressHandlers() {
         return mBackPressHandlers;
     }

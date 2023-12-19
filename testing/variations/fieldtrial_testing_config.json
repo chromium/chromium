@@ -350,27 +350,6 @@
             ]
         }
     ],
-    "AndroidBackPressRefactorSecondaryActivity": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230629",
-                    "enable_features": [
-                        "BackGestureRefactorActivityAndroid"
-                    ]
-                },
-                {
-                    "name": "Control_20230629",
-                    "disable_features": [
-                        "BackGestureRefactorActivityAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidDropIntoOmnibox": [
         {
             "platforms": [

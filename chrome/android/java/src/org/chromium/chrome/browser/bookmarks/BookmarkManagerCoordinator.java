@@ -352,15 +352,6 @@ public class BookmarkManagerCoordinator
         mMediator.updateForUrl(url);
     }
 
-    /**
-     * Called when the user presses the back key. This is only going to be called on Phone.
-     *
-     * @return True if manager handles this event, false if it decides to ignore.
-     */
-    public boolean onBackPressed() {
-        return mMediator.onBackPressed();
-    }
-
     /** Opens the given BookmarkId. */
     public void openBookmark(BookmarkId bookmarkId) {
         mMediator.openBookmark(bookmarkId);
@@ -403,6 +394,14 @@ public class BookmarkManagerCoordinator
     }
 
     // Private methods.
+    /**
+     * Called when the user presses the back key. This is only going to be called on Phone.
+     *
+     * @return True if manager handles this event, false if it decides to ignore.
+     */
+    private boolean onBackPressed() {
+        return mMediator.onBackPressed();
+    }
 
     private int computeCacheMaxSize() {
         ActivityManager activityManager =

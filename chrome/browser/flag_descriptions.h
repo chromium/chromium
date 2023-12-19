@@ -2235,9 +2235,6 @@ extern const char kArchiveTabServiceDescription[];
 extern const char kBackGestureActivityTabProviderName[];
 extern const char kBackGestureActivityTabProviderDescription[];
 
-extern const char kBackGestureRefactorActivityAndroidName[];
-extern const char kBackGestureRefactorActivityAndroidDescription[];
-
 extern const char kBackGestureRefactorAndroidName[];
 extern const char kBackGestureRefactorAndroidDescription[];
 

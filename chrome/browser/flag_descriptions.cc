@@ -3862,12 +3862,6 @@ const char kBackGestureActivityTabProviderDescription[] =
     "get current tab, rather than getActivityTab if predictive back gesture"
     "is disabled.";
 
-const char kBackGestureRefactorActivityAndroidName[] =
-    "Back Gesture Refactor (Secondary Activities)";
-const char kBackGestureRefactorActivityAndroidDescription[] =
-    "Enable Back Gesture Refactor for Secondary Activities to support in-app "
-    "activity-to-activity predictive back gestures";
-
 const char kBackGestureRefactorAndroidName[] = "Back Gesture Refactor";
 const char kBackGestureRefactorAndroidDescription[] =
     "Enable Back Gesture Refactor.";

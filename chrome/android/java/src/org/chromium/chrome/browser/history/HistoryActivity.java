@@ -10,7 +10,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersConstants;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -44,16 +43,8 @@ public class HistoryActivity extends SnackbarActivity {
                         historyClustersQuery,
                         new BrowsingHistoryBridge(profile));
         setContentView(mHistoryManager.getView());
-        if (BackPressManager.isSecondaryActivityEnabled()) {
-            BackPressHelper.create(
-                    this, getOnBackPressedDispatcher(), mHistoryManager, SecondaryActivity.HISTORY);
-        } else {
-            BackPressHelper.create(
-                    this,
-                    getOnBackPressedDispatcher(),
-                    mHistoryManager::onBackPressed,
-                    SecondaryActivity.HISTORY);
-        }
+        BackPressHelper.create(
+                this, getOnBackPressedDispatcher(), mHistoryManager, SecondaryActivity.HISTORY);
     }
 
     @Override

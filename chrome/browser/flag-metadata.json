@@ -777,11 +777,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "back-gesture-refactor-activity-android",
-    "owners": ["lazzzis@google.com", "jinsukkim@chromium.org", "twellington@chromium.org"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "back-gesture-refactor-android",
     "owners": ["lazzzis@google.com", "jinsukkim@chromium.org", "twellington@chromium.org"],
     "expiry_milestone": 130

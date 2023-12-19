@@ -96,11 +96,7 @@ import java.util.Date;
 
 /** Tests the History UI. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.HISTORY_JOURNEYS,
-    ChromeFeatureList.RENAME_JOURNEYS,
-    ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY,
-})
+@DisableFeatures({ChromeFeatureList.HISTORY_JOURNEYS, ChromeFeatureList.RENAME_JOURNEYS})
 public class HistoryUITest {
     private static final int PAGE_INCREMENT = 2;
     private static final String HISTORY_SEARCH_QUERY = "some page";
@@ -201,21 +197,11 @@ public class HistoryUITest {
 
         Assert.assertEquals(expectedItemCount, mAdapter.getItemCount());
 
-        // Some individual tests may override to enable this feature which is disabled by
-        // the class by default.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY)) {
-            BackPressHelper.create(
-                    mLifecycleOwner,
-                    mOnBackPressedDispatcher,
-                    mHistoryManager,
-                    SecondaryActivity.HISTORY);
-        } else {
-            BackPressHelper.create(
-                    mLifecycleOwner,
-                    mOnBackPressedDispatcher,
-                    mHistoryManager::onBackPressed,
-                    SecondaryActivity.HISTORY);
-        }
+        BackPressHelper.create(
+                mLifecycleOwner,
+                mOnBackPressedDispatcher,
+                mHistoryManager,
+                SecondaryActivity.HISTORY);
     }
 
     @Test
@@ -458,7 +444,6 @@ public class HistoryUITest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY)
     public void testSearchViewDismissedByBackPress() {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         View toolbarShadow = mHistoryManager.getSelectableListLayout().getToolbarShadowForTests();
@@ -494,13 +479,6 @@ public class HistoryUITest {
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
         Assert.assertEquals(View.GONE, toolbarSearchView.getVisibility());
         backPressRecorder2.assertExpected();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY)
-    public void testSearchViewDismissedByBackPress_Refactored() {
-        testSearchViewDismissedByBackPress();
     }
 
     @Test

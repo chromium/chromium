@@ -167,7 +167,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAuxiliarySearchDonation,
     &kAvoidSelectedTabFocusOnLayoutDoneShowing,
     &kBackGestureActivityTabProvider,
-    &kBackGestureRefactorActivityAndroid,
     &kBackGestureRefactorAndroid,
     &kBackgroundThreadPool,
     &kBlockIntentsWhileLocked,
@@ -691,10 +690,6 @@ BASE_FEATURE(kPwaRestoreUi, "PwaRestoreUi", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBackGestureActivityTabProvider,
              "BackGestureActivityTabProvider",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kBackGestureRefactorActivityAndroid,
-             "BackGestureRefactorActivityAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBackGestureRefactorAndroid,
              "BackGestureRefactorAndroid",

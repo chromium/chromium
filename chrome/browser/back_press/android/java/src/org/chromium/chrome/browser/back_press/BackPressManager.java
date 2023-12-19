@@ -149,13 +149,6 @@ public class BackPressManager implements Destroyable {
     }
 
     /**
-     * @return True if the back gesture refactor is enabled for secondary activities.
-     */
-    public static boolean isSecondaryActivityEnabled() {
-        return ChromeFeatureList.sBackGestureRefactorActivityAndroid.isEnabled();
-    }
-
-    /**
      * @return True if ActivityTabProvider should replace ChromeTabActivity#getActivityTab
      */
     public static boolean shouldUseActivityTabProvider() {
