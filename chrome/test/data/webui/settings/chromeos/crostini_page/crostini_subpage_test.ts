@@ -4,11 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrostiniBrowserProxyImpl, CrostiniPortSetting, GuestOsBrowserProxyImpl, SettingsCrostiniDiskResizeDialogElement, SettingsCrostiniPageElement, SettingsCrostiniSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {CrostiniBrowserProxyImpl, CrostiniPortSetting, GuestOsBrowserProxyImpl, SettingsCrostiniDiskResizeDialogElement, SettingsCrostiniSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import {CrSliderElement, Router, routes, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertGE, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -19,12 +18,11 @@ import {TestGuestOsBrowserProxy} from '../guest_os/test_guest_os_browser_proxy.j
 
 import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
-let crostiniPage: SettingsCrostiniPageElement;
 let subpage: SettingsCrostiniSubpageElement;
 let guestOsBrowserProxy: TestGuestOsBrowserProxy;
 let crostiniBrowserProxy: TestCrostiniBrowserProxy;
 
-const MIC_ALLOWED_PATH = 'prefs.crostini.mic_allowed.value';
+const MIC_ALLOWED_PREF_PATH = 'prefs.crostini.mic_allowed.value';
 
 interface PrefParams {
   sharedPaths?: {[key: string]: string[]};
@@ -41,7 +39,7 @@ function setCrostiniPrefs(enabled: boolean, {
   arcEnabled = false,
   bruschettaInstalled = false,
 }: PrefParams = {}): void {
-  crostiniPage.prefs = {
+  subpage.prefs = {
     arc: {
       enabled: {value: arcEnabled},
     },
@@ -63,6 +61,10 @@ function setCrostiniPrefs(enabled: boolean, {
 }
 
 suite('<settings-crostini-subpage>', () => {
+  suiteSetup(() => {
+    disableAnimationsAndTransitions();
+  });
+
   setup(async () => {
     loadTimeData.overrideValues({
       isCrostiniAllowed: true,
@@ -74,60 +76,47 @@ suite('<settings-crostini-subpage>', () => {
       arcAdbSideloadingSupported: true,
       showCrostiniExtraContainers: true,
     });
+
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
     CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
     guestOsBrowserProxy = new TestGuestOsBrowserProxy();
     GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
 
-    crostiniPage = document.createElement('settings-crostini-page');
-    document.body.appendChild(crostiniPage);
-    flush();
-
-    disableAnimationsAndTransitions();
-
+    Router.getInstance().navigateTo(routes.CROSTINI_DETAILS);
+    subpage = document.createElement('settings-crostini-subpage');
+    document.body.appendChild(subpage);
     setCrostiniPrefs(true, {arcEnabled: true});
-
-    Router.getInstance().navigateTo(routes.CROSTINI);
-    const crostiniSettingsCard =
-        crostiniPage.shadowRoot!.querySelector('crostini-settings-card');
-    assertTrue(!!crostiniSettingsCard);
-    const button =
-        crostiniSettingsCard.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#crostini');
-    assertTrue(!!button);
-    button.click();
-
     await flushTasks();
-    const subpageElement =
-        crostiniPage.shadowRoot!.querySelector('settings-crostini-subpage');
-    assertTrue(!!subpageElement);
-    subpage = subpageElement;
   });
 
   teardown(() => {
-    crostiniPage.remove();
+    subpage.remove();
     Router.getInstance().resetRouteForTesting();
+    crostiniBrowserProxy.reset();
+    guestOsBrowserProxy.reset();
   });
 
   suite('Subpage default', () => {
     test('Basic', () => {
+      assertTrue(isVisible(
+          subpage.shadowRoot!.querySelector('#crostiniSharedPathsRow')));
+      assertTrue(isVisible(
+          subpage.shadowRoot!.querySelector('#crostiniSharedUsbDevicesRow')));
+      assertTrue(isVisible(
+          subpage.shadowRoot!.querySelector('#crostiniExportImportRow')));
+      assertTrue(isVisible(
+          subpage.shadowRoot!.querySelector('#crostiniEnableArcAdbRow')));
+      assertTrue(isVisible(subpage.shadowRoot!.querySelector('#remove')));
       assertTrue(
-          !!subpage.shadowRoot!.querySelector('#crostiniSharedPathsRow'));
-      assertTrue(
-          !!subpage.shadowRoot!.querySelector('#crostiniSharedUsbDevicesRow'));
-      assertTrue(
-          !!subpage.shadowRoot!.querySelector('#crostiniExportImportRow'));
-      assertTrue(
-          !!subpage.shadowRoot!.querySelector('#crostiniEnableArcAdbRow'));
-      assertTrue(!!subpage.shadowRoot!.querySelector('#remove'));
-      assertTrue(!!subpage.shadowRoot!.querySelector('#container-upgrade'));
-      assertTrue(
-          !!subpage.shadowRoot!.querySelector('#crostiniPortForwardingRow'));
-      assertTrue(!!subpage.shadowRoot!.querySelector(
-          '#crostini-mic-permission-toggle'));
-      assertTrue(!!subpage.shadowRoot!.querySelector('#crostiniDiskResizeRow'));
-      assertTrue(
-          !!subpage.shadowRoot!.querySelector('#crostiniExtraContainersRow'));
+          isVisible(subpage.shadowRoot!.querySelector('#container-upgrade')));
+      assertTrue(isVisible(
+          subpage.shadowRoot!.querySelector('#crostiniPortForwardingRow')));
+      assertTrue(isVisible(subpage.shadowRoot!.querySelector(
+          '#crostini-mic-permission-toggle')));
+      assertTrue(isVisible(
+          subpage.shadowRoot!.querySelector('#crostiniDiskResizeRow')));
+      assertTrue(isVisible(
+          subpage.shadowRoot!.querySelector('#crostiniExtraContainersRow')));
     });
 
     test('Shared paths', async () => {
@@ -135,11 +124,10 @@ suite('<settings-crostini-subpage>', () => {
           '#crostiniSharedPathsRow');
       assertTrue(!!button);
       button.click();
+      flush();
 
-      await flushTasks();
-      const sharedPathsPage = crostiniPage.shadowRoot!.querySelector(
-          'settings-guest-os-shared-paths');
-      assertTrue(!!sharedPathsPage);
+      assertEquals(
+          routes.CROSTINI_SHARED_PATHS, Router.getInstance().currentRoute);
     });
 
     test('Container upgrade', () => {
@@ -229,7 +217,7 @@ suite('<settings-crostini-subpage>', () => {
           '#crostini-mic-permission-toggle');
       assertTrue(!!toggle);
       assertTrue(toggle.checked);
-      assertTrue(crostiniPage.get(MIC_ALLOWED_PATH));
+      assertTrue(subpage.get(MIC_ALLOWED_PREF_PATH));
     });
 
     test('Toggle crostini mic permission shutdown', async () => {
@@ -264,7 +252,7 @@ suite('<settings-crostini-subpage>', () => {
           '#crostini-mic-permission-toggle');
       assertTrue(!!toggle);
       assertTrue(toggle.checked);
-      assertTrue(crostiniPage.get(MIC_ALLOWED_PATH));
+      assertTrue(subpage.get(MIC_ALLOWED_PREF_PATH));
 
       // Crostini is now shutdown, this means that it doesn't need to be
       // restarted in order for changes to take effect, therefore no dialog is
@@ -274,7 +262,7 @@ suite('<settings-crostini-subpage>', () => {
       assertNull(
           subpage.shadowRoot!.querySelector('#crostini-mic-permission-dialog'));
       assertFalse(toggle.checked);
-      assertFalse(crostiniPage.get(MIC_ALLOWED_PATH));
+      assertFalse(subpage.get(MIC_ALLOWED_PREF_PATH));
     });
 
     // TODO(b/313456787) Re-enable test once fixed.
@@ -319,12 +307,11 @@ suite('<settings-crostini-subpage>', () => {
       assertTrue(isVisible(removeElement));
     });
 
-    test('Hide on disable', async () => {
+    test('Disabling crostini returns to previous route', async () => {
       assertEquals(routes.CROSTINI_DETAILS, Router.getInstance().currentRoute);
+      const popstateEventPromise = eventToPromise('popstate', window);
       setCrostiniPrefs(false);
-
-      await eventToPromise('popstate', window);
-      assertEquals(routes.CROSTINI, Router.getInstance().currentRoute);
+      await popstateEventPromise;
     });
 
     test('Disk resize opens when clicked', async () => {
@@ -361,7 +348,7 @@ suite('<settings-crostini-subpage>', () => {
       assertTrue(!!deepLinkElement);
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
-          deepLinkElement, getDeepActiveElement(),
+          deepLinkElement, subpage.shadowRoot!.activeElement,
           `Resize disk button should be focused for settingId=${
               CROSTINI_DISK_RESIZE_SETTING}.`);
     });
