@@ -142,6 +142,8 @@ class TabletModeControllerTest : public AshTestBase {
 
   void TearDown() override {
     AccelerometerReader::GetInstance()->AddObserver(tablet_mode_controller());
+    // Rset before Shell destruction.
+    test_api_.reset();
     AshTestBase::TearDown();
   }
 

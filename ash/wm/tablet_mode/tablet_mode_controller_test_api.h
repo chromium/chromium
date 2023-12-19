@@ -99,8 +99,7 @@ class TabletModeControllerTestApi {
   float GetLidAngle() const { return tablet_mode_controller_->lid_angle(); }
 
  private:
-  raw_ptr<TabletModeController, DanglingUntriaged | ExperimentalAsh>
-      tablet_mode_controller_;
+  raw_ptr<TabletModeController, ExperimentalAsh> tablet_mode_controller_;
 };
 
 }  // namespace ash
