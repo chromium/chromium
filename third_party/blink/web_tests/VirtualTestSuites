@@ -1824,7 +1824,7 @@
       "--disable-headless-mode",
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Dec 1, 2024"
   },
 
   {
