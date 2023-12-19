@@ -3498,6 +3498,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.PreFilledFields.{FormType}"
+    enum="AutofillPreFilledFields" expires_after="2024-05-10">
+  <owner>bwolfgang@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records the number of fields that are pre-filled or empty on page load. The
+    metric is emitted on form submission.
+  </summary>
+  <token key="FormType" variants="Autofill.Ablation.FormType"/>
+</histogram>
+
 <histogram name="Autofill.PreviouslyHiddenSuggestionNumber" units="suggestions"
     expires_after="2024-12-12">
   <owner>jihadghanna@google.com</owner>

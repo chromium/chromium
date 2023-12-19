@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics_utils.h"
+#include "components/autofill/core/browser/metrics/placeholder_metrics.h"
 #include "components/autofill/core/browser/metrics/precedence_over_autocomplete_metrics.h"
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
 #include "components/autofill/core/browser/validation.h"
@@ -199,6 +200,10 @@ void LogQualityMetrics(
           AddFillingStatsForAutofillFillingMethod(
               *field, address_field_stats_by_filling_method);
         }
+
+        LogPreFilledFields(
+            std::string(FormTypeToStringView(form_type_of_field)),
+            field->initial_value_changed());
       }
     }
 

@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
+#include "components/autofill/core/browser/metrics/placeholder_metrics.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -922,6 +923,43 @@ TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
                   "Autofill.LabelInference.InferredLabelSource.AtSubmission2"),
               BucketsAre(Bucket(name_field.label_source, 1),
                          Bucket(country_field.label_source, 1)));
+}
+
+TEST_F(QualityMetricsTest, EmitsUmaAutofillPreFilledFields) {
+  base::test::ScopedFeatureList features{
+      features::kAutofillOverwritePlaceholdersOnly};
+
+  base::HistogramTester histogram_tester;
+  test::FormDescription form_description = {
+      .fields = {{.role = NAME_FIRST,
+                  .heuristic_type = NAME_FIRST,
+                  .value = u"pre-filled"},
+                 {.role = NAME_LAST, .heuristic_type = NAME_LAST}}};
+  FormData form = test::GetFormData(form_description);
+
+  // Simulate page load.
+  autofill_manager().AddSeenForm(form,
+                                 test::GetHeuristicTypes(form_description),
+                                 test::GetServerTypes(form_description),
+                                 /*preserve_values_in_form_structure=*/true);
+  // Simluate interacting with the form.
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
+  // Get cached form and modify fields.
+  FormStructure* cached_form;
+  AutofillField* cached_triggering_field;
+  ASSERT_TRUE(autofill_manager().GetCachedFormAndField(
+      form, form.fields[0], &cached_form, &cached_triggering_field));
+  cached_form->fields()[1]->set_may_use_prefilled_placeholder(false);
+  // Fill form.
+  FillTestProfile(form);
+  // Submit form.
+  SubmitForm(form);
+
+  ResetDriverToCommitMetrics();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.PreFilledFields.Address"),
+      BucketsAre(base::Bucket(AutofillPreFilledFields::kPreFilledOnPageLoad, 1),
+                 base::Bucket(AutofillPreFilledFields::kEmptyOnPageLoad, 1)));
 }
 
 }  // namespace autofill_metrics

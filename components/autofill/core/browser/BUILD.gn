@@ -345,6 +345,8 @@ static_library("browser") {
     "metrics/payments/virtual_card_standalone_cvc_suggestion_metrics.h",
     "metrics/payments/wallet_usage_data_metrics.cc",
     "metrics/payments/wallet_usage_data_metrics.h",
+    "metrics/placeholder_metrics.cc",
+    "metrics/placeholder_metrics.h",
     "metrics/precedence_over_autocomplete_metrics.cc",
     "metrics/precedence_over_autocomplete_metrics.h",
     "metrics/profile_import_metrics.cc",

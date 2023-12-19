@@ -4878,6 +4878,11 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="PREDICTION_SOURCE_OVERALL"/>
 </enum>
 
+<enum name="AutofillPreFilledFields">
+  <int value="0" label="Pre-filled on page load"/>
+  <int value="1" label="Empty on page load"/>
+</enum>
+
 <enum name="AutofillProfileAction">
   <int value="0" label="Existing profile used"/>
   <int value="1" label="Existing profile updated"/>
