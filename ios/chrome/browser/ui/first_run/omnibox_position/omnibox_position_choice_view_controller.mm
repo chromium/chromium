@@ -61,6 +61,7 @@ const CGFloat kLogoSize = 36;
   self.hideHeaderOnTallContent = YES;
 
   self.headerImageType = PromoStyleImageType::kImageWithShadow;
+  self.headerViewForceStyleLight = YES;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   UIImage* logo = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoSize));

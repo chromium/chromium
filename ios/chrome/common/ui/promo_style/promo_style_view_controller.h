@@ -79,6 +79,10 @@ enum class BannerImageSizeType {
 // Default to NO.
 @property(nonatomic, assign) BOOL hideHeaderOnTallContent;
 
+// When set to YES, forces UIUserInterfaceStyleLight for the header views. This
+// value has to be set before the view is loaded. Default to NO.
+@property(nonatomic, assign) BOOL headerViewForceStyleLight;
+
 // The label of the headline below the image. Must be set before the view is
 // loaded. This is declared public so the accessibility can be enabled.
 @property(nonatomic, strong) UILabel* titleLabel;

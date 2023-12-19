@@ -651,6 +651,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     _headerImageView.image = _headerImage;
     _headerImageView.accessibilityLabel = _headerAccessibilityLabel;
     _headerImageView.isAccessibilityElement = _headerAccessibilityLabel != nil;
+    if (self.headerViewForceStyleLight) {
+      _headerImageView.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+    }
   }
   return _headerImageView;
 }
@@ -1258,6 +1261,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
       UIView* frameView = [[UIView alloc] init];
       frameView.translatesAutoresizingMaskIntoConstraints = NO;
       frameView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+      if (self.headerViewForceStyleLight) {
+        frameView.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+      }
       frameView.layer.cornerRadius = kHeaderImageCornerRadius;
       frameView.layer.shadowOffset =
           CGSizeMake(kHeaderImageShadowOffsetX, kHeaderImageShadowOffsetY);

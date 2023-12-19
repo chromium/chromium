@@ -6,6 +6,7 @@
 
 #import "base/ios/ios_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
 
@@ -95,6 +96,21 @@ BOOL IsCompact(UITraitCollection* traitCollection) {
   });
 }
 
+/// Returns a resized `image` with a width covering the `horizontalRatio` of the
+/// view. The height is computed to keep the same aspect ratio as the original
+/// image.
+- (UIImage*)resizeImage:(UIImage*)image
+        horizontalRatio:(CGFloat)horizontalRatio {
+  CGFloat imageAspectRatio = image.size.height / image.size.width;
+  const CGFloat width =
+      AlignValueToPixel(self.bounds.size.width * horizontalRatio);
+  const CGFloat height =
+      MIN(self.bounds.size.height, AlignValueToPixel(width * imageAspectRatio));
+
+  return ResizeImage(image, CGSizeMake(width, height),
+                     ProjectionMode::kAspectFillAlignTop);
+}
+
 /// Updates left and right images.
 - (void)updateImages {
   // TODO(crbug.com/1503638): Add dark mode assets.
@@ -103,20 +119,14 @@ BOOL IsCompact(UITraitCollection* traitCollection) {
   UIImage* leftImage = [UIImage imageNamed:@"promo_background_left"];
   CGFloat leftImageHorizontalRatio =
       isCompact ? kLeftImageRatioCompact : kLeftImageRatioRegular;
-  _leftImageView.image =
-      ResizeImage(leftImage,
-                  CGSizeMake(self.bounds.size.width * leftImageHorizontalRatio,
-                             self.bounds.size.height),
-                  ProjectionMode::kAspectFillAlignTop);
+  _leftImageView.image = [self resizeImage:leftImage
+                           horizontalRatio:leftImageHorizontalRatio];
 
   UIImage* rightImage = [UIImage imageNamed:@"promo_background_right"];
   CGFloat rightImageHorizontalRatio =
       isCompact ? kRightImageRatioCompact : kRightImageRatioRegular;
-  _rightImageView.image =
-      ResizeImage(rightImage,
-                  CGSizeMake(self.bounds.size.width * rightImageHorizontalRatio,
-                             self.bounds.size.height),
-                  ProjectionMode::kAspectFillAlignTop);
+  _rightImageView.image = [self resizeImage:rightImage
+                            horizontalRatio:rightImageHorizontalRatio];
 }
 
 @end
