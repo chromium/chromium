@@ -227,6 +227,9 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
  private:
   FRIEND_TEST_ALL_PREFIXES(TextBreakIteratorTest, Strictness);
 
+  template <typename CharacterType>
+  struct Context;
+
   const AtomicString& LocaleWithKeyword() const;
   void InvalidateLocaleWithKeyword();
 
