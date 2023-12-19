@@ -1379,6 +1379,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   item.text = l10n_util::GetNSString(buttonLabelID);
   item.textColor = [UIColor colorNamed:kBlueColor];
   item.accessibilityTraits = UIAccessibilityTraitButton;
+  item.accessibilityIdentifier = kSyncErrorButtonIdentifier;
   return item;
 }
 

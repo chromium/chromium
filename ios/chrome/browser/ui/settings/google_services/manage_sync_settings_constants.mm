@@ -21,6 +21,7 @@ NSString* const kSyncOpenTabsIdentifier = @"syncOpenTabsIdentifier";
 NSString* const kSyncAutofillIdentifier = @"syncAutofillIdentifier";
 NSString* const kSyncPreferencesIdentifier = @"syncPreferencesIdentifier";
 NSString* const kSyncReadingListIdentifier = @"syncReadingListIdentifier";
+NSString* const kSyncErrorButtonIdentifier = @"syncErrorButtonIdentifier";
 
 NSString* const kEncryptionAccessibilityIdentifier =
     @"EncryptionAccessibilityIdentifier";

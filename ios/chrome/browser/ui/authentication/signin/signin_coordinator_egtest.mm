@@ -85,15 +85,6 @@ typedef NS_ENUM(NSInteger, OpenSigninMethod) {
 #else
 #define MAYBE_testSwipeDownInAdvancedSettings testSwipeDownInAdvancedSettings
 #endif
-// TODO(crbug.com/1277545): Flaky on iOS simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn \
-  DISABLED_testSyncOnWhenPassphraseIntroducedAfterSignIn
-#else
-#define MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn \
-  testSyncOnWhenPassphraseIntroducedAfterSignIn
-#endif
-
 namespace {
 
 // Label used to find the 'Learn more' link.
@@ -220,8 +211,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       [self
           isRunningTest:@selector(testSwipeDownSignInViewWithoutAnIdentity)] ||
       [self isRunningTest:@selector(MAYBE_testSwipeDownInAdvancedSettings)] ||
-      [self isRunningTest:@selector
-            (MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn)] ||
       [self isRunningTest:@selector(testCancelFromSyncOffLink)] ||
       [self
           isRunningTest:@selector
@@ -238,6 +227,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       [self isRunningTest:@selector
             (testSignOutForSupervisedUserClearAccountData)] ||
       [self isRunningTest:@selector(testSignInCancelAddAccount)] ||
+      [self isRunningTest:@selector
+            (testSyncOnWhenPassphraseIntroducedAfterSignIn)] ||
       [self isRunningTest:@selector
             (testDismissSigninFromTabSwitcherFromIdentityPicker)] ||
       [self isRunningTest:@selector(testDismissSigninFromTabSwitcher)] ||
@@ -1275,29 +1266,31 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that Sync is on when introducing passphrase from settings, after
 // logging in.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
-- (void)MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn {
+- (void)testSyncOnWhenPassphraseIntroducedAfterSignIn {
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
-  [SigninEarlGreyUI tapSigninConfirmationDialog];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kWebSigninPrimaryButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()]
+      performAction:grey_tap()];
 
   // Give the Sync state a chance to finish UI updates.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       GoogleServicesSettingsButton()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityValue(GetNSString(
-                                       IDS_IOS_SYNC_ENCRYPTION_DESCRIPTION)),
-                                   grey_accessibilityID(
-                                       kSettingsGoogleSyncAndServicesCellId),
-                                   grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
       performAction:grey_tap()];
+
+  // Checks the user is invited to enter the passphrase.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]
+      assertWithMatcher:grey_notNil()];
 
   // Scroll to bottom of Manage Sync Settings, if necessary.
   [[EarlGrey selectElementWithMatcher:
@@ -1320,8 +1313,13 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       performAction:grey_tap()];
   [ChromeEarlGreyUI openSettingsMenu];
 
-  // Check Sync On label is visible.
-  [SigninEarlGrey verifySyncUIEnabled:YES];
+  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
+      performAction:grey_tap()];
+
+  // Check the user is not invited to enter the passphrase
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests to sign-in with one user, and then turn on syncn with a second account.

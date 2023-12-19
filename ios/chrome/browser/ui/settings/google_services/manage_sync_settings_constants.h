@@ -26,6 +26,7 @@ extern NSString* const kSyncOpenTabsIdentifier;
 extern NSString* const kSyncAutofillIdentifier;
 extern NSString* const kSyncPreferencesIdentifier;
 extern NSString* const kSyncReadingListIdentifier;
+extern NSString* const kSyncErrorButtonIdentifier;
 
 // Accessibility identifier for Encryption item.
 extern NSString* const kEncryptionAccessibilityIdentifier;
