@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #import "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/permissions/permissions_constants.h"
@@ -121,6 +122,10 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
 
   [self.tableViewModel
       addSectionWithIdentifier:SectionIdentifierSecurityContent];
+
+  if (IsRevampPageInfoIosEnabled()) {
+    // TODO(crbug.com/1512580): Start implementation for Page Info's revamp.
+  }
 
   // Site Security section.
   TableViewDetailIconItem* securityHeader =

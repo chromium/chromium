@@ -741,6 +741,10 @@ extern const char kRemoveExcessNTPsExperimentDescription[];
 extern const char kReplaceSyncPromosWithSignInPromosName[];
 extern const char kReplaceSyncPromosWithSignInPromosDescription[];
 
+// Title and description for the flag to revamp Page Info in iOS.
+extern const char kRevampPageInfoIosName[];
+extern const char kRevampPageInfoIosDescription[];
+
 // Title and description for the flag that makes Safe Browsing available.
 extern const char kSafeBrowsingAvailableName[];
 extern const char kSafeBrowsingAvailableDescription[];

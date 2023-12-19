@@ -10,6 +10,7 @@ source_set("page_info") {
     "page_info_view_controller.mm",
   ]
   deps = [
+    ":features",
     "//base",
     "//base:i18n",
     "//components/keyed_service/core",
@@ -135,4 +136,12 @@ source_set("eg2_tests") {
     "//net:test_support",
     "//ui/base",
   ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
 }

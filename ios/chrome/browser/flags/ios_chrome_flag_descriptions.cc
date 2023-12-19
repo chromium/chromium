@@ -834,6 +834,11 @@ const char kReplaceSyncPromosWithSignInPromosName[] =
 const char kReplaceSyncPromosWithSignInPromosDescription[] =
     "When enabled, all sync-related promos will be replaced by sign-in ones.";
 
+const char kRevampPageInfoIosName[] = "Revamp Page Info";
+const char kRevampPageInfoIosDescription[] =
+    "Revamps Page Info to add two new sections, AboutThisPage and Last "
+    "Visited.";
+
 const char kSafeBrowsingAvailableName[] = "Make Safe Browsing available";
 const char kSafeBrowsingAvailableDescription[] =
     "When enabled, navigation URLs are compared to Safe Browsing blocklists, "

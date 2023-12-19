@@ -92,6 +92,7 @@
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
+#import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/features.h"
@@ -1613,6 +1614,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kBottomOmniboxPromoDefaultPosition,
          kBottomOmniboxPromoDefaultPositionVariations,
          "BottomOmniboxPromoDefaultPosition")},
+    {"revamp-page-info-ios", flag_descriptions::kRevampPageInfoIosName,
+     flag_descriptions::kRevampPageInfoIosDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kRevampPageInfoIos)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
