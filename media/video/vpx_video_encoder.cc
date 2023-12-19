@@ -523,7 +523,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
             const_cast<uint8_t*>(frame->visible_data(VideoFrame::kYPlane));
         vpx_image_.planes[VPX_PLANE_U] =
             const_cast<uint8_t*>(frame->visible_data(VideoFrame::kUVPlane));
-        // In NV12 Y and U samples are combined in one plane (bytes go YUYUYU),
+        // In NV12 U and V samples are combined in one plane (bytes go UVUVUV),
         // but libvpx treats them as two planes with the same stride but shifted
         // by one byte.
         vpx_image_.planes[VPX_PLANE_V] = vpx_image_.planes[VPX_PLANE_U] + 1;
