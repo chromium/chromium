@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
@@ -26,6 +27,7 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/webdata/token_web_data.h"
@@ -68,7 +70,7 @@ class MutableProfileOAuth2TokenServiceDelegateTest
         tokens_loaded_count_(0),
         end_batch_changes_(0),
         auth_error_changed_count_(0),
-        revoke_all_tokens_on_load_(false) {}
+        revoke_all_tokens_on_load_(RevokeAllTokensOnLoad::kNo) {}
 
   void SetUp() override {
     OSCryptMocker::SetUp();
@@ -252,7 +254,7 @@ class MutableProfileOAuth2TokenServiceDelegateTest
   int tokens_loaded_count_;
   int end_batch_changes_;
   int auth_error_changed_count_;
-  bool revoke_all_tokens_on_load_;
+  RevokeAllTokensOnLoad revoke_all_tokens_on_load_;
   std::string source_for_refresh_token_available_;
   std::string source_for_refresh_token_revoked_;
 };
@@ -376,7 +378,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   EXPECT_EQ(0, token_available_count_);
   EXPECT_EQ(2, token_revoked_count_);
   EXPECT_EQ(1, end_batch_changes_);
-  EXPECT_TRUE(oauth2_service_delegate_->revoke_all_tokens_on_load_);
+  EXPECT_NE(RevokeAllTokensOnLoad::kNo,
+            oauth2_service_delegate_->revoke_all_tokens_on_load_);
   EXPECT_TRUE(token_service_observer.revoke_all_credentials_called_);
   EXPECT_FALSE(oauth2_service_delegate_->RefreshTokenIsAvailable(account1));
   EXPECT_FALSE(oauth2_service_delegate_->RefreshTokenIsAvailable(account2));
@@ -1100,7 +1103,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 // updates the database, and is applied only once.
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ClearTokensOnStartup) {
   client_->SetNetworkCallsDelayed(true);
-  revoke_all_tokens_on_load_ = true;
+  revoke_all_tokens_on_load_ = RevokeAllTokensOnLoad::kDeleteSiteDataOnExit;
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
   CoreAccountId primary_account = CoreAccountId::FromGaiaId("primaryaccount");
   CoreAccountId secondary_account =
@@ -1347,3 +1350,69 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, FetchWithBoundToken) {
   EXPECT_EQ(0, access_token_failure_count_);
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
+class MutableProfileOAuth2TokenServiceDelegateWithUnoDesktopTest
+    : public MutableProfileOAuth2TokenServiceDelegateTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{switches::kUnoDesktop};
+};
+
+// Checks that, for a signed in non-syncing account in UNO with clear on exit,
+// set_revoke_all_tokens_on_first_load() keeps the tokens for the primary and
+// secondary accounts, updates the database, and is applied only once.
+TEST_F(MutableProfileOAuth2TokenServiceDelegateWithUnoDesktopTest,
+       KeepPrimaryAccountTokenOnStartupWithClearOnExit) {
+  client_->SetNetworkCallsDelayed(true);
+  revoke_all_tokens_on_load_ = RevokeAllTokensOnLoad::kDeleteSiteDataOnExit;
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  CoreAccountId primary_account = CoreAccountId::FromGaiaId("primary_account");
+  char refresh_token_primary[] = "refresh_token_primary";
+  CoreAccountId secondary_account =
+      CoreAccountId::FromGaiaId("secondary_account");
+  char refresh_token_secondary[] = "refresh_token_secondary";
+
+  oauth2_service_delegate_->RevokeAllCredentials();
+  ResetObserverCounts();
+  AddAuthTokenManually("AccountId-" + primary_account.ToString(),
+                       refresh_token_primary);
+  AddAuthTokenManually("AccountId-" + secondary_account.ToString(),
+                       refresh_token_secondary);
+  oauth2_service_delegate_->LoadCredentials(primary_account,
+                                            /*is_syncing=*/false);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, tokens_loaded_count_);
+  EXPECT_EQ(2, token_available_count_);
+  EXPECT_EQ(0, token_revoked_count_);
+  EXPECT_EQ(1, end_batch_changes_);
+  EXPECT_TRUE(
+      oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account));
+  EXPECT_TRUE(
+      oauth2_service_delegate_->RefreshTokenIsAvailable(secondary_account));
+  EXPECT_STREQ(
+      refresh_token_primary,
+      oauth2_service_delegate_->GetRefreshToken(primary_account).c_str());
+  EXPECT_EQ(GoogleServiceAuthError::AuthErrorNone(),
+            oauth2_service_delegate_->GetAuthError(primary_account));
+
+  // No token is revoked on the server.
+  EXPECT_EQ(0u, oauth2_service_delegate_->server_revokes_.size());
+  client_->SetNetworkCallsDelayed(false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(oauth2_service_delegate_->server_revokes_.empty());
+
+  // Check that the changes have been persisted in the database: tokens are not
+  // revoked again on the server.
+  client_->SetNetworkCallsDelayed(true);
+  oauth2_service_delegate_->LoadCredentials(primary_account,
+                                            /*is_syncing=*/false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(
+      oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account));
+  EXPECT_TRUE(
+      oauth2_service_delegate_->RefreshTokenIsAvailable(secondary_account));
+  EXPECT_STREQ(
+      refresh_token_primary,
+      oauth2_service_delegate_->GetRefreshToken(primary_account).c_str());
+  EXPECT_TRUE(oauth2_service_delegate_->server_revokes_.empty());
+}

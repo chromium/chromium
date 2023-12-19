@@ -19,6 +19,7 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/webdata/token_web_data.h"
 #include "components/webdata/common/web_data_service_base.h"
@@ -200,7 +201,7 @@ MutableProfileOAuth2TokenServiceDelegate::
         network::NetworkConnectionTracker* network_connection_tracker,
         scoped_refptr<TokenWebData> token_web_data,
         signin::AccountConsistencyMethod account_consistency,
-        bool revoke_all_tokens_on_load,
+        RevokeAllTokensOnLoad revoke_all_tokens_on_load,
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
         std::unique_ptr<TokenBindingHelper> token_binding_helper,
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -375,6 +376,7 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadCredentials(
   }
 
   loading_primary_account_id_ = primary_account_id;
+  loading_is_syncing_ = is_syncing;
   web_data_service_request_ = token_web_data_->GetAllTokens(this);
 }
 
@@ -432,6 +434,7 @@ void MutableProfileOAuth2TokenServiceDelegate::OnWebDataServiceRequestDone(
 #endif
 
   loading_primary_account_id_ = CoreAccountId();
+  loading_is_syncing_ = false;
   FinishLoadingCredentials();
 }
 
@@ -467,7 +470,26 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
         load_account ? LoadTokenFromDBStatus::TOKEN_LOADED
                      : LoadTokenFromDBStatus::TOKEN_REVOKED_SECONDARY_ACCOUNT;
 
-    if (load_account && revoke_all_tokens_on_load_) {
+    bool revoke_token = false;
+    switch (revoke_all_tokens_on_load_) {
+      case RevokeAllTokensOnLoad::kNo:
+        break;
+      case RevokeAllTokensOnLoad::kDeleteSiteDataOnExit:
+        if (base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
+          // With Uno, tokens are not revoked when clearing cookies if the user
+          // is signed in non-syncing.
+          revoke_token =
+              loading_primary_account_id_.empty() || loading_is_syncing_;
+        } else {
+          revoke_token = true;
+        }
+        break;
+      case RevokeAllTokensOnLoad::kExplicitRevoke:
+        revoke_token = true;
+        break;
+    }
+
+    if (load_account && revoke_token) {
       if (account_id == loading_primary_account_id_) {
         RevokeCredentialsOnServer(refresh_token);
         refresh_token = GaiaConstants::kInvalidRefreshToken;
@@ -626,8 +648,9 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeAllCredentials() {
     VLOG(1) << "MutablePO2TS::RevokeAllCredentials before tokens are loaded.";
     // If |RevokeAllCredentials| is called while credentials are being loaded,
     // then the tokens should be revoked on load.
-    revoke_all_tokens_on_load_ = true;
+    revoke_all_tokens_on_load_ = RevokeAllTokensOnLoad::kExplicitRevoke;
     loading_primary_account_id_ = CoreAccountId();
+    loading_is_syncing_ = false;
   }
 
   // Make a temporary copy of the account ids.

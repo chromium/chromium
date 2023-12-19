@@ -3371,8 +3371,6 @@ void AddSiteDataPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_SITE_DATA_PAGE_ALLOW_RADIO_SUB_LABEL},
       {"siteDataPageClearOnExitRadioLabel",
        IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_RADIO_LABEL},
-      {"siteDataPageClearOnExitRadioSubLabel",
-       IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_RADIO_SUBLABEL},
       {"siteDataPageBlockRadioLabel",
        IDS_SETTINGS_SITE_DATA_PAGE_BLOCK_RADIO_LABEL},
       {"siteDataPageBlockRadioSublabel",
@@ -3397,6 +3395,11 @@ void AddSiteDataPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_CANCEL_BUTTON},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddLocalizedString(
+      "siteDataPageClearOnExitRadioSubLabel",
+      base::FeatureList::IsEnabled(switches::kUnoDesktop)
+          ? IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_WITH_EXCEPTION_RADIO_SUBLABEL
+          : IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_RADIO_SUBLABEL);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
