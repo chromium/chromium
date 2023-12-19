@@ -120,8 +120,14 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorServiceBrowserTest, CloseBubbleView) {
 // This uses the deprecated "unowned" API to the GlobalErrorService to maintain
 // coverage. When those calls are eventually removed (http://crbug.com/673578)
 // these uses should be switched to the non-deprecated API.
+// TODO(https://crbug.com/1513012): Flaky on asan lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_BubbleViewDismissedOnRemove DISABLED_BubbleViewDismissedOnRemove
+#else
+#define MAYBE_BubbleViewDismissedOnRemove BubbleViewDismissedOnRemove
+#endif
 IN_PROC_BROWSER_TEST_F(GlobalErrorServiceBrowserTest,
-                       BubbleViewDismissedOnRemove) {
+                       MAYBE_BubbleViewDismissedOnRemove) {
   std::unique_ptr<BubbleViewError> error(new BubbleViewError);
 
   GlobalErrorService* service =
