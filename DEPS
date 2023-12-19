@@ -3955,7 +3955,7 @@ deps = {
 
   'src/components/plus_addresses/resources/internal': {
       'url': Var('chrome_git') + '/chrome/components/plus_addresses/resources.git' + '@' +
-        '8babd9da0911bfc8afe09c49358d10be85a2558e',
+        'f8c3e0b3c46aa748b27dce9f04c8fc9a630e5e46',
       'condition': 'checkout_src_internal',
   },
 
