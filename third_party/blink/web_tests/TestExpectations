@@ -549,11 +549,6 @@ crbug.com/699040 external/wpt/svg/text/reftests/text-xml-space-001.svg [ Failure
 crbug.com/1370460 [ Mac ] external/wpt/svg/text/reftests/lang-attribute.svg [ Failure ]
 crbug.com/1370460 [ Mac ] external/wpt/svg/text/reftests/xml-lang-attribute.svg [ Failure ]
 
-# Temporarily disabled to unblock https://crrev.com/c/5131015
-crbug.com/1512108 http/tests/devtools/console/console-functions.js [ Failure Pass ]
-crbug.com/1512108 http/tests/devtools/console/console-tainted-globals.js [ Failure Pass ]
-crbug.com/1512108 http/tests/devtools/sources/debugger/properties-special.js [ Failure Pass ]
-
 # WPT backgrounds and borders tests. Note that there are many more in NeverFixTests
 # that should be investigated (see crbug.com/780700)
 crbug.com/492187 external/wpt/css/CSS2/backgrounds/background-intrinsic-004.xht [ Failure ]

@@ -9,7 +9,7 @@ Running: dumpConsoleMessages
 testOverriddenArrayPushAndMathMax()
 (3) [1, 2, 3]
 testOverriddenConstructorName()
-{constructor: {…}}
+{}
 testThrowConstructorName()
 {}
 testOverriddenIsFinite()
