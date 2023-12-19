@@ -64,9 +64,8 @@ bool MayHaveWindowsHelloCredentials(
   return allow_list.empty() ||
          base::ranges::any_of(allow_list, [](const auto& credential) {
            return credential.transports.empty() ||
-                  credential.transports ==
-                      base::flat_set<FidoTransportProtocol>{
-                          FidoTransportProtocol::kInternal};
+                  base::Contains(credential.transports,
+                                 FidoTransportProtocol::kInternal);
          });
 }
 
@@ -283,8 +282,8 @@ void WinWebAuthnApiAuthenticator::GetPlatformCredentialInfoForRequest(
     const CtapGetAssertionOptions& request_options,
     GetPlatformCredentialInfoForRequestCallback callback) {
   // Handle the special case where a request has an allow list, all the
-  // credential descriptors have a transport, and none of those are "internal"
-  // only. These credentials cannot possibly be Windows Hello.
+  // credential descriptors have a transport, and none of have the "internal"
+  // transport. These credentials cannot possibly be Windows Hello.
   if (!MayHaveWindowsHelloCredentials(request.allow_list)) {
     std::move(callback).Run(
         /*credentials=*/{},
