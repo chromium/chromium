@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_danger_type.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -151,85 +150,27 @@ void DownloadBubbleRowViewInfo::PopulateForInProgressOrComplete() {
   switch (model_->GetDangerType()) {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
       if (model_->IsExtensionDownload()) {
-        if (base::FeatureList::IsEnabled(
-                safe_browsing::kImprovedDownloadBubbleWarnings)) {
-          PopulateSuspiciousUiPattern();
-          return;
-        }
-        has_subpage_ = true;
-        icon_override_ = features::IsChromeRefresh2023()
-                             ? &kDownloadWarningIcon
-                             : &vector_icons::kNotSecureWarningIcon;
-        secondary_color_ = kColorDownloadItemIconWarning;
-        secondary_text_color_ = kColorDownloadItemTextWarning;
+        PopulateSuspiciousUiPattern();
         return;
       } else {
-        if (base::FeatureList::IsEnabled(
-                safe_browsing::kImprovedDownloadBubbleWarnings)) {
-          if (WasSafeBrowsingVerdictObtained(model_->GetDownloadItem())) {
-            PopulateSuspiciousUiPattern();
-            return;
-          }
-          if (ShouldShowWarningForNoSafeBrowsing(model_->profile())) {
-            PopulateForFileTypeWarningNoSafeBrowsing();
-            return;
-          }
+        if (WasSafeBrowsingVerdictObtained(model_->GetDownloadItem())) {
           PopulateSuspiciousUiPattern();
           return;
         }
-
-        has_subpage_ = true;
-        icon_override_ = features::IsChromeRefresh2023()
-                             ? &kDownloadWarningIcon
-                             : &vector_icons::kNotSecureWarningIcon;
-        secondary_color_ = ui::kColorSecondaryForeground;
-        primary_button_command_ = DownloadCommands::Command::KEEP;
+        if (ShouldShowWarningForNoSafeBrowsing(model_->profile())) {
+          PopulateForFileTypeWarningNoSafeBrowsing();
+          return;
+        }
+        PopulateSuspiciousUiPattern();
         return;
       }
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
-      if (base::FeatureList::IsEnabled(
-              safe_browsing::kImprovedDownloadBubbleWarnings)) {
-        PopulateDangerousUiPattern();
-        return;
-      } else {
-        has_subpage_ = true;
-        icon_override_ = features::IsChromeRefresh2023()
-                             ? &vector_icons::kDangerousChromeRefreshIcon
-                             : &vector_icons::kDangerousIcon;
-        secondary_color_ = kColorDownloadItemIconDangerous;
-        primary_button_command_ = DownloadCommands::Command::DISCARD;
-        return;
-      }
     case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
-      if (base::FeatureList::IsEnabled(
-              safe_browsing::kImprovedDownloadBubbleWarnings)) {
-        PopulateDangerousUiPattern();
-        return;
-      } else {
-        has_subpage_ = true;
-        icon_override_ = features::IsChromeRefresh2023()
-                             ? &kDownloadWarningIcon
-                             : &vector_icons::kNotSecureWarningIcon;
-        secondary_color_ = kColorDownloadItemIconWarning;
-        secondary_text_color_ = kColorDownloadItemTextWarning;
-        primary_button_command_ = DownloadCommands::Command::DISCARD;
-        return;
-      }
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
-      if (base::FeatureList::IsEnabled(
-              safe_browsing::kImprovedDownloadBubbleWarnings)) {
-        return PopulateDangerousUiPattern();
-      } else {
-        has_subpage_ = true;
-        icon_override_ = features::IsChromeRefresh2023()
-                             ? &kDownloadWarningIcon
-                             : &vector_icons::kNotSecureWarningIcon;
-        secondary_color_ = kColorDownloadItemIconDangerous;
-        primary_button_command_ = DownloadCommands::Command::DISCARD;
-        return;
-      }
+      PopulateDangerousUiPattern();
+      return;
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT: {
       bool request_ap_verdicts = false;
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -247,18 +188,7 @@ void DownloadBubbleRowViewInfo::PopulateForInProgressOrComplete() {
         secondary_text_color_ = kColorDownloadItemTextWarning;
         return;
       } else {
-        if (base::FeatureList::IsEnabled(
-                safe_browsing::kImprovedDownloadBubbleWarnings)) {
-          PopulateSuspiciousUiPattern();
-          return;
-        }
-        has_subpage_ = true;
-        icon_override_ = features::IsChromeRefresh2023()
-                             ? &kDownloadWarningIcon
-                             : &vector_icons::kNotSecureWarningIcon;
-        secondary_color_ = kColorDownloadItemIconWarning;
-        secondary_text_color_ = kColorDownloadItemTextWarning;
-        primary_button_command_ = DownloadCommands::Command::DISCARD;
+        PopulateSuspiciousUiPattern();
         return;
       }
     }

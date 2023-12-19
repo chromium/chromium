@@ -140,9 +140,7 @@ BASE_DECLARE_FEATURE(kHashRealTimeOverOhttp);
 // kHashRealTimeOverOhttp feature.
 extern const base::FeatureParam<std::string> kHashRealTimeOverOhttpRelayUrl;
 
-// UX improvements to download warnings in the download bubble and
-// chrome://downloads page, respectively.
-BASE_DECLARE_FEATURE(kImprovedDownloadBubbleWarnings);
+// UX improvements to download warnings on chrome://downloads page.
 BASE_DECLARE_FEATURE(kImprovedDownloadPageWarnings);
 
 // Enable logging of the account enhanced protection setting in Protego pings.

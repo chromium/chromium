@@ -2858,18 +2858,6 @@ are declared in tools/grit/grit_rule.gni.
                desc="Tooltip label for the button to open full download history">
         Show full download history in a new tab
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_HEADER_TEXT"
-               desc="Header text in the Download Bubble">
-        Recent Downloads
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_FOOTER_LINK"
-               desc="Footer link in the Download Bubble">
-        Show all downloads
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_FOOTER_TOOLTIP"
-               desc="Tooltip label for the button to open all downloads">
-        Show all downloads in a new tab
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_ESB_PROMO"
                desc="Text for the in-product-help bubble shown for the esb promo download bubble.">
         Chrome just blocked a dangerous file from downloading. Get even stronger security with enhanced protection.

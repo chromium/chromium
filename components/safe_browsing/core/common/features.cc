@@ -147,10 +147,6 @@ constexpr base::FeatureParam<std::string> kHashRealTimeOverOhttpRelayUrl{
     &kHashRealTimeOverOhttp, "SafeBrowsingHashRealTimeOverOhttpRelayUrl",
     /*default_value=*/""};
 
-BASE_FEATURE(kImprovedDownloadBubbleWarnings,
-             "ImprovedDownloadBubbleWarnings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kImprovedDownloadPageWarnings,
              "ImprovedDownloadPageWarnings",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -344,7 +340,6 @@ constexpr struct {
     {&kExtensionTelemetryTabsExecuteScriptSignal, true},
     {&kHashPrefixRealTimeLookups, true},
     {&kHashRealTimeOverOhttp, true},
-    {&kImprovedDownloadBubbleWarnings, true},
     {&kImprovedDownloadPageWarnings, true},
     {&kLogAccountEnhancedProtectionStateInProtegoPings, true},
     {&kMmapSafeBrowsingDatabase, true},
