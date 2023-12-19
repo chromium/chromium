@@ -219,7 +219,9 @@ class PhishingClassifierTest
   }
 
   // Completion callback for classification.
-  void ClassificationFinished(const ClientPhishingRequest& verdict) {
+  void ClassificationFinished(
+      const ClientPhishingRequest& verdict,
+      PhishingClassifier::Result phishing_classifier_result) {
     verdict_ = verdict;
     for (int i = 0; i < verdict.feature_map_size(); ++i) {
       feature_map_.AddRealFeature(verdict.feature_map(i).name(),
@@ -329,7 +331,8 @@ TEST_F(PhishingClassifierTest, TestClassificationWhenNoTld) {
   RunPhishingClassifier(&page_text_);
 
   EXPECT_EQ(0U, feature_map_.features().size());
-  EXPECT_EQ(PhishingClassifier::kInvalidScore, verdict_.client_score());
+  EXPECT_EQ(PhishingClassifier::kClassifierFailed,
+            static_cast<int>(verdict_.client_score()));
   EXPECT_FALSE(verdict_.is_phishing());
 }
 
@@ -340,7 +343,8 @@ TEST_F(PhishingClassifierTest, TestClassificationWhenSchemeNotSupported) {
   RunPhishingClassifier(&page_text_);
 
   EXPECT_EQ(0U, feature_map_.features().size());
-  EXPECT_EQ(PhishingClassifier::kInvalidScore, verdict_.client_score());
+  EXPECT_EQ(PhishingClassifier::kClassifierFailed,
+            static_cast<int>(verdict_.client_score()));
   EXPECT_FALSE(verdict_.is_phishing());
 }
 
@@ -357,7 +361,7 @@ TEST_F(PhishingClassifierTest, TestPhishingPagesAreDomMatches) {
       "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
   RunPhishingClassifier(&page_text_);
 
-  EXPECT_NE(PhishingClassifier::kInvalidScore, verdict_.client_score());
+  EXPECT_NE(PhishingClassifier::kClassifierFailed, verdict_.client_score());
   EXPECT_TRUE(verdict_.is_phishing());
   EXPECT_TRUE(verdict_.is_dom_match());
 }
@@ -367,7 +371,7 @@ TEST_F(PhishingClassifierTest, TestSafePagesAreNotDomMatches) {
            "<html><body><a href=\"http://safe.com/\">login</a></body></html>");
   RunPhishingClassifier(&page_text_);
 
-  EXPECT_NE(PhishingClassifier::kInvalidScore, verdict_.client_score());
+  EXPECT_NE(PhishingClassifier::kClassifierFailed, verdict_.client_score());
   EXPECT_FALSE(verdict_.is_phishing());
   EXPECT_FALSE(verdict_.is_dom_match());
 }

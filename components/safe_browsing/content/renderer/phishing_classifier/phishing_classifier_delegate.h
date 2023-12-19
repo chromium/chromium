@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_thread_observer.h"
@@ -116,7 +117,9 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
                               StartPhishingDetectionCallback callback) override;
 
   // Called when classification for the current page finishes.
-  void ClassificationDone(const ClientPhishingRequest& verdict);
+  void ClassificationDone(
+      const ClientPhishingRequest& verdict,
+      PhishingClassifier::Result phishing_classifier_result);
 
   // Shared code to begin classification if all conditions are met.
   void MaybeStartClassification();

@@ -127,7 +127,8 @@ class PhishingClassifierDelegateTest : public ChromeRenderViewTest {
   // Runs the ClassificationDone callback, then verify if message sent
   // by FakeRenderThread is correct.
   void RunAndVerifyClassificationDone(const ClientPhishingRequest& verdict) {
-    delegate_->ClassificationDone(verdict);
+    delegate_->ClassificationDone(verdict,
+                                  PhishingClassifier::Result::kSuccess);
   }
 
   void OnStartPhishingDetection(const GURL& url) {
