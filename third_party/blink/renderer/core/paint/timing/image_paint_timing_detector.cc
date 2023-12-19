@@ -264,7 +264,6 @@ void ImagePaintTimingDetector::ReportPresentationTime(
   DCHECK(ThreadState::Current()->IsMainThread());
   records_manager_.AssignPaintTimeToRegisteredQueuedRecords(
       timestamp, last_queued_frame_index);
-  frame_view_->GetPaintTimingDetector().UpdateLargestContentfulPaintCandidate();
 }
 
 void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
