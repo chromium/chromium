@@ -455,6 +455,10 @@ static void PopulateProfiles(
     case mozilla::gfx::VRControllerType::_empty:
       input_source->description->profiles = {"generic-button"};
       break;
+    case mozilla::gfx::VRControllerType::MagicLeap2:
+      input_source->description->profiles = {
+	"magicleap-one", "generic-trigger-squeeze-touchpad"};
+      break;
     case mozilla::gfx::VRControllerType::_end:
       NOTREACHED();
       break;
