@@ -36,6 +36,7 @@ export class CrostiniController {
    * changes.
    */
   async redraw() {
+    const store = getStore();
     // Setup Linux files fake root.
     let crostiniNavigationModelItem;
     if (this.crostini_.isEnabled(DEFAULT_CROSTINI_VM)) {
@@ -45,10 +46,10 @@ export class CrostiniController {
           str('LINUX_FILES_ROOT_LABEL'), NavigationModelItemType.CROSTINI,
           crostiniEntry);
       crostiniNavigationModelItem.disabled = this.disabled_;
-      getStore().dispatch(addUiEntry({entry: crostiniEntry}));
+      store.dispatch(addUiEntry(crostiniEntry));
     } else {
       crostiniNavigationModelItem = null;
-      getStore().dispatch(removeUiEntry({key: crostiniPlaceHolderKey}));
+      store.dispatch(removeUiEntry(crostiniPlaceHolderKey));
     }
     if (!isNewDirectoryTreeEnabled()) {
       this.directoryTree_.dataModel.linuxFilesItem =

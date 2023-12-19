@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isSameEntry, isVolumeEntry, sortEntries} from '../../common/js/entry_utils.js';
+import {isSameEntry, isVolumeEntry} from '../../common/js/entry_utils.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {FileKey, State} from '../../externs/ts/state.js';
+import {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {Slice} from '../../lib/base_store.js';
-import {cacheEntries, getMyFiles} from '../ducks/all_entries.js';
-import {getEntry, getFileData} from '../store.js';
+import {cacheEntries, getMyFiles, readSubDirectories} from '../ducks/all_entries.js';
+import {getEntry, getStore} from '../store.js';
 
 /**
  * @fileoverview UI entries slice of the store.
@@ -31,9 +32,9 @@ const uiEntryRootTypesInMyFiles = new Set([
 
 
 /** Create action to add an UI entry to the store. */
-export const addUiEntry = slice.addReducer('add', addUiEntryReducer);
+export const addUiEntryInternal = slice.addReducer('add', addUiEntryReducer);
 
-export function addUiEntryReducer(currentState: State, payload: {
+function addUiEntryReducer(currentState: State, payload: {
   entry: FakeEntry|EntryList,
 }): State {
   // Cache entries, so the reducers can use any entry from `allEntries`.
@@ -41,87 +42,110 @@ export function addUiEntryReducer(currentState: State, payload: {
 
   const {entry} = payload;
   const key = entry.toURL();
-
-  let isVolumeEntryExistedInMyFiles = false;
-  if (entry.rootType && uiEntryRootTypesInMyFiles.has(entry.rootType)) {
-    const {myFilesEntry} = getMyFiles(currentState);
-    const children = myFilesEntry.getUiChildren();
-    // Check if the the ui entry already has a corresponding volume entry.
-    isVolumeEntryExistedInMyFiles = !!children.find(
-        childEntry =>
-            isVolumeEntry(childEntry) && childEntry.name === entry.name);
-    const isUiEntryExistedInMyFiles =
-        !!children.find(childEntry => isSameEntry(childEntry, entry));
-    // We only add the UI entry here if:
-    // 1. it is not existed in MyFiles entry
-    // 2. its corresponding volume (which ui entry is a placeholder for) is not
-    // existed in MyFiles entry
-    const shouldAddUiEntry =
-        !isUiEntryExistedInMyFiles && !isVolumeEntryExistedInMyFiles;
-    if (shouldAddUiEntry) {
-      myFilesEntry.addEntry(entry);
-      // Push the new entry to the children of FileData and sort them.
-      const fileData = getFileData(currentState, myFilesEntry.toURL());
-      if (fileData) {
-        const newChildren = fileData.children.concat(entry.toURL());
-        const childEntries =
-            newChildren.map(childKey => getEntry(currentState, childKey)!);
-        const sortedChildren =
-            sortEntries(myFilesEntry, childEntries).map(entry => entry.toURL());
-        currentState.allEntries[myFilesEntry.toURL()] = {
-          ...fileData,
-          children: sortedChildren,
-        };
-      }
-    }
-  }
-
-  // If the corresponding volume entry exists, we don't add the ui entry here.
-  if (!currentState.uiEntries.find(k => k === key) &&
-      !isVolumeEntryExistedInMyFiles) {
-    // Shallow copy.
-    currentState.uiEntries = currentState.uiEntries.slice();
-    currentState.uiEntries.push(key);
-  }
+  const uiEntries = [...currentState.uiEntries, key];
 
   return {
     ...currentState,
+    uiEntries,
   };
 }
 
-/** Create action to remove an UI entry from the store. */
-export const removeUiEntry = slice.addReducer('remove', removeUiEntryReducer);
+/**
+ * Add UI entry to the store and re-scan MyFiles if the newly added UI entry is
+ * under MyFiles.
+ */
+export async function*
+    addUiEntry(entry: FakeEntry|EntryList): ActionsProducerGen {
+  const state = getStore().getState();
+  const exists = state.uiEntries.find(key => key === entry.toURL());
+  if (exists) {
+    return;
+  }
 
-export function removeUiEntryReducer(currentState: State, payload: {
+  // If the UI entry to be added is under MyFiles, we also need to update
+  // MyFiles's UI children.
+  let isVolumeEntryInMyFiles = false;
+  if (entry.rootType && uiEntryRootTypesInMyFiles.has(entry.rootType)) {
+    const {myFilesEntry} = getMyFiles(state);
+    const children = myFilesEntry.getUiChildren();
+    // Check if the the ui entry already has a corresponding volume entry.
+    isVolumeEntryInMyFiles = !!children.find(
+        childEntry =>
+            isVolumeEntry(childEntry) && childEntry.name === entry.name);
+    const isUiEntryInMyFiles =
+        !!children.find(childEntry => isSameEntry(childEntry, entry));
+    // We only add the UI entry here if:
+    // 1. it does not exist in MyFiles entry's UI children.
+    // 2. its corresponding volume (which ui entry is a placeholder for) does
+    // not exist in MyFiles entry's UI children.
+    const shouldAddUiEntry = !isUiEntryInMyFiles && !isVolumeEntryInMyFiles;
+    if (shouldAddUiEntry) {
+      myFilesEntry.addEntry(entry);
+      yield addUiEntryInternal({entry});
+      // Get MyFiles again from the latest state after yield because yield pause
+      // the execution of this function and between the pause MyFiles might
+      // change from EntryList to Volume (e.g. MyFiles volume mounts during the
+      // pause).
+      const {myFilesEntry: updatedMyFiles} = getMyFiles(getStore().getState());
+      // Trigger a re-scan for MyFiles to make FileData.children in the store
+      // has this newly added children.
+      for await (const action of readSubDirectories(updatedMyFiles)) {
+        yield action;
+      }
+      return;
+    }
+  }
+  if (!isVolumeEntryInMyFiles) {
+    yield addUiEntryInternal({entry});
+  }
+}
+
+/** Create action to remove an UI entry from the store. */
+const removeUiEntryInternal = slice.addReducer('remove', removeUiEntryReducer);
+
+function removeUiEntryReducer(currentState: State, payload: {
   key: FileKey,
 }): State {
   const {key} = payload;
-  const entry = getEntry(currentState, key) as FakeEntry | null;
-  if (currentState.uiEntries.find(k => k === key)) {
-    // Shallow copy.
-    currentState.uiEntries = currentState.uiEntries.filter(k => k !== key);
-  }
-
-  // We also need to remove it from the children of MyFiles if it's existed
-  // there.
-  if (entry?.rootType && uiEntryRootTypesInMyFiles.has(entry.rootType)) {
-    const {myFilesEntry} = getMyFiles(currentState);
-    const children = myFilesEntry.getUiChildren();
-    const isUiEntryExistedInMyFiles =
-        !!children.find(childEntry => isSameEntry(childEntry, entry));
-    if (isUiEntryExistedInMyFiles) {
-      myFilesEntry.removeChildEntry(entry);
-      const fileData = getFileData(currentState, myFilesEntry.toURL());
-      if (fileData) {
-        currentState.allEntries[myFilesEntry.toURL()] = {
-          ...fileData,
-          children: fileData.children.filter(child => child !== key),
-        };
-      }
-    }
-  }
+  const uiEntries = currentState.uiEntries.filter(k => k !== key);
 
   return {
     ...currentState,
+    uiEntries,
   };
+}
+
+/**
+ * Remove UI entry from the store and re-scan MyFiles if the removed UI entry is
+ * under MyFiles.
+ */
+export async function* removeUiEntry(key: FileKey): ActionsProducerGen {
+  const state = getStore().getState();
+  const exists = state.uiEntries.find(uiEntryKey => uiEntryKey === key);
+  if (!exists) {
+    return;
+  }
+
+  yield removeUiEntryInternal({key});
+
+  const entry = getEntry(state, key) as FakeEntry | EntryList | null;
+  // We also need to remove it from the children of MyFiles if it's existed
+  // there.
+  if (entry?.rootType && uiEntryRootTypesInMyFiles.has(entry.rootType)) {
+    // Get MyFiles from the latest state after yield because yield pause
+    // the execution of this function and between the pause MyFiles might
+    // change.
+    const {myFilesEntry} = getMyFiles(getStore().getState());
+    const children = myFilesEntry.getUiChildren();
+    const isUiEntryInMyFiles =
+        !!children.find(childEntry => isSameEntry(childEntry, entry));
+    if (isUiEntryInMyFiles) {
+      myFilesEntry.removeChildEntry(entry);
+      // Trigger a re-scan for MyFiles to make FileData.children in the store
+      // removes this children.
+      for await (const action of readSubDirectories(myFilesEntry)) {
+        yield action;
+      }
+    }
+  }
 }

@@ -141,7 +141,7 @@ export class BaseStore<State> {
   private initialized_: boolean = false;
 
   /** Queues actions while the Store un-initialized. */
-  private queuedActions_: Action[];
+  private queuedActions_: Array<Action|ActionsProducerGen>;
 
   /**
    * Observers that are notified when the State is updated by Action/Reducer.
@@ -216,7 +216,11 @@ export class BaseStore<State> {
     this.state_ = initialState;
 
     this.queuedActions_.forEach((action) => {
-      this.dispatchInternal_(action);
+      if (isActionsProducer(action)) {
+        this.consumeProducedActions_(action);
+      } else {
+        this.dispatchInternal_(action);
+      }
     });
 
     this.initialized_ = true;
@@ -280,15 +284,15 @@ export class BaseStore<State> {
    * reducers during the initialization.
    */
   dispatch(action: Action|ActionsProducerGen) {
-    if (isActionsProducer(action)) {
-      this.consumeProducedActions_(action);
-      return;
-    }
     if (!this.initialized_) {
       this.queuedActions_.push(action);
       return;
     }
-    this.dispatchInternal_(action);
+    if (isActionsProducer(action)) {
+      this.consumeProducedActions_(action);
+    } else {
+      this.dispatchInternal_(action);
+    }
   }
 
   /** Synchronously call apply the `action` by calling the reducer.  */

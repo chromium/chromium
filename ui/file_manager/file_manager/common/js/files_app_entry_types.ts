@@ -25,6 +25,7 @@
 import {ErrorCallback, FakeEntry, FileEntryCallback, FileErrorCallback, FilesAppDirEntry, FilesAppEntry, MetadataCallback} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 
+import {isSameEntry} from './entry_utils.js';
 import {vmTypeToIconName} from './icon_util.js';
 import {getVolumeTypeFromRootType, RootType, VolumeType} from './volume_manager_types.js';
 
@@ -285,7 +286,7 @@ export class EntryList extends FilesAppDirEntry {
    */
   removeChildEntry(entry: Entry|FilesAppEntry): boolean {
     const childIndex =
-        this.children_.findIndex(childEntry => childEntry === entry);
+        this.children_.findIndex(childEntry => isSameEntry(childEntry, entry));
     if (childIndex !== -1) {
       this.children_.splice(childIndex, 1);
       return true;
@@ -568,7 +569,7 @@ export class VolumeEntry extends FilesAppDirEntry {
    */
   removeChildEntry(entry: Entry|FilesAppEntry): boolean {
     const childIndex =
-        this.children_.findIndex(childEntry => childEntry === entry);
+        this.children_.findIndex(childEntry => isSameEntry(childEntry, entry));
     if (childIndex !== -1) {
       this.children_.splice(childIndex, 1);
       return true;

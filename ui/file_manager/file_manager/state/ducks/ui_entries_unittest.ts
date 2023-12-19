@@ -40,7 +40,7 @@ export async function testAddUiEntry(done: () => void) {
 
   // Dispatch an action to add a UI entry.
   const uiEntry = new FakeEntryImpl('Ui entry', RootType.RECENT);
-  store.dispatch(addUiEntry({entry: uiEntry}));
+  store.dispatch(addUiEntry(uiEntry));
 
   // Expect the newly added entry is in the store.
   const want: Partial<State> = {
@@ -67,7 +67,7 @@ export async function testAddDuplicateUiEntry(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to add an already existed UI entry.
-  store.dispatch(addUiEntry({entry: uiEntry}));
+  store.dispatch(addUiEntry(uiEntry));
 
   // Expect nothing changes in the store.
   const want: State['uiEntries'] = [uiEntry.toURL()];
@@ -102,7 +102,7 @@ export async function testAddUiEntryForMyFiles(done: () => void) {
 
   // Dispatch an action to add a new UI entry which belongs to MyFiles.
   const uiEntry = new FakeEntryImpl('Linux files', RootType.CROSTINI);
-  store.dispatch(addUiEntry({entry: uiEntry}));
+  store.dispatch(addUiEntry(uiEntry));
 
   // Expect 2 ui entries in the store.
   const want: Partial<State> = {
@@ -154,7 +154,7 @@ export async function testAddDuplicateUiEntryForMyFiles(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to add an already existed UI entry.
-  store.dispatch(addUiEntry({entry: uiEntry}));
+  store.dispatch(addUiEntry(uiEntry));
 
   // Expect no changes in the store.
   await waitDeepEquals(store, initialState, (state) => state);
@@ -194,7 +194,7 @@ export async function testAddDuplicateUiEntryForMyFilesWhenVolumeExists(
   // Dispatch an action to add UI entry.
   const uiEntry =
       new GuestOsPlaceholder(label, 0, chrome.fileManagerPrivate.VmType.ARCVM);
-  store.dispatch(addUiEntry({entry: uiEntry}));
+  store.dispatch(addUiEntry(uiEntry));
 
   // Expect the UI entry is not being added to the store.
   await waitDeepEquals(store, [], (state) => state.uiEntries);
@@ -222,7 +222,7 @@ export async function testAddUiEntryWithDisabledVolumeType(done: () => void) {
   };
   const uiEntry = new GuestOsPlaceholder(
       'Play files', 0, chrome.fileManagerPrivate.VmType.ARCVM);
-  store.dispatch(addUiEntry({entry: uiEntry}));
+  store.dispatch(addUiEntry(uiEntry));
 
   // Expect the UI entry is being disabled.
   await waitUntil(() => uiEntry.disabled === true);
@@ -241,7 +241,7 @@ export async function testRemoveUiEntry(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to remove the UI entry.
-  store.dispatch(removeUiEntry({key: uiEntry.toURL()}));
+  store.dispatch(removeUiEntry(uiEntry.toURL()));
 
   // Expect the UI entry has been removed.
   await waitDeepEquals(store, [], (state) => state.uiEntries);
@@ -256,7 +256,7 @@ export async function testRemoveNonExistedUiEntry(done: () => void) {
 
   // Dispatch an action to remove a non-existed UI entry.
   const uiEntry = new FakeEntryImpl('Ui entry', RootType.TRASH);
-  store.dispatch(removeUiEntry({key: uiEntry.toURL()}));
+  store.dispatch(removeUiEntry(uiEntry.toURL()));
 
   // Expect nothing changes in the store.
   await waitDeepEquals(store, initialState, (state) => state);
@@ -285,7 +285,7 @@ export async function testRemoveUiEntryFromMyFiles(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to remove ui entry.
-  store.dispatch(removeUiEntry({key: uiEntry.toURL()}));
+  store.dispatch(removeUiEntry(uiEntry.toURL()));
 
   // Expect the entry has been removed from MyFiles.
   const want: Partial<State> = {

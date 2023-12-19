@@ -997,7 +997,7 @@ export class FileManager {
     this.recentEntry_ = new FakeEntryImpl(
         str('RECENT_ROOT_LABEL'), RootType.RECENT, this.getSourceRestriction_(),
         chrome.fileManagerPrivate.FileCategory.ALL);
-    this.store_.dispatch(addUiEntry({entry: this.recentEntry_}));
+    this.store_.dispatch(addUiEntry(this.recentEntry_));
     assert(this.launchParams_);
     this.selectionHandler_ = new FileSelectionHandler(
         this.directoryModel_, this.ui_.listContainer, this.metadataModel_,
@@ -1698,8 +1698,7 @@ export class FileManager {
             str('TRASH_ROOT_LABEL'), NavigationModelItemType.TRASH,
             new TrashRootEntry());
       }
-      this.store_.dispatch(
-          addUiEntry({entry: this.fakeTrashItem_.entry as FakeEntry}));
+      this.store_.dispatch(addUiEntry(this.fakeTrashItem_.entry as FakeEntry));
       assert(this.ui_.directoryTree);
       if (!isXfTree(this.ui_.directoryTree)) {
         this.ui_.directoryTree!.dataModel.fakeTrashItem = this.fakeTrashItem_;
@@ -1707,7 +1706,7 @@ export class FileManager {
       return;
     }
 
-    this.store_.dispatch(removeUiEntry({key: trashRootKey}));
+    this.store_.dispatch(removeUiEntry(trashRootKey));
     assert(this.ui_.directoryTree);
     if (!isXfTree(this.ui_.directoryTree)) {
       this.ui_.directoryTree!.dataModel.fakeTrashItem = null;
@@ -1726,7 +1725,7 @@ export class FileManager {
       if (!driveFakeRoot) {
         driveFakeRoot = new EntryList(
             str('DRIVE_DIRECTORY_LABEL'), RootType.DRIVE_FAKE_ROOT);
-        this.store_.dispatch(addUiEntry({entry: driveFakeRoot}));
+        this.store_.dispatch(addUiEntry(driveFakeRoot));
       }
       assert(this.ui.directoryTree);
       if (!isXfTree(this.ui.directoryTree)) {
@@ -1744,7 +1743,7 @@ export class FileManager {
       }
       return;
     }
-    this.store_.dispatch(removeUiEntry({key: driveRootEntryListKey}));
+    this.store_.dispatch(removeUiEntry(driveRootEntryListKey));
     assert(this.ui.directoryTree);
     if (!isXfTree(this.ui.directoryTree)) {
       this.ui.directoryTree!.dataModel.fakeDriveItem = null;
