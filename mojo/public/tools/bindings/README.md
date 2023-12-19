@@ -96,7 +96,7 @@ for message parameters.
 | `string`                      | UTF-8 encoded string.
 | `array<T>`                    | Array of any Mojom type *T*; for example, `array<uint8>` or `array<array<string>>`.
 | `array<T, N>`                 | Fixed-length array of any Mojom type *T*. The parameter *N* must be an integral constant.
-| `map<S, T>`                   | Associated array maping values of type *S* to values of type *T*. *S* may be a `string`, `enum`, or numeric type.
+| `map<S, T>`                   | Associated array mapping values of type *S* to values of type *T*. *S* may be a `string`, `enum`, or numeric type.
 | `handle`                      | Generic Mojo handle. May be any type of handle, including a wrapped native platform handle.
 | `handle<message_pipe>`        | Generic message pipe handle.
 | `handle<shared_buffer>`       | Shared buffer handle.
@@ -355,8 +355,8 @@ target language. See [documentation for individual target languages](#Generated-
 
 Features can be declared with a `name` and `default_state` and can be attached
 in mojo to interfaces or methods using the `RuntimeFeature` attribute. If the
-feature is disabled at runtime the method will crash, and the interface will
-refused to be bound / instantiated. Features cannot serialized to be sent over
+feature is disabled at runtime, the method will crash and the interface will
+refuse to be bound / instantiated. Features cannot be serialized to be sent over
 IPC at this time.
 
 ```
@@ -378,7 +378,7 @@ interface Building {
   CallElevator(int floor);
 
   // This method can be called.
-  RingDoorbell(int volune);
+  RingDoorbell(int volume);
 }
 ```
 
@@ -935,7 +935,7 @@ InterfaceBody = <empty>
               | InterfaceBody Const
               | InterfaceBody Enum
               | InterfaceBody Method
-Method = AttributeSection Name Ordinal "(" ParamterList ")" Response ";"
+Method = AttributeSection Name Ordinal "(" ParameterList ")" Response ";"
 ParameterList = <empty> | NonEmptyParameterList
 NonEmptyParameterList = Parameter
                       | Parameter "," NonEmptyParameterList
