@@ -108,6 +108,11 @@ std::unique_ptr<BitstreamFileWriter> BitstreamFileWriter::Create(
 void BitstreamFileWriter::ProcessBitstream(
     scoped_refptr<BitstreamRef> bitstream,
     size_t frame_index) {
+  if (bitstream->metadata.payload_size_bytes == 0) {
+    // Drop frame. Do nothing for this.
+    return;
+  }
+
   if (spatial_layer_index_to_write_ && bitstream->metadata.vp9) {
     const Vp9Metadata& metadata = *bitstream->metadata.vp9;
     if (bitstream->metadata.key_frame) {
