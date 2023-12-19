@@ -43,8 +43,7 @@ import java.util.List;
 })
 @Features.EnableFeatures({
     ChromeFeatureList.ANDROID_HATS_REFACTOR + "<Study",
-    ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID + "<Study",
-    ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE + "<Study"
+    ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID + "<Study"
 })
 @Batch(Batch.PER_CLASS)
 public class ChromeStartupSurveyIntegrationTest {

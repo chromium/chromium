@@ -440,7 +440,6 @@
                         "save_card_message_use_gpay_icon": "true"
                     },
                     "enable_features": [
-                        "MessagesForAndroidInfrastructure",
                         "MessagesForAndroidSaveCard"
                     ]
                 },
@@ -452,7 +451,6 @@
                         "save_card_message_use_gpay_icon": "true"
                     },
                     "enable_features": [
-                        "MessagesForAndroidInfrastructure",
                         "MessagesForAndroidSaveCard"
                     ]
                 }

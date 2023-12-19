@@ -846,48 +846,7 @@ public class RootUiCoordinator
             initIncognitoReauthController();
         }
 
-        // TODO(crbug.com/1185887): Move feature flag and parameters into a separate class in
-        // the Messages component.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
-            MessagesResourceMapperInitializer.init();
-            MessageContainer container = mActivity.findViewById(R.id.message_container);
-            mMessageContainerCoordinator =
-                    new MessageContainerCoordinator(container, mBrowserControlsManager);
-            mMessageContainerObserver =
-                    new MessageContainerObserver() {
-                        @Override
-                        public void onShowMessageContainer() {
-                            if (mPageZoomCoordinator != null) {
-                                mPageZoomCoordinator.hide();
-                            }
-                        }
-
-                        @Override
-                        public void onHideMessageContainer() {}
-                    };
-            mMessageContainerCoordinator.addObserver(mMessageContainerObserver);
-            mMessageDispatcher =
-                    MessagesFactory.createMessageDispatcher(
-                            container,
-                            mMessageContainerCoordinator::getMessageTopOffset,
-                            mMessageContainerCoordinator::getMessageMaxTranslation,
-                            new ChromeMessageAutodismissDurationProvider(),
-                            mWindowAndroid::startAnimationOverContent,
-                            mWindowAndroid);
-            mMessageQueueMediator =
-                    new ChromeMessageQueueMediator(
-                            mBrowserControlsManager,
-                            mMessageContainerCoordinator,
-                            mActivityTabProvider,
-                            mLayoutStateProviderOneShotSupplier,
-                            mModalDialogManagerSupplier,
-                            getBottomSheetController(),
-                            mActivityLifecycleDispatcher,
-                            mMessageDispatcher);
-            mMessageDispatcher.setDelegate(mMessageQueueMediator);
-            MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
-        }
-
+        initMessagesInfra();
         initMerchantTrustSignals();
         initScrollCapture();
         initializeEdgeToEdgeController(mActivity, mActivityTabProvider);
@@ -925,6 +884,48 @@ public class RootUiCoordinator
             mReadAloudControllerSupplier.set(controller);
             mToolbarManager.setReadAloudReadabilitySupplier(controller.getReadabilitySupplier());
         }
+    }
+
+    private void initMessagesInfra() {
+        // TODO(crbug.com/1185887): Move feature flag and parameters into a separate class in
+        // the Messages component.
+        MessagesResourceMapperInitializer.init();
+        MessageContainer container = mActivity.findViewById(R.id.message_container);
+        mMessageContainerCoordinator =
+                new MessageContainerCoordinator(container, mBrowserControlsManager);
+        mMessageContainerObserver =
+                new MessageContainerObserver() {
+                    @Override
+                    public void onShowMessageContainer() {
+                        if (mPageZoomCoordinator != null) {
+                            mPageZoomCoordinator.hide();
+                        }
+                    }
+
+                    @Override
+                    public void onHideMessageContainer() {}
+                };
+        mMessageContainerCoordinator.addObserver(mMessageContainerObserver);
+        mMessageDispatcher =
+                MessagesFactory.createMessageDispatcher(
+                        container,
+                        mMessageContainerCoordinator::getMessageTopOffset,
+                        mMessageContainerCoordinator::getMessageMaxTranslation,
+                        new ChromeMessageAutodismissDurationProvider(),
+                        mWindowAndroid::startAnimationOverContent,
+                        mWindowAndroid);
+        mMessageQueueMediator =
+                new ChromeMessageQueueMediator(
+                        mBrowserControlsManager,
+                        mMessageContainerCoordinator,
+                        mActivityTabProvider,
+                        mLayoutStateProviderOneShotSupplier,
+                        mModalDialogManagerSupplier,
+                        getBottomSheetController(),
+                        mActivityLifecycleDispatcher,
+                        mMessageDispatcher);
+        mMessageDispatcher.setDelegate(mMessageQueueMediator);
+        MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
     }
 
     private void initIncognitoReauthController() {

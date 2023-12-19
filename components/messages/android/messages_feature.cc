@@ -32,10 +32,6 @@ BASE_FEATURE(kMessagesForAndroidAdsBlocked,
              "MessagesForAndroidAdsBlocked",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMessagesForAndroidInfrastructure,
-             "MessagesForAndroidInfrastructure",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMessagesForAndroidOfferNotification,
              "MessagesForAndroidOfferNotification",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -61,38 +57,31 @@ BASE_FEATURE(kMessagesForAndroidFullyVisibleCallback,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAdsBlockedMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
-         base::FeatureList::IsEnabled(kMessagesForAndroidAdsBlocked);
+  return base::FeatureList::IsEnabled(kMessagesForAndroidAdsBlocked);
 }
 
 bool IsOfferNotificationMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
-         base::FeatureList::IsEnabled(kMessagesForAndroidOfferNotification);
+  return base::FeatureList::IsEnabled(kMessagesForAndroidOfferNotification);
 }
 
 bool IsPopupBlockedMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
-         base::FeatureList::IsEnabled(kMessagesForAndroidPopupBlocked);
+  return base::FeatureList::IsEnabled(kMessagesForAndroidPopupBlocked);
 }
 
 bool IsSaveCardMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
-         base::FeatureList::IsEnabled(kMessagesForAndroidSaveCard);
+  return base::FeatureList::IsEnabled(kMessagesForAndroidSaveCard);
 }
 
 bool IsPermissionUpdateMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
-         base::FeatureList::IsEnabled(kMessagesForAndroidPermissionUpdate);
+  return base::FeatureList::IsEnabled(kMessagesForAndroidPermissionUpdate);
 }
 
 bool IsStackingAnimationEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
-         base::FeatureList::IsEnabled(kMessagesForAndroidStackingAnimation);
+  return base::FeatureList::IsEnabled(kMessagesForAndroidStackingAnimation);
 }
 
 bool ISdFullyVisibleCallbackEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
-         base::FeatureList::IsEnabled(kMessagesForAndroidFullyVisibleCallback);
+  return base::FeatureList::IsEnabled(kMessagesForAndroidFullyVisibleCallback);
 }
 
 static jlong JNI_MessageFeatureMap_GetNativeMap(JNIEnv* env) {

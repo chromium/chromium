@@ -13,11 +13,6 @@ namespace messages {
 // Infobars infrastructure.
 BASE_DECLARE_FEATURE(kMessagesForAndroidAdsBlocked);
 
-// Feature that controls whether Messages for Android infrastucture components
-// are initialized. When this feature is disabled all individual message
-// implementations also fallback to Infobar implementations.
-BASE_DECLARE_FEATURE(kMessagesForAndroidInfrastructure);
-
 // Feature that controls whether offer notifications use Messages or Infobars
 // infrastructure.
 BASE_DECLARE_FEATURE(kMessagesForAndroidOfferNotification);

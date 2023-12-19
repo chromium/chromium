@@ -296,9 +296,7 @@ void AmbientBadgeManager::ShowAmbientBadge() {
   GURL url = a2hs_params_->app_type == AddToHomescreenParams::AppType::WEBAPK
                  ? a2hs_params_->shortcut_info->url
                  : validated_url_;
-  if (base::FeatureList::IsEnabled(features::kInstallableAmbientBadgeMessage) &&
-      base::FeatureList::IsEnabled(
-          messages::kMessagesForAndroidInfrastructure)) {
+  if (base::FeatureList::IsEnabled(features::kInstallableAmbientBadgeMessage)) {
     message_controller_.EnqueueMessage(
         web_contents_.get(), app_name_, a2hs_params_->primary_icon,
         a2hs_params_->HasMaskablePrimaryIcon(), url);

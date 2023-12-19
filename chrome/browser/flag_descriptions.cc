@@ -4080,10 +4080,6 @@ const char kMessagesForAndroidAdsBlockedName[] = "Ads Blocked Messages UI";
 const char kMessagesForAndroidAdsBlockedDescription[] =
     "When enabled, ads blocked message will use the new Messages UI.";
 
-const char kMessagesForAndroidInfrastructureName[] = "Messages infrastructure";
-const char kMessagesForAndroidInfrastructureDescription[] =
-    "When enabled, will initialize Messages UI infrastructure";
-
 const char kMessagesForAndroidOfferNotificationName[] =
     "Offer Notification Messages UI";
 const char kMessagesForAndroidOfferNotificationDescription[] =
