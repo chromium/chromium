@@ -83,6 +83,10 @@ export class KeyCombinationInputDialogElement extends
       inputKeyEvent: {
         type: Object,
       },
+
+      hasLauncherButton: {
+        type: Boolean,
+      },
     };
   }
 
@@ -98,6 +102,7 @@ export class KeyCombinationInputDialogElement extends
   shortcutInput: ShortcutInputElement;
   inputKeyEvent: KeyEvent|undefined;
   isCapturing: boolean = false;
+  hasLauncherButton: boolean;
   private buttonRemapping_: ButtonRemapping;
   private eventTracker_: EventTracker = new EventTracker();
 

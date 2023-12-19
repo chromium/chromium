@@ -96,11 +96,16 @@ export class CustomizeButtonsSubsectionElement extends
         type: Boolean,
         value: false,
       },
+
+      hasLauncherButton: {
+        type: Boolean,
+      },
     };
   }
 
   buttonRemappingList: ButtonRemapping[];
   actionList: ActionChoice[];
+  hasLauncherButton: boolean;
   private selectedButton_: ButtonRemapping;
   private selectedButtonIndex_: number;
   private shouldShowRenamingDialog_: boolean;

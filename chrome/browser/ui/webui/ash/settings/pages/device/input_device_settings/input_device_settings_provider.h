@@ -117,6 +117,7 @@ class InputDeviceSettingsProvider
   void OnWidgetDestroyed(views::Widget* widget) override;
 
   void SetWidgetForTesting(views::Widget* widget);
+  void HasLauncherButton(HasLauncherButtonCallback callback) override;
 
  private:
   void NotifyKeyboardsUpdated();

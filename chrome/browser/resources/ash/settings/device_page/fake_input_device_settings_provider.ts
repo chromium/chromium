@@ -21,6 +21,7 @@ interface InputDeviceSettingsType {
   fakeGraphicsTablets: GraphicsTablet[];
   fakeMouseButtonActions: {options: ActionChoice[]};
   fakeGraphicsTabletButtonActions: {options: ActionChoice[]};
+  fakeHasLauncherButton: {hasLauncherButton: boolean};
 }
 
 class FakeMethodState {
@@ -102,6 +103,7 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.register('fakeGraphicsTablets');
     this.methods.register('fakeMouseButtonActions');
     this.methods.register('fakeGraphicsTabletButtonActions');
+    this.methods.register('fakeHasLauncherButton');
   }
 
   setFakeKeyboards(keyboards: Keyboard[]): void {
@@ -362,5 +364,14 @@ export class FakeInputDeviceSettingsProvider implements
     for (const observer of this.buttonPressObservers) {
       observer.onButtonPressed(button);
     }
+  }
+
+  hasLauncherButton(): Promise<{hasLauncherButton: boolean}> {
+    return this.methods.resolveMethod('fakeHasLauncherButton');
+  }
+
+  setFakeHasLauncherButton(hasLauncherButton: boolean): void {
+    this.methods.setResult(
+        'fakeHasLauncherButton', {hasLauncherButton: hasLauncherButton});
   }
 }

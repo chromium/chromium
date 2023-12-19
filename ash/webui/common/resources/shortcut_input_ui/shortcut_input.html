@@ -25,7 +25,8 @@
   <template is="dom-if" if="[[shouldShowConfirmView(isCapturing)]]">
     <div id="confirmContainer">
       <template is="dom-repeat" items="[[modifiers]]">
-        <shortcut-input-key key="[[item]]" key-state="modifier-selected">
+        <shortcut-input-key key="[[item]]" key-state="modifier-selected"
+            has-launcher-button="[[hasLauncherButton]]">
         </shortcut-input-key>
       </template>
       <template is="dom-if"
@@ -39,7 +40,8 @@
             key="[[getConfirmKey(pendingKeyEvent.*,
                                  pendingPrerewrittenKeyEvent.*)]]"
             key-state="[[getConfirmKeyState(pendingKeyEvent.*,
-                                            pendingPrerewrittenKeyEvent.*)]]">
+                                            pendingPrerewrittenKeyEvent.*)]]"
+            has-launcher-button="[[hasLauncherButton]]">
         </shortcut-input-key>
       </template>
     </div>
