@@ -213,7 +213,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDynamicTopChrome,
     &kEarlyInitializeStartupMetrics,
     &kExperimentsForAgsa,
-    &kExploreSites,
     &kFocusOmniboxInIncognitoTabIntents,
     &kGridTabSwitcherAndroidAnimations,
     &kHideTabOnTabSwitcher,
@@ -635,8 +634,6 @@ BASE_FEATURE(kEarlyInitializeStartupMetrics,
 BASE_FEATURE(kExperimentsForAgsa,
              "ExperimentsForAgsa",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kExploreSites, "ExploreSites", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGridTabSwitcherAndroidAnimations,
              "GridTabSwitcherAndroidAnimations",
