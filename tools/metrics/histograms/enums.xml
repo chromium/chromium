@@ -43940,19 +43940,6 @@ Called by update_net_error_codes.py.-->
       label="Served redirect that required change in network context"/>
 </enum>
 
-<enum name="PrefServiceReadError">
-  <int value="0" label="PREF_READ_ERROR_NONE"/>
-  <int value="1" label="PREF_READ_ERROR_JSON_PARSE"/>
-  <int value="2" label="PREF_READ_ERROR_JSON_TYPE"/>
-  <int value="3" label="PREF_READ_ERROR_ACCESS_DENIED"/>
-  <int value="4" label="PREF_READ_ERROR_FILE_OTHER"/>
-  <int value="5" label="PREF_READ_ERROR_FILE_LOCKED"/>
-  <int value="6" label="PREF_READ_ERROR_NO_FILE"/>
-  <int value="7" label="PREF_READ_ERROR_JSON_REPEAT"/>
-  <int value="8" label="PREF_READ_ERROR_OTHER"/>
-  <int value="9" label="PREF_READ_ERROR_FILE_NOT_SPECIFIED"/>
-</enum>
-
 <enum name="PreloadBookmarkMetricsEvent">
   <int value="0" label="MouseOver"/>
   <int value="1" label="MouseDown"/>

@@ -8162,14 +8162,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PrefService.ReadError" enum="PrefServiceReadError"
-    expires_after="M81">
-  <owner>csharp@chromium.org</owner>
-  <summary>
-    Enumeration of errors that happened when reading Preferences files.
-  </summary>
-</histogram>
-
 <histogram name="Process.Sandbox.Launch.Error" enum="WinGetLastError"
     expires_after="never">
 <!-- expires-never: metric needed for diagnosing sandbox issues. -->
