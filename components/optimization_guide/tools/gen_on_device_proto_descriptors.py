@@ -134,13 +134,14 @@ def GenerateProtoDescriptors(out, includes, message_data):
 
 def main(argv):
   parser = optparse.OptionParser()
-  parser.add_option('--input_file')
+  parser.add_option('--input_file', action='append', default=[])
   parser.add_option('--output_cc')
   parser.add_option('--include', action='append', default=[])
   options, _ = parser.parse_args(argv)
 
   from google.protobuf import descriptor_pb2
 
+  input_files = list(options.input_file)
   includes = list(options.include)
 
   # Write to standard output or file specified by --output_cc.
@@ -148,39 +149,44 @@ def main(argv):
   if options.output_cc:
     out_cc = open(options.output_cc, 'wb')
 
-  fds = descriptor_pb2.FileDescriptorSet()
-  with open(options.input_file, 'rb') as fp:
-    fds.ParseFromString(fp.read())
+  fds_set = []
+  for input_file in input_files:
+    fds = descriptor_pb2.FileDescriptorSet()
+    with open(input_file, 'rb') as fp:
+      fds.ParseFromString(fp.read())
+      fds_set.append(fds)
+
 
   msg_data = {}
-  for f in fds.file:
-    for m in f.message_type:
-      name = f.package + '.' + m.name
-      msg_data[name] = {
-        'cpp_class_name': name.replace('.', '::'),
-        'fields': [],
-      }
-      for field in m.field:
-        msg_data[name]['fields'].append({
-          'tag_number': field.number,
-          'name': field.name,
-          'type': field.type,
-          'is_repeated': field.label == 3,
-          })
-
-      for nested_type in m.nested_type:
-        nested_name = name + '.' + nested_type.name
-        msg_data[nested_name] = {
-          'cpp_class_name': name.replace('.', '::') + '_' + nested_type.name,
-          'fields': []
+  for fds in fds_set:
+    for f in fds.file:
+      for m in f.message_type:
+        name = f.package + '.' + m.name
+        msg_data[name] = {
+          'cpp_class_name': name.replace('.', '::'),
+          'fields': [],
         }
-        for field in nested_type.field:
-          msg_data[nested_name]['fields'].append({
+        for field in m.field:
+          msg_data[name]['fields'].append({
             'tag_number': field.number,
             'name': field.name,
             'type': field.type,
             'is_repeated': field.label == 3,
-          })
+            })
+
+        for nested_type in m.nested_type:
+          nested_name = name + '.' + nested_type.name
+          msg_data[nested_name] = {
+            'cpp_class_name': name.replace('.', '::') + '_' + nested_type.name,
+            'fields': []
+          }
+          for field in nested_type.field:
+            msg_data[nested_name]['fields'].append({
+              'tag_number': field.number,
+              'name': field.name,
+              'type': field.type,
+              'is_repeated': field.label == 3,
+            })
 
   out_cc_str = StringIO()
   GenerateProtoDescriptors(out_cc_str, includes, msg_data)

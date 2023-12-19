@@ -34,6 +34,7 @@ proto_library("optimization_guide_proto") {
     "page_topics_override_list.proto",
     "push_notification.proto",
     "salient_image_metadata.proto",
+    "string_value.proto",
     "visual_search_model_metadata.proto",
   ]
 
@@ -66,5 +67,15 @@ proto_library("compose_proto_descriptor") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "compose.descriptor"
+  proto_deps = [ ":optimization_guide_proto" ]
+}
+
+proto_library("string_value_proto_descriptor") {
+  proto_in_dir = "//"
+  proto_out_dir = "components/optimization_guide/proto"
+  sources = [ "string_value.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "string_value.descriptor"
   proto_deps = [ ":optimization_guide_proto" ]
 }

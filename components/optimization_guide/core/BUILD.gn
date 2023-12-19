@@ -166,8 +166,6 @@ component("features") {
   defines = [ "IS_OPTIMIZATION_GUIDE_FEATURES_IMPL" ]
 }
 
-input_proto_descriptor_file =
-    "$root_gen_dir/components/optimization_guide/proto/compose.descriptor"
 output_proto_descriptors_cc_file = "$root_gen_dir/components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.cc"
 
 static_library("core") {
@@ -633,18 +631,28 @@ action("on_device_model_execution_proto_generator") {
   script =
       "//components/optimization_guide/tools/gen_on_device_proto_descriptors.py"
 
-  inputs = [ input_proto_descriptor_file ]
+  inputs = [
+    "$root_gen_dir/components/optimization_guide/proto/compose.descriptor",
+    "$root_gen_dir/components/optimization_guide/proto/string_value.descriptor",
+  ]
   outputs = [ output_proto_descriptors_cc_file ]
 
   args = [
-    "--input_file=" + rebase_path(input_proto_descriptor_file, root_build_dir),
     "--output_cc=" +
         rebase_path(output_proto_descriptors_cc_file, root_build_dir),
     "--include=\"components/optimization_guide/proto/features/compose.pb.h\"",
+    "--include=\"components/optimization_guide/proto/string_value.pb.h\"",
   ]
+  foreach(file, inputs) {
+    args += [
+      "--input_file",
+      rebase_path(file, root_build_dir),
+    ]
+  }
 
   deps = [
     "//components/optimization_guide/proto:compose_proto_descriptor",
+    "//components/optimization_guide/proto:string_value_proto_descriptor",
     "//third_party/protobuf:py_proto_runtime",
   ]
 }
