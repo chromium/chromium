@@ -139,6 +139,9 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
                  SendWheelCallback callback) override;
   void GetZoomLevel(const base::UnguessableToken& device_id,
                     GetZoomLevelCallback callback) override;
+  void SetZoomLevel(const base::UnguessableToken& device_id,
+                    int32_t zoom_level,
+                    SetZoomLevelCallback callback) override;
   void OnSubCaptureTargetValidationComplete(
       const base::UnguessableToken& device_id,
       media::mojom::SubCaptureTargetType type,

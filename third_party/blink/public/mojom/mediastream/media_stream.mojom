@@ -307,6 +307,19 @@ interface MediaStreamDispatcherHost {
   GetZoomLevel(mojo_base.mojom.UnguessableToken device_id)
            => (int32? zoom_level, CapturedSurfaceControlResult result);
 
+  // Sets the zoom level of the captured tab.
+  //
+  // |device_id| identifies the captured tab.
+  // |zoom_level| is the zoom level to be set.
+  // |result| reports if the call was successful or what type of error occurred.
+  //
+  // TODO(crbug.com/1512609): Create a new device mojo interface to replace the
+  // use of the device_id token.
+  [EnableIfNot=is_android]
+  SetZoomLevel(mojo_base.mojom.UnguessableToken device_id,
+               int32 zoom_level)
+           => (CapturedSurfaceControlResult result);
+
   // Get a MediaStreamDevice metadata object which refers to the same flow of
   // media backing an existing MediaStreamDevice.
   //
