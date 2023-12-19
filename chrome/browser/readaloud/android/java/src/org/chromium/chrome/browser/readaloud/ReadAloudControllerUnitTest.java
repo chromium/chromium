@@ -1190,6 +1190,48 @@ public class ReadAloudControllerUnitTest {
         histogram.assertExpected();
     }
 
+    @Test
+    public void testMetricRecorded_isPlaybackCreationSuccessful_True() {
+        final String histogramName = ReadAloudMetrics.IS_TAB_PLAYBACK_CREATION_SUCCESSFUL;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        mController.playTab(mTab);
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testMetricRecorded_isPlaybackCreationSuccessful_False() {
+        final String histogramName = ReadAloudMetrics.IS_TAB_PLAYBACK_CREATION_SUCCESSFUL;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+        mController.playTab(mTab);
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        mPlaybackCallbackCaptor.getValue().onFailure(new Exception("Very bad error"));
+        resolvePromises();
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testMetricNotRecorded_isPlaybackCreationSuccessful() {
+        final String histogramName = ReadAloudMetrics.IS_TAB_PLAYBACK_CREATION_SUCCESSFUL;
+        var histogram = HistogramWatcher.newBuilder().expectNoRecords(histogramName).build();
+
+        // Play tab to set up playbackhooks
+        mController.playTab(mTab);
+
+        // Preview a voice.
+        var voice = new PlaybackVoice("en", "asdf", "");
+        doReturn(List.of(voice)).when(mPlaybackHooks).getVoicesFor(anyString());
+        doReturn(List.of(voice)).when(mPlaybackHooks).getPlaybackVoiceList(any());
+        mController.previewVoice(voice);
+
+        histogram.assertExpected();
+    }
+
     private void onPlaybackSuccess(Playback playback) {
         mPlaybackCallbackCaptor.getValue().onSuccess(playback);
         resolvePromises();

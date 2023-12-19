@@ -162,7 +162,6 @@ robolectric_library("junit") {
   testonly = true
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudControllerUnitTest.java",
-    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMetricsUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayerUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPrefsUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonControllerUnitTest.java",

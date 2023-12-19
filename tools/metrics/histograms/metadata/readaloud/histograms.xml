@@ -57,6 +57,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadAloud.IsTabPlaybackCreationSuccessful"
+    enum="BooleanSuccess" expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Records if a tab playback creation succeeds or fails. Emitted in the tab
+    playback creation callback. Does not mean playback has started.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

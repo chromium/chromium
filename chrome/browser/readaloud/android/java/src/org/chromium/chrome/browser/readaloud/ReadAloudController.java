@@ -439,6 +439,7 @@ public class ReadAloudController
         promise.then(
                 playback -> {
                     Log.d(TAG, "Playback created");
+                    ReadAloudMetrics.recordIsTabPlaybackCreationSuccessful(true);
                     maybeSetUpHighlighter(playback.getMetadata());
 
                     mHighlightingEnabled.addObserver(
@@ -450,6 +451,7 @@ public class ReadAloudController
                 },
                 exception -> {
                     Log.e(TAG, exception.getMessage());
+                    ReadAloudMetrics.recordIsTabPlaybackCreationSuccessful(false);
                     mPlayerCoordinator.playbackFailed();
                 });
 

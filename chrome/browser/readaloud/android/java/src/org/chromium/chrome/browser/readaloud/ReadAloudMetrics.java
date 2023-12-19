@@ -21,6 +21,10 @@ public class ReadAloudMetrics {
     @VisibleForTesting
     public static String IS_USER_ELIGIBLE = "ReadAloud.Eligibility.IsUserEligible";
 
+    @VisibleForTesting
+    public static String IS_TAB_PLAYBACK_CREATION_SUCCESSFUL =
+            "ReadAloud.IsTabPlaybackCreationSuccessful";
+
     /**
      * The reason why we clear the prepared message.
      *
@@ -60,5 +64,9 @@ public class ReadAloudMetrics {
     public static void recordIneligibilityReason(@IneligibilityReason int reason) {
         RecordHistogram.recordEnumeratedHistogram(
                 INELIGIBILITY_REASON, reason, IneligibilityReason.COUNT);
+    }
+
+    public static void recordIsTabPlaybackCreationSuccessful(boolean successful) {
+        RecordHistogram.recordBooleanHistogram(IS_TAB_PLAYBACK_CREATION_SUCCESSFUL, successful);
     }
 }
