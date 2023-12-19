@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_autofill_history.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
@@ -437,8 +438,6 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Given a `form` (and corresponding `form_structure`) to fill, return a list
   // of skip reasons for the fields.
-  // `optional_credit_card` is the credit card to be filled or nullopt if we're
-  // filling an AutofillProfile.
   // `type_group_originally_filled` denotes, in case of a refill, what groups
   // where filled in the initial filling.
   // It is assumed here that `form` and `form_structure` have the same
@@ -448,6 +447,7 @@ class BrowserAutofillManager : public AutofillManager {
   // filling, and the actual fields filled will be the intersection between
   // `field_types_to_fill` and the classified fields for which we have data
   // stored.
+  // `filling_product` is the type of filling calling this function.
   // TODO(crbug/1275649): Add the case removed in crrev.com/c/4675831 when the
   // experiment resumes.
   // TODO(crbug.com/1481035): Make `optional_type_groups_originally_filled` also
@@ -457,11 +457,12 @@ class BrowserAutofillManager : public AutofillManager {
       const FormStructure& form_structure,
       const FormFieldData& trigger_field,
       const Section& filling_section,
-      const CreditCard* optional_credit_card,
       const FieldTypeSet& field_types_to_fill,
       const DenseSet<FieldTypeGroup>* optional_type_groups_originally_filled,
+      FillingProduct filling_product,
       bool skip_unrecognized_autocomplete_fields,
-      bool is_refill) const;
+      bool is_refill,
+      bool is_expired_credit_card) const;
 
   // When `FillOrPreviewCreditCardForm()` fetches a credit card, this gets
   // called once the fetching has finished. If successful, the `credit_card` is

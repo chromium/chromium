@@ -172,6 +172,9 @@ std::string_view GetSkipFieldFillLogMessage(
       return "Skipped: Field type filling limit reached";
     case FieldFillingSkipReason::kFieldDoesNotMatchTargetFieldsSet:
       return "Skipped: The field type does not match the targeted fields.";
+    case FieldFillingSkipReason::kFieldTypeUnrelated:
+      return "Skipped: The field type is not related to the data used for "
+             "filling.";
     case FieldFillingSkipReason::kNotSkipped:
       return "Fillable";
     case FieldFillingSkipReason::kUnknown:
@@ -2170,11 +2173,12 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
     const FormStructure& form_structure,
     const FormFieldData& trigger_field,
     const Section& filling_section,
-    const CreditCard* optional_credit_card,
     const FieldTypeSet& field_types_to_fill,
     const DenseSet<FieldTypeGroup>* optional_type_groups_originally_filled,
+    FillingProduct filling_product,
     bool skip_unrecognized_autocomplete_fields,
-    bool is_refill) const {
+    bool is_refill,
+    bool is_expired_credit_card) const {
   // Counts the number of times a type was seen in the section to be filled.
   // This is used to limit the maximum number of fills per value.
   base::flat_map<FieldType, size_t> type_count;
@@ -2258,8 +2262,7 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
     FieldType field_type = autofill_field->Type().GetStorableType();
     // Don't fill expired cards expiration date.
     if (data_util::IsCreditCardExpirationType(field_type) &&
-        (optional_credit_card &&
-         optional_credit_card->IsExpired(AutofillClock::Now()))) {
+        is_expired_credit_card) {
       skip_reasons[i] = FieldFillingSkipReason::kExpiredCards;
       continue;
     }
@@ -2286,6 +2289,21 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
         base::FeatureList::IsEnabled(
             features::kAutofillOverwritePlaceholdersOnly)) {
       skip_reasons[i] = FieldFillingSkipReason::kValuePrefilled;
+      continue;
+    }
+
+    // Usually, this should not happen because Autofill sectioning logic
+    // separates address fields from credit card fields. However, autofill
+    // respects the HTML `autocomplete` attribute when it is used to specify a
+    // section, and so in some rare cases it might happen that a credit card
+    // field is included in an address field or vice versa.
+    // Note that autofilling using manual fallback does not use this logic flow,
+    // otherwise this wouldn't be true.
+    if ((filling_product == FillingProduct::kAddress &&
+         !IsAddressType(autofill_field->Type().GetStorableType())) ||
+        (filling_product == FillingProduct::kCreditCard &&
+         autofill_field->Type().group() != FieldTypeGroup::kCreditCard)) {
+      skip_reasons[i] = FieldFillingSkipReason::kFieldTypeUnrelated;
       continue;
     }
 
@@ -2396,15 +2414,15 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
   std::vector<FieldFillingSkipReason> skip_reasons = GetFieldFillingSkipReasons(
       result, *form_structure, field, autofill_trigger_field->section,
-      absl::holds_alternative<const CreditCard*>(profile_or_credit_card)
-          ? absl::get<const CreditCard*>(profile_or_credit_card)
-          : nullptr,
       trigger_details.field_types_to_fill,
       filling_context ? &filling_context->type_groups_originally_filled
                       : nullptr,
+      is_credit_card ? FillingProduct::kCreditCard : FillingProduct::kAddress,
       /*skip_unrecognized_autocomplete_fields=*/
       trigger_details.trigger_source != AutofillTriggerSource::kManualFallback,
-      is_refill);
+      is_refill,
+      is_credit_card && absl::get<const CreditCard*>(profile_or_credit_card)
+                            ->IsExpired(AutofillClock::Now()));
 
   constexpr DenseSet<FieldFillingSkipReason> pre_ukm_logging_skips{
       FieldFillingSkipReason::kNotInFilledSection,
@@ -2752,16 +2770,16 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
       form.fields.size() == form_structure.field_count()
           ? GetFieldFillingSkipReasons(
                 form, form_structure, field, autofill_field.section,
-                /*optional_credit_card=*/nullptr,
                 last_address_fields_to_fill_for_section
                     ? GetTargetServerFieldsForTypeAndLastTargetedFields(
                           *last_address_fields_to_fill_for_section,
                           autofill_field.Type().GetStorableType())
                     : kAllFieldTypes,
                 /*optional_type_groups_originally_filled=*/nullptr,
+                FillingProduct::kAddress,
                 /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
                     AutofillSuggestionTriggerSource::kManualFallbackAddress,
-                /*is_refill=*/false)
+                /*is_refill=*/false, /*is_expired_credit_card=*/false)
           : std::vector<FieldFillingSkipReason>(
                 form_structure.field_count(),
                 FieldFillingSkipReason::kNotSkipped);

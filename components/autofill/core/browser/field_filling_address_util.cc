@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/browser/select_control_util.h"
@@ -401,6 +402,7 @@ std::optional<std::u16string> GetValueForProfile(
     const FormFieldData& field_data,
     AddressNormalizer* address_normalizer,
     std::string* failure_to_fill) {
+  CHECK(IsAddressType(field_type.GetStorableType()));
   std::optional<std::u16string> value = GetValueForProfileForInput(
       profile, app_locale, field_type, field_data, failure_to_fill);
 

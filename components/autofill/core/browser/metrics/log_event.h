@@ -49,7 +49,8 @@ enum class FieldFillingSkipReason : uint8_t {
   kFillingLimitReachedType = 12,
   kUnrecognizedAutocompleteAttribute = 13,
   kFieldDoesNotMatchTargetFieldsSet = 14,
-  kMaxValue = kFieldDoesNotMatchTargetFieldsSet
+  kFieldTypeUnrelated = 15,
+  kMaxValue = kFieldTypeUnrelated
 };
 
 // Enum for different data types filled during autofill filling events,
