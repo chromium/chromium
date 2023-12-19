@@ -1154,13 +1154,16 @@ chromium-metrics-reviews@google.com.
   <component>Services&gt;Sync</component>
   <summary>
     Freshness of the sync data per received sync entity update, excluding
-    reflections. The time represents the clock difference from the model being
-    modified (usually on another device) until the change is processing by this
-    instance of the browser. The time is capped at 1 week. Beware of potential
-    clock skew due to two clients being involved.
+    reflections, for {SyncModelType}. The time represents the clock difference
+    from the model being modified (usually on another device) until the change
+    is processing by this instance of the browser. The time is capped at 1 week.
+    Beware of potential clock skew due to two clients being involved.
   </summary>
   <token key="SyncModelType" variants="SyncModelType">
-    <variant name="" summary="Any type"/>
+    <variant name=""
+        summary="any data type. NOTE that changes in this histogram are often
+                 caused by data types being introduced or retired, so look at
+                 the per-data-type splits"/>
   </token>
 </histogram>
 
