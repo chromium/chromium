@@ -603,12 +603,26 @@ class ThirdPartyCookiesBlockedHttpCookieBrowserTest
     return EvalJs(frame, "document.body.textContent").ExtractString();
   }
 
+  std::string ExtractCookieFromDocument(RenderFrameHost* frame) const {
+    return EvalJs(frame, "document.cookie").ExtractString();
+  }
+
   std::string PostWithCredentials(RenderFrameHost* frame, const GURL& url) {
     constexpr char script[] = R"JS(
       fetch($1, {method: 'POST', 'credentials' : 'include'}
       ).then((result) => result.text());
       )JS";
     return EvalJs(frame, JsReplace(script, url)).ExtractString();
+  }
+
+  bool CookieStoreEmpty(RenderFrameHost* frame) {
+    constexpr char script[] = R"JS(
+          (async () => {
+            let cookies = await cookieStore.getAll();
+            return cookies.length == 0 ? true : false;
+          })();
+      )JS";
+    return EvalJs(frame, script).ExtractBool();
   }
 
   EvalJsResult NavigateToURLWithPOST(RenderFrameHost* frame,
@@ -745,11 +759,51 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
       ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 
-  // Perform redirect from cross-site GET request and ensure that no cookie was
+  // Perform redirect from cross-site subresource and ensure that no cookie was
   // sent even though it was redirected to the top-level-site.
   EXPECT_EQ(ReadCookiesViaFetchWithRedirect(
                 web_contents()->GetPrimaryMainFrame(), kHostB, kHostA),
             "None");
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
+                       SameSiteNoneCookieBlockedOnABEmbeddedIframe) {
+  // Set and confirm SameSite=None cookie on top-level-site kHostA is
+  // present in the cookie header, document.cookie and cookie store.
+  ASSERT_TRUE(SetCookie(
+      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
+      base::StrCat({kSameSiteNoneCookieName, "=1;Secure;SameSite=None;"})));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
+  // Confirm in cookie header.
+  ASSERT_THAT(
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+  // Confirm in document.cookie.
+  ASSERT_THAT(
+      ExtractCookieFromDocument(web_contents()->GetPrimaryMainFrame()),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+  // Confirm in cookie store.
+  ASSERT_TRUE(
+      GetCookies(web_contents()->GetBrowserContext(), EchoCookiesUrl(kHostA))
+          .starts_with(kSameSiteNoneCookieName));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostB)));
+
+  // Embed an iframe containing A in B and check cookie header.
+  EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
+                  web_contents(), https_server(),
+                  base::StrCat({kHostB, "(%s)"}), {0}, EchoCookiesUrl(kHostA)),
+              "None");
+
+  // Check document.cookie.
+  EXPECT_TRUE(ExtractCookieFromDocument(
+                  ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0))
+                  .empty());
+
+  // Check cookie store.
+  EXPECT_TRUE(
+      CookieStoreEmpty(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no label */,
