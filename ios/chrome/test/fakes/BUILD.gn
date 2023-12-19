@@ -40,7 +40,7 @@ source_set("fakes") {
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/presenters",
     "//ios/chrome/browser/ui/settings/utils",
-    "//ios/chrome/browser/web:web_internal",
+    "//ios/chrome/browser/web/model:web_internal",
     "//ios/web/public",
     "//ios/web/public/download",
   ]

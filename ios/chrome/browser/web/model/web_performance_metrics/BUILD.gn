@@ -14,3 +14,10 @@ source_set("web_performance_metrics") {
 
   public_deps = [ "//ios/chrome/browser/web/web_performance_metrics" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  public_deps =
+      [ "//ios/chrome/browser/web/web_performance_metrics:unit_tests" ]
+}
