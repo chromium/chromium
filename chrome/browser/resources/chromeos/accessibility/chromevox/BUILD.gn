@@ -21,7 +21,7 @@ tsc_out_dir = "$target_gen_dir/tsc"
 # chromevox scripts.
 #
 # TS files to compile.
-ts_modules = []
+ts_modules = [ "background/input/background_keyboard_handler.ts" ]
 
 # These files all use older Closure provide/require support for dependency management and will be transitioned to ES6 modules (see below).
 chromevox_modules = [
@@ -95,7 +95,6 @@ chromevox_es6_modules = [
   "background/input/command_handler_interface.js",
   "background/input/gesture_command_handler.js",
   "background/input/gesture_interface.js",
-  "background/input/keyboard_handler.js",
   "background/input/smart_sticky_mode.js",
   "background/live_regions.js",
   "background/logging/event_stream_logger.js",
@@ -196,7 +195,23 @@ js_deps = []
 ts_library("ts_build") {
   root_dir = "../"
   out_dir = tsc_out_dir
-  definitions = []
+
+  definitions = [
+    "../definitions/tts.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/context_menus.d.ts",
+    "../definitions/automation.d.ts",
+    "../definitions/extensions.d.ts",
+    "../definitions/runtime.d.ts",
+    "../definitions/i18n.d.ts",
+    "../definitions/tabs.d.ts",
+    "../definitions/accessibility_private_mv2.d.ts",
+    "../definitions/settings_private_mv2.d.ts",
+    "../definitions/storage_mv2.d.ts",
+    "../definitions/clipboard_mv2.d.ts",
+    "../definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
+  ]
 
   in_files = []
   foreach(_js_file, js_deps) {
@@ -205,6 +220,8 @@ ts_library("ts_build") {
   foreach(_ts_file, ts_modules) {
     in_files += [ "chromevox/" + _ts_file ]
   }
+
+  tsconfig_base = "../tsconfig.base.json"
 }
 
 group("build") {
@@ -234,6 +251,7 @@ run_jsbundler("copied_files") {
   deps = [
     ":ts_build",
     "../common:copied_files",
+    "../common:ts_build",
   ]
   sources = [
     "background/background.html",

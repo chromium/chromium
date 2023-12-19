@@ -19,7 +19,7 @@ ChromeVoxForcedActionPathTest = class extends ChromeVoxE2ETest {
           'ChromeVoxRange', '/chromevox/background/chromevox_range.js'),
       importModule(
           'BackgroundKeyboardHandler',
-          '/chromevox/background/input/keyboard_handler.js'),
+          '/chromevox/background/input/background_keyboard_handler.js'),
       importModule(
           'ForcedActionPath', '/chromevox/background/forced_action_path.js'),
       importModule(

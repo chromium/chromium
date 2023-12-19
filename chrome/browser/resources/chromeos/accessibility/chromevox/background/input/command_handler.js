@@ -46,9 +46,9 @@ import {PhoneticData} from '../phonetic_data.js';
 import {ChromeVoxPrefs} from '../prefs.js';
 import {TtsBackground} from '../tts_background.js';
 
+import {BackgroundKeyboardHandler} from './background_keyboard_handler.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';
 import {GestureInterface} from './gesture_interface.js';
-import {BackgroundKeyboardHandler} from './keyboard_handler.js';
 import {SmartStickyMode} from './smart_sticky_mode.js';
 
 const AutomationNode = chrome.automation.AutomationNode;

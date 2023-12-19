@@ -48,7 +48,7 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
           '/chromevox/background/input/gesture_command_handler.js'),
       importModule(
           'BackgroundKeyboardHandler',
-          '/chromevox/background/input/keyboard_handler.js'),
+          '/chromevox/background/input/background_keyboard_handler.js'),
       importModule('Output', '/chromevox/background/output/output.js'),
       importModule(
           'OutputAction', '/chromevox/background/output/output_types.js'),
