@@ -37,8 +37,7 @@ class FormFieldTest
     ParsingContext context(client_country, language,
                            GetActivePatternSource().value());
     FormField::ParseFormFields(context, list_,
-                               /*is_form_tag=*/true, field_candidates_map_,
-                               /*log_manager=*/nullptr);
+                               /*is_form_tag=*/true, field_candidates_map_);
     return field_candidates_map_.size();
   }
 

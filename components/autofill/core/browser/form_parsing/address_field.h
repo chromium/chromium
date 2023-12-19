@@ -22,13 +22,11 @@ namespace autofill {
 
 class AutofillField;
 class AutofillScanner;
-class LogManager;
 
 class AddressField : public FormField {
  public:
   static std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                          AutofillScanner* scanner,
-                                          LogManager* log_manager);
+                                          AutofillScanner* scanner);
 
   // Returns whether a stand-alone zip field is supported for `client_country`.
   // In some countries that's a prevalent UI (the user is first asked to enter
@@ -37,9 +35,9 @@ class AddressField : public FormField {
   // classifications. We may reevaluate that decision in the future.
   static bool IsStandaloneZipSupported(const GeoIpCountryCode& client_country);
 
-  static std::unique_ptr<FormField> ParseStandaloneZip(ParsingContext& context,
-                                                       AutofillScanner* scanner,
-                                                       LogManager* log_manager);
+  static std::unique_ptr<FormField> ParseStandaloneZip(
+      ParsingContext& context,
+      AutofillScanner* scanner);
 
   AddressField(const AddressField&) = delete;
   AddressField& operator=(const AddressField&) = delete;
@@ -56,7 +54,7 @@ class AddressField : public FormField {
     RESULT_MATCH_NAME_LABEL  // Name and label both match the pattern.
   };
 
-  explicit AddressField(LogManager* log_manager);
+  AddressField();
 
   bool ParseCompany(ParsingContext& context, AutofillScanner* scanner);
 
@@ -91,7 +89,7 @@ class AddressField : public FormField {
       MatchParams match_type,
       base::span<const MatchPatternRef> patterns,
       raw_ptr<AutofillField>* match,
-      const RegExLogging& logging);
+      const char* regex_name);
 
   // Run matches on the name and label separately. If the return result is
   // RESULT_MATCH_NAME_LABEL, then |scanner| advances and the field is set.
@@ -144,8 +142,6 @@ class AddressField : public FormField {
   // Return true if the form being parsed shows an indication of being a
   // structured address form.
   bool PossiblyAStructuredAddressForm() const;
-
-  raw_ptr<LogManager> log_manager_;
 
   raw_ptr<AutofillField> company_ = nullptr;
   raw_ptr<AutofillField> street_location_ = nullptr;

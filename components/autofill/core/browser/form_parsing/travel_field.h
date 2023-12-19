@@ -15,15 +15,12 @@
 
 namespace autofill {
 
-class LogManager;
-
 class TravelField : public FormField {
  public:
   ~TravelField() override;
 
   static std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                          AutofillScanner* scanner,
-                                          LogManager* log_manager);
+                                          AutofillScanner* scanner);
 
  protected:
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;

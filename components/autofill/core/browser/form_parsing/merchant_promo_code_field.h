@@ -18,15 +18,13 @@ namespace autofill {
 
 class AutofillField;
 class AutofillScanner;
-class LogManager;
 
 // A form field that accepts promo/gift/coupon codes during checkout on a
 // merchant's web site.
 class MerchantPromoCodeField : public FormField {
  public:
   static std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                          AutofillScanner* scanner,
-                                          LogManager* log_manager);
+                                          AutofillScanner* scanner);
   explicit MerchantPromoCodeField(const AutofillField* field);
 
   MerchantPromoCodeField(const MerchantPromoCodeField&) = delete;

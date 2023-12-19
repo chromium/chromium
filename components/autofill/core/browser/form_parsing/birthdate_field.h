@@ -19,8 +19,7 @@ namespace autofill {
 class BirthdateField : public FormField {
  public:
   static std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                          AutofillScanner* scanner,
-                                          LogManager* log_manager);
+                                          AutofillScanner* scanner);
 
   BirthdateField(const BirthdateField&) = delete;
   BirthdateField& operator=(const BirthdateField&) = delete;

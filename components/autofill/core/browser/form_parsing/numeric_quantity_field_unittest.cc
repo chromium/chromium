@@ -19,7 +19,7 @@ class NumericQuantityFieldTest
  protected:
   std::unique_ptr<FormField> Parse(ParsingContext& context,
                                    AutofillScanner* scanner) override {
-    return NumericQuantityField::Parse(context, scanner, nullptr);
+    return NumericQuantityField::Parse(context, scanner);
   }
 };
 

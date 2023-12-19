@@ -15,13 +15,10 @@
 
 namespace autofill {
 
-class LogManager;
-
 class EmailField : public FormField {
  public:
   static std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                          AutofillScanner* scanner,
-                                          LogManager* log_manager);
+                                          AutofillScanner* scanner);
   explicit EmailField(const AutofillField* field);
 
   EmailField(const EmailField&) = delete;

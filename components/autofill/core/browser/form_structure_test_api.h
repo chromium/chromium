@@ -97,7 +97,7 @@ class FormStructureTestApi {
   }
 
   void ParseFieldTypesWithPatterns(ParsingContext& context) {
-    return form_structure_->ParseFieldTypesWithPatterns(context, nullptr);
+    return form_structure_->ParseFieldTypesWithPatterns(context);
   }
 
  private:

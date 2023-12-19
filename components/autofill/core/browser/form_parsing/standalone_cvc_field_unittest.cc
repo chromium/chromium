@@ -21,7 +21,7 @@ class StandaloneCvcFieldTest
  protected:
   std::unique_ptr<FormField> Parse(ParsingContext& context,
                                    AutofillScanner* scanner) override {
-    return StandaloneCvcField::Parse(context, scanner, nullptr);
+    return StandaloneCvcField::Parse(context, scanner);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

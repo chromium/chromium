@@ -18,15 +18,13 @@ namespace autofill {
 
 class AutofillField;
 class AutofillScanner;
-class LogManager;
 
 // Price fields are not filled by autofill, but identifying them will help to
 // reduce the number of false positives.
 class PriceField : public FormField {
  public:
   static std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                          AutofillScanner* scanner,
-                                          LogManager* log_manager);
+                                          AutofillScanner* scanner);
   explicit PriceField(const AutofillField* field);
 
   PriceField(const PriceField&) = delete;

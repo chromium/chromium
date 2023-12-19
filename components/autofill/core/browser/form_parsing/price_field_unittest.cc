@@ -21,7 +21,7 @@ class PriceFieldTest
  protected:
   std::unique_ptr<FormField> Parse(ParsingContext& context,
                                    AutofillScanner* scanner) override {
-    return PriceField::Parse(context, scanner, nullptr);
+    return PriceField::Parse(context, scanner);
   }
 };
 

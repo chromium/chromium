@@ -493,13 +493,13 @@ void FormStructure::DetermineHeuristicTypes(
       base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
           ? current_page_language_
           : LanguageCode();
-  ParsingContext context(client_country_, page_language,
-                         PatternSource::kLegacy);
+  ParsingContext context(client_country_, page_language, PatternSource::kLegacy,
+                         log_manager);
 
   // The active heuristic source might not be a pattern source.
   if (std::optional<PatternSource> pattern_source = GetActivePatternSource()) {
     context.pattern_source = *pattern_source;
-    ParseFieldTypesWithPatterns(context, log_manager);
+    ParseFieldTypesWithPatterns(context);
   }
 
   if (!base::FeatureList::IsEnabled(
@@ -508,7 +508,7 @@ void FormStructure::DetermineHeuristicTypes(
       if (auto shadow_source =
               HeuristicSourceToPatternSource(heuristic_source)) {
         context.pattern_source = *shadow_source;
-        ParseFieldTypesWithPatterns(context, log_manager);
+        ParseFieldTypesWithPatterns(context);
       }
     }
   }
@@ -1359,18 +1359,15 @@ bool FormStructure::SetSectionsFromAutocompleteOrReset() {
   return has_autocomplete;
 }
 
-void FormStructure::ParseFieldTypesWithPatterns(ParsingContext& context,
-                                                LogManager* log_manager) {
+void FormStructure::ParseFieldTypesWithPatterns(ParsingContext& context) {
   FieldCandidatesMap field_type_map;
 
   if (ShouldRunHeuristics()) {
-    FormField::ParseFormFields(context, fields_, is_form_tag_, field_type_map,
-                               log_manager);
+    FormField::ParseFormFields(context, fields_, is_form_tag_, field_type_map);
   } else if (ShouldRunHeuristicsForSingleFieldForms()) {
     FormField::ParseSingleFieldForms(context, fields_, is_form_tag_,
-                                     field_type_map, log_manager);
-    FormField::ParseStandaloneCVCFields(context, fields_, field_type_map,
-                                        log_manager);
+                                     field_type_map);
+    FormField::ParseStandaloneCVCFields(context, fields_, field_type_map);
 
     // For standalone email fields inside a form tag, allow heuristics even
     // when the minimum number of fields is not met. See similar comments
@@ -1378,8 +1375,7 @@ void FormStructure::ParseFieldTypesWithPatterns(ParsingContext& context,
     if (is_form_tag_ &&
         base::FeatureList::IsEnabled(
             features::kAutofillEnableEmailHeuristicOnlyAddressForms)) {
-      FormField::ParseStandaloneEmailFields(context, fields_, field_type_map,
-                                            log_manager);
+      FormField::ParseStandaloneEmailFields(context, fields_, field_type_map);
     }
   }
   if (field_type_map.empty()) {

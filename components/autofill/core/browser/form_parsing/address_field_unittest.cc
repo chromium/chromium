@@ -26,8 +26,7 @@ class AddressFieldTest
  protected:
   std::unique_ptr<FormField> Parse(ParsingContext& context,
                                    AutofillScanner* scanner) override {
-    return AddressField::Parse(context, scanner,
-                               /*log_manager=*/nullptr);
+    return AddressField::Parse(context, scanner);
   }
 };
 

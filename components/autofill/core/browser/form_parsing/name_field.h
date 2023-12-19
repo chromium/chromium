@@ -17,14 +17,12 @@
 namespace autofill {
 
 class AutofillScanner;
-class LogManager;
 
 // A form field that can parse either a FullNameField or a FirstLastNameField.
 class NameField : public FormField {
  public:
   static std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                          AutofillScanner* scanner,
-                                          LogManager* log_manager);
+                                          AutofillScanner* scanner);
 
   NameField(const NameField&) = delete;
   NameField& operator=(const NameField&) = delete;

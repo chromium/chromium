@@ -29,8 +29,7 @@ base::span<const MatchPatternRef> GetMatchPatterns(base::StringPiece name,
 class FullNameField : public NameField {
  public:
   static std::unique_ptr<FullNameField> Parse(ParsingContext& context,
-                                              AutofillScanner* scanner,
-                                              LogManager* log_manager);
+                                              AutofillScanner* scanner);
   explicit FullNameField(AutofillField* field);
 
   FullNameField(const FullNameField&) = delete;
@@ -49,11 +48,10 @@ class FirstTwoLastNamesField : public NameField {
  public:
   static std::unique_ptr<FirstTwoLastNamesField> ParseComponentNames(
       ParsingContext& context,
-      AutofillScanner* scanner,
-      LogManager* log_manager);
-  static std::unique_ptr<FirstTwoLastNamesField> Parse(ParsingContext& context,
-                                                       AutofillScanner* scanner,
-                                                       LogManager* log_manager);
+      AutofillScanner* scanner);
+  static std::unique_ptr<FirstTwoLastNamesField> Parse(
+      ParsingContext& context,
+      AutofillScanner* scanner);
 
   FirstTwoLastNamesField(const FirstTwoLastNamesField&) = delete;
   FirstTwoLastNamesField& operator=(const FirstTwoLastNamesField&) = delete;
@@ -79,30 +77,26 @@ class FirstLastNameField : public NameField {
   // Surname".
   static std::unique_ptr<FirstLastNameField> ParseNameSurnameLabelSequence(
       ParsingContext& context,
-      AutofillScanner* scanner,
-      LogManager* log_manager);
+      AutofillScanner* scanner);
 
   // Tries to match a series of fields with a shared label: The first field
   // needs to have a unspecific name label followed by up to two fields without
   // a label.
   static std::unique_ptr<FirstLastNameField> ParseSharedNameLabelSequence(
       ParsingContext& context,
-      AutofillScanner* scanner,
-      LogManager* log_manager);
+      AutofillScanner* scanner);
 
   // Tries to match a series of fields with patterns that are specific to the
   // individual components of a name. Note that the order of the components does
   // not matter.
   static std::unique_ptr<FirstLastNameField> ParseSpecificComponentSequence(
       ParsingContext& context,
-      AutofillScanner* scanner,
-      LogManager* log_manager);
+      AutofillScanner* scanner);
 
   // Probes the matching strategies defined above. Returns the result of the
   // first successful match. Returns a nullptr if no matches can be found.
   static std::unique_ptr<FirstLastNameField> Parse(ParsingContext& context,
-                                                   AutofillScanner* scanner,
-                                                   LogManager* log_manager);
+                                                   AutofillScanner* scanner);
 
   FirstLastNameField(const FirstLastNameField&) = delete;
   FirstLastNameField& operator=(const FirstLastNameField&) = delete;
@@ -124,8 +118,7 @@ class FirstLastNameField : public NameField {
 
 // static
 std::unique_ptr<FormField> NameField::Parse(ParsingContext& context,
-                                            AutofillScanner* scanner,
-                                            LogManager* log_manager) {
+                                            AutofillScanner* scanner) {
   if (scanner->IsEnd()) {
     return nullptr;
   }
@@ -134,13 +127,13 @@ std::unique_ptr<FormField> NameField::Parse(ParsingContext& context,
   // more specific.
   std::unique_ptr<FormField> field;
   if (!field) {
-    field = FirstTwoLastNamesField::Parse(context, scanner, log_manager);
+    field = FirstTwoLastNamesField::Parse(context, scanner);
   }
   if (!field) {
-    field = FirstLastNameField::Parse(context, scanner, log_manager);
+    field = FirstLastNameField::Parse(context, scanner);
   }
   if (!field) {
-    field = FullNameField::Parse(context, scanner, log_manager);
+    field = FullNameField::Parse(context, scanner);
   }
   return field;
 }
@@ -151,8 +144,7 @@ void NameField::AddClassifications(FieldCandidatesMap& field_candidates) const {
 
 // static
 std::unique_ptr<FullNameField> FullNameField::Parse(ParsingContext& context,
-                                                    AutofillScanner* scanner,
-                                                    LogManager* log_manager) {
+                                                    AutofillScanner* scanner) {
   // Exclude e.g. "username" or "nickname" fields.
   scanner->SaveCursor();
   base::span<const MatchPatternRef> name_ignored_patterns =
@@ -161,12 +153,12 @@ std::unique_ptr<FullNameField> FullNameField::Parse(ParsingContext& context,
       GetMatchPatterns("ADDRESS_NAME_IGNORED", context);
   bool should_ignore =
       ParseField(context, scanner, kNameIgnoredRe, name_ignored_patterns,
-                 nullptr, {log_manager, "kNameIgnoredRe"}) ||
+                 nullptr, "kNameIgnoredRe") ||
       // This pattern fully migrated to the MatchPattern mechanism. There
       // is no regular expression in autofill_regex_constants.h anymore.
       ParseField(context, scanner, kNoLegacyPattern,
                  address_name_ignored_patterns, nullptr,
-                 {log_manager, "kAddressNameIgnoredRe"});
+                 "kAddressNameIgnoredRe");
   scanner->Rewind();
   if (should_ignore) {
     return nullptr;
@@ -180,7 +172,7 @@ std::unique_ptr<FullNameField> FullNameField::Parse(ParsingContext& context,
   base::span<const MatchPatternRef> name_patterns =
       GetMatchPatterns("FULL_NAME", context);
   if (ParseField(context, scanner, kFullNameRe, name_patterns, &field,
-                 {log_manager, "kFullNameRe"})) {
+                 "kFullNameRe")) {
     return std::make_unique<FullNameField>(field);
   }
 
@@ -199,16 +191,14 @@ FirstTwoLastNamesField::FirstTwoLastNamesField() = default;
 // static
 std::unique_ptr<FirstTwoLastNamesField> FirstTwoLastNamesField::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner,
-    LogManager* log_manager) {
-  return ParseComponentNames(context, scanner, log_manager);
+    AutofillScanner* scanner) {
+  return ParseComponentNames(context, scanner);
 }
 
 // static
 std::unique_ptr<FirstTwoLastNamesField>
 FirstTwoLastNamesField::ParseComponentNames(ParsingContext& context,
-                                            AutofillScanner* scanner,
-                                            LogManager* log_manager) {
+                                            AutofillScanner* scanner) {
   auto v = base::WrapUnique(new FirstTwoLastNamesField());
   scanner->SaveCursor();
 
@@ -235,7 +225,7 @@ FirstTwoLastNamesField::ParseComponentNames(ParsingContext& context,
     // regular expression in autofill_regex_constants.h anymore.
     if (ParseField(context, scanner, kNoLegacyPattern,
                    address_name_ignored_patterns, nullptr,
-                   {log_manager, "kAddressNameIgnoredRe"})) {
+                   "kAddressNameIgnoredRe")) {
       continue;
     }
 
@@ -247,7 +237,7 @@ FirstTwoLastNamesField::ParseComponentNames(ParsingContext& context,
     if (!v->honorific_prefix_ &&
         ParseField(context, scanner, kHonorificPrefixRe,
                    honorific_prefix_patterns, &v->honorific_prefix_,
-                   {log_manager, "kHonorificPrefixRe"})) {
+                   "kHonorificPrefixRe")) {
       continue;
     }
 
@@ -255,33 +245,32 @@ FirstTwoLastNamesField::ParseComponentNames(ParsingContext& context,
     if (ParseFieldSpecifics(context, scanner, kNameIgnoredRe,
                             kDefaultMatchParamsWith<MatchFieldType::kSelect,
                                                     MatchFieldType::kSearch>,
-                            name_ignored_patterns, nullptr,
-                            {log_manager, "kNameIgnoredRe"})) {
+                            name_ignored_patterns, nullptr, "kNameIgnoredRe")) {
       continue;
     }
 
     if (!v->first_name_ &&
         ParseField(context, scanner, kFirstNameRe, first_name_patterns,
-                   &v->first_name_, {log_manager, "kFirstNameRe"})) {
+                   &v->first_name_, "kFirstNameRe")) {
       continue;
     }
 
     if (!v->middle_name_ &&
         ParseField(context, scanner, kMiddleNameRe, middle_name_patterns,
-                   &v->middle_name_, {log_manager, "kMiddleNameRe"})) {
+                   &v->middle_name_, "kMiddleNameRe")) {
       continue;
     }
 
     if (!v->first_last_name_ &&
         ParseField(context, scanner, kNameLastFirstRe, first_last_name_patterns,
-                   &v->first_last_name_, {log_manager, "kNameLastFirstRe"})) {
+                   &v->first_last_name_, "kNameLastFirstRe")) {
       continue;
     }
 
     if (!v->second_last_name_ &&
         ParseField(context, scanner, kNameLastSecondRe,
                    second_last_name_patterns, &v->second_last_name_,
-                   {log_manager, "kNameLastSecondtRe"})) {
+                   "kNameLastSecondtRe")) {
       continue;
     }
 
@@ -314,8 +303,7 @@ void FirstTwoLastNamesField::AddClassifications(
 
 std::unique_ptr<FirstLastNameField>
 FirstLastNameField::ParseNameSurnameLabelSequence(ParsingContext& context,
-                                                  AutofillScanner* scanner,
-                                                  LogManager* log_manager) {
+                                                  AutofillScanner* scanner) {
   // Some pages have a generic name label that corresponds to a first name
   // followed by a last name label.
   // Example: Name [      ] Last Name [      ]
@@ -337,12 +325,12 @@ FirstLastNameField::ParseNameSurnameLabelSequence(ParsingContext& context,
 
   bool should_ignore =
       ParseField(context, scanner, kNameIgnoredRe, name_ignored_patterns,
-                 nullptr, {log_manager, "kNameIgnoredRe"}) ||
+                 nullptr, "kNameIgnoredRe") ||
       // This pattern fully migrated to the MatchPattern mechanism. There is no
       // regular expression in autofill_regex_constants.h anymore.
       ParseField(context, scanner, kNoLegacyPattern,
                  address_name_ignored_patterns, nullptr,
-                 {log_manager, "kAddressNameIgnoredRe"});
+                 "kAddressNameIgnoredRe");
   scanner->Rewind();
 
   scanner->SaveCursor();
@@ -352,12 +340,12 @@ FirstLastNameField::ParseNameSurnameLabelSequence(ParsingContext& context,
   }
 
   if (ParseField(context, scanner, kNameGenericRe, name_specific_patterns,
-                 &v->first_name_, {log_manager, "kNameGenericRe"})) {
+                 &v->first_name_, "kNameGenericRe")) {
     // Check for an optional middle name field.
     ParseField(context, scanner, kMiddleNameRe, middle_name_patterns,
-               &v->middle_name_, {log_manager, "kMiddleNameRe"});
+               &v->middle_name_, "kMiddleNameRe");
     if (ParseField(context, scanner, kLastNameRe, last_name_patterns,
-                   &v->last_name_, {log_manager, "kLastNameRe"})) {
+                   &v->last_name_, "kLastNameRe")) {
       return v;
     }
   }
@@ -368,8 +356,7 @@ FirstLastNameField::ParseNameSurnameLabelSequence(ParsingContext& context,
 
 std::unique_ptr<FirstLastNameField>
 FirstLastNameField::ParseSharedNameLabelSequence(ParsingContext& context,
-                                                 AutofillScanner* scanner,
-                                                 LogManager* log_manager) {
+                                                 AutofillScanner* scanner) {
   // Some pages (e.g. Overstock_comBilling.html, SmithsonianCheckout.html)
   // have the label "Name" followed by two or three text fields.
   auto v = base::WrapUnique(new FirstLastNameField());
@@ -380,7 +367,7 @@ FirstLastNameField::ParseSharedNameLabelSequence(ParsingContext& context,
       GetMatchPatterns("NAME_GENERIC", context);
 
   if (ParseField(context, scanner, kNameGenericRe, name_specific_patterns,
-                 &v->first_name_, {log_manager, "kNameGenericRe"}) &&
+                 &v->first_name_, "kNameGenericRe") &&
       ParseEmptyLabel(context, scanner, &next)) {
     if (ParseEmptyLabel(context, scanner, &v->last_name_)) {
       // There are three name fields; assume that the middle one is a
@@ -401,8 +388,7 @@ FirstLastNameField::ParseSharedNameLabelSequence(ParsingContext& context,
 // static
 std::unique_ptr<FirstLastNameField>
 FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
-                                                   AutofillScanner* scanner,
-                                                   LogManager* log_manager) {
+                                                   AutofillScanner* scanner) {
   auto v = base::WrapUnique(new FirstLastNameField());
   scanner->SaveCursor();
 
@@ -440,7 +426,7 @@ FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
     // regular expression in autofill_regex_constants.h anymore.
     if (ParseField(context, scanner, kNoLegacyPattern,
                    address_name_ignored_patterns, nullptr,
-                   {log_manager, "kAddressNameIgnoredRe"})) {
+                   "kAddressNameIgnoredRe")) {
       continue;
     }
 
@@ -450,7 +436,7 @@ FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
     if (!v->honorific_prefix_ &&
         ParseField(context, scanner, kHonorificPrefixRe,
                    honorific_prefix_patterns, &v->honorific_prefix_,
-                   {log_manager, "kHonorificPrefixRe"})) {
+                   "kHonorificPrefixRe")) {
       continue;
     }
 
@@ -458,14 +444,13 @@ FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
     if (ParseFieldSpecifics(context, scanner, kNameIgnoredRe,
                             kDefaultMatchParamsWith<MatchFieldType::kSelect,
                                                     MatchFieldType::kSearch>,
-                            name_ignored_patterns, nullptr,
-                            {log_manager, "kNameIgnoredRe"})) {
+                            name_ignored_patterns, nullptr, "kNameIgnoredRe")) {
       continue;
     }
 
     if (!v->first_name_ &&
         ParseField(context, scanner, kFirstNameRe, first_name_patterns,
-                   &v->first_name_, {log_manager, "kFirstNameRe"})) {
+                   &v->first_name_, "kFirstNameRe")) {
       continue;
     }
 
@@ -474,23 +459,22 @@ FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
     // as both (the label text is "MI" and the element name is
     // "txtmiddlename"); such a field probably actually represents a
     // middle initial.
-    if (!v->middle_name_ &&
-        ParseField(context, scanner, kMiddleInitialRe,
-                   middle_name_initial_patterns, &v->middle_name_,
-                   {log_manager, "kMiddleInitialRe"})) {
+    if (!v->middle_name_ && ParseField(context, scanner, kMiddleInitialRe,
+                                       middle_name_initial_patterns,
+                                       &v->middle_name_, "kMiddleInitialRe")) {
       v->middle_initial_ = true;
       continue;
     }
 
     if (!v->middle_name_ &&
         ParseField(context, scanner, kMiddleNameRe, middle_name_patterns,
-                   &v->middle_name_, {log_manager, "kMiddleNameRe"})) {
+                   &v->middle_name_, "kMiddleNameRe")) {
       continue;
     }
 
     if (!v->last_name_ &&
         ParseField(context, scanner, kLastNameRe, last_name_patterns,
-                   &v->last_name_, {log_manager, "kLastNameRe"})) {
+                   &v->last_name_, "kLastNameRe")) {
       continue;
     }
 
@@ -510,16 +494,15 @@ FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
 // static
 std::unique_ptr<FirstLastNameField> FirstLastNameField::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner,
-    LogManager* log_manager) {
+    AutofillScanner* scanner) {
   std::unique_ptr<FirstLastNameField> field =
-      ParseSharedNameLabelSequence(context, scanner, log_manager);
+      ParseSharedNameLabelSequence(context, scanner);
 
   if (!field) {
-    field = ParseNameSurnameLabelSequence(context, scanner, log_manager);
+    field = ParseNameSurnameLabelSequence(context, scanner);
   }
   if (!field) {
-    field = ParseSpecificComponentSequence(context, scanner, log_manager);
+    field = ParseSpecificComponentSequence(context, scanner);
   }
   return field;
 }

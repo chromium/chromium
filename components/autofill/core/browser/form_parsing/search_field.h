@@ -18,15 +18,13 @@ namespace autofill {
 
 class AutofillField;
 class AutofillScanner;
-class LogManager;
 
 // Search fields are not filled by autofill, but identifying them will help
 // to reduce the number of false positives.
 class SearchField : public FormField {
  public:
   static std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                          AutofillScanner* scanner,
-                                          LogManager* log_manager);
+                                          AutofillScanner* scanner);
   explicit SearchField(const AutofillField* field);
 
   SearchField(const SearchField&) = delete;

@@ -22,7 +22,7 @@ class SearchFieldTest
  protected:
   std::unique_ptr<FormField> Parse(ParsingContext& context,
                                    AutofillScanner* scanner) override {
-    return SearchField::Parse(context, scanner, nullptr);
+    return SearchField::Parse(context, scanner);
   }
 };
 

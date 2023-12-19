@@ -19,7 +19,7 @@ class IbanFieldTest
  protected:
   std::unique_ptr<FormField> Parse(ParsingContext& context,
                                    AutofillScanner* scanner) override {
-    return IbanField::Parse(context, scanner, nullptr);
+    return IbanField::Parse(context, scanner);
   }
 };
 

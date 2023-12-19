@@ -12,14 +12,13 @@ namespace autofill {
 
 // static
 std::unique_ptr<FormField> EmailField::Parse(ParsingContext& context,
-                                             AutofillScanner* scanner,
-                                             LogManager* log_manager) {
+                                             AutofillScanner* scanner) {
   raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> email_patterns = GetMatchPatterns(
       "EMAIL_ADDRESS", context.page_language, context.pattern_source);
   if (ParseFieldSpecifics(context, scanner, kEmailRe,
                           kDefaultMatchParamsWith<MatchFieldType::kEmail>,
-                          email_patterns, &field, {log_manager, "kEmailRe"})) {
+                          email_patterns, &field, "kEmailRe")) {
     return std::make_unique<EmailField>(field);
   }
 

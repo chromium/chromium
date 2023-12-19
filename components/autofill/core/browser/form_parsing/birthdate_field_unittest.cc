@@ -50,8 +50,7 @@ class BirthdateFieldTest
  protected:
   std::unique_ptr<FormField> Parse(ParsingContext& context,
                                    AutofillScanner* scanner) override {
-    return BirthdateField::Parse(context, scanner,
-                                 /*log_manager=*/nullptr);
+    return BirthdateField::Parse(context, scanner);
   }
 };
 

@@ -263,8 +263,7 @@ class FormStructure {
   bool SetSectionsFromAutocompleteOrReset();
 
   // Classifies each field in |fields_| using the regular expressions.
-  void ParseFieldTypesWithPatterns(ParsingContext& context,
-                                   LogManager* log_manager);
+  void ParseFieldTypesWithPatterns(ParsingContext& context);
 
   // Returns the values that can be filled into the form structure for the
   // given type. For example, there's no way to fill in a value of "The Moon"

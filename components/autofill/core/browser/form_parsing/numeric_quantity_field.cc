@@ -14,8 +14,7 @@ namespace autofill {
 // static
 std::unique_ptr<FormField> NumericQuantityField::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner,
-    LogManager* log_manager) {
+    AutofillScanner* scanner) {
   raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> quantity_patterns = GetMatchPatterns(
       "NUMERIC_QUANTITY", context.page_language, context.pattern_source);
@@ -25,7 +24,7 @@ std::unique_ptr<FormField> NumericQuantityField::Parse(
           kDefaultMatchParamsWith<
               MatchFieldType::kNumber, MatchFieldType::kSelect,
               MatchFieldType::kTextArea, MatchFieldType::kSearch>,
-          quantity_patterns, &field, {log_manager, "kNumericQuantityRe"})) {
+          quantity_patterns, &field, "kNumericQuantityRe")) {
     return base::WrapUnique(new NumericQuantityField(field));
   }
 

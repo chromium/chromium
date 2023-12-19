@@ -14,8 +14,7 @@ namespace autofill {
 // static
 std::unique_ptr<FormField> MerchantPromoCodeField::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner,
-    LogManager* log_manager) {
+    AutofillScanner* scanner) {
   raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> merchant_promo_code_patterns =
       GetMatchPatterns("MERCHANT_PROMO_CODE", context.page_language,
@@ -25,7 +24,7 @@ std::unique_ptr<FormField> MerchantPromoCodeField::Parse(
                           kDefaultMatchParamsWith<MatchFieldType::kNumber,
                                                   MatchFieldType::kTextArea>,
                           merchant_promo_code_patterns, &field,
-                          {log_manager, "kMerchantPromoCodeRe"})) {
+                          "kMerchantPromoCodeRe")) {
     return std::make_unique<MerchantPromoCodeField>(field);
   }
 

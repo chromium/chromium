@@ -22,7 +22,6 @@ namespace autofill {
 
 class AutofillField;
 class AutofillScanner;
-class LogManager;
 
 // A phone number in one of the following formats:
 // - area code, prefix, suffix
@@ -35,8 +34,7 @@ class PhoneField : public FormField {
   PhoneField& operator=(const PhoneField&) = delete;
 
   static std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                          AutofillScanner* scanner,
-                                          LogManager* log_manager);
+                                          AutofillScanner* scanner);
 
 #if defined(UNIT_TEST)
   // Assign types to the fields for the testing purposes.
@@ -106,7 +104,7 @@ class PhoneField : public FormField {
                               AutofillScanner* scanner,
                               base::StringPiece16 regex,
                               raw_ptr<AutofillField>* field,
-                              const RegExLogging& logging,
+                              const char* regex_name,
                               const bool is_country_code_field,
                               const std::string& json_field_type);
 
@@ -115,8 +113,7 @@ class PhoneField : public FormField {
   static bool ParseGrammar(ParsingContext& context,
                            const PhoneGrammar& grammar,
                            ParsedPhoneFields& parsed_fields,
-                           AutofillScanner* scanner,
-                           LogManager* log_manager);
+                           AutofillScanner* scanner);
 
   // Returns true if |scanner| points to a <select> field that appears to be the
   // phone country code by looking at its option contents.

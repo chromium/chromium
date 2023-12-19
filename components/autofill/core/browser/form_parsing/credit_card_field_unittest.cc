@@ -90,7 +90,7 @@ class CreditCardFieldTestBase : public FormFieldTestBase {
  protected:
   std::unique_ptr<FormField> Parse(ParsingContext& context,
                                    AutofillScanner* scanner) override {
-    return CreditCardField::Parse(context, scanner, nullptr);
+    return CreditCardField::Parse(context, scanner);
   }
 
   // Runs multiple parsing attempts until the end of the form is reached.

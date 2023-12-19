@@ -14,8 +14,7 @@ namespace autofill {
 
 // static
 std::unique_ptr<FormField> StandaloneCvcField::Parse(ParsingContext& context,
-                                                     AutofillScanner* scanner,
-                                                     LogManager* log_manager) {
+                                                     AutofillScanner* scanner) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillParseVcnCardOnFileStandaloneCvcFields)) {
     return nullptr;
@@ -24,7 +23,7 @@ std::unique_ptr<FormField> StandaloneCvcField::Parse(ParsingContext& context,
   // Ignore gift card fields as both |kGiftCardRe| and |kCardCvcRe| matches
   // "gift card pin" and "gift card code" but it should only match
   // |kGiftCardRe|.
-  if (MatchGiftCard(context, scanner, log_manager)) {
+  if (MatchGiftCard(context, scanner)) {
     return nullptr;
   }
 
@@ -39,8 +38,7 @@ std::unique_ptr<FormField> StandaloneCvcField::Parse(ParsingContext& context,
                               MatchFieldType::kTelephone,
                               MatchFieldType::kPassword>;
   if (ParseFieldSpecifics(context, scanner, kCardCvcRe, kMatchNumTelAndPwd,
-                          cvc_patterns, &field,
-                          {log_manager, "kCardCvcRe(standalone)"})) {
+                          cvc_patterns, &field, "kCardCvcRe(standalone)")) {
     return std::make_unique<StandaloneCvcField>(field);
   }
 
@@ -51,8 +49,7 @@ StandaloneCvcField::~StandaloneCvcField() = default;
 
 // static
 bool StandaloneCvcField::MatchGiftCard(ParsingContext& context,
-                                       AutofillScanner* scanner,
-                                       LogManager* log_manager) {
+                                       AutofillScanner* scanner) {
   if (scanner->IsEnd()) {
     return false;
   }
@@ -64,9 +61,9 @@ bool StandaloneCvcField::MatchGiftCard(ParsingContext& context,
       "GIFT_CARD", context.page_language, context.pattern_source);
 
   size_t saved_cursor = scanner->SaveCursor();
-  const bool gift_card_match = ParseFieldSpecifics(
-      context, scanner, kGiftCardRe, kMatchFieldType, gift_card_patterns,
-      nullptr, {log_manager, "kGiftCardRe"});
+  const bool gift_card_match =
+      ParseFieldSpecifics(context, scanner, kGiftCardRe, kMatchFieldType,
+                          gift_card_patterns, nullptr, "kGiftCardRe");
   // MatchGiftCard only wants to test the presence of a gift card but not
   // consume the field.
   scanner->RewindTo(saved_cursor);

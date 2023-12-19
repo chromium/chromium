@@ -27,7 +27,7 @@ class NameFieldTest
  protected:
   std::unique_ptr<FormField> Parse(ParsingContext& context,
                                    AutofillScanner* scanner) override {
-    return NameField::Parse(context, scanner, nullptr);
+    return NameField::Parse(context, scanner);
   }
 };
 

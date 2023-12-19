@@ -20,19 +20,17 @@ namespace autofill {
 
 class AutofillField;
 class AutofillScanner;
-class LogManager;
 
 class CreditCardField : public FormField {
  public:
-  explicit CreditCardField(LogManager* log_manager);
+  explicit CreditCardField();
 
   CreditCardField(const CreditCardField&) = delete;
   CreditCardField& operator=(const CreditCardField&) = delete;
 
   ~CreditCardField() override;
   static std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                          AutofillScanner* scanner,
-                                          LogManager* log_manager);
+                                          AutofillScanner* scanner);
 
   // Instructions for how to format an expiration date for a text field.
   struct ExpirationDateFormat {
@@ -89,11 +87,9 @@ class CreditCardField : public FormField {
 
   // Returns true if |scanner| points to a field that looks like a year
   // <select> for a credit card. i.e. it contains the current year and
-  // the next few years. |log_manager| is used to log any parsing details
-  // to chrome://autofill-internals
+  // the next few years.
   static bool LikelyCardYearSelectField(ParsingContext* context,
-                                        AutofillScanner* scanner,
-                                        LogManager* log_manager);
+                                        AutofillScanner* scanner);
 
   // Returns true if |scanner| points to a <select> field that contains credit
   // card type options.
@@ -104,14 +100,11 @@ class CreditCardField : public FormField {
   // Prepaid debit cards do not count as gift cards, since they can be used like
   // a credit card.
   static bool IsGiftCardField(ParsingContext& context,
-                              AutofillScanner* scanner,
-                              LogManager* log_manager);
+                              AutofillScanner* scanner);
 
   // Parses the expiration month/year/date fields. Returns true if it finds
   // something new.
-  bool ParseExpirationDate(ParsingContext& context,
-                           AutofillScanner* scanner,
-                           LogManager* log_manager);
+  bool ParseExpirationDate(ParsingContext& context, AutofillScanner* scanner);
 
   // For the combined expiration field we return |exp_year_type_|; otherwise if
   // |expiration_year_| is having year with |max_length| of 2-digits we return
@@ -121,8 +114,6 @@ class CreditCardField : public FormField {
   // Returns whether the expiration has been set for this credit card field.
   // It can be either a date or both the month and the year.
   bool HasExpiration() const;
-
-  raw_ptr<LogManager> log_manager_;  // Optional.
 
   raw_ptr<AutofillField> cardholder_;  // Optional.
 

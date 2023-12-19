@@ -23,8 +23,7 @@ TravelField::~TravelField() = default;
 
 // static
 std::unique_ptr<FormField> TravelField::Parse(ParsingContext& context,
-                                              AutofillScanner* scanner,
-                                              LogManager* log_manager) {
+                                              AutofillScanner* scanner) {
   if (!scanner || scanner->IsEnd()) {
     return nullptr;
   }
@@ -40,14 +39,14 @@ std::unique_ptr<FormField> TravelField::Parse(ParsingContext& context,
 
   auto travel_field = std::make_unique<TravelField>();
   if (ParseField(context, scanner, kPassportRe, passport_patterns,
-                 &travel_field->passport_, {log_manager, "kPassportRe"}) ||
+                 &travel_field->passport_, "kPassportRe") ||
       ParseField(context, scanner, kTravelOriginRe, travel_origin_patterns,
-                 &travel_field->origin_, {log_manager, "kTravelOriginRe"}) ||
+                 &travel_field->origin_, "kTravelOriginRe") ||
       ParseField(context, scanner, kTravelDestinationRe,
                  travel_destination_patterns, &travel_field->destination_,
-                 {log_manager, "kTravelDestinationRe"}) ||
+                 "kTravelDestinationRe") ||
       ParseField(context, scanner, kFlightRe, flight_patterns,
-                 &travel_field->flight_, {log_manager, "kFlightRe"})) {
+                 &travel_field->flight_, "kFlightRe")) {
     // If any regex matches, then we found a travel field.
     return std::move(travel_field);
   }
