@@ -783,7 +783,8 @@ class LocalDeviceInstrumentationTestRun(
 
       if self._env.force_main_user:
         coverage_directory = device.ResolveSpecialPath(coverage_directory)
-      if not device.PathExists(coverage_directory):
+      if not device.PathExists(coverage_directory,
+                               as_root=self._env.force_main_user):
         # Root permission is needed when accessing a secondary user's path.
         device.RunShellCommand(['mkdir', '-p', coverage_directory],
                                check_return=True,
@@ -1346,7 +1347,7 @@ class LocalDeviceInstrumentationTestRun(
     device_file_path = trace_device_file.name
     if self._env.force_main_user:
       device_file_path = device.ResolveSpecialPath(device_file_path)
-    if device.FileExists(device_file_path, as_root=self._env.force_main_user):
+    if device.PathExists(device_file_path, as_root=self._env.force_main_user):
       try:
         java_trace_json = device.ReadFile(device_file_path,
                                           as_root=self._env.force_main_user)
@@ -1410,7 +1411,7 @@ class LocalDeviceInstrumentationTestRun(
     device_file_path = screenshot_device_file.name
     if self._env.force_main_user:
       device_file_path = device.ResolveSpecialPath(device_file_path)
-    if device.FileExists(device_file_path):
+    if device.PathExists(device_file_path, as_root=self._env.force_main_user):
       with self._env.output_manager.ArchivedTempfile(
           screenshot_filename, 'screenshot',
           output_manager.Datatype.PNG) as screenshot_host_file:
@@ -1440,7 +1441,7 @@ class LocalDeviceInstrumentationTestRun(
     logging.info('Starting Gold directory existence check')
     start_time = time.time()
     try:
-      if not device.FileExists(gold_dir):
+      if not device.PathExists(gold_dir):
         return
     finally:
       logging.info('Gold directory existence check took %fs',
