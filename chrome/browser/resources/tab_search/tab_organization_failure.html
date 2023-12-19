@@ -35,9 +35,12 @@
     <div class="footer">
       <div class="tab-organization-body">
         <b>$i18n{tipTitle}</b> $i18n{tipBody}
-      </div>
-      <div class="tab-organization-link" on-click="onTipClick_">
-        $i18n{tipAction}
+        <div class="tab-organization-link inline"
+            role="link"
+            tabindex="0"
+            on-click="onTipClick_">
+          $i18n{tipAction}
+        </div>
       </div>
     </div>
   </template>
