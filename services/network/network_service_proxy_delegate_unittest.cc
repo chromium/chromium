@@ -334,7 +334,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({{"foo:80"}});
+  ipp_config_cache->SetProxyList({{"[foo]"}});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   net::ProxyInfo result;
