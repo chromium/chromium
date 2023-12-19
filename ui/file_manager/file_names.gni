@@ -529,6 +529,7 @@ ts_test_files = [
   # Don't remove this.
   # These lines will be removed at the end of the TS migration.
   # UI:
+  "file_manager/foreground/js/ui/actions_submenu_unittest.ts",
   "file_manager/foreground/js/ui/command_unittest.ts",
   "file_manager/foreground/js/ui/context_menu_handler_unittest.ts",
   "file_manager/foreground/js/ui/file_grid_unittest.ts",
@@ -623,7 +624,6 @@ generated_js_files = [
 # Test files:
 unittest_files = [
   # Foreground:
-  "file_manager/foreground/js/ui/actions_submenu_unittest.js",
   "file_manager/foreground/js/ui/file_tap_handler_unittest.js",
   "file_manager/foreground/js/ui/install_linux_package_dialog_unittest.js",
   "file_manager/foreground/js/ui/directory_tree_unittest.js",

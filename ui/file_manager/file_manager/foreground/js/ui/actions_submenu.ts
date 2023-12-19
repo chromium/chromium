@@ -28,7 +28,8 @@ export class ActionsSubmenu {
   /**
    * @param element The target element.
    */
-  setActionsModel(actionsModel: ActionsModel, element: Element) {
+  setActionsModel(
+      actionsModel: ActionsModel|null, element: Element|null = null) {
     this.items_.forEach((item: MenuItem) => {
       item.parentNode!.removeChild(item);
     });
