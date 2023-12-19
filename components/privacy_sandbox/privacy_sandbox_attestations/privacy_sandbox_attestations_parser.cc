@@ -5,6 +5,8 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_parser.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
 
+#include <string>
+
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "net/base/schemeful_site.h"
@@ -54,12 +56,12 @@ void InsertAPI(
 
 namespace privacy_sandbox {
 
-absl::optional<PrivacySandboxAttestationsMap> ParseAttestationsFromStream(
-    std::istream& input) {
+absl::optional<PrivacySandboxAttestationsMap> ParseAttestationsFromString(
+    std::string& input) {
   PrivacySandboxAttestationsProto proto;
 
   // Parse the istream into a proto for the attestations message format.
-  if (!proto.ParseFromIstream(&input)) {
+  if (!proto.ParseFromString(input)) {
     // Parsing failed. This should never happen in real use, because the input
     // comes from Chrome servers.
     return absl::nullopt;

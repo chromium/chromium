@@ -4,6 +4,7 @@
 
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 
+#include <string>
 #include <string_view>
 
 #include "base/feature_list.h"
@@ -96,8 +97,8 @@ class PrivacySandboxAttestationsFeatureEnabledTest
   void WriteAttestationsFileAndWaitForLoading(base::Version version,
                                               std::string_view content) {
     base::ScopedTempDir component_install_dir;
-    CHECK(component_install_dir.CreateUniqueTempDirUnderPath(
-        scoped_temp_dir_.GetPath()));
+    CHECK(
+        component_install_dir.CreateUniqueTempDirUnderPath(GetTestDirectory()));
     // Note the actual attestations file name required by the Privacy Sandbox
     // Attestations component is specified by
     // `kPrivacySandboxAttestationsFileName`. Here because this is a unit test
@@ -119,8 +120,8 @@ class PrivacySandboxAttestationsFeatureEnabledTest
   void WriteAttestationsFileAndPauseDuringParsing(base::Version version,
                                                   std::string_view content) {
     base::ScopedTempDir component_install_dir;
-    CHECK(component_install_dir.CreateUniqueTempDirUnderPath(
-        scoped_temp_dir_.GetPath()));
+    CHECK(
+        component_install_dir.CreateUniqueTempDirUnderPath(GetTestDirectory()));
     // Note the actual attestations file name required by the Privacy Sandbox
     // Attestations component is specified by
     // `kPrivacySandboxAttestationsFileName`. Here because this is a unit test
@@ -156,6 +157,10 @@ class PrivacySandboxAttestationsFeatureEnabledTest
     }
 
     return status;
+  }
+
+  const base::FilePath& GetTestDirectory() const {
+    return scoped_temp_dir_.GetPath();
   }
 
  private:
@@ -753,6 +758,89 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
   EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
                 net::SchemefulSite(GURL(site)),
                 PrivacySandboxAttestationsGatedAPI::kTopics),
+            GetExpectedStatus(Status::kAttestationFailed));
+  histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 3);
+  histogram_tester().ExpectBucketCount(kAttestationStatusUMA,
+                                       Status::kAttestationFailed, 1);
+}
+
+// Test that the parsing works as expected when there are combining characters
+// in the file path to the attestation list. There are exhaustive tests on this
+// in `base/files/file_path_unittest.cc`.
+TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
+       CombiningCharacterFilePath) {
+  MockAttestationsObserver observer;
+  base::ScopedObservation<PrivacySandboxAttestations,
+                          content::PrivacySandboxAttestationsObserver>
+      observation(&observer);
+  observation.Observe(PrivacySandboxAttestations::GetInstance());
+
+  EXPECT_CALL(observer, OnAttestationsLoaded).Times(1);
+
+  PrivacySandboxAttestationsProto proto;
+  ASSERT_TRUE(proto.site_attestations_size() == 0);
+
+  std::string site = "https://example.com";
+  ASSERT_EQ(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+                net::SchemefulSite(GURL(site)),
+                PrivacySandboxAttestationsGatedAPI::kTopics),
+            GetExpectedStatus(Status::kAttestationsFileNotYetReady));
+  histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 1);
+  histogram_tester().ExpectBucketCount(kAttestationStatusUMA,
+                                       Status::kAttestationsFileNotYetReady, 1);
+
+  // Add attestation for the site.
+  PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto
+      site_attestation;
+  site_attestation.add_attested_apis(TOPICS);
+  (*proto.mutable_site_attestations())[site] = site_attestation;
+
+  std::string serialized_proto;
+  proto.SerializeToString(&serialized_proto);
+
+  base::ScopedTempDir scoped_temp_dir;
+  CHECK(scoped_temp_dir.CreateUniqueTempDirUnderPath(GetTestDirectory()));
+  // Create an install directory that contains combining characters.
+  base::FilePath component_install_dir = scoped_temp_dir.GetPath().Append(
+      FILE_PATH_LITERAL("k\u0301u\u032Do\u0304\u0301n"));
+  CHECK(base::CreateDirectory(component_install_dir));
+  base::FilePath attestations_file_path =
+      component_install_dir.Append(FILE_PATH_LITERAL("attestations"));
+  CHECK(base::WriteFile(attestations_file_path, serialized_proto));
+
+  base::RunLoop run_loop;
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetLoadAttestationsDoneCallbackForTesting(run_loop.QuitClosure());
+
+  PrivacySandboxAttestations::GetInstance()->LoadAttestations(
+      base::Version("2023.1.23.0"), attestations_file_path);
+  run_loop.Run();
+
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingStatusUMA, 1);
+  histogram_tester().ExpectBucketCount(kAttestationsFileParsingStatusUMA,
+                                       ParsingStatus::kSuccess, 1);
+
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingTimeUMA, 1);
+  histogram_tester().ExpectTotalCount(kAttestationsMapMemoryUsageUMA, 1);
+
+  // The site should be attested for the API.
+  ASSERT_TRUE(PrivacySandboxAttestations::GetInstance()
+                  ->GetVersionForTesting()
+                  .IsValid());
+  EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->GetVersionForTesting(),
+            base::Version("2023.1.23.0"));
+  EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+                net::SchemefulSite(GURL(site)),
+                PrivacySandboxAttestationsGatedAPI::kTopics),
+            GetExpectedStatus(Status::kAllowed));
+  histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 2);
+  histogram_tester().ExpectBucketCount(kAttestationStatusUMA, Status::kAllowed,
+                                       1);
+  // For API not in the attestations list, the result should be
+  // `kAttestationFailed`.
+  EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+                net::SchemefulSite(GURL(site)),
+                PrivacySandboxAttestationsGatedAPI::kProtectedAudience),
             GetExpectedStatus(Status::kAttestationFailed));
   histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 3);
   histogram_tester().ExpectBucketCount(kAttestationStatusUMA,
