@@ -106,7 +106,7 @@ class TestExtensionUninstallDialogDelegate
 
 }  // namespace
 
-typedef InProcessBrowserTest ExtensionUninstallDialogViewBrowserTest;
+using ExtensionUninstallDialogViewBrowserTest = InProcessBrowserTest;
 
 // Test that ExtensionUninstallDialog cancels the uninstall if the Window which
 // is passed to ExtensionUninstallDialog::Create() is destroyed before
