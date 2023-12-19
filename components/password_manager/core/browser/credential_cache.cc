@@ -41,8 +41,19 @@ void CredentialCache::SaveCredentialsAndBlocklistedForOrigin(
                           return credential.origin() == origin;
                         });
   GetOrCreateCredentialStore(origin).SaveCredentials(std::move(credentials));
+
   GetOrCreateCredentialStore(origin).SetBlocklistedStatus(
       is_blocklisted.value());
+
+  std::vector<PasswordForm> unnotified_shared_credentials;
+  for (const PasswordForm* form : best_matches) {
+    if (form->type == PasswordForm::Type::kReceivedViaSharing &&
+        !form->sharing_notification_displayed) {
+      unnotified_shared_credentials.push_back(*form);
+    }
+  }
+  GetOrCreateCredentialStore(origin).SaveUnnotifiedSharedCredentials(
+      std::move(unnotified_shared_credentials));
 }
 
 const OriginCredentialStore& CredentialCache::GetCredentialStore(

@@ -117,7 +117,36 @@ TEST_F(CredentialCacheTest, StoresCredentialsSortedByAplhabetAndOrigins) {
                            password_manager_util::GetLoginMatchType::kPSL)));
 }
 
-TEST_F(CredentialCacheTest, StoredCredentialsForIndependentOrigins) {
+TEST_F(CredentialCacheTest, StoresUnnotifiedSharedCredentialsCredentials) {
+  Origin origin = Origin::Create(GURL(kExampleSite));
+
+  std::unique_ptr<PasswordForm> non_shared_credentials =
+      CreateEntry("non_shared", "pass", GURL(kExampleSite),
+                  PasswordForm::MatchType::kExact);
+
+  std::unique_ptr<PasswordForm> shared_notified_credentials =
+      CreateEntry("shared_notified", "pass", GURL(kExampleSite),
+                  PasswordForm::MatchType::kExact);
+  shared_notified_credentials->type = PasswordForm::Type::kReceivedViaSharing;
+  shared_notified_credentials->sharing_notification_displayed = true;
+
+  std::unique_ptr<PasswordForm> shared_unnotified_credentials =
+      CreateEntry("shared_unnotified", "pass", GURL(kExampleSite),
+                  PasswordForm::MatchType::kExact);
+  shared_unnotified_credentials->type = PasswordForm::Type::kReceivedViaSharing;
+  shared_unnotified_credentials->sharing_notification_displayed = false;
+
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {non_shared_credentials.get(), shared_notified_credentials.get(),
+       shared_unnotified_credentials.get()},
+      IsOriginBlocklisted(false), origin);
+
+  EXPECT_THAT(
+      cache()->GetCredentialStore(origin).GetUnnotifiedSharedCredentials(),
+      testing::ElementsAre(*shared_unnotified_credentials));
+}
+
+TEST_F(CredentialCacheTest, StoresCredentialsForIndependentOrigins) {
   Origin origin = Origin::Create(GURL(kExampleSite));
   Origin origin2 = Origin::Create(GURL(kExampleSite2));
 
