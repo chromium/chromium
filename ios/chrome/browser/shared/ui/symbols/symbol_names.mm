@@ -193,6 +193,7 @@ NSString* const kLockSymbol = @"lock";
 NSString* const kRulerSymbol = @"ruler";
 NSString* const kLaptopAndIphoneSymbol = @"laptopcomputer.and.iphone";
 NSString* const kNewTabGroupActionSymbol = @"plus.square.on.square";
+NSString* const kRemoveTabFromGroupActionSymbol = @"minus.square";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
