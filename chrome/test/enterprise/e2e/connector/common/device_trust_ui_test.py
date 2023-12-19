@@ -32,7 +32,7 @@ flags.DEFINE_string(
 _POLICY_URL = 'chrome://policy'
 _CONNECTOR_INTERNAL_URL = 'chrome://connectors-internals'
 _POLICY_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST = (
-    'ContextAwareAccessSignalsAllowlist')
+    'BrowserContextAwareAccessSignalsAllowlist')
 _TIMEOUT = 10
 
 
@@ -60,7 +60,6 @@ def main(argv):
   exclude_switches = ['disable-background-networking']
   chrome_options = webdriver.ChromeOptions()
   chrome_options.add_experimental_option('excludeSwitches', exclude_switches)
-  chrome_options.add_argument('--enable-features=DeviceTrustConnectorEnabled')
   chrome_options.add_argument('--enable-stats-collection-bindings')
   results = {}
   test_cases = ['key_creation', 'key_load']
