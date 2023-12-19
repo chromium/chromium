@@ -35,6 +35,7 @@
 #include "third_party/blink/public/platform/web_encrypted_media_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_key_system_track_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_capabilities_decoding_info.h"
@@ -60,7 +61,6 @@
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -186,7 +186,10 @@ ScriptPromise CreateResolvedPromiseToDecodingInfoWith(
   MediaCapabilitiesDecodingInfo* info = CreateDecodingInfoWith(value);
   media_capabilities_identifiability_metrics::ReportDecodingInfoResult(
       ExecutionContext::From(script_state), config, info);
-  return ScriptPromise::Cast(script_state, ToV8(info, script_state));
+  return ScriptPromise::Cast(
+      script_state,
+      ToV8Traits<MediaCapabilitiesDecodingInfo>::ToV8(script_state, info)
+          .ToLocalChecked());
 }
 
 MediaCapabilitiesDecodingInfo* CreateEncryptedDecodingInfoWith(
@@ -953,7 +956,10 @@ ScriptPromise MediaCapabilities::decodingInfo(
           CreateEncryptedDecodingInfoWith(false, nullptr);
       media_capabilities_identifiability_metrics::ReportDecodingInfoResult(
           ExecutionContext::From(script_state), config, info);
-      return ScriptPromise::Cast(script_state, ToV8(info, script_state));
+      return ScriptPromise::Cast(
+          script_state,
+          ToV8Traits<MediaCapabilitiesDecodingInfo>::ToV8(script_state, info)
+              .ToLocalChecked());
     }
   }
 

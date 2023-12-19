@@ -29,6 +29,7 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_request.h"
@@ -87,7 +88,9 @@ v8::Local<v8::Object> IDBCursor::AssociateWithWrapper(
   if (!wrapper.IsEmpty()) {
     static const V8PrivateProperty::SymbolKey kPrivatePropertyRequest;
     V8PrivateProperty::GetSymbol(isolate, kPrivatePropertyRequest)
-        .Set(wrapper, ToV8(request_.Get(), wrapper, isolate));
+        .Set(wrapper,
+             ToV8Traits<IDBRequest>::ToV8(isolate, request_.Get(), wrapper)
+                 .ToLocalChecked());
   }
   return wrapper;
 }
