@@ -1480,11 +1480,7 @@ TEST_F(PasswordManagerTest, SyncCredentialsNotSaved) {
       .WillByDefault(Return(true));
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
       .WillByDefault(Return(true));
-  EXPECT_CALL(reuse_manager_,
-              SaveGaiaPasswordHash(
-                  "googleuser", form_data.fields[1].value,
-                  /*is_primary_account=*/true,
-                  metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA));
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
@@ -1525,11 +1521,7 @@ TEST_F(PasswordManagerTest, HashSavedOnGaiaFormWithSkipSavePassword) {
 
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
 
-  EXPECT_CALL(reuse_manager_,
-              SaveGaiaPasswordHash(
-                  "googleuser", form_data.fields[1].value,
-                  /*is_primary_account=*/true,
-                  metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA));
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
 
   OnPasswordFormSubmitted(form_data);
   observed.clear();
@@ -1553,12 +1545,7 @@ TEST_F(PasswordManagerTest,
       .WillByDefault(Return(false));
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
       .WillByDefault(Return(true));
-
-  EXPECT_CALL(reuse_manager_,
-              SaveGaiaPasswordHash(
-                  "googleuser", form_data.fields[1].value,
-                  /*is_primary_account=*/true,
-                  metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA));
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
 
   EXPECT_CALL(client_, IsNewTabPage()).WillRepeatedly(Return(true));
   OnPasswordFormSubmitted(form_data);
@@ -1627,11 +1614,7 @@ TEST_F(PasswordManagerTest, SyncCredentialsNotDroppedIfUpToDate) {
       .WillByDefault(Return(true));
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
       .WillByDefault(Return(true));
-  EXPECT_CALL(
-      reuse_manager_,
-      SaveGaiaPasswordHash(
-          "googleuser", form.password_value, /*is_primary_account=*/true,
-          metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA));
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
 
   manager()->OnPasswordFormSubmitted(&driver_, form.form_data);
 
@@ -2562,8 +2545,6 @@ TEST_F(PasswordManagerTest, NotSavingSyncPasswordHash_NoUsername) {
   // Simulate that this credentials which is similar to be sync credentials.
   client_.FilterAllResultsForSaving();
 
-  // Check that no Gaia credential password hash is saved.
-  EXPECT_CALL(reuse_manager_, SaveGaiaPasswordHash).Times(0);
   OnPasswordFormSubmitted(form_data);
   observed.clear();
   manager()->OnPasswordFormsRendered(&driver_, observed);
@@ -2580,10 +2561,6 @@ TEST_F(PasswordManagerTest, NotSavingSyncPasswordHash_NotSyncCredentials) {
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
-
-  // Check that no Gaia credential password hash is saved since these
-  // credentials are eligible for saving.
-  EXPECT_CALL(reuse_manager_, SaveGaiaPasswordHash).Times(0);
 
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword)
@@ -2733,12 +2710,7 @@ TEST_F(PasswordManagerTest, SaveSyncPasswordHashOnChangePasswordPage) {
       .WillByDefault(Return(true));
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
       .WillByDefault(Return(true));
-  EXPECT_CALL(
-      reuse_manager_,
-      SaveGaiaPasswordHash(
-          "googleuser", form_data.fields[1].value,
-          /*is_primary_account=*/true,
-          metrics_util::GaiaPasswordHashChange::CHANGED_IN_CONTENT_AREA));
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
 
   client_.FilterAllResultsForSaving();
   OnPasswordFormSubmitted(form_data);
@@ -2765,11 +2737,7 @@ TEST_F(PasswordManagerTest, SaveOtherGaiaPasswordHash) {
 
   ON_CALL(*client_.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
       .WillByDefault(Return(true));
-  EXPECT_CALL(
-      reuse_manager_,
-      SaveGaiaPasswordHash(
-          "googleuser", form_data.fields[1].value, /*is_primary_account=*/false,
-          metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA));
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
 
   client_.FilterAllResultsForSaving();
   OnPasswordFormSubmitted(form_data);
@@ -2795,11 +2763,7 @@ TEST_F(PasswordManagerTest, SaveOtherGaiaPasswordHashOnChangePasswordPage) {
 
   ON_CALL(*client_.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
       .WillByDefault(Return(true));
-  EXPECT_CALL(
-      reuse_manager_,
-      SaveGaiaPasswordHash(
-          "googleuser", form_data.fields[1].value, /*is_primary_account=*/false,
-          metrics_util::GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE));
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
 
   client_.FilterAllResultsForSaving();
   OnPasswordFormSubmitted(form_data);
@@ -2829,8 +2793,7 @@ TEST_F(PasswordManagerTest, SaveEnterprisePasswordHash) {
       .WillByDefault(Return(true));
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
       .WillByDefault(Return(false));
-  EXPECT_CALL(reuse_manager_, SaveEnterprisePasswordHash(
-                                  "googleuser", form_data.fields[1].value));
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
   client_.FilterAllResultsForSaving();
   OnPasswordFormSubmitted(form_data);
 

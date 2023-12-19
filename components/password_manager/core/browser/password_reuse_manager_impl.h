@@ -71,6 +71,8 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   void SetPasswordStoreSigninNotifier(
       std::unique_ptr<PasswordStoreSigninNotifier> notifier) override;
   void ScheduleEnterprisePasswordURLUpdate() override;
+  void MaybeSavePasswordHash(const PasswordForm* submitted_form,
+                             PasswordManagerClient* client) override;
 
  private:
   // Schedules the update of password hashes used by reuse detector.

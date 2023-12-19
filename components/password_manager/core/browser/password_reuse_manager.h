@@ -22,8 +22,10 @@ class PrefService;
 
 namespace password_manager {
 
+class PasswordManagerClient;
 class PasswordStoreInterface;
 class PasswordStoreSigninNotifier;
+struct PasswordForm;
 
 // Per-store class responsible for detection of password reuse, i.e. that the
 // user input on some site contains the password saved on another site.
@@ -103,6 +105,11 @@ class PasswordReuseManager : public KeyedService {
   // Schedules the update of enterprise login and change password URLs.
   // These URLs are used in enterprise password reuse detection.
   virtual void ScheduleEnterprisePasswordURLUpdate() = 0;
+
+  // Saves the hash version of a password if it corresponds to an
+  // enterprise or gaia password.
+  virtual void MaybeSavePasswordHash(const PasswordForm* submitted_form,
+                                     PasswordManagerClient* client) = 0;
 };
 
 }  // namespace password_manager

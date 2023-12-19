@@ -475,7 +475,13 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
     PasswordFormManager* manager = GetSubmittedManager();
     if (manager && manager->GetSubmittedForm()
                        ->form_data.is_gaia_with_skip_save_password_form) {
-      MaybeSavePasswordHash(manager);
+      password_manager::PasswordReuseManager* reuse_manager =
+          client_->GetPasswordReuseManager();
+      // May be null in tests.
+      if (reuse_manager) {
+        reuse_manager->MaybeSavePasswordHash(manager->GetSubmittedForm(),
+                                             client_);
+      }
     }
   }
 
@@ -1149,7 +1155,13 @@ void PasswordManager::OnLoginSuccessful() {
   if (!able_to_save_passwords)
     return;
 
-  MaybeSavePasswordHash(submitted_manager);
+  password_manager::PasswordReuseManager* reuse_manager =
+      client_->GetPasswordReuseManager();
+  // May be null in tests.
+  if (reuse_manager) {
+    reuse_manager->MaybeSavePasswordHash(submitted_manager->GetSubmittedForm(),
+                                         client_);
+  }
 
   // TODO(https://crbug.com/831123): Implement checking whether to save with
   // PasswordFormManager.
@@ -1206,71 +1218,6 @@ void PasswordManager::OnLoginSuccessful() {
     }
   }
   ResetSubmittedManager();
-}
-
-void PasswordManager::MaybeSavePasswordHash(
-    PasswordFormManager* submitted_manager) {
-  if (!base::FeatureList::IsEnabled(features::kPasswordReuseDetectionEnabled)) {
-    return;
-  }
-
-  const PasswordForm* submitted_form = submitted_manager->GetSubmittedForm();
-  // When |username_value| is empty, it's not clear whether the submitted
-  // credentials are really Gaia or enterprise credentials. Don't save
-  // password hash in that case.
-  std::string username = base::UTF16ToUTF8(submitted_form->username_value);
-  if (username.empty())
-    return;
-
-  password_manager::PasswordReuseManager* reuse_manager =
-      client_->GetPasswordReuseManager();
-  // May be null in tests.
-  if (!reuse_manager)
-    return;
-
-  bool should_save_enterprise_pw =
-      client_->GetStoreResultFilter()->ShouldSaveEnterprisePasswordHash(
-          *submitted_form);
-  bool should_save_gaia_pw =
-      client_->GetStoreResultFilter()->ShouldSaveGaiaPasswordHash(
-          *submitted_form);
-
-  if (!should_save_enterprise_pw && !should_save_gaia_pw)
-    return;
-
-  if (password_manager_util::IsLoggingActive(client_)) {
-    BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
-    logger.LogMessage(Logger::STRING_SAVE_PASSWORD_HASH);
-  }
-
-  // Canonicalizes username if it is an email.
-  if (username.find('@') != std::string::npos)
-    username = gaia::CanonicalizeEmail(username);
-  bool is_password_change = !submitted_form->new_password_element.empty();
-  const std::u16string password = is_password_change
-                                      ? submitted_form->new_password_value
-                                      : submitted_form->password_value;
-
-  if (should_save_enterprise_pw) {
-    reuse_manager->SaveEnterprisePasswordHash(username, password);
-    return;
-  }
-
-  DCHECK(should_save_gaia_pw);
-  bool is_sync_account_email =
-      client_->GetStoreResultFilter()->IsSyncAccountEmail(username);
-  metrics_util::GaiaPasswordHashChange event =
-      is_sync_account_email
-          ? (is_password_change
-                 ? metrics_util::GaiaPasswordHashChange::CHANGED_IN_CONTENT_AREA
-                 : metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA)
-          : (is_password_change
-                 ? metrics_util::GaiaPasswordHashChange::
-                       NOT_SYNC_PASSWORD_CHANGE
-                 : metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA);
-  reuse_manager->SaveGaiaPasswordHash(
-      username, password,
-      /*is_sync_password_for_metrics=*/is_sync_account_email, event);
 }
 
 void PasswordManager::ProcessAutofillPredictions(

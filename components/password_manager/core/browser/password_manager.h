@@ -262,10 +262,6 @@ class PasswordManager : public PasswordManagerInterface {
   // appropriate.
   void OnLoginSuccessful();
 
-  // Helper function called inside OnLoginSuccessful() to save password hash
-  // data from |submitted_manager| for password reuse detection purpose.
-  void MaybeSavePasswordHash(PasswordFormManager* submitted_manager);
-
   // Checks for every form in |forms_data| whether |pending_login_managers_|
   // already contain a manager for that form. If not, adds a manager for each
   // such form.
