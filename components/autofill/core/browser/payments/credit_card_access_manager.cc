@@ -1596,7 +1596,6 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
       client_->GetOrCreatePaymentsMandatoryReauthManager()
           ->GetAuthenticationMethod();
 
-#if BUILDFLAG(IS_IOS)
   // If there is no supported auth method on the device, we should skip re-auth
   // and fill the form. Otherwise the user removing authentication on the
   // device will prevent them from using payments autofill. In the settings
@@ -1613,7 +1612,6 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
         .Run(CreditCardFetchResult::kSuccess, card);
     return;
   }
-#endif
 
   autofill_metrics::LogMandatoryReauthCheckoutFlowUsageEvent(
       card->record_type(), authentication_method,

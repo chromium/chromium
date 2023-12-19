@@ -949,9 +949,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Bool(),
         testing::Bool(),
         testing::Values(
-#if BUILDFLAG(IS_IOS)
             payments::MandatoryReauthAuthenticationMethod::kUnsupportedMethod,
-#endif
             payments::MandatoryReauthAuthenticationMethod::kBiometric,
             payments::MandatoryReauthAuthenticationMethod::kScreenLock)));
 
