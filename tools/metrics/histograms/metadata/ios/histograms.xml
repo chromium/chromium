@@ -1493,6 +1493,28 @@ chromium-metrics-reviews@google.com.
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
+<histogram name="IOS.MetricKit.{MXVersion}CPUTimePerDay" units="s"
+    expires_after="2024-12-14">
+  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    The total amout of CPU time used by the app over a 24 hour period. This is
+    logged when an MXMetricPayload is received (one per day).
+
+    Recorded only if user opted in for sharing diagnostic data on iOS device.
+    The exact percentage of users who are opted into sharing data with Apple is
+    not known, but see go/chrome-uma-metrickit-sharing-rate for an estimate.
+
+    Note: Data is received from Apple once a day when Chrome is running,
+    covering the previous 24 hours as well as any older data that has not yet
+    been delivered to Chrome. This means that the date the data is reported may
+    be later than the user activity it corresponds to.
+
+    {MXVersion}
+  </summary>
+  <token key="MXVersion" variants="MXVersion"/>
+</histogram>
+
 <histogram name="IOS.MetricKit.{MXVersion}ExtendedLaunch" units="ms"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
