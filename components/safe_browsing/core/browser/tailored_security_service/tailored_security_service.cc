@@ -409,6 +409,7 @@ void TailoredSecurityService::MaybeNotifySyncUser(bool is_enabled,
       RecordEnabledNotificationResult(
           TailoredSecurityNotificationResult::kHistoryNotSynced);
     }
+    SaveRetryState(TailoredSecurityRetryState::NO_RETRY_NEEDED);
     return;
   }
 
@@ -418,12 +419,15 @@ void TailoredSecurityService::MaybeNotifySyncUser(bool is_enabled,
       RecordEnabledNotificationResult(
           TailoredSecurityNotificationResult::kSafeBrowsingControlledByPolicy);
     }
+    SaveRetryState(TailoredSecurityRetryState::NO_RETRY_NEEDED);
     return;
   }
 
   if (is_enabled && IsEnhancedProtectionEnabled(*prefs())) {
     RecordEnabledNotificationResult(
         TailoredSecurityNotificationResult::kEnhancedProtectionAlreadyEnabled);
+    SaveRetryState(TailoredSecurityRetryState::NO_RETRY_NEEDED);
+    return;
   }
 
   if (is_enabled && !IsEnhancedProtectionEnabled(*prefs())) {
@@ -535,6 +539,13 @@ void TailoredSecurityService::TailoredSecurityTimestampUpdateCallback() {
 
   StartRequest(base::BindOnce(&TailoredSecurityService::MaybeNotifySyncUser,
                               weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TailoredSecurityService::SaveRetryState(TailoredSecurityRetryState state) {
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kTailoredSecurityRetryForSyncUsers)) {
+    prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState, state);
+  }
 }
 
 void TailoredSecurityService::SetCanQuery(bool can_query) {
