@@ -366,6 +366,14 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {
   EXPECT_NEAR(item->progress().GetValue().value(), 0.5f,
               std::numeric_limits<float>::epsilon());
 
+  // Update the path to the file being written to during download. Check the
+  // holding space item's backing file path after update.
+  const base::FilePath old_file_path = item->file().file_path;
+  download->full_path = CreateFile();
+  EXPECT_NE(download->full_path, old_file_path);
+  Update(download->Clone());
+  EXPECT_EQ(item->file().file_path, download->full_path.value());
+
   // Complete `download`. Verify that the download chip associated to `download`
   // still exists.
   download->received_bytes = download->total_bytes;

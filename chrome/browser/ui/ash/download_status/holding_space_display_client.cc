@@ -13,11 +13,14 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "base/check.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "url/gurl.h"
 
 namespace ash::download_status {
 
@@ -87,10 +90,19 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
             command_info.command_callback));
   }
 
+  // Specify the backing file.
+  const base::FilePath& file_path = display_metadata.file_path;
+  const GURL file_system_url =
+      holding_space_util::ResolveFileSystemUrl(profile(), file_path);
+
   // TODO(http://b/307347158): Update the holding space item specified by
   // `holding_space_item_id` with `display_metadata`.
   service->UpdateItem(item_id_by_guid->second)
-      ->SetInProgressCommands(std::move(in_progress_commands))
+      ->SetBackingFile(HoldingSpaceFile(
+          file_path,
+          holding_space_util::ResolveFileSystemType(profile(), file_system_url),
+          file_system_url))
+      .SetInProgressCommands(std::move(in_progress_commands))
       .SetProgress(progress)
       .SetSecondaryText(display_metadata.secondary_text)
       .SetText(display_metadata.text);
