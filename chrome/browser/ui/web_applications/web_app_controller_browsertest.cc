@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -68,7 +69,6 @@ WebAppControllerBrowserTest::WebAppControllerBrowserTest(
   os_hooks_suppress_.emplace();
   std::vector<base::test::FeatureRef> all_disabled_features = disabled_features;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
   base::Extend(all_disabled_features,
                ash::standalone_browser::GetFeatureRefs());
 #endif
@@ -270,6 +270,12 @@ void WebAppControllerBrowserTest::TearDownOnMainThread() {
     base::TimeDelta log_time = base::TimeTicks::Now() - start_time_;
     test::LogDebugInfoToConsole(profile_manager->GetLoadedProfiles(), log_time);
   }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (IsCrosapiEnabled()) {
+    // Make sure all ash browser UI are closed before the test tears down.
+    CloseAllAshBrowserWindows();
+  }
+#endif
   InProcessBrowserTest::TearDownOnMainThread();
 }
 
@@ -281,6 +287,12 @@ void WebAppControllerBrowserTest::SetUpCommandLine(
 }
 
 void WebAppControllerBrowserTest::SetUpOnMainThread() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (IsCrosapiEnabled()) {
+    CHECK(IsWebAppsCrosapiEnabled());
+  }
+#endif
+
   InProcessBrowserTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
   ASSERT_TRUE(https_server()->Start());

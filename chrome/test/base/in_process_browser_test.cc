@@ -266,12 +266,6 @@ class IdentityExtraSetUp : public ChromeBrowserMainExtraParts {
   std::unique_ptr<ScopedAshAccountManagerForTests> scoped_ash_account_manager_;
 };
 
-bool IsCrosapiEnabled() {
-  return !base::CommandLine::ForCurrentProcess()
-              ->GetSwitchValuePath("lacros-mojo-socket-for-testing")
-              .empty();
-}
-
 // Returns true if crosapi::mojom::TestController is available.
 // Note: crosapi::mojom::TestController can be unavailable in the following
 // case:
@@ -335,6 +329,12 @@ void InProcessBrowserTest::RunScheduledLayouts() {
 FakeAccountManagerUI* InProcessBrowserTest::GetFakeAccountManagerUI() const {
   return static_cast<FakeAccountManagerUI*>(
       MaybeGetAshAccountManagerUIForTests());
+}
+
+bool InProcessBrowserTest::IsCrosapiEnabled() {
+  return !base::CommandLine::ForCurrentProcess()
+              ->GetSwitchValuePath("lacros-mojo-socket-for-testing")
+              .empty();
 }
 
 base::Version InProcessBrowserTest::GetAshChromeVersion() {

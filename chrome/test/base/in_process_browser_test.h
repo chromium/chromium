@@ -418,6 +418,9 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // as early as in test SetUp().
   static base::Version GetAshChromeVersion();
 
+  // Returns true if crosapi is enabled for the test.
+  bool IsCrosapiEnabled();
+
   // The following are the helper functions to manage Ash browser based windows
   // from Lacros browser tests. When running with Ash, Lacros browser tests can
   // create some Ash browser based UIs, such as SWA, Web UI, etc. These UIs
