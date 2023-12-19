@@ -16,6 +16,7 @@
 #include "net/base/test_completion_callback.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_stream_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace storage {
@@ -80,11 +81,9 @@ TYPED_TEST_P(FileStreamReaderTypedTest, NonExistent) {
   const char kFileName[] = "nonexistent";
   std::unique_ptr<FileStreamReader> reader(
       this->CreateFileReader(kFileName, 0, base::Time()));
-  int result = 0;
-  std::string data;
-  ReadFromReader(reader.get(), &data, 10, &result);
-  ASSERT_EQ(net::ERR_FILE_NOT_FOUND, result);
-  ASSERT_EQ(0U, data.size());
+  auto data_or_error = ReadFromReader(*reader, /*bytes_to_read=*/10);
+  ASSERT_FALSE(data_or_error.has_value());
+  EXPECT_EQ(data_or_error.error(), net::ERR_FILE_NOT_FOUND);
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, Empty) {
@@ -93,11 +92,9 @@ TYPED_TEST_P(FileStreamReaderTypedTest, Empty) {
 
   std::unique_ptr<FileStreamReader> reader(
       this->CreateFileReader(kFileName, 0, base::Time()));
-  int result = 0;
-  std::string data;
-  ReadFromReader(reader.get(), &data, 10, &result);
-  ASSERT_EQ(net::OK, result);
-  ASSERT_EQ(0U, data.size());
+  auto data_or_error = ReadFromReader(*reader, /*bytes_to_read=*/10);
+  ASSERT_TRUE(data_or_error.has_value());
+  EXPECT_THAT(data_or_error.value(), testing::IsEmpty());
 
   net::TestInt64CompletionCallback callback;
   int64_t length_result = reader->GetLength(callback.callback());
@@ -154,11 +151,10 @@ TYPED_TEST_P(FileStreamReaderTypedTest, ReadNormal) {
   std::unique_ptr<FileStreamReader> reader(
       this->CreateFileReader(std::string(this->kTestFileName), 0,
                              this->test_file_modification_time()));
-  int result = 0;
-  std::string data;
-  ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
-  ASSERT_EQ(net::OK, result);
-  ASSERT_EQ(this->kTestData, data);
+  auto data_or_error =
+      ReadFromReader(*reader, /*bytes_to_read=*/this->kTestData.size());
+  ASSERT_TRUE(data_or_error.has_value());
+  EXPECT_EQ(data_or_error.value(), this->kTestData);
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModified) {
@@ -170,11 +166,10 @@ TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModified) {
   std::unique_ptr<FileStreamReader> reader(
       this->CreateFileReader(std::string(this->kTestFileName), 0,
                              this->test_file_modification_time()));
-  int result = 0;
-  std::string data;
-  ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
-  ASSERT_EQ(net::ERR_UPLOAD_FILE_CHANGED, result);
-  ASSERT_EQ(0U, data.size());
+  auto data_or_error =
+      ReadFromReader(*reader, /*bytes_to_read=*/this->kTestData.size());
+  ASSERT_FALSE(data_or_error.has_value());
+  EXPECT_EQ(data_or_error.error(), net::ERR_UPLOAD_FILE_CHANGED);
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModifiedLessThanThreshold) {
@@ -185,12 +180,10 @@ TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModifiedLessThanThreshold) {
   std::unique_ptr<FileStreamReader> reader(
       this->CreateFileReader(std::string(this->kTestFileName), 0,
                              this->test_file_modification_time()));
-  int result = 0;
-  std::string data;
-
-  ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
-  ASSERT_EQ(net::OK, result);
-  ASSERT_EQ(this->kTestData, data);
+  auto data_or_error =
+      ReadFromReader(*reader, /*bytes_to_read=*/this->kTestData.size());
+  ASSERT_TRUE(data_or_error.has_value());
+  EXPECT_EQ(data_or_error.value(), this->kTestData);
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModifiedWithMatchingTimes) {
@@ -198,56 +191,46 @@ TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModifiedWithMatchingTimes) {
   std::unique_ptr<FileStreamReader> reader(
       this->CreateFileReader(std::string(this->kTestFileName), 0,
                              this->test_file_modification_time()));
-  int result = 0;
-  std::string data;
-
-  ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
-  ASSERT_EQ(net::OK, result);
-  ASSERT_EQ(this->kTestData, data);
+  auto data_or_error =
+      ReadFromReader(*reader, /*bytes_to_read=*/this->kTestData.size());
+  ASSERT_TRUE(data_or_error.has_value());
+  EXPECT_EQ(data_or_error.value(), this->kTestData);
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModifiedWithoutExpectedTime) {
   this->TouchFile(std::string(this->kTestFileName), base::Seconds(-1));
   std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
       std::string(this->kTestFileName), 0, base::Time()));
-  int result = 0;
-  std::string data;
-
-  ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
-  ASSERT_EQ(net::OK, result);
-  ASSERT_EQ(this->kTestData, data);
+  auto data_or_error =
+      ReadFromReader(*reader, /*bytes_to_read=*/this->kTestData.size());
+  ASSERT_TRUE(data_or_error.has_value());
+  EXPECT_EQ(data_or_error.value(), this->kTestData);
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, ReadWithOffset) {
   std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
       std::string(this->kTestFileName), 3, base::Time()));
-  int result = 0;
-  std::string data;
-  ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
-  ASSERT_EQ(net::OK, result);
-
-  ASSERT_EQ(this->kTestData.substr(3), data);
+  auto data_or_error =
+      ReadFromReader(*reader, /*bytes_to_read=*/this->kTestData.size());
+  ASSERT_TRUE(data_or_error.has_value());
+  EXPECT_EQ(data_or_error.value(), this->kTestData.substr(3));
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, ReadWithNegativeOffset) {
   std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
       std::string(this->kTestFileName), -1, base::Time()));
-  int result = 0;
-  std::string data;
-  ReadFromReader(reader.get(), &data, 1, &result);
-  ASSERT_EQ(net::ERR_INVALID_ARGUMENT, result);
-  ASSERT_EQ(data.size(), 0u);
+  auto data_or_error = ReadFromReader(*reader, /*bytes_to_read=*/1);
+  ASSERT_FALSE(data_or_error.has_value());
+  EXPECT_EQ(data_or_error.error(), net::ERR_INVALID_ARGUMENT);
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, ReadWithOffsetLargerThanFile) {
   std::unique_ptr<FileStreamReader> reader(
       this->CreateFileReader(std::string(this->kTestFileName),
                              this->kTestData.size() + 1, base::Time()));
-  int result = 0;
-  std::string data;
-  ReadFromReader(reader.get(), &data, 1, &result);
-  ASSERT_EQ(data.size(), 0u);
-  ASSERT_EQ(net::OK, result);
+  auto data_or_error = ReadFromReader(*reader, /*bytes_to_read=*/1);
+  ASSERT_TRUE(data_or_error.has_value());
+  EXPECT_THAT(data_or_error.value(), testing::IsEmpty());
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, DeleteWithUnfinishedRead) {
