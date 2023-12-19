@@ -10,8 +10,11 @@ configuration is considered as a flaky test. The script will provide a
 recommended fuzzy fixable range for the test:
 
 third_party/blink/tools/run_fuzzy_diff_analyzer.py \
-  --project chrome-unexpected-pass-data \
   --sample-period 3
+
+Use 'gcloud auth login' command first for local usage.
+Use the --test-path flag to specify the tests you want to perform a fuzzy diff
+analysis, instead of all tests.
 """
 
 import argparse
@@ -36,7 +39,7 @@ def ParseArgs() -> argparse.Namespace:
         'Script to fuzzy diff analyzer for flaky image comparison web tests'))
     parser.add_argument(
         '--project',
-        required=True,
+        default='chrome-unexpected-pass-data',
         help=('The billing project to use for BigQuery queries. '
               'Must have access to the ResultDB BQ tables, e.g. '
               '"luci-resultdb.chromium.web_tests_ci_test_results".'))

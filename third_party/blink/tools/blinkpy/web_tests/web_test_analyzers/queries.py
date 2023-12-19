@@ -253,11 +253,16 @@ class Querier:
             batch=False)
 
         with open(os.devnull, 'w') as devnull:
-            completed_process = subprocess.run(cmd,
-                                               input=query,
-                                               stdout=subprocess.PIPE,
-                                               stderr=devnull,
-                                               check=True,
-                                               text=True)
+            try:
+                completed_process = subprocess.run(cmd,
+                                                   input=query,
+                                                   stdout=subprocess.PIPE,
+                                                   stderr=devnull,
+                                                   check=True,
+                                                   text=True)
+            except subprocess.CalledProcessError as error:
+                print("Failed to query result, run 'gcloud auth login'"
+                      " first.")
+                raise error
 
         return json.loads(completed_process.stdout)

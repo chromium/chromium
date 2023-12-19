@@ -10,6 +10,10 @@ and recommended an action for each slow test:
 third_party/blink/tools/run_slow_test_analyzer.py \
   --sample-period 3
 
+Use 'gcloud auth login' command first for local usage.
+Use the --test-path flag to specify the tests you want to perform a slow test
+analysis on, instead of all tests.
+
 Example output:
 Test name: test1
 Test is slow in the below list of builders:
