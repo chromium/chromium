@@ -167,11 +167,6 @@ void CompanionPageHandler::DidFinishLoad(
 
   auto* pref_service = GetProfile()->GetPrefs();
   if (IsUserPermittedToSharePageContentWithCompanion(pref_service)) {
-    page_title_ = base::UTF16ToUTF8(web_contents()->GetTitle());
-    if (ui_ready_for_page_title_) {
-      SendPageTitle();
-    }
-
     content_extraction::GetInnerHtml(
         *render_frame_host,
         base::BindOnce(&CompanionPageHandler::HandleInnerHtmlResponse,
@@ -229,24 +224,17 @@ void CompanionPageHandler::HandleInnerHtmlResponse(
     const std::optional<std::string>& result) {
   inner_html_ = result;
   if (ui_ready_for_page_content_time_.has_value()) {
-    SendInnerHtml();
+    SendPageContent();
   }
 }
 
-void CompanionPageHandler::SendInnerHtml() {
+void CompanionPageHandler::SendPageContent() {
   CHECK(ui_ready_for_page_content_time_.has_value());
   // TODO(b/298449509): Add histograms to measure latency and page content size.
   if (inner_html_.has_value()) {
-    page_->UpdateInnerHtml(std::move(*inner_html_));
+    page_->UpdatePageContent(base::UTF16ToUTF8(web_contents()->GetTitle()),
+                             std::move(*inner_html_));
     inner_html_.reset();
-  }
-}
-
-void CompanionPageHandler::SendPageTitle() {
-  CHECK(ui_ready_for_page_title_);
-  if (page_title_.has_value()) {
-    page_->UpdatePageTitle(*page_title_);
-    page_title_.reset();
   }
 }
 
@@ -255,15 +243,9 @@ void CompanionPageHandler::OnLoadingState(
   if (loading_state == side_panel::mojom::LoadingState::kStartedLoading) {
     auto* pref_service = GetProfile()->GetPrefs();
     if (IsUserPermittedToSharePageContentWithCompanion(pref_service)) {
-      ui_ready_for_page_title_ = true;
-      if (!page_title_.has_value()) {
-        page_title_ = base::UTF16ToUTF8(web_contents()->GetTitle());
-      }
-      SendPageTitle();
-
       ui_ready_for_page_content_time_ = base::TimeTicks::Now();
       if (inner_html_.has_value()) {
-        SendInnerHtml();
+        SendPageContent();
       } else {
         content_extraction::GetInnerHtml(
             *web_contents()->GetPrimaryMainFrame(),
@@ -397,7 +379,6 @@ void CompanionPageHandler::NotifyURLChanged(bool is_full_reload) {
     ui_ready_for_visual_queries_time_.reset();
     visual_query_host_->CancelClassification(web_contents()->GetVisibleURL());
   }
-  ui_ready_for_page_title_ = false;
   ui_ready_for_page_content_time_.reset();
 }
 

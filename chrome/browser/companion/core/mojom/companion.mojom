@@ -61,11 +61,8 @@ enum MethodType {
   // Method corresponding to `CompanionPage.NotifyLinkOpen`.
   kNotifyLinkOpen = 34,
 
-  // Method corresponding to `CompanionPage.UpdatePageTitle`.
-  kUpdatePageTitle = 35,
-
-  // Method corresponding to `CompanionPage.UpdateInnerHtml`.
-  kUpdateInnerHtml = 36,
+  // Method corresponding to `CompanionPage.UpdatePageContent`.
+  kUpdatePageContent = 35,
 };
 
 // Types of promos shown in the companion UI.
@@ -305,9 +302,6 @@ interface CompanionPage {
   // outside of side panel. `opened_url` is the link the user clicked on.
   NotifyLinkOpen(url.mojom.Url opened_url, LinkOpenMetadata metadata );
 
-  // Passes the title of the main page to the companion page.
-  UpdatePageTitle(string page_title);
-
-  // Passes the innerHtml of the main page to the companion page.
-  UpdateInnerHtml(string inner_html);
+  // Passes the title and the innerHtml of the main page to the companion page.
+  UpdatePageContent(string page_title, string inner_html);
 };

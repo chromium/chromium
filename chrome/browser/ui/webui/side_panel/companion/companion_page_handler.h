@@ -144,13 +144,9 @@ class CompanionPageHandler
   // side panel if ready.
   void HandleInnerHtmlResponse(const std::optional<std::string>& inner_html);
 
-  // Notifies the companion side panel about the innerHTML of the main frame
-  // using a postmessage() update.
-  void SendInnerHtml();
-
-  // Notifies the companion side panel about the page title of the main frame
-  // using a postmessage() update.
-  void SendPageTitle();
+  // Notifies the companion side panel about the title and the innerHTML of the
+  // main frame using a postmessage() update.
+  void SendPageContent();
 
   mojo::Receiver<side_panel::mojom::CompanionPageHandler> receiver_;
   mojo::Remote<side_panel::mojom::CompanionPage> page_;
@@ -193,13 +189,6 @@ class CompanionPageHandler
   // is untrustworthy content which will be sent to the webui for processing.
   // TODO(1493364): Use an opaque mojo type to hold this data in the browser.
   std::optional<std::string> inner_html_;
-  // Indicates that the kStartedLoading signal was received from side panel. The
-  // page title is sent to the side panel only if the side panel is ready.
-  // Otherwise, it is stored to be sent when the kStartedLoading signal is
-  // received from the side panel.
-  bool ui_ready_for_page_title_;
-  // Used to store the page title before the side panel is ready for it.
-  std::optional<std::string> page_title_;
 
   base::WeakPtrFactory<CompanionPageHandler> weak_ptr_factory_{this};
 };

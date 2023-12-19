@@ -119,28 +119,13 @@ function initialize() {
         }
       });
 
-  companionProxy.callbackRouter.updatePageTitle.addListener(
-      (pageTitle: string) => {
+  companionProxy.callbackRouter.updatePageContent.addListener(
+      (pageTitle: string, innerHtml: string) => {
         const companionOrigin =
             new URL(loadTimeData.getString('companion_origin')).origin;
         const message = {
-          [ParamType.METHOD_TYPE]: MethodType.kUpdatePageTitle,
+          [ParamType.METHOD_TYPE]: MethodType.kUpdatePageContent,
           [ParamType.PAGE_TITLE]: pageTitle,
-        };
-
-        const frame = document.body.querySelector('iframe');
-        assert(frame);
-        if (frame.contentWindow) {
-          frame.contentWindow.postMessage(message, companionOrigin);
-        }
-      });
-
-  companionProxy.callbackRouter.updateInnerHtml.addListener(
-      (innerHtml: string) => {
-        const companionOrigin =
-            new URL(loadTimeData.getString('companion_origin')).origin;
-        const message = {
-          [ParamType.METHOD_TYPE]: MethodType.kUpdateInnerHtml,
           [ParamType.INNER_HTML]: innerHtml,
         };
 
@@ -150,7 +135,6 @@ function initialize() {
           frame.contentWindow.postMessage(message, companionOrigin);
         }
       });
-
 
   // On image queries, we need to send a POST to the iframe using a form in the
   // WebUI.

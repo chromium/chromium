@@ -1162,31 +1162,11 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
-                       PageTitleNotifiesViaPostMessage) {
+                       PageContentNotifiesViaPostMessage) {
   EnablePco(true);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("data:text/html;charset=utf-8,"
-                      "<head><title>Title of the page</title></head>")));
-  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
-
-  WaitForCompanionToBeLoaded();
-  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
-            SidePanelEntry::Id::kSearchCompanion);
-
-  CompanionScriptBuilder builder(MethodType::kCompanionLoadingState);
-  builder.loading_state = LoadingState::kStartedLoading;
-  builder.wait_for_message = true;
-  EXPECT_TRUE(ExecJs(builder.Build()));
-
-  // Ensure browser sent post message
-  EXPECT_EQ("Title of the page", GetLastPageTitleFromPostMessage());
-}
-
-IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
-                       InnerHtmlNotifiesViaPostMessage) {
-  EnablePco(true);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL("data:text/html;charset=utf-8,"
+                      "<head><title>Title of the page</title></head>"
                       "<body>Content of the page</body>")));
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
 
@@ -1200,6 +1180,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   EXPECT_TRUE(ExecJs(builder.Build()));
 
   // Ensure browser sent post message
+  EXPECT_EQ("Title of the page", GetLastPageTitleFromPostMessage());
   EXPECT_EQ("<body>Content of the page</body>",
             GetLastInnerHtmlFromPostMessage());
 }

@@ -36,12 +36,10 @@
       window.lastReceivedLinkOpenedUrl = event.data['openedUrl'];
       window.lastReceivedLinkOpenedMetadata = event.data['openMetadata'];
       promiseResolve(event.data['openedUrl']);
-    } else if (event.data['type'] == 35) { // `MethodType.kUpdatePageTitle`
+    } else if (event.data['type'] == 35) { // `MethodType.kUpdatePageContent`
       window.lastReceivedPageTitle = event.data['pageTitle'];
-      promiseResolve(event.data['pageTitle']);
-    } else if (event.data['type'] == 36) { // `MethodType.kUpdateInnerHtml`
       window.lastReceivedInnerHtml = event.data['innerHtml'];
-      promiseResolve(event.data['innerHtml']);
+      promiseResolve();
     }
   }
 
