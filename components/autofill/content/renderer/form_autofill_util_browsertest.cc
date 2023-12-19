@@ -17,6 +17,8 @@
 #include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame.h"
@@ -942,42 +944,42 @@ TEST_F(FormAutofillUtilsTest, ExtractBounds) {
   LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
+  std::optional<std::pair<FormData, FormFieldData>> form_and_field =
+      FindFormAndFieldForFormControlElement(
+          web_control, *base::MakeRefCounted<FieldDataManager>(),
+          {ExtractOption::kBounds});
 
-  FormData form_data;
-  ASSERT_TRUE(FindFormAndFieldForFormControlElement(
-      web_control, *base::MakeRefCounted<FieldDataManager>(),
-      {ExtractOption::kBounds}, &form_data,
-      /*field=*/nullptr));
-
-  EXPECT_FALSE(form_data.fields.back().bounds.IsEmpty());
+  ASSERT_TRUE(form_and_field);
+  auto& [form, field] = *form_and_field;
+  EXPECT_FALSE(form.fields.back().bounds.IsEmpty());
 }
 
 TEST_F(FormAutofillUtilsTest, NotExtractBounds) {
   LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
+  std::optional<std::pair<FormData, FormFieldData>> form_and_field =
+      FindFormAndFieldForFormControlElement(
+          web_control, *base::MakeRefCounted<FieldDataManager>(),
+          /*extract_options=*/{});
 
-  FormData form_data;
-  ASSERT_TRUE(FindFormAndFieldForFormControlElement(
-      web_control, *base::MakeRefCounted<FieldDataManager>(),
-      /*extract_options=*/{}, &form_data,
-      /*field=*/nullptr));
-
-  EXPECT_TRUE(form_data.fields.back().bounds.IsEmpty());
+  ASSERT_TRUE(form_and_field);
+  auto& [form, field] = *form_and_field;
+  EXPECT_TRUE(form.fields.back().bounds.IsEmpty());
 }
 
 TEST_F(FormAutofillUtilsTest, ExtractUnownedBounds) {
   LoadHTML("<body><input id='i1'></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
+  std::optional<std::pair<FormData, FormFieldData>> form_and_field =
+      FindFormAndFieldForFormControlElement(
+          web_control, *base::MakeRefCounted<FieldDataManager>(),
+          {ExtractOption::kBounds});
 
-  FormData form_data;
-  ASSERT_TRUE(FindFormAndFieldForFormControlElement(
-      web_control, *base::MakeRefCounted<FieldDataManager>(),
-      {ExtractOption::kBounds}, &form_data,
-      /*field=*/nullptr));
-
-  EXPECT_FALSE(form_data.fields.back().bounds.IsEmpty());
+  ASSERT_TRUE(form_and_field);
+  auto& [form, field] = *form_and_field;
+  EXPECT_FALSE(form.fields.back().bounds.IsEmpty());
 }
 
 TEST_F(FormAutofillUtilsTest, GetDataListSuggestions) {
@@ -1019,19 +1021,20 @@ TEST_F(FormAutofillUtilsTest, ExtractDataList) {
       "value='2'>two</option></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
-  FormData form_data;
-  FormFieldData form_field_data;
-  ASSERT_TRUE(FindFormAndFieldForFormControlElement(
-      web_control, *base::MakeRefCounted<FieldDataManager>(),
-      {ExtractOption::kDatalist}, &form_data, &form_field_data));
+  std::optional<std::pair<FormData, FormFieldData>> form_and_field =
+      FindFormAndFieldForFormControlElement(
+          web_control, *base::MakeRefCounted<FieldDataManager>(),
+          {ExtractOption::kDatalist});
 
-  auto& options = form_data.fields.back().datalist_options;
+  ASSERT_TRUE(form_and_field);
+  auto& [form, field] = *form_and_field;
+  auto& options = form.fields.back().datalist_options;
   ASSERT_EQ(options.size(), 2u);
   EXPECT_EQ(options[0].value, u"1");
   EXPECT_EQ(options[1].value, u"2");
   EXPECT_EQ(options[0].content, u"one");
   EXPECT_EQ(options[1].content, u"two");
-  EXPECT_EQ(form_field_data.datalist_options.size(), options.size());
+  EXPECT_EQ(field.datalist_options.size(), options.size());
 }
 
 TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
@@ -1041,12 +1044,14 @@ TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
       "value='2'>two</option></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
-  FormData form_data;
-  FormFieldData form_field_data;
-  ASSERT_TRUE(FindFormAndFieldForFormControlElement(
-      web_control, *base::MakeRefCounted<FieldDataManager>(),
-      /*extract_options=*/{}, &form_data, &form_field_data));
-  EXPECT_TRUE(form_data.fields.back().datalist_options.empty());
+  std::optional<std::pair<FormData, FormFieldData>> form_and_field =
+      FindFormAndFieldForFormControlElement(
+          web_control, *base::MakeRefCounted<FieldDataManager>(),
+          {ExtractOption::kBounds});
+
+  ASSERT_TRUE(form_and_field);
+  auto& [form, field] = *form_and_field;
+  EXPECT_TRUE(form.fields.back().datalist_options.empty());
 }
 
 // Tests the visibility detection of iframes.

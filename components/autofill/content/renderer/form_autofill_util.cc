@@ -2255,19 +2255,21 @@ bool UnownedFormElementsToFormData(
       field_data_manager, extract_options, form, field);
 }
 
-bool FindFormAndFieldForFormControlElement(
+std::optional<std::pair<FormData, FormFieldData>>
+FindFormAndFieldForFormControlElement(
     const WebFormControlElement& element,
     const FieldDataManager& field_data_manager,
-    DenseSet<ExtractOption> extract_options,
-    FormData* form,
-    FormFieldData* field) {
+    DenseSet<ExtractOption> extract_options) {
   DCHECK(!element.IsNull());
 
-  if (!IsAutofillableElement(element))
-    return false;
+  if (!IsAutofillableElement(element)) {
+    return std::nullopt;
+  }
 
   extract_options.insert_all({ExtractOption::kValue, ExtractOption::kOptions});
   WebFormElement form_element = GetOwningForm(element);
+  FormData form;
+  FormFieldData field;
 
   if (form_element.IsNull()) {
     // No associated form, try the synthetic form for unowned form elements.
@@ -2278,11 +2280,17 @@ bool FindFormAndFieldForFormControlElement(
         GetUnownedIframeElements(document);
     return UnownedFormElementsToFormData(control_elements, iframe_elements,
                                          &element, document, field_data_manager,
-                                         extract_options, form, field);
+                                         extract_options, &form, &field)
+               ? std::make_optional<std::pair<FormData, FormFieldData>>(form,
+                                                                        field)
+               : std::nullopt;
   }
 
   return WebFormElementToFormData(form_element, element, field_data_manager,
-                                  extract_options, form, field);
+                                  extract_options, &form, &field)
+             ? std::make_optional<std::pair<FormData, FormFieldData>>(form,
+                                                                      field)
+             : std::nullopt;
 }
 
 std::optional<FormData> FindFormForContentEditable(

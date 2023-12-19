@@ -317,17 +317,16 @@ bool UnownedFormElementsToFormData(
     FormData* form,
     FormFieldData* field);
 
-// Finds the form that contains |element| and returns it in |form|.  If |field|
-// is non-nullptr, fill it with the FormField representation for |element|.
-// |extract_options| control what to extract beside the default options which is
-// {ExtractOption::kValue, ExtractOption::kOptions}. Returns false if the form
-// is not found or cannot be serialized.
-bool FindFormAndFieldForFormControlElement(
+// Finds the field that represents `element`, and the form that contains
+// `element` and returns them. |extract_options| control what to extract beside
+// the default options which is {ExtractOption::kValue,
+// ExtractOption::kOptions}. Returns nullopt if the form is not found or cannot
+// be serialized.
+std::optional<std::pair<FormData, FormFieldData>>
+FindFormAndFieldForFormControlElement(
     const blink::WebFormControlElement& element,
     const FieldDataManager& field_data_manager,
-    DenseSet<ExtractOption> extract_options,
-    FormData* form,
-    FormFieldData* field);
+    DenseSet<ExtractOption> extract_options);
 
 // Creates a FormData containing a single field out of a contenteditable
 // non-form element. The FormData is synthetic in the sense that it does not

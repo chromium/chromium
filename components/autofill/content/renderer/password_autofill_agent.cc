@@ -1637,10 +1637,10 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
     ShowAll show_all,
     OnPasswordField show_on_password_field) {
   username_query_prefix_ = typed_username;
-  FormData form;
-  FormFieldData field;
-  form_util::FindFormAndFieldForFormControlElement(
-      user_input, field_data_manager(), /*extract_options=*/{}, &form, &field);
+  auto [form, field] =
+      form_util::FindFormAndFieldForFormControlElement(
+          user_input, field_data_manager(), /*extract_options=*/{})
+          .value_or(std::make_pair(FormData(), FormFieldData()));
 
   int options = 0;
   if (show_all)
