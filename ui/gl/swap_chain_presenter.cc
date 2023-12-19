@@ -41,6 +41,14 @@ BASE_FEATURE(kFallbackBT709VideoToBT601,
              "FallbackBT709VideoToBT601",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDisableVPBLTUpscale,
+             "DisableVPBLTUpscale",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kApplyTransformToLetterboxing,
+             "ApplyTransformToLetterBoxing",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 gfx::ColorSpace GetOutputColorSpace(const gfx::ColorSpace& input_color_space,
                                     bool is_yuv_swapchain) {
   gfx::ColorSpace output_color_space =
@@ -690,17 +698,29 @@ gfx::Size SwapChainPresenter::GetMonitorSize() const {
 }
 
 void SwapChainPresenter::SetTargetToFullScreen(gfx::Transform* visual_transform,
-                                               gfx::Rect* visual_clip_rect) {
-  // Reset the horizontal/vertical shift according to the visual clip and
-  // original transform, since DWM will do the positioning in case of overlay.
-  visual_transform->set_rc(
-      0, 3,
-      visual_clip_rect->x() -
-          visual_transform->rc(0, 3) * visual_transform->rc(0, 0));
-  visual_transform->set_rc(
-      1, 3,
-      visual_clip_rect->y() -
-          visual_transform->rc(1, 3) * visual_transform->rc(1, 1));
+                                               gfx::Rect* visual_clip_rect,
+                                               const gfx::Rect& target_rect) {
+  if (base::FeatureList::IsEnabled(kApplyTransformToLetterboxing)) {
+    // Reset the horizontal/vertical shift according to the target_rect and
+    // original transform, since DWM will do the positioning in case of overlay.
+    visual_transform->set_rc(0, 3,
+                             visual_transform->rc(0, 3) -
+                                 target_rect.x() * visual_transform->rc(0, 0));
+    visual_transform->set_rc(1, 3,
+                             visual_transform->rc(1, 3) -
+                                 target_rect.y() * visual_transform->rc(1, 1));
+  } else {
+    // Reset the horizontal/vertical shift according to the visual clip and
+    // original transform, since DWM will do the positioning in case of overlay.
+    visual_transform->set_rc(
+        0, 3,
+        visual_clip_rect->x() -
+            visual_transform->rc(0, 3) * visual_transform->rc(0, 0));
+    visual_transform->set_rc(
+        1, 3,
+        visual_clip_rect->y() -
+            visual_transform->rc(1, 3) * visual_transform->rc(1, 1));
+  }
 
   // Expand the clip rect for swap chain to the whole screen.
   *visual_clip_rect = gfx::Rect(GetMonitorSize());
@@ -1034,8 +1054,19 @@ void SwapChainPresenter::AdjustTargetForFullScreenLetterboxing(
   // Here the destination surface size is set to the whole monitor, while the
   // target region is set to the visual clip rectangle on the screen.
   if (params.z_order > 0) {
-    *dest_size = monitor_size;
-    *target_rect = *visual_clip_rect;
+    if (base::FeatureList::IsEnabled(kApplyTransformToLetterboxing)) {
+      // The transform scaling ratio should be applied in the process of
+      // calculating dest_size and target_rect.
+      float inverse_scale_x = 1.0f / std::abs(visual_transform->rc(0, 0));
+      float inverse_scale_y = 1.0f / std::abs(visual_transform->rc(1, 1));
+      *dest_size = gfx::ScaleToRoundedSize(monitor_size, inverse_scale_x,
+                                           inverse_scale_y);
+      *target_rect = gfx::ScaleToRoundedRect(*visual_clip_rect, inverse_scale_x,
+                                             inverse_scale_y);
+    } else {
+      *dest_size = monitor_size;
+      *target_rect = *visual_clip_rect;
+    }
   } else {
     // For underlay scenario, keep the destination surface size and target
     // region according to swap chain size.
@@ -1114,7 +1145,19 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
   // overlays especially for protected video. Use the onscreen size (scale==1)
   // for overlay can avoid this problem.
   // TODO(sunnyps): Support 90/180/270 deg rotations using video context.
-  if (params.transform.IsScaleOrTranslation()) {
+
+  // On battery_power mode, set swap_chain_size to the source content size when
+  // the swap chain presents upscaled overlay, multi-plane overlay hardware will
+  // perform an upscaling operation instead of video processor(VP). Disabling VP
+  // upscaled BLT is more power saving as the video processor can do the minimal
+  // amount of work and the overlay has to read the minimal amount of data.
+  bool can_disable_vp_upscaling_blt =
+      base::FeatureList::IsEnabled(kDisableVPBLTUpscale) &&
+      is_on_battery_power_ && std::abs(params.transform.rc(0, 0)) > 1.0f &&
+      std::abs(params.transform.rc(1, 1)) > 1.0f;
+
+  if (params.transform.IsScaleOrTranslation() &&
+      !can_disable_vp_upscaling_blt) {
     swap_chain_size = overlay_onscreen_rect.size();
   }
 
@@ -1451,7 +1494,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     // But the visual transform and clip rectangle for DCLayerTree update need
     // to keep the same as the last presentation when desktop plane was removed.
     if (last_desktop_plane_removed_) {
-      SetTargetToFullScreen(visual_transform, visual_clip_rect);
+      SetTargetToFullScreen(visual_transform, visual_clip_rect, *target_rect);
     }
 
     return true;
@@ -1469,7 +1512,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     // Only NV12 format is supported in zero copy presentation path.
     if (dest_size.has_value() && target_rect.has_value() &&
         params.z_order > 0) {
-      SetTargetToFullScreen(visual_transform, visual_clip_rect);
+      SetTargetToFullScreen(visual_transform, visual_clip_rect, *target_rect);
     } else {
       last_desktop_plane_removed_ = false;
     }
@@ -1614,7 +1657,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   // Update |visual_transform| and |visual_clip_rect| for the full screen
   // letterboxing overlay presentation.
   if (is_letterboxing_overlay_ready) {
-    SetTargetToFullScreen(visual_transform, visual_clip_rect);
+    SetTargetToFullScreen(visual_transform, visual_clip_rect, *target_rect);
   } else {
     last_desktop_plane_removed_ = false;
   }
