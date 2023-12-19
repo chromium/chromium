@@ -1398,21 +1398,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Signin.Extensions.GetAuthTokenResult"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GPU_ProtectedVideoType" separator=".">
-  <suffix name="Clear" label="Clear"/>
-  <suffix name="HardwareProtected" label="HardwareProtected"/>
-  <suffix name="SoftwareProtected" label="SoftwareProtected"/>
-  <affected-histogram name="GPU.DirectComposition.DCLayerResult.Video"/>
-  <affected-histogram name="GPU.DirectComposition.SwapChainCreationResult3"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="GPU_SoftwareProtectedType" separator=".">
-  <suffix name="HasOverlaySupport" label="HasOverlaySupport"/>
-  <suffix name="NoOverlaySupport" label="NoOverlaySupport"/>
-  <affected-histogram
-      name="GPU.DirectComposition.SwapChainCreationResult3.SoftwareProtected"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="GridTabSwitcherAnimationType" separator=".">
   <suffix name="Expand" label="Grid to Tab"/>
   <suffix name="Shrink" label="Tab to Grid"/>

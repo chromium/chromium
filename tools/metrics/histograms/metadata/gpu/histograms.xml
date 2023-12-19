@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="GPUProtectedVideoType">
+  <variant name="Clear" summary="Clear"/>
+  <variant name="HardwareProtected" summary="HardwareProtected"/>
+  <variant name="SoftwareProtected" summary="SoftwareProtected"/>
+</variants>
+
 <variants name="GraphiteDawnOrWebGPU">
   <variant name="GraphiteDawn"/>
   <variant name="WebGPU"/>
@@ -632,16 +638,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="GPU.DirectComposition.DCLayerResult.Video"
+<histogram base="true"
+    name="GPU.DirectComposition.DCLayerResult.Video.{GPUProtectedVideoType}"
     enum="DCLayerResult" expires_after="2024-04-28">
-<!-- Name completed by histogram_suffixes name="GPU.ProtectedVideoType" -->
-
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Recorded for each quad (on overlay processing) with protected video type the
     reason it was or wasn't put in an overlay.
   </summary>
+  <token key="GPUProtectedVideoType" variants="GPUProtectedVideoType"/>
 </histogram>
 
 <histogram name="GPU.DirectComposition.DcompDeviceCreateSurface" enum="Hresult"
@@ -709,16 +716,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="GPU.DirectComposition.SwapChainCreationResult3"
+<histogram base="true"
+    name="GPU.DirectComposition.SwapChainCreationResult3.SoftwareProtected.{SoftwareProtectedType}"
     enum="Hresult" expires_after="2024-06-16">
-<!-- Name completed by histogram_suffixes name="GPU.ProtectedVideoType" -->
-
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Whether creating swap chain for protected video succeeded. Recorded once per
     swap chain creation.
   </summary>
+  <token key="SoftwareProtectedType">
+    <variant name="HasOverlaySupport" summary="HasOverlaySupport"/>
+    <variant name="NoOverlaySupport" summary="NoOverlaySupport"/>
+  </token>
+</histogram>
+
+<histogram base="true"
+    name="GPU.DirectComposition.SwapChainCreationResult3.{GPUProtectedVideoType}"
+    enum="Hresult" expires_after="2024-06-16">
+  <owner>magchen@chromium.org</owner>
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Whether creating swap chain for protected video succeeded. Recorded once per
+    swap chain creation.
+  </summary>
+  <token key="GPUProtectedVideoType" variants="GPUProtectedVideoType"/>
 </histogram>
 
 <histogram name="GPU.DirectComposition.SwapChainFormat3" enum="DXGI_FORMAT"
