@@ -488,6 +488,7 @@ crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gle
 
 ## Win / Intel ##
 
+crbug.com/1509927 [ win intel-0x9bc5 angle-d3d11 ] deqp/functional/gles3/* [ RetryOnFailure ]
 
 ######################
 # Mac Metal failures #
