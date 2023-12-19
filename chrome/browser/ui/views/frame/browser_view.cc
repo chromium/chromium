@@ -2606,8 +2606,11 @@ void BrowserView::OnWidgetSizeConstraintsChanged(views::Widget* widget) {
 }
 
 void BrowserView::OnWidgetShowStateChanged(views::Widget* widget) {
+// TODO(crbug.com/1503145): Investigate and fix on MacOS.
+#if !BUILDFLAG(IS_MAC)
   // `display-state` @media feature value in renderer needs to be updated.
   SynchronizeRenderWidgetHostVisualPropertiesForMainFrame();
+#endif
 }
 
 void BrowserView::PrimaryPageChanged(content::Page& page) {
