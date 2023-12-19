@@ -10,6 +10,8 @@
 #include "base/files/file_path.h"
 #include "net/cookies/canonical_cookie.h"
 
+class PrefService;
+
 namespace net {
 class CookieStore;
 class SystemCookieStore;
@@ -72,7 +74,7 @@ std::unique_ptr<net::CookieStore> CreateCookieStore(
 // Returns true if the cookies should be cleared.
 // Current implementation returns true if the device has rebooted since the
 // last time cookies have been cleared.
-bool ShouldClearSessionCookies();
+bool ShouldClearSessionCookies(PrefService* pref_service);
 
 // Clears the session cookies for `browser_state`.
 void ClearSessionCookies(web::BrowserState* browser_state);

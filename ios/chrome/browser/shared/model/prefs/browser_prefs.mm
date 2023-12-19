@@ -101,6 +101,7 @@
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/voice/model/voice_search_prefs_registration.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
+#import "ios/components/cookie_util/cookie_constants.h"
 #import "ios/web/common/features.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -211,6 +212,23 @@ void MigrateIntegerPreferenceFromUserDefaults(std::string_view pref_name,
   }
 
   pref_service->SetInteger(pref_name.data(), [value intValue]);
+  [defaults removeObjectForKey:key];
+}
+
+// Helper function migrating the preference `pref_name` of type "int" from
+// `defaults` to `pref_service` and to transform the "int" into "base::Time".
+void MigrateIntegerToTimePreferenceFromUserDefaults(std::string_view pref_name,
+                                                    PrefService* pref_service,
+                                                    NSUserDefaults* defaults) {
+  NSString* key = @(pref_name.data());
+  NSNumber* value =
+      base::apple::ObjCCast<NSNumber>([defaults objectForKey:key]);
+  if (!value) {
+    return;
+  }
+
+  pref_service->SetTime(pref_name.data(),
+                        base::Time::FromTimeT([value intValue]));
   [defaults removeObjectForKey:key];
 }
 
@@ -679,6 +697,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kNotificationsPromoTimesDismissed, 0);
 
   registry->RegisterBooleanPref(prefs::kInsecureFormWarningsEnabled, true);
+
+  registry->RegisterTimePref(kLastCookieDeletionDate, base::Time());
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -861,6 +881,10 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 12/2023.
   prefs->ClearPref(kSigninLastAccounts);
   prefs->ClearPref(kSigninLastAccountsMigrated);
+
+  // Added 12/2023.
+  MigrateIntegerToTimePreferenceFromUserDefaults(kLastCookieDeletionDate, prefs,
+                                                 defaults);
 }
 
 void MigrateObsoleteUserDefault() {

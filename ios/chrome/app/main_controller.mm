@@ -1070,8 +1070,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self scheduleCrashReportUpload];
 
   // ClearSessionCookies() is not synchronous.
-  if (cookie_util::ShouldClearSessionCookies()) {
-    ChromeBrowserState* browserState = self.appState.mainBrowserState;
+  ChromeBrowserState* browserState = self.appState.mainBrowserState;
+  if (cookie_util::ShouldClearSessionCookies(browserState->GetPrefs())) {
     cookie_util::ClearSessionCookies(
         browserState->GetOriginalChromeBrowserState());
     Browser* otrBrowser =

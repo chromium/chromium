@@ -116,6 +116,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/voice/model:prefs",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/browser/web/model/font_size",
+    "//ios/components/cookie_util:constants",
     "//ios/web/common:features",
     "//ui/base",
   ]

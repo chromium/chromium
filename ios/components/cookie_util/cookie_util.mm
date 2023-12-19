@@ -14,6 +14,8 @@
 #import "base/functional/callback_helpers.h"
 #import "base/memory/ref_counted.h"
 #import "base/task/thread_pool.h"
+#import "components/prefs/pref_service.h"
+#import "ios/components/cookie_util/cookie_constants.h"
 #import "ios/net/cookies/cookie_store_ios.h"
 #import "ios/net/cookies/system_cookie_store.h"
 #import "ios/web/common/features.h"
@@ -30,9 +32,6 @@
 namespace cookie_util {
 
 namespace {
-
-// Date of the last cookie deletion.
-NSString* const kLastCookieDeletionDate = @"LastCookieDeletionDate";
 
 // Creates a SQLitePersistentCookieStore running on a background thread.
 scoped_refptr<net::SQLitePersistentCookieStore> CreatePersistentCookieStore(
@@ -94,22 +93,27 @@ std::unique_ptr<net::CookieStore> CreateCookieStore(
                                                net_log);
 }
 
-bool ShouldClearSessionCookies() {
-  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
-  struct timeval boottime;
-  int mib[2] = {CTL_KERN, KERN_BOOTTIME};
-  size_t size = sizeof(boottime);
-  time_t lastCookieDeletionDate =
-      [standardDefaults integerForKey:kLastCookieDeletionDate];
-  time_t now;
-  time(&now);
+bool ShouldClearSessionCookies(PrefService* pref_service) {
+  const base::Time last_cookie_deletion_date =
+      pref_service->GetTime(kLastCookieDeletionDate);
+
   bool clear_cookies = true;
-  if (lastCookieDeletionDate != 0 &&
-      sysctl(mib, 2, &boottime, &size, NULL, 0) != -1 && boottime.tv_sec != 0) {
-    clear_cookies = boottime.tv_sec > lastCookieDeletionDate;
+  if (!last_cookie_deletion_date.is_null()) {
+    struct timeval boottime;
+    int mib[2] = {CTL_KERN, KERN_BOOTTIME};
+    size_t size = sizeof(boottime);
+
+    if (sysctl(mib, 2, &boottime, &size, NULL, 0) != -1) {
+      if (boottime.tv_sec != 0) {
+        const base::Time boot = base::Time::FromTimeVal(boottime);
+
+        clear_cookies = boot > last_cookie_deletion_date;
+      }
+    }
   }
-  if (clear_cookies)
-    [standardDefaults setInteger:now forKey:kLastCookieDeletionDate];
+  if (clear_cookies) {
+    pref_service->SetTime(kLastCookieDeletionDate, base::Time::Now());
+  }
   return clear_cookies;
 }
 
