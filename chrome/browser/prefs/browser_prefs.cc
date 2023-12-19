@@ -547,12 +547,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 12/2022.
-const char kAutofillWalletImportStorageCheckboxState[] =
-    "autofill.wallet_import_storage_checkbox_state";
-const char kDeprecatedReadingListHasUnseenEntries[] =
-    "reading_list.has_unseen_entries";
-
 // Deprecated 01/2023
 const char kSendDownloadToCloudPref[] =
     "enterprise_connectors.send_download_to_cloud";
@@ -1087,12 +1081,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
-
-
-  // Deprecated 12/2022.
-  registry->RegisterBooleanPref(kAutofillWalletImportStorageCheckboxState,
-                                true);
-  registry->RegisterBooleanPref(kDeprecatedReadingListHasUnseenEntries, false);
 
   // Deprecated 01/2023.
   registry->RegisterBooleanPref(
@@ -2276,12 +2264,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
                                account_id);
     }
   }
-
-  // Added 12/2022.
-  profile_prefs->ClearPref(kDeprecatedReadingListHasUnseenEntries);
-
-  // Added 12/2022.
-  profile_prefs->ClearPref(kAutofillWalletImportStorageCheckboxState);
 
   // Added 01/2023.
   profile_prefs->ClearPref(kFileSystemSyncAccessHandleAsyncInterfaceEnabled);
