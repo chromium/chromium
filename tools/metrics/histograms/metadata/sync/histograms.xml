@@ -484,7 +484,9 @@ chromium-metrics-reviews@google.com.
     NOTE: This does NOT include OS datatypes. Use Sync.CustomOSSync for those.
 
     See also &quot;Sync.SelectedTypesInTransportMode&quot; which is the
-    corresponding histogram for Sync-transport users.
+    corresponding histogram for Sync-transport users, and
+    &quot;Sync.SyncEverything2&quot; which is the histogram for whether the user
+    has selected the &quot;Sync Everything&quot; option.
   </summary>
 </histogram>
 
