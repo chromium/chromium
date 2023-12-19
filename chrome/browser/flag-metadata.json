@@ -4856,6 +4856,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "ios-external-action-urls",
+    "owners": ["nicolasmacbeth@google.com", "bling-mony-pod@google.com"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "ios-hide-feed-with-search-choice",
     "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
     "expiry_milestone": 123

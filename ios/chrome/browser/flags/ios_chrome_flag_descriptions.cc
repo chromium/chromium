@@ -513,6 +513,10 @@ extern const char kIOSEditMenuHideSearchWebName[] =
 extern const char kIOSEditMenuHideSearchWebDescription[] =
     "Hides the Search Web entry in edit menu.";
 
+extern const char kIOSExternalActionURLsName[] = "iOS external action URLs";
+extern const char kIOSExternalActionURLsDescription[] =
+    "When enabled, the browser will support handling external action URLs.";
+
 const char kIOSIncognitoDownloadsWarningName[] =
     "Enable Incognito downloads warning on iOS";
 const char kIOSIncognitoDownloadsWarningDescription[] =

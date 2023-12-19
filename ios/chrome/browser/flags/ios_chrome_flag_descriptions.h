@@ -441,6 +441,10 @@ extern const char kIOSEditMenuSearchWithDescription[];
 extern const char kIOSEditMenuHideSearchWebName[];
 extern const char kIOSEditMenuHideSearchWebDescription[];
 
+// Title and description for the flag to enable handling external action URLs.
+extern const char kIOSExternalActionURLsName[];
+extern const char kIOSExternalActionURLsDescription[];
+
 // Title and description for the flag to enable Incognito downloads education.
 extern const char kIOSIncognitoDownloadsWarningName[];
 extern const char kIOSIncognitoDownloadsWarningDescription[];

@@ -1614,6 +1614,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"revamp-page-info-ios", flag_descriptions::kRevampPageInfoIosName,
      flag_descriptions::kRevampPageInfoIosDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kRevampPageInfoIos)},
+    {"ios-external-action-urls", flag_descriptions::kIOSExternalActionURLsName,
+     flag_descriptions::kIOSExternalActionURLsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSExternalActionURLs)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
