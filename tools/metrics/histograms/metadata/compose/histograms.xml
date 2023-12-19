@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.Dialog.InnerTextSize" units="bytes"
-    expires_after="2024-03-31">
+    expires_after="2024-06-16">
   <owner>sophey@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -155,7 +155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.Session.Consent.DialogShownCount.{FinalStatus}"
-    units="count" expires_after="2024-03-31">
+    units="count" expires_after="2024-06-16">
   <owner>cuianthony@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>

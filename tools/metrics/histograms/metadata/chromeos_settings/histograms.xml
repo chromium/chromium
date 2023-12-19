@@ -478,7 +478,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Privacy.VerifiedAccessEnabled"
-    enum="BooleanEnabled" expires_after="2024-04-17">
+    enum="BooleanEnabled" expires_after="2024-06-16">
   <owner>jpachara@google.com</owner>
   <owner>pwg-cros@google.com</owner>
   <summary>
@@ -488,7 +488,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Privacy.VerifiedAccessOnOff"
-    enum="BooleanToggled" expires_after="2024-04-17">
+    enum="BooleanToggled" expires_after="2024-06-16">
   <owner>jpachara@google.com</owner>
   <owner>pwg-cros@google.com</owner>
   <summary>

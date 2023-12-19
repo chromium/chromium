@@ -1116,7 +1116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.IncognitoInterstitial.Settings"
-    enum="IncognitoInterstitialSettingsActionType" expires_after="2024-02-11">
+    enum="IncognitoInterstitialSettingsActionType" expires_after="2024-06-16">
   <owner>qpubert@google.com</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -2953,7 +2953,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.ContextMenu"
-    enum="IOSSaveToPhotosContextMenuType" expires_after="2024-04-16">
+    enum="IOSSaveToPhotosContextMenuType" expires_after="2024-06-16">
   <owner>qpubert@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
