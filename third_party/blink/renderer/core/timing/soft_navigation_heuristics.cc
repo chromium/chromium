@@ -131,6 +131,7 @@ void SoftNavigationHeuristics::ResetHeuristic() {
   did_commit_previous_paints_ = false;
   soft_navigation_conditions_met_ = false;
   pending_interaction_timestamp_ = base::TimeTicks();
+  softnav_painted_area_ = 0;
 }
 
 void SoftNavigationHeuristics::InteractionCallbackCalled(
