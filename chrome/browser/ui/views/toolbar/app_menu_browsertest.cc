@@ -93,21 +93,24 @@ void AppMenuBrowserTest::ShowUi(const std::string& name) {
   }
 
   constexpr auto kSubmenus = base::MakeFixedFlatMap<base::StringPiece, int>({
-    // Submenus present in all versions.
-    {"history", IDC_RECENT_TABS_MENU}, {"bookmarks", IDC_BOOKMARKS_MENU},
-        {"more_tools", IDC_MORE_TOOLS_MENU},
+      // Submenus present in all versions.
+      {"history", IDC_RECENT_TABS_MENU},
+      {"bookmarks", IDC_BOOKMARKS_MENU},
+      {"more_tools", IDC_MORE_TOOLS_MENU},
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        {"help", IDC_HELP_MENU},
+      {"help", IDC_HELP_MENU},
 #endif
 
-        // Submenus only present after Chrome Refresh.
-        {"passwords_and_autofill", IDC_PASSWORDS_AND_AUTOFILL_MENU},
-        {"reading_list", IDC_READING_LIST_MENU},  // Inside the bookmarks menu.
-        {"extensions", IDC_EXTENSIONS_SUBMENU},
-        {"find_and_edit", IDC_FIND_AND_EDIT_MENU},
-        {"save_and_share", IDC_SAVE_AND_SHARE_MENU},
-        {"profile_menu_in_app", IDC_PROFILE_MENU_IN_APP_MENU},
-        {"signin_not_allowed", IDC_PROFILE_MENU_IN_APP_MENU},
+      // Submenus only present after Chrome Refresh.
+      {"passwords_and_autofill", IDC_PASSWORDS_AND_AUTOFILL_MENU},
+      {"reading_list", IDC_READING_LIST_MENU},  // Inside the bookmarks menu.
+      {"extensions", IDC_EXTENSIONS_SUBMENU},
+      {"find_and_edit", IDC_FIND_AND_EDIT_MENU},
+      {"save_and_share", IDC_SAVE_AND_SHARE_MENU},
+      {"profile_menu_in_app_menu_signed_out", IDC_PROFILE_MENU_IN_APP_MENU},
+      {"profile_menu_in_app_menu_signed_in", IDC_PROFILE_MENU_IN_APP_MENU},
+      {"profile_menu_in_app_menu_signin_not_allowed",
+       IDC_PROFILE_MENU_IN_APP_MENU},
   });
   const auto* const id_entry = kSubmenus.find(name);
   if (id_entry == kSubmenus.end()) {
@@ -292,14 +295,18 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_save_and_share) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
-                       InvokeUi_profile_menu_in_app) {
+                       InvokeUi_main_profile_signed_in) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
-  signin::SetPrimaryAccount(identity_manager, "user@example.com",
-                            signin::ConsentLevel::kSignin);
+  signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
+                                      signin::ConsentLevel::kSignin);
+  ShowAndVerifyUi();
+}
 
-  // Create an additional profile.
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
+                       InvokeUi_profile_menu_in_app_menu_signed_out) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
   profiles::testing::CreateProfileSync(profile_manager, new_path);
@@ -307,7 +314,16 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
 }
 
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
-                       InvokeUi_signin_not_allowed) {
+                       InvokeUi_profile_menu_in_app_menu_signed_in) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
+                                      signin::ConsentLevel::kSignin);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
+                       InvokeUi_profile_menu_in_app_menu_signin_not_allowed) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   ShowAndVerifyUi();
 }
