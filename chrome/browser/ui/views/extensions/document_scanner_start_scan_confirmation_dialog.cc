@@ -59,15 +59,17 @@ void ShowDocumentScannerStartScanConfirmationDialog(
                   &DocumentScannerStartScanConfirmationDialogDelegate::
                       OnDialogAccepted,
                   base::Unretained(bubble_delegate)),
-              ui::DialogModelButton::Params().SetLabel(l10n_util::GetStringUTF16(
-                  IDS_EXTENSIONS_DOCUMENT_SCAN_API_START_SCAN_REQUEST_ALLOW)))
+              ui::DialogModel::Button::Params().SetLabel(
+                  l10n_util::GetStringUTF16(
+                      IDS_EXTENSIONS_DOCUMENT_SCAN_API_START_SCAN_REQUEST_ALLOW)))
           .AddCancelButton(
               base::BindOnce(
                   &DocumentScannerStartScanConfirmationDialogDelegate::
                       OnDialogClosed,
                   base::Unretained(bubble_delegate)),
-              ui::DialogModelButton::Params().SetLabel(l10n_util::GetStringUTF16(
-                  IDS_EXTENSIONS_DOCUMENT_SCAN_API_START_SCAN_REQUEST_DENY)))
+              ui::DialogModel::Button::Params().SetLabel(
+                  l10n_util::GetStringUTF16(
+                      IDS_EXTENSIONS_DOCUMENT_SCAN_API_START_SCAN_REQUEST_DENY)))
           .AddParagraph(
               ui::DialogModelLabel(
                   l10n_util::GetStringFUTF16(

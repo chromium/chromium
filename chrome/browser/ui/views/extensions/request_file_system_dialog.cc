@@ -43,12 +43,12 @@ void ShowRequestFileSystemDialog(
               IDS_FILE_SYSTEM_REQUEST_FILE_SYSTEM_DIALOG_TITLE))
           .AddOkButton(
               std::move(accept_callback),
-              ui::DialogModelButton::Params().SetLabel(
+              ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(
                       IDS_FILE_SYSTEM_REQUEST_FILE_SYSTEM_DIALOG_ALLOW_BUTTON)))
           .AddCancelButton(
               std::move(cancel_callbacks.first),
-              ui::DialogModelButton::Params().SetLabel(
+              ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(
                       IDS_FILE_SYSTEM_REQUEST_FILE_SYSTEM_DIALOG_DENY_BUTTON)))
           .SetCloseActionCallback(std::move(cancel_callbacks.second))

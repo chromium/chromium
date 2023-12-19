@@ -105,11 +105,6 @@ DialogModelField::DialogModelField(Type type,
 
 DialogModelField::~DialogModelField() = default;
 
-DialogModelButton* DialogModelField::AsButton() {
-  CHECK_EQ(type_, kButton, base::NotFatalUntil::M123);
-  return static_cast<DialogModelButton*>(this);
-}
-
 DialogModelParagraph* DialogModelField::AsParagraph() {
   CHECK_EQ(type_, kParagraph, base::NotFatalUntil::M123);
   return static_cast<DialogModelParagraph*>(this);
@@ -142,62 +137,6 @@ DialogModelTextfield* DialogModelField::AsTextfield() {
 DialogModelCustomField* DialogModelField::AsCustomField() {
   CHECK_EQ(type_, kCustom, base::NotFatalUntil::M123);
   return static_cast<DialogModelCustomField*>(this);
-}
-
-DialogModelButton::Params::Params() = default;
-DialogModelButton::Params::~Params() = default;
-
-DialogModelButton::Params& DialogModelButton::Params::SetId(
-    ElementIdentifier id) {
-  CHECK(!id_, base::NotFatalUntil::M123);
-  CHECK(id, base::NotFatalUntil::M123);
-  id_ = id;
-  return *this;
-}
-
-DialogModelButton::Params& DialogModelButton::Params::SetLabel(
-    std::u16string label) {
-  CHECK(label_.empty(), base::NotFatalUntil::M123);
-  CHECK(!label.empty(), base::NotFatalUntil::M123);
-  label_ = label;
-  return *this;
-}
-
-DialogModelButton::Params& DialogModelButton::Params::SetStyle(
-    absl::optional<ButtonStyle> style) {
-  CHECK(style_ != style, base::NotFatalUntil::M123);
-  style_ = style;
-  return *this;
-}
-
-DialogModelButton::Params& DialogModelButton::Params::SetEnabled(
-    bool is_enabled) {
-  is_enabled_ = is_enabled;
-  return *this;
-}
-
-DialogModelButton::Params& DialogModelButton::Params::AddAccelerator(
-    Accelerator accelerator) {
-  accelerators_.insert(std::move(accelerator));
-  return *this;
-}
-
-DialogModelButton::DialogModelButton(
-    base::RepeatingCallback<void(const Event&)> callback,
-    const DialogModelButton::Params& params)
-    : DialogModelField(kButton, params.id_, params.accelerators_, params),
-      label_(std::move(params.label_)),
-      style_(params.style_),
-      is_enabled_(params.is_enabled_),
-      callback_(std::move(callback)) {
-  CHECK(callback_, base::NotFatalUntil::M123);
-}
-
-DialogModelButton::~DialogModelButton() = default;
-
-void DialogModelButton::OnPressed(base::PassKey<DialogModelFieldHost>,
-                                  const Event& event) {
-  callback_.Run(event);
 }
 
 DialogModelParagraph::DialogModelParagraph(const DialogModelLabel& label,

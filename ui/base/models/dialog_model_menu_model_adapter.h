@@ -26,6 +26,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelMenuModelAdapter final
   // DialogModelHost:
   void Close() override;
   void OnFieldChanged(DialogModelField* field) override;
+  void OnDialogButtonChanged() override;
 
   // MenuModel:
   size_t GetItemCount() const override;

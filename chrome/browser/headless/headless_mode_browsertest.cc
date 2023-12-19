@@ -354,12 +354,11 @@ Widget* ShowTestBubble(Browser* browser) {
   TestBubbleDelegate* bubble_delegate_ptr = bubble_delegate.get();
 
   ui::DialogModel::Builder dialog_builder(std::move(bubble_delegate));
-  dialog_builder.SetTitle(std::u16string(u"Test bubble"))
-      .AddParagraph(ui::DialogModelLabel(std::u16string(u"Test bubble text")))
-      .AddOkButton(
-          base::BindOnce(&TestBubbleDelegate::OnOkButton,
-                         base::Unretained(bubble_delegate_ptr)),
-          ui::DialogModelButton::Params().SetLabel(std::u16string(u"OK")));
+  dialog_builder.SetTitle(u"Test bubble")
+      .AddParagraph(ui::DialogModelLabel(u"Test bubble text"))
+      .AddOkButton(base::BindOnce(&TestBubbleDelegate::OnOkButton,
+                                  base::Unretained(bubble_delegate_ptr)),
+                   ui::DialogModel::Button::Params().SetLabel(u"OK"));
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       dialog_builder.Build(), anchor_view, views::BubbleBorder::TOP_RIGHT);

@@ -429,13 +429,13 @@ void BookmarkBubbleView::ShowBubble(
                          base::Unretained(bubble_delegate)))
       .AddOkButton(base::BindOnce(&BookmarkBubbleDelegate::ApplyEdits,
                                   base::Unretained(bubble_delegate)),
-                   ui::DialogModelButton::Params()
+                   ui::DialogModel::Button::Params()
                        .SetLabel(l10n_util::GetStringUTF16(IDS_DONE))
                        .SetId(kBookmarkBubbleOkButtonId))
       .AddCancelButton(
           base::BindRepeating(&BookmarkBubbleDelegate::HandleSecondaryButton,
                               base::Unretained(bubble_delegate)),
-          ui::DialogModelButton::Params()
+          ui::DialogModel::Button::Params()
               .SetLabel(secondary_button_label)
               .SetStyle(features::IsChromeRefresh2023()
                             ? ui::ButtonStyle::kTonal

@@ -85,6 +85,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   // ui::DialogModelHost:
   void Close() override;
   void OnFieldChanged(ui::DialogModelField* field) override;
+  void OnDialogButtonChanged() override;
 
  private:
   // This class observes the ContentsView theme to make sure that the window
@@ -112,7 +113,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
 
   void OnWindowClosing();
 
-  void UpdateButton(ui::DialogModelButton* model_field);
+  void UpdateDialogButtons();
 
   void UpdateWindowIcon();
   void UpdateSpacingAndMargins();

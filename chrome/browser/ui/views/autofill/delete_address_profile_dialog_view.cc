@@ -28,13 +28,13 @@ void ShowDeleteAddressProfileDialogView(
           .AddOkButton(
               base::BindOnce(&DeleteAddressProfileDialogController::OnAccepted,
                              controller),
-              ui::DialogModelButton::Params()
+              ui::DialogModel::Button::Params()
                   .SetId(views::DialogClientView::kOkButtonElementId)
                   .SetLabel(controller->GetAcceptButtonText()))
           .AddCancelButton(
               base::BindOnce(&DeleteAddressProfileDialogController::OnCanceled,
                              controller),
-              ui::DialogModelButton::Params()
+              ui::DialogModel::Button::Params()
                   .SetId(views::DialogClientView::kCancelButtonElementId)
                   .SetLabel(controller->GetDeclineButtonText()))
           .AddParagraph(

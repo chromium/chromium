@@ -48,8 +48,6 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
     ui::DialogModelField* field) {
   DCHECK(field);
   switch (field->type()) {
-    case ui::DialogModelField::kButton:
-      return BubbleDialogModelHost::FieldType::kControl;
     case ui::DialogModelField::kParagraph:
       return BubbleDialogModelHost::FieldType::kText;
     case ui::DialogModelField::kCheckbox:
@@ -336,9 +334,6 @@ class BubbleDialogModelHostContentsView final
   // anything remains try to have BubbleDialogModelHost observe it directly.
   void OnFieldAdded(ui::DialogModelField* field) {
     switch (field->type()) {
-      case ui::DialogModelField::kButton:
-        // TODO(pbos): Add support for buttons that are part of content area.
-        NOTREACHED_NORETURN();
       case ui::DialogModelField::kParagraph:
         AddOrUpdateParagraph(field->AsParagraph());
         break;
@@ -809,15 +804,15 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   // TODO(pbos): Consider refactoring ::SetExtraView() so it can be called
   // after the Widget is created and still be picked up. Moving this to
   // OnWidgetInitialized() will not work until then.
-  if (ui::DialogModelButton* extra_button =
+  if (ui::DialogModel::Button* extra_button =
           model_->extra_button(DialogModelHost::GetPassKey())) {
     DCHECK(!model_->extra_link(DialogModelHost::GetPassKey()));
-    auto builder = views::Builder<MdTextButton>()
-                       .SetCallback(base::BindRepeating(
-                           &ui::DialogModelButton::OnPressed,
-                           base::Unretained(extra_button),
-                           DialogModelFieldHost::GetPassKey()))
-                       .SetText(extra_button->label());
+    auto builder =
+        views::Builder<MdTextButton>()
+            .SetCallback(base::BindRepeating(
+                &ui::DialogModel::Button::OnPressed,
+                base::Unretained(extra_button), DialogModelHost::GetPassKey()))
+            .SetText(extra_button->label());
     if (extra_button->style()) {
       builder.SetStyle(extra_button->style().value());
     }
@@ -1051,10 +1046,13 @@ void BubbleDialogModelHost::OnFieldChanged(ui::DialogModelField* field) {
   // TODO(pbos): This should move into BubbleDialogModelHostContentsView.
   UpdateFieldVisibility(field);
 
-  // TODO(pbos): This should be directly observed from DialogModel.
-  if (field->type() == ui::DialogModelField::kButton) {
-    UpdateButton(field->AsButton());
-  }
+  // If the contents of the dialog change (text, field visitiblity, etc.), the
+  // dialog may need to be resized.
+  SizeToContents();
+}
+
+void BubbleDialogModelHost::OnDialogButtonChanged() {
+  UpdateDialogButtons();
 
   // If the contents of the dialog change (text, field visitiblity, etc.), the
   // dialog may need to be resized.
@@ -1156,20 +1154,20 @@ void BubbleDialogModelHost::OnWindowClosing() {
   // TODO(pbos): Do we need to reset `model_` and destroy contents? See Close().
 }
 
-void BubbleDialogModelHost::UpdateButton(ui::DialogModelButton* model_field) {
-  std::u16string label = model_field->label();
-  if (model_field == model_->ok_button(DialogModelHost::GetPassKey())) {
-    SetButtonLabel(ui::DIALOG_BUTTON_OK, label);
-  } else if (model_field ==
-             model_->cancel_button(DialogModelHost::GetPassKey())) {
-    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, label);
-  } else if (model_field ==
-             model_->extra_button(DialogModelHost::GetPassKey())) {
+void BubbleDialogModelHost::UpdateDialogButtons() {
+  if (ui::DialogModel::Button* const ok_button =
+          model_->ok_button(DialogModelHost::GetPassKey())) {
+    SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_button->label());
+  }
+  if (ui::DialogModel::Button* const cancel_button =
+          model_->cancel_button(DialogModelHost::GetPassKey())) {
+    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_button->label());
+  }
+  if (ui::DialogModel::Button* const extra_button =
+          model_->extra_button(DialogModelHost::GetPassKey())) {
     static_cast<MdTextButton*>(
-        GetTargetView(contents_view_->FindDialogModelHostField(model_field)))
-        ->SetText(label);
-  } else {
-    NOTIMPLEMENTED();
+        GetTargetView(contents_view_->FindDialogModelHostField(extra_button)))
+        ->SetText(extra_button->label());
   }
 }
 

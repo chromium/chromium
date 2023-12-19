@@ -23,7 +23,6 @@
 
 namespace ui {
 
-class DialogModelButton;
 class DialogModelParagraph;
 class DialogModelCheckbox;
 class DialogModelCombobox;
@@ -156,7 +155,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
 class COMPONENT_EXPORT(UI_BASE) DialogModelField {
  public:
   enum Type {
-    kButton,
     kParagraph,
     kCheckbox,
     kCombobox,
@@ -199,7 +197,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
     return accelerators_;
   }
   ElementIdentifier id() const { return id_; }
-  DialogModelButton* AsButton();
   DialogModelParagraph* AsParagraph();
   DialogModelCheckbox* AsCheckbox();
   DialogModelCombobox* AsCombobox();
@@ -227,62 +224,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   const base::flat_set<Accelerator> accelerators_;
 
   bool is_visible_;
-};
-
-// Field class representing a dialog button.
-class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
- public:
-  class COMPONENT_EXPORT(UI_BASE) Params : public DialogModelField::Params {
-   public:
-    Params();
-    Params(const Params&) = delete;
-    Params& operator=(const Params&) = delete;
-    ~Params();
-
-    Params& SetId(ElementIdentifier id);
-    Params& SetLabel(std::u16string label);
-    Params& SetStyle(absl::optional<ButtonStyle> style);
-    Params& SetEnabled(bool is_enabled);
-
-    Params& AddAccelerator(Accelerator accelerator);
-
-    Params& SetVisible(bool is_visible) {
-      DialogModelField::Params::SetVisible(is_visible);
-      return *this;
-    }
-
-   private:
-    friend class DialogModel;
-    friend class DialogModelButton;
-
-    ElementIdentifier id_;
-    std::u16string label_;
-    absl::optional<ButtonStyle> style_;
-    bool is_enabled_ = true;
-    base::flat_set<Accelerator> accelerators_;
-  };
-
-  DialogModelButton(base::RepeatingCallback<void(const Event&)> callback,
-                    const Params& params);
-  DialogModelButton(const DialogModelButton&) = delete;
-  DialogModelButton& operator=(const DialogModelButton&) = delete;
-  ~DialogModelButton() override;
-
-  const std::u16string& label() const { return label_; }
-  const absl::optional<ButtonStyle> style() const { return style_; }
-  bool is_enabled() const { return is_enabled_; }
-  void OnPressed(base::PassKey<DialogModelFieldHost>, const Event& event);
-
- private:
-  friend class DialogModel;
-
-  std::u16string label_;
-  const absl::optional<ButtonStyle> style_;
-  const bool is_enabled_;
-  // The button callback gets called when the button is activated. Whether
-  // that happens on key-press, release, etc. is implementation (and platform)
-  // dependent.
-  base::RepeatingCallback<void(const Event&)> callback_;
 };
 
 // Field class representing a paragraph.

@@ -23,7 +23,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelHost {
 
  protected:
   friend class DialogModel;
-  friend class DialogModelField;
 
   // This PassKey is used to make sure that some methods on DialogModel
   // are only called as part of the host integration.
@@ -37,6 +36,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelHost {
 
   // Called when some aspect of |field| changes.
   virtual void OnFieldChanged(DialogModelField* field) = 0;
+
+  // Called when a button changes.
+  virtual void OnDialogButtonChanged() = 0;
 };
 
 }  // namespace ui

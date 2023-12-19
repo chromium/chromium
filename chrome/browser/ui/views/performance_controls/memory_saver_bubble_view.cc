@@ -78,7 +78,7 @@ void AddCancelButton(ui::DialogModel::Builder* dialog_model_builder,
   }
   dialog_model_builder->AddCancelButton(
       std::move(callback),
-      ui::DialogModelButton::Params()
+      ui::DialogModel::Button::Params()
           .SetLabel(l10n_util::GetStringUTF16(button_string_id))
           .SetId(MemorySaverBubbleView::kMemorySaverDialogCancelButton));
 }
@@ -107,7 +107,7 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
           base::BindOnce(&MemorySaverBubbleDelegate::OnDialogDestroy,
                          base::Unretained(bubble_delegate)))
       .AddOkButton(base::DoNothing(),
-                   ui::DialogModelButton::Params()
+                   ui::DialogModel::Button::Params()
                        .SetLabel(l10n_util::GetStringUTF16(IDS_OK))
                        .SetId(kMemorySaverDialogOkButton));
 

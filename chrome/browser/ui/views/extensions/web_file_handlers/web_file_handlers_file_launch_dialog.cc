@@ -118,14 +118,14 @@ void ShowWebFileHandlersFileLaunchDialog(
               base::BindOnce(
                   &WebFileHandlersFileLaunchDialogDelegate::OnDialogAccepted,
                   base::Unretained(bubble_delegate)),
-              ui::DialogModelButton::Params().SetLabel(
+              ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(
                       IDS_WEB_APP_FILE_HANDLING_POSITIVE_BUTTON)))
           .AddCancelButton(
               base::BindOnce(
                   &WebFileHandlersFileLaunchDialogDelegate::OnDialogClosed,
                   base::Unretained(bubble_delegate)),
-              ui::DialogModelButton::Params().SetLabel(
+              ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(
                       IDS_WEB_APP_FILE_HANDLING_NEGATIVE_BUTTON)))
           .SetCloseActionCallback(base::BindOnce(

@@ -57,7 +57,7 @@ void ShowExtensionInstallBlockedByParentDialog(
           .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
               IDS_EXTENSION_PERMISSIONS_BLOCKED_BY_PARENT_PROMPT_MESSAGE)))
           .AddOkButton(base::DoNothing(),
-                       ui::DialogModelButton::Params().SetLabel(
+                       ui::DialogModel::Button::Params().SetLabel(
                            l10n_util::GetStringUTF16(IDS_OK)))
           .SetDialogDestroyingCallback(std::move(done_callback))
           .Build();

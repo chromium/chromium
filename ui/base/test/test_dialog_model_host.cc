@@ -10,9 +10,9 @@ namespace ui {
 
 namespace {
 
-DialogModelButton* GetButton(DialogModel* dialog_model,
-                             TestDialogModelHost::ButtonId button_id,
-                             base::PassKey<DialogModelHost> pass_key) {
+DialogModel::Button* GetButton(DialogModel* dialog_model,
+                               TestDialogModelHost::ButtonId button_id,
+                               base::PassKey<DialogModelHost> pass_key) {
   switch (button_id) {
     case TestDialogModelHost::ButtonId::kCancel:
       return dialog_model->cancel_button(pass_key);
@@ -56,7 +56,7 @@ void TestDialogModelHost::DestroyWithoutAction(
 
 void TestDialogModelHost::TriggerExtraButton(const ui::Event& event) {
   dialog_model_->extra_button(DialogModelHost::GetPassKey())
-      ->OnPressed(DialogModelFieldHost::GetPassKey(), event);
+      ->OnPressed(DialogModelHost::GetPassKey(), event);
 }
 
 DialogModelTextfield* TestDialogModelHost::FindSingleTextfield() {
@@ -105,6 +105,10 @@ void TestDialogModelHost::Close() {
 }
 
 void TestDialogModelHost::OnFieldChanged(DialogModelField* field) {
+  NOTREACHED_NORETURN();
+}
+
+void TestDialogModelHost::OnDialogButtonChanged() {
   NOTREACHED_NORETURN();
 }
 

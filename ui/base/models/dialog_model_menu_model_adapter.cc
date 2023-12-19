@@ -24,6 +24,12 @@ void DialogModelMenuModelAdapter::OnFieldChanged(DialogModelField* field) {
   NOTREACHED_NORETURN();
 }
 
+// TODO(pbos): This should probably not be hosting a DialogModel but rather
+// another model with DialogModelSection(s).
+void DialogModelMenuModelAdapter::OnDialogButtonChanged() {
+  NOTREACHED_NORETURN();
+}
+
 size_t DialogModelMenuModelAdapter::GetItemCount() const {
   return model_->fields(DialogModelHost::GetPassKey()).size();
 }

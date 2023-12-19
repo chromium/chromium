@@ -43,12 +43,12 @@ void DeferredUpdateDialog::CreateDialog(Action callback_action,
           .AddOkButton(
               base::BindOnce(&DeferredUpdateDialog::OnApplyDeferredUpdate,
                              base::Unretained(dialog_)),
-              ui::DialogModelButton::Params().SetLabel(
+              ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(ok_text)))
           .AddCancelButton(
               base::BindOnce(&DeferredUpdateDialog::OnContinueWithoutUpdate,
                              base::Unretained(dialog_)),
-              ui::DialogModelButton::Params().SetLabel(
+              ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(cancel_text)))
           .AddParagraph(ui::DialogModelLabel(
               l10n_util::GetStringUTF16(IDS_DEFERRED_UPDATE_DIALOG_TEXT)))

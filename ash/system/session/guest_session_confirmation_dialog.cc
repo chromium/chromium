@@ -46,12 +46,12 @@ void GuestSessionConfirmationDialog::Show() {
           .AddOkButton(
               base::BindOnce(&GuestSessionConfirmationDialog::OnConfirm,
                              g_dialog_->weak_ptr_factory_.GetWeakPtr()),
-              ui::DialogModelButton::Params().SetLabel(
+              ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(
                       IDS_GUEST_SESSION_CONFIRMATION_DIALOG_SIGN_OUT)))
           .AddCancelButton(
               base::DoNothing(),
-              ui::DialogModelButton::Params().SetLabel(
+              ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(
                       IDS_GUEST_SESSION_CONFIRMATION_DIALOG_CANCEL)))
           .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(

@@ -98,7 +98,7 @@ void ShowOutdatedUpgradeBubble(Browser* browser, bool auto_update_enabled) {
           .AddOkButton(
               base::BindOnce(&OnDialogAccepted, browser, auto_update_enabled,
                              kUpdateBrowserRedirectUrl),
-              ui::DialogModelButton::Params().SetLabel(
+              ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(auto_update_enabled
                                                 ? IDS_REINSTALL_APP
                                                 : IDS_REENABLE_UPDATES)))
