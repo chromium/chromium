@@ -100,5 +100,9 @@ BASE_FEATURE(kHostIndexedMetadataGrants,
 const base::FeatureParam<int> kMetadataGrantsThreshold{
     &kHostIndexedMetadataGrants, kMetadataGrantsThresholdName, 1};
 
+BASE_FEATURE(kIndexedHostContentSettingsMap,
+             "IndexedHostContentSettingsMap",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace content_settings

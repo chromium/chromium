@@ -129,6 +129,11 @@ BASE_DECLARE_FEATURE(kHostIndexedMetadataGrants);
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const base::FeatureParam<int> kMetadataGrantsThreshold;
 
+// Enable indexing HostContentSettings to allow for faster lookups of content
+// setting rules.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kIndexedHostContentSettingsMap);
+
 }  // namespace features
 }  // namespace content_settings
 

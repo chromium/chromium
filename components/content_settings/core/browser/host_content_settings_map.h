@@ -478,6 +478,12 @@ class HostContentSettingsMap : public content_settings::Observer,
       content_settings::RuleMetaData* metadata,
       base::Clock* clock);
 
+  static base::Value GetContentSettingValueAndPatterns(
+      content_settings::Rule* rule,
+      ContentSettingsPattern* primary_pattern,
+      ContentSettingsPattern* secondary_pattern,
+      content_settings::RuleMetaData* metadata);
+
   // Migrate requesting and top level origin content settings to remove all
   // settings that have a top level pattern. If there is a pattern set for
   // (http://x.com, http://y.com) this will remove that pattern and also remove

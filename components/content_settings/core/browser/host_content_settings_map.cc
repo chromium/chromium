@@ -1096,27 +1096,52 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
   CHECK(provider);
 
   if (include_incognito) {
-    // Check incognito-only specific settings. It's essential that the
-    // |RuleIterator| gets out of scope before we get a rule iterator for the
-    // normal mode.
-    std::unique_ptr<content_settings::RuleIterator> incognito_rule_iterator(
-        provider->GetRuleIterator(
-            content_type, true /* incognito */,
-            content_settings::PartitionKey::WipGetDefault()));
-    base::Value value = GetContentSettingValueAndPatterns(
-        incognito_rule_iterator.get(), primary_url, secondary_url,
-        primary_pattern, secondary_pattern, metadata, clock);
-    if (!value.is_none())
-      return value;
+    if (base::FeatureList::IsEnabled(
+            content_settings::features::kIndexedHostContentSettingsMap)) {
+      auto rule = provider->GetRule(
+          primary_url, secondary_url, content_type, /*off_the_record=*/true,
+          content_settings::PartitionKey::WipGetDefault());
+      if (rule) {
+        return GetContentSettingValueAndPatterns(rule.get(), primary_pattern,
+                                                 secondary_pattern, metadata);
+      }
+    } else {
+      // Check incognito-only specific settings. It's essential that the
+      // |RuleIterator| gets out of scope before we get a rule iterator for the
+      // normal mode.
+      std::unique_ptr<content_settings::RuleIterator> incognito_rule_iterator(
+          provider->GetRuleIterator(
+              content_type, true /* incognito */,
+              content_settings::PartitionKey::WipGetDefault()));
+      base::Value value = GetContentSettingValueAndPatterns(
+          incognito_rule_iterator.get(), primary_url, secondary_url,
+          primary_pattern, secondary_pattern, metadata, clock);
+      if (!value.is_none()) {
+        return value;
+      }
+    }
   }
+
   // No settings from the incognito; use the normal mode.
-  std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-      provider->GetRuleIterator(
-          content_type, false /* incognito */,
-          content_settings::PartitionKey::WipGetDefault()));
-  base::Value value = GetContentSettingValueAndPatterns(
-      rule_iterator.get(), primary_url, secondary_url, primary_pattern,
-      secondary_pattern, metadata, clock);
+  base::Value value;
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kIndexedHostContentSettingsMap)) {
+    auto rule = provider->GetRule(
+        primary_url, secondary_url, content_type, /*off_the_record=*/false,
+        content_settings::PartitionKey::WipGetDefault());
+    if (rule) {
+      value = GetContentSettingValueAndPatterns(rule.get(), primary_pattern,
+                                                secondary_pattern, metadata);
+    }
+  } else {
+    std::unique_ptr<content_settings::RuleIterator> rule_iterator(
+        provider->GetRuleIterator(
+            content_type, false /* incognito */,
+            content_settings::PartitionKey::WipGetDefault()));
+    value = GetContentSettingValueAndPatterns(
+        rule_iterator.get(), primary_url, secondary_url, primary_pattern,
+        secondary_pattern, metadata, clock);
+  }
   if (!value.is_none() && include_incognito) {
     value = ProcessIncognitoInheritanceBehavior(content_type, std::move(value));
   }
@@ -1143,17 +1168,31 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
                content_settings::features::kActiveContentSettingExpiry) ||
            (rule->metadata.expiration().is_null() ||
             (rule->metadata.expiration() > clock->Now())))) {
-        if (primary_pattern)
-          *primary_pattern = rule->primary_pattern;
-        if (secondary_pattern)
-          *secondary_pattern = rule->secondary_pattern;
-        if (metadata)
-          *metadata = rule->metadata;
-        return rule->TakeValue();
+        return GetContentSettingValueAndPatterns(rule.get(), primary_pattern,
+                                                 secondary_pattern, metadata);
       }
     }
   }
   return base::Value();
+}
+
+// static
+base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
+    content_settings::Rule* rule,
+    ContentSettingsPattern* primary_pattern,
+    ContentSettingsPattern* secondary_pattern,
+    content_settings::RuleMetaData* metadata) {
+  if (primary_pattern) {
+    *primary_pattern = std::move(rule->primary_pattern);
+  }
+  if (secondary_pattern) {
+    *secondary_pattern = std::move(rule->secondary_pattern);
+  }
+  if (metadata) {
+    *metadata = std::move(rule->metadata);
+  }
+  DCHECK(!rule->value().is_none());
+  return rule->TakeValue();
 }
 
 void HostContentSettingsMap::
