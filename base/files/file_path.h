@@ -105,6 +105,7 @@
 #include <cstddef>
 #include <iosfwd>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
@@ -166,7 +167,7 @@ class BASE_EXPORT FilePath {
 #endif  // BUILDFLAG(IS_WIN)
 
   typedef StringType::value_type CharType;
-  typedef BasicStringPiece<CharType> StringPieceType;
+  typedef std::basic_string_view<CharType> StringPieceType;
 
   // Null-terminated array of separators used to separate components in paths.
   // Each character in this array is a valid separator, but kSeparators[0] is

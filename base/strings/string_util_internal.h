@@ -6,6 +6,7 @@
 #define BASE_STRINGS_STRING_UTIL_INTERNAL_H_
 
 #include <concepts>
+#include <string_view>
 #include <type_traits>
 
 #include "base/ranges/algorithm.h"
@@ -51,8 +52,8 @@ constexpr int CompareCaseInsensitiveASCIIT(T a, T b) {
 }
 
 template <typename CharT, typename CharU>
-inline bool EqualsCaseInsensitiveASCIIT(BasicStringPiece<CharT> a,
-                                        BasicStringPiece<CharU> b) {
+inline bool EqualsCaseInsensitiveASCIIT(std::basic_string_view<CharT> a,
+                                        std::basic_string_view<CharU> b) {
   return ranges::equal(a, b, [](auto lhs, auto rhs) {
     return ToLowerASCII(lhs) == ToLowerASCII(rhs);
   });

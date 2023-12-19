@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 #include <limits>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/logging.h"
@@ -152,7 +153,7 @@ class StringToNumberParser {
 };
 
 template <typename Number, int kBase, typename CharT>
-auto StringToNumber(BasicStringPiece<CharT> input) {
+auto StringToNumber(std::basic_string_view<CharT> input) {
   using Parser = StringToNumberParser<Number, kBase>;
   using Result = typename Parser::Result;
 

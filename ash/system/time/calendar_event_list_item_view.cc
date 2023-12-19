@@ -5,6 +5,7 @@
 #include "ash/system/time/calendar_event_list_item_view.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -91,7 +92,7 @@ class CalendarEventListItemDot : public views::View {
                                               : SK_AlphaOPAQUE) {
     DCHECK(color_id.empty() || kEventHexColorCodes.count(color_id));
 
-    base::BasicStringPiece<char> hex_code = LookupColorId(color_id);
+    std::string_view hex_code = LookupColorId(color_id);
     base::HexStringToInt(hex_code, &color_);
     SetPreferredSize(gfx::Size(
         kColorDotViewSize,
@@ -113,7 +114,7 @@ class CalendarEventListItemDot : public views::View {
   }
 
  private:
-  base::BasicStringPiece<char> LookupColorId(std::string color_id) {
+  std::string_view LookupColorId(std::string color_id) {
     const auto* iter = kEventHexColorCodes.find(color_id);
     if (iter == kEventHexColorCodes.end()) {
       return kEventHexColorCodes.at(kDefaultColorId);

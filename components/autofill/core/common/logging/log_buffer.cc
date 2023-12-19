@@ -5,6 +5,7 @@
 #include "components/autofill/core/common/logging/log_buffer.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -243,7 +244,7 @@ namespace {
 // Highlights the first |needle| in |haystack| by wrapping it in <b> tags.
 template <typename T, typename CharT = typename T::value_type>
 LogBuffer HighlightValueInternal(T haystack, T needle) {
-  using StringPieceT = base::BasicStringPiece<CharT>;
+  using StringPieceT = std::basic_string_view<CharT>;
   LogBuffer buffer(LogBuffer::IsActive(true));
   size_t pos = haystack.find(needle);
   if (pos == StringPieceT::npos || needle.empty()) {
