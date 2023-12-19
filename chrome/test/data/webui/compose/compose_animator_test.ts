@@ -57,6 +57,28 @@ suite('ComposeAnimator', () => {
     assertEquals('1', window.getComputedStyle(child).opacity);
   });
 
+  test('FadesOut', async () => {
+    const animations = animator.fadeOut('#child1', {duration: 5});
+    assertEquals(1, animations.length);
+    const child = mockRoot.shadowRoot!.querySelector('#child1')!;
+    assertEquals('1', window.getComputedStyle(child).opacity);
+    await animationsAsPromises(animations);
+    assertEquals('0', window.getComputedStyle(child).opacity);
+    assertEquals('block', window.getComputedStyle(child).display);
+  });
+
+  test('FadesOutAndHides', async () => {
+    const animations =
+        animator.fadeOutAndHide('#child1', 'flex', {duration: 5});
+    assertEquals(1, animations.length);
+    const child = mockRoot.shadowRoot!.querySelector('#child1')!;
+    assertEquals('1', window.getComputedStyle(child).opacity);
+    assertEquals('flex', window.getComputedStyle(child).display);
+    await animationsAsPromises(animations);
+    assertEquals('0', window.getComputedStyle(child).opacity);
+    assertEquals('none', window.getComputedStyle(child).display);
+  });
+
   test('ScalesIn', async () => {
     const animations = animator.scaleIn('#child1', {duration: 5});
     assertEquals(1, animations.length);
@@ -77,6 +99,17 @@ suite('ComposeAnimator', () => {
     await animationsAsPromises(animations);
     assertEquals(
         'matrix(1, 0, 0, 1, 0, 0)', window.getComputedStyle(child).transform);
+  });
+
+  test('SlidesOut', async () => {
+    const animations = animator.slideOut('#child1', 83, {duration: 5});
+    assertEquals(1, animations.length);
+    const child = mockRoot.shadowRoot!.querySelector('#child1')!;
+    assertEquals(
+        'matrix(1, 0, 0, 1, 0, 0)', window.getComputedStyle(child).transform);
+    await animationsAsPromises(animations);
+    assertEquals(
+        'matrix(1, 0, 0, 1, 0, 83)', window.getComputedStyle(child).transform);
   });
 
   test('DisablesAnimations', () => {

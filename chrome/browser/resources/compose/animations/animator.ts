@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-const STANDARD_EASING = 'cubic-bezier(0.2, 0.0, 0, 1.0)';
+export const STANDARD_EASING = 'cubic-bezier(0.2, 0.0, 0, 1.0)';
 
 /**
  * Generic animator class that has common animations and util methods.
@@ -16,6 +16,12 @@ export class Animator {
   constructor(root: HTMLElement, animationsEnabled: boolean) {
     this.root_ = root;
     this.animationsEnabled_ = animationsEnabled;
+  }
+
+  getElement(selector: string): HTMLElement {
+    const element = this.root_.shadowRoot!.querySelector(selector);
+    assert(element);
+    return element as HTMLElement;
   }
 
   animate(
@@ -39,7 +45,32 @@ export class Animator {
           {opacity: 0},
           {opacity: 1},
         ],
-        Object.assign({easing: 'linear', fill: 'both'}, options));
+        Object.assign({easing: 'linear'}, options));
+  }
+
+  fadeOut(selector: string, options: KeyframeAnimationOptions): Animation[] {
+    return this.animate(
+        selector,
+        [
+          {opacity: 1},
+          {opacity: 0},
+        ],
+        Object.assign({easing: 'linear'}, options));
+  }
+
+  /* Fades out an element and then sets the 'display' of the element to 'none'.
+   * This is useful for animations that result in an element and its children
+   * becoming [hidden]. */
+  fadeOutAndHide(
+      selector: string, beforeDisplay: string,
+      options: KeyframeAnimationOptions): Animation[] {
+    return this.animate(
+        selector,
+        [
+          {display: beforeDisplay, opacity: 1},
+          {display: 'none', opacity: 0},
+        ],
+        Object.assign({easing: 'linear'}, options));
   }
 
   scaleIn(selector: string, options: KeyframeAnimationOptions): Animation[] {
@@ -49,7 +80,7 @@ export class Animator {
           {transform: 'scale(0)'},
           {transform: 'scale(1)'},
         ],
-        Object.assign({easing: STANDARD_EASING, fill: 'both'}, options));
+        Object.assign({easing: STANDARD_EASING}, options));
   }
 
   slideIn(
@@ -61,6 +92,18 @@ export class Animator {
           {transform: `translateY(${startDistance}px)`},
           {transform: `translateY(0)`},
         ],
-        Object.assign({easing: STANDARD_EASING, fill: 'both'}, options));
+        Object.assign({easing: STANDARD_EASING}, options));
+  }
+
+  slideOut(
+      selector: string, endDistance: number,
+      options: KeyframeAnimationOptions): Animation[] {
+    return this.animate(
+        selector,
+        [
+          {transform: `translateY(0)`},
+          {transform: `translateY(${endDistance}px)`},
+        ],
+        Object.assign({easing: STANDARD_EASING}, options));
   }
 }
