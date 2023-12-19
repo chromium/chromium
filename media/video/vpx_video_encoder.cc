@@ -202,8 +202,8 @@ EncoderStatus ReallocateVpxImageIfNeeded(vpx_image_t* vpx_image,
                                          const vpx_img_fmt fmt,
                                          int width,
                                          int height) {
-  if (vpx_image->fmt != fmt || static_cast<int>(vpx_image->w) != width ||
-      static_cast<int>(vpx_image->h) != height) {
+  if (vpx_image->fmt != fmt || static_cast<int>(vpx_image->d_w) != width ||
+      static_cast<int>(vpx_image->d_h) != height) {
     vpx_img_free(vpx_image);
     if (vpx_image != vpx_img_alloc(vpx_image, fmt, width, height, 1)) {
       return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
