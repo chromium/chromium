@@ -15,8 +15,8 @@ struct TabStripConstants {
   /// Tab item constants.
   struct TabItem {
     static let height: CGFloat = 40
-    static let minWidth: CGFloat = 80
-    static let maxWidth: CGFloat = 150
+    static let minWidth: CGFloat = 132
+    static let maxWidth: CGFloat = 233
     static let horizontalSpacing: CGFloat = 0
     static let selectedZindex: Int = 10
   }

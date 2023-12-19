@@ -13,8 +13,10 @@
 
 namespace {
 
-// The size of the xmark symbol image.
-NSInteger kXmarkSymbolPointSize = 13;
+// The size of the close button.
+const CGFloat kCloseButtonSize = 16;
+// The alpha of the close button background color.
+const CGFloat kCloseButtonBackgroundAlpha = 0.2;
 
 // Corner radius of the top left and right corner of the content view.
 const CGFloat kTopCornerRadius = 16;
@@ -24,7 +26,7 @@ const CGFloat kTailSize = 16;
 
 // Content view constants.
 const CGFloat kFaviconLeadingMargin = 16;
-const CGFloat kCloseButtonMargin = 16;
+const CGFloat kCloseButtonMargin = 10;
 const CGFloat kTitleInset = 10.0;
 const CGFloat kFontSize = 14.0;
 const CGFloat kFaviconSize = 16.0;
@@ -238,6 +240,7 @@ UIImage* DefaultFavicon() {
 
   UIView* contentView = self.contentView;
 
+  /// `leadingImageGuide` constraints.
   [NSLayoutConstraint activateConstraints:@[
     [leadingImageGuide.leadingAnchor
         constraintEqualToAnchor:contentView.leadingAnchor
@@ -248,29 +251,36 @@ UIImage* DefaultFavicon() {
     [leadingImageGuide.heightAnchor
         constraintEqualToAnchor:leadingImageGuide.widthAnchor],
   ]];
-
   AddSameConstraints(leadingImageGuide, _faviconView);
   AddSameConstraints(leadingImageGuide, _activityIndicator);
 
+  /// `_closeButton` image constraints.
   [NSLayoutConstraint activateConstraints:@[
+    [_closeButton.leadingAnchor
+        constraintEqualToAnchor:_titleLabel.trailingAnchor
+                       constant:kCloseButtonMargin],
     [_closeButton.trailingAnchor
         constraintEqualToAnchor:contentView.trailingAnchor
                        constant:-kCloseButtonMargin],
+    [_closeButton.widthAnchor constraintEqualToConstant:kCloseButtonSize],
+    [_closeButton.heightAnchor constraintEqualToConstant:kCloseButtonSize],
     [_closeButton.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
   ]];
 
+  /// `_titleLabel` constraints.
   [NSLayoutConstraint activateConstraints:@[
     [_titleLabel.leadingAnchor
         constraintEqualToAnchor:leadingImageGuide.trailingAnchor
                        constant:kTitleInset],
     [_titleLabel.trailingAnchor
-        constraintLessThanOrEqualToAnchor:_closeButton.leadingAnchor
+        constraintLessThanOrEqualToAnchor:contentView.trailingAnchor
                                  constant:-kTitleInset],
     [_titleLabel.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
   ]];
 
+  /// `_leftTailView` and `_rightTailView` constraints.
   [NSLayoutConstraint activateConstraints:@[
     [_leftTailView.trailingAnchor
         constraintEqualToAnchor:contentView.leadingAnchor],
@@ -304,11 +314,19 @@ UIImage* DefaultFavicon() {
 
 // Returns a new close button.
 - (UIButton*)createCloseButton {
-  UIImage* close =
-      DefaultSymbolTemplateWithPointSize(kXMarkSymbol, kXmarkSymbolPointSize);
+  UIImage* closeSymbol =
+      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseButtonSize);
   UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
   closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [closeButton setImage:close forState:UIControlStateNormal];
+  [closeButton
+      setImage:SymbolWithPalette(
+                   closeSymbol,
+                   @[
+                     [UIColor colorNamed:kTextSecondaryColor],
+                     [[UIColor colorNamed:kTextQuaternaryColor]
+                         colorWithAlphaComponent:kCloseButtonBackgroundAlpha]
+                   ])
+      forState:UIControlStateNormal];
   [closeButton addTarget:self
                   action:@selector(closeButtonTapped:)
         forControlEvents:UIControlEventTouchUpInside];
