@@ -73,14 +73,16 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
 #if BUILDFLAG(IS_WIN)
   gpu::SurfaceHandle window_handle_to_draw_to;
 
-  // TODO(crbug.com/swiftshader/186): If we are using SwiftShader, don't create
-  // child window. Child window is created with WS_EX_LAYERED |
-  // WS_EX_NOREDIRECTIONBITMAP flag which doesn't work with SwiftShader.
-  if (!context_state_->IsGraphiteDawnVulkanSwiftShader()) {
-    child_window_.Initialize();
-    window_handle_to_draw_to = child_window_.window();
-  } else {
-    window_handle_to_draw_to = surface_handle;
+  // Only D3D swapchain requires that the rendering windows are owned by the
+  // process that's currently doing the rendering.
+  switch (context_state_->dawn_context_provider()->backend_type()) {
+    case wgpu::BackendType::D3D11:
+    case wgpu::BackendType::D3D12:
+      child_window_.Initialize();
+      window_handle_to_draw_to = child_window_.window();
+      break;
+    default:
+      window_handle_to_draw_to = surface_handle;
   }
 
   vsync_provider_ =

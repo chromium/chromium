@@ -105,7 +105,6 @@ D3DImageBackingFactory::D3DImageBackingFactory(
       dxgi_shared_handle_manager_(std::move(dxgi_shared_handle_manager)),
       angle_d3d11_device_(gl::QueryD3D11DeviceObjectFromANGLE()),
       gl_format_caps_(gl_format_caps) {
-  CHECK(d3d11_device_);
   CHECK(angle_d3d11_device_);
 }
 
