@@ -126,6 +126,9 @@
 - (ProceduralBlock)recordMobileWebContextMenuOpenTabActionWithBlock:
     (ProceduralBlock)block;
 
+// Creates a UIAction instance for adding a tab in a new tab group.
+- (UIAction*)actionToAddTabToNewGroupWithBlock:(ProceduralBlock)block;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_ACTION_FACTORY_H_

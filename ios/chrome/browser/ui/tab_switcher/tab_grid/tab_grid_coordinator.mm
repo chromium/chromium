@@ -1333,6 +1333,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.pinnedTabsMediator setPinState:NO forItemWithID:identifier];
 }
 
+- (void)createNewTabGroupWithIdentifier:(web::WebStateID)identifier {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+      << "You should not be able to create a new tab group outside the Tab "
+         "Groups experiment.";
+  // TODO(crbug.com/1501837): Display the tab group creation view.
+}
+
 - (void)closeTabWithIdentifier:(web::WebStateID)identifier
                      incognito:(BOOL)incognito
                         pinned:(BOOL)pinned {

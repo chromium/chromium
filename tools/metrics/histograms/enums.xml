@@ -25873,6 +25873,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="41" label="Lens Camera Search"/>
   <int value="42" label="Save Image in Google Photos"/>
   <int value="43" label="Close Other Tabs"/>
+  <int value="44" label="Add Tab to New Group"/>
 </enum>
 
 <enum name="IOSMenuScenario">

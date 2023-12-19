@@ -54,7 +54,8 @@ enum class MenuActionType {
   LensCameraSearch = 41,
   SaveImageToGooglePhotos = 42,
   CloseAllOtherTabs = 43,
-  kMaxValue = CloseAllOtherTabs
+  AddTabToNewGroup = 44,
+  kMaxValue = AddTabToNewGroup
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 
