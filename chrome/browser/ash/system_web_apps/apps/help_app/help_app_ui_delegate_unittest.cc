@@ -12,25 +12,21 @@
 #include "chrome/browser/ash/borealis/testing/features.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/test_web_ui.h"
 
 namespace ash {
 
 class HelpAppUiDelegateTest : public BrowserWithTestWindowTest {
  public:
-  HelpAppUiDelegateTest()
-      : user_manager_(new FakeChromeUserManager()),
-        scoped_user_manager_(
-            std::unique_ptr<FakeChromeUserManager>(user_manager_)),
-        web_ui_(std::make_unique<content::TestWebUI>()) {}
+  HelpAppUiDelegateTest() : web_ui_(std::make_unique<content::TestWebUI>()) {}
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     AddTab(browser(), GURL("about:blank"));
     content::WebContents* contents =
         browser()->tab_strip_model()->GetWebContentsAt(0);
+    user_manager_ = static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
     web_ui_->set_web_contents(contents);
     delegate_ = std::make_unique<ChromeHelpAppUIDelegate>(web_ui());
   }
@@ -43,11 +39,9 @@ class HelpAppUiDelegateTest : public BrowserWithTestWindowTest {
  protected:
   content::WebUI* web_ui() { return web_ui_.get(); }
 
-  TestingProfile profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
       user_manager_;
-  user_manager::ScopedUserManager scoped_user_manager_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<ChromeHelpAppUIDelegate> delegate_;
 };
