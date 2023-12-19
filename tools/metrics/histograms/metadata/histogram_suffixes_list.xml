@@ -1413,16 +1413,6 @@ chromium-metrics-reviews@google.com.
       name="GPU.DirectComposition.SwapChainCreationResult3.SoftwareProtected"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GPUBlocklistPerFeature" separator=".">
-  <suffix name="Accelerated2dCanvas" label="Accelerated2dCanvas"/>
-  <suffix name="GpuCompositing" label="GpuCompositing"/>
-  <suffix name="GpuRasterization" label="GpuRasterization"/>
-  <suffix name="Webgl" label="Webgl"/>
-  <suffix name="Webgl2" label="Webgl2"/>
-  <suffix name="Webgpu" label="Webgpu"/>
-  <affected-histogram name="GPU.BlocklistFeatureTestResults"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="GridTabSwitcherAnimationType" separator=".">
   <suffix name="Expand" label="Grid to Tab"/>
   <suffix name="Shrink" label="Tab to Grid"/>

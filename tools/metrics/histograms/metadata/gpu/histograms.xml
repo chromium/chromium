@@ -411,7 +411,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.BlocklistFeatureTestResults"
+<histogram name="GPU.BlocklistFeatureTestResults.{GPUBlocklistPerFeature}"
     enum="GPUBlocklistFeatureTestResults" expires_after="2024-04-28">
   <owner>vmiura@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -419,6 +419,14 @@ chromium-metrics-reviews@google.com.
     Counts number of browser invocations for which a GPU feature is
     allowed/blocklisted/disabled.
   </summary>
+  <token key="GPUBlocklistPerFeature">
+    <variant name="Accelerated2dCanvas" summary="Accelerated2dCanvas"/>
+    <variant name="GpuCompositing" summary="GpuCompositing"/>
+    <variant name="GpuRasterization" summary="GpuRasterization"/>
+    <variant name="Webgl" summary="Webgl"/>
+    <variant name="Webgl2" summary="Webgl2"/>
+    <variant name="Webgpu" summary="Webgpu"/>
+  </token>
 </histogram>
 
 <histogram name="GPU.BlocklistTestResultsPerEntry"
