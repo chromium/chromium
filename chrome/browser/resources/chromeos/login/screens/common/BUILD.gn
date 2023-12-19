@@ -26,7 +26,6 @@ js_type_check("closure_compile_local") {
         "js_module_root=./gen/chrome/browser/resources/gaia_auth_host",
       ]
   deps = [
-    ":adb_sideloading",
     ":app_downloading",
     ":app_launch_splash",
 
@@ -74,16 +73,6 @@ js_type_check("closure_compile_multidevice_setup") {
 ###############################
 # Closure compiler libraries below
 
-js_library("adb_sideloading") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/adb_sideloading.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-}
 
 js_library("app_downloading") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/app_downloading.js" ]

@@ -123,7 +123,7 @@ foreach(f, oobe_screens_html_files) {
 }
 
 common_screens_js_files = [
-  "screens/common/adb_sideloading.js",
+  "screens/common/adb_sideloading.ts",
   "screens/common/add_child.ts",
   "screens/common/app_downloading.js",
   "screens/common/app_launch_splash.js",

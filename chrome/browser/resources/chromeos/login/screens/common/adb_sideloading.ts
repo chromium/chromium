@@ -8,57 +8,55 @@
 
 import '//resources/js/action_link.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../../components/oobe_icons.html.js';
+import '../../components/buttons/oobe_text_button.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
+import '../../components/oobe_icons.html.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 
 import {getTemplate} from './adb_sideloading.html.js';
 
 /**
  * UI mode for the dialog.
- * @enum {string}
  */
-const AdbSideloadingState = {
-  ERROR: 'error',
-  SETUP: 'setup',
-};
+enum AdbSideloadingState {
+  ERROR = 'error',
+  SETUP = 'setup',
+}
 
 /**
  * The constants need to be synced with EnableAdbSideloadingScreenView::UIState
- * @enum {number}
  */
-const ADB_SIDELOADING_SCREEN_STATE = {
-  ERROR: 1,
-  SETUP: 2,
-};
+enum AdbsideloadingScreenState {
+  ERROR = 1,
+  SETUP = 2,
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- */
-const AdbSideloadingBase = mixinBehaviors([OobeI18nBehavior,
-  LoginScreenBehavior, MultiStepBehavior], PolymerElement);
+const AdbSideloadingBase = mixinBehaviors(
+    [OobeI18nBehavior,
+        OobeDialogHostBehavior,
+        LoginScreenBehavior,
+        MultiStepBehavior],
+    PolymerElement) as { new (): PolymerElement
+        & OobeDialogHostBehaviorInterface
+        & OobeI18nBehaviorInterface
+        & LoginScreenBehaviorInterface
+        & MultiStepBehaviorInterface,
+    };
 
-/**
- * @polymer
- */
-class AdbSideloading extends AdbSideloadingBase {
+export class AdbSideloading extends AdbSideloadingBase {
   static get is() {
-    return 'adb-sideloading-element';
+    return 'adb-sideloading-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
@@ -66,19 +64,20 @@ class AdbSideloading extends AdbSideloadingBase {
     super();
   }
 
-  get EXTERNAL_API() {
+  override get EXTERNAL_API(): string[] {
     return ['setScreenState'];
   }
 
-  get UI_STEPS() {
+  override get UI_STEPS() {
     return AdbSideloadingState;
   }
 
-  defaultUIStep() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep() {
     return AdbSideloadingState.SETUP;
   }
 
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('EnableAdbSideloadingScreen');
   }
@@ -86,51 +85,50 @@ class AdbSideloading extends AdbSideloadingBase {
   /*
    * Executed on language change.
    */
-  updateLocalizedContent() {
+  override updateLocalizedContent(): void {
     this.i18nUpdateLocale();
   }
 
-  onBeforeShow() {
-    this.setScreenState(ADB_SIDELOADING_SCREEN_STATE.SETUP);
+  override onBeforeShow(): void {
+    this.setScreenState(AdbsideloadingScreenState.SETUP);
   }
 
   /**
    * Sets UI state for the dialog to show corresponding content.
-   * @param {ADB_SIDELOADING_SCREEN_STATE} state
    */
-  setScreenState(state) {
-    if (state == ADB_SIDELOADING_SCREEN_STATE.ERROR) {
+  setScreenState(state: AdbsideloadingScreenState): void {
+    if (state == AdbsideloadingScreenState.ERROR) {
       this.setUIStep(AdbSideloadingState.ERROR);
-    } else if (state == ADB_SIDELOADING_SCREEN_STATE.SETUP) {
+    } else if (state == AdbsideloadingScreenState.SETUP) {
       this.setUIStep(AdbSideloadingState.SETUP);
     }
   }
 
   /**
    * On-tap event handler for enable button.
-   *
-   * @private
    */
-  onEnableTap_() {
+  private onEnableClick(): void {
     this.userActed('enable-pressed');
   }
 
   /**
    * On-tap event handler for cancel button.
-   *
-   * @private
    */
-  onCancelTap_() {
+  private onCancelClick(): void {
     this.userActed('cancel-pressed');
   }
 
   /**
    * On-tap event handler for learn more link.
-   *
-   * @private
    */
-  onLearnMoreTap_() {
+  private onLearnMoreClick(): void {
     this.userActed('learn-more-link');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [AdbSideloading.is]: AdbSideloading;
   }
 }
 
