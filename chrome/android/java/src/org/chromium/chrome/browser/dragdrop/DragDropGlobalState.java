@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.dragdrop;
 
+import android.view.View.DragShadowBuilder;
+
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -12,17 +14,17 @@ public final class DragDropGlobalState {
 
     private static DragDropGlobalState sInstance = new DragDropGlobalState();
 
-    public boolean dragShadowShowing;
     public int dragSourceInstanceId = MultiWindowUtils.INVALID_INSTANCE_ID;
     public Tab tabBeingDragged;
+    public DragShadowBuilder dragShadowBuilder;
 
     public static DragDropGlobalState getInstance() {
         return sInstance;
     }
 
     public void reset() {
-        dragShadowShowing = false;
         dragSourceInstanceId = MultiWindowUtils.INVALID_INSTANCE_ID;
         tabBeingDragged = null;
+        dragShadowBuilder = null;
     }
 }
