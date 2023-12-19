@@ -68,6 +68,9 @@ const CGSize kGridCellSizeLarge = CGSize{228.0f, 256.0f};
 const CGSize kGridCellSizeAccessibility = CGSize{288.0f, 336.0f};
 const CGFloat kGridCellCornerRadius = 16.0f;
 const CGFloat kGridCellIconCornerRadius = 3.0f;
+// TODO(crbug.com/1501837): This is a temporary value, this have to be change to
+// match design specifications
+const CGFloat kGroupGridBottomTrailingCellsCornerRadius = 8.0f;
 // The cell header contains the icon, title, and close button.
 const CGFloat kGridCellHeaderHeight = 32.0f;
 const CGFloat kGridCellHeaderAccessibilityHeight = 108.0f;

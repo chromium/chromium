@@ -112,6 +112,8 @@ source_set("grid_ui") {
     "grid_layout.mm",
     "grid_shareable_items_provider.h",
     "grid_theme.h",
+    "group_bottom_trailing_view.h",
+    "group_bottom_trailing_view.mm",
     "group_grid_cell.h",
     "group_grid_cell.mm",
     "group_tab_info.h",
