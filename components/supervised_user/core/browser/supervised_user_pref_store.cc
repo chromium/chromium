@@ -143,14 +143,8 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
     prefs_->SetInteger(policy::policy_prefs::kForceYouTubeRestrict,
                        safe_search_api::YOUTUBE_RESTRICT_MODERATE);
 #endif
+
     prefs_->SetBoolean(policy::policy_prefs::kHideWebStoreIcon, false);
-
-// TODO(b/290004926): Modifying `prefs::kSigninAllowed` causes check failures on
-// iOS.
-#if !BUILDFLAG(IS_IOS)
-    prefs_->SetBoolean(prefs::kSigninAllowed, false);
-#endif  // !BUILDFLAG(IS_IOS)
-
     prefs_->SetBoolean(feed::prefs::kEnableSnippets,
                        supervised_user::IsKidFriendlyContentFeedAvailable());
 
