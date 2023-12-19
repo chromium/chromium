@@ -26,10 +26,10 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/cpu_probe.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
+#include "components/system_cpu/cpu_probe.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -39,6 +39,8 @@ namespace performance_manager::metrics {
 
 namespace {
 
+using system_cpu::CpuProbe;
+using system_cpu::PressureSample;
 using PageMeasurementBackgroundState =
     PageResourceMonitor::PageMeasurementBackgroundState;
 

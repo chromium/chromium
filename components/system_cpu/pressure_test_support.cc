@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/cpu_probe/pressure_test_support.h"
+#include "components/system_cpu/pressure_test_support.h"
 
 #include <utility>
 
@@ -13,7 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 
-namespace performance_manager::metrics {
+namespace system_cpu {
 
 FakeCpuProbe::FakeCpuProbe() = default;
 
@@ -69,4 +69,4 @@ base::WeakPtr<CpuProbe> StreamingCpuProbe::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-}  // namespace performance_manager::metrics
+}  // namespace system_cpu

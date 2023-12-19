@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_CPU_PROBE_CORE_TIMES_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_CPU_PROBE_CORE_TIMES_H_
+#ifndef COMPONENTS_SYSTEM_CPU_CORE_TIMES_H_
+#define COMPONENTS_SYSTEM_CPU_CORE_TIMES_H_
 
 #include <stdint.h>
 
@@ -11,7 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 
-namespace performance_manager::metrics {
+namespace system_cpu {
 
 // CPU core utilization statistics.
 //
@@ -84,6 +84,6 @@ class CoreTimes {
   uint64_t times_[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 };
 
-}  // namespace performance_manager::metrics
+}  // namespace system_cpu
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_CPU_PROBE_CORE_TIMES_H_
+#endif  // COMPONENTS_SYSTEM_CPU_CORE_TIMES_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/cpu_probe/cpu_probe.h"
+#include "components/system_cpu/cpu_probe.h"
 
 #include <memory>
 #include <utility>
@@ -13,14 +13,14 @@
 #include "base/location.h"
 #include "build/build_config.h"
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/performance_manager/metrics/cpu_probe/cpu_probe_linux.h"
+#include "components/system_cpu/cpu_probe_linux.h"
 #elif BUILDFLAG(IS_WIN)
-#include "chrome/browser/performance_manager/metrics/cpu_probe/cpu_probe_win.h"
+#include "components/system_cpu/cpu_probe_win.h"
 #elif BUILDFLAG(IS_MAC)
-#include "chrome/browser/performance_manager/metrics/cpu_probe/cpu_probe_mac.h"
+#include "components/system_cpu/cpu_probe_mac.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-namespace performance_manager::metrics {
+namespace system_cpu {
 
 // static
 std::unique_ptr<CpuProbe> CpuProbe::Create() {
@@ -80,4 +80,4 @@ void CpuProbe::OnPressureSampleAvailable(
   std::move(callback).Run(std::move(sample));
 }
 
-}  // namespace performance_manager::metrics
+}  // namespace system_cpu

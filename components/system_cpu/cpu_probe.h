@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_CPU_PROBE_CPU_PROBE_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_CPU_PROBE_CPU_PROBE_H_
+#ifndef COMPONENTS_SYSTEM_CPU_CPU_PROBE_H_
+#define COMPONENTS_SYSTEM_CPU_CPU_PROBE_H_
 
 #include <memory>
 
@@ -12,10 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/pressure_sample.h"
+#include "components/system_cpu/pressure_sample.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace performance_manager::metrics {
+namespace system_cpu {
 
 // Interface for retrieving the CPU load from the underlying OS on request.
 //
@@ -95,6 +95,6 @@ class CpuProbe {
   bool got_probe_baseline_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 };
 
-}  // namespace performance_manager::metrics
+}  // namespace system_cpu
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_CPU_PROBE_CPU_PROBE_H_
+#endif  // COMPONENTS_SYSTEM_CPU_CPU_PROBE_H_

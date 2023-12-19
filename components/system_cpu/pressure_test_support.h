@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_CPU_PROBE_PRESSURE_TEST_SUPPORT_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_CPU_PROBE_PRESSURE_TEST_SUPPORT_H_
+#ifndef COMPONENTS_SYSTEM_CPU_PRESSURE_TEST_SUPPORT_H_
+#define COMPONENTS_SYSTEM_CPU_PRESSURE_TEST_SUPPORT_H_
 
 #include <stdint.h>
 
@@ -16,11 +16,11 @@
 #include "base/synchronization/lock.h"
 #include "base/test/test_future.h"
 #include "base/thread_annotations.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/cpu_probe.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/pressure_sample.h"
+#include "components/system_cpu/cpu_probe.h"
+#include "components/system_cpu/pressure_sample.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace performance_manager::metrics {
+namespace system_cpu {
 
 // Test double for platform specific CpuProbe that stores the PressureSample in
 // a TestFuture.
@@ -88,6 +88,6 @@ class StreamingCpuProbe final : public CpuProbe {
   base::WeakPtrFactory<StreamingCpuProbe> weak_factory_{this};
 };
 
-}  // namespace performance_manager::metrics
+}  // namespace system_cpu
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_CPU_PROBE_PRESSURE_TEST_SUPPORT_H_
+#endif  // COMPONENTS_SYSTEM_CPU_PRESSURE_TEST_SUPPORT_H_

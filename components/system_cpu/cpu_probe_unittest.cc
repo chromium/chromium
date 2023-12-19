@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/cpu_probe/cpu_probe.h"
+#include "components/system_cpu/cpu_probe.h"
 
 #include <memory>
 #include <utility>
@@ -18,13 +18,13 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/cpu_probe.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/pressure_sample.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/pressure_test_support.h"
+#include "components/system_cpu/cpu_probe.h"
+#include "components/system_cpu/pressure_sample.h"
+#include "components/system_cpu/pressure_test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace performance_manager::metrics {
+namespace system_cpu {
 
 class CpuProbeTest : public testing::Test {
  public:
@@ -169,4 +169,4 @@ TEST_F(CpuProbeDeathTest, StartSamplingTwice) {
   EXPECT_CHECK_DEATH(cpu_probe_->StartSampling());
 }
 
-}  // namespace performance_manager::metrics
+}  // namespace system_cpu

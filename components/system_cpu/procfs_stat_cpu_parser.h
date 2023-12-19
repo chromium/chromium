@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_CPU_PROBE_PROCFS_STAT_CPU_PARSER_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_CPU_PROBE_PROCFS_STAT_CPU_PARSER_H_
+#ifndef COMPONENTS_SYSTEM_CPU_PROCFS_STAT_CPU_PARSER_H_
+#define COMPONENTS_SYSTEM_CPU_PROCFS_STAT_CPU_PARSER_H_
 
 #include <stdint.h>
 
@@ -13,9 +13,9 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/core_times.h"
+#include "components/system_cpu/core_times.h"
 
-namespace performance_manager::metrics {
+namespace system_cpu {
 
 // Parses CPU time usage stats from procfs (/proc/stat).
 //
@@ -63,6 +63,6 @@ class ProcfsStatCpuParser {
   std::vector<CoreTimes> core_times_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-}  // namespace performance_manager::metrics
+}  // namespace system_cpu
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_CPU_PROBE_PROCFS_STAT_CPU_PARSER_H_
+#endif  // COMPONENTS_SYSTEM_CPU_PROCFS_STAT_CPU_PARSER_H_

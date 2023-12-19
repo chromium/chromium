@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/cpu_probe/cpu_probe_win.h"
+#include "components/system_cpu/cpu_probe_win.h"
 
 #include <pdh.h>
 
@@ -17,10 +17,10 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/win/scoped_pdh_query.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/pressure_sample.h"
+#include "components/system_cpu/pressure_sample.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace performance_manager::metrics {
+namespace system_cpu {
 
 namespace {
 
@@ -166,4 +166,4 @@ base::WeakPtr<CpuProbe> CpuProbeWin::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-}  // namespace performance_manager::metrics
+}  // namespace system_cpu

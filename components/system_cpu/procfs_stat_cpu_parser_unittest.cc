@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/cpu_probe/procfs_stat_cpu_parser.h"
+#include "components/system_cpu/procfs_stat_cpu_parser.h"
 
 #include <memory>
 #include <string>
@@ -15,7 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace performance_manager::metrics {
+namespace system_cpu {
 
 class ProcfsStatCpuParserTest : public testing::Test {
  public:
@@ -428,4 +428,4 @@ softirq 900 901 902 903 904 905 906 907 908 909 910
   }
 }
 
-}  // namespace performance_manager::metrics
+}  // namespace system_cpu

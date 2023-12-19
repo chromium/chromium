@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/cpu_probe/core_times.h"
+#include "components/system_cpu/core_times.h"
 
 #include "base/check_op.h"
 
-namespace performance_manager::metrics {
+namespace system_cpu {
 
 CoreTimes::CoreTimes(const std::initializer_list<uint64_t>& times) {
   CHECK_EQ(times.size(), 10u);
@@ -138,4 +138,4 @@ double CoreTimes::TimeUtilization(const CoreTimes& baseline) const {
   return active_delta / total_delta;
 }
 
-}  // namespace performance_manager::metrics
+}  // namespace system_cpu

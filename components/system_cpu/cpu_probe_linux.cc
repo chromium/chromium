@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/cpu_probe/cpu_probe_linux.h"
+#include "components/system_cpu/cpu_probe_linux.h"
 
 #include <stdint.h>
 
@@ -17,11 +17,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/core_times.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/pressure_sample.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/procfs_stat_cpu_parser.h"
+#include "components/system_cpu/core_times.h"
+#include "components/system_cpu/pressure_sample.h"
+#include "components/system_cpu/procfs_stat_cpu_parser.h"
 
-namespace performance_manager::metrics {
+namespace system_cpu {
 
 // Helper class that performs the actual I/O. It must run on a
 // SequencedTaskRunner that is properly configured for blocking I/O
@@ -141,4 +141,4 @@ base::WeakPtr<CpuProbe> CpuProbeLinux::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-}  // namespace performance_manager::metrics
+}  // namespace system_cpu

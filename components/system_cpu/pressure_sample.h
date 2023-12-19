@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_CPU_PROBE_PRESSURE_SAMPLE_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_CPU_PROBE_PRESSURE_SAMPLE_H_
+#ifndef COMPONENTS_SYSTEM_CPU_PRESSURE_SAMPLE_H_
+#define COMPONENTS_SYSTEM_CPU_PRESSURE_SAMPLE_H_
 
-namespace performance_manager::metrics {
+namespace system_cpu {
 
 // Represents availability of compute resources measured over a period of time.
 struct PressureSample {
@@ -15,6 +15,6 @@ struct PressureSample {
   double cpu_utilization;
 };
 
-}  // namespace performance_manager::metrics
+}  // namespace system_cpu
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_CPU_PROBE_PRESSURE_SAMPLE_H_
+#endif  // COMPONENTS_SYSTEM_CPU_PRESSURE_SAMPLE_H_

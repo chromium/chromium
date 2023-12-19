@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/cpu_probe/cpu_probe_mac.h"
+#include "components/system_cpu/cpu_probe_mac.h"
 
 #include <stdint.h>
 
@@ -16,12 +16,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/core_times.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/host_processor_info_scanner.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/pressure_sample.h"
+#include "components/system_cpu/core_times.h"
+#include "components/system_cpu/host_processor_info_scanner.h"
+#include "components/system_cpu/pressure_sample.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace performance_manager::metrics {
+namespace system_cpu {
 
 // Helper class that performs the actual I/O. It must run on a
 // SequencedTaskRunner that is properly configured for blocking I/O
@@ -132,4 +132,4 @@ base::WeakPtr<CpuProbe> CpuProbeMac::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-}  // namespace performance_manager::metrics
+}  // namespace system_cpu

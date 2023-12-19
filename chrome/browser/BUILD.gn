@@ -1095,9 +1095,6 @@ static_library("browser") {
     "performance_manager/mechanisms/page_freezer.h",
     "performance_manager/mechanisms/working_set_trimmer.cc",
     "performance_manager/mechanisms/working_set_trimmer.h",
-    "performance_manager/metrics/cpu_probe/cpu_probe.cc",
-    "performance_manager/metrics/cpu_probe/cpu_probe.h",
-    "performance_manager/metrics/cpu_probe/pressure_sample.h",
     "performance_manager/metrics/memory_pressure_metrics.cc",
     "performance_manager/metrics/memory_pressure_metrics.h",
     "performance_manager/metrics/metrics_provider_common.cc",
@@ -1991,6 +1988,7 @@ static_library("browser") {
     "//components/session_proto_db:session_proto_db",
     "//components/sync",
     "//components/sync_device_info",
+    "//components/system_cpu:system_cpu",
     "//content/public/browser",
     "//ipc",
     "//pdf:buildflags",
@@ -5843,9 +5841,6 @@ static_library("browser") {
 
       # Needed for _variant_t used in browser_dm_token_storage_win.cc
       "comsuppw.lib",
-
-      # Needed for cpu_probe_win.cc
-      "pdh.lib",
     ]
     sources += [
       "accessibility/caption_settings_dialog.h",
@@ -5927,8 +5922,6 @@ static_library("browser") {
       "os_crypt/app_bound_encryption_win.h",
       "password_manager/password_manager_util_win.cc",
       "password_manager/password_manager_util_win.h",
-      "performance_manager/metrics/cpu_probe/cpu_probe_win.cc",
-      "performance_manager/metrics/cpu_probe/cpu_probe_win.h",
       "performance_monitor/metric_evaluator_helper_win.cc",
       "performance_monitor/metric_evaluator_helper_win.h",
       "platform_util_win.cc",
@@ -6199,12 +6192,6 @@ static_library("browser") {
       "obsolete_system/obsolete_system_mac.cc",
       "password_manager/password_manager_util_mac.h",
       "password_manager/password_manager_util_mac.mm",
-      "performance_manager/metrics/cpu_probe/core_times.cc",
-      "performance_manager/metrics/cpu_probe/core_times.h",
-      "performance_manager/metrics/cpu_probe/cpu_probe_mac.cc",
-      "performance_manager/metrics/cpu_probe/cpu_probe_mac.h",
-      "performance_manager/metrics/cpu_probe/host_processor_info_scanner.cc",
-      "performance_manager/metrics/cpu_probe/host_processor_info_scanner.h",
       "platform_util_mac.mm",
       "policy/browser_dm_token_storage_mac.h",
       "policy/browser_dm_token_storage_mac.mm",
@@ -6450,12 +6437,6 @@ static_library("browser") {
       "memory_details_linux.cc",
       "metrics/bluetooth_metrics_provider.cc",
       "metrics/bluetooth_metrics_provider.h",
-      "performance_manager/metrics/cpu_probe/core_times.cc",
-      "performance_manager/metrics/cpu_probe/core_times.h",
-      "performance_manager/metrics/cpu_probe/cpu_probe_linux.cc",
-      "performance_manager/metrics/cpu_probe/cpu_probe_linux.h",
-      "performance_manager/metrics/cpu_probe/procfs_stat_cpu_parser.cc",
-      "performance_manager/metrics/cpu_probe/procfs_stat_cpu_parser.h",
       "policy/browser_dm_token_storage_linux.cc",
       "policy/browser_dm_token_storage_linux.h",
     ]

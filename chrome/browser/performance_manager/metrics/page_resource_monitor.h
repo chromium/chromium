@@ -15,15 +15,18 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/pressure_sample.h"
 #include "chrome/browser/performance_manager/metrics/page_resource_cpu_monitor.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
+#include "components/system_cpu/pressure_sample.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace system_cpu {
+class CpuProbe;
+}
 
 namespace performance_manager::metrics {
 
-class CpuProbe;
 class PageResourceMonitorUnitTest;
 
 // Periodically reports tab resource usage via UKM.
@@ -75,8 +78,9 @@ class PageResourceMonitor : public GraphOwned {
 
   // Invoked asynchronously from CollectPageResourceUsage() when measurements
   // are ready.
-  void OnPageResourceUsageResult(const PageCPUUsageVector& page_cpu_usage,
-                                 absl::optional<PressureSample> system_cpu);
+  void OnPageResourceUsageResult(
+      const PageCPUUsageVector& page_cpu_usage,
+      absl::optional<system_cpu::PressureSample> system_cpu);
 
   // Asynchronously checks if the CPU metrics are still above the threshold
   // after a delay.
@@ -86,12 +90,12 @@ class PageResourceMonitor : public GraphOwned {
   // measurements are ready.
   void OnDelayedCPUInterventionMetricsResult(
       const PageCPUUsageVector& page_cpu_usage,
-      absl::optional<PressureSample> system_cpu);
+      absl::optional<system_cpu::PressureSample> system_cpu);
 
   // Log CPU intervention metrics with the provided suffix.
   void LogCPUInterventionMetrics(
       const PageCPUUsageVector& page_cpu_usage,
-      const absl::optional<PressureSample>& system_cpu,
+      const absl::optional<system_cpu::PressureSample>& system_cpu,
       const base::TimeTicks now,
       CPUInterventionSuffix histogram_suffix);
 
@@ -103,7 +107,8 @@ class PageResourceMonitor : public GraphOwned {
   void CalculatePageCPUUsage(
       bool use_delayed_system_cpu_probe,
       base::OnceCallback<void(const PageCPUUsageVector&,
-                              absl::optional<PressureSample>)> callback);
+                              absl::optional<system_cpu::PressureSample>)>
+          callback);
 
   // Invoked asynchronously from CalculatePageCPUUsage() when page CPU
   // measurements are ready. Converts the measurements in `cpu_usage_map`
@@ -114,7 +119,8 @@ class PageResourceMonitor : public GraphOwned {
   void OnPageCPUUsageResult(
       bool use_delayed_system_cpu_probe,
       base::OnceCallback<void(const PageCPUUsageVector&,
-                              absl::optional<PressureSample>)> callback,
+                              absl::optional<system_cpu::PressureSample>)>
+          callback,
       const PageResourceCPUMonitor::CPUUsageMap& cpu_usage_map);
 
   // If this is called, CollectPageResourceUsage() will not be called on a
@@ -151,9 +157,9 @@ class PageResourceMonitor : public GraphOwned {
   PageResourceCPUMonitor cpu_monitor_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Helpers to take system CPU measurements for UMA.
-  std::unique_ptr<CpuProbe> system_cpu_probe_
+  std::unique_ptr<system_cpu::CpuProbe> system_cpu_probe_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unique_ptr<CpuProbe> delayed_system_cpu_probe_
+  std::unique_ptr<system_cpu::CpuProbe> delayed_system_cpu_probe_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // WeakPtrFactory for the RepeatingTimer to call a method on this object.

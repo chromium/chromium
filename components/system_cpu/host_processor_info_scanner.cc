@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/cpu_probe/host_processor_info_scanner.h"
+#include "components/system_cpu/host_processor_info_scanner.h"
 
 #include <mach/mach.h>
 #include <mach/mach_host.h>
@@ -12,9 +12,9 @@
 #include "base/apple/scoped_mach_vm.h"
 #include "base/mac/mac_util.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/core_times.h"
+#include "components/system_cpu/core_times.h"
 
-namespace performance_manager::metrics {
+namespace system_cpu {
 
 HostProcessorInfoScanner::HostProcessorInfoScanner() {
   core_times_.reserve(base::SysInfo::NumberOfProcessors());
@@ -70,4 +70,4 @@ bool HostProcessorInfoScanner::Update() {
   return true;
 }
 
-}  // namespace performance_manager::metrics
+}  // namespace system_cpu

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/cpu_probe/core_times.h"
+#include "components/system_cpu/core_times.h"
 
 #include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace performance_manager::metrics {
+namespace system_cpu {
 
 using CoreTimesTest = testing::Test;
 
@@ -107,4 +107,4 @@ TEST_F(CoreTimesTest, TimeUtilizationComputation) {
   }
 }
 
-}  // namespace performance_manager::metrics
+}  // namespace system_cpu

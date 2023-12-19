@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/cpu_probe/procfs_stat_cpu_parser.h"
+#include "components/system_cpu/procfs_stat_cpu_parser.h"
 
 #include <stdint.h>
 
@@ -18,7 +18,7 @@
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 
-namespace performance_manager::metrics {
+namespace system_cpu {
 
 constexpr base::FilePath::CharType ProcfsStatCpuParser::kProcfsStatPath[];
 
@@ -145,4 +145,4 @@ void ProcfsStatCpuParser::UpdateCore(base::StringPiece core_line,
   core_times.set_guest_nice(parsed_numbers[9]);
 }
 
-}  // namespace performance_manager::metrics
+}  // namespace system_cpu
