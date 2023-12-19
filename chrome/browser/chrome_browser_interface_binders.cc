@@ -448,6 +448,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_COMPOSE)
+#include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/ui/webui/compose/compose_ui.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/compose/core/browser/compose_features.h"  // nogncheck crbug.com/1125897
@@ -1723,7 +1724,8 @@ void PopulateChromeWebUIFrameBinders(
 #endif
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-  if (base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
+  if (ComposeEnabling::IsEnabledForProfile(Profile::FromBrowserContext(
+          render_frame_host->GetBrowserContext()))) {
     RegisterWebUIControllerInterfaceBinder<
         compose::mojom::ComposeSessionPageHandlerFactory, ComposeUI>(map);
   }

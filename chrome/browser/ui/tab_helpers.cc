@@ -246,10 +246,6 @@
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #endif
 
-#if BUILDFLAG(ENABLE_COMPOSE)
-#include "chrome/browser/compose/chrome_compose_client.h"
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api.h"
 #include "chrome/browser/extensions/navigation_extension_enabler.h"
@@ -290,6 +286,7 @@
 
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/compose/chrome_compose_client.h"
+#include "chrome/browser/compose/compose_enabling.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
 #endif
@@ -626,7 +623,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-  if (base::FeatureList::IsEnabled(compose::features::kEnableCompose) &&
+  if ((ComposeEnabling::IsEnabledForProfile(profile)) &&
       !profile->IsOffTheRecord()) {
     ChromeComposeClient::CreateForWebContents(web_contents);
   }

@@ -186,6 +186,10 @@
 #include "chrome/browser/ui/webui/settings/mac_system_settings_handler.h"
 #endif
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+#include "chrome/browser/compose/compose_enabling.h"
+#endif
+
 namespace settings {
 
 // static
@@ -393,9 +397,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
               companion::features::kCompanionEnablePageContent));
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-  html_source->AddBoolean(
-      "enableComposeSetting",
-      base::FeatureList::IsEnabled(compose::features::kEnableCompose));
+  html_source->AddBoolean("enableComposeSetting",
+                          ComposeEnabling::IsEnabledForProfile(profile));
 #endif
 
   html_source->AddBoolean(

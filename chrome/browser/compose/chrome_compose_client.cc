@@ -19,6 +19,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -71,11 +72,13 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
   opt_guide_ = OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
   pref_service_ = profile_->GetPrefs();
   compose_enabling_ = std::make_unique<ComposeEnabling>(
-      translate_language_provider_.get(), profile_);
+      translate_language_provider_.get(), profile_,
+      IdentityManagerFactory::GetForProfileIfExists(profile_),
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile_));
 
   if (GetOptimizationGuide()) {
     std::vector<optimization_guide::proto::OptimizationType> types;
-    if (compose_enabling_->IsEnabledForProfile(profile_).has_value()) {
+    if (compose_enabling_->IsEnabled().has_value()) {
       types.push_back(optimization_guide::proto::OptimizationType::COMPOSE);
     }
 

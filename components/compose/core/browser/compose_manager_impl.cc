@@ -56,10 +56,6 @@ bool ComposeManagerImpl::HasSavedState(
   return client_->HasSession(trigger_field_id);
 }
 
-bool ComposeManagerImpl::IsEnabled() const {
-  return base::FeatureList::IsEnabled(features::kEnableCompose);
-}
-
 void ComposeManagerImpl::GetBrowserFormHandler(
     autofill::FieldGlobalId field_id,
     compose::ComposeManagerImpl::UiEntryPoint ui_entry_point,
@@ -102,7 +98,6 @@ void ComposeManagerImpl::OpenComposeWithFormFieldData(
     const autofill::FormFieldData& trigger_field,
     std::optional<PopupScreenLocation> popup_screen_location,
     ComposeCallback callback) {
-  CHECK(IsEnabled());
   if (ui_entry_point == UiEntryPoint::kContextMenu) {
     compose::LogComposeContextMenuCtr(
         compose::ComposeContextMenuCtrEvent::kComposeOpened);

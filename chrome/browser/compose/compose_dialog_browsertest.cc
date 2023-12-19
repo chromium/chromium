@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest,
       browser(), embedded_test_server()->GetURL("/compose/test2.html")));
   ASSERT_NE(nullptr, ChromeComposeClient::FromWebContents(web_contents));
   auto* client = ChromeComposeClient::FromWebContents(web_contents);
-  client->GetComposeEnabling().SetEnabledForTesting();
+  client->GetComposeEnabling().SetEnabledForTesting(true);
 
   // get point of element
   gfx::PointF textarea_center =
@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, OpenFeedbackPage) {
       browser(), embedded_test_server()->GetURL("/compose/test2.html")));
   ASSERT_NE(nullptr, ChromeComposeClient::FromWebContents(web_contents));
   auto* client = ChromeComposeClient::FromWebContents(web_contents);
-  client->GetComposeEnabling().SetEnabledForTesting();
+  client->GetComposeEnabling().SetEnabledForTesting(true);
 
   // get point of element
   gfx::PointF textarea_center =

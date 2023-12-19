@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/compose/core/browser/compose_features.h"
@@ -9,7 +10,10 @@
 
 class ComposeTest : public WebUIMochaBrowserTest {
  protected:
-  ComposeTest() { set_test_loader_host(chrome::kChromeUIComposeHost); }
+  ComposeTest() {
+    set_test_loader_host(chrome::kChromeUIComposeHost);
+    ComposeEnabling::SetEnabledForTesting(true);
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{

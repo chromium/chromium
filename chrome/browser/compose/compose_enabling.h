@@ -22,20 +22,25 @@ class ComposeEnabling : public optimization_guide::SettingsEnabledObserver {
  public:
   explicit ComposeEnabling(
       TranslateLanguageProvider* translate_language_provider,
-      Profile* profile);
+      Profile* profile,
+      signin::IdentityManager* identity_manager,
+      OptimizationGuideKeyedService* opt_guide);
   ~ComposeEnabling() override;
 
   ComposeEnabling(const ComposeEnabling&) = delete;
   ComposeEnabling& operator=(const ComposeEnabling&) = delete;
 
-  base::expected<void, compose::ComposeShowStatus> IsEnabledForProfile(
-      Profile* profile);
-  base::expected<void, compose::ComposeShowStatus> IsEnabled(
-      Profile* profile,
-      signin::IdentityManager* identity_manager);
-  void SetEnabledForTesting();
-  void ClearEnabledForTesting();
-  void SkipUserEnabledCheckForTesting(bool skip);
+  // Static method that verifies that the feature can be enabled on the given
+  // profile. Doesn't take advantage of for test opt_guide or identity_manager,
+  // use member function version if you need to mock them out.
+  static bool IsEnabledForProfile(Profile* profile);
+
+  // Instance method that verifies that the feature be enabled for profile
+  // provided associated with this instance.
+  base::expected<void, compose::ComposeShowStatus> IsEnabled();
+
+  static void SetEnabledForTesting(bool enabled);
+  static void SkipUserEnabledCheckForTesting(bool skip);
   bool ShouldTriggerPopup(std::string_view autocomplete_attribute,
                           Profile* profile,
                           translate::TranslateManager* translate_manager,
@@ -57,17 +62,22 @@ class ComposeEnabling : public optimization_guide::SettingsEnabledObserver {
   void PrepareToEnableOnRestart() override;
 
  private:
-  raw_ptr<TranslateLanguageProvider> translate_language_provider_;
-  raw_ptr<Profile> profile_;
-  raw_ptr<OptimizationGuideKeyedService> opt_guide_;
-  bool enabled_for_testing_{false};
-  bool skip_user_check_for_testing_{false};
-
   base::expected<void, compose::ComposeShowStatus> PageLevelChecks(
-      Profile* profile,
       translate::TranslateManager* translate_manager,
       const url::Origin& top_level_frame_origin,
       const url::Origin& element_frame_origin);
+
+  static base::expected<void, compose::ComposeShowStatus> CheckEnabling(
+      Profile* profile,
+      OptimizationGuideKeyedService* opt_guide,
+      signin::IdentityManager* identity_manager);
+
+  raw_ptr<TranslateLanguageProvider> translate_language_provider_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<OptimizationGuideKeyedService> opt_guide_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  static bool enabled_for_testing_;
+  static bool skip_user_check_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_COMPOSE_COMPOSE_ENABLING_H_

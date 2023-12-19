@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <memory>
 #include <utility>
-
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -299,6 +298,7 @@
 #endif  // BUILDFLAG(PLATFORM_CFM)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
+#include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/ui/webui/compose/compose_ui.h"
 #include "components/compose/core/browser/compose_features.h"
 #endif
@@ -757,7 +757,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
 #if BUILDFLAG(ENABLE_COMPOSE)
   if (url.host_piece() == chrome::kChromeUIComposeHost &&
-      base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
+      ComposeEnabling::IsEnabledForProfile(profile)) {
     return &NewWebUI<ComposeUI>;
   }
 #endif
