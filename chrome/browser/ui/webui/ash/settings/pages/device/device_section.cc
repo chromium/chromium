@@ -1772,6 +1772,8 @@ void DeviceSection::AddCustomizeButtonsPageStrings(
        IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_TITLE},
       {"customizeButtonSubpageDescription",
        IDS_SETTINGS_CUSTOMIZE_BUTTONS_SUBPAGE_DESCRIPTION},
+      {"customizeMouseButtonsNudgeHeader",
+       IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_NUDGE_HEADER},
       {"customizeMouseButtonsTitle",
        IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_TITLE},
       {"disbableOptionLabel", IDS_SETTINGS_DISABLE_OPTION_LABEL},
