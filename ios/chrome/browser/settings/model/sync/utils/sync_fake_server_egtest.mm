@@ -7,6 +7,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/bookmarks/common/storage_type.h"
+#import "components/browser_sync/browser_sync_switches.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -108,9 +110,36 @@ void ClearRelevantData() {
       [self isRunningTest:@selector(testSyncUpdateAutofillProfile)]) {
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
+  } else if ([self isRunningTest:@selector(testMigrateSyncToSignin)]) {
+    // testMigrateSyncToSignin starts out with SyncToSignin disabled; it'll turn
+    // on flags and restart Chrome.
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+    config.features_disabled.push_back(switches::kMigrateSyncingUserToSignedIn);
   }
 
   return config;
+}
+
+- (void)relaunchWithIdentity:(FakeSystemIdentity*)identity
+             enabledFeatures:(const std::vector<base::test::FeatureRef>&)enabled
+            disabledFeatures:
+                (const std::vector<base::test::FeatureRef>&)disabled {
+  // Before restarting, ensure that the FakeServer has written all its pending
+  // state to disk.
+  [ChromeEarlGrey flushFakeSyncServerToDisk];
+
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled = enabled;
+  config.features_disabled = disabled;
+  config.additional_args.push_back(
+      base::StrCat({"--", test_switches::kSignInAtStartup}));
+  config.additional_args.push_back(base::StrCat({
+    "-", test_switches::kAddFakeIdentitiesAtStartup, "=",
+        [FakeSystemIdentity encodeIdentitiesToBase64:@[ identity ]]
+  }));
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
 // Tests that a bookmark added on the client (before Sync is enabled) is
@@ -451,6 +480,73 @@ void ClearRelevantData() {
                                    syncTimeout:kSyncOperationTimeout];
   WaitForEntitiesOnFakeServer(1, syncer::DEVICE_INFO);
   [ChromeEarlGrey waitForSyncInvalidationFields];
+}
+
+- (void)testMigrateSyncToSignin {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Sign in and turn on Sync-the-feature.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  NSString* const kBookmarkUrl = @"https://www.goo.com/";
+  NSString* const kBookmarkTitle = @"Goo";
+  // Create some data and wait for it to arrive on the server.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:kBookmarkTitle
+                       URL:kBookmarkUrl
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  WaitForEntitiesOnFakeServer(1, syncer::BOOKMARKS);
+  // TODO(crbug.com/1486420): Also add a password and a reading list entry.
+
+  // Restart Chrome with UNO phase 2 enabled.
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos}
+            disabledFeatures:{switches::kMigrateSyncingUserToSignedIn}];
+  // Sync-the-feature should still be enabled.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+  // Wait for the sync machinery to become active, which is required for the
+  // migration.
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  // Verify that the bookmark still exists in the local-or-syncable storage.
+  [BookmarkEarlGrey verifyExistenceOfBookmarkWithURL:kBookmarkUrl
+                                                name:kBookmarkTitle
+                                           inStorage:bookmarks::StorageType::
+                                                         kLocalOrSyncable];
+
+  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled.
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
+                              switches::kMigrateSyncingUserToSignedIn}
+            disabledFeatures:{}];
+  // Sync-the-feature should *not* be enabled anymore.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:NO
+                                syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  // The bookmark should still exist, but now be in the account store.
+  [BookmarkEarlGrey
+      verifyAbsenceOfBookmarkWithURL:kBookmarkUrl
+                           inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [BookmarkEarlGrey
+      verifyExistenceOfBookmarkWithURL:kBookmarkUrl
+                                  name:kBookmarkTitle
+                             inStorage:bookmarks::StorageType::kAccount];
+
+  // The sync machinery should still be functional: Add an account bookmarks
+  // and ensure it arrives on the server.
+  [BookmarkEarlGrey addBookmarkWithTitle:@"Second bookmark"
+                                     URL:@"https://second.com/"
+                               inStorage:bookmarks::StorageType::kAccount];
+  WaitForEntitiesOnFakeServer(2, syncer::BOOKMARKS);
 }
 
 @end
