@@ -47,6 +47,7 @@ namespace performance_manager::metrics {
 
 namespace {
 
+using PageMeasurementAlgorithm = PageResourceMonitor::PageMeasurementAlgorithm;
 using PageMeasurementBackgroundState =
     PageResourceMonitor::PageMeasurementBackgroundState;
 
@@ -298,14 +299,17 @@ void PageResourceMonitorUnitTest::WaitForMetricsAndTestBackgroundStates(
 // feature flag.
 class PageResourceMonitorWithFeatureTest
     : public PageResourceMonitorUnitTest,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<
+          std::tuple<bool, PageMeasurementAlgorithm>> {
  public:
   PageResourceMonitorWithFeatureTest() {
+    std::tie(use_resource_attribution_, expected_measurement_algorithm_) =
+        GetParam();
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kPageTimelineMonitor,
              {{"use_resource_attribution_cpu_monitor",
-               GetParam() ? "true" : "false"}}},
+               use_resource_attribution_ ? "true" : "false"}}},
             {performance_manager::features::kCPUInterventionEvaluationLogging,
              {{"threshold_chrome_cpu_percent", "50"}}},
         },
@@ -326,13 +330,21 @@ class PageResourceMonitorWithFeatureTest
     PageResourceMonitorUnitTest::TearDown();
   }
 
+ protected:
+  bool use_resource_attribution_;
+  PageMeasurementAlgorithm expected_measurement_algorithm_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PageResourceMonitorWithFeatureTest,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageResourceMonitorWithFeatureTest,
+    ::testing::Values(
+        std::make_tuple(false, PageMeasurementAlgorithm::kLegacy),
+        std::make_tuple(true,
+                        PageMeasurementAlgorithm::kEvenSplitAndAggregate)));
 
 // A test of CPU intervention logging when the system CPUProbe is not available.
 class PageResourceMonitorNoCPUProbeTest : public PageResourceMonitorUnitTest {
@@ -466,6 +478,9 @@ TEST_P(PageResourceMonitorWithFeatureTest, TestResourceUsage) {
         entry, "RecentCPUUsage", kExpectedCPUUsage.at(entry->source_id));
     test_ukm_recorder()->ExpectEntryMetric(entry, "TotalRecentCPUUsageAllPages",
                                            kExpectedAllCPUUsage);
+    test_ukm_recorder()->ExpectEntryMetric(
+        entry, "MeasurementAlgorithm",
+        static_cast<int64_t>(expected_measurement_algorithm_));
   }
 }
 
@@ -682,7 +697,7 @@ TEST_P(PageResourceMonitorWithFeatureTest, TestCPUInterventionMetrics) {
     immediate.ExpectNone("SystemCPUError");
 
     auto delayed = histograms.WithSuffix("Delayed");
-    if (GetParam()) {
+    if (use_resource_attribution_) {
       delayed.ExpectUniqueSample("AverageBackgroundCPU", 75);
       delayed.ExpectUniqueSample("TotalBackgroundCPU", 75);
       delayed.ExpectUniqueSample("TotalBackgroundTabCount", 1);

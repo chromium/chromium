@@ -139,6 +139,9 @@ void PageResourceMonitor::OnPageResourceUsageResult(
     const PageCPUUsageVector& page_cpu_usage,
     absl::optional<PressureSample> system_cpu) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const bool use_resource_attribution =
+      performance_manager::features::kUseResourceAttributionCPUMonitor.Get();
+
   // Calculate the overall CPU usage.
   double total_cpu_usage = 0;
   for (const auto& [page_context, cpu_usage] : page_cpu_usage) {
@@ -161,6 +164,10 @@ void PageResourceMonitor::OnPageResourceUsageResult(
         .SetBackgroundState(
             static_cast<int64_t>(GetBackgroundStateForMeasurementPeriod(
                 page_node, now - time_of_last_resource_usage_)))
+        .SetMeasurementAlgorithm(static_cast<int64_t>(
+            use_resource_attribution
+                ? PageMeasurementAlgorithm::kEvenSplitAndAggregate
+                : PageMeasurementAlgorithm::kLegacy))
         .Record(ukm::UkmRecorder::Get());
   }
   time_of_last_resource_usage_ = now;
@@ -181,8 +188,7 @@ void PageResourceMonitor::OnPageResourceUsageResult(
                                   CPUInterventionSuffix::kImmediate);
 
         // Only logged delayed metrics when using the new CPU monitor.
-        if (performance_manager::features::kUseResourceAttributionCPUMonitor
-                .Get()) {
+        if (use_resource_attribution) {
           if (system_cpu_probe_) {
             // `system_cpu_probe_` needs to be called at fixed intervals, so
             // start a second probe  to measure the CPU until the delay timer

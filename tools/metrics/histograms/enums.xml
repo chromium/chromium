@@ -42485,6 +42485,22 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
+<enum name="PageMeasurementAlgorithm">
+  <summary>
+    The algorithm used to estimate the resource usage of a page based on
+    measurements of renderer processes.
+  </summary>
+  <int value="0" label="Legacy">
+    Measurements without Resource Attribution are assigned to pages with the
+    algorithm in performance_manager::ProcessMetricsDecorator.
+  </int>
+  <int value="1" label="EvenSplitAndAggregate">
+    Measurements from the Resource Attribution framework are split evenly among
+    frames and workers hosted in each process, then aggregated to the page(s)
+    containing those frames and workers.
+  </int>
+</enum>
+
 <enum name="PageMeasurementBackgroundState">
   <summary>
     Whether a page is in the foreground or background during a measurement

@@ -19997,6 +19997,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PerformanceManager.PageResourceUsage2">
+  <owner>agale@chromium.org</owner>
   <owner>anthonyvd@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <summary>
@@ -20010,6 +20011,12 @@ be describing additional metrics about the same event.
     <summary>
       Whether the page was in the foreground, background, or mixed during the
       last 2 minutes.
+    </summary>
+  </metric>
+  <metric name="MeasurementAlgorithm" enum="PageMeasurementAlgorithm">
+    <summary>
+      The algorithm used to estimate the resource usage of the page. If this is
+      missing, the Legacy algorithm was used.
     </summary>
   </metric>
   <metric name="PrivateFootprintEstimate">

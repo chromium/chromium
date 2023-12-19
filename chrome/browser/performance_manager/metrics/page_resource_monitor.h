@@ -32,6 +32,15 @@ class PageResourceMonitor : public GraphOwned {
  public:
   // These values are logged to UKM. Entries should not be renumbered and
   // numeric values should never be reused. Please keep in sync with
+  // PageMeasurementAlgorithm in enums.xml.
+  enum class PageMeasurementAlgorithm {
+    kLegacy = 0,
+    kEvenSplitAndAggregate = 1,
+    kMaxValue = kEvenSplitAndAggregate,
+  };
+
+  // These values are logged to UKM. Entries should not be renumbered and
+  // numeric values should never be reused. Please keep in sync with
   // PageMeasurementBackgroundState in enums.xml.
   enum class PageMeasurementBackgroundState {
     kForeground = 0,
