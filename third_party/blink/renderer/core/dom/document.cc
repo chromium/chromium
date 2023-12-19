@@ -8264,7 +8264,7 @@ void Document::AdjustQuadsForScrollAndAbsoluteZoom(
   }
 
   for (auto& quad : quads)
-    AdjustForAbsoluteZoom::AdjustQuad(quad, layout_object);
+    AdjustForAbsoluteZoom::AdjustQuadMaybeExcludingCSSZoom(quad, layout_object);
 }
 
 void Document::AdjustRectForScrollAndAbsoluteZoom(

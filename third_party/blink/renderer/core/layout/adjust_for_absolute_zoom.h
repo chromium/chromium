@@ -88,9 +88,15 @@ class AdjustForAbsoluteZoom {
                         AdjustLayoutUnit(size.height, style));
   }
 
-  inline static void AdjustQuad(gfx::QuadF& quad,
-                                const LayoutObject& layout_object) {
-    float zoom = layout_object.StyleRef().EffectiveZoom();
+  inline static void AdjustQuadMaybeExcludingCSSZoom(
+      gfx::QuadF& quad,
+      const LayoutObject& layout_object) {
+    float zoom;
+    if (RuntimeEnabledFeatures::RemoveZoomAdjustmentOfBoundingBoxEnabled()) {
+      zoom = layout_object.GetFrame()->PageZoomFactor();
+    } else {
+      zoom = layout_object.StyleRef().EffectiveZoom();
+    }
     if (zoom != 1)
       quad.Scale(1 / zoom, 1 / zoom);
   }
