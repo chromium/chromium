@@ -253,10 +253,10 @@ void ComposeSession::Compose(const std::string& input, bool is_input_edited) {
 
 void ComposeSession::Rewrite(compose::mojom::StyleModifiersPtr style) {
   optimization_guide::proto::ComposeRequest request;
-  if (style->is_tone()) {
+  if (style && style->is_tone()) {
     request.mutable_rewrite_params()->set_tone(
         optimization_guide::proto::ComposeTone(style->get_tone()));
-  } else if (style->is_length()) {
+  } else if (style && style->is_length()) {
     request.mutable_rewrite_params()->set_length(
         optimization_guide::proto::ComposeLength(style->get_length()));
   } else {
