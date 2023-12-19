@@ -11,8 +11,8 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/reading_list/core/reading_list_model.h"
-#import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/sync/base/features.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_constants.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
@@ -64,10 +64,8 @@ void ReadingListBrowserAgent::AddURLsToReadingList(
         base::i18n::MessageFormatter::FormatWithNamedArgs(
             pattern, "count", (int)urls.count, "email", account_info.email);
     snackbar_text = base::SysUTF16ToNSString(utf16Text);
-    snackbar_action =
-        reading_list::switches::IsReadingListAccountStorageUIEnabled()
-            ? CreateUndoActionWithReadingListURLs(urls)
-            : nil;
+    static_assert(syncer::IsReadingListAccountStorageEnabled());
+    snackbar_action = CreateUndoActionWithReadingListURLs(urls);
   } else {
     snackbar_text =
         l10n_util::GetNSString(IDS_IOS_READING_LIST_SNACKBAR_MESSAGE);

@@ -27,7 +27,6 @@ source_set("core") {
   deps = [
     "//components/keyed_service/core",
     "//components/prefs",
-    "//components/reading_list/features:flags",
     "//components/sync",
     "//net",
     "//url",

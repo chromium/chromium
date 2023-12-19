@@ -193,7 +193,6 @@ source_set("unit_tests") {
     "//components/reading_list/core",
     "//components/reading_list/core:test_support",
     "//components/sync:test_support",
-    "//components/sync/base",
     "//components/url_formatter",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement/model",

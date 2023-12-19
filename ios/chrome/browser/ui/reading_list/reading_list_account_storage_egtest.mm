@@ -162,8 +162,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      syncer::kReadingListEnableSyncTransportModeUponSignIn);
   if ([self isRunningTest:@selector
             (testSignInWithSecondaryAccountInPromo_WithSnackbar)] ||
       [self isRunningTest:@selector(testAddAccountItemThenUpgradeToFullSync)] ||

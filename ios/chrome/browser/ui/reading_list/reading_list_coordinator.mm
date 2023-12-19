@@ -17,7 +17,6 @@
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -638,10 +637,7 @@
 // Computes whether the sign-in promo should be visible in the reading list and
 // updates the view accordingly.
 - (void)updateSignInPromoVisibility {
-  BOOL areAccountStorageAndPromoEnabled =
-      base::FeatureList::IsEnabled(
-          syncer::kReadingListEnableSyncTransportModeUponSignIn);
-  if (!areAccountStorageAndPromoEnabled || self.isSyncDisabledByAdministrator) {
+  if (self.isSyncDisabledByAdministrator) {
     self.shouldShowSignInPromo = NO;
     return;
   }

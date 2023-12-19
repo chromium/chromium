@@ -301,7 +301,9 @@ TEST_F(SyncPrefsTest,
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{kEnableBookmarkFoldersForAccountStorage,
+#if !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
+#endif  // !BUILDFLAG(IS_IOS)
                             password_manager::features::
                                 kEnablePasswordsAccountStorage,
                             kSyncEnableContactInfoDataTypeInTransportMode,
@@ -343,7 +345,9 @@ TEST_F(SyncPrefsTest,
   features.InitWithFeatures(
       /*enabled_features=*/{kEnableBookmarkFoldersForAccountStorage,
                             kReplaceSyncPromosWithSignInPromos,
+#if !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
+#endif  // !BUILDFLAG(IS_IOS)
                             password_manager::features::
                                 kEnablePasswordsAccountStorage,
                             kSyncEnableContactInfoDataTypeInTransportMode,
@@ -683,7 +687,9 @@ class SyncPrefsMigrationTest : public testing::Test {
     // in transport mode.
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{kEnableBookmarkFoldersForAccountStorage,
+#if !BUILDFLAG(IS_IOS)
                               kReadingListEnableSyncTransportModeUponSignIn,
+#endif  // !BUILDFLAG(IS_IOS)
                               password_manager::features::
                                   kEnablePasswordsAccountStorage,
                               kSyncEnableContactInfoDataTypeInTransportMode,
