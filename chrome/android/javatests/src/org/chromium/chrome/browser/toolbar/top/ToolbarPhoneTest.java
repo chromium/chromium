@@ -1049,10 +1049,10 @@ public class ToolbarPhoneTest {
         View iconBackground = mToolbar.findViewById(R.id.location_bar_status_icon_bg);
         int expectedEndMarginAfterPolish =
                 mToolbar.getResources()
-                        .getDimensionPixelOffset(R.dimen.location_bar_url_action_offset_polish);
+                        .getDimensionPixelSize(R.dimen.location_bar_url_action_offset_polish);
         int expectedEndMarginBeforePolish =
                 mToolbar.getResources()
-                        .getDimensionPixelOffset(R.dimen.location_bar_url_action_offset);
+                        .getDimensionPixelSize(R.dimen.location_bar_url_action_offset);
 
         assertEquals(false, mToolbar.isLocationBarShownInNtp());
         assertEquals(View.INVISIBLE, iconBackground.getVisibility());
@@ -1068,7 +1068,8 @@ public class ToolbarPhoneTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbar.setNtpSearchBoxScrollFractionForTesting(1);
-                    mToolbar.updateLocationBarForSurfacePolish(VisualState.NEW_TAB_NORMAL, false);
+                    mToolbar.updateLocationBarForSurfacePolish(
+                            VisualState.NEW_TAB_NORMAL, /* hasFocus= */ false);
                 });
         if (nightModeEnabled) {
             assertEquals(View.INVISIBLE, iconBackground.getVisibility());

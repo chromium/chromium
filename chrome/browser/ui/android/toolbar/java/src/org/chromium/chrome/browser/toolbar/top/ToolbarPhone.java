@@ -17,7 +17,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -2139,7 +2138,7 @@ public class ToolbarPhone extends ToolbarLayout
                     updateToNtpBackground();
                 }
             } else {
-                // Update the location bar background when entering the search results page or other
+                // Update the location bar background when entering the focus state or other
                 // non-NTP tabs from the Start Surface.
                 mActiveLocationBarBackground = mLocationBarBackground;
             }
@@ -2682,15 +2681,15 @@ public class ToolbarPhone extends ToolbarLayout
 
     /**
      * Update the appearance (logo background, search text's color and style) of the location bar
-     * based on the state of the current page.
-     * For Start Surface and NTP, while not on the search results page, the real search box's search
-     * text has a particular color and style. The style would be "google-sans-medium" and the color
-     * would be colorOnSurface or colorOnPrimaryContainer based on whether the variant
-     * SURFACE_POLISH_OMNIBOX_COLOR is enabled or not. When being in light mode, there is also a
-     * round white background for the G logo. For other situations such as browser tabs, and search
-     * result pages, the real search box will stay the same.
+     * based on the state of the current page. For Start Surface and NTP, while not on the focus
+     * state, the real search box's search text has a particular color and style. The style would be
+     * "google-sans-medium" and the color would be colorOnSurface or colorOnPrimaryContainer based
+     * on whether the variant SURFACE_POLISH_OMNIBOX_COLOR is enabled or not. When being in light
+     * mode, there is also a round white background for the G logo. For other situations such as
+     * browser tabs, and search result pages, the real search box will stay the same.
+     *
      * @param visualState The Visual State of the current page.
-     * @param hasFocus True if the current page is search results page.
+     * @param hasFocus True if the current page is the focus state.
      */
     @VisibleForTesting
     void updateLocationBarForSurfacePolish(@VisualState int visualState, boolean hasFocus) {
@@ -2700,42 +2699,54 @@ public class ToolbarPhone extends ToolbarLayout
 
         // Detect whether state has changed and update only when that happens.
         boolean prevIsStartOrNtpWithSurfacePolish = mIsStartOrNtpWithSurfacePolish;
-        // Check whether the current page is NTP (the search results page is not included) and the
+
+        // Check whether the current page is NTP (the focus state is not included) and the
         // real omnibox is pinned on the top of the screen. We need to make sure the real omnibox is
         // visible here to forbid the situation that the background of the G logo shows and then
-        // vanishes during the un-focus animation(from search results page to NTP). This situation
+        // vanishes during the un-focus animation(from focus state to NTP). This situation
         // won't happen in Start Surface, so we don't need to check the scroll fraction for Start
         // Surface.
         boolean isNtpShowingWithRealOmnibox =
                 visualState == VisualState.NEW_TAB_NORMAL && mNtpSearchBoxScrollFraction > 0;
         mIsStartOrNtpWithSurfacePolish =
                 (isNtpShowingWithRealOmnibox || mIsShowingStartSurfaceHomepage) && !hasFocus;
+
         if (mIsStartOrNtpWithSurfacePolish == prevIsStartOrNtpWithSurfacePolish) {
             return;
         }
 
-        // TODO(crbug.com/1487760): Use TextAppearance style instead.
-        Typeface typeface;
-        int urlActionContainerEndMargin;
         if (mIsStartOrNtpWithSurfacePolish) {
-            boolean isNightMode = ColorUtils.inNightMode(getContext());
-            mLocationBar.setStatusIconBackgroundVisibility(!isNightMode);
-            typeface = Typeface.create("google-sans-medium", Typeface.NORMAL);
-            urlActionContainerEndMargin =
-                    getResources()
-                            .getDimensionPixelOffset(R.dimen.location_bar_url_action_offset_polish);
+            updateLocationBarForSurfacePolishImpl(
+                    !ColorUtils.inNightMode(getContext()),
+                    /* useDefaultUrlBarAndUrlActionContainerAppearance= */ false);
         } else {
             // Restore the appearance of the real search box when transitioning from Start Surface
-            // or NTP to the search results page.
-            mLocationBar.setStatusIconBackgroundVisibility(false);
-            typeface = Typeface.defaultFromStyle(Typeface.NORMAL);
-            urlActionContainerEndMargin =
-                    getResources().getDimensionPixelOffset(R.dimen.location_bar_url_action_offset);
+            // or NTP to other pages.
+            updateLocationBarForSurfacePolishImpl(
+                    /* statusIconBackgroundVisibility= */ false,
+                    /* useDefaultUrlBarAndUrlActionContainerAppearance= */ true);
         }
-        mLocationBar.setUrlBarTypeface(typeface);
-        mLocationBar.setUrlBarHintTextColor(mIsStartOrNtpWithSurfacePolish);
+    }
+
+    /**
+     * Update the appearance (logo background, search text's color and style) of the location bar
+     * based on the value provided.
+     *
+     * @param statusIconBackgroundVisibility The visibility of the status icon background.
+     * @param useDefaultUrlBarAndUrlActionContainerAppearance Whether to use the default typeface
+     *     and color for the search text in the search box and use the default end margin for the
+     *     url action container in the search box. If not we will use specific settings for surface
+     *     polish.
+     */
+    private void updateLocationBarForSurfacePolishImpl(
+            boolean statusIconBackgroundVisibility,
+            boolean useDefaultUrlBarAndUrlActionContainerAppearance) {
+        mLocationBar.setStatusIconBackgroundVisibility(statusIconBackgroundVisibility);
+        mLocationBar.updateUrlBarTypeface(useDefaultUrlBarAndUrlActionContainerAppearance);
+        mLocationBar.updateUrlBarHintTextColor(useDefaultUrlBarAndUrlActionContainerAppearance);
+        mLocationBar.updateUrlActionContainerEndMargin(
+                useDefaultUrlBarAndUrlActionContainerAppearance);
         mLocationBar.updateButtonTints();
-        mLocationBar.updateUrlActionContainerEndMargin(urlActionContainerEndMargin);
     }
 
     private void updateVisualsForLocationBarState() {

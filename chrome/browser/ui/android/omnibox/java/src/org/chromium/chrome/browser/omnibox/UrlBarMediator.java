@@ -400,11 +400,17 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
     }
 
     /**
-     * Sets the typeface and style of the search text in the search box.
+     * Updates the typeface and style of the search text in the search box.
      *
-     * @param typeface The typeface for the search text in the search box.
+     * @param useDefaultUrlBarTypeface Whether to use the default typeface for the search text in
+     *     the search box. If not we will use medium Google sans typeface for surface polish.
      */
-    void setUrlBarTypeface(Typeface typeface) {
+    void updateUrlBarTypeface(boolean useDefaultUrlBarTypeface) {
+        // TODO(crbug.com/1487760): Use TextAppearance style instead.
+        Typeface typeface =
+                useDefaultUrlBarTypeface
+                        ? Typeface.defaultFromStyle(Typeface.NORMAL)
+                        : Typeface.create("google-sans-medium", Typeface.NORMAL);
         mModel.set(UrlBarProperties.TYPEFACE, typeface);
     }
 }
