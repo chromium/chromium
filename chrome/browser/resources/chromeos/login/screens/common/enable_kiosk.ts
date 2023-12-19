@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 /**
@@ -11,121 +11,113 @@ import '../../components/buttons/oobe_text_button.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 
 import {getTemplate} from './enable_kiosk.html.js';
 
-
 /**
  * UI mode for the dialog.
- * @enum {string}
  */
-const EnableKioskMode = {
-  CONFIRM: 'confirm',
-  SUCCESS: 'success',
-  ERROR: 'error',
-};
+enum EnableKioskMode {
+  CONFIRM = 'confirm',
+  SUCCESS = 'success',
+  ERROR = 'error',
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- */
-const EnableKioskBase = mixinBehaviors(
-    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    PolymerElement);
+export const EnableKioskBase =
+    mixinBehaviors(
+        [OobeI18nBehavior, LoginScreenBehavior, OobeDialogHostBehavior],
+        PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
+    };
 
-/**
- * @polymer
- */
-class EnableKiosk extends EnableKioskBase {
+export class EnableKiosk extends EnableKioskBase {
   static get is() {
-    return 'enable-kiosk-element';
+    return 'enable-kiosk-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * Current dialog state
-       * @private
        */
       state_: {
-        type: String,
         value: EnableKioskMode.CONFIRM,
       },
     };
   }
 
+  private state_: EnableKioskMode;
+
   constructor() {
     super();
   }
 
-  get EXTERNAL_API() {
-    return  ['onCompleted'];
+  override get EXTERNAL_API(): string[] {
+    return ['onCompleted'];
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('KioskEnableScreen');
   }
 
   /** Called after resources are updated. */
-  updateLocalizedContent() {
+  override updateLocalizedContent(): void {
     this.i18nUpdateLocale();
   }
 
   /** Called when dialog is shown */
-  onBeforeShow() {
+  override onBeforeShow(): void {
     this.state_ = EnableKioskMode.CONFIRM;
   }
 
   /**
    * "Enable" button handler
-   * @private
    */
-  onEnableButton_(event) {
+  private onEnableButton_(): void {
     this.userActed('enable');
   }
 
   /**
    * "Cancel" / "Ok" button handler
-   * @private
    */
-  closeDialog_(event) {
+  private closeDialog_(): void {
     this.userActed('close');
   }
 
-  onCompleted(success) {
+  onCompleted(success: boolean): void {
     this.state_ = success ? EnableKioskMode.SUCCESS : EnableKioskMode.ERROR;
   }
 
   /**
    * Simple equality comparison function.
-   * @private
    */
-  eq_(one, another) {
+  private eq_(one: EnableKioskMode, another: string): boolean {
     return one === another;
   }
 
-  /**
-   *
-   * @private
-   */
-  primaryButtonTextKey_(state) {
+  private primaryButtonTextKey_(state: EnableKioskMode): string {
     if (state === EnableKioskMode.CONFIRM) {
       return 'kioskOKButton';
     }
     return 'kioskCancelButton';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [EnableKiosk.is]: EnableKiosk;
   }
 }
 

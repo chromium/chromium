@@ -35,7 +35,6 @@ js_type_check("closure_compile_local") {
     ":consolidated_consent",
     ":device_disabled",
     ":drive_pinning",
-    ":enable_kiosk",
     ":error_message",
     ":family_link_notice",
     ":gaia_signin",
@@ -169,17 +168,6 @@ js_library("drive_pinning") {
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("enable_kiosk") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/enable_kiosk.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
   ]
   extra_deps = [ ":web_components" ]
 }
