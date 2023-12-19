@@ -12,70 +12,59 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/cr_card_radio_group_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
+import '../../components/oobe_cr_lottie.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import type {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 
 import {getTemplate} from './gaia_info.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- */
-const GaiaInfoScreenElementBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
+export const GaiaInfoScreenElementBase =
+    mixinBehaviors(
+        [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+        PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
+    };
 
-/**
- * @enum {string}
- */
-const GaiaInfoStep = {
-  OVERVIEW: 'overview',
-};
 
-/**
- * User type for setting up the device.
- * @enum {string}
- */
-const UserCreationFlowType = {
-  MANUAL: 'manual',
-  QUICKSTART: 'quickstart',
-};
+enum GaiaInfoStep {
+  OVERVIEW = 'overview',
+}
 
-/**
- * Available user actions.
- * @enum {string}
- */
-const UserAction = {
-  BACK: 'back',
-  MANUAL: 'manual',
-  QUICKSTART: 'quickstart',
-};
 
-/**
- * @polymer
- */
-class GaiaInfoScreen extends GaiaInfoScreenElementBase {
+enum UserCreationFlowType {
+  MANUAL = 'manual',
+  QUICKSTART = 'quickstart',
+}
+
+
+enum UserAction {
+  BACK = 'back',
+  MANUAL = 'manual',
+  QUICKSTART = 'quickstart',
+}
+
+
+export class GaiaInfoScreen extends GaiaInfoScreenElementBase {
   static get is() {
-    return 'gaia-info-element';
+    return 'gaia-info-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * The currently selected flow type.
-       * @type {string}
-       * @private
        */
       selectedFlowType_: {
         type: String,
@@ -84,8 +73,6 @@ class GaiaInfoScreen extends GaiaInfoScreenElementBase {
       /**
        * Whether Quick start feature is enabled. If it's enabled the quick start
        * button will be shown in the gaia info screen.
-       * @type {boolean}
-       * @private
        */
       isQuickStartVisible_: {
         type: Boolean,
@@ -94,42 +81,46 @@ class GaiaInfoScreen extends GaiaInfoScreenElementBase {
     };
   }
 
-  get EXTERNAL_API() {
+  private selectedFlowType_: string;
+  private isQuickStartVisible_: boolean;
+
+  override get EXTERNAL_API(): string[] {
     return ['setQuickStartVisible'];
   }
 
-  get UI_STEPS() {
+  override get UI_STEPS() {
     return GaiaInfoStep;
   }
 
-  onBeforeShow() {
+  onBeforeShow(): void {
     this.selectedFlowType_ = '';
     this.setAnimationPlaying_(true);
   }
 
-  onBeforeHide() {
+  onBeforeHide(): void {
     this.setAnimationPlaying_(false);
   }
 
-  defaultUIStep() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep(): GaiaInfoStep {
     return GaiaInfoStep.OVERVIEW;
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('GaiaInfoScreen');
   }
 
-  setQuickStartVisible() {
+  setQuickStartVisible(): void {
     this.isQuickStartVisible_ = true;
   }
 
-  getOobeUIInitialState() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override getOobeUIInitialState(): OOBE_UI_STATE {
     return OOBE_UI_STATE.GAIA_INFO;
   }
 
-  onNextClicked_() {
+  private onNextClicked_(): void {
     if (this.isQuickStartVisible_ &&
         this.selectedFlowType_ == UserCreationFlowType.QUICKSTART) {
       this.userActed(UserAction.QUICKSTART);
@@ -138,25 +129,27 @@ class GaiaInfoScreen extends GaiaInfoScreenElementBase {
     }
   }
 
-  onBackClicked_() {
+  private onBackClicked_(): void {
     this.userActed(UserAction.BACK);
   }
 
-  isNextButtonEnabled_(isQuickStartVisible, selectedFlowType) {
-    return (!this.isQuickStartVisible_) || this.selectedFlowType_;
+  private isNextButtonEnabled_(
+      isQuickStartVisible: boolean, selectedFlowType: string): boolean {
+    return (!isQuickStartVisible) || selectedFlowType !== '';
   }
 
-  /**
-   * Play or pause the lottie animation in the legacy flow.
-   * @param {boolean} play - whether play or pause the animation.
-   * @private
-   */
-  setAnimationPlaying_(play) {
+  private setAnimationPlaying_(play: boolean): void {
     const gaiaInfoAnimation =
-        this.shadowRoot.querySelector('#gaiaInfoAnimation');
+        this.shadowRoot!.querySelector<OobeCrLottie>('#gaiaInfoAnimation');
     if (gaiaInfoAnimation) {
       gaiaInfoAnimation.playing = play;
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [GaiaInfoScreen.is]: GaiaInfoScreen;
   }
 }
 

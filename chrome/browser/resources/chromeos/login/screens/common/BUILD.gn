@@ -39,7 +39,6 @@ js_type_check("closure_compile_local") {
     ":enable_kiosk",
     ":error_message",
     ":family_link_notice",
-    ":gaia_info",
     ":gaia_signin",
     ":gesture_navigation",
     ":guest_tos",
@@ -434,17 +433,6 @@ js_library("os_trial") {
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
 
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("gaia_info") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/gaia_info.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-  ]
   extra_deps = [ ":web_components" ]
 }
 
