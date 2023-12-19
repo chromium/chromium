@@ -113,7 +113,7 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 // Tests that the Password Checkup view is dismissed when there are no saved
 // passwords.
 - (void)testPasswordCheckupDismissedAfterAllPasswordsGone {
-  password_manager_test_utils::SavePasswordForm();
+  password_manager_test_utils::SavePasswordFormToProfileStore();
 
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(
@@ -149,7 +149,7 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
           grey_accessibilityID(password_manager::kPasswordCheckupTableViewId)]
       assertWithMatcher:grey_notNil()];
 
-  [PasswordSettingsAppInterface clearPasswordStore];
+  [PasswordSettingsAppInterface clearProfilePasswordStore];
 
   // Verify that the Password Checkup Homepage is not displayed.
   [[EarlGrey
@@ -161,7 +161,7 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 // Tests that the Password Checkup view is dismissed when the user doesn't pass
 // Local Authentication.
 - (void)testPasswordCheckupDismissedAfterFailedAuthentication {
-  password_manager_test_utils::SavePasswordForm();
+  password_manager_test_utils::SavePasswordFormToProfileStore();
 
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(

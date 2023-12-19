@@ -157,7 +157,9 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   self.URL = self.testServer->GetURL(kFormHTMLFile);
   [self loadLoginPage];
-  [AutofillAppInterface saveExamplePasswordForm];
+  [AutofillAppInterface saveExamplePasswordFormToProfileStore];
+  [ChromeEarlGrey loadURL:self.URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
 
   // Mock successful reauth for opening the Password Manager.
   [PasswordSettingsAppInterface setUpMockReauthenticationModule];
@@ -166,7 +168,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
 }
 
 - (void)tearDown {
-  [AutofillAppInterface clearPasswordStore];
+  [AutofillAppInterface clearProfilePasswordStore];
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
   [super tearDown];
 }
@@ -788,7 +790,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
 
 // Tests that the password icon is not present when no passwords are available.
 - (void)testPasswordIconIsNotVisibleWhenPasswordStoreEmpty {
-  [AutofillAppInterface clearPasswordStore];
+  [AutofillAppInterface clearProfilePasswordStore];
 
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]

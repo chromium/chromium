@@ -31,9 +31,10 @@ using password_manager_test_utils::kDefaultUsername;
 using password_manager_test_utils::PasswordCheckupCellForState;
 using password_manager_test_utils::PasswordIssuesTableView;
 using password_manager_test_utils::ReauthenticationController;
-using password_manager_test_utils::SaveCompromisedPasswordForm;
-using password_manager_test_utils::SaveMutedCompromisedPasswordForm;
-using password_manager_test_utils::SavePasswordForm;
+using password_manager_test_utils::SaveCompromisedPasswordFormToProfileStore;
+using password_manager_test_utils::
+    SaveMutedCompromisedPasswordFormToProfileStore;
+using password_manager_test_utils::SavePasswordFormToProfileStore;
 
 namespace {
 
@@ -177,14 +178,14 @@ id<GREYMatcher> RestoreWarningButton() {
 #pragma mark - Helpers
 
 // Saves two reused passwords.
-void SaveReusedPasswordForms() {
-  SavePasswordForm(kReusedPassword, kDefaultUsername, kSite1);
-  SavePasswordForm(kReusedPassword, kDefaultUsername, kSite2);
+void SaveReusedPasswordFormsToProfileStore() {
+  SavePasswordFormToProfileStore(kReusedPassword, kDefaultUsername, kSite1);
+  SavePasswordFormToProfileStore(kReusedPassword, kDefaultUsername, kSite2);
 }
 
 // Saves a weak password.
-void SaveWeakPasswordForm() {
-  SavePasswordForm(kWeakPassword, kDefaultUsername, kSite3);
+void SaveWeakPasswordFormToProfileStore() {
+  SavePasswordFormToProfileStore(kWeakPassword, kDefaultUsername, kSite3);
 }
 
 // Opens the Password Checkup Homepage.
@@ -314,7 +315,7 @@ NSString* LeakedPasswordDescription() {
 
 // Tests the safe state of the Password Checkup Homepage.
 - (void)testPasswordCheckupHomepageSafeState {
-  SavePasswordForm();
+  SavePasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(/*result_state=*/PasswordCheckStateSafe,
                               /*result_password_count=*/0);
@@ -335,7 +336,7 @@ NSString* LeakedPasswordDescription() {
 // Validates that the Password Manager UI is dismissed when local authentication
 // fails while in the Password Checkup UI.
 - (void)testPasswordCheckupHomepageWithFailedAuth {
-  SavePasswordForm();
+  SavePasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(/*result_state=*/PasswordCheckStateSafe,
                               /*result_password_count=*/0);
@@ -368,9 +369,9 @@ NSString* LeakedPasswordDescription() {
 
 // Tests the warning state of the Password Checkup Homepage.
 - (void)testPasswordCheckupHomepageWarningState {
-  SaveMutedCompromisedPasswordForm();
-  SaveReusedPasswordForms();
-  SaveWeakPasswordForm();
+  SaveMutedCompromisedPasswordFormToProfileStore();
+  SaveReusedPasswordFormsToProfileStore();
+  SaveWeakPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
       /*result_state=*/PasswordCheckStateReusedPasswords,
@@ -404,7 +405,7 @@ NSString* LeakedPasswordDescription() {
 
 // Tests the severe warning state of the Password Checkup Homepage.
 - (void)testPasswordCheckupHomepageCompromisedState {
-  SaveCompromisedPasswordForm();
+  SaveCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
       /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
@@ -433,7 +434,7 @@ NSString* LeakedPasswordDescription() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
   }
-  SaveCompromisedPasswordForm();
+  SaveCompromisedPasswordFormToProfileStore();
 
   NSInteger numberOfAffiliatedGroups = 1;
 
@@ -473,7 +474,7 @@ NSString* LeakedPasswordDescription() {
 
 // Tests the error state of the Password Checkup Homepage.
 - (void)testPasswordCheckupHomepageErrorState {
-  SaveCompromisedPasswordForm();
+  SaveCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
       /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
@@ -513,7 +514,7 @@ NSString* LeakedPasswordDescription() {
                            @"the Password Checkup Homepage.");
   }
 
-  SavePasswordForm();
+  SavePasswordFormToProfileStore();
 
   // Rotate device to left landscape orientation before opening the Password
   // Checkup Homepage.
@@ -544,7 +545,7 @@ NSString* LeakedPasswordDescription() {
 
 // Tests dismissing a compromised password warning.
 - (void)testPasswordCheckupDismissCompromisedPasswordWarning {
-  SaveCompromisedPasswordForm();
+  SaveCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
       /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
@@ -603,7 +604,7 @@ NSString* LeakedPasswordDescription() {
 
 // Tests restoring a muted compromised password warning.
 - (void)testPasswordCheckupRestoreCompromisedPasswordWarning {
-  SaveMutedCompromisedPasswordForm();
+  SaveMutedCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
       /*result_state=*/PasswordCheckStateDismissedWarnings,
@@ -662,7 +663,7 @@ NSString* LeakedPasswordDescription() {
 
 // Tests deleting the last saved password through Password Checkup.
 - (void)testDeleteLastPassword {
-  SaveCompromisedPasswordForm();
+  SaveCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
       /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
@@ -693,7 +694,7 @@ NSString* LeakedPasswordDescription() {
 // Tests resolving the last reused passwords issue by editing a password through
 // Password Checkup.
 - (void)testResolveLastIssueByEditingPassword {
-  SaveReusedPasswordForms();
+  SaveReusedPasswordFormsToProfileStore();
 
   OpenPasswordCheckupHomepage(
       /*result_state=*/PasswordCheckStateReusedPasswords,
@@ -729,8 +730,8 @@ NSString* LeakedPasswordDescription() {
 // Tests resolving the last compromised passwords issue by deleting a password
 // through Password Checkup.
 - (void)testResolveLastIssueByDeletingPassword {
-  SavePasswordForm(kSafePassword, kDefaultUsername, kSite1);
-  SaveCompromisedPasswordForm();
+  SavePasswordFormToProfileStore(kSafePassword, kDefaultUsername, kSite1);
+  SaveCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
       /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
@@ -766,7 +767,7 @@ NSString* LeakedPasswordDescription() {
 // Tests resolving the last compromised passwords issue by deleting a password
 // through Password Checkup.
 - (void)testChangeCompromisedPasswordToSafePassword {
-  SaveCompromisedPasswordForm();
+  SaveCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
       /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
@@ -802,7 +803,7 @@ NSString* LeakedPasswordDescription() {
 // Tests changing the password of a muted compromised password to a weak
 // password.
 - (void)testChangeMutedPasswordToWeakPassword {
-  SaveMutedCompromisedPasswordForm();
+  SaveMutedCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
       /*result_state=*/PasswordCheckStateDismissedWarnings,
@@ -863,7 +864,7 @@ NSString* LeakedPasswordDescription() {
 // Tests the details page of a credential that is both weak and compromised when
 // opened from the weak issues page.
 - (void)testCompromisedAndWeakPasswordOpenedInWeakContext {
-  SaveCompromisedPasswordForm(kWeakPassword);
+  SaveCompromisedPasswordFormToProfileStore(kWeakPassword);
 
   OpenPasswordCheckupHomepage(
       /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
@@ -889,8 +890,8 @@ NSString* LeakedPasswordDescription() {
 // Tests the details page of a credential that is both reused and compromised
 // when opened from the reused issues page.
 - (void)testCompromisedAndReusedPasswordOpenedInReusedContext {
-  SaveCompromisedPasswordForm(kReusedPassword);
-  SaveReusedPasswordForms();
+  SaveCompromisedPasswordFormToProfileStore(kReusedPassword);
+  SaveReusedPasswordFormsToProfileStore();
 
   OpenPasswordCheckupHomepage(
       /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
@@ -916,13 +917,13 @@ NSString* LeakedPasswordDescription() {
 // Tests that Password Checkup Homepage is dismissed when there are no saved
 // passwords.
 - (void)testPasswordCheckupDismissedAfterAllPasswordsGone {
-  SavePasswordForm();
+  SavePasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
       /*result_state=*/PasswordCheckStateSafe,
       /*result_password_count=*/0);
 
-  [PasswordSettingsAppInterface clearPasswordStore];
+  [PasswordSettingsAppInterface clearProfilePasswordStore];
 
   // Verify that the Password Checkup Homepage is dismissed.
   [[EarlGrey
@@ -934,7 +935,7 @@ NSString* LeakedPasswordDescription() {
 // Validates that the Password Manager UI is dismissed when local authentication
 // fails while in the Password Issues UI.
 - (void)testPasswordIssuesWithFailedAuth {
-  SaveWeakPasswordForm();
+  SaveWeakPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
       /*result_state=*/PasswordCheckStateWeakPasswords,

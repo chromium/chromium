@@ -43,8 +43,9 @@ namespace {
 const char16_t kExampleUsername[] = u"concrete username";
 const char16_t kExamplePassword[] = u"concrete password";
 
-// Gets the current password store.
-scoped_refptr<password_manager::PasswordStoreInterface> GetPasswordStore() {
+// Gets the current profile password store.
+scoped_refptr<password_manager::PasswordStoreInterface>
+GetPasswordProfileStore() {
   // ServiceAccessType governs behaviour in Incognito: only modifications with
   // EXPLICIT_ACCESS, which correspond to user's explicit gesture, succeed.
   // This test does not deal with Incognito, and should not run in Incognito
@@ -69,7 +70,7 @@ class TestStoreConsumer : public password_manager::PasswordStoreConsumer {
   const std::vector<password_manager::PasswordForm>& GetStoreResults() {
     results_.clear();
     ResetObtained();
-    GetPasswordStore()->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
+    GetPasswordProfileStore()->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-result"
     base::test::ios::WaitUntilConditionOrTimeout(
@@ -108,10 +109,10 @@ class TestStoreConsumer : public password_manager::PasswordStoreConsumer {
   base::WeakPtrFactory<TestStoreConsumer> weak_ptr_factory_{this};
 };
 
-// Saves `form` to the password store and waits until the async processing is
-// done.
-void SaveToPasswordStore(const password_manager::PasswordForm& form) {
-  GetPasswordStore()->AddLogin(form);
+// Saves `form` to the profile password store and waits until the async
+// processing is done.
+void SaveToPasswordProfileStore(const password_manager::PasswordForm& form) {
+  GetPasswordProfileStore()->AddLogin(form);
   // When we retrieve the form from the store, `in_store` should be set.
   password_manager::PasswordForm expected_form = form;
   expected_form.in_store = password_manager::PasswordForm::Store::kProfileStore;
@@ -123,30 +124,30 @@ void SaveToPasswordStore(const password_manager::PasswordForm& form) {
   }
 }
 
-// Saves an example form in the store.
-void SaveExamplePasswordForm() {
+// Saves an example form in the profile store.
+void SaveExamplePasswordFormInProfileStore() {
   password_manager::PasswordForm example;
   example.username_value = kExampleUsername;
   example.password_value = kExamplePassword;
   example.url = GURL("https://example.com/");
   example.signon_realm = password_manager_util::GetSignonRealm(example.url);
-  SaveToPasswordStore(example);
+  SaveToPasswordProfileStore(example);
 }
 
-// Saves an example form in the store for the passed URL.
+// Saves an example form in the profile store for the passed URL.
 void SaveLocalPasswordForm(const GURL& url) {
   password_manager::PasswordForm localForm;
   localForm.username_value = kExampleUsername;
   localForm.password_value = kExamplePassword;
   localForm.url = url;
   localForm.signon_realm = password_manager_util::GetSignonRealm(localForm.url);
-  SaveToPasswordStore(localForm);
+  SaveToPasswordProfileStore(localForm);
 }
 
-// Removes all credentials stored.
-void ClearPasswordStore() {
-  GetPasswordStore()->RemoveLoginsCreatedBetween(base::Time(), base::Time(),
-                                                 base::DoNothing());
+// Removes all credentials from the profile store.
+void ClearProfilePasswordStore() {
+  GetPasswordProfileStore()->RemoveLoginsCreatedBetween(
+      base::Time(), base::Time(), base::DoNothing());
   TestStoreConsumer consumer;
 }
 
@@ -350,12 +351,12 @@ class SaveCardInfobarEGTestHelper
 static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
     _scopedReauthModuleOverride;
 
-+ (void)clearPasswordStore {
-  ClearPasswordStore();
++ (void)clearProfilePasswordStore {
+  ClearProfilePasswordStore();
 }
 
-+ (void)saveExamplePasswordForm {
-  SaveExamplePasswordForm();
++ (void)saveExamplePasswordFormToProfileStore {
+  SaveExamplePasswordFormInProfileStore();
 }
 
 + (void)savePasswordFormForURLSpec:(NSString*)URLSpec {

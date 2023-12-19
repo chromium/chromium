@@ -38,7 +38,8 @@ using password_manager::PasswordForm;
 
 namespace {
 
-scoped_refptr<password_manager::PasswordStoreInterface> GetPasswordStore() {
+scoped_refptr<password_manager::PasswordStoreInterface>
+GetPasswordProfileStore() {
   // Ensure that the fails in incognito mode by using IMPLICIT_ACCESS.
   return IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
       chrome_test_util::GetOriginalBrowserState(),
@@ -67,10 +68,10 @@ class FakeStoreConsumer : public password_manager::PasswordStoreConsumer {
 
   // Retrieves all logins from the profile password store and updates
   // `results_`. Returns true if the logins retrieved successfully.
-  bool FetchStoreResults() {
+  bool FetchProfileStoreResults() {
     results_.clear();
     ResetObtained();
-    GetPasswordStore()->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
+    GetPasswordProfileStore()->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
     bool responded =
         base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), ^bool {
           return !AreObtainedReset();
@@ -130,15 +131,15 @@ class FakeStoreConsumer : public password_manager::PasswordStoreConsumer {
 
 // Saves `form` to the password store and waits until the async processing is
 // done.
-bool SaveToPasswordStore(const PasswordForm& form) {
-  GetPasswordStore()->AddLogin(form);
+bool SaveToPasswordProfileStore(const PasswordForm& form) {
+  GetPasswordProfileStore()->AddLogin(form);
   // When we retrieve the form from the store, `in_store` should be set.
   password_manager::PasswordForm expected_form = form;
   expected_form.in_store = password_manager::PasswordForm::Store::kProfileStore;
 
   // Check the result and ensure PasswordStore processed this.
   FakeStoreConsumer consumer;
-  if (!consumer.FetchStoreResults()) {
+  if (!consumer.FetchProfileStoreResults()) {
     return false;
   }
   for (const auto& result : consumer.GetStoreResults()) {
@@ -183,11 +184,11 @@ PasswordForm CreateSampleFormWithIndex(int index) {
   return form;
 }
 
-bool ClearPasswordStore() {
-  GetPasswordStore()->RemoveLoginsCreatedBetween(base::Time(), base::Time(),
-                                                 base::DoNothing());
+bool ClearProfilePasswordStore() {
+  GetPasswordProfileStore()->RemoveLoginsCreatedBetween(
+      base::Time(), base::Time(), base::DoNothing());
   FakeStoreConsumer consumer;
-  if (!consumer.FetchStoreResults()) {
+  if (!consumer.FetchProfileStoreResults()) {
     return false;
   }
   return consumer.GetStoreResults().empty();
@@ -241,21 +242,21 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
       dismissAndCallCompletionBlocksWithCategory:@"PasswordsSnackbarCategory"];
 }
 
-+ (void)saveExamplePasswordWithCount:(NSInteger)count {
++ (void)saveExamplePasswordToProfileWithCount:(NSInteger)count {
   for (int i = 1; i <= count; ++i) {
-    GetPasswordStore()->AddLogin(CreateSampleFormWithIndex(i));
+    GetPasswordProfileStore()->AddLogin(CreateSampleFormWithIndex(i));
   }
 }
 
-+ (BOOL)saveExamplePassword:(NSString*)password
-                   username:(NSString*)username
-                     origin:(NSString*)origin {
++ (BOOL)saveExamplePasswordToProfileStore:(NSString*)password
+                                 username:(NSString*)username
+                                   origin:(NSString*)origin {
   PasswordForm example;
   example.username_value = base::SysNSStringToUTF16(username);
   example.password_value = base::SysNSStringToUTF16(password);
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.signon_realm = example.url.spec();
-  return SaveToPasswordStore(example);
+  return SaveToPasswordProfileStore(example);
 }
 
 + (BOOL)saveExamplePasswordToAccountStore:(NSString*)password
@@ -269,10 +270,10 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   return SaveToPasswordAccountStore(example);
 }
 
-+ (BOOL)saveExampleNote:(NSString*)note
-               password:(NSString*)password
-               username:(NSString*)username
-                 origin:(NSString*)origin {
++ (BOOL)saveExampleNoteToProfileStore:(NSString*)note
+                             password:(NSString*)password
+                             username:(NSString*)username
+                               origin:(NSString*)origin {
   PasswordForm example;
   example.username_value = base::SysNSStringToUTF16(username);
   example.password_value = base::SysNSStringToUTF16(password);
@@ -280,12 +281,12 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   example.signon_realm = example.url.spec();
   example.notes = {password_manager::PasswordNote(
       base::SysNSStringToUTF16(note), base::Time::Now())};
-  return SaveToPasswordStore(example);
+  return SaveToPasswordProfileStore(example);
 }
 
-+ (BOOL)saveCompromisedPassword:(NSString*)password
-                       username:(NSString*)username
-                         origin:(NSString*)origin {
++ (BOOL)saveCompromisedPasswordToProfileStore:(NSString*)password
+                                     username:(NSString*)username
+                                       origin:(NSString*)origin {
   PasswordForm example;
   example.username_value = base::SysNSStringToUTF16(username);
   example.password_value = base::SysNSStringToUTF16(password);
@@ -293,12 +294,12 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   example.signon_realm = example.url.spec();
   example.password_issues.insert({password_manager::InsecureType::kLeaked,
                                   password_manager::InsecurityMetadata()});
-  return SaveToPasswordStore(example);
+  return SaveToPasswordProfileStore(example);
 }
 
-+ (BOOL)saveMutedCompromisedPassword:(NSString*)password
-                            username:(NSString*)userName
-                              origin:(NSString*)origin {
++ (BOOL)saveMutedCompromisedPasswordToProfilePassword:(NSString*)password
+                                             username:(NSString*)userName
+                                               origin:(NSString*)origin {
   PasswordForm example;
   example.username_value = base::SysNSStringToUTF16(userName);
   example.password_value = base::SysNSStringToUTF16(password);
@@ -309,39 +310,39 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
        password_manager::InsecurityMetadata(
            base::Time::Now(), password_manager::IsMuted(true),
            password_manager::TriggerBackendNotification(false))});
-  return SaveToPasswordStore(example);
+  return SaveToPasswordProfileStore(example);
 }
 
-+ (BOOL)saveExampleBlockedOrigin:(NSString*)origin {
++ (BOOL)saveExampleBlockedOriginToProfileStore:(NSString*)origin {
   PasswordForm example;
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.blocked_by_user = true;
   example.signon_realm = example.url.spec();
-  return SaveToPasswordStore(example);
+  return SaveToPasswordProfileStore(example);
 }
 
-+ (BOOL)saveExampleFederatedOrigin:(NSString*)federatedOrigin
-                          username:(NSString*)username
-                            origin:(NSString*)origin {
++ (BOOL)saveExampleFederatedOriginToProfileStore:(NSString*)federatedOrigin
+                                        username:(NSString*)username
+                                          origin:(NSString*)origin {
   PasswordForm federated;
   federated.username_value = base::SysNSStringToUTF16(username);
   federated.url = GURL(base::SysNSStringToUTF16(origin));
   federated.signon_realm = federated.url.spec();
   federated.federation_origin =
       url::Origin::Create(GURL(base::SysNSStringToUTF16(federatedOrigin)));
-  return SaveToPasswordStore(federated);
+  return SaveToPasswordProfileStore(federated);
 }
 
-+ (NSInteger)passwordStoreResultsCount {
++ (NSInteger)passwordProfileStoreResultsCount {
   FakeStoreConsumer consumer;
-  if (!consumer.FetchStoreResults()) {
+  if (!consumer.FetchProfileStoreResults()) {
     return -1;
   }
   return consumer.GetStoreResults().size();
 }
 
-+ (BOOL)clearPasswordStore {
-  return ClearPasswordStore();
++ (BOOL)clearProfilePasswordStore {
+  return ClearProfilePasswordStore();
 }
 
 + (BOOL)isCredentialsServiceEnabled {

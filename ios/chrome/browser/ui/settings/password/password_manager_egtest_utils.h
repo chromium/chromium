@@ -94,25 +94,27 @@ GREYElementInteraction* GetInteractionForPasswordIssueEntry(
     NSString* username,
     NSString* compromised_description = nil);
 
-// Saves a password form in the store.
-void SavePasswordForm(NSString* password = kDefaultPassword,
-                      NSString* username = kDefaultUsername,
-                      NSString* origin = kDefaultSite);
+// Saves a password form in the profile store.
+void SavePasswordFormToProfileStore(NSString* password = kDefaultPassword,
+                                    NSString* username = kDefaultUsername,
+                                    NSString* origin = kDefaultSite);
 
 // Saves a password form in the account store.
 void SavePasswordFormToAccountStore(NSString* password = kDefaultPassword,
                                     NSString* username = kDefaultUsername,
                                     NSString* origin = kDefaultSite);
 
-// Saves a compromised password form in the store.
-void SaveCompromisedPasswordForm(NSString* password = kDefaultPassword,
-                                 NSString* username = kDefaultUsername,
-                                 NSString* origin = kDefaultSite);
+// Saves a compromised password form in the profile store.
+void SaveCompromisedPasswordFormToProfileStore(
+    NSString* password = kDefaultPassword,
+    NSString* username = kDefaultUsername,
+    NSString* origin = kDefaultSite);
 
-// Saves a muted compromised password form in the store.
-void SaveMutedCompromisedPasswordForm(NSString* origin = kDefaultSite,
-                                      NSString* username = kDefaultUsername,
-                                      NSString* password = kDefaultPassword);
+// Saves a muted compromised password form in the profile store.
+void SaveMutedCompromisedPasswordFormToProfileStore(
+    NSString* origin = kDefaultSite,
+    NSString* username = kDefaultUsername,
+    NSString* password = kDefaultPassword);
 
 // Opens the Password Manager page from the NTP.
 void OpenPasswordManager();

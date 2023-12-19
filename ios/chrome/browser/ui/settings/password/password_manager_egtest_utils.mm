@@ -182,13 +182,14 @@ GREYElementInteraction* GetInteractionForPasswordIssueEntry(
 
 #pragma mark - Saving passwords
 
-void SavePasswordForm(NSString* password,
-                      NSString* username,
-                      NSString* origin) {
-  GREYAssert([PasswordSettingsAppInterface saveExamplePassword:password
-                                                      username:username
-                                                        origin:origin],
-             kPasswordStoreErrorMessage);
+void SavePasswordFormToProfileStore(NSString* password,
+                                    NSString* username,
+                                    NSString* origin) {
+  GREYAssert(
+      [PasswordSettingsAppInterface saveExamplePasswordToProfileStore:password
+                                                             username:username
+                                                               origin:origin],
+      kPasswordStoreErrorMessage);
 }
 
 void SavePasswordFormToAccountStore(NSString* password,
@@ -201,21 +202,23 @@ void SavePasswordFormToAccountStore(NSString* password,
       kPasswordStoreErrorMessage);
 }
 
-void SaveCompromisedPasswordForm(NSString* password,
-                                 NSString* username,
-                                 NSString* origin) {
-  GREYAssert([PasswordSettingsAppInterface saveCompromisedPassword:password
-                                                          username:username
-                                                            origin:origin],
+void SaveCompromisedPasswordFormToProfileStore(NSString* password,
+                                               NSString* username,
+                                               NSString* origin) {
+  GREYAssert([PasswordSettingsAppInterface
+                 saveCompromisedPasswordToProfileStore:password
+                                              username:username
+                                                origin:origin],
              kPasswordStoreErrorMessage);
 }
 
-void SaveMutedCompromisedPasswordForm(NSString* origin,
-                                      NSString* username,
-                                      NSString* password) {
-  GREYAssert([PasswordSettingsAppInterface saveMutedCompromisedPassword:password
-                                                               username:username
-                                                                 origin:origin],
+void SaveMutedCompromisedPasswordFormToProfileStore(NSString* origin,
+                                                    NSString* username,
+                                                    NSString* password) {
+  GREYAssert([PasswordSettingsAppInterface
+                 saveMutedCompromisedPasswordToProfilePassword:password
+                                                      username:username
+                                                        origin:origin],
              kPasswordStoreErrorMessage);
 }
 
@@ -230,7 +233,7 @@ void OpenPasswordManager() {
   // background task runner and wait until it is finished. Because the
   // background task runner is sequenced, this means that previously posted
   // tasks are also finished when this function exits.
-  [PasswordSettingsAppInterface passwordStoreResultsCount];
+  [PasswordSettingsAppInterface passwordProfileStoreResultsCount];
 }
 
 void TapNavigationBarEditButton() {
