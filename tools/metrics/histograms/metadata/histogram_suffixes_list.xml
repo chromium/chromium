@@ -888,33 +888,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ContextMenu.SelectedOptionDesktop"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ContextType" separator=".">
-  <suffix name="BrowserCompositor"
-      label="A browser process UI + display compositor command buffer context"/>
-  <suffix name="BrowserMainThread"
-      label="A browser process shared main thread command buffer context"/>
-  <suffix name="BrowserWorker"
-      label="A browser process worker command buffer context"/>
-  <suffix name="DisplayCompositor"
-      label="A display compositor command buffer context"/>
-  <suffix name="Media" label="The media worker command buffer context"/>
-  <suffix name="RenderCompositor"
-      label="A RenderCompositor GPU command buffer context"/>
-  <suffix name="RenderMainThread"
-      label="A RenderMainThread GPU command buffer context"/>
-  <suffix name="RenderWorker"
-      label="A RenderWorker GPU command buffer context"/>
-  <suffix name="Unknown" label="A GPU command buffer context of unknown type"/>
-  <suffix name="VideoAccelerator"
-      label="A VideoAccelerator GPU command buffer context"/>
-  <suffix name="VideoCapture"
-      label="A VideoCapture GPU command buffer context"/>
-  <suffix name="WebGL" label="A WebGL GPU command buffer context"/>
-  <suffix name="WebGPU" label="A WebGPU control command buffer context"/>
-  <suffix name="XRCompositing" label="Command buffer used for XR compositing"/>
-  <affected-histogram name="GPU.ContextLost"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ContextualSearchQuickActionCategory" separator=".">
   <suffix name="Address" label=""/>
   <suffix name="Email" label=""/>
