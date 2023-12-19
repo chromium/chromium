@@ -2312,7 +2312,7 @@ TEST_F(PersonalDataManagerTest, GetProfilesToSuggest_ProfileAutofillDisabled) {
   AddProfileToPersonalDataManager(local_profile);
 
   // Disable Profile autofill.
-  prefs::SetAutofillProfileEnabled(personal_data_->pref_service_, false);
+  prefs::SetAutofillProfileEnabled(prefs_.get(), false);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
   // Check that profiles were saved.
@@ -2346,7 +2346,7 @@ TEST_F(PersonalDataManagerTest,
   EXPECT_EQ(expected_profiles, personal_data_->GetProfilesToSuggest().size());
 
   // Disable Profile autofill.
-  prefs::SetAutofillProfileEnabled(personal_data_->pref_service_, false);
+  prefs::SetAutofillProfileEnabled(prefs_.get(), false);
   // Reload the database.
   ResetPersonalDataManager();
 
@@ -2358,7 +2358,7 @@ TEST_F(PersonalDataManagerTest,
 // false.
 TEST_F(PersonalDataManagerTest,
        GetProfilesToSuggest_NoProfilesAddedIfDisabled) {
-  prefs::SetAutofillProfileEnabled(personal_data_->pref_service_, false);
+  prefs::SetAutofillProfileEnabled(prefs_.get(), false);
   AddProfileToPersonalDataManager(test::GetFullProfile());
   EXPECT_TRUE(personal_data_->GetProfiles().empty());
 }
@@ -2641,7 +2641,7 @@ TEST_F(PersonalDataManagerTest,
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
   // Disable Credit card autofill.
-  prefs::SetAutofillPaymentMethodsEnabled(personal_data_->pref_service_, false);
+  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
   // Check that profiles were saved.
@@ -2684,7 +2684,7 @@ TEST_F(PersonalDataManagerTest,
   EXPECT_EQ(5U, personal_data_->GetCreditCards().size());
 
   // Disable Credit card autofill.
-  prefs::SetAutofillPaymentMethodsEnabled(personal_data_->pref_service_, false);
+  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
   // Reload the database.
   ResetPersonalDataManager();
 
@@ -2701,7 +2701,7 @@ TEST_F(PersonalDataManagerTest,
 TEST_F(PersonalDataManagerTest,
        GetCreditCardsToSuggest_NoCreditCardsAddedIfDisabled) {
   // Disable Profile autofill.
-  prefs::SetAutofillPaymentMethodsEnabled(personal_data_->pref_service_, false);
+  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
 
   // Add a local credit card.
   CreditCard credit_card("002149C1-EE28-4213-A3B9-DA243FFF021B",

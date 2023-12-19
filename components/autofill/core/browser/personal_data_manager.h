@@ -59,23 +59,16 @@ class PaymentsSuggestionBottomSheetMediatorTest;
 class Profile;
 class PrefService;
 
-namespace autofill {
-class AutofillImageFetcherBase;
-struct CreditCardArtImage;
-class PersonalDataManagerObserver;
-class PersonalDataManagerFactory;
-class PersonalDatabaseHelper;
-}  // namespace autofill
-
-namespace autofill_helper {
-void SetCreditCards(int, std::vector<autofill::CreditCard>*);
-}  // namespace autofill_helper
-
 namespace syncer {
 class SyncService;
 }  // namespace syncer
 
 namespace autofill {
+
+class AutofillImageFetcherBase;
+struct CreditCardArtImage;
+class PersonalDataManagerObserver;
+class PersonalDatabaseHelper;
 
 // The PersonalDataManager (PDM) has two main responsibilities:
 // - Caching the data stored in `AutofillTable` for synchronous retrieval.
@@ -719,12 +712,11 @@ class PersonalDataManager : public KeyedService,
     return auto_accept_address_imports_for_testing_;
   }
 
-  void set_test_addresses(
-      std::vector<autofill::AutofillProfile> test_addresses) {
+  void set_test_addresses(std::vector<AutofillProfile> test_addresses) {
     test_addresses_ = test_addresses;
   }
 
-  const std::vector<autofill::AutofillProfile>& test_addresses() const {
+  const std::vector<AutofillProfile>& test_addresses() const {
     return test_addresses_;
   }
 
@@ -736,29 +728,13 @@ class PersonalDataManager : public KeyedService,
   void AddFullServerCreditCardForTesting(const CreditCard& credit_card);
 
  protected:
-  // Only PersonalDataManagerFactory and certain tests can create instances of
-  // PersonalDataManager.
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            AddAndGetCreditCardArtImage);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           GetProfilesToSuggest_ProfileAutofillDisabled);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           GetProfilesToSuggest_NoProfilesLoadedIfDisabled);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           GetProfilesToSuggest_NoProfilesAddedIfDisabled);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           GetCreditCardsToSuggest_CreditCardAutofillDisabled);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           GetCreditCardsToSuggest_NoCardsLoadedIfDisabled);
-  FRIEND_TEST_ALL_PREFIXES(
-      PersonalDataManagerTest,
-      GetCreditCardsToSuggest_NoCreditCardsAddedIfDisabled);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, LogStoredCreditCardMetrics);
 
-  friend class autofill::PersonalDataManagerCleaner;
   friend class ::PaymentsSuggestionBottomSheetMediatorTest;
+  friend class PersonalDataManagerCleaner;
   friend class VirtualCardEnrollmentManagerTest;
-  friend std::default_delete<PersonalDataManager>;
 
   // Used to get a pointer to the strike database for migrating existing
   // profiles. Note, the result can be a nullptr, for example, on incognito
@@ -1050,7 +1026,7 @@ class PersonalDataManager : public KeyedService,
   bool is_syncing_for_test_ = false;
 
   // Test addresses used to allow developers to test their forms.
-  std::vector<autofill::AutofillProfile> test_addresses_;
+  std::vector<AutofillProfile> test_addresses_;
 
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
