@@ -358,7 +358,8 @@ payments::PaymentsAutofillClient*
 ChromeAutofillClient::GetPaymentsAutofillClient() {
   if (!payments_autofill_client_) {
     payments_autofill_client_ =
-        std::make_unique<payments::ChromePaymentsAutofillClient>();
+        std::make_unique<payments::ChromePaymentsAutofillClient>(
+            web_contents());
   }
   return payments_autofill_client_.get();
 }
