@@ -206,7 +206,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   if ([self isRunningTest:@selector
             (testSignInSwitchAccountsAndKeepDataSeparate)] ||
       [self isRunningTest:@selector(testSignInSwitchAccountsAndImportData)] ||
-      [self isRunningTest:@selector(testSignInCancelIdentityPicker)] ||
       [self isRunningTest:@selector(testSignInCancelAuthenticationFlow)] ||
       [self isRunningTest:@selector
             (testDismissAdvancedSigninSettingsFromAdvancedSigninSettings)] ||
@@ -214,7 +213,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
             (testDismissSigninFromRecentTabsFromAdvancedSigninSettings)] ||
       [self isRunningTest:@selector
             (testDismissSigninFromTabSwitcherFromAdvancedSigninSettings)] ||
-      [self isRunningTest:@selector(testSignInCancelAddAccount)] ||
       [self isRunningTest:@selector(testSignInFromSyncOffLink)] ||
       [self isRunningTest:@selector
             (testSignInWithOneAccountStartSyncWithAnotherAccount)] ||
@@ -236,8 +234,10 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   }
   if ([self isRunningTest:@selector(testOpenSignInFromNTP)] ||
       [self isRunningTest:@selector(testSignInFromSettingsMenu)] ||
+      [self isRunningTest:@selector(testSignInCancelIdentityPicker)] ||
       [self isRunningTest:@selector
             (testSignOutForSupervisedUserClearAccountData)] ||
+      [self isRunningTest:@selector(testSignInCancelAddAccount)] ||
       [self isRunningTest:@selector
             (testDismissSigninFromTabSwitcherFromIdentityPicker)] ||
       [self isRunningTest:@selector(testDismissSigninFromTabSwitcher)] ||
@@ -435,9 +435,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Opens the sign in screen and then cancel it by opening a new tab. Ensures
 // that the sign in screen is correctly dismissed. crbug.com/462200
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
 - (void)testSignInCancelIdentityPicker {
   // Add an identity to avoid arriving on the Add Account screen when opening
   // sign-in.
@@ -468,15 +465,17 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       performAction:grey_tap()];
 
   // Verifies that the Chrome sign-in view is visible.
-  id<GREYMatcher> signin_matcher = StaticTextWithAccessibilityLabelId(
-      IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_SUBTITLE);
-  [[EarlGrey selectElementWithMatcher:signin_matcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kIdentityButtonControlIdentifier),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 
   // Close sign-in screen and Settings.
   [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabelId(
-                     IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON)]
+                 grey_allOf(ButtonWithAccessibilityLabelId(
+                                IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON),
+                            grey_userInteractionEnabled(), nil)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
@@ -485,9 +484,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Starts an authentication flow and cancel it by opening a new tab. Ensures
 // that the authentication flow is correctly canceled and dismissed.
 // crbug.com/462202
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
+// kReplaceSyncPromosWithSignInPromos is disabled because it specifically tests
+// having data from a previous account which became impossible. Appart from
+// that, the test is identical to `testSignInCancelIdentityPicker`.
 - (void)testSignInCancelAuthenticationFlow {
   // Set up the fake identities.
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
@@ -773,9 +772,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Opens the add account screen and then cancels it by opening a new tab.
 // Ensures that the add account screen is correctly dismissed. crbug.com/462200
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
 - (void)testSignInCancelAddAccount {
   // Add an identity to avoid arriving on the Add Account screen when opening
   // sign-in.
@@ -812,15 +808,17 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       performAction:grey_tap()];
 
   // Verifies that the Chrome sign-in view is visible.
-  id<GREYMatcher> signin_matcher = StaticTextWithAccessibilityLabelId(
-      IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_SUBTITLE);
-  [[EarlGrey selectElementWithMatcher:signin_matcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kIdentityButtonControlIdentifier),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 
   // Close sign-in screen and Settings.
   [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabelId(
-                     IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON)]
+                 grey_allOf(ButtonWithAccessibilityLabelId(
+                                IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON),
+                            grey_userInteractionEnabled(), nil)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
