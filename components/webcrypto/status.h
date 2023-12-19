@@ -8,8 +8,8 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 
 namespace webcrypto {
@@ -62,15 +62,15 @@ class Status {
   static Status ErrorJwkNotDictionary();
 
   // The required JWK member |member_name| was missing.
-  static Status ErrorJwkMemberMissing(base::StringPiece member_name);
+  static Status ErrorJwkMemberMissing(std::string_view member_name);
 
   // The JWK member |member_name| was not of type |expected_type|.
-  static Status ErrorJwkMemberWrongType(base::StringPiece member_name,
-                                        base::StringPiece expected_type);
+  static Status ErrorJwkMemberWrongType(std::string_view member_name,
+                                        std::string_view expected_type);
 
   // The JWK member |member_name| was a string, however could not be
   // successfully base64 decoded.
-  static Status ErrorJwkBase64Decode(base::StringPiece member_name);
+  static Status ErrorJwkBase64Decode(std::string_view member_name);
 
   // The "ext" parameter was specified but was
   // incompatible with the value requested by the Web Crypto call.
@@ -102,7 +102,7 @@ class Status {
 
   // The "kty" parameter was given and was a string, however it was not the
   // expected value.
-  static Status ErrorJwkUnexpectedKty(base::StringPiece expected);
+  static Status ErrorJwkUnexpectedKty(std::string_view expected);
 
   // The amount of key data provided was incompatible with the selected
   // algorithm. For instance if the algorith name was A128CBC then EXACTLY
@@ -112,11 +112,11 @@ class Status {
 
   // The JWK member |member_name| is supposed to represent a big-endian unsigned
   // integer, however was the empty string.
-  static Status ErrorJwkEmptyBigInteger(base::StringPiece member_name);
+  static Status ErrorJwkEmptyBigInteger(std::string_view member_name);
 
   // The big-endian unsigned integer |member_name| contained leading zeros. This
   // violates the JWA requirement that such octet strings be minimal.
-  static Status ErrorJwkBigIntegerHasLeadingZero(base::StringPiece member_name);
+  static Status ErrorJwkBigIntegerHasLeadingZero(std::string_view member_name);
 
   // The key_ops lists a usage more than once.
   static Status ErrorJwkDuplicateKeyOps();
@@ -181,7 +181,7 @@ class Status {
   // question was unsupported, some parameter combination was unsupported, or
   // something has not yet been implemented.
   static Status ErrorUnsupported();
-  static Status ErrorUnsupported(base::StringPiece message);
+  static Status ErrorUnsupported(std::string_view message);
 
   // Something unexpected happened in the code, which implies there is a
   // source-level bug. These should not happen, but safer to fail than simply
@@ -245,7 +245,7 @@ class Status {
 
   // The octet string |member_name| was expected to be |expected_length| bytes
   // long, but was instead |actual_length| bytes long.
-  static Status JwkOctetStringWrongLength(base::StringPiece member_name,
+  static Status JwkOctetStringWrongLength(std::string_view member_name,
                                           size_t expected_length,
                                           size_t actual_length);
 
@@ -312,7 +312,7 @@ class Status {
 
   // Constructs an error with the specified error type and message.
   Status(blink::WebCryptoErrorType error_type,
-         base::StringPiece error_details_utf8);
+         std::string_view error_details_utf8);
 
   // Constructs a success or error without any details.
   explicit Status(Type type);

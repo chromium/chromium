@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/webcrypto/algorithms/ed25519.h"
+
 #include <string.h>
 
-#include "components/webcrypto/algorithms/ed25519.h"
+#include <string_view>
 
 #include "components/webcrypto/algorithms/asymmetric_key_util.h"
 #include "components/webcrypto/algorithms/util.h"
@@ -64,7 +66,7 @@ Status CreateWebCryptoEd25519PublicKey(
 
 // Reads a fixed length base64url-decoded bytes from a JWK.
 Status ReadBytes(const JwkReader& jwk,
-                 base::StringPiece member_name,
+                 std::string_view member_name,
                  size_t expected_length,
                  std::vector<uint8_t>* out) {
   std::vector<uint8_t> bytes;
