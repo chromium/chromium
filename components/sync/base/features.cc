@@ -214,4 +214,8 @@ BASE_FEATURE(kSyncIncreaseNudgeDelayForSingleClient,
              "SyncIncreaseNudgeDelayForSingleClient",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncSchedulerUseWallClockTimer,
+             "SyncSchedulerUseWallClockTimer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace syncer

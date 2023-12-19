@@ -202,6 +202,10 @@ inline constexpr base::FeatureParam<double>
         &kSyncIncreaseNudgeDelayForSingleClient,
         "SyncIncreaseNudgeDelayForSingleClientFactor", 2.0};
 
+// If enabled, SyncSchedulerImpl uses a WallClockTimer instead of a OneShotTimer
+// to schedule poll requests.
+BASE_DECLARE_FEATURE(kSyncSchedulerUseWallClockTimer);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_
