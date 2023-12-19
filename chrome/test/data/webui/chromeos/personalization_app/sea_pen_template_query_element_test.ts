@@ -46,7 +46,9 @@ suite('SeaPenTemplateQueryElementTest', function() {
     assertEquals(
         0, unselectedTemplate.length,
         'there should be no unselected templates');
-    assertEquals('Search', searchButton!.innerText);
+    assertEquals(
+        seaPenTemplateQueryElement.i18n('seaPenCreateButton'),
+        searchButton!.innerText);
   });
 
   test('displays search again button on results page', async () => {
@@ -59,7 +61,9 @@ suite('SeaPenTemplateQueryElementTest', function() {
     const searchButton = seaPenTemplateQueryElement.shadowRoot!.querySelector(
                              '#searchButton') as HTMLElement;
 
-    assertEquals('Search again', searchButton!.innerText);
+    assertEquals(
+        seaPenTemplateQueryElement.i18n('seaPenRecreateButton'),
+        searchButton!.innerText);
   });
 
   test('selects chip', async () => {

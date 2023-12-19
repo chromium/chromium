@@ -125,8 +125,7 @@
 </template>
 <main aria-label="$i18n{wallpaperCollections}" hidden$="[[hasError_]]">
   <template is="dom-if" if="[[isSeaPenEnabled_]]" restamp>
-    <!-- TODO(b/308200616): Add real text -->
-    <h2 class="wallpaper-collections-heading">TBD Heading</h2>
+    <h2 class="wallpaper-collections-heading">$i18n{seaPenExclusiveWallpapersHeading}</h2>
     <iron-list aria-setsize$="[[promotedTiles_.length]]"
         id="promoted"
         grid
@@ -155,6 +154,7 @@
                 on-wallpaper-grid-item-selected="onCollectionSelected_"
                 primary-text="Sea Pen"
                 primary-text="[[item.name]]"
+                secondary-text="$i18n{seaPenPoweredByGoogle}"
                 role="option"
                 src="[[item.preview]]"
                 tabindex$="[[tabIndex]]">
@@ -179,8 +179,7 @@
         </div>
       </template>
     </iron-list>
-    <!-- TODO(b/308200616): Add real text -->
-    <h2 class="wallpaper-collections-heading">TBD Heading</h2>
+    <h2 class="wallpaper-collections-heading">$i18n{seaPenChooseAWallpaperHeading}</h2>
   </template>
   <iron-list aria-setsize$="[[tiles_.length]]"
       id="grid"

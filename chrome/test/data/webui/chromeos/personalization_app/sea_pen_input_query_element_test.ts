@@ -32,7 +32,9 @@ suite('SeaPenInputQueryElementTest', function() {
     const searchButton = seaPenInputQueryElement.shadowRoot!.querySelector(
                              '#searchButton') as HTMLElement;
 
-    assertEquals('Search', searchButton!.innerText);
+    assertEquals(
+        seaPenInputQueryElement.i18n('seaPenCreateButton'),
+        searchButton!.innerText);
   });
 
   test('displays search again button on results page', async () => {
@@ -43,6 +45,8 @@ suite('SeaPenInputQueryElementTest', function() {
     const searchButton = seaPenInputQueryElement.shadowRoot!.querySelector(
                              '#searchButton') as HTMLElement;
 
-    assertEquals('Search again', searchButton!.innerText);
+    assertEquals(
+        seaPenInputQueryElement.i18n('seaPenRecreateButton'),
+        searchButton!.innerText);
   });
 });

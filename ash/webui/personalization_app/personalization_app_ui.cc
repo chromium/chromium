@@ -345,7 +345,24 @@ void AddStrings(content::WebUIDataSource* source) {
       {"timeOfDayWallpaperDialogBackButton",
        IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_BACK_BUTTON},
       {"timeOfDayWallpaperDialogConfirmButton",
-       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONFIRM_BUTTON}};
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONFIRM_BUTTON},
+
+      // SeaPen strings
+      {"seaPenExclusiveWallpapersHeading",
+       IDS_PERSONALIZATION_APP_EXCLUSIVE_WALLPAPERS_HEADING},
+      {"seaPenChooseAWallpaperHeading",
+       IDS_PERSONALIZATION_APP_CHOOSE_A_WALLPAPER_HEADING},
+      {"seaPenPoweredByGoogle", IDS_SEA_PEN_POWERED_BY_GOOGLE},
+      {"seaPenTemplateHeading", IDS_SEA_PEN_TEMPLATE_HEADING},
+      {"seaPenRecentWallpapersHeading", IDS_SEA_PEN_RECENT_WALLPAPERS_HEADING},
+      {"seaPenInspireMeButton", IDS_SEA_PEN_INSPIRE_ME_BUTTON},
+      {"seaPenCreateButton", IDS_SEA_PEN_CREATE_BUTTON},
+      {"seaPenRecreateButton", IDS_SEA_PEN_RECREATE_BUTTON},
+      {"seaPenWallpaperPoweredByGoogle",
+       IDS_SEA_PEN_WALLPAPER_POWERED_BY_GOOGLE},
+      {"seaPenDeleteWallpaper", IDS_SEA_PEN_DELETE_WALLPAPER},
+      {"seaPenCreateMore", IDS_SEA_PEN_CREATE_MORE},
+      {"seaPenAbout", IDS_SEA_PEN_ABOUT}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
 

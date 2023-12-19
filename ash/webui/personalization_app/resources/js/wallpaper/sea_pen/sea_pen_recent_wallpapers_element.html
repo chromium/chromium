@@ -64,8 +64,7 @@
   }
 </style>
 <template is="dom-if" if="[[shouldShowRecentlyUsedWallpapers_(recentImages_)]]">
-  <!-- TODO(b/308200616): Add finalized strings -->
-  <h2 class="wallpaper-collections-heading">Recently used Sea Pen wallpaper</h2>
+  <h2 class="wallpaper-collections-heading">$i18n{seaPenRecentWallpapersHeading}</h2>
   <iron-list id="grid"
       items="[[recentImagesToDisplay_]]"
       as="image"
@@ -93,15 +92,15 @@
         <cr-action-menu class="action-menu-container">
           <button data-id$="[[index]]" class="dropdown-item more-like-this-option"
               on-click="onClickMoreLikeThis_">
-            More like this
+            $i18n{seaPenCreateMore}
           </button>
           <button class="dropdown-item delete-wallpaper-option"
               on-click="onClickDeleteWallpaper_">
-            Delete wallpaper
+            $i18n{seaPenDeleteWallpaper}
           </button>
           <button data-id$="[[index]]" class="dropdown-item wallpaper-info-option"
               on-click="onClickWallpaperInfo_">
-            Wallpaper info
+            $i18n{seaPenAbout}
           </button>
         </cr-action-menu>
         <template is="dom-if" if="[[shouldShowWallpaperInfoDialog_(index, currentShowWallpaperInfoDialog_)]]" restamp>

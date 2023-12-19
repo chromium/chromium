@@ -245,13 +245,12 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   }
 
   private getSearchButtonText_(path: string|null): string {
-    // TODO(b/308200616) Add finalized text.
     switch (path) {
       case SeaPenPaths.RESULTS:
-        return 'Search again';
+        return this.i18n('seaPenRecreateButton');
       case SeaPenPaths.ROOT:
       default:
-        return 'Search';
+        return this.i18n('seaPenCreateButton');
     }
   }
 
