@@ -5426,7 +5426,7 @@ void ChromeContentBrowserClient::OverridePageVisibilityState(
           web_contents->GetBrowserContext());
   if (no_state_prefetch_manager &&
       no_state_prefetch_manager->IsWebContentsPrefetching(web_contents)) {
-    *visibility_state = content::PageVisibilityState::kHiddenButPainting;
+    *visibility_state = content::PageVisibilityState::kHidden;
   }
 }
 
