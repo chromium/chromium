@@ -169,24 +169,8 @@ TEST_F(AwMetricsServiceClientTest,
       "Android.WebView.AppDataDirectory.TimeToComputeSize", 0);
 }
 
-TEST_F(AwMetricsServiceClientTest, TestShouldApplyMetricsFilteringFeatureOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      android_webview::features::kWebViewMetricsFiltering);
-
-  // Both metrics consent and app consent true;
-  GetClient()->SetHaveMetricsConsent(true, true);
-
-  EXPECT_EQ(GetClient()->GetSampleRatePerMille(), 20);
-  EXPECT_EQ(GetClient()->ShouldApplyMetricsFiltering(), false);
-}
-
 TEST_F(AwMetricsServiceClientTest,
        TestShouldApplyMetricsFilteringFeatureOn_AllMetrics) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      android_webview::features::kWebViewMetricsFiltering);
-
   // Both metrics consent and app consent true;
   GetClient()->SetHaveMetricsConsent(true, true);
   GetClient()->SetSampleBucketValue(19);
@@ -197,10 +181,6 @@ TEST_F(AwMetricsServiceClientTest,
 
 TEST_F(AwMetricsServiceClientTest,
        TestShouldApplyMetricsFilteringFeatureOn_OnlyCriticalMetrics) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      android_webview::features::kWebViewMetricsFiltering);
-
   // Both metrics consent and app consent true;
   GetClient()->SetHaveMetricsConsent(true, true);
   GetClient()->SetSampleBucketValue(20);

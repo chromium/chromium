@@ -94,12 +94,6 @@ BASE_FEATURE(kWebViewJavaJsBridgeMojo,
              "WebViewJavaJsBridgeMojo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable reporting filtered metrics from webview clients used to be
-// out-sampled.
-BASE_FEATURE(kWebViewMetricsFiltering,
-             "WebViewMetricsFiltering",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Field trial feature for controlling support of Origin Trials on WebView.
 BASE_FEATURE(kWebViewOriginTrials,
              "WebViewOriginTrials",

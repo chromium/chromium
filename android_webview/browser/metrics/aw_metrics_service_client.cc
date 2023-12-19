@@ -109,19 +109,12 @@ int32_t AwMetricsServiceClient::GetProduct() {
 }
 
 int AwMetricsServiceClient::GetSampleRatePerMille() const {
-  if (base::FeatureList::IsEnabled(features::kWebViewMetricsFiltering)) {
-    return 1000;
-  }
-  return GetBaseSampleRatePerMille();
+  return 1000;
 }
 
 bool AwMetricsServiceClient::ShouldApplyMetricsFiltering() const {
-  if (base::FeatureList::IsEnabled(features::kWebViewMetricsFiltering)) {
-    bool used_to_sample_in =
-        GetSampleBucketValue() < GetBaseSampleRatePerMille();
-    return !used_to_sample_in;
-  }
-  return false;
+  bool used_to_sample_in = GetSampleBucketValue() < GetBaseSampleRatePerMille();
+  return !used_to_sample_in;
 }
 
 std::string AwMetricsServiceClient::GetAppPackageNameIfLoggable() {

@@ -595,10 +595,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, blocks rendering on font preloads to reduce CLS. "
                         + "See go/critical-font-analysis"),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_METRICS_FILTERING,
-                "If enabled, clients used to be out-sampled will report filtered metrics."
-                        + " This has no effect if metrics reporting is disabled"),
-        Flag.baseFeature(
                 SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES,
                 "When enabled, Safe Browsing will skip subresources"),
         Flag.baseFeature(

@@ -14,12 +14,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsUtils;
 import org.chromium.android_webview.metrics.MetricsFilteringDecorator;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.metrics.AndroidMetricsLogConsumer;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
@@ -74,7 +72,6 @@ public class MetricsFilteringDecoratorTest extends AwParameterizedTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_METRICS_FILTERING)
     public void testMetricsFiltering_applied() throws Throwable {
         ChromeUserMetricsExtension log =
                 ChromeUserMetricsExtension.newBuilder()
@@ -114,7 +111,6 @@ public class MetricsFilteringDecoratorTest extends AwParameterizedTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_METRICS_FILTERING)
     public void testMetricsFiltering_notApplied() throws Throwable {
         ChromeUserMetricsExtension log =
                 ChromeUserMetricsExtension.newBuilder()
@@ -135,45 +131,9 @@ public class MetricsFilteringDecoratorTest extends AwParameterizedTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_METRICS_FILTERING)
     public void testMetricsFiltering_missingSystemProfile() throws Throwable {
         ChromeUserMetricsExtension log =
                 ChromeUserMetricsExtension.newBuilder()
-                        .addHistogramEvent(createHistogramWithName("Histogram.Not.In.Allowlist"))
-                        .addUserActionEvent(getUserAction())
-                        .build();
-
-        int status = mUploader.log(log.toByteArray());
-        Assert.assertEquals(HttpURLConnection.HTTP_OK, status);
-        ChromeUserMetricsExtension receivedLog = mPlatformServiceBridge.waitForNextMetricsLog();
-        // We expect to receive an identical log to the one we provided.
-        Assert.assertEquals(log, receivedLog);
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("disable-features=" + AwFeatures.WEBVIEW_METRICS_FILTERING)
-    public void testMetricsFiltering_featureOff() throws Throwable {
-        // Note: It should not typically be the case that a METRICS_ONLY_CRITICAL log is
-        // processed while the feature is off, however this can happen in the following
-        // scenario:
-        // 1. Feature is enabled for some clients.
-        // 2. Clients generate METRICS_ONLY_CRITICAL logs, but not all of them are sent (e.g. no
-        // network connection)
-        // 3. Feature gets disabled for those clients (e.g. server-side config change)
-        // 4. Clients go to upload previously generated logs
-        //
-        // This is an edge case that would happen to a small subset of logs in the case
-        // the feature gets disabled. Although the above results in METRICS_ONLY_CRITICAL
-        // logs containing full data, we are OK with that behavior given the feature check
-        // on the Java side ensures we are able to evaluate the performance impact of
-        // the proto parsing code.
-        ChromeUserMetricsExtension log =
-                ChromeUserMetricsExtension.newBuilder()
-                        .setSystemProfile(
-                                SystemProfileProto.newBuilder()
-                                        .setMetricsFilteringStatus(
-                                                MetricsFilteringStatus.METRICS_ONLY_CRITICAL))
                         .addHistogramEvent(createHistogramWithName("Histogram.Not.In.Allowlist"))
                         .addUserActionEvent(getUserAction())
                         .build();
