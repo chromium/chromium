@@ -1313,7 +1313,9 @@ crbug.com/1450858 virtual/threaded-prefer-compositing/external/wpt/scroll-animat
 
 crbug.com/1366717 http/tests/inspector-protocol/storage/indexed-db-set-items-by-storage-key.js [ Slow ]
 
-crbug.com/1412278 http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js [ Slow ]
+crbug.com/1412278 [ Debug Linux ] http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js [ Slow ]
+crbug.com/1412278 [ Debug Mac13 ] http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js [ Slow ]
+crbug.com/1412278 [ Release ] http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js [ Slow ]
 crbug.com/1412278 http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-disabled.js [ Slow ]
 
 crbug.com/1404951 [ Debug Mac ] external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
