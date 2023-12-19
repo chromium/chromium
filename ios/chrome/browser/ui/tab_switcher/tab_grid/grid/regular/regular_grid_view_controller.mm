@@ -228,9 +228,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 
   // Configure it.
   [gHeader configureWithDaysThreshold:_inactiveTabsDaysThreshold];
-  if (IsShowInactiveTabsCountEnabled()) {
-    [gHeader configureWithCount:_inactiveTabsCount];
-  }
+  [gHeader configureWithCount:_inactiveTabsCount];
 
   // Get its fitting size.
   CGFloat width = CGRectGetWidth(self.collectionView.bounds);
@@ -364,9 +362,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
     [weakSelf didTapInactiveTabsButton];
   };
   [header configureWithDaysThreshold:_inactiveTabsDaysThreshold];
-  if (IsShowInactiveTabsCountEnabled()) {
-    [header configureWithCount:_inactiveTabsCount];
-  }
+  [header configureWithCount:_inactiveTabsCount];
   header.hidden = _inactiveTabsCount == 0;
 }
 

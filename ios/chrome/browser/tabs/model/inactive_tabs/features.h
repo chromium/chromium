@@ -43,10 +43,4 @@ const base::TimeDelta InactiveTabsTimeThreshold();
 // Returns true if a user disabled the feature manually.
 bool IsInactiveTabsExplictlyDisabledByUser();
 
-// Feature flag to enable the display of the count of Inactive Tabs in Tab Grid.
-BASE_DECLARE_FEATURE(kShowInactiveTabsCount);
-
-// Whether the count of Inactive Tabs should be shown.
-bool IsShowInactiveTabsCountEnabled();
-
 #endif  // IOS_CHROME_BROWSER_TABS_MODEL_INACTIVE_TABS_FEATURES_H_

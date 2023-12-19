@@ -878,12 +878,6 @@ const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
     "text.";
 
-const char kShowInactiveTabsCountName[] =
-    "Show Inactive Tabs count in Tab Grid";
-const char kShowInactiveTabsCountDescription[] =
-    "When enabled, the count of Inactive Tabs is shown in the Inactive Tabs "
-    "button that appears in the Tab Grid.";
-
 const char kSkipUndecryptablePasswordsName[] =
     "Enable silent ignoring of undecryptable passwords";
 const char kSkipUndecryptablePasswordsDescription[] =

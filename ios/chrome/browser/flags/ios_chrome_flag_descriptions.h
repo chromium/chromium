@@ -782,11 +782,6 @@ extern const char kSharedHighlightingIOSDescription[];
 extern const char kShowAutofillTypePredictionsName[];
 extern const char kShowAutofillTypePredictionsDescription[];
 
-// Title and description for the flag to show the count of Inactive Tabs in the
-// Tab Grid button.
-extern const char kShowInactiveTabsCountName[];
-extern const char kShowInactiveTabsCountDescription[];
-
 // Title and description for the flag to enable ignoring undecryptable passwords
 // in the password storage.
 extern const char kSkipUndecryptablePasswordsName[];

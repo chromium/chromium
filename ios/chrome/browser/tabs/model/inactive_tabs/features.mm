@@ -79,12 +79,3 @@ const base::TimeDelta InactiveTabsTimeThreshold() {
   }
   return base::Days(21);
 }
-
-BASE_FEATURE(kShowInactiveTabsCount,
-             "ShowInactiveTabsCount",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsShowInactiveTabsCountEnabled() {
-  CHECK(IsInactiveTabsAvailable());
-  return base::FeatureList::IsEnabled(kShowInactiveTabsCount);
-}

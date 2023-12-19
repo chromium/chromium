@@ -7298,11 +7298,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "show-inactive-tabs-count",
-    "owners": [ "lpromero@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "show-metered-toggle",
     "owners": [ "stevenjb@chromium.org", "azeemarshad@chromium.org", "cros-connectivity@google.com" ],
     "expiry_milestone": 122
