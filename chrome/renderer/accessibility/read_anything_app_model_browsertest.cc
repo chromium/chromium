@@ -733,6 +733,24 @@ TEST_F(ReadAnythingAppModelTest, DisplayNodeIdsContains_ContentNodes) {
 }
 
 TEST_F(ReadAnythingAppModelTest,
+       DisplayNodeIdsDoesNotContain_InvisibleOrIgnoredNodes) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[1].AddState(ax::mojom::State::kInvisible);
+  update.nodes[2].id = 4;
+  update.nodes[2].AddState(ax::mojom::State::kIgnored);
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({2, 3, 4});
+  EXPECT_TRUE(DisplayNodeIdsContains(1));
+  EXPECT_TRUE(DisplayNodeIdsContains(2));
+  EXPECT_FALSE(DisplayNodeIdsContains(3));
+  EXPECT_FALSE(DisplayNodeIdsContains(4));
+}
+
+TEST_F(ReadAnythingAppModelTest,
        SelectionNodeIdsContains_SelectionAndNearbyNodes) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
@@ -765,6 +783,30 @@ TEST_F(ReadAnythingAppModelTest,
   EXPECT_TRUE(SelectionNodeIdsContains(2));
   EXPECT_TRUE(SelectionNodeIdsContains(3));
   EXPECT_TRUE(SelectionNodeIdsContains(4));
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       SelectionNodeIdsDoesNotContain_InvisibleOrIgnoredNodes) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[1].AddState(ax::mojom::State::kInvisible);
+  update.nodes[2].id = 4;
+  update.nodes[2].AddState(ax::mojom::State::kIgnored);
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 4;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 0;
+  update.tree_data.sel_is_backward = false;
+
+  AccessibilityEventReceived({update});
+  ProcessSelection();
+  EXPECT_FALSE(DisplayNodeIdsContains(1));
+  EXPECT_FALSE(SelectionNodeIdsContains(2));
+  EXPECT_FALSE(SelectionNodeIdsContains(3));
+  EXPECT_FALSE(SelectionNodeIdsContains(4));
 }
 
 TEST_F(ReadAnythingAppModelTest, SetTheme_LineAndLetterSpacingCorrect) {

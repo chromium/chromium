@@ -166,8 +166,9 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
   ui::AXNode* end_node = GetAXNode(end_node_id_);
   DCHECK(end_node);
 
-  // If start node or end node is ignored, the selection was invalid.
-  if (start_node->IsIgnored() || end_node->IsIgnored()) {
+  // If start node or end node is invisible or ignored, the selection was
+  // invalid.
+  if (start_node->IsInvisibleOrIgnored() || end_node->IsInvisibleOrIgnored()) {
     return;
   }
 
@@ -269,7 +270,7 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
     // TODO(abigailbklein) This prevents the crash in crbug.com/1402788, but may
     // not be the correct approach. Do we need a version of
     // GetDeepestLastUnignoredDescendant() that works on ignored nodes?
-    if (!content_node || content_node->IsIgnored()) {
+    if (!content_node || content_node->IsInvisibleOrIgnored()) {
       continue;
     }
 
