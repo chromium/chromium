@@ -1830,30 +1830,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-font-size.html"));
 }
 
-#if BUILDFLAG(IS_MAC)
-// Mac failures: http://crbug.com/571712.
-#define MAYBE_AccessibilityContenteditableDescendants \
-  DISABLED_AccessibilityContenteditableDescendants
-#else
-#define MAYBE_AccessibilityContenteditableDescendants \
-  AccessibilityContenteditableDescendants
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityContenteditableDescendants) {
+                       AccessibilityContenteditableDescendants) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-descendants.html"));
 }
 
-#if BUILDFLAG(IS_MAC)
-// Mac failures: http://crbug.com/571712.
-#define MAYBE_AccessibilityContenteditableDescendantsFormControls \
-  DISABLED_AccessibilityContenteditableDescendantsFormControls
-#else
-#define MAYBE_AccessibilityContenteditableDescendantsFormControls \
-  AccessibilityContenteditableDescendantsFormControls
-#endif
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityTreeTest,
-    MAYBE_AccessibilityContenteditableDescendantsFormControls) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityContenteditableDescendantsFormControls) {
   RunFormControlsTest(FILE_PATH_LITERAL("contenteditable-descendants.html"));
 }
 
