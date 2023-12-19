@@ -208,6 +208,11 @@ PhysicalRect BoxBackgroundPaintContext::ComputePositioningArea(
   if (ShouldUseFixedAttachment(fill_layer)) {
     return FixedAttachmentPositioningArea(paint_info);
   }
+  return NormalPositioningArea(paint_rect);
+}
+
+PhysicalRect BoxBackgroundPaintContext::NormalPositioningArea(
+    const PhysicalRect& paint_rect) const {
   if (painting_view_ || cell_using_container_background_ ||
       box_has_multiple_fragments_) {
     return {PhysicalOffset(), positioning_size_override_};

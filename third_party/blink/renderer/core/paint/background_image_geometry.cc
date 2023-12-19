@@ -204,14 +204,6 @@ void BackgroundImageGeometry::SetSpaceY(LayoutUnit space,
   SetPhaseY(ComputeTilePhase(extra_offset, tile_size_.height + space));
 }
 
-void BackgroundImageGeometry::UseFixedAttachment(
-    const PhysicalOffset& attachment_point) {
-  PhysicalOffset fixed_adjustment =
-      attachment_point - unsnapped_dest_rect_.offset;
-  fixed_adjustment.ClampNegativeToZero();
-  phase_ += fixed_adjustment;
-}
-
 SnappedAndUnsnappedOutsets BackgroundImageGeometry::ComputeDestRectAdjustments(
     const FillLayer& fill_layer,
     const BoxBackgroundPaintContext& paint_context,
@@ -340,76 +332,68 @@ BackgroundImageGeometry::ComputePositioningAreaAdjustments(
 void BackgroundImageGeometry::AdjustPositioningArea(
     const FillLayer& fill_layer,
     const BoxBackgroundPaintContext& paint_context,
-    const PhysicalRect& paint_rect,
     const PaintInfo& paint_info,
     PhysicalRect& unsnapped_positioning_area,
     PhysicalRect& snapped_positioning_area,
     PhysicalOffset& unsnapped_box_offset,
     PhysicalOffset& snapped_box_offset) {
-  if (paint_context.ShouldUseFixedAttachment(fill_layer)) {
-    unsnapped_dest_rect_ = snapped_dest_rect_ = snapped_positioning_area =
-        unsnapped_positioning_area;
-  } else {
-    unsnapped_dest_rect_ = paint_rect;
+  // Attempt to shrink the destination rect if possible while also ensuring
+  // that it paints to the border:
+  //
+  //   * for background-clip content-box/padding-box, we can restrict to the
+  //     respective box, but for padding-box we also try to force alignment
+  //     with the inner border.
+  //
+  //   * for border-box, we can modify individual edges iff the border fully
+  //     obscures the background.
+  //
+  // It is unsafe to derive dest from border information when any of the
+  // following is true:
+  // * the layer is not painted as part of a regular background phase
+  //  (e.g.paint_phase == kMask)
+  // * non-SrcOver compositing is active
+  // * painting_view_ is set, meaning we're dealing with a
+  //   LayoutView - for which dest rect is overflowing (expanded to cover
+  //   the whole canvas).
+  // * We are painting table cells using the table background, or the table
+  //   has collapsed borders
+  // * We are painting a block-fragmented box.
+  // * There is a border image, because it may not be opaque or may be outset.
+  bool disallow_border_derived_adjustment =
+      !ShouldPaintSelfBlockBackground(paint_info.phase) ||
+      fill_layer.Composite() != CompositeOperator::kCompositeSourceOver ||
+      paint_context.DisallowBorderDerivedAdjustment();
 
-    // Attempt to shrink the destination rect if possible while also ensuring
-    // that it paints to the border:
-    //
-    //   * for background-clip content-box/padding-box, we can restrict to the
-    //     respective box, but for padding-box we also try to force alignment
-    //     with the inner border.
-    //
-    //   * for border-box, we can modify individual edges iff the border fully
-    //     obscures the background.
-    //
-    // It is unsafe to derive dest from border information when any of the
-    // following is true:
-    // * the layer is not painted as part of a regular background phase
-    //  (e.g.paint_phase == kMask)
-    // * non-SrcOver compositing is active
-    // * painting_view_ is set, meaning we're dealing with a
-    //   LayoutView - for which dest rect is overflowing (expanded to cover
-    //   the whole canvas).
-    // * We are painting table cells using the table background, or the table
-    //   has collapsed borders
-    // * We are painting a block-fragmented box.
-    // * There is a border image, because it may not be opaque or may be outset.
-    bool disallow_border_derived_adjustment =
-        !ShouldPaintSelfBlockBackground(paint_info.phase) ||
-        fill_layer.Composite() != CompositeOperator::kCompositeSourceOver ||
-        paint_context.DisallowBorderDerivedAdjustment();
+  // Compute all the outsets we need to apply to the rectangles. These
+  // outsets also include the snapping behavior.
+  const SnappedAndUnsnappedOutsets dest_adjust = ComputeDestRectAdjustments(
+      fill_layer, paint_context, unsnapped_positioning_area,
+      disallow_border_derived_adjustment);
+  const SnappedAndUnsnappedOutsets box_outset =
+      ComputePositioningAreaAdjustments(fill_layer, paint_context,
+                                        unsnapped_positioning_area,
+                                        disallow_border_derived_adjustment);
 
-    // Compute all the outsets we need to apply to the rectangles. These
-    // outsets also include the snapping behavior.
-    const SnappedAndUnsnappedOutsets dest_adjust = ComputeDestRectAdjustments(
-        fill_layer, paint_context, unsnapped_positioning_area,
-        disallow_border_derived_adjustment);
-    const SnappedAndUnsnappedOutsets box_outset =
-        ComputePositioningAreaAdjustments(fill_layer, paint_context,
-                                          unsnapped_positioning_area,
-                                          disallow_border_derived_adjustment);
+  // Offset of the positioning area from the corner of positioning_box_.
+  unsnapped_box_offset =
+      box_outset.unsnapped.Offset() - dest_adjust.unsnapped.Offset();
+  snapped_box_offset =
+      box_outset.snapped.Offset() - dest_adjust.snapped.Offset();
 
-    // Offset of the positioning area from the corner of positioning_box_.
-    unsnapped_box_offset =
-        box_outset.unsnapped.Offset() - dest_adjust.unsnapped.Offset();
-    snapped_box_offset =
-        box_outset.snapped.Offset() - dest_adjust.snapped.Offset();
-
-    // Apply the adjustments.
-    snapped_dest_rect_ = unsnapped_dest_rect_;
-    snapped_dest_rect_.Contract(dest_adjust.snapped);
-    snapped_dest_rect_ = PhysicalRect(ToPixelSnappedRect(snapped_dest_rect_));
-    snapped_dest_rect_.size.ClampNegativeToZero();
-    unsnapped_dest_rect_.Contract(dest_adjust.unsnapped);
-    unsnapped_dest_rect_.size.ClampNegativeToZero();
-    snapped_positioning_area = unsnapped_positioning_area;
-    snapped_positioning_area.Contract(box_outset.snapped);
-    snapped_positioning_area =
-        PhysicalRect(ToPixelSnappedRect(snapped_positioning_area));
-    snapped_positioning_area.size.ClampNegativeToZero();
-    unsnapped_positioning_area.Contract(box_outset.unsnapped);
-    unsnapped_positioning_area.size.ClampNegativeToZero();
-  }
+  // Apply the adjustments.
+  snapped_dest_rect_ = unsnapped_dest_rect_;
+  snapped_dest_rect_.Contract(dest_adjust.snapped);
+  snapped_dest_rect_ = PhysicalRect(ToPixelSnappedRect(snapped_dest_rect_));
+  snapped_dest_rect_.size.ClampNegativeToZero();
+  unsnapped_dest_rect_.Contract(dest_adjust.unsnapped);
+  unsnapped_dest_rect_.size.ClampNegativeToZero();
+  snapped_positioning_area = unsnapped_positioning_area;
+  snapped_positioning_area.Contract(box_outset.snapped);
+  snapped_positioning_area =
+      PhysicalRect(ToPixelSnappedRect(snapped_positioning_area));
+  snapped_positioning_area.size.ClampNegativeToZero();
+  unsnapped_positioning_area.Contract(box_outset.unsnapped);
+  unsnapped_positioning_area.size.ClampNegativeToZero();
 }
 
 void BackgroundImageGeometry::CalculateFillTileSize(
@@ -659,8 +643,7 @@ void BackgroundImageGeometry::Calculate(
   // Unsnapped positioning area is used to derive quantities
   // that reference source image maps and define non-integer values, such
   // as phase and position.
-  PhysicalRect unsnapped_positioning_area =
-      paint_context.ComputePositioningArea(paint_info, fill_layer, paint_rect);
+  PhysicalRect unsnapped_positioning_area;
 
   // Snapped positioning area is used for sizing images based on the
   // background area (like cover and contain), and for setting the repeat
@@ -671,10 +654,22 @@ void BackgroundImageGeometry::Calculate(
   PhysicalOffset unsnapped_box_offset;
   PhysicalOffset snapped_box_offset;
 
-  // This method also sets the destination rects.
-  AdjustPositioningArea(fill_layer, paint_context, paint_rect, paint_info,
-                        unsnapped_positioning_area, snapped_positioning_area,
-                        unsnapped_box_offset, snapped_box_offset);
+  if (paint_context.ShouldUseFixedAttachment(fill_layer)) {
+    unsnapped_positioning_area =
+        paint_context.FixedAttachmentPositioningArea(paint_info);
+    unsnapped_dest_rect_ = snapped_dest_rect_ = snapped_positioning_area =
+        unsnapped_positioning_area;
+  } else {
+    unsnapped_positioning_area =
+        paint_context.NormalPositioningArea(paint_rect);
+    unsnapped_dest_rect_ = paint_rect;
+
+    // This method adjusts `unsnapped_dest_rect_` and sets
+    // `snapped_dest_rect_`.
+    AdjustPositioningArea(fill_layer, paint_context, paint_info,
+                          unsnapped_positioning_area, snapped_positioning_area,
+                          unsnapped_box_offset, snapped_box_offset);
+  }
 
   // Sets the tile_size_.
   CalculateFillTileSize(fill_layer, paint_context.Style(),
@@ -689,7 +684,10 @@ void BackgroundImageGeometry::Calculate(
       snapped_positioning_area.size, unsnapped_box_offset, snapped_box_offset);
 
   if (paint_context.ShouldUseFixedAttachment(fill_layer)) {
-    UseFixedAttachment(paint_rect.offset);
+    PhysicalOffset fixed_adjustment =
+        paint_rect.offset - unsnapped_dest_rect_.offset;
+    fixed_adjustment.ClampNegativeToZero();
+    phase_ += fixed_adjustment;
   }
 
   // The actual painting area can be bigger than the provided background

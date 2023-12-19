@@ -79,8 +79,6 @@ class BackgroundImageGeometry {
   void SetSpaceX(LayoutUnit space, LayoutUnit extra_offset);
   void SetSpaceY(LayoutUnit space, LayoutUnit extra_offset);
 
-  void UseFixedAttachment(const PhysicalOffset& attachment_point);
-
   // Compute adjustments for the destination rects. Adjustments
   // both optimize painting when the background is obscured by a
   // border, and snap the dest rect to the border. They also
@@ -109,7 +107,6 @@ class BackgroundImageGeometry {
 
   void AdjustPositioningArea(const FillLayer&,
                              const BoxBackgroundPaintContext&,
-                             const PhysicalRect&,
                              const PaintInfo&,
                              PhysicalRect&,
                              PhysicalRect&,

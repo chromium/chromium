@@ -50,9 +50,14 @@ class BoxBackgroundPaintContext {
 
   // Compute the initial position area based on the geometry for the object
   // this BackgroundPaintContext was created for.
+  PhysicalRect NormalPositioningArea(const PhysicalRect& paint_rect) const;
+  // As above, but also considers background-attachment: fixed.
   PhysicalRect ComputePositioningArea(const PaintInfo& paint_info,
                                       const FillLayer& fill_layer,
                                       const PhysicalRect& paint_rect) const;
+  // The positioning area for a background layer with background-attachment:
+  // fixed.
+  PhysicalRect FixedAttachmentPositioningArea(const PaintInfo&) const;
 
   PhysicalBoxStrut BorderOutsets() const;
   PhysicalBoxStrut PaddingOutsets() const;
@@ -88,8 +93,6 @@ class BoxBackgroundPaintContext {
  private:
   BoxBackgroundPaintContext(const LayoutBoxModelObject* box,
                             const LayoutBoxModelObject* positioning_box);
-
-  PhysicalRect FixedAttachmentPositioningArea(const PaintInfo&) const;
 
   // In most cases this is the same as positioning_box_. They are different
   // when we are painting:
