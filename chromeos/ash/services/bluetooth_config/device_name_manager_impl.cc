@@ -168,15 +168,6 @@ void DeviceNameManagerImpl::MigrateExistingNicknames() {
       continue;
     }
 
-    // Avoid overwriting an existing entry with a BlueZ nickname. This allows us
-    // to guarantee that Floss nicknames are migrated and outdate BlueZ
-    // nicknames are effectively forgotten.
-    if (local_state_->GetDict(kDeviceIdToNicknameMapPrefName).contains(id)) {
-      BLUETOOTH_LOG(EVENT)
-          << "Device ID format already matches Floss format; skipping entry";
-      continue;
-    }
-
     // Since BlueZ uses the DBus object path of the device as the ID, which
     // includes the parts of the address of the device, we are able to extract
     // these parts and use them to generate an ID for the device that follows
@@ -200,10 +191,20 @@ void DeviceNameManagerImpl::MigrateExistingNicknames() {
       continue;
     }
 
+    auto floss_id =
+        base::JoinString(base::make_span(parts.end() - 6, parts.end()), ":");
+
+    // Avoid overwriting an existing entry with a BlueZ nickname. This allows us
+    // to guarantee that Floss nicknames are migrated and outdate BlueZ
+    // nicknames are effectively forgotten.
+    if (local_state_->GetDict(kDeviceIdToNicknameMapPrefName)
+            .contains(floss_id)) {
+      BLUETOOTH_LOG(EVENT) << "Device ID already exists; skipping entry";
+      continue;
+    }
+
     ScopedDictPrefUpdate update(local_state_, kDeviceIdToNicknameMapPrefName);
-    update->Set(
-        base::JoinString(base::make_span(parts.end() - 6, parts.end()), ":"),
-        nickname.Clone());
+    update->Set(floss_id, nickname.Clone());
 
     BLUETOOTH_LOG(EVENT) << "Successfully migrated Bluetooth nickname pref";
   }
