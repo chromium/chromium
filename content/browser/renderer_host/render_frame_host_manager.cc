@@ -4583,9 +4583,7 @@ void RenderFrameHostManager::CommitPending(
     // not affect the visibility of the blink::WidgetBase. We should unify these
     // two visibility states to prevent them from drifting.
     old_view->Hide();
-    if (base::FeatureList::IsEnabled(
-            features::kNavigationUpdatesChildViewsVisibility) &&
-        old_render_frame_host->child_count()) {
+    if (old_render_frame_host->child_count()) {
       old_render_frame_host->SetVisibilityForChildViews(false);
     }
   }
@@ -4800,9 +4798,7 @@ void RenderFrameHostManager::CommitPending(
     // finishes, we show it if the delegate is shown.
     if (!frame_tree_node_->frame_tree().IsHidden()) {
       new_view->Show();
-      if (base::FeatureList::IsEnabled(
-              features::kNavigationUpdatesChildViewsVisibility) &&
-          render_frame_host_->child_count()) {
+      if (render_frame_host_->child_count()) {
         render_frame_host_->SetVisibilityForChildViews(true);
       }
     }

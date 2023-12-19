@@ -6843,26 +6843,6 @@
             ]
         }
     ],
-    "EvictSubtree": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EvictSubtree"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExcludeBrokenImageIconFromBeingLcpEligible": [
         {
             "platforms": [
@@ -11048,26 +11028,6 @@
                     "name": "Enabled_20230616",
                     "enable_features": [
                         "NavigationPredictor"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NavigationUpdatesChildViewsVisibility": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NavigationUpdatesChildViewsVisibility"
                     ]
                 }
             ]

@@ -505,13 +505,10 @@ void DelegatedFrameHost::ContinueDelegatedFrameEviction(
   if (!HasSavedFrame())
     return;
 
-  // This list could incorrectly be empty. This could occur when the
-  // RenderFrameHostImpl has been disconnected from the RenderViewHostImpl,
-  // preventing the FrameTree from being traversed. This could happen during
-  // navigation involving BFCache. This should not occur with
-  // features::kEvictSubtree.
-  DCHECK(!surface_ids.empty() ||
-         !base::FeatureList::IsEnabled(features::kEvictSubtree));
+  // Ensure the list is not empty, otherwise we are silently disconnecting our
+  // FrameTree. This prevents the eviction of viz::Surfaces, leading to GPU
+  // memory staying allocated.
+  DCHECK(!surface_ids.empty());
   if (!surface_ids.empty()) {
     DCHECK(host_frame_sink_manager_);
     host_frame_sink_manager_->EvictSurfaces(surface_ids);

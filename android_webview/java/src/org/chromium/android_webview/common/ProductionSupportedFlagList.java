@@ -716,11 +716,6 @@ public final class ProductionSupportedFlagList {
                 "Enables PartitionAlloc's MemoryReclaimer, which tries decommitting unused "
                         + "system pages as much as possible so that other applications can "
                         + "reuse the memory pages."),
-        Flag.baseFeature(VizFeatures.EVICT_SUBTREE, "Enables evicting entire tree of surfaces."),
-        Flag.baseFeature(
-                ContentFeatures.NAVIGATION_UPDATES_CHILD_VIEWS_VISIBILITY,
-                "Enables notifying children of the top-most RenderWidgetHostView that they "
-                        + "were hidden during a navigation."),
         Flag.baseFeature(
                 BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_TEXT_SUPPORT,
                 "Enables support for CSS vertical writing mode on text-based form controls."),
