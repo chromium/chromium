@@ -34,3 +34,8 @@ NSString* const kLegacyWebStateListOpenerIndexKey = @"OpenerIndex";
 
 NSString* const kLegacyWebStateListOpenerNavigationIndexKey =
     @"OpenerNavigationIndex";
+
+const char kSessionStorageFormatPref[] = "ios.session.storage.format";
+
+const char kSessionStorageMigrationStatusPref[] =
+    "ios.session.storage.migration-status";
