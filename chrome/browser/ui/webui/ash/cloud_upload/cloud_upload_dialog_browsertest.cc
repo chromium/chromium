@@ -918,6 +918,8 @@ class FileHandlerDialogBrowserTestWithAutomatedFlow
     auto* prefs = profile()->GetPrefs();
     prefs->SetString(prefs::kGoogleWorkspaceCloudUpload,
                      google_workspace_cloud_upload);
+    prefs->SetString(prefs::kMicrosoftOneDriveMount,
+                     microsoft_office_cloud_upload);
     prefs->SetString(prefs::kMicrosoftOfficeCloudUpload,
                      microsoft_office_cloud_upload);
   }
