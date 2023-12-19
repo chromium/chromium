@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   std::vector<const FormFieldData* const> filled_fields_by_autofill = {
       {&form.fields[0], &form.fields[1]}};
 
-  // Enabled events and emit event about forming being filled.
+  // Enabled events and emit event about form being filled.
   SendCommandSync("Autofill.enable");
   main_autofill_manager().NotifyObservers(
       &autofill::AutofillManager::Observer::OnFillOrPreviewDataModelForm,
@@ -512,6 +512,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
                                     af->form_control_type))));
     EXPECT_THAT(ff,
                 FilledFieldHasAttributeWithValue16("name", af->name_attribute));
+    EXPECT_EQ(*ff.GetDict().FindIntByDottedPath("fieldId"),
+              (int)(ffd->unique_renderer_id.value()));
   }
 
   // The first filled field uses autocomplete attribute as filling strategy.

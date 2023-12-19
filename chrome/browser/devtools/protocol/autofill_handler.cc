@@ -27,6 +27,7 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 
 using autofill::AutofillField;
 using autofill::AutofillTriggerSource;
@@ -277,6 +278,10 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
                     ? protocol::Autofill::FillingStrategyEnum::AutofillInferred
                     : protocol::Autofill::FillingStrategyEnum::
                           AutocompleteAttribute)
+            .SetFieldId(base::FeatureList::IsEnabled(
+                            blink::features::kAutofillUseDomNodeIdForRendererId)
+                            ? field->unique_renderer_id.value()
+                            : 0)
             .Build());
   }
 
