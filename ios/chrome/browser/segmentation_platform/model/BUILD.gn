@@ -14,6 +14,7 @@ source_set("model") {
     "segmentation_platform_service_factory.mm",
   ]
   deps = [
+    ":ukm_client",
     "//base",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
@@ -28,6 +29,7 @@ source_set("model") {
     "//components/segmentation_platform/public",
     "//components/segmentation_platform/public/proto",
     "//components/sync_device_info",
+    "//components/ukm",
     "//components/variations",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/metrics/model:accessor",
@@ -45,20 +47,46 @@ source_set("model") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("ukm_client") {
+  sources = [
+    "ukm_database_client.h",
+    "ukm_database_client.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/metrics_services_manager",
+    "//components/segmentation_platform/internal",
+    "//components/ukm",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state:browser_state",
+    "//ios/chrome/browser/shared/model/paths",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "otr_web_state_observer_unittest.mm",
     "segmentation_platform_service_factory_unittest.mm",
+    "ukm_data_manager_test_utils.h",
+    "ukm_data_manager_test_utils.mm",
   ]
   deps = [
     ":model",
+    ":ukm_client",
     "//base/test:test_support",
+    "//components/history/core/browser",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
+    "//components/segmentation_platform/embedder",
+    "//components/segmentation_platform/internal",
+    "//components/segmentation_platform/internal:test_support",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
     "//components/segmentation_platform/public/proto",
+    "//components/ukm:test_support",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
@@ -67,6 +95,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//services/metrics/public/cpp:ukm_builders",
     "//testing/gtest",
   ]
 }

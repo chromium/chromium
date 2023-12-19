@@ -238,8 +238,8 @@ void SegmentResultProviderImpl::GetCachedModelScore(
     return;
   }
 
-  if (metadata_utils::HasExpiredOrUnavailableResult(*db_segment_info,
-                                                    clock_->Now())) {
+  if (force_refresh_results_ || metadata_utils::HasExpiredOrUnavailableResult(
+                                    *db_segment_info, clock_->Now())) {
     VLOG(1) << __func__ << ": segment="
             << SegmentId_Name(request_state->options->segment_id)
             << " has expired or unavailable result.";

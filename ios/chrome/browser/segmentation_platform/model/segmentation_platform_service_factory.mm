@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/otr_web_state_observer.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_config.h"
+#import "ios/chrome/browser/segmentation_platform/model/ukm_database_client.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -49,11 +50,6 @@ const char kSegmentationDeviceSwitcherUserDataKey[] =
     "segmentation_device_switcher_data";
 const char kSegmentationTabRankDispatcherUserDataKey[] =
     "segmentation_tab_rank_dispatcher_data";
-
-UkmDataManager* GetUkmDataManager() {
-  static base::NoDestructor<DummyUkmDataManager> instance;
-  return instance.get();
-}
 
 std::unique_ptr<processing::InputDelegateHolder> SetUpInputDelegates(
     std::vector<std::unique_ptr<Config>>& configs,
@@ -141,7 +137,9 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   params->db_provider = protodb_provider;
   params->clock = base::DefaultClock::GetInstance();
 
-  params->ukm_data_manager = GetUkmDataManager();
+  params->ukm_data_manager =
+      UkmDatabaseClientHolder::GetClientInstance(chrome_browser_state)
+          .GetUkmDataManager();
   params->profile_prefs = chrome_browser_state->GetPrefs();
 
   params->configs = GetSegmentationPlatformConfig();

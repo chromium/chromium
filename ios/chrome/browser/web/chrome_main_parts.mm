@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_metrics_collector_factory.h"
+#import "ios/chrome/browser/segmentation_platform/model/ukm_database_client.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
@@ -298,6 +299,10 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   // Initialize opt guide.
   OptimizationGuideServiceFactory::InitializePredictionModelStore();
 
+  segmentation_platform::UkmDatabaseClientHolder::GetClientInstance(nullptr)
+      .PreProfileInit(
+          /*in_memory_database=*/false);
+
   // Ensure that the browser state is initialized.
   EnsureBrowserStateKeyedServiceFactoriesBuilt();
   ios::ChromeBrowserStateManager* browser_state_manager =
@@ -322,6 +327,9 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
       metrics::CleanExitBeacon::ShouldUseUserDefaultsBeacon() ? "Enabled"
                                                               : "Disabled",
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
+
+  segmentation_platform::UkmDatabaseClientHolder::GetClientInstance(nullptr)
+      .StartObservation();
 
 #if BUILDFLAG(ENABLE_RLZ)
   // Init the RLZ library. This just schedules a task on the file thread to be
@@ -380,6 +388,10 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 
 void IOSChromeMainParts::PostMainMessageLoopRun() {
   TranslateServiceIOS::Shutdown();
+
+  segmentation_platform::UkmDatabaseClientHolder::GetClientInstance(nullptr)
+      .PostMessageLoopRun();
+
 #if BUILDFLAG(ENABLE_RLZ)
   rlz::RLZTracker::CleanupRlz();
 #endif  // BUILDFLAG(ENABLE_RLZ)

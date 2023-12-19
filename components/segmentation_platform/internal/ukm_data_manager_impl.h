@@ -31,9 +31,8 @@ class UkmDataManagerImpl : public UkmDataManager {
                             UkmObserver* ukm_observer);
 
   // UkmDataManager implementation:
-  void Initialize(const base::FilePath& database_path,
-                  bool in_memory,
-                  UkmObserver* ukm_observer) override;
+  void Initialize(const base::FilePath& database_path, bool in_memory) override;
+  void StartObservation(UkmObserver* ukm_observer) override;
   bool IsUkmEngineEnabled() override;
   void StartObservingUkm(const UkmConfig& config) override;
   void PauseOrResumeObservation(bool pause) override;
@@ -48,8 +47,7 @@ class UkmDataManagerImpl : public UkmDataManager {
 
  private:
   // Helper method for initializing this object.
-  void InitiailizeImpl(std::unique_ptr<UkmDatabase> ukm_database,
-                       UkmObserver* ukm_observer);
+  void InitiailizeImpl(std::unique_ptr<UkmDatabase> ukm_database);
 
   void RunCleanupTask();
 

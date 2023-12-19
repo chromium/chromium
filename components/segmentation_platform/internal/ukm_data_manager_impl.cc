@@ -43,25 +43,25 @@ UkmDataManagerImpl::~UkmDataManagerImpl() {
 void UkmDataManagerImpl::InitializeForTesting(
     std::unique_ptr<UkmDatabase> ukm_database,
     UkmObserver* ukm_observer) {
-  InitiailizeImpl(std::move(ukm_database), ukm_observer);
+  InitiailizeImpl(std::move(ukm_database));
+  StartObservation(ukm_observer);
 }
 
 void UkmDataManagerImpl::Initialize(const base::FilePath& database_path,
-                                    bool in_memory,
-                                    UkmObserver* ukm_observer) {
-  InitiailizeImpl(std::make_unique<UkmDatabaseImpl>(database_path, in_memory),
-                  ukm_observer);
+                                    bool in_memory) {
+  InitiailizeImpl(std::make_unique<UkmDatabaseImpl>(database_path, in_memory));
+}
+
+void UkmDataManagerImpl::StartObservation(UkmObserver* ukm_observer) {
+  ukm_observer_ = ukm_observer;
+  ukm_observer_->set_ukm_data_manager(this);
 }
 
 void UkmDataManagerImpl::InitiailizeImpl(
-    std::unique_ptr<UkmDatabase> ukm_database,
-    UkmObserver* ukm_observer) {
+    std::unique_ptr<UkmDatabase> ukm_database) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
   DCHECK(!ukm_database_);
   DCHECK(!ukm_observer_);
-
-  ukm_observer_ = ukm_observer;
-  ukm_observer_->set_ukm_data_manager(this);
 
   ukm_database_ = std::move(ukm_database);
   // TODO(ssid): Move this call  to constructor to make it clear any transaction
@@ -106,7 +106,10 @@ void UkmDataManagerImpl::PauseOrResumeObservation(bool pause) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
   // TODO(b/290821132): Remove this check.
   if (!ukm_observer_) {
+    // On iOS the eg tests do not set this flag.
+#if !BUILDFLAG(IS_IOS)
     CHECK_IS_TEST();
+#endif
     return;
   }
   ukm_observer_->PauseOrResumeObservation(pause);
