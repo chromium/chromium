@@ -32,7 +32,6 @@ js_type_check("closure_compile_local") {
 
     #":assistant_optin",
     ":autolaunch",
-    ":choobe",
     ":consolidated_consent",
     ":device_disabled",
     ":display_size",
@@ -123,22 +122,6 @@ js_library("autolaunch") {
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("choobe") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/choobe.js" ]
-  deps = [
-    "../../components:display_manager_types",
-    "../../components:oobe_screens_list",
-    "../../components:oobe_types",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//ash/webui/common/resources:cr.m",
   ]
   extra_deps = [ ":web_components" ]
 }

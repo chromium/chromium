@@ -10,11 +10,13 @@ import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/buttons/oobe_text_button.js';
 import '../../components/oobe_icons.html.js';
+import '../../components/oobe_screens_list.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
@@ -24,57 +26,40 @@ import {OobeScreensList, ScreenItem} from '../../components/oobe_screens_list.js
 
 import {getTemplate} from './choobe.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- */
-const ChoobeScreenElementBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
+export const ChoobeScreenElementBase =
+  mixinBehaviors(
+      [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+      PolymerElement) as {
+    new (): PolymerElement & OobeI18nBehaviorInterface &
+        LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
+  };
 
-/**
- * @typedef {{
- *   screensList: OobeScreensList,
- * }}
- */
-ChoobeScreenElementBase.$;
-
-/**
- * Data that is passed to the screen during onBeforeShow.
- * @typedef {{
- *   screens: !Array<ScreenItem>,
- * }}
- */
-let ChoobeScreenData;
-
-const ChoobeStep = {
-  OVERVIEW: 'overview',
-};
+enum ChoobeStep {
+  OVERVIEW = 'overview',
+}
 
 /**
  * Available user actions.
- * @enum {string}
  */
-const UserAction = {
-  SKIP: 'choobeSkip',
-  NEXT: 'choobeSelect',
-};
+enum UserAction {
+  SKIP = 'choobeSkip',
+  NEXT = 'choobeSelect',
+}
 
-/**
- * @polymer
- */
+interface ChoobeScreenData {
+  screens: ScreenItem[];
+}
+
 class ChoobeScreen extends ChoobeScreenElementBase {
   static get is() {
-    return 'choobe-element';
+    return 'choobe-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       numberOfSelectedScreens_: {
         type: Number,
@@ -83,43 +68,54 @@ class ChoobeScreen extends ChoobeScreenElementBase {
     };
   }
 
-  get UI_STEPS() {
+  private numberOfSelectedScreens_: number;
+
+  override get UI_STEPS() {
     return ChoobeStep;
   }
 
-  defaultUIStep() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep() {
     return ChoobeStep.OVERVIEW;
   }
 
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('ChoobeScreen');
   }
 
-  /**
-   * @param {ChoobeScreenData} data Screen init payload.
-   */
-  onBeforeShow(data) {
+  onBeforeShow(data: ChoobeScreenData): void {
     if ('screens' in data) {
-      this.$.screensList.init(data['screens']);
+      this.shadowRoot!.querySelector<OobeScreensList>('#screensList')!.init(
+        data['screens']);
     }
   }
 
-  getOobeUIInitialState() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override getOobeUIInitialState(): OOBE_UI_STATE {
     return OOBE_UI_STATE.CHOOBE;
   }
 
-  onNextClicked_() {
-    const screenSelected = this.$.screensList.getScreenSelected();
+  private onNextClicked_(): void {
+    const screenSelected =
+        this.shadowRoot!.querySelector<OobeScreensList>(
+                            '#screensList')!.getScreenSelected();
     this.userActed([UserAction.NEXT, screenSelected]);
   }
 
-  onSkip_() {
+  private onSkip_(): void {
     this.userActed(UserAction.SKIP);
   }
 
-  canProceed_() {
+  private canProceed_(): boolean {
     return this.numberOfSelectedScreens_ > 0;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [ChoobeScreen.is]: ChoobeScreen;
+  }
+}
+
 customElements.define(ChoobeScreen.is, ChoobeScreen);

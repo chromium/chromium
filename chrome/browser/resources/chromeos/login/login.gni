@@ -129,7 +129,7 @@ common_screens_js_files = [
   "screens/common/app_launch_splash.js",
   "screens/common/assistant_optin.js",
   "screens/common/autolaunch.js",
-  "screens/common/choobe.js",
+  "screens/common/choobe.ts",
   "screens/common/consolidated_consent.js",
   "screens/common/device_disabled.js",
   "screens/common/display_size.js",
