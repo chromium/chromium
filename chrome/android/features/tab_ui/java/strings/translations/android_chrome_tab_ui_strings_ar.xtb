@@ -74,7 +74,7 @@
 <translation id="7204204600596740190">وضع التحديد المتعدد</translation>
 <translation id="7326879924029668159">الاطّلاع على سياسة الإرجاع وغيرها</translation>
 <translation id="7352298686197644113">يمكنك الاطّلاع على المُنتَج الذي انخفض سعره في علامات التبويب المفتوحة.</translation>
-<translation id="753732157349120914">أداة تغيير علامات التبويب</translation>
+<translation id="753732157349120914">أداة التبديل بين علامات التبويب</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{‏مراجعة واحدة (<ph name="REVIEWS_COUNT_ONE" />) من Google}zero{‏<ph name="REVIEWS_COUNT_MANY" /> مراجعة من Google}two{‏مراجعتان (<ph name="REVIEWS_COUNT_MANY" />) من Google}few{‏<ph name="REVIEWS_COUNT_MANY" /> مراجعات من Google}many{‏<ph name="REVIEWS_COUNT_MANY" /> مراجعة من Google}other{‏<ph name="REVIEWS_COUNT_MANY" /> مراجعة من Google}}</translation>
 <translation id="7559245342362162951">عرض علامات تبويب المجموعة في شبكة ملء الشاشة</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{مشاركة علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) محدَّدة}zero{مشاركة <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}two{مشاركة علامتَي تبويب (<ph name="TABS_COUNT_MANY" />) محدَّدتَين}few{مشاركة <ph name="TABS_COUNT_MANY" /> علامات تبويب محدَّدة}many{مشاركة <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}other{مشاركة <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}}</translation>

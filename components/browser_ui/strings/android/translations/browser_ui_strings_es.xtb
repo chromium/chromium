@@ -116,7 +116,7 @@
 <translation id="2913331724188855103">Permitir que los sitios guarden y lean datos de cookies (recomendado)</translation>
 <translation id="2932883381142163287">Notificar uso inadecuado</translation>
 <translation id="2968755619301702150">Visor de certificados</translation>
-<translation id="3008272652534848354">Borrar permisos</translation>
+<translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="301521992641321250">Bloqueado automáticamente</translation>
 <translation id="3069226013421428034">Permite el inicio de sesión de terceros en un sitio específico.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Caduca mañana}other{Caduca dentro de # días}}</translation>
