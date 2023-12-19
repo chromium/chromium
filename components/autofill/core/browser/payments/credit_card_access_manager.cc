@@ -1641,20 +1641,25 @@ void CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling(
     payments::MandatoryReauthAuthenticationMethod authentication_method,
     const CreditCard* card,
     bool successful_auth) {
+  CHECK(card);
+  CreditCard::RecordType record_type = card->record_type();
+
   autofill_metrics::LogMandatoryReauthCheckoutFlowUsageEvent(
-      card->record_type(), authentication_method,
+      record_type, authentication_method,
       successful_auth
           ? autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
                 kFlowSucceeded
           : autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
                 kFlowFailed);
-  CHECK(card);
+  if (successful_auth && !card->cvc().empty()) {
+    autofill_metrics::LogCvcFilling(
+        autofill_metrics::CvcFillingFlowType::kMandatoryReauth, record_type);
+  }
   autofill_metrics::LogServerCardUnmaskResult(
       successful_auth
           ? autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked
           : autofill_metrics::ServerCardUnmaskResult::kAuthenticationError,
-      card->record_type(),
-      autofill_metrics::ServerCardUnmaskFlowType::kDeviceUnlock);
+      record_type, autofill_metrics::ServerCardUnmaskFlowType::kDeviceUnlock);
 
   std::move(on_credit_card_fetched_callback_)
       .Run(successful_auth ? CreditCardFetchResult::kSuccess

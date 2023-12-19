@@ -47,7 +47,9 @@ enum class CvcFillingFlowType {
   kNoInteractiveAuthentication = 0,
   // CVC filled with FIDO authentication.
   kFido = 1,
-  kMaxValue = kFido,
+  // CVC filled with mandatory re-auth.
+  kMandatoryReauth = 2,
+  kMaxValue = kMandatoryReauth,
 };
 
 enum class ServerCardUnmaskFlowType {

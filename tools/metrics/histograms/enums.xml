@@ -10852,6 +10852,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
 <enum name="CvcFillingFlowType">
   <int value="0" label="CVC filled without any interactive authentication"/>
   <int value="1" label="CVC filled by FIDO authentication"/>
+  <int value="2" label="CVC filed by mandatory re-auth"/>
 </enum>
 
 <enum name="DaemonError">
