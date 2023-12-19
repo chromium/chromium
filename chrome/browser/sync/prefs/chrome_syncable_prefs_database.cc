@@ -305,6 +305,7 @@ enum {
   kApplicationLocale = 100247,
   kListenToThisPageEnabled = 100248,
   kIpProtectionEnabled = 100249,
+  kAccessibilityReadAnythingLinksEnabled = 100250,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -399,6 +400,10 @@ const auto& SyncablePreferences() {
       {prefs::kAccessibilityReadAnythingOmniboxIconLabelShownCount,
        {syncable_prefs_ids::
             kAccessibilityReadAnythingOmniboxIconLabelShownCount,
+        syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+        sync_preferences::MergeBehavior::kNone}},
+      {prefs::kAccessibilityReadAnythingLinksEnabled,
+       {syncable_prefs_ids::kAccessibilityReadAnythingLinksEnabled,
         syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
         sync_preferences::MergeBehavior::kNone}},
       {prefs::kLensRegionSearchEnabled,
