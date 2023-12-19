@@ -21,7 +21,7 @@
 // numeric values should never be reused. The numbers here correspond to the
 // ordering of the flow. This enum should be kept in sync with the
 // NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent enum in
-// src/tools/metrics/histograms/enums.xml.
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class
     NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent {
       kNotificationShown = 1,
@@ -34,7 +34,7 @@ enum class
 // numeric values should never be reused. The numbers here correspond to the
 // ordering of the flow. This enum should be kept in sync with the
 // NearbyShareBackgroundScanningSetupNotificationFlowEvent enum in
-// src/tools/metrics/histograms/enums.xml.
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class NearbyShareBackgroundScanningSetupNotificationFlowEvent {
   kNotificationShown = 1,
   kSetup = 12,

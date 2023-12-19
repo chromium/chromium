@@ -38,7 +38,9 @@ enum class NearbyHttpError {
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. This enum should be kept in sync with
+// the NearbyHttpResult enum in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class NearbyHttpResult {
   kSuccess = 0,
   kTimeout = 1,
