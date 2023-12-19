@@ -647,6 +647,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4452411734226507615">Fechar o separador <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Adicionado aos marcadores em <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Quando associa outro dispositivo com um código QR, esse dispositivo pode utilizar este telemóvel como chave de segurança. Se o remover, terá de ler um código QR para o associar novamente.</translation>
+<translation id="4478161224666880173">Pode usar a sua conta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> neste site. Para continuar, inicie sessão na conta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">A instalar o módulo <ph name="MODULE" /> para o Chrome…</translation>
 <translation id="4484496141267039529">Sem ligação. Tente mais tarde.</translation>
 <translation id="4487967297491345095">Todos os dados de apps do Chrome são eliminados permanentemente, incluindo todos os ficheiros, definições, contas, bases de dados, etc.</translation>

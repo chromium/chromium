@@ -647,6 +647,7 @@
 <translation id="4452411734226507615">ปิดแท็บ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">เพิ่มบุ๊กมาร์กไปยัง <ph name="FOLDER_NAME" /> แล้ว</translation>
 <translation id="4461614516424362539">เมื่อคุณลิงก์อุปกรณ์อื่นด้วยคิวอาร์โค้ด อุปกรณ์ดังกล่าวจะใช้โทรศัพท์เครื่องนี้เป็นคีย์ความปลอดภัยได้ หากนำออก คุณจะต้องสแกนคิวอาร์โค้ดเพื่อลิงก์อีกครั้ง</translation>
+<translation id="4478161224666880173">คุณใช้บัญชี <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ในเว็บไซต์นี้ได้ หากต้องการดำเนินการต่อ โปรดลงชื่อเข้าใช้ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4479972344484327217">กำลังติดตั้ง <ph name="MODULE" /> สำหรับ Chrome…</translation>
 <translation id="4484496141267039529">ไม่มีการเชื่อมต่อ ลองอีกครั้งในภายหลัง</translation>
 <translation id="4487967297491345095">ระบบจะลบข้อมูลแอปทั้งหมดของ Chrome อย่างถาวร ซึ่งรวมถึงไฟล์ทั้งหมด การตั้งค่า บัญชี ฐานข้อมูล และอื่นๆ</translation>

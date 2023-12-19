@@ -647,6 +647,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4452411734226507615">Mbyll skedën <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Faqeshënuesi u shtua te <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Kur lidh një pajisje tjetër me një kod QR, ajo mund ta përdorë telefonin si një çelës sigurie. Nëse e heq, do të të duhet të skanosh një kod QR për ta lidhur atë sërish.</translation>
+<translation id="4478161224666880173">Mund të përdorësh llogarinë tënde të <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> në këtë sajt. Për të vazhduar, identifikohu në <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Po instalohet <ph name="MODULE" /> për Chrome…</translation>
 <translation id="4484496141267039529">Nuk ka lidhje. Provo sërish më vonë.</translation>
 <translation id="4487967297491345095">Të gjitha të dhënat e aplikacionit të Chrome do të fshihen përgjithmonë. Kjo përfshin të gjithë skedarët, cilësimet, llogaritë, bazat e të dhënave etj.</translation>

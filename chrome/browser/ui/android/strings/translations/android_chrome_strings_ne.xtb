@@ -647,6 +647,7 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ट्याब बन्द गर्नुहोस्‌</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> मा पुस्तक चिन्ह लगाइयो</translation>
 <translation id="4461614516424362539">तपाईंले QR कोडमार्फत अर्को डिभाइस लिंक गर्नुभएका बेला उक्त डिभाइसमा यो फोन सुरक्षा साँचोका रूपमा प्रयोग गर्न सकिन्छ। तपाईंले उक्त डिभाइस हटाउनुभयो भने सो डिभाइस फेरि लिंक गर्न तपाईंले QR कोड स्क्यान गर्नु पर्ने हुन्छ।</translation>
+<translation id="4478161224666880173">तपाईं यो साइटमा <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> खाता प्रयोग गर्न सक्नुहुन्छ। जारी राख्न <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्।</translation>
 <translation id="4479972344484327217">Chrome को <ph name="MODULE" /> स्थापना गरिँदै…</translation>
 <translation id="4484496141267039529">इन्टरनेट छैन। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4487967297491345095">Chrome का एप सम्बन्धी सबै डेटा सदाका लागि मेटिने छन्। यस अन्तर्गत सबै फाइल, सेटिङ, खाता, डेटाबेसहरू आदि पर्दछन्।</translation>

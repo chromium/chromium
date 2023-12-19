@@ -647,6 +647,7 @@
 <translation id="4452411734226507615">Затвори ја картичката <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Додаден е обележувач во <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Кога ќе поврзете друг уред со QR-код, тој ќе може да го користи телефонов како безбедносен клуч. Ако го отстраните, ќе треба да скенирате QR-код за да го поврзете повторно.</translation>
+<translation id="4478161224666880173">Може да ја користите вашата сметка на <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> на сајтов. За да продолжите, најавете се на <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Се инсталира <ph name="MODULE" /> за Chrome…</translation>
 <translation id="4484496141267039529">Нема интернет-врска. Обидете се повторно подоцна.</translation>
 <translation id="4487967297491345095">Сите податоци од апликациите на Chrome ќе се избришат трајно. Тука спаѓаат сите датотеки, поставки, сметки, бази на податоци итн.</translation>

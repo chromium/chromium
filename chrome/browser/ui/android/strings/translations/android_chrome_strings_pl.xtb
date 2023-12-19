@@ -647,6 +647,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="4452411734226507615">Zamknij kartę <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Utworzono zakładkę w folderze <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Gdy połączysz kolejne urządzenie za pomocą kodu QR, może ono używać tego telefonu jako klucza bezpieczeństwa. Jeśli usuniesz urządzenie, będziesz musiał(a) zeskanować kod QR, aby połączyć je ponownie.</translation>
+<translation id="4478161224666880173">W tej witrynie możesz używać swojego konta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />. Aby przejść dalej, zaloguj się na konto <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Instaluję moduł <ph name="MODULE" /> do Chrome…</translation>
 <translation id="4484496141267039529">Brak połączenia. Spróbuj ponownie później.</translation>
 <translation id="4487967297491345095">Wszystkie dane aplikacji Chrome zostaną trwale usunięte. Dotyczy to wszystkich plików, ustawień, kont, baz danych itp.</translation>

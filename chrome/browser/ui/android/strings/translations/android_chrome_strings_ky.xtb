@@ -647,6 +647,7 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> өтмөгүн жабуу</translation>
 <translation id="4452548195519783679">Кыстарма <ph name="FOLDER_NAME" /> куржунуна кошулду</translation>
 <translation id="4461614516424362539">Башка түзмөктү QR код аркылуу туташтырганыңызда ал ушул телефонду коопсуздук ачкычы катары колдоно алат. Эгер аны өчүрсөңүз, кайра туташтыруу үчүн QR кодду скандашыңыз керек болот.</translation>
+<translation id="4478161224666880173"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аккаунтуңузду бул сайтта колдоно аласыз. Улантуу үчүн <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аккаунтуна кириңиз.</translation>
 <translation id="4479972344484327217">Chrome үчүн <ph name="MODULE" /> орнотулууда…</translation>
 <translation id="4484496141267039529">Туташуу жок. Кайталаңыз.</translation>
 <translation id="4487967297491345095">Chrome'дун колдонмо дайындарынын бардыгы биротоло өчүрүлөт. Ага бардык файлдар, жөндөөлөр, каттоо эсептери, маалыматтар базасы ж.б. кирет.</translation>

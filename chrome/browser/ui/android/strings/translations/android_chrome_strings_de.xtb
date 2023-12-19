@@ -467,7 +467,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3443221991560634068">Aktuelle Seite neu laden</translation>
 <translation id="3444179773590444986">Feedback zu dunklem Design für Websites teilen?</translation>
 <translation id="3452832259067974318">Um deine Daten zu schützen, füllt Chrome dieses Feld nicht automatisch mit deinem Passwort aus.</translation>
-<translation id="3474624961160222204">Als "<ph name="NAME" />" fortfahren</translation>
+<translation id="3474624961160222204">Als „<ph name="NAME" />“ fortfahren</translation>
 <translation id="3478363558367712427">Du kannst deine Suchmaschine auswählen</translation>
 <translation id="3479552764303398839">Jetzt nicht</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> zu vorgeschlagenen Inhalten</translation>
@@ -647,6 +647,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4452411734226507615">Tab "<ph name="TAB_TITLE" />" schließen</translation>
 <translation id="4452548195519783679">Als Lesezeichen in "<ph name="FOLDER_NAME" />" gespeichert</translation>
 <translation id="4461614516424362539">Wenn du ein weiteres Gerät per QR-Code verknüpfst, kann es dieses Smartphone als Sicherheitsschlüssel verwenden. Wenn du es entfernst, musst du noch einmal einen QR-Code scannen, um es wieder zu verknüpfen.</translation>
+<translation id="4478161224666880173">Du kannst dein <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-Konto auf dieser Website verwenden. Melde dich bei <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> an, um fortzufahren.</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> für Chrome wird installiert…</translation>
 <translation id="4484496141267039529">Keine Verbindung. Versuche es später noch einmal.</translation>
 <translation id="4487967297491345095">Alle App-Daten in Chrome werden dauerhaft gelöscht. Hierzu gehören alle Dateien, Einstellungen, Konten, Datenbanken.</translation>

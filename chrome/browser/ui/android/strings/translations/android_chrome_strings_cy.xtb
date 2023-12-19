@@ -647,6 +647,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4452411734226507615">Cau'r tab <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Wedi creu nod tudalen yn <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Pan fyddwch yn cysylltu dyfais arall â chod QR, gall ddefnyddio'r ffôn hwn fel allwedd ddiogelwch. Os byddwch yn ei thynnu, bydd yn rhaid i chi sganio cod QR i'w chysylltu eto.</translation>
+<translation id="4478161224666880173">Gallwch ddefnyddio eich cyfrif <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ar y wefan hon. I barhau, mewngofnodwch i <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Wrthi'n gosod <ph name="MODULE" /> ar gyfer Chrome…</translation>
 <translation id="4484496141267039529">Dim cysylltiad. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="4487967297491345095">Bydd holl ddata'r ap Chrome yn cael eu dileu yn barhaol. Mae hyn yn cynnwys yr holl ffeiliau, gosodiadau, cyfrifon, cronfeydd data, ac ati.</translation>

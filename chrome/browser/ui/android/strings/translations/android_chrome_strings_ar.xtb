@@ -649,6 +649,7 @@
 <translation id="4452411734226507615">إغلاق علامة التبويب <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">أُضيفَت إشارة مرجعية إلى <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">عند ربط جهاز آخر باستخدام رمز الاستجابة السريعة، يمكن لهذا الجهاز استخدام هذا الهاتف كمفتاح أمان. وإذا أزَلت هذا الجهاز، يجب مسح رمز الاستجابة السريعة ضوئيًا لربط الجهاز مرة أخرى.</translation>
+<translation id="4478161224666880173">يمكنك استخدام حسابك على <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> على هذا الموقع الإلكتروني. للمتابعة، سجِّل الدخول إلى <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">‏جارٍ تثبيت <ph name="MODULE" /> لمتصفِّح Chrome…</translation>
 <translation id="4484496141267039529">لا يتوفّر اتصال بالإنترنت. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="4487967297491345095">‏سيتم حذف جميع بيانات تطبيق Chrome نهائيًا. ويشمل ذلك جميع الملفات والإعدادات والحسابات وقواعد البيانات وما إلى ذلك.</translation>

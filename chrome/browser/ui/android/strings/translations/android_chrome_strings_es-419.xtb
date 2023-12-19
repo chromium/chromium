@@ -647,6 +647,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4452411734226507615">Cierra la pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Se agregó a favoritos en <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Cuando vinculas otro dispositivo con un código QR, puede usar este teléfono como llave de seguridad. Si lo quitas, deberás escanear un código QR para vincularlo de nuevo.</translation>
+<translation id="4478161224666880173">Puedes usar tu cuenta de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> en este sitio. Para continuar, accede a <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Instalando <ph name="MODULE" /> para Chrome…</translation>
 <translation id="4484496141267039529">No hay conexión. Vuelve a intentarlo más tarde.</translation>
 <translation id="4487967297491345095">Todos los datos de app de Chrome se borrarán de forma permanente. Esta información incluye todos los archivos, opciones de configuración, cuentas, bases de datos, etc.</translation>

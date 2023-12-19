@@ -647,6 +647,7 @@
 <translation id="4452411734226507615">關閉 <ph name="TAB_TITLE" /> 分頁</translation>
 <translation id="4452548195519783679">已將書籤加入到「<ph name="FOLDER_NAME" />」</translation>
 <translation id="4461614516424362539">將另一部裝置連結 QR 碼後，該裝置就能將手機作為安全密鑰。如果移除裝置，您便需掃瞄 QR 碼才能再次連結裝置。</translation>
+<translation id="4478161224666880173">你可在此網站上使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶。如要繼續操作，請登入 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />。</translation>
 <translation id="4479972344484327217">正在為 Chrome 安裝 <ph name="MODULE" />…</translation>
 <translation id="4484496141267039529">沒有連線，請稍後再試。</translation>
 <translation id="4487967297491345095">所有 Chrome 的應用程式資料將會永久刪除，包括所有檔案、設定、帳戶、資料庫等。</translation>

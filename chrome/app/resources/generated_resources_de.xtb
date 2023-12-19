@@ -3184,7 +3184,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3473241910002674503">Mit den Schaltflächen im Tablet-Modus zum Launcher, zurück und zwischen Apps wechseln.</translation>
 <translation id="3473479545200714844">Lupe</translation>
 <translation id="3474218480460386727">Neue Wörter dürfen maximal 99 Buchstaben lang sein</translation>
-<translation id="3474624961160222204">Als "<ph name="NAME" />" fortfahren</translation>
+<translation id="3474624961160222204">Als „<ph name="NAME" />“ fortfahren</translation>
 <translation id="3475843873335999118">Dein Fingerabdruck wurde immer noch nicht erkannt. Bitte gib dein Passwort ein.</translation>
 <translation id="3476303763173086583">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. So kannst du uns helfen, Android für dein Kind zu verbessern, indem du zulässt, dass Diagnose- sowie Geräte- und App-Nutzungsdaten automatisch an Google gesendet werden. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Diese <ph name="BEGIN_LINK1" />Einstellung<ph name="END_LINK1" /> wird vom Inhaber erzwungen. Der Inhaber kann festlegen, ob Diagnose- und Nutzungsdaten von diesem Gerät an Google gesendet werden. Wenn zusätzlich die Einstellung "Web- &amp; App-Aktivitäten" für dein Kind aktiviert ist, werden diese Daten in seinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Hoppla! Das System konnte die Richtlinie für dein Gerät nicht abrufen.</translation>

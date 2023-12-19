@@ -647,6 +647,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4452411734226507615">Lukk <ph name="TAB_TITLE" />-fanen</translation>
 <translation id="4452548195519783679">Satt som bokmerke i <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Når du tilknytter en annen enhet med QR-kode, kan den bruke denne telefonen som sikkerhetsnøkkel. Hvis du fjerner den, må du skanne QR-koden for å tilknytte den igjen.</translation>
+<translation id="4478161224666880173">Du kan bruke <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-kontoen din på dette nettstedet. For å fortsette, logg på <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Installerer <ph name="MODULE" /> for Chrome …</translation>
 <translation id="4484496141267039529">Ingen tilkobling. Prøv på nytt senere.</translation>
 <translation id="4487967297491345095">Alle appdataene for Chrome slettes permanent. Dette omfatter alle filer, innstillinger, kontoer, databaser osv.</translation>

@@ -647,6 +647,7 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> tabını bağlayın</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> qovluğuna əlfəcinləndi</translation>
 <translation id="4461614516424362539">Başqa cihazı QR kodu ilə əlaqələndirdiyiniz zaman o, bu telefonu təhlükəsizlik açarı kimi istifadə edə bilər. Onu silsəniz, onu yenidən əlaqələndirmək üçün QR kodunu skan etməli olacaqsınız.</translation>
+<translation id="4478161224666880173">Bu saytda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hesabını istifadə edə bilərsiniz. Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hesabına daxil olun.</translation>
 <translation id="4479972344484327217">Chrome üçün <ph name="MODULE" /> quraşdırılır…</translation>
 <translation id="4484496141267039529">Bağlantı yoxdur. Sonra cəhd edin.</translation>
 <translation id="4487967297491345095">Bütün Chrome tətbiq datası həmişəlik silinəcək. Bura fayllar, ayarlar, hesablar, data bazası və s. daxildir.</translation>

@@ -647,6 +647,7 @@
 <translation id="4452411734226507615">Затваряне на раздела „<ph name="TAB_TITLE" />“</translation>
 <translation id="4452548195519783679">Отметката бе запазена в/ъв „<ph name="FOLDER_NAME" />“</translation>
 <translation id="4461614516424362539">Когато свържете друго устройство чрез QR код, то може да използва този телефон като ключ за сигурност. Ако го премахнете, трябва пак да сканирате QR код, за да го свържете отново.</translation>
+<translation id="4478161224666880173">Можете да използвате профила си в(ъв) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> на този сайт. За да продължите, влезте в(ъв) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Модулът „<ph name="MODULE" />“ за Chrome се инсталира…</translation>
 <translation id="4484496141267039529">Няма връзка. Опитайте отново по-късно.</translation>
 <translation id="4487967297491345095">Всички данни на приложението Chrome ще се изтрият за постоянно. Това включва всички файлове, настройки, профили, бази от данни и др.</translation>

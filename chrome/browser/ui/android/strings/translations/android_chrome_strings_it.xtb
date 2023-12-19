@@ -647,6 +647,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4452411734226507615">Chiudi la scheda <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Preferito aggiunto in: <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Quando colleghi un altro dispositivo con un codice QR, questo può usare il telefono come token di sicurezza. Se lo rimuovi, dovrai scansionare un codice QR per ricollegarlo.</translation>
+<translation id="4478161224666880173">Puoi usare il tuo account <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> su questo sito. Per continuare, accedi a <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Installazione di <ph name="MODULE" /> per Chrome…</translation>
 <translation id="4484496141267039529">Nessuna connessione. Riprova più tardi.</translation>
 <translation id="4487967297491345095">Tutti i dati delle app di Chrome saranno eliminati definitivamente. Sono inclusi tutti i file, le impostazioni, gli account, i database e così via.</translation>

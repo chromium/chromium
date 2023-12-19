@@ -647,6 +647,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4452411734226507615">Tutup tab <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Dibookmark ke <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Jika Anda menautkan perangkat lain dengan kode QR, perangkat tersebut dapat menggunakan ponsel ini sebagai kunci keamanan. Jika Anda menghapusnya, Anda harus memindai kode QR untuk menautkannya lagi.</translation>
+<translation id="4478161224666880173">Anda dapat menggunakan akun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> Anda di situs ini. Untuk melanjutkan, login ke <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Menginstal <ph name="MODULE" /> untuk Chrome…</translation>
 <translation id="4484496141267039529">Tidak ada koneksi. Coba lagi nanti.</translation>
 <translation id="4487967297491345095">Semua data aplikasi Chrome akan dihapus secara permanen. Hal ini meliputi semua file, setelan, akun, database, dll.</translation>

@@ -647,6 +647,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4452411734226507615">Zavřít kartu <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Záložka přidána do složky <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Když jiné zařízení propojíte pomocí QR kódu, můžete tento telefon používat jako bezpečnostní klíč. Pokud ho odstraníte, k opětovnému propojení bude potřeba znovu naskenovat QR kód.</translation>
+<translation id="4478161224666880173">Na tomto webu můžete použít účet <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />. Pokud chcete pokračovat, přihlaste se k účtu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Instalace modulu <ph name="MODULE" /> pro Chrome…</translation>
 <translation id="4484496141267039529">Nejste připojeni. Zkuste to později.</translation>
 <translation id="4487967297491345095">Všechna data aplikace Chrome budou trvale smazána. Zahrnuje to soubory, nastavení, účty, databáze apod.</translation>

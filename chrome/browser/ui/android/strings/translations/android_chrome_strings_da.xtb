@@ -647,6 +647,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4452411734226507615">Luk fanen <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bogmærket er gemt i <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Når du tilknytter en anden enhed med en QR-kode, kan den bruge denne telefon som en sikkerhedsnøgle. Hvis du fjerner den, skal du scanne en QR-kode for at tilknytte den igen.</translation>
+<translation id="4478161224666880173">Du kan bruge din <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-konto på dette website. Du kan fortsætte ved at logge ind på <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Installerer <ph name="MODULE" /> til Chrome…</translation>
 <translation id="4484496141267039529">Der er ingen forbindelse. Prøv igen senere.</translation>
 <translation id="4487967297491345095">Alle Chromes appdata slettes permanent. Dette omfatter alle filer, indstillinger, konti, databaser osv.</translation>

@@ -647,6 +647,7 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="4452411734226507615">Tanca la pestanya <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Adreça d'interès afegida a <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Quan enllaces un altre dispositiu amb un codi QR, pot utilitzar aquest telèfon com a clau de seguretat. Si el suprimeixes, hauràs d'escanejar el codi QR per tornar-lo a enllaçar.</translation>
+<translation id="4478161224666880173">Pots utilitzar el teu compte de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> en aquest lloc web. Per continuar, inicia la sessió a<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">S'està instal·lant <ph name="MODULE" /> per a Chrome…</translation>
 <translation id="4484496141267039529">No hi ha connexió. Torna-ho a provar més tard.</translation>
 <translation id="4487967297491345095">Totes les dades de les aplicacions de Chrome, com ara els fitxers, la configuració, els comptes o les bases de dades, entre d'altres, se suprimiran permanentment.</translation>

@@ -647,6 +647,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4452411734226507615">Fermer l'onglet <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Ajouté aux favoris dans "<ph name="FOLDER_NAME" />"</translation>
 <translation id="4461614516424362539">Lorsque vous associez un autre appareil avec un code QR, celui-ci peut utiliser ce téléphone comme clé de sécurité. Si vous le supprimez, vous devrez scanner à nouveau un code QR pour l'associer.</translation>
+<translation id="4478161224666880173">Vous pouvez utiliser votre compte <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sur ce site. Pour continuer, connectez-vous à <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Installation du module <ph name="MODULE" /> pour Chrome…</translation>
 <translation id="4484496141267039529">Aucune connexion. Réessayez plus tard.</translation>
 <translation id="4487967297491345095">Toutes les données de l'application Chrome seront supprimées de façon définitive, y compris les fichiers, paramètres, comptes, bases de données, etc.</translation>

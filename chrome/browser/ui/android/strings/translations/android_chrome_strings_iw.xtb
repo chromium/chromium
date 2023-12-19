@@ -647,6 +647,7 @@
 <translation id="4452411734226507615">סגירת הכרטיסייה <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">התווסף לסימניות ב-<ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">‏קישור של מכשיר אחר באמצעות קוד QR יאפשר לך להשתמש בטלפון הזה כמפתח אבטחה. אם הקישור יוסר, יהיה עליך לסרוק קוד QR כדי לקשר שוב את המכשיר.</translation>
+<translation id="4478161224666880173">אפשר להשתמש בחשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> באתר הזה. כדי להמשיך עליך להיכנס אל <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">‏מתבצעת התקנה של <ph name="MODULE" /> ל-Chrome…</translation>
 <translation id="4484496141267039529">אין חיבור. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="4487967297491345095">‏כל נתוני היישומים של Chrome יימחקו לצמיתות, כולל כל הקבצים, ההגדרות, החשבונות, מסדי הנתונים וכו'</translation>
