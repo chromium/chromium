@@ -294,6 +294,7 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   // Remove the only extension that requests access to the current site.
   UninstallExtension(extension_all_urls->id());
   LayoutContainerIfNecessary();
+  WaitForAnimation();
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 
@@ -499,6 +500,7 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   // Force the confirmation to be collapsed.
   task_environment()->AdvanceClock(kConfirmationDisplayDuration);
   base::RunLoop().RunUntilIdle();
+  WaitForAnimation();
 
   // Verify the request access button is hidden.
   ASSERT_FALSE(request_access_button()->GetVisible());

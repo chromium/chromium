@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
@@ -67,6 +68,10 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
   SetVectorIcon(GetIcon(state_));
 
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
+
+  // Do not flip the Extensions icon in RTL.
+  SetFlipCanvasOnPaintForRTLUI(false);
+  SetID(VIEW_ID_EXTENSIONS_MENU_BUTTON);
 
   // Set button for IPH.
   SetProperty(views::kElementIdentifierKey, kExtensionsMenuButtonElementId);

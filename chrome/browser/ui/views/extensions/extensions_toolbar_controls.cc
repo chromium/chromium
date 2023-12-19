@@ -21,19 +21,14 @@
 #include "ui/views/background.h"
 
 ExtensionsToolbarControls::ExtensionsToolbarControls(
-    std::unique_ptr<ExtensionsToolbarButton> extensions_button,
-    std::unique_ptr<ExtensionsRequestAccessButton> request_access_button)
-    : ToolbarIconContainerView(/*uses_highlight=*/true),
-      request_access_button_(AddChildView(std::move(request_access_button))),
-      extensions_button_(extensions_button.get()) {
+    raw_ptr<ExtensionsToolbarButton> extensions_button,
+    raw_ptr<ExtensionsRequestAccessButton> request_access_button)
+    : request_access_button_(request_access_button),
+      extensions_button_(extensions_button) {
   request_access_button_->SetVisible(false);
-  // TODO(emiliapaz): Consider changing AddMainItem() to receive a unique_ptr.
-  AddMainItem(extensions_button.release());
 }
 
 ExtensionsToolbarControls::~ExtensionsToolbarControls() = default;
-
-void ExtensionsToolbarControls::UpdateAllIcons() {}
 
 void ExtensionsToolbarControls::UpdateControls(
     bool is_restricted_url,
@@ -44,10 +39,6 @@ void ExtensionsToolbarControls::UpdateControls(
   UpdateExtensionsButton(actions, site_setting, current_web_contents,
                          is_restricted_url);
   UpdateRequestAccessButton(actions, site_setting, current_web_contents);
-
-  // Resets the layout since layout animation does not handle host view
-  // visibility changing. This should be called after any visibility changes.
-  GetAnimatingLayoutManager()->ResetLayout();
 }
 
 void ExtensionsToolbarControls::UpdateExtensionsButton(
@@ -123,6 +114,3 @@ bool ExtensionsToolbarControls::IsShowingConfirmationFor(
     const url::Origin& origin) const {
   return request_access_button_->IsShowingConfirmationFor(origin);
 }
-
-BEGIN_METADATA(ExtensionsToolbarControls)
-END_METADATA

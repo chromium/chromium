@@ -58,6 +58,11 @@ namespace {
 
 using ::ui::mojom::DragOperation;
 
+// Flex behavior precedence for the container's views.
+constexpr int kFlexOrderExtensionsButton = 1;
+constexpr int kFlexOrderRequestAccessButton = 2;
+constexpr int kFlexOrderActionView = 3;
+
 base::OnceClosure& GetOnVisibleCallbackForTesting() {
   static base::NoDestructor<base::OnceClosure> callback;
   return *callback;
@@ -111,24 +116,10 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
               extensions_features::kExtensionsMenuAccessControl)
               ? std::make_unique<ExtensionsMenuCoordinator>(browser_)
               : nullptr),
-      extensions_button_(base::FeatureList::IsEnabled(
-                             extensions_features::kExtensionsMenuAccessControl)
-                             ? nullptr
-                             : new ExtensionsToolbarButton(
-                                   browser,
-                                   this,
-                                   extensions_menu_coordinator_.get())),
-      extensions_controls_(
-          base::FeatureList::IsEnabled(
-              extensions_features::kExtensionsMenuAccessControl)
-              ? new ExtensionsToolbarControls(
-                    std::make_unique<ExtensionsToolbarButton>(
-                        browser,
-                        this,
-                        extensions_menu_coordinator_.get()),
-                    std::make_unique<ExtensionsRequestAccessButton>(browser_,
-                                                                    this))
-              : nullptr),
+      extensions_button_(
+          new ExtensionsToolbarButton(browser,
+                                      this,
+                                      extensions_menu_coordinator_.get())),
       display_mode_(display_mode),
       action_hover_card_controller_(
           std::make_unique<ToolbarActionHoverCardController>(this)) {
@@ -143,54 +134,21 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
   // too.
   SetNotifyEnterExitOnChild(true);
 
-  model_observation_.Observe(model_.get());
-  permissions_manager_observation_.Observe(
-      extensions::PermissionsManager::Get(browser_->profile()));
+  // Add extensions button.
+  AddMainItem(extensions_button_);
 
-  const views::FlexSpecification hide_icon_flex_specification =
-      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                               views::MinimumFlexSizeRule::kPreferredSnapToZero,
-                               views::MaximumFlexSizeRule::kPreferred)
-          .WithWeight(0);
-  GetTargetLayoutManager()
-      ->SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse)
-      .SetDefault(views::kFlexBehaviorKey,
-                  hide_icon_flex_specification.WithOrder(3));
+  // Create request access button.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    auto request_access_button =
+        std::make_unique<ExtensionsRequestAccessButton>(browser_, this);
+    request_access_button_ = AddChildView(std::move(request_access_button));
 
-  views::View* const main_item =
-      extensions_button_
-          ? static_cast<views::View* const>(extensions_button_)
-          : static_cast<views::View* const>(extensions_controls_);
-  switch (display_mode) {
-    case DisplayMode::kNormal:
-      // In normal mode, the menu icon is always shown.
-      main_item->SetProperty(views::kFlexBehaviorKey,
-                             views::FlexSpecification());
-      break;
-    case DisplayMode::kCompact:
-    case DisplayMode::kAutoHide:
-      // In compact/auto hide mode, the menu icon can be hidden but has the
-      // highest priority.
-      main_item->SetProperty(views::kFlexBehaviorKey,
-                             hide_icon_flex_specification.WithOrder(1));
-      break;
+    // TODO(crbug.com/1511762): Remove extensions controls, since it's no longer
+    // a view, and move functionality to the extensions container.
+    extensions_controls_ = std::make_unique<ExtensionsToolbarControls>(
+        extensions_button_.get(), request_access_button_);
   }
-  if (extensions_button_) {
-    // Do not flip the Extensions icon in RTL.
-    extensions_button_->SetFlipCanvasOnPaintForRTLUI(false);
-    extensions_button_->SetID(VIEW_ID_EXTENSIONS_MENU_BUTTON);
-  }
-
-  if (GetExtensionsButton() &&
-      (features::IsChromeRefresh2023() ||
-       base::FeatureList::IsEnabled(
-           extensions_features::kExtensionsMenuAccessControl))) {
-    GetTargetLayoutManager()->SetDefault(views::kMarginsKey,
-                                         gfx::Insets::VH(0, 2));
-  }
-
-  AddMainItem(main_item);
-  UpdateControlsVisibility();
 
   // Create close side panel button.
   if (features::IsSidePanelPinningEnabled()) {
@@ -213,12 +171,61 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
             base::Unretained(this)));
   }
 
-  CreateActions();
+  // Layout.
+  const views::FlexSpecification hide_icon_flex_specification =
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kPreferredSnapToZero,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithWeight(0);
+  GetTargetLayoutManager()
+      ->SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse)
+      .SetDefault(views::kFlexBehaviorKey,
+                  hide_icon_flex_specification.WithOrder(3));
 
+  switch (display_mode) {
+    case DisplayMode::kNormal:
+      // In normal mode, the buttons are always shown.
+      extensions_button_->SetProperty(views::kFlexBehaviorKey,
+                                      views::FlexSpecification());
+      if (request_access_button_) {
+        request_access_button_->SetProperty(views::kFlexBehaviorKey,
+                                            views::FlexSpecification());
+      }
+      break;
+    case DisplayMode::kCompact:
+    case DisplayMode::kAutoHide:
+      // In compact/auto hide mode, the buttons can be hidden according to flex
+      // order preference.
+      extensions_button_->SetProperty(
+          views::kFlexBehaviorKey,
+          hide_icon_flex_specification.WithOrder(kFlexOrderExtensionsButton));
+      if (request_access_button_) {
+        request_access_button_->SetProperty(
+            views::kFlexBehaviorKey, hide_icon_flex_specification.WithOrder(
+                                         kFlexOrderRequestAccessButton));
+      }
+      break;
+  }
+
+  if (features::IsChromeRefresh2023() ||
+      base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    GetTargetLayoutManager()->SetDefault(views::kMarginsKey,
+                                         gfx::Insets::VH(0, 2));
+  }
+
+  // Observers.
+  model_observation_.Observe(model_.get());
+  permissions_manager_observation_.Observe(
+      extensions::PermissionsManager::Get(browser_->profile()));
   // TODO(pbos): Consider splitting out tab-strip observing into another class.
   // Triggers for Extensions-related bubbles should preferably be separate from
   // the container where they are shown.
   browser_->tab_strip_model()->AddObserver(this);
+
+  UpdateControlsVisibility();
+
+  CreateActions();
 }
 
 ExtensionsToolbarContainer::~ExtensionsToolbarContainer() {
@@ -255,14 +262,6 @@ void ExtensionsToolbarContainer::UpdateAllIcons() {
   if (close_side_panel_button_) {
     close_side_panel_button_->UpdateIcon();
   }
-}
-
-// TODO(emiliapaz): Move this method as an accessor in the header file once the
-// redesigned menu and toolbar with access control is released.
-ExtensionsToolbarButton* ExtensionsToolbarContainer::GetExtensionsButton()
-    const {
-  return extensions_button_ ? extensions_button_.get()
-                            : extensions_controls_->extensions_button();
 }
 
 ToolbarActionView* ExtensionsToolbarContainer::GetViewForId(
@@ -363,7 +362,7 @@ void ExtensionsToolbarContainer::UpdateIconVisibility(
             views::FlexSpecification(min_flex_rule,
                                      views::MaximumFlexSizeRule::kPreferred)
                 .WithWeight(0)
-                .WithOrder(2));
+                .WithOrder(kFlexOrderActionView));
         break;
     }
   } else {
@@ -1019,7 +1018,7 @@ void ExtensionsToolbarContainer::WindowControlsOverlayEnabledChanged(
       views::kFlexBehaviorKey,
       views::FlexSpecification(min_flex_rule,
                                views::MaximumFlexSizeRule::kPreferred)
-          .WithOrder(1));
+          .WithOrder(kFlexOrderExtensionsButton));
 }
 
 void ExtensionsToolbarContainer::UpdateSidePanelState(bool is_active) {

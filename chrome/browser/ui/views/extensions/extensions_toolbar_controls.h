@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "extensions/browser/permissions_manager.h"
 
 namespace content {
@@ -20,17 +19,15 @@ class ExtensionsToolbarButton;
 class ExtensionsRequestAccessButton;
 class ToolbarActionViewController;
 
-class ExtensionsToolbarControls : public ToolbarIconContainerView {
-  METADATA_HEADER(ExtensionsToolbarControls, ToolbarIconContainerView)
-
+class ExtensionsToolbarControls {
  public:
   explicit ExtensionsToolbarControls(
-      std::unique_ptr<ExtensionsToolbarButton> extensions_button,
-      std::unique_ptr<ExtensionsRequestAccessButton> request_button);
+      const raw_ptr<ExtensionsToolbarButton> extensions_button,
+      raw_ptr<ExtensionsRequestAccessButton> request_button);
   ExtensionsToolbarControls(const ExtensionsToolbarControls&) = delete;
   ExtensionsToolbarControls operator=(const ExtensionsToolbarControls&) =
       delete;
-  ~ExtensionsToolbarControls() override;
+  ~ExtensionsToolbarControls();
 
   ExtensionsToolbarButton* extensions_button() const {
     return extensions_button_;
@@ -64,9 +61,6 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
 
   // Returns whether the button is showing a confirmation message for `origin`.
   bool IsShowingConfirmationFor(const url::Origin& origin) const;
-
-  // ToolbarIconContainerView:
-  void UpdateAllIcons() override;
 
  private:
   // Updates `extensions_button_` icon given `actions`, the user `site_setting`

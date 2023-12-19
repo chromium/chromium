@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -91,11 +92,13 @@ class ExtensionsToolbarContainer
   }
 
   // Gets the extension menu button for the toolbar.
-  ExtensionsToolbarButton* GetExtensionsButton() const;
+  ExtensionsToolbarButton* GetExtensionsButton() const {
+    return extensions_button_;
+  }
 
   // Gets the extensions toolbar controls.
   ExtensionsToolbarControls* GetExtensionsToolbarControls() const {
-    return extensions_controls_;
+    return extensions_controls_.get();
   }
 
   // Get the view corresponding to the extension |id|, if any.
@@ -335,14 +338,13 @@ class ExtensionsToolbarContainer
   // Coordinator to show and hide the ExtensionsMenuView.
   const std::unique_ptr<ExtensionsMenuCoordinator> extensions_menu_coordinator_;
 
-  // TODO(emiliapaz): Remove `extensions_button_` once
-  // `extensions_features::kExtensionsMenuAccessControl` experiment is released.
-  // Exactly one of `extensions_button_ and `extensions_controls_` is created;
-  // the other is null.
   const raw_ptr<ExtensionsToolbarButton, AcrossTasksDanglingUntriaged>
       extensions_button_;
-  const raw_ptr<ExtensionsToolbarControls, DanglingUntriaged>
-      extensions_controls_;
+  raw_ptr<ExtensionsRequestAccessButton> request_access_button_ = nullptr;
+
+  // TODO(crbug.com/1511762): Remove controls.
+  std::unique_ptr<ExtensionsToolbarControls> extensions_controls_ = nullptr;
+
   DisplayMode display_mode_;
 
   // Controller for showing the toolbar action hover card.
