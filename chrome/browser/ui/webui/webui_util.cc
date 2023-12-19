@@ -77,8 +77,8 @@ void EnableTrustedTypesCSP(content::WebUIDataSource* source) {
       "print-preview-plugin-loader "
       // Add TrustedTypes policies necessary for using Polymer.
       "polymer-html-literal polymer-template-event-attribute-policy "
-      // Add TrustedTypes policies necessary for using Desktop's Lit bundle.
-      "lit-html-desktop;");
+      // Add TrustedTypes policies necessary for using Lit.
+      "lit-html;");
 }
 
 void AddLocalizedString(content::WebUIDataSource* source,
