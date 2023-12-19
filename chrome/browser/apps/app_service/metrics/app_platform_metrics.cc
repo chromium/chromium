@@ -74,7 +74,6 @@ constexpr auto kAppTypeNameSet = base::MakeFixedFlatSet<apps::AppTypeName>({
     apps::AppTypeName::kCrostini,
     apps::AppTypeName::kChromeApp,
     apps::AppTypeName::kWeb,
-    apps::AppTypeName::kMacOs,
     apps::AppTypeName::kPluginVm,
     apps::AppTypeName::kStandaloneBrowser,
     apps::AppTypeName::kRemote,
@@ -148,8 +147,6 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
         return apps::AppTypeNameV2::kWebWindow;
       }
     }
-    case apps::AppType::kMacOs:
-      return apps::AppTypeNameV2::kMacOs;
     case apps::AppType::kPluginVm:
       return apps::AppTypeNameV2::kPluginVm;
     case apps::AppType::kStandaloneBrowser:
@@ -206,8 +203,6 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
         return apps::AppTypeNameV2::kWebWindow;
       }
     }
-    case apps::AppType::kMacOs:
-      return apps::AppTypeNameV2::kMacOs;
     case apps::AppType::kPluginVm:
       return apps::AppTypeNameV2::kPluginVm;
     case apps::AppType::kStandaloneBrowser:
@@ -312,8 +307,6 @@ std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name) {
       return kWebAppWindowHistogramName;
     case apps::AppTypeNameV2::kWebTab:
       return kWebAppTabHistogramName;
-    case apps::AppTypeNameV2::kMacOs:
-      return kMacOsHistogramName;
     case apps::AppTypeNameV2::kPluginVm:
       return kPluginVmHistogramName;
     case apps::AppTypeNameV2::kStandaloneBrowser:

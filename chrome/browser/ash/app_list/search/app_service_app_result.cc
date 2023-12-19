@@ -112,7 +112,6 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
       return ash::BRUSCHETTA_APP;
     case apps::AppType::kExtension:
     case apps::AppType::kStandaloneBrowserExtension:
-    case apps::AppType::kMacOs:
     case apps::AppType::kUnknown:
       NOTREACHED();
       return ash::SEARCH_RESULT_TYPE_BOUNDARY;

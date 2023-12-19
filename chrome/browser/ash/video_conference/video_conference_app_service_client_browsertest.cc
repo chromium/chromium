@@ -640,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
   for (const auto type :
        {apps::AppType::kUnknown, apps::AppType::kBuiltIn,
         apps::AppType::kCrostini, apps::AppType::kChromeApp,
-        apps::AppType::kWeb, apps::AppType::kMacOs, apps::AppType::kPluginVm,
+        apps::AppType::kWeb, apps::AppType::kPluginVm,
         apps::AppType::kStandaloneBrowser, apps::AppType::kRemote,
         apps::AppType::kBorealis, apps::AppType::kSystemWeb,
         apps::AppType::kStandaloneBrowserChromeApp, apps::AppType::kExtension,

@@ -31,8 +31,6 @@ std::string AppTypeToString(apps::AppType app_type) {
       return "Built in";
     case apps::AppType::kCrostini:
       return "Crostini";
-    case apps::AppType::kMacOs:
-      return "Mac OS";
     case apps::AppType::kPluginVm:
       return "Plugin VM";
     case apps::AppType::kStandaloneBrowser:

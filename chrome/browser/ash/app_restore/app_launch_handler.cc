@@ -42,7 +42,6 @@ apps::AppTypeName GetHistogrameAppType(apps::AppType app_type) {
       return apps::AppTypeName::kChromeApp;
     case apps::AppType::kWeb:
       return apps::AppTypeName::kWeb;
-    case apps::AppType::kMacOs:
     case apps::AppType::kPluginVm:
     case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kStandaloneBrowserChromeApp:
@@ -181,7 +180,6 @@ void AppLaunchHandler::LaunchApp(apps::AppType app_type,
     case apps::AppType::kCrostini:
     case apps::AppType::kPluginVm:
     case apps::AppType::kUnknown:
-    case apps::AppType::kMacOs:
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:

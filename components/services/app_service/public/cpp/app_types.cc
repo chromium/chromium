@@ -13,7 +13,6 @@ APP_ENUM_TO_STRING(AppType,
                    kCrostini,
                    kChromeApp,
                    kWeb,
-                   kMacOs,
                    kPluginVm,
                    kStandaloneBrowser,
                    kRemote,
@@ -250,8 +249,6 @@ ApplicationType ConvertAppTypeToProtoApplicationType(AppType app_type) {
       return ApplicationType::APPLICATION_TYPE_CHROME_APP;
     case AppType::kWeb:
       return ApplicationType::APPLICATION_TYPE_WEB;
-    case AppType::kMacOs:
-      return ApplicationType::APPLICATION_TYPE_MAC_OS;
     case AppType::kPluginVm:
       return ApplicationType::APPLICATION_TYPE_PLUGIN_VM;
     case AppType::kStandaloneBrowser:

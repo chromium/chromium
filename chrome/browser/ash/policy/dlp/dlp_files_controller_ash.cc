@@ -109,7 +109,6 @@ std::optional<DlpFileDestination> GetFileDestinationForApp(
       return DlpFileDestination(GURL(app_update.PublisherId()));
     case apps::AppType::kUnknown:
     case apps::AppType::kBuiltIn:
-    case apps::AppType::kMacOs:
     case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:

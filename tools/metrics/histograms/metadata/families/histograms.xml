@@ -644,7 +644,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Crostini"/>
     <variant name="Extension"/>
     <variant name="Lacros"/>
-    <variant name="MacOs"/>
     <variant name="PluginVm"/>
     <variant name="Remote"/>
     <variant name="SystemWeb"/>

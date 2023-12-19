@@ -52,9 +52,6 @@ bool IsNewInstall(const apps::AppUpdate& app_update) {
     case apps::AppType::kRemote:
       // Chrome, Lacros, Settings, etc. are built-in.
       return false;
-    case apps::AppType::kMacOs:
-      NOTREACHED();
-      return false;
     case apps::AppType::kArc:
     case apps::AppType::kCrostini:
     case apps::AppType::kChromeApp:

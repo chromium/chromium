@@ -49,7 +49,6 @@ std::optional<std::string> GetAppReportingCategoryForType(
       return kAppCategoryBrowser;
     case ::apps::AppType::kBorealis:
       return kAppCategoryGames;
-    case ::apps::AppType::kMacOs:     // Not tracked today.
     case ::apps::AppType::kPluginVm:  // Only applies to MGS, so we skip.
     case ::apps::AppType::kUnknown:   // Invalid app type.
       return std::nullopt;

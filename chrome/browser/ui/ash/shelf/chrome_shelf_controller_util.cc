@@ -185,7 +185,6 @@ bool IsAppPinEditable(apps::AppType app_type,
       // Type kUnknown is used for "unregistered" Crostini apps, which do not
       // have a .desktop file and can only be closed, not pinned.
       return false;
-    case apps::AppType::kMacOs:
     case apps::AppType::kRemote:
     case apps::AppType::kExtension:
     case apps::AppType::kStandaloneBrowserExtension:

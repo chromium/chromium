@@ -49,7 +49,6 @@ constexpr char kCrostiniAppsCountHistogramName[] =
 constexpr char kExtensionAppsCountHistogramName[] =
     "FamilyUser.ExtensionAppsCount2";
 constexpr char kWebAppsCountHistogramName[] = "FamilyUser.WebAppsCount2";
-constexpr char kMacOsAppsCountHistogramName[] = "FamilyUser.MacOsAppsCount2";
 constexpr char kPluginVmAppsCountHistogramName[] =
     "FamilyUser.PluginVmAppsCount2";
 constexpr char kStandaloneBrowserAppsCountHistogramName[] = "FamilyUser.LacrosAppsCount2";
@@ -84,8 +83,6 @@ const char* GetAppsCountHistogramName(apps::AppType app_type) {
       return kExtensionAppsCountHistogramName;
     case apps::AppType::kWeb:
       return kWebAppsCountHistogramName;
-    case apps::AppType::kMacOs:
-      return kMacOsAppsCountHistogramName;
     case apps::AppType::kPluginVm:
       return kPluginVmAppsCountHistogramName;
     case apps::AppType::kStandaloneBrowser:

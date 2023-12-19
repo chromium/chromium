@@ -172,7 +172,6 @@ void AppInstallServiceAsh::InstallFromFetchedData(
       case AppType::kChromeApp:
       case AppType::kCrostini:
       case AppType::kExtension:
-      case AppType::kMacOs:
       case AppType::kPluginVm:
       case AppType::kRemote:
       case AppType::kStandaloneBrowser:

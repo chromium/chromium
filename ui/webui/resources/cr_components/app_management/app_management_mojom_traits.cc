@@ -22,8 +22,6 @@ AppType EnumTraits<AppType, apps::AppType>::ToMojom(apps::AppType input) {
       return AppType::kChromeApp;
     case apps::AppType::kWeb:
       return AppType::kWeb;
-    case apps::AppType::kMacOs:
-      return AppType::kMacOs;
     case apps::AppType::kPluginVm:
       return AppType::kPluginVm;
     case apps::AppType::kStandaloneBrowser:
@@ -65,9 +63,6 @@ bool EnumTraits<AppType, apps::AppType>::FromMojom(AppType input,
       return true;
     case AppType::kWeb:
       *output = apps::AppType::kWeb;
-      return true;
-    case AppType::kMacOs:
-      *output = apps::AppType::kMacOs;
       return true;
     case AppType::kPluginVm:
       *output = apps::AppType::kPluginVm;

@@ -406,8 +406,6 @@ api::autotest_private::AppType GetAppType(apps::AppType type) {
       return api::autotest_private::AppType::kWeb;
     case apps::AppType::kUnknown:
       return api::autotest_private::AppType::kNone;
-    case apps::AppType::kMacOs:
-      return api::autotest_private::AppType::kMacOs;
     case apps::AppType::kStandaloneBrowser:
       return api::autotest_private::AppType::kStandaloneBrowser;
     case apps::AppType::kRemote:

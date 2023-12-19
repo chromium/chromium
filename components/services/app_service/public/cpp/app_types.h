@@ -33,7 +33,6 @@ ENUM(AppType,
      kCrostini,                    // Linux (via Crostini) app.
      kChromeApp,                   // Chrome app.
      kWeb,                         // Web app.
-     kMacOs,                       // Mac OS app.
      kPluginVm,                    // Plugin VM app, see go/pluginvm.
      kStandaloneBrowser,           // Lacros browser app, see //docs/lacros.md.
      kRemote,                      // Remote app.

@@ -356,10 +356,6 @@ class AppPlatformMetricsServiceTest
                       /*should_notify_initialized=*/false)});
 
     pre_installed_apps_.insert(
-        {"m", TestApp("m", AppType::kMacOs, "", Readiness::kReady,
-                      InstallReason::kUnknown, InstallSource::kUnknown,
-                      /*should_notify_initialized=*/false)});
-    pre_installed_apps_.insert(
         {"p", TestApp("p", AppType::kPluginVm, "", Readiness::kReady,
                       InstallReason::kUser, InstallSource::kUnknown,
                       /*should_notify_initialized=*/false)});
@@ -438,14 +434,6 @@ class AppPlatformMetricsServiceTest
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             GetWebAppTypeName(), apps::InstallReason::kSync),
-        /*count=*/1);
-    histogram_tester().ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountHistogramNameForTest(
-            AppTypeName::kMacOs),
-        /*count=*/1);
-    histogram_tester().ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kMacOs, apps::InstallReason::kUnknown),
         /*count=*/1);
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(

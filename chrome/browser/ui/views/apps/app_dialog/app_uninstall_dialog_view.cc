@@ -258,7 +258,6 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
   switch (app_type) {
     case apps::AppType::kUnknown:
     case apps::AppType::kBuiltIn:
-    case apps::AppType::kMacOs:
     case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kExtension:

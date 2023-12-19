@@ -52,9 +52,6 @@ PickerEntryType GetPickerEntryType(AppType app_type) {
     case AppType::kSystemWeb:
       picker_entry_type = PickerEntryType::kWeb;
       break;
-    case AppType::kMacOs:
-      picker_entry_type = PickerEntryType::kMacOs;
-      break;
   }
   return picker_entry_type;
 }
@@ -64,15 +61,13 @@ apps::AppType GetAppType(apps::PickerEntryType picker_entry_type) {
   switch (picker_entry_type) {
     case apps::PickerEntryType::kUnknown:
     case apps::PickerEntryType::kDevice:
+    case apps::PickerEntryType::kMacOs:
       break;
     case apps::PickerEntryType::kArc:
       app_type = apps::AppType::kArc;
       break;
     case apps::PickerEntryType::kWeb:
       app_type = apps::AppType::kWeb;
-      break;
-    case apps::PickerEntryType::kMacOs:
-      app_type = apps::AppType::kMacOs;
       break;
   }
   return app_type;
