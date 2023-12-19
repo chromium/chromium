@@ -24,16 +24,10 @@ static constexpr bool kHasClassMetadata<
         typename std::remove_cvref_t<std::remove_pointer_t<T>>::kMetadataTag,
         typename std::remove_cvref_t<std::remove_pointer_t<T>>>;
 
-// TODO (kylixrd): Disable metadata checks for chromeos until all classes have
-// metadata.
-#if BUILDFLAG(IS_CHROMEOS)
-#define CHECK_CLASS_HAS_METADATA(class_type)
-#else
 #define CHECK_CLASS_HAS_METADATA(class_type)                                  \
   static_assert(ui::metadata::kHasClassMetadata<class_type>,                  \
                 "The class_type param doesn't implement metadata. Make sure " \
                 "class publicly calls METADATA_HEADER in the declaration.");
-#endif
 
 template <typename V, typename B>
 bool IsClass(const B* instance) {
