@@ -22,7 +22,6 @@ interface WifiConfig {
   securityType: string;
   ssid: string|null;
   password: string|null;
-  hidden: boolean;
   eapMethod: string|null;     // EAP only
   anonIdentity: string|null;  // EAP only
   identity: string|null;      // EAP only
@@ -108,7 +107,6 @@ function parseWifi(s: string): WifiConfig|null {
     securityType: 'nopass',
     ssid: null,
     password: null,
-    hidden: false,
     eapMethod: null,
     anonIdentity: null,
     identity: null,
@@ -139,9 +137,7 @@ function parseWifi(s: string): WifiConfig|null {
             wifiConfig.eapMethod = val;
             break;
           case 'H':
-            if (val === 'true') {
-              wifiConfig.hidden = true;
-            } else if (val !== 'false') {
+            if (val !== 'true' && val !== 'false') {
               wifiConfig.phase2method = val;
             }
             break;
