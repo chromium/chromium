@@ -34,7 +34,6 @@ js_type_check("closure_compile_local") {
     ":autolaunch",
     ":consolidated_consent",
     ":device_disabled",
-    ":display_size",
     ":drive_pinning",
     ":enable_kiosk",
     ":error_message",
@@ -159,20 +158,6 @@ js_library("device_disabled") {
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("display_size") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/display_size.js" ]
-  deps = [
-    "../../components:oobe_display_size_selector",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js" ]
   extra_deps = [ ":web_components" ]
 }
 

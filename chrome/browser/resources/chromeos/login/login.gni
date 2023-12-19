@@ -132,7 +132,7 @@ common_screens_js_files = [
   "screens/common/choobe.ts",
   "screens/common/consolidated_consent.js",
   "screens/common/device_disabled.js",
-  "screens/common/display_size.js",
+  "screens/common/display_size.ts",
   "screens/common/drive_pinning.js",
   "screens/common/enable_kiosk.js",
   "screens/common/error_message.js",
