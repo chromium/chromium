@@ -103,10 +103,6 @@ suite('TabOrganizationPageTest', () => {
     const notStarted = tabOrganizationPage.shadowRoot!.querySelector(
         'tab-organization-not-started');
     assertTrue(!!notStarted);
-    const animations = notStarted.getAnimations();
-    assertEquals(2, animations.length);
-    animations[0]!.finish();
-    animations[1]!.finish();
     assertTrue(isVisible(notStarted));
 
     const organizeTabsButton =
@@ -301,10 +297,6 @@ suite('TabOrganizationPageTest', () => {
     const notStarted = tabOrganizationPage.shadowRoot!.querySelector(
         'tab-organization-not-started');
     assertTrue(!!notStarted);
-    const animations = notStarted.getAnimations();
-    assertEquals(2, animations.length);
-    animations[0]!.finish();
-    animations[1]!.finish();
     assertTrue(isVisible(notStarted));
 
     const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
@@ -382,10 +374,6 @@ suite('TabOrganizationPageTest', () => {
     const notStarted = tabOrganizationPage.shadowRoot!.querySelector(
         'tab-organization-not-started');
     assertTrue(!!notStarted);
-    const animations = notStarted.getAnimations();
-    assertEquals(2, animations.length);
-    animations[0]!.finish();
-    animations[1]!.finish();
     assertTrue(isVisible(notStarted));
 
     const accountRowSynced =
