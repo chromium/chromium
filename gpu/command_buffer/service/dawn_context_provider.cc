@@ -331,6 +331,7 @@ bool DawnContextProvider::Initialize(
 
   const wgpu::FeatureName kOptionalFeatures[] = {
       wgpu::FeatureName::BGRA8UnormStorage,
+      wgpu::FeatureName::BufferMapExtendedUsages,
       wgpu::FeatureName::DualSourceBlending,
       wgpu::FeatureName::FramebufferFetch,
       wgpu::FeatureName::MultiPlanarFormatExtendedUsages,
