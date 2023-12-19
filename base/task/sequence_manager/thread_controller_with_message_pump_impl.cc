@@ -288,6 +288,7 @@ void ThreadControllerWithMessagePumpImpl::OnBeginWorkItemImpl(
   hang_watch_scope_.emplace();
   work_id_provider_->IncrementWorkId();
   run_level_tracker_.OnWorkStarted(lazy_now);
+  main_thread_only().task_source->OnBeginWork();
 }
 
 void ThreadControllerWithMessagePumpImpl::OnEndWorkItem(int run_level_depth) {
@@ -611,6 +612,11 @@ void ThreadControllerWithMessagePumpImpl::Run(bool application_tasks_allowed,
                                               TimeDelta timeout) {
   DCHECK(RunsTasksInCurrentSequence());
 
+  // Inside a `RunLoop`, all work that has mutual exclusion or ordering
+  // expectations with the task source is tracked, so it's safe to allow running
+  // tasks synchronously in `RunOrPostTask()`.
+  main_thread_only().task_source->SetRunTaskSynchronouslyAllowed(true);
+
   LazyNow lazy_now_run_loop_start(time_source_);
 
   // RunLoops can be nested so we need to restore the previous value of
@@ -651,6 +657,13 @@ void ThreadControllerWithMessagePumpImpl::Run(bool application_tasks_allowed,
     hang_watch_scope_.reset();
   }
   work_id_provider_->IncrementWorkId();
+
+  // Work outside of a `RunLoop` may have mutual exclusion or ordering
+  // guarantees with the task source, so disallow running tasks synchronously in
+  // `RunOrPostTask()`.
+  if (run_level_tracker_.num_run_levels() == 0) {
+    main_thread_only().task_source->SetRunTaskSynchronouslyAllowed(false);
+  }
 }
 
 void ThreadControllerWithMessagePumpImpl::OnBeginNestedRunLoop() {

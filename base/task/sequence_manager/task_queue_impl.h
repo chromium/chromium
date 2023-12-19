@@ -33,6 +33,7 @@
 #include "base/task/sequence_manager/lazily_deallocated_deque.h"
 #include "base/task/sequence_manager/sequenced_task_source.h"
 #include "base/task/sequence_manager/task_queue.h"
+#include "base/task/sequence_manager/tasks.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/base_tracing_forward.h"
@@ -291,6 +292,7 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
 
     bool PostTask(PostedTask task);
     DelayedTaskHandle PostCancelableTask(PostedTask task);
+    bool RunOrPostTask(PostedTask task);
 
     void StartAcceptingOperations() {
       operations_controller_.StartAcceptingOperations();
@@ -342,6 +344,9 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
     bool PostNonNestableDelayedTask(const Location& location,
                                     OnceClosure callback,
                                     TimeDelta delay) final;
+    bool RunOrPostTask(subtle::RunOrPostTaskPassKey,
+                       const Location& from_here,
+                       OnceClosure task) final;
     bool RunsTasksInCurrentSequence() const final;
 
    private:
@@ -539,6 +544,9 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
            main_thread_only().voter_count;
   }
 
+  // Returns whether the queue is enabled. May be invoked from any thread.
+  bool IsQueueEnabledFromAnyThread() const;
+
   QueueName name_;
   const raw_ptr<SequenceManagerImpl, AcrossTasksDanglingUntriaged>
       sequence_manager_;
@@ -555,7 +563,6 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
       TracingOnly();
       ~TracingOnly();
 
-      bool is_enabled = true;
       absl::optional<TimeTicks> disabled_time;
       bool should_report_posted_tasks_when_disabled = false;
     };
@@ -565,12 +572,10 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
 
     TaskDeque immediate_incoming_queue;
 
-    // True if main_thread_only().immediate_work_queue is empty.
     bool immediate_work_queue_empty = true;
-
     bool post_immediate_task_should_schedule_work = true;
-
     bool unregistered = false;
+    bool is_enabled = true;
 
     base::flat_map<raw_ptr<OnTaskPostedCallbackHandleImpl>, OnTaskPostedHandler>
         on_task_posted_handlers;

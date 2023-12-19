@@ -51,6 +51,15 @@ class SequencedTaskSource {
 
   virtual ~SequencedTaskSource() = default;
 
+  // Controls whether a `SequencedTaskRunner` associated with this source can
+  // run a task synchronously in `RunOrPostTask`. Enable this to indicate that
+  // there isn't any pending or running work that has mutual exclusion or
+  // ordering expectations with tasks from this source, outside of
+  // `SelectNextTask()` or `OnBeginWork()` -> `OnIdle()` (those prevent tasks
+  // from running synchronously, irrespective of the state set here).
+  virtual void SetRunTaskSynchronouslyAllowed(
+      bool can_run_tasks_synchronously) = 0;
+
   // Returns the next task to run from this source or nullopt if
   // there're no more tasks ready to run. If a task is returned,
   // DidRunTask() must be invoked before the next call to SelectNextTask().
@@ -74,6 +83,10 @@ class SequencedTaskSource {
   // Return true if there are any pending tasks in the task source which require
   // high resolution timing.
   virtual bool HasPendingHighResolutionTasks() = 0;
+
+  // Indicates that work that has mutual exclusion expectations with tasks from
+  // this `SequencedTaskSource` will start running.
+  virtual void OnBeginWork() = 0;
 
   // Called when we have run out of immediate work.  If more immediate work
   // becomes available as a result of any processing done by this callback,

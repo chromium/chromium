@@ -145,6 +145,9 @@ namespace base {
 class Environment;
 class File;
 class FilePath;
+namespace sequence_manager::internal {
+class WorkTracker;
+}  // namespace sequence_manager::internal
 }  // namespace base
 
 bool EnsureBrowserStateDirectoriesCreated(const base::FilePath&,
@@ -810,6 +813,7 @@ class BASE_EXPORT
   friend class base::StackSamplingProfiler;
   friend class base::internal::JobTaskSource;
   friend class base::sequence_manager::internal::TaskQueueImpl;
+  friend class base::sequence_manager::internal::WorkTracker;
   friend class base::win::ObjectWatcher;
   friend class blink::AudioDestination;
   friend class blink::RTCVideoDecoderAdapter;

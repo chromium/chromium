@@ -68,10 +68,14 @@ void WorkQueueSets::ChangeSetIndex(WorkQueue* work_queue, size_t set_index) {
   work_queue_heaps_[old_set].erase(work_queue->heap_handle());
   bool was_empty = work_queue_heaps_[set_index].empty();
   work_queue_heaps_[set_index].insert({*key, work_queue});
-  if (work_queue_heaps_[old_set].empty())
-    observer_->WorkQueueSetBecameEmpty(old_set);
+  // Invoke `WorkQueueSetBecameNonEmpty()` before `WorkQueueSetBecameEmpty()` so
+  // `observer_` doesn't momentarily observe that all work queue sets are empty.
+  // TaskQueueSelectorTest.TestDisableEnable will fail if the order changes.
   if (was_empty)
     observer_->WorkQueueSetBecameNonEmpty(set_index);
+  if (work_queue_heaps_[old_set].empty()) {
+    observer_->WorkQueueSetBecameEmpty(old_set);
+  }
 }
 
 void WorkQueueSets::OnQueuesFrontTaskChanged(WorkQueue* work_queue) {

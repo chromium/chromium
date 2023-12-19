@@ -122,6 +122,9 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
   explicit FakeSequencedTaskSource(TickClock* clock) : clock_(clock) {}
   ~FakeSequencedTaskSource() override = default;
 
+  void SetRunTaskSynchronouslyAllowed(
+      bool can_run_tasks_synchronously) override {}
+
   absl::optional<SelectedTask> SelectNextTask(
       LazyNow& lazy_now,
       SelectTaskOption option) override {
@@ -176,6 +179,8 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
   bool HasPendingHighResolutionTasks() override {
     return has_pending_high_resolution_tasks;
   }
+
+  void OnBeginWork() override {}
 
   void SetHasPendingHighResolutionTasks(bool state) {
     has_pending_high_resolution_tasks = state;

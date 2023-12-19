@@ -77,6 +77,12 @@ bool SequencedTaskRunner::PostDelayedTaskAt(
                              : delayed_run_time - TimeTicks::Now());
 }
 
+bool SequencedTaskRunner::RunOrPostTask(subtle::RunOrPostTaskPassKey,
+                                        const Location& from_here,
+                                        OnceClosure task) {
+  return PostTask(from_here, std::move(task));
+}
+
 // static
 const scoped_refptr<SequencedTaskRunner>&
 SequencedTaskRunner::GetCurrentDefault() {
