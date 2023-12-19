@@ -559,7 +559,7 @@ public class LocationBarLayout extends FrameLayout {
         boolean isInSingleUrlBarMode =
                 isNtpOnPhone
                         && mSearchEngineUtils != null
-                        && mSearchEngineUtils.doesDefaultSearchEngineHaveLogo();
+                        && mSearchEngineUtils.isDefaultSearchEngineGoogle();
         if (mIsSurfacePolishEnabled && isInSingleUrlBarMode) {
             translationX +=
                     (getResources().getDimensionPixelSize(R.dimen.fake_search_box_start_padding)
@@ -602,18 +602,10 @@ public class LocationBarLayout extends FrameLayout {
     /**
      * Updates the value for the end margin of the url action container in the search box.
      *
-     * @param useDefaultUrlActionContainerEndMargin Whether to use the default end margin for the
-     *     url action container in the search box. If not we will use the specific end margin value
-     *     for surface polish.
+     * @param endMargin The end margin for the url action container in the search box.
      */
-    public void updateUrlActionContainerEndMargin(boolean useDefaultUrlActionContainerEndMargin) {
-        mUrlActionContainerEndMargin =
-                useDefaultUrlActionContainerEndMargin
-                        ? getResources()
-                                .getDimensionPixelSize(R.dimen.location_bar_url_action_offset)
-                        : getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.location_bar_url_action_offset_polish);
+    public void updateUrlActionContainerEndMargin(int endMargin) {
+        mUrlActionContainerEndMargin = endMargin;
     }
 
     int getUrlActionContainerEndMarginForTesting() {

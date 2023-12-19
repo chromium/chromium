@@ -1068,8 +1068,7 @@ public class ToolbarPhoneTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbar.setNtpSearchBoxScrollFractionForTesting(1);
-                    mToolbar.updateLocationBarForSurfacePolish(
-                            VisualState.NEW_TAB_NORMAL, /* hasFocus= */ false);
+                    mToolbar.updateLocationBarForSurfacePolish(VisualState.NEW_TAB_NORMAL, false);
                 });
         if (nightModeEnabled) {
             assertEquals(View.INVISIBLE, iconBackground.getVisibility());

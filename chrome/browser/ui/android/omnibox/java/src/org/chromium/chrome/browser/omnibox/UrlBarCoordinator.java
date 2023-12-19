@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.ActionMode;
 import android.view.inputmethod.InputMethodManager;
 
@@ -328,9 +329,9 @@ public class UrlBarCoordinator
     }
 
     /**
-     * @see UrlBarMediator#updateUrlBarTypeface(boolean)
+     * @see UrlBarMediator#setUrlBarTypeface(Typeface)
      */
-    public void updateUrlBarTypeface(boolean useDefaultUrlBarTypeface) {
-        mMediator.updateUrlBarTypeface(useDefaultUrlBarTypeface);
+    public void setUrlBarTypeface(Typeface typeface) {
+        mMediator.setUrlBarTypeface(typeface);
     }
 }

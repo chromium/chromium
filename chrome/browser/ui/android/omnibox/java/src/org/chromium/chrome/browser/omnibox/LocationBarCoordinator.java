@@ -8,6 +8,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.view.ActionMode;
 import android.view.View;
 
@@ -814,25 +815,26 @@ public class LocationBarCoordinator
     }
 
     /**
-     * @see LocationBarMediator#updateUrlBarHintTextColor(boolean)
+     * @see LocationBarMediator#setUrlBarHintTextColor(boolean)
      */
-    public void updateUrlBarHintTextColor(boolean useDefaultUrlBarHintTextColor) {
-        mLocationBarMediator.updateUrlBarHintTextColor(useDefaultUrlBarHintTextColor);
+    public void setUrlBarHintTextColor(boolean isStartOrNtp) {
+        mLocationBarMediator.setUrlBarHintTextColor(isStartOrNtp);
     }
 
     /**
-     * @see LocationBarMediator#updateUrlBarTypeface(boolean)
+     * @see LocationBarMediator#setUrlBarTypeface(Typeface)
      */
-    public void updateUrlBarTypeface(boolean useDefaultUrlBarTypeface) {
-        mLocationBarMediator.updateUrlBarTypeface(useDefaultUrlBarTypeface);
+    public void setUrlBarTypeface(Typeface typeface) {
+        mLocationBarMediator.setUrlBarTypeface(typeface);
     }
 
     /**
-     * @see LocationBarMediator#updateUrlActionContainerEndMargin(boolean)
+     * Updates the value for the end margin of the url action container in the search box.
+     *
+     * @param endMargin The end margin for the url action container in the search box.
      */
-    public void updateUrlActionContainerEndMargin(boolean useDefaultUrlActionContainerEndMargin) {
-        mLocationBarMediator.updateUrlActionContainerEndMargin(
-                useDefaultUrlActionContainerEndMargin);
+    public void updateUrlActionContainerEndMargin(int endMargin) {
+        mLocationBarMediator.updateUrlActionContainerEndMargin(endMargin);
     }
 
     public int getUrlActionContainerEndMarginForTesting() {
