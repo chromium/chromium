@@ -218,10 +218,6 @@ class CONTENT_EXPORT ClipboardHostImpl
   bool IsRendererPasteAllowed(ui::ClipboardBuffer clipboard_buffer,
                               RenderFrameHost& render_frame_host);
 
-  // Returns true if custom format is allowed to be read/written from/to the
-  // clipboard, else, fails.
-  bool IsUnsanitizedCustomFormatContentAllowed();
-
   // Called by PerformPasteIfContentAllowed() when an is allowed request is
   // needed. Virtual to be overridden in tests.
   virtual void StartIsPasteContentAllowedRequest(

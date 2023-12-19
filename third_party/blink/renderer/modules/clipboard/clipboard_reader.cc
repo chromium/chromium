@@ -326,8 +326,7 @@ ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
                                          bool sanitize_html) {
   DCHECK(ClipboardWriter::IsValidType(mime_type));
   // If this is a web custom format then read the unsanitized version.
-  if (RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() &&
-      !Clipboard::ParseWebCustomFormat(mime_type).empty()) {
+  if (!Clipboard::ParseWebCustomFormat(mime_type).empty()) {
     // We read the custom MIME type that has the "web " prefix.
     // These MIME types are found in the web custom format map written by
     // native applications.

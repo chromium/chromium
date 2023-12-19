@@ -645,12 +645,6 @@
       status: "stable",
     },
     {
-      // Allows read/write of custom formats with unsanitized clipboard content.
-      // See crbug.com/106449.
-      name: "ClipboardCustomFormats",
-      status: "stable",
-    },
-    {
       name: "ClipboardSupportedTypes",
       status: "stable",
     },

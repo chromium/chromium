@@ -245,8 +245,7 @@ void ClipboardPromise::HandleRead(ClipboardUnsanitizedFormats* formats) {
   }
 
   RequestPermission(mojom::blink::PermissionName::CLIPBOARD_READ,
-                    /*will_be_sanitized=*/
-                    !RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled(),
+                    /*will_be_sanitized=*/false,
                     WTF::BindOnce(&ClipboardPromise::HandleReadWithPermission,
                                   WrapPersistent(this)));
 }
@@ -291,9 +290,6 @@ void ClipboardPromise::HandleWrite(
     return;
   }
 
-  DCHECK(RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() ||
-         write_custom_format_types_.empty());
-
   // Input in standard formats is sanitized, so the write will be sanitized
   // unless there are custom formats.
   RequestPermission(mojom::blink::PermissionName::CLIPBOARD_WRITE,
@@ -324,13 +320,8 @@ void ClipboardPromise::HandleReadWithPermission(
   }
 
   SystemClipboard* system_clipboard = GetLocalFrame()->GetSystemClipboard();
-  if (RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled()) {
-    system_clipboard->ReadAvailableCustomAndStandardFormats(WTF::BindOnce(
-        &ClipboardPromise::OnReadAvailableFormatNames, WrapPersistent(this)));
-    return;
-  }
-  Vector<String> available_types = system_clipboard->ReadAvailableTypes();
-  OnReadAvailableFormatNames(available_types);
+  system_clipboard->ReadAvailableCustomAndStandardFormats(WTF::BindOnce(
+      &ClipboardPromise::OnReadAvailableFormatNames, WrapPersistent(this)));
 }
 
 void ClipboardPromise::ResolveRead() {
