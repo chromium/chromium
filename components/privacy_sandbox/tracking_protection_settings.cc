@@ -31,6 +31,11 @@ TrackingProtectionSettings::TrackingProtectionSettings(
           &TrackingProtectionSettings::OnDoNotTrackEnabledPrefChanged,
           base::Unretained(this)));
   pref_change_registrar_.Add(
+      prefs::kIpProtectionEnabled,
+      base::BindRepeating(
+          &TrackingProtectionSettings::OnIpProtectionPrefChanged,
+          base::Unretained(this)));
+  pref_change_registrar_.Add(
       prefs::kBlockAll3pcToggleEnabled,
       base::BindRepeating(
           &TrackingProtectionSettings::OnBlockAllThirdPartyCookiesPrefChanged,
@@ -78,6 +83,10 @@ bool TrackingProtectionSettings::AreAllThirdPartyCookiesBlocked() const {
           is_incognito_);
 }
 
+bool TrackingProtectionSettings::IsIpProtectionEnabled() const {
+  return pref_service_->GetBoolean(prefs::kIpProtectionEnabled);
+}
+
 bool TrackingProtectionSettings::IsDoNotTrackEnabled() const {
   return pref_service_->GetBoolean(prefs::kEnableDoNotTrack);
 }
@@ -111,6 +120,12 @@ void TrackingProtectionSettings::OnTrackingProtectionOnboardingUpdated(
 void TrackingProtectionSettings::OnDoNotTrackEnabledPrefChanged() {
   for (auto& observer : observers_) {
     observer.OnDoNotTrackEnabledChanged();
+  }
+}
+
+void TrackingProtectionSettings::OnIpProtectionPrefChanged() {
+  for (auto& observer : observers_) {
+    observer.OnIpProtectionEnabledChanged();
   }
 }
 

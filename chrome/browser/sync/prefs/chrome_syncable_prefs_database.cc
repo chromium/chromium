@@ -304,6 +304,7 @@ enum {
   kAccessibilityReadAnythingOmniboxIconLabelShownCount = 100246,
   kApplicationLocale = 100247,
   kListenToThisPageEnabled = 100248,
+  kIpProtectionEnabled = 100249,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1336,6 +1337,10 @@ const auto& SyncablePreferences() {
         sync_preferences::MergeBehavior::kNone}},
       {prefs::kTrackingProtectionLevel,
        {syncable_prefs_ids::kTrackingProtectionLevel, syncer::PREFERENCES,
+        sync_preferences::PrefSensitivity::kNone,
+        sync_preferences::MergeBehavior::kNone}},
+      {prefs::kIpProtectionEnabled,
+       {syncable_prefs_ids::kIpProtectionEnabled, syncer::PREFERENCES,
         sync_preferences::PrefSensitivity::kNone,
         sync_preferences::MergeBehavior::kNone}},
       {prefs::kHttpsFirstModeIncognito,

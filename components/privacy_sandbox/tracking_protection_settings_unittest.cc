@@ -22,6 +22,7 @@ class MockTrackingProtectionSettingsObserver
     : public TrackingProtectionSettingsObserver {
  public:
   MOCK_METHOD(void, OnDoNotTrackEnabledChanged, (), (override));
+  MOCK_METHOD(void, OnIpProtectionEnabledChanged, (), (override));
   MOCK_METHOD(void, OnBlockAllThirdPartyCookiesChanged, (), (override));
   MOCK_METHOD(void, OnTrackingProtection3pcdChanged, (), (override));
 };
@@ -56,23 +57,18 @@ class TrackingProtectionSettingsTest : public testing::Test {
   std::unique_ptr<TrackingProtectionSettings> tracking_protection_settings_;
 };
 
+// Gets prefs
+
 TEST_F(TrackingProtectionSettingsTest, ReturnsDoNotTrackStatus) {
   EXPECT_FALSE(tracking_protection_settings()->IsDoNotTrackEnabled());
   prefs()->SetBoolean(prefs::kEnableDoNotTrack, true);
   EXPECT_TRUE(tracking_protection_settings()->IsDoNotTrackEnabled());
 }
 
-TEST_F(TrackingProtectionSettingsTest,
-       DisablesTrackingProtection3pcdWhenEnterpriseControlEnabled) {
-  prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
-  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-  EXPECT_TRUE(
-      tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
-
-  prefs()->SetManagedPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-                          std::make_unique<base::Value>(false));
-  EXPECT_FALSE(
-      tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
+TEST_F(TrackingProtectionSettingsTest, ReturnsIpProtectionStatus) {
+  EXPECT_FALSE(tracking_protection_settings()->IsIpProtectionEnabled());
+  prefs()->SetBoolean(prefs::kIpProtectionEnabled, true);
+  EXPECT_TRUE(tracking_protection_settings()->IsIpProtectionEnabled());
 }
 
 TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {
@@ -101,6 +97,8 @@ TEST_F(TrackingProtectionSettingsTest, AreAll3pcBlockedFalseOutside3pcd) {
           .AreAllThirdPartyCookiesBlocked());
 }
 
+// Sets prefs
+
 TEST_F(TrackingProtectionSettingsTest,
        SetsTrackingProtection3pcdStatusUsingOnboardingService) {
   MockTrackingProtectionSettingsObserver observer;
@@ -127,6 +125,21 @@ TEST_F(TrackingProtectionSettingsTest,
       tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
 }
 
+TEST_F(TrackingProtectionSettingsTest,
+       DisablesTrackingProtection3pcdWhenEnterpriseControlEnabled) {
+  prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
+  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+  EXPECT_TRUE(
+      tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
+
+  prefs()->SetManagedPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
+                          std::make_unique<base::Value>(false));
+  EXPECT_FALSE(
+      tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
+}
+
+// Calls observers
+
 TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForDoNotTrack) {
   MockTrackingProtectionSettingsObserver observer;
   tracking_protection_settings()->AddObserver(&observer);
@@ -137,6 +150,19 @@ TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForDoNotTrack) {
 
   EXPECT_CALL(observer, OnDoNotTrackEnabledChanged());
   prefs()->SetBoolean(prefs::kEnableDoNotTrack, false);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForIpProtection) {
+  MockTrackingProtectionSettingsObserver observer;
+  tracking_protection_settings()->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnIpProtectionEnabledChanged());
+  prefs()->SetBoolean(prefs::kIpProtectionEnabled, true);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnIpProtectionEnabledChanged());
+  prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
