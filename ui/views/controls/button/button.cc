@@ -210,7 +210,7 @@ void Button::SetTooltipText(const std::u16string& tooltip_text) {
   OnPropertyChanged(&tooltip_text_, kPropertyEffectsNone);
 }
 
-std::u16string Button::GetTooltipText() const {
+const std::u16string& Button::GetTooltipText() const {
   return tooltip_text_;
 }
 
