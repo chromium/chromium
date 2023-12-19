@@ -552,11 +552,29 @@ bool ShouldShowSuggestionsForAutocompleteUnrecognizedFields(
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
-bool IsMeaningfullyPreFilled(const FormFieldData& cached_field,
-                             const autofill::AutofillField* autofill_field) {
-  return !cached_field.value.empty() &&
-         autofill_field->may_use_prefilled_placeholder().has_value() &&
-         !autofill_field->may_use_prefilled_placeholder().value();
+// Returns `true` if `autofill_field`'s pre-filled value is classified as
+// meaningful (guarded by `features::kAutofillOverwritePlaceholdersOnly`) and
+// Autofill's behavior for filling pre-filled fields is overwriting them by
+// default.
+bool IsMeaningfullyPreFilled(const autofill::AutofillField* autofill_field) {
+  return autofill_field->may_use_prefilled_placeholder().has_value() &&
+         !autofill_field->may_use_prefilled_placeholder().value() &&
+         !base::FeatureList::IsEnabled(
+             features::kAutofillSkipPreFilledFields) &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillOverwritePlaceholdersOnly);
+}
+
+// Returns `true` if `autofill_field`'s pre-filled value is classified as a
+// placeholder (guarded by `features::kAutofillOverwritePlaceholdersOnly`) and
+// Autofill's behavior for filling pre-filled fields is skipping them by
+// default.
+bool IsNotAPlaceholder(const autofill::AutofillField* autofill_field) {
+  return (!autofill_field->may_use_prefilled_placeholder().has_value() ||
+          !autofill_field->may_use_prefilled_placeholder().value() ||
+          !base::FeatureList::IsEnabled(
+              features::kAutofillOverwritePlaceholdersOnly)) &&
+         base::FeatureList::IsEnabled(features::kAutofillSkipPreFilledFields);
 }
 
 }  // namespace
@@ -2283,11 +2301,10 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
       continue;
     }
 
-    // Don't fill meaningfully pre-filled fields.
-    if (!is_triggering_field &&
-        IsMeaningfullyPreFilled(form.fields[i], autofill_field) &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillOverwritePlaceholdersOnly)) {
+    // Don't fill meaningfully pre-filled fields but do fill placeholders.
+    if (!is_triggering_field && !form.fields[i].value.empty() &&
+        (IsNotAPlaceholder(autofill_field) ||
+         IsMeaningfullyPreFilled(autofill_field))) {
       skip_reasons[i] = FieldFillingSkipReason::kValuePrefilled;
       continue;
     }

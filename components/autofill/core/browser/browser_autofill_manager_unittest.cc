@@ -2916,6 +2916,54 @@ TEST_F(BrowserAutofillManagerTest, SkipFillIfFieldIsMeaningfullyPreFilled) {
   EXPECT_EQ(filled_fields[3].value, form.fields[3].value);
 }
 
+TEST_F(BrowserAutofillManagerTest,
+       SkipAllPreFilledFieldsExceptIfFieldIsAPlaceholder) {
+  base::test::ScopedFeatureList placeholders_features;
+  placeholders_features.InitWithFeatures(
+      {features::kAutofillOverwritePlaceholdersOnly,
+       features::kAutofillSkipPreFilledFields},
+      {});
+
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST, .value = u"Triggering field (filled)"},
+                  {.role = NAME_LAST, .value = u"Placeholder (filled)"},
+                  {.role = EMAIL_ADDRESS, .value = u"No data (skipped)"},
+                  {.role = ADDRESS_HOME_LINE1,
+                   .value = u"No placeholder (skipped)"}}});
+  FormsSeen({form});
+
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  ASSERT_TRUE(browser_autofill_manager_->GetCachedFormAndField(
+      form, form.fields.front(), &form_structure, &autofill_field));
+  form_structure->fields()[0]->set_may_use_prefilled_placeholder(true);
+  form_structure->fields()[1]->set_may_use_prefilled_placeholder(true);
+  form_structure->fields()[3]->set_may_use_prefilled_placeholder(false);
+
+  AutofillProfile* profile =
+      personal_data().GetProfileByGUID(kElvisProfileGuid);
+  ASSERT_TRUE(profile);
+
+  FormData filled_form;
+  EXPECT_CALL(*autofill_driver_, ApplyFormAction)
+      .WillOnce((DoAll(SaveArg<2>(&filled_form),
+                       Return(std::vector<FieldGlobalId>{}))));
+  test_api(*browser_autofill_manager_)
+      .FillOrPreviewDataModelForm(mojom::ActionPersistence::kFill, form,
+                                  form.fields.front(), profile, nullptr,
+                                  form_structure, autofill_field);
+
+  const auto& filled_fields = filled_form.fields;
+  EXPECT_TRUE(filled_fields[0].is_autofilled);
+  EXPECT_EQ(filled_fields[0].value, profile->GetRawInfo(NAME_FIRST));
+  EXPECT_TRUE(filled_fields[1].is_autofilled);
+  EXPECT_EQ(filled_fields[1].value, profile->GetRawInfo(NAME_LAST));
+  EXPECT_FALSE(filled_fields[2].is_autofilled);
+  EXPECT_EQ(filled_fields[2].value, form.fields[2].value);
+  EXPECT_FALSE(filled_fields[3].is_autofilled);
+  EXPECT_EQ(filled_fields[3].value, form.fields[3].value);
+}
+
 TEST_F(BrowserAutofillManagerTest, UndoSavesFormFillingData) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});

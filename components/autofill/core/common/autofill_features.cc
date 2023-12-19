@@ -447,9 +447,16 @@ BASE_FEATURE(kAutofillPreferLabelsInSomeCountries,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, a pre-filled field will only be overwritten if it's not
-// classified as meaningfully pre-filled based on server predictions.
+// classified as meaningfully pre-filled based on server predictions. If also
+// flag `kAutofillSkipPreFilledFields` is enabled, a pre-filled field will only
+// be overwritten if it's classified as a placeholder.
 BASE_FEATURE(kAutofillOverwritePlaceholdersOnly,
              "AutofillOverwritePlaceholdersOnly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, a pre-filled field will not be filled.
+BASE_FEATURE(kAutofillSkipPreFilledFields,
+             "AutofillSkipPreFilledFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, Autofill would not override the field values that were either
