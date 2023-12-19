@@ -1616,11 +1616,13 @@ void WebAppPublisherHelper::OnWebAppSettingsPolicyChanged() {
 
 void WebAppPublisherHelper::Init() {
   // Allow for web app migration tests.
-  if (!AreWebAppsEnabled(profile_)) {
+  // In some tests, WebAppPublisherHelper could be created during the shutdown
+  // stage as the web app publisher is created async by AppServiceProxy. So
+  // provider_ could be null in some tests.
+  if (!AreWebAppsEnabled(profile_) || !provider_) {
     return;
   }
 
-  DCHECK(provider_);
   provider_->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&WebAppPublisherHelper::ObserveWebAppSubsystems,
                                 weak_ptr_factory_.GetWeakPtr()));

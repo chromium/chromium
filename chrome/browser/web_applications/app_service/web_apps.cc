@@ -72,11 +72,13 @@ const WebApp* WebApps::GetWebApp(const webapps::AppId& app_id) const {
 
 void WebApps::Initialize() {
   DCHECK(profile_);
-  if (!AreWebAppsEnabled(profile_)) {
+
+  // In some tests, WebAppPublisherHelper could be created during the shutdown
+  // stage as the web app publisher is created async by AppServiceProxy. So
+  // provider_ could be null in some tests.
+  if (!AreWebAppsEnabled(profile_) || !provider_) {
     return;
   }
-
-  DCHECK(provider_);
 
   provider_->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&WebApps::InitWebApps, AsWeakPtr()));
