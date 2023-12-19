@@ -752,20 +752,6 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
   return all_succeeded;
 }
 
-bool AutofillCrowdsourcingManager::StartUploadRequest(
-    const FormStructure& form,
-    bool form_was_autofilled,
-    const FieldTypeSet& available_field_types,
-    const std::string& login_form_signature,
-    bool observed_submission,
-    PrefService* prefs,
-    base::WeakPtr<Observer> observer) {
-  return StartUploadRequest(
-      form.EncodeUploadRequest(available_field_types, form_was_autofilled,
-                               login_form_signature, observed_submission),
-      form.submission_source(), form.active_field_count(), prefs, observer);
-}
-
 void AutofillCrowdsourcingManager::ClearUploadHistory(PrefService* pref_service) {
   if (pref_service) {
     pref_service->ClearPref(prefs::kAutofillUploadEvents);

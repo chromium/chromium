@@ -40,17 +40,6 @@ class MockAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
                PrefService*,
                base::WeakPtr<Observer>),
               (override));
-
-  MOCK_METHOD(bool,
-              StartUploadRequest,
-              (const FormStructure&,
-               bool,
-               const FieldTypeSet&,
-               const std::string&,
-               bool,
-               PrefService*,
-               base::WeakPtr<Observer>),
-              (override));
 };
 
 }  // namespace autofill

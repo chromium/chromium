@@ -475,7 +475,7 @@ class PasswordFormManagerTest : public testing::Test,
     ON_CALL(*client_.GetPasswordFeatureManager(),
             ShouldShowAccountStorageBubbleUi)
         .WillByDefault(Return(true));
-    ON_CALL(crowdsourcing_manager(), StartUploadRequest(_, _, _, _, _))
+    ON_CALL(crowdsourcing_manager(), StartUploadRequest)
         .WillByDefault(Return(true));
     ON_CALL(*client_.GetPasswordFeatureManager(), GetDefaultPasswordStore)
         .WillByDefault(Return(PasswordForm::Store::kProfileStore));
@@ -1274,7 +1274,7 @@ TEST_P(PasswordFormManagerTest, VotesUploadingOnPasswordUpdate) {
                 StartUploadRequest(upload_contents_matcher, _, _, _, _));
     if (expected_vote == autofill::NEW_PASSWORD) {
       // An unrelated |FIRST_USE| vote.
-      EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest(_, _, _, _, _));
+      EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest);
     }
 
     if (expected_vote == autofill::NEW_PASSWORD)
@@ -1343,7 +1343,7 @@ TEST_P(PasswordFormManagerTest, UsernameCorrectionVote) {
 
   testing::InSequence in_sequence;
   // Unrelated regular PASSWORD vote.
-  EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest(_, _, _, _, _));
+  EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest);
 
   // The first key in the map should be
   // `saved_match_.form_data.fields[0].unique_renderer_id`, but the new
@@ -1508,7 +1508,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueEmptyStore) {
 
   // TODO(https://crbug.com/928690): implement not sending incorrect votes and
   // check that StartUploadRequest is not called.
-  EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest(_, _, _, _, _));
+  EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest);
   form_manager_->Save();
 }
 
@@ -3371,8 +3371,7 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
     EXPECT_CALL(crowdsourcing_manager(),
                 StartUploadRequest(upload_contents_matcher, _, _, _, _));
   } else {
-    EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest(_, _, _, _, _))
-        .Times(0);
+    EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest).Times(0);
   }
 
   // Upload for the password form.

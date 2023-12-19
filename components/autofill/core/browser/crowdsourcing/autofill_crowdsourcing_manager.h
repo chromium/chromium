@@ -105,27 +105,6 @@ class AutofillCrowdsourcingManager {
       PrefService* prefs,
       base::WeakPtr<Observer> observer);
 
-  // DEPRECATED (crbug.com/1505969): Use the version that expect
-  // `AutofillUploadContents` instead of `FormStructure` instead.
-  //
-  // Starts an upload request for the given |form|. |available_field_types|
-  // should contain the types for which we have data stored on the local client.
-  // |login_form_signature| may be empty. It is non-empty when the user fills
-  // and submits a login form using a generated password. In this case,
-  // |login_form_signature| should be set to the submitted form's signature.
-  // Note that in this case, |form.FormSignature()| gives the signature for the
-  // registration form on which the password was generated, rather than the
-  // submitted form's signature.
-  // |observed_submission| indicates whether the upload request is the result of
-  // an observed submission event.
-  virtual bool StartUploadRequest(const FormStructure& form,
-                                  bool form_was_autofilled,
-                                  const FieldTypeSet& available_field_types,
-                                  const std::string& login_form_signature,
-                                  bool observed_submission,
-                                  PrefService* pref_service,
-                                  base::WeakPtr<Observer> observer);
-
   // Returns true if the autofill server communication is enabled.
   bool IsEnabled() const;
 

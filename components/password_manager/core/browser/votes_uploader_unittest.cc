@@ -119,8 +119,7 @@ class VotesUploaderTest : public testing::Test {
     EXPECT_CALL(client_, GetAutofillCrowdsourcingManager())
         .WillRepeatedly(Return(&mock_autofill_crowdsourcing_manager_));
 
-    ON_CALL(mock_autofill_crowdsourcing_manager_,
-            StartUploadRequest(_, _, _, _, _))
+    ON_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
         .WillByDefault(Return(true));
 
     // Create |fields| in |form_to_upload_| and |submitted_form_|. Only |name|
@@ -277,8 +276,8 @@ TEST_F(VotesUploaderTest, SendVotesOnSaveOverwrittenFlow) {
 
   // SendVotesOnSave should call UploadPasswordVote and StartUploadRequest
   // twice. The first call is not the one that should be tested.
-  testing::Expectation first_call = EXPECT_CALL(
-      mock_autofill_crowdsourcing_manager_, StartUploadRequest(_, _, _, _, _));
+  testing::Expectation first_call =
+      EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest);
   auto upload_contents_matcher = IsPasswordUpload(FieldsContain(UploadField(
       6, FieldType::USERNAME, FieldVoteTypeIs(Field::USERNAME_OVERWRITTEN))));
   EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
@@ -642,8 +641,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_NonAsciiPassword) {
 
 TEST_F(VotesUploaderTest, NoSingleUsernameDataNoUpload) {
   VotesUploader votes_uploader(&client_, false);
-  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
-              StartUploadRequest(_, _, _, _, _, _, _))
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
       .Times(0);
   base::HistogramTester histogram_tester;
   votes_uploader.set_should_send_username_first_flow_votes(true);
@@ -695,8 +693,7 @@ TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
                                    /*pref_service=*/IsNull(),
                                    /*observer=*/IsNull()));
   } else {
-    EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
-                StartUploadRequest(_, _, _, _, _))
+    EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
         .Times(0);
   }
 
@@ -738,8 +735,7 @@ TEST_F(VotesUploaderTest, UploadNotSingleUsernameForWhitespaces) {
                                    /*pref_service=*/IsNull(),
                                    /*observer=*/IsNull()));
   } else {
-    EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
-                StartUploadRequest(_, _, _, _, _))
+    EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
         .Times(0);
   }
 
@@ -794,8 +790,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSuggestedAndAccepted) {
                                    /*pref_service=*/IsNull(),
                                    /*observer=*/IsNull()));
   } else {
-    EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
-                StartUploadRequest(_, _, _, _, _))
+    EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
         .Times(0);
   }
 
@@ -849,8 +844,7 @@ TEST_F(VotesUploaderTest, SingleUsernameOtherValueSuggestedAndAccepted) {
                                    /*pref_service=*/IsNull(),
                                    /*observer=*/IsNull()));
   } else {
-    EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
-                StartUploadRequest(_, _, _, _, _))
+    EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
         .Times(0);
   }
   votes_uploader.MaybeSendSingleUsernameVotes();
@@ -904,8 +898,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSetInPrompt) {
                                    /*pref_service=*/IsNull(),
                                    /*observer=*/IsNull()));
   } else {
-    EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
-                StartUploadRequest(_, _, _, _, _))
+    EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
         .Times(0);
   }
   votes_uploader.MaybeSendSingleUsernameVotes();
@@ -957,8 +950,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueDeletedInPrompt) {
                                    /*pref_service=*/IsNull(),
                                    /*observer=*/IsNull()));
   } else {
-    EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
-                StartUploadRequest(_, _, _, _, _))
+    EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
         .Times(0);
   }
   votes_uploader.MaybeSendSingleUsernameVotes();
