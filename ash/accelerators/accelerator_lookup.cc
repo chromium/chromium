@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/accelerators_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/types/optional_ref.h"
 
 namespace ash {
@@ -40,6 +41,32 @@ std::vector<AcceleratorDetails> AcceleratorLookup::GetAcceleratorsForAction(
 
   for (const auto& accelerator : *accelerators) {
     details.push_back({accelerator, GetKeyDisplay(accelerator.key_code())});
+  }
+
+  return details;
+}
+
+std::vector<AcceleratorDetails>
+AcceleratorLookup::GetAvailableAcceleratorsForAction(uint32_t action) const {
+  CHECK(ash_accelerator_configuration_);
+
+  std::vector<AcceleratorDetails> details;
+  OptionalAccelerators accelerators =
+      ash_accelerator_configuration_->GetAcceleratorsForAction(action);
+
+  for (const auto& accelerator : *accelerators) {
+    // Get the aliased and filtered accelerators associated for `accelerator`.
+    // This ensures that clients will only fetch available accelerators.
+    std::vector<ui::Accelerator> aliased_accelerators =
+        alias_converter_.CreateAcceleratorAlias(accelerator);
+
+    base::ranges::transform(
+        aliased_accelerators, std::back_inserter(details),
+        [](const ui::Accelerator& aliased_accelerator) {
+          return AcceleratorDetails{
+              aliased_accelerator,
+              GetKeyDisplay(aliased_accelerator.key_code())};
+        });
   }
 
   return details;

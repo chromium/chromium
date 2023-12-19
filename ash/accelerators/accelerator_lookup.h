@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/accelerators/accelerator_alias_converter.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -31,12 +32,20 @@ class ASH_EXPORT AcceleratorLookup {
     std::u16string key_display;
   };
 
-  // Returns a list of accelerator details for `action`.
+  // Returns a list of all accelerator details for `action`.
   std::vector<AcceleratorDetails> GetAcceleratorsForAction(
+      uint32_t action) const;
+
+  // Returns accelerators that are available to the users. This takes into
+  // account of connected keyboards and availability of the activation key.
+  // Also provides alternative accelerators (alias accelerators),
+  // e.g. [Search + Up == Home].
+  std::vector<AcceleratorDetails> GetAvailableAcceleratorsForAction(
       uint32_t action) const;
 
  private:
   raw_ptr<AcceleratorConfiguration> ash_accelerator_configuration_;
+  AcceleratorAliasConverter alias_converter_;
 };
 
 }  // namespace ash
