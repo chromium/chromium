@@ -45,7 +45,7 @@ class TCPSocketEventDispatcher : public BrowserContextKeyedAPI {
   static TCPSocketEventDispatcher* Get(content::BrowserContext* context);
 
  private:
-  typedef ApiResourceManager<ResumableTCPSocket>::ApiResourceData SocketData;
+  using SocketData = ApiResourceManager<ResumableTCPSocket>::ApiResourceData;
   friend class BrowserContextKeyedAPIFactory<TCPSocketEventDispatcher>;
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "TCPSocketEventDispatcher"; }
