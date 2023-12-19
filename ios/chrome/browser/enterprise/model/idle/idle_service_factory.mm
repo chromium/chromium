@@ -41,6 +41,8 @@ void IdleServiceFactory::RegisterBrowserStatePrefs(
   registry->RegisterListPref(enterprise_idle::prefs::kIdleTimeoutActions);
   registry->RegisterTimePref(enterprise_idle::prefs::kLastIdleTimestamp,
                              base::Time());
+  registry->RegisterBooleanPref(
+      enterprise_idle::prefs::kIdleTimeoutPolicyAppliesToUserOnly, false);
 }
 
 }  // namespace enterprise_idle

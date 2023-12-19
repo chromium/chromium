@@ -40,10 +40,11 @@ class IdleTimeoutPolicyHandlerTest : public testing::Test {
     SetPolicyValue(policy::key::kSyncDisabled, base::Value(true));
   }
 
-  void SetPolicyValue(const std::string& policy, base::Value value) {
-    policies_.Set(policy, policy::POLICY_LEVEL_MANDATORY,
-                  policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,
-                  std::move(value), nullptr);
+  void SetPolicyValue(const std::string& policy,
+                      base::Value value,
+                      policy::PolicyScope scope = policy::POLICY_SCOPE_USER) {
+    policies_.Set(policy, policy::POLICY_LEVEL_MANDATORY, scope,
+                  policy::POLICY_SOURCE_PLATFORM, std::move(value), nullptr);
   }
 
   bool CheckPolicySettings() {
@@ -458,4 +459,39 @@ TEST_F(IdleTimeoutPolicyHandlerTest, SyncTypesDisabledForClearActions) {
       prefs().GetBoolean(syncer::prefs::internal::kSyncPasswords, &enabled));
   EXPECT_FALSE(enabled);
 }
+
+#if BUILDFLAG(IS_IOS)
+TEST_F(IdleTimeoutPolicyHandlerTest,
+       IdleTimeoutPolicyAppliesToUserOnlyPrefSetCorrectly) {
+  // Initialize the pref to false to detect the pref changes when the policy is
+  // set.
+  prefs().SetBoolean(syncer::prefs::internal::kSyncAutofill, true);
+
+  base::Value::List list;
+  list.Append("clear_browsing_history");
+  list.Append("clear_cookies_and_other_site_data");
+
+  // Set the policy scope to user and check that
+  // `kIdleTimeoutPolicyAppliesToUserOnly` is set to true.
+  SetPolicyValue(policy::key::kIdleTimeout, base::Value(15));
+  SetPolicyValue(policy::key::kIdleTimeoutActions,
+                 base::Value(std::move(list)));
+  CheckAndApplyPolicySettings();
+  bool enabled;
+  ASSERT_TRUE(
+      prefs().GetBoolean(prefs::kIdleTimeoutPolicyAppliesToUserOnly, &enabled));
+  EXPECT_TRUE(enabled);
+
+  // Reset the policy scope to machine and check that
+  // `kIdleTimeoutPolicyAppliesToUserOnly` is reset to false.
+  SetPolicyValue(policy::key::kIdleTimeoutActions, base::Value(std::move(list)),
+                 policy::POLICY_SCOPE_MACHINE);
+  CheckAndApplyPolicySettings();
+  ASSERT_TRUE(
+      prefs().GetBoolean(prefs::kIdleTimeoutPolicyAppliesToUserOnly, &enabled));
+  EXPECT_FALSE(enabled);
+}
+
+#endif  // BUILDFLAG(IS_IOS)
+
 }  // namespace enterprise_idle
