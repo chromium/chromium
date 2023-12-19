@@ -216,7 +216,13 @@ class RecordingServiceBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 
-IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordFullscreen) {
+// TODO(b/252343017): Flaky on MSAN bots.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_RecordFullscreen DISABLED_RecordFullscreen
+#else
+#define MAYBE_RecordFullscreen RecordFullscreen
+#endif
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, MAYBE_RecordFullscreen) {
   ash::CaptureModeTestApi test_api;
   test_api.StartForFullscreen(/*for_video=*/true);
   FinishVideoRecordingTest(&test_api);
