@@ -623,8 +623,22 @@ TEST_F('OSSettingsCrostiniPageCrostiniSubpageRevampTest', 'AllJsTests', () => {
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
  [
-   'DevicePagePerDeviceKeyboard', 'device_page/per_device_keyboard_test.js',
-   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
+   'DevicePagePerDeviceKeyboard',
+   'device_page/per_device_keyboard_test.js',
+   {
+     disabled: ['ash::features::kOsSettingsRevampWayfinding'],
+     enabled: ['ash::features::kInputDeviceSettingsSplit'],
+   },
+ ],
+ [
+   'DevicePagePerDeviceKeyboardRevamp',
+   'device_page/per_device_keyboard_test.js',
+   {
+     enabled: [
+       'ash::features::kInputDeviceSettingsSplit',
+       'ash::features::kOsSettingsRevampWayfinding',
+     ],
+   },
  ],
  [
    'DevicePagePerDeviceKeyboardRemapKeys',
