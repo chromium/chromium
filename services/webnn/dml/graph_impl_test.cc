@@ -11,7 +11,9 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/ml/webnn/features.mojom-features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/command_queue.h"
@@ -227,12 +229,17 @@ class WebNNGraphDMLImplTest : public TestBase {
   void SetUp() override;
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<Adapter> adapter_;
 };
 
 void WebNNGraphDMLImplTest::SetUp() {
   SKIP_TEST_IF(!UseGPUInTests());
+
+  scoped_feature_list_.InitAndEnableFeature(
+      webnn::mojom::features::kWebMachineLearningNeuralNetwork);
+
   ASSERT_TRUE(InitializeGLDisplay());
   Adapter::EnableDebugLayerForTesting();
   auto adapter_creation_result = Adapter::GetInstanceForTesting();

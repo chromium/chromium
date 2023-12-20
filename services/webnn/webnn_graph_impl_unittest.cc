@@ -5001,8 +5001,9 @@ TEST_F(WebNNGraphImplTest, WhereTest) {
 }
 
 TEST_F(WebNNGraphImplTest, ValidateInputsTest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitFromCommandLine("WebMachineLearningNeuralNetwork", "");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::mojom::features::kWebMachineLearningNeuralNetwork);
 
   const std::vector<uint32_t> dimensions = {3, 5};
   // Build the graph with mojo type.
