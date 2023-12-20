@@ -1945,8 +1945,8 @@ class HostedAppJitTestBase : public HostedAppProcessModelTest {
   std::unique_ptr<ScopedJitChromeBrowserClientOverride> scoped_client_override_;
 };
 
-typedef HostedAppJitTestBase<false> HostedAppJitTestBaseDefaultEnabled;
-typedef HostedAppJitTestBase<true> HostedAppJitTestBaseDefaultDisabled;
+using HostedAppJitTestBaseDefaultEnabled = HostedAppJitTestBase<false>;
+using HostedAppJitTestBaseDefaultDisabled = HostedAppJitTestBase<true>;
 
 IN_PROC_BROWSER_TEST_P(HostedAppJitTestBaseDefaultEnabled, JITDisabledTest) {
   JitTestInternal();
