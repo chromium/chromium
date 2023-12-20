@@ -11,18 +11,12 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertGE, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestGuestOsBrowserProxy} from '../guest_os/test_guest_os_browser_proxy.js';
+import {clearBody} from '../utils.js';
 
 import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
-
-let subpage: SettingsCrostiniSubpageElement;
-let guestOsBrowserProxy: TestGuestOsBrowserProxy;
-let crostiniBrowserProxy: TestCrostiniBrowserProxy;
-
-const MIC_ALLOWED_PREF_PATH = 'prefs.crostini.mic_allowed.value';
 
 interface PrefParams {
   sharedPaths?: {[key: string]: string[]};
@@ -32,38 +26,40 @@ interface PrefParams {
   bruschettaInstalled?: boolean;
 }
 
-function setCrostiniPrefs(enabled: boolean, {
-  sharedPaths = {},
-  forwardedPorts = [],
-  micAllowed = false,
-  arcEnabled = false,
-  bruschettaInstalled = false,
-}: PrefParams = {}): void {
-  subpage.prefs = {
-    arc: {
-      enabled: {value: arcEnabled},
-    },
-    bruschetta: {
-      installed: {
-        value: bruschettaInstalled,
-      },
-    },
-    crostini: {
-      enabled: {value: enabled},
-      mic_allowed: {value: micAllowed},
-      port_forwarding: {ports: {value: forwardedPorts}},
-    },
-    guest_os: {
-      paths_shared_to_vms: {value: sharedPaths},
-    },
-  };
-  flush();
-}
-
 suite('<settings-crostini-subpage>', () => {
-  suiteSetup(() => {
-    disableAnimationsAndTransitions();
-  });
+  let subpage: SettingsCrostiniSubpageElement;
+  let guestOsBrowserProxy: TestGuestOsBrowserProxy;
+  let crostiniBrowserProxy: TestCrostiniBrowserProxy;
+
+  const MIC_ALLOWED_PREF_PATH = 'prefs.crostini.mic_allowed.value';
+
+  function setCrostiniPrefs(enabled: boolean, {
+    sharedPaths = {},
+    forwardedPorts = [],
+    micAllowed = false,
+    arcEnabled = false,
+    bruschettaInstalled = false,
+  }: PrefParams = {}): void {
+    subpage.prefs = {
+      arc: {
+        enabled: {value: arcEnabled},
+      },
+      bruschetta: {
+        installed: {
+          value: bruschettaInstalled,
+        },
+      },
+      crostini: {
+        enabled: {value: enabled},
+        mic_allowed: {value: micAllowed},
+        port_forwarding: {ports: {value: forwardedPorts}},
+      },
+      guest_os: {
+        paths_shared_to_vms: {value: sharedPaths},
+      },
+    };
+    flush();
+  }
 
   setup(async () => {
     loadTimeData.overrideValues({
@@ -83,6 +79,8 @@ suite('<settings-crostini-subpage>', () => {
     GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
 
     Router.getInstance().navigateTo(routes.CROSTINI_DETAILS);
+
+    clearBody();
     subpage = document.createElement('settings-crostini-subpage');
     document.body.appendChild(subpage);
     setCrostiniPrefs(true, {arcEnabled: true});
@@ -90,10 +88,7 @@ suite('<settings-crostini-subpage>', () => {
   });
 
   teardown(() => {
-    subpage.remove();
     Router.getInstance().resetRouteForTesting();
-    crostiniBrowserProxy.reset();
-    guestOsBrowserProxy.reset();
   });
 
   suite('Subpage default', () => {

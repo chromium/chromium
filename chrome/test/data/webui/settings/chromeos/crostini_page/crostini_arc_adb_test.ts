@@ -11,10 +11,9 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-let subpage: SettingsCrostiniArcAdbElement;
+import {clearBody} from '../utils.js';
 
 interface PrefParams {
   sharedPaths?: {[key: string]: string[]};
@@ -24,38 +23,36 @@ interface PrefParams {
   bruschettaInstalled?: boolean;
 }
 
-function setCrostiniPrefs(enabled: boolean, {
-  sharedPaths = {},
-  forwardedPorts = [],
-  micAllowed = false,
-  arcEnabled = false,
-  bruschettaInstalled = false,
-}: PrefParams = {}): void {
-  subpage.prefs = {
-    arc: {
-      enabled: {value: arcEnabled},
-    },
-    bruschetta: {
-      installed: {
-        value: bruschettaInstalled,
-      },
-    },
-    crostini: {
-      enabled: {value: enabled},
-      mic_allowed: {value: micAllowed},
-      port_forwarding: {ports: {value: forwardedPorts}},
-    },
-    guest_os: {
-      paths_shared_to_vms: {value: sharedPaths},
-    },
-  };
-  flush();
-}
-
 suite('<settings-crostini-arc-adb>', () => {
-  suiteSetup(() => {
-    disableAnimationsAndTransitions();
-  });
+  let subpage: SettingsCrostiniArcAdbElement;
+
+  function setCrostiniPrefs(enabled: boolean, {
+    sharedPaths = {},
+    forwardedPorts = [],
+    micAllowed = false,
+    arcEnabled = false,
+    bruschettaInstalled = false,
+  }: PrefParams = {}): void {
+    subpage.prefs = {
+      arc: {
+        enabled: {value: arcEnabled},
+      },
+      bruschetta: {
+        installed: {
+          value: bruschettaInstalled,
+        },
+      },
+      crostini: {
+        enabled: {value: enabled},
+        mic_allowed: {value: micAllowed},
+        port_forwarding: {ports: {value: forwardedPorts}},
+      },
+      guest_os: {
+        paths_shared_to_vms: {value: sharedPaths},
+      },
+    };
+    flush();
+  }
 
   setup(async () => {
     loadTimeData.overrideValues({
@@ -65,6 +62,8 @@ suite('<settings-crostini-arc-adb>', () => {
     });
 
     Router.getInstance().navigateTo(routes.CROSTINI_ANDROID_ADB);
+
+    clearBody();
     subpage = document.createElement('settings-crostini-arc-adb');
     document.body.appendChild(subpage);
     setCrostiniPrefs(true, {arcEnabled: true});
@@ -72,7 +71,6 @@ suite('<settings-crostini-arc-adb>', () => {
   });
 
   teardown(() => {
-    subpage.remove();
     Router.getInstance().resetRouteForTesting();
   });
 

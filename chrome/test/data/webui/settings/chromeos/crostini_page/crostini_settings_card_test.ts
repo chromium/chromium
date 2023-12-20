@@ -12,10 +12,10 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestGuestOsBrowserProxy} from '../guest_os/test_guest_os_browser_proxy.js';
+import {clearBody} from '../utils.js';
 
 import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
@@ -66,21 +66,12 @@ suite('<crostini-settings-card>', () => {
   }
 
   async function createCrostiniSettingsCard(): Promise<void> {
+    clearBody();
     crostiniSettingsCard = document.createElement('crostini-settings-card');
     document.body.appendChild(crostiniSettingsCard);
-    disableAnimationsAndTransitions();
-
     setCrostiniPrefs(false);
     await flushTasks();
   }
-
-  suiteSetup(() => {
-    crostiniBrowserProxy = new TestCrostiniBrowserProxy();
-    CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
-
-    guestOsBrowserProxy = new TestGuestOsBrowserProxy();
-    GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
-  });
 
   setup(() => {
     loadTimeData.overrideValues({
@@ -89,14 +80,17 @@ suite('<crostini-settings-card>', () => {
       showBruschetta: false,
     });
 
+    crostiniBrowserProxy = new TestCrostiniBrowserProxy();
+    CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
+
+    guestOsBrowserProxy = new TestGuestOsBrowserProxy();
+    GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
+
     Router.getInstance().navigateTo(hostRoute);
   });
 
   teardown(() => {
-    crostiniSettingsCard.remove();
     Router.getInstance().resetRouteForTesting();
-    crostiniBrowserProxy.reset();
-    guestOsBrowserProxy.reset();
   });
 
   test('NotSupported', async () => {

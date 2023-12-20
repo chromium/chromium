@@ -12,44 +12,12 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestGuestOsBrowserProxy} from '../guest_os/test_guest_os_browser_proxy.js';
+import {clearBody} from '../utils.js';
 
 import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
-
-let subpage: SettingsCrostiniExportImportElement;
-let guestOsBrowserProxy: TestGuestOsBrowserProxy;
-let crostiniBrowserProxy: TestCrostiniBrowserProxy;
-
-const singleContainer: ContainerInfo[] = [
-  {
-    id: {
-      vm_name: 'termina',
-      container_name: 'penguin',
-    },
-    ipv4: '1.2.3.4',
-  },
-];
-
-const multipleContainers: ContainerInfo[] = [
-  {
-    id: {
-      vm_name: 'termina',
-      container_name: 'penguin',
-    },
-    ipv4: '1.2.3.4',
-  },
-  {
-    id: {
-      vm_name: 'not-termina',
-      container_name: 'not-penguin',
-
-    },
-    ipv4: '1.2.3.5',
-  },
-];
 
 interface PrefParams {
   sharedPaths?: {[key: string]: string[]};
@@ -59,48 +27,75 @@ interface PrefParams {
   bruschettaInstalled?: boolean;
 }
 
-function setCrostiniPrefs(enabled: boolean, {
-  sharedPaths = {},
-  forwardedPorts = [],
-  micAllowed = false,
-  arcEnabled = false,
-  bruschettaInstalled = false,
-}: PrefParams = {}): void {
-  subpage.prefs = {
-    arc: {
-      enabled: {value: arcEnabled},
-    },
-    bruschetta: {
-      installed: {
-        value: bruschettaInstalled,
-      },
-    },
-    crostini: {
-      enabled: {value: enabled},
-      mic_allowed: {value: micAllowed},
-      port_forwarding: {ports: {value: forwardedPorts}},
-    },
-    guest_os: {
-      paths_shared_to_vms: {value: sharedPaths},
-    },
-  };
-  flush();
-}
-
-function selectContainerByIndex(
-    select: ContainerSelectElement, index: number): void {
-  const mdSelect = select.shadowRoot!.querySelector<HTMLSelectElement>(
-      'select#selectContainer.md-select');
-  assertTrue(!!mdSelect);
-  mdSelect.selectedIndex = index;
-  mdSelect.dispatchEvent(new CustomEvent('change'));
-  flush();
-}
-
 suite('<settings-crostini-export-import>', () => {
-  suiteSetup(() => {
-    disableAnimationsAndTransitions();
-  });
+  let subpage: SettingsCrostiniExportImportElement;
+  let guestOsBrowserProxy: TestGuestOsBrowserProxy;
+  let crostiniBrowserProxy: TestCrostiniBrowserProxy;
+
+  const multipleContainers: ContainerInfo[] = [
+    {
+      id: {
+        vm_name: 'termina',
+        container_name: 'penguin',
+      },
+      ipv4: '1.2.3.4',
+    },
+    {
+      id: {
+        vm_name: 'not-termina',
+        container_name: 'not-penguin',
+
+      },
+      ipv4: '1.2.3.5',
+    },
+  ];
+  const singleContainer: ContainerInfo[] = [
+    {
+      id: {
+        vm_name: 'termina',
+        container_name: 'penguin',
+      },
+      ipv4: '1.2.3.4',
+    },
+  ];
+
+  function setCrostiniPrefs(enabled: boolean, {
+    sharedPaths = {},
+    forwardedPorts = [],
+    micAllowed = false,
+    arcEnabled = false,
+    bruschettaInstalled = false,
+  }: PrefParams = {}): void {
+    subpage.prefs = {
+      arc: {
+        enabled: {value: arcEnabled},
+      },
+      bruschetta: {
+        installed: {
+          value: bruschettaInstalled,
+        },
+      },
+      crostini: {
+        enabled: {value: enabled},
+        mic_allowed: {value: micAllowed},
+        port_forwarding: {ports: {value: forwardedPorts}},
+      },
+      guest_os: {
+        paths_shared_to_vms: {value: sharedPaths},
+      },
+    };
+    flush();
+  }
+
+  function selectContainerByIndex(
+      select: ContainerSelectElement, index: number): void {
+    const mdSelect = select.shadowRoot!.querySelector<HTMLSelectElement>(
+        'select#selectContainer.md-select');
+    assertTrue(!!mdSelect);
+    mdSelect.selectedIndex = index;
+    mdSelect.dispatchEvent(new CustomEvent('change'));
+    flush();
+  }
 
   setup(async () => {
     loadTimeData.overrideValues({
@@ -113,7 +108,6 @@ suite('<settings-crostini-export-import>', () => {
       arcAdbSideloadingSupported: true,
       showCrostiniExtraContainers: true,
     });
-
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
     crostiniBrowserProxy.containerInfo = singleContainer;
     CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
@@ -121,6 +115,8 @@ suite('<settings-crostini-export-import>', () => {
     GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
 
     Router.getInstance().navigateTo(routes.CROSTINI_EXPORT_IMPORT);
+
+    clearBody();
     subpage = document.createElement('settings-crostini-export-import');
     document.body.appendChild(subpage);
     setCrostiniPrefs(true, {arcEnabled: true});
@@ -136,10 +132,7 @@ suite('<settings-crostini-export-import>', () => {
   });
 
   teardown(() => {
-    subpage.remove();
     Router.getInstance().resetRouteForTesting();
-    crostiniBrowserProxy.reset();
-    guestOsBrowserProxy.reset();
   });
 
   test('Deep link to backup linux', async () => {

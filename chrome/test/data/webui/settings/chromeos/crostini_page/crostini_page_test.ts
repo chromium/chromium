@@ -12,14 +12,15 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestGuestOsBrowserProxy} from '../guest_os/test_guest_os_browser_proxy.js';
+import {clearBody} from '../utils.js';
 
 import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
-let crostiniPage: SettingsCrostiniPageElement;
-let guestOsBrowserProxy: TestGuestOsBrowserProxy;
-let crostiniBrowserProxy: TestCrostiniBrowserProxy;
-
 suite('<settings-crostini-page>', () => {
+  let crostiniPage: SettingsCrostiniPageElement;
+  let guestOsBrowserProxy: TestGuestOsBrowserProxy;
+  let crostiniBrowserProxy: TestCrostiniBrowserProxy;
+
   function setCrostiniPrefs(enabled: boolean, {
     sharedPaths = {},
     forwardedPorts = [],
@@ -59,13 +60,14 @@ suite('<settings-crostini-page>', () => {
     GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
 
     Router.getInstance().navigateTo(routes.CROSTINI);
+
+    clearBody();
     crostiniPage = document.createElement('settings-crostini-page');
     document.body.appendChild(crostiniPage);
     flush();
   });
 
   teardown(() => {
-    crostiniPage.remove();
     Router.getInstance().resetRouteForTesting();
   });
 

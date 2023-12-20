@@ -9,49 +9,41 @@ import {CrToggleElement, Router, routes} from 'chrome://os-settings/os_settings.
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
 
 import {TestGuestOsBrowserProxy} from '../guest_os/test_guest_os_browser_proxy.js';
+import {clearBody} from '../utils.js';
 
 import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
-let subpage: CrostiniSharedUsbDevicesElement;
-let guestOsBrowserProxy: TestGuestOsBrowserProxy;
-let crostiniBrowserProxy: TestCrostiniBrowserProxy;
-
-const multipleContainers: ContainerInfo[] = [
-  {
-    id: {
-      vm_name: 'termina',
-      container_name: 'penguin',
-    },
-    ipv4: '1.2.3.4',
-  },
-  {
-    id: {
-      vm_name: 'not-termina',
-      container_name: 'not-penguin',
-
-    },
-    ipv4: '1.2.3.5',
-  },
-];
-
 suite('<settings-crostini-shared-usb-devices>', () => {
+  let subpage: CrostiniSharedUsbDevicesElement;
+  let guestOsBrowserProxy: TestGuestOsBrowserProxy;
+  let crostiniBrowserProxy: TestCrostiniBrowserProxy;
+
+  const multipleContainers: ContainerInfo[] = [
+    {
+      id: {
+        vm_name: 'termina',
+        container_name: 'penguin',
+      },
+      ipv4: '1.2.3.4',
+    },
+    {
+      id: {
+        vm_name: 'not-termina',
+        container_name: 'not-penguin',
+
+      },
+      ipv4: '1.2.3.5',
+    },
+  ];
+
   async function initSubpage(): Promise<void> {
+    clearBody();
     subpage = document.createElement('settings-crostini-shared-usb-devices');
     document.body.appendChild(subpage);
     await flushTasks();
   }
-
-  suiteSetup(() => {
-    disableAnimationsAndTransitions();
-
-    crostiniBrowserProxy = new TestCrostiniBrowserProxy();
-    CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
-    guestOsBrowserProxy = new TestGuestOsBrowserProxy();
-    GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
-  });
 
   setup(() => {
     loadTimeData.overrideValues({
@@ -59,14 +51,16 @@ suite('<settings-crostini-shared-usb-devices>', () => {
       isCrostiniSupported: true,
     });
 
+    crostiniBrowserProxy = new TestCrostiniBrowserProxy();
+    CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
+    guestOsBrowserProxy = new TestGuestOsBrowserProxy();
+    GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
+
     Router.getInstance().navigateTo(routes.CROSTINI_SHARED_USB_DEVICES);
   });
 
   teardown(() => {
-    subpage.remove();
     Router.getInstance().resetRouteForTesting();
-    crostiniBrowserProxy.reset();
-    guestOsBrowserProxy.reset();
   });
 
   // Functionality is already tested in OSSettingsGuestOsSharedUsbDevicesTest,

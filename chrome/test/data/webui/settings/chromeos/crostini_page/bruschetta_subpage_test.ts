@@ -10,13 +10,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
+import {clearBody} from '../utils.js';
 
-let subpage: BruschettaSubpageElement;
-let crostiniBrowserProxy: TestCrostiniBrowserProxy;
+import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
 interface PrefParams {
   sharedPaths?: {[key: string]: string[]};
@@ -26,38 +24,37 @@ interface PrefParams {
   bruschettaInstalled?: boolean;
 }
 
-function setCrostiniPrefs(enabled: boolean, {
-  sharedPaths = {},
-  forwardedPorts = [],
-  micAllowed = false,
-  arcEnabled = false,
-  bruschettaInstalled = false,
-}: PrefParams = {}): void {
-  subpage.prefs = {
-    arc: {
-      enabled: {value: arcEnabled},
-    },
-    bruschetta: {
-      installed: {
-        value: bruschettaInstalled,
-      },
-    },
-    crostini: {
-      enabled: {value: enabled},
-      mic_allowed: {value: micAllowed},
-      port_forwarding: {ports: {value: forwardedPorts}},
-    },
-    guest_os: {
-      paths_shared_to_vms: {value: sharedPaths},
-    },
-  };
-  flush();
-}
-
 suite('<settings-bruschetta-subpage>', () => {
-  suiteSetup(() => {
-    disableAnimationsAndTransitions();
-  });
+  let subpage: BruschettaSubpageElement;
+  let crostiniBrowserProxy: TestCrostiniBrowserProxy;
+
+  function setCrostiniPrefs(enabled: boolean, {
+    sharedPaths = {},
+    forwardedPorts = [],
+    micAllowed = false,
+    arcEnabled = false,
+    bruschettaInstalled = false,
+  }: PrefParams = {}): void {
+    subpage.prefs = {
+      arc: {
+        enabled: {value: arcEnabled},
+      },
+      bruschetta: {
+        installed: {
+          value: bruschettaInstalled,
+        },
+      },
+      crostini: {
+        enabled: {value: enabled},
+        mic_allowed: {value: micAllowed},
+        port_forwarding: {ports: {value: forwardedPorts}},
+      },
+      guest_os: {
+        paths_shared_to_vms: {value: sharedPaths},
+      },
+    };
+    flush();
+  }
 
   setup(async () => {
     loadTimeData.overrideValues({
@@ -70,16 +67,15 @@ suite('<settings-bruschetta-subpage>', () => {
 
     Router.getInstance().navigateTo(routes.BRUSCHETTA_DETAILS);
 
+    clearBody();
     subpage = document.createElement('settings-bruschetta-subpage');
     document.body.appendChild(subpage);
     setCrostiniPrefs(false, {bruschettaInstalled: true});
-    flushTasks();
+    await flushTasks();
   });
 
   teardown(() => {
-    subpage.remove();
     Router.getInstance().resetRouteForTesting();
-    crostiniBrowserProxy.reset();
   });
 
   test('Navigate to shared USB devices', async () => {

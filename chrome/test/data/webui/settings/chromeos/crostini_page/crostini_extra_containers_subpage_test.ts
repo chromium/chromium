@@ -10,17 +10,14 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
+
+import {clearBody} from '../utils.js';
 
 import {SharedVmDevices, TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
 suite('<settings-crostini-extra-containers>', () => {
   let crostiniBrowserProxy: TestCrostiniBrowserProxy;
   let subpage: ExtraContainersElement;
-
-  suiteSetup(() => {
-    disableAnimationsAndTransitions();
-  });
 
   setup(async () => {
     const allContainers: ContainerInfo[] = [
@@ -54,12 +51,13 @@ suite('<settings-crostini-extra-containers>', () => {
     ];
 
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
-    CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
     crostiniBrowserProxy.containerInfo = allContainers;
     crostiniBrowserProxy.sharedVmDevices = sharedVmDevices;
+    CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
 
     Router.getInstance().navigateTo(routes.CROSTINI_EXTRA_CONTAINERS);
 
+    clearBody();
     subpage = document.createElement('settings-crostini-extra-containers');
     subpage.prefs = {
       crostini: {
@@ -75,9 +73,7 @@ suite('<settings-crostini-extra-containers>', () => {
   });
 
   teardown(() => {
-    subpage.remove();
     Router.getInstance().resetRouteForTesting();
-    crostiniBrowserProxy.reset();
   });
 
   suite('CreateContainerDialog', () => {
