@@ -19,10 +19,6 @@ namespace reading_list::switches {
 // details.
 BASE_DECLARE_FEATURE(kReadLaterBackendMigration);
 
-// Returns whether reading list storage related UI can be enabled, by testing
-// `kReadingListEnableSyncTransportModeUponSignIn`.
-bool IsReadingListAccountStorageUIEnabled();
-
 }  // namespace reading_list::switches
 
 #endif  // COMPONENTS_READING_LIST_FEATURES_READING_LIST_SWITCHES_H_

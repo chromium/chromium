@@ -638,10 +638,7 @@
 // Computes whether the sign-in promo should be visible in the reading list and
 // updates the view accordingly.
 - (void)updateSignInPromoVisibility {
-  BOOL areAccountStorageAndPromoEnabled =
-      base::FeatureList::IsEnabled(
-          syncer::kReadingListEnableSyncTransportModeUponSignIn);
-  if (!areAccountStorageAndPromoEnabled || self.isSyncDisabledByAdministrator) {
+  if (self.isSyncDisabledByAdministrator) {
     self.shouldShowSignInPromo = NO;
     return;
   }
