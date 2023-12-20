@@ -51,6 +51,8 @@
     "libs/com_google_android_gms_play_services_places_placereport",
     "libs/com_google_android_gms_play_services_stats",
     "libs/com_google_android_gms_play_services_tasks",
+    "libs/com_google_android_gms_play_services_tflite_impl",
+    "libs/com_google_android_gms_play_services_tflite_java",
     "libs/com_google_android_gms_play_services_vision",
     "libs/com_google_android_gms_play_services_vision_common",
     "libs/com_google_android_material_material",
@@ -150,5 +152,6 @@
     "libs/org_robolectric_shadows_framework",
     "libs/org_robolectric_shadows_versioning",
     "libs/org_robolectric_utils",
-    "libs/org_robolectric_utils_reflector"
+    "libs/org_robolectric_utils_reflector",
+    "libs/org_tensorflow_tensorflow_lite_api"
 ]

@@ -40,6 +40,10 @@ class ChromiumDepGraph {
             exclude: true),  // We're not using datatransport functionality.
         com_google_android_gms_play_services_cloud_messaging: new PropertyOverride(
             description: 'Firebase Cloud Messaging library that interfaces with GmsCore.'),
+        com_google_android_gms_play_services_tflite_java: new PropertyOverride(
+            overrideLatest: true),
+        com_google_android_gms_play_services_tflite_impl: new PropertyOverride(
+            overrideLatest: true),
         com_google_auto_auto_common: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
@@ -136,6 +140,8 @@ class ChromiumDepGraph {
             licenseUrl: 'https://www.eclipse.org/org/documents/edl-v10.html',
             licensePath: 'licenses/Eclipse_EDL.txt',
             licenseName: 'BSD 3-Clause'),
+        org_tensorflow_tensorflow_lite_api: new PropertyOverride(
+            overrideLatest: true),
         com_google_protobuf_protobuf_java: new PropertyOverride(
             url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/README.md',
             licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
