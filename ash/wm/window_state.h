@@ -375,6 +375,12 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // snapped window.
   void UpdateSnapRatio();
 
+  // Forcefully updates `snap_ratio` based on the given `target_bounds`. You
+  // usually should use `UpdateSnapRatio()` instead. This method does not check
+  // whether `window()` is in the snapped state, so the caller must be sure that
+  // `window()` is to-be-snapped. Use with care.
+  void ForceUpdateSnapRatio(const gfx::Rect& target_bounds);
+
   // Gets/sets whether the shelf should be hidden when this window is
   // fullscreen.
   bool GetHideShelfWhenFullscreen() const;

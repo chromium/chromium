@@ -369,12 +369,18 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
               << ", state=" << state_type_
               << ", next_state=" << next_state_type;
 
+      const gfx::Rect snapped_bounds = GetSnappedWindowBoundsInParent(
+          window, next_state_type, next_snap_ratio);
+
+      // The snap ratio of `snapped_bounds` may be different from the requested
+      // snap ratio (e.g., if the window has a minimum size requirement or the
+      // opposite side of splitview is partial-snapped).
+      window_state->ForceUpdateSnapRatio(snapped_bounds);
+
       // Then ask delegate to set the desired bounds for the snap state.
-      delegate_->HandleBoundsRequest(
-          window_state, next_state_type,
-          GetSnappedWindowBoundsInParent(window, next_state_type,
-                                         next_snap_ratio),
-          window_state->GetDisplay().id());
+      delegate_->HandleBoundsRequest(window_state, next_state_type,
+                                     snapped_bounds,
+                                     window_state->GetDisplay().id());
     }
   } else if (next_state_type == WindowStateType::kFloated) {
     if (chromeos::wm::CanFloatWindow(window)) {

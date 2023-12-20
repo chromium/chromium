@@ -218,18 +218,17 @@ bool ShouldConsiderDivider(aura::Window* window) {
          split_view_controller->split_view_divider();
 }
 
-float GetCurrentSnapRatio(aura::Window* window) {
+float GetCurrentSnapRatio(aura::Window* window,
+                          const gfx::Rect& target_bounds) {
   gfx::Rect maximized_bounds =
       screen_util::GetMaximizedWindowBoundsInParent(window);
   const int divider_delta =
       ShouldConsiderDivider(window) ? kSplitviewDividerShortSideLength / 2 : 0;
   if (IsLayoutHorizontal(window)) {
-    return static_cast<float>(window->GetTargetBounds().width() +
-                              divider_delta) /
+    return static_cast<float>(target_bounds.width() + divider_delta) /
            static_cast<float>(maximized_bounds.width());
   }
-  return static_cast<float>(window->GetTargetBounds().height() +
-                            divider_delta) /
+  return static_cast<float>(target_bounds.height() + divider_delta) /
          static_cast<float>(maximized_bounds.height());
 }
 
@@ -674,7 +673,11 @@ std::unique_ptr<WindowState::State> WindowState::SetStateObject(
 void WindowState::UpdateSnapRatio() {
   if (!IsSnapped())
     return;
-  snap_ratio_ = std::make_optional(GetCurrentSnapRatio(window_));
+  ForceUpdateSnapRatio(window_->GetTargetBounds());
+}
+
+void WindowState::ForceUpdateSnapRatio(const gfx::Rect& target_bounds) {
+  snap_ratio_ = std::make_optional(GetCurrentSnapRatio(window_, target_bounds));
   // If the snap ratio was adjusted, partial may have ended.
   MaybeRecordPartialDuration();
 }

@@ -140,6 +140,33 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
   }
 };
 
+void VerifySnappedBounds(aura::Window* window, float expected_snap_ratio) {
+  const WindowState* window_state = WindowState::Get(window);
+  // `window` must be in any snapped state to use this method.
+  ASSERT_TRUE(window_state->IsSnapped());
+
+  const bool in_tablet = display::Screen::GetScreen()->InTabletMode();
+  const auto* screen = display::Screen::GetScreen();
+  const gfx::Rect work_area = screen->GetPrimaryDisplay().work_area();
+  const bool is_primary =
+      window_state->GetStateType() == WindowStateType::kPrimarySnapped;
+
+  const gfx::Size expected_size(
+      work_area.width() * expected_snap_ratio -
+          (in_tablet ? kSplitviewDividerShortSideLength / 2 : 0),
+      work_area.height());
+  const gfx::Point expected_origin(
+      is_primary ? work_area.x() : work_area.right() - expected_size.width(),
+      work_area.y());
+
+  const gfx::Rect bounds = window->GetTargetBounds();
+  constexpr int eps = 1;  // Allow 1px rounding errors for partial snap.
+  EXPECT_NEAR(expected_size.width(), bounds.width(), eps);
+  EXPECT_EQ(expected_size.height(), bounds.height());
+  EXPECT_NEAR(expected_origin.x(), bounds.x(), eps);
+  EXPECT_EQ(expected_origin.y(), bounds.y());
+}
+
 }  // namespace
 
 class ClientControlledStateTest : public AshTestBase {
@@ -208,6 +235,24 @@ class ClientControlledStateTest : public AshTestBase {
     state()->set_bounds_locally(true);
     widget()->SetBounds(delegate()->requested_bounds());
     state()->set_bounds_locally(false);
+  }
+  void ClickOnOverviewItem(aura::Window* window) {
+    auto* const overview_controller = OverviewController::Get();
+    ASSERT_TRUE(overview_controller->InOverviewSession());
+    auto* const overview_item = GetOverviewItemForWindow(window);
+
+    auto* const event_generator = GetEventGenerator();
+    event_generator->set_current_screen_location(
+        gfx::ToRoundedPoint(overview_item->target_bounds().CenterPoint()));
+    event_generator->ClickLeftButton();
+  }
+  void SimulateUnminimizeViaShelfIcon(views::Widget* widget) {
+    // When clicking an app icon on the hotseat to unminimize the window,
+    // `ChromeShelfController` shows and activates the widget.
+    // We here simulate the behavior because //ash should not use any component
+    // from //chrome/browser/ui.
+    widget->Show();
+    widget->Activate();
   }
 
  private:
@@ -612,6 +657,135 @@ TEST_F(ClientControlledStateTest, SnapMinimizeAndUnminimize) {
   state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
   EXPECT_EQ(resized_bounds, delegate()->requested_bounds());
+}
+
+// Tests that auto snapping from maximized/minimized via overview/shelf works
+// for ClientControlledState.
+TEST_F(ClientControlledStateTest, AutoSnap) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+
+  // Snap enabled.
+  widget_delegate()->EnableSnap();
+  ASSERT_TRUE(window_state()->CanResize());
+  ASSERT_TRUE(window_state()->CanSnap());
+
+  // Create a normal (non-client-controlled) window in addition to `window()`
+  // (client-controlled window) to fill the one side of the split view.
+  auto non_client_controlled_window = CreateAppWindow();
+
+  // Snap `non_client_controlled_window` to left.
+  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  WindowState::Get(non_client_controlled_window.get())
+      ->OnWMEvent(&snap_primary);
+
+  // Click `window()`'s overview item to snap to right.
+  ClickOnOverviewItem(window());
+
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+  VerifySnappedBounds(non_client_controlled_window.get(),
+                      chromeos::kDefaultSnapRatio);
+
+  // Minimize `window()`.
+  const WMEvent minimize(WM_EVENT_MINIMIZE);
+  window_state()->OnWMEvent(&minimize);
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_TRUE(window_state()->IsMinimized());
+  EXPECT_FALSE(window()->IsVisible());
+
+  // Click `window()`'s overview item to snap to right.
+  ClickOnOverviewItem(window());
+
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+  VerifySnappedBounds(non_client_controlled_window.get(),
+                      chromeos::kDefaultSnapRatio);
+
+  // Minimize `window()`.
+  window_state()->OnWMEvent(&minimize);
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_TRUE(window_state()->IsMinimized());
+  EXPECT_FALSE(window()->IsVisible());
+
+  // Unminimize `window()` by clicking the app icon on the shelf.
+  SimulateUnminimizeViaShelfIcon(widget());
+
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+  VerifySnappedBounds(non_client_controlled_window.get(),
+                      chromeos::kDefaultSnapRatio);
+}
+
+// Tests that auto partial-snapping from maximized/minimized via overview/shelf
+// works for ClientControlledState.
+TEST_F(ClientControlledStateTest, AutoPartialSnap) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+
+  // Snap enabled.
+  widget_delegate()->EnableSnap();
+  ASSERT_TRUE(window_state()->CanResize());
+  ASSERT_TRUE(window_state()->CanSnap());
+
+  // Create a normal (non-client-controlled) window in addition to `window()`
+  // (client-controlled window) to fill the one side of the split view.
+  auto non_client_controlled_window = CreateAppWindow();
+
+  // Snap `non_client_controlled_window` to 1/3 left.
+  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY,
+                                       chromeos::kOneThirdSnapRatio);
+  WindowState::Get(non_client_controlled_window.get())
+      ->OnWMEvent(&snap_primary);
+
+  // Click `window()`'s overview item to snap to 2/3 right.
+  ClickOnOverviewItem(window());
+
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
+  VerifySnappedBounds(window(), chromeos::kTwoThirdSnapRatio);
+  VerifySnappedBounds(non_client_controlled_window.get(),
+                      chromeos::kOneThirdSnapRatio);
+
+  // Minimize `window()`.
+  const WMEvent minimize(WM_EVENT_MINIMIZE);
+  window_state()->OnWMEvent(&minimize);
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_TRUE(window_state()->IsMinimized());
+  EXPECT_FALSE(window()->IsVisible());
+
+  // Click `window()`'s overview item to snap to 2/3 right.
+  ClickOnOverviewItem(window());
+
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
+  VerifySnappedBounds(window(), chromeos::kTwoThirdSnapRatio);
+  VerifySnappedBounds(non_client_controlled_window.get(),
+                      chromeos::kOneThirdSnapRatio);
+
+  // Minimize `window()`.
+  window_state()->OnWMEvent(&minimize);
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_TRUE(window_state()->IsMinimized());
+  EXPECT_FALSE(window()->IsVisible());
+
+  // Unminimize `window()` by clicking the app icon on the shelf.
+  SimulateUnminimizeViaShelfIcon(widget());
+
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
+  VerifySnappedBounds(window(), chromeos::kTwoThirdSnapRatio);
+  VerifySnappedBounds(non_client_controlled_window.get(),
+                      chromeos::kOneThirdSnapRatio);
 }
 
 // Pin events should not be applied immediately. The request should be sent
