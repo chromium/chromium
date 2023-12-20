@@ -537,6 +537,7 @@ ts_test_files = [
   "file_manager/foreground/js/ui/file_table_list_unittest.ts",
   "file_manager/foreground/js/ui/file_table_unittest.ts",
   "file_manager/foreground/js/ui/grid_unittest.ts",
+  "file_manager/foreground/js/ui/install_linux_package_dialog_unittest.ts",
   "file_manager/foreground/js/ui/menu_unittest.ts",
   "file_manager/foreground/js/ui/multi_menu_unittest.ts",
   "file_manager/foreground/js/ui/list_single_selection_model_unittest.ts",
@@ -626,7 +627,6 @@ generated_js_files = [
 unittest_files = [
   # Foreground:
   "file_manager/foreground/js/ui/file_tap_handler_unittest.js",
-  "file_manager/foreground/js/ui/install_linux_package_dialog_unittest.js",
   "file_manager/foreground/js/ui/directory_tree_unittest.js",
   "file_manager/foreground/js/navigation_list_model_unittest.js",
 
