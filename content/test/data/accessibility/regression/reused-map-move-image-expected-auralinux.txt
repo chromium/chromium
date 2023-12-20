@@ -1,9 +1,18 @@
-[document web] name='done' focusable
+[document web] focusable
 ++[image map] name='star0'
 ++++[link] name='Area' focusable
 ++[static] name=' '
-++[image map] name='star2'
+++[image map] name='star1'
 ++++[link] name='Area' focusable
 ++++[link] name='Area2' focusable focused
+++[static] name=' '
+++[image] name='star2'
 ++[section]
-++++[image] name='star1'
+=== Start Continuation ===
+[document web] focusable focused
+++[image map] name='star0'
+++++[link] name='Area' focusable
+++[static] name=' '
+++[image] name='star2'
+++[section]
+++++[static] name='done'
