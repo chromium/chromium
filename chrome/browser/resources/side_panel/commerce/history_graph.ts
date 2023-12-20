@@ -65,7 +65,8 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
   private dateTopMarginPx_ = 8;
   private priceRightMarginPx_ = 4;
   private bubbleHorizontalPaddingPx_ = 4;
-  private bubbleVerticalPaddingPx_ = 4;
+  private bubbleTopPaddingPx_ = 4;
+  private bubbleBottomPaddingPx_ = 4;
   private bubbleCornerRadiusPx_ = 3;
 
   override connectedCallback() {
@@ -75,7 +76,8 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
       this.dateTopMarginPx_ = 12;
       this.priceRightMarginPx_ = 8;
       this.bubbleHorizontalPaddingPx_ = 6;
-      this.bubbleVerticalPaddingPx_ = 2;
+      this.bubbleTopPaddingPx_ = 3;
+      this.bubbleBottomPaddingPx_ = 2;
     }
 
     this.points = this.data.map(
@@ -118,7 +120,7 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
         this.getLabelSize_(formattedTicks[formattedTicks.length - 1]);
 
     const graphMarginTopPx = GRAPH_BUBBLE_BOTTOM_MARGIN_PX +
-        2 * this.bubbleVerticalPaddingPx_ + tooltipHeight;
+        this.bubbleTopPaddingPx_ + this.bubbleBottomPaddingPx_ + tooltipHeight;
     const graphMarginBottomPx = this.dateTopMarginPx_ + labelHeight;
     const graphHeightPx =
         LINE_AREA_HEIGHT_PX + graphMarginTopPx + graphMarginBottomPx;
@@ -199,7 +201,10 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
     // Set up bubble and mouse listeners.
     const verticalLine =
         svg.append('line')
-            .attr('y1', 2 * this.bubbleVerticalPaddingPx_ + tooltipHeight)
+            .attr(
+                'y1',
+                this.bubbleTopPaddingPx_ + this.bubbleBottomPaddingPx_ +
+                    tooltipHeight)
             .attr('y2', graphHeightPx - graphMarginBottomPx)
             .attr('opacity', 0)
             .classed(CssClass.DASH_LINE, true);
@@ -211,23 +216,26 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
 
     if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
       this.bubbleCornerRadiusPx_ =
-          this.bubbleVerticalPaddingPx_ + tooltipHeight / 2;
+          (this.bubbleTopPaddingPx_ + this.bubbleBottomPaddingPx_ +
+           tooltipHeight) /
+          2;
     }
-    const bubble =
-        svg.append('rect')
-            .attr('opacity', 0)
-            .attr('y', 0)
-            .attr('height', 2 * this.bubbleVerticalPaddingPx_ + tooltipHeight)
-            .attr('rx', this.bubbleCornerRadiusPx_)
-            .attr('ry', this.bubbleCornerRadiusPx_)
-            .classed(CssClass.BUBBLE, true);
+    const bubble = svg.append('rect')
+                       .attr('opacity', 0)
+                       .attr('y', 0)
+                       .attr(
+                           'height',
+                           this.bubbleTopPaddingPx_ +
+                               this.bubbleBottomPaddingPx_ + tooltipHeight)
+                       .attr('rx', this.bubbleCornerRadiusPx_)
+                       .attr('ry', this.bubbleCornerRadiusPx_)
+                       .classed(CssClass.BUBBLE, true);
 
-    const tooltip =
-        svg.append('text')
-            .attr('y', this.bubbleVerticalPaddingPx_ + tooltipHeight / 2)
-            .attr('dominant-baseline', 'middle')
-            .attr('opacity', 0)
-            .attr('aria-hidden', 'true');
+    const tooltip = svg.append('text')
+                        .attr('y', this.bubbleTopPaddingPx_ + tooltipHeight / 2)
+                        .attr('dominant-baseline', 'middle')
+                        .attr('opacity', 0)
+                        .attr('aria-hidden', 'true');
 
     const initialIndex = this.points.length - 1;
     this.showTooltip_(
