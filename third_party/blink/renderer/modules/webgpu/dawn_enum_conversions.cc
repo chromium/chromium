@@ -579,7 +579,7 @@ const char* FromDawnEnum(WGPUTextureDimension dawn_enum) {
       return "2d";
     case WGPUTextureDimension_3D:
       return "3d";
-    case WGPUTextureDimension_Force32:
+    default:
       NOTREACHED();
   }
   return "";
