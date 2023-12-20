@@ -208,17 +208,6 @@ class JourneyLogger {
     ABORT_REASON_MAX,
   };
 
-  // The reason why the Payment Request was not shown to the user.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.payments
-  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: NotShownReason
-  enum NotShownReason {
-    NOT_SHOWN_REASON_NO_MATCHING_PAYMENT_METHOD = 0,
-    NOT_SHOWN_REASON_NO_SUPPORTED_PAYMENT_METHOD = 1,
-    NOT_SHOWN_REASON_CONCURRENT_REQUESTS = 2,
-    NOT_SHOWN_REASON_OTHER = 3,
-    NOT_SHOWN_REASON_MAX = 4,
-  };
-
   // The categories of the payment methods.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.payments
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: PaymentMethodCategory
@@ -324,9 +313,8 @@ class JourneyLogger {
   // starting the logging of all the journey metrics.
   void SetAborted(AbortReason reason);
 
-  // Records that the Payment Request was not shown to the user, along with the
-  // reason.
-  void SetNotShown(NotShownReason reason);
+  // Records that the Payment Request was not shown to the user.
+  void SetNotShown();
 
   // Records that the SPC No Matching Credentials UX was shown to the user.
   void SetNoMatchingCredentialsShown();

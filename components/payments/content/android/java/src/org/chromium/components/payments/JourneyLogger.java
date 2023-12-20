@@ -201,18 +201,13 @@ public class JourneyLogger {
         }
     }
 
-    /**
-     * Records that the Payment Request was not shown to the user and for what reason.
-     *
-     * @param reason An int indicating why the payment request was not shown.
-     */
-    public void setNotShown(int reason) {
-        assert reason < NotShownReason.MAX;
+    /** Records that the Payment Request was not shown to the user. */
+    public void setNotShown() {
         assert !mHasRecorded;
 
         if (!mHasRecorded) {
             mHasRecorded = true;
-            JourneyLoggerJni.get().setNotShown(mJourneyLoggerAndroid, JourneyLogger.this, reason);
+            JourneyLoggerJni.get().setNotShown(mJourneyLoggerAndroid, JourneyLogger.this);
         }
     }
 
@@ -292,7 +287,7 @@ public class JourneyLogger {
 
         void setAborted(long nativeJourneyLoggerAndroid, JourneyLogger caller, int reason);
 
-        void setNotShown(long nativeJourneyLoggerAndroid, JourneyLogger caller, int reason);
+        void setNotShown(long nativeJourneyLoggerAndroid, JourneyLogger caller);
 
         void setNoMatchingCredentialsShown(long nativeJourneyLoggerAndroid, JourneyLogger caller);
 
