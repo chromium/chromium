@@ -176,6 +176,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   const ContentSettingsForOneType& GetContentSettings(
       ContentSettingsType type) const;
 
+  // Returns a host-indexed map of ContentSettingPatternSources associated with
+  // the input `type`.
+  const HostIndexedContentSettings& GetHostIndexedContentSettings(
+      ContentSettingsType type) const;
+
   // An enum that represents the scope of cookies to which the user's
   // third-party-cookie-blocking setting applies, in a given context.
   using ThirdPartyBlockingScope = CookieSettingsBase::ThirdPartyBlockingScope;
@@ -215,6 +220,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
 
   base::flat_map<ContentSettingsType, ContentSettingsForOneType>
       content_settings_;
+
+  base::flat_map<ContentSettingsType, HostIndexedContentSettings>
+      host_indexed_content_settings_;
 };
 
 }  // namespace network

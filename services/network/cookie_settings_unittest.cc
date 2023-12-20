@@ -14,6 +14,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "net/base/features.h"
 #include "net/base/network_delegate.h"
 #include "net/base/schemeful_site.h"
@@ -80,7 +81,8 @@ enum TestVariables {
   // Whether `net::features::kTpcdSupportSettings` is enabled.
   k3pcdSupportEligible,
   kTrackingProtectionEnabledFor3pcd,
-  kForceThirdPartyCookieBlockingFlagEnabled
+  kForceThirdPartyCookieBlockingFlagEnabled,
+  kHostIndexedMetadataGrantsEnabled
 };
 
 class CookieSettingsTestBase {
@@ -121,24 +123,37 @@ class CookieSettingsTest
                      /*kStorageAccessGrantsEligible*/ bool,
                      /*k3pcdSupportEligible*/ bool,
                      /*kTrackingProtectionEnabledFor3pcd*/ bool,
-                     /*kForceThirdPartyCookieBlockingFlagEnabled*/ bool>> {
+                     /*kForceThirdPartyCookieBlockingFlagEnabled*/ bool,
+                     /*kHostIndexedMetadataGrantsEnabled*/ bool>> {
  public:
   CookieSettingsTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (IsForceThirdPartyCookieBlockingFlagEnabled()) {
-      enabled_features.push_back(net::features::kForceThirdPartyCookieBlocking);
-      enabled_features.push_back(net::features::kThirdPartyStoragePartitioning);
+      enabled_features.push_back(
+          {net::features::kForceThirdPartyCookieBlocking, {}});
+      enabled_features.push_back(
+          {net::features::kThirdPartyStoragePartitioning, {}});
     }
 
     if (Is3pcdSupportEligible()) {
-      enabled_features.push_back(net::features::kTpcdSupportSettings);
+      enabled_features.push_back({net::features::kTpcdSupportSettings, {}});
     } else {
       disabled_features.push_back(net::features::kTpcdSupportSettings);
     }
 
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    if (IsHostIndexedMetadataGrantsEnabled()) {
+      enabled_features.push_back(
+          {content_settings::features::kHostIndexedMetadataGrants,
+           {{"MetadataGrantsThreshold", "1"}}});
+    } else {
+      disabled_features.push_back(
+          content_settings::features::kHostIndexedMetadataGrants);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
   }
 
   // Indicates whether the setting comes from the testing flag if the test case
@@ -165,6 +180,12 @@ class CookieSettingsTest
   bool Is3pcdSupportEligible() const {
     return std::get<TestVariables::k3pcdSupportEligible>(GetParam());
   }
+
+  bool IsHostIndexedMetadataGrantsEnabled() const {
+    return std::get<TestVariables::kHostIndexedMetadataGrantsEnabled>(
+        GetParam());
+  }
+
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
     net::CookieSettingOverrides overrides;
     if (IsStorageAccessGrantEligible()) {
@@ -1763,7 +1784,9 @@ std::string CustomTestName(
       << "_TpcdMetadataGrants_"
       << std::get<TestVariables::kTrackingProtectionEnabledFor3pcd>(info.param)
       << "_Force3pcb_"
-      << std::get<TestVariables::kForceThirdPartyCookieBlockingFlagEnabled>(info.param);
+      << std::get<TestVariables::kForceThirdPartyCookieBlockingFlagEnabled>(info.param)
+      << "_HostIndexed_"
+      << std::get<TestVariables::kHostIndexedMetadataGrantsEnabled>(info.param);
   // clang-format on
   return custom_test_name.str();
 }
@@ -1772,6 +1795,7 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTest,
     testing::Combine(testing::Bool(),
+                     testing::Bool(),
                      testing::Bool(),
                      testing::Bool(),
                      testing::Bool(),

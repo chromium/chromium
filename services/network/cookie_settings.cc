@@ -9,13 +9,17 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/to_string.h"
 #include "base/types/optional_util.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
+#include "components/content_settings/core/common/features.h"
+#include "components/content_settings/core/common/host_indexed_content_settings.h"
 #include "net/base/network_delegate.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/canonical_cookie.h"
@@ -29,24 +33,6 @@
 
 namespace network {
 namespace {
-
-const ContentSettingPatternSource* FindMatchingSetting(
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    const ContentSettingsForOneType& settings) {
-  // We assume `settings` is sorted in order of precedence, so we use the
-  // first matching rule we find.
-  const auto& entry = base::ranges::find_if(
-      settings, [&](const ContentSettingPatternSource& entry) {
-        // The primary pattern is for the request URL; the secondary pattern
-        // is for the first-party URL (which is the top-frame origin [if
-        // available] or the site-for-cookies).
-        return !entry.IsExpired() &&
-               entry.primary_pattern.Matches(primary_url) &&
-               entry.secondary_pattern.Matches(secondary_url);
-      });
-  return entry == settings.end() ? nullptr : &*entry;
-}
 
 // Check whether the allowed cookie should add `WARN_THIRD_PARTY_PHASEOUT`
 // reason. `block_third_party_cookies` should be the global setting of whether
@@ -118,6 +104,11 @@ void CookieSettings::set_content_settings(
     ContentSettingsType type,
     const ContentSettingsForOneType& settings) {
   CHECK(IsValidType(type)) << static_cast<int>(type);
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kHostIndexedMetadataGrants)) {
+    host_indexed_content_settings_[type] =
+        content_settings::ToHostIndexedMap(settings);
+  }
   content_settings_[type] = settings;
   if (type == ContentSettingsType::COOKIES) {
     // Ensure that a default cookie setting is specified.
@@ -125,6 +116,15 @@ void CookieSettings::set_content_settings(
         settings.back().primary_pattern != ContentSettingsPattern::Wildcard() ||
         settings.back().secondary_pattern !=
             ContentSettingsPattern::Wildcard()) {
+      if (base::FeatureList::IsEnabled(
+              content_settings::features::kHostIndexedMetadataGrants)) {
+        host_indexed_content_settings_[type][content_settings::kAnyHost]
+            .emplace_back(ContentSettingsPattern::Wildcard(),
+                          ContentSettingsPattern::Wildcard(),
+                          base::Value(CONTENT_SETTING_ALLOW),
+                          /*source=*/std::string(),
+                          /*incognito=*/false);
+      }
       content_settings_[type].emplace_back(ContentSettingsPattern::Wildcard(),
                                            ContentSettingsPattern::Wildcard(),
                                            base::Value(CONTENT_SETTING_ALLOW),
@@ -340,13 +340,34 @@ const ContentSettingsForOneType& CookieSettings::GetContentSettings(
   return content_settings_.at(type);
 }
 
+const HostIndexedContentSettings& CookieSettings::GetHostIndexedContentSettings(
+    ContentSettingsType type) const {
+  CHECK(IsValidType(type)) << static_cast<int>(type);
+  return host_indexed_content_settings_.at(type);
+}
+
 ContentSetting CookieSettings::GetContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
     content_settings::SettingInfo* info) const {
-  const ContentSettingPatternSource* result = FindMatchingSetting(
-      primary_url, secondary_url, GetContentSettings(content_type));
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "ContentSettings.GetContentSetting.Network.Duration");
+  const ContentSettingPatternSource* result;
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kHostIndexedMetadataGrants)) {
+    DCHECK(content_settings::SettingsLookupsAreConsistent(
+        primary_url, secondary_url, GetContentSettings(content_type),
+        GetHostIndexedContentSettings(content_type)))
+        << "Different result in index lookup: " << primary_url.spec() << " "
+        << secondary_url.spec();
+    result = content_settings::FindInHostIndexedContentSettings(
+        primary_url, secondary_url,
+        GetHostIndexedContentSettings(content_type));
+  } else {
+    result = content_settings::FindContentSetting(
+        primary_url, secondary_url, GetContentSettings(content_type));
+  }
 
   if (!result) {
     if (info) {

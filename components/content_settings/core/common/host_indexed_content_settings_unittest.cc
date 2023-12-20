@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "components/content_settings/core/browser/host_indexed_content_settings.h"
+#include "components/content_settings/core/common/host_indexed_content_settings.h"
 
 #include "components/content_settings/core/common/content_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +40,7 @@ TEST_F(HostIndexedContentSettingsTest, EmptyHostIndexedContentSettings) {
   EXPECT_EQ(FindInHostIndexedContentSettings(GURL("https://www.example.com/"),
                                              GURL("http://toplevel.com"),
                                              test_settings_map),
-            absl::nullopt);
+            nullptr);
 }
 TEST_F(HostIndexedContentSettingsTest, DomainWildcardMatchFound) {
   ContentSettingsForOneType test_settings = {
@@ -57,7 +57,7 @@ TEST_F(HostIndexedContentSettingsTest, DomainWildcardMatchFound) {
   EXPECT_EQ(FindInHostIndexedContentSettings(GURL("https://www.example.com/"),
                                              GURL("http://toplevel.com"),
                                              test_settings_map)
-                .value(),
+                ->GetContentSetting(),
             CONTENT_SETTING_ALLOW);
 }
 
@@ -77,7 +77,7 @@ TEST_F(HostIndexedContentSettingsTest, MostSpecificMatchBlocks) {
   EXPECT_EQ(FindInHostIndexedContentSettings(GURL("https://www.example.com/"),
                                              GURL("http://toplevel.com"),
                                              test_settings_map)
-                .value(),
+                ->GetContentSetting(),
             CONTENT_SETTING_BLOCK);
 }
 
@@ -97,7 +97,7 @@ TEST_F(HostIndexedContentSettingsTest, ExactDomainMatchFound) {
   EXPECT_EQ(FindInHostIndexedContentSettings(GURL("https://www.example.com/"),
                                              GURL("http://toplevel.com"),
                                              test_settings_map)
-                .value(),
+                ->GetContentSetting(),
             CONTENT_SETTING_ALLOW);
 }
 
@@ -118,7 +118,7 @@ TEST_F(HostIndexedContentSettingsTest, NotFirstDomainMatchFound) {
   EXPECT_EQ(FindInHostIndexedContentSettings(GURL("https://www.example.com/"),
                                              GURL("http://toplevel.com"),
                                              test_settings_map)
-                .value(),
+                ->GetContentSetting(),
             CONTENT_SETTING_ALLOW);
 }
 
@@ -137,7 +137,7 @@ TEST_F(HostIndexedContentSettingsTest, WildcardMatchFound) {
   EXPECT_EQ(FindInHostIndexedContentSettings(GURL("https://www.example.com/"),
                                              GURL("http://toplevel.com"),
                                              test_settings_map)
-                .value(),
+                ->GetContentSetting(),
             CONTENT_SETTING_ALLOW);
 }
 
@@ -156,7 +156,7 @@ TEST_F(HostIndexedContentSettingsTest, NoMatchFound) {
   EXPECT_EQ(FindInHostIndexedContentSettings(
                 GURL("https://www.example.com:456/"),
                 GURL("http://toplevel.com"), test_settings_map),
-            absl::nullopt);
+            nullptr);
 }
 
 TEST_F(HostIndexedContentSettingsTest, CheckIPAddressesMatch) {
@@ -175,7 +175,7 @@ TEST_F(HostIndexedContentSettingsTest, CheckIPAddressesMatch) {
   EXPECT_EQ(FindInHostIndexedContentSettings(GURL("http://192.168.1.2/"),
                                              GURL("http://toplevel.com"),
                                              test_settings_map)
-                .value(),
+                ->GetContentSetting(),
             CONTENT_SETTING_ALLOW);
 }
 
@@ -195,7 +195,7 @@ TEST_F(HostIndexedContentSettingsTest, CheckIPAddressesMatchIsBlock) {
   EXPECT_EQ(FindInHostIndexedContentSettings(GURL("http://192.168.1.2/"),
                                              GURL("http://toplevel.com"),
                                              test_settings_map)
-                .value(),
+                ->GetContentSetting(),
             CONTENT_SETTING_BLOCK);
 }
 
@@ -215,7 +215,7 @@ TEST_F(HostIndexedContentSettingsTest, CheckIPAddressesNoMatch) {
   EXPECT_EQ(FindInHostIndexedContentSettings(GURL("http://192.168.1.2/"),
                                              GURL("http://toplevel.com"),
                                              test_settings_map),
-            absl::nullopt);
+            nullptr);
 }
 
 class FindContentSettingTest : public testing::Test {
@@ -232,7 +232,7 @@ TEST_F(FindContentSettingTest, MatchInMultiItemVector) {
                     CONTENT_SETTING_ALLOW)};
   EXPECT_EQ(FindContentSetting(GURL("https://www.example.com/"),
                                GURL("http://toplevel.com"), matching_vector)
-                .value(),
+                ->GetContentSetting(),
             CONTENT_SETTING_BLOCK);
 }
 TEST_F(FindContentSettingTest, MatchInSingleItemVector) {
@@ -240,7 +240,7 @@ TEST_F(FindContentSettingTest, MatchInSingleItemVector) {
       CreateSetting("https://www.example.com:*/*", "*", CONTENT_SETTING_ALLOW)};
   EXPECT_EQ(FindContentSetting(GURL("https://www.example.com/"),
                                GURL("http://toplevel.com"), single_item_vector)
-                .value(),
+                ->GetContentSetting(),
             CONTENT_SETTING_ALLOW);
 }
 TEST_F(FindContentSettingTest, NoMatchInSingleItemVector) {
@@ -254,7 +254,7 @@ TEST_F(FindContentSettingTest, NoMatchInSingleItemVector) {
   EXPECT_EQ(
       FindContentSetting(GURL("https://www.example.com/"),
                          GURL("http://toplevel.com"), not_matching_vector),
-      absl::nullopt);
+      nullptr);
 }
 
 }  // namespace

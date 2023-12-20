@@ -152,11 +152,13 @@ class CookieSettingsTest
 
     if (Is3pcdMetadataGrantEligible()) {
       if (IsHostIndexedMetadataGrantsEnabled()) {
-        enabled_features.push_back({features::kHostIndexedMetadataGrants, {}});
+        enabled_features.push_back({features::kHostIndexedMetadataGrants,
+                                    {{"MetadataGrantsThreshold", "1"}}});
       } else {
         disabled_features.push_back(features::kHostIndexedMetadataGrants);
       }
-      enabled_features.push_back({net::features::kTpcdMetadataGrants, {}});
+      enabled_features.push_back({net::features::kTpcdMetadataGrants,
+                                  {{"MetadataGrantsThreshold", "1"}}});
     } else {
       disabled_features.push_back(net::features::kTpcdMetadataGrants);
       disabled_features.push_back(features::kHostIndexedMetadataGrants);
