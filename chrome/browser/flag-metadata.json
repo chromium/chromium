@@ -7973,6 +7973,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-fullscreen-insets-api",
+    "owners": [ "geoffhuang@google.com"],
+    "expiry_milestone": 126
+  },
+  {
     "name": "use-gms-core-for-branding-info",
     "owners": [ "vsemeniuk@google.com", "vasilii@chromium.org" ],
     "expiry_milestone": 125

@@ -4059,6 +4059,11 @@ const char kFeedDynamicColorsName[] = "Enable dynamic colors in the feed";
 const char kFeedDynamicColorsDescription[] =
     "Allows feed to fully respect dynamic colors if supported by the client.";
 
+const char kFullscreenInsetsApiMigrationName[] =
+    "Migrate to the new fullscreen insets APIs";
+const char kFullscreenInsetsApiMigrationDescription[] =
+    "Migration from View#setSystemUiVisibility to WindowInsetsController.";
+
 const char kRefreshFeedOnRestartName[] = "Enable refreshing feed on restart";
 const char kRefreshFeedOnRestartDescription[] =
     "Refresh feed when Chrome restarts.";

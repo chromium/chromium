@@ -2364,6 +2364,9 @@ extern const char kFeedDynamicColorsDescription[];
 extern const char kFeedDiscoFeedEndpointName[];
 extern const char kFeedDiscoFeedEndpointDescription[];
 
+extern const char kFullscreenInsetsApiMigrationName[];
+extern const char kFullscreenInsetsApiMigrationDescription[];
+
 extern const char kRefreshFeedOnRestartName[];
 extern const char kRefreshFeedOnRestartDescription[];
 

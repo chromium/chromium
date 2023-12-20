@@ -22,6 +22,7 @@
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome_feature_list.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
@@ -210,6 +211,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEarlyInitializeStartupMetrics,
     &kExperimentsForAgsa,
     &kFocusOmniboxInIncognitoTabIntents,
+    &kFullscreenInsetsApiMigration,
     &kGridTabSwitcherAndroidAnimations,
     &kHideTabOnTabSwitcher,
     &kIncognitoReauthenticationForAndroid,
@@ -610,6 +612,10 @@ BASE_FEATURE(kEarlyInitializeStartupMetrics,
 BASE_FEATURE(kExperimentsForAgsa,
              "ExperimentsForAgsa",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFullscreenInsetsApiMigration,
+             "FullscreenInsetsApiMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGridTabSwitcherAndroidAnimations,
              "GridTabSwitcherAndroidAnimations",

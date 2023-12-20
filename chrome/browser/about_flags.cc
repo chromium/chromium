@@ -10920,6 +10920,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVerticalAutomotiveBackButtonToolbarDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kVerticalAutomotiveBackButtonToolbar)},
+
+    {"use-fullscreen-insets-api",
+     flag_descriptions::kFullscreenInsetsApiMigrationName,
+     flag_descriptions::kFullscreenInsetsApiMigrationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kFullscreenInsetsApiMigration)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

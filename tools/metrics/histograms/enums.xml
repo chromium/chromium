@@ -28974,6 +28974,7 @@ from previous Chrome versions.
   <int value="-1964730371"
       label="AutofillFillMerchantPromoCodeFields:disabled"/>
   <int value="-1964725496" label="AutofillEnableCvcStorageAndFilling:disabled"/>
+  <int value="-1964343476" label="FullscreenInsetsApiMigration:disabled"/>
   <int value="-1964261747" label="WebVrVsyncAlign:disabled"/>
   <int value="-1963995131" label="DesktopPWAsKeepAlive:disabled"/>
   <int value="-1963838301"
@@ -32242,6 +32243,7 @@ from previous Chrome versions.
   <int value="-428556995" label="DesktopPWAsTabStripSettings:enabled"/>
   <int value="-428111342" label="FilesInlineSyncStatus:enabled"/>
   <int value="-428082036" label="AnimatedImageResume:disabled"/>
+  <int value="-427835676" label="FullscreenInsetsApiMigration:enabled"/>
   <int value="-427163069" label="isolation-by-default"/>
   <int value="-426815606" label="HomepageTile:enabled"/>
   <int value="-425754211" label="FirstPartyVietnameseInput:disabled"/>

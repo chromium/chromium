@@ -254,6 +254,7 @@ public abstract class ChromeFeatureList {
             "FriendlierSafeBrowsingSettingsEnhancedProtection";
     public static final String FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION =
             "FriendlierSafeBrowsingSettingsStandardProtection";
+    public static final String FULLSCREEN_INSETS_API_MIGRATION = "FullscreenInsetsApiMigration";
     public static final String GRID_TAB_SWITCHER_ANDROID_ANIMATIONS =
             "GridTabSwitcherAndroidAnimations";
     public static final String HASH_PREFIX_REAL_TIME_LOOKUPS =
