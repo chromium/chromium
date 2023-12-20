@@ -8916,6 +8916,51 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Event.Scroll">
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    Metrics related to scroll and scroll jank,
+  </summary>
+  <metric name="FrameCount">
+    <summary>
+      The number of frames that are presented during the scroll. If this is less
+      than or equal to 16, then the presented frame count is considered small;
+      if this is greater than 16 and less than or equal to 64 presented frames,
+      then it is considered medium; if this is greater than 64 presented frames,
+      then it is considered large.
+    </summary>
+  </metric>
+  <metric name="PredictorJankyFrameCount">
+    <summary>
+      The number of frames that are deemed janky to the human eye after Chrome
+      has applied its scroll prediction algorithm..
+    </summary>
+  </metric>
+  <metric name="ScrollJank.DelayedFrameCount">
+    <summary>
+      The number of delayed frames.
+    </summary>
+  </metric>
+  <metric name="ScrollJank.MissedVsyncsMax">
+    <summary>
+      The maximum number of vsyncs missed during any and all janks.
+    </summary>
+  </metric>
+  <metric name="ScrollJank.MissedVsyncsSum">
+    <summary>
+      The total number of vsyncs missed during any and all janks that occurred.
+    </summary>
+  </metric>
+  <metric name="VsyncCount">
+    <summary>
+      The number of vsyncs that occur during the scroll. If this is less than or
+      equal to 16, then the number of vsyncs is considered small; if this is
+      greater than 16 and less than or equal to 64 vsyncs, then it is considered
+      medium; if this is greater than 64 vsyncs, then is considered large.
+    </summary>
+  </metric>
+</event>
+
 <event name="Event.ScrollBegin.Touch">
   <owner>nzolghadr@chromium.org</owner>
   <summary>

@@ -43,6 +43,7 @@ CompositorFrameReportingController::CompositorFrameReportingController(
       predictor_jank_tracker_(std::make_unique<PredictorJankTracker>()),
       scroll_jank_dropped_frame_tracker_(
           std::make_unique<ScrollJankDroppedFrameTracker>()),
+      scroll_jank_ukm_reporter_(std::make_unique<ScrollJankUkmReporter>()),
       previous_latency_predictions_main_(base::Microseconds(-1)),
       previous_latency_predictions_impl_(base::Microseconds(-1)),
       event_latency_predictions_(
@@ -52,6 +53,12 @@ CompositorFrameReportingController::CompositorFrameReportingController(
     // UKM metrics should be reported if and only if `latency_ukm_reporter` is
     // set on `global_trackers_`.
     global_trackers_.latency_ukm_reporter = latency_ukm_reporter_.get();
+
+    global_trackers_.scroll_jank_ukm_reporter = scroll_jank_ukm_reporter_.get();
+    predictor_jank_tracker_->set_scroll_jank_ukm_reporter(
+        scroll_jank_ukm_reporter_.get());
+    scroll_jank_dropped_frame_tracker_->set_scroll_jank_ukm_reporter(
+        scroll_jank_ukm_reporter_.get());
   }
   global_trackers_.predictor_jank_tracker = predictor_jank_tracker_.get();
   global_trackers_.scroll_jank_dropped_frame_tracker =
@@ -70,6 +77,9 @@ CompositorFrameReportingController::~CompositorFrameReportingController() {
     pair.reporter->TerminateFrame(FrameTerminationStatus::kDidNotPresentFrame,
                                   Now());
   }
+
+  predictor_jank_tracker_->set_scroll_jank_ukm_reporter(nullptr);
+  scroll_jank_dropped_frame_tracker_->set_scroll_jank_ukm_reporter(nullptr);
 }
 
 void CompositorFrameReportingController::SetVisible(bool visible) {
@@ -815,6 +825,7 @@ CompositorFrameReportingController::RestoreReporterAtBeginImpl(
 
 void CompositorFrameReportingController::SetUkmManager(UkmManager* manager) {
   latency_ukm_reporter_->set_ukm_manager(manager);
+  scroll_jank_ukm_reporter_->set_ukm_manager(manager);
 }
 
 CompositorFrameReporter::SmoothThread

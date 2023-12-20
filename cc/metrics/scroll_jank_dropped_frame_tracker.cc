@@ -268,8 +268,21 @@ void ScrollJankDroppedFrameTracker::ReportLatestPresentationData(
                                 kVsyncCountsMax, kVsyncCountsBuckets);
     fixed_window_.missed_vsyncs += curr_frame_missed_vsyncs;
     per_scroll_->missed_vsyncs += curr_frame_missed_vsyncs;
+
+    // TODO(b/306611560): If experimental per scroll logic is promoted to
+    // default, then UKM reporting will need to be recorded under the same
+    // conditions.
+    if (scroll_jank_ukm_reporter_) {
+      scroll_jank_ukm_reporter_->IncrementDelayedFrameCount();
+      scroll_jank_ukm_reporter_->AddMissedVsyncs(curr_frame_missed_vsyncs);
+    }
+
     if (curr_frame_missed_vsyncs > per_scroll_->max_missed_vsyncs) {
       per_scroll_->max_missed_vsyncs = curr_frame_missed_vsyncs;
+      if (scroll_jank_ukm_reporter_) {
+        scroll_jank_ukm_reporter_->set_max_missed_vsyncs(
+            curr_frame_missed_vsyncs);
+      }
     }
     if (curr_frame_missed_vsyncs > fixed_window_.max_missed_vsyncs) {
       fixed_window_.max_missed_vsyncs = curr_frame_missed_vsyncs;
@@ -298,13 +311,22 @@ void ScrollJankDroppedFrameTracker::ReportLatestPresentationData(
     // Per scroll
     experimental_per_scroll_vsync_->missed_vsyncs += curr_frame_missed_vsyncs;
     experimental_per_scroll_vsync_->num_past_vsyncs += curr_frame_total_vsyncs;
+    if (scroll_jank_ukm_reporter_) {
+      scroll_jank_ukm_reporter_->AddVsyncs(curr_frame_total_vsyncs);
+    }
   } else {
     ++experimental_vsync_fixed_window_.num_past_vsyncs;
     ++experimental_per_scroll_vsync_->num_past_vsyncs;
+    if (scroll_jank_ukm_reporter_) {
+      scroll_jank_ukm_reporter_->AddVsyncs(1);
+    }
   }
 
   ++fixed_window_.num_presented_frames;
   ++per_scroll_->num_presented_frames;
+  if (scroll_jank_ukm_reporter_) {
+    scroll_jank_ukm_reporter_->IncrementFrameCount();
+  }
 
   if (fixed_window_.num_presented_frames == kHistogramEmitFrequency) {
     EmitPerWindowHistogramsAndResetCounters();

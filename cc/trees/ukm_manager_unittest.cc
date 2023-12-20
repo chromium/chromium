@@ -129,7 +129,7 @@ class UkmManagerTest : public testing::Test {
   }
 
   ukm::TestUkmRecorder* recorder() {
-    return static_cast<ukm::TestUkmRecorder*>(manager_->recorder_for_testing());
+    return static_cast<ukm::TestUkmRecorder*>(manager_->recorder());
   }
 
   std::unique_ptr<EventMetrics> SetupEventMetrics(
