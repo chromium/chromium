@@ -410,6 +410,28 @@ void SessionRestorationServiceImpl::LoadSession(Browser* browser) {
                           base::TimeTicks::Now() - start_time);
 }
 
+void SessionRestorationServiceImpl::LoadWebStateStorage(
+    Browser* browser,
+    web::WebState* web_state,
+    WebStateStorageCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto iterator = infos_.find(browser->GetWebStateList());
+  if (iterator == infos_.end()) {
+    return;
+  }
+
+  WebStateListInfo& info = *iterator->second;
+  const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  const base::FilePath web_state_dir = ios::sessions::WebStateDirectory(
+      storage_path_.Append(info.identifier()), web_state_id);
+  const base::FilePath storage_path =
+      web_state_dir.Append(kWebStateStorageFilename);
+
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&::LoadWebStateStorage, storage_path),
+      std::move(callback));
+}
+
 void SessionRestorationServiceImpl::Disconnect(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SaveDirtySessions();

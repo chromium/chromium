@@ -25,6 +25,10 @@ class WebState;
 // Service responsible for session saving and restoration.
 class SessionRestorationService : public KeyedService {
  public:
+  // Callback invoked when data for a WebState has been loaded.
+  using WebStateStorageCallback =
+      base::OnceCallback<void(web::proto::WebStateStorage)>;
+
   SessionRestorationService() = default;
   ~SessionRestorationService() override = default;
 
@@ -56,6 +60,20 @@ class SessionRestorationService : public KeyedService {
   //
   // `SetSessionID()` must have been called before with this `browser`.
   virtual void LoadSession(Browser* browser) = 0;
+
+  // Asynchronously loads data for `web_state` owned by `browser` that is
+  // unrealized. Invokes `callback` with the data loaded from disk on the
+  // calling sequence.
+  //
+  // If the method `SetSessionID(...)` has not been called for `browser`,
+  // or if the method `Disconnect(...)` has already been called, then the
+  // callback is not invoked.
+  //
+  // The callback may be invoked with an empty WebStateStorage (e.g. if
+  // the data could not be read from disk for any reason).
+  virtual void LoadWebStateStorage(Browser* browser,
+                                   web::WebState* web_state,
+                                   WebStateStorageCallback callback) = 0;
 
   // Forgets about `browser` (after writing to disk any pending changes).
   //

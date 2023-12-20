@@ -30,6 +30,9 @@ class TestSessionRestorationService : public SessionRestorationService {
   void ScheduleSaveSessions() override;
   void SetSessionID(Browser* browser, const std::string& identifier) override;
   void LoadSession(Browser* browser) override;
+  void LoadWebStateStorage(Browser* browser,
+                           web::WebState* web_state,
+                           WebStateStorageCallback callback) override;
   void Disconnect(Browser* browser) override;
   std::unique_ptr<web::WebState> CreateUnrealizedWebState(
       Browser* browser,
