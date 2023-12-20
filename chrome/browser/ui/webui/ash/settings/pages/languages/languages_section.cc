@@ -28,6 +28,7 @@
 namespace ash::settings {
 
 namespace mojom {
+using ::chromeos::settings::mojom::kAppLanguagesSubpagePath;
 using ::chromeos::settings::mojom::kLanguagesAndInputSectionPath;
 using ::chromeos::settings::mojom::kLanguagesSubpagePath;
 using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
@@ -64,6 +65,18 @@ const std::vector<SearchConcept>& GetLanguagesPageSearchConceptsV2() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kOfferTranslation}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetAppLanguagesPageSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_LANGUAGES_APP_LANGUAGES,
+       mojom::kAppLanguagesSubpagePath,
+       mojom::SearchResultIcon::kLanguage,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kAppLanguages}},
   });
   return *tags;
 }
@@ -160,6 +173,9 @@ LanguagesSection::LanguagesSection(Profile* profile,
               : std::nullopt) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetLanguagesPageSearchConceptsV2());
+  if (IsPerAppLanguageEnabled(profile)) {
+    updater.AddSearchTags(GetAppLanguagesPageSearchConcepts());
+  }
 }
 
 LanguagesSection::~LanguagesSection() = default;
@@ -236,6 +252,16 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   };
   RegisterNestedSettingBulk(mojom::Subpage::kLanguages, kLanguagesPageSettings,
                             generator);
+
+  if (IsPerAppLanguageEnabled(profile())) {
+    // App language subpage.
+    generator->RegisterNestedSubpage(
+        IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_TITLE,
+        mojom::Subpage::kAppLanguages, mojom::Subpage::kLanguages,
+        mojom::SearchResultIcon::kLanguage,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::kAppLanguagesSubpagePath);
+  }
 
   // Inputs subsection exists only when the OsSettingsRevampWayfinding feature
   // is disabled. It is part of the Device section when the feature is enabled.

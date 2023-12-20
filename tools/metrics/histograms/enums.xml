@@ -42308,6 +42308,7 @@ Called by update_net_error_codes.py.-->
   <int value="1205" label="Input"/>
   <int value="1206" label="Customize spell check"/>
   <int value="1207" label="Manage user dictionary"/>
+  <int value="1208" label="App languages"/>
   <int value="1300" label="Network File Shares"/>
   <int value="1301" label="Office Files"/>
   <int value="1302" label="Google Drive"/>

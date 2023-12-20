@@ -21,6 +21,14 @@
     </os-settings-subpage>
   </template>
 
+  <!-- "App Languages" sub-page. -->
+  <template is="dom-if" route-path="/osLanguages/languages/appLanguages">
+    <os-settings-subpage page-title="$i18n{appLanguagesTitle}">
+      <os-settings-app-languages-page prefs="{{prefs}}">
+      </os-settings-app-languages-page>
+    </os-settings-subpage>
+  </template>
+
   <!-- "Input" page. -->
   <template is="dom-if" route-path="/osLanguages/input">
     <os-settings-subpage page-title="$i18n{inputPageTitle}">
