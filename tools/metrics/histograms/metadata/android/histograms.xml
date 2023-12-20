@@ -1637,8 +1637,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.IncognitoNotification.FileNotDeleted" enum="Boolean"
-    expires_after="M120">
-  <owner>roagarwal@chromium.org</owner>
+    expires_after="M126">
+  <owner>arabm@google.com</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
     Records the count of any cases when clicking on the &quot;Close all
