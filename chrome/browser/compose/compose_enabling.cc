@@ -224,6 +224,7 @@ bool ComposeEnabling::ShouldTriggerPopup(
       return false;
     }
     // Check autocomplete attribute if the proactive nudge would be presented.
+    // TODO(b/303288183): Decide if we should keep this check or not.
     if (!AutocompleteAllowed(autocomplete_attribute)) {
       DVLOG(2) << "autocomplete=off";
       return false;

@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -31,6 +32,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::test::ErrorIs;
 using testing::_;
 using testing::Return;
 
@@ -117,9 +119,13 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
+    // Note: Flags should be set to the expected enabled/disabled state for this
+    // test without relying on their expected default state. In other words, a
+    // change in default state should not cause these tests to break.
     scoped_feature_list_.InitWithFeatures(
         {compose::features::kEnableCompose,
-         compose::features::kEnableComposeNudge},
+         compose::features::kEnableComposeNudge,
+         compose::features::kEnableComposeLanguageBypass},
         {});
 
     mock_translate_client_ =
@@ -147,6 +153,9 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
     compose_enabling_ = std::make_unique<ComposeEnabling>(
         &mock_translate_language_provider_, GetProfile(),
         identity_test_env_.identity_manager(), &opt_guide());
+
+    // Override un-mockable per-user checks.
+    ComposeEnabling::SkipUserEnabledCheckForTesting(true);
   }
 
   void TearDown() override {
@@ -284,7 +293,6 @@ TEST_F(ComposeEnablingTest, ComposeEligibleTest) {
       {compose::features::kEnableCompose,
        compose::features::kEnableComposeNudge},
       {compose::features::kComposeEligible});
-  ComposeEnabling::SkipUserEnabledCheckForTesting(true);
   // Sign in, with sync turned on.
   SignIn(signin::ConsentLevel::kSync);
   // Turn on MSBB.
@@ -296,12 +304,24 @@ TEST_F(ComposeEnablingTest, ComposeEligibleTest) {
 }
 
 TEST_F(ComposeEnablingTest, EverythingEnabledTest) {
-  ComposeEnabling::SkipUserEnabledCheckForTesting(true);
   // Sign in, with sync turned on.
   SignIn(signin::ConsentLevel::kSync);
   // Turn on MSBB.
   SetMsbbState(true);
   EXPECT_EQ(compose_enabling_->IsEnabled(), base::ok());
+}
+
+TEST_F(ComposeEnablingTest, UserNotAllowedTest) {
+  // Sign in, with sync turned on.
+  SignIn(signin::ConsentLevel::kSync);
+  // Turn on MSBB.
+  SetMsbbState(true);
+  // Cause per-user check to fail.
+  ComposeEnabling::SkipUserEnabledCheckForTesting(false);
+
+  EXPECT_THAT(
+      compose_enabling_->IsEnabled(),
+      ErrorIs(compose::ComposeShowStatus::kUserNotAllowedByOptimizationGuide));
 }
 
 TEST_F(ComposeEnablingTest, StaticMethodEverythingDisabledTest) {
@@ -314,20 +334,12 @@ TEST_F(ComposeEnablingTest, StaticMethodEverythingDisabledTest) {
   EXPECT_FALSE(ComposeEnabling::IsEnabledForProfile(GetProfile()));
 }
 
-TEST_F(ComposeEnablingTest, StaticMethodFlagsNotEnabledTest) {
-  scoped_feature_list_.Reset();
-  EXPECT_FALSE(ComposeEnabling::IsEnabledForProfile(GetProfile()));
-}
-
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuDisabledTest) {
   // We intentionally disable the feature.
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
-      {}, {compose::features::kEnableCompose,
-           compose::features::kEnableComposeNudge});
-
-  // Set the language to something we support. "en" is English.
-  SetLanguage("en");
+      {compose::features::kEnableComposeNudge},
+      {compose::features::kEnableCompose});
 
   EXPECT_FALSE(compose_enabling_->ShouldTriggerContextMenu(
       GetProfile(), mock_translate_manager_.get(),
@@ -335,29 +347,34 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuDisabledTest) {
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageTest) {
-  // Enable everything.
+  // Disable the language bypass.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {compose::features::kEnableCompose,
+       compose::features::kEnableComposeNudge},
+      {compose::features::kEnableComposeLanguageBypass});
+  // Enable all base requirements.
   ComposeEnabling::SetEnabledForTesting(true);
 
-  // Set the mock language to something we don't support. "eo" is Esperanto.
-  SetLanguage("eo");
+  // Set the mock to return a language we support (English).
+  SetLanguage("en");
+  EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
+      GetProfile(), mock_translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
+      context_menu_params_));
 
+  // Set the mock to return a language we don't support (Esperanto).
+  SetLanguage("eo");
   EXPECT_FALSE(compose_enabling_->ShouldTriggerContextMenu(
       GetProfile(), mock_translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
       context_menu_params_));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageBypassTest) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {compose::features::kEnableCompose,
-       compose::features::kEnableComposeLanguageBypass},
-      {});
   // Enable everything.
   ComposeEnabling::SetEnabledForTesting(true);
 
-  // Set the mock language to something we don't support. "eo" is Esperanto.
+  // Set the mock to return a language we don't support (Esperanto).
   SetLanguage("eo");
-
   // Although the language is unsupported, ShouldTrigger should return true as
   // the bypass is enabled.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
@@ -365,41 +382,51 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageBypassTest) {
       context_menu_params_));
 }
 
-TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuEmptyLangugeTest) {
-  // Enable everything.
+TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuEmptyLanguageTest) {
+  // Disable the language bypass.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {compose::features::kEnableCompose,
+       compose::features::kEnableComposeNudge},
+      {compose::features::kEnableComposeLanguageBypass});
+  // Enable all base requirements.
   ComposeEnabling::SetEnabledForTesting(true);
 
-  // Set the language to the empty string - translate doesn't have the answer
-  // yet.
+  // Set the mock to return the empty string, simluating that translate doesn't
+  // have the answer yet.
   SetLanguage("");
-
   EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
       GetProfile(), mock_translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
       context_menu_params_));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuUndeterminedLangugeTest) {
-  // Enable everything.
+  // Disable the language bypass.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {compose::features::kEnableCompose,
+       compose::features::kEnableComposeNudge},
+      {compose::features::kEnableComposeLanguageBypass});
+  // Enable all base requirements.
   ComposeEnabling::SetEnabledForTesting(true);
 
-  // Set the language to the "und" for a page where translate could not
-  // determine the language.
+  // Set the mock to return "und", simluating that translate could not determine
+  // the page language.
   SetLanguage("und");
-
   EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
       GetProfile(), mock_translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
       context_menu_params_));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuFieldTypeTest) {
+  // Enable everything.
+  ComposeEnabling::SetEnabledForTesting(true);
+
   // Set ContextMenuParams to non-contenteditable and non-textarea, which we do
   // not support.
   context_menu_params_.is_content_editable_for_autofill = false;
   context_menu_params_.form_control_type =
       blink::mojom::FormControlType::kInputButton;
-
-  // Set the language to something we support. Not expected to be called.
-  SetLanguage("en");
 
   EXPECT_FALSE(compose_enabling_->ShouldTriggerContextMenu(
       GetProfile(), mock_translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
@@ -411,9 +438,6 @@ TEST_F(ComposeEnablingTest,
   // Enable everything.
   ComposeEnabling::SetEnabledForTesting(true);
 
-  // Set the language to something we support.
-  SetLanguage("en");
-
   EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
       GetProfile(), mock_translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
       context_menu_params_));
@@ -422,9 +446,6 @@ TEST_F(ComposeEnablingTest,
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuAllEnabledTextAreaTest) {
   // Enable everything.
   ComposeEnabling::SetEnabledForTesting(true);
-
-  // Set the language to something we support.
-  SetLanguage("en");
 
   // Set ContextMenuParams to textarea, which we support.
   context_menu_params_.is_content_editable_for_autofill = false;
@@ -436,6 +457,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuAllEnabledTextAreaTest) {
       context_menu_params_));
 }
 
+// TODO: Add test for the proactive nudge not showing by default.
+
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupDisabledTest) {
   // We intentionally disable the feature.
   scoped_feature_list_.Reset();
@@ -446,45 +469,45 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupDisabledTest) {
   std::string autocomplete_attribute;
   bool has_saved_state = false;
 
-  // Set the language to something we support. "en" is English.
-  SetLanguage("en");
-
   EXPECT_FALSE(compose_enabling_->ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
       has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
 }
 
-TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageTest) {
+TEST_F(ComposeEnablingTest, ShouldTriggerSavedStatePopupLanguageTest) {
+  // Disable the language bypass.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {compose::features::kEnableCompose,
+       compose::features::kEnableComposeNudge},
+      {compose::features::kEnableComposeLanguageBypass});
   // Enable the feature.
   ComposeEnabling::SetEnabledForTesting(true);
   std::string autocomplete_attribute;
-  bool has_saved_state = false;
+  // Note: only the saved-state nudge is currently enabled.
+  bool has_saved_state = true;
 
-  // Set the mock language to something we don't support. "eo" is Esperanto.
+  // Set the mock to return a language we support (English).
+  SetLanguage("en");
+  EXPECT_TRUE(compose_enabling_->ShouldTriggerPopup(
+      autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
+      has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
+
+  // Set the mock to return a language we don't support (Esperanto).
   SetLanguage("eo");
-
   EXPECT_FALSE(compose_enabling_->ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
       has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageBypassTest) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {compose::features::kEnableCompose,
-       compose::features::kEnableComposeNudge,
-       compose::features::kEnableComposeLanguageBypass},
-      {});
-
   // Enable the feature.
   ComposeEnabling::SetEnabledForTesting(true);
   std::string autocomplete_attribute;
   bool has_saved_state = true;
 
-  // Set the mock language to something we don't support. "eo" is Esperanto.
-  // Not expected to be called.
+  // Set the mock to return a language we don't support (Esperanto).
   SetLanguage("eo");
-
   // Although the language is unsupported, ShouldTrigger should return true as
   // the bypass is enabled.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerPopup(
@@ -499,9 +522,6 @@ TEST_F(ComposeEnablingTest, ShouldNotTriggerProactivePopupAutocompleteOffTest) {
   std::string autocomplete_attribute("off");
   bool has_saved_state = false;
 
-  // Set the language to something we support.
-  SetLanguage("en");
-
   EXPECT_FALSE(compose_enabling_->ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
       has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
@@ -513,9 +533,6 @@ TEST_F(ComposeEnablingTest, ShouldTriggerSavedStatePopupAutocompleteOffTest) {
   // Autocomplete is set to off for this page.
   std::string autocomplete_attribute("off");
   bool has_saved_state = true;
-
-  // Set the language to something we support.
-  SetLanguage("en");
 
   EXPECT_TRUE(compose_enabling_->ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
@@ -536,8 +553,6 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupWithSavedStateTest) {
     config.popup_with_saved_state = popup_with_state;
     config.popup_with_no_saved_state = popup_without_state;
 
-    SetLanguage("en");
-
     EXPECT_EQ(popup_with_state, compose_enabling_->ShouldTriggerPopup(
                                     autocomplete_attribute, GetProfile(),
                                     mock_translate_manager_.get(),
@@ -553,9 +568,11 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupWithSavedStateTest) {
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupNudgeDisabledTest) {
+  // Disable the nudge flag.
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
-      {compose::features::kEnableCompose},
+      {compose::features::kEnableCompose,
+       compose::features::kEnableComposeLanguageBypass},
       {compose::features::kEnableComposeNudge});
 
   // Enable everything.
@@ -575,8 +592,6 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupNudgeDisabledTest) {
     config.popup_with_saved_state = popup_with_state;
     config.popup_with_no_saved_state = popup_without_state;
 
-    SetLanguage("en");
-
     EXPECT_FALSE(compose_enabling_->ShouldTriggerPopup(
         autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
         /*has_saved_state=*/true, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
@@ -594,8 +609,6 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupCrossOrigin) {
   std::string autocomplete_attribute;
   bool has_saved_state = false;
 
-  // Set the language to something we support.
-  SetLanguage("en");
   EXPECT_FALSE(compose_enabling_->ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
       has_saved_state, GetOrigin(), url::Origin(), GURL(kExampleURL)));
@@ -605,9 +618,6 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuCrossOrigin) {
   base::HistogramTester histogram_tester;
   // Enable everything.
   ComposeEnabling::SetEnabledForTesting(true);
-
-  // Set the language to something we support.
-  SetLanguage("en");
 
   context_menu_params_.frame_origin = url::Origin();
   EXPECT_FALSE(compose_enabling_->ShouldTriggerContextMenu(
@@ -702,8 +712,6 @@ TEST_F(ComposeEnablingTest, GetOptimizationGuidanceNoComposeMetadataTest) {
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuOutOfPolicyURLTest) {
   // Enable everything.
   ComposeEnabling::SetEnabledForTesting(true);
-  // Set the language to something we support.
-  SetLanguage("en");
 
   // Set ContextMenuParams to textarea, which we support.
   context_menu_params_.is_content_editable_for_autofill = false;
