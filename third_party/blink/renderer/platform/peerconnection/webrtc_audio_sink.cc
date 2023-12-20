@@ -121,7 +121,7 @@ void WebRtcAudioSink::OnData(const media::AudioBus& audio_bus,
 }
 
 void WebRtcAudioSink::OnSetFormat(const media::AudioParameters& params) {
-  DCHECK(params.IsValid());
+  CHECK(params.IsValid());
   SendLogMessage(base::StringPrintf("OnSetFormat([label=%s] {params=[%s]})",
                                     adapter_->label().c_str(),
                                     params.AsHumanReadableString().c_str()));
