@@ -7,6 +7,7 @@
 #import "base/time/time.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/pref_names.h"
 
 namespace {
@@ -46,6 +47,10 @@ void RecordDeclinePrefs(PrefService* pref_service) {
 }
 
 bool IsDeclinedTooOften(PrefService* pref_service) {
+  if (experimental_flags::ShouldIgnoreHistorySyncDeclineLimits()) {
+    return false;
+  }
+
   const int decline_count = pref_service->GetInteger(
       history_sync_prefs::kHistorySyncSuccessiveDeclineCount);
   if (decline_count >= kMaxSuccessiveDeclineCount) {

@@ -48,6 +48,8 @@ NSString* const kSafetyCheckReusedPasswordsCountOverride =
 NSString* const kSafetyCheckCompromisedPasswordsCountOverride =
     @"SafetyCheckCompromisedPasswordsCountOverride";
 NSString* const kSimulatePostDeviceRestore = @"SimulatePostDeviceRestore";
+NSString* const kShouldIgnoreHistorySyncDeclineLimits =
+    @"ShouldIgnoreHistorySyncDeclineLimits";
 BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
              "EnableThirdPartyKeyboardWorkaround",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -241,6 +243,11 @@ std::string GetSegmentForForcedDeviceSwitcherExperience() {
 bool SimulatePostDeviceRestore() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kSimulatePostDeviceRestore];
+}
+
+bool ShouldIgnoreHistorySyncDeclineLimits() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kShouldIgnoreHistorySyncDeclineLimits];
 }
 
 }  // namespace experimental_flags

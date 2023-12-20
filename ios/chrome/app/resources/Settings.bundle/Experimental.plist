@@ -198,6 +198,16 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Ignore history sync decline limits</string>
+			<key>Key</key>
+			<string>ShouldIgnoreHistorySyncDeclineLimits</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
 			<string>Update Chrome Safety Check State</string>
