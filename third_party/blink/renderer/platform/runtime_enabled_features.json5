@@ -2959,6 +2959,10 @@
       origin_trial_feature_name: "PNaCl",
     },
     {
+      name: "PointerCaptureLostOnRemovalDuringCapture",
+      status: "stable",
+    },
+    {
       name: "PointerEventDeviceId",
       status: "test",
     },
