@@ -95,6 +95,7 @@ java_library_patterns = [
 java_target_patterns = java_library_patterns + java_resource_patterns
 
 _r8_path = "//third_party/r8/lib/r8.jar"
+_custom_r8_path = "//third_party/r8/custom_r8.jar"
 
 # This duplication is intentional, so we avoid updating the r8.jar used by
 # dexing unless necessary, since each update invalidates all incremental dexing
@@ -1208,6 +1209,7 @@ if (enable_java_templates) {
       java_path_for_inputs,
       invoker.build_config,
       _r8_path,
+      _custom_r8_path,
     ]
     if (defined(invoker.inputs)) {
       _inputs += invoker.inputs
@@ -1246,6 +1248,8 @@ if (enable_java_templates) {
       "@FileArg($_rebased_build_config:android:sdk_jars)",
       "--r8-path",
       rebase_path(_r8_path, root_build_dir),
+      "--custom-r8-path",
+      rebase_path(_custom_r8_path, root_build_dir),
       "--package-name=$_package_name",
       "--source-file",
       _source_file_template,
