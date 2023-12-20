@@ -105,5 +105,5 @@ void WebAppMenuButton::FadeHighlightOff() {
   }
 }
 
-BEGIN_METADATA(WebAppMenuButton, AppMenuButton)
+BEGIN_METADATA(WebAppMenuButton)
 END_METADATA

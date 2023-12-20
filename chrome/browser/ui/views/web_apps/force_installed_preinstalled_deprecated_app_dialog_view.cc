@@ -165,8 +165,9 @@ ForceInstalledPreinstalledDeprecatedAppDialogView::
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           [](base::WeakPtr<content::WebContents> web_contents, GURL url,
              const ui::Event& event) {
-            if (!web_contents)
+            if (!web_contents) {
               return;
+            }
             web_contents->OpenURL(content::OpenURLParams(
                 url, content::Referrer(),
                 ui::DispositionFromEventFlags(
@@ -180,8 +181,9 @@ ForceInstalledPreinstalledDeprecatedAppDialogView::
   learn_more->SetCallback(base::BindRepeating(
       [](base::WeakPtr<content::WebContents> web_contents,
          const ui::Event& event) {
-        if (!web_contents)
+        if (!web_contents) {
           return;
+        }
         web_contents->OpenURL(content::OpenURLParams(
             GURL(chrome::kChromeAppsDeprecationLearnMoreURL),
             content::Referrer(),
@@ -195,5 +197,5 @@ ForceInstalledPreinstalledDeprecatedAppDialogView::
   learn_more->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 
-BEGIN_METADATA(ForceInstalledPreinstalledDeprecatedAppDialogView, views::View)
+BEGIN_METADATA(ForceInstalledPreinstalledDeprecatedAppDialogView)
 END_METADATA

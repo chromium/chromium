@@ -106,8 +106,9 @@ class ImageCarouselLayoutManager : public views::LayoutManagerBase {
 
 enum class ButtonType { LEADING, TRAILING };
 class ScrollButton : public views::ImageButton {
+  METADATA_HEADER(ScrollButton, views::ImageButton)
+
  public:
-  METADATA_HEADER(ScrollButton);
   ScrollButton(ButtonType button_type, PressedCallback callback)
       : views::ImageButton(std::move(callback)) {
     ConfigureVectorImageButton(this);
@@ -158,12 +159,13 @@ class ScrollButton : public views::ImageButton {
   raw_ptr<views::InkDropContainerView> ink_drop_container_ = nullptr;
 };
 
-BEGIN_METADATA(ScrollButton, views::ImageButton)
+BEGIN_METADATA(ScrollButton)
 END_METADATA
 
 class ImageCarouselView : public views::View {
+  METADATA_HEADER(ImageCarouselView, views::View)
+
  public:
-  METADATA_HEADER(ImageCarouselView);
   explicit ImageCarouselView(
       const std::vector<webapps::Screenshot>& screenshots)
       : screenshots_(screenshots) {
@@ -326,7 +328,7 @@ class ImageCarouselView : public views::View {
   bool trailing_button_visibility_set_up_ = false;
 };
 
-BEGIN_METADATA(ImageCarouselView, views::View)
+BEGIN_METADATA(ImageCarouselView)
 END_METADATA
 
 #if BUILDFLAG(IS_CHROMEOS)

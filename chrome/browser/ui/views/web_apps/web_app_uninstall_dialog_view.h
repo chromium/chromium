@@ -31,7 +31,7 @@ class Profile;
 namespace webapps {
 enum class UninstallResultCode;
 enum class WebappUninstallSource;
-}
+}  // namespace webapps
 
 namespace views {
 class Checkbox;
@@ -41,8 +41,9 @@ class Checkbox;
 class WebAppUninstallDialogDelegateView
     : public views::DialogDelegateView,
       public web_app::WebAppInstallManagerObserver {
+  METADATA_HEADER(WebAppUninstallDialogDelegateView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(WebAppUninstallDialogDelegateView);
   // Constructor for view component of dialog.
   WebAppUninstallDialogDelegateView(
       Profile* profile,

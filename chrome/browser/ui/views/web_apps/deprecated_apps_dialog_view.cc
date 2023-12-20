@@ -271,10 +271,11 @@ void DeprecatedAppsDialogView::OnAccept() {
 void DeprecatedAppsDialogView::OnCancel() {
   bool hide_launch_anyways =
       features::kChromeAppsDeprecationHideLaunchAnyways.Get();
-  if (!hide_launch_anyways)
+  if (!hide_launch_anyways) {
     std::move(launch_anyways_).Run();
+  }
   CloseDialog();
 }
 
-BEGIN_METADATA(DeprecatedAppsDialogView, views::DialogDelegateView)
+BEGIN_METADATA(DeprecatedAppsDialogView)
 END_METADATA

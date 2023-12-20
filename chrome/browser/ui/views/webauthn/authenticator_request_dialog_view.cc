@@ -345,5 +345,5 @@ void AuthenticatorRequestDialogView::OnDialogClosing() {
   }
 }
 
-BEGIN_METADATA(AuthenticatorRequestDialogView, views::DialogDelegateView)
+BEGIN_METADATA(AuthenticatorRequestDialogView)
 END_METADATA

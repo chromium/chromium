@@ -88,8 +88,9 @@ FileHandlerLaunchDialogView::CreateAboveAppInfoView() {
 
 std::unique_ptr<views::View>
 FileHandlerLaunchDialogView::CreateBelowAppInfoView() {
-  if (file_paths_.size() == 1)
+  if (file_paths_.size() == 1) {
     return nullptr;
+  }
 
   auto* layout_provider = views::LayoutProvider::Get();
   auto description_view = std::make_unique<views::View>();
@@ -138,8 +139,9 @@ FileHandlerLaunchDialogView::CreateBelowAppInfoView() {
                                              views::Label::GetDefaultFontList(),
                                              0.95 * available_width);
                  });
-  if (file_paths_.size() > displayed_file_name_count)
+  if (file_paths_.size() > displayed_file_name_count) {
     file_names.emplace_back(gfx::kEllipsisUTF16);
+  }
 
   auto* files_label =
       files_view->AddChildView(std::make_unique<views::Label>(base::JoinString(
@@ -161,7 +163,7 @@ std::u16string FileHandlerLaunchDialogView::GetRememberChoiceString() {
       associations);
 }
 
-BEGIN_METADATA(FileHandlerLaunchDialogView, views::DialogDelegateView)
+BEGIN_METADATA(FileHandlerLaunchDialogView)
 END_METADATA
 
 void ShowWebAppFileLaunchDialog(const std::vector<base::FilePath>& file_paths,

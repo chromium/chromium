@@ -24,9 +24,10 @@ namespace web_app {
 // User choice dialog for PWA protocol handling, shown before launching a PWA to
 // handle a protocol launch. See https://web.dev/url-protocol-handler/
 class ProtocolHandlerLaunchDialogView : public LaunchAppUserChoiceDialogView {
- public:
-  METADATA_HEADER(ProtocolHandlerLaunchDialogView);
+  METADATA_HEADER(ProtocolHandlerLaunchDialogView,
+                  LaunchAppUserChoiceDialogView)
 
+ public:
   ProtocolHandlerLaunchDialogView(
       GURL url,
       Profile* profile,

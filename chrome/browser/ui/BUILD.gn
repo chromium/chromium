@@ -6063,6 +6063,7 @@ static_library("ui") {
       "views/web_apps/isolated_web_apps/isolated_web_app_installer_coordinator.h",
       "views/web_apps/isolated_web_apps/isolated_web_app_installer_model.cc",
       "views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h",
+      "views/web_apps/isolated_web_apps/isolated_web_app_installer_view.cc",
       "views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h",
       "views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.cc",
       "views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h",

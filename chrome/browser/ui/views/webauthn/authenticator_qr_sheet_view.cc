@@ -38,8 +38,9 @@ constexpr int kSecurityKeyIconSize = 30;
 }  // namespace
 
 class AuthenticatorQRViewCentered : public views::View {
+  METADATA_HEADER(AuthenticatorQRViewCentered, views::View)
+
  public:
-  METADATA_HEADER(AuthenticatorQRViewCentered);
   explicit AuthenticatorQRViewCentered(const std::string& qr_string) {
     views::BoxLayout* layout =
         SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -123,7 +124,7 @@ class AuthenticatorQRViewCentered : public views::View {
   std::unique_ptr<qrcode_generator::QRImageGenerator> qr_code_service_;
 };
 
-BEGIN_METADATA(AuthenticatorQRViewCentered, views::View)
+BEGIN_METADATA(AuthenticatorQRViewCentered)
 END_METADATA
 
 AuthenticatorQRSheetView::AuthenticatorQRSheetView(

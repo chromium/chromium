@@ -71,8 +71,9 @@ void WebAppContentSettingsContainer::SetUpForFadeIn() {
 }
 
 void WebAppContentSettingsContainer::FadeIn() {
-  if (GetVisible())
+  if (GetVisible()) {
     return;
+  }
 
   // The layer may have been destroyed since SetUpForFadeIn() was called.
   SetPaintToLayer();
@@ -85,9 +86,10 @@ void WebAppContentSettingsContainer::FadeIn() {
 
 void WebAppContentSettingsContainer::EnsureVisible() {
   SetVisible(true);
-  if (layer())
+  if (layer()) {
     layer()->SetOpacity(1);
+  }
 }
 
-BEGIN_METADATA(WebAppContentSettingsContainer, views::View)
+BEGIN_METADATA(WebAppContentSettingsContainer)
 END_METADATA

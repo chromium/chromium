@@ -40,8 +40,9 @@ class AuthenticatorRequestDialogView
     : public views::DialogDelegateView,
       public AuthenticatorRequestDialogModel::Observer,
       public content::WebContentsObserver {
+  METADATA_HEADER(AuthenticatorRequestDialogView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(AuthenticatorRequestDialogView);
   AuthenticatorRequestDialogView(const AuthenticatorRequestDialogView&) =
       delete;
   AuthenticatorRequestDialogView& operator=(

@@ -11,8 +11,9 @@
 // An invisible, but accessible label that indicates the system app name. This
 // label can only be focused by accessibility features.
 class SystemAppAccessibleName : public views::Label {
+  METADATA_HEADER(SystemAppAccessibleName, views::Label)
+
  public:
-  METADATA_HEADER(SystemAppAccessibleName);
   explicit SystemAppAccessibleName(const std::u16string& app_name);
   SystemAppAccessibleName(const SystemAppAccessibleName&) = delete;
   SystemAppAccessibleName& operator=(const SystemAppAccessibleName&) = delete;

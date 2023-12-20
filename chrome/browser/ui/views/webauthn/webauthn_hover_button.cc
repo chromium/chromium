@@ -25,8 +25,9 @@ namespace {
 // internal class of the same name, but the horizontal spacing applied
 // by that class is incompatible with the WebAuthn UI spec.
 class IconWrapper : public views::View {
+  METADATA_HEADER(IconWrapper, views::View)
+
  public:
-  METADATA_HEADER(IconWrapper);
   explicit IconWrapper(std::unique_ptr<views::View> icon) {
     AddChildView(std::move(icon));
     SetUseDefaultFillLayout(true);
@@ -38,7 +39,7 @@ class IconWrapper : public views::View {
   }
 };
 
-BEGIN_METADATA(IconWrapper, views::View)
+BEGIN_METADATA(IconWrapper)
 END_METADATA
 
 }  // namespace
@@ -147,5 +148,5 @@ WebAuthnHoverButton::WebAuthnHoverButton(
       gfx::Insets::TLBR(vert_inset, left_inset, vert_inset, right_inset)));
 }
 
-BEGIN_METADATA(WebAuthnHoverButton, HoverButton)
+BEGIN_METADATA(WebAuthnHoverButton)
 END_METADATA

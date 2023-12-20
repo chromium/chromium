@@ -36,8 +36,9 @@ class WebAppToolbarButtonContainer;
 class WebAppFrameToolbarView : public views::AccessiblePaneView,
                                public ToolbarButtonProvider,
                                public views::ViewTargeterDelegate {
+  METADATA_HEADER(WebAppFrameToolbarView, views::AccessiblePaneView)
+
  public:
-  METADATA_HEADER(WebAppFrameToolbarView);
   explicit WebAppFrameToolbarView(BrowserView* browser_view);
   WebAppFrameToolbarView(const WebAppFrameToolbarView&) = delete;
   WebAppFrameToolbarView& operator=(const WebAppFrameToolbarView&) = delete;

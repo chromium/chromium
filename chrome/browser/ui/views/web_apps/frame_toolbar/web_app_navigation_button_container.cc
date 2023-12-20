@@ -97,8 +97,9 @@ WebAppNavigationButtonContainer::WebAppNavigationButtonContainer(
 
 WebAppNavigationButtonContainer::~WebAppNavigationButtonContainer() {
   chrome::RemoveCommandObserver(browser_, IDC_BACK, this);
-  if (reload_button_)
+  if (reload_button_) {
     chrome::RemoveCommandObserver(browser_, IDC_RELOAD, this);
+  }
 }
 
 BackForwardButton* WebAppNavigationButtonContainer::back_button() {
@@ -125,5 +126,5 @@ void WebAppNavigationButtonContainer::EnabledStateChangedForCommand(
   }
 }
 
-BEGIN_METADATA(WebAppNavigationButtonContainer, views::View)
+BEGIN_METADATA(WebAppNavigationButtonContainer)
 END_METADATA

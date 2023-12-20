@@ -91,5 +91,5 @@ ForceInstalledDeprecatedAppsDialogView::ForceInstalledDeprecatedAppsDialogView(
   learn_more->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 
-BEGIN_METADATA(ForceInstalledDeprecatedAppsDialogView, views::View)
+BEGIN_METADATA(ForceInstalledDeprecatedAppsDialogView)
 END_METADATA

@@ -36,6 +36,8 @@ class IdpImageView;
 // user moves through the FedCM flow steps.
 class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
                                    public AccountSelectionBubbleViewInterface {
+  METADATA_HEADER(AccountSelectionBubbleView, views::BubbleDialogDelegateView)
+
  public:
   // Used to observe changes to the account selection bubble.
   class Observer {
@@ -79,7 +81,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
     virtual void CloseModalDialog() = 0;
   };
 
-  METADATA_HEADER(AccountSelectionBubbleView);
   AccountSelectionBubbleView(
       const std::u16string& top_frame_for_display,
       const std::optional<std::u16string>& iframe_for_display,

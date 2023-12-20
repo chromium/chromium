@@ -102,9 +102,9 @@ class ToU16String {
 
 // A View containing a progress bar and a description string below it.
 class AnnotatedProgressBar : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(AnnotatedProgressBar);
+  METADATA_HEADER(AnnotatedProgressBar, views::BoxLayoutView)
 
+ public:
   explicit AnnotatedProgressBar(const std::u16string& description) {
     SetOrientation(views::BoxLayout::Orientation::kVertical);
     SetInsideBorderInsets(gfx::Insets::VH(0, kProgressViewHorizontalPadding));
@@ -123,15 +123,15 @@ class AnnotatedProgressBar : public views::BoxLayoutView {
  private:
   raw_ptr<views::ProgressBar> progress_bar_;
 };
-BEGIN_METADATA(AnnotatedProgressBar, views::BoxLayoutView)
+BEGIN_METADATA(AnnotatedProgressBar)
 END_METADATA
 
 // A View that displays key/value entries in a pane with a different
 // background color and a rounded border.
 class InfoPane : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(InfoPane);
+  METADATA_HEADER(InfoPane, views::BoxLayoutView)
 
+ public:
   explicit InfoPane(
       const std::vector<std::pair<int, std::u16string>>& metadata) {
     views::LayoutProvider* provider = views::LayoutProvider::Get();
@@ -162,16 +162,16 @@ class InfoPane : public views::BoxLayoutView {
     InvalidateLayout();
   }
 };
-BEGIN_METADATA(InfoPane, views::BoxLayoutView)
+BEGIN_METADATA(InfoPane)
 END_METADATA
 
 // The contents view used for all installer screens. This will handle rendering
 // common UI elements like icon, title, subtitle, and an optional View for the
 // body of the dialog.
 class InstallerDialogView : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(InstallerDialogView);
+  METADATA_HEADER(InstallerDialogView, views::BoxLayoutView)
 
+ public:
   InstallerDialogView(const ui::ImageModel& icon_model,
                       const ToU16String& title,
                       int subtitle_id,
@@ -249,14 +249,16 @@ class InstallerDialogView : public views::BoxLayoutView {
   raw_ptr<views::StyledLabel> subtitle_label_;
   raw_ptr<views::BoxLayoutView> contents_wrapper_;
 };
-BEGIN_METADATA(InstallerDialogView, views::BoxLayoutView)
+
+BEGIN_METADATA(InstallerDialogView)
 END_METADATA
 
 }  // namespace
 
 class DisabledView : public InstallerDialogView {
+  METADATA_HEADER(DisabledView, InstallerDialogView)
+
  public:
-  METADATA_HEADER(DisabledView);
   explicit DisabledView(IsolatedWebAppInstallerView::Delegate* delegate)
       : InstallerDialogView(
             CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
@@ -268,12 +270,14 @@ class DisabledView : public InstallerDialogView {
                 &IsolatedWebAppInstallerView::Delegate::OnSettingsLinkClicked,
                 base::Unretained(delegate))) {}
 };
-BEGIN_METADATA(DisabledView, InstallerDialogView)
+
+BEGIN_METADATA(DisabledView)
 END_METADATA
 
 class GetMetadataView : public InstallerDialogView {
+  METADATA_HEADER(GetMetadataView, InstallerDialogView)
+
  public:
-  METADATA_HEADER(GetMetadataView);
   GetMetadataView()
       : InstallerDialogView(
             CreateImageModelFromVector(kFingerprintIcon, ui::kColorAccent),
@@ -292,12 +296,14 @@ class GetMetadataView : public InstallerDialogView {
  private:
   raw_ptr<AnnotatedProgressBar> progress_bar_;
 };
-BEGIN_METADATA(GetMetadataView, InstallerDialogView)
+
+BEGIN_METADATA(GetMetadataView)
 END_METADATA
 
 class ShowMetadataView : public InstallerDialogView {
+  METADATA_HEADER(ShowMetadataView, InstallerDialogView)
+
  public:
-  METADATA_HEADER(ShowMetadataView);
   explicit ShowMetadataView(IsolatedWebAppInstallerView::Delegate* delegate)
       : InstallerDialogView(
             CreateImageModelFromVector(kFingerprintIcon, ui::kColorAccent),
@@ -325,12 +331,14 @@ class ShowMetadataView : public InstallerDialogView {
  private:
   raw_ptr<InfoPane> info_pane_;
 };
-BEGIN_METADATA(ShowMetadataView, InstallerDialogView)
+
+BEGIN_METADATA(ShowMetadataView)
 END_METADATA
 
 class InstallView : public InstallerDialogView {
+  METADATA_HEADER(InstallView, InstallerDialogView)
+
  public:
-  METADATA_HEADER(InstallView);
   InstallView()
       : InstallerDialogView(
             CreateImageModelFromVector(kFingerprintIcon, ui::kColorAccent),
@@ -349,12 +357,14 @@ class InstallView : public InstallerDialogView {
  private:
   raw_ptr<AnnotatedProgressBar> progress_bar_;
 };
-BEGIN_METADATA(InstallView, InstallerDialogView)
+
+BEGIN_METADATA(InstallView)
 END_METADATA
 
 class InstallSuccessView : public InstallerDialogView {
+  METADATA_HEADER(InstallSuccessView, InstallerDialogView)
+
  public:
-  METADATA_HEADER(InstallSuccessView);
   InstallSuccessView()
       : InstallerDialogView(
             CreateImageModelFromVector(kFingerprintIcon, ui::kColorAccent),
@@ -362,7 +372,8 @@ class InstallSuccessView : public InstallerDialogView {
             IDS_IWA_INSTALLER_VERIFICATION_TITLE,
             IDS_IWA_INSTALLER_SUCCESS_SUBTITLE) {}
 };
-BEGIN_METADATA(InstallSuccessView, InstallerDialogView)
+
+BEGIN_METADATA(InstallSuccessView)
 END_METADATA
 
 // static
@@ -498,7 +509,7 @@ void IsolatedWebAppInstallerViewImpl::ShowChildView(views::View* view) {
   }
 }
 
-BEGIN_METADATA(IsolatedWebAppInstallerViewImpl, views::View)
+BEGIN_METADATA(IsolatedWebAppInstallerViewImpl)
 END_METADATA
 
 }  // namespace web_app

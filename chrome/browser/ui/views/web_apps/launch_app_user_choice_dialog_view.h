@@ -31,9 +31,9 @@ namespace web_app {
 // dialog is shown before Chrome launches an app window for protocol handler or
 // file handler launches.
 class LaunchAppUserChoiceDialogView : public views::DialogDelegateView {
- public:
-  METADATA_HEADER(LaunchAppUserChoiceDialogView);
+  METADATA_HEADER(LaunchAppUserChoiceDialogView, views::DialogDelegateView)
 
+ public:
   LaunchAppUserChoiceDialogView(Profile* profile,
                                 const webapps::AppId& app_id,
                                 WebAppLaunchAcceptanceCallback close_callback);

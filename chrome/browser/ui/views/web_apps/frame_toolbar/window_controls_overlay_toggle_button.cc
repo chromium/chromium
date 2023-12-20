@@ -52,5 +52,5 @@ int WindowControlsOverlayToggleButton::GetIconSize() const {
   return 0;
 }
 
-BEGIN_METADATA(WindowControlsOverlayToggleButton, ToolbarButton)
+BEGIN_METADATA(WindowControlsOverlayToggleButton)
 END_METADATA

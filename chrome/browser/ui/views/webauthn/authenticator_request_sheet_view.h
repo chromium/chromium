@@ -58,8 +58,9 @@ class NonAccessibleImageView;
 // both use the concept of showing multiple "sheets" in a single dialog. To
 // avoid code duplication, consider factoring out common parts.
 class AuthenticatorRequestSheetView : public views::View {
+  METADATA_HEADER(AuthenticatorRequestSheetView, views::View)
+
  public:
-  METADATA_HEADER(AuthenticatorRequestSheetView);
   explicit AuthenticatorRequestSheetView(
       std::unique_ptr<AuthenticatorRequestSheetModel> model);
   AuthenticatorRequestSheetView(const AuthenticatorRequestSheetView&) = delete;

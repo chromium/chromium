@@ -15,8 +15,9 @@
 #include "ui/views/view.h"
 
 class WebAppContentSettingsContainer : public views::View {
+  METADATA_HEADER(WebAppContentSettingsContainer, views::View)
+
  public:
-  METADATA_HEADER(WebAppContentSettingsContainer);
   WebAppContentSettingsContainer(
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       ContentSettingImageView::Delegate* content_setting_image_delegate);

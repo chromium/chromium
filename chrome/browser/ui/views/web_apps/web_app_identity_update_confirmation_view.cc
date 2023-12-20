@@ -197,7 +197,7 @@ void WebAppIdentityUpdateConfirmationView::OnWebAppUninstallScheduled(
   }
 }
 
-BEGIN_METADATA(WebAppIdentityUpdateConfirmationView, views::DialogDelegateView)
+BEGIN_METADATA(WebAppIdentityUpdateConfirmationView)
 END_METADATA
 
 namespace web_app {

@@ -200,8 +200,9 @@ class CircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
 // - If `brand_text_color` is not provided, computes the text color such that it
 //   contrasts sufficiently with `brand_background_color`.
 class ContinueButton : public views::MdTextButton {
+  METADATA_HEADER(ContinueButton, views::MdTextButton)
+
  public:
-  METADATA_HEADER(ContinueButton);
   ContinueButton(views::MdTextButton::PressedCallback callback,
                  const std::u16string& text,
                  AccountSelectionBubbleView* bubble_view,
@@ -253,12 +254,13 @@ class ContinueButton : public views::MdTextButton {
   std::optional<SkColor> brand_text_color_;
 };
 
-BEGIN_METADATA(ContinueButton, views::MdTextButton)
+BEGIN_METADATA(ContinueButton)
 END_METADATA
 
 class AccountImageView : public views::ImageView {
+  METADATA_HEADER(AccountImageView, views::ImageView)
+
  public:
-  METADATA_HEADER(AccountImageView);
   AccountImageView() = default;
 
   AccountImageView(const AccountImageView&) = delete;
@@ -303,14 +305,15 @@ class AccountImageView : public views::ImageView {
   base::WeakPtrFactory<AccountImageView> weak_ptr_factory_{this};
 };
 
-BEGIN_METADATA(AccountImageView, views::ImageView)
+BEGIN_METADATA(AccountImageView)
 END_METADATA
 
 // Wrapper around ImageViews for IDP icons. Used to ensure that the fetch
 // callback is not run when the ImageView has been deleted.
 class IdpImageView : public views::ImageView {
+  METADATA_HEADER(IdpImageView, views::ImageView)
+
  public:
-  METADATA_HEADER(IdpImageView);
   explicit IdpImageView(AccountSelectionBubbleView* bubble_view)
       : bubble_view_(bubble_view) {}
 
@@ -355,7 +358,7 @@ class IdpImageView : public views::ImageView {
   base::WeakPtrFactory<IdpImageView> weak_ptr_factory_{this};
 };
 
-BEGIN_METADATA(IdpImageView, views::ImageView)
+BEGIN_METADATA(IdpImageView)
 END_METADATA
 
 void SendAccessibilityEvent(views::Widget* widget,
@@ -1190,5 +1193,5 @@ void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
   }
 }
 
-BEGIN_METADATA(AccountSelectionBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(AccountSelectionBubbleView)
 END_METADATA

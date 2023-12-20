@@ -195,13 +195,15 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
 WebAppToolbarButtonContainer::~WebAppToolbarButtonContainer() {
   ImmersiveModeController* immersive_controller =
       browser_view_->immersive_mode_controller();
-  if (immersive_controller)
+  if (immersive_controller) {
     immersive_controller->RemoveObserver(this);
+  }
 }
 
 void WebAppToolbarButtonContainer::UpdateStatusIconsVisibility() {
-  if (content_settings_container_)
+  if (content_settings_container_) {
     content_settings_container_->UpdateContentSettingViewsVisibility();
+  }
   page_action_icon_controller_->UpdateAll();
 }
 
@@ -215,8 +217,9 @@ void WebAppToolbarButtonContainer::SetColors(SkColor foreground_color,
                                        /*show_text=*/color_changed);
   }
 
-  if (content_settings_container_)
+  if (content_settings_container_) {
     content_settings_container_->SetIconColor(foreground_color_);
+  }
   page_action_icon_controller_->SetIconColor(foreground_color_);
 }
 
@@ -258,8 +261,9 @@ int WebAppToolbarButtonContainer::GetPageActionIconSize() const {
 gfx::Insets WebAppToolbarButtonContainer::GetPageActionIconInsets(
     const PageActionIconView* icon_view) const {
   const int icon_size = icon_view->GetImageView()->GetPreferredSize().height();
-  if (icon_size == 0)
+  if (icon_size == 0) {
     return gfx::Insets();
+  }
 
   const int height = toolbar_button_provider_->GetToolbarButtonSize().height();
   const int inset_size = std::max(0, (height - icon_size) / 2);
@@ -274,8 +278,9 @@ bool WebAppToolbarButtonContainer::GetAnimate() const {
 }
 
 void WebAppToolbarButtonContainer::StartTitlebarAnimation() {
-  if (!GetAnimate())
+  if (!GetAnimate()) {
     return;
+  }
 
   if (web_app_origin_text_) {
     web_app_origin_text_->SetAllowedToAnimate(true);
@@ -290,11 +295,13 @@ void WebAppToolbarButtonContainer::StartTitlebarAnimation() {
 }
 
 void WebAppToolbarButtonContainer::FadeInContentSettingIcons() {
-  if (!GetAnimate())
+  if (!GetAnimate()) {
     return;
+  }
 
-  if (content_settings_container_)
+  if (content_settings_container_) {
     content_settings_container_->FadeIn();
+  }
 }
 
 void WebAppToolbarButtonContainer::ChildPreferredSizeChanged(
@@ -331,8 +338,9 @@ WebAppToolbarButtonContainer::GetContentSettingBubbleModelDelegate() {
 void WebAppToolbarButtonContainer::OnImmersiveRevealStarted() {
   // Don't wait for the fade in animation to make content setting icons
   // visible once in immersive mode.
-  if (content_settings_container_)
+  if (content_settings_container_) {
     content_settings_container_->EnsureVisible();
+  }
 }
 
 // PageActionIconView::Delegate:
@@ -343,14 +351,15 @@ WebAppToolbarButtonContainer::GetWebContentsForPageActionIconView() {
 
 void WebAppToolbarButtonContainer::AddedToWidget() {
   if (GetAnimate()) {
-    if (content_settings_container_)
+    if (content_settings_container_) {
       content_settings_container_->SetUpForFadeIn();
+    }
     animation_start_delay_.Start(
         FROM_HERE, kTitlebarAnimationDelay, this,
         &WebAppToolbarButtonContainer::StartTitlebarAnimation);
   }
 }
 
-BEGIN_METADATA(WebAppToolbarButtonContainer, views::View)
+BEGIN_METADATA(WebAppToolbarButtonContainer)
 ADD_READONLY_PROPERTY_METADATA(bool, Animate)
 END_METADATA
