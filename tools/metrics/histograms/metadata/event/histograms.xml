@@ -48,11 +48,6 @@ chromium-metrics-reviews@google.com.
       summary="small scrolls - number of presented frames between [1,16]"/>
 </variants>
 
-<variants name="TopControlsState">
-  <variant name=".NoTopControlsMoved" summary="Top controls did not change."/>
-  <variant name=".TopControlsMoved" summary="Top controls changed."/>
-</variants>
-
 <histogram name="Event.AndroidActionDown.ToolType" enum="MotionEventToolType"
     expires_after="never">
 <!-- expires-never: Needed for long-term usage tracking for different types of
@@ -408,53 +403,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Event.Latency.ScrollBegin.Scrollbar.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2023-08-08">
-  <owner>nzolghadr@chromium.org</owner>
-  <owner>gerchiko@microsoft.com</owner>
-  <owner>input-dev@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    NOTE: This metric is deprecated in favor of
-    EventLatency.FirstGestureScrollUpdate.Scrollbar.TotalLatency metric (see
-    crbug.com/1054021).
-
-    Time between initial creation of an input event that resulted in a scrollbar
-    scroll and the start of the frame swap on the GPU service caused by the
-    generated ScrollUpdate gesture event if that ScrollUpdate is the first such
-    event in a given scroll gesture event sequence. If no swap was induced by
-    the event, no recording is made.
-
-    Do not modify this metric in any way without contacting
-    speed-metrics-dev@chromium.org.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.ScrollBegin.TimeToScrollUpdateSwapBegin2"
-    units="microseconds" expires_after="2023-10-22">
-  <owner>nzolghadr@chromium.org</owner>
-  <summary>
-    NOTE: This metric is deprecated in favor of
-    EventLatency.FirstGestureScrollUpdate.TotalLatency metric (see
-    crbug.com/1054021).
-
-    Time between initial creation of a wheel/touch event and start of the frame
-    swap on the GPU service caused by the generated ScrollUpdate gesture event
-    if that ScrollUpdate is the first such event in a given scroll gesture event
-    sequence. If no swap was induced by the event, no recording is made. If no
-    swap was induced by the event, no recording is made.
-
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
 <histogram name="Event.Latency.ScrollBegin.Touch.AverageLagPresentation"
     units="pixels" expires_after="2024-06-12">
   <owner>flackr@chromium.org</owner>
@@ -497,36 +445,6 @@ chromium-metrics-reviews@google.com.
 
     Team: input-dev@chromium.org.
   </summary>
-</histogram>
-
-<histogram
-    name="Event.Latency.ScrollBegin.Touch.TimeToScrollUpdateSwapBegin4{TopControlsState}"
-    units="microseconds" expires_after="2023-06-30">
-  <owner>flackr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    NOTE: This metric is deprecated in favor of
-    EventLatency.FirstGestureScrollUpdate.Touchscreen.TotalLatency metric (see
-    crbug.com/1054021).
-
-    Time between initial creation of a touch event and the start of the frame
-    swap on the GPU service caused by the generated ScrollUpdate gesture event
-    if that ScrollUpdate is the first such event in a given scroll gesture event
-    sequence. If no swap was induced by the event, no recording is made.
-
-    Do not modify this metric in any way without contacting
-    speed-metrics-dev@chromium.org.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution. {TopControlsState}
-  </summary>
-  <token key="TopControlsState" variants="TopControlsState">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4"
@@ -765,38 +683,6 @@ chromium-metrics-reviews@google.com.
   <token key="PredictionImpact">
     <variant name="PredictionNegative" summary="Negative impact values"/>
     <variant name="PredictionPositive" summary="Positive impact values"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Event.Latency.ScrollUpdate.Touch.TimeToScrollUpdateSwapBegin4{TopControlsState}"
-    units="microseconds" expires_after="2023-06-30">
-  <owner>flackr@chromium.org</owner>
-  <owner>sullivan@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
-  <summary>
-    NOTE: This metric is deprecated in favor of
-    EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency metric (see
-    crbug.com/1054021).
-
-    Time between initial creation of a touch event and start of the frame swap
-    on the GPU service caused by the generated ScrollUpdate gesture event. If no
-    swap was induced by the event, no recording is made. The first GSU of every
-    scrolling sequence is excluded from this metric.
-
-    Do not modify this metric in any way without contacting
-    speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution. {TopControlsState}
-  </summary>
-  <token key="TopControlsState" variants="TopControlsState">
-    <variant name=""/>
   </token>
 </histogram>
 
