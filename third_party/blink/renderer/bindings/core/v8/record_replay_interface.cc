@@ -649,14 +649,17 @@ function buildRrpObjectResult(cdpReturnValue) {
   if (cdpReturnValue) {
     const { result: cdpResult, exceptionDetails } = cdpReturnValue;
     if (exceptionDetails) {
-      // exceptionDetails encapsulate a JS exception thrown while handling the command.
-      const rrpId = buildRrpObjectFromCdpObject(exceptionDetails);
-      rrpResult.exception = rrpId;
-    }
-    if (cdpResult) {
+      /**
+       * @see https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-ExceptionDetails
+       */
+      const rrpObject = exceptionDetails.exception ?
+        buildRrpObjectFromCdpObject(exceptionDetails.exception) :
+        registerPlainObject({ message: exceptionDetails.text })
+      rrpResult.exception = rrpObject;
+    } else if (cdpResult) {
       // cdpResult is the actual result RemoteObject.
-      const rrpId = buildRrpObjectFromCdpObject(cdpResult);
-      rrpResult.returned = rrpId;
+      const rrpObject = buildRrpObjectFromCdpObject(cdpResult);
+      rrpResult.returned = rrpObject;
     }
   } else {
     // Sometimes things go wrong.
