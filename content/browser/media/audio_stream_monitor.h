@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -57,18 +58,17 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
 
   // Starts or stops monitoring respectively for the stream owned by the
   // specified renderer.  Safe to call from any thread.
-  static void StartMonitoringStream(int render_process_id,
-                                    int render_frame_id,
-                                    int stream_id);
-  static void StopMonitoringStream(int render_process_id,
-                                   int render_frame_id,
+  static void StartMonitoringStream(
+      GlobalRenderFrameHostId render_frame_host_id,
+      int stream_id);
+  static void StopMonitoringStream(GlobalRenderFrameHostId render_frame_host_id,
                                    int stream_id);
   // Updates the audible state for the given stream. Safe to call from any
   // thread.
-  static void UpdateStreamAudibleState(int render_process_id,
-                                       int render_frame_id,
-                                       int stream_id,
-                                       bool is_audible);
+  static void UpdateStreamAudibleState(
+      GlobalRenderFrameHostId render_frame_host_id,
+      int stream_id,
+      bool is_audible);
 
   // WebContentsObserver implementation
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
@@ -85,19 +85,19 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
   // Class to help automatically remove audible client.
   class CONTENT_EXPORT AudibleClientRegistration {
    public:
-    AudibleClientRegistration(GlobalRenderFrameHostId host_id,
+    AudibleClientRegistration(GlobalRenderFrameHostId render_frame_host_id,
                               AudioStreamMonitor* audio_stream_monitor);
     ~AudibleClientRegistration();
 
    private:
-    GlobalRenderFrameHostId host_id_;
+    GlobalRenderFrameHostId render_frame_host_id_;
     raw_ptr<AudioStreamMonitor> audio_stream_monitor_;
   };
 
   // Registers an audible client, which will be unregistered when the returned
   // AudibleClientRegistration is released.
   std::unique_ptr<AudibleClientRegistration> RegisterAudibleClient(
-      GlobalRenderFrameHostId host_id);
+      GlobalRenderFrameHostId render_frame_host_id);
 
  private:
   friend class AudioStreamMonitorTest;
@@ -110,8 +110,7 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
   };
 
   struct CONTENT_EXPORT StreamID {
-    int render_process_id;
-    int render_frame_id;
+    GlobalRenderFrameHostId render_frame_host_id;
     int stream_id;
     bool operator<(const StreamID& other) const;
     bool operator==(const StreamID& other) const;
@@ -133,8 +132,8 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
   void UpdateStreams();
 
   // Adds/Removes Audible clients.
-  void AddAudibleClient(GlobalRenderFrameHostId host_id);
-  void RemoveAudibleClient(GlobalRenderFrameHostId host_id);
+  void AddAudibleClient(GlobalRenderFrameHostId render_frame_host_id);
+  void RemoveAudibleClient(GlobalRenderFrameHostId render_frame_host_id);
 
   // The WebContents instance to receive indicator toggle notifications. This
   // pointer should be valid for the lifetime of AudioStreamMonitor.

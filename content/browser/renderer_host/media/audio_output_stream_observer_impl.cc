@@ -13,8 +13,7 @@ AudioOutputStreamObserverImpl::AudioOutputStreamObserverImpl(
     int render_process_id,
     int render_frame_id,
     int stream_id)
-    : render_process_id_(render_process_id),
-      render_frame_id_(render_frame_id),
+    : render_frame_host_id_(render_process_id, render_frame_id),
       stream_id_(stream_id) {}
 
 AudioOutputStreamObserverImpl::~AudioOutputStreamObserverImpl() {
@@ -26,20 +25,18 @@ AudioOutputStreamObserverImpl::~AudioOutputStreamObserverImpl() {
 void AudioOutputStreamObserverImpl::DidStartPlaying() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   did_start_playing_ = true;
-  AudioStreamMonitor::StartMonitoringStream(render_process_id_,
-                                            render_frame_id_, stream_id_);
+  AudioStreamMonitor::StartMonitoringStream(render_frame_host_id_, stream_id_);
 }
 void AudioOutputStreamObserverImpl::DidStopPlaying() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  AudioStreamMonitor::StopMonitoringStream(render_process_id_, render_frame_id_,
-                                           stream_id_);
+  AudioStreamMonitor::StopMonitoringStream(render_frame_host_id_, stream_id_);
   did_start_playing_ = false;
 }
 
 void AudioOutputStreamObserverImpl::DidChangeAudibleState(bool is_audible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  AudioStreamMonitor::UpdateStreamAudibleState(
-      render_process_id_, render_frame_id_, stream_id_, is_audible);
+  AudioStreamMonitor::UpdateStreamAudibleState(render_frame_host_id_,
+                                               stream_id_, is_audible);
 }
 
 }  // namespace content
