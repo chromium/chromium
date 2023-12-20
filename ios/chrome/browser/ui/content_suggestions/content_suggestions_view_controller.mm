@@ -1069,9 +1069,12 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 }
 
 - (void)layoutReturnToRecentTabTile {
-  [_returnToRecentTabTile.widthAnchor
-      constraintEqualToAnchor:self.view.widthAnchor]
-      .active = YES;
+  [NSLayoutConstraint activateConstraints:@[
+    [_returnToRecentTabTile.widthAnchor
+        constraintEqualToAnchor:self.view.widthAnchor],
+    [_returnToRecentTabTile.heightAnchor
+        constraintEqualToConstant:ReturnToRecentTabHeight()],
+  ]];
 }
 
 - (void)createAndInsertMostVisitedModule {
