@@ -7,14 +7,47 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 source_set("java_script_console") {
   sources = [
     "java_script_console_feature.h",
+    "java_script_console_feature.mm",
     "java_script_console_feature_delegate.h",
     "java_script_console_feature_factory.h",
+    "java_script_console_feature_factory.mm",
     "java_script_console_message.h",
+    "java_script_console_message.mm",
   ]
-  public_deps = [ "//ios/chrome/browser/web/java_script_console" ]
+  deps = [
+    ":console_js",
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+optimize_ts("console_js") {
+  visibility = [ ":java_script_console" ]
+
+  sources = [ "resources/console.ts" ]
+
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  public_deps = [ "//ios/chrome/browser/web/java_script_console:unit_tests" ]
+  sources = [ "java_script_console_feature_unittest.mm" ]
+  deps = [
+    ":java_script_console",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/test/fakes",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
 }

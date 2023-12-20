@@ -5,6 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_WEB_MODEL_WEB_STATE_CONTAINER_VIEW_PROVIDER_H_
 #define IOS_CHROME_BROWSER_WEB_MODEL_WEB_STATE_CONTAINER_VIEW_PROVIDER_H_
 
-#import "ios/chrome/browser/web/web_state_container_view_provider.h"
+#import <UIKit/UIKit.h>
+
+// An object conforming to this protocol can provide information about the
+// view that a WebState will be displayed in.
+@protocol WebStateContainerViewProvider <NSObject>
+
+// The container view for the web state.
+- (UIView*)containerView;
+
+// The location in the web state that should be used to display dialogs.
+- (CGPoint)dialogLocation;
+
+@end
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_WEB_STATE_CONTAINER_VIEW_PROVIDER_H_

@@ -251,7 +251,7 @@ source_set("session_restoration_service_factory") {
 source_set("session_constants") {
   visibility = [
     ":*",
-    "//ios/chrome/browser/web/session_state:*",
+    "//ios/chrome/browser/web/model/session_state:*",
   ]
   sources = [
     "session_constants.h",
