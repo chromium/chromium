@@ -4,6 +4,7 @@ include_rules = [
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/core/common",
   "+extensions/buildflags",
+  "+third_party/fuzztest",
   "+third_party/lzma_sdk",
   "+third_party/zlib",
   "+third_party/zlib/google",

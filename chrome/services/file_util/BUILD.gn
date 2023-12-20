@@ -5,8 +5,10 @@
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//build/config/sanitizers/sanitizers.gni")
 import("//chrome/services/file_util/public/features.gni")
 import("//components/safe_browsing/buildflags.gni")
+import("//testing/test.gni")
 
 source_set("file_util") {
   sources = [
@@ -144,4 +146,25 @@ buildflag_header("buildflags") {
     "ENABLE_EXTRACTORS=$enable_extractors",
     "ENABLE_MALDOCA=$enable_maldoca",
   ]
+}
+
+if (enable_extractors && fuzztest_supported) {
+  test("single_file_tar_reader_fuzzer") {
+    sources = [ "single_file_tar_reader_fuzzer.cc" ]
+
+    enable_fuzztest = true
+
+    deps = [
+      ":file_util",
+      "//third_party/fuzztest:fuzztest_gtest_main",
+    ]
+
+    if (safe_browsing_mode == 1) {
+      deps += [ "//chrome/common:common" ]
+    }
+
+    if (is_mac) {
+      frameworks = [ "AppKit.framework" ]
+    }
+  }
 }
