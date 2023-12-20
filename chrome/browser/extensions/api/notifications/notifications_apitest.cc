@@ -465,9 +465,6 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestShouldDisplayFullscreen) {
 
 // The Fake OSX fullscreen window doesn't like drawing a second fullscreen
 // window when another is visible.
-// Disabled since this tests constantly fails on windows 7.
-// http://crbug.com/1202553
-#if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestShouldDisplayMultiFullscreen) {
   // Start a fullscreen app, and then start another fullscreen app on top of the
   // first. Notifications from the first should not be displayed because it is
@@ -498,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestShouldDisplayMultiFullscreen) {
   EXPECT_EQ(message_center::FullscreenVisibility::NONE,
             notification->fullscreen_visibility());
 }
-#endif
+
 // Verify that a notification is actually displayed when the app window that
 // creates it is fullscreen.
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest,
