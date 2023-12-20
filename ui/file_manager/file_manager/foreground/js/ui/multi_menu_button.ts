@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventTracker} from 'chrome://resources/ash/common/event_tracker.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
@@ -38,7 +37,7 @@ export class MultiMenuButton extends CrButtonElement {
    */
   private menuEndGap_: number = 0;  // padding on cr.menu + 2px
 
-  private showingEvents_: EventTracker|null = null;
+  private abortController_: AbortController|null = null;
   private menu_: MultiMenu|null = null;
   private observer_: ResizeObserver|null = null;
   private observedElement_: HTMLElement|null = null;
@@ -71,10 +70,6 @@ export class MultiMenuButton extends CrButtonElement {
     this.observer_ = new ResizeObserver(() => {
       this.positionMenu_();
     });
-
-    // An event tracker for events we only connect to while the menu is
-    // displayed.
-    this.showingEvents_ = new EventTracker();
   }
 
   get menu(): MultiMenu|null {
@@ -279,16 +274,16 @@ export class MultiMenuButton extends CrButtonElement {
     const doc = this.ownerDocument;
     assert(doc.defaultView);
     const win = doc.defaultView;
-    const self = this as unknown as EventListener;
-    assert(this.showingEvents_);
-    this.showingEvents_.add(doc, 'keydown', self, true);
-    this.showingEvents_.add(doc, 'mousedown', self, true);
-    this.showingEvents_.add(doc, 'focus', self, true);
-    this.showingEvents_.add(doc, 'scroll', self, true);
-    this.showingEvents_.add(win, 'popstate', self);
-    this.showingEvents_.add(win, 'resize', self);
-    this.showingEvents_.add(this.menu, 'contextmenu', self);
-    this.showingEvents_.add(this.menu, 'activate', self);
+    this.abortController_ = new AbortController();
+    const signal = this.abortController_.signal;
+    doc.addEventListener('keydown', this, {capture: true, signal});
+    doc.addEventListener('mousedown', this, {capture: true, signal});
+    doc.addEventListener('focus', this, {capture: true, signal});
+    doc.addEventListener('scroll', this, {capture: true, signal});
+    win.addEventListener('popstate', this, {signal});
+    win.addEventListener('resize', this, {signal});
+    this.menu.addEventListener('contextmenu', this, {signal});
+    this.menu.addEventListener('activate', this, {signal});
     this.observedElement_ = this.parentElement;
 
     assert(this.observedElement_);
@@ -337,7 +332,6 @@ export class MultiMenuButton extends CrButtonElement {
     this.setAttribute('aria-expanded', 'false');
     this.removeAttribute('menu-shown');
     assert(this.menu);
-    assert(this.showingEvents_);
     assert(this.observer_);
     assert(this.observedElement_);
 
@@ -348,7 +342,7 @@ export class MultiMenuButton extends CrButtonElement {
     }
     this.menu.hide();
 
-    this.showingEvents_.removeAll();
+    this.abortController_?.abort();
     if (shouldTakeFocus) {
       this.focus();
     }

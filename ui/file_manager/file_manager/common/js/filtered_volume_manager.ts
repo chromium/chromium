@@ -249,7 +249,6 @@ export class FilteredVolumeManager extends
     if (!this.volumeManager_) {
       return;
     }
-    // TODO(crbug.com/972849): Consider using EventTracker instead.
     this.volumeManager_.removeEventListener(
         'drive-connection-changed', this.onEventBound_);
     this.volumeManager_.removeEventListener(
