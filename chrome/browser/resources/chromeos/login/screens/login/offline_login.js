@@ -11,8 +11,6 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
-import '../../components/gaia_header.js';
-import '../../components/gaia_input_form.js';
 import '../../components/gaia_button.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/buttons/oobe_back_button.js';
@@ -360,6 +358,14 @@ class OfflineLogin extends OfflineLoginBase {
    */
   setEmailForTest(email) {
     this.email_ = email;
+  }
+
+  /** @private */
+  onKeyDown_(e) {
+    if (e.keyCode != 13 || this.disabled) {
+      return;
+    }
+    this.onNextButtonClicked_();
   }
 }
 

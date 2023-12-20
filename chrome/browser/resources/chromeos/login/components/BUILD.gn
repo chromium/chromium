@@ -31,8 +31,6 @@ group("closure_compile") {
     ":display_manager_types",
     ":gaia_button",
     ":gaia_dialog",
-    ":gaia_header",
-    ":gaia_input_form",
     ":hd_iron_icon",
     ":keyboard_utils",
     ":keyboard_utils_oobe",
@@ -100,22 +98,6 @@ js_library("gaia_dialog") {
     "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:load_time_data.m",
     "//chrome/browser/resources/gaia_auth_host:authenticator",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("gaia_header") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_header.js" ]
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("gaia_input_form") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_input_form.js" ]
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -353,8 +335,6 @@ html_to_js("web_components_local") {
     "api_keys_notice.js",
     "gaia_button.js",
     "gaia_dialog.js",
-    "gaia_header.js",
-    "gaia_input_form.js",
     "hd_iron_icon.js",
     "network_select_login.js",
     "notification_card.js",
