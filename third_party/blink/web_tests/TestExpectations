@@ -5140,6 +5140,7 @@ crbug.com/1285411 external/wpt/css/css-scroll-snap/input/mouse-wheel.html [ Time
 crbug.com/1509336 http/tests/devtools/har-importer.js [ Failure Pass ]
 crbug.com/1509336 http/tests/devtools/network/json-preview.js [ Failure Pass ]
 crbug.com/1509336 http/tests/devtools/network/network-choose-preview-view.js [ Failure Pass ]
+crbug.com/1509336 http/tests/devtools/network/network-xhr-binary-content.js [ Failure Pass ]
 
 # Possible Interop PE 2024 investigation
 crbug.com/1495467 external/wpt/uievents/mouse/synthetic-mouse-enter-leave-over-out-button-state-after-target-removed.tentative.html?buttonType=LEFT&button=0&buttons=1 [ Failure ]
