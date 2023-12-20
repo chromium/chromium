@@ -1493,6 +1493,7 @@ source_set("unit_tests_v2") {
       rebase_path(blink_core_tests_execution_context, "", "execution_context")
   sources += rebase_path(blink_core_tests_fetch, "", "fetch")
   sources += rebase_path(blink_core_tests_fullscreen, "", "fullscreen")
+  sources += rebase_path(blink_core_tests_geometry, "", "geometry")
   sources += rebase_path(blink_core_tests_html, "", "html")
   sources += rebase_path(blink_core_tests_highlight, "", "highlight")
   sources += rebase_path(blink_core_tests_imagebitmap, "", "imagebitmap")
