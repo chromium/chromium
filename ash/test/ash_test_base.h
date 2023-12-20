@@ -126,7 +126,9 @@ class AshTestBase : public testing::Test {
   // See ash::DisplayManagerTestApi::UpdateDisplay for more details.
   // Note: To properly specify the radii of display's panel upon startup, set it
   // via specifying the command line switch `ash-host-window-bounds`.
-  void UpdateDisplay(const std::string& display_specs);
+  void UpdateDisplay(const std::string& display_specs,
+                     bool from_native_platform = false,
+                     bool generate_new_ids = false);
 
   // Returns a root Window. Usually this is the active root Window, but that
   // method can return NULL sometimes, and in those cases, we fall back on the
