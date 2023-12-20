@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -91,11 +92,10 @@ class LocalFileStreamReaderTest : public FileStreamReaderTest {
   }
 
   void WriteFile(const std::string& file_name,
-                 const char* buf,
-                 size_t buf_size,
+                 std::string_view data,
                  base::Time* modification_time) override {
     base::FilePath path = test_dir().AppendASCII(file_name);
-    base::WriteFile(path, std::string_view(buf, buf_size));
+    base::WriteFile(path, data);
 
     base::File::Info file_info;
     ASSERT_TRUE(base::GetFileInfo(path, &file_info));

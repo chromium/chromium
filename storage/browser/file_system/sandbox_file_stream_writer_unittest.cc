@@ -114,9 +114,9 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
 
   bool CreateFileWithContent(const std::string& name,
                              const std::string& data) override {
-    return AsyncFileTestHelper::CreateFileWithData(
-               file_system_context_.get(), GetFileSystemURL(name), data.data(),
-               data.size()) == base::File::FILE_OK;
+    return AsyncFileTestHelper::CreateFileWithData(file_system_context_.get(),
+                                                   GetFileSystemURL(name),
+                                                   data) == base::File::FILE_OK;
   }
 
   std::unique_ptr<FileStreamWriter> CreateWriter(const std::string& name,

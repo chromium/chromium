@@ -87,8 +87,7 @@ class ShareInfoFileStreamAdapterTest : public testing::Test {
 
     ASSERT_EQ(base::File::FILE_OK,
               storage::AsyncFileTestHelper::CreateFileWithData(
-                  file_system_context_.get(), url_, test_data_.data(),
-                  test_data_.size()));
+                  file_system_context_.get(), url_, test_data_));
   }
 
   void TearDown() override { stream_adapter_.reset(); }

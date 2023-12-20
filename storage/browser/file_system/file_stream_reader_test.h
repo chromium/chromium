@@ -5,6 +5,8 @@
 #ifndef STORAGE_BROWSER_FILE_SYSTEM_FILE_STREAM_READER_TEST_H_
 #define STORAGE_BROWSER_FILE_SYSTEM_FILE_STREAM_READER_TEST_H_
 
+#include <string_view>
+
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
@@ -35,8 +37,7 @@ class FileStreamReaderTest : public testing::Test {
       int64_t initial_offset,
       const base::Time& expected_modification_time) = 0;
   virtual void WriteFile(const std::string& file_name,
-                         const char* buf,
-                         size_t buf_size,
+                         std::string_view buffer,
                          base::Time* modification_time) = 0;
   // Adjust a file's last modified time by |delta|.
   virtual void TouchFile(const std::string& file_name,
@@ -48,7 +49,7 @@ class FileStreamReaderTest : public testing::Test {
   }
 
   void WriteTestFile() {
-    WriteFile(std::string(kTestFileName), kTestData.data(), kTestData.size(),
+    WriteFile(std::string(kTestFileName), kTestData,
               &test_file_modification_time_);
   }
 
@@ -88,7 +89,8 @@ TYPED_TEST_P(FileStreamReaderTypedTest, NonExistent) {
 
 TYPED_TEST_P(FileStreamReaderTypedTest, Empty) {
   const char kFileName[] = "empty";
-  this->WriteFile(kFileName, nullptr, 0, nullptr);
+  this->WriteFile(kFileName, /*data=*/std::string_view(),
+                  /*modification_time=*/nullptr);
 
   std::unique_ptr<FileStreamReader> reader(
       this->CreateFileReader(kFileName, 0, base::Time()));

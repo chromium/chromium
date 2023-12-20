@@ -690,7 +690,7 @@ TEST_F(FileSystemAccessManagerImplTest, FileWriterCloseDoesNotAbortOnDestruct) {
 
   ASSERT_EQ(base::File::FILE_OK,
             storage::AsyncFileTestHelper::CreateFileWithData(
-                file_system_context_.get(), test_swap_url, "foo", 3));
+                file_system_context_.get(), test_swap_url, "foo"));
 
   auto lock = TakeLockSync(kBindingContext, test_file_url,
                            manager_->GetWFSSiloedLockType());
@@ -742,7 +742,7 @@ TEST_F(FileSystemAccessManagerImplTest,
 
   ASSERT_EQ(base::File::FILE_OK,
             storage::AsyncFileTestHelper::CreateFileWithData(
-                file_system_context_.get(), test_swap_url, "foo", 3));
+                file_system_context_.get(), test_swap_url, "foo"));
 
   auto lock = TakeLockSync(kBindingContext, test_file_url,
                            manager_->GetWFSSiloedLockType());
@@ -783,7 +783,7 @@ TEST_F(FileSystemAccessManagerImplTest,
 
   ASSERT_EQ(base::File::FILE_OK,
             storage::AsyncFileTestHelper::CreateFileWithData(
-                file_system_context_.get(), test_swap_url, "foo", 3));
+                file_system_context_.get(), test_swap_url, "foo"));
 
   auto lock = TakeLockSync(kBindingContext, test_file_url,
                            manager_->GetWFSSiloedLockType());
