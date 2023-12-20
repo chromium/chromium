@@ -36,6 +36,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return "layerNormalization";
     case mojom::Operation::Tag::kLeakyRelu:
       return "leakyRelu";
+    case mojom::Operation::Tag::kLinear:
+      return "linear";
     case mojom::Operation::Tag::kMatmul:
       return "matmul";
     case mojom::Operation::Tag::kPad:

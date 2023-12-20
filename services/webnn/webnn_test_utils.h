@@ -45,6 +45,8 @@ class GraphInfoBuilder final {
   //  absl::optional<ClampTester::ClampAttributes> clamp_attributes;
   //  absl::optional<float> elu_alpha;
   //  absl::optional<float> leaky_relu_alpha;
+  //  absl::optional<float> linear_alpha;
+  //  absl::optional<float> linear_beta;
   //  absl::optional<float> softplus_steepness;
   // };
   template <typename ActivationAttributes>
@@ -70,6 +72,14 @@ class GraphInfoBuilder final {
         CHECK(activation.leaky_relu_alpha.has_value());
         leaky_relu->alpha = activation.leaky_relu_alpha.value();
         return mojom::Activation::NewLeakyRelu(std::move(leaky_relu));
+      }
+      case mojom::Activation::Tag::kLinear: {
+        auto linear = mojom::Linear::New();
+        CHECK(activation.linear_alpha.has_value());
+        linear->alpha = activation.linear_alpha.value();
+        CHECK(activation.linear_beta.has_value());
+        linear->beta = activation.linear_beta.value();
+        return mojom::Activation::NewLinear(std::move(linear));
       }
       case mojom::Activation::Tag::kRelu:
         return mojom::Activation::NewRelu(mojom::Relu::New());
@@ -292,6 +302,11 @@ class GraphInfoBuilder final {
   void BuildLeakyRelu(uint64_t input_operand_id,
                       uint64_t output_operand_id,
                       float alpha);
+
+  void BuildLinear(uint64_t input_operand_id,
+                   uint64_t output_operand_id,
+                   float alpha,
+                   float beta);
 
   void BuildMatmul(uint64_t a_operand_id,
                    uint64_t b_operand_id,

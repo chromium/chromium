@@ -413,6 +413,8 @@ struct Activation {
   absl::optional<ClampAttributes> clamp_attributes;
   absl::optional<float> elu_alpha;
   absl::optional<float> leaky_relu_alpha;
+  absl::optional<float> linear_alpha;
+  absl::optional<float> linear_beta;
   absl::optional<float> softplus_steepness;
 };
 
@@ -510,6 +512,34 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
                    .dimensions = {1, 2, 1, 3},
                    .values = {-0.9999950000374997, 0, 0.9999950000374997,
                               -0.22474078892909666, 1, 2.224740788929097}}}
+        .Test();
+  }
+  {  // Test batchNormalization with 4-D input, default axis and activation =
+    // linear.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {-1, 0, 1, 2, 3, 4}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {0, 3}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1.0, 1.5}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2},
+                                    .values = {1.0, 1.5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {0, 1}},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kLinear,
+                                      .linear_alpha = 10,
+                                      .linear_beta = 1}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {-8.999950000374997, 1, 10.999950000374997,
+                              -1.2474078892909666, 11, 23.24740788929097}}}
         .Test();
   }
   {
@@ -911,6 +941,36 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 2, 2},
                    .values = {-0.3, -0.12, 21, 30}}}
+        .Test();
+  }
+  // Test conv2d with NCHW layout, float 32 data type, fusing with bias and
+  // linear activation.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d_Type::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5},
+                  .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = std::vector<float>(9, 1)},
+        .attributes = {.padding = {1, 1, 1, 1},
+                       .bias =
+                           OperandInfo<float>{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1},
+                               .values = {1}},
+                       .activation =
+                           Activation{.kind = mojom::Activation::Tag::kLinear,
+                                      .linear_alpha = 0.01,
+                                      .linear_beta = 1}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5},
+                   .values = {1.13, 1.22, 1.28, 1.34, 1.25, 1.34, 1.55,
+                              1.64, 1.73, 1.52, 1.64, 2,    2.09, 2.18,
+                              1.82, 1.94, 2.45, 2.54, 2.63, 2.12, 1.73,
+                              2.12, 2.18, 2.24, 1.85}}}
         .Test();
   }
   // Test conv2d with NHWC layout, float 32 data type, fusing with bias and relu
@@ -3059,6 +3119,8 @@ struct UnaryOperatorTester {
   absl::optional<float> clamp_max_value;
   absl::optional<float> elu_alpha;
   absl::optional<float> leaky_relu_alpha;
+  absl::optional<float> linear_alpha;
+  absl::optional<float> linear_beta;
   absl::optional<float> softplus_steepness;
   OperandInfo<float> output;
   void Test(BuildAndComputeExpectation expectation =
@@ -3085,6 +3147,12 @@ struct UnaryOperatorTester {
         CHECK(leaky_relu_alpha);
         builder.BuildLeakyRelu(input_operand_id, output_operand_id,
                                leaky_relu_alpha.value());
+        break;
+      case mojom::Operation::Tag::kLinear:
+        CHECK(linear_alpha);
+        CHECK(linear_beta);
+        builder.BuildLinear(input_operand_id, output_operand_id,
+                            linear_alpha.value(), linear_beta.value());
         break;
       case mojom::Operation::Tag::kRelu:
         builder.BuildRelu(input_operand_id, output_operand_id);
@@ -3459,6 +3527,39 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorLeakyRelu) {
                               0.58390397, 0.1735679, 0.539724, -0.0476757,
                               -0.029601413, -0.008672242500000002, 0.14395015,
                               -0.018960453500000002}}}
+        .Test();
+  }
+}
+
+// Test building and computing a DML graph with single operator linear.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorLinear) {
+  {
+    // Test linear with a 3d input and alpha = 0.01, beta = 1.0.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kLinear,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 2, 3},
+                  .values = {-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
+        .linear_alpha = 0.01,
+        .linear_beta = 1.0,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2, 3},
+                   .values = {0.99, 1, 1.01, 1.02, 1.03, 1.04, 1.05, 1.06, 1.07,
+                              1.08, 1.09, 1.1}}}
+        .Test();
+  }
+  {
+    // Test linear with a 2d input and alpha = 0.02, beta = 2.0.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kLinear,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 3},
+                  .values = {-1, 0, 1, 2, 3, 4}},
+        .linear_alpha = 0.02,
+        .linear_beta = 2.0,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 3},
+                   .values = {1.98, 2, 2.02, 2.04, 2.06, 2.08}}}
         .Test();
   }
 }

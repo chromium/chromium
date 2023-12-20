@@ -143,6 +143,15 @@ bool ValidateLeakyReluAttributes(const mojom::LeakyReluPtr& leaky_relu) {
   return true;
 }
 
+bool ValidateLinearAttributes(const mojom::LinearPtr& linear) {
+  if (std::isnan(linear->alpha) || std::isnan(linear->beta)) {
+    // The values of alpha and beta should not be NAN.
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateSoftplusAttributes(const mojom::SoftplusPtr& softplus) {
   if (std::isnan(softplus->steepness)) {
     // The value of steepness should not be NAN.
@@ -160,6 +169,8 @@ bool ValidateActivation(const mojom::ActivationPtr& activation) {
       return ValidateEluAttributes(activation->get_elu());
     case mojom::Activation::Tag::kLeakyRelu:
       return ValidateLeakyReluAttributes(activation->get_leaky_relu());
+    case mojom::Activation::Tag::kLinear:
+      return ValidateLinearAttributes(activation->get_linear());
     case mojom::Activation::Tag::kSoftplus:
       return ValidateSoftplusAttributes(activation->get_softplus());
     case mojom::Activation::Tag::kRelu:
@@ -833,6 +844,19 @@ bool ValidateLeakyRelu(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateLinear(const IdToOperandMap& id_to_operand_map,
+                    const mojom::LinearPtr& linear) {
+  if (!ValidateUnaryOperation(id_to_operand_map, linear,
+                              DataTypeConstraint::kFloat)) {
+    return false;
+  }
+  if (!ValidateLinearAttributes(linear)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateInstanceNormalization(
     const IdToOperandMap& id_to_operand_map,
     const mojom::InstanceNormalizationPtr& instance_normalization) {
@@ -1261,6 +1285,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
           id_to_operand_map, operation->get_instance_normalization());
     case mojom::Operation::Tag::kLeakyRelu:
       return ValidateLeakyRelu(id_to_operand_map, operation->get_leaky_relu());
+    case mojom::Operation::Tag::kLinear:
+      return ValidateLinear(id_to_operand_map, operation->get_linear());
     case mojom::Operation::Tag::kMatmul:
       return ValidateMatmul(id_to_operand_map, operation->get_matmul());
     case mojom::Operation::Tag::kPad:

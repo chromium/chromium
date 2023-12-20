@@ -421,6 +421,8 @@ struct Activation {
   absl::optional<ClampTester::ClampAttributes> clamp_attributes;
   absl::optional<float> elu_alpha;
   absl::optional<float> leaky_relu_alpha;
+  absl::optional<float> linear_alpha;
+  absl::optional<float> linear_beta;
   absl::optional<float> softplus_steepness;
 };
 
@@ -560,6 +562,23 @@ TEST_F(WebNNGraphImplTest, BatchNormalizationTest) {
                            Activation{
                                .kind = mojom::Activation::Tag::kLeakyRelu,
                                .leaky_relu_alpha = 0.01}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test batchNormalization with linear activation.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kLinear,
+                                      .linear_alpha = 0.01,
+                                      .linear_beta = 1}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 3}},
         .expected = true}
@@ -1183,6 +1202,22 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
                            Activation{
                                .kind = mojom::Activation::Tag::kLeakyRelu,
                                .leaky_relu_alpha = 0.01}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test conv2d with linear activation.
+    Conv2dTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kLinear,
+                                      .linear_alpha = 0.01,
+                                      .linear_beta = 1}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .expected = true}
@@ -4318,7 +4353,7 @@ TEST_F(WebNNGraphImplTest, SliceTest) {
   }
 }
 
-enum class FloatingPointUnaryKind { kLeakyRelu, kSigmoid, kTanh };
+enum class FloatingPointUnaryKind { kLeakyRelu, kLinear, kSigmoid, kTanh };
 
 struct FloatingPointUnaryTester {
   OperandInfo input;
@@ -4327,6 +4362,7 @@ struct FloatingPointUnaryTester {
 
   void Test() {
     Test(FloatingPointUnaryKind::kLeakyRelu);
+    Test(FloatingPointUnaryKind::kLinear);
     Test(FloatingPointUnaryKind::kSigmoid);
     Test(FloatingPointUnaryKind::kTanh);
   }
@@ -4342,6 +4378,10 @@ struct FloatingPointUnaryTester {
       case FloatingPointUnaryKind::kLeakyRelu:
         builder.BuildLeakyRelu(input_operand_id, output_operand_id,
                                /*alpha*/ 1.0);
+        break;
+      case FloatingPointUnaryKind::kLinear:
+        builder.BuildLinear(input_operand_id, output_operand_id,
+                            /*alpha*/ 1.0, /*beta*/ 0.0);
         break;
       case FloatingPointUnaryKind::kSigmoid:
         builder.BuildSigmoid(input_operand_id, output_operand_id);
@@ -4423,6 +4463,40 @@ TEST_F(WebNNGraphImplTest, FloatingPointUnaryTest) {
         builder.BuildOutput("output", {2}, mojom::Operand::DataType::kFloat32);
     builder.BuildLeakyRelu(input_operand_id, output_operand_id,
                            /*alpha*/ NAN);
+
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph for linear when the input is as same as output.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2}, mojom::Operand::DataType::kFloat32);
+    builder.BuildLinear(input_operand_id, input_operand_id,
+                        /*alpha*/ 1.0, /*beta*/ 0.0);
+
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph for linear when alpha is NAN.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2}, mojom::Operand::DataType::kFloat32);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", {2}, mojom::Operand::DataType::kFloat32);
+    builder.BuildLinear(input_operand_id, output_operand_id,
+                        /*alpha*/ NAN, /*beta*/ 0.0);
+
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph for linear when beta is NAN.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2}, mojom::Operand::DataType::kFloat32);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", {2}, mojom::Operand::DataType::kFloat32);
+    builder.BuildLinear(input_operand_id, output_operand_id,
+                        /*alpha*/ 1.0, /*beta*/ NAN);
 
     EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
   }

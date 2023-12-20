@@ -304,6 +304,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForArgMinMax(
 struct ActivationOperatorDesc {
   absl::variant<DML_ACTIVATION_ELU_OPERATOR_DESC,
                 DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC,
+                DML_ACTIVATION_LINEAR_OPERATOR_DESC,
                 DML_ACTIVATION_RELU_OPERATOR_DESC,
                 DML_ACTIVATION_SIGMOID_OPERATOR_DESC,
                 DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC,
@@ -318,6 +319,10 @@ struct ActivationOperatorDesc {
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_LEAKY_RELU,
               &absl::get<DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC>(desc)};
+    } else if (absl::holds_alternative<DML_ACTIVATION_LINEAR_OPERATOR_DESC>(
+                   desc)) {
+      return {DML_OPERATOR_ACTIVATION_LINEAR,
+              &absl::get<DML_ACTIVATION_LINEAR_OPERATOR_DESC>(desc)};
     } else if (absl::holds_alternative<DML_ACTIVATION_RELU_OPERATOR_DESC>(
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_RELU,
@@ -354,6 +359,11 @@ CreateActivationOperatorDesc(const mojom::ActivationPtr& activation) {
       return ActivationOperatorDesc{
           .desc = DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC{
               .Alpha = activation->get_leaky_relu()->alpha}};
+    case mojom::Activation::Tag::kLinear:
+      return ActivationOperatorDesc{
+          .desc = DML_ACTIVATION_LINEAR_OPERATOR_DESC{
+              .Alpha = activation->get_linear()->alpha,
+              .Beta = activation->get_linear()->beta}};
     case mojom::Activation::Tag::kRelu:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_RELU_OPERATOR_DESC{}};
@@ -1904,6 +1914,41 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLeakyRelu(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLinear(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::LinearPtr& linear,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, linear->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  uint64_t output_id = linear->output_operand_id;
+  auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  DML_ACTIVATION_LINEAR_OPERATOR_DESC linear_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .Alpha = linear->alpha,
+      .Beta = linear->beta};
+
+  std::array<const NodeOutput*, 1> inputs = {input};
+  const OperatorNode* linear_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ACTIVATION_LINEAR, &linear_desc, inputs);
+  if (!linear_node) {
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create linear operator."));
+  }
+
+  const NodeOutput* node_output = graph_builder.CreateNodeOutput(
+      linear_node, std::move(output_tensor_desc));
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
+
+  return base::ok();
+}
+
 // Using DML_GEMM_OPERATOR_DESC to implement WebNN matmul.
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
     const IdToOperandMap& id_to_operand_map,
@@ -2754,6 +2799,12 @@ void GraphImpl::CreateAndBuild(
       case Operation::Tag::kLeakyRelu: {
         create_operator_result = CreateOperatorNodeForLeakyRelu(
             id_to_operand_map, operation->get_leaky_relu(), graph_builder,
+            id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kLinear: {
+        create_operator_result = CreateOperatorNodeForLinear(
+            id_to_operand_map, operation->get_linear(), graph_builder,
             id_to_node_output_map);
         break;
       }

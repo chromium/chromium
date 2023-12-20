@@ -569,6 +569,21 @@ struct LeakyRelu {
   float alpha = 0.01;
 };
 
+// Represents a linear operation whose calculation follows the
+// expression alpha * x + beta.
+struct Linear {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+  // A float scalar multiplier.
+  float alpha = 1.0;
+  // A float scalar addition.
+  float beta = 0;
+};
+
 // Represents a parametric relu operation whose calculation follows the
 // expression max(0, x) + slope ∗ min(0, x).
 struct Prelu {
@@ -739,6 +754,7 @@ union Activation {
   Clamp clamp;
   Elu elu;
   LeakyRelu leaky_relu;
+  Linear linear;
   Relu relu;
   Sigmoid sigmoid;
   Softmax softmax;
@@ -763,6 +779,7 @@ union Operation {
   LayerNormalization layer_normalization;
   InstanceNormalization instance_normalization;
   LeakyRelu leaky_relu;
+  Linear linear;
   Matmul matmul;
   Pad pad;
   Pool2d pool2d;
