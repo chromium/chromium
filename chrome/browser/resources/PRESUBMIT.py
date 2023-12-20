@@ -166,7 +166,7 @@ def CheckNoNewJs(input_api, output_api):
 
   def excluded_path(f):
     for path in normalized_excluded_paths:
-      if f.LocalPath().startswith(path):
+      if f.LocalPath().startswith(path) or '.eslintrc.js' in f.LocalPath():
         return True
     return False
 
