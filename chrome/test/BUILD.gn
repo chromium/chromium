@@ -282,6 +282,8 @@ static_library("test_support") {
       sources += [
         "base/chromeos/crosier/chromeos_integration_login_mixin.cc",
         "base/chromeos/crosier/chromeos_integration_login_mixin.h",
+        "base/chromeos/crosier/supervised_user_login_delegate.cc",
+        "base/chromeos/crosier/supervised_user_login_delegate.h",
       ]
     }
 
@@ -759,8 +761,10 @@ static_library("test_support") {
       "base/chromeos/crosier/crosier_util.h",
     ]
 
-    if (is_chrome_branded) {
+    if (is_chrome_branded && is_chromeos_ash) {
       sources += [
+        "base/chromeos/crosier/gaia_host_util.cc",
+        "base/chromeos/crosier/gaia_host_util.h",
         "base/chromeos/crosier/test_accounts.cc",
         "base/chromeos/crosier/test_accounts.h",
       ]
@@ -1117,6 +1121,7 @@ if (is_chromeos && is_chromeos_device) {
         "../browser/ash/featured_integration_test.cc",
         "../browser/ash/login/lock/lock_screen_integration_test.cc",
         "../browser/ash/login/login_integration_test.cc",
+        "../browser/ash/login/supervised_user_login_integration_test.cc",
         "../browser/ash/ml_integration_test.cc",
         "../browser/ash/power/ml/smart_dim/smart_dim_integration_test.cc",
         "../browser/ash/scanning/scan_integration_test.cc",
@@ -1137,7 +1142,7 @@ if (is_chromeos && is_chromeos_device) {
         "base/chromeos/crosier/interactive_ash_test.h",
       ]
 
-      if (is_chrome_branded) {
+      if (is_chrome_branded && is_chromeos_ash) {
         sources += [ "base/chromeos/crosier/test_accounts_test.cc" ]
       }
 
