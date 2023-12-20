@@ -84,7 +84,7 @@ const CGFloat kSnapShotViewBottomOffset = 4;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    _state = GroupGridCellStateNotEditing;
+    _state = GridCellStateNotEditing;
 
     // The background color must be set to avoid the corners behind the rounded
     // layer from showing when dragging and dropping. Unfortunately, using
@@ -567,7 +567,7 @@ const CGFloat kSnapShotViewBottomOffset = 4;
 }
 
 - (UIImage*)selectIconImageForCurrentState {
-  if (_state == GroupGridCellStateEditingUnselected) {
+  if (_state == GridCellStateEditingUnselected) {
     return DefaultSymbolTemplateWithPointSize(kCircleSymbol,
                                               kIconSymbolPointSize);
   }
@@ -609,10 +609,10 @@ const CGFloat kSnapShotViewBottomOffset = 4;
 }
 
 - (BOOL)isInSelectionMode {
-  return self.state != GroupGridCellStateNotEditing;
+  return self.state != GridCellStateNotEditing;
 }
 
-- (void)setState:(GroupGridCellState)state {
+- (void)setState:(GridCellState)state {
   if (state == _state) {
     return;
   }

@@ -14,6 +14,12 @@
 // index].
 extern NSString* const kGridCellIdentifierPrefix;
 
+// Accessibility identifier prefix of a group grid cell. To reference a specific
+// cell, concatenate `kGroupGridCellIdentifierPrefix` with the index of the
+// cell. For example, [NSString stringWithFormat:@"%@%d",
+// kGroupGridCellIdentifierPrefix, index].
+extern NSString* const kGroupGridCellIdentifierPrefix;
+
 // Accessibility identifier for the close button in a grid cell.
 extern NSString* const kGridCellCloseButtonIdentifier;
 
@@ -98,5 +104,11 @@ extern const CGFloat kGridCellSelectionRingTintWidth;
 extern const CGFloat kGridCellPriceDropTopSpacing;
 extern const CGFloat kGridCellPriceDropLeadingSpacing;
 extern const CGFloat kGridCellPriceDropTrailingSpacing;
+
+typedef NS_ENUM(NSUInteger, GridCellState) {
+  GridCellStateNotEditing = 1,
+  GridCellStateEditingUnselected,
+  GridCellStateEditingSelected,
+};
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_CONSTANTS_H_

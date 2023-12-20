@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/legacy_grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_grid_cell.h"
@@ -73,6 +74,7 @@ namespace {
 NSString* const kSuggestedActionsSectionIdentifier =
     @"SuggestedActionsSectionIdentifier";
 NSString* const kCellIdentifier = @"GridCellIdentifier";
+NSString* const kGroupCellIdentifier = @"GroupGridCellIdentifier";
 
 // Creates an NSIndexPath with `index` in section 0.
 NSIndexPath* CreateIndexPath(NSInteger index) {
@@ -85,9 +87,17 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   return [NSString stringWithFormat:@"%@%ld", kGridCellIdentifierPrefix, index];
 }
 
+// Returns the accessibility identifier to set on a GroupGridCell when
+// positioned at the given index.
+NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
+  return [NSString
+      stringWithFormat:@"%@%ld", kGroupGridCellIdentifierPrefix, index];
+}
+
 }  // namespace
 
 @interface BaseGridViewController () <GridCellDelegate,
+                                      GroupGridCellDelegate,
                                       SuggestedActionsViewControllerDelegate,
                                       UICollectionViewDragDelegate,
                                       UICollectionViewDropDelegate,
@@ -99,6 +109,9 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 // The cell registration for grid cells.
 @property(nonatomic, strong)
     UICollectionViewCellRegistration* gridCellRegistration;
+// The cell registration for grid group cells.
+@property(nonatomic, strong)
+    UICollectionViewCellRegistration* groupGridCellRegistration;
 // The cell registration for the Suggested Actions cell.
 @property(nonatomic, strong)
     UICollectionViewCellRegistration* suggestedActionsCellRegistration;
@@ -218,6 +231,8 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   // registered.
   [collectionView registerClass:[GridCell class]
       forCellWithReuseIdentifier:kCellIdentifier];
+  [collectionView registerClass:[GroupGridCell class]
+      forCellWithReuseIdentifier:kGroupCellIdentifier];
 
   collectionView.delegate = self;
   collectionView.backgroundView = [[UIView alloc] init];
@@ -433,8 +448,14 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     if (path.section != tabSectionIndex) {
       continue;
     }
-    GridCell* cell = ObjCCastStrict<GridCell>(
-        [self.collectionView cellForItemAtIndexPath:path]);
+    UICollectionViewCell* collectionViewCell =
+        [self.collectionView cellForItemAtIndexPath:path];
+    if (![collectionViewCell isKindOfClass:[GridCell class]]) {
+      // TODO(crbug.com/1513165): Remove once the transition annimation for the
+      // group cells is available.
+      continue;
+    }
+    GridCell* cell = ObjCCastStrict<GridCell>(collectionViewCell);
     UICollectionViewLayoutAttributes* attributes =
         [self.collectionView layoutAttributesForItemAtIndexPath:path];
     // Normalize frame to window coordinates. The attributes class applies this
@@ -477,9 +498,14 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
           containsObject:selectedItemIndexPath]) {
     return nil;
   }
-
-  GridCell* cell = ObjCCastStrict<GridCell>(
-      [self.collectionView cellForItemAtIndexPath:selectedItemIndexPath]);
+  UICollectionViewCell* collectionViewCell =
+      [self.collectionView cellForItemAtIndexPath:selectedItemIndexPath];
+  if ([collectionViewCell isKindOfClass:[GroupGridCell class]]) {
+    // TODO(crbug.com/1501837): Handle once the annimations are available for
+    // group cells.
+    return nil;
+  }
+  GridCell* cell = ObjCCastStrict<GridCell>(collectionViewCell);
 
   UICollectionViewLayoutAttributes* attributes = [self.collectionView
       layoutAttributesForItemAtIndexPath:selectedItemIndexPath];
@@ -603,6 +629,11 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
       // another – correct – layout shortly after the incorrect one.
       // Keep `items`' bounds valid.
       if (self.items.count == 0 || itemIndex >= self.items.count) {
+        if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+          return [self.collectionView
+              dequeueReusableCellWithReuseIdentifier:kGroupCellIdentifier
+                                        forIndexPath:indexPath];
+        }
         // Dequeue using the reuse identifier, not the registration, as there is
         // no valid `item` that could be passed in for the configuration.
         return [self.collectionView
@@ -610,6 +641,14 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
                                       forIndexPath:indexPath];
       }
       TabSwitcherItem* item = self.items[itemIndex];
+      if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+        UICollectionViewCellRegistration* groupCellRegistration =
+            self.groupGridCellRegistration;
+        return [self.collectionView
+            dequeueConfiguredReusableCellWithRegistration:groupCellRegistration
+                                             forIndexPath:indexPath
+                                                     item:item];
+      }
       UICollectionViewCellRegistration* registration =
           self.gridCellRegistration;
       return [self.collectionView
@@ -679,8 +718,14 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     return nil;
   }
 
-  GridCell* cell = ObjCCastStrict<GridCell>(
-      [self.collectionView cellForItemAtIndexPath:indexPath]);
+  UICollectionViewCell* collectionViewCell =
+      [self.collectionView cellForItemAtIndexPath:indexPath];
+  if ([collectionViewCell isKindOfClass:[GroupGridCell class]]) {
+    // TODO(crbug.com/1501837): Handle the context menu for group cells, and
+    // remove this check.
+    return nil;
+  }
+  GridCell* cell = ObjCCastStrict<GridCell>(collectionViewCell);
 
   MenuScenarioHistogram scenario;
   if (_mode == TabGridModeSearch) {
@@ -874,8 +919,14 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     return nil;
   }
 
-  GridCell* gridCell = ObjCCastStrict<GridCell>(
-      [self.collectionView cellForItemAtIndexPath:indexPath]);
+  UICollectionViewCell* collectionViewCell =
+      [self.collectionView cellForItemAtIndexPath:indexPath];
+  if ([collectionViewCell isKindOfClass:[GroupGridCell class]]) {
+    // TODO(crbug.com/1513165): Remove once the annimations for group cells are
+    // available.
+    return nil;
+  }
+  GridCell* gridCell = ObjCCastStrict<GridCell>(collectionViewCell);
   return gridCell.dragPreviewParameters;
 }
 
@@ -1023,6 +1074,13 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridCloseControlTappedDuringSearch"));
   }
+}
+
+#pragma mark - GroupGridCellDelegate
+
+- (void)closeButtonTappedForGroupCell:(GroupGridCell*)cell {
+  [self.delegate gridViewController:self
+                 didCloseItemWithID:cell.itemIdentifier];
 }
 
 #pragma mark - SuggestedActionsViewControllerDelegate
@@ -1451,6 +1509,14 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)createRegistrations {
   __weak __typeof(self) weakSelf = self;
 
+  auto configureGroupGridCell =
+      ^(GroupGridCell* cell, NSIndexPath* indexPath, TabSwitcherItem* item) {
+        [weakSelf configureGroupCell:cell withItem:item atIndex:indexPath.item];
+      };
+  self.groupGridCellRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:[GroupGridCell class]
+           configurationHandler:configureGroupGridCell];
+
   // Register GridCell.
   auto configureGridCell =
       ^(GridCell* cell, NSIndexPath* indexPath, TabSwitcherItem* item) {
@@ -1598,6 +1664,64 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
         return item.identifier == identifier;
       };
   return [self.items indexOfObjectPassingTest:selectedTest];
+}
+
+// Configures `groupCell`'s identifier and title synchronously, and pass the
+// list of `GroupTabInfo`asynchronously with information from `item`. Updates
+// the `cell`'s theme to this view controller's theme. This view controller
+// becomes the delegate for the cell.
+- (void)configureGroupCell:(GroupGridCell*)cell
+                  withItem:(TabSwitcherItem*)item
+                   atIndex:(NSUInteger)index {
+  CHECK(cell);
+  CHECK(item);
+  cell.delegate = self;
+  cell.theme = self.theme;
+  cell.itemIdentifier = item.identifier;
+  cell.title = item.title;
+  cell.titleHidden = item.hidesTitle;
+  cell.accessibilityIdentifier = GroupGridCellAccessibilityIdentifier(index);
+  if (self.mode == TabGridModeSelection) {
+    if ([self.gridProvider isItemSelected:item.identifier]) {
+      cell.state = GridCellStateEditingSelected;
+    } else {
+      cell.state = GridCellStateEditingUnselected;
+    }
+  } else {
+    cell.state = GridCellStateNotEditing;
+  }
+  [item fetchFavicon:^(TabSwitcherItem* innerItem, UIImage* icon) {
+    // Only update the icon if the cell is not already reused for another item.
+    if (cell.itemIdentifier == innerItem.identifier) {
+      // TODO(crbug.com/1501837): Remove once the group color is available
+      // throught the group model. Keep for now for testing purposes.
+      cell.icon = icon;
+    }
+  }];
+
+  [item fetchSnapshot:^(TabSwitcherItem* innerItem, UIImage* snapshot) {
+    // Only update the icon if the cell is not already reused for another item.
+    if (cell.itemIdentifier == innerItem.identifier) {
+      GroupTabInfo* snapshotFavicon = [[GroupTabInfo alloc] init];
+      snapshotFavicon.snapshot = snapshot;
+      snapshotFavicon.favicon = snapshot;
+      // The `snapshotFavicon` is for demo purposes only, it will be replaced
+      // when the group tab model is available, the objects in `groupTabInfos`
+      // can be updated manually to view the different group tab configurations.
+      NSArray<GroupTabInfo*>* groupTabInfos = @[
+        snapshotFavicon, snapshotFavicon, snapshotFavicon, snapshotFavicon,
+        snapshotFavicon, snapshotFavicon
+      ];
+      [cell configureWithGroupTabInfos:groupTabInfos];
+    }
+  }];
+
+  cell.opacity = 1.0f;
+  if (item.showsActivity) {
+    [cell showActivityIndicator];
+  } else {
+    [cell hideActivityIndicator];
+  }
 }
 
 // Configures `cell`'s identifier and title synchronously, and favicon and

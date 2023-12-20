@@ -7,6 +7,10 @@
 // Accessibility identifier prefix of a grid cell.
 NSString* const kGridCellIdentifierPrefix = @"GridCellIdentifierPrefix";
 
+// Accessibility identifier prefix of a grid cell.
+NSString* const kGroupGridCellIdentifierPrefix =
+    @"GroupGridCellIdentifierPrefix";
+
 // Accessibility identifier for the close button in a grid cell.
 NSString* const kGridCellCloseButtonIdentifier =
     @"GridCellCloseButtonIdentifier";

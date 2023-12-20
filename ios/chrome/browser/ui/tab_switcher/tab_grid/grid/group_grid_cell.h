@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_info.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
@@ -17,13 +18,6 @@
 @protocol GroupGridCellDelegate
 - (void)closeButtonTappedForGroupCell:(GroupGridCell*)cell;
 @end
-
-// Values describing the editing state of the cell.
-typedef NS_ENUM(NSUInteger, GroupGridCellState) {
-  GroupGridCellStateNotEditing = 1,
-  GroupGridCellStateEditingUnselected,
-  GroupGridCellStateEditingSelected,
-};
 
 // A square-ish cell in a grid. Contains the group's favicon, its title and
 // close button.
@@ -39,7 +33,7 @@ typedef NS_ENUM(NSUInteger, GroupGridCellState) {
 // Sets to update and keep cell alpha in sync.
 @property(nonatomic, assign) CGFloat opacity;
 // The current state which the cell should display.
-@property(nonatomic, assign) GroupGridCellState state;
+@property(nonatomic, assign) GridCellState state;
 
 // Configures every tab of the group with a given snapshot/favicon pairs.
 - (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos;
