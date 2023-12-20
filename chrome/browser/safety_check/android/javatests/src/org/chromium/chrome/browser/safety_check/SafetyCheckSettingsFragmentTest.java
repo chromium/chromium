@@ -62,7 +62,8 @@ public class SafetyCheckSettingsFragmentTest {
 
     @Mock private PasswordCheck mPasswordCheck;
 
-    private PropertyModel mModel;
+    private PropertyModel mSafetyCheckModel;
+    private PropertyModel mPasswordCheckPreferenceModel;
     private SafetyCheckSettingsFragment mFragment;
 
     @Before
@@ -125,7 +126,11 @@ public class SafetyCheckSettingsFragmentTest {
         mFragment = (SafetyCheckSettingsFragment) mSettingsActivityTestRule.getFragment();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mModel = SafetyCheckCoordinator.createModelAndMcp(mFragment);
+                    mSafetyCheckModel =
+                            SafetyCheckCoordinator.createSafetyCheckModelAndBind(mFragment);
+                    mPasswordCheckPreferenceModel =
+                            SafetyCheckCoordinator.createPasswordCheckPreferenceModelAndBind(
+                                    mFragment, mSafetyCheckModel);
                 });
     }
 
@@ -135,7 +140,11 @@ public class SafetyCheckSettingsFragmentTest {
         mFragment = (SafetyCheckSettingsFragment) mSettingsActivityTestRule.getFragment();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mModel = SafetyCheckCoordinator.createModelAndMcp(mFragment);
+                    mSafetyCheckModel =
+                            SafetyCheckCoordinator.createSafetyCheckModelAndBind(mFragment);
+                    mPasswordCheckPreferenceModel =
+                            SafetyCheckCoordinator.createPasswordCheckPreferenceModelAndBind(
+                                    mFragment, mSafetyCheckModel);
                 });
     }
 
@@ -163,11 +172,13 @@ public class SafetyCheckSettingsFragmentTest {
                 () -> {
                     // Passwords state remains unchanged.
                     // Safe browsing is in "checking".
-                    mModel.set(
+                    mSafetyCheckModel.set(
                             SafetyCheckProperties.SAFE_BROWSING_STATE, SafeBrowsingState.CHECKING);
                     // Updates goes through "checking" and ends up in "outdated".
-                    mModel.set(SafetyCheckProperties.UPDATES_STATE, UpdatesState.CHECKING);
-                    mModel.set(SafetyCheckProperties.UPDATES_STATE, UpdatesState.OUTDATED);
+                    mSafetyCheckModel.set(
+                            SafetyCheckProperties.UPDATES_STATE, UpdatesState.CHECKING);
+                    mSafetyCheckModel.set(
+                            SafetyCheckProperties.UPDATES_STATE, UpdatesState.OUTDATED);
                 });
 
         assertEquals("", passwords.getSummary());
@@ -188,21 +199,21 @@ public class SafetyCheckSettingsFragmentTest {
         // Set the listeners
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mModel.set(
-                            SafetyCheckProperties.PASSWORDS_CLICK_LISTENER,
+                    mPasswordCheckPreferenceModel.set(
+                            PasswordsCheckPreferenceProperties.PASSWORDS_CLICK_LISTENER,
                             (Preference.OnPreferenceClickListener)
                                     (p) -> {
                                         passwordsClicked.notifyCalled();
                                         return true;
                                     });
-                    mModel.set(
+                    mSafetyCheckModel.set(
                             SafetyCheckProperties.SAFE_BROWSING_CLICK_LISTENER,
                             (Preference.OnPreferenceClickListener)
                                     (p) -> {
                                         safeBrowsingClicked.notifyCalled();
                                         return true;
                                     });
-                    mModel.set(
+                    mSafetyCheckModel.set(
                             SafetyCheckProperties.UPDATES_CLICK_LISTENER,
                             (Preference.OnPreferenceClickListener)
                                     (p) -> {
@@ -218,14 +229,16 @@ public class SafetyCheckSettingsFragmentTest {
                     // Passwords state remains unchanged, should be clickable.
                     passwords.performClick();
                     // Safe browsing is in "checking", the element deactivates, not clickable.
-                    mModel.set(
+                    mSafetyCheckModel.set(
                             SafetyCheckProperties.SAFE_BROWSING_STATE, SafeBrowsingState.CHECKING);
                     safeBrowsing.performClick();
                     // Updates goes through "checking" and ends up in "outdated".
                     // Checking: the element deactivates, clicks are not handled.
-                    mModel.set(SafetyCheckProperties.UPDATES_STATE, UpdatesState.CHECKING);
+                    mSafetyCheckModel.set(
+                            SafetyCheckProperties.UPDATES_STATE, UpdatesState.CHECKING);
                     // Final state: the element is reactivated and should handle clicks.
-                    mModel.set(SafetyCheckProperties.UPDATES_STATE, UpdatesState.OUTDATED);
+                    mSafetyCheckModel.set(
+                            SafetyCheckProperties.UPDATES_STATE, UpdatesState.OUTDATED);
                     updates.performClick();
                 });
         // Passwords and updates should get clicked, SB element is inactive.

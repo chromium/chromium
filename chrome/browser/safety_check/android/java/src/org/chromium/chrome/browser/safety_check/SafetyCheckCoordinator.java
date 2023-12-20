@@ -85,10 +85,15 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
                                             .addObserver(SafetyCheckCoordinator.this);
                                     // The View is available, so now we can create the Model, MCP,
                                     // and Mediator.
-                                    PropertyModel model = createModelAndMcp(mSettingsFragment);
+                                    PropertyModel safetyCheckModel =
+                                            createSafetyCheckModelAndBind(mSettingsFragment);
+                                    PropertyModel passwordsCheckPreferenceModel =
+                                            createPasswordCheckPreferenceModelAndBind(
+                                                    mSettingsFragment, safetyCheckModel);
                                     mMediator =
                                             new SafetyCheckMediator(
-                                                    model,
+                                                    safetyCheckModel,
+                                                    passwordsCheckPreferenceModel,
                                                     mUpdatesClient,
                                                     settingsLauncher,
                                                     signinLauncher,
@@ -115,10 +120,24 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
     }
 
     @VisibleForTesting
-    static PropertyModel createModelAndMcp(SafetyCheckSettingsFragment settingsFragment) {
+    static PropertyModel createSafetyCheckModelAndBind(
+            SafetyCheckSettingsFragment settingsFragment) {
         PropertyModel model = SafetyCheckProperties.createSafetyCheckModel();
         PropertyModelChangeProcessor.create(model, settingsFragment, SafetyCheckViewBinder::bind);
         return model;
+    }
+
+    static PropertyModel createPasswordCheckPreferenceModelAndBind(
+            SafetyCheckSettingsFragment settingsFragment, PropertyModel safetyCheckModel) {
+        PropertyModel passwordSafetyCheckModel =
+                PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel();
+        PropertyModelChangeProcessor.create(
+                passwordSafetyCheckModel,
+                settingsFragment,
+                (model, fragment, key) ->
+                        SafetyCheckViewBinder.bindPasswordSafetyCheck(
+                                safetyCheckModel, model, fragment, key));
+        return passwordSafetyCheckModel;
     }
 
     /** Gets invoked when the Fragment detaches (the View is destroyed ). */

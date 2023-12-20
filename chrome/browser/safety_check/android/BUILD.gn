@@ -26,6 +26,7 @@ source_set("android") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/safety_check/PasswordsCheckPreferenceProperties.java",
     "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckBridge.java",
     "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckCoordinator.java",
     "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckElementPreference.java",

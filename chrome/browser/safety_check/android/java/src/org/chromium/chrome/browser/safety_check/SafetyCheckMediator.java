@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
-import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.PasswordsState;
+import org.chromium.chrome.browser.safety_check.PasswordsCheckPreferenceProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
@@ -70,8 +70,11 @@ class SafetyCheckMediator
 
     private static final String SAFETY_CHECK_INTERACTIONS = "Settings.SafetyCheck.Interactions";
 
-    /** Model representing the current state of the checks. */
-    private PropertyModel mModel;
+    /** Model representing the current state of the update and safe browsing checks. */
+    private PropertyModel mSafetyCheckModel;
+
+    /** Model representing the current state of the password check. */
+    private PropertyModel mPasswordsSafetyCheckPreferenceModel;
 
     /** Client to interact with Omaha for the updates check. */
     private SafetyCheckUpdatesDelegate mUpdatesClient;
@@ -170,12 +173,12 @@ class SafetyCheckMediator
 
                 setRunnableUpdates(
                         () -> {
-                            if (mModel != null) {
+                            if (mSafetyCheckModel != null) {
                                 RecordHistogram.recordEnumeratedHistogram(
                                         "Settings.SafetyCheck.UpdatesResult",
                                         SafetyCheckProperties.updatesStateToNative(status),
                                         UpdateStatus.MAX_VALUE + 1);
-                                mModel.set(SafetyCheckProperties.UPDATES_STATE, status);
+                                mSafetyCheckModel.set(SafetyCheckProperties.UPDATES_STATE, status);
                             }
                         });
             };
@@ -190,20 +193,29 @@ class SafetyCheckMediator
      * @param modalDialogManagerSupplier A supplier for the {@link ModalDialogManager}.
      */
     public SafetyCheckMediator(
-            PropertyModel model,
+            PropertyModel safetyCheckModel,
+            PropertyModel passwordsSafetyCheckPreferenceModel,
             SafetyCheckUpdatesDelegate client,
             SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
             SyncService syncService,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
-        this(model, client, settingsLauncher, signinLauncher, syncService, new Handler());
+        this(
+                safetyCheckModel,
+                passwordsSafetyCheckPreferenceModel,
+                client,
+                settingsLauncher,
+                signinLauncher,
+                syncService,
+                new Handler());
         mPasswordStoreBridge = new PasswordStoreBridge();
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
     @VisibleForTesting
     SafetyCheckMediator(
-            PropertyModel model,
+            PropertyModel safetyCheckModel,
+            PropertyModel passwordsSafetyCheckPreferenceModel,
             SafetyCheckUpdatesDelegate client,
             SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
@@ -211,19 +223,28 @@ class SafetyCheckMediator
             PasswordStoreBridge bridge,
             Handler handler,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
-        this(model, client, settingsLauncher, signinLauncher, syncService, handler);
+        this(
+                safetyCheckModel,
+                passwordsSafetyCheckPreferenceModel,
+                client,
+                settingsLauncher,
+                signinLauncher,
+                syncService,
+                handler);
         mPasswordStoreBridge = bridge;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
     SafetyCheckMediator(
-            PropertyModel model,
+            PropertyModel safetyCheckModel,
+            PropertyModel passwordsSafetyCheckPreferenceModel,
             SafetyCheckUpdatesDelegate client,
             SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
             @Nullable SyncService syncService,
             Handler handler) {
-        mModel = model;
+        mSafetyCheckModel = safetyCheckModel;
+        mPasswordsSafetyCheckPreferenceModel = passwordsSafetyCheckPreferenceModel;
         mUpdatesClient = client;
         mSettingsLauncher = settingsLauncher;
         mSigninLauncher = signinLauncher;
@@ -231,7 +252,7 @@ class SafetyCheckMediator
         mHandler = handler;
         mPreferenceManager = ChromeSharedPreferences.getInstance();
         // Set the listener for clicking the updates element.
-        mModel.set(
+        mSafetyCheckModel.set(
                 SafetyCheckProperties.UPDATES_CLICK_LISTENER,
                 (Preference.OnPreferenceClickListener)
                         (p) -> {
@@ -243,7 +264,7 @@ class SafetyCheckMediator
                             return true;
                         });
         // Set the listener for clicking the Safe Browsing element.
-        mModel.set(
+        mSafetyCheckModel.set(
                 SafetyCheckProperties.SAFE_BROWSING_CLICK_LISTENER,
                 (Preference.OnPreferenceClickListener)
                         (p) -> {
@@ -269,11 +290,11 @@ class SafetyCheckMediator
         // Set the listener for clicking the passwords element.
         updatePasswordElementClickDestination();
         // Set the listener for clicking the Check button.
-        mModel.set(
+        mSafetyCheckModel.set(
                 SafetyCheckProperties.SAFETY_CHECK_BUTTON_CLICK_LISTENER,
                 (View.OnClickListener) (v) -> performSafetyCheck());
         // Get the timestamp of the last run.
-        mModel.set(
+        mSafetyCheckModel.set(
                 SafetyCheckProperties.LAST_RUN_TIMESTAMP,
                 mPreferenceManager.readLong(
                         ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP, 0));
@@ -298,14 +319,16 @@ class SafetyCheckMediator
         if (currentTime - lastRun < RESET_TO_NULL_AFTER_MS) {
             mShowSafePasswordState = true;
             // Rerun the updates and Safe Browsing checks.
-            mModel.set(SafetyCheckProperties.SAFE_BROWSING_STATE, SafeBrowsingState.CHECKING);
-            mModel.set(SafetyCheckProperties.UPDATES_STATE, UpdatesState.CHECKING);
+            mSafetyCheckModel.set(
+                    SafetyCheckProperties.SAFE_BROWSING_STATE, SafeBrowsingState.CHECKING);
+            mSafetyCheckModel.set(SafetyCheckProperties.UPDATES_STATE, UpdatesState.CHECKING);
             checkSafeBrowsing();
             mUpdatesClient.checkForUpdates(new WeakReference(mUpdatesCheckCallback));
         } else {
             mShowSafePasswordState = false;
-            mModel.set(SafetyCheckProperties.SAFE_BROWSING_STATE, SafeBrowsingState.UNCHECKED);
-            mModel.set(SafetyCheckProperties.UPDATES_STATE, UpdatesState.UNCHECKED);
+            mSafetyCheckModel.set(
+                    SafetyCheckProperties.SAFE_BROWSING_STATE, SafeBrowsingState.UNCHECKED);
+            mSafetyCheckModel.set(SafetyCheckProperties.UPDATES_STATE, UpdatesState.UNCHECKED);
 
             // If the new Password Manager backend is out of date, attempting to fetch breached
             // credentials will expectedly fail and display an error message. This error is
@@ -314,16 +337,20 @@ class SafetyCheckMediator
             if (PasswordManagerHelper.canUseUpm()
                     && PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
                 mLoadStage = PasswordCheckLoadStage.IDLE;
-                mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.UNCHECKED);
+                mPasswordsSafetyCheckPreferenceModel.set(
+                        PasswordsCheckPreferenceProperties.PASSWORDS_STATE,
+                        PasswordsState.UNCHECKED);
                 return;
             }
         }
-        mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.CHECKING);
+        mPasswordsSafetyCheckPreferenceModel.set(
+                PasswordsCheckPreferenceProperties.PASSWORDS_STATE, PasswordsState.CHECKING);
         mLoadStage = PasswordCheckLoadStage.INITIAL_WAIT_FOR_LOAD;
         // If the user is not signed in, immediately set the state and do not block on disk loads.
         if (!SafetyCheckBridge.userSignedIn()) {
             mLoadStage = PasswordCheckLoadStage.IDLE;
-            mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.SIGNED_OUT);
+            mPasswordsSafetyCheckPreferenceModel.set(
+                    PasswordsCheckPreferenceProperties.PASSWORDS_STATE, PasswordsState.SIGNED_OUT);
             // Record the value in UMA.
             RecordHistogram.recordEnumeratedHistogram(
                     "Settings.SafetyCheck.PasswordsResult2",
@@ -354,15 +381,17 @@ class SafetyCheckMediator
         mCheckStartTime = SystemClock.elapsedRealtime();
         // Record the absolute start time for showing when the last Safety check was performed.
         long currentTime = System.currentTimeMillis();
-        mModel.set(SafetyCheckProperties.LAST_RUN_TIMESTAMP, currentTime);
+        mSafetyCheckModel.set(SafetyCheckProperties.LAST_RUN_TIMESTAMP, currentTime);
         mPreferenceManager.writeLong(
                 ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP, currentTime);
         // Increment the stored number of Safety check starts.
         mPreferenceManager.incrementInt(ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_RUN_COUNTER);
         // Set the checking state for all elements.
-        mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.CHECKING);
-        mModel.set(SafetyCheckProperties.SAFE_BROWSING_STATE, SafeBrowsingState.CHECKING);
-        mModel.set(SafetyCheckProperties.UPDATES_STATE, UpdatesState.CHECKING);
+        mPasswordsSafetyCheckPreferenceModel.set(
+                PasswordsCheckPreferenceProperties.PASSWORDS_STATE, PasswordsState.CHECKING);
+        mSafetyCheckModel.set(
+                SafetyCheckProperties.SAFE_BROWSING_STATE, SafeBrowsingState.CHECKING);
+        mSafetyCheckModel.set(SafetyCheckProperties.UPDATES_STATE, UpdatesState.CHECKING);
         // Start all the checks.
         checkSafeBrowsing();
         checkPasswords();
@@ -403,20 +432,24 @@ class SafetyCheckMediator
             return;
         }
 
-        if (mModel == null) return;
+        if (mPasswordsSafetyCheckPreferenceModel == null) return;
 
         // Handle error state.
         if (status != PasswordCheckUIStatus.IDLE) {
             setRunnablePasswords(
                     () -> {
-                        if (mModel != null) {
-                            @SafetyCheckProperties.PasswordsState
-                            int state = SafetyCheckProperties.passwordsStatefromErrorState(status);
+                        if (mPasswordsSafetyCheckPreferenceModel != null) {
+                            @PasswordsState
+                            int state =
+                                    PasswordsCheckPreferenceProperties.passwordsStatefromErrorState(
+                                            status);
                             RecordHistogram.recordEnumeratedHistogram(
                                     "Settings.SafetyCheck.PasswordsResult2",
-                                    SafetyCheckProperties.passwordsStateToNative(state),
+                                    PasswordsCheckPreferenceProperties.passwordsStateToNative(
+                                            state),
                                     PasswordsStatus.MAX_VALUE + 1);
-                            mModel.set(SafetyCheckProperties.PASSWORDS_STATE, state);
+                            mPasswordsSafetyCheckPreferenceModel.set(
+                                    PasswordsCheckPreferenceProperties.PASSWORDS_STATE, state);
                             updatePasswordElementClickDestination();
                         }
                     });
@@ -463,7 +496,8 @@ class SafetyCheckMediator
             mPasswordStoreBridge.destroy();
         }
         mUpdatesClient = null;
-        mModel = null;
+        mSafetyCheckModel = null;
+        mPasswordsSafetyCheckPreferenceModel = null;
         mHandler = null;
     }
 
@@ -519,13 +553,13 @@ class SafetyCheckMediator
     private void checkSafeBrowsing() {
         setRunnableSafeBrowsing(
                 () -> {
-                    if (mModel != null) {
+                    if (mSafetyCheckModel != null) {
                         @SafeBrowsingStatus int status = SafetyCheckBridge.checkSafeBrowsing();
                         RecordHistogram.recordEnumeratedHistogram(
                                 "Settings.SafetyCheck.SafeBrowsingResult",
                                 status,
                                 SafeBrowsingStatus.MAX_VALUE + 1);
-                        mModel.set(
+                        mSafetyCheckModel.set(
                                 SafetyCheckProperties.SAFE_BROWSING_STATE,
                                 SafetyCheckProperties.safeBrowsingStateFromNative(status));
                     }
@@ -555,8 +589,12 @@ class SafetyCheckMediator
     private void updatePasswordsStateOnDataLoaded() {
         // Always display the compromised state.
         if (mBreachedCredentialsCount != 0) {
-            mModel.set(SafetyCheckProperties.COMPROMISED_PASSWORDS, mBreachedCredentialsCount);
-            mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.COMPROMISED_EXIST);
+            mPasswordsSafetyCheckPreferenceModel.set(
+                    PasswordsCheckPreferenceProperties.COMPROMISED_PASSWORDS_COUNT,
+                    mBreachedCredentialsCount);
+            mPasswordsSafetyCheckPreferenceModel.set(
+                    PasswordsCheckPreferenceProperties.PASSWORDS_STATE,
+                    PasswordsState.COMPROMISED_EXIST);
             // Record the value in UMA.
             RecordHistogram.recordEnumeratedHistogram(
                     "Settings.SafetyCheck.PasswordsResult2",
@@ -565,10 +603,13 @@ class SafetyCheckMediator
         } else if (mLoadStage == PasswordCheckLoadStage.INITIAL_WAIT_FOR_LOAD
                 && !mShowSafePasswordState) {
             // Cannot show the safe state at the initial load if last run is older than 10 mins.
-            mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.UNCHECKED);
+            mPasswordsSafetyCheckPreferenceModel.set(
+                    PasswordsCheckPreferenceProperties.PASSWORDS_STATE, PasswordsState.UNCHECKED);
         } else if (!hasSavedPasswords()) {
             // Can show safe state: display no passwords.
-            mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.NO_PASSWORDS);
+            mPasswordsSafetyCheckPreferenceModel.set(
+                    PasswordsCheckPreferenceProperties.PASSWORDS_STATE,
+                    PasswordsState.NO_PASSWORDS);
             // Record the value in UMA.
             RecordHistogram.recordEnumeratedHistogram(
                     "Settings.SafetyCheck.PasswordsResult2",
@@ -576,7 +617,8 @@ class SafetyCheckMediator
                     PasswordsStatus.MAX_VALUE + 1);
         } else {
             // Can show safe state: display no compromises.
-            mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.SAFE);
+            mPasswordsSafetyCheckPreferenceModel.set(
+                    PasswordsCheckPreferenceProperties.PASSWORDS_STATE, PasswordsState.SAFE);
             // Record the value in UMA.
             RecordHistogram.recordEnumeratedHistogram(
                     "Settings.SafetyCheck.PasswordsResult2",
@@ -598,7 +640,10 @@ class SafetyCheckMediator
 
     /** Sets the destination of the click on the passwords element based on the current state. */
     private void updatePasswordElementClickDestination() {
-        @PasswordsState int state = mModel.get(SafetyCheckProperties.PASSWORDS_STATE);
+        @PasswordsState
+        int state =
+                mPasswordsSafetyCheckPreferenceModel.get(
+                        PasswordsCheckPreferenceProperties.PASSWORDS_STATE);
         Preference.OnPreferenceClickListener listener = null;
         if (state == PasswordsState.SIGNED_OUT) {
             listener =
@@ -655,11 +700,12 @@ class SafetyCheckMediator
                         return true;
                     };
         }
-        mModel.set(SafetyCheckProperties.PASSWORDS_CLICK_LISTENER, listener);
+        mPasswordsSafetyCheckPreferenceModel.set(
+                PasswordsCheckPreferenceProperties.PASSWORDS_CLICK_LISTENER, listener);
     }
 
     private void onPasswordsLoaded() {
-        if (mModel == null) return;
+        if (mPasswordsSafetyCheckPreferenceModel == null) return;
 
         mPasswordsLoaded = true;
         if (mLeaksLoaded) {
@@ -733,7 +779,7 @@ class SafetyCheckMediator
 
     /** Following methods are used only with the new PasswordCheck API. */
     private void onBreachedCredentialsObtained(Integer count, boolean duringCheck) {
-        if (mModel == null) return;
+        if (mPasswordsSafetyCheckPreferenceModel == null) return;
 
         if (duringCheck) {
             // Hand off the completed state to the method for handling loaded passwords data.
@@ -748,7 +794,7 @@ class SafetyCheckMediator
     }
 
     private void onPasswordCheckFinished() {
-        if (mModel == null) return;
+        if (mPasswordsSafetyCheckPreferenceModel == null) return;
 
         WeakReference<SafetyCheckMediator> weakRef = new WeakReference(this);
         PasswordManagerHelper.getBreachedCredentialsCount(
@@ -767,24 +813,27 @@ class SafetyCheckMediator
     }
 
     private void onPasswordCheckFailed(Exception error) {
-        if (mModel == null) return;
+        if (mPasswordsSafetyCheckPreferenceModel == null) return;
 
         setRunnablePasswords(
                 () -> {
-                    if (mModel == null) return;
+                    if (mPasswordsSafetyCheckPreferenceModel == null) return;
 
                     RecordHistogram.recordEnumeratedHistogram(
                             "Settings.SafetyCheck.PasswordsResult2",
-                            SafetyCheckProperties.passwordsStateToNative(PasswordsState.ERROR),
+                            PasswordsCheckPreferenceProperties.passwordsStateToNative(
+                                    PasswordsState.ERROR),
                             PasswordsStatus.MAX_VALUE + 1);
                     if (error instanceof PasswordCheckBackendException
                             && ((PasswordCheckBackendException) error).errorCode
                                     == CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED) {
-                        mModel.set(
-                                SafetyCheckProperties.PASSWORDS_STATE,
+                        mPasswordsSafetyCheckPreferenceModel.set(
+                                PasswordsCheckPreferenceProperties.PASSWORDS_STATE,
                                 PasswordsState.BACKEND_VERSION_NOT_SUPPORTED);
                     } else {
-                        mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.ERROR);
+                        mPasswordsSafetyCheckPreferenceModel.set(
+                                PasswordsCheckPreferenceProperties.PASSWORDS_STATE,
+                                PasswordsState.ERROR);
                     }
 
                     updatePasswordElementClickDestination();
