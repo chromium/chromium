@@ -22222,6 +22222,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4756" label="LCPImageWasLazy"/>
   <int value="4757" label="EventTargetOnObservable"/>
   <int value="4758" label="CredentialManagerCrossOriginPublicKeyCreateRequest"/>
+  <int value="4759" label="ViewTransitionNameAuto"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
