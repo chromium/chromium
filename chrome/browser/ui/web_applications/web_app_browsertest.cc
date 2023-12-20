@@ -134,7 +134,7 @@
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
-// TODO(crbug/4925196): enable gn check once it learn about conditional includes
+// TODO(crbug.com/1125897): Enable gn check once it handles conditional includes
 #include "components/metrics/structured/structured_events.h"  // nogncheck
 #endif
 
