@@ -97,7 +97,7 @@ void AshIntegrationTest::SetUpOnMainThread() {
 void AshIntegrationTest::OverrideGaiaUrlForLacros(
     base::CommandLine* command_line) {
   // When using real Gaia login, don't override the Gaia URL.
-  if (login_mixin_.IsGaiaLoginMode()) {
+  if (login_mixin_.mode() == ChromeOSIntegrationLoginMixin::Mode::kGaiaLogin) {
     return;
   }
 
