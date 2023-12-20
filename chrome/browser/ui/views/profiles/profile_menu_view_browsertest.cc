@@ -72,6 +72,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/service/sync_service.h"
@@ -372,7 +373,9 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
 class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
                                    public InProcessBrowserTest {
  public:
-  ProfileMenuViewSignoutTest() = default;
+  ProfileMenuViewSignoutTest() {
+    feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
+  }
 
   CoreAccountId account_id() const { return account_id_; }
 
@@ -420,6 +423,7 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
  private:
   CoreAccountId account_id_;
   raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -472,6 +476,24 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, SignoutFromNTP) {
   EXPECT_EQ(1, tab_strip->count());
   content::WebContents* logout_page = tab_strip->GetActiveWebContents();
   EXPECT_EQ(GaiaUrls::GetInstance()->service_logout_url(),
+            logout_page->GetURL());
+}
+
+class ProfileMenuViewSignoutTestUno : public ProfileMenuViewSignoutTest {
+ public:
+  ProfileMenuViewSignoutTestUno() {
+    feature_list_.InitAndEnableFeature(switches::kUnoDesktop);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTestUno, LogoutUrlWithUnoEnabled) {
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ASSERT_TRUE(Signout());
+  content::WebContents* logout_page = tab_strip->GetActiveWebContents();
+  EXPECT_EQ(GURL("https://accounts.google.com/Logout?continue=https://"
+                 "accounts.google.com"),
             logout_page->GetURL());
 }
 

@@ -340,6 +340,13 @@ GURL GaiaUrls::GetCheckConnectionInfoURLWithSource(const std::string& source) {
                               base::StringPrintf("?source=%s", source.c_str()));
 }
 
+GURL GaiaUrls::LogOutURLWithContinueURL(const GURL& continue_url) {
+  std::string params = base::StringPrintf(
+      "?continue=%s", (continue_url.is_valid() ? continue_url.spec().c_str()
+                                               : kDefaultGaiaUrl));
+  return service_logout_url_.Resolve(params);
+}
+
 void GaiaUrls::InitializeDefault() {
   SetDefaultURLIfInvalid(&google_url_, switches::kGoogleUrl, kDefaultGoogleUrl);
   SetDefaultOriginIfOpaqueOrInvalidScheme(&gaia_origin_, switches::kGaiaUrl,
