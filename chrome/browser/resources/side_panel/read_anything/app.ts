@@ -525,6 +525,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   playNextGranularity() {
     this.synth.cancel();
+    this.resetPreviousHighlight();
     if (!this.playNextMessage()) {
       this.onSpeechStopped();
     }
@@ -534,6 +535,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   //  previous granularity.
   playPreviousGranularity() {
     this.synth.cancel();
+    this.resetPreviousHighlight();
     this.playPreviousMessage();
   }
 
