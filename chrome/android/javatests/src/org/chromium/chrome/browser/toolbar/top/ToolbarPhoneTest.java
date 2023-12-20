@@ -14,7 +14,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
@@ -80,7 +79,6 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
-import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.NtpSearchBoxDrawable;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -119,7 +117,6 @@ public class ToolbarPhoneTest {
     @Mock ThemeColorProvider mThemeColorProvider;
     @Mock GradientDrawable mLocationbarBackgroundDrawable;
     @Mock OptionalButtonCoordinator mOptionalButtonCoordinator;
-    @Mock NtpSearchBoxDrawable mNtpSearchBoxDrawable;
 
     private Canvas mCanvas = new Canvas();
     private ToolbarPhone mToolbar;
@@ -957,52 +954,6 @@ public class ToolbarPhoneTest {
                     // Optional button should be drawn.
                     verify(mOptionalButtonCoordinator, atLeastOnce()).getViewForDrawing();
                 });
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
-    public void testLocationBarBackgroundChangedWithStartSurfaceState() {
-        // Test updating the location bar background when entering the search page from the Start
-        // Surface.
-        assertEquals(false, mToolbar.isLocationBarShownInNtp());
-        mToolbar.setLocationBarBackgroundDrawableForTesting(mLocationbarBackgroundDrawable);
-        mToolbar.setIsShowingStartSurfaceHomepageForTesting(true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mToolbar.onStartSurfaceStateChanged(false, false, false, true);
-                });
-        assertEquals(
-                mLocationbarBackgroundDrawable,
-                mToolbar.getActiveLocationBarBackgroundForTesting());
-
-        // Test updating the location bar background when entering the New Tab Page from the Start
-        // Surface.
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        NewTabPageTestUtils.waitForNtpLoaded(tab);
-        assertEquals(true, mToolbar.isLocationBarShownInNtp());
-        mToolbar.setNtpSearchBoxBackgroundForTesting(mNtpSearchBoxDrawable);
-        mToolbar.setIsShowingStartSurfaceHomepageForTesting(true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mToolbar.onStartSurfaceStateChanged(false, false, false, false);
-                });
-        assertEquals(mNtpSearchBoxDrawable, mToolbar.getActiveLocationBarBackgroundForTesting());
-
-        // Test updating the location bar background when entering the New Tab Page from the Start
-        // Surface when NtpSearchBoxDrawable hasn't been constructed.
-        assertEquals(true, mToolbar.isLocationBarShownInNtp());
-        mToolbar.setNtpSearchBoxBackgroundForTesting(null);
-        mToolbar.setIsShowingStartSurfaceHomepageForTesting(true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mToolbar.onStartSurfaceStateChanged(false, false, false, false);
-                });
-        assertTrue(mToolbar.getActiveLocationBarBackgroundForTesting() != null);
-        assertTrue(
-                mToolbar.getActiveLocationBarBackgroundForTesting()
-                        instanceof NtpSearchBoxDrawable);
     }
 
     @Test

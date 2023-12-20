@@ -621,17 +621,16 @@ public abstract class ToolbarLayout extends FrameLayout
 
     /**
      * Called when start surface state is changed.
+     *
      * @param shouldBeVisible Whether toolbar layout should be visible.
      * @param isShowingStartSurfaceHomepage Whether start surface homepage is showing.
      * @param isShowingStartSurfaceTabSwitcher Whether the StartSurface-controlled TabSwitcher is
-     *         showing.
-     * @param isRealSearchBoxFocused Whether the real search box is focused.
+     *     showing.
      */
     void onStartSurfaceStateChanged(
             boolean shouldBeVisible,
             boolean isShowingStartSurfaceHomepage,
-            boolean isShowingStartSurfaceTabSwitcher,
-            boolean isRealSearchBoxFocused) {}
+            boolean isShowingStartSurfaceTabSwitcher) {}
 
     /**
      * Gives inheriting classes the chance to observe tab count changes.

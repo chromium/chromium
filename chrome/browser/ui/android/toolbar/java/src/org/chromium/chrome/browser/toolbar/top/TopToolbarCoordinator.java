@@ -789,8 +789,7 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarLayout.onStartSurfaceStateChanged(
                 showToolbar,
                 mStartSurfaceToolbarCoordinator.isOnHomepage(),
-                isShowingStartSurfaceTabSwitcher(),
-                mStartSurfaceToolbarCoordinator.isRealSearchBoxFocused());
+                isShowingStartSurfaceTabSwitcher());
     }
 
     private boolean isShowingStartSurfaceTabSwitcher() {

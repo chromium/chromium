@@ -251,4 +251,13 @@ public class ColorUtils {
             @ColorInt int color, @IntRange(from = 0L, to = 255L) int alpha) {
         return androidx.core.graphics.ColorUtils.setAlphaComponent(color, alpha);
     }
+
+    /**
+     * Convert the float alpha value into an integer ranging from 0 to 255 to be used in {@link
+     * #setAlphaComponent(int, int)}
+     */
+    public static @ColorInt int setAlphaComponentWithFloatAlpha(
+            @ColorInt int color, @FloatRange(from = 0f, to = 1f) float alpha) {
+        return setAlphaComponent(color, (int) (alpha * 255));
+    }
 }

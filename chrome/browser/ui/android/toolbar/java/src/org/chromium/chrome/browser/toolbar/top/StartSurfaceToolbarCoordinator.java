@@ -288,11 +288,6 @@ public class StartSurfaceToolbarCoordinator {
         return mToolbarMediator.isOnHomepage();
     }
 
-    /** Returns whether the real search box is focused.*/
-    boolean isRealSearchBoxFocused() {
-        return mToolbarMediator.isRealSearchBoxFocused();
-    }
-
     boolean isShowingTabSwitcher() {
         return mToolbarMediator.isOnGridTabSwitcher();
     }

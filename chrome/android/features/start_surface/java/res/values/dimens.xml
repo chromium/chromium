@@ -15,7 +15,6 @@ found in the LICENSE file.
 
     <!-- Surface Polish -->
     <dimen name="home_surface_ui_background_color_elevation">@dimen/default_elevation_0</dimen>
-    <dimen name="home_surface_search_box_background_neutral_color_elevation">@dimen/default_elevation_0</dimen>
     <dimen name="home_surface_ui_background_radius">24dp</dimen>
     <dimen name="home_surface_search_box_background_radius">100dp</dimen>
 
