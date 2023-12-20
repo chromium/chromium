@@ -73,7 +73,6 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/validation.h"
-#include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -710,23 +709,11 @@ class BrowserAutofillManagerTest : public testing::Test {
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     personal_data().set_auto_accept_address_imports_for_testing(true);
-    personal_data().Init(/*profile_database=*/database_,
-                         /*account_database=*/nullptr,
-                         /*pref_service=*/autofill_client_.GetPrefs(),
-                         /*local_state=*/autofill_client_.GetPrefs(),
-                         /*identity_manager=*/nullptr,
-                         /*history_service=*/nullptr,
-                         /*sync_service=*/&sync_service_,
-                         /*strike_database=*/nullptr,
-                         /*image_fetcher=*/nullptr);
     personal_data().SetPrefService(autofill_client_.GetPrefs());
+    personal_data().SetSyncServiceForTest(&sync_service_);
 
     autocomplete_history_manager_ =
         std::make_unique<NiceMock<MockAutocompleteHistoryManager>>();
-    autocomplete_history_manager_->Init(
-        /*profile_database=*/database_,
-        /*pref_service=*/autofill_client_.GetPrefs(),
-        /*is_off_the_record=*/false);
     iban_manager_ =
         std::make_unique<NiceMock<MockIbanManager>>(&personal_data());
     merchant_promo_code_manager_ =
@@ -1341,7 +1328,6 @@ class BrowserAutofillManagerTest : public testing::Test {
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
   syncer::TestSyncService sync_service_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
-  scoped_refptr<AutofillWebDataService> database_;
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   std::unique_ptr<MockIbanManager> iban_manager_;
   std::unique_ptr<MockMerchantPromoCodeManager> merchant_promo_code_manager_;
