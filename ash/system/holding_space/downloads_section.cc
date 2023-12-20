@@ -74,8 +74,8 @@ class Header : public views::Button {
             holding_space_ui::CreateSectionHeaderLabel(
                 IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE)
                 .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                .SetProperty(views::kFlexBehaviorKey,
-                             views::FlexSpecification().WithWeight(1)),
+                .SetProperty(views::kBoxLayoutFlexKey,
+                             views::BoxLayoutFlexSpecification()),
             views::Builder<views::ImageView>()
                 .CopyAddressTo(&chevron_)
                 .SetFlipCanvasOnPaintForRTLUI(true)

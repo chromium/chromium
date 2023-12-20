@@ -726,17 +726,18 @@ TEST_F(BoxLayoutTest, FlexBehavior) {
   EXPECT_EQ(gfx::Rect(0, 0, 20, 50).ToString(), v1->bounds().ToString());
   EXPECT_EQ(gfx::Rect(0, 50, 20, 50).ToString(), v2->bounds().ToString());
 
-  // Set `kFlexBehaviorKey` so that the first view fills 2/3 of the available
-  // space. Flex set via `kFlexBehaviorKey` takes higher precedence than default
-  // flex.
-  v1->SetProperty(kFlexBehaviorKey, FlexSpecification().WithWeight(2));
+  // Set `kBoxLayoutFlexKey` so that the first view fills 2/3 of the available
+  // space. Flex set via `kBoxLayoutFlexKey` takes higher precedence than
+  // default flex.
+  v1->SetProperty(kBoxLayoutFlexKey,
+                  BoxLayoutFlexSpecification().WithWeight(2));
   HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(0, 0, 20, 60).ToString(), v1->bounds().ToString());
   EXPECT_EQ(gfx::Rect(0, 60, 20, 40).ToString(), v2->bounds().ToString());
 
   // Set flex so that the first view fills 3/4 of the available space. Flex for
   // a view set on the `layout` takes higher precedence than flex set via
-  // `kFlexBehaviorKey`.
+  // `kBoxLayoutFlexKey`.
   layout->SetFlexForView(v1, 3);
   HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(0, 0, 20, 65).ToString(), v1->bounds().ToString());

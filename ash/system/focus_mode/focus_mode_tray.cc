@@ -248,10 +248,8 @@ void FocusModeTray::ShowBubble() {
             base::UTF8ToUTF16(controller->selected_task_title()),
             base::BindRepeating(&FocusModeTray::OnCompleteTask,
                                 weak_ptr_factory_.GetWeakPtr())));
-    task_item_view_->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                 views::MaximumFlexSizeRule::kPreferred));
+    task_item_view_->SetProperty(views::kBoxLayoutFlexKey,
+                                 views::BoxLayoutFlexSpecification());
   }
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);

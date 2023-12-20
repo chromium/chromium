@@ -1711,10 +1711,8 @@ void AshNotificationView::CreateOrUpdateSnoozeButton(
       views::Builder<views::BoxLayoutView>()
           .CopyAddressTo(&snooze_button_spacer_)
           .SetMainAxisAlignment(MainAxisAlignment::kEnd)
-          .SetProperty(
-              views::kFlexBehaviorKey,
-              views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                       views::MaximumFlexSizeRule::kUnbounded))
+          .SetProperty(views::kBoxLayoutFlexKey,
+                       views::BoxLayoutFlexSpecification())
           .Build());
 
   auto snooze_button = std::make_unique<IconButton>(

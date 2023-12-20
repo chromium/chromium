@@ -535,7 +535,8 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
               .SetInteriorMargin(gfx::Insets::TLBR(dialog_insets.top(),
                                                    dialog_insets.left(), 0,
                                                    dialog_insets.right()))
-              .SetProperty(views::kFlexBehaviorKey, stretch_specification)
+              .SetProperty(views::kBoxLayoutFlexKey,
+                           views::BoxLayoutFlexSpecification())
               .SetVisible(true)
               .AddChildren(
                   views::Builder<views::FlexLayoutView>()

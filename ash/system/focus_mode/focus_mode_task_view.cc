@@ -176,11 +176,8 @@ FocusModeTaskView::FocusModeTaskView() {
       views::BoxLayout::CrossAxisAlignment::kCenter);
   textfield_container_->SetOrientation(
       views::BoxLayout::Orientation::kHorizontal);
-  textfield_container_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                               views::MaximumFlexSizeRule::kUnbounded));
-
+  textfield_container_->SetProperty(views::kBoxLayoutFlexKey,
+                                    views::BoxLayoutFlexSpecification());
   radio_button_ = textfield_container_->AddChildView(
       std::make_unique<views::ImageButton>(base::BindRepeating(
           &FocusModeTaskView::OnCompleteTask, base::Unretained(this))));

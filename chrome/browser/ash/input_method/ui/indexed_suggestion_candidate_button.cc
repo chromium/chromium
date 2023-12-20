@@ -97,11 +97,8 @@ void IndexedSuggestionCandidateButton::BuildCandidate(
       views::LayoutAlignment::kCenter);
   candidate_wrapper_layout->SetMainAxisAlignment(
       views::LayoutAlignment::kCenter);
-  candidate_wrapper->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kUnbounded, false)
-          .WithAlignment(views::LayoutAlignment::kCenter));
+  candidate_wrapper->SetProperty(views::kBoxLayoutFlexKey,
+                                 views::BoxLayoutFlexSpecification());
   candidate_wrapper->SetPreferredSize(
       gfx::Size(kCandidateSquareSide, kCandidateSquareSide));
   candidate_wrapper->AddChildView(

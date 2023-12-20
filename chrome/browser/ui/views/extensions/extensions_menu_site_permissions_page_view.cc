@@ -257,7 +257,8 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
               .SetInteriorMargin(gfx::Insets::TLBR(dialog_insets.top(),
                                                    dialog_insets.left(), 0,
                                                    dialog_insets.right()))
-              .SetProperty(views::kFlexBehaviorKey, stretch_specification)
+              .SetProperty(views::kBoxLayoutFlexKey,
+                           views::BoxLayoutFlexSpecification())
               .AddChildren(
                   // Back button.
                   views::Builder<views::ImageButton>(

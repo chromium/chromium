@@ -138,10 +138,8 @@ std::unique_ptr<views::View> CastDialogSinkView::CreateLabelView(
   label_wrapper->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-  label_wrapper->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
+  label_wrapper->SetProperty(views::kBoxLayoutFlexKey,
+                             views::BoxLayoutFlexSpecification());
   label_wrapper->SetProperty(views::kMarginsKey,
                              gfx::Insets::VH(vertical_spacing, 0));
 

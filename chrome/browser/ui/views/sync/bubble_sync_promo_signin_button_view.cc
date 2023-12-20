@@ -66,11 +66,8 @@ BubbleSyncPromoSigninButtonView::BubbleSyncPromoSigninButtonView(
   if (orientation == views::BoxLayout::Orientation::kHorizontal) {
     button_layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
-    hover_button->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                 views::MaximumFlexSizeRule::kUnbounded)
-            .WithAlignment(views::LayoutAlignment::kStart));
+    hover_button->SetProperty(views::kBoxLayoutFlexKey,
+                              views::BoxLayoutFlexSpecification());
   }
 
   views::Builder<BubbleSyncPromoSigninButtonView>(this)

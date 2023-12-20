@@ -81,9 +81,7 @@ void SetupOverflowIcon(views::ImageButton* overflow_icon, bool left) {
 FocusModeChipCarousel::FocusModeChipCarousel(
     ChipPressedCallback on_chip_pressed)
     : on_chip_pressed_(std::move(on_chip_pressed)) {
-  SetProperty(views::kFlexBehaviorKey,
-              views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                       views::MaximumFlexSizeRule::kUnbounded));
+  SetProperty(views::kBoxLayoutFlexKey, views::BoxLayoutFlexSpecification());
   SetBorder(views::CreateEmptyBorder(kCarouselInsets));
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetNotifyEnterExitOnChild(true);
