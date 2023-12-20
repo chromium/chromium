@@ -1736,12 +1736,15 @@ void SpdySession::CloseActiveStreamIterator(ActiveStreamMap::iterator it,
 
   DeleteStream(std::move(owned_stream), status);
 
-  // If the socket belongs to a socket pool, and there are no active streams,
-  // and the socket pool is stalled, then close the session to free up a socket
-  // slot.
-  if (client_socket_handle_ && active_streams_.empty() &&
-      created_streams_.empty() && client_socket_handle_->IsPoolStalled()) {
-    DoDrainSession(ERR_CONNECTION_CLOSED, "Closing idle connection.");
+  if (active_streams_.empty() && created_streams_.empty()) {
+    // If the socket belongs to a socket pool, and there are no active streams,
+    // and the socket pool is stalled, then close the session to free up a
+    // socket slot.
+    if (client_socket_handle_ && client_socket_handle_->IsPoolStalled()) {
+      DoDrainSession(ERR_CONNECTION_CLOSED, "Closing idle connection.");
+    } else {
+      MaybeFinishGoingAway();
+    }
   }
 }
 

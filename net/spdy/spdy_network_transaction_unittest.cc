@@ -4038,9 +4038,9 @@ TEST_P(SpdyNetworkTransactionTest, GracefulGoaway) {
   spdy::SpdySerializedFrame resp2(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 3));
   spdy::SpdySerializedFrame body2(spdy_util_.ConstructSpdyDataFrame(3, true));
-  MockRead reads[] = {CreateMockRead(resp1, 1),  CreateMockRead(body1, 2),
+  MockRead reads[] = {CreateMockRead(resp1, 1), CreateMockRead(body1, 2),
                       CreateMockRead(goaway, 4), CreateMockRead(resp2, 5),
-                      CreateMockRead(body2, 6),  MockRead(ASYNC, 0, 7)};
+                      CreateMockRead(body2, 6)};
 
   // Run first transaction.
   SequencedSocketData data(reads, writes);
@@ -4126,8 +4126,7 @@ TEST_P(SpdyNetworkTransactionTest, ActiveStreamWhileGoingAway) {
   spdy::SpdySerializedFrame body2(
       spdy_util_.ConstructSpdyDataFrame(1, "bar", true));
   MockRead reads[] = {CreateMockRead(resp, 1), CreateMockRead(body1, 2),
-                      CreateMockRead(goaway, 3), CreateMockRead(body2, 4),
-                      MockRead(ASYNC, 0, 5)};
+                      CreateMockRead(goaway, 3), CreateMockRead(body2, 4)};
 
   SequencedSocketData data(reads, writes);
   NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);
