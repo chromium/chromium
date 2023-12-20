@@ -191,7 +191,7 @@ struct StorageRemoverHelper {
       )
       : storage_partition_(storage_partition),
         quota_helper_(quota_helper),
-        delegate_(delegate) {}
+        delegate_(delegate ? delegate->AsWeakPtr() : nullptr) {}
 
   void RemoveDataKeyEntries(
       const BrowsingDataModel::DataKeyEntries& data_key_entries,
@@ -221,7 +221,7 @@ struct StorageRemoverHelper {
 
   raw_ptr<content::StoragePartition> storage_partition_;
   scoped_refptr<BrowsingDataQuotaHelper> quota_helper_;
-  raw_ptr<BrowsingDataModel::Delegate, AcrossTasksDanglingUntriaged> delegate_;
+  base::WeakPtr<BrowsingDataModel::Delegate> delegate_;
   base::WeakPtrFactory<StorageRemoverHelper> weak_ptr_factory_{this};
 };
 
