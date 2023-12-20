@@ -36,6 +36,7 @@ struct AndroidAppInstallData {};
 std::ostream& operator<<(std::ostream& out, const AndroidAppInstallData& data);
 
 // Web app specific data for use during web app installation.
+// AppInstallData::package_id.identifier() holds the manifest identity.
 struct WebAppInstallData {
   WebAppInstallData();
   WebAppInstallData(const WebAppInstallData&);
@@ -43,8 +44,6 @@ struct WebAppInstallData {
   WebAppInstallData& operator=(const WebAppInstallData&);
   WebAppInstallData& operator=(WebAppInstallData&&);
   ~WebAppInstallData();
-
-  GURL manifest_id;
 
   GURL original_manifest_url;
 

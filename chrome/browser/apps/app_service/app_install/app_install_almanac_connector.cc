@@ -102,10 +102,6 @@ std::optional<AppInstallData> ParseAppInstallResponseProto(
   if (instance.has_web_extras()) {
     WebAppInstallData& web_app_data =
         result.app_type_data.emplace<WebAppInstallData>();
-    web_app_data.manifest_id = GURL(result.package_id.identifier());
-    if (!web_app_data.manifest_id.is_valid()) {
-      return std::nullopt;
-    }
     web_app_data.document_url = GURL(instance.web_extras().document_url());
     if (!web_app_data.document_url.is_valid()) {
       return std::nullopt;

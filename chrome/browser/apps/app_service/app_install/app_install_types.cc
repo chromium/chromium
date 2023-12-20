@@ -33,7 +33,6 @@ WebAppInstallData::~WebAppInstallData() = default;
 
 std::ostream& operator<<(std::ostream& out, const WebAppInstallData& data) {
   out << "WebAppInstallData{";
-  out << "manifest_id: " << data.manifest_id;
   out << ", original_manifest_url: " << data.original_manifest_url;
   out << ", proxied_manifest_url: " << data.proxied_manifest_url;
   out << ", document_url: " << data.document_url;
