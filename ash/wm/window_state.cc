@@ -275,6 +275,15 @@ void SaveWindowForWindowRestore(WindowState* window_state) {
     controller->SaveWindow(window_state);
 }
 
+bool ShouldSetExplicitOpaqueRegionsForOcclusion(WindowState* window_state) {
+  // If the window manager manages the window opacity, set the opaque regions
+  // explicitly if the window must be transparent (e.g. has rounded corners).
+  return chromeos::ShouldWindowStateHaveRoundedCorners(
+             window_state->GetStateType()) &&
+         window_state->window()->GetProperty(
+             ash::kWindowManagerManagesOpacityKey);
+}
+
 }  // namespace
 
 constexpr base::TimeDelta WindowState::kBoundsChangeSlideDuration;
@@ -926,9 +935,7 @@ void WindowState::UpdateWindowPropertiesFromStateType() {
 
   if (window_->GetProperty(ash::kWindowManagerManagesOpacityKey)) {
     const gfx::Size& size = window_->bounds().size();
-    // WindowManager manages the window opacity. Make it opaque unless
-    // the window has rounded corners.
-    if (chromeos::ShouldWindowStateHaveRoundedCorners(GetStateType())) {
+    if (ShouldSetExplicitOpaqueRegionsForOcclusion(this)) {
       window_->SetTransparent(true);
       window_->SetOpaqueRegionsForOcclusion({gfx::Rect(size)});
     } else {
@@ -1361,8 +1368,8 @@ void WindowState::OnWindowBoundsChanged(aura::Window* window,
                                         const gfx::Rect& new_bounds,
                                         ui::PropertyChangeReason reason) {
   CHECK_EQ(window_, window);
-  if (window_->GetTransparent() && IsNormalStateType() &&
-      window_->GetProperty(ash::kWindowManagerManagesOpacityKey)) {
+  if (window_->GetTransparent() &&
+      ShouldSetExplicitOpaqueRegionsForOcclusion(this)) {
     window_->SetOpaqueRegionsForOcclusion({gfx::Rect(new_bounds.size())});
   }
 
