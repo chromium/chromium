@@ -21,6 +21,9 @@ const CGFloat kCloseButtonBackgroundAlpha = 0.2;
 // Size of the decoration corner when the cell is selected.
 const CGFloat kCornerSize = 16;
 
+// Threshold width for collapsing the cell and hiding the close button.
+const CGFloat kCollapsedWidthThreshold = 150;
+
 // Content view constants.
 const CGFloat kFaviconLeadingMargin = 16;
 const CGFloat kCloseButtonMargin = 10;
@@ -52,6 +55,10 @@ UIImage* DefaultFavicon() {
 
   // Circular spinner that shows the loading state of the tab.
   MDCActivityIndicator* _activityIndicator;
+
+  // Title label's trailing constraints.
+  NSLayoutConstraint* _titleLabelCollapsedTrailingConstraint;
+  NSLayoutConstraint* _titleLabelTrailingConstraint;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -147,6 +154,15 @@ UIImage* DefaultFavicon() {
   _rightTailView.hidden = !selected;
   _topLeftCornerView.hidden = !selected;
   _topRightCornerView.hidden = !selected;
+
+  [self updateCollapsedState];
+}
+
+- (void)applyLayoutAttributes:
+    (UICollectionViewLayoutAttributes*)layoutAttributes {
+  [super applyLayoutAttributes:layoutAttributes];
+
+  [self updateCollapsedState];
 }
 
 #pragma mark - UICollectionViewCell
@@ -199,6 +215,30 @@ UIImage* DefaultFavicon() {
   _decorationLayersUpdated = YES;
 }
 
+/// Hides the close button view if the cell is collapsed.
+- (void)updateCollapsedState {
+  BOOL collapsed = NO;
+  if (self.frame.size.width < kCollapsedWidthThreshold) {
+    // Don't hide the close button if the cell is selected.
+    collapsed = !self.selected;
+  }
+
+  if (collapsed == _closeButton.hidden) {
+    return;
+  }
+
+  _closeButton.hidden = collapsed;
+
+  // To avoid breaking the layout, always disable the active constraint first.
+  if (collapsed) {
+    _titleLabelTrailingConstraint.active = NO;
+    _titleLabelCollapsedTrailingConstraint.active = YES;
+  } else {
+    _titleLabelCollapsedTrailingConstraint.active = NO;
+    _titleLabelTrailingConstraint.active = YES;
+  }
+}
+
 // Sets the cell constraints.
 - (void)setupConstraints {
   UILayoutGuide* leadingImageGuide = [[UILayoutGuide alloc] init];
@@ -220,11 +260,8 @@ UIImage* DefaultFavicon() {
   AddSameConstraints(leadingImageGuide, _faviconView);
   AddSameConstraints(leadingImageGuide, _activityIndicator);
 
-  /// `_closeButton` image constraints.
+  /// `_closeButton` constraints.
   [NSLayoutConstraint activateConstraints:@[
-    [_closeButton.leadingAnchor
-        constraintEqualToAnchor:_titleLabel.trailingAnchor
-                       constant:kCloseButtonMargin],
     [_closeButton.trailingAnchor
         constraintEqualToAnchor:contentView.trailingAnchor
                        constant:-kCloseButtonMargin],
@@ -235,13 +272,16 @@ UIImage* DefaultFavicon() {
   ]];
 
   /// `_titleLabel` constraints.
+  _titleLabelTrailingConstraint = [_titleLabel.trailingAnchor
+      constraintEqualToAnchor:_closeButton.leadingAnchor
+                     constant:-kTitleInset];
+  _titleLabelCollapsedTrailingConstraint = [_titleLabel.trailingAnchor
+      constraintEqualToAnchor:contentView.trailingAnchor
+                     constant:-kTitleInset];
   [NSLayoutConstraint activateConstraints:@[
     [_titleLabel.leadingAnchor
         constraintEqualToAnchor:leadingImageGuide.trailingAnchor
                        constant:kTitleInset],
-    [_titleLabel.trailingAnchor
-        constraintLessThanOrEqualToAnchor:contentView.trailingAnchor
-                                 constant:-kTitleInset],
     [_titleLabel.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
   ]];
