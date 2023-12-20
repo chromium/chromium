@@ -479,6 +479,7 @@ void HTMLDocumentParser::StopParsing() {
 void HTMLDocumentParser::PrepareToStopParsing() {
   TRACE_EVENT1("blink", "HTMLDocumentParser::PrepareToStopParsing", "parser",
                (void*)this);
+  base::ElapsedTimer timer;
   DCHECK(!HasInsertionPoint());
 
   // If we've already been detached, e.g. in
@@ -523,6 +524,8 @@ void HTMLDocumentParser::PrepareToStopParsing() {
   GetDocument()->OnPrepareToStopParsing();
 
   AttemptToRunDeferredScriptsAndEnd();
+
+  base::UmaHistogramTimes("Blink.PrepareToStopParsingTime", timer.Elapsed());
 }
 
 bool HTMLDocumentParser::IsParsingFragment() const {
@@ -652,6 +655,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
                        "should_complete", should_run_until_completion,
                        "bytes_queued", starting_bytes);
   }
+  base::ElapsedTimer pump_tokenizer_timer;
 
   // We tell the InspectorInstrumentation about every pump, even if we end up
   // pumping nothing.  It can filter out empty pumps itself.
@@ -759,6 +763,9 @@ bool HTMLDocumentParser::PumpTokenizer() {
         break;
     }
   }
+
+  base::UmaHistogramTimes("Blink.PumpTokenizerTime",
+                          pump_tokenizer_timer.Elapsed());
 
   if (is_tracing) {
     TRACE_EVENT_END2("blink", "HTMLDocumentParser::PumpTokenizer",

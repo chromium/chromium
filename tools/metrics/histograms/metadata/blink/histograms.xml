@@ -701,6 +701,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.CommitDocumentLoaderTime" units="ms"
+    expires_after="2024-03-19">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time it takes to commit a new document in Blink. Collected once
+    per navigation when a frame is loaded.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Blink.CompositingCommit.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
@@ -3259,6 +3269,26 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+  </summary>
+</histogram>
+
+<histogram name="Blink.PrepareToStopParsingTime" units="ms"
+    expires_after="2024-03-19">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time it takes to tokenize the HTML document, if necessary, and
+    perform other tasks around parsing completion. Logged every time there is an
+    update to the HTML document.
+  </summary>
+</histogram>
+
+<histogram name="Blink.PumpTokenizerTime" units="ms" expires_after="2024-03-19">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time it takes to tokenize an HTML document in Blink. Collected
+    once per update to HTML document.
   </summary>
 </histogram>
 

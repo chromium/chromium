@@ -1303,6 +1303,7 @@ void FrameLoader::CommitDocumentLoader(DocumentLoader* document_loader,
                                        HistoryItem* previous_history_item,
                                        CommitReason commit_reason) {
   TRACE_EVENT("blink", "FrameLoader::CommitDocumentLoader");
+  base::ElapsedTimer timer;
   document_loader_ = document_loader;
   CHECK(document_loader_);
 
@@ -1341,6 +1342,8 @@ void FrameLoader::CommitDocumentLoader(DocumentLoader* document_loader,
   Client()->TransitionToCommittedForNewPage();
 
   document_loader_->CommitNavigation();
+
+  base::UmaHistogramTimes("Blink.CommitDocumentLoaderTime", timer.Elapsed());
 }
 
 void FrameLoader::RestoreScrollPositionAndViewState() {
