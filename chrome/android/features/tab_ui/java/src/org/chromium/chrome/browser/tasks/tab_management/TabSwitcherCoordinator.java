@@ -110,7 +110,6 @@ public class TabSwitcherCoordinator
 
     private final MenuOrKeyboardActionController.MenuOrKeyboardActionHandler
             mTabSwitcherMenuActionHandler;
-    private TabGridIphDialogCoordinator mTabGridIphDialogCoordinator;
     private TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
 
     /** {@see TabManagementDelegate#createCarouselTabSwitcher} */
@@ -589,12 +588,10 @@ public class TabSwitcherCoordinator
         if (mTabGridDialogCoordinator != null) {
             mTabGridDialogCoordinator.destroy();
         }
-        if (mTabGridIphDialogCoordinator != null) {
-            mTabGridIphDialogCoordinator.destroy();
-        }
         mMultiThumbnailCardProvider.destroy();
         mTabListEditorManager.destroy();
         mMediator.destroy();
+        mMessageManager.destroy();
         mLifecycleDispatcher.unregister(this);
         if (mTabAttributeCache != null) {
             mTabAttributeCache.destroy();

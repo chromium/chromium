@@ -270,6 +270,12 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         mCurrentTabModelFilterSupplier.removeObserver(mOnTabModelFilterChanged);
 
         mMessageCardProviderCoordinator.destroy();
+        if (mTabGridIphDialogCoordinator != null) {
+            mTabGridIphDialogCoordinator.destroy();
+        }
+        if (mIncognitoReauthPromoMessageService != null) {
+            mIncognitoReauthPromoMessageService.destroy();
+        }
     }
 
     @Override

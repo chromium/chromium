@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
@@ -115,7 +116,10 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
 
     @After
     public void tearDown() {
+        mIncognitoReauthPromoMessageService.destroy();
         verifyNoMoreInteractions(mProfileMock, mContextMock, mSnackbarManagerMock);
+        verify(mActivityLifecycleDispatcherMock, atLeastOnce())
+                .unregister(mLifecycleObserverArgumentCaptor.getValue());
     }
 
     @Test
