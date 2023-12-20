@@ -127,24 +127,11 @@ void EyeDropperView::PreEventDispatchHandler::OnGestureEvent(
 void EyeDropperView::PreEventDispatchHandler::OnTouchEvent(
     ui::TouchEvent* event) {
   if (event->type() == ui::ET_TOUCH_PRESSED) {
-    // For touch-move, we don't move the center of the EyeDropper to be at the
-    // touch point, but rather maintain the offset from the first press.
     touch_offset_ = event->root_location() -
                     view_->GetWidget()->GetWindowBoundsInScreen().CenterPoint();
   }
   if (event->type() == ui::ET_TOUCH_MOVED) {
-    // Keep EyeDropper always inside a display, but adjust offset if it is
-    // pushing up against the bounds.
-    gfx::Point position = event->root_location() - touch_offset_;
-    display::Display display =
-        display::Screen::GetScreen()->GetDisplayNearestPoint(position);
-    if (display.bounds().Contains(position)) {
-      view_->UpdatePosition(std::move(position));
-    } else {
-      touch_offset_ =
-          event->root_location() -
-          view_->GetWidget()->GetWindowBoundsInScreen().CenterPoint();
-    }
+    view_->UpdatePosition(event->root_location() - touch_offset_);
   }
 }
 
