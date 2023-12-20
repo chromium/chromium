@@ -148,12 +148,14 @@
 
 // Observes the frame property of the view of the `webState` using KVO.
 - (void)observeWebStateViewFrame:(web::WebState*)webState {
-  if (base::FeatureList::IsEnabled(kFullscreenImprovement) ||
-      _installedObserver || !webState->GetView()) {
+  if (_installedObserver || !webState->GetView()) {
     return;
   }
 
   NSKeyValueObservingOptions options = 0;
+  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    options = NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld;
+  }
   [webState->GetView() addObserver:self
                         forKeyPath:@"frame"
                            options:options
@@ -166,9 +168,19 @@
                       ofObject:(id)object
                         change:(NSDictionary*)change
                        context:(void*)context {
-  if (base::FeatureList::IsEnabled(kFullscreenImprovement) ||
-      ![keyPath isEqualToString:@"frame"] || object != _webState->GetView()) {
+  if (![keyPath isEqualToString:@"frame"] || object != _webState->GetView())
     return;
+
+  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    NSValue* oldValue =
+        base::apple::ObjCCast<NSValue>(change[NSKeyValueChangeOldKey]);
+    NSValue* newValue =
+        base::apple::ObjCCast<NSValue>(change[NSKeyValueChangeNewKey]);
+    // If the value is unchanged -- if the old and new values are equal --
+    // then return without notifying observers.
+    if (oldValue && newValue && [newValue isEqualToValue:oldValue]) {
+      return;
+    }
   }
 
   [self updateForCurrentState];
