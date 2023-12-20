@@ -200,6 +200,16 @@ INSTANTIATE_TEST_SUITE_P(TestCases,
 
 TEST_P(WindowsSpellCheckerRequestTextCheckWithSuggestionsTest,
        RequestTextCheck) {
+  // TODO(https://crbug.com/1513242): Remove once Windows fixes spellcheck.
+#if defined(ARCH_CPU_ARM64)
+  const char* text_to_check = GetParam().text_to_check;
+  if (text_to_check == kRequestTextCheckTestCases[1].text_to_check ||
+      text_to_check == kRequestTextCheckTestCases[6].text_to_check ||
+      text_to_check == kRequestTextCheckTestCases[10].text_to_check) {
+    GTEST_SKIP() << "Newest spell checker drop on Arm64 is broken for several "
+                    "test cases";
+  }
+#endif  // defined(ARCH_CPU_ARM64)
   RunRequestTextCheckTest(GetParam());
 }
 
