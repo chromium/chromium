@@ -72,6 +72,15 @@ BASE_FEATURE(kForceStartupSigninPromo,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+// Flag guarding the restoration of the signed-in only account instead of
+// the syncing one and the restoration of account settings after device
+// restore.
+BASE_FEATURE(kRestoreSignedInAccountAndSettingsFromBackup,
+             "RestoreSignedInAccountAndSettingsFromBackup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Enables a new version of the sync confirmation UI.
 BASE_FEATURE(kTangibleSync,
              "TangibleSync",
