@@ -282,6 +282,10 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
 void TouchToFillControllerAutofillDelegate::CleanUpFillerAndReportOutcome(
     TouchToFillOutcome outcome,
     bool show_virtual_keyboard) {
+  // User action is complete which indicates that the user has been informed
+  // about any shared unnotified password. Report that to the client to mark
+  // them as notified.
+  password_client_->MarkSharedCredentialsAsNotified(GetFrameUrl());
   filler_->Dismiss(ToShowVirtualKeyboard(show_virtual_keyboard));
   filler_.reset();
   base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome", outcome);
