@@ -36,8 +36,10 @@ AndroidVideoImageBacking::AndroidVideoImageBacking(
           color_space,
           surface_origin,
           alpha_type,
-          (SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_GLES2_READ |
-           SHARED_IMAGE_USAGE_GLES2_WRITE),
+          // This SI will be used to back a VideoFrame. As such, it
+          // will potentially be sent to the display compositor and read by the
+          // GL interface for WebGL.
+          SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_GLES2_READ,
           viz::SinglePlaneFormat::kRGBA_8888.EstimatedSizeInBytes(size),
           is_thread_safe,
           base::ScopedFD()) {}
