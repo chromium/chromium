@@ -12,6 +12,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,6 +40,33 @@ class SemaphoreTest : public PlatformTest {
 };
 
 }  // namespace
+
+TEST_F(SemaphoreTest, BasicWait) {
+  internal::Semaphore sem{0};
+  RepeatingClosure task = BindLambdaForTesting([&]() {
+    PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+    sem.Signal();
+  });
+  const auto start_time = TimeTicks::Now();
+  CreateThreadWithTask(task);
+
+  sem.Wait();
+  EXPECT_GE(TimeTicks::Now() - start_time, TestTimeouts::tiny_timeout());
+}
+
+// TimedWait(TimeDelta::Max()) should be equivalent to Wait().
+TEST_F(SemaphoreTest, MaxTimedWait) {
+  internal::Semaphore sem{0};
+  RepeatingClosure task = BindLambdaForTesting([&]() {
+    PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+    sem.Signal();
+  });
+  const auto start_time = TimeTicks::Now();
+  CreateThreadWithTask(task);
+
+  EXPECT_TRUE(sem.TimedWait(TimeDelta::Max()));
+  EXPECT_GE(TimeTicks::Now() - start_time, TestTimeouts::tiny_timeout());
+}
 
 TEST_F(SemaphoreTest, TimedWaitFail) {
   internal::Semaphore sem{0};
