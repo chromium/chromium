@@ -4,24 +4,13 @@
 
 import {$} from 'chrome://resources/js/util.js';
 
-import {GetSsrcFromReport, SsrcInfoManager} from './ssrc_info_manager.js';
 import {generateStatsLabel} from './stats_helper.js';
 
 /**
  * Maintains the stats table.
- * @param {SsrcInfoManager} ssrcInfoManager The source of the ssrc info.
  */
 export class StatsTable {
-  /**
-   * @param {SsrcInfoManager} ssrcInfoManager The source of the ssrc info.
-   */
-  constructor(ssrcInfoManager) {
-    /**
-     * @type {SsrcInfoManager}
-     * @private
-     */
-    this.ssrcInfoManager_ = ssrcInfoManager;
-  }
+  constructor() {}
 
   /**
    * Adds |report| to the stats table of |peerConnectionElement|.
@@ -126,15 +115,6 @@ export class StatsTable {
 
       table.appendChild($('trth-template').content.cloneNode(true));
       table.rows[0].cells[0].textContent = 'Statistics ' + report.id;
-
-      // Only for legacy stats.
-      if (report.type === 'ssrc') {
-        table.insertRow(1);
-        table.rows[1].appendChild(
-            $('td-colspan-template').content.cloneNode(true));
-        this.ssrcInfoManager_.populateSsrcInfo(
-            table.rows[1].cells[0], GetSsrcFromReport(report));
-      }
     }
     return table;
   }

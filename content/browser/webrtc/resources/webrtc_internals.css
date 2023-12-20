@@ -18,15 +18,6 @@
   background-color: #be2026;
 }
 
-.update-log-legacy-api-usage {
-  background-color: #fed14b;
-}
-
-.ssrc-info-block {
-  color: #999;
-  font-size: 0.8em;
-}
-
 .stats-graph-container {
   clear: both;
   margin: 0.5em 0 0.5em 0;
@@ -160,8 +151,4 @@ details[open] details summary {
 
 .candidategrid-candidate td:first-of-type {
     text-align: right;
-}
-
-#legacy-stats-warning {
-    display: none;
 }

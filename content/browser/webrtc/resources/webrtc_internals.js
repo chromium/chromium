@@ -9,7 +9,6 @@ import {createIceCandidateGrid, updateIceCandidateGrid} from './candidate_grid.j
 import {MAX_STATS_DATA_POINT_BUFFER_SIZE} from './data_series.js';
 import {DumpCreator, peerConnectionDataStore, userMediaRequests} from './dump_creator.js';
 import {PeerConnectionUpdateTable} from './peer_connection_update_table.js';
-import {SsrcInfoManager} from './ssrc_info_manager.js';
 import {drawSingleReport, removeStatsReportGraphs} from './stats_graph_helper.js';
 import {StatsRatesCalculator, StatsReport} from './stats_rates_calculator.js';
 import {StatsTable} from './stats_table.js';
@@ -17,7 +16,6 @@ import {TabView} from './tab_view.js';
 import {UserMediaTable} from './user_media_table.js';
 
 let tabView = null;
-let ssrcInfoManager = null;
 let peerConnectionUpdateTable = null;
 let statsTable = null;
 let userMediaTable = null;
@@ -100,10 +98,8 @@ function initialize() {
   dumpCreator = new DumpCreator($('content-root'));
 
   tabView = new TabView($('content-root'));
-  ssrcInfoManager = new SsrcInfoManager();
-  window.ssrcInfoManager = ssrcInfoManager;
   peerConnectionUpdateTable = new PeerConnectionUpdateTable();
-  statsTable = new StatsTable(ssrcInfoManager);
+  statsTable = new StatsTable();
   userMediaTable = new UserMediaTable(tabView, userMediaRequests);
 
   // Add listeners for all the updates that get sent from webrtc_internals.cc.
@@ -183,20 +179,6 @@ function getPeerConnectionId(data) {
   return data.rid + '-' + data.lid;
 }
 
-
-/**
- * Extracts ssrc info from a setLocal/setRemoteDescription update.
- *
- * @param {!PeerConnectionUpdateEntry} data The peer connection update data.
- */
-function extractSsrcInfo(data) {
-  if (data.type === 'setLocalDescription' ||
-      data.type === 'setRemoteDescription') {
-    ssrcInfoManager.addSsrcStreamInfo(data.value);
-  }
-}
-
-
 /**
  * A helper function for appending a child element to |parent|.
  *
@@ -221,7 +203,6 @@ function appendChildWithText(parent, tag, text) {
 function addPeerConnectionUpdate(peerConnectionElement, update) {
   peerConnectionUpdateTable.addPeerConnectionUpdate(
       peerConnectionElement, update);
-  extractSsrcInfo(update);
   peerConnectionDataStore[peerConnectionElement.id].addUpdate(update);
 }
 
@@ -385,7 +366,7 @@ function addStandardStats(data) {
   for (let i = 0; i < data.reports.length; ++i) {
     const report = data.reports[i];
     statsTable.addStatsReport(peerConnectionElement, report);
-    drawSingleReport(peerConnectionElement, report, false);
+    drawSingleReport(peerConnectionElement, report);
   }
   // Determine currently connected candidate pair.
   const stats = r.statsById;

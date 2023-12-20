@@ -15,14 +15,12 @@ import {$} from 'chrome://resources/js/util.js';
 
 import {TimelineDataSeries} from './data_series.js';
 import {peerConnectionDataStore} from './dump_creator.js';
-import {bweCompoundGraphConfig, createBweCompoundLegend, getLegacySsrcReportType, isLegacyStatBlocklisted, legacyDataConversionConfig} from './legacy_stats_helper.js';
-import {GetSsrcFromReport} from './ssrc_info_manager.js';
 import {generateStatsLabel} from './stats_helper.js';
 import {TimelineGraphView} from './timeline_graph_view.js';
 
 const STATS_GRAPH_CONTAINER_HEADING_CLASS = 'stats-graph-container-heading';
 
-function isStandardReportBlocklisted(report) {
+function isReportBlocklisted(report) {
   // Codec stats reflect what has been negotiated. They don't contain
   // information that is useful in graphs.
   if (report.type === 'codec') {
@@ -57,7 +55,7 @@ function readReportStat(report, stat) {
   return undefined;
 }
 
-function isStandardStatBlocklisted(report, statName) {
+function isStatBlocklisted(report, statName) {
   // The priority does not change over time on its own; plotting uninteresting.
   if (report.type === 'candidate-pair' && statName === 'priority') {
     return true;
@@ -76,11 +74,8 @@ const graphViews = {};
 window.graphViews = graphViews;
 const graphElementsByPeerConnectionId = new Map();
 
-// Returns number parsed from |value|, or NaN if the stats name is blocklisted.
+// Returns number parsed from |value|, or NaN.
 function getNumberFromValue(name, value) {
-  if (isLegacyStatBlocklisted(name)) {
-    return NaN;
-  }
   if (isNaN(value)) {
     return NaN;
   }
@@ -90,7 +85,7 @@ function getNumberFromValue(name, value) {
 // Adds the stats report |report| to the timeline graph for the given
 // |peerConnectionElement|.
 export function drawSingleReport(
-    peerConnectionElement, report, isLegacyReport) {
+    peerConnectionElement, report) {
   const reportType = report.type;
   const reportId = report.id;
   const stats = report.stats;
@@ -117,38 +112,20 @@ export function drawSingleReport(
     let finalDataSeriesId = rawDataSeriesId;
     let finalLabel = rawLabel;
     let finalValue = rawValue;
-    // We need to convert the value if dataConversionConfig[rawLabel] exists.
-    if (isLegacyReport && legacyDataConversionConfig[rawLabel]) {
-      // Updates the original dataSeries before the conversion.
-      addDataSeriesPoints(
-          peerConnectionElement, reportType, rawDataSeriesId, rawLabel,
-          [stats.timestamp], [rawValue]);
-
-      // Convert to another value to draw on graph, using the original
-      // dataSeries as input.
-      finalValue = legacyDataConversionConfig[rawLabel].convertFunction(
-          peerConnectionDataStore[peerConnectionElement.id].getDataSeries(
-              rawDataSeriesId));
-      finalLabel = legacyDataConversionConfig[rawLabel].convertedName;
-      finalDataSeriesId = reportId + '-' + finalLabel;
-    }
 
     // Updates the final dataSeries to draw.
     addDataSeriesPoints(
         peerConnectionElement, reportType, finalDataSeriesId, finalLabel,
         [stats.timestamp], [finalValue]);
 
-    if (!isLegacyReport &&
-        (isStandardReportBlocklisted(report) ||
-         isStandardStatBlocklisted(report, rawLabel))) {
-      // We do not want to draw certain standard reports but still want to
+    if (isReportBlocklisted(report) || isStatBlocklisted(report, rawLabel)) {
+      // We do not want to draw certain reports but still want to
       // record them in the data series.
       continue;
     }
 
     // Updates the graph.
-    const graphType =
-        bweCompoundGraphConfig[finalLabel] ? 'bweCompound' : finalLabel;
+    const graphType = finalLabel;
     const graphViewId =
         peerConnectionElement.id + '-' + reportId + '-' + graphType;
 
@@ -229,9 +206,6 @@ function addDataSeriesPoints(
     dataSeries = new TimelineDataSeries(reportType);
     peerConnectionDataStore[peerConnectionElement.id].setDataSeries(
         dataSeriesId, dataSeries);
-    if (bweCompoundGraphConfig[label]) {
-      dataSeries.setColor(bweCompoundGraphConfig[label].color);
-    }
   }
   for (let i = 0; i < times.length; ++i) {
     dataSeries.addPoint(times[i], values[i]);
@@ -281,21 +255,10 @@ function ensureStatsGraphContainer(peerConnectionElement, report) {
     container.appendChild($('summary-span-template').content.cloneNode(true));
     container.firstChild.firstChild.className =
         STATS_GRAPH_CONTAINER_HEADING_CLASS;
-    const statsType = getLegacySsrcReportType(report);
-    if (statsType !== '') {
-      container.firstChild.firstChild.textContent += ' (' + statsType + ')';
-    }
-
-    if (report.type === 'ssrc') {
-      const ssrcInfoElement = document.createElement('div');
-      container.firstChild.appendChild(ssrcInfoElement);
-      ssrcInfoManager.populateSsrcInfo(
-          ssrcInfoElement, GetSsrcFromReport(report));
-    }
     topContainer.appendChild(container);
   }
   // Update the label all the time to account for new information.
-  container.firstChild.firstChild.textContent ='Stats graphs for ' +
+  container.firstChild.firstChild.textContent = 'Stats graphs for ' +
     generateStatsLabel(report);
   return container;
 }
@@ -319,14 +282,6 @@ function createStatsGraphView(peerConnectionElement, report, statsName) {
   canvasDiv.querySelectorAll('div')[1].id = divId;
   canvasDiv.querySelector('canvas').id = canvasId;
   container.appendChild(canvasDiv);
-  if (statsName === 'bweCompound') {
-    // Disable getElementById restriction here, since |divId| is not always
-    // a valid selector.
-    // eslint-disable-next-line no-restricted-properties
-    const div = document.getElementById(divId);
-    container.insertBefore(
-        createBweCompoundLegend(peerConnectionElement, report.id), div);
-  }
   return new TimelineGraphView(divId, canvasId);
 }
 
