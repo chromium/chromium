@@ -284,6 +284,9 @@ void AuthSessionAuthenticator::DoCompleteLogin(
       steps.push_back(
           base::BindOnce(&AuthFactorEditor::AddContextChallengeResponseKey,
                          auth_factor_editor_->AsWeakPtr()));
+      steps.push_back(
+          base::BindOnce(&AuthSessionAuthenticator::RecordFirstAuthFactorAdded,
+                         weak_factory_.GetWeakPtr()));
     } else {
       if (ash::switches::AreEmptyPasswordsAllowedForForTesting()) {
         // Empty passwords are currently not supported in ChromeOS, and
