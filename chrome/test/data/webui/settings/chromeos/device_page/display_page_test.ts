@@ -6,8 +6,8 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {CrLinkRowElement, DevicePageBrowserProxyImpl, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -23,6 +23,8 @@ import DisplayUnitInfo = chrome.system.display.DisplayUnitInfo;
 const kDisplayIdPrefix = '123456789';
 
 suite('<settings-display>', () => {
+  const isRevampWayfindingEnabled =
+      loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let displayPage: SettingsDisplayElement;
   let fakeSystemDisplay: FakeSystemDisplay;
   let browserProxy: any;
@@ -476,10 +478,12 @@ suite('<settings-display>', () => {
           assertEquals(90, displayPage.displays[1]!.rotation);
 
           // Mirror the displays.
-          const displayMirrorCheckbox = strictQuery(
-              '#displayMirrorCheckbox', displayPage.shadowRoot, HTMLElement);
-          assertTrue(!!displayMirrorCheckbox);
-          displayMirrorCheckbox.click();
+          const mirrorDisplayControl = strictQuery(
+              isRevampWayfindingEnabled ? '#mirrorDisplayToggle' :
+                                          '#displayMirrorCheckbox',
+              displayPage.shadowRoot, HTMLElement);
+          assertTrue(!!mirrorDisplayControl);
+          mirrorDisplayControl.click();
           flush();
 
           fakeSystemDisplay.onDisplayChanged.callListeners();
@@ -559,12 +563,13 @@ suite('<settings-display>', () => {
     assertEquals(2, displayPage.displays.length);
     assertTrue(displayPage.shouldShowArrangementSection());
 
-    const deepLinkElement =
-        displayPage.shadowRoot!.querySelector('#displayMirrorCheckbox')!
-            .shadowRoot!.querySelector('#checkbox');
-    await waitAfterNextRender(deepLinkElement as HTMLElement);
+    const deepLinkElement = displayPage.shadowRoot!.querySelector<HTMLElement>(
+        isRevampWayfindingEnabled ? '#mirrorDisplayToggle' :
+                                    '#displayMirrorCheckbox');
+    assertTrue(!!deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
-        deepLinkElement, getDeepActiveElement(),
+        deepLinkElement, displayPage.shadowRoot!.activeElement,
         'Display mirroring checkbox should be focused for settingId=428.');
   });
 
