@@ -189,6 +189,10 @@ void BrowserAccessibilityStateImpl::OnScreenReaderStopped() {
 }
 
 void BrowserAccessibilityStateImpl::EnableAccessibility() {
+  if (IsAccessibleBrowser()) {
+    // Accessibility is already enabled, nothing to do.
+    return;
+  }
   // First disable any non-additive modes that restrict or filter the
   // information available in the tree.
   RemoveAccessibilityModeFlags(ui::kAXModeFormControls);

@@ -9,8 +9,10 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_mode_observer.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/events/base_event_utils.h"
 
@@ -230,6 +232,36 @@ TEST_F(BrowserAccessibilityStateImplTest,
     task_environment_.FastForwardBy(base::Seconds(i));
     EXPECT_TRUE(state_->IsAccessibleBrowser());
   }
+}
+
+namespace {
+using ::testing::_;
+
+class MockAXModeObserver : public ui::AXModeObserver {
+ public:
+  MOCK_METHOD(void, OnAXModeAdded, (ui::AXMode mode), (override));
+};
+
+}  // namespace
+TEST_F(BrowserAccessibilityStateImplTest,
+       EnablingAccessibilityTwiceSendsASingleNotification) {
+  // Initially accessibility should be disabled.
+  EXPECT_FALSE(state_->IsAccessibleBrowser());
+
+  auto& ax_platform = ui::AXPlatform::GetInstance();
+  ::testing::StrictMock<MockAXModeObserver> mock_observer;
+  base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
+      scoped_observation(&mock_observer);
+  scoped_observation.Observe(&ax_platform);
+
+  // Enable accessibility.
+  EXPECT_CALL(mock_observer, OnAXModeAdded(ui::kAXModeComplete));
+  state_->OnScreenReaderDetected();
+  ::testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // A second call should be a no-op.
+  state_->OnScreenReaderDetected();
+  ::testing::Mock::VerifyAndClearExpectations(&mock_observer);
 }
 
 }  // namespace content
