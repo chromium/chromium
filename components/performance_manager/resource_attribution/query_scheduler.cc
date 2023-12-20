@@ -19,6 +19,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/variant_util.h"
+#include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
 #include "components/performance_manager/resource_attribution/query_params.h"
 
@@ -202,8 +203,10 @@ void QueryScheduler::OnPassedToGraph(Graph* graph) {
   CHECK_EQ(graph_, nullptr);
   graph_ = graph;
   graph_->RegisterObject(this);
-  SchedulerTaskRunner::GetInstance()->OnSchedulerPassedToGraph(graph);
   memory_provider_.emplace(graph);
+  graph->GetNodeDataDescriberRegistry()->RegisterDescriber(&cpu_monitor_,
+                                                           "CpuAttribution");
+  SchedulerTaskRunner::GetInstance()->OnSchedulerPassedToGraph(graph);
 }
 
 void QueryScheduler::OnTakenFromGraph(Graph* graph) {
@@ -212,6 +215,7 @@ void QueryScheduler::OnTakenFromGraph(Graph* graph) {
   graph_->UnregisterObject(this);
   graph_ = nullptr;
   SchedulerTaskRunner::GetInstance()->OnSchedulerTakenFromGraph(graph);
+  graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(&cpu_monitor_);
   if (cpu_query_count_ > 0) {
     cpu_monitor_.StopMonitoring();
   }

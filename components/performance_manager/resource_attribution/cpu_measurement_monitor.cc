@@ -21,6 +21,7 @@
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
+#include "components/performance_manager/public/graph/node_data_describer_util.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
@@ -285,6 +286,26 @@ void CPUMeasurementMonitor::OnBeforeClientWorkerRemoved(
       GraphChangeRemoveClientWorkerFromWorker(worker_node, client_worker_node));
 }
 
+base::Value::Dict CPUMeasurementMonitor::DescribeFrameNodeData(
+    const FrameNode* node) const {
+  return DescribeContextData(node->GetResourceContext());
+}
+
+base::Value::Dict CPUMeasurementMonitor::DescribePageNodeData(
+    const PageNode* node) const {
+  return DescribeContextData(node->GetResourceContext());
+}
+
+base::Value::Dict CPUMeasurementMonitor::DescribeProcessNodeData(
+    const ProcessNode* node) const {
+  return DescribeContextData(node->GetResourceContext());
+}
+
+base::Value::Dict CPUMeasurementMonitor::DescribeWorkerNodeData(
+    const WorkerNode* node) const {
+  return DescribeContextData(node->GetResourceContext());
+}
+
 void CPUMeasurementMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -396,6 +417,24 @@ void CPUMeasurementMonitor::ApplyMeasurementDeltas(
       }
     }
   }
+}
+
+base::Value::Dict CPUMeasurementMonitor::DescribeContextData(
+    const ResourceContext& context) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::Value::Dict dict;
+  const auto it = measurement_results_.find(context);
+  if (it != measurement_results_.end()) {
+    const CPUTimeResult& result = it->second;
+    const base::TimeDelta measurement_interval =
+        result.metadata.measurement_time - result.start_time;
+    dict.Set("algorithm", static_cast<int>(result.metadata.algorithm));
+    dict.Set("measurement_time",
+             TimeSinceEpochToValue(result.metadata.measurement_time));
+    dict.Set("measurement_interval", TimeDeltaToValue(measurement_interval));
+    dict.Set("cumulative_cpu", TimeDeltaToValue(result.cumulative_cpu));
+  }
+  return dict;
 }
 
 CPUMeasurementMonitor::CPUMeasurement::CPUMeasurement(
