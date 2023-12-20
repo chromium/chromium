@@ -303,11 +303,9 @@ class BubbleDialogModelHostContentsView final
   // TODO(pbos): Break this dependency on BubbleDialogModelHost once most of
   // OnFieldAdded etc. has moved into this class.
   BubbleDialogModelHostContentsView(
-      BubbleDialogModelHost* parent,
       ui::DialogModelSection* contents,
       ui::ElementIdentifier initially_focused_field_id)
-      : parent_(parent),
-        contents_(contents),
+      : contents_(contents),
         initially_focused_field_id_(initially_focused_field_id),
         on_field_added_subscription_(
             contents->AddOnFieldAddedCallback(base::BindRepeating(
@@ -326,7 +324,7 @@ class BubbleDialogModelHostContentsView final
   }
 
   [[nodiscard]] base::CallbackListSubscription AddOnFieldAddedCallback(
-      base::RepeatingCallback<void(ui::DialogModelField*)> on_field_added) {
+      base::RepeatingClosure on_field_added) {
     return on_field_added_.Add(std::move(on_field_added));
   }
 
@@ -366,7 +364,16 @@ class BubbleDialogModelHostContentsView final
         AddDialogModelHostField(std::move(view), info);
         break;
     }
-    on_field_added_.Notify(field);
+    UpdateFieldVisibility(field);
+    on_field_added_.Notify();
+  }
+
+  void UpdateFieldVisibility(ui::DialogModelField* field) {
+    const DialogModelHostField host_field = FindDialogModelHostField(field);
+
+    if (host_field.field_view) {
+      host_field.field_view->SetVisible(field->is_visible());
+    }
   }
 
   // TODO(pbos): Remove the need for this method by making sure the host always
@@ -374,7 +381,6 @@ class BubbleDialogModelHostContentsView final
   // RootView lifetimes are complicated.
   void Detach() {
     RemoveAllChildViews();
-    parent_ = nullptr;
     contents_ = nullptr;
     fields_.clear();
   }
@@ -633,25 +639,12 @@ class BubbleDialogModelHostContentsView final
 
   void AddDialogModelHostField(std::unique_ptr<View> view,
                                const DialogModelHostField& field_view_info) {
-    CHECK(parent_);
     DCHECK_EQ(view.get(), field_view_info.field_view);
 
     AddChildView(std::move(view));
-    AddDialogModelHostFieldForExistingView(field_view_info);
-  }
 
-  // TODO(pbos): Remove BubbleDialogModelHost direct dependency on this method
-  // then merge with AddDialogModelHostField, and presumably make private. Also
-  // remove calls to parent_ (due to buttons being hosted in the parent), they
-  // should be handled separately by BubbleDialogModelHost.
-  void AddDialogModelHostFieldForExistingView(
-      const DialogModelHostField& field_view_info) {
     DCHECK(field_view_info.dialog_model_field);
     DCHECK(field_view_info.field_view);
-    DCHECK(Contains(field_view_info.field_view) ||
-           field_view_info.field_view == parent_->GetOkButton() ||
-           field_view_info.field_view == parent_->GetCancelButton() ||
-           field_view_info.field_view == parent_->GetExtraView());
 #if DCHECK_IS_ON()
     // Make sure none of the info is already in use.
     for (const auto& info : fields_) {
@@ -696,8 +689,8 @@ class BubbleDialogModelHostContentsView final
   // DialogModelSection. Currently this isn't true because WidgetDelegate gets
   // destroyed by Widget in OnNativeWidgetDestroyed before the content gets
   // destroyed inside DestroyRootView in ~Widget.
-  raw_ptr<BubbleDialogModelHost> parent_;
   raw_ptr<ui::DialogModelSection> contents_;
+
   const ui::ElementIdentifier initially_focused_field_id_;
 
   const base::CallbackListSubscription on_field_added_subscription_;
@@ -705,7 +698,7 @@ class BubbleDialogModelHostContentsView final
   std::vector<DialogModelHostField> fields_;
   // TODO(pbos): Try to work away this list (and just have the parent observe
   // size changes).
-  base::RepeatingCallbackList<void(ui::DialogModelField*)> on_field_added_;
+  base::RepeatingClosureList on_field_added_;
 
   std::vector<base::CallbackListSubscription> property_changed_subscriptions_;
 
@@ -921,30 +914,31 @@ View* BubbleDialogModelHost::GetInitiallyFocusedView() {
   if (!unique_id)
     return BubbleDialogDelegate::GetInitiallyFocusedView();
 
+  if (ui::DialogModel::Button* const ok_button =
+          model_->ok_button(DialogModelHost::GetPassKey());
+      ok_button && unique_id == ok_button->id()) {
+    return GetOkButton();
+  }
+
+  if (ui::DialogModel::Button* const cancel_button =
+          model_->cancel_button(DialogModelHost::GetPassKey());
+      cancel_button && unique_id == cancel_button->id()) {
+    return GetCancelButton();
+  }
+
+  if (ui::DialogModel::Button* const extra_button =
+          model_->extra_button(DialogModelHost::GetPassKey());
+      extra_button && unique_id == extra_button->id()) {
+    return GetExtraView();
+  }
+
   return GetTargetView(contents_view_->FindDialogModelHostField(
       model_->GetFieldByUniqueId(unique_id)));
 }
 
 void BubbleDialogModelHost::OnWidgetInitialized() {
   // Dialog buttons are added on dialog initialization.
-  if (GetOkButton()) {
-    contents_view_->AddDialogModelHostFieldForExistingView(
-        {model_->ok_button(DialogModelHost::GetPassKey()), GetOkButton(),
-         nullptr});
-  }
-
-  if (GetCancelButton()) {
-    contents_view_->AddDialogModelHostFieldForExistingView(
-        {model_->cancel_button(DialogModelHost::GetPassKey()),
-         GetCancelButton(), nullptr});
-  }
-
-  if (model_->extra_button(DialogModelHost::GetPassKey())) {
-    DCHECK(GetExtraView());
-    contents_view_->AddDialogModelHostFieldForExistingView(
-        {model_->extra_button(DialogModelHost::GetPassKey()), GetExtraView(),
-         nullptr});
-  }
+  UpdateDialogButtons();
 
   if (const ui::ImageModel& banner =
           model_->banner(DialogModelHost::GetPassKey());
@@ -990,7 +984,7 @@ BubbleDialogModelHostContentsView* BubbleDialogModelHost::InitContentsView(
     ui::DialogModelSection* contents) {
   auto contents_view_unique =
       std::make_unique<BubbleDialogModelHostContentsView>(
-          this, contents,
+          contents,
           model_->initially_focused_field(DialogModelHost::GetPassKey()));
 
   BubbleDialogModelHostContentsView* const contents_view =
@@ -1030,21 +1024,19 @@ BubbleDialogModelHostContentsView* BubbleDialogModelHost::InitContentsView(
 // TODO(pbos): Try to remove this parameter and have a more-generic
 // OnContentsViewChanged. Maybe this doesn't even need to get communicated from
 // ContentsView but can be a ViewObserver for when the preferred size changes.
-void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
+void BubbleDialogModelHost::OnFieldAdded() {
   UpdateSpacingAndMargins();
 
-  // TODO(pbos): This should move into BubbleDialogModelHostContentsView.
-  UpdateFieldVisibility(field);
-
-  if (GetBubbleFrameView())
+  if (GetBubbleFrameView()) {
     SizeToContents();
+  }
 }
 
 void BubbleDialogModelHost::OnFieldChanged(ui::DialogModelField* field) {
   CHECK(field);
 
   // TODO(pbos): This should move into BubbleDialogModelHostContentsView.
-  UpdateFieldVisibility(field);
+  contents_view_->UpdateFieldVisibility(field);
 
   // If the contents of the dialog change (text, field visitiblity, etc.), the
   // dialog may need to be resized.
@@ -1136,15 +1128,6 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
                                 bottom_margin >= 0 ? bottom_margin : 0, 0));
 }
 
-void BubbleDialogModelHost::UpdateFieldVisibility(ui::DialogModelField* field) {
-  DialogModelHostField host_field =
-      contents_view_->FindDialogModelHostField(field);
-
-  if (host_field.field_view) {
-    host_field.field_view->SetVisible(field->is_visible());
-  }
-}
-
 void BubbleDialogModelHost::OnWindowClosing() {
   // If the model has been removed we have already notified it of closing on the
   // ::Close() stack.
@@ -1158,16 +1141,23 @@ void BubbleDialogModelHost::UpdateDialogButtons() {
   if (ui::DialogModel::Button* const ok_button =
           model_->ok_button(DialogModelHost::GetPassKey())) {
     SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_button->label());
+    MdTextButton* const ok_button_view = GetOkButton();
+    ok_button_view->SetVisible(ok_button->is_visible());
+    ok_button_view->SetProperty(kElementIdentifierKey, ok_button->id());
   }
   if (ui::DialogModel::Button* const cancel_button =
           model_->cancel_button(DialogModelHost::GetPassKey())) {
     SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_button->label());
+    MdTextButton* const cancel_button_view = GetCancelButton();
+    cancel_button_view->SetVisible(cancel_button->is_visible());
+    cancel_button_view->SetProperty(kElementIdentifierKey, cancel_button->id());
   }
   if (ui::DialogModel::Button* const extra_button =
           model_->extra_button(DialogModelHost::GetPassKey())) {
-    static_cast<MdTextButton*>(
-        GetTargetView(contents_view_->FindDialogModelHostField(extra_button)))
-        ->SetText(extra_button->label());
+    auto* const extra_button_view = static_cast<MdTextButton*>(GetExtraView());
+    extra_button_view->SetText(extra_button->label());
+    extra_button_view->SetVisible(extra_button->is_visible());
+    extra_button_view->SetProperty(kElementIdentifierKey, extra_button->id());
   }
 }
 

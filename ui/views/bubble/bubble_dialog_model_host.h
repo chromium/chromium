@@ -109,7 +109,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   [[nodiscard]] BubbleDialogModelHostContentsView* InitContentsView(
       ui::DialogModelSection* contents);
 
-  void OnFieldAdded(ui::DialogModelField* field);
+  void OnFieldAdded();
 
   void OnWindowClosing();
 
@@ -117,7 +117,6 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
 
   void UpdateWindowIcon();
   void UpdateSpacingAndMargins();
-  void UpdateFieldVisibility(ui::DialogModelField* field);
 
   bool IsModalDialog() const;
 
