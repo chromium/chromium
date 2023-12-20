@@ -218,13 +218,13 @@ class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
     GURL url = embedded_test_server()->GetURL(
         DownloadTestBase::kDangerousMockFilePath);
 
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    return base::BindLambdaForTesting([this]() {
+    return base::BindLambdaForTesting([this, url]() {
       std::unique_ptr<content::DownloadTestObserver> waiter{
           DangerousDownloadWaiter(
               browser(), /*num_downloads=*/1,
               content::DownloadTestObserver::DangerousDownloadAction::
                   ON_DANGEROUS_DOWNLOAD_QUIT)};
+      EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
       waiter->WaitForFinished();
     });
   }
