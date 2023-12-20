@@ -53,7 +53,7 @@ class FencedDocumentData : public DocumentUserData<FencedDocumentData> {
   // Stores data registered by the document in a fenced frame tree using
   // the `fence.setReportEventDataForAutomaticBeacons` API. Maps an event type
   // to an AutomaticBeaconInfo object.
-  std::map<blink::mojom::AutomaticBeaconType, const AutomaticBeaconInfo>
+  std::map<blink::mojom::AutomaticBeaconType, AutomaticBeaconInfo>
       automatic_beacon_info_;
 };
 
