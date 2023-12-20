@@ -289,6 +289,9 @@ void ChromeComposeClient::RemoveActiveSession() {
     debug_session_.reset();
     return;
   }
+  if (!active_compose_field_id_.has_value()) {
+    return;
+  }
   auto it = sessions_.find(active_compose_field_id_.value());
   CHECK(it != sessions_.end())
       << "Attempted to remove compose session that doesn't exist.";
