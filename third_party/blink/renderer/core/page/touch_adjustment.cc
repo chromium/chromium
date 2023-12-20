@@ -583,6 +583,9 @@ PhysicalSize GetHitTestRectForAdjustment(LocalFrame& frame,
   ChromeClient& chrome_client = frame.GetChromeClient();
   float device_scale_factor =
       chrome_client.GetScreenInfo(frame).device_scale_factor;
+  if (frame.GetPage()->InspectorDeviceScaleFactorOverride() != 1) {
+    device_scale_factor = 1;
+  }
 
   float page_scale_factor = frame.GetPage()->PageScaleFactor();
   const PhysicalSize max_size_in_dip(touch_adjustment::kMaxAdjustmentSizeDip,
