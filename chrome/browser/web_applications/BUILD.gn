@@ -739,7 +739,6 @@ source_set("web_applications_unit_tests") {
     "jobs/install_placeholder_job_unittest.cc",
     "locks/web_app_lock_manager_unittest.cc",
     "os_integration/file_handling_sub_manager_unittest.cc",
-    "os_integration/os_integration_manager_unittest.cc",
     "os_integration/protocol_handling_sub_manager_unittest.cc",
     "os_integration/run_on_os_login_sub_manager_unittest.cc",
     "os_integration/shortcut_menu_handling_sub_manager_unittest.cc",
