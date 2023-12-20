@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_keyboard_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_change_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_result_consumer.h"
-#import "ios/chrome/browser/ui/omnibox/popup/carousel_item.h"
+#import "ios/chrome/browser/ui/omnibox/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 
 @protocol CarouselItemMenuProvider;

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_carousel_cell.h"
+#import "ios/chrome/browser/ui/omnibox/popup/carousel/omnibox_popup_carousel_cell.h"
 
 #import "base/check.h"
 #import "base/i18n/rtl.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
-#import "ios/chrome/browser/ui/omnibox/popup/carousel_item.h"
+#import "ios/chrome/browser/ui/omnibox/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_carousel_control.h"
+#import "ios/chrome/browser/ui/omnibox/popup/carousel/omnibox_popup_carousel_control.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ui/base/device_form_factor.h"

@@ -204,6 +204,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/ntp/feed_management:eg2_tests",
     "//ios/chrome/browser/ui/omnibox:eg2_tests",
     "//ios/chrome/browser/ui/omnibox/popup:eg2_tests",
+    "//ios/chrome/browser/ui/omnibox/popup/carousel:eg2_tests",
     "//ios/chrome/browser/ui/page_info:eg2_tests",
     "//ios/chrome/browser/ui/passwords:eg2_tests",
     "//ios/chrome/browser/ui/passwords/bottom_sheet:eg2_tests",

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_CAROUSEL_CELL_H_
-#define IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_CAROUSEL_CELL_H_
+#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_CAROUSEL_OMNIBOX_POPUP_CAROUSEL_CELL_H_
+#define IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_CAROUSEL_OMNIBOX_POPUP_CAROUSEL_CELL_H_
 
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_keyboard_delegate.h"
-#import "ios/chrome/browser/ui/omnibox/popup/carousel_item.h"
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_carousel_control.h"
+#import "ios/chrome/browser/ui/omnibox/popup/carousel/carousel_item.h"
+#import "ios/chrome/browser/ui/omnibox/popup/carousel/omnibox_popup_carousel_control.h"
 
 @class OmniboxPopupCarouselCell;
 @protocol AutocompleteSuggestionGroup;
@@ -55,4 +55,4 @@
 @property(nonatomic, readonly, assign) NSUInteger tileCount;
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_CAROUSEL_CELL_H_
+#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_CAROUSEL_OMNIBOX_POPUP_CAROUSEL_CELL_H_
