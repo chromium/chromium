@@ -42,6 +42,7 @@ class MLPadOptions;
 class MLPool2dOptions;
 class MLReduceOptions;
 class MLResample2dOptions;
+class MLSoftplusOptions;
 class MLSplitOptions;
 class MLTransposeOptions;
 class MLOperand;
@@ -293,6 +294,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
 
   MLOperand* softmax(const MLOperand* input, ExceptionState& exception_state);
   MLActivation* softmax(ExceptionState& exception_state);
+
+  MLOperand* softplus(const MLOperand* input,
+                      const MLSoftplusOptions* options,
+                      ExceptionState& exception_state);
+  MLActivation* softplus(const MLSoftplusOptions* options,
+                         ExceptionState& exception_state);
 
   MLOperand* softsign(const MLOperand* input, ExceptionState& exception_state);
   MLActivation* softsign(ExceptionState& exception_state);

@@ -502,6 +502,7 @@ struct Activation {
   absl::optional<ClampTester::ClampOptions> clamp_options;
   absl::optional<float> elu_alpha;
   absl::optional<float> leaky_relu_alpha;
+  absl::optional<float> softplus_steepness;
 };
 
 MLActivation* CreateActivation(V8TestingScope& scope,
@@ -537,6 +538,14 @@ MLActivation* CreateActivation(V8TestingScope& scope,
       return builder->sigmoid(scope.GetExceptionState());
     case MLOperator::OperatorKind::kSoftmax:
       return builder->softmax(scope.GetExceptionState());
+    case MLOperator::OperatorKind::kSoftplus: {
+      auto* softplus_options = MLSoftplusOptions::Create();
+      CHECK(softplus_options);
+      if (activation.softplus_steepness.has_value()) {
+        softplus_options->setSteepness(activation.softplus_steepness.value());
+      }
+      return builder->softplus(softplus_options, scope.GetExceptionState());
+    }
     case MLOperator::OperatorKind::kTanh:
       return builder->tanh(scope.GetExceptionState());
     default:
@@ -583,6 +592,15 @@ void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
     case MLOperator::OperatorKind::kSoftmax:
       EXPECT_TRUE(mojom_activation->is_softmax());
       break;
+    case MLOperator::OperatorKind::kSoftplus: {
+      ASSERT_TRUE(mojom_activation->is_softplus());
+      auto& softplus = mojom_activation->get_softplus();
+      CHECK(softplus);
+      CHECK(expected_activation.softplus_steepness.has_value());
+      EXPECT_EQ(softplus->steepness,
+                expected_activation.softplus_steepness.value());
+      break;
+    }
     case MLOperator::OperatorKind::kTanh:
       EXPECT_TRUE(mojom_activation->is_tanh());
       break;
@@ -1000,6 +1018,32 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
              .epsilon = 1e-5,
              .activation =
                  Activation{.kind = MLOperator::OperatorKind::kSoftmax}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with softplus activation with default options.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind =
+                                       MLOperator::OperatorKind::kSoftplus}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes = {.scale = absl::nullopt,
+                                .bias = absl::nullopt,
+                                .axis = 1,
+                                .epsilon = 1e-5,
+                                .activation =
+                                    Activation{
+                                        .kind =
+                                            MLOperator::OperatorKind::kSoftplus,
+                                        .softplus_steepness = 1.0}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1426,6 +1470,30 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
              .groups = 1,
              .activation =
                  Activation{.kind = MLOperator::OperatorKind::kSoftmax}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test conv2d with softplus activation with steepness = 2.0.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                   .dimensions = {1, 1, 3, 3}},
+        .options = {.activation =
+                        Activation{.kind = MLOperator::OperatorKind::kSoftplus,
+                                   .softplus_steepness = 2.0}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+                                .strides = Vector<uint32_t>({1, 1}),
+                                .dilations = Vector<uint32_t>({1, 1}),
+                                .groups = 1,
+                                .activation =
+                                    Activation{
+                                        .kind =
+                                            MLOperator::OperatorKind::kSoftplus,
+                                        .softplus_steepness = 2.0}}}
         .Test(*this, scope, builder);
   }
   {
@@ -4143,6 +4211,104 @@ TEST_P(MLGraphTestMojo, SoftmaxTest) {
                   .dimensions = {1, 5}},
         .expected = {.data_type = blink_mojom::Operand::DataType::kFloat16,
                      .dimensions = {1, 5}}}
+        .Test(*this, scope, builder);
+  }
+}
+
+struct SoftplusTester {
+  OperandInfoBlink input;
+  absl::optional<float> steepness;
+  OperandInfoMojo expected_output;
+  float expected_steepness;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    MLSoftplusOptions* softplus_options = MLSoftplusOptions::Create();
+    if (steepness) {
+      softplus_options->setSteepness(steepness.value());
+    }
+    auto* output_operand = builder->softplus(input_operand, softplus_options,
+                                             scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the `mojo::Operator`.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    ASSERT_TRUE(operation->is_softplus());
+    auto& softplus = operation->get_softplus();
+
+    // Verify the steepness.
+    EXPECT_FLOAT_EQ(softplus->steepness, expected_steepness);
+
+    // Verify the input `mojo::Operand`.
+    ASSERT_EQ(graph_info->input_operands.size(), 1u);
+    auto input_operand_id = graph_info->input_operands[0];
+    auto input_operand_iter =
+        graph_info->id_to_operand_map.find(input_operand_id);
+    ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(input_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(input_operand_iter->value->data_type, expected_output.data_type);
+    EXPECT_EQ(input_operand_iter->value->dimensions,
+              expected_output.dimensions);
+    EXPECT_EQ(input_operand_iter->value->name, "input");
+
+    // Verify the output `mojo::Operand`.
+    ASSERT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kOutput);
+    EXPECT_EQ(output_operand_iter->value->data_type, expected_output.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_output.dimensions);
+    EXPECT_EQ(output_operand_iter->value->name, "output");
+  }
+};
+
+TEST_P(MLGraphTestMojo, SoftplusTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn_features::kWebMachineLearningNeuralNetwork);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test building softplus with default options.
+    SoftplusTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 4}},
+        .expected_output = {.data_type =
+                                blink_mojom::Operand::DataType::kFloat32,
+                            .dimensions = {2, 4}},
+        .expected_steepness = 1.0}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test building softplus with steepness = 5.0.
+    SoftplusTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {1, 5}},
+        .steepness = 5.0,
+        .expected_output = {.data_type =
+                                blink_mojom::Operand::DataType::kFloat16,
+                            .dimensions = {1, 5}},
+        .expected_steepness = 5.0}
         .Test(*this, scope, builder);
   }
 }

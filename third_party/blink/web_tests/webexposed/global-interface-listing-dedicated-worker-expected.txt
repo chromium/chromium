@@ -1241,6 +1241,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method sin
 [Worker]     method slice
 [Worker]     method softmax
+[Worker]     method softplus
 [Worker]     method softsign
 [Worker]     method split
 [Worker]     method sqrt

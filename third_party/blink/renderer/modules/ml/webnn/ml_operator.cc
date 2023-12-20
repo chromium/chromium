@@ -142,6 +142,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "slice";
     case MLOperator::OperatorKind::kSoftmax:
       return "softmax";
+    case MLOperator::OperatorKind::kSoftplus:
+      return "softplus";
     case MLOperator::OperatorKind::kSplit:
       return "split";
     case MLOperator::OperatorKind::kTanh:

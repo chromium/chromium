@@ -5819,6 +5819,71 @@ TEST_F(MLGraphBuilderTest, Softmax) {
   }
 }
 
+MLOperand* BuildSoftplus(V8TestingScope& scope,
+                         MLGraphBuilder* builder,
+                         const MLOperand* input,
+                         const MLSoftplusOptions* options) {
+  auto* output = builder->softplus(input, options, scope.GetExceptionState());
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->DataType(), input->DataType());
+  EXPECT_EQ(output->Dimensions(), input->Dimensions());
+  auto* softplus = output->Operator();
+  EXPECT_NE(softplus, nullptr);
+  EXPECT_EQ(softplus->Kind(), MLOperator::OperatorKind::kSoftplus);
+  EXPECT_TRUE(softplus->IsConnected());
+  EXPECT_NE(softplus->Options(), nullptr);
+  return output;
+}
+
+TEST_F(MLGraphBuilderTest, SoftPlusTest) {
+  V8TestingScope scope;
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  {
+    // Test building softplus with a scalar input and default options.
+    auto* input =
+        BuildInput(builder, "input", {}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    BuildSoftplus(scope, builder, input);
+  }
+  {
+    // Test building softplus with a 2-D input and steepness = 2.0.
+    auto* input = BuildInput(builder, "input", {3, 4},
+                             V8MLOperandDataType::Enum::kFloat16,
+                             scope.GetExceptionState());
+    auto* options = MLSoftplusOptions::Create();
+    options->setSteepness(2.0);
+    BuildSoftplus(scope, builder, input, options);
+  }
+  {
+    // Test building softplus activation.
+    auto* output = builder->softplus(MLSoftplusOptions::Create(),
+                                     scope.GetExceptionState());
+    ASSERT_NE(output, nullptr);
+    const MLOperator* softplus = output->Operator();
+    ASSERT_NE(softplus, nullptr);
+    EXPECT_EQ(softplus->Kind(), MLOperator::OperatorKind::kSoftplus);
+    EXPECT_FALSE(softplus->IsConnected());
+    EXPECT_NE(softplus->Options(), nullptr);
+  }
+  {
+    // Test throwing exception when building softplus with int32 input.
+    Vector<uint32_t> input_shape({3, 4});
+    auto* input = BuildInput(builder, "input", input_shape,
+                             V8MLOperandDataType::Enum::kInt32,
+                             scope.GetExceptionState());
+    auto* output = builder->softplus(input, MLSoftplusOptions::Create(),
+                                     scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input data type must be one of the float32,float16 types.");
+  }
+}
+
 TEST_F(MLGraphBuilderTest, SoftSignTest) {
   V8TestingScope scope;
   auto* builder =

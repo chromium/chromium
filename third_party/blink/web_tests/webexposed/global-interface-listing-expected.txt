@@ -5684,6 +5684,7 @@ interface MLGraphBuilder
     method sin
     method slice
     method softmax
+    method softplus
     method softsign
     method split
     method sqrt

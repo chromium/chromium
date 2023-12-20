@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_softplus_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
@@ -141,7 +142,7 @@ blink_mojom::ClampPtr CreateClamp(const OperandToIdMap& operand_to_id_map,
                                   const MLOperator* clamp,
                                   bool is_activation) {
   auto clamp_mojo = blink_mojom::Clamp::New();
-  // Activation has no input and output operand.
+  // Activation has no input or output operands.
   if (!is_activation) {
     clamp_mojo->input_operand_id = GetOperatorInputId(clamp, operand_to_id_map);
     clamp_mojo->output_operand_id =
@@ -161,7 +162,7 @@ blink_mojom::EluPtr CreateElu(const OperandToIdMap& operand_to_id_map,
                               const MLOperator* elu,
                               bool is_activation) {
   auto elu_mojo = blink_mojom::Elu::New();
-  // Activation has no input and output operand.
+  // Activation has no input or output operands.
   if (!is_activation) {
     elu_mojo->input_operand_id = GetOperatorInputId(elu, operand_to_id_map);
     elu_mojo->output_operand_id = GetOperatorOutputId(elu, operand_to_id_map);
@@ -187,7 +188,7 @@ blink_mojom::LeakyReluPtr CreateLeakyRelu(
     const MLOperator* leaky_relu,
     bool is_activation) {
   auto leaky_relu_mojo = blink_mojom::LeakyRelu::New();
-  // Activation has no input and output operand.
+  // Activation has no input or output operands.
   if (!is_activation) {
     leaky_relu_mojo->input_operand_id =
         GetOperatorInputId(leaky_relu, operand_to_id_map);
@@ -200,6 +201,25 @@ blink_mojom::LeakyReluPtr CreateLeakyRelu(
   CHECK(options);
   leaky_relu_mojo->alpha = options->alpha();
   return leaky_relu_mojo;
+}
+
+blink_mojom::SoftplusPtr CreateSoftplus(const OperandToIdMap& operand_to_id_map,
+                                        const MLOperator* softplus,
+                                        bool is_activation) {
+  auto softplus_mojo = blink_mojom::Softplus::New();
+  // Activation has no input or output operands.
+  if (!is_activation) {
+    softplus_mojo->input_operand_id =
+        GetOperatorInputId(softplus, operand_to_id_map);
+    softplus_mojo->output_operand_id =
+        GetOperatorOutputId(softplus, operand_to_id_map);
+  }
+
+  const auto* options =
+      static_cast<const MLSoftplusOptions*>(softplus->Options());
+  CHECK(options);
+  softplus_mojo->steepness = options->steepness();
+  return softplus_mojo;
 }
 
 blink_mojom::InputOperandLayout BlinkInputOperandLayoutToMojo(
@@ -233,6 +253,9 @@ base::expected<ActivationPtr, String> CreateActivation(
       return blink_mojom::Activation::NewSigmoid(blink_mojom::Sigmoid::New());
     case blink::MLOperator::OperatorKind::kSoftmax:
       return blink_mojom::Activation::NewSoftmax(blink_mojom::Softmax::New());
+    case blink::MLOperator::OperatorKind::kSoftplus:
+      return blink_mojom::Activation::NewSoftplus(
+          CreateSoftplus(operand_to_id_map, ml_operator, true));
     case blink::MLOperator::OperatorKind::kTanh:
       return blink_mojom::Activation::NewTanh(blink_mojom::Tanh::New());
     default:
@@ -1089,6 +1112,9 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreateSliceOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kSoftmax:
       return CreateSoftmaxOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kSoftplus:
+      return blink_mojom::Operation::NewSoftplus(
+          CreateSoftplus(operand_to_id_map, op, false));
     case MLOperator::OperatorKind::kSplit:
       return CreateSplitOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kTanh:

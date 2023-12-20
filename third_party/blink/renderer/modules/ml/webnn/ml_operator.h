@@ -85,6 +85,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
     kSigmoid,
     kSlice,
     kSoftmax,
+    kSoftplus,
     kSoftsign,
     kSplit,
     kTanh,

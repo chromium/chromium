@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_softplus_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -1500,6 +1501,28 @@ MLActivation* MLGraphBuilder::softmax(ExceptionState& exception_state) {
   // Create the softmax operator that would be used as an activation function.
   return MakeGarbageCollected<MLActivation>(this,
                                             MLOperator::OperatorKind::kSoftmax);
+}
+
+MLOperand* MLGraphBuilder::softplus(const MLOperand* input,
+                                    const MLSoftplusOptions* options,
+                                    ExceptionState& exception_state) {
+  // The current spec doesn't specify the operand data type constraints of
+  // softplus. An issue has been filed to track it:
+  // https://github.com/webmachinelearning/webnn/issues/283.
+  //
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softplus, the output
+  // tensor of softplus has the same type and dimensions as its input.
+  return BuildUnaryOperator(this, exception_state,
+                            MLOperator::OperatorKind::kSoftplus,
+                            webnn::DataTypeConstraint::kFloat, input, options);
+}
+
+MLActivation* MLGraphBuilder::softplus(const MLSoftplusOptions* options,
+                                       ExceptionState& exception_state) {
+  // Create the softplus operator that would be used as an activation function.
+  return MakeGarbageCollected<MLActivation>(
+      this, MLOperator::OperatorKind::kSoftplus, options);
 }
 
 MLOperand* MLGraphBuilder::softsign(const MLOperand* input,
