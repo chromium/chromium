@@ -31,7 +31,9 @@
 
 namespace content {
 
+class NavigationRequest;
 class PageDelegate;
+class PeakGpuMemoryTracker;
 class RenderFrameHostImpl;
 
 // This implements the Page interface that is exposed to embedders of content,
@@ -204,6 +206,17 @@ class CONTENT_EXPORT PageImpl : public Page {
     return credentialless_iframes_nonce_;
   }
 
+  // Take ownership of the loading memory tracker from the NavigationRequest
+  // that navigated to this page.
+  void TakeLoadingMemoryTracker(NavigationRequest* request);
+  // If we have a loading memory tracker, close it as loading has stopped. It
+  // will asynchronously receive the statistics from the GPU process, and update
+  // UMA stats.
+  void ResetLoadingMemoryTracker();
+  // If we have a loading memory tracker, cancel it as loading hasn't stopped
+  // and the page is being navigated away from. UMA stats will not be recorded.
+  void CancelLoadingMemoryTracker();
+
  private:
   void DidActivateAllRenderViewsForPrerenderingOrPreview(
       base::OnceCallback<void(base::TimeTicks)> completion_callback);
@@ -331,6 +344,12 @@ class CONTENT_EXPORT PageImpl : public Page {
   // document.
   const base::UnguessableToken credentialless_iframes_nonce_ =
       base::UnguessableToken::Create();
+
+  // This is only set for primary pages.
+  // Created by NavigationRequest; ownership is maintained until the frame has
+  // stopped loading, or we navigate away from the page before it finishes
+  // loading.
+  std::unique_ptr<PeakGpuMemoryTracker> loading_memory_tracker_;
 
   base::WeakPtrFactory<PageImpl> weak_factory_{this};
 };

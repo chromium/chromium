@@ -1987,6 +1987,11 @@ void RenderFrameHostImpl::DidEnterBackForwardCache() {
         ->DidEnterBackForwardCache();
   }
 
+  // Cancel loading memory tracker if it hasn't already recorded loading
+  // memory stats, as we would now be including stats from the navigation
+  // navigating away from the page.
+  GetPage().CancelLoadingMemoryTracker();
+
   CHECK(GetRenderWidgetHost());
   CHECK(GetRenderWidgetHost()->view_is_frame_sink_id_owner());
 
@@ -8136,11 +8141,11 @@ void RenderFrameHostImpl::DidStopLoading() {
   was_discarded_ = false;
   loading_state_ = LoadingState::NONE;
 
-  // If we have a PeakGpuMemoryTrack, close it as loading as stopped. It will
-  // asynchronously receive the statistics from the GPU process, and update
-  // UMA stats.
-  if (loading_mem_tracker_)
-    loading_mem_tracker_.reset();
+  if (IsInPrimaryMainFrame()) {
+    // After resetting the tracker, it will asynchronously receive the
+    // statistics from the GPU process, and update UMA stats.
+    GetPage().ResetLoadingMemoryTracker();
+  }
 
   // Only inform the FrameTreeNode of a change in load state if the load state
   // of this RenderFrameHost is being tracked.
@@ -13515,16 +13520,11 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   renderer_url_info_.was_loaded_from_load_data_with_base_url =
       navigation_request->IsLoadDataWithBaseURL();
 
-  // If we still have a PeakGpuMemoryTracker, then the loading it was observing
-  // never completed. Cancel it's callback so that we don't report partial
-  // loads to UMA.
-  if (loading_mem_tracker_) {
-    loading_mem_tracker_->Cancel();
+  // Transfer ownership of PeakGpuMemoryTracker to Page. It will eventually be
+  // destroyed after the page finishes loading.
+  if (IsInPrimaryMainFrame()) {
+    GetPage().TakeLoadingMemoryTracker(navigation_request);
   }
-
-  // Main Frames will create the tracker, which will be triggered after we
-  // receive DidStopLoading.
-  loading_mem_tracker_ = navigation_request->TakePeakGpuMemoryTracker();
 
   early_hints_manager_ = navigation_request->TakeEarlyHintsManager();
 

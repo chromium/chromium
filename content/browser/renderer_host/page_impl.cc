@@ -17,6 +17,7 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/public/browser/peak_gpu_memory_tracker.h"
 #include "content/public/browser/render_view_host.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
@@ -46,6 +47,11 @@ PageImpl::~PageImpl() {
   // explicitly here to ensure that the PageUserData destructors can access
   // associated Page object.
   ClearAllUserData();
+
+  // If we still have a PeakGpuMemoryTracker, then the loading it was observing
+  // never completed. Cancel its callback so that we don't report partial
+  // loads to UMA.
+  CancelLoadingMemoryTracker();
 }
 
 const absl::optional<GURL>& PageImpl::GetManifestUrl() const {
@@ -400,6 +406,25 @@ bool PageImpl::CheckAndMaybeDebitSelectURLBudgets(
   // Charge the overall budget.
   select_url_overall_budget_.value() -= bits_to_charge;
   return true;
+}
+
+void PageImpl::TakeLoadingMemoryTracker(NavigationRequest* request) {
+  CHECK(IsPrimary());
+  loading_memory_tracker_ = request->TakePeakGpuMemoryTracker();
+}
+
+void PageImpl::ResetLoadingMemoryTracker() {
+  CHECK(IsPrimary());
+  if (loading_memory_tracker_) {
+    loading_memory_tracker_.reset();
+  }
+}
+
+void PageImpl::CancelLoadingMemoryTracker() {
+  if (loading_memory_tracker_) {
+    loading_memory_tracker_->Cancel();
+    loading_memory_tracker_.reset();
+  }
 }
 
 }  // namespace content

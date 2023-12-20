@@ -269,7 +269,6 @@ class PrerenderCancellationReason;
 class IdleManagerImpl;
 class NavigationEarlyHintsManager;
 class NavigationRequest;
-class PeakGpuMemoryTracker;
 class PeerConnectionTrackerHost;
 class PrefetchedSignedExchangeCache;
 class PresentationServiceImpl;
@@ -4843,11 +4842,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Tracking active features in this frame, for use in figuring out whether
   // or not it can be frozen.
   std::unique_ptr<FeatureObserver> feature_observer_;
-
-  // Optional PeakGpuMemoryTracker, when this frame is the primary main frame.
-  // Created by NavigationRequest, ownership is maintained until the frame has
-  // stopped loading. Or newer navigations occur.
-  std::unique_ptr<PeakGpuMemoryTracker> loading_mem_tracker_;
 
   scoped_refptr<WebAuthRequestSecurityChecker>
       webauth_request_security_checker_;
