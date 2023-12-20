@@ -43,7 +43,8 @@ sys.path.insert(0, os.path.join(_REPOSITORY_ROOT, 'build'))
 import action_helpers
 
 METADATA_FILE_NAMES = frozenset({
-    "README.chromium",
+    "README.chromium", "README.crashpad", "README.v8", "README.pdfium",
+    "README.angle"
 })
 
 # Paths from the root of the tree to directories to skip.
@@ -1043,7 +1044,8 @@ def GenerateCredits(file_template_file,
   def MetadataToTemplateEntry(metadata, entry_template):
     licenses = []
     for filepath in metadata['License File']:
-      licenses.append(codecs.open(filepath, encoding='utf-8').read())
+      licenses.append(
+          codecs.open(filepath, errors="replace", encoding='utf-8').read())
     license_content = '\n\n'.join(licenses)
 
     env = {
