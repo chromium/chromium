@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/accelerators/accelerator_lookup.h"
+#include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -18,6 +20,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_split.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -38,6 +41,8 @@ using message_center::RichNotificationData;
 using message_center::SystemNotificationWarningLevel;
 
 namespace {
+
+using AcceleratorDetails = AcceleratorLookup::AcceleratorDetails;
 
 constexpr char kNotifierAccelerator[] = "ash.accelerator-controller";
 constexpr char kSpokenFeedbackToggleAccelNotificationId[] =
@@ -179,9 +184,22 @@ const char kFullscreenMagnifierToggleAccelNotificationId[] =
 const char kHighContrastToggleAccelNotificationId[] =
     "chrome://settings/accessibility/highcontrast";
 
-void ShowDeprecatedAcceleratorNotification(const char* notification_id,
-                                           int message_id,
-                                           int new_shortcut_id) {
+void MaybeShowDeprecatedAcceleratorNotification(const char* notification_id,
+                                                int message_id,
+                                                int new_shortcut_id,
+                                                ui::Accelerator replacement,
+                                                AcceleratorAction action_id) {
+  const std::vector<AcceleratorDetails> available_accelerators =
+      Shell::Get()->accelerator_lookup()->GetAvailableAcceleratorsForAction(
+          action_id);
+
+  if (!base::Contains(available_accelerators, replacement,
+                      &AcceleratorDetails::accelerator)) {
+    // No current accelerators for the action or the replacement accelerator
+    // is not available.
+    return;
+  }
+
   const std::u16string title =
       l10n_util::GetStringUTF16(IDS_DEPRECATED_SHORTCUT_TITLE);
   const std::u16string message =

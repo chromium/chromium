@@ -2629,6 +2629,42 @@ TEST_F(DeprecatedAcceleratorTester, TestDeprecatedAcceleratorsBehavior) {
   }
 }
 
+TEST_F(DeprecatedAcceleratorTester, NoNotificationIfReplacementMissing) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kShortcutCustomization);
+
+  // Remove the replacements for all deprecated accelerators.
+  Shell::Get()->ash_accelerator_configuration()->RemoveAccelerator(
+      AcceleratorAction::kShowShortcutViewer,
+      ui::Accelerator{ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN});
+
+  Shell::Get()->ash_accelerator_configuration()->RemoveAccelerator(
+      AcceleratorAction::kOpenGetHelp,
+      ui::Accelerator{ui::VKEY_H, ui::EF_COMMAND_DOWN});
+
+  for (size_t i = 0; i < kDeprecatedAcceleratorsLength; ++i) {
+    const AcceleratorData& entry = kDeprecatedAccelerators[i];
+
+    const DeprecatedAcceleratorData* data =
+        test_api_->GetDeprecatedAcceleratorData(entry.action);
+    DCHECK(data);
+
+    EXPECT_TRUE(IsMessageCenterEmpty());
+    ui::Accelerator deprecated_accelerator = CreateAccelerator(entry);
+    if (data->deprecated_enabled) {
+      EXPECT_TRUE(ProcessInController(deprecated_accelerator));
+    } else {
+      EXPECT_FALSE(ProcessInController(deprecated_accelerator));
+    }
+
+    // We do not expect to see a notification in the message center.
+    EXPECT_FALSE(
+        ContainsDeprecatedAcceleratorNotification(data->uma_histogram_name));
+
+    ResetStateIfNeeded();
+  }
+}
+
 TEST_F(DeprecatedAcceleratorTester, TestNewAccelerators) {
   // Add below the new accelerators that replaced the deprecated ones (if any).
   const AcceleratorData kNewAccelerators[] = {

@@ -1558,11 +1558,10 @@ AcceleratorControllerImpl::MaybeDeprecatedAcceleratorPressed(
   // Record UMA stats.
   RecordUmaHistogram(deprecated_data->uma_histogram_name, DEPRECATED_USED);
 
-  // We always display the notification as long as this |data| entry exists.
-  ShowDeprecatedAcceleratorNotification(
+  MaybeShowDeprecatedAcceleratorNotification(
       deprecated_data->uma_histogram_name,
       deprecated_data->notification_message_id,
-      deprecated_data->new_shortcut_id);
+      deprecated_data->new_shortcut_id, deprecated_data->replacement, action);
 
   if (!deprecated_data->deprecated_enabled)
     return AcceleratorProcessingStatus::STOP;

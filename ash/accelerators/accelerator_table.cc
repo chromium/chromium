@@ -7,6 +7,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "build/branding_buildflags.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
@@ -54,10 +55,13 @@ const DeprecatedAcceleratorData kDeprecatedAcceleratorsData[] = {
     {AcceleratorAction::kShowShortcutViewer,
      "Ash.Accelerators.Deprecated.ShowShortcutViewer",
      IDS_DEPRECATED_SHOW_SHORTCUT_VIEWER_MSG,
-     IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW, false},
+     IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW,
+     ui::Accelerator(ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN),
+     false},
     {AcceleratorAction::kOpenGetHelp,
      "Ash.Accelerators.Deprecated.ShowShortcutViewer",
-     IDS_DEPRECATED_OPEN_GET_HELP_MSG, IDS_SHORTCUT_OPEN_GET_HELP_NEW, false}};
+     IDS_DEPRECATED_OPEN_GET_HELP_MSG, IDS_SHORTCUT_OPEN_GET_HELP_NEW,
+     ui::Accelerator(ui::VKEY_H, ui::EF_COMMAND_DOWN), false}};
 
 const size_t kDeprecatedAcceleratorsDataLength =
     std::size(kDeprecatedAcceleratorsData);
