@@ -106,6 +106,13 @@ const int kCurrentVersionNumber = 8;
 const int kCompatibleVersionNumber = 8;
 const int kDeprecatedVersionNumber = 6;  // and earlier.
 
+// When enabled, prefer to use the new recovery module to recover the
+// `FaviconDatabase` database. See https://crbug.com/1385500 for details.
+// This is a kill switch and is not intended to be used in a field trial.
+BASE_FEATURE(kFaviconDatabaseUseBuiltInRecoveryIfSupported,
+             "FaviconDatabaseUseBuiltInRecoveryIfSupported",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 void FillIconMapping(const GURL& page_url,
                      sql::Statement& statement,
                      IconMapping* icon_mapping) {
@@ -189,22 +196,19 @@ bool InitIndices(sql::Database* db) {
 }
 
 void DatabaseErrorCallback(sql::Database* db,
-                           const base::FilePath& db_path,
                            int extended_error,
                            sql::Statement* stmt) {
   // TODO(shess): Assert that this is running on a safe thread.
   // AFAICT, should be the history thread, but at this level I can't
   // see how to reach that.
 
-  // Attempt to recover corrupt databases.
-  if (sql::Recovery::ShouldRecover(extended_error)) {
-    // NOTE(shess): This approach is valid as of version 8.  When bumping the
-    // version, it will PROBABLY remain valid, but consider whether any schema
-    // changes might break automated recovery.
-    DCHECK_EQ(8, kCurrentVersionNumber);
-
-    // Prevent reentrant calls.
-    db->reset_error_callback();
+  // Attempt to recover a corrupt database, if it is eligible to be recovered.
+  if (sql::BuiltInRecovery::RecoverIfPossible(
+          db, extended_error,
+          sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze,
+          &kFaviconDatabaseUseBuiltInRecoveryIfSupported)) {
+    // Recovery was attempted. The database handle has been poisoned and the
+    // error callback has been reset.
 
     // TODO(shess): Is it possible/likely to have broken foreign-key
     // issues with the tables?
@@ -216,15 +220,7 @@ void DatabaseErrorCallback(sql::Database* db,
     // and sequence the statements, as it is basically a form of garbage
     // collection.
 
-    // After this call, the |db| handle is poisoned so that future calls will
-    // return errors until the handle is re-opened.
-    sql::Recovery::RecoverDatabaseWithMetaVersion(db, db_path);
-
-    // The DLOG(FATAL) below is intended to draw immediate attention to errors
-    // in newly-written code.  Database corruption is generally a result of OS
-    // or hardware issues, not coding errors at the client level, so displaying
-    // the error would probably lead to confusion.  The ignored call signals the
-    // test-expectation framework that the error was handled.
+    // Signal the test-expectation framework that the error was handled.
     std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
     return;
   }
@@ -1009,9 +1005,12 @@ favicon_base::IconType FaviconDatabase::FromPersistedIconType(int icon_type) {
 sql::InitStatus FaviconDatabase::OpenDatabase(sql::Database* db,
                                               const base::FilePath& db_name) {
   db->set_histogram_tag("Thumbnail");
-  db->set_error_callback(
-      base::BindRepeating(&DatabaseErrorCallback, db, db_name));
 
+  // `OpenDatabase()` may be called repeatedly on the same `db`. Ensure that we
+  // don't attempt to overwrite an existing error callback.
+  if (!db_.has_error_callback()) {
+    db->set_error_callback(base::BindRepeating(&DatabaseErrorCallback, db));
+  }
   if (!db->Open(db_name))
     return sql::INIT_FAILURE;
   db->Preload();
