@@ -1618,10 +1618,6 @@ static_library("ui") {
       "webui/access_code_cast/access_code_cast_handler.h",
       "webui/access_code_cast/access_code_cast_ui.cc",
       "webui/access_code_cast/access_code_cast_ui.h",
-      "webui/app_management/app_management_page_handler.cc",
-      "webui/app_management/app_management_page_handler.h",
-      "webui/app_management/app_management_page_handler_factory.cc",
-      "webui/app_management/app_management_page_handler_factory.h",
       "webui/app_service_internals/app_service_internals_page_handler_impl.cc",
       "webui/app_service_internals/app_service_internals_page_handler_impl.h",
       "webui/app_service_internals/app_service_internals_ui.cc",
@@ -4133,6 +4129,15 @@ static_library("ui") {
     deps += [
       "//chrome/app:generated_resources",
       "//chrome/browser/ui/webui/app_home:mojo_bindings",
+    ]
+  }
+
+  if (is_win || is_mac || is_fuchsia || is_linux || is_chromeos_ash) {
+    sources += [
+      "webui/app_management/app_management_page_handler_base.cc",
+      "webui/app_management/app_management_page_handler_base.h",
+      "webui/app_management/app_management_page_handler_factory.cc",
+      "webui/app_management/app_management_page_handler_factory.h",
     ]
   }
 

@@ -78,7 +78,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
-#include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
+#include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
 #include "chrome/browser/ui/webui/app_settings/web_app_settings_ui.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
@@ -685,14 +685,14 @@ std::optional<AppState> GetStateForAppId(StateSnapshot* state_snapshot,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-AppManagementPageHandler CreateAppManagementPageHandler(Profile* profile) {
+AppManagementPageHandlerBase CreateAppManagementPageHandler(Profile* profile) {
   mojo::PendingReceiver<app_management::mojom::Page> page;
   mojo::Remote<app_management::mojom::PageHandler> handler;
   static auto delegate =
       WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile);
-  return AppManagementPageHandler(handler.BindNewPipeAndPassReceiver(),
-                                  page.InitWithNewPipeAndPassRemote(), profile,
-                                  *delegate);
+  return AppManagementPageHandlerBase(handler.BindNewPipeAndPassReceiver(),
+                                      page.InitWithNewPipeAndPassRemote(),
+                                      profile, *delegate);
 }
 #endif
 

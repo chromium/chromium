@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_BASE_H_
+#define CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_BASE_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -31,10 +31,11 @@
 
 class Profile;
 
-class AppManagementPageHandler : public app_management::mojom::PageHandler,
-                                 public apps::AppRegistryCache::Observer,
-                                 public apps::PreferredAppsListHandle::Observer,
-                                 public web_app::WebAppRegistrarObserver {
+class AppManagementPageHandlerBase
+    : public app_management::mojom::PageHandler,
+      public apps::AppRegistryCache::Observer,
+      public apps::PreferredAppsListHandle::Observer,
+      public web_app::WebAppRegistrarObserver {
  public:
   //  Handles platform specific tasks.
   class Delegate {
@@ -48,16 +49,17 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
     virtual gfx::NativeWindow GetUninstallAnchorWindow() const = 0;
   };
 
-  AppManagementPageHandler(
+  AppManagementPageHandlerBase(
       mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
       mojo::PendingRemote<app_management::mojom::Page> page,
       Profile* profile,
       Delegate& delegate);
 
-  AppManagementPageHandler(const AppManagementPageHandler&) = delete;
-  AppManagementPageHandler& operator=(const AppManagementPageHandler&) = delete;
+  AppManagementPageHandlerBase(const AppManagementPageHandlerBase&) = delete;
+  AppManagementPageHandlerBase& operator=(const AppManagementPageHandlerBase&) =
+      delete;
 
-  ~AppManagementPageHandler() override;
+  ~AppManagementPageHandlerBase() override;
 
   void OnPinnedChanged(const std::string& app_id, bool pinned);
 
@@ -143,7 +145,7 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
                           web_app::WebAppRegistrarObserver>
       registrar_observation_{this};
 
-  base::WeakPtrFactory<AppManagementPageHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AppManagementPageHandlerBase> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_BASE_H_

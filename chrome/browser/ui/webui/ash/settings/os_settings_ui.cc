@@ -71,7 +71,7 @@
 
 namespace {
 
-class AppManagementDelegate : public AppManagementPageHandler::Delegate {
+class AppManagementDelegate : public AppManagementPageHandlerBase::Delegate {
  public:
   AppManagementDelegate() = default;
   ~AppManagementDelegate() override = default;

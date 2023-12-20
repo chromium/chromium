@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
+#include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
 
 #include <memory>
 #include <set>
@@ -280,7 +280,7 @@ std::vector<std::string> GetScopeExtensions(const webapps::AppId& app_id,
 
 }  // namespace
 
-AppManagementPageHandler::AppManagementPageHandler(
+AppManagementPageHandlerBase::AppManagementPageHandlerBase(
     mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
     mojo::PendingRemote<app_management::mojom::Page> page,
     Profile* profile,
@@ -306,10 +306,10 @@ AppManagementPageHandler::AppManagementPageHandler(
 #endif
 }
 
-AppManagementPageHandler::~AppManagementPageHandler() {}
+AppManagementPageHandlerBase::~AppManagementPageHandlerBase() {}
 
-void AppManagementPageHandler::OnPinnedChanged(const std::string& app_id,
-                                               bool pinned) {
+void AppManagementPageHandlerBase::OnPinnedChanged(const std::string& app_id,
+                                                   bool pinned) {
   app_management::mojom::AppPtr app;
 
   apps::AppServiceProxyFactory::GetForProfile(profile_)
@@ -330,7 +330,7 @@ void AppManagementPageHandler::OnPinnedChanged(const std::string& app_id,
   page_->OnAppChanged(std::move(app));
 }
 
-void AppManagementPageHandler::GetApps(GetAppsCallback callback) {
+void AppManagementPageHandlerBase::GetApps(GetAppsCallback callback) {
   std::vector<app_management::mojom::AppPtr> app_management_apps;
   std::vector<apps::AppPtr> apps =
       apps::AppServiceProxyFactory::GetForProfile(profile_)
@@ -352,8 +352,8 @@ void AppManagementPageHandler::GetApps(GetAppsCallback callback) {
   std::move(callback).Run(std::move(app_management_apps));
 }
 
-void AppManagementPageHandler::GetApp(const std::string& app_id,
-                                      GetAppCallback callback) {
+void AppManagementPageHandlerBase::GetApp(const std::string& app_id,
+                                          GetAppCallback callback) {
   app_management::mojom::AppPtr app;
 
   apps::AppServiceProxyFactory::GetForProfile(profile_)
@@ -367,13 +367,13 @@ void AppManagementPageHandler::GetApp(const std::string& app_id,
   std::move(callback).Run(std::move(app));
 }
 
-void AppManagementPageHandler::GetSubAppToParentMap(
+void AppManagementPageHandlerBase::GetSubAppToParentMap(
     GetSubAppToParentMapCallback callback) {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   if (provider) {
     // Web apps are managed in the current process (Ash or Lacros).
     provider->scheduler().ScheduleCallbackWithLock<web_app::AllAppsLock>(
-        "AppManagementPageHandler::GetSubAppToParentMap",
+        "AppManagementPageHandlerBase::GetSubAppToParentMap",
         std::make_unique<web_app::AllAppsLockDescription>(),
         base::BindOnce([](web_app::AllAppsLock& lock) {
           return lock.registrar().GetSubAppToParentMap();
@@ -400,7 +400,7 @@ void AppManagementPageHandler::GetSubAppToParentMap(
   std::move(callback).Run(base::flat_map<std::string, std::string>());
 }
 
-void AppManagementPageHandler::GetExtensionAppPermissionMessages(
+void AppManagementPageHandlerBase::GetExtensionAppPermissionMessages(
     const std::string& app_id,
     GetExtensionAppPermissionMessagesCallback callback) {
   extensions::ExtensionRegistry* registry =
@@ -419,8 +419,8 @@ void AppManagementPageHandler::GetExtensionAppPermissionMessages(
   std::move(callback).Run(std::move(messages));
 }
 
-void AppManagementPageHandler::SetPinned(const std::string& app_id,
-                                         bool pinned) {
+void AppManagementPageHandlerBase::SetPinned(const std::string& app_id,
+                                             bool pinned) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   shelf_delegate_.SetPinned(app_id, pinned);
 #else
@@ -428,14 +428,15 @@ void AppManagementPageHandler::SetPinned(const std::string& app_id,
 #endif
 }
 
-void AppManagementPageHandler::SetPermission(const std::string& app_id,
-                                             apps::PermissionPtr permission) {
+void AppManagementPageHandlerBase::SetPermission(
+    const std::string& app_id,
+    apps::PermissionPtr permission) {
   apps::AppServiceProxyFactory::GetForProfile(profile_)->SetPermission(
       app_id, std::move(permission));
 }
 
-void AppManagementPageHandler::SetResizeLocked(const std::string& app_id,
-                                               bool locked) {
+void AppManagementPageHandlerBase::SetResizeLocked(const std::string& app_id,
+                                                   bool locked) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   apps::AppServiceProxyFactory::GetForProfile(profile_)->SetResizeLocked(
       app_id, locked);
@@ -444,19 +445,20 @@ void AppManagementPageHandler::SetResizeLocked(const std::string& app_id,
 #endif
 }
 
-void AppManagementPageHandler::Uninstall(const std::string& app_id) {
+void AppManagementPageHandlerBase::Uninstall(const std::string& app_id) {
   apps::AppServiceProxyFactory::GetForProfile(profile_)->Uninstall(
       app_id, apps::UninstallSource::kAppManagement,
       delegate_->GetUninstallAnchorWindow());
 }
 
-void AppManagementPageHandler::OpenNativeSettings(const std::string& app_id) {
+void AppManagementPageHandlerBase::OpenNativeSettings(
+    const std::string& app_id) {
   apps::AppServiceProxyFactory::GetForProfile(profile_)->OpenNativeSettings(
       app_id);
 }
 
-void AppManagementPageHandler::SetPreferredApp(const std::string& app_id,
-                                               bool is_preferred_app) {
+void AppManagementPageHandlerBase::SetPreferredApp(const std::string& app_id,
+                                                   bool is_preferred_app) {
 #if BUILDFLAG(IS_CHROMEOS)
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   bool is_preferred_app_for_supported_links =
@@ -476,7 +478,7 @@ void AppManagementPageHandler::SetPreferredApp(const std::string& app_id,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void AppManagementPageHandler::GetOverlappingPreferredApps(
+void AppManagementPageHandlerBase::GetOverlappingPreferredApps(
     const std::string& app_id,
     GetOverlappingPreferredAppsCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -499,7 +501,7 @@ void AppManagementPageHandler::GetOverlappingPreferredApps(
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(profile_);
   provider->scheduler().ScheduleCallbackWithLock<web_app::AllAppsLock>(
-      "AppManagementPageHandler::GetOverlappingPreferredApps",
+      "AppManagementPageHandlerBase::GetOverlappingPreferredApps",
       std::make_unique<web_app::AllAppsLockDescription>(),
       base::BindOnce(
           [](const webapps::AppId& app_id,
@@ -513,13 +515,13 @@ void AppManagementPageHandler::GetOverlappingPreferredApps(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void AppManagementPageHandler::UpdateAppSize(const std::string& app_id) {
+void AppManagementPageHandlerBase::UpdateAppSize(const std::string& app_id) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   proxy->UpdateAppSize(app_id);
 }
 
-void AppManagementPageHandler::SetWindowMode(const std::string& app_id,
-                                             apps::WindowMode window_mode) {
+void AppManagementPageHandlerBase::SetWindowMode(const std::string& app_id,
+                                                 apps::WindowMode window_mode) {
   // On ChromeOS, apps should always open in a new window,
   // hence window mode changes are not allowed.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -537,7 +539,7 @@ void AppManagementPageHandler::SetWindowMode(const std::string& app_id,
 #endif
 }
 
-void AppManagementPageHandler::SetRunOnOsLoginMode(
+void AppManagementPageHandlerBase::SetRunOnOsLoginMode(
     const std::string& app_id,
     apps::RunOnOsLoginMode run_on_os_login_mode) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -548,8 +550,9 @@ void AppManagementPageHandler::SetRunOnOsLoginMode(
 #endif
 }
 
-void AppManagementPageHandler::SetFileHandlingEnabled(const std::string& app_id,
-                                                      bool enabled) {
+void AppManagementPageHandlerBase::SetFileHandlingEnabled(
+    const std::string& app_id,
+    bool enabled) {
   auto permission = std::make_unique<apps::Permission>(
       apps::PermissionType::kFileHandling, enabled,
       /*is_managed=*/false);
@@ -557,14 +560,14 @@ void AppManagementPageHandler::SetFileHandlingEnabled(const std::string& app_id,
       app_id, std::move(permission));
 }
 
-void AppManagementPageHandler::ShowDefaultAppAssociationsUi() {
+void AppManagementPageHandlerBase::ShowDefaultAppAssociationsUi() {
   DCHECK(CanShowDefaultAppAssociationsUi());
 #if BUILDFLAG(IS_WIN)
   base::win::LaunchDefaultAppsSettingsModernDialog({});
 #endif
 }
 
-void AppManagementPageHandler::OnWebAppFileHandlerApprovalStateChanged(
+void AppManagementPageHandlerBase::OnWebAppFileHandlerApprovalStateChanged(
     const webapps::AppId& app_id) {
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
@@ -586,19 +589,19 @@ void AppManagementPageHandler::OnWebAppFileHandlerApprovalStateChanged(
   page_->OnAppChanged(std::move(app));
 }
 
-void AppManagementPageHandler::OnAppRegistrarDestroyed() {
+void AppManagementPageHandlerBase::OnAppRegistrarDestroyed() {
   registrar_observation_.Reset();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-void AppManagementPageHandler::OnWebAppUserLinkCapturingPreferencesChanged(
+void AppManagementPageHandlerBase::OnWebAppUserLinkCapturingPreferencesChanged(
     const webapps::AppId& app_id,
     bool is_preferred) {
   OnPreferredAppChanged(app_id, is_preferred);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
+app_management::mojom::AppPtr AppManagementPageHandlerBase::CreateUIAppPtr(
     const apps::AppUpdate& update) {
   auto app = app_management::mojom::App::New();
   app->id = update.AppId();
@@ -774,7 +777,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   return app;
 }
 
-void AppManagementPageHandler::OpenStorePage(const std::string& app_id) {
+void AppManagementPageHandlerBase::OpenStorePage(const std::string& app_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   auto* apk_service = ash::ApkWebAppService::Get(profile_);
@@ -801,8 +804,8 @@ void AppManagementPageHandler::OpenStorePage(const std::string& app_id) {
 #endif
 }
 
-void AppManagementPageHandler::SetAppLocale(const std::string& app_id,
-                                            const std::string& locale_tag) {
+void AppManagementPageHandlerBase::SetAppLocale(const std::string& app_id,
+                                                const std::string& locale_tag) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   apps::AppServiceProxyFactory::GetForProfile(profile_)->SetAppLocale(
       app_id, locale_tag);
@@ -811,7 +814,7 @@ void AppManagementPageHandler::SetAppLocale(const std::string& app_id,
 #endif
 }
 
-void AppManagementPageHandler::OnAppUpdate(const apps::AppUpdate& update) {
+void AppManagementPageHandlerBase::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.ShowInManagementChanged() || update.ReadinessChanged()) {
     if (update.ShowInManagement().value_or(false) &&
         update.Readiness() == apps::Readiness::kReady) {
@@ -827,13 +830,14 @@ void AppManagementPageHandler::OnAppUpdate(const apps::AppUpdate& update) {
   }
 }
 
-void AppManagementPageHandler::OnAppRegistryCacheWillBeDestroyed(
+void AppManagementPageHandlerBase::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   cache->RemoveObserver(this);
 }
 
-void AppManagementPageHandler::OnPreferredAppChanged(const std::string& app_id,
-                                                     bool is_preferred_app) {
+void AppManagementPageHandlerBase::OnPreferredAppChanged(
+    const std::string& app_id,
+    bool is_preferred_app) {
   app_management::mojom::AppPtr app;
 
   apps::AppServiceProxyFactory::GetForProfile(profile_)
@@ -854,7 +858,7 @@ void AppManagementPageHandler::OnPreferredAppChanged(const std::string& app_id,
   page_->OnAppChanged(std::move(app));
 }
 
-void AppManagementPageHandler::OnPreferredAppsListWillBeDestroyed(
+void AppManagementPageHandlerBase::OnPreferredAppsListWillBeDestroyed(
     apps::PreferredAppsListHandle* handle) {
   preferred_apps_list_handle_observer_.Reset();
 }

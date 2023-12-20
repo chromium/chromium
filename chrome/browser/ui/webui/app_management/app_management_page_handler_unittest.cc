@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
+#include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
 
 #include <memory>
 #include <string>
@@ -49,13 +49,13 @@ using ::testing::ElementsAre;
 
 namespace apps {
 namespace {
-class TestDelegate : public AppManagementPageHandler::Delegate {
+class TestDelegate : public AppManagementPageHandlerBase::Delegate {
  public:
   TestDelegate() = default;
   TestDelegate(const TestDelegate&) = delete;
   TestDelegate& operator=(const TestDelegate&) = delete;
 
-  // AppManagementPageHandler::Delegate:
+  // AppManagementPageHandlerBase::Delegate:
 
   ~TestDelegate() override = default;
 
@@ -78,7 +78,7 @@ class AppManagementPageHandlerTestBase
 
     mojo::PendingReceiver<app_management::mojom::Page> page;
     mojo::Remote<app_management::mojom::PageHandler> handler;
-    handler_ = std::make_unique<AppManagementPageHandler>(
+    handler_ = std::make_unique<AppManagementPageHandlerBase>(
         handler.BindNewPipeAndPassReceiver(),
         page.InitWithNewPipeAndPassRemote(), profile(), *delegate_);
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -97,7 +97,7 @@ class AppManagementPageHandlerTestBase
 
   bool LinkCapturingEnabledByDefault() { return GetParam(); }
 
-  AppManagementPageHandler* handler() { return handler_.get(); }
+  AppManagementPageHandlerBase* handler() { return handler_.get(); }
 
  protected:
   void AwaitWebAppCommandsComplete() {
@@ -123,7 +123,7 @@ class AppManagementPageHandlerTestBase
  private:
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<TestDelegate> delegate_;
-  std::unique_ptr<AppManagementPageHandler> handler_;
+  std::unique_ptr<AppManagementPageHandlerBase> handler_;
 #if !BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList scoped_feature_list_;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
