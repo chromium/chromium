@@ -28,6 +28,13 @@
 
 namespace blocklist {
 
+// When enabled, prefer to use the new recovery module to recover the
+// `OptOutStoreSQL` database. See https://crbug.com/1385500 for details.
+// This is a kill switch and is not intended to be used in a field trial.
+BASE_FEATURE(kOptOutStoreSQLUseBuiltInRecoveryIfSupported,
+             "OptOutStoreSQLUseBuiltInRecoveryIfSupported",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // Command line switch to change the entry per host DB size.
@@ -91,22 +98,16 @@ void CreateSchema(sql::Database* db) {
 }
 
 void DatabaseErrorCallback(sql::Database* db,
-                           const base::FilePath& db_path,
                            int extended_error,
                            sql::Statement* stmt) {
-  if (sql::Recovery::ShouldRecover(extended_error)) {
-    // Prevent reentrant calls.
-    db->reset_error_callback();
+  // Attempt to recover a corrupt database, if it is eligible to be recovered.
+  if (sql::BuiltInRecovery::RecoverIfPossible(
+          db, extended_error, sql::BuiltInRecovery::Strategy::kRecoverOrRaze,
+          &kOptOutStoreSQLUseBuiltInRecoveryIfSupported)) {
+    // Recovery was attempted. The database handle has been poisoned and the
+    // error callback has been reset.
 
-    // After this call, the |db| handle is poisoned so that future calls will
-    // return errors until the handle is re-opened.
-    sql::Recovery::RecoverDatabase(db, db_path);
-
-    // The DLOG(WARNING) below is intended to draw immediate attention to errors
-    // in newly-written code.  Database corruption is generally a result of OS
-    // or hardware issues, not coding errors at the client level, so displaying
-    // the error would probably lead to confusion.  The ignored call signals the
-    // test-expectation framework that the error was handled.
+    // Signal the test-expectation framework that the error was handled.
     std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
     return;
   }
@@ -117,7 +118,11 @@ void InitDatabase(sql::Database* db, base::FilePath path) {
   // code that may depend on this tag.
   db->set_histogram_tag("OptOutBlacklist");
 
-  db->set_error_callback(base::BindRepeating(&DatabaseErrorCallback, db, path));
+  if (!db->has_error_callback()) {
+    // The error callback may be reset if recovery was attempted, so ensure the
+    // callback is re-set when the database is re-opened.
+    db->set_error_callback(base::BindRepeating(&DatabaseErrorCallback, db));
+  }
 
   base::File::Error err;
   if (!base::CreateDirectoryAndGetError(path.DirName(), &err)) {
