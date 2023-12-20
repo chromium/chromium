@@ -9,6 +9,7 @@
 
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -118,6 +119,9 @@ TEST_F(CredentialCacheTest, StoresCredentialsSortedByAplhabetAndOrigins) {
 }
 
 TEST_F(CredentialCacheTest, StoresUnnotifiedSharedCredentialsCredentials) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kSharedPasswordNotificationUI);
+
   Origin origin = Origin::Create(GURL(kExampleSite));
 
   std::unique_ptr<PasswordForm> non_shared_credentials =
@@ -144,6 +148,30 @@ TEST_F(CredentialCacheTest, StoresUnnotifiedSharedCredentialsCredentials) {
   EXPECT_THAT(
       cache()->GetCredentialStore(origin).GetUnnotifiedSharedCredentials(),
       testing::ElementsAre(*shared_unnotified_credentials));
+}
+
+TEST_F(
+    CredentialCacheTest,
+    DoesNotStoreUnnotifiedSharedCredentialsCredentialsWhenFeatureIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kSharedPasswordNotificationUI);
+
+  Origin origin = Origin::Create(GURL(kExampleSite));
+
+  std::unique_ptr<PasswordForm> shared_unnotified_credentials =
+      CreateEntry("shared_unnotified", "pass", GURL(kExampleSite),
+                  PasswordForm::MatchType::kExact);
+  shared_unnotified_credentials->type = PasswordForm::Type::kReceivedViaSharing;
+  shared_unnotified_credentials->sharing_notification_displayed = false;
+
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {shared_unnotified_credentials.get()}, IsOriginBlocklisted(false),
+      origin);
+
+  EXPECT_THAT(
+      cache()->GetCredentialStore(origin).GetUnnotifiedSharedCredentials(),
+      testing::IsEmpty());
 }
 
 TEST_F(CredentialCacheTest, StoresCredentialsForIndependentOrigins) {

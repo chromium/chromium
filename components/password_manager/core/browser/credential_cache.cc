@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "url/origin.h"
@@ -49,7 +50,13 @@ void CredentialCache::SaveCredentialsAndBlocklistedForOrigin(
   for (const PasswordForm* form : best_matches) {
     if (form->type == PasswordForm::Type::kReceivedViaSharing &&
         !form->sharing_notification_displayed) {
-      unnotified_shared_credentials.push_back(*form);
+      // The cache is only useful when the sharing notification UI is displayed
+      // since it is used to mark those credentials as notified after the user
+      // interacts with the UI.
+      if (base::FeatureList::IsEnabled(
+              password_manager::features::kSharedPasswordNotificationUI)) {
+        unnotified_shared_credentials.push_back(*form);
+      }
     }
   }
   GetOrCreateCredentialStore(origin).SaveUnnotifiedSharedCredentials(
