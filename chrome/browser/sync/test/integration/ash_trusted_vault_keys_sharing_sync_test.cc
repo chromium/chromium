@@ -143,6 +143,15 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
   }
 
   bool SetupSyncAndTrustedVaultFakes() {
+    if (!SetupClients()) {
+      return false;
+    }
+    // SetupSync() may trigger some notifications, so need to create
+    // `notification_display_service_tester_` before calling it, but after
+    // profile is created by SetupClients().
+    notification_display_service_tester_ =
+        std::make_unique<NotificationDisplayServiceTester>(GetProfile(0));
+
     if (!SetupSync()) {
       return false;
     }
@@ -206,6 +215,10 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
     return true;
   }
 
+  NotificationDisplayServiceTester& notification_display_service_tester() {
+    return *notification_display_service_tester_;
+  }
+
  protected:
   const std::vector<uint8_t> kTestTrustedVaultKey = {1, 2, 3};
 
@@ -214,6 +227,16 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
 
   std::unique_ptr<views::NamedWidgetShownWaiter>
       trusted_vault_widget_shown_waiter_;
+
+  // Should be created before any observed notification is shown. Must outlive
+  // profile, i.e. TearDownOnMainThread().
+  // TODO(crbug.com/1513038): would be better to avoid non-trivial lifetime
+  // requirements. Perhaps, NotificationDisplayServiceTester simply should not
+  // call SetTestingFactory(ctx, NullFactory) in destructor, since this
+  // contradicts class-level comment ("Profile may outlive this") and unlikely
+  // to be needed.
+  std::unique_ptr<NotificationDisplayServiceTester>
+      notification_display_service_tester_;
 
   mojo::Remote<crosapi::mojom::TrustedVaultBackend>
       trusted_vault_backend_remote_;
@@ -233,19 +256,12 @@ IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
   EXPECT_THAT(FetchKeysThroughCrosapi(), ElementsAre(kTestTrustedVaultKey));
 }
 
-// TODO(https://crbug.com/1513038): Flaky on bots.
-IN_PROC_BROWSER_TEST_F(
-    AshTrustedVaultKeysSharingSyncTest,
-    DISABLED_ShouldAcceptKeysFromTheWebAndFetchThemThroughCrosapi) {
+IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
+                       ShouldAcceptKeysFromTheWebAndFetchThemThroughCrosapi) {
   // Mimic the account being already using a trusted vault passphrase.
   SetNigoriInFakeServer(
       syncer::BuildTrustedVaultNigoriSpecifics({kTestTrustedVaultKey}),
       GetFakeServer());
-
-  // Need to create `display_service` before key missing notification is shown
-  // (it will be shown during SetupSyncAndTrustedVaultFakes()).
-  ASSERT_TRUE(SetupClients());
-  NotificationDisplayServiceTester display_service(GetProfile(0));
 
   ASSERT_TRUE(SetupSyncAndTrustedVaultFakes());
   SetupCrosapi();
@@ -261,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(
       ash::SyncErrorNotifierFactory::GetForProfile(GetProfile(0))
           ->GetNotificationIdForTesting();
   absl::optional<message_center::Notification> notification =
-      display_service.GetNotification(notification_id);
+      notification_display_service_tester().GetNotification(notification_id);
   ASSERT_TRUE(notification);
   EXPECT_THAT(notification->title(),
               Eq(l10n_util::GetStringUTF16(
@@ -280,9 +296,10 @@ IN_PROC_BROWSER_TEST_F(
   // 2. It opens reauth page (note that no actual reauth happens in this test,
   // page closes automatically as if user did the reauth).
   // 3. Reauth page supplies Ash with kTestTrustedVaultKey.
-  display_service.SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                notification_id, /*action_index=*/absl::nullopt,
-                                /*reply=*/absl::nullopt);
+  notification_display_service_tester().SimulateClick(
+      NotificationHandler::Type::TRANSIENT, notification_id,
+      /*action_index=*/absl::nullopt,
+      /*reply=*/absl::nullopt);
   EXPECT_TRUE(WaitForTrustedVaultReauthCompletion());
 
   // Now Lacros should be able to fetch keys.
