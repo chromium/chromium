@@ -795,7 +795,7 @@ AXObject* AXObjectCacheImpl::Root() {
   if (AXObject* root = SafeGet(document_))
     return root;
 
-  ProcessDeferredAccessibilityEvents(GetDocument());
+  ProcessDeferredAccessibilityEvents(GetDocument(), /*force*/ true);
   return SafeGet(document_.Get());
 }
 
@@ -846,8 +846,7 @@ void AXObjectCacheImpl::UpdateAXForAllDocuments() {
   // Next flush all accessibility events and dirty objects, for both the main
   // and popup document, and update tree if needed.
   if (IsDirty() || HasDirtyObjects()) {
-    pause_tree_updates_until_more_loaded_content_ = false;
-    ProcessDeferredAccessibilityEvents(GetDocument());
+    ProcessDeferredAccessibilityEvents(GetDocument(), /*force*/ true);
   }
 }
 
@@ -2720,7 +2719,8 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() const {
 #endif
 }
 
-void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
+void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
+                                                           bool force) {
   if (IsPopup(document)) {
     // Only process popup document together with main document.
     DCHECK_EQ(&document, GetPopupDocumentIfShowing());
@@ -2736,17 +2736,20 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
   CHECK(!processing_deferred_events_);
 
   if (tree_updates_paused_) {
-    LOG(INFO) << "Accessibility tree updates will be resumed after rebuilding "
-                 "the tree from root";
-    MarkDocumentDirty();
     tree_updates_paused_ = false;
-    return;
+    if (!force) {
+      LOG(INFO)
+          << "Accessibility tree updates will be resumed after rebuilding "
+             "the tree from root";
+      MarkDocumentDirty();
+      return;
+    }
   }
 
   // Don't update the tree at an awkward time during page load.
   // Example: when the last node is whitespace, there is not yet enough context
   // to determine the relevance of the whitespace.
-  if (pause_tree_updates_until_more_loaded_content_) {
+  if (pause_tree_updates_until_more_loaded_content_ && !force) {
     if (IsParsingMainDocument()) {
       return;
     }
@@ -4928,7 +4931,8 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
 const AtomicString& AXObjectCacheImpl::ComputedRoleForNode(Node* node) {
   // Accessibility tree must be updated before getting an object.
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-  ProcessDeferredAccessibilityEvents(GetDocument());
+  ProcessDeferredAccessibilityEvents(GetDocument(), /*force*/ true);
+  ScopedFreezeAXCache scoped_freeze_cache(*this);
   AXObject* obj = SafeGet(node);
   return AXObject::ARIARoleName(obj ? obj->RoleValue()
                                     : ax::mojom::blink::Role::kUnknown);
@@ -4937,7 +4941,8 @@ const AtomicString& AXObjectCacheImpl::ComputedRoleForNode(Node* node) {
 String AXObjectCacheImpl::ComputedNameForNode(Node* node) {
   // Accessibility tree must be updated before getting an object.
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-  ProcessDeferredAccessibilityEvents(GetDocument());
+  ProcessDeferredAccessibilityEvents(GetDocument(), /*force*/ true);
+  ScopedFreezeAXCache scoped_freeze_cache(*this);
   AXObject* obj = SafeGet(node);
   return obj ? obj->ComputedName() : "";
 }

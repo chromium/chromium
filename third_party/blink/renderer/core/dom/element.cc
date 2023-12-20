@@ -2167,7 +2167,6 @@ const AtomicString& Element::computedRole() {
   AXContext ax_context(document, ui::kAXModeBasic);
   document.View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kJavaScript);
-  ax_context.GetAXObjectCache().ProcessDeferredAccessibilityEvents(document);
   return ax_context.GetAXObjectCache().ComputedRoleForNode(this);
 }
 
@@ -2186,7 +2185,6 @@ const AtomicString& Element::ComputedRoleNoLifecycleUpdate() {
   // Allocating the AXContext needs to not change lifecycle states.
   DCHECK_GE(document.Lifecycle().GetState(), DocumentLifecycle::kPrePaintClean)
       << " State was: " << document.Lifecycle().GetState();
-  ax_context.GetAXObjectCache().ProcessDeferredAccessibilityEvents(document);
   return ax_context.GetAXObjectCache().ComputedRoleForNode(this);
 }
 
@@ -2198,7 +2196,6 @@ String Element::computedName() {
   AXContext ax_context(document, ui::kAXModeBasic);
   document.View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kJavaScript);
-  ax_context.GetAXObjectCache().ProcessDeferredAccessibilityEvents(document);
   return ax_context.GetAXObjectCache().ComputedNameForNode(this);
 }
 
@@ -2217,7 +2214,6 @@ String Element::ComputedNameNoLifecycleUpdate() {
   // Allocating the AXContext needs to not change lifecycle states.
   DCHECK_GE(document.Lifecycle().GetState(), DocumentLifecycle::kPrePaintClean)
       << " State was: " << document.Lifecycle().GetState();
-  ax_context.GetAXObjectCache().ProcessDeferredAccessibilityEvents(document);
   return ax_context.GetAXObjectCache().ComputedNameForNode(this);
 }
 

@@ -155,7 +155,9 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
                                           const AtomicString& event_type) = 0;
 
   // Handle any notifications which arrived while layout was dirty.
-  virtual void ProcessDeferredAccessibilityEvents(Document&) = 0;
+  // If |force|, then process regardless of any active batching or pauses.
+  virtual void ProcessDeferredAccessibilityEvents(Document&,
+                                                  bool force = false) = 0;
 
   // Changes to virtual Accessibility Object Model nodes.
   virtual void HandleAttributeChanged(const QualifiedName& attr_name,
