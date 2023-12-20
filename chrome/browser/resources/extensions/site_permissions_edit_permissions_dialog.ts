@@ -10,16 +10,17 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
 import './strings.m.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getItemSource, SourceType} from './item_util.js';
 import {getTemplate} from './site_permissions_edit_permissions_dialog.html.js';
-import {SiteSettingsDelegate} from './site_settings_mixin.js';
+import type {SiteSettingsDelegate} from './site_settings_mixin.js';
 import {matchesSubdomains, SUBDOMAIN_SPECIFIER} from './url_util.js';
 
 interface ExtensionSiteAccessInfo {

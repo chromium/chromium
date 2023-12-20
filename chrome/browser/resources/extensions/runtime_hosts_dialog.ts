@@ -11,10 +11,10 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './strings.m.js';
 import './shared_vars.css.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

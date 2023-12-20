@@ -24,21 +24,22 @@ import './shared_vars.css.js';
 import './strings.m.js';
 import './toggle_row.js';
 
-import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
+import type {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './detail_view.html.js';
-import {ItemDelegate} from './item.js';
+import type {ItemDelegate} from './item.js';
 import {ItemMixin} from './item_mixin.js';
 import {computeInspectableViewLabel, EnableControl, getEnableControl, getEnableToggleAriaLabel, getEnableToggleTooltipText, getItemSource, getItemSourceString, isEnabled, sortViews, userCanChangeEnablement} from './item_util.js';
 import {navigation, Page} from './navigation_helper.js';
-import {ExtensionsToggleRowElement} from './toggle_row.js';
+import type {ExtensionsToggleRowElement} from './toggle_row.js';
 
 export interface ExtensionsDetailViewElement {
   $: {

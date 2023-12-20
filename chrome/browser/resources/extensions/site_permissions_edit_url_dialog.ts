@@ -8,14 +8,14 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './strings.m.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './site_permissions_edit_url_dialog.html.js';
-import {SiteSettingsDelegate} from './site_settings_mixin.js';
+import type {SiteSettingsDelegate} from './site_settings_mixin.js';
 
 // A RegExp to roughly match acceptable patterns entered by the user.
 // exec'ing() this RegExp will match the following groups:

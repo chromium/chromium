@@ -9,11 +9,11 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './code_section.js';
 import './strings.m.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ExtensionsCodeSectionElement} from './code_section.js';
+import type {ExtensionsCodeSectionElement} from './code_section.js';
 import {getTemplate} from './load_error.html.js';
 
 export interface LoadErrorDelegate {

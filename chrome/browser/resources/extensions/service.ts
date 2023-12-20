@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
+import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {ActivityLogDelegate} from './activity_log/activity_log_history.js';
-import {ActivityLogEventDelegate} from './activity_log/activity_log_stream.js';
-import {ErrorPageDelegate} from './error_page.js';
-import {ItemDelegate} from './item.js';
-import {KeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
-import {LoadErrorDelegate} from './load_error.js';
+import type {ActivityLogDelegate} from './activity_log/activity_log_history.js';
+import type {ActivityLogEventDelegate} from './activity_log/activity_log_stream.js';
+import type {ErrorPageDelegate} from './error_page.js';
+import type {ItemDelegate} from './item.js';
+import type {KeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
+import type {LoadErrorDelegate} from './load_error.js';
 import {Dialog, navigation, Page} from './navigation_helper.js';
-import {PackDialogDelegate} from './pack_dialog.js';
-import {SiteSettingsDelegate} from './site_settings_mixin.js';
-import {ToolbarDelegate} from './toolbar.js';
+import type {PackDialogDelegate} from './pack_dialog.js';
+import type {SiteSettingsDelegate} from './site_settings_mixin.js';
+import type {ToolbarDelegate} from './toolbar.js';
 
 export interface ServiceInterface extends ActivityLogDelegate,
                                           ActivityLogEventDelegate,

@@ -13,14 +13,15 @@ import './shared_vars.css.js';
 import './site_permissions_edit_permissions_dialog.js';
 import './site_permissions_edit_url_dialog.js';
 
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './site_permissions_list.html.js';
-import {SiteSettingsDelegate} from './site_settings_mixin.js';
+import type {SiteSettingsDelegate} from './site_settings_mixin.js';
 import {getFaviconUrl} from './url_util.js';
 
 export interface ExtensionsSitePermissionsListElement {

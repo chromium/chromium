@@ -13,10 +13,11 @@ import './site_permissions_edit_permissions_dialog.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './site_permissions_site_group.html.js';
-import {SiteSettingsDelegate} from './site_settings_mixin.js';
+import type {SiteSettingsDelegate} from './site_settings_mixin.js';
 import {getFaviconUrl, matchesSubdomains, SUBDOMAIN_SPECIFIER} from './url_util.js';
 
 export interface SitePermissionsSiteGroupElement {

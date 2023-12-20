@@ -8,12 +8,12 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../shared_style.css.js';
 import './activity_log_stream_item.js';
 
-import {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
+import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './activity_log_stream.html.js';
-import {StreamItem} from './activity_log_stream_item.js';
+import type {StreamItem} from './activity_log_stream_item.js';
 
 export interface ActivityLogEventDelegate {
   getOnExtensionActivity(): ChromeEvent<

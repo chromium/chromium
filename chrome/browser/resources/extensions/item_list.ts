@@ -12,7 +12,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ExtensionsItemElement, ItemDelegate} from './item.js';
+import type {ExtensionsItemElement, ItemDelegate} from './item.js';
 import {getTemplate} from './item_list.html.js';
 
 type Filter = (info: chrome.developerPrivate.ExtensionInfo) => boolean;
