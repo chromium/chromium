@@ -74,14 +74,16 @@ ChromeML::ChromeML(base::PassKey<ChromeML>,
 ChromeML::~ChromeML() = default;
 
 // static
-ChromeML* ChromeML::Get() {
-  static base::NoDestructor<std::unique_ptr<ChromeML>> chrome_ml{Create()};
+ChromeML* ChromeML::Get(const std::optional<std::string>& library_name) {
+  static base::NoDestructor<std::unique_ptr<ChromeML>> chrome_ml{
+      Create(library_name)};
   return chrome_ml->get();
 }
 
 // static
 DISABLE_CFI_DLSYM
-std::unique_ptr<ChromeML> ChromeML::Create() {
+std::unique_ptr<ChromeML> ChromeML::Create(
+    const std::optional<std::string>& library_name) {
   // Log GPU info for crash reports.
   gpu::GPUInfo gpu_info;
   gpu::CollectBasicGraphicsInfo(&gpu_info);
@@ -101,7 +103,8 @@ std::unique_ptr<ChromeML> ChromeML::Create() {
 #endif  // BUILDFLAG(IS_MAC)
 #endif  // !BUILDFLAG(IS_ANDROID)
   base::NativeLibrary library = base::LoadNativeLibrary(
-      base_dir.AppendASCII(base::GetNativeLibraryName(kChromeMLLibraryName)),
+      base_dir.AppendASCII(base::GetNativeLibraryName(
+          library_name.value_or(std::string(kChromeMLLibraryName)))),
       &error);
   if (!library) {
     LOG(ERROR) << "Error loading native library: " << error.ToString();
