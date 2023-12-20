@@ -178,7 +178,7 @@ struct ThenHelper<OriginalCallback<void(OriginalArgs...)>,
                   ThenCallback<ThenR(ThenArgs...)>> {
  private:
   // For context on this "templated struct with a lambda that asserts" pattern,
-  // see comments in MakeBindStateTypeImpl.
+  // see comments in `Invoker<>`.
   template <bool v = sizeof...(ThenArgs) == 0>
   struct CorrectNumberOfArgs {
     static constexpr bool value = [] {

@@ -81,7 +81,7 @@ concept DisallowsUnretained = !kCustomizeSupportsUnretained<T> || requires {
 template <typename T>
 struct SupportsUnretainedImpl {
   // For context on this "templated struct with a lambda that asserts" pattern,
-  // see comments in `MakeBindStateTypeImpl`.
+  // see comments in `Invoker<>`.
   template <bool v = IsComplete<T> || SafeIncompleteTypeForUnretained<T>>
   struct AllowlistIncompleteTypes {
     static constexpr bool value = [] {

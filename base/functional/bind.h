@@ -86,12 +86,6 @@ inline auto BindRepeating(Functor&& functor, Args&&... args) {
 //
 // So these overloads will only be selected as a last resort iff template type
 // deduction fails.
-//
-// These overloads also intentionally do not return `void`, as this prevents
-// clang from emitting spurious errors such as "variable has incomplete type
-// 'void'" when assigning the result of `BindOnce()`/`BindRepeating()` to a
-// variable with type `auto` or `decltype(auto)`.
-struct BindFailedCheckPreviousErrors {};
 BindFailedCheckPreviousErrors BindOnce(...);
 BindFailedCheckPreviousErrors BindRepeating(...);
 

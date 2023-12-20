@@ -80,6 +80,12 @@ struct CallbackCancellationTraits;
 template <typename Signature>
 class FunctionRef;
 
+// A tag type to return when `Bind()` calls fail. In this case we intentionally
+// don't return `void`, since that would produce spurious errors like "variable
+// has incomplete type 'void'" when assigning the result of
+// `Bind{Once,Repeating}()` to an `auto`.
+struct BindFailedCheckPreviousErrors {};
+
 namespace unretained_traits {
 
 // `UnretainedWrapper` will check and report if pointer is dangling upon
@@ -119,7 +125,7 @@ class UnretainedWrapper {
   // When we can't have both, prefer the former, mostly because
   // `GetPtrType`=`raw_ptr<T>` would break if e.g. `UnretainedWrapper()` is
   // constructed using `char*`, but the receiver is of type `std::string&`.
-  // This is enforced by `static_assert`s in `ParamCanBeBound`.
+  // This is enforced by `static_assert()`s in `ParamCanBeBound`.
   using GetPtrType = std::conditional_t<
       raw_ptr_traits::IsSupportedType<T>::value &&
           std::same_as<UnretainedTrait, unretained_traits::MayDangle>,
@@ -848,7 +854,13 @@ using MakeFunctorTraits = FunctorTraits<std::decay_t<Functor>>;
 // See description at top of file.
 template <typename T>
 struct StorageTraits {
+  // The type to use for storing the bound arg inside `BindState`.
   using Type = T;
+
+  // True iff all compile-time preconditions for using this specialization are
+  // satisfied. Specializations that set this to `false` should ensure a
+  // `static_assert()` explains why.
+  static constexpr bool value = true;
 };
 
 // For `T*`, store as `UnretainedWrapper<T>` for safety, as it internally uses
@@ -856,6 +868,7 @@ struct StorageTraits {
 template <typename T>
 struct StorageTraits<T*> {
   using Type = UnretainedWrapper<T, unretained_traits::MayNotDangle>;
+  static constexpr bool value = Type::value;
 };
 
 // For `raw_ptr<T>`, store as `UnretainedWrapper<T>` for safety. This may seem
@@ -864,6 +877,7 @@ struct StorageTraits<T*> {
 template <typename T, RawPtrTraits PtrTraits>
 struct StorageTraits<raw_ptr<T, PtrTraits>> {
   using Type = UnretainedWrapper<T, unretained_traits::MayNotDangle, PtrTraits>;
+  static constexpr bool value = Type::value;
 };
 
 // Unwrap `std::reference_wrapper` and store it in a custom wrapper so that
@@ -871,10 +885,11 @@ struct StorageTraits<raw_ptr<T, PtrTraits>> {
 template <typename T>
 struct StorageTraits<std::reference_wrapper<T>> {
   using Type = UnretainedRefWrapper<T, unretained_traits::MayNotDangle>;
+  static constexpr bool value = Type::value;
 };
 
 template <typename T>
-using MakeStorageType = typename StorageTraits<std::decay_t<T>>::Type;
+using ValidateStorageTraits = StorageTraits<std::decay_t<T>>;
 
 // `InvokeHelper<>`
 //
@@ -903,14 +918,6 @@ struct InvokeHelper<false, ReturnType, indices...> {
 
 template <typename ReturnType, size_t index_target, size_t... index_tail>
 struct InvokeHelper<true, ReturnType, index_target, index_tail...> {
-  // Weak calls are only supported for functions with a `void` return type.
-  // Otherwise, the desired function result would be unclear if the `WeakPtr<>`
-  // is invalidated. In theory, we could support default-constructible return
-  // types (and return the default value) or allow callers to specify a default
-  // return value via a template arg. It's not clear these are necessary.
-  static_assert(std::is_void_v<ReturnType>,
-                "WeakPtrs can only bind to methods without return values.");
-
   template <typename Functor, typename BoundArgsTuple, typename... RunArgs>
   static inline void MakeItSo(Functor&& functor,
                               BoundArgsTuple&& bound,
@@ -939,27 +946,74 @@ struct Invoker;
 
 template <typename StorageType, typename R, typename... UnboundArgs>
 struct Invoker<StorageType, R(UnboundArgs...)> {
+ private:
+  using Indices = std::make_index_sequence<
+      std::tuple_size_v<decltype(StorageType::bound_args_)>>;
+
+ public:
   static R RunOnce(BindStateBase* base,
                    PassingType<UnboundArgs>... unbound_args) {
     StorageType* storage = static_cast<StorageType*>(base);
-    static constexpr size_t num_bound_args =
-        std::tuple_size_v<decltype(storage->bound_args_)>;
     return RunImpl(std::move(storage->functor_),
-                   std::move(storage->bound_args_),
-                   std::make_index_sequence<num_bound_args>(),
+                   std::move(storage->bound_args_), Indices(),
                    std::forward<UnboundArgs>(unbound_args)...);
   }
 
   static R Run(BindStateBase* base, PassingType<UnboundArgs>... unbound_args) {
     const StorageType* storage = static_cast<StorageType*>(base);
-    static constexpr size_t num_bound_args =
-        std::tuple_size_v<decltype(storage->bound_args_)>;
-    return RunImpl(storage->functor_, storage->bound_args_,
-                   std::make_index_sequence<num_bound_args>(),
+    return RunImpl(storage->functor_, storage->bound_args_, Indices(),
                    std::forward<UnboundArgs>(unbound_args)...);
   }
 
  private:
+  // The "templated struct with a lambda that asserts" pattern below is used
+  // repeatedly in Bind/Callback code to verify compile-time preconditions. The
+  // goal is to print only the root cause failure when users violate a
+  // precondition, and not also a host of resulting compile errors.
+  //
+  // There are three key aspects:
+  //   1. By placing the assertion inside a lambda that initializes a variable,
+  //      the assertion will not be verified until the compiler tries to read
+  //      the value of that variable. This allows the containing types to be
+  //      complete. As a result, code that needs to know if the assertion failed
+  //      can read the variable's value and get the right answer. (If we instead
+  //      placed the assertion at struct scope, the resulting type would be
+  //      incomplete when the assertion failed; in practice, reading a
+  //      `constexpr` member of an incomplete type seems to return the default
+  //      value regardless of what the code tried to set the value to, which
+  //      makes it impossible for other code to check whether the assertion
+  //      failed.)
+  //   2. Code that will not successfully compile unless the assertion holds is
+  //      guarded by a constexpr if that checks the variable.
+  //   3. By placing the variable inside an independent, templated struct and
+  //      naming it `value`, we allow checking multiple conditions via
+  //      `std::conjunction_v<>`. This short-circuits type instantiation, so
+  //      that when one condition fails, the others are never examined and thus
+  //      never assert. As a result, we can verify dependent conditions without
+  //      worrying that "if one fails, we'll get errors from several others".
+  //      (This would not be true if we simply checked all the values with `&&`,
+  //      which would instantiate all the types before evaluating the
+  //      expression.)
+  //
+  // For caller convenience and to avoid potential repetition, the actual
+  // condition to be checked is always used as the default value of a template
+  // argument, so callers can simply instantiate the struct with no template
+  // params to verify the condition.
+
+  // Weak calls are only supported for functions with a `void` return type.
+  // Otherwise, the desired function result would be unclear if the `WeakPtr<>`
+  // is invalidated. In theory, we could support default-constructible return
+  // types (and return the default value) or allow callers to specify a default
+  // return value via a template arg. It's not clear these are necessary.
+  template <bool is_weak_call, bool v = !is_weak_call || std::is_void_v<R>>
+  struct WeakCallReturnsVoid {
+    static constexpr bool value = [] {
+      static_assert(v,
+                    "WeakPtrs can only bind to methods without return values.");
+      return v;
+    }();
+  };
+
   template <typename Functor, typename BoundArgsTuple, size_t... indices>
   static inline R RunImpl(Functor&& functor,
                           BoundArgsTuple&& bound,
@@ -976,20 +1030,21 @@ struct Invoker<StorageType, R(UnboundArgs...)> {
     static constexpr bool kIsWeakCall =
         kIsWeakMethod<MakeFunctorTraits<Functor>::is_method,
                       std::tuple_element_t<indices, DecayedArgsTuple>...>;
-
-    // Do not `Unwrap()` here, as that immediately triggers dangling pointer
-    // detection. Dangling pointer detection should only be triggered if the
-    // callback is not cancelled, but cancellation status is not determined
-    // until later inside the `InvokeHelper::MakeItSo()` specialization for weak
-    // calls.
-    //
-    // Dangling pointers when invoking a cancelled callback are not considered
-    // a memory safety error because protecting raw pointers usage with weak
-    // receivers (where the weak receiver usually own the pointed objects) is a
-    // common and broadly used pattern in the codebase.
-    return InvokeHelper<kIsWeakCall, R, indices...>::MakeItSo(
-        std::forward<Functor>(functor), std::forward<BoundArgsTuple>(bound),
-        std::forward<UnboundArgs>(unbound_args)...);
+    if constexpr (WeakCallReturnsVoid<kIsWeakCall>::value) {
+      // Do not `Unwrap()` here, as that immediately triggers dangling pointer
+      // detection. Dangling pointer detection should only be triggered if the
+      // callback is not cancelled, but cancellation status is not determined
+      // until later inside the `InvokeHelper::MakeItSo()` specialization for
+      // weak calls.
+      //
+      // Dangling pointers when invoking a cancelled callback are not considered
+      // a memory safety error because protecting raw pointers usage with weak
+      // receivers (where the weak receiver usually own the pointed objects) is
+      // a common and broadly used pattern in the codebase.
+      return InvokeHelper<kIsWeakCall, R, indices...>::MakeItSo(
+          std::forward<Functor>(functor), std::forward<BoundArgsTuple>(bound),
+          std::forward<UnboundArgs>(unbound_args)...);
+    }
   }
 };
 
@@ -1137,55 +1192,14 @@ struct BindState final : BindStateBase {
 };
 
 // Used to determine and validate the appropriate `BindState`. The
-// specializations below cover all cases. Each has the following public members:
-//   // The appropriate `BindState` specialization for the given params.
-//   using Type = BindState<std::decay_t<Functor>,
-//                          MakeStorageType<BoundArgs>...>;
-//
-//   // True iff all compile-time preconditions for using this specialization
-//   // are satisfied. Specializations that set this to `false` should use a
-//   // `static_assert` to explain why. See comments below on the "templated
-//   // struct with a lambda that asserts" pattern used to do this.
-//   static constexpr bool value = false;
+// specializations below cover all cases. The members are similar in intent to
+// those in `StorageTraits`; see comments there.
 template <bool is_method, typename Functor, typename... BoundArgs>
 struct ValidateBindStateType;
 
 template <typename Functor, typename... BoundArgs>
 struct ValidateBindStateType<false, Functor, BoundArgs...> {
  private:
-  // This "templated struct with a lambda that asserts" pattern is used
-  // repeatedly in Bind/Callback code to verify compile-time preconditions. The
-  // goal is to print only the root cause failure when users violate a
-  // precondition, and not also a host of resulting compile errors.
-  //
-  // There are three key aspects:
-  //   1. By placing the assertion inside a lambda that initializes a variable,
-  //      the assertion will not be verified until the compiler tries to read
-  //      the value of that variable. This allows the containing types to be
-  //      complete. As a result, code that needs to know if the assertion failed
-  //      can read the variable's value and get the right answer. (If we instead
-  //      placed the assertion at struct scope, the resulting type would be
-  //      incomplete when the assertion failed; in practice, reading a
-  //      `constexpr` member of an incomplete type seems to return the default
-  //      value regardless of what the code tried to set the value to, which
-  //      makes it impossible for other code to check whether the assertion
-  //      failed.)
-  //   2. Code that will not successfully compile unless the assertion holds is
-  //      guarded by a constexpr if that checks the variable.
-  //   3. By placing the variable inside an independent, templated struct and
-  //      naming it `value`, we allow checking multiple conditions via
-  //      `std::conjunction_v<>`. This short-circuits type instantiation, so
-  //      that when one condition fails, the others are never examined and thus
-  //      never assert. As a result, we can verify dependent conditions without
-  //      worrying that "if one fails, we'll get errors from several others".
-  //      (This would not be true if we simply checked all the values with `&&`,
-  //      which would instantiate all the types before evaluating the
-  //      expression.)
-  //
-  // For caller convenience and to avoid potential repetition, the actual
-  // condition to be checked is always used as the default value of a template
-  // argument, so callers can simply instantiate the struct with no template
-  // params to verify the condition.
   template <bool v = !HasRefCountedTypeAsRawPtr<std::decay_t<BoundArgs>...>>
   struct NoRawPtrsToRefCountedTypes {
     static constexpr bool value = [] {
@@ -1196,8 +1210,11 @@ struct ValidateBindStateType<false, Functor, BoundArgs...> {
   };
 
  public:
-  using Type = BindState<std::decay_t<Functor>, MakeStorageType<BoundArgs>...>;
-  static constexpr bool value = NoRawPtrsToRefCountedTypes<>::value;
+  using Type = BindState<std::decay_t<Functor>,
+                         typename ValidateStorageTraits<BoundArgs>::Type...>;
+  static constexpr bool value =
+      std::conjunction_v<NoRawPtrsToRefCountedTypes<>,
+                         ValidateStorageTraits<BoundArgs>...>;
 };
 
 template <typename Functor>
@@ -1255,12 +1272,13 @@ struct ValidateBindStateType<true, Functor, Receiver, BoundArgs...> {
  public:
   using Type = BindState<std::decay_t<Functor>,
                          ReceiverStorageType,
-                         MakeStorageType<BoundArgs>...>;
+                         typename ValidateStorageTraits<BoundArgs>::Type...>;
   static constexpr bool value =
       std::conjunction_v<FirstBoundArgIsNotArray<>,
                          ReceiverIsNotRawRef<>,
                          ReceiverIsNotRawPtr<>,
-                         NoRawPtrsToRefCountedTypes<>>;
+                         NoRawPtrsToRefCountedTypes<>,
+                         ValidateStorageTraits<BoundArgs>...>;
 };
 
 // Transforms `T` into an unwrapped type, which is passed to the target
@@ -1301,8 +1319,8 @@ struct ValidateReceiverType {
   };
 
  public:
-  // These members are similar in intent to those in `MakeBindStateTypeImpl`;
-  // see comments there.
+  // These members are similar in intent to those in `StorageTraits`; see
+  // comments there.
   using Type = T;
   static constexpr bool value = ReceiverMustBePointerLike<>::value;
 };
@@ -1319,8 +1337,8 @@ struct ValidateReceiverType<T> {
 // pointers.
 template <bool is_once, bool is_method, typename... Args>
 struct ValidateUnwrappedTypeList {
-  // These members are similar in intent to those in `MakeBindStateTypeImpl`;
-  // see comments there.
+  // These members are similar in intent to those in `StorageTraits`; see
+  // comments there.
   using Type = TypeList<TransformToUnwrappedType<is_once, Args>...>;
   static constexpr bool value = true;
 };
@@ -1756,6 +1774,21 @@ struct BindHelper {
     CHECK(callback);
     return callback;
   }
+
+  // Must be defined after `Bind()` since it refers to it.
+  template <typename Functor, typename... Args>
+  struct BindWouldSucceed {
+    // Can't use a defaulted template param since it can't come after `Args`.
+    //
+    // Determining if `Bind()` would succeed is not as simple as verifying any
+    // conditions it checks directly; those only control when it's safe to call
+    // other methods, which in turn may fail. However, ultimately, any failure
+    // will result in returning `void`, so check for a non-`void` return type.
+    static constexpr bool value =
+        !std::same_as<void,
+                      decltype(Bind(std::declval<Functor&&>(),
+                                    std::declval<Args&&>()...))>;
+  };
 };
 
 // Implementation of `BindOnce()`, which checks preconditions before handing off
@@ -1788,9 +1821,13 @@ struct BindOnceHelper {
  public:
   static auto BindOnce(Functor&& functor, Args&&... args) {
     if constexpr (std::conjunction_v<OnceCallbackFunctorIsConstRvalue<>,
-                                     NoBindArgIsBasePassed<>>) {
+                                     NoBindArgIsBasePassed<>,
+                                     BindHelper<OnceCallback>::BindWouldSucceed<
+                                         Functor, Args...>>) {
       return BindHelper<OnceCallback>::Bind(std::forward<Functor>(functor),
                                             std::forward<Args>(args)...);
+    } else {
+      return BindFailedCheckPreviousErrors();
     }
   }
 };
@@ -1812,9 +1849,13 @@ struct BindRepeatingHelper {
 
  public:
   static auto BindRepeating(Functor&& functor, Args&&... args) {
-    if constexpr (FunctorIsNotOnceCallback<>::value) {
+    if constexpr (std::conjunction_v<FunctorIsNotOnceCallback<>,
+                                     BindHelper<RepeatingCallback>::
+                                         BindWouldSucceed<Functor, Args...>>) {
       return BindHelper<RepeatingCallback>::Bind(std::forward<Functor>(functor),
                                                  std::forward<Args>(args)...);
+    } else {
+      return BindFailedCheckPreviousErrors();
     }
   }
 };

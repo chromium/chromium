@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_FUNCTIONAL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_FUNCTIONAL_H_
 
+#include <concepts>
 #include <utility>
 
 #include "base/dcheck_is_on.h"
@@ -365,9 +366,13 @@ auto BindOnce(FunctionType&& function, BoundParameters&&... bound_parameters) {
   auto cb = base::BindOnce(std::forward<FunctionType>(function),
                            std::forward<BoundParameters>(bound_parameters)...);
 #if DCHECK_IS_ON()
-  using WrapperType = ThreadCheckingCallbackWrapper<decltype(cb)>;
-  cb = base::BindOnce(&WrapperType::Run,
-                      std::make_unique<WrapperType>(std::move(cb)));
+  // Avoid spewing more errors if the call above failed.
+  if constexpr (!std::same_as<decltype(cb),
+                              base::BindFailedCheckPreviousErrors>) {
+    using WrapperType = ThreadCheckingCallbackWrapper<decltype(cb)>;
+    cb = base::BindOnce(&WrapperType::Run,
+                        std::make_unique<WrapperType>(std::move(cb)));
+  }
 #endif
   return cb;
 }
@@ -383,9 +388,13 @@ auto BindRepeating(FunctionType function,
   auto cb = base::BindRepeating(
       function, std::forward<BoundParameters>(bound_parameters)...);
 #if DCHECK_IS_ON()
-  using WrapperType = ThreadCheckingCallbackWrapper<decltype(cb)>;
-  cb = base::BindRepeating(&WrapperType::Run,
-                           std::make_unique<WrapperType>(std::move(cb)));
+  // Avoid spewing more errors if the call above failed.
+  if constexpr (!std::same_as<decltype(cb),
+                              base::BindFailedCheckPreviousErrors>) {
+    using WrapperType = ThreadCheckingCallbackWrapper<decltype(cb)>;
+    cb = base::BindRepeating(&WrapperType::Run,
+                             std::make_unique<WrapperType>(std::move(cb)));
+  }
 #endif
   return cb;
 }
