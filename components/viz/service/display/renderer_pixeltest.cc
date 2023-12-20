@@ -1320,24 +1320,7 @@ TEST_P(RendererPixelTest, BypassableTextureQuad_Rotation_ClipRect) {
                                      .SetAvgAbsErrorLimit(40)));
 }
 
-// Tests that exercise render pass bypass code. When the feature is enabled by
-// default these can be merged back into RendererPixelTest.
-class RendererPixelBypassTest : public RendererPixelTest {
- public:
-  RendererPixelBypassTest() {
-    feature_list_.InitAndEnableFeature(features::kAllowBypassRenderPassQuads);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         RendererPixelBypassTest,
-                         testing::ValuesIn(GetRendererTypes()),
-                         testing::PrintToStringParamName());
-
-TEST_P(RendererPixelBypassTest, BypassableRenderPassQuad) {
+TEST_P(RendererPixelTest, BypassableRenderPassQuad) {
   AggregatedRenderPassId root_pass_id{1};
   AggregatedRenderPassId child_pass_id{2};
   AggregatedRenderPassId grand_child_pass_id{3};
@@ -1438,7 +1421,7 @@ TEST_P(RendererPixelBypassTest, BypassableRenderPassQuad) {
       cc::ExactPixelComparator()));
 }
 
-TEST_P(RendererPixelBypassTest, BypassableRenderPassQuad_DoubleBypass) {
+TEST_P(RendererPixelTest, BypassableRenderPassQuad_DoubleBypass) {
   AggregatedRenderPassId root_pass_id{1};
   AggregatedRenderPassId child_pass_id{2};
   AggregatedRenderPassId grand_child_pass_id{3};
@@ -1537,8 +1520,7 @@ TEST_P(RendererPixelBypassTest, BypassableRenderPassQuad_DoubleBypass) {
       cc::ExactPixelComparator()));
 }
 
-TEST_P(RendererPixelBypassTest,
-       BypassableRenderPassQuad_DoubleBypass_ScaledClip) {
+TEST_P(RendererPixelTest, BypassableRenderPassQuad_DoubleBypass_ScaledClip) {
   AggregatedRenderPassId root_pass_id{1};
   AggregatedRenderPassId child_pass_id{2};
   AggregatedRenderPassId grand_child_pass_id{3};
