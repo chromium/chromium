@@ -99,6 +99,22 @@ inline ::testing::Matcher<AutofillUploadContents::Field> FieldSignatureIs(
                              signature.value());
 }
 
+inline ::testing::Matcher<AutofillUploadContents> PasswordLengthIsPositive() {
+  return ::testing::Property("password_length",
+                             &AutofillUploadContents::password_length,
+                             ::testing::Gt(0u));
+}
+
+inline ::testing::Matcher<AutofillUploadContents> HasPasswordAttribute() {
+  return ::testing::AnyOf(
+      ::testing::Property("has_password_has_letter",
+                          &AutofillUploadContents::has_password_has_letter,
+                          true),
+      ::testing::Property(
+          "has_password_has_special_symbol",
+          &AutofillUploadContents::has_password_has_special_symbol, true));
+}
+
 }  // namespace upload_contents_matchers
 
 }  // namespace autofill

@@ -52,7 +52,9 @@ using ::autofill::upload_contents_matchers::FieldAutofillTypeIs;
 using ::autofill::upload_contents_matchers::FieldsContain;
 using ::autofill::upload_contents_matchers::FieldSignatureIs;
 using ::autofill::upload_contents_matchers::FormSignatureIs;
+using ::autofill::upload_contents_matchers::HasPasswordAttribute;
 using ::autofill::upload_contents_matchers::ObservedSubmissionIs;
+using ::autofill::upload_contents_matchers::PasswordLengthIsPositive;
 using ::autofill::upload_contents_matchers::SubmissionIndicatorEventIs;
 using ::testing::_;
 using ::testing::AllOf;
@@ -183,6 +185,7 @@ TEST_F(VotesUploaderTest, UploadPasswordVoteUpdate) {
 
   auto upload_contents_matcher = IsPasswordUpload(
       FormSignatureIs(CalculateFormSignature(form_to_upload_.form_data)),
+      PasswordLengthIsPositive(), HasPasswordAttribute(),
       SubmissionIndicatorEventIs(
           SubmissionIndicatorEvent::HTML_FORM_SUBMISSION),
       LoginFormSignatureIs(login_form_signature_),
@@ -210,6 +213,7 @@ TEST_F(VotesUploaderTest, UploadPasswordVoteSave) {
 
   auto upload_contents_matcher = IsPasswordUpload(
       FormSignatureIs(CalculateFormSignature(form_to_upload_.form_data)),
+      PasswordLengthIsPositive(), HasPasswordAttribute(),
       SubmissionIndicatorEventIs(
           SubmissionIndicatorEvent::HTML_FORM_SUBMISSION),
       LoginFormSignatureIs(login_form_signature_),
@@ -484,8 +488,7 @@ TEST_F(VotesUploaderTest, UploadPasswordAttributes) {
   }
 }
 
-TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote) {
-  VotesUploader votes_uploader(&client_, true);
+TEST_F(VotesUploaderTest, GeneratePasswordAttributesMetadata) {
   // Checks that randomization distorts information about present and missed
   // character classes, but a true value is still restorable with aggregation
   // of many distorted reports.
@@ -501,8 +504,6 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote) {
     if (password_value.empty())
       continue;
 
-    FormData form;
-    FormStructure form_structure(form);
     int reported_false[kNumberOfPasswordAttributes] = {0, 0};
     int reported_true[kNumberOfPasswordAttributes] = {0, 0};
 
@@ -512,16 +513,18 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote) {
     int kNumberOfRuns = 1000;
 
     for (int i = 0; i < kNumberOfRuns; ++i) {
-      votes_uploader.GeneratePasswordAttributesVote(password_value,
-                                                    &form_structure);
-      std::optional<std::pair<PasswordAttribute, bool>> vote =
-          form_structure.get_password_attributes_vote();
-      int attribute_index = static_cast<int>(vote->first);
-      if (vote->second)
+      VotesUploader votes_uploader(&client_, true);
+      std::optional<PasswordAttributesMetadata> password_attributes =
+          votes_uploader.GeneratePasswordAttributesMetadata(password_value);
+      std::pair<PasswordAttribute, bool> vote =
+          password_attributes->password_attributes_vote;
+      int attribute_index = static_cast<int>(vote.first);
+      if (vote.second) {
         reported_true[attribute_index]++;
-      else
+      } else {
         reported_false[attribute_index]++;
-      size_t reported_length = form_structure.get_password_length_vote();
+      }
+      size_t reported_length = password_attributes->password_length_vote;
       if (reported_length == password_value.size()) {
         reported_actual_length++;
       } else {
@@ -553,38 +556,34 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote) {
 }
 
 TEST_F(VotesUploaderTest, GeneratePasswordSpecialSymbolVote) {
-  VotesUploader votes_uploader(&client_, true);
 
   const std::u16string password_value = u"password-withsymbols!";
   const int kNumberOfRuns = 2000;
   const int kSpecialSymbolsAttribute =
       static_cast<int>(PasswordAttribute::kHasSpecialSymbol);
 
-  FormData form;
-
   int correct_symbol_reported = 0;
   int wrong_symbol_reported = 0;
   int number_of_symbol_votes = 0;
 
   for (int i = 0; i < kNumberOfRuns; ++i) {
-    FormStructure form_structure(form);
-
-    votes_uploader.GeneratePasswordAttributesVote(password_value,
-                                                  &form_structure);
-    std::optional<std::pair<PasswordAttribute, bool>> vote =
-        form_structure.get_password_attributes_vote();
+    VotesUploader votes_uploader(&client_, true);
+    std::optional<PasswordAttributesMetadata> password_attributes =
+        votes_uploader.GeneratePasswordAttributesMetadata(password_value);
+    std::pair<PasswordAttribute, bool> vote =
+        password_attributes->password_attributes_vote;
 
     // Continue if the vote is not about special symbols or implies that no
     // special symbols are used.
-    if (static_cast<int>(vote->first) != kSpecialSymbolsAttribute ||
-        !vote->second) {
-      EXPECT_EQ(form_structure.get_password_symbol_vote(), 0);
+    if (static_cast<int>(vote.first) != kSpecialSymbolsAttribute ||
+        !vote.second) {
+      EXPECT_EQ(password_attributes->password_symbol_vote, 0);
       continue;
     }
 
     number_of_symbol_votes += 1;
 
-    int symbol = form_structure.get_password_symbol_vote();
+    int symbol = password_attributes->password_symbol_vote;
     if (symbol == '-' || symbol == '!')
       correct_symbol_reported += 1;
     else
@@ -594,48 +593,40 @@ TEST_F(VotesUploaderTest, GeneratePasswordSpecialSymbolVote) {
   EXPECT_LT(0.15 * number_of_symbol_votes, wrong_symbol_reported);
 }
 
-TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_OneCharacterPassword) {
-  // |VotesUploader::GeneratePasswordAttributesVote| shouldn't crash if a
+TEST_F(VotesUploaderTest,
+       GeneratePasswordAttributesMetadata_OneCharacterPassword) {
+  // `VotesUploader::GeneratePasswordAttributesMetadata` shouldn't crash if a
   // password has only one character.
-  FormData form;
-  FormStructure form_structure(form);
   VotesUploader votes_uploader(&client_, true);
-  votes_uploader.GeneratePasswordAttributesVote(u"1", &form_structure);
-  std::optional<std::pair<PasswordAttribute, bool>> vote =
-      form_structure.get_password_attributes_vote();
-  EXPECT_TRUE(vote.has_value());
-  size_t reported_length = form_structure.get_password_length_vote();
+  std::optional<PasswordAttributesMetadata> password_attributes =
+      votes_uploader.GeneratePasswordAttributesMetadata(u"1");
+  EXPECT_TRUE(password_attributes.has_value());
+
+  size_t reported_length = password_attributes->password_length_vote;
   EXPECT_EQ(1u, reported_length);
 }
 
-TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_AllAsciiCharacters) {
-  FormData form;
-  FormStructure form_structure(form);
+TEST_F(VotesUploaderTest,
+       GeneratePasswordAttributesMetadata_AllAsciiCharacters) {
   VotesUploader votes_uploader(&client_, true);
-  votes_uploader.GeneratePasswordAttributesVote(
-      u"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr"
-      u"stuvwxyz!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
-      &form_structure);
-  std::optional<std::pair<PasswordAttribute, bool>> vote =
-      form_structure.get_password_attributes_vote();
-  EXPECT_TRUE(vote.has_value());
+  std::optional<PasswordAttributesMetadata> password_attributes =
+      votes_uploader.GeneratePasswordAttributesMetadata(
+          u"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr"
+          u"stuvwxyz!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~");
+  EXPECT_TRUE(password_attributes.has_value());
 }
 
-TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_NonAsciiPassword) {
+TEST_F(VotesUploaderTest, GeneratePasswordAttributesMetadata_NonAsciiPassword) {
   // Checks that password attributes vote is not generated if the password has
   // non-ascii characters.
   for (const auto* password :
        {u"пароль1", u"パスワード", u"münchen", u"סיסמה-A", u"Σ-12345",
         u"գաղտնաբառըTTT", u"Slaptažodis", u"密碼", u"كلمهالسر", u"mậtkhẩu!",
         u"ລະຫັດຜ່ານ-l", u"စကားဝှက်ကို3", u"პაროლი", u"पारण शब्द"}) {
-    FormData form;
-    FormStructure form_structure(form);
     VotesUploader votes_uploader(&client_, true);
-    votes_uploader.GeneratePasswordAttributesVote(password, &form_structure);
-    std::optional<std::pair<PasswordAttribute, bool>> vote =
-        form_structure.get_password_attributes_vote();
-
-    EXPECT_FALSE(vote.has_value()) << password;
+    std::optional<PasswordAttributesMetadata> password_attributes =
+        votes_uploader.GeneratePasswordAttributesMetadata(password);
+    EXPECT_FALSE(password_attributes.has_value()) << password;
   }
 }
 

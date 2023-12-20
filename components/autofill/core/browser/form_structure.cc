@@ -158,26 +158,6 @@ FieldType FirstNonCapturedType(const FormStructure& form,
   return MAX_VALID_FIELD_TYPE;
 }
 
-// Encode password attributes and length into |upload|.
-void EncodePasswordAttributesVote(
-    const std::pair<PasswordAttribute, bool>& password_attributes_vote,
-    const size_t password_length_vote,
-    const int password_symbol_vote,
-    AutofillUploadContents* upload) {
-  switch (password_attributes_vote.first) {
-    case PasswordAttribute::kHasLetter:
-      upload->set_password_has_letter(password_attributes_vote.second);
-      break;
-    case PasswordAttribute::kHasSpecialSymbol:
-      upload->set_password_has_special_symbol(password_attributes_vote.second);
-      if (password_attributes_vote.second)
-        upload->set_password_special_symbol(password_symbol_vote);
-      break;
-    case PasswordAttribute::kPasswordAttributesCount:
-      NOTREACHED();
-  }
-  upload->set_password_length(password_length_vote);
-}
 
 void EncodeRandomizedValue(const RandomizedEncoder& encoder,
                            FormSignature form_signature,
@@ -561,7 +541,6 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
   upload.set_form_signature(form_signature().value());
   upload.set_autofill_used(form_was_autofilled);
   upload.set_data_present(data_present);
-  upload.set_passwords_revealed(passwords_were_revealed_);
   upload.set_has_form_tag(is_form_tag_);
   if (!current_page_language_->empty() && randomized_encoder_ != nullptr) {
     upload.set_language(current_page_language_.value());
@@ -593,12 +572,6 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
   upload.set_submission_event(
       static_cast<AutofillUploadContents_SubmissionIndicatorEvent>(
           triggering_event));
-
-  if (password_attributes_vote_) {
-    EncodePasswordAttributesVote(*password_attributes_vote_,
-                                 password_length_vote_, password_symbol_vote_,
-                                 &upload);
-  }
 
   if (!login_form_signature.empty()) {
     uint64_t login_sig;

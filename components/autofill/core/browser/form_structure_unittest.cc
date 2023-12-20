@@ -2536,9 +2536,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   form.fields.push_back(checkable_field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->set_password_attributes_vote(
-      std::make_pair(PasswordAttribute::kHasLetter, true));
-  form_structure->set_password_length_vote(10u);
   for (auto& fs_field : *form_structure)
     fs_field->host_form_signature = form_structure->form_signature();
 
@@ -2568,9 +2565,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("1442000308");
-  upload.set_passwords_revealed(false);
-  upload.set_password_has_letter(true);
-  upload.set_password_length(10u);
   upload.set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_NONE);
   upload.set_has_form_tag(true);
@@ -2611,9 +2605,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   }
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->set_password_attributes_vote(
-      std::make_pair(PasswordAttribute::kHasLetter, true));
-  form_structure->set_password_length_vote(10u);
   for (auto& fs_field : *form_structure)
     fs_field->host_form_signature = form_structure->form_signature();
 
@@ -2708,9 +2699,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
   form.fields.push_back(checkable_field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->set_password_attributes_vote(
-      std::make_pair(PasswordAttribute::kHasLetter, true));
-  form_structure->set_password_length_vote(10u);
   for (auto& fs_field : *form_structure)
     fs_field->host_form_signature = form_structure->form_signature();
 
@@ -2740,9 +2728,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("1442000308");
-  upload.set_passwords_revealed(false);
-  upload.set_password_has_letter(true);
-  upload.set_password_length(10u);
 
   test::FillUploadField(upload.add_field(), 3763331450U, 3U, 0);
   test::FillUploadField(upload.add_field(), 3494530716U, 5U, 0);
@@ -2827,9 +2812,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
   form.fields.push_back(checkable_field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->set_password_attributes_vote(
-      std::make_pair(PasswordAttribute::kHasLetter, true));
-  form_structure->set_password_length_vote(10u);
   for (auto& fs_field : *form_structure)
     fs_field->host_form_signature = form_structure->form_signature();
 
@@ -2859,9 +2841,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("1442000308");
-  upload.set_passwords_revealed(false);
-  upload.set_password_has_letter(true);
-  upload.set_password_length(10u);
   upload.set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_NONE);
   upload.set_has_form_tag(true);
@@ -2941,9 +2920,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
   form.fields.push_back(checkable_field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->set_password_attributes_vote(
-      std::make_pair(PasswordAttribute::kHasLetter, true));
-  form_structure->set_password_length_vote(10u);
   form_structure->set_submission_event(
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION);
   for (auto& fs_field : *form_structure)
@@ -2976,9 +2952,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("1442000308");
-  upload.set_passwords_revealed(false);
-  upload.set_password_has_letter(true);
-  upload.set_password_length(10u);
   upload.set_has_form_tag(true);
 
   test::FillUploadField(upload.add_field(), 3763331450U, 3U);
@@ -3009,9 +2982,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
   }
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->set_password_attributes_vote(
-      std::make_pair(PasswordAttribute::kHasLetter, true));
-  form_structure->set_password_length_vote(10u);
   form_structure->set_submission_event(
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION);
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
@@ -3143,7 +3113,6 @@ TEST_F(FormStructureTestImpl,
   upload.set_autofill_used(true);
   upload.set_data_present("1440000000000000000802");
   upload.set_login_form_signature(42);
-  upload.set_passwords_revealed(false);
   upload.set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_NONE);
   upload.set_has_form_tag(true);
@@ -3244,7 +3213,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequestWithPropertiesMask) {
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(true);
   upload.set_data_present("1440");
-  upload.set_passwords_revealed(false);
   upload.set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_NONE);
   upload.set_has_form_tag(true);
@@ -3326,7 +3294,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_ObservedSubmissionFalse) {
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(true);
   upload.set_data_present("1440");
-  upload.set_passwords_revealed(false);
   upload.set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_NONE);
   upload.set_has_form_tag(true);
@@ -3397,7 +3364,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithLabels) {
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(true);
   upload.set_data_present("1440");
-  upload.set_passwords_revealed(false);
   upload.set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_NONE);
   upload.set_has_form_tag(true);
@@ -3499,7 +3465,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSubForms) {
     upload.set_form_signature(form_structure->form_signature().value());
     upload.set_autofill_used(false);
     upload.set_data_present("0000000000001850");
-    upload.set_passwords_revealed(false);
     upload.set_has_form_tag(true);
     test::FillUploadField(upload.add_field(), 3340391946, 51);
     test::FillUploadField(upload.add_field(), 1415886167, 52);
@@ -3605,7 +3570,6 @@ TEST_F(FormStructureTestImpl, CheckDataPresence) {
   upload.set_form_signature(form_structure.form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("");
-  upload.set_passwords_revealed(false);
   upload.set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_HTML_FORM_SUBMISSION);
   upload.set_has_form_tag(true);
@@ -3863,7 +3827,6 @@ TEST_F(FormStructureTestImpl, CheckMultipleTypes) {
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("1440000360000008");
-  upload.set_passwords_revealed(false);
   upload.set_has_form_tag(false);
   upload.set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_XHR_SUCCEEDED);
@@ -3949,7 +3912,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_PasswordsRevealed) {
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
-  form_structure.set_passwords_were_revealed(true);
   for (auto& fs_field : form_structure)
     fs_field->host_form_signature = form_structure.form_signature();
 
@@ -3959,7 +3921,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_PasswordsRevealed) {
           std::string() /* login_form_signature */,
           true /* observed_submission */);
   ASSERT_EQ(1u, uploads.size());
-  EXPECT_EQ(true, uploads.front().passwords_revealed());
 }
 
 TEST_F(FormStructureTestImpl, EncodeUploadRequest_IsFormTag) {
@@ -3978,7 +3939,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_IsFormTag) {
     FormStructure form_structure(form);
     for (auto& fs_field : form_structure)
       fs_field->host_form_signature = form_structure.form_signature();
-    form_structure.set_passwords_were_revealed(true);
     std::vector<AutofillUploadContents> uploads =
         form_structure.EncodeUploadRequest(
             {{}} /* available_field_types */, false /* form_was_autofilled */,

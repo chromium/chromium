@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 
+#include <optional>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -26,6 +27,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager.h"
+#include "components/password_manager/core/browser/votes_uploader.h"
 
 using autofill::AutofillType;
 using autofill::AutofillUploadContents;
@@ -216,7 +218,8 @@ void BrowserSavePasswordProgressLogger::LogFormDataWithServerPredictions(
 
 void BrowserSavePasswordProgressLogger::LogFormStructure(
     StringID label,
-    const FormStructure& form_structure) {
+    const FormStructure& form_structure,
+    std::optional<PasswordAttributesMetadata> password_attributes) {
   std::string message = GetStringFromID(label) + ": {\n";
   message += GetStringFromID(STRING_FORM_SIGNATURE) + ": " +
              FormSignatureToDebugString(form_structure.form_signature()) + "\n";
@@ -229,7 +232,7 @@ void BrowserSavePasswordProgressLogger::LogFormStructure(
   message += GetStringFromID(STRING_ACTION) + ": " +
              ScrubURL(form_structure.target_url()) + "\n";
   message += FormStructureToFieldsLogString(form_structure);
-  message += FormStructurePasswordAttributesLogString(form_structure);
+  message += VotesPasswordAttributesLogString(password_attributes);
   message += "}";
   SendLog(message);
 }
@@ -247,16 +250,15 @@ void BrowserSavePasswordProgressLogger::LogSuccessiveOrigins(
   SendLog(message);
 }
 
-std::string
-BrowserSavePasswordProgressLogger::FormStructurePasswordAttributesLogString(
-    const FormStructure& form) {
-  const std::optional<std::pair<PasswordAttribute, bool>> attribute_vote =
-      form.get_password_attributes_vote();
-  if (!attribute_vote.has_value())
+std::string BrowserSavePasswordProgressLogger::VotesPasswordAttributesLogString(
+    std::optional<PasswordAttributesMetadata> password_attributes) {
+  if (!password_attributes.has_value()) {
     return std::string();
+  }
+  const std::pair<PasswordAttribute, bool> attribute_vote =
+      password_attributes->password_attributes_vote;
   std::string message;
-  const PasswordAttribute attribute = std::get<0>(attribute_vote.value());
-  const bool attribute_value = std::get<1>(attribute_vote.value());
+  const auto [attribute, attribute_value] = attribute_vote;
 
   switch (attribute) {
     case PasswordAttribute::kHasLetter:
@@ -270,7 +272,7 @@ BrowserSavePasswordProgressLogger::FormStructurePasswordAttributesLogString(
           attribute_value);
       if (attribute_value) {
         std::string voted_symbol(
-            1, static_cast<char>(form.get_password_symbol_vote()));
+            1, static_cast<char>(password_attributes->password_symbol_vote));
         message += PasswordAttributeLogString(
             STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_SPECIFIC_SPECIAL_SYMBOL,
             voted_symbol);
@@ -281,7 +283,7 @@ BrowserSavePasswordProgressLogger::FormStructurePasswordAttributesLogString(
       break;
   }
   std::string password_length =
-      base::NumberToString(form.get_password_length_vote());
+      base::NumberToString(password_attributes->password_length_vote);
   message += PasswordAttributeLogString(
       STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_PASSWORD_LENGTH, password_length);
 
