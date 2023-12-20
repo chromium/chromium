@@ -495,7 +495,16 @@ void Server::Dispatch(base::TimeDelta timeout) {
 }
 
 void Server::Flush() {
-  wl_display_flush_clients(wl_display_.get());
+  // TODO(crbug.com/1508130): This should be updated to use
+  // wl_display_flush_clients() after an upstream libwayland fix has landed to
+  // address crashes during client-disconnect.
+  wl_client* client = nullptr;
+  wl_list* all_clients = wl_display_get_client_list(wl_display_.get());
+  wl_client_for_each(client, all_clients) {
+    if (!IsClientDestroyed(client)) {
+      wl_client_flush(client);
+    }
+  }
 }
 
 void Server::OnDisplayAdded(const display::Display& new_display) {
