@@ -6979,8 +6979,7 @@ void Element::SetShadowPseudoId(const AtomicString& id) {
         CSSSelectorParser::ParsePseudoType(id, false, &GetDocument());
     DCHECK(type == CSSSelector::kPseudoWebKitCustomElement ||
            type == CSSSelector::kPseudoBlinkInternalElement ||
-           type == CSSSelector::kPseudoDetailsContent ||
-           type == CSSSelector::kPseudoDetailsSummary)
+           type == CSSSelector::kPseudoDetailsContent)
         << type;
   }
 #endif

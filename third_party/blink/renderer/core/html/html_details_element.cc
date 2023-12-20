@@ -100,9 +100,6 @@ void HTMLDetailsElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   summary_slot_ = MakeGarbageCollected<HTMLSlotElement>(GetDocument());
   summary_slot_->SetIdAttribute(shadow_element_names::kIdDetailsSummary);
-  if (RuntimeEnabledFeatures::DetailsStylingEnabled()) {
-    summary_slot_->SetShadowPseudoId(shadow_element_names::kIdDetailsSummary);
-  }
   summary_slot_->AppendChild(default_summary);
   root.AppendChild(summary_slot_);
 

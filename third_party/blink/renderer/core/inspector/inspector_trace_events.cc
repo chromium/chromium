@@ -416,7 +416,6 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoViewTransitionNew);
     DEFINE_STRING_MAPPING(PseudoViewTransitionOld);
     DEFINE_STRING_MAPPING(PseudoDetailsContent)
-    DEFINE_STRING_MAPPING(PseudoDetailsSummary)
     DEFINE_STRING_MAPPING(PseudoParent);
     DEFINE_STRING_MAPPING(PseudoUnparsed)
 #undef DEFINE_STRING_MAPPING
