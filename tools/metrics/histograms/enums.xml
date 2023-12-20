@@ -7731,13 +7731,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="2140268492" label="CSS.startRuleUsageTracking"/>
 </enum>
 
-<enum name="CertificateErrorReportEvent">
-  <int value="0" label="Submitted"/>
-  <int value="1" label="Failed"/>
-  <int value="2" label="Successful"/>
-  <int value="3" label="Dropped or ignored"/>
-</enum>
-
 <enum name="ChannelLayout">
   <int value="0" label="CHANNEL_LAYOUT_NONE"/>
   <int value="1" label="CHANNEL_LAYOUT_UNSUPPORTED"/>

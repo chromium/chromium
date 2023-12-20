@@ -361,48 +361,4 @@ CertificateReportingServiceTestHelper::Clone() {
   return nullptr;
 }
 
-EventHistogramTester::EventHistogramTester() {}
-
-EventHistogramTester::~EventHistogramTester() {
-  if (submitted_) {
-    histogram_tester_.ExpectBucketCount(
-        CertificateReportingService::kReportEventHistogram,
-        static_cast<int>(CertificateReportingService::ReportOutcome::SUBMITTED),
-        submitted_);
-  }
-  if (failed_) {
-    histogram_tester_.ExpectBucketCount(
-        CertificateReportingService::kReportEventHistogram,
-        static_cast<int>(CertificateReportingService::ReportOutcome::FAILED),
-        failed_);
-  }
-  if (successful_) {
-    histogram_tester_.ExpectBucketCount(
-        CertificateReportingService::kReportEventHistogram,
-        static_cast<int>(
-            CertificateReportingService::ReportOutcome::SUCCESSFUL),
-        successful_);
-  }
-  if (dropped_) {
-    histogram_tester_.ExpectBucketCount(
-        CertificateReportingService::kReportEventHistogram,
-        static_cast<int>(
-            CertificateReportingService::ReportOutcome::DROPPED_OR_IGNORED),
-        dropped_);
-  }
-  histogram_tester_.ExpectTotalCount(
-      CertificateReportingService::kReportEventHistogram,
-      submitted_ + failed_ + successful_ + dropped_);
-}
-
-void EventHistogramTester::SetExpectedValues(int submitted,
-                                             int failed,
-                                             int successful,
-                                             int dropped) {
-  submitted_ = submitted;
-  failed_ = failed;
-  successful_ = successful;
-  dropped_ = dropped;
-}
-
 }  // namespace certificate_reporting_test_utils

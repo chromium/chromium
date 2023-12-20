@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/thread_test_helper.h"
@@ -38,7 +37,6 @@
 
 using certificate_reporting_test_utils::CertificateReportingServiceTestHelper;
 using certificate_reporting_test_utils::CertificateReportingServiceObserver;
-using certificate_reporting_test_utils::EventHistogramTester;
 using certificate_reporting_test_utils::ReportExpectation;
 using certificate_reporting_test_utils::RetryStatus;
 
@@ -91,8 +89,6 @@ void CheckReport(const CertificateReportingService::Report& report,
 }  // namespace
 
 TEST(CertificateReportingServiceReportListTest, BoundedReportList) {
-  EventHistogramTester event_histogram_tester;
-
   // Create a report list with maximum of 2 items.
   CertificateReportingService::BoundedReportList list(2 /* max_size */);
   EXPECT_EQ(0u, list.items().size());
@@ -128,9 +124,6 @@ TEST(CertificateReportingServiceReportListTest, BoundedReportList) {
   EXPECT_EQ(2u, list.items().size());
   EXPECT_EQ("report3_zero_minutes_old", list.items()[0].serialized_report);
   EXPECT_EQ("report2_five_minutes_old", list.items()[1].serialized_report);
-
-  event_histogram_tester.SetExpectedValues(0 /* submitted */, 0 /* failed */,
-                                           0 /* successful */, 2 /* dropped */);
 }
 
 class CertificateReportingServiceReporterOnIOThreadTest
@@ -140,14 +133,6 @@ class CertificateReportingServiceReporterOnIOThreadTest
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
-
-    event_histogram_tester_ = std::make_unique<EventHistogramTester>();
-  }
-
-  void TearDown() override {
-    // Check histograms as the last thing. This makes sure no in-flight report
-    // is missed.
-    event_histogram_tester_.reset();
   }
 
  protected:
@@ -158,21 +143,12 @@ class CertificateReportingServiceReporterOnIOThreadTest
     return test_shared_loader_factory_;
   }
 
-  EventHistogramTester* event_histogram_tester() {
-    return event_histogram_tester_.get();
-  }
-
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  // Histogram tester for reporting events. This is a member instead of a local
-  // so that we can check the histogram after the test teardown. At that point
-  // all in flight reports should be completed or deleted because
-  // of CleanUpOnIOThread().
-  std::unique_ptr<EventHistogramTester> event_histogram_tester_;
 };
 
 TEST_F(CertificateReportingServiceReporterOnIOThreadTest,
@@ -263,12 +239,6 @@ TEST_F(CertificateReportingServiceReporterOnIOThreadTest,
   EXPECT_EQ(1u, reporter.inflight_report_count_for_testing());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, list->items().size());
-
-  // report1 was submitted once, failed once, dropped once.
-  // report2 was submitted twice, failed twice, dropped once.
-  // report3 was submitted four times, failed thrice, succeeded once.
-  event_histogram_tester()->SetExpectedValues(
-      7 /* submitted */, 6 /* failed */, 1 /* successful */, 2 /* dropped */);
 }
 
 // Same as above, but retries are disabled.
@@ -317,10 +287,6 @@ TEST_F(CertificateReportingServiceReporterOnIOThreadTest,
   reporter.SendPending();
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(0u, list->items().size());
-
-  // report1 and report2 were both submitted once, failed once.
-  event_histogram_tester()->SetExpectedValues(
-      2 /* submitted */, 2 /* failed */, 0 /* successful */, 0 /* dropped */);
 }
 
 class CertificateReportingServiceTest : public ::testing::Test {
@@ -350,8 +316,6 @@ class CertificateReportingServiceTest : public ::testing::Test {
             &CertificateReportingServiceObserver::OnServiceReset,
             base::Unretained(&service_observer_)));
     service_observer_.WaitForReset();
-
-    event_histogram_tester_ = std::make_unique<EventHistogramTester>();
   }
 
   void TearDown() override {
@@ -360,8 +324,6 @@ class CertificateReportingServiceTest : public ::testing::Test {
     service_->Shutdown();
     service_.reset(nullptr);
     safe_browsing::SafeBrowsingService::RegisterFactory(nullptr);
-
-    event_histogram_tester_.reset();
   }
 
  protected:
@@ -380,10 +342,6 @@ class CertificateReportingServiceTest : public ::testing::Test {
 
   CertificateReportingServiceTestHelper* test_helper() {
     return test_helper_.get();
-  }
-
-  EventHistogramTester* event_histogram_tester() {
-    return event_histogram_tester_.get();
   }
 
   void WaitForNoReports() {
@@ -410,8 +368,6 @@ class CertificateReportingServiceTest : public ::testing::Test {
 
   scoped_refptr<CertificateReportingServiceTestHelper> test_helper_;
   CertificateReportingServiceObserver service_observer_;
-
-  std::unique_ptr<EventHistogramTester> event_histogram_tester_;
 };
 
 TEST_F(CertificateReportingServiceTest, SendSuccessful) {
@@ -426,9 +382,6 @@ TEST_F(CertificateReportingServiceTest, SendSuccessful) {
                                      {"report1", RetryStatus::NOT_RETRIED}}));
 
   WaitForNoReports();
-  // report0 and report1 were both submitted once, succeeded once.
-  event_histogram_tester()->SetExpectedValues(
-      2 /* submitted */, 0 /* failed */, 2 /* successful */, 0 /* dropped */);
 }
 
 TEST_F(CertificateReportingServiceTest, SendFailure) {
@@ -470,10 +423,6 @@ TEST_F(CertificateReportingServiceTest, SendFailure) {
       {{"report0", RetryStatus::RETRIED}, {"report1", RetryStatus::RETRIED}}));
 
   WaitForNoReports();
-  // report0 and report1 were both submitted thrice, failed twice, succeeded
-  // once. report2 was submitted once, succeeded once.
-  event_histogram_tester()->SetExpectedValues(
-      7 /* submitted */, 4 /* failed */, 3 /* successful */, 0 /* dropped */);
 }
 
 TEST_F(CertificateReportingServiceTest, Disabled_ShouldNotSend) {
@@ -496,9 +445,6 @@ TEST_F(CertificateReportingServiceTest, Disabled_ShouldNotSend) {
       ReportExpectation::Successful({{"report1", RetryStatus::NOT_RETRIED}}));
 
   WaitForNoReports();
-  // report0 was never sent. report1 was submitted once, succeeded once.
-  event_histogram_tester()->SetExpectedValues(
-      1 /* submitted */, 0 /* failed */, 1 /* successful */, 0 /* dropped */);
 }
 
 TEST_F(CertificateReportingServiceTest, Disabled_ShouldClearPendingReports) {
@@ -527,9 +473,6 @@ TEST_F(CertificateReportingServiceTest, Disabled_ShouldClearPendingReports) {
   service()->SendPending();
 
   WaitForNoReports();
-  // report0 was submitted once, failed once.
-  event_histogram_tester()->SetExpectedValues(
-      1 /* submitted */, 1 /* failed */, 0 /* successful */, 0 /* dropped */);
 }
 
 TEST_F(CertificateReportingServiceTest, DontSendOldReports) {
@@ -589,12 +532,6 @@ TEST_F(CertificateReportingServiceTest, DontSendOldReports) {
   service()->SendPending();
 
   WaitForNoReports();
-  // report0 was submitted once, failed once, dropped once.
-  // report1 was submitted twice, failed twice, dropped once.
-  // report2 was submitted twice, failed twice, dropped once.
-  // Need to wait for SendPending() to complete.
-  event_histogram_tester()->SetExpectedValues(
-      5 /* submitted */, 5 /* failed */, 0 /* successful */, 3 /* dropped */);
 }
 
 TEST_F(CertificateReportingServiceTest, DiscardOldReports) {
@@ -660,12 +597,6 @@ TEST_F(CertificateReportingServiceTest, DiscardOldReports) {
   service()->SendPending();
 
   WaitForNoReports();
-  // report0 was submitted once, failed once, dropped once.
-  // report1 was submitted twice, failed twice, dropped once.
-  // report2 was submitted thrice, failed twice, succeeded once.
-  // report3 was submitted thrice, failed twice, succeeded once.
-  event_histogram_tester()->SetExpectedValues(
-      9 /* submitted */, 7 /* failed */, 2 /* successful */, 2 /* dropped */);
 }
 
 // A delayed report should successfully upload when it's resumed.
@@ -684,9 +615,6 @@ TEST_F(CertificateReportingServiceTest, Delayed_Resumed) {
       ReportExpectation::Delayed({{"report0", RetryStatus::NOT_RETRIED}}));
 
   WaitForNoReports();
-  // report0 was submitted once, succeeded once.
-  event_histogram_tester()->SetExpectedValues(
-      1 /* submitted */, 0 /* failed */, 1 /* successful */, 0 /* dropped */);
 }
 
 // Delayed reports should cleaned when the service is reset.
@@ -722,8 +650,4 @@ TEST_F(CertificateReportingServiceTest, Delayed_Reset) {
                                   {"report1", RetryStatus::NOT_RETRIED}}));
 
   WaitForNoReports();
-  // report0 was submitted once, but neither failed nor succeeded because the
-  // report queue was cleared. report1 was submitted once, succeeded once.
-  event_histogram_tester()->SetExpectedValues(
-      2 /* submitted */, 0 /* failed */, 1 /* successful */, 0 /* dropped */);
 }
