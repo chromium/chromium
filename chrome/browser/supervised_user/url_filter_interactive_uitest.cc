@@ -293,8 +293,9 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     UrlFilterUiTest,
-    // TODO(b/315794138): Add the rest of DMA-configured accounts.
-    testing::Values(supervised_user::FamilyIdentifier("FAMILY")),
+    testing::Values(supervised_user::FamilyIdentifier("FAMILY_DMA_NONE"),
+                    supervised_user::FamilyIdentifier("FAMILY_DMA_ALL"),
+                    supervised_user::FamilyIdentifier("FAMILY")),
     [](const auto& info) { return info.param->data(); });
 
 }  // namespace

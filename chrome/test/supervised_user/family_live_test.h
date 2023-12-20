@@ -70,8 +70,8 @@ class FamilyLiveTest : public signin::test::LiveTest {
 
   // Extracts requested account, which must exist.
   signin::test::TestAccount GetTestAccount(std::string_view account_name) const;
-  // Checks if test account exists.
-  bool TestAccountExists(std::string_view account_name) const;
+  // Checks if the requested account exists.
+  bool AccountExists(std::string_view account_name) const;
 
   // Creates a new browser signed in to the specified account, which must
   // exist.

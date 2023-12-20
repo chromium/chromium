@@ -30,9 +30,9 @@ namespace {
 
 // List of accounts specified in
 // chrome/browser/internal/resources/signin/test_accounts.json.
-static constexpr std::string_view kHeadOfHouseholdAccountId{
+static constexpr std::string_view kHeadOfHouseholdAccountIdSuffix{
     "HEAD_OF_HOUSEHOLD"};
-static constexpr std::string_view kChildAccountId{"CHILD_1"};
+static constexpr std::string_view kChildAccountIdSuffix{"CHILD_1"};
 
 Profile& CreateNewProfile() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -77,9 +77,9 @@ void FamilyLiveTest::SetUpOnMainThread() {
   signin::test::LiveTest::SetUpOnMainThread();
 
   child_ = MakeSignedInBrowser(
-      GetFamilyMemberIdentifier(family_identifier_, kChildAccountId));
-  head_of_household_ = MakeSignedInBrowser(
-      GetFamilyMemberIdentifier(family_identifier_, kHeadOfHouseholdAccountId));
+      GetFamilyMemberIdentifier(family_identifier_, kChildAccountIdSuffix));
+  head_of_household_ = MakeSignedInBrowser(GetFamilyMemberIdentifier(
+      family_identifier_, kHeadOfHouseholdAccountIdSuffix));
 }
 
 void FamilyLiveTest::SetUpInProcessBrowserTestFixture() {
@@ -97,14 +97,14 @@ signin::test::TestAccount FamilyLiveTest::GetTestAccount(
   return account;
 }
 
-bool FamilyLiveTest::TestAccountExists(std::string_view account_name) const {
+bool FamilyLiveTest::AccountExists(std::string_view account_name) const {
   signin::test::TestAccount account;
   return GetTestAccountsUtil()->GetAccount(std::string(account_name), account);
 }
 
 std::unique_ptr<FamilyMember> FamilyLiveTest::MakeSignedInBrowser(
     std::string_view account_name) {
-  if (!TestAccountExists(std::string(account_name))) {
+  if (!AccountExists(std::string(account_name))) {
     return nullptr;
   }
 
