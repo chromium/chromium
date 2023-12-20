@@ -715,16 +715,18 @@ PhysicalRect LayoutText::LocalCaretRect(
 bool LayoutText::IsAllCollapsibleWhitespace() const {
   NOT_DESTROYED();
   unsigned length = TextLength();
-  if (Is8Bit()) {
+  if (text_.Is8Bit()) {
     for (unsigned i = 0; i < length; ++i) {
-      if (!StyleRef().IsCollapsibleWhiteSpace(Characters8()[i]))
+      if (!StyleRef().IsCollapsibleWhiteSpace(text_.Characters8()[i])) {
         return false;
+      }
     }
     return true;
   }
   for (unsigned i = 0; i < length; ++i) {
-    if (!StyleRef().IsCollapsibleWhiteSpace(Characters16()[i]))
+    if (!StyleRef().IsCollapsibleWhiteSpace(text_.Characters16()[i])) {
       return false;
+    }
   }
   return true;
 }

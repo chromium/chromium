@@ -130,29 +130,10 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
-  bool Is8Bit() const {
-    NOT_DESTROYED();
-    return text_.Is8Bit();
-  }
-  const LChar* Characters8() const {
-    NOT_DESTROYED();
-    return text_.Characters8();
-  }
-  const UChar* Characters16() const {
-    NOT_DESTROYED();
-    return text_.Characters16();
-  }
   bool HasEmptyText() const {
     NOT_DESTROYED();
     return text_.empty();
   }
-  UChar CharacterAt(unsigned) const;
-  UChar UncheckedCharacterAt(unsigned) const;
-  UChar operator[](unsigned i) const {
-    NOT_DESTROYED();
-    return UncheckedCharacterAt(i);
-  }
-  UChar32 CodepointAt(unsigned) const;
   unsigned TextLength() const {
     NOT_DESTROYED();
     return text_.length();
@@ -446,28 +427,6 @@ inline wtf_size_t LayoutText::FirstInlineFragmentItemIndex() const {
   if (!IsInLayoutNGInlineFormattingContext())
     return 0u;
   return first_fragment_item_index_;
-}
-
-inline UChar LayoutText::UncheckedCharacterAt(unsigned i) const {
-  SECURITY_DCHECK(i < TextLength());
-  return Is8Bit() ? Characters8()[i] : Characters16()[i];
-}
-
-inline UChar LayoutText::CharacterAt(unsigned i) const {
-  if (i >= TextLength())
-    return 0;
-
-  return UncheckedCharacterAt(i);
-}
-
-inline UChar32 LayoutText::CodepointAt(unsigned i) const {
-  if (i >= TextLength())
-    return 0;
-  if (Is8Bit())
-    return Characters8()[i];
-  UChar32 c;
-  U16_GET(Characters16(), 0, i, TextLength(), c);
-  return c;
 }
 
 inline void LayoutText::DetachAbstractInlineTextBoxesIfNeeded() {
