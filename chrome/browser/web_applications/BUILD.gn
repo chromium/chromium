@@ -658,6 +658,9 @@ source_set("web_applications_test_support") {
       "//chrome/browser/ash/system_web_apps/types",
     ]
   }
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants" ]
+  }
 }
 
 # This has to be a separate target to avoid circular dependencies with
