@@ -4,6 +4,7 @@
 
 #include "ash/system/phonehub/locate_phone_quick_action_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
@@ -40,8 +41,12 @@ LocatePhoneQuickActionController::~LocatePhoneQuickActionController() {
 
 QuickActionItem* LocatePhoneQuickActionController::CreateItem() {
   DCHECK(!item_);
-  item_ = new QuickActionItem(this, IDS_ASH_PHONE_HUB_LOCATE_PHONE_TITLE,
-                              kPhoneHubLocatePhoneIcon);
+  item_ = new QuickActionItem(
+      this,
+      features::IsPhoneHubShortQuickActionPodsTitlesEnabled()
+          ? IDS_ASH_PHONE_HUB_LOCATE_PHONE_SHORTENED_TITLE
+          : IDS_ASH_PHONE_HUB_LOCATE_PHONE_TITLE,
+      kPhoneHubLocatePhoneIcon);
   OnPhoneRingingStateChanged();
   return item_;
 }

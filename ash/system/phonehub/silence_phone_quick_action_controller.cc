@@ -4,6 +4,7 @@
 
 #include "ash/system/phonehub/silence_phone_quick_action_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
@@ -42,8 +43,12 @@ bool SilencePhoneQuickActionController::IsItemEnabled() {
 
 QuickActionItem* SilencePhoneQuickActionController::CreateItem() {
   DCHECK(!item_);
-  item_ = new QuickActionItem(this, IDS_ASH_PHONE_HUB_SILENCE_PHONE_TITLE,
-                              kPhoneHubSilencePhoneIcon);
+  item_ = new QuickActionItem(
+      this,
+      features::IsPhoneHubShortQuickActionPodsTitlesEnabled()
+          ? IDS_ASH_PHONE_HUB_SILENCE_PHONE_SHORTENED_TITLE
+          : IDS_ASH_PHONE_HUB_SILENCE_PHONE_TITLE,
+      kPhoneHubSilencePhoneIcon);
   item_->icon_button()->SetButtonBehavior(
       FeaturePodIconButton::DisabledButtonBehavior::
           kCanDisplayDisabledToggleValue);

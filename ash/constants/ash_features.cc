@@ -2169,6 +2169,10 @@ BASE_FEATURE(kPhoneHubPingOnBubbleOpen,
 const base::FeatureParam<base::TimeDelta> kPhoneHubPingTimeout{
     &kPhoneHubPingOnBubbleOpen, "PhoneHubPingTimeout", base::Seconds(5)};
 
+BASE_FEATURE(kPhoneHubShortQuickActionPodsTitles,
+             "PhoneHubShortQuickActionPodsTitles",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPine, "Pine", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the new picker feature.
@@ -4019,6 +4023,10 @@ bool IsPhoneHubAttestationRetriesEnabled() {
 
 bool IsPhoneHubCallNotificationEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubCallNotification);
+}
+
+bool IsPhoneHubShortQuickActionPodsTitlesEnabled() {
+  return base::FeatureList::IsEnabled(kPhoneHubShortQuickActionPodsTitles);
 }
 
 bool IsPickerUpdateEnabled() {

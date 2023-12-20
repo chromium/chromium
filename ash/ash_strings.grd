@@ -1796,6 +1796,15 @@ Style notes:
       <message name="IDS_ASH_PHONE_HUB_LOCATE_PHONE_TITLE" desc="Title of the locate phone toggle in the phone hub bubble.">
         Locate phone
       </message>
+      <message name="IDS_ASH_PHONE_HUB_ENABLE_HOTSPOT_SHORTENED_TITLE" desc="Short version of title of the enable hotspot toggle in the phone hub bubble.">
+        Hotspot
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_SILENCE_PHONE_SHORTENED_TITLE" desc="Short version of title of the silence phone toggle in the phone hub bubble.">
+        Silence
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_LOCATE_PHONE_SHORTENED_TITLE" desc="Short version of title of the locate phone toggle in the phone hub bubble.">
+        Locate
+      </message>
       <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP" desc="The tooltip text used for the button in phone hube bubble to toggle quick actions feature on or off.">
         Toggle <ph name="FEATURE_NAME">$1<ex>Silence</ex></ph>. <ph name="STATE_TEXT">$2<ex>Silence is on.</ex></ph>
       </message>
