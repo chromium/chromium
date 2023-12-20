@@ -14,7 +14,7 @@ import {CursorRange} from '../../../common/cursors/range.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {Msgs} from '../../common/msgs.js';
 import {SettingsManager} from '../../common/settings_manager.js';
-import {MultiSpannable, Spannable} from '../../common/spannable.js';
+import {MultiSpannable} from '../../common/spannable.js';
 import {Personality, QueueMode} from '../../common/tts_types.js';
 import {BrailleTranslatorManager} from '../braille/braille_translator_manager.js';
 import {LibLouis} from '../braille/liblouis.js';
@@ -30,23 +30,40 @@ import {EditableLine} from './editable_line.js';
 import {AutomationEditableText} from './editable_text.js';
 import {ChromeVoxEditableTextBase, TextChangeEvent} from './editable_text_base.js';
 import {IntentHandler} from './intent_handler.js';
-import {TextEditHandler} from './text_edit_handler.js';
 
-const AutomationIntent = chrome.automation.AutomationIntent;
-const AutomationNode = chrome.automation.AutomationNode;
-const Dir = constants.Dir;
-const FormType = LibLouis.FormType;
-const IntentCommandType = chrome.automation.IntentCommandType;
-const RoleType = chrome.automation.RoleType;
-const StateType = chrome.automation.StateType;
+type AutomationIntent = chrome.automation.AutomationIntent;
+type AutomationNode = chrome.automation.AutomationNode;
+import Dir = constants.Dir;
+import FormType = LibLouis.FormType;
+import MarkerType = chrome.automation.MarkerType;
+import RoleType = chrome.automation.RoleType;
+import StateType = chrome.automation.StateType;
 
 /**
  * A |ChromeVoxEditableTextBase| that implements text editing feedback
  * for automation tree text fields using anchor and focus selection.
  */
 export class AutomationRichEditableText extends AutomationEditableText {
-  /** @param {!AutomationNode} node */
-  constructor(node) {
+  private startLine_?: EditableLine;
+  private endLine_?: EditableLine;
+  private line_?: EditableLine;
+
+  private misspelled = false;
+  private grammarError = false;
+
+  private bold_ = false;
+  private italic_ = false;
+  private underline_ = false;
+  private lineThrough_ = false;
+
+  private fontFamily_: string | undefined;
+  private fontSize_: number | undefined;
+  private fontColor_: string | undefined;
+  private linked_: boolean | undefined;
+  private subscript_: boolean | undefined;
+  private superscript_: boolean | undefined;
+
+  constructor(node: AutomationNode) {
     super(node);
 
     const root = this.node_.root;
@@ -68,37 +85,10 @@ export class AutomationRichEditableText extends AutomationEditableText {
         root.selectionEndObject, root.selectionEndOffset);
 
     this.updateIntraLineState_(this.line_);
-
-    /** @private {boolean} */
-    this.misspelled = false;
-    /** @private {boolean} */
-    this.grammarError = false;
-
-    /** @private {number|undefined} */
-    this.fontSize_;
-    /** @private {string|undefined} */
-    this.fontColor_;
-    /** @private {boolean|undefined} */
-    this.linked_;
-    /** @private {boolean|undefined} */
-    this.subscript_;
-    /** @private {boolean|undefined} */
-    this.superscript_;
-    /** @private {boolean} */
-    this.bold_ = false;
-    /** @private {boolean} */
-    this.italic_ = false;
-    /** @private {boolean} */
-    this.underline_ = false;
-    /** @private {boolean} */
-    this.lineThrough_ = false;
-    /** @private {string|undefined} */
-    this.fontFamily_;
   }
 
-  /** @override */
-  isSelectionOnFirstLine() {
-    let deep = this.line_.end.node;
+  override isSelectionOnFirstLine(): boolean {
+    let deep = this.line_!.end.node;
     while (deep.previousOnLine) {
       deep = deep.previousOnLine;
     }
@@ -112,9 +102,8 @@ export class AutomationRichEditableText extends AutomationEditableText {
     return exited.includes(this.node_);
   }
 
-  /** @override */
-  isSelectionOnLastLine() {
-    let deep = this.line_.end.node;
+  override isSelectionOnLastLine(): boolean {
+    let deep = this.line_!.end.node;
     while (deep.nextOnLine) {
       deep = deep.nextOnLine;
     }
@@ -128,8 +117,7 @@ export class AutomationRichEditableText extends AutomationEditableText {
     return exited.includes(this.node_);
   }
 
-  /** @override */
-  onUpdate(intents) {
+  override onUpdate(intents: AutomationIntent[]): void {
     const root = this.node_.root;
     if (!root.selectionStartObject || !root.selectionEndObject ||
         root.selectionStartOffset === undefined ||
@@ -144,8 +132,8 @@ export class AutomationRichEditableText extends AutomationEditableText {
         root.selectionEndObject, root.selectionEndOffset,
         root.selectionEndObject, root.selectionEndOffset);
 
-    const prevStartLine = this.startLine_;
-    const prevEndLine = this.endLine_;
+    const prevStartLine = this.startLine_!;
+    const prevEndLine = this.endLine_!;
     this.startLine_ = startLine;
     this.endLine_ = endLine;
 
@@ -162,7 +150,7 @@ export class AutomationRichEditableText extends AutomationEditableText {
           root.selectionStartObject, root.selectionStartOffset,
           root.selectionEndObject, root.selectionEndOffset, baseLineOnStart);
     }
-    const prev = this.line_;
+    const prev = this.line_!;
     this.line_ = cur;
 
     this.handleSpeech_(
@@ -171,20 +159,11 @@ export class AutomationRichEditableText extends AutomationEditableText {
     this.handleBraille_(baseLineOnStart);
   }
 
-  /**
-   * @param {!EditableLine} cur
-   * @param {!EditableLine} prev
-   * @param {!EditableLine} startLine
-   * @param {!EditableLine} endLine
-   * @param {!EditableLine} prevStartLine
-   * @param {!EditableLine} prevEndLine
-   * @param {boolean} baseLineOnStart
-   * @param {!Array<AutomationIntent>} intents
-   * @private
-   */
-  handleSpeech_(
-      cur, prev, startLine, endLine, prevStartLine, prevEndLine,
-      baseLineOnStart, intents) {
+  private handleSpeech_(
+      cur: EditableLine, prev: EditableLine, startLine: EditableLine,
+      endLine: EditableLine, prevStartLine: EditableLine,
+      prevEndLine: EditableLine, baseLineOnStart: boolean,
+      intents: AutomationIntent[]): void {
     // During continuous read, skip speech (which gets handled in
     // CommandHandler). We use the speech end callback to trigger additional
     // speech.
@@ -371,21 +350,20 @@ export class AutomationRichEditableText extends AutomationEditableText {
       // selections and picking the line edge boundary that changed (as computed
       // above). This is also the code path for describing paste. It also covers
       // jump commands which are non-overlapping selections from prev to cur.
-      this.line_.speakLine(prev);
+      this.line_!.speakLine(prev);
     }
     this.updateIntraLineState_(cur);
   }
 
   /**
-   * @param {boolean} baseLineOnStart When true, the brailled line will show
+   * @param baseLineOnStart When true, the brailled line will show
    *     ancestry context based on the start of the selection. When false, it
    *     will use the end of the selection.
-   * @private
    */
-  handleBraille_(baseLineOnStart) {
+  private handleBraille_(baseLineOnStart: boolean): void {
     const isEmpty = !this.node_.find({role: RoleType.STATIC_TEXT});
     const isFirstLine = this.isSelectionOnFirstLine();
-    const cur = this.line_;
+    const cur = this.line_!;
     if (cur.value === null) {
       return;
     }
@@ -394,11 +372,15 @@ export class AutomationRichEditableText extends AutomationEditableText {
     if (!this.node_.constructor) {
       return;
     }
-    value.getSpansInstanceOf(this.node_.constructor).forEach(span => {
-      const style = span.role === RoleType.INLINE_TEXT_BOX ? span.parent : span;
-      if (!style) {
+    value.getSpansInstanceOf(this.node_.constructor).forEach(spanObj => {
+      const span = spanObj as {role: RoleType, parent: Object};
+      const styleObj =
+          span.role === RoleType.INLINE_TEXT_BOX ? span.parent : span;
+      if (!styleObj) {
         return;
       }
+      const style =
+          styleObj as {bold: boolean, italic: boolean, underline: boolean};
       let formType = FormType.PLAIN_TEXT;
       // Currently no support for sub/superscript in 3rd party liblouis library.
       if (style.bold) {
@@ -415,10 +397,7 @@ export class AutomationRichEditableText extends AutomationEditableText {
       }
       const start = value.getSpanStart(span);
       const end = value.getSpanEnd(span);
-      value.setSpan(
-          new BrailleTextStyleSpan(
-              /** @type {LibLouis.FormType<number>} */ (formType)),
-          start, end);
+      value.setSpan(new BrailleTextStyleSpan(formType as FormType), start, end);
     });
 
     value.setSpan(new ValueSpan(0), 0, value.length);
@@ -466,13 +445,9 @@ export class AutomationRichEditableText extends AutomationEditableText {
         new NavBraille({text: value, startIndex: start, endIndex: end}));
   }
 
-  /**
-   * @param {AutomationNode|undefined} startNode
-   * @param {number} startOffset
-   * @param {AutomationNode|undefined} endNode
-   * @param {number} endOffset
-   */
-  speakTextSelection_(startNode, startOffset, endNode, endOffset) {
+  private speakTextSelection_(
+      startNode: AutomationNode | undefined, startOffset: number,
+      endNode: AutomationNode | undefined, endOffset: number): void {
     if (!startNode || !endNode) {
       return;
     }
@@ -487,14 +462,9 @@ export class AutomationRichEditableText extends AutomationEditableText {
         .go();
   }
 
-  /**
-   * @param {AutomationNode!} container
-   * @param {number} selStart
-   * @param {number} selEnd
-   * @private
-   */
-  speakTextMarker_(container, selStart, selEnd) {
-    const markersWithinSelection = {};
+  private speakTextMarker_(
+      container: AutomationNode, selStart: number, selEnd: number): void {
+    const markersWithinSelection: Record<string, boolean> = {};
     const markers = container.markers;
     if (markers) {
       for (const marker of markers) {
@@ -507,14 +477,12 @@ export class AutomationRichEditableText extends AutomationEditableText {
       }
     }
 
-    const msgs = [];
-    if (this.misspelled ===
-        !(markersWithinSelection[chrome.automation.MarkerType.SPELLING])) {
+    const msgs: string[] = [];
+    if (this.misspelled === !(markersWithinSelection[MarkerType.SPELLING])) {
       this.misspelled = !this.misspelled;
       msgs.push(this.misspelled ? 'misspelling_start' : 'misspelling_end');
     }
-    if (this.grammarError ===
-        !(markersWithinSelection[chrome.automation.MarkerType.GRAMMAR])) {
+    if (this.grammarError === !(markersWithinSelection[MarkerType.GRAMMAR])) {
       this.grammarError = !this.grammarError;
       msgs.push(this.grammarError ? 'grammar_start' : 'grammar_end');
     }
@@ -526,17 +494,13 @@ export class AutomationRichEditableText extends AutomationEditableText {
     }
   }
 
-  /**
-   * @param {!AutomationNode} style
-   * @private
-   */
-  speakTextStyle_(style) {
-    const msgs = [];
+  private speakTextStyle_(style: AutomationNode): void {
+    const msgs: Array<{msg: string, opt_subs?: string[]}> = [];
     const fontSize = style.fontSize;
     const fontColor = Color.getColorDescription(style.color);
-    const linked = style.state[StateType.LINKED];
-    const subscript = style.state.subscript;
-    const superscript = style.state.superscript;
+    const linked = style.state![StateType.LINKED];
+    const subscript = style.state!['subscript'];
+    const superscript = style.state!['superscript'];
     const bold = style.bold;
     const italic = style.italic;
     const underline = style.underline;
@@ -546,7 +510,7 @@ export class AutomationRichEditableText extends AutomationEditableText {
     // Only report text style attributes if they change.
     if (fontSize && (fontSize !== this.fontSize_)) {
       this.fontSize_ = fontSize;
-      msgs.push({msg: 'font_size', opt_subs: [this.fontSize_]});
+      msgs.push({msg: 'font_size', opt_subs: [String(this.fontSize_)]});
     }
     if (fontColor && (fontColor !== this.fontColor_)) {
       this.fontColor_ = fontColor;
@@ -584,7 +548,7 @@ export class AutomationRichEditableText extends AutomationEditableText {
     }
     if (fontFamily && (fontFamily !== this.fontFamily_)) {
       this.fontFamily_ = fontFamily;
-      msgs.push({msg: 'font_family', opt_subs: [this.fontFamily_]});
+      msgs.push({msg: 'font_family', opt_subs: [this.fontFamily_!]});
     }
 
     if (msgs.length) {
@@ -595,8 +559,7 @@ export class AutomationRichEditableText extends AutomationEditableText {
     }
   }
 
-  /** @override */
-  describeSelectionChanged(evt) {
+  override describeSelectionChanged(evt: TextChangeEvent): void {
     // Note that since Chrome allows for selection to be placed immediately at
     // the end of a line (i.e. end == value.length) and since we try to describe
     // the character to the right, just describe it as a new line.
@@ -609,33 +572,25 @@ export class AutomationRichEditableText extends AutomationEditableText {
         this, evt);
   }
 
-  /** @override */
-  getLineIndex(charIndex) {
+  override getLineIndex(_charIndex: number): number {
     return 0;
   }
 
-  /** @override */
-  getLineStart(lineIndex) {
+  override getLineStart(_lineIndex: number): number {
     return 0;
   }
 
-  /** @override */
-  getLineEnd(lineIndex) {
+  override getLineEnd(_lineIndex: number): number {
     return this.value.length;
   }
 
-  /** @override */
-  changed(evt) {
+  override changed(evt: TextChangeEvent): void {
     // This path does not use the Output module to synthesize speech.
     Output.forceModeForNextSpeechUtterance(undefined);
     AutomationEditableText.prototype.changed.call(this, evt);
   }
 
-  /**
-   * @private
-   * @param {EditableLine} cur Current line.
-   */
-  updateIntraLineState_(cur) {
+  private updateIntraLineState_(cur: EditableLine): void {
     let text = cur.text;
     if (text === '\n') {
       text = '';
@@ -645,14 +600,9 @@ export class AutomationRichEditableText extends AutomationEditableText {
     this.end = cur.endOffset;
   }
 
-  /**
-   * @param {!Array<AutomationIntent>} intents
-   * @param {!EditableLine} cur
-   * @param {!EditableLine} prev
-   * @return {boolean}
-   * @private
-   */
-  maybeSpeakUsingIntents_(intents, cur, prev) {
+  private maybeSpeakUsingIntents_(
+      intents: AutomationIntent[], cur: EditableLine,
+      prev: EditableLine): boolean {
     if (IntentHandler.onIntents(intents, cur, prev)) {
       this.updateIntraLineState_(cur);
       this.speakAllMarkers_(cur);
@@ -662,11 +612,7 @@ export class AutomationRichEditableText extends AutomationEditableText {
     return false;
   }
 
-  /**
-   * @param {!EditableLine} cur
-   * @private
-   */
-  speakAllMarkers_(cur) {
+  private speakAllMarkers_(cur: EditableLine): void {
     const container = cur.startContainer;
     if (!container) {
       return;
@@ -683,26 +629,23 @@ export class AutomationRichEditableText extends AutomationEditableText {
 /**
  * An observer that reacts to ChromeVox range changes that modifies braille
  * table output when over email or url text fields.
- * @implements {ChromeVoxRangeObserver}
  */
-export class EditingRangeObserver {
+export class EditingRangeObserver implements ChromeVoxRangeObserver {
+  static instance?: ChromeVoxRangeObserver;
+
   constructor() {
     ChromeVoxState.ready().then(() => ChromeVoxRange.addObserver(this));
   }
 
-  static init() {
+  static init(): void {
     if (EditingRangeObserver.instance) {
       throw new Error('Cannot call EditingRangeObserver.init more than once');
     }
     EditingRangeObserver.instance = new EditingRangeObserver();
   }
 
-  /**
-   * @param {CursorRange} range
-   * @param {boolean=} opt_fromEditing
-   * @override
-   */
-  onCurrentRangeChanged(range, opt_fromEditing) {
+  onCurrentRangeChanged(
+      range: CursorRange | null,_fromEditing?: boolean): void {
     const inputType = range && range.start.node.inputType;
     if (inputType === 'email' || inputType === 'url') {
       BrailleTranslatorManager.instance.refresh(
@@ -713,6 +656,3 @@ export class EditingRangeObserver {
         SettingsManager.getString('brailleTable'));
   }
 }
-
-/** @type {ChromeVoxRangeObserver} */
-EditingRangeObserver.instance;
