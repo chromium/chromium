@@ -11422,6 +11422,10 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="119" label="Console insight closed"/>
   <int value="120" label="Console insight generation errored"/>
   <int value="121" label="Console insight hover button was shown"/>
+  <int value="122" label="Self-XSS warning shown in console"/>
+  <int value="123" label="Self-XSS warning dialog shown"/>
+  <int value="124" label="Self-XSS pasting allowed in console"/>
+  <int value="125" label="Self-XSS pasting allowed in dialog"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
