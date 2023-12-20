@@ -92,6 +92,7 @@ base::flat_map<VkFormat, VkImageUsageFlags> CreateImageUsageCache(
 bool IsFormatSupported(viz::SharedImageFormat format,
                        gfx::GpuMemoryBufferType gmb_type,
                        uint32_t usage) {
+#if !BUILDFLAG(IS_FUCHSIA)
   if (HasGLES2ReadOrWriteUsage(usage) ||
       usage & SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT) {
     if (format.IsLegacyMultiplanar() || format.PrefersExternalSampler()) {
@@ -100,6 +101,7 @@ bool IsFormatSupported(viz::SharedImageFormat format,
       return false;
     }
   }
+#endif
 
   if (format.is_multi_plane()) {
     if (gmb_type != gfx::GpuMemoryBufferType::EMPTY_BUFFER) {
