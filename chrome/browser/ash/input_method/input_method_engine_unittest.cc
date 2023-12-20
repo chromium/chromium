@@ -33,8 +33,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace ash {
-namespace input_method {
+namespace ash::input_method {
 
 namespace {
 
@@ -52,7 +51,7 @@ enum CallsBitmap {
 };
 
 void InitInputMethod() {
-  auto* delegate = new MockComponentExtensionIMEManagerDelegate;
+  auto delegate = std::make_unique<MockComponentExtensionIMEManagerDelegate>();
 
   ComponentExtensionIME ext1;
   ext1.id = kTestExtensionId;
@@ -67,18 +66,17 @@ void InitInputMethod() {
   ime_list.push_back(ext1);
   delegate->set_ime_list(ime_list);
 
-  auto* comp_ime_manager = new ComponentExtensionIMEManager(
-      std::unique_ptr<ComponentExtensionIMEManagerDelegate>(delegate));
+  auto comp_ime_manager =
+      std::make_unique<ComponentExtensionIMEManager>(std::move(delegate));
 
   auto* manager = new MockInputMethodManagerImpl;
-  manager->SetComponentExtensionIMEManager(
-      std::unique_ptr<ComponentExtensionIMEManager>(comp_ime_manager));
+  manager->SetComponentExtensionIMEManager(std::move(comp_ime_manager));
   InitializeForTesting(manager);
 }
 
 class TestObserver : public StubInputMethodEngineObserver {
  public:
-  TestObserver() : calls_bitmap_(NONE) {}
+  TestObserver() = default;
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
   ~TestObserver() override = default;
@@ -122,7 +120,7 @@ class TestObserver : public StubInputMethodEngineObserver {
   }
 
  private:
-  unsigned char calls_bitmap_;
+  unsigned char calls_bitmap_ = 0;
   std::string engine_id_;
 };
 
@@ -146,6 +144,8 @@ class InputMethodEngineTest : public testing::Test {
 
   ~InputMethodEngineTest() override {
     IMEBridge::Get()->SetInputContextHandler(nullptr);
+    // |observer_| will be deleted in engine_.reset().
+    observer_.ExtractAsDangling();
     engine_.reset();
     chrome_keyboard_controller_client_test_helper_.reset();
     Shutdown();
@@ -154,9 +154,10 @@ class InputMethodEngineTest : public testing::Test {
  protected:
   void CreateEngine(bool allowlisted) {
     engine_ = std::make_unique<InputMethodEngine>();
-    observer_ = new TestObserver();
-    std::unique_ptr<InputMethodEngineObserver> observer_ptr(observer_);
-    engine_->Initialize(std::move(observer_ptr),
+    std::unique_ptr<InputMethodEngineObserver> observer =
+        std::make_unique<TestObserver>();
+    observer_ = static_cast<TestObserver*>(observer.get());
+    engine_->Initialize(std::move(observer),
                         allowlisted ? kTestExtensionId : kTestExtensionId2,
                         nullptr);
   }
@@ -169,7 +170,7 @@ class InputMethodEngineTest : public testing::Test {
 
   std::unique_ptr<InputMethodEngine> engine_;
 
-  raw_ptr<TestObserver, DanglingUntriaged | ExperimentalAsh> observer_;
+  raw_ptr<TestObserver> observer_;
   std::vector<std::string> languages_;
   std::vector<std::string> layouts_;
   GURL options_page_;
@@ -438,5 +439,4 @@ TEST_F(InputMethodEngineTest,
   EXPECT_EQ(deleteSurroundingTextArg.num_char16s_after_cursor, 0u);
   EXPECT_EQ(u"suggestion", mock_ime_input_context_handler_->last_commit_text());
 }
-}  // namespace input_method
-}  // namespace ash
+}  // namespace ash::input_method
