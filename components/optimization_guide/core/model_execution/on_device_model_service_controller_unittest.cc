@@ -44,6 +44,9 @@ base::TimeDelta g_execute_delay = base::TimeDelta();
 on_device_model::mojom::ResponseStatus g_on_complete_response_type =
     on_device_model::mojom::ResponseStatus::kOk;
 
+// If non-empty, used as the output from Execute().
+std::string g_model_execute_result;
+
 }  // namespace
 
 std::vector<std::string> ConcatResponses(
@@ -97,7 +100,11 @@ class FakeOnDeviceSession : public base::SupportsWeakPtr<FakeOnDeviceSession>,
     for (const std::string& context : context_) {
       remote->OnResponse("Context: " + context + "\n");
     }
-    remote->OnResponse("Input: " + input->text + "\n");
+    remote->OnResponse("Input: " +
+                       (g_model_execute_result.empty()
+                            ? input->text
+                            : g_model_execute_result) +
+                       "\n");
     remote->OnComplete(g_on_complete_response_type);
   }
 
@@ -229,6 +236,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    g_model_execute_result.clear();
     g_execute_delay = base::TimeDelta();
     g_on_complete_response_type = on_device_model::mojom::ResponseStatus::kOk;
     feature_list_.InitAndEnableFeatureWithParameters(
@@ -259,18 +267,8 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
         });
   }
 
-  void RecreateServiceController() {
-    access_controller_ = nullptr;
-    test_controller_ = nullptr;
-
-    auto access_controller =
-        std::make_unique<OnDeviceModelAccessController>(pref_service_);
-    access_controller_ = access_controller.get();
-    test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
-        std::move(access_controller),
-        on_device_component_state_manager_.get()->GetWeakPtr());
-
-    proto::OnDeviceModelExecutionFeatureConfig config;
+  void PopulateConfigForFeature(
+      proto::OnDeviceModelExecutionFeatureConfig& config) {
     config.set_feature(kFeature);
     auto& input_config = *config.mutable_input_config();
     input_config.set_request_base_name(proto::ComposeRequest().GetTypeName());
@@ -304,13 +302,49 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     output_config.mutable_proto_field()
         ->add_proto_descriptors()
         ->set_tag_number(1);
+  }
 
+  proto::RedactRule& PopulateConfigForFeatureWithRedactRule(
+      proto::OnDeviceModelExecutionFeatureConfig& config,
+      const std::string& regex,
+      proto::RedactBehavior behavior =
+          proto::RedactBehavior::REDACT_IF_ONLY_IN_OUTPUT) {
+    PopulateConfigForFeature(config);
+    auto& output_config = *config.mutable_output_config();
+    auto& redact_rules = *output_config.mutable_redact_rules();
+    auto& field = *redact_rules.add_fields_to_check();
+    field.add_proto_descriptors()->set_tag_number(7);
+    field.add_proto_descriptors()->set_tag_number(1);
+    auto& redact_rule = *redact_rules.add_rules();
+    redact_rule.set_regex(regex);
+    redact_rule.set_behavior(behavior);
+    return redact_rule;
+  }
+
+  void RecreateServiceController() {
+    access_controller_ = nullptr;
+    test_controller_ = nullptr;
+
+    auto access_controller =
+        std::make_unique<OnDeviceModelAccessController>(pref_service_);
+    access_controller_ = access_controller.get();
+    test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
+        std::move(access_controller),
+        on_device_component_state_manager_.get()->GetWeakPtr());
+
+    proto::OnDeviceModelExecutionFeatureConfig config;
+    PopulateConfigForFeature(config);
     auto config_interpreter =
         std::make_unique<OnDeviceModelExecutionConfigInterpreter>();
-    auto* config_interpreter_raw = config_interpreter.get();
     test_controller_->Init(base::FilePath::FromASCII("/foo"),
                            std::move(config_interpreter));
-    config_interpreter_raw->OverrideFeatureConfigForTesting(config);
+    OverrideFeatureConfigForTesting(config);
+  }
+
+  void OverrideFeatureConfigForTesting(
+      const proto::OnDeviceModelExecutionFeatureConfig& config) {
+    test_controller_->ConfigInterpreterForTesting()
+        .OverrideFeatureConfigForTesting(config);
   }
 
   void AddContext(OptimizationGuideModelExecutor::Session& session,
@@ -320,10 +354,34 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     session.AddContext(request);
   }
 
+  // Calls Execute() after setting `input` as the page-url.
   void ExecuteModel(OptimizationGuideModelExecutor::Session& session,
                     std::string_view input) {
     proto::ComposeRequest request;
     request.mutable_page_metadata()->set_page_url(std::string(input));
+    session.ExecuteModel(
+        request,
+        base::BindRepeating(&OnDeviceModelServiceControllerTest::OnResponse,
+                            base::Unretained(this)));
+  }
+
+  // Calls Execute() after setting `input` as the user_input.
+  void ExecuteModelUsingInput(OptimizationGuideModelExecutor::Session& session,
+                              std::string_view input) {
+    proto::ComposeRequest request;
+    request.mutable_generate_params()->set_user_input(std::string(input));
+    session.ExecuteModel(
+        request,
+        base::BindRepeating(&OnDeviceModelServiceControllerTest::OnResponse,
+                            base::Unretained(this)));
+  }
+
+  void ExecuteModelWithRewrite(
+      OptimizationGuideModelExecutor::Session& session) {
+    proto::ComposeRequest request;
+    auto& rewrite_params = *request.mutable_rewrite_params();
+    rewrite_params.set_previous_response("bar");
+    rewrite_params.set_tone(proto::COMPOSE_FORMAL);
     session.ExecuteModel(
         request,
         base::BindRepeating(&OnDeviceModelServiceControllerTest::OnResponse,
@@ -909,10 +967,9 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
   config.set_feature(kFeature);
   auto config_interpreter =
       std::make_unique<OnDeviceModelExecutionConfigInterpreter>();
-  auto* config_interpreter_raw = config_interpreter.get();
   test_controller_->Init(base::FilePath::FromASCII("/foo"),
                          std::move(config_interpreter));
-  config_interpreter_raw->OverrideFeatureConfigForTesting(config);
+  OverrideFeatureConfigForTesting(config);
 
   auto session = test_controller_->CreateSession(
       kFeature, CreateExecuteRemoteFn(), &logger_);
@@ -953,10 +1010,9 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
   config.set_feature(kFeature);
   auto config_interpreter =
       std::make_unique<OnDeviceModelExecutionConfigInterpreter>();
-  auto* config_interpreter_raw = config_interpreter.get();
   test_controller_->Init(base::FilePath::FromASCII("/foo"),
                          std::move(config_interpreter));
-  config_interpreter_raw->OverrideFeatureConfigForTesting(config);
+  OverrideFeatureConfigForTesting(config);
 
   auto session = test_controller_->CreateSession(
       kFeature, CreateExecuteRemoteFn(), &logger_);
@@ -1118,6 +1174,108 @@ TEST_F(OnDeviceModelServiceControllerTest, RetractUnsafeContent) {
   EXPECT_EQ(
       *response_error_,
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeatureWithRedactRule(config, "bar");
+  OverrideFeatureConfigForTesting(config);
+
+  // `foo` doesn't match the redaction, so should be returned.
+  auto session1 =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session1);
+  ExecuteModelUsingInput(*session1, "foo");
+  task_environment_.RunUntilIdle();
+  const std::string expected_response1 = "Input: execute:foo\n";
+  EXPECT_EQ(*response_received_, expected_response1);
+  EXPECT_THAT(streamed_responses_, ElementsAre(expected_response1));
+
+  // Input and output contain text matching redact, so should not be redacted.
+  response_received_.reset();
+  streamed_responses_.clear();
+  auto session2 =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session2);
+  ExecuteModelUsingInput(*session2, "abarx");
+  task_environment_.RunUntilIdle();
+  const std::string expected_response2 = "Input: execute:abarx\n";
+  EXPECT_EQ(*response_received_, expected_response2);
+  EXPECT_THAT(streamed_responses_, ElementsAre(expected_response2));
+
+  // Output contains redacted text (and  input doesn't), so redact.
+  g_model_execute_result = "abarx";
+  response_received_.reset();
+  streamed_responses_.clear();
+  auto session3 =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session3);
+  ExecuteModelUsingInput(*session3, "foo");
+  task_environment_.RunUntilIdle();
+  const std::string expected_response3 = "Input: a[###]x\n";
+  EXPECT_EQ(*response_received_, expected_response3);
+  EXPECT_THAT(streamed_responses_, ElementsAre(expected_response3));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeatureWithRedactRule(config, "bar",
+                                         proto::RedactBehavior::REJECT);
+  OverrideFeatureConfigForTesting(config);
+
+  auto session1 =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session1);
+  ExecuteModelUsingInput(*session1, "bar");
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(response_received_);
+  ASSERT_TRUE(response_error_);
+  EXPECT_EQ(
+      *response_error_,
+      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeatureWithRedactRule(config, "bar");
+  // Add a rule that identifies `previous_response` of `rewrite_params`.
+  auto& output_config = *config.mutable_output_config();
+  auto& redact_rules = *output_config.mutable_redact_rules();
+  auto& field = *redact_rules.add_fields_to_check();
+  field.add_proto_descriptors()->set_tag_number(8);
+  field.add_proto_descriptors()->set_tag_number(1);
+  OverrideFeatureConfigForTesting(config);
+
+  // Force 'bar' to be returned from model.
+  g_model_execute_result = "bar";
+
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session);
+  ExecuteModelWithRewrite(*session);
+  task_environment_.RunUntilIdle();
+  // `bar` shouldn't be rewritten as it's in the input.
+  const std::string expected_response = "Input: bar\n";
+  EXPECT_EQ(*response_received_, expected_response);
+  EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ReplacementText) {
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeatureWithRedactRule(config, "bar")
+      .set_replacement_string("[redacted]");
+  OverrideFeatureConfigForTesting(config);
+
+  // Output contains redacted text (and  input doesn't), so redact.
+  g_model_execute_result = "abarx";
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session);
+  ExecuteModelUsingInput(*session, "foo");
+  task_environment_.RunUntilIdle();
+  const std::string expected_response = "Input: a[redacted]x\n";
+  EXPECT_EQ(*response_received_, expected_response);
+  EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
 }
 
 }  // namespace optimization_guide

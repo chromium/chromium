@@ -289,6 +289,9 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Used on-device, but output considered unsafe">
     On-device model was used, it completed successfully, but considered unsafe.
   </int>
+  <int value="10" label="Used on-device, but output contained PII">
+    On-device model was used, but was cancelled because it surfaced PII.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideOnDeviceModelEligibilityReason">

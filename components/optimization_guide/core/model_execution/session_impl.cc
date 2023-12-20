@@ -10,6 +10,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -354,8 +355,28 @@ void SessionImpl::SendResponse(ResponseType response_type) {
     return;
   }
 
+  std::string current_response = on_device_state_->current_response;
+  if (auto* redactor =
+          on_device_state_->config_interpreter->GetRedactorForFeature(
+              feature_)) {
+    auto redact_string_input =
+        on_device_state_->config_interpreter->GetStringToCheckForRedacting(
+            feature_, *last_message_);
+    if (redactor->Redact(redact_string_input, current_response) ==
+        RedactResult::kReject) {
+      if (on_device_state_->histogram_logger) {
+        on_device_state_->histogram_logger->set_result(
+            ExecuteModelResult::kContainedPII);
+        on_device_state_->histogram_logger.reset();
+      }
+      CancelPendingResponse(ExecuteModelResult::kUsedOnDeviceOutputUnsafe,
+                            ModelExecutionError::kFiltered);
+      return;
+    }
+  }
+
   auto output = on_device_state_->config_interpreter->ConstructOutputMetadata(
-      feature_, on_device_state_->current_response);
+      feature_, current_response);
   if (!output) {
     if (on_device_state_->histogram_logger) {
       on_device_state_->histogram_logger->set_result(

@@ -105,6 +105,10 @@ class OnDeviceModelServiceController
   // OnDeviceModelComponentStateManager::Observer.
   void StateChanged(const OnDeviceModelComponentState* state) override;
 
+  OnDeviceModelExecutionConfigInterpreter& ConfigInterpreterForTesting() {
+    return *config_interpreter_;
+  }
+
  protected:
   ~OnDeviceModelServiceController() override;
 

@@ -74,7 +74,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     // On-device was used, it completed successfully, but the output is
     // considered unsafe.
     kUsedOnDeviceOutputUnsafe = 9,
-    kMaxValue = kUsedOnDeviceOutputUnsafe,
+    // On-device was used, but the output was rejected (because contained PII).
+    kContainedPII = 10,
+    kMaxValue = kContainedPII,
   };
 
   SessionImpl(StartSessionFn start_session_fn,
