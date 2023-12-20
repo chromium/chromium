@@ -125,9 +125,8 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, GLSkiaGL) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ |
-                   SHARED_IMAGE_USAGE_GLES2_WRITE |
-                   SHARED_IMAGE_USAGE_DISPLAY_READ;
+  uint32_t usage =
+      SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
@@ -187,12 +186,11 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InitialData) {
     initial_data[i] = static_cast<uint8_t>(i);
   }
 
+  // Create a SharedImage whose contents will be read out by Skia.
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ |
-                   SHARED_IMAGE_USAGE_GLES2_WRITE |
-                   SHARED_IMAGE_USAGE_DISPLAY_READ;
+  uint32_t usage = SHARED_IMAGE_USAGE_DISPLAY_READ;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       "TestLabel", initial_data);
@@ -220,8 +218,10 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InvalidFormat) {
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  uint32_t usage =
-      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
+  // NOTE: The specific usage here doesn't matter - the only important thing is
+  // that it be a usage that the factory supports so that the test is exercising
+  // the fact that the passed-in *format* is not supported.
+  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
@@ -237,8 +237,10 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InvalidSize) {
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  uint32_t usage =
-      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
+  // NOTE: The specific usage here doesn't matter - the only important thing is
+  // that it be a usage that the factory supports so that the test is exercising
+  // the fact that the passed-in *size* is not supported.
+  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
@@ -259,8 +261,9 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, EstimatedSize) {
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  uint32_t usage =
-      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
+  // NOTE: The specific usage does not matter here as long as it is supported by
+  // the factory.
+  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
