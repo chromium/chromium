@@ -1286,6 +1286,10 @@ crbug.com/750992 [ Win ] external/wpt/css/css-writing-modes/sizing-orthog-vrl-in
 crbug.com/1432009 external/wpt/css/css-writing-modes/forms/range-input-appearance-native-vertical-rtl.optional.html [ Failure ]
 crbug.com/1432009 external/wpt/css/css-writing-modes/forms/range-input-appearance-none-vertical-rtl.optional.html [ Failure ]
 
+# PEPC crash
+crbug.com/1512722 external/wpt/html/semantics/permission-element/no-end-tag-no-contents.html [ Crash Failure ]
+crbug.com/1512722 virtual/permission-element/external/wpt/html/semantics/permission-element/no-end-tag-no-contents.html [ Pass ]
+
 # These tests are mismatch tests which means they will only pass if the rendered page is not the
 # same between vertical and horizontal writing mode. Failing the tests is equivalent to testing
 # that the appearance is the same. For the virtual version, we disable the features
