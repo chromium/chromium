@@ -62,6 +62,9 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
   private points: Array<{date: Date, price: number}>;
   private isGraphInteracted_: boolean = false;
   private currentPricePointIndex_?: number;
+  private resizeObserver_: ResizeObserver;
+  private currentWidth_: number;
+  private graphSvg_: any;
   private dateTopMarginPx_ = 8;
   private priceRightMarginPx_ = 4;
   private bubbleHorizontalPaddingPx_ = 4;
@@ -84,6 +87,14 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
         d => ({date: this.stringToDate_(d.date), price: d.price}));
 
     this.drawHistoryGraph_();
+
+    this.currentWidth_ = this.$.historyGraph.offsetWidth;
+    this.resizeObserver_ = new ResizeObserver(this.onResize_.bind(this));
+    this.resizeObserver_.observe(this.$.historyGraph);
+  }
+
+  override disconnectedCallback() {
+    this.resizeObserver_.disconnect();
   }
 
   private stringToDate_(s: string): Date {
@@ -94,6 +105,14 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
     const month: number = parseInt(monthStr, 10);
     const day: number = parseInt(dayStr, 10);
     return new Date(year, month - 1, day);
+  }
+
+  private onResize_() {
+    if (this.$.historyGraph.offsetWidth !== this.currentWidth_) {
+      this.currentWidth_ = this.$.historyGraph.offsetWidth;
+      this.graphSvg_.remove();
+      this.drawHistoryGraph_();
+    }
   }
 
   private getTooltipText_(i: number): string {
@@ -132,6 +151,7 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
                     .attr('width', '100%')
                     .attr('height', graphHeightPx)
                     .attr('background-color', 'transparent');
+    this.graphSvg_ = svg;
     const node = svg.node();
     assert(node);
     const graphWidthPx = node.getBoundingClientRect().width;
@@ -237,7 +257,9 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
                         .attr('opacity', 0)
                         .attr('aria-hidden', 'true');
 
-    const initialIndex = this.points.length - 1;
+    const initialIndex = this.currentPricePointIndex_ == null ?
+        this.points.length - 1 :
+        this.currentPricePointIndex_;
     this.showTooltip_(
         verticalLine, circle, bubble, tooltip, initialIndex,
         xScale(this.points[initialIndex].date),
