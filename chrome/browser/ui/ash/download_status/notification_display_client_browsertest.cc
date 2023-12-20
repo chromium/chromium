@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -418,8 +419,9 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   EXPECT_THAT(GetDisplayedNotificationIds(), Not(Contains(notification_id)));
 }
 
-// Verifies pausing download from a notification.
-IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, PauseDownload) {
+// Verifies pausing and resuming download from a notification.
+IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
+                       PauseAndResumeDownload) {
   // Add a pausable download. Cache the notification ID.
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   std::string notification_id;
@@ -433,8 +435,21 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, PauseDownload) {
                                      /*received_bytes=*/0,
                                      /*target_bytes=*/1024);
   download->pausable = true;
+  download->resumable = false;
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
+
+  // The notification of a pausable download should not have a resume button.
+  AshNotificationView* const popup_view =
+      GetPopupView(profile, notification_id);
+  ASSERT_TRUE(popup_view);
+  std::vector<views::LabelButton*> action_buttons =
+      popup_view->GetActionButtonsForTest();
+  const std::u16string resume_button_text =
+      l10n_util::GetStringUTF16(GetCommandTextId(CommandType::kResume));
+  auto resume_button_iter = base::ranges::find(
+      action_buttons, resume_button_text, &views::LabelButton::GetText);
+  EXPECT_EQ(resume_button_iter, action_buttons.end());
 
   // Implement download pause for the mock client.
   ON_CALL(download_status_updater_client(), Pause(download->guid, _))
@@ -442,16 +457,12 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, PauseDownload) {
                          crosapi::MockDownloadStatusUpdaterClient::PauseCallback
                              callback) {
         download->pausable = false;
+        download->resumable = true;
         Update(download->Clone());
         std::move(callback).Run(/*handled=*/true);
       });
 
   // Get the pause button.
-  AshNotificationView* const popup_view =
-      GetPopupView(profile, notification_id);
-  ASSERT_TRUE(popup_view);
-  std::vector<views::LabelButton*> action_buttons =
-      popup_view->GetActionButtonsForTest();
   const std::u16string pause_button_text =
       l10n_util::GetStringUTF16(GetCommandTextId(CommandType::kPause));
   auto pause_button_iter = base::ranges::find(action_buttons, pause_button_text,
@@ -459,14 +470,15 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, PauseDownload) {
   ASSERT_NE(pause_button_iter, action_buttons.end());
 
   // Click on the pause button and wait until download is paused.
-  base::RunLoop run_loop;
+  auto run_loop = std::make_unique<base::RunLoop>();
   EXPECT_CALL(service_observer(), OnNotificationDisplayed)
       .WillOnce(WithArg<0>(
           [&run_loop](const message_center::Notification& notification) {
-            run_loop.Quit();
+            run_loop->Quit();
           }));
   test::Click(*pause_button_iter, ui::EF_NONE);
-  run_loop.Run();
+  run_loop->Run();
+  Mock::VerifyAndClearExpectations(&service_observer());
 
   // After pausing, `popup_view` is hidden. Therefore, get the notification view
   // from the notification center bubble.
@@ -481,6 +493,34 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, PauseDownload) {
   pause_button_iter = base::ranges::find(action_buttons, pause_button_text,
                                          &views::LabelButton::GetText);
   EXPECT_EQ(pause_button_iter, action_buttons.end());
+
+  // The resume button should show.
+  resume_button_iter = base::ranges::find(action_buttons, resume_button_text,
+                                          &views::LabelButton::GetText);
+  ASSERT_NE(resume_button_iter, action_buttons.end());
+
+  // Implement download resume for the mock client.
+  ON_CALL(download_status_updater_client(), Resume(download->guid, _))
+      .WillByDefault(
+          [&](const std::string& guid,
+              crosapi::MockDownloadStatusUpdaterClient::ResumeCallback
+                  callback) {
+            download->pausable = true;
+            download->resumable = false;
+            Update(download->Clone());
+            std::move(callback).Run(/*handled=*/true);
+          });
+
+  // Click on the resume button and wait until download is resumed.
+  run_loop = std::make_unique<base::RunLoop>();
+  EXPECT_CALL(service_observer(), OnNotificationDisplayed)
+      .WillOnce(WithArg<0>(
+          [&run_loop](const message_center::Notification& notification) {
+            run_loop->Quit();
+          }));
+  test::Click(*resume_button_iter, ui::EF_NONE);
+  run_loop->Run();
+  Mock::VerifyAndClearExpectations(&service_observer());
 }
 
 }  // namespace ash::download_status
