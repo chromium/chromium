@@ -9,7 +9,6 @@ import logging
 import os
 import subprocess
 import sys
-import time
 
 from typing import Optional, Tuple
 
@@ -48,7 +47,7 @@ def _get_system_info(target: Optional[str],
     return get_system_info(target)
 
 
-def update_required(
+def _update_required(
         os_check,
         system_image_dir: Optional[str],
         target: Optional[str],
@@ -80,18 +79,6 @@ def update_required(
 def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
     """Helper function for running `ffx target flash`."""
     logging.info('Flashing %s to %s', system_image_dir, target_id)
-    configs = [
-        'fastboot.usb.disabled=true',
-        'ffx.fastboot.inline_target=true',
-        'fastboot.reboot.reconnect_timeout=120',
-    ]
-    if running_unattended():
-        # fxb/126212: The timeout rate determines the timeout for each file
-        # transfer based on the size of the file / this rate (in MB).
-        # Decreasing the rate to 1 (from 5) increases the timeout in swarming,
-        # where large files can take longer to transfer.
-        configs.append('fastboot.flash.timeout_rate=1')
-
     # Flash only with a file lock acquired.
     # This prevents multiple fastboot binaries from flashing concurrently,
     # which should increase the odds of flashing success.
@@ -102,24 +89,7 @@ def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
                                         system_image_dir,
                                         '--no-bootloader-reboot'),
                                    target_id=target_id,
-                                   capture_output=True,
-                                   configs=configs).stdout)
-
-
-def flash(system_image_dir: str,
-          target: Optional[str],
-          serial_num: Optional[str] = None) -> None:
-    """Flash the device."""
-    if serial_num:
-        boot_device(target, BootMode.BOOTLOADER, serial_num)
-        for _ in range(10):
-            time.sleep(10)
-            if common.run_ffx_command(cmd=('target', 'list', serial_num),
-                                      check=False).returncode == 0:
-                break
-        _run_flash_command(system_image_dir, serial_num)
-    else:
-        _run_flash_command(system_image_dir, target)
+                                   capture_output=True).stdout)
 
 
 def update(system_image_dir: str,
@@ -134,25 +104,18 @@ def update(system_image_dir: str,
         target: Node-name string indicating device that should be updated.
         serial_num: String of serial number of device that should be updated.
     """
-    needs_update, actual_image_dir = update_required(os_check,
-                                                     system_image_dir, target,
-                                                     serial_num)
+    needs_update, actual_image_dir = _update_required(os_check,
+                                                      system_image_dir, target,
+                                                      serial_num)
     logging.info('update_required %s, actual_image_dir %s', needs_update,
                  actual_image_dir)
     if not needs_update:
         return
-    flash(actual_image_dir, target, serial_num)
-    # Always reboot the device since the ffx may ignore the device state
-    # after the flash. See
-    # https://cs.opensource.google/fuchsia/fuchsia/+/main:src/developer/ffx/lib/fastboot/src/common/fastboot.rs;drc=cfba0bdd4f8857adb6409f8ae9e35af52c0da93e;l=454
-    # TODO(crbug.com/1490434): May consider is_in_fuchsia and
-    # test_connection before the reboot.
-    try:
-        boot_device(target, BootMode.REGULAR, serial_num, must_boot=True)
-    except:  # pylint: disable=bare-except
-        # If unfortunately, the reboot failed, it's still worth continuing
-        # the test rather than failing here.
-        pass
+    if serial_num:
+        boot_device(target, BootMode.BOOTLOADER, serial_num)
+        _run_flash_command(system_image_dir, serial_num)
+    else:
+        _run_flash_command(system_image_dir, target)
 
 
 def register_update_args(arg_parser: argparse.ArgumentParser,

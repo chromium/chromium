@@ -35,13 +35,21 @@ class IsolateDaemon(AbstractContextManager):
             return self._temp_dir.name
 
     def __init__(self, extra_inits: List[AbstractContextManager] = None):
+        # Keep the alphabetical order.
         self._extra_inits = [
             self.IsolateDir(),
-            ScopedFfxConfig('repository.server.listen', '"[::]:0"'),
             ScopedFfxConfig('daemon.autostart', 'false'),
             ScopedFfxConfig('discovery.zedboot.enabled', 'false'),
+            # fxb/126212: The timeout rate determines the timeout for each file
+            # transfer based on the size of the file / this rate (in MB).
+            # Decreasing the rate to 1 (from 5) increases the timeout in
+            # swarming, where large files can take longer to transfer.
+            ScopedFfxConfig('fastboot.flash.timeout_rate', '1'),
             ScopedFfxConfig('fastboot.reboot.reconnect_timeout', '120'),
-            ScopedFfxConfig('log.level', 'debug')
+            ScopedFfxConfig('fastboot.usb.disabled', 'true'),
+            ScopedFfxConfig('ffx.fastboot.inline_target', 'true'),
+            ScopedFfxConfig('log.level', 'debug'),
+            ScopedFfxConfig('repository.server.listen', '"[::]:0"'),
         ] + (extra_inits or [])
 
     def __enter__(self):
