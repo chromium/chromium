@@ -23,6 +23,7 @@ class TabOrganizationSession;
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }
 
 // Provides an interface for getting Organizations for tabs.
@@ -54,10 +55,14 @@ class TabOrganizationService
   // Creates a new tab organization session, checking to ensure one does not
   // already exist for the browser. If callers are unsure whether there is an
   // existing session, they should first call GetSessionForBrowser to confirm.
-  TabOrganizationSession* CreateSessionForBrowser(const Browser* browser);
+  TabOrganizationSession* CreateSessionForBrowser(
+      const Browser* browser,
+      const content::WebContents* base_session_webcontents = nullptr);
 
   // If the session exists, destroys the session, calls CreateSessionForBrowser.
-  TabOrganizationSession* ResetSessionForBrowser(const Browser* browser);
+  TabOrganizationSession* ResetSessionForBrowser(
+      const Browser* browser,
+      const content::WebContents* base_session_webcontents = nullptr);
 
   void AcceptTabOrganization(Browser* browser,
                              TabOrganization::ID session_id,

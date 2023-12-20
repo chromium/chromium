@@ -123,6 +123,6 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandOrganizeTabs) {
   const TabOrganizationSession* const session =
       service->GetSessionForBrowser(browser());
   EXPECT_NE(session, nullptr);
-  EXPECT_NE(session->request()->state(),
+  EXPECT_EQ(session->request()->state(),
             TabOrganizationRequest::State::NOT_STARTED);
 }

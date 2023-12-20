@@ -77,6 +77,8 @@ class TabOrganizationRequest {
     return response_ ? response_.get() : nullptr;
   }
 
+  void SetBaseTabID(TabData::TabID base_tab_id) { base_tab_id_ = base_tab_id; }
+
   void SetResponseCallback(OnResponseCallback callback);
   TabData* AddTabData(std::unique_ptr<TabData> tab_data);
 
