@@ -87,13 +87,6 @@ class MidiPermissionsFlowInteractiveUITest : public InteractiveBrowserTest {
     return https_server()->GetURL("a.test", "/permissions/requests.html");
   }
 
-  void SetPermission(ContentSettingsType type, ContentSetting setting) {
-    HostContentSettingsMap* map =
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-
-    map->SetContentSettingDefaultScope(GetURL(), GetURL(), type, setting);
-  }
-
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
  private:
@@ -101,8 +94,7 @@ class MidiPermissionsFlowInteractiveUITest : public InteractiveBrowserTest {
 };
 
 // Display MIDI permission prompt.
-IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
-                       MidiPermissionPrompt) {
+IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest, PermissionPrompt) {
   RunTestSequenceInContext(
       context(), NavigateAndRequestMidi(),
       CheckViewProperty(
@@ -111,7 +103,6 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
           l10n_util::GetStringFUTF16(
               IDS_PERMISSIONS_BUBBLE_PROMPT_ACCESSIBLE_TITLE_ONE_PERM, u"",
               l10n_util::GetStringUTF16(IDS_MIDI_PERMISSION_FRAGMENT))));
-  // TODO(b/315345075): Add a check for the strings displayed in the prompt.
 }
 
 // Display MIDI permission state in page info when denied.
@@ -143,7 +134,6 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
             EXPECT_TRUE(includes_midi);
             EXPECT_FALSE(includes_midi_sysex);
           })));
-  // TODO(b/315345075): Add a check for the state of MIDI toggle.
 }
 
 // Display MIDI permission state in page info when allowed.
@@ -175,7 +165,6 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
             EXPECT_TRUE(includes_midi);
             EXPECT_FALSE(includes_midi_sysex);
           })));
-  // TODO(b/315345075): Add a check for the state of MIDI toggle.
 }
 
 // TODO(b/315345075): Add a test for the behavior of the MIDI toggle in page
