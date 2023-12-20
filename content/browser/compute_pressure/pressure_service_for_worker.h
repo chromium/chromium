@@ -55,8 +55,6 @@ class CONTENT_EXPORT PressureServiceForWorker : public PressureServiceBase {
   }
 
  private:
-  SEQUENCE_CHECKER(sequence_checker_);
-
   // DedicatedWorkerHost/SharedWorkerHost owns an instance of this class.
   raw_ptr<WorkerHost> GUARDED_BY_CONTEXT(sequence_checker_) worker_host_;
 };

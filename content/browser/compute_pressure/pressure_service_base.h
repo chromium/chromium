@@ -64,10 +64,10 @@ class CONTENT_EXPORT PressureServiceBase
  protected:
   PressureServiceBase();
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
  private:
   void OnPressureManagerDisconnected();
-
-  SEQUENCE_CHECKER(sequence_checker_);
 
   // Services side.
   // Callback from |manager_receiver_| is passed to |manager_remote_| and the
