@@ -766,6 +766,10 @@
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024"
   },
+  "This never expires because it tests rendering of form controls when the",
+  "preferred color-scheme is dark. It should now be possible to render",
+  "controls dark even if the preferred is light, but that requires a bit of",
+  "work",
   {
     "prefix": "dark-color-scheme",
     "owners": ["futhark@chromium.org", "andruud@chromium.org"],
@@ -779,7 +783,7 @@
               "http/tests/eye-dropper"],
     "args": ["--blink-settings=preferredColorScheme=0",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jan 1, 2024"
+    "expires": "never"
   },
   {
     "prefix": "force-eager",
