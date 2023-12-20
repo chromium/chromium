@@ -3096,13 +3096,8 @@ class AppServiceShortcutShelfBrowserTest : public ShelfAppBrowserTest {
   apps::ShortcutId CreateWebAppBasedShortcut(
       const GURL& shortcut_url,
       const std::u16string& shortcut_name) {
-    // Create web app based shortcut.
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = shortcut_url;
-    web_app_info->title = shortcut_name;
-    auto local_shortcut_id = web_app::test::InstallWebApp(
-        profile(), std::move(web_app_info),
-        /*overwrite_existing_manifest_fields=*/true);
+    webapps::AppId local_shortcut_id = web_app::test::InstallShortcut(
+        browser()->profile(), base::UTF16ToUTF8(shortcut_name), shortcut_url);
     return apps::GenerateShortcutId(app_constants::kChromeAppId,
                                     local_shortcut_id);
   }
