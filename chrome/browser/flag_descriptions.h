@@ -4091,6 +4091,9 @@ extern const char kWifiConnectMacAddressRandomizationDescription[];
 extern const char kWindowSplittingName[];
 extern const char kWindowSplittingDescription[];
 
+extern const char kLacrosSharedComponentsDirName[];
+extern const char kLacrosSharedComponentsDirDescription[];
+
 extern const char kLauncherGameSearchName[];
 extern const char kLauncherGameSearchDescription[];
 
@@ -4127,22 +4130,23 @@ extern const char kLauncherManateeForKeyboardShortcutsDescription[];
 extern const char kMacAddressRandomizationName[];
 extern const char kMacAddressRandomizationDescription[];
 
-extern const char kSmdsSupportName[];
-extern const char kSmdsSupportDescription[];
-
-extern const char kTetheringExperimentalFunctionalityName[];
-extern const char kTetheringExperimentalFunctionalityDescription[];
-
 extern const char kOobeJellyName[];
 extern const char kOobeJellyDescription[];
 
 extern const char kOobeJellyModalName[];
 extern const char kOobeJellyModalDescription[];
 
+extern const char kSmdsSupportName[];
+extern const char kSmdsSupportDescription[];
+
+extern const char kSysUiDownloadIntegrationV2Name[];
+extern const char kSysUiDownloadIntegrationV2Description[];
+
+extern const char kTetheringExperimentalFunctionalityName[];
+extern const char kTetheringExperimentalFunctionalityDescription[];
+
 // Prefer keeping this section sorted to adding new declarations down here.
 
-extern const char kLacrosSharedComponentsDirName[];
-extern const char kLacrosSharedComponentsDirDescription[];
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

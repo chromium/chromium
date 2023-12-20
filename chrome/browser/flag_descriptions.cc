@@ -7116,6 +7116,12 @@ const char kWindowSplittingName[] = "CrOS Labs - Window splitting";
 const char kWindowSplittingDescription[] =
     "Enables splitting windows by dragging one over another.";
 
+const char kLacrosSharedComponentsDirName[] =
+    "Place browser components in a shared location";
+const char kLacrosSharedComponentsDirDescription[] =
+    "When enabled, it causes Lacros to use a location shared across users for "
+    "browser components.";
+
 const char kLauncherGameSearchName[] = "Enable launcher game search";
 const char kLauncherGameSearchDescription[] =
     "Enables cloud game search results in the launcher.";
@@ -7184,17 +7190,6 @@ const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "
     "networks.";
 
-const char kSmdsSupportName[] = "SM-DS Support";
-const char kSmdsSupportDescription[] =
-    "Feature to enable the consumer and enterprise support for provisioning "
-    "eSIM profiles using Subscription Manager Discovery Service (SM-DS).";
-
-const char kTetheringExperimentalFunctionalityName[] =
-    "Tethering Allow Experimental Functionality";
-const char kTetheringExperimentalFunctionalityDescription[] =
-    "Feature to enable Chromebook hotspot functionality for experimental "
-    "carriers, modem and modem FW.";
-
 const char kOobeJellyName[] = "Jelly design for OOBE";
 const char kOobeJellyDescription[] =
     "Feature to enable the Jelly design in out of box experience.";
@@ -7203,11 +7198,21 @@ const char kOobeJellyModalName[] = "Jelly modal feature for OOBE";
 const char kOobeJellyModalDescription[] =
     "Feature to enable the Jelly modal feature in out of box experience.";
 
-const char kLacrosSharedComponentsDirName[] =
-    "Place browser components in a shared location";
-const char kLacrosSharedComponentsDirDescription[] =
-    "When enabled, it causes Lacros to use a location shared across users for "
-    "browser components.";
+const char kSmdsSupportName[] = "SM-DS Support";
+const char kSmdsSupportDescription[] =
+    "Feature to enable the consumer and enterprise support for provisioning "
+    "eSIM profiles using Subscription Manager Discovery Service (SM-DS).";
+
+const char kSysUiDownloadIntegrationV2Name[] =
+    "Lacros Browser Downloads on ChromeOS";
+const char kSysUiDownloadIntegrationV2Description[] =
+    "Downloads paradigm between Chrome Browser and ChromeOS on Lacros.";
+
+const char kTetheringExperimentalFunctionalityName[] =
+    "Tethering Allow Experimental Functionality";
+const char kTetheringExperimentalFunctionalityDescription[] =
+    "Feature to enable Chromebook hotspot functionality for experimental "
+    "carriers, modem and modem FW.";
 
 // Prefer keeping this section sorted to adding new definitions down here.
 

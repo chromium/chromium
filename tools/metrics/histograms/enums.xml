@@ -32953,6 +32953,7 @@ from previous Chrome versions.
   <int value="-94055083" label="RemoveUPMUnenrollment:enabled"/>
   <int value="-93619449" label="video-tutorials-instant-fetch"/>
   <int value="-92116820" label="InlineUpdateFlow:enabled"/>
+  <int value="-91999916" label="SysUiDownloadsIntegrationV2:enabled"/>
   <int value="-91928075" label="PasswordViewPageInSettings:disabled"/>
   <int value="-91767554" label="enable-de-jelly"/>
   <int value="-91370149" label="UseSerialBusEnumerator:enabled"/>
@@ -37306,6 +37307,7 @@ from previous Chrome versions.
       label="SignedExchangePrefetchCacheForNavigations:enabled"/>
   <int value="1952811009" label="EnableSuggestedDriveFiles:disabled"/>
   <int value="1953967314" label="NtpRealboxWidthBehavior:disabled"/>
+  <int value="1954461720" label="SysUiDownloadsIntegrationV2:disabled"/>
   <int value="1954778883" label="COLRV1Fonts:disabled"/>
   <int value="1955238689" label="OmniboxMaxURLMatches:disabled"/>
   <int value="1955669770" label="MessagesForAndroidPopupBlocked:enabled"/>

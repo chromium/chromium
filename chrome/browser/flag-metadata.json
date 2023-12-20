@@ -7588,6 +7588,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "system-ui-downloads-integration-v2",
+    "owners": ["andrewxu@google.com", "dmblack@google.com"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "system-voice-isolation-option",
     "owners": ["eddyhsu@chromium.org"],
     "expiry_milestone": 130
