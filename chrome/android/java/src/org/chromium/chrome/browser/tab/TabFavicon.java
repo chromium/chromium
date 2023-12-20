@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -53,7 +54,7 @@ public class TabFavicon extends TabWebContentsUserData {
      * @param tab Tab containing the web contents's favicon.
      * @return {@link Bitmap} of the favicon.
      */
-    public static Bitmap getBitmap(Tab tab) {
+    public static @Nullable Bitmap getBitmap(Tab tab) {
         TabFavicon tabFavicon = get(tab);
         return tabFavicon != null ? tabFavicon.getFavicon() : null;
     }
