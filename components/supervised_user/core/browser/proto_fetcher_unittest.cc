@@ -173,7 +173,7 @@ class ProtoFetcherTestBase {
   }
 
  protected:
-  using Fetcher = DeferredProtoFetcher<Response>;
+  using Fetcher = ProtoFetcher<Response>;
 
   const FetcherConfig& GetConfig() const { return config_; }
 
@@ -763,7 +763,7 @@ class FetchManagerTest : public testing::Test {
 
   // Flips order of arguments so that the sole unbound argument will be the
   // request.
-  static std::unique_ptr<DeferredProtoFetcher<ClassifyUrlResponse>> ClassifyURL(
+  static std::unique_ptr<ProtoFetcher<ClassifyUrlResponse>> ClassifyURL(
       signin::IdentityManager* identity_manager,
       network::TestURLLoaderFactory& url_loader_factory,
       const FetcherConfig& config,
@@ -777,8 +777,8 @@ class FetchManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   IdentityTestEnvironment identity_test_env_;
 
-  base::RepeatingCallback<std::unique_ptr<
-      DeferredProtoFetcher<ClassifyUrlResponse>>(const ClassifyUrlRequest&)>
+  base::RepeatingCallback<std::unique_ptr<ProtoFetcher<ClassifyUrlResponse>>(
+      const ClassifyUrlRequest&)>
       factory_{base::BindRepeating(&FetchManagerTest::ClassifyURL,
                                    identity_test_env_.identity_manager(),
                                    std::ref(test_url_loader_factory_),
@@ -863,10 +863,9 @@ class DeferredFetcherTest : public ::testing::Test {
     identity_test_env_.SetAutomaticIssueOfAccessTokens(/*grant=*/true);
   }
 
-  // Used to demonstrate DeferredProtoFetcher anit-pattern.
+  // Used to demonstrate deferred ProtoFetcher anit-pattern.
   static void OnResponse(
-      std::unique_ptr<DeferredProtoFetcher<CreatePermissionRequestResponse>>
-          fetcher,
+      std::unique_ptr<ProtoFetcher<CreatePermissionRequestResponse>> fetcher,
       base::OnceCallback<CallbackType> callback,
       const ProtoFetcherStatus& status,
       std::unique_ptr<CreatePermissionRequestResponse> response) {
@@ -894,8 +893,8 @@ TEST_F(DeferredFetcherTest, IsCreatedAndStarted) {
     // fetcher survives going out-of-scope, because it is bound to the callback
     // which is in turn referenced in the task environment. Outside of this
     // scope, there is no way to cancel this fetcher.
-    std::unique_ptr<DeferredProtoFetcher<CreatePermissionRequestResponse>>
-        fetcher = CreatePermissionRequestFetcher(
+    std::unique_ptr<ProtoFetcher<CreatePermissionRequestResponse>> fetcher =
+        CreatePermissionRequestFetcher(
             *identity_test_env_.identity_manager(),
             test_url_loader_factory_.GetSafeWeakWrapper(),
             // Payload does not matter, not validated on client side.

@@ -43,8 +43,8 @@ safe_search_api::ClientClassification ToSafeSearchClientClassification(
 
 // Flips order of arguments so that the sole unbound argument will be the
 // request.
-std::unique_ptr<supervised_user::DeferredProtoFetcher<
-    kids_chrome_management::ClassifyUrlResponse>>
+std::unique_ptr<
+    supervised_user::ProtoFetcher<kids_chrome_management::ClassifyUrlResponse>>
 ClassifyURL(signin::IdentityManager* identity_manager,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
             const supervised_user::FetcherConfig& config,

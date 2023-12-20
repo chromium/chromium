@@ -61,8 +61,8 @@ void OnResponse(
 
 // Flips order of arguments so that the sole unbound argument will be the
 // request.
-std::unique_ptr<DeferredProtoFetcher<
-    kids_chrome_management::CreatePermissionRequestResponse>>
+std::unique_ptr<
+    ProtoFetcher<kids_chrome_management::CreatePermissionRequestResponse>>
 FetcherFactory(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
