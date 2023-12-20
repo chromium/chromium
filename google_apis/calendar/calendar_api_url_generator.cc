@@ -18,6 +18,8 @@ namespace {
 // Hard coded URLs for communication with a google calendar server.
 constexpr char kCalendarV3ColorUrl[] = "calendar/v3/colors";
 constexpr char kCalendarV3EventsUrl[] = "calendar/v3/calendars/primary/events";
+constexpr char kCalendarV3CalendarListUrl[] =
+    "calendar/v3/users/me/calendarList";
 constexpr char kMaxAttendeesParameterName[] = "maxAttendees";
 constexpr char kMaxResultsParameterName[] = "maxResults";
 constexpr char kSingleEventsParameterName[] = "singleEvents";
@@ -66,6 +68,17 @@ GURL CalendarApiUrlGenerator::GetCalendarEventListUrl(
 
 GURL CalendarApiUrlGenerator::GetCalendarColorListUrl() const {
   GURL url = base_url_.Resolve(kCalendarV3ColorUrl);
+  return url;
+}
+
+GURL CalendarApiUrlGenerator::GetCalendarListUrl(
+    std::optional<int> max_results) const {
+  GURL url = base_url_.Resolve(kCalendarV3CalendarListUrl);
+  if (max_results.has_value()) {
+    url = net::AppendOrReplaceQueryParameter(
+        url, kMaxResultsParameterName,
+        base::NumberToString(max_results.value()));
+  }
   return url;
 }
 

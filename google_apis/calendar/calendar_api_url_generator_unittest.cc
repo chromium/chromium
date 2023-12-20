@@ -4,6 +4,8 @@
 
 #include "google_apis/calendar/calendar_api_url_generator.h"
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
@@ -57,5 +59,20 @@ TEST(CalendarApiUrlGeneratorTest,
           .spec());
 }
 
+TEST(CalendarApiUrlGeneratorTest, GetCalendarListUrl) {
+  CalendarApiUrlGenerator url_generator_;
+  EXPECT_EQ(
+      "https://www.googleapis.com/calendar/v3/users/me/calendarList"
+      "?maxResults=50",
+      url_generator_.GetCalendarListUrl(/*max_results=*/50).spec());
+}
+
+TEST(CalendarApiUrlGeneratorTest,
+     GetCalendarListUrlWithDefaultOptionalParameters) {
+  CalendarApiUrlGenerator url_generator_;
+  EXPECT_EQ(
+      "https://www.googleapis.com/calendar/v3/users/me/calendarList",
+      url_generator_.GetCalendarListUrl(/*max_results=*/std::nullopt).spec());
+}
 }  // namespace calendar
 }  // namespace google_apis

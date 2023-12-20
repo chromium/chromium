@@ -27,6 +27,14 @@ namespace google_apis {
 namespace calendar {
 
 namespace {
+// CalendarList
+constexpr char kCalendarListKind[] = "calendar#calendarList";
+
+// SingleCalendar
+constexpr char kCalendarColorId[] = "colorId";
+constexpr char kPrimary[] = "primary";
+constexpr char kSelected[] = "selected";
+constexpr char kSingleCalendarKind[] = "calendar#calendarListEntry";
 
 // EventList
 constexpr char kCalendarEventListKind[] = "calendar#events";
@@ -221,6 +229,18 @@ bool IsAllDayEvent(const base::Value* value, bool* result) {
   return result;
 }
 
+bool ConvertCalendarListResponseItems(const base::Value* value,
+                                      SingleCalendar* calendar) {
+  base::JSONValueConverter<SingleCalendar> converter;
+
+  if (!IsResourceKindExpected(*value, kSingleCalendarKind) ||
+      !converter.Convert(*value, calendar)) {
+    DVLOG(1) << "Unable to create: Invalid calendarListEntry JSON!";
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 DateTime::DateTime() = default;
@@ -317,6 +337,66 @@ std::unique_ptr<EventList> EventList::CreateFrom(const base::Value& value) {
 }
 
 void EventList::InjectItemForTesting(std::unique_ptr<CalendarEvent> item) {
+  items_.push_back(std::move(item));
+}
+
+SingleCalendar::SingleCalendar() = default;
+
+SingleCalendar::~SingleCalendar() = default;
+
+SingleCalendar::SingleCalendar(const SingleCalendar&) = default;
+
+SingleCalendar& SingleCalendar::operator=(const SingleCalendar&) = default;
+
+// static
+void SingleCalendar::RegisterJSONConverter(
+    base::JSONValueConverter<SingleCalendar>* converter) {
+  converter->RegisterStringField(kApiResponseIdKey, &SingleCalendar::id_);
+  converter->RegisterStringField(kCalendarColorId, &SingleCalendar::color_id_);
+  converter->RegisterBoolField(kPrimary, &SingleCalendar::primary_);
+  converter->RegisterBoolField(kSelected, &SingleCalendar::selected_);
+}
+
+int SingleCalendar::GetApproximateSizeInBytes() const {
+  int total_bytes = 0;
+
+  total_bytes += sizeof(SingleCalendar);
+  total_bytes += id_.length();
+  total_bytes += color_id_.length();
+  total_bytes += sizeof(primary_);
+  total_bytes += sizeof(selected_);
+
+  return total_bytes;
+}
+
+CalendarList::CalendarList() = default;
+
+CalendarList::~CalendarList() = default;
+
+// static
+void CalendarList::RegisterJSONConverter(
+    base::JSONValueConverter<CalendarList>* converter) {
+  converter->RegisterStringField(kApiResponseETagKey, &CalendarList::etag_);
+  converter->RegisterStringField(kApiResponseKindKey, &CalendarList::kind_);
+  converter->RegisterRepeatedCustomValue<SingleCalendar>(
+      kApiResponseItemsKey, &CalendarList::items_,
+      &ConvertCalendarListResponseItems);
+}
+
+// static
+std::unique_ptr<CalendarList> CalendarList::CreateFrom(
+    const base::Value& value) {
+  auto calendars = std::make_unique<CalendarList>();
+  base::JSONValueConverter<CalendarList> converter;
+  if (!IsResourceKindExpected(value, kCalendarListKind) ||
+      !converter.Convert(value, calendars.get())) {
+    DVLOG(1) << "Unable to create: Invalid CalendarList JSON!";
+    return nullptr;
+  }
+  return calendars;
+}
+
+void CalendarList::InjectItemForTesting(std::unique_ptr<SingleCalendar> item) {
   items_.push_back(std::move(item));
 }
 
