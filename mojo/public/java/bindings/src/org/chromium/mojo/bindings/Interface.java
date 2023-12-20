@@ -4,7 +4,6 @@
 
 package org.chromium.mojo.bindings;
 
-import org.chromium.mojo.bindings.Callbacks.Callback1;
 import org.chromium.mojo.bindings.Interface.AbstractProxy.HandlerImpl;
 import org.chromium.mojo.bindings.interfacecontrol.QueryVersion;
 import org.chromium.mojo.bindings.interfacecontrol.RequireVersion;
@@ -53,12 +52,17 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
             /** Returns the version number of the interface that the remote side supports. */
             public int getVersion();
 
+            /** Callback interface for the async response to {@link Proxy#queryVersion}. */
+            interface QueryVersionCallback {
+                public void call(int version);
+            }
+
             /**
              * Queries the max version that the remote side supports. On completion, the result will
              * be returned as the input of |callback|. The version number of this interface pointer
              * will also be updated.
              */
-            public void queryVersion(Callback1<Integer> callback);
+            public void queryVersion(QueryVersionCallback callback);
 
             /**
              * If the remote side doesn't support the specified version, it will close its end of
@@ -167,7 +171,7 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
              * @see Handler#queryVersion(org.chromium.mojo.bindings.Callbacks.Callback1)
              */
             @Override
-            public void queryVersion(final Callback1<Integer> callback) {
+            public void queryVersion(QueryVersionCallback callback) {
                 RunMessageParams message = new RunMessageParams();
                 message.input = new RunInput();
                 message.input.setQueryVersion(new QueryVersion());
@@ -176,7 +180,7 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
                         getCore(),
                         mMessageReceiver,
                         message,
-                        new Callback1<RunResponseMessageParams>() {
+                        new InterfaceControlMessagesHelper.SendRunMessageCallback() {
                             @Override
                             public void call(RunResponseMessageParams response) {
                                 if (response.output != null

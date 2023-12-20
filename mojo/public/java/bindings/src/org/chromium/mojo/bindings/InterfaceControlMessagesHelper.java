@@ -4,7 +4,6 @@
 
 package org.chromium.mojo.bindings;
 
-import org.chromium.mojo.bindings.Callbacks.Callback1;
 import org.chromium.mojo.bindings.Interface.Manager;
 import org.chromium.mojo.bindings.Interface.Proxy;
 import org.chromium.mojo.bindings.interfacecontrol.InterfaceControlMessagesConstants;
@@ -23,14 +22,22 @@ import org.chromium.mojo.system.Core;
  */
 public class InterfaceControlMessagesHelper {
     /**
+     * Callback interface for the async response to {@link
+     * InterfaceControlMessagesHelper#sendRunMessage}.
+     */
+    interface SendRunMessageCallback {
+        public void call(RunResponseMessageParams params);
+    }
+
+    /**
      * MessageReceiver that forwards a message containing a {@link RunResponseMessageParams} to a
      * callback.
      */
     private static class RunResponseForwardToCallback extends SideEffectFreeCloseable
             implements MessageReceiver {
-        private final Callback1<RunResponseMessageParams> mCallback;
+        private final SendRunMessageCallback mCallback;
 
-        RunResponseForwardToCallback(Callback1<RunResponseMessageParams> callback) {
+        RunResponseForwardToCallback(SendRunMessageCallback callback) {
             mCallback = callback;
         }
 
@@ -51,7 +58,7 @@ public class InterfaceControlMessagesHelper {
             Core core,
             MessageReceiverWithResponder receiver,
             RunMessageParams params,
-            Callback1<RunResponseMessageParams> callback) {
+            SendRunMessageCallback callback) {
         Message message =
                 params.serializeWithHeader(
                         core,

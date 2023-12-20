@@ -106,7 +106,6 @@ android_library("mojo_javatests") {
     "javatests/src/org/chromium/mojo/bindings/BindingsTest.java",
     "javatests/src/org/chromium/mojo/bindings/BindingsTestUtils.java",
     "javatests/src/org/chromium/mojo/bindings/BindingsVersioningTest.java",
-    "javatests/src/org/chromium/mojo/bindings/CallbacksTest.java",
     "javatests/src/org/chromium/mojo/bindings/ConnectorTest.java",
     "javatests/src/org/chromium/mojo/bindings/ExecutorFactoryTest.java",
     "javatests/src/org/chromium/mojo/bindings/InterfacesTest.java",

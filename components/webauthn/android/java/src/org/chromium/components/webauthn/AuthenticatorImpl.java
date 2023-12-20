@@ -64,12 +64,15 @@ public final class AuthenticatorImpl implements Authenticator {
 
     private MakeCredential_Response mMakeCredentialCallback;
     private GetAssertion_Response mGetAssertionCallback;
-    // A queue is used to store pending IsUserVerifyingPlatformAuthenticatorAvailable request
-    // callbacks when there are multiple requests pending on the result from GMSCore. Noted that
-    // the callbacks may not be invoked in the same order as the pending requests, which in this
-    // situation does not matter because all pending requests will return the same value.
-    private Queue<org.chromium.mojo.bindings.Callbacks.Callback1<Boolean>>
+    // A queue for pending isUserVerifyingPlatformAuthenticatorAvailable request callbacks when
+    // there are multiple requests pending on the result from GMSCore. Note that the callbacks may
+    // not be invoked in the same order the pending requests were enqueued, but this is OK because
+    // all pending requests end up returning the same value.
+    private Queue<IsUserVerifyingPlatformAuthenticatorAvailable_Response>
             mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue = new LinkedList<>();
+    // Similar to the above, but for pending isConditionalMediationAvailable request callbacks.
+    private Queue<IsConditionalMediationAvailable_Response>
+            mIsConditionalMediationAvailableCallbackQueue = new LinkedList<>();
     private Fido2CredentialRequest mPendingFido2CredentialRequest;
     private Set<Fido2CredentialRequest> mUnclosedFido2CredentialRequests = new HashSet<>();
 
@@ -279,12 +282,10 @@ public final class AuthenticatorImpl implements Authenticator {
         // If the gmscore and chromium versions are out of sync for some reason, this method will
         // return true but chrome will ignore conditional requests. Android surfaces only platform
         // credentials on conditional requests, use IsUVPAA as a proxy for availability.
-        mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.add(callback);
+        mIsConditionalMediationAvailableCallbackQueue.add(callback);
         getFido2CredentialRequest()
                 .handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
-                        mContext,
-                        isUvpaa ->
-                                onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUvpaa));
+                        mContext, isUvpaa -> onIsConditionalMediationAvailableResponse(isUvpaa));
     }
 
     @Override
@@ -323,6 +324,11 @@ public final class AuthenticatorImpl implements Authenticator {
     public void onIsUserVerifyingPlatformAuthenticatorAvailableResponse(boolean isUVPAA) {
         assert !mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.isEmpty();
         mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.poll().call(isUVPAA);
+    }
+
+    public void onIsConditionalMediationAvailableResponse(boolean isUVPAA) {
+        assert !mIsConditionalMediationAvailableCallbackQueue.isEmpty();
+        mIsConditionalMediationAvailableCallbackQueue.poll().call(isUVPAA);
     }
 
     public void onError(Integer status) {
