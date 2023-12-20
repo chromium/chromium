@@ -121,6 +121,11 @@ const base::FeatureParam<int> kAutofillMaxServerAttempts(
     "max-attempts",
     5);
 
+enum class RequestType {
+  kRequestQuery,
+  kRequestUpload,
+};
+
 // Returns the base URL for the autofill server.
 GURL GetAutofillServerURL() {
   // If a valid autofill server URL is specified on the command line, then the
@@ -172,15 +177,12 @@ bool IsAutofillExperimentId(int id) {
   });
 }
 
-std::string GetMetricName(
-  AutofillCrowdsourcingManager::RequestType request_type,
-                          std::string_view suffix) {
-  auto TypeToName =
-      [](AutofillCrowdsourcingManager::RequestType type) -> std::string_view {
+std::string GetMetricName(RequestType request_type, std::string_view suffix) {
+  auto TypeToName = [](RequestType type) -> std::string_view {
     switch (type) {
-      case AutofillCrowdsourcingManager::REQUEST_QUERY:
+      case RequestType::kRequestQuery:
         return "Query";
-      case AutofillCrowdsourcingManager::REQUEST_UPLOAD:
+      case RequestType::kRequestUpload:
         return "Upload";
     }
     NOTREACHED_NORETURN();
@@ -189,9 +191,10 @@ std::string GetMetricName(
 }
 
 net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
-    const AutofillCrowdsourcingManager::RequestType& request_type) {
-  if (request_type == AutofillCrowdsourcingManager::REQUEST_QUERY) {
-    return net::DefineNetworkTrafficAnnotation("autofill_query", R"(
+    RequestType request_type) {
+  switch (request_type) {
+    case RequestType::kRequestQuery:
+      return net::DefineNetworkTrafficAnnotation("autofill_query", R"(
         semantics {
           sender: "Autofill"
           description:
@@ -241,10 +244,8 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             }
           }
         })");
-  }
-
-  DCHECK_EQ(request_type, AutofillCrowdsourcingManager::REQUEST_UPLOAD);
-  return net::DefineNetworkTrafficAnnotation("autofill_upload", R"(
+    case RequestType::kRequestUpload:
+      return net::DefineNetworkTrafficAnnotation("autofill_upload", R"(
       semantics {
         sender: "Autofill"
         description:
@@ -290,6 +291,8 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
           }
         }
       })");
+  }
+  NOTREACHED_NORETURN();
 }
 
 size_t CountActiveFieldsInForms(const std::vector<FormStructure*>& forms) {
@@ -470,17 +473,20 @@ std::optional<std::string> GetUploadPayloadForApi(
 // Gets an API method URL given its type (query or upload), an optional
 // resource ID, and the HTTP method to be used.
 // Example usage:
-// * GetAPIMethodUrl(REQUEST_QUERY, "1234", "GET") will return "/v1/pages/1234".
-// * GetAPIMethodUrl(REQUEST_QUERY, "1234", "POST") will return "/v1/pages:get".
-// * GetAPIMethodUrl(REQUEST_UPLOAD, "", "POST") will return "/v1/forms:vote".
-std::string GetAPIMethodUrl(AutofillCrowdsourcingManager::RequestType type,
+// * GetAPIMethodUrl(RequestType::kRequestQuery, "1234", "GET") will return
+//   "/v1/pages/1234".
+// * GetAPIMethodUrl(RequestType::kRequestQuery, "1234", "POST") will return
+//   "/v1/pages:get".
+// * GetAPIMethodUrl(RequestType::kRequestUpload, "", "POST") will return
+//   "/v1/forms:vote".
+std::string GetAPIMethodUrl(RequestType type,
                             std::string_view resource_id,
                             std::string_view method) {
   const char* api_method_url = [&] {
     switch (type) {
-      case AutofillCrowdsourcingManager::REQUEST_QUERY:
+      case RequestType::kRequestQuery:
         return method == "POST" ? "/v1/pages:get" : "/v1/pages";
-      case AutofillCrowdsourcingManager::REQUEST_UPLOAD:
+      case RequestType::kRequestUpload:
         return "/v1/forms:vote";
     }
     NOTREACHED_NORETURN();
@@ -492,11 +498,10 @@ std::string GetAPIMethodUrl(AutofillCrowdsourcingManager::RequestType type,
 }
 
 // Gets HTTP body payload for API POST request.
-std::optional<std::string> GetAPIBodyPayload(
-    std::string payload,
-    AutofillCrowdsourcingManager::RequestType type) {
+std::optional<std::string> GetAPIBodyPayload(std::string payload,
+                                             RequestType type) {
   // Don't do anything for payloads not related to Query.
-  if (type != AutofillCrowdsourcingManager::REQUEST_QUERY) {
+  if (type != RequestType::kRequestQuery) {
     return std::move(payload);
   }
   // Wrap query payload in a request proto to interface with API Query method.
@@ -656,7 +661,7 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
   FormRequestData request_data = {
       .observer = observer,
       .form_signatures = std::move(queried_form_signatures),
-      .request_type = AutofillCrowdsourcingManager::REQUEST_QUERY,
+      .request_type = RequestType::kRequestQuery,
       .isolation_info = std::move(isolation_info),
       .payload = std::move(payload).value(),
   };
@@ -729,7 +734,7 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
     FormRequestData request_data = {
         .observer = observer,
         .form_signatures = {form_signature},
-        .request_type = AutofillCrowdsourcingManager::REQUEST_UPLOAD,
+        .request_type = RequestType::kRequestUpload,
         .isolation_info = std::nullopt,
         .payload = std::move(payload).value(),
     };
@@ -772,7 +777,7 @@ std::tuple<GURL, std::string> AutofillCrowdsourcingManager::GetRequestURLAndMeth
   std::string resource_id;
   std::string method = "POST";
 
-  if (request_data.request_type == AutofillCrowdsourcingManager::REQUEST_QUERY) {
+  if (request_data.request_type == RequestType::kRequestQuery) {
     if (GetPayloadLength(request_data.payload) <= kMaxQueryGetSize) {
       resource_id = request_data.payload;
       method = "GET";
@@ -795,22 +800,21 @@ std::tuple<GURL, std::string> AutofillCrowdsourcingManager::GetRequestURLAndMeth
 }
 
 bool AutofillCrowdsourcingManager::StartRequest(FormRequestData request_data) {
-  // REQUEST_UPLOADs take no IsolationInfo because Password Manager uploads when
+  // kRequestUploads take no IsolationInfo because Password Manager uploads when
   // RenderFrameHostImpl::DidCommitNavigation() is called, in which case
   // AutofillDriver::IsolationInfo() may crash because there is no committing
   // NavigationRequest. Not setting an IsolationInfo is safe because no
   // information about the response is passed to the renderer, or is otherwise
   // visible to a page. See crbug/1176635#c22.
-  DCHECK(
-      (request_data.request_type == AutofillCrowdsourcingManager::REQUEST_UPLOAD) ==
-      !request_data.isolation_info);
+  DCHECK((request_data.request_type == RequestType::kRequestUpload) ==
+         !request_data.isolation_info);
 
   // Get the URL and method to use for this request.
   auto [request_url, method] = GetRequestURLAndMethod(request_data);
 
   // Track the URL length for GET queries because the URL length can be in the
   // thousands when rich metadata is enabled.
-  if (request_data.request_type == AutofillCrowdsourcingManager::REQUEST_QUERY &&
+  if (request_data.request_type == RequestType::kRequestQuery &&
       method == "GET") {
     base::UmaHistogramCounts100000(kUmaGetUrlLength,
                                    request_url.spec().length());
@@ -991,7 +995,7 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
     return;
   }
 
-  if (request_data.request_type != REQUEST_QUERY) {
+  if (request_data.request_type != RequestType::kRequestQuery) {
     return;
   }
 

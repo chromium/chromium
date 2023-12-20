@@ -45,11 +45,6 @@ struct ScopedActiveAutofillExperiments {
 // Obtains Autofill server predictions and upload votes for generating them.
 class AutofillCrowdsourcingManager {
  public:
-  enum RequestType {
-    REQUEST_QUERY,
-    REQUEST_UPLOAD,
-  };
-
   // Names of UMA metrics recorded in this class.
   static constexpr char kUmaApiUrlIsTooLong[] =
       "Autofill.Query.ApiUrlIsTooLong";
