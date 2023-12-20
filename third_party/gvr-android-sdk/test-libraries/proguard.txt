@@ -1,4 +1,0 @@
-# Suppress some warnings that block compilation in release builds, but don't
-# actually affect anything
--dontwarn java.awt.**
--dontwarn javax.lang.model.element.Modifier

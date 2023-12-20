@@ -1294,11 +1294,6 @@ deps = {
       'condition': 'checkout_win',
   },
 
-  'src/third_party/gvr-android-sdk/src': {
-      'url': Var('chromium_git') + '/external/github.com/googlevr/gvr-android-sdk.git' + '@' + '233e7fe922a543e0bc55382d64cacd047307d0e7',
-      'condition': 'checkout_android',
-  },
-
   'src/third_party/cardboard/src' : {
       'url': Var('chromium_git') + '/external/github.com/googlevr/cardboard/' + '@' + '5c9f3066dc14962d1dec9a32ec9d3668641c408d',
       'condition': 'checkout_android',
@@ -4958,45 +4953,12 @@ hooks = [
                 '--gs_url_base=chromeos-prebuilt/afdo-job/llvm',
     ],
   },
-  {
-    'name': 'gvr_static_shim_android',
-    'pattern': '\\.sha1',
-    'condition': 'checkout_android',
-    'action': [ 'python3',
-                'src/third_party/depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--no_auth',
-                '--bucket', 'chromium-gvr-static-shim',
-                '-d', 'src/third_party/gvr-android-sdk',
-    ],
-  },
-  {
-    'name': 'vr_controller_test_api',
-    'pattern': '\\.sha1',
-    'condition': 'checkout_android',
-    'action': [ 'python3',
-                'src/third_party/depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--no_auth',
-                '--bucket', 'chromium-gvr-static-shim/controller_test_api',
-                '-s', 'src/third_party/gvr-android-sdk/test-libraries/controller_test_api.aar.sha1',
-    ],
-  },
   # Download and unpack MediaPipe Integration tests.
   {
     'name': 'mediapipe_integration_testdata',
     'pattern': '.',
     'action': [ 'python3',
                 'src/content/test/gpu/gpu_tests/mediapipe_update.py',
-    ],
-  },
-  # Download VR test APKs only if the environment variable is set
-  {
-    'name': 'vr_test_apks',
-    'pattern': '.',
-    'condition': 'checkout_android',
-    'action': [ 'python3',
-                'src/third_party/gvr-android-sdk/test-apks/update.py',
     ],
   },
   # DOWNLOAD AR test APKs only if the environment variable is set

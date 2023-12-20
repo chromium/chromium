@@ -64,12 +64,6 @@
 /google-truth/src/
 /googlefonts_testdata/data
 /guava/lib/
-/gvr-android-sdk/common_library.aar
-/gvr-android-sdk/libgvr_shim_static_*.a
-/gvr-android-sdk/test-apks/daydream_home/*.apk
-/gvr-android-sdk/test-apks/vr_keyboard/*.apk
-/gvr-android-sdk/test-apks/vr_services/*.apk
-/gvr-android-sdk/test-libraries/controller_test_api.aar
 /hamcrest/lib/
 /icu4j/lib/
 /instrumented_libraries/scripts/*.tgz
