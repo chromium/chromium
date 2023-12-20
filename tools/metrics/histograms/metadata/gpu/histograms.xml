@@ -505,18 +505,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="GPU.D3D11_B8G8R8A8_RenderTargetSupport" enum="BooleanSuccess"
-    expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <summary>Whether D3D11 supports B8G8R8A8 format for render targets.</summary>
-</histogram>
-
-<histogram name="GPU.D3D11_B8G8R8A8_Texture2DSupport" enum="BooleanSuccess"
-    expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <summary>Whether D3D11 supports B8G8R8A8 format for 2D textures.</summary>
-</histogram>
-
 <histogram name="GPU.D3D11FeatureLevel" enum="D3D11FeatureLevel"
     expires_after="2024-04-28">
   <owner>zmo@chromium.org</owner>
@@ -1034,31 +1022,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Gpu.Metal.TestShaderCompileTime" units="ms"
-    expires_after="M85">
-  <owner>ccameron@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Compiling a MTLLibrary will sometimes hang forever. When initializing the
-    gpu process, a test shader is compiled to see if the MTLCompilerService is
-    responding or not. This records the time that it took for the compile to
-    succeeded, up to 1 minute. After 1 minute, a timeout sentinel value of 3
-    minutes is reported.
-  </summary>
-</histogram>
-
-<histogram name="Gpu.Metal.TestShaderLinkTime" units="ms" expires_after="M85">
-  <owner>ccameron@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Linking a MTLRenderPipelineState will sometimes hang forever. When
-    initializing the GPU process, a test shader is compiled to see if the
-    MTLCompilerService is responding or not. This records the time that it took
-    for the compile to succeeded, up to 1 minute. After 1 minute, a timeout
-    sentinel value of 3 minutes is reported.
-  </summary>
-</histogram>
-
 <histogram name="Gpu.MetalShaderCache.LoadTime" units="microseconds"
     expires_after="2023-12-17">
   <owner>sky@chromium.org</owner>
@@ -1232,34 +1195,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.ProgramCache.CompilationCacheHitTime" units="microseconds"
-    expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The time to check the program cache that we've already compiled the shader.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="GPU.ProgramCache.CompilationCacheMissTime"
-    units="microseconds" expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The time to compile a shader.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="GPU.RasterDecoder.TimeToFlush" units="microseconds"
     expires_after="2024-04-28">
   <owner>sky@chromium.org</owner>
@@ -1296,14 +1231,6 @@ chromium-metrics-reviews@google.com.
 
     Part of a performance investigation that Catan is doing into GPU startup
     time.
-  </summary>
-</histogram>
-
-<histogram name="GPU.setIsAcceleratedCompositingActive"
-    enum="GPUsetIsAcceleratedCompositingActive" expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    Counts activation and deactivation of accelerated compositing.
   </summary>
 </histogram>
 
@@ -1385,15 +1312,6 @@ chromium-metrics-reviews@google.com.
     not re-collected at each recording time because GPU process could crash for
     various reasons and fall back to software rendering. This value is intended
     to reflect device capabilities rather than the current state.
-  </summary>
-</histogram>
-
-<histogram name="GPU.Stage3DFieldTrial" enum="BooleanEnabled"
-    expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    Records whether a client was selected for the Stage3D on XP field trial or
-    not.
   </summary>
 </histogram>
 
@@ -1501,16 +1419,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.WaitForVBlankErrorCode" enum="WaitForVBlankErrorCode"
-    expires_after="M85">
-  <owner>stanisc@chromium.org</owner>
-  <summary>
-    Whether WaitForVBlank operation has been successful or failed with one of
-    the errors prompting a backup delay based v-sync mechanism. Recorded each
-    time a new GPU v-sync signal is generated.
-  </summary>
-</histogram>
-
 <histogram name="GPU.WatchdogThread.Event{ThreadType}"
     enum="GpuWatchdogThreadEvent" expires_after="2024-10-01">
   <owner>magchen@chromium.org</owner>
@@ -1565,101 +1473,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Types of EGL displays used to back large (area &gt;= 128*128) WebGL
     contexts. Recorded at context creation time in the GPU process.
-  </summary>
-</histogram>
-
-<histogram name="GPU.WebGraphicsContext3D_Init_CanLoseContext"
-    enum="GPUWebGraphicsContext3D_Init_CanLoseContext" expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    Counts of context initialization that succeed or fail based on combinations
-    of attributes requiring canRecoverFromContextLoss and devices that report
-    can_lose_context. Failing Init is desired when a device can not guarantee it
-    won't fail for a user that can not handle failures, e.g. DX9 on WinXP used
-    by Canvas2D'
-  </summary>
-</histogram>
-
-<histogram name="GPU.WinSAT.GamingScore" units="units" expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The WinSAT (Windows System Assessment Tool) gaming graphics score. It is in
-    the range 1.0-5.9 on Vista, 1.0-7.9 on Win7 and 1.0-9.9 on Win8. 0
-    represents a failure to get the score. This is collected each time Chrome is
-    launched.
-  </summary>
-</histogram>
-
-<histogram name="GPU.WinSAT.GamingScore2" units="units" expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The WinSAT (Windows System Assessment Tool) gaming graphics score, scaled by
-    10x. It is in the range 10-59 on Vista, 10-79 on Win7 and 10-99 on Win8. 0
-    represents a failure to get the score. This is collected each time Chrome is
-    launched.
-  </summary>
-</histogram>
-
-<histogram name="GPU.WinSAT.GraphicsScore" units="units" expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The WinSAT (Windows System Assessment Tool) graphics score. It is in the
-    range 1.0-5.9 on Vista, 1.0-7.9 on Win7 and 1.0-9.9 on Win8. 0 represents a
-    failure to get the score. This is collected each time Chrome is launched.
-  </summary>
-</histogram>
-
-<histogram name="GPU.WinSAT.GraphicsScore2" units="units" expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The WinSAT (Windows System Assessment Tool) graphics score, scaled by 10x.
-    It is in the range 10-59 on Vista, 10-79 on Win7 and 10-99 on Win8. 0
-    represents a failure to get the score. This is collected each time Chrome is
-    launched.
-  </summary>
-</histogram>
-
-<histogram name="GPU.WinSAT.HasResults" enum="BooleanSuccess"
-    expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    A boolean representing whether or not we succeeded in getting the system's
-    WinSAT scores. This is collected each time Chrome is launched.
-  </summary>
-</histogram>
-
-<histogram name="GPU.WinSAT.OverallScore" units="units" expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The WinSAT (Windows System Assessment Tool) overall system score. This is
-    the minimum of all the individual subscores. It is in the range 1.0-5.9 on
-    Vista, 1.0-7.9 on Win7 and 1.0-9.9 on Win8. 0 represents a failure to get
-    the score. This is collected each time Chrome is launched.
-  </summary>
-</histogram>
-
-<histogram name="GPU.WinSAT.OverallScore2" units="units" expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The WinSAT (Windows System Assessment Tool) overall system score, scaled by
-    10x. This is the minimum of all the individual subscores. It is in the range
-    10-59 on Vista, 10-79 on Win7 and 10-99 on Win8. 0 represents a failure to
-    get the score. This is collected each time Chrome is launched.
-  </summary>
-</histogram>
-
-<histogram name="GPU.WinSAT.ReadResultsFileTime" units="microseconds"
-    expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The amount of time it takes to read the WinSAT results. This is collected
-    each time Chrome is launched.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
   </summary>
 </histogram>
 
