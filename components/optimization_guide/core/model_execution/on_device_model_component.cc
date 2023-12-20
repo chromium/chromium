@@ -8,7 +8,10 @@
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -47,9 +50,65 @@ bool IsDeviceCapable(const PrefService& local_state) {
       static_cast<OnDeviceModelPerformanceClass>(value));
 }
 
-bool IsModelNeeded(const PrefService& local_state) {
-  return WasAnOnDeviceFeatureRecentlyUsed(local_state) &&
-         features::IsOnDeviceExecutionEnabled() && IsDeviceCapable(local_state);
+void LogInstallCriteria(std::string_view event_name,
+                        std::string_view criteria_name,
+                        bool criteria_value) {
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria.",
+           event_name, ".", criteria_name}),
+      criteria_value);
+}
+
+}  // namespace
+
+struct OnDeviceModelComponentStateManager::RegistrationCriteria {
+  // Requirements for install. Please update `LogInstallCriteria()` when
+  // updating this.
+  bool disk_space_available = false;
+  bool device_capable = false;
+  bool on_device_feature_recently_used = false;
+  bool enabled_by_feature = false;
+
+  // Reasons to uninstall. TODO(b/302327114): Add UMA for uninstall reason.
+  bool running_out_of_disk_space = false;
+  bool out_of_retention = false;
+
+  // Current state.
+
+  // We've registered the installer in the past, and haven't uninstalled yet.
+  // The component may or may not be ready.
+  bool is_already_installing = false;
+
+  bool is_model_allowed() const { return device_capable && enabled_by_feature; }
+
+  bool should_install() const {
+    if (should_uninstall()) {
+      return false;
+    }
+    return (disk_space_available && is_model_allowed() &&
+            on_device_feature_recently_used);
+  }
+
+  bool should_uninstall() const {
+    return (is_already_installing &&
+            (running_out_of_disk_space || out_of_retention));
+  }
+};
+
+namespace {
+
+void LogInstallCriteria(
+    OnDeviceModelComponentStateManager::RegistrationCriteria& criteria,
+    std::string_view event_name) {
+  // Keep optimization/histograms.xml in sync with these criteria names.
+  LogInstallCriteria(event_name, "DiskSpace", criteria.disk_space_available);
+  LogInstallCriteria(event_name, "DeviceCapability", criteria.device_capable);
+  LogInstallCriteria(event_name, "FeatureUse",
+                     criteria.on_device_feature_recently_used);
+  LogInstallCriteria(event_name, "EnabledByFeature",
+                     criteria.enabled_by_feature);
+  LogInstallCriteria(event_name, "All", criteria.should_install());
 }
 
 }  // namespace
@@ -66,7 +125,30 @@ void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed() {
       prefs::localstate::kLastTimeOnDeviceEligibleFeatureWasUsed,
       base::Time::Now());
 
-  UpdateRegistration();
+  OnDeviceModelStatus status;
+  if (GetState() != nullptr) {
+    status = OnDeviceModelStatus::kReady;
+  } else if (!registration_criteria_) {
+    status = OnDeviceModelStatus::kNotReadyForUnknownReason;
+  } else {
+    if (component_installer_registered_) {
+      status = OnDeviceModelStatus::kInstallNotComplete;
+    } else if (registration_criteria_->should_install()) {
+      status =
+          OnDeviceModelStatus::kModelInstallerNotRegisteredForUnknownReason;
+    } else {
+      status = OnDeviceModelStatus::kNotEligible;
+    }
+  }
+
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.ModelExecution.OnDeviceModelStatusAtUseTime", status);
+
+  if (registration_criteria_) {
+    LogInstallCriteria(*registration_criteria_, "AtAttemptedUse");
+  }
+
+  BeginUpdateRegistration();
 }
 
 void OnDeviceModelComponentStateManager::DevicePerformanceClassChanged(
@@ -74,60 +156,93 @@ void OnDeviceModelComponentStateManager::DevicePerformanceClassChanged(
   local_state_->SetInteger(prefs::localstate::kOnDevicePerformanceClass,
                            base::to_underlying(performance_class));
 
-  UpdateRegistration();
+  BeginUpdateRegistration();
 }
 
 void OnDeviceModelComponentStateManager::OnStartup() {
-  // TODO(b/302327114): Add UMA.
-  UpdateRegistration();
+  BeginUpdateRegistration();
 }
 
-void OnDeviceModelComponentStateManager::UpdateRegistration() {
-  // After the installer is registered, don't do anything until after a chrome
-  // restart.
+void OnDeviceModelComponentStateManager::InstallerRegistered() {
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceModelInstalledAtRegistrationTime",
+      state_ != nullptr);
+}
+
+void OnDeviceModelComponentStateManager::BeginUpdateRegistration() {
+  delegate_->GetFreeDiskSpace(
+      delegate_->GetInstallDirectory(),
+      base::BindOnce(
+          &OnDeviceModelComponentStateManager::CompleteUpdateRegistration,
+          GetWeakPtr()));
+}
+
+void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
+    int64_t disk_space_free_bytes) {
+  RegistrationCriteria criteria =
+      GetRegistrationCriteria(disk_space_free_bytes);
+  bool first_registration_attempt = !registration_criteria_;
+  registration_criteria_ = std::make_unique<RegistrationCriteria>(criteria);
+
+  if (criteria.should_install()) {
+    local_state_->SetTime(
+        prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload,
+        base::Time::Now());
+  }
+
+  bool was_allowed = is_model_allowed_;
+  is_model_allowed_ = criteria.is_model_allowed();
+  if (state_ && was_allowed && !is_model_allowed_) {
+    NotifyStateChanged();
+  }
+
   if (component_installer_registered_) {
     return;
   }
 
-  switch (GetRegistrationDecision()) {
-    case OnDeviceRegistrationDecision::kDoNotInstall:
-      break;
-    case OnDeviceRegistrationDecision::kInstall:
-      component_installer_registered_ = true;
-      delegate_->RegisterInstaller(this);
-      break;
-    case OnDeviceRegistrationDecision::kUninstall:
-      // Don't allow UpdateRegistration to do anything until after
-      // UninstallComplete.
-      component_installer_registered_ = true;
-      delegate_->Uninstall(this);
-      break;
+  if (criteria.should_uninstall()) {
+    // Don't allow UpdateRegistration to do anything until after
+    // UninstallComplete.
+    component_installer_registered_ = true;
+    delegate_->Uninstall(this);
+  } else if (criteria.should_install() || criteria.is_already_installing) {
+    component_installer_registered_ = true;
+    delegate_->RegisterInstaller(this);
   }
+
+  // Log metrics only for first registration attempt.
+  if (!first_registration_attempt) {
+    return;
+  }
+  LogInstallCriteria(criteria, "AtRegistration");
 }
 
-OnDeviceModelComponentStateManager::OnDeviceRegistrationDecision
-OnDeviceModelComponentStateManager::GetRegistrationDecision() {
-  if (IsModelNeeded(*local_state_)) {
-    local_state_->SetTime(
-        prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload,
-        base::Time::Now());
-    return OnDeviceRegistrationDecision::kInstall;
-  }
+OnDeviceModelComponentStateManager::RegistrationCriteria
+OnDeviceModelComponentStateManager::GetRegistrationCriteria(
+    int64_t disk_space_free_bytes) {
+  RegistrationCriteria result;
+  result.running_out_of_disk_space =
+      (disk_space_free_bytes < kMinDiskSpaceBeforeUninstall);
+  result.disk_space_available =
+      (disk_space_free_bytes > kMinDiskSpaceBeforeInstall);
+  result.device_capable = IsDeviceCapable(*local_state_);
+  result.on_device_feature_recently_used =
+      WasAnOnDeviceFeatureRecentlyUsed(*local_state_);
+  result.enabled_by_feature = features::IsOnDeviceExecutionEnabled();
 
   auto last_time_eligible = local_state_->GetTime(
       prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload);
-  if (last_time_eligible == base::Time::Min()) {
-    return OnDeviceRegistrationDecision::kDoNotInstall;
-  }
+
+  result.is_already_installing = last_time_eligible != base::Time::Min();
 
   const base::TimeDelta retention_time =
       features::GetOnDeviceModelRetentionTime();
   auto time_since_eligible = base::Time::Now() - last_time_eligible;
-  if (time_since_eligible < retention_time &&
-      time_since_eligible > -retention_time) {
-    return OnDeviceRegistrationDecision::kInstall;
-  }
-  return OnDeviceRegistrationDecision::kUninstall;
+  result.out_of_retention = time_since_eligible > retention_time ||
+                            time_since_eligible < -retention_time;
+
+  return result;
 }
 
 OnDeviceModelComponentStateManager::OnDeviceModelComponentStateManager(
@@ -142,7 +257,9 @@ OnDeviceModelComponentStateManager::~OnDeviceModelComponentStateManager() =
 
 const OnDeviceModelComponentState*
 OnDeviceModelComponentStateManager::GetState() {
-  return state_.get();
+  // Even if the component is installed, we return nullptr if the model is not
+  // 'allowed' at the moment.
+  return is_model_allowed_ ? state_.get() : nullptr;
 }
 
 scoped_refptr<OnDeviceModelComponentStateManager>
@@ -194,8 +311,14 @@ void OnDeviceModelComponentStateManager::SetReady(
   state_ = base::WrapUnique(new OnDeviceModelComponentState);
   state_->install_dir_ = install_dir;
   state_->version_ = version;
+  if (is_model_allowed_) {
+    NotifyStateChanged();
+  }
+}
+
+void OnDeviceModelComponentStateManager::NotifyStateChanged() {
   for (auto& o : observers_) {
-    o.StateChanged(state_.get());
+    o.StateChanged(GetState());
   }
 }
 

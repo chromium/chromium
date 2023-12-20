@@ -119,7 +119,10 @@ void RegisterOptimizationGuideOnDeviceModelComponent(
   base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<OptimizationGuideOnDeviceModelInstallerPolicy>(
           state_manager))
-      ->Register(cus, base::DoNothing());
+      ->Register(cus,
+                 base::BindOnce(
+                     &OnDeviceModelComponentStateManager::InstallerRegistered,
+                     state_manager->GetWeakPtr()));
 }
 
 void UninstallOptimizationGuideOnDeviceModelComponent(

@@ -20,6 +20,17 @@ class PrefService;
 
 namespace optimization_guide {
 
+// Disk space requirements in bytes.
+// TODO(b/302327114): Make these constants finch params.
+inline constexpr int64_t kMaxModelDiskUsage = 5 /*GB*/ * (1024ll * 1024 * 1024);
+inline constexpr int64_t kMinDiskSpaceBeforeInstall =
+    20 /*GB*/ * (1024ll * 1024 * 1024);
+inline constexpr int64_t kMinDiskSpaceBeforeUninstall =
+    10 /*GB*/ * (1024ll * 1024 * 1024);
+// Make sure we won't immediately uninstall after install.
+static_assert(kMinDiskSpaceBeforeUninstall + kMaxModelDiskUsage <
+              kMinDiskSpaceBeforeInstall);
+
 inline constexpr std::string_view kOnDeviceModelCrxId =
     "fklghjjljmnfjoepjmlobpekiapffcja";
 
@@ -35,6 +46,15 @@ class OnDeviceModelComponentStateManager
   class Delegate {
    public:
     virtual ~Delegate() = default;
+
+    // Returns the directory where the component would be installed.
+    virtual base::FilePath GetInstallDirectory() = 0;
+
+    // Calls `base::SysInfo::AmountOfFreeDiskSpace()` on a background sequence,
+    // and calls `callback`.
+    virtual void GetFreeDiskSpace(
+        const base::FilePath& path,
+        base::OnceCallback<void(int64_t)> callback) = 0;
 
     // Registers the component installer. Calls
     // `OnDeviceModelComponentStateManager::SetReady` when the component is
@@ -94,12 +114,17 @@ class OnDeviceModelComponentStateManager
                 const base::FilePath& install_dir,
                 const base::Value::Dict& manifest);
 
+  // Called after the installer is successfully registered.
+  void InstallerRegistered();
+
   base::WeakPtr<OnDeviceModelComponentStateManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
   // Testing functionality:
   static OnDeviceModelComponentStateManager* GetInstanceForTesting();
+
+  struct RegistrationCriteria;
 
  private:
   friend class base::RefCounted<OnDeviceModelComponentStateManager>;
@@ -117,19 +142,24 @@ class OnDeviceModelComponentStateManager
                                      std::unique_ptr<Delegate> delegate);
   ~OnDeviceModelComponentStateManager();
 
-  // Called at startup to determine whether to install or uninstall the on
-  // device component.
-  OnDeviceRegistrationDecision GetRegistrationDecision();
+  RegistrationCriteria GetRegistrationCriteria(int64_t disk_space_free_bytes);
 
   // Installs the component installer if it needs installed.
-  void UpdateRegistration();
+  void BeginUpdateRegistration();
+  // Continuation of `UpdateRegistration()` after async work.
+  void CompleteUpdateRegistration(int64_t disk_space_free_bytes);
+
+  void NotifyStateChanged();
 
   raw_ptr<PrefService> local_state_;
   std::unique_ptr<Delegate> delegate_;
   base::ObserverList<Observer> observers_;
   bool component_installer_registered_ = false;
-  std::unique_ptr<OnDeviceModelComponentState> state_;
 
+  bool is_model_allowed_ = false;
+  std::unique_ptr<OnDeviceModelComponentState> state_;
+  // Null until first registration attempt.
+  std::unique_ptr<RegistrationCriteria> registration_criteria_;
   base::WeakPtrFactory<OnDeviceModelComponentStateManager> weak_ptr_factory_{
       this};
 };

@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/pref_names.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
@@ -184,6 +186,22 @@ class OnDeviceModelComponentStateManagerDelegate
     : public OnDeviceModelComponentStateManager::Delegate {
  public:
   ~OnDeviceModelComponentStateManagerDelegate() override = default;
+
+  base::FilePath GetInstallDirectory() override {
+    base::FilePath local_install_path;
+    base::PathService::Get(component_updater::DIR_COMPONENT_USER,
+                           &local_install_path);
+    return local_install_path;
+  }
+
+  void GetFreeDiskSpace(const base::FilePath& path,
+                        base::OnceCallback<void(int64_t)> callback) override {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace, path),
+        std::move(callback));
+  }
+
   void RegisterInstaller(scoped_refptr<OnDeviceModelComponentStateManager>
                              state_manager) override {
     if (!g_browser_process) {

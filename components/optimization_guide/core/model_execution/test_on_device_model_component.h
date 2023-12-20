@@ -4,6 +4,8 @@
 
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_TEST_ON_DEVICE_MODEL_COMPONENT_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_TEST_ON_DEVICE_MODEL_COMPONENT_H_
+
+#include "base/memory/scoped_refptr.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 
 class PrefService;
@@ -27,10 +29,15 @@ class TestOnDeviceModelComponentStateManager {
   bool IsInstallerRegistered() const;
   bool WasComponentUninstalled() const;
 
+  void SetFreeDiskSpace(int64_t free_space_bytes);
+
+  struct State;
+
  private:
   raw_ptr<PrefService> local_state_;
   raw_ptr<FakeOnDeviceModelComponentStateManagerDelegate> delegate_;
   scoped_refptr<OnDeviceModelComponentStateManager> manager_;
+  scoped_refptr<State> state_;
 };
 
 }  // namespace optimization_guide

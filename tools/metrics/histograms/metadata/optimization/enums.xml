@@ -323,6 +323,25 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="OptimizationGuideOnDeviceModelStatus">
+  <int value="0" label="Ready">The model is ready to use.</int>
+  <int value="1" label="Not eligible for installation">
+    The model is not eligible for installation.
+  </int>
+  <int value="2" label="Install not done">
+    The model installation has not been completed.
+  </int>
+  <int value="3" label="Model not registered">
+    The model installer was not registered, even though the client would be
+    eligible to install right now. This likely means the state of the system has
+    changed recently.
+  </int>
+  <int value="4" label="Installed too late">
+    The model is ready, but it wasn't ready early enough for
+    OnDeviceModelServiceController to use it.
+  </int>
+</enum>
+
 <enum name="OptimizationGuideOptimizationFilterStatus">
   <int value="0" label="Found a server filter configuration">
     Found configuration data for a server filter.

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/scoped_add_feature_flags.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
@@ -52,8 +53,28 @@ class OnDeviceModelComponentTest : public testing::Test {
                                    {});
   }
 
+  void TearDown() override {
+    // Try to detect mistakes in the tests. If any lingering tasks affect state,
+    // the test may have not waited before asserting state.
+    bool uninstalled =
+        on_device_component_state_manager_.WasComponentUninstalled();
+    bool installer_registered =
+        on_device_component_state_manager_.IsInstallerRegistered();
+    WaitForStartup();
+    ASSERT_EQ(uninstalled,
+              on_device_component_state_manager_.WasComponentUninstalled());
+    ASSERT_EQ(installer_registered,
+              on_device_component_state_manager_.IsInstallerRegistered());
+  }
+
   scoped_refptr<OnDeviceModelComponentStateManager> manager() {
     return on_device_component_state_manager_.get();
+  }
+
+  void WaitForStartup() {
+    // In the event we want to verify the installer is not installed, there's no
+    // event to quit a RunLoop. For now this works well enough.
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
  protected:
@@ -63,15 +84,69 @@ class OnDeviceModelComponentTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   TestOnDeviceModelComponentStateManager on_device_component_state_manager_{
       &local_state_};
+  base::HistogramTester histograms_;
 };
 
 TEST_F(OnDeviceModelComponentTest, InstallsWhenEligible) {
+  const auto time_at_start = base::Time::Now();
   manager()->OnStartup();
+  WaitForStartup();
 
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
-  EXPECT_EQ(local_state_.GetTime(
+  EXPECT_GE(local_state_.GetTime(
+                prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload),
+            time_at_start);
+  EXPECT_LE(local_state_.GetTime(
                 prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload),
             base::Time::Now());
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.DiskSpace",
+      true, 1);
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.DeviceCapability",
+      true, 1);
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.FeatureUse",
+      true, 1);
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.EnabledByFeature",
+      true, 1);
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.All",
+      true, 1);
+}
+
+TEST_F(OnDeviceModelComponentTest, AlreadyInstalledFlow) {
+  manager()->OnStartup();
+  WaitForStartup();
+
+  manager()->SetReady(base::Version("0.1.1"),
+                      base::FilePath(FILE_PATH_LITERAL("/some/path")),
+                      base::Value::Dict());
+
+  manager()->InstallerRegistered();
+
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceModelInstalledAtRegistrationTime",
+      true, 1);
+}
+
+TEST_F(OnDeviceModelComponentTest, NotYetInstalledFlow) {
+  manager()->OnStartup();
+  WaitForStartup();
+
+  manager()->InstallerRegistered();
+
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceModelInstalledAtRegistrationTime",
+      false, 1);
 }
 
 TEST_F(OnDeviceModelComponentTest, DoesNotInstallWhenFeatureNotEnabled) {
@@ -81,13 +156,37 @@ TEST_F(OnDeviceModelComponentTest, DoesNotInstallWhenFeatureNotEnabled) {
         &features::kOptimizationGuideOnDeviceModel,
         &features::kLogOnDeviceMetricsOnStartup}) {
     SCOPED_TRACE(feature->name);
+    base::HistogramTester histograms;
     on_device_component_state_manager_.Reset();
     base::test::ScopedFeatureList features;
     features.InitAndDisableFeature(*feature);
 
     manager()->OnStartup();
+    WaitForStartup();
     EXPECT_FALSE(on_device_component_state_manager_.IsInstallerRegistered());
+    histograms.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+        "AtRegistration.EnabledByFeature",
+        false, 1);
   }
+}
+
+TEST_F(OnDeviceModelComponentTest, NotEnoughDiskSpaceToInstall) {
+  on_device_component_state_manager_.SetFreeDiskSpace(
+      kMinDiskSpaceBeforeInstall - 1);
+
+  manager()->OnStartup();
+  WaitForStartup();
+
+  EXPECT_FALSE(on_device_component_state_manager_.IsInstallerRegistered());
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.DiskSpace",
+      false, 1);
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.All",
+      false, 1);
 }
 
 TEST_F(OnDeviceModelComponentTest, NoEligibleFeatureUse) {
@@ -95,7 +194,13 @@ TEST_F(OnDeviceModelComponentTest, NoEligibleFeatureUse) {
       prefs::localstate::kLastTimeOnDeviceEligibleFeatureWasUsed);
 
   manager()->OnStartup();
+  WaitForStartup();
+
   EXPECT_FALSE(on_device_component_state_manager_.IsInstallerRegistered());
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.FeatureUse",
+      false, 1);
 }
 
 TEST_F(OnDeviceModelComponentTest, EligibleFeatureUseTooOld) {
@@ -104,6 +209,8 @@ TEST_F(OnDeviceModelComponentTest, EligibleFeatureUseTooOld) {
       base::Time::Now() - base::Days(31));
 
   manager()->OnStartup();
+  WaitForStartup();
+
   EXPECT_FALSE(on_device_component_state_manager_.IsInstallerRegistered());
 }
 
@@ -111,6 +218,8 @@ TEST_F(OnDeviceModelComponentTest, NoPerformanceClass) {
   local_state_.ClearPref(prefs::localstate::kOnDevicePerformanceClass);
 
   manager()->OnStartup();
+  WaitForStartup();
+
   EXPECT_FALSE(on_device_component_state_manager_.IsInstallerRegistered());
 }
 
@@ -120,7 +229,13 @@ TEST_F(OnDeviceModelComponentTest, PerformanceClassTooLow) {
       base::to_underlying(OnDeviceModelPerformanceClass::kVeryLow));
 
   manager()->OnStartup();
+  WaitForStartup();
+
   EXPECT_FALSE(on_device_component_state_manager_.IsInstallerRegistered());
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.DeviceCapability",
+      false, 1);
 }
 
 TEST_F(OnDeviceModelComponentTest, UninstallNeeded) {
@@ -135,24 +250,82 @@ TEST_F(OnDeviceModelComponentTest, UninstallNeeded) {
 
   // Should uninstall the first time, and skip uninstallation the next time.
   manager()->OnStartup();
+  WaitForStartup();
+
   EXPECT_TRUE(on_device_component_state_manager_.WasComponentUninstalled());
 
   manager()->UninstallComplete();
 
   manager()->OnStartup();
+  WaitForStartup();
+
   EXPECT_FALSE(on_device_component_state_manager_.IsInstallerRegistered());
 }
 
-TEST_F(OnDeviceModelComponentTest, InstallWhileNotEligible) {
-  // If the model is already installed, we don't uninstall right away.
+TEST_F(OnDeviceModelComponentTest, UninstallNeededDueToDiskSpace) {
   local_state_.SetTime(
       prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload,
-      base::Time::Now() - base::Days(1));
+      base::Time::Now());
+  on_device_component_state_manager_.SetFreeDiskSpace(
+      kMinDiskSpaceBeforeUninstall - 1);
+
+  // Should uninstall right away. Unlike most install requirements, the disk
+  // space requirement is not subject to `GetOnDeviceModelRetentionTime()`.
+  manager()->OnStartup();
+  WaitForStartup();
+
+  EXPECT_TRUE(on_device_component_state_manager_.WasComponentUninstalled());
+}
+
+TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotEligible) {
+  // If the model is already installed, we don't uninstall right away.
+
+  // Trigger installer registration.
+  manager()->OnStartup();
+  WaitForStartup();
+
+  EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
+
+  // Simulate a restart, and clear kLastTimeOnDeviceEligibleFeatureWasUsed so
+  // that the model is no longer eligible for download.
+  on_device_component_state_manager_.Reset();
   local_state_.ClearPref(
       prefs::localstate::kLastTimeOnDeviceEligibleFeatureWasUsed);
-
   manager()->OnStartup();
+  WaitForStartup();
+
+  // The installer is still registered. Even if the component is ready, it's not
+  // exposed via GetState().
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
+  manager()->SetReady(base::Version("0.1.1"),
+                      base::FilePath(FILE_PATH_LITERAL("/some/path")),
+                      base::Value::Dict());
+
+  // The model is still available.
+  EXPECT_TRUE(manager()->GetState());
+}
+
+TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotAllowed) {
+  // Same test as KeepInstalledWhileNotEligible, but in this case the model
+  // should not be used (because performance class is not supported) even though
+  // it's installed.
+  manager()->OnStartup();
+  WaitForStartup();
+
+  EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
+  on_device_component_state_manager_.Reset();
+  manager()->DevicePerformanceClassChanged(
+      OnDeviceModelPerformanceClass::kVeryLow);
+  manager()->OnStartup();
+  WaitForStartup();
+
+  EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
+  manager()->SetReady(base::Version("0.1.1"),
+                      base::FilePath(FILE_PATH_LITERAL("/some/path")),
+                      base::Value::Dict());
+
+  EXPECT_FALSE(manager()->GetState())
+      << "state available even though performance class is not supported";
 }
 
 TEST_F(OnDeviceModelComponentTest, GetStateInitiallyNull) {
@@ -160,6 +333,9 @@ TEST_F(OnDeviceModelComponentTest, GetStateInitiallyNull) {
 }
 
 TEST_F(OnDeviceModelComponentTest, SetReady) {
+  manager()->OnStartup();
+  WaitForStartup();
+
   StubObserver observer;
   manager()->AddObserver(&observer);
   manager()->SetReady(base::Version("0.1.1"),
@@ -179,18 +355,31 @@ TEST_F(OnDeviceModelComponentTest, InstallAfterPerformanceClassChanges) {
   // This sequence would happen on first run.
   local_state_.ClearPref(prefs::localstate::kOnDevicePerformanceClass);
   manager()->OnStartup();
+  WaitForStartup();
+
   ASSERT_FALSE(on_device_component_state_manager_.IsInstallerRegistered());
+  EXPECT_FALSE(manager()->GetState());
 
   manager()->DevicePerformanceClassChanged(OnDeviceModelPerformanceClass::kLow);
+  WaitForStartup();
 
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
+
+  manager()->SetReady(base::Version("0.1.1"),
+                      base::FilePath(FILE_PATH_LITERAL("/some/path")),
+                      base::Value::Dict());
+
+  EXPECT_TRUE(manager()->GetState());
 }
 
 TEST_F(OnDeviceModelComponentTest, DontUninstallAfterPerformanceClassChanges) {
   manager()->OnStartup();
+  WaitForStartup();
+
   ASSERT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
 
   manager()->DevicePerformanceClassChanged(OnDeviceModelPerformanceClass::kLow);
+  WaitForStartup();
 
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
   EXPECT_FALSE(on_device_component_state_manager_.WasComponentUninstalled());
@@ -200,10 +389,50 @@ TEST_F(OnDeviceModelComponentTest, InstallAfterEligibleFeatureWasUsed) {
   local_state_.ClearPref(
       prefs::localstate::kLastTimeOnDeviceEligibleFeatureWasUsed);
   manager()->OnStartup();
+  WaitForStartup();
+
   ASSERT_FALSE(on_device_component_state_manager_.IsInstallerRegistered());
 
   manager()->OnDeviceEligibleFeatureUsed();
+  WaitForStartup();
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
+}
+
+TEST_F(OnDeviceModelComponentTest, LogsStatusOnUse) {
+  manager()->OnStartup();
+  WaitForStartup();
+
+  manager()->SetReady(base::Version("0.1.1"),
+                      base::FilePath(FILE_PATH_LITERAL("/some/path")),
+                      base::Value::Dict());
+
+  manager()->InstallerRegistered();
+
+  manager()->OnDeviceEligibleFeatureUsed();
+
+  histograms_.ExpectBucketCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelStatusAtUseTime",
+      OnDeviceModelStatus::kReady, 1);
+  histograms_.ExpectBucketCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtAttemptedUse.All",
+      true, 1);
+  histograms_.ExpectBucketCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtAttemptedUse.DeviceCapability",
+      true, 1);
+  histograms_.ExpectBucketCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtAttemptedUse.DiskSpace",
+      true, 1);
+  histograms_.ExpectBucketCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtAttemptedUse.EnabledByFeature",
+      true, 1);
+  histograms_.ExpectBucketCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtAttemptedUse.FeatureUse",
+      true, 1);
 }
 
 }  // namespace

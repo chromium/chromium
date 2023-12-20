@@ -268,6 +268,34 @@ enum class OnDeviceModelEligibilityReason {
   kMaxValue = kSafetyModelNotAvailable,
 };
 
+// Status of the on-device model.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OnDeviceModelStatus {
+  // Model is installed and ready to use.
+  kReady = 0,
+  // Criteria to install model have not been met.
+  kNotEligible = 1,
+  // Criteria to install are met, but model not installed yet.
+  kInstallNotComplete = 2,
+  // The model installer was not registered, even though the client would be
+  // eligible to install right now. This likely means the state of the system
+  // has changed recently.
+  kModelInstallerNotRegisteredForUnknownReason = 3,
+  // The model is ready, but it wasn't ready early enough for
+  // OnDeviceModelServiceController to use it.
+  kModelInstalledTooLate = 4,
+  // The model is not ready, and the reason is unknown.
+  kNotReadyForUnknownReason = 5,
+
+  // This must be kept in sync with
+  // OptimizationGuideOnDeviceModelStatus in optimization/enums.xml.
+
+  // Insert new values before this line.
+  kMaxValue = kNotReadyForUnknownReason,
+};
+
 // Status of a model quality logs upload request.
 enum class ModelQualityLogsUploadStatus {
   kUnknown = 0,
