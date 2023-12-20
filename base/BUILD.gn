@@ -1346,7 +1346,7 @@ component("base") {
 
     sources += [ "power_monitor/power_monitor_device_source_chromeos.cc" ]
 
-    if (current_cpu == "x64") {
+    if (current_cpu == "x64" || current_cpu == "arm64") {
       sources += [
         "profiler/frame_pointer_unwinder.cc",
         "profiler/frame_pointer_unwinder.h",

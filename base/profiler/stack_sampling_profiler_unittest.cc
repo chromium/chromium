@@ -54,7 +54,8 @@
     (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)) ||            \
     (BUILDFLAG(IS_IOS) && defined(ARCH_CPU_64_BITS)) ||           \
     (BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)) || \
-    (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64) &&        \
+    (BUILDFLAG(IS_CHROMEOS) &&                                    \
+     (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)) &&     \
      !defined(MEMORY_SANITIZER))
 #define STACK_SAMPLING_PROFILER_SUPPORTED 1
 #endif
