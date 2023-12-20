@@ -45,14 +45,6 @@ media_app_definitions_staged =
         media_app_static_defs + media_app_defs_for_unconverted_js,
         "$ts_root_dir/{{source_file_part}}")
 
-# Extend with external .js and .d.ts that is fed to both .tsc and rollup. .js
-# that is only fed to rollup is listed in resources/js/BUILD.gn.
-media_app_external_js = [ "//ash/webui/system_apps/public/js/message_pipe.js" ]
-media_app_external_js_staged = [ "message_pipe.js" ]
-media_app_defs_for_external_js =
-    [ "$root_gen_dir/ash/webui/system_apps/public/js/message_pipe.d.ts" ]
-media_app_defs_for_external_js_staged = [ "$ts_root_dir/message_pipe.d.ts" ]
-
 # Testing .d.ts and .ts files that are staged and consumed by tsc.
 media_app_test_ts = [
   "driver_api.ts",

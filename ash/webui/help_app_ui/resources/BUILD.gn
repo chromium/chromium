@@ -23,7 +23,6 @@ group("closure_compile") {
 # stage_generated moves generated files from gen/ into stage/.
 copy("stage_static") {
   sources = [
-    "//ash/webui/system_apps/public/js/message_pipe.js",
     "//ash/webui/system_apps/public/js/sandboxed_load_time_data.js",
     "browser_proxy.js",
     "message_types.js",
@@ -34,6 +33,7 @@ copy("stage_static") {
 
 copy("stage_generated") {
   sources = [
+    "$root_gen_dir/ash/webui/system_apps/public/js/message_pipe.js",
     "$root_gen_dir/mojom-webui/ash/webui/help_app_ui/help_app_ui.mojom-webui.js",
     "$root_gen_dir/mojom-webui/ash/webui/help_app_ui/search/search.mojom-webui.js",
     "$root_gen_dir/mojom-webui/chromeos/ash/components/local_search_service/public/mojom/index.mojom-webui.js",
@@ -43,6 +43,7 @@ copy("stage_generated") {
   deps = [
     "//ash/webui/help_app_ui:mojo_bindings_js__generator",
     "//ash/webui/help_app_ui/search:mojo_bindings_js__generator",
+    "//ash/webui/system_apps/public/js:build_ts",
     "//chromeos/ash/components/local_search_service/public/mojom:mojom_js__generator",
   ]
 }
@@ -108,12 +109,12 @@ js_library("browser_proxy") {
     # passed over postMessage.
     "help_app.externs.js",
     "//third_party/closure_compiler/externs/metrics_private.js",
+    "//ash/webui/system_apps/public/js/message_pipe.externs.js",
   ]
   deps = [
     ":message_types",
     "//ash/webui/help_app_ui:mojo_bindings_webui_js",
     "//ash/webui/help_app_ui/search:mojo_bindings_webui_js",
-    "//ash/webui/system_apps/public/js:message_pipe",
     "//chromeos/ash/components/local_search_service/public/mojom:mojom_webui_js",
   ]
 }
@@ -122,9 +123,9 @@ js_library("message_types") {
 }
 
 js_library("receiver") {
-  externs_list = [ "help_app.externs.js" ]
-  deps = [
-    ":message_types",
-    "//ash/webui/system_apps/public/js:message_pipe",
+  externs_list = [
+    "help_app.externs.js",
+    "//ash/webui/system_apps/public/js/message_pipe.externs.js",
   ]
+  deps = [ ":message_types" ]
 }

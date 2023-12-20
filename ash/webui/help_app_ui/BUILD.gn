@@ -175,42 +175,46 @@ js_library("test_driver_api_js") {
 js_library("test_guest_query_receiver_js") {
   testonly = true
   sources = [ "test/guest_query_receiver.js" ]
+  externs_list = [ "//ash/webui/system_apps/public/js/message_pipe.externs.js" ]
   deps = [
     ":test_driver_api_js",
     "//ash/webui/help_app_ui/resources:receiver",
-    "//ash/webui/system_apps/public/js:message_pipe",
   ]
 }
 
 js_library("test_driver_js") {
   testonly = true
   sources = [ "test/driver.js" ]
-  externs_list = [ "//third_party/closure_compiler/externs/chai-3.5.js" ]
+  externs_list = [
+    "//third_party/closure_compiler/externs/chai-3.5.js",
+    "//ash/webui/system_apps/public/js/message_pipe.externs.js",
+  ]
   deps = [
     ":test_driver_api_js",
     "//ash/webui/help_app_ui/resources:browser_proxy",
-    "//ash/webui/system_apps/public/js:message_pipe",
   ]
 }
 
 js_library("test_help_app_ui_browsertest_js") {
   testonly = true
   sources = [ "test/help_app_ui_browsertest.js" ]
+  externs_list = [ "//ash/webui/system_apps/public/js/message_pipe.externs.js" ]
   deps = [
     ":test_driver_js",
     "//ash/webui/help_app_ui/resources:browser_proxy",
-    "//ash/webui/system_apps/public/js:message_pipe",
   ]
 }
 
 js_library("test_help_app_guest_ui_browsertest_js") {
   testonly = true
   sources = [ "test/help_app_guest_ui_browsertest.js" ]
-  externs_list = [ "//ash/webui/web_applications/js2gtest_support.externs.js" ]
+  externs_list = [
+    "//ash/webui/web_applications/js2gtest_support.externs.js",
+    "//ash/webui/system_apps/public/js/message_pipe.externs.js",
+  ]
   deps = [
     ":test_driver_js",
     "//ash/webui/help_app_ui/resources:receiver",
-    "//ash/webui/system_apps/public/js:message_pipe",
   ]
 }
 

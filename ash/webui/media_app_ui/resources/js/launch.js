@@ -6,10 +6,10 @@ import './strings.m.js';
 import './unguessable_token.mojom-lite.js';
 import './file_system_access_transfer_token.mojom-lite.js';
 
+import {assertCast, MessagePipe} from '//system_apps/message_pipe.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import * as error_reporter from './error_reporter.js';
-import {assertCast, MessagePipe} from './message_pipe.js';
 import {DeleteFileMessage, EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileBrowserWritableMessage, LoadFilesMessage, Message, NavigateMessage, NotifyCurrentFileMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
 import {mediaAppPageHandler} from './mojo_api_bootstrap.js';
 

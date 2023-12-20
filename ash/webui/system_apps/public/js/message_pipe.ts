@@ -3,64 +3,46 @@
 // found in the LICENSE file.
 
 /** The data structure the message pipe sends and receives. */
-class MessageData {
-  constructor() {
-    /**
-     * The id of the message, this uniquely identifies a message
-     * and should only appear on the sent message and a response to that
-     * message.
-     *
-     * @type {number}
-     */
-    this.messageId;
-    /**
-     * The message type. Indicates the structure of the data in
-     * `message` and is set to special reserved strings when the message is
-     * an generated messaged used to communicate between message pipe
-     * instances.
-     *
-     * @type {string}
-     */
-    this.type;
-    /**
-     * The message being sent through the pipe, the structure of
-     * the object sent is implied by the type of the message.
-     *
-     * @type {!Object}
-     */
-    this.message;
-  }
+interface MessageData {
+  /**
+   * The id of the message, this uniquely identifies a message
+   * and should only appear on the sent message and a response to that
+   * message.
+   */
+  messageId: number;
+  /**
+   * The message type. Indicates the structure of the data in
+   * `message` and is set to special reserved strings when the message is
+   * an generated messaged used to communicate between message pipe
+   * instances.
+   */
+  type: string;
+  /**
+   * The message being sent through the pipe, the structure of
+   * the object sent is implied by the type of the message.
+   */
+  message: object;
 }
 
 /**
  * The Object placed in MessageData.message (and thrown by the Promise returned
  * by sendMessage) if an exception is caught on the receiving end.
- * @typedef {{
- *     name: string,
- *     message: string,
- *     stack: string,
- * }}
+ * Note this must be a class (not an interface) whilst there are .js files
+ * importing `GenericErrorResponse`, otherwise the export is invisible.
  */
-export let GenericErrorResponse;
-
-/**
- * Error object allowing attributes to be undefined.
- * @typedef {{
- *    name: (string|undefined),
- *    message: (string|undefined),
- *    stack: (string|undefined),
- * }}
- */
-let DefensiveError;
+export class GenericErrorResponse {
+  name: string = '';
+  message: string = '';
+  stack: string = '';
+}
 
 /**
  * To handle generic errors such as `DOMException` not being an `Error`
  * defensively assign '' if the attribute is undefined. Without explicitly
  * extracting fields, `Errors` are sent as `{}` across the pipe.
- * @param {!DefensiveError} error
- * @return {!GenericErrorResponse}
  */
-function serializeError(error) {
+function serializeError(error: Partial<GenericErrorResponse>):
+    GenericErrorResponse {
   return {
     message: error.message || '',
     name: error.name || '',
@@ -71,25 +53,21 @@ function serializeError(error) {
 /**
  * The type of a message handler function which gets called when the message
  * pipe receives a message.
- *
- * @typedef {function(!Object): (!Object|undefined|!Promise<!Object|undefined>)}
  */
-let MessageHandler;
+type MessageHandler = (message: any) =>
+    object|undefined|Promise<object|undefined>;
 
 /**
  * Creates a new JavaScript native Promise and captures its resolve and reject
  * callbacks. The promise, resolve, and reject are available as properties.
  * Inspired by goog.promise.NativeResolver.
  */
-class NativeResolver {
+class NativeResolver<T = object> {
+  resolve!: (arg0: T|PromiseLike<T>) => void;
+  reject!: (reason: any) => void;
+  promise: Promise<T>;
   constructor() {
-    /** @type {function(!Object): void} */
-    this.resolve;
-    /** @type {function(!Object): void} */
-    this.reject;
-
-    /** @type {!Promise<!Object>} */
-    this.promise = new Promise((resolve, reject) => {
+    this.promise = new Promise<T>((resolve, reject) => {
       this.resolve = resolve;
       this.reject = reject;
     });
@@ -98,18 +76,10 @@ class NativeResolver {
 
 /**
  * A simplified "assert" that casts away null types. Assumes preconditions that
- * satisfy the assert have already been checked. Inspired by
- * webui/resources/js/assert/assert.js. However, this file is used (and tested)
- * verbatim in multiple repositories with different dependency management, so
- * that's not used directly. TODO(b/150650426): consolidate this better.
- *
- * @template T
- * @param {?T|undefined} condition
- * @return {T} A non-null |condition|.
- * @closurePrimitive {asserts.truthy}
- * @suppress {reportUnknownTypes} because T is not sufficiently constrained.
+ * satisfy the assert have already been checked.
+ * TODO(b/150650426): consolidate this better.
  */
-export function assertCast(condition) {
+export function assertCast<A extends object>(condition?: A|null): A {
   if (!condition) {
     throw new Error('Failed assertion');
   }
@@ -118,29 +88,24 @@ export function assertCast(condition) {
 
 /**
  * Enum for reserved message types used in generated messages.
- *
- * @enum {string}
  */
-const ReservedMessageTypes = {
+enum ReservedMessageTypes {
   /**
    * Indicates a autogenerated response message for a previously received
    * message.
    */
-  RESPONSE_TYPE: '___response',
+  RESPONSE_TYPE = '___response',
   /**
    * Indicates a autogenerated error message for a previously received
    * message.
    */
-  ERROR_TYPE: '___error',
-};
+  ERROR_TYPE = '___error',
+}
 
 /**
  * Checks if a provided message type indicates a generated message.
- *
- * @param {string} messageType
- * @return {boolean}
  */
-function isGeneratedMessage(messageType) {
+function isGeneratedMessage(messageType: string): boolean {
   // Any message type with three underscores before it should only be used
   // in generated messages.
   return messageType.substr(0, 3) === '___';
@@ -149,10 +114,8 @@ function isGeneratedMessage(messageType) {
 /**
  * Checks a message type is not reserved by generated messages, if it is, throws
  * a error indicating this to the user.
- *
- * @param {string} messageType
  */
-function throwIfReserved(messageType) {
+function throwIfReserved(messageType: string) {
   if (isGeneratedMessage(messageType)) {
     throw new Error(`Unexpected reserved message type: '${messageType}'`);
   }
@@ -164,79 +127,69 @@ function throwIfReserved(messageType) {
  * window and receive async responses.
  */
 export class MessagePipe {
+  private readonly target_: Window;
+  private readonly targetOrigin_: string;
+
+  /**
+   * If true any errors thrown in a handler during message handling will be
+   * thrown again in addition to being sent over the pipe to the message
+   * sender. true by default.
+   */
+  rethrowErrors: boolean;
+
+  /**
+   * Client error logger. Mockable for tests that check for errors. This is
+   * only used to log errors generated from handlers. Logging occurs on both
+   * sides of the message pipe if rethrowErrors is set, otherwise only on
+   * the side that sent the message.
+   */
+  logClientError = (object: unknown) => console.error(JSON.stringify(object));
+
+  /**
+   * Maps a message type to a message handler, a function which takes in
+   * the message and returns a response message or a promise which resolves
+   * with a response message.
+   */
+  private readonly messageHandlers_ = new Map<string, MessageHandler>();
+
+  /**
+   * Maps a message id to a resolver.
+   */
+  private readonly pendingMessages_ = new Map<number, NativeResolver>();
+
+  /**
+   * The id the next message the object sends will have.
+   */
+  private nextMessageId_ = 0;
+
+  /**
+   * The message listener we attach to the window. We need a reference to the
+   * function for later removal.
+   */
+  private readonly messageListener_ = (m: MessageEvent) =>
+      this.receiveMessage_(m);
+
   /**
    * Constructs a new message pipe to the `target` window which has the
    * `targetOrigin` origin.
    *
-   * @param {string} targetOrigin
-   * @param {!Window=} target If not specified, the document tree will be
+   * @param target If not specified, the document tree will be
    *     queried for a iframe with src `targetOrigin` to target.
-   * @param {boolean=} rethrowErrors
    */
-  constructor(targetOrigin, target, rethrowErrors = true) {
+  constructor(
+      targetOrigin: string, target?: Window, rethrowErrors: boolean = true) {
     if (!target) {
-      const frame = /** @type {!HTMLIFrameElement} */ (
-          document.querySelector(`iframe[src^='${targetOrigin}']`));
+      const frame = document.querySelector<HTMLIFrameElement>(
+          `iframe[src^='${targetOrigin}']`);
       if (!frame || !frame.contentWindow) {
         throw new Error('Unable to locate target content window.');
       }
       target = assertCast(frame.contentWindow);
     }
 
-    /** @private @const {!Window} */
     this.target_ = target;
-
-    /** @private @const {string} */
     this.targetOrigin_ = targetOrigin;
-
-    /**
-     * If true any errors thrown in a handler during message handling will be
-     * thrown again in addition to being sent over the pipe to the message
-     * sender. true by default.
-     *
-     * @type {boolean}
-     */
     this.rethrowErrors = rethrowErrors;
-
-    /**
-     * Client error logger. Mockable for tests that check for errors. This is
-     * only used to log errors generated from handlers. Logging occurs on both
-     * sides of the message pipe if rethrowErrors is set, otherwise only on
-     * the side that sent the message.
-     */
-    this.logClientError = (/** * */ object) =>
-        console.error(JSON.stringify(object));
-
-    /**
-     * Maps a message type to a message handler, a function which takes in
-     * the message and returns a response message or a promise which resolves
-     * with a response message.
-     *
-     * @private @const {!Map<string, !MessageHandler>}
-     */
-    this.messageHandlers_ = new Map();
-
-    /**
-     * Maps a message id to a resolver.
-     *
-     * @private @const {!Map<number, !NativeResolver>}
-     */
-    this.pendingMessages_ = new Map();
-
-    /**
-     * The id the next message the object sends will have.
-     *
-     * @private
-     */
-    this.nextMessageId_ = 0;
-
-    /**
-     * The message listener we attach to the window. We need a reference to the
-     * function for later removal.
-     *
-     * @private @const {function(!Event): void}
-     */
-    this.messageListener_ = (m) => this.receiveMessage_(m);
 
     // Make sure we aren't trying to send messages to ourselves.
     console.assert(this.target_ !== window, 'target !== window');
@@ -253,10 +206,8 @@ export class MessagePipe {
    * NOTE: The message type can not be prefixed with 3 underscores as that is
    * reserved for generated messages. i.e `___hello` is disallowed.
    *
-   * @param {string} messageType
-   * @param {!MessageHandler} handler
    */
-  registerHandler(messageType, handler) {
+  registerHandler(messageType: string, handler: MessageHandler) {
     throwIfReserved(messageType);
     if (this.messageHandlers_.has(messageType)) {
       throw new Error(`A handler already exists for ${messageType}`);
@@ -268,15 +219,11 @@ export class MessagePipe {
   /**
    * Wraps `sendMessageImpl()` catching errors from the target context to throw
    * more useful errors with the current context stacktrace attached.
-   *
-   * @param {string} messageType
-   * @param {!Object=} message
-   * @return {!Promise<!Object>}
    */
-  async sendMessage(messageType, message = {}) {
+  async sendMessage(messageType: string, message = {}): Promise<any> {
     try {
       return await this.sendMessageImpl(messageType, message);
-    } catch (/** @type {!GenericErrorResponse} */ errorResponse) {
+    } catch (errorResponse: any) {
       // Create an error with the name of the IPC function invoked, append the
       // stacktrace from the target context (origin of the error) with the
       // stacktrace of the current context.
@@ -294,13 +241,9 @@ export class MessagePipe {
    * Sends a message to the target window and return a Promise that will resolve
    * on response. If the target handler does not send a response the promise
    * will resolve with a empty object.
-   *
-   * @private
-   * @param {string} messageType
-   * @param {!Object=} message
-   * @return {!Promise<!Object>}
    */
-  async sendMessageImpl(messageType, message = {}) {
+  private async sendMessageImpl(messageType: string, message = {}):
+      Promise<object> {
     throwIfReserved(messageType);
 
     const messageId = this.nextMessageId_++;
@@ -323,15 +266,11 @@ export class MessagePipe {
   /**
    * Handles a message which represents the targets response to a previously
    * sent message.
-   *
-   * @private
-   * @param {string} messageType
-   * @param {!Object} message
-   * @param {number} messageId
    */
-  handleMessageResponse_(messageType, message, messageId) {
+  private handleMessageResponse_(
+      messageType: string, message: object, messageId: number) {
     const {RESPONSE_TYPE, ERROR_TYPE} = ReservedMessageTypes;
-    const resolver = this.pendingMessages_.get(messageId);
+    const resolver = assertCast(this.pendingMessages_.get(messageId));
 
     if (messageType === RESPONSE_TYPE) {
       resolver.resolve(message);
@@ -348,25 +287,18 @@ export class MessagePipe {
   /**
    * Calls the relevant handler for a received message and generates the right
    * response message to send back to the source.
-   *
-   * @private
-   * @param {string} messageType
-   * @param {!Object} message
-   * @param {number} messageId
-   * @return {!Promise<void>}
    */
-  async callHandlerForMessageType_(messageType, message, messageId) {
+  private async callHandlerForMessageType_(
+      messageType: string, message: object, messageId: number): Promise<void> {
     const {RESPONSE_TYPE, ERROR_TYPE} = ReservedMessageTypes;
-    /** @type {!Object|undefined} */
-    let response;
-    /** @type {?DefensiveError} */
-    let error = null;
-    /** @type {boolean} */
+    let response: object|undefined;
+    let error: Partial<GenericErrorResponse>|null = null;
     let sawError = false;
 
     try {
-      response = await this.messageHandlers_.get(messageType)(message);
-    } catch (/** @type {!DefensiveError} */ err) {
+      const handler = assertCast(this.messageHandlers_.get(messageType));
+      response = await handler(message);
+    } catch (err: any) {
       // If an error happened capture the error and send it back.
       sawError = true;
       error = err;
@@ -383,19 +315,13 @@ export class MessagePipe {
     }
   }
 
-  /**
-   * @private
-   * @param {!Event} event
-   */
-  receiveMessage_(event) {
-    const e = /** @type {!MessageEvent<!MessageData>} */ (event);
-
+  private receiveMessage_(e: MessageEvent) {
     // Ignore message events missing a type.
-    if (typeof e.data !== 'object' || !e.data
-        || typeof e.data.type !== 'string') {
+    if (typeof e.data !== 'object' || !e.data ||
+        typeof e.data.type !== 'string') {
       return;
     }
-    const {messageId, type, message} = e.data;
+    const {messageId, type, message} = e.data as MessageData;
     const {ERROR_TYPE} = ReservedMessageTypes;
 
     // Ignore any messages that are not from the target origin unless we are
@@ -429,14 +355,9 @@ export class MessagePipe {
     this.callHandlerForMessageType_(type, message, messageId);
   }
 
-  /**
-   * @private
-   * @param {string} messageType
-   * @param {!Object|undefined} message
-   * @param {number} messageId
-   */
-  postToTarget_(messageType, message, messageId) {
-    const messageWrapper = {
+  private postToTarget_(
+      messageType: string, message: object|undefined, messageId: number) {
+    const messageWrapper: MessageData = {
       messageId,
       type: messageType,
       message: message || {},

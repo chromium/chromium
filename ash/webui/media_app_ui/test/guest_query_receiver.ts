@@ -25,7 +25,7 @@ const {
  * TODO(b/314827247): Remove this when imports are converted to TypeScript. This
  * is needed because the generated .d.ts doesn't capture non-nullability.
  */
-function assertCast<A>(arg: A): NonNullable<A> {
+function assertCast<A extends object>(arg?: A|null): A {
   return TEST_ONLY.assertCast(arg)!;
 }
 
@@ -109,7 +109,7 @@ const SIMPLE_TEST_QUERIES: {[key: string]: QueryHandler} = {
     const pickedFile = await DELEGATE.requestSaveFile(
         existingFile.name, existingFile.mimeType,
         data.simpleArgs ? data.simpleArgs.accept : []);
-    return assertCast(pickedFile.token).toString();
+    return pickedFile.token!.toString();
   },
   getExportFile: async (data, _resultData) => {
     const existingFile = assertLastReceivedFileList().item(0);
@@ -247,7 +247,7 @@ async function runTestQuery(data: TestMessageQueryData):
                            existingFile.name, existingFile.mimeType, []))
                           .token;
         const testBlob = new Blob([data.saveAs]);
-        await assertCast(file.saveAs).call(file, testBlob, assertCast(token));
+        await assertCast(file.saveAs).call(file, testBlob, token!);
         result = file.name;
         extraResultData = {blobText: await file.blob.text()};
       } catch (error: unknown) {
