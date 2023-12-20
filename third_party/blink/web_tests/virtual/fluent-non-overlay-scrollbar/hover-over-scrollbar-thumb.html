@@ -24,7 +24,6 @@
 
     const { x, y } = verticalThumb(document.documentElement);
     await mouseMoveTo(x, y);
-    await waitForCompositorCommit();
     testRunner.notifyDone();
   };
 </script>
