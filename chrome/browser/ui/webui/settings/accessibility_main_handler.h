@@ -47,7 +47,7 @@ class AccessibilityMainHandler
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
  private:
-  void HandleA11yPageReady(const base::Value::List& args);
+  void HandleGetScreenReaderState(const base::Value::List& args);
   void HandleCheckAccessibilityImageLabels(const base::Value::List& args);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)

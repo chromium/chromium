@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export interface OsA11yPageBrowserProxy {
-  /**
-   * Requests whether screen reader state changed. Result
-   * is returned by the 'screen-reader-state-changed' WebUI listener event.
-   */
-  a11yPageReady(): void;
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
+export interface OsA11yPageBrowserProxy {
   /**
    * Opens the a11y image labels modal dialog.
    */
   confirmA11yImageLabels(): void;
+
+  /**
+   * Requests the current state of screen reader. Result is returned with a
+   * Promise.
+   */
+  getScreenReaderState(): Promise<boolean>;
 }
 
 let instance: OsA11yPageBrowserProxy|null = null;
@@ -26,11 +28,11 @@ export class OsA11yPageBrowserProxyImpl implements OsA11yPageBrowserProxy {
     instance = obj;
   }
 
-  a11yPageReady(): void {
-    chrome.send('a11yPageReady');
-  }
-
   confirmA11yImageLabels(): void {
     chrome.send('confirmA11yImageLabels');
+  }
+
+  getScreenReaderState(): Promise<boolean> {
+    return sendWithPromise('getScreenReaderState');
   }
 }

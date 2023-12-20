@@ -30,6 +30,7 @@ class TestAccessibilityBrowserProxy extends TestBrowserProxy implements
       // <if expr="is_win or is_linux or is_macosx">
       'getScreenAiInstallState',
       // </if>
+      'getScreenReaderState',
     ]);
 
     this.pdfOcrState_ = ScreenAiInstallStatus.NOT_DOWNLOADED;
@@ -49,6 +50,11 @@ class TestAccessibilityBrowserProxy extends TestBrowserProxy implements
     return Promise.resolve(this.pdfOcrState_);
   }
   // </if>
+
+  getScreenReaderState() {
+    this.methodCalled('getScreenReaderState');
+    return Promise.resolve(false);
+  }
 }
 
 suite('A11yPage', () => {

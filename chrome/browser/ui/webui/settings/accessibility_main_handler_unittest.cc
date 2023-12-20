@@ -22,10 +22,6 @@ namespace settings {
 
 namespace {
 
-// TODO(crbug.com/1499996): Uncomment and use the callback string below when
-// adding test cases for a11y_page.ts.
-// const char kA11yPageReadyCallback[] = "a11yPageReady";
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 const char kWebUIListenerCall[] = "cr.webUIListenerCallback";
 const char kPdfOcrDownloadingProgressChangedEventName[] =

@@ -175,7 +175,7 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
     };
   }
 
-  private accessibilityBrowserProxy: AccessibilityBrowserProxy =
+  private browserProxy_: AccessibilityBrowserProxy =
       AccessibilityBrowserProxyImpl.getInstance();
 
   // <if expr="not is_chromeos">
@@ -193,16 +193,15 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   private showPdfOcrToggle_: boolean;
   // </if>
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
 
+    const updateScreenReaderState = (hasScreenReader: boolean) => {
+      this.hasScreenReader_ = hasScreenReader;
+    };
+    this.browserProxy_.getScreenReaderState().then(updateScreenReaderState);
     this.addWebUiListener(
-        'screen-reader-state-changed', (hasScreenReader: boolean) => {
-          this.hasScreenReader_ = hasScreenReader;
-        });
-
-    // Enables javascript and gets the screen reader state.
-    chrome.send('a11yPageReady');
+        'screen-reader-state-changed', updateScreenReaderState);
   }
 
   private onA11yCaretBrowsingChange_(event: Event) {
@@ -269,14 +268,13 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   // <if expr="is_win or is_linux">
   private onOverscrollHistoryNavigationChange_(event: Event) {
     const enabled = (event.target as SettingsToggleButtonElement).checked;
-    this.accessibilityBrowserProxy.recordOverscrollHistoryNavigationChanged(
-        enabled);
+    this.browserProxy_.recordOverscrollHistoryNavigationChanged(enabled);
   }
   // </if>
 
   // <if expr="is_macosx">
   private onMacTrackpadGesturesLinkClick_() {
-    this.accessibilityBrowserProxy.openTrackpadGesturesSettings();
+    this.browserProxy_.openTrackpadGesturesSettings();
   }
   // </if>
 }
