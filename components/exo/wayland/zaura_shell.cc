@@ -593,9 +593,6 @@ void AuraSurface::ComputeAndSendOcclusion(
       const gfx::Rect bounds_in_screen = GetTransformedBoundsInScreen(window);
       const int tracked_area =
           bounds_in_screen.width() * bounds_in_screen.height();
-      SkRegion tracked_and_occluded_region = occluded_region;
-      tracked_and_occluded_region.op(gfx::RectToSkIRect(bounds_in_screen),
-                                     SkRegion::Op::kIntersect_Op);
 
       // Clip the area outside of the display.
       gfx::Rect area_inside_display = bounds_in_screen;
@@ -603,6 +600,12 @@ void AuraSurface::ComputeAndSendOcclusion(
       int occluded_area = tracked_area - area_inside_display.width() *
                                              area_inside_display.height();
 
+      // We already marked the area outside the display as occluded, so
+      // intersect the occluded region with the region of the window which is
+      // inside the display.
+      SkRegion tracked_and_occluded_region = occluded_region;
+      tracked_and_occluded_region.op(gfx::RectToSkIRect(area_inside_display),
+                                     SkRegion::Op::kIntersect_Op);
       for (SkRegion::Iterator i(tracked_and_occluded_region); !i.done();
            i.next()) {
         occluded_area += i.rect().width() * i.rect().height();
