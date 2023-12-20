@@ -62,7 +62,7 @@ void OpenXrGraphicsBinding::PrepareViewConfigForRender(
 
     XrCompositionLayerProjectionView& projection_view =
         view_config.GetProjectionView(view_index);
-    const XrViewConfigurationView& properties =
+    const OpenXrViewProperties& properties =
         view_config.Properties()[view_index];
     projection_view.type = XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW;
     projection_view.pose = view.pose;
@@ -73,16 +73,13 @@ void OpenXrGraphicsBinding::PrepareViewConfigForRender(
     // and is always index 0. If secondary views are enabled, those views are
     // also in this same texture array.
     projection_view.subImage.imageArrayIndex = 0;
-    projection_view.subImage.imageRect.extent.width =
-        properties.recommendedImageRectWidth;
-    projection_view.subImage.imageRect.extent.height =
-        properties.recommendedImageRectHeight;
+    projection_view.subImage.imageRect.extent.width = properties.Width();
+    projection_view.subImage.imageRect.extent.height = properties.Height();
     projection_view.subImage.imageRect.offset.x = x_offset;
-    x_offset += properties.recommendedImageRectWidth;
+    x_offset += properties.Width();
 
     projection_view.subImage.imageRect.offset.y =
-        GetSwapchainImageSize().height() -
-        properties.recommendedImageRectHeight;
+        GetSwapchainImageSize().height() - properties.Height();
     projection_view.fov.angleUp = view.fov.angleUp;
     projection_view.fov.angleDown = view.fov.angleDown;
 

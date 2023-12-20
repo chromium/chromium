@@ -144,18 +144,17 @@ void OpenXrTestHelper::OnPresentedFrame() {
     const device::OpenXrViewConfiguration& view_config =
         GetViewConfigInfo(view_config_type);
     if (view_config.Active()) {
-      const std::vector<XrViewConfigurationView>& view_properties =
+      const std::vector<device::OpenXrViewProperties>& view_properties =
           view_config.Properties();
       for (uint32_t i = 0; i < view_properties.size(); i++) {
-        const XrViewConfigurationView& properties = view_properties[i];
+        const device::OpenXrViewProperties& properties = view_properties[i];
         device::ViewData& data = submitted_views.emplace_back();
         data.viewport =
-            gfx::Rect(current_x, 0, properties.recommendedImageRectWidth,
-                      properties.recommendedImageRectHeight);
+            gfx::Rect(current_x, 0, properties.Width(), properties.Height());
         data.eye = GetEyeForIndex(i, view_properties.size());
 
         CopyTextureDataIntoFrameData(current_x, data);
-        current_x += properties.recommendedImageRectWidth;
+        current_x += properties.Width();
       }
     }
   }
@@ -597,10 +596,11 @@ void OpenXrTestHelper::AddDimensions(
     const device::OpenXrViewConfiguration& view_config,
     uint32_t& width,
     uint32_t& height) const {
-  const std::vector<XrViewConfigurationView>& views = view_config.Properties();
-  for (const XrViewConfigurationView& view : views) {
-    width += view.recommendedImageRectWidth;
-    height = std::max(height, view.recommendedImageRectHeight);
+  const std::vector<device::OpenXrViewProperties>& views =
+      view_config.Properties();
+  for (const device::OpenXrViewProperties& view : views) {
+    width += view.Width();
+    height = std::max(height, view.Height());
   }
 }
 

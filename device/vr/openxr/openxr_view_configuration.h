@@ -13,6 +13,31 @@
 
 namespace device {
 
+// A helper class to abstract away decisions that may need to be made about how
+// to use/consume/interpret the properties.
+class OpenXrViewProperties {
+ public:
+  OpenXrViewProperties(XrViewConfigurationView xr_properties,
+                       uint32_t view_count);
+  ~OpenXrViewProperties();
+
+  uint32_t Width() const;
+  uint32_t Height() const;
+  uint32_t RecommendedSwapchainSampleCount() const;
+  uint32_t MaxSwapchainSampleCount() const;
+
+  XrViewConfigurationView GetPropertiesForTest() const {
+    return xr_properties_;
+  }
+
+ private:
+  XrViewConfigurationView xr_properties_;
+
+  // Unused on some platforms, but leaving in to simplify the usage and not
+  // introduce per-platform constructors or a factory method.
+  [[maybe_unused]] uint32_t view_count_;
+};
+
 // Stores information about an OpenXR view configuration that is available in
 // the OpenXR runtime, as well as any properties associated with the view
 // configuration. These are intiialized at the beginning of a session and
@@ -42,7 +67,7 @@ class OpenXrViewConfiguration {
   const gfx::Rect& Viewport() const;
   void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
-  const std::vector<XrViewConfigurationView>& Properties() const;
+  const std::vector<OpenXrViewProperties>& Properties() const;
   void SetProperties(std::vector<XrViewConfigurationView> properties);
 
   const std::vector<XrView>& Views() const;
@@ -62,7 +87,7 @@ class OpenXrViewConfiguration {
   // meaningless. This is the viewport of this entire view configuration within
   // the single OpenXR texture.
   gfx::Rect viewport_ = gfx::Rect();
-  std::vector<XrViewConfigurationView> properties_;
+  std::vector<OpenXrViewProperties> properties_;
 
   std::vector<XrView> local_from_view_;
   std::vector<XrCompositionLayerProjectionView> projection_views_;
