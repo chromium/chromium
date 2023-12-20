@@ -104,9 +104,28 @@ base::test::FeatureRefAndParams ControlFeatures() {
            {tpcd::experiment::kForceEligibleForTestingName, "true"}}};
 }
 
+base::test::FeatureRefAndParams ControlFeaturesWithSilentOnboarding() {
+  return {features::kCookieDeprecationFacilitatedTesting,
+          {
+              {tpcd::experiment::kDisable3PCookiesName, "false"},
+              {tpcd::experiment::kForceEligibleForTestingName, "true"},
+              {tpcd::experiment::kEnableSilentOnboardingName, "true"},
+          }};
+}
+
 std::vector<base::test::FeatureRefAndParams> HatsImmediateControlFeatures() {
   return {
       ControlFeatures(),
+      {features::kTrackingProtectionSentimentSurvey,
+       {{"tracking-protection-immediate-over-delayed-probability", "1"},
+        {"tracking-protection-control-immediate-probability", "1.0"},
+        {"tracking-protection-control-immediate-trigger-id", "trigger-1"}}}};
+}
+
+std::vector<base::test::FeatureRefAndParams>
+HatsImmediateControlFeaturesWithSilentOnboarding() {
+  return {
+      ControlFeaturesWithSilentOnboarding(),
       {features::kTrackingProtectionSentimentSurvey,
        {{"tracking-protection-immediate-over-delayed-probability", "1"},
         {"tracking-protection-control-immediate-probability", "1.0"},
@@ -1106,6 +1125,7 @@ struct TrackingProtectionSurveyTestData {
   bool has_topics_enabled = false;
   bool has_fledge_enabled = false;
   bool has_measurement_enabled = false;
+  std::optional<bool> should_silently_onboard = std::nullopt;
   std::optional<NoticeAction> ack_action = std::nullopt;
   base::TimeDelta to_start_survey;
   base::TimeDelta after_end_of_survey;
@@ -1192,6 +1212,14 @@ IN_PROC_BROWSER_TEST_P(TrackingProtectionHatsBrowserTest,
       prefs::kPrivacySandboxM1AdMeasurementEnabled,
       params.has_measurement_enabled);
 
+  if (params.should_silently_onboard) {
+    {
+      base::subtle::ScopedTimeClockOverrides override([]() { return Now(); },
+                                                      nullptr, nullptr);
+      onboarding_service()->MaybeMarkSilentEligible();
+      onboarding_service()->SilentOnboardingNoticeShown();
+    }
+  }
   // Ack if necessary.
   if (params.ack_action.has_value()) {
     // Onboarding first
@@ -1312,6 +1340,19 @@ INSTANTIATE_TEST_SUITE_P(
             .has_topics_enabled = false,
             .has_fledge_enabled = false,
             .has_measurement_enabled = false,
+            .to_start_survey = base::Minutes(5),
+            .after_end_of_survey = base::Minutes(65),
+            .trigger_id = kHatsSurveyTriggerTrackingProtectionControlImmediate,
+            .group = SentimentSurveyGroup::kControlImmediate,
+        },
+        // Immediate Control with silent onbaording. No Ads API Enabled
+        TrackingProtectionSurveyTestData{
+            .features = HatsImmediateControlFeaturesWithSilentOnboarding(),
+            .has_cookie_controls_3pc_blocked = true,
+            .has_topics_enabled = false,
+            .has_fledge_enabled = false,
+            .has_measurement_enabled = false,
+            .should_silently_onboard = true,
             .to_start_survey = base::Minutes(5),
             .after_end_of_survey = base::Minutes(65),
             .trigger_id = kHatsSurveyTriggerTrackingProtectionControlImmediate,
