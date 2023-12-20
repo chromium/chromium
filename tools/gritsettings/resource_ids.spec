@@ -709,6 +709,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [5260],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/privacy_sandbox/internals/resources.grd": {
+   "META": {"sizes": {"includes": [30],}},
+    "includes": [5280],
+  },
   # END chrome/ WebUI resources section
 
   # START chrome/ miscellaneous section.

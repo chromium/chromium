@@ -8,8 +8,15 @@
 #include "components/content_settings/core/common/content_settings_pattern_parser.h"
 #include "privacy_sandbox_internals_handler.h"
 
-PrivacySandboxInternalsHandler::PrivacySandboxInternalsHandler(Profile* profile)
-    : profile_(profile) {}
+namespace privacy_sandbox_internals {
+
+PrivacySandboxInternalsHandler::PrivacySandboxInternalsHandler(
+    Profile* profile,
+    mojo::PendingReceiver<privacy_sandbox_internals::mojom::PageHandler>
+        pending_receiver)
+    : profile_(profile) {
+  receiver_.Bind(std::move(pending_receiver));
+}
 
 PrivacySandboxInternalsHandler::~PrivacySandboxInternalsHandler() = default;
 
@@ -28,3 +35,5 @@ void PrivacySandboxInternalsHandler::ContentSettingsPatternToString(
     ContentSettingsPatternToStringCallback callback) {
   std::move(callback).Run(pattern.ToString());
 }
+
+}  // namespace privacy_sandbox_internals

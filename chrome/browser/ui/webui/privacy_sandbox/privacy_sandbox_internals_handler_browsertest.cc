@@ -21,6 +21,7 @@
 
 namespace {
 
+using ::privacy_sandbox_internals::PrivacySandboxInternalsHandler;
 using ::privacy_sandbox_internals::mojom::PageHandler;
 using ::testing::AllOf;
 using ::testing::Ge;
@@ -59,39 +60,14 @@ class CallbackWaiter {
   std::unique_ptr<base::RunLoop> runner_;
 };
 
-// Given an implementation `Handler` of a mojo handler for `Interface`, will
-// wire up a pipe with this object acting as the remote (client) side.
-template <typename Handler, typename Interface>
-class MojoPiping {
- public:
-  explicit MojoPiping(Handler handler)
-      : handler_(std::move(handler)),
-        // Connect both ends to the mojo pipe.  The `Remote` is the client end
-        // and the `Receiver` is the end connected to the handler.
-        remote_(mojo::PendingRemote<Interface>(std::move(pipe_.handle0), 0)),
-        receiver_(&handler_,
-                  mojo::PendingReceiver<Interface>(std::move(pipe_.handle1))) {}
-
-  // For this test we only care about access to the `Remote` object since the
-  // test is acting as a client.
-  typename Interface::Proxy_* get() const { return remote_.get(); }
-  typename Interface::Proxy_* operator->() const { return get(); }
-  typename Interface::Proxy_& operator*() const { return *get(); }
-
- private:
-  mojo::MessagePipe pipe_;
-  Handler handler_;
-  mojo::Remote<PageHandler> remote_;
-  mojo::Receiver<PageHandler> receiver_;
-};
-
 class PrivacySandboxInternalsMojoTest : public InProcessBrowserTest {
  public:
   PrivacySandboxInternalsMojoTest() = default;
 
-  MojoPiping<PrivacySandboxInternalsHandler, PageHandler> MakeMojoPiping() {
-    return MojoPiping<PrivacySandboxInternalsHandler, PageHandler>(
-        PrivacySandboxInternalsHandler(browser()->profile()));
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    handler_ = std::make_unique<PrivacySandboxInternalsHandler>(
+        browser()->profile(), remote_.BindNewPipeAndPassReceiver());
   }
 
   void GetCookieContentSettingsCallback(
@@ -106,6 +82,9 @@ class PrivacySandboxInternalsMojoTest : public InProcessBrowserTest {
   }
 
  protected:
+  mojo::Remote<PageHandler> remote_;
+  std::unique_ptr<PrivacySandboxInternalsHandler> handler_;
+
   // Notified when _any_ callback from the mojo interface is made.
   CallbackWaiter waiter_;
 
@@ -115,13 +94,12 @@ class PrivacySandboxInternalsMojoTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,
                        GetCookieContentSettings) {
-  auto mojo = MakeMojoPiping();
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(browser()->profile()).get();
   settings->SetCookieSetting(GURL("https://example.com"),
                              CONTENT_SETTING_ALLOW);
 
-  mojo->GetCookieContentSettings(base::BindOnce(
+  remote_->GetCookieContentSettings(base::BindOnce(
       &PrivacySandboxInternalsMojoTest::GetCookieContentSettingsCallback,
       base::Unretained(this)));
   waiter_.Wait();
@@ -133,12 +111,10 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, PatternPartsToString) {
-  auto mojo = MakeMojoPiping();
-
   for (const std::string& regex :
        {"[*.]example.com", "http://example.net", "example.org"}) {
     ContentSettingsPattern pattern = ContentSettingsPattern::FromString(regex);
-    mojo->ContentSettingsPatternToString(
+    remote_->ContentSettingsPatternToString(
         pattern, base::BindOnce(&PrivacySandboxInternalsMojoTest::
                                     ContentSettingsPatternToStringCallback,
                                 base::Unretained(this)));

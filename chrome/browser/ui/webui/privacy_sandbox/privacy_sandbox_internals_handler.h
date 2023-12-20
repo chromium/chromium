@@ -7,16 +7,22 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals.mojom.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
+namespace privacy_sandbox_internals {
+
+// Mojo handler for the Privacy Sandbox DevUI page
 class PrivacySandboxInternalsHandler
     : public privacy_sandbox_internals::mojom::PageHandler {
  public:
-  explicit PrivacySandboxInternalsHandler(Profile* profile);
+  explicit PrivacySandboxInternalsHandler(
+      Profile* profile,
+      mojo::PendingReceiver<privacy_sandbox_internals::mojom::PageHandler>
+          pending_receiver);
 
   ~PrivacySandboxInternalsHandler() override;
 
-  // Movable, not copyable.
-  PrivacySandboxInternalsHandler(PrivacySandboxInternalsHandler&&) = default;
+  PrivacySandboxInternalsHandler(PrivacySandboxInternalsHandler&&) = delete;
   PrivacySandboxInternalsHandler(const PrivacySandboxInternalsHandler&) =
       delete;
   PrivacySandboxInternalsHandler& operator=(
@@ -30,6 +36,11 @@ class PrivacySandboxInternalsHandler
 
  private:
   raw_ptr<Profile> profile_;
+  // It seems like the handler is supposed to retain ownership even though we
+  // don't need to reference the mojo::Receiver.
+  mojo::Receiver<privacy_sandbox_internals::mojom::PageHandler> receiver_{this};
 };
+
+}  // namespace privacy_sandbox_internals
 
 #endif  // CHROME_BROWSER_UI_WEBUI_PRIVACY_SANDBOX_PRIVACY_SANDBOX_INTERNALS_HANDLER_H_

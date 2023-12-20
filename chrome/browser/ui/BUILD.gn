@@ -1774,6 +1774,8 @@ static_library("ui") {
       "webui/privacy_sandbox/privacy_sandbox_dialog_ui.h",
       "webui/privacy_sandbox/privacy_sandbox_internals_handler.cc",
       "webui/privacy_sandbox/privacy_sandbox_internals_handler.h",
+      "webui/privacy_sandbox/privacy_sandbox_internals_ui.cc",
+      "webui/privacy_sandbox/privacy_sandbox_internals_ui.h",
       "webui/profile_info_watcher.cc",
       "webui/profile_info_watcher.h",
       "webui/profile_internals/profile_internals_handler.cc",
