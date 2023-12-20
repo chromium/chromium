@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.LocalizationUtils;
@@ -96,6 +97,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     /** The distance of the divider from the end of the bar, in dp. */
     private final float mEndButtonWidthDp;
 
+    /** Supplies a {@link EdgeToEdgeController} that adjusts for more screen-bottom space. */
+    private Supplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+
     /** Whether the Panel should be promoted to a new tab after being maximized. */
     private boolean mShouldPromoteToTabAfterMaximizing;
 
@@ -151,7 +155,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
             float toolbarHeightDp,
             @NonNull ToolbarManager toolbarManager,
             @ActivityType int activityType,
-            @NonNull Supplier<Tab> currentTabSupplier) {
+            @NonNull Supplier<Tab> currentTabSupplier,
+            @NonNull Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         super(
                 context,
                 layoutManager,
@@ -166,6 +171,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         mPanelMetrics = new ContextualSearchPanelMetrics();
         mToolbarManager = toolbarManager;
         mActivityType = activityType;
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
 
         mEndButtonWidthDp =
                 mContext.getResources()
@@ -442,7 +448,13 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     @Override
     protected float getPeekedHeight() {
-        return getBarHeight();
+        // When Edge To Edge is enabled and drawing to the bottom edge, increase the peek
+        // positioning to keep the whole Bar above the Gesture Nav.
+        int e2eAdditionalPadding = 0;
+        if (mEdgeToEdgeControllerSupplier.get() != null) {
+            e2eAdditionalPadding = mEdgeToEdgeControllerSupplier.get().getBottomInset();
+        }
+        return getBarHeight() + e2eAdditionalPadding;
     }
 
     @Override
@@ -1239,5 +1251,10 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     @VisibleForTesting
     public OverlayPanelContent getOverlayPanelContent() {
         return super.getOverlayPanelContent();
+    }
+
+    public void setEdgeToEdgeControllerSupplierForTesting(
+            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
     }
 }

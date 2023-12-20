@@ -104,8 +104,8 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                 };
     }
 
-    @Override
-    public void onTabSwitched(@Nullable Tab tab) {
+    @VisibleForTesting
+    void onTabSwitched(@Nullable Tab tab) {
         if (mCurrentTab != null) mCurrentTab.removeObserver(mTabObserver);
         mCurrentTab = tab;
         if (tab != null) {
@@ -157,6 +157,13 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     @Override
     public void unregisterAdjuster(EdgeToEdgePadAdjuster adjuster) {
         mPadAdjusters.removeObserver(adjuster);
+    }
+
+    @Override
+    public int getBottomInset() {
+        return mSystemInsets == null || !isToEdge()
+                ? 0
+                : (int) Math.ceil(mSystemInsets.bottom * mPxToDp);
     }
 
     /**
@@ -367,7 +374,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         return mWebContentsObserver;
     }
 
-    void setToEdgeForTesting(boolean toEdge) {
+    public void setToEdgeForTesting(boolean toEdge) {
         mIsActivityToEdge = toEdge;
     }
 

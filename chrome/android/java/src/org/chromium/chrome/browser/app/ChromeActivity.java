@@ -182,6 +182,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockLauncher;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -288,6 +289,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /** Used to access the {@link TabCreatorManager} from {@link WindowAndroid}. */
     private final UnownedUserDataSupplier<TabCreatorManager> mTabCreatorManagerSupplier =
             new TabCreatorManagerSupplier();
+
+    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier =
+            new ObservableSupplierImpl<>();
 
     private final UnownedUserDataSupplier<ManualFillingComponent> mManualFillingComponentSupplier =
             new ManualFillingComponentSupplier();
@@ -580,6 +584,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 mCompositorViewHolderSupplier,
                 getTabContentManagerSupplier(),
                 this::getSnackbarManager,
+                getEdgeToEdgeSupplier(),
                 getActivityType(),
                 this::isInOverviewMode,
                 this::isWarmOnResume,
@@ -1084,7 +1089,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                             getBrowserControlsManager(),
                             getWindowAndroid(),
                             getTabModelSelectorSupplier().get(),
-                            () -> getLastUserInteractionTime()));
+                            () -> getLastUserInteractionTime(),
+                            getEdgeToEdgeSupplier()));
         }
 
         TraceEvent.end("ChromeActivity:CompositorInitialization");
@@ -2018,6 +2024,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /** Gets the supplier of the {@link TabCreatorManager} instance. */
     public ObservableSupplier<TabCreatorManager> getTabCreatorManagerSupplier() {
         return mTabCreatorManagerSupplier;
+    }
+
+    /**
+     * @return a supplier for the {@link EdgeToEdgeController} that supports drawing to the edge of
+     *     the screen.
+     */
+    protected final ObservableSupplierImpl<EdgeToEdgeController> getEdgeToEdgeSupplier() {
+        return mEdgeToEdgeControllerSupplier;
     }
 
     @Override
@@ -3055,6 +3069,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     public boolean recreatingForTabletModeChangeForTesting() {
         return mIsRecreatingForTabletModeChange;
+    }
+
+    public ObservableSupplierImpl<EdgeToEdgeController>
+            getEdgeToEdgeControllerSupplierForTesting() {
+        return mEdgeToEdgeControllerSupplier;
     }
 
     /** Returns whether the print action was successfully started. */

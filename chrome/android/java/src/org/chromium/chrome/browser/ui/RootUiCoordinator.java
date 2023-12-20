@@ -306,6 +306,7 @@ public class RootUiCoordinator
     protected final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     protected StatusBarColorController mStatusBarColorController;
     protected final Supplier<SnackbarManager> mSnackbarManagerSupplier;
+    protected final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     protected final @ActivityType int mActivityType;
     protected final Supplier<Boolean> mIsInOverviewModeSupplier;
     private final Supplier<Boolean> mIsWarmOnResumeSupplier;
@@ -331,15 +332,15 @@ public class RootUiCoordinator
             new OneshotSupplierImpl<>();
     private FoldTransitionController mFoldTransitionController;
     private RestoreTabsFeatureHelper mRestoreTabsFeatureHelper;
-    private @Nullable EdgeToEdgeController mE2eController;
+    private @Nullable EdgeToEdgeController mEdgeToEdgeController;
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
     private @Nullable BoardingPassController mBoardingPassController;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
+     *
      * @param activity The activity whose UI the coordinator is responsible for.
-     * @param onOmniboxFocusChangedListener callback to invoke when Omnibox focus
-     *         changes.
+     * @param onOmniboxFocusChangedListener callback to invoke when Omnibox focus changes.
      * @param shareDelegateSupplier Supplies the {@link ShareDelegate}.
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      * @param profileSupplier Supplier of the currently applicable profile.
@@ -367,6 +368,7 @@ public class RootUiCoordinator
      * @param compositorViewHolderSupplier Supplies the {@link CompositorViewHolder}.
      * @param tabContentManagerSupplier Supplies the {@link TabContentManager}.
      * @param snackbarManagerSupplier Supplies the {@link SnackbarManager}.
+     * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController}.
      * @param activityType The {@link ActivityType} for the activity.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
      * @param isWarmOnResumeSupplier Supplies whether the app was warm on resume.
@@ -409,6 +411,7 @@ public class RootUiCoordinator
             @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull Supplier<TabContentManager> tabContentManagerSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
+            @NonNull ObservableSupplierImpl<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             @ActivityType int activityType,
             @NonNull Supplier<Boolean> isInOverviewModeSupplier,
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
@@ -437,6 +440,7 @@ public class RootUiCoordinator
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mActivityType = activityType;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
         mIsWarmOnResumeSupplier = isWarmOnResumeSupplier;
@@ -728,10 +732,11 @@ public class RootUiCoordinator
             mReadAloudControllerSupplier.set(null);
         }
 
-        if (mE2eController != null) {
-            mE2eController.destroy();
-            mE2eController = null;
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.destroy();
+            mEdgeToEdgeController = null;
         }
+        mEdgeToEdgeControllerSupplier.set(null);
 
         if (mBoardingPassController != null) {
             mBoardingPassController.destroy();
@@ -849,7 +854,8 @@ public class RootUiCoordinator
         initMessagesInfra();
         initMerchantTrustSignals();
         initScrollCapture();
-        initializeEdgeToEdgeController(mActivity, mActivityTabProvider);
+        initializeEdgeToEdgeController(
+                mActivity, mActivityTabProvider, mEdgeToEdgeControllerSupplier);
         initBoardingPassDetector();
 
         new OneShotCallback<>(mProfileSupplier, this::initHistoryClustersCoordinator);
@@ -1758,9 +1764,13 @@ public class RootUiCoordinator
     /** Setup drawing using Android Edge-to-Edge. */
     @VisibleForTesting
     void initializeEdgeToEdgeController(
-            Activity activity, ActivityTabProvider activityTabProvider) {
+            Activity activity,
+            ActivityTabProvider activityTabProvider,
+            ObservableSupplierImpl<EdgeToEdgeController> supplier) {
         if (supportsEdgeToEdge() && EdgeToEdgeControllerFactory.isEnabled()) {
-            mE2eController = EdgeToEdgeControllerFactory.create(activity, activityTabProvider);
+            mEdgeToEdgeController =
+                    EdgeToEdgeControllerFactory.create(activity, activityTabProvider);
+            supplier.set(mEdgeToEdgeController);
         }
     }
 
@@ -1789,13 +1799,6 @@ public class RootUiCoordinator
      */
     public @Nullable FindToolbarManager getFindToolbarManager() {
         return mFindToolbarManager;
-    }
-
-    /**
-     * @return The {@link EdgeToEdgeController} controlling the edge-to-edge state.
-     */
-    public @Nullable EdgeToEdgeController getEdgeToEdgeController() {
-        return mE2eController;
     }
 
     /**
@@ -1990,10 +1993,6 @@ public class RootUiCoordinator
 
     public ScrimCoordinator getScrimCoordinatorForTesting() {
         return mScrimCoordinator;
-    }
-
-    public EdgeToEdgeController getEdgeToEdgeControllerForTesting() {
-        return mE2eController;
     }
 
     public void destroyActivityForTesting() {

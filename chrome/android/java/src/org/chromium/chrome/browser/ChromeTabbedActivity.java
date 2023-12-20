@@ -1116,8 +1116,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             mInactivityTracker.setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
 
-            getSnackbarManager()
-                    .setEdgeToEdgeSupplier(mRootUiCoordinator.getEdgeToEdgeController());
+            getSnackbarManager().setEdgeToEdgeSupplier(getEdgeToEdgeSupplier().get());
         }
     }
 
@@ -2039,6 +2038,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getCompositorViewHolderSupplier(),
                 getTabContentManagerSupplier(),
                 this::getSnackbarManager,
+                getEdgeToEdgeSupplier(),
                 getActivityType(),
                 this::isInOverviewMode,
                 this::isWarmOnResume,

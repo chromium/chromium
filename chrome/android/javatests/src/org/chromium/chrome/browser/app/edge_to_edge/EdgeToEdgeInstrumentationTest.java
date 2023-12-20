@@ -111,9 +111,7 @@ public class EdgeToEdgeInstrumentationTest {
 
         mEdgeToEdgeController =
                 (EdgeToEdgeControllerImpl)
-                        mActivity
-                                .getRootUiCoordinatorForTesting()
-                                .getEdgeToEdgeControllerForTesting();
+                        mActivity.getEdgeToEdgeControllerSupplierForTesting().get();
         assertNotNull("Couldn't get the EdgeToEdgeController during setUp!", mEdgeToEdgeController);
         assertFalse(
                 "Setup error, all tests start ToNormal (controller never activated)!",

@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForTabs;
@@ -30,6 +35,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -40,6 +46,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -65,6 +72,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -99,6 +107,8 @@ import java.util.Set;
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchManagerTest extends ContextualSearchInstrumentationBase {
+    @Mock private EdgeToEdgeController mMockEdgeToEdgeController;
+
     // DOM element IDs in our test page based on what functions they trigger.
     // TODO(donnd): add more, and also the associated Search Term, or build a similar mapping.
     /**
@@ -124,7 +134,9 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Override
     @After
     public void tearDown() throws Exception {
+        super.tearDown();
         if (mActionTester != null) mActionTester.tearDown();
+        mPanel.setEdgeToEdgeControllerSupplierForTesting(() -> null);
     }
 
     // ============================================================================================
@@ -1101,5 +1113,52 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 () -> {
                     Criteria.checkThat(mPanel.getBarHeight(), Matchers.greaterThan(defaultHeight));
                 });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    @EnableFeatures({"DrawEdgeToEdge, DrawCutoutEdgeToEdge"})
+    public void testPeekStateHeightGrowsForEdgeToEdge() throws Exception {
+        // Run through with the fake controller using the default logic.
+        mPanel.setEdgeToEdgeControllerSupplierForTesting(() -> mMockEdgeToEdgeController);
+        when(mMockEdgeToEdgeController.getBottomInset()).thenReturn(0);
+        final float defaultHeight = 70;
+
+        simulateResolveSearch("search");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(
+                                mPanel.getPanelHeightFromState(PanelState.PEEKED),
+                                Matchers.equalTo(defaultHeight));
+                    } catch (CriteriaNotSatisfiedException ex) {
+                        Assert.fail(
+                                "Error - Peek Height or Bar Height is not the normal expected value"
+                                        + " for these tests.");
+                    }
+                });
+        closePanel();
+        verify(mMockEdgeToEdgeController, atLeastOnce()).getBottomInset();
+
+        // Set ToEdge, which returns a non-zero inset. The panel should be positioned higher.
+        final int arbitraryGestureNavHeight = 100;
+        reset(mMockEdgeToEdgeController);
+        when(mMockEdgeToEdgeController.getBottomInset()).thenReturn(arbitraryGestureNavHeight);
+        simulateResolveSearch("search");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(
+                                mPanel.getPanelHeightFromState(PanelState.PEEKED),
+                                Matchers.equalTo(defaultHeight + arbitraryGestureNavHeight));
+                    } catch (CriteriaNotSatisfiedException ex) {
+                        Assert.fail(
+                                "When EdgeToEdge is active the Peek position should be inset for"
+                                        + " the Bottom Gesture Nav  Bar.");
+                    }
+                });
+        closePanel();
+        verify(mMockEdgeToEdgeController, atLeastOnce()).getBottomInset();
     }
 }

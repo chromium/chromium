@@ -23,6 +23,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.cc.input.BrowserControlsState;
@@ -57,6 +58,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -152,6 +154,8 @@ public class ContextualSearchManager
 
     /** A supplier of the last time the user interacted with the browser. */
     private final Supplier<Long> mLastUserInteractionTimeSupplier;
+
+    private final Supplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
     private ContextualSearchSelectionController mSelectionController;
     private ContextualSearchNetworkCommunicator mNetworkCommunicator;
@@ -249,9 +253,10 @@ public class ContextualSearchManager
 
     /**
      * Constructs the manager for the given activity, and will attach views to the given parent.
+     *
      * @param activity The {@link Activity} in use.
      * @param tabPromotionDelegate The {@link ContextualSearchTabPromotionDelegate} that is
-     *        responsible for building tabs from contextual search {@link WebContents}.
+     *     responsible for building tabs from contextual search {@link WebContents}.
      * @param scrimCoordinator A mechanism for showing and hiding the shared scrim.
      * @param tabSupplier Access to the tab that is currently active.
      * @param fullscreenManager Access to the fullscreen state.
@@ -259,7 +264,8 @@ public class ContextualSearchManager
      * @param windowAndroid A window to create the overlay panel with.
      * @param tabModelSelector A means of observing all tabs in the browser.
      * @param lastUserInteractionTimeSupplier A supplier of the last time a user interacted with the
-     *                                        browser.
+     *     browser.
+     * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController} when available.
      */
     public ContextualSearchManager(
             Activity activity,
@@ -270,7 +276,8 @@ public class ContextualSearchManager
             BrowserControlsStateProvider browserControlsStateProvider,
             WindowAndroid windowAndroid,
             TabModelSelector tabModelSelector,
-            Supplier<Long> lastUserInteractionTimeSupplier) {
+            Supplier<Long> lastUserInteractionTimeSupplier,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mActivity = activity;
         mTabPromotionDelegate = tabPromotionDelegate;
         mScrimCoordinator = scrimCoordinator;
@@ -280,6 +287,7 @@ public class ContextualSearchManager
         mWindowAndroid = windowAndroid;
         mTabModelSelector = tabModelSelector;
         mLastUserInteractionTimeSupplier = lastUserInteractionTimeSupplier;
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mDpToPx = mActivity.getResources().getDisplayMetrics().density;
 
         final View controlContainer = mActivity.findViewById(R.id.control_container);
@@ -373,7 +381,8 @@ public class ContextualSearchManager
                             toolbarHeightDp,
                             toolbarManager,
                             activityType,
-                            mTabSupplier);
+                            mTabSupplier,
+                            mEdgeToEdgeControllerSupplier);
         }
 
         panel.setManagementDelegate(this);
