@@ -4,9 +4,9 @@
 
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 
-#include <fstream>
 #include <ios>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -113,10 +113,12 @@ absl::optional<PrivacySandboxAttestationsMap> LoadAttestationsInternal(
   CHECK(base::FeatureList::IsEnabled(
       privacy_sandbox::kEnforcePrivacySandboxAttestations));
 
-  std::ifstream stream(installed_file_path.AsUTF8Unsafe(),
-                       std::ios::binary | std::ios::in);
-  if (!stream.is_open()) {
-    // File does not exist.
+  std::string proto_str;
+  // When reading the file, the `base::FilePath` directory should be used to
+  // make sure it works across platforms. If using the converted directory
+  // returned by `base::FilePath::AsUTF8Unsafe()`, it fails on Windows when the
+  // directory contains combining characters.
+  if (!base::ReadFileToString(installed_file_path, &proto_str)) {
     return absl::nullopt;
   }
 
@@ -136,7 +138,7 @@ absl::optional<PrivacySandboxAttestationsMap> LoadAttestationsInternal(
   // the attestations file from being parsed again.
   base::ElapsedTimer parsing_timer;
   absl::optional<PrivacySandboxAttestationsMap> attestations_map =
-      ParseAttestationsFromStream(stream);
+      ParseAttestationsFromString(proto_str);
   if (!attestations_map.has_value()) {
     // The parsing failed.
     return absl::nullopt;
