@@ -1310,8 +1310,9 @@ String HTMLSelectElement::ItemText(const Element& element) const {
   else if (auto* option = DynamicTo<HTMLOptionElement>(element))
     item_string = option->TextIndentedToRespectGroupLabel();
 
-  if (GetLayoutObject() && GetLayoutObject()->Style())
-    GetLayoutObject()->Style()->ApplyTextTransform(&item_string);
+  if (GetLayoutObject() && GetLayoutObject()->Style()) {
+    return GetLayoutObject()->Style()->ApplyTextTransform(item_string);
+  }
   return item_string;
 }
 

@@ -877,7 +877,7 @@ void LayoutText::SetTextInternal(String text) {
 void LayoutText::ApplyTextTransform() {
   NOT_DESTROYED();
   if (const ComputedStyle* style = Style()) {
-    style->ApplyTextTransform(&text_, PreviousCharacter());
+    text_ = style->ApplyTextTransform(text_, PreviousCharacter());
 
     // We use the same characters here as for list markers.
     // See CollectUACounterStyleRules() in ua_counter_style_map.cc.
