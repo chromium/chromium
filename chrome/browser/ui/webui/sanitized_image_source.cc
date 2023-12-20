@@ -173,6 +173,13 @@ void SanitizedImageSource::StartDataRequest(
       send_auth_token = true;
     }
   }
+
+  if (image_url.SchemeIs(url::kHttpScheme)) {
+    // Disallow any HTTP requests, treat them as a failure instead.
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   request_attributes.image_url = image_url;
 
   // Download the image body.
