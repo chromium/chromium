@@ -296,8 +296,7 @@ export class EmojiPickerApp extends PolymerElement {
 
     // After initial data is loaded, if the GIF nudge is not shown before, show
     // the GIF nudge.
-    if (this.gifSupport &&
-        !GifNudgeHistoryStore.getInstance().hasNudgeShown()) {
+    if (this.gifSupport && !GifNudgeHistoryStore.hasNudgeShown()) {
       this.showGifNudgeOverlay = true;
     }
 
@@ -1103,7 +1102,7 @@ export class EmojiPickerApp extends PolymerElement {
       return [];
     }
 
-    return this.categoriesHistory[category]?.data?.history?.map(
+    return this.categoriesHistory[category]?.getHistory().map(
                emoji => ({
                  base: {
                    string: emoji.base.string,
@@ -1241,8 +1240,7 @@ export class EmojiPickerApp extends PolymerElement {
    * @returns {boolean} True for empty history.
    */
   private isCategoryHistoryEmpty(category: CategoryEnum) {
-    return this.incognito ||
-        (this.categoriesHistory[category]?.data?.history?.length ?? 0) === 0;
+    return this.incognito || this.categoriesHistory[category]?.isHistoryEmpty();
   }
 
   /**
@@ -1320,7 +1318,7 @@ export class EmojiPickerApp extends PolymerElement {
     return this.incognito ? {} :
                             // ! is safe as categories history must contain
                             // entries for all categories.
-                            this.categoriesHistory[category]!.data.preference;
+        this.categoriesHistory[category]!.getPreferenceMapping();
   }
 
   private onShowEmojiVariants(ev: events.EmojiVariantsShownEvent) {
@@ -1590,7 +1588,7 @@ export class EmojiPickerApp extends PolymerElement {
       this.showGifNudgeOverlay = false;
     }
 
-    GifNudgeHistoryStore.getInstance().setNudgeShown(true);
+    GifNudgeHistoryStore.setNudgeShown(true);
   }
 }
 
