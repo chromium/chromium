@@ -1452,12 +1452,16 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
         return current_granularity;
       }
 
+      // If the position is now at the start of a paragraph and we already have
+      // nodes to return, return the current list of nodes so that we don't
+      // cross paragraph boundaries with text.
+      if (ax_position_->AtStartOfParagraph() &&
+          current_granularity.node_ids.size() > 0) {
+        return current_granularity;
+      }
+
       std::u16string base_text =
           GetNodeFromCurrentPosition()->GetTextContentUTF16();
-
-      // TODO(crbug.com/1474951): With this implementation, sometimes headers
-      // are combined with standard text. In addition to checking if the text
-      // is too long, also check that we're not crossing paragraphs.
 
       // Look at the text of the items we've already added to the
       // current sentence (current_text) combined with the text of the next

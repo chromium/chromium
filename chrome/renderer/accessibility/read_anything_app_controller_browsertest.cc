@@ -2435,6 +2435,148 @@ TEST_F(ReadAnythingAppControllerTest, GetNextText_SentenceSplitAcrossTwoNodes) {
   EXPECT_EQ((int)next_node_ids.size(), 0);
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       GetNextText_SentenceSplitAcrossParagraphs) {
+  std::u16string header_text = u"Header Text";
+  std::u16string paragraph_text1 = u"Paragraph one.";
+  std::u16string paragraph_text2 = u"Paragraph two.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(header_text);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(paragraph_text1);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(paragraph_text2);
+
+  ui::AXNodeData header_node;
+  header_node.id = 5;
+  header_node.role = ax::mojom::Role::kHeader;
+  header_node.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                               true);
+  header_node.child_ids = {static_text1.id};
+
+  ui::AXNodeData paragraph_node1;
+  paragraph_node1.id = 6;
+  paragraph_node1.role = ax::mojom::Role::kParagraph;
+  paragraph_node1.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  paragraph_node1.child_ids = {static_text2.id};
+
+  ui::AXNodeData paragraph_node2;
+  paragraph_node2.id = 7;
+  paragraph_node2.role = ax::mojom::Role::kParagraph;
+  paragraph_node2.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  paragraph_node2.child_ids = {static_text3.id};
+
+  ui::AXNodeData root;
+  root.id = 10;
+  root.role = ax::mojom::Role::kParagraph;
+  root.child_ids = {header_node.id, paragraph_node1.id, paragraph_node2.id};
+  update.root_id = root.id;
+
+  update.nodes = {root,         header_node,     static_text1, paragraph_node1,
+                  static_text2, paragraph_node2, static_text3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({root.id, header_node.id, static_text1.id,
+                     paragraph_node1.id, static_text2.id, paragraph_node2.id,
+                     static_text3.id});
+  InitAXPosition(static_text1.id);
+
+  // The header is returned alone.
+  std::vector<ui::AXNodeID> next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text1.id);
+  EXPECT_EQ(GetNextTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(next_node_ids[0]), (int)header_text.length());
+
+  // Paragraph 1 is returned alone.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text2.id);
+  EXPECT_EQ(GetNextTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(next_node_ids[0]),
+            (int)paragraph_text1.length());
+
+  // Paragraph 2 is returned alone.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text3.id);
+  EXPECT_EQ(GetNextTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(next_node_ids[0]),
+            (int)paragraph_text2.length());
+
+  // Nodes are empty at the end of the new tree.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetNextText_SentenceSplitAcrossParagraphsWithoutParagraphRoles) {
+  std::u16string header_text = u"Header Text\n";
+  std::u16string paragraph_text1 = u"Paragraph one.\n";
+  std::u16string paragraph_text2 = u"Paragraph two.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+
+  ui::AXNodeData header_node;
+  header_node.id = 2;
+  header_node.role = ax::mojom::Role::kStaticText;
+  header_node.SetNameChecked(header_text);
+
+  ui::AXNodeData paragraph_node1;
+  paragraph_node1.id = 3;
+  paragraph_node1.role = ax::mojom::Role::kStaticText;
+  paragraph_node1.SetNameChecked(paragraph_text1);
+
+  ui::AXNodeData paragraph_node2;
+  paragraph_node2.id = 4;
+  paragraph_node2.role = ax::mojom::Role::kStaticText;
+  paragraph_node2.SetNameChecked(paragraph_text2);
+
+  update.nodes = {header_node, paragraph_node1, paragraph_node2};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({header_node.id, paragraph_node1.id, paragraph_node2.id});
+  InitAXPosition(header_node.id);
+
+  // The header is returned alone.
+  std::vector<ui::AXNodeID> next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], header_node.id);
+  EXPECT_EQ(GetNextTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(next_node_ids[0]), (int)header_text.length());
+
+  // Paragraph 1 is returned alone.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], paragraph_node1.id);
+  EXPECT_EQ(GetNextTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(next_node_ids[0]),
+            (int)paragraph_text1.length());
+
+  // Paragraph 2 is returned alone.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], paragraph_node2.id);
+  EXPECT_EQ(GetNextTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(next_node_ids[0]),
+            (int)paragraph_text2.length());
+
+  // Nodes are empty at the end of the new tree.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
 TEST_F(ReadAnythingAppControllerTest, GetNextText_MultipleSentencesInSameNode) {
   std::u16string sentence1 = u"But from up here. The ";
   std::u16string sentence2 = u"world ";
