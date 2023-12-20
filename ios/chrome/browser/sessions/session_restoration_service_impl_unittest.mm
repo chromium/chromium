@@ -1044,3 +1044,8 @@ TEST_F(SessionRestorationServiceImplTest, PurgeUnassociatedData) {
 
   service()->Disconnect(&browser);
 }
+
+// Tests that PlaceholderTabsEnabled() can be called at any time.
+TEST_F(SessionRestorationServiceImplTest, PlaceholderTabsEnabled) {
+  EXPECT_TRUE(service()->PlaceholderTabsEnabled());
+}

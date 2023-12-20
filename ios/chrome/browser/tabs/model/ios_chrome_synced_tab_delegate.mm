@@ -10,12 +10,17 @@
 #import "components/sync_sessions/synced_window_delegates_getter.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
-#import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state.h"
+
+// TODO(crbug.com/1504753): Remove those imports and the corresponding deps
+// when support for legacy session storage is removed.
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
-#import "ios/web/public/web_state.h"
 
 namespace {
 
@@ -30,27 +35,26 @@ web::NavigationItem* GetPossiblyPendingItemAtIndex(web::WebState* web_state,
              : web_state->GetNavigationManager()->GetItemAtIndex(index);
 }
 
-// Returns whether placeholder tabs are supported.
-bool ArePlaceholderTabsSupported() {
-  // The support for placeholder tabs requires the WebState session id to be
-  // stable across application restart. It is the case since M-114 which added
-  // the code to save and restore the identifier. However, it also requires
-  // that the stable identifier is communicated to sync with the detail about
-  // the corresponding session which will happen as the application is used.
-  //
-  // Yet, placeholder tabs support is required to enable session restoration
-  // optimisations. As this will be launched later, it is expected that by
-  // that point, all existing sessions will have been converted to use the
-  // stable session id and the session state uploaded to sync. Thus it is
-  // safe to enable the support of placeholder tabs behind the same feature
-  // controlling the other session restoration optimisations.
-  return web::features::UseSessionSerializationOptimizations();
+// Returns whether the session restoration service requires the support of
+// placeholder tabs to be used.
+bool PlaceholderTabsSupportEnabled(web::WebState* web_state) {
+  // Some unit tests create WebStates without a BrowserState. Don't crash.
+  web::BrowserState* browser_state = web_state->GetBrowserState();
+  if (!browser_state) {
+    return false;
+  }
+
+  return SessionRestorationServiceFactory::GetForBrowserState(
+             ChromeBrowserState::FromBrowserState(browser_state))
+      ->PlaceholderTabsEnabled();
 }
 
 }  // namespace
 
 IOSChromeSyncedTabDelegate::IOSChromeSyncedTabDelegate(web::WebState* web_state)
-    : web_state_(web_state) {
+    : web_state_(web_state),
+      placeholder_tabs_support_enabled_(
+          PlaceholderTabsSupportEnabled(web_state_)) {
   DCHECK(web_state);
 }
 
@@ -163,7 +167,7 @@ IOSChromeSyncedTabDelegate::GetBlockedNavigations() const {
 bool IOSChromeSyncedTabDelegate::IsPlaceholderTab() const {
   // Can't be a placeholder tab if the support for placeholder tabs is not
   // enabled.
-  if (!ArePlaceholderTabsSupported()) {
+  if (!placeholder_tabs_support_enabled_) {
     return false;
   }
 
@@ -247,7 +251,7 @@ bool IOSChromeSyncedTabDelegate::GetSessionStorageIfNeeded() const {
   // Never use the session storage when placeholder tabs support is enabled.
   // In fact, using the session storage is a workaround to missing placeholder
   // tab support.
-  if (ArePlaceholderTabsSupported()) {
+  if (placeholder_tabs_support_enabled_) {
     return false;
   }
 

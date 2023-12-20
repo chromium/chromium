@@ -63,6 +63,9 @@ class IOSChromeSyncedTabDelegate
   // The associated WebState.
   web::WebState* const web_state_;
 
+  // Whether placeholder tabs support is enabled.
+  const bool placeholder_tabs_support_enabled_;
+
   // The session storage for the WebState. Used only when the support for
   // placeholder tabs is not enabled. Invalid to use otherwise.
   mutable CRWSessionStorage* session_storage_;

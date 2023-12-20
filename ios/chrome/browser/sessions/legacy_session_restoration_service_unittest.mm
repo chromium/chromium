@@ -1050,3 +1050,8 @@ TEST_F(LegacySessionRestorationServiceTest, PurgeUnassociatedData) {
       ->RemoveBrowser(&browser);
   service()->Disconnect(&browser);
 }
+
+// Tests that PlaceholderTabsEnabled() can be called at any time.
+TEST_F(LegacySessionRestorationServiceTest, PlaceholderTabsEnabled) {
+  EXPECT_FALSE(service()->PlaceholderTabsEnabled());
+}

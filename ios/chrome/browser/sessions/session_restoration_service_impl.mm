@@ -497,6 +497,11 @@ void SessionRestorationServiceImpl::PurgeUnassociatedData(
                                                            std::move(closure));
 }
 
+bool SessionRestorationServiceImpl::PlaceholderTabsEnabled() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return true;
+}
+
 #pragma mark - Private
 
 void SessionRestorationServiceImpl::MarkWebStateListDirty(

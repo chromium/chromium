@@ -97,3 +97,7 @@ void TestSessionRestorationService::PurgeUnassociatedData(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                            std::move(closure));
 }
+
+bool TestSessionRestorationService::PlaceholderTabsEnabled() const {
+  return false;
+}

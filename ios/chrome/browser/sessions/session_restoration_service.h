@@ -91,6 +91,9 @@ class SessionRestorationService : public KeyedService {
   // Removes any persisted data that is no longer needed and invokes
   // `closure` on the calling sequence when done.
   virtual void PurgeUnassociatedData(base::OnceClosure closure) = 0;
+
+  // Returns whether placeholder tabs support is enabled.
+  virtual bool PlaceholderTabsEnabled() const = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_SERVICE_H_

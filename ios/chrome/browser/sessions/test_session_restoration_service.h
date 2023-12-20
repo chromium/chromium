@@ -39,6 +39,7 @@ class TestSessionRestorationService : public SessionRestorationService {
   void InvokeClosureWhenBackgroundProcessingDone(
       base::OnceClosure closure) override;
   void PurgeUnassociatedData(base::OnceClosure closure) final;
+  bool PlaceholderTabsEnabled() const final;
 
  private:
   base::ObserverList<SessionRestorationObserver, true> observers_;

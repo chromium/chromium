@@ -164,10 +164,15 @@ source_set("synced_tabs") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/sync/model/glue",
-    "//ios/web/common:features",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/navigation",
+
+    # TODO(crbug.com/1504753): Remove those deps when support for legacy
+    # session storage is removed.
+    "//ios/chrome/browser/sessions:session_restoration_service",
+    "//ios/chrome/browser/sessions:session_restoration_service_factory",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/web/public/session",
   ]
 }
