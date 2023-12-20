@@ -277,7 +277,7 @@ TEST(U2fParsingUtils, CreateSHA256Hash) {
               ::testing::ElementsAreArray(test_data::kApplicationParameter));
 }
 
-TEST(U2fParsingUtils, ConvertSpanToStringPiece) {
+TEST(U2fParsingUtils, ConvertSpanToStringView) {
   constexpr uint8_t kTestAsciiAbcd[] = {'a', 'b', 'c', 'd'};
   EXPECT_EQ("abcd", ConvertToStringView(kTestAsciiAbcd));
 }

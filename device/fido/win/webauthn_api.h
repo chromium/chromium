@@ -6,8 +6,10 @@
 #define DEVICE_FIDO_WIN_WEBAUTHN_API_H_
 
 #include <windows.h>
+
 #include <functional>
 #include <memory>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
@@ -133,7 +135,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
 // any.
 std::pair<bool, std::vector<DiscoverableCredentialMetadata>>
 AuthenticatorEnumerateCredentialsBlocking(WinWebAuthnApi* webauthn_api,
-                                          base::StringPiece16 rp_id,
+                                          std::u16string_view rp_id,
                                           bool is_incognito);
 
 }  // namespace device

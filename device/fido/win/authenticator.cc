@@ -5,7 +5,9 @@
 #include "device/fido/win/authenticator.h"
 
 #include <windows.h>
+
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -138,7 +140,7 @@ void WinWebAuthnApiAuthenticator::EnumeratePlatformCredentials(
       {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(AuthenticatorEnumerateCredentialsBlocking, api,
-                     /*rp_id=*/base::StringPiece16(),
+                     /*rp_id=*/std::u16string_view(),
                      /*is_incognito=*/false),
       base::BindOnce(
           [](base::OnceCallback<void(
