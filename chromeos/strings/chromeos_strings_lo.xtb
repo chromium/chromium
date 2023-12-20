@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">ຂະຫນາດຫນ້າ</translation>
 <translation id="1082009148392559545">ກຳລັງດາວໂຫຼດພາບພັກໜ້າຈໍ</translation>
 <translation id="1094693127011229778">ທີ່ຢູ່ IP ບໍ່ສາມາດໃຊ້ໄດ້</translation>
+<translation id="1116694919640316211">ກ່ຽວ​ກັບ</translation>
 <translation id="1118572504348554005">ພວກເຮົາອາດແບ່ງປັນຄຳຕິຊົມທີ່ສົ່ງມາທາງແບບຟອມນີ້ກັບຮຸ້ນສ່ວນຂອງພວກເຮົາເພື່ອແກ້ບັນຫາຂໍ້ຜິດພາດ ແລະ ບັນຫາອື່ນໆທີ່ທ່ານລາຍງານໃຫ້ພວກເຮົາ. ກະລຸນາຢ່າໃສ່ຂໍ້ມູນລະອຽດອ່ອນ ເຊັ່ນ: ລະຫັດຜ່ານ.</translation>
 <translation id="1119447706177454957">ຜິດພາດພາຍໃນ</translation>
 <translation id="1124772482545689468">ຜູ້​ໃຊ້</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ຄວາມຈຸຂອງແບັດເຕີຣີຫຼຸດລົງເມື່ອໃຊ້ໄປເລື້ອຍໆ</translation>
 <translation id="6191293864534840972">ເຊີບເວີຊື່ຜິດຮູບແບບ</translation>
+<translation id="6196607555925437199">ສ້າງຄືນໃໝ່</translation>
 <translation id="6205145102504628069">ກະແສຄລາວ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ບໍ່ມີເຄື່ອງສະແກນ</translation>
@@ -871,7 +873,9 @@
 <translation id="7502658306369382406">ທີ່ຢູ່ IPv6</translation>
 <translation id="7513770521371759388">ລຸ່ມສຸດ</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">ສ້າງຂຶ້ນ</translation>
 <translation id="7528507600602050979">ເນື້ອຫາຊ່ວຍເຫຼືອບໍ່ມີໃຫ້</translation>
+<translation id="753556296624075801">ຂັບເຄື່ອນໂດຍ Google</translation>
 <translation id="7535791657097741517">ເປີດໃຊ້ຮູບແບບສີສັນແຈ້ງ</translation>
 <translation id="7550715992156305117">ການວິນິໄສທີ່ເຮັດປະຈຳ</translation>
 <translation id="7551123448725492271">ອຸປະກອນແມ່ນເຄື່ອງ​ສຽງ.</translation>
@@ -962,6 +966,7 @@
 <translation id="8227119283605456246">ຄັດ​ຕິດ​ໄຟລ໌</translation>
 <translation id="8230672074305416752">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
 <translation id="8246209727385807362">ຜູ້ໃຫ້ບໍລິການທີ່ບໍ່ຮູ້ຈັກ</translation>
+<translation id="8261506727792406068">ລຶບ</translation>
 <translation id="8262870577632766028">1 ຊົ່ວໂມງ</translation>
 <translation id="827422111966801947">ສີຄາມ</translation>
 <translation id="8286154143153872371">ກະລຸນາເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍແລ້ວໂຫຼດໜ້າຄືນໃໝ່ເພື່ອເບິ່ງຮູບພື້ນຫຼັງ.</translation>

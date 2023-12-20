@@ -2069,7 +2069,6 @@
 <translation id="2540449034743108469">ఎక్స్‌టెన్షన్ యాక్టివిటీలను వినడానికి "ప్రారంభించండి" నొక్కండి</translation>
 <translation id="2540651571961486573">ఏదో తప్పు జరిగింది. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">పూర్తిస్క్రీన్ ప్రసారాన్ని ఆప్టిమైజ్ చేయాలా?</translation>
-<translation id="2541423446708352368">అన్ని డౌన్‌లోడ్‌లను చూపించు</translation>
 <translation id="2541706104884128042">కొత్త నిద్ర సమయం సెట్ చేయబడింది</translation>
 <translation id="2542050502251273923">ff_debugను ఉపయోగించి నెట్‌వర్క్ కనెక్షన్ మేనేజర్ ఇంకా ఇతర సర్వీస్‌ల డీబగ్గింగ్ స్థాయిని సెట్ చేస్తుంది.</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{మీరు "<ph name="APP_NAME" />" కోసం మంజూరు చేసే అనుమతులు ఈ యాప్‌నకు కూడా అనుమతించబడతాయి. <ph name="MANAGE_LINK" />}other{మీరు "<ph name="APP_NAME" />" కోసం మంజూరు చేసే అనుమతులు ఈ యాప్‌లకు కూడా అనుమతించబడతాయి. <ph name="MANAGE_LINK" />}}</translation>
@@ -4765,7 +4764,6 @@
 <translation id="4681512854288453141">సోర్స్ పాలసీ</translation>
 <translation id="4681930562518940301">అసలు &amp;చిత్రాన్ని కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="4682481611456523884">ఈ సైట్‌లో ఉండే పొందుపరచబడిన కంటెంట్, మీ గురించి సర్వీస్‌లు సేవ్ చేసిన సమాచారాన్ని ఉపయోగించలేదు</translation>
-<translation id="4682830185876172415">ఇటీవలి డౌన్‌లోడ్‌లు</translation>
 <translation id="4683629100208651599">లోయర్‌కేస్‌ను ఎంచుకోండి</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (డిఫాల్ట్)</translation>
 <translation id="4684427112815847243">అంతా సింక్ చేయండి</translation>
@@ -8943,7 +8941,6 @@
 <translation id="8014154204619229810">అప్‌డేటర్ ప్రస్తుతం అమలులో ఉంది. మళ్లీ చెక్ చేయడానికి ఒక నిమిషం తర్వాత రిఫ్రెష్ చేయండి.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> మునుపు ఇన్‌స్టాల్ చేసిన వెర్షన్‌కు తిరిగి మారలేకపోయింది. దయచేసి మీ పరికరాన్ని పవర్‌వాష్ చేయడానికి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="8015565302826764056">{NUM_OF_FILES,plural, =1{1 ఫైల్ కాపీ చేయబడింది}other{{NUM_OF_FILES} ఫైల్స్ కాపీ చేయబడ్డాయి}}</translation>
-<translation id="8015812716978143">అన్ని డౌన్‌లోడ్‌లను కొత్త ట్యాబ్‌లో చూడండి</translation>
 <translation id="8017176852978888182">Linux షేర్ చేసిన డైరెక్టరీలు</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">షార్ట్‌కట్ ఎడిట్ చేయబడింది</translation>

@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">页面大小</translation>
 <translation id="1082009148392559545">正在下载屏保</translation>
 <translation id="1094693127011229778">IP 地址缺失</translation>
+<translation id="1116694919640316211">关于</translation>
 <translation id="1118572504348554005">我们可能会与合作伙伴分享通过本表单提交的反馈，以便排查您向我们报告的错误和其他问题。请勿包含密码等敏感信息。</translation>
 <translation id="1119447706177454957">内部错误</translation>
 <translation id="1124772482545689468">用户</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">电池容量会随使用时长的增加而减少</translation>
 <translation id="6191293864534840972">域名服务器格式不正确</translation>
+<translation id="6196607555925437199">重新创建</translation>
 <translation id="6205145102504628069">云朵的动态变化</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">没有可用的扫描仪</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 地址</translation>
 <translation id="7513770521371759388">底部</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">创建</translation>
 <translation id="7528507600602050979">帮助内容不可用</translation>
+<translation id="753556296624075801">由 Google 提供支持</translation>
 <translation id="7535791657097741517">开启浅色主题</translation>
 <translation id="7550715992156305117">诊断例程</translation>
 <translation id="7551123448725492271">设备类型是音频设备。</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">附上文件</translation>
 <translation id="8230672074305416752">未能对默认网关执行 ping 操作</translation>
 <translation id="8246209727385807362">未知运营商</translation>
+<translation id="8261506727792406068">删除</translation>
 <translation id="8262870577632766028">1 小时</translation>
 <translation id="827422111966801947">靛青色</translation>
 <translation id="8286154143153872371">若要查看壁纸，请连接到网络并重新加载这个页面。</translation>

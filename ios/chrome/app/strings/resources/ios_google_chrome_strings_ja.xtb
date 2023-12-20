@@ -63,6 +63,7 @@
 <translation id="2427791862912929107">Chrome には、インターネットのデータやウェブページの読み込み速度を管理できる機能があります。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">保存したパスワードを他のアプリでも簡単に利用するには、Chrome の自動入力を使用します</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Chrome を {THRESHOLD} 分間使用しなかった場合に行われます。履歴や自動入力も対象となります。}other{Chrome を {THRESHOLD} 分間使用しなかった場合に行われます。履歴や自動入力も対象となります。}}</translation>
 <translation id="2561231791489583059">Chrome を既定のブラウザに設定すれば、危険なサイトから保護され、パスワードを保護できます</translation>
 <translation id="2574249610672786438">どのデバイスからでも Chrome で自分のタブにアクセスするには、すべてのデバイスでログインしてください</translation>
 <translation id="2576431527583832481">Chrome のアップデートが見つかりました。新しいバージョンが利用可能です。</translation>
@@ -91,6 +92,7 @@
 <translation id="3282568296779691940">Chrome にログイン</translation>
 <translation id="3340938510625667914">Chrome アクション</translation>
 <translation id="3345341804167540816">Chromeをどこでも使用</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome を {THRESHOLD} 分間使用しなかった場合に行われます。}other{Chrome を {THRESHOLD} 分間使用しなかった場合に行われます。}}</translation>
 <translation id="3399930248910934354">Chrome の設定を開く</translation>
 <translation id="3472587960215700950">Chrome では Google マップを使用して、検出された住所までの経路やローカル情報を表示しています。</translation>
 <translation id="3503014945441706099">この Chrome プロフィールもセーフ ブラウジング保護強化機能で保護されます</translation>

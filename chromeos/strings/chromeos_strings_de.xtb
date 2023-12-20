@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Seitengröße</translation>
 <translation id="1082009148392559545">Bildschirmschoner wird herunterladen</translation>
 <translation id="1094693127011229778">IP-Adresse ist nicht verfügbar</translation>
+<translation id="1116694919640316211">Über</translation>
 <translation id="1118572504348554005">Wir leiten über dieses Formular gesendetes Feedback möglicherweise an unsere Partner weiter, um Fehler und andere Probleme zu beheben, die du uns meldest. Gib keine vertraulichen Daten wie Passwörter an.</translation>
 <translation id="1119447706177454957">Interner Fehler</translation>
 <translation id="1124772482545689468">Nutzer</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Die Akkukapazität sinkt mit fortschreitender Nutzung</translation>
 <translation id="6191293864534840972">Nameserver hat fehlerhaftes Format</translation>
+<translation id="6196607555925437199">Neu erstellen</translation>
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Keine Scanner verfügbar</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6-Adresse</translation>
 <translation id="7513770521371759388">unten</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Erstellen</translation>
 <translation id="7528507600602050979">Hilfeinhalte nicht verfügbar</translation>
+<translation id="753556296624075801">Powered by Google</translation>
 <translation id="7535791657097741517">Helles Design einschalten</translation>
 <translation id="7550715992156305117">Diagnoseroutinen</translation>
 <translation id="7551123448725492271">Das Gerät ist ein Audiogerät.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Datei anhängen</translation>
 <translation id="8230672074305416752">Das standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
 <translation id="8246209727385807362">Unbekannter Mobilfunkanbieter</translation>
+<translation id="8261506727792406068">Löschen</translation>
 <translation id="8262870577632766028">1 Stunde</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Stelle bitte eine Verbindung zu einem Netzwerk her und lade die Seite neu, um den Hintergrund anzusehen.</translation>

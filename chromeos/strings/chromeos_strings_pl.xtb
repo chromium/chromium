@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Rozmiar strony</translation>
 <translation id="1082009148392559545">Pobieram wygaszacz ekranu</translation>
 <translation id="1094693127011229778">Adres IP jest niedostępny</translation>
+<translation id="1116694919640316211">Informacje</translation>
 <translation id="1118572504348554005">Opinie, które przesyłasz za pomocą tego formularza, możemy udostępniać naszym partnerom, aby pomagać im w naprawianiu błędów i rozwiązywaniu innych problemów, jakie do nas zgłaszasz. Nie podawaj informacji poufnych, takich jak hasła.</translation>
 <translation id="1119447706177454957">Błąd wewnętrzny</translation>
 <translation id="1124772482545689468">Użytkownik</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Pojemność baterii zmniejsza się w miarę jej zużycia</translation>
 <translation id="6191293864534840972">Nieprawidłowe serwery nazw</translation>
+<translation id="6196607555925437199">Powtórz</translation>
 <translation id="6205145102504628069">Chmury</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Brak dostępnych skanerów</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">Adres IPv6</translation>
 <translation id="7513770521371759388">dół</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Utwórz</translation>
 <translation id="7528507600602050979">Treść pomocy jest niedostępna</translation>
+<translation id="753556296624075801">Technologia Google</translation>
 <translation id="7535791657097741517">Włącz jasny motyw</translation>
 <translation id="7550715992156305117">Procedury diagnostyczne</translation>
 <translation id="7551123448725492271">To urządzenie typu audio.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Załącz plik</translation>
 <translation id="8230672074305416752">Nie udało się sprawdzić pingiem domyślnej bramy sieciowej</translation>
 <translation id="8246209727385807362">Nieznany operator</translation>
+<translation id="8261506727792406068">Usuń</translation>
 <translation id="8262870577632766028">1 godzina</translation>
 <translation id="827422111966801947">Indygo</translation>
 <translation id="8286154143153872371">Aby wyświetlić tapetę, połącz się z siecią i załaduj ponownie stronę.</translation>

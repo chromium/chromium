@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Μέγεθος σελίδας</translation>
 <translation id="1082009148392559545">Λήψη προφύλαξης οθόνης</translation>
 <translation id="1094693127011229778">Η διεύθυνση IP δεν είναι διαθέσιμη.</translation>
+<translation id="1116694919640316211">Σχετικά με</translation>
 <translation id="1118572504348554005">Ενδέχεται να κοινοποιήσουμε σχόλια μέσω αυτής της φόρμας στους συνεργάτες μας για την αντιμετώπιση σφαλμάτων και άλλων ζητημάτων που μας αναφέρετε. Μην συμπεριλάβετε ευαίσθητες πληροφορίες, όπως κωδικούς πρόσβασης.</translation>
 <translation id="1119447706177454957">Εσωτερικό σφάλμα</translation>
 <translation id="1124772482545689468">Χρήστης</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Η χωρητικότητα της μπαταρίας μειώνεται με τη χρήση</translation>
 <translation id="6191293864534840972">Τα ονόματα διακομιστών έχουν λανθασμένη μορφή.</translation>
+<translation id="6196607555925437199">Αναδημιουργία</translation>
 <translation id="6205145102504628069">Κίνηση των σύννεφων</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Δεν υπάρχουν διαθέσιμοι σαρωτές</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">Διεύθυνση IPv6</translation>
 <translation id="7513770521371759388">κάτω</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Δημιουργία</translation>
 <translation id="7528507600602050979">Το περιεχόμενο βοήθειας δεν είναι διαθέσιμο</translation>
+<translation id="753556296624075801">Με την υποστήριξη της Google</translation>
 <translation id="7535791657097741517">Ενεργοποίηση φωτεινού θέματος</translation>
 <translation id="7550715992156305117">Ρουτίνες διαγνωστικών στοιχείων</translation>
 <translation id="7551123448725492271">Η συσκευή είναι συσκευή ήχου.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Επισύναψη αρχείου</translation>
 <translation id="8230672074305416752">Αποτυχία ping της προεπιλεγμένης πύλης δικτύου.</translation>
 <translation id="8246209727385807362">Άγνωστη εταιρεία κινητής τηλεφωνίας</translation>
+<translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="8262870577632766028">1 ώρα</translation>
 <translation id="827422111966801947">Λουλάκι</translation>
 <translation id="8286154143153872371">Συνδεθείτε σε ένα δίκτυο και επαναφορτώστε τη σελίδα για να δείτε την ταπετσαρία.</translation>

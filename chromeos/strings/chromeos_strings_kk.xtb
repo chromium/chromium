@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Бет өлшемі</translation>
 <translation id="1082009148392559545">Скринсейверді жүктеп алу</translation>
 <translation id="1094693127011229778">IP мекенжайы жоқ.</translation>
+<translation id="1116694919640316211">Мәлімет</translation>
 <translation id="1118572504348554005">Қателерді және сіз бізге хабарлаған басқа мәселелерді шешу үшін осы үлгі арқылы жіберілген пікірді серіктестерімізбен бөлісуіміз мүмкін. Құпия сөздер сияқты құпия ақпаратты қоспаңыз.</translation>
 <translation id="1119447706177454957">Ішкі қате</translation>
 <translation id="1124772482545689468">Пайдаланушы</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Пайдаланған сайын, батарея сыйымдылығы азая береді.</translation>
 <translation id="6191293864534840972">Атау серверлері форматы дұрыс емес.</translation>
+<translation id="6196607555925437199">Қайта жасау</translation>
 <translation id="6205145102504628069">Бұлт ағыны</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Сканерлер жоқ</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 мекенжайы</translation>
 <translation id="7513770521371759388">төменгі жақ</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Жасау</translation>
 <translation id="7528507600602050979">Анықтамалық контент қолжетімсіз</translation>
+<translation id="753556296624075801">Google ұсынған</translation>
 <translation id="7535791657097741517">Жарық режимді қосу</translation>
 <translation id="7550715992156305117">Диагностикалық режим</translation>
 <translation id="7551123448725492271">Бұл — аудио құрылғы.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Файл тіркеу</translation>
 <translation id="8230672074305416752">Әдепкі желі шлюзінің байланысы тексерілмеді.</translation>
 <translation id="8246209727385807362">Белгісіз оператор</translation>
+<translation id="8261506727792406068">Жою</translation>
 <translation id="8262870577632766028">1 сағат</translation>
 <translation id="827422111966801947">Индиго</translation>
 <translation id="8286154143153872371">Тұсқағазды көру үшін желіге қосылып, бетті қайта жүктеңіз.</translation>

@@ -2070,7 +2070,6 @@
 <translation id="2540449034743108469">நீட்டிப்பு நடவடிக்கைகளை கவனிக்க "தொடங்கு" என்பதை அழுத்தவும்</translation>
 <translation id="2540651571961486573">ஏதோ தவறாகிவிட்டது. பிழைக் குறியீடு: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">முழுத்திரை அலைபரப்பலை மேம்படுத்தவா?</translation>
-<translation id="2541423446708352368">அனைத்து பதிவிறக்கங்களையும் காண்பி</translation>
 <translation id="2541706104884128042">புதிய உறக்க நேரம் அமைக்கப்பட்டது</translation>
 <translation id="2542050502251273923">நெட்வொர்க் இணைப்பு நிர்வாகி மற்றும் ff_debug என்பதைப் பயன்படுத்தும் பிற சேவைகளின் பிழைதிருத்த நிலையை அமைக்கும்.</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" ஆப்ஸிற்கு நீங்கள் வழங்கும் அனுமதிகள் இந்த ஆப்ஸிற்கும் பொருந்தும். <ph name="MANAGE_LINK" />}other{"<ph name="APP_NAME" />" ஆப்ஸிற்கு நீங்கள் வழங்கும் அனுமதிகள் இந்த ஆப்ஸிற்கும் பொருந்தும். <ph name="MANAGE_LINK" />}}</translation>
@@ -4763,7 +4762,6 @@
 <translation id="4681512854288453141">மூலக் கொள்கை</translation>
 <translation id="4681930562518940301">அசல் &amp;படத்தைப் புதிய தாவலில் திற</translation>
 <translation id="4682481611456523884">இந்தத் தளத்தில் உள்ள உட்பொதிக்கப்பட்ட உள்ளடக்கம் உங்களைப் பற்றிச் சேமித்துள்ள தகவல்களைப் பயன்படுத்த முடியாது</translation>
-<translation id="4682830185876172415">சமீபத்திய பதிவிறக்கங்கள்</translation>
 <translation id="4683629100208651599">சிற்றெழுத்தாக்கு</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (இயல்பு)</translation>
 <translation id="4684427112815847243">அனைத்தையும் ஒத்திசை</translation>
@@ -6820,6 +6818,7 @@
 <translation id="6347010704471250799">அறிவிப்பைக் காட்டு</translation>
 <translation id="6348805481186204412">ஆஃப்லைன் சேமிப்பகம்</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ஆப்ஸை நிறுவுக</translation>
+<translation id="6350821834561350243">சிக்கலுக்கான தெளிவான விளக்கத்தையும், முடிந்தால் அதை மறுஉருவாக்கம் செய்வதற்கான படிகளையும் வழங்கவும்</translation>
 <translation id="6354918092619878358">SECG நீள்வட்ட வளைவான secp256r1 (ANSI X9.62 prime256v1 எனவும் அறியப்படும், NIST P-256)</translation>
 <translation id="6355395056805388423">Google கணக்குத் தகவலைப் பெறுகிறது...</translation>
 <translation id="635609604405270300">சாதனத்தை இயக்கத்தில் வைத்திருக்கவும்</translation>
@@ -7752,6 +7751,7 @@
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ஆப்ஸை அகற்று}other{ஆப்ஸை அகற்று}}</translation>
 <translation id="7099337801055912064">அதிகபட்ச அளவு 250 கி.பை. என்பதால், பெரிய PPDஐ ஏற்ற முடியாது.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{களவாடப்பட்ட கடவுச்சொற்கள் எதுவுமில்லை}=1{களவாடப்பட்ட {COUNT} கடவுச்சொல்}other{களவாடப்பட்ட {COUNT} கடவுச்சொற்கள்}}</translation>
+<translation id="7100379916748214860">ஆபத்தான ஃபைல் பதிவிறக்கப்படுவதைத் தற்போது Chrome தடுத்துள்ளது. மேம்பட்ட பாதுகாப்புடன் இன்னும் வலிமையான பாதுகாப்பைப் பெற்றிடுங்கள்.</translation>
 <translation id="710047887584828070">இந்தப் பக்கத்தில் உள்ள உள்ளடக்கம் பகிரப்படுகிறது</translation>
 <translation id="710224247908684995">பாதுகாப்பு உலாவல் அமைப்பை ஒரு நீட்டிப்பு முடக்கியுள்ளது</translation>
 <translation id="7102832101143475489">கோரிக்கை காலாவதியானது</translation>
@@ -8933,7 +8933,6 @@
 <translation id="8014154204619229810">தற்போது புதுப்பிப்பான் இயங்குகிறது. மீண்டும் சரிபார்க்க ஒரு நிமிடத்தில் புதுப்பிக்கவும்.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> ஆல் ஏற்கனவே நிறுவப்பட்ட பதிப்பிற்கு மாற்றியமைக்க முடியவில்லை. உங்கள் சாதனத்தை பவர்வாஷ் செய்ய, மீண்டும் முயலவும்.</translation>
 <translation id="8015565302826764056">{NUM_OF_FILES,plural, =1{1 ஃபைல் நகலெடுக்கப்பட்டது}other{{NUM_OF_FILES} ஃபைல்கள் நகலெடுக்கப்பட்டன}}</translation>
-<translation id="8015812716978143">அனைத்துப் பதிவிறக்கங்களையும் புதிய பக்கத்தில் காட்டும்</translation>
 <translation id="8017176852978888182">Linux பகிர்ந்த கோப்பகங்கள்</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">ஷார்ட்கட் திருத்தப்பட்டது</translation>
@@ -9242,6 +9241,7 @@
 <translation id="8256319818471787266">ஸ்பார்க்கி</translation>
 <translation id="8257950718085972371">கேமரா அணுகலைத் தொடர்ந்து தடு</translation>
 <translation id="8258027225380843424">ஏற்றப்பட்டன!</translation>
+<translation id="8260177673299865994">பதிவிறக்குதல் பாதுகாப்பை மேம்படுத்துங்கள்</translation>
 <translation id="8260864402787962391">சுட்டி</translation>
 <translation id="8261378640211443080">இந்த நீட்டிப்பு <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> இல் பட்டியலிடப்படவில்லை, மேலும் அது உங்களுக்குத் தெரியாமல் சேர்க்கப்பட்டிருக்கலாம்.</translation>
 <translation id="8261506727792406068">நீக்கு</translation>

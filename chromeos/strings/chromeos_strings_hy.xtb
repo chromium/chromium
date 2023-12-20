@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Էջի չափսը</translation>
 <translation id="1082009148392559545">Էկրանապահի ներբեռնում</translation>
 <translation id="1094693127011229778">IP հասցեն անհասանելի է</translation>
+<translation id="1116694919640316211">Տեղեկություններ</translation>
 <translation id="1118572504348554005">Մենք կարող ենք փոխանցել այս ձևի միջոցով ուղարկված կարծիքը մեր գործընկերներին, որպեսզի նրանք շտկեն վրիպակները և այլ խնդիրներ, որոնց մասին դուք հաղորդել եք մեզ։ Մի՛ ներառեք զգայուն տեղեկություններ, օրինակ՝ գաղտնաբառեր։</translation>
 <translation id="1119447706177454957">Ներքին սխալ</translation>
 <translation id="1124772482545689468">Օգտատեր</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Օգտագործման ընթացքում մարտկոցի հզորությունը նվազում է</translation>
 <translation id="6191293864534840972">Սխալ DNS սերվերներ</translation>
+<translation id="6196607555925437199">Նորից ստեղծել</translation>
 <translation id="6205145102504628069">Ամպերի հոսք</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Հասանելի սկաներներ չկան</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 հասցե</translation>
 <translation id="7513770521371759388">ներքև</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Ստեղծել</translation>
 <translation id="7528507600602050979">Տեղեկատվական բովանդակությունը հասանելի չէ</translation>
+<translation id="753556296624075801">Google-ի տեխնոլոգիա</translation>
 <translation id="7535791657097741517">Միացնել բաց թեման</translation>
 <translation id="7550715992156305117">Դիագնոստիկայի ծրագրեր</translation>
 <translation id="7551123448725492271">Սարքն աուդիո սարք է։</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Կցել ֆայլ</translation>
 <translation id="8230672074305416752">Չհաջողվեց փինգ ուղարկել կանխադրված ցանցի անցախուցին</translation>
 <translation id="8246209727385807362">Անհայտ օպերատոր</translation>
+<translation id="8261506727792406068">Ջնջել</translation>
 <translation id="8262870577632766028">1 ժամ</translation>
 <translation id="827422111966801947">Ինդիգո</translation>
 <translation id="8286154143153872371">Միացեք որևէ ցանցի և վերաբեռնեք էջը՝ պաստառը դիտելու համար։</translation>

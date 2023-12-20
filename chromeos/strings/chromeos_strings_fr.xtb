@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Taille de page</translation>
 <translation id="1082009148392559545">Téléchargement de l'économiseur d'écran</translation>
 <translation id="1094693127011229778">Adresse IP indisponible</translation>
+<translation id="1116694919640316211">À propos</translation>
 <translation id="1118572504348554005">Les commentaires que vous transmettez via ce formulaire peuvent être partagés avec nos partenaires afin de résoudre des bugs et d'autres problèmes que vous nous signalez. N'incluez pas d'informations sensibles, comme un mot de passe.</translation>
 <translation id="1119447706177454957">Erreur interne.</translation>
 <translation id="1124772482545689468">Utilisateur</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">La capacité de la batterie diminue au fur et à mesure de son utilisation</translation>
 <translation id="6191293864534840972">Serveurs de noms non valides</translation>
+<translation id="6196607555925437199">Recréer</translation>
 <translation id="6205145102504628069">Flux nuageux</translation>
 <translation id="6213737986933151570">CDMA 1xRTT</translation>
 <translation id="6223752125779001553">Aucun scanner disponible</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">Adresse IPv6</translation>
 <translation id="7513770521371759388">bas</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Créer</translation>
 <translation id="7528507600602050979">Le contenu d'aide n'est pas disponible</translation>
+<translation id="753556296624075801">Fourni par Google</translation>
 <translation id="7535791657097741517">Appliquer le thème clair</translation>
 <translation id="7550715992156305117">Routines de diagnostics</translation>
 <translation id="7551123448725492271">L'appareil est de type audio.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Joindre un fichier</translation>
 <translation id="8230672074305416752">Impossible de pinguer la passerelle du réseau par défaut</translation>
 <translation id="8246209727385807362">Opérateur inconnu</translation>
+<translation id="8261506727792406068">Supprimer</translation>
 <translation id="8262870577632766028">1 heure</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Connectez-vous à un réseau et actualisez la page pour voir le fond d'écran.</translation>

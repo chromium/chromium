@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Величина странице</translation>
 <translation id="1082009148392559545">Чувар екрана се преузима</translation>
 <translation id="1094693127011229778">IP адреса није доступна</translation>
+<translation id="1116694919640316211">Основни подаци</translation>
 <translation id="1118572504348554005">Са партнерима можемо да делимо повратне информације послате преко овог обрасца ради отклањања грешака и других проблема које нам пријавите. Немојте да уносите осетљиве информације попут лозинки.</translation>
 <translation id="1119447706177454957">Интерна грешка</translation>
 <translation id="1124772482545689468">Корисник</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Капацитет батерије се смањује током коришћења</translation>
 <translation id="6191293864534840972">Сервери за имена су погрешног формата</translation>
+<translation id="6196607555925437199">Поново направи</translation>
 <translation id="6205145102504628069">Ток у клауду</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Нису доступни скенери</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 адреса</translation>
 <translation id="7513770521371759388">дно</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Направи</translation>
 <translation id="7528507600602050979">Садржај помоћи није доступан</translation>
+<translation id="753556296624075801">Омогућава Google</translation>
 <translation id="7535791657097741517">Укључите светлу тему</translation>
 <translation id="7550715992156305117">Дијагностичке рутине</translation>
 <translation id="7551123448725492271">Уређај је аудио уређај.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Приложи датотеку</translation>
 <translation id="8230672074305416752">Пинговање подразумеваног мрежног пролаза није успело</translation>
 <translation id="8246209727385807362">Непознат мобилни оператер</translation>
+<translation id="8261506727792406068">Избриши</translation>
 <translation id="8262870577632766028">1 сат</translation>
 <translation id="827422111966801947">Тамноплава</translation>
 <translation id="8286154143153872371">Повежите се на мрежу и поново учитајте страницу да бисте видели позадину.</translation>

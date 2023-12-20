@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Veľkosť stránky</translation>
 <translation id="1082009148392559545">Sťahuje sa šetrič obrazovky</translation>
 <translation id="1094693127011229778">Adresa IP nie je k dispozícii</translation>
+<translation id="1116694919640316211">Informácie</translation>
 <translation id="1118572504348554005">Spätnú väzbu odoslanú prostredníctvom tohto formulára môžeme zdieľať s našimi partnermi na účely opravy chýb a riešenia ďalších problémov, ktoré nám hlásite. Neuvádzajte citlivé údaje, ako sú heslá.</translation>
 <translation id="1119447706177454957">Interná chyba</translation>
 <translation id="1124772482545689468">Používateľ</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Kapacita batérie používaním klesá</translation>
 <translation id="6191293864534840972">Nesprávny formát serverov DNS</translation>
+<translation id="6196607555925437199">Znova vytvoriť</translation>
 <translation id="6205145102504628069">Tok oblakov</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nie sú k dispozícii žiadne skenery</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7513770521371759388">dole</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Vytvoriť</translation>
 <translation id="7528507600602050979">Obsah pomocníka nie je k dispozícii</translation>
+<translation id="753556296624075801">Používa technológiu Google</translation>
 <translation id="7535791657097741517">Zapnúť svetlý motív</translation>
 <translation id="7550715992156305117">Diagnostické postupy</translation>
 <translation id="7551123448725492271">Zariadenie je audio zariadenie.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Pripojiť súbor</translation>
 <translation id="8230672074305416752">Predvolenú bránu siete sa nepodarilo otestovať</translation>
 <translation id="8246209727385807362">Neznámy operátor</translation>
+<translation id="8261506727792406068">Odstrániť</translation>
 <translation id="8262870577632766028">1 hodina</translation>
 <translation id="827422111966801947">Indigová</translation>
 <translation id="8286154143153872371">Pripojte sa k sieti a opätovným načítaním stránky zobrazte tapetu.</translation>

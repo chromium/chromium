@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">စာမျက်နှာ အရွယ်အစား</translation>
 <translation id="1082009148392559545">စခရင်နားချိန်ပုံ ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="1094693127011229778">IP လိပ်စာ မရနိုင်ပါ</translation>
+<translation id="1116694919640316211">အကြောင်း</translation>
 <translation id="1118572504348554005">သင်အကြောင်းကြားသော ချွတ်ယွင်းမှုနှင့် အခြားပြဿနာများကို ရှာဖွေဖြေရှင်းရန် ဤဖောင်ဖြင့် ပေးပို့ထားသည့် အကြံပြုချက်ကို ကျွန်ုပ်တို့ပါတနာများနှင့် မျှဝေနိုင်ပါသည်။ စကားဝှက်ကဲ့သို့ သတိထားရမည့် အချက်အလက်များ မထည့်ပါနှင့်။</translation>
 <translation id="1119447706177454957">အတွင်းပိုင်း အမှား။</translation>
 <translation id="1124772482545689468">အသုံးပြုသူ</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">အသုံးပြုသည်နှင့်အမျှ ဘက်ထရီပမာဏ လျော့ကျသွားသည်</translation>
 <translation id="6191293864534840972">ပုံပျက်နေသော အမည်ဆာဗာများ</translation>
+<translation id="6196607555925437199">ပြန်ပြုလုပ်ရန်</translation>
 <translation id="6205145102504628069">တိမ် လွင့်မျောမှု</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">စကင်ဖတ်စက်များ မရနိုင်ပါ</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 လိပ်စာ</translation>
 <translation id="7513770521371759388">အောက်</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">ပြုလုပ်ရန်</translation>
 <translation id="7528507600602050979">အကူအညီ အကြောင်းအရာ မရနိုင်ပါ</translation>
+<translation id="753556296624075801">Google က ပံ့ပိုးသည်</translation>
 <translation id="7535791657097741517">လင်းသည့် အပြင်အဆင် ဖွင့်ရန်</translation>
 <translation id="7550715992156305117">အမှားရှာဖွေမှု ပုံမှန်အစီအစဉ်များ</translation>
 <translation id="7551123448725492271">ကိရိယာသည် အသံစက်ပစ္စည်းဖြစ်သည်။</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">ပူးတွဲဖိုင်</translation>
 <translation id="8230672074305416752">မူလကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
 <translation id="8246209727385807362">အမျိုးအမည်မသိရသော ဝန်ဆောင်မှုပေးသူ</translation>
+<translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="8262870577632766028">၁ နာရီ</translation>
 <translation id="827422111966801947">မဲနယ်</translation>
 <translation id="8286154143153872371">နောက်ခံကိုကြည့်ရန် ကွန်ရက်ချိတ်ဆက်၍ စာမျက်နှာကို ပြန်လည် စတင်ပါ။</translation>

@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Sayfa boyutu</translation>
 <translation id="1082009148392559545">Ekran koruyucu indiriliyor</translation>
 <translation id="1094693127011229778">IP adresi kullanılamıyor</translation>
+<translation id="1116694919640316211">Hakkında</translation>
 <translation id="1118572504348554005">Bize bildirdiğiniz hataları ve diğer sorunları gidermek için bu form üzerinden gönderilen geri bildirimleri iş ortaklarımızla paylaşabiliriz. Şifreler gibi hassas bilgileri eklemeyin.</translation>
 <translation id="1119447706177454957">Dahili hata</translation>
 <translation id="1124772482545689468">Kullanıcı</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Pil kapasitesi kullanıldıkça azalır</translation>
 <translation id="6191293864534840972">Alan adı sunucuları geçersiz</translation>
+<translation id="6196607555925437199">Yeniden oluştur</translation>
 <translation id="6205145102504628069">Bulut Akışı</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Kullanılabilir tarayıcı yok</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 adresi</translation>
 <translation id="7513770521371759388">alt</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Oluştur</translation>
 <translation id="7528507600602050979">Yardım içeriği kullanılamıyor</translation>
+<translation id="753556296624075801">Google Destekli</translation>
 <translation id="7535791657097741517">Açık temayı aç</translation>
 <translation id="7550715992156305117">Teşhis Rutinleri</translation>
 <translation id="7551123448725492271">Cihazın türü ses sistemi.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Dosya ekle</translation>
 <translation id="8230672074305416752">Varsayılan ağ geçidi pinglenemedi</translation>
 <translation id="8246209727385807362">Bilinmeyen operatör</translation>
+<translation id="8261506727792406068">Sil</translation>
 <translation id="8262870577632766028">1 saat</translation>
 <translation id="827422111966801947">Çivit Mavisi</translation>
 <translation id="8286154143153872371">Duvar kağıdını görmek için lütfen bir ağa bağlanıp sayfayı yeniden yükleyin.</translation>

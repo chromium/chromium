@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Kukka</translation>
 <translation id="4943368462779413526">Jalkapallo</translation>
 <translation id="4961158930123534723">1 kansio jaettu Parallels Desktopille</translation>
+<translation id="4965874878399872778">Tarkistetaan, ovatko tiedostot organisaatiosi tietosuojakäytäntöjen mukaisia…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> palautettu</translation>
 <translation id="4969785127455456148">Albumi</translation>
 <translation id="4972330214479971536">Tiedostojen synkronoinnin käyttöönottoa ei voitu suorittaa loppuun</translation>
@@ -710,6 +711,7 @@
 <translation id="6430271654280079150">Sinulla on 1 yritys jäljellä.</translation>
 <translation id="643243556292470964">Poistetut tiedostot siirretään roskakoriin</translation>
 <translation id="6438480100790416671">Tarkistetaan tallennustilaa…</translation>
+<translation id="6451527188465304418">Tarkistetaan, onko tiedosto organisaatiosi tietosuojakäytäntöjen mukainen…</translation>
 <translation id="6485131920355264772">Tilatietojen noutaminen epäonnistui</translation>
 <translation id="6495925982925244349">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan hallinnoima, lisätietoja</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> puretaan tänne: <ph name="FOLDER_NAME" /></translation>

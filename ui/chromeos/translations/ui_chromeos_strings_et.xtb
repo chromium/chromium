@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Karikakar</translation>
 <translation id="4943368462779413526">Jalgpall</translation>
 <translation id="4961158930123534723">Üksusega Parallels Desktop jagatakse 1 kausta</translation>
+<translation id="4965874878399872778">Kontrollime, kas failid vastavad teie organisatsiooni turbereeglitele ...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> on taastatud</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Failide sünkroonimise seadistamist ei saanud lõpetada</translation>
@@ -710,6 +711,7 @@
 <translation id="6430271654280079150">Teil on veel 1 katse.</translation>
 <translation id="643243556292470964">Kustutatud failid teisaldatakse nüüd prügikasti</translation>
 <translation id="6438480100790416671">Salvestusruumi kontrollimine …</translation>
+<translation id="6451527188465304418">Kontrollime, kas fail vastab teie organisatsiooni turbereeglitele ...</translation>
 <translation id="6485131920355264772">Talletusruumi teabe toomine ebaõnnestus</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, võrku haldab teie administraator, üksikasjad</translation>
 <translation id="649877868557234318">Faili <ph name="FILE_NAME" /> ekstraktimine kausta <ph name="FOLDER_NAME" /></translation>

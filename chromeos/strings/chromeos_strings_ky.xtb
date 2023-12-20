@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Барактын өлчөмү</translation>
 <translation id="1082009148392559545">Көшөгө жүктөлүп алынууда</translation>
 <translation id="1094693127011229778">IP дареги жеткиликсиз</translation>
+<translation id="1116694919640316211">Программа жөнүндө</translation>
 <translation id="1118572504348554005">Бузулууларды аныктап оңдоо жана сиз кабарлаган башка маселелерди чечүү үчүн бул форма аркылуу тапшырылган маалымат өнөктөштөрүбүз менен бөлүшүлүшү мүмкүн. Сырсөздөр сыяктуу купуя маалыматты жазбаңыз.</translation>
 <translation id="1119447706177454957">Ички ката</translation>
 <translation id="1124772482545689468">Колдонуучу</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Батарея колдонулган сайын анын сыйымдуулугу төмөндөйт</translation>
 <translation id="6191293864534840972">Бурмаланган ысым серверлери</translation>
+<translation id="6196607555925437199">Кайра түзүү</translation>
 <translation id="6205145102504628069">Булут</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Жеткиликтүү сканерлер жок</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 дареги</translation>
 <translation id="7513770521371759388">төмөн жакта</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Түзүү</translation>
 <translation id="7528507600602050979">Жардам берүү бөлүмү жеткиликсиз</translation>
+<translation id="753556296624075801">Google иштеп чыккан</translation>
 <translation id="7535791657097741517">Жарык теманы күйгүзүү</translation>
 <translation id="7550715992156305117">Мүчүлүштүктөрдү аныктоо программалары</translation>
 <translation id="7551123448725492271">Түзмөк — аудио түзмөк.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Файл тиркөө</translation>
 <translation id="8230672074305416752">Демейки тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>
 <translation id="8246209727385807362">Белгисиз байланыш оператору</translation>
+<translation id="8261506727792406068">Жок кылуу</translation>
 <translation id="8262870577632766028">1 саат</translation>
 <translation id="827422111966801947">Индиго</translation>
 <translation id="8286154143153872371">Тушкагазды көрүү үчүн тармакка туташып, баракты кайра жүктөңүз.</translation>

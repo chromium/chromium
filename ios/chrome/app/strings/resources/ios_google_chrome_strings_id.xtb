@@ -63,6 +63,7 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="2427791862912929107">Chrome memiliki berbagai fitur yang dapat membantu Anda mengelola data internet dan seberapa cepat Anda dapat memuat halaman web.
 <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Untuk mendapatkan sandi tersimpan dengan mudah di aplikasi lain, gunakan Chrome untuk Isi Otomatis</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Hal ini terjadi jika Chrome tidak digunakan selama {THRESHOLD} menit. Data ini dapat mencakup histori dan isi otomatis.}other{Hal ini terjadi jika Chrome tidak digunakan selama {THRESHOLD} menit. Data ini dapat mencakup histori dan isi otomatis.}}</translation>
 <translation id="2561231791489583059">Gunakan Chrome sebagai browser default agar Anda tetap terlindungi dari situs berbahaya &amp; sandi Anda tetap aman</translation>
 <translation id="2574249610672786438">Untuk melihat tab Chrome Anda dari perangkat lain, login ke semua perangkat Anda</translation>
 <translation id="2576431527583832481">Chrome jadi semakin baik! Versi baru telah tersedia.</translation>
@@ -91,6 +92,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3282568296779691940">Login ke Chrome</translation>
 <translation id="3340938510625667914">Tindakan Chrome</translation>
 <translation id="3345341804167540816">Gunakan Chrome di Mana Saja</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Hal ini terjadi jika Chrome tidak digunakan selama {THRESHOLD} menit}other{Hal ini terjadi jika Chrome tidak digunakan selama {THRESHOLD} menit}}</translation>
 <translation id="3399930248910934354">Buka Setelan Chrome</translation>
 <translation id="3472587960215700950">Chrome menggunakan Google Maps untuk memberikan rute dan info lokal di alamat yang terdeteksi.</translation>
 <translation id="3503014945441706099">Dapatkan juga Safe Browsing yang Disempurnakan untuk profil Chrome ini</translation>

@@ -66,6 +66,7 @@
         โปรดรอสักครู่ก่อนออกจากระบบ หากคุณออกจากระบบตอนนี้ ระบบจะลบข้อมูลนี้</translation>
 <translation id="3256316712990552818">คัดลอกลงใน Chromium แล้ว</translation>
 <translation id="3344973607274501920">Chromium ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{การดำเนินการนี้จะเกิดขึ้นเมื่อไม่ได้ใช้ Chromium เป็นเวลา {THRESHOLD} นาที ซึ่งอาจรวมถึงประวัติการเข้าชมและการป้อนข้อความอัตโนมัติ}other{การดำเนินการนี้จะเกิดขึ้นเมื่อไม่ได้ใช้ Chromium เป็นเวลา {THRESHOLD} นาที ซึ่งอาจรวมถึงประวัติการเข้าชมและการป้อนข้อความอัตโนมัติ}}</translation>
 <translation id="3472200483164753384">ไม่รองรับใน Chromium Canary</translation>
 <translation id="3478750326643748149">ซ่อนการ์ด "รับประโยชน์สูงสุดจาก Chromium"</translation>
 <translation id="3554027294407525061">ล้างข้อมูลการท่องเว็บใน Chromium</translation>
@@ -231,6 +232,7 @@
 <translation id="88376265765385899">เปิดบุ๊กมาร์ก Chromium</translation>
 <translation id="8924617840944134898">เปิดแท็บที่ไม่ระบุตัวตนใน Chromium</translation>
 <translation id="894437814105052438">Chromium จะไม่ซิงค์ข้อมูลใหม่กับบัญชี Google ของคุณเมื่อออกจากระบบ แต่ข้อมูลที่ซิงค์ไว้ก่อนหน้านี้จะยังอยู่ในบัญชี</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{การดำเนินการนี้จะเกิดขึ้นเมื่อไม่ได้ใช้ Chromium เป็นเวลา {THRESHOLD} นาที}other{การดำเนินการนี้จะเกิดขึ้นเมื่อไม่ได้ใช้ Chromium เป็นเวลา {THRESHOLD} นาที}}</translation>
 <translation id="8963279154877372067">อนุญาตให้การแจ้งเตือนของ Chromium รับการแจ้งเตือนเมื่อราคาลดลง</translation>
 <translation id="9022552996538154597">ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="9050790730841755540">ใช้ Chromium ทุกครั้งที่คุณแตะลิงก์ในแอปอื่นๆ</translation>

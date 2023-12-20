@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Záporvirág</translation>
 <translation id="4943368462779413526">Focilabda</translation>
 <translation id="4961158930123534723">1 mappa megosztva a Parallels Desktoppal</translation>
+<translation id="4965874878399872778">Folyamatban van annak ellenőrzése, hogy a fájlok megfelelnek-e szervezete biztonsági házirendjeinek…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> visszaállítva</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Nem sikerült befejezni a fájlszinkronizálás beállítását</translation>
@@ -710,6 +711,7 @@
 <translation id="6430271654280079150">1 próbálkozási lehetősége maradt.</translation>
 <translation id="643243556292470964">A törölt fájlok most a kukába kerülnek</translation>
 <translation id="6438480100790416671">Tárhely ellenőrzése…</translation>
+<translation id="6451527188465304418">Folyamatban van annak ellenőrzése, hogy a fájl megfelel-e szervezete biztonsági házirendjeinek…</translation>
 <translation id="6485131920355264772">A helyinformációk lekérése sikertelen</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, a rendszergazdája kezeli, részletek</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> kicsomagolása ide: <ph name="FOLDER_NAME" /></translation>

@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">網頁大小</translation>
 <translation id="1082009148392559545">正在下載螢幕保護程式</translation>
 <translation id="1094693127011229778">缺少 IP 位址</translation>
+<translation id="1116694919640316211">關於</translation>
 <translation id="1118572504348554005">我們可能會將透過這份表單提交的意見回饋提供給合作夥伴，用於排解錯誤及你回報的其他問題。請勿輸入密碼等機密資訊。</translation>
 <translation id="1119447706177454957">內部錯誤</translation>
 <translation id="1124772482545689468">使用者</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">電池電量會隨使用時間而減少</translation>
 <translation id="6191293864534840972">名稱伺服器格式錯誤</translation>
+<translation id="6196607555925437199">重新建立</translation>
 <translation id="6205145102504628069">雲朵動態</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">沒有可用的掃描器</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 位址</translation>
 <translation id="7513770521371759388">下方</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">建立</translation>
 <translation id="7528507600602050979">無法存取說明內容</translation>
+<translation id="753556296624075801">Google 技術提供</translation>
 <translation id="7535791657097741517">開啟淺色主題</translation>
 <translation id="7550715992156305117">診斷日常安排</translation>
 <translation id="7551123448725492271">裝置類型為音訊裝置。</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">附加檔案</translation>
 <translation id="8230672074305416752">無法連線偵測預設的網路閘道</translation>
 <translation id="8246209727385807362">不明電信業者</translation>
+<translation id="8261506727792406068">刪除</translation>
 <translation id="8262870577632766028">1 小時</translation>
 <translation id="827422111966801947">靛藍</translation>
 <translation id="8286154143153872371">如要查看桌布，請連上網路並重新載入網頁。</translation>

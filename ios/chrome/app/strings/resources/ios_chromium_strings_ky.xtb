@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{Азыр 1 Chromium терезеси көрсөтүлүүдө}other{Азыр {count} Chromium терезеси көрсөтүлүүдө}}</translation>
 <translation id="3344973607274501920">Chromium сырсөздөрүңүздү текшере алган жок. Интернет байланышын текшерип көрүңүз.</translation>
 <translation id="3366305173356742781">Аккаунтуңуздагы Chromium маалыматы</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium {THRESHOLD} мүнөт бою колдонулбаса, күтүү режиминде болуп калат. Бул таржымалды жана автотолтурууну камтышы мүмкүн.}other{Chromium {THRESHOLD} мүнөт бою колдонулбаса, күтүү режиминде болуп калат. Бул таржымалды жана автотолтурууну камтышы мүмкүн.}}</translation>
 <translation id="3472200483164753384">Chromium Canary'де колдоого алынбайт</translation>
 <translation id="3478750326643748149">"Chromium'дун бардык мүмкүнчүлүктөрүн колдонуңуз" картасын жашыруу</translation>
 <translation id="3512168799938877162">Сырсөзүңүз бөлүшүлгөн жок. Интернет байланышыңызды жана Chromium'га кирип турганыңызды текшериңиз. Андан кийин кайталап көрүңүз.</translation>
@@ -282,6 +283,7 @@
 <translation id="8909995017390087892">iOS үчүн Chromium</translation>
 <translation id="8924617840944134898">Chromium'да жашыруун өтмөктү ачуу</translation>
 <translation id="894437814105052438">Аккаунтуңуздан чыксаңыз, Chromium жаңы нерселерди Google аккаунтуңузга шайкештирбейт. Буга чейин шайкештирилген маалымат аккаунтуңузда сакталган бойдон калат.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium {THRESHOLD} мүнөт бою колдонулбаса, күтүү режиминде болуп калат}other{Chromium {THRESHOLD} мүнөт бою колдонулбаса, күтүү режиминде болуп калат}}</translation>
 <translation id="8963279154877372067">Баалардын түшкөнүн билип туруу үчүн Chromium билдирмелерине уруксат бериңиз</translation>
 <translation id="900560297598578021"><ph name="EMAIL" /> катары кирдиңиз.
 

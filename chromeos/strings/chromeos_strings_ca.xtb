@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Mida de la pàgina</translation>
 <translation id="1082009148392559545">S'està baixant l'estalvi de pantalla</translation>
 <translation id="1094693127011229778">L'adreça IP no està disponible</translation>
+<translation id="1116694919640316211">Informació</translation>
 <translation id="1118572504348554005">És possible que compartim amb els nostres partners els comentaris que enviïs a través d'aquest formulari per resoldre els errors i altres problemes de què ens informis. No incloguis informació sensible, com ara contrasenyes.</translation>
 <translation id="1119447706177454957">Error intern</translation>
 <translation id="1124772482545689468">Usuari</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">La capacitat de la bateria es redueix amb l'ús</translation>
 <translation id="6191293864534840972">Els servidors de noms tenen un format incorrecte</translation>
+<translation id="6196607555925437199">Torna a crear</translation>
 <translation id="6205145102504628069">Moviment de núvols</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">No hi ha cap escàner disponible</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">Adreça IPv6</translation>
 <translation id="7513770521371759388">inferior</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Crea</translation>
 <translation id="7528507600602050979">El contingut d'ajuda no està disponible</translation>
+<translation id="753556296624075801">Amb la tecnologia de Google</translation>
 <translation id="7535791657097741517">Activa el tema clar</translation>
 <translation id="7550715992156305117">Rutines de diagnòstic</translation>
 <translation id="7551123448725492271">El dispositiu és un dispositiu d'àudio.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Adjunta un fitxer</translation>
 <translation id="8230672074305416752">No s'ha pogut fer ping a la passarel·la de xarxa predeterminada</translation>
 <translation id="8246209727385807362">Operador de telefonia mòbil desconegut</translation>
+<translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8262870577632766028">1 hora</translation>
 <translation id="827422111966801947">Anyil</translation>
 <translation id="8286154143153872371">Connecta't a una xarxa i torna a carregar la pàgina per veure el fons de pantalla.</translation>

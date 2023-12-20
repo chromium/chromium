@@ -2073,7 +2073,6 @@
 <translation id="2540449034743108469">Натисніть "Почати", щоб прослухати дії розширення</translation>
 <translation id="2540651571961486573">Сталася помилка з кодом <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Оптимізувати трансляцію на повний екран?</translation>
-<translation id="2541423446708352368">Показати всі завантаження</translation>
 <translation id="2541706104884128042">Налаштовано новий час сну</translation>
 <translation id="2542050502251273923">Налаштовує рівень налагодження менеджера й інших сервісів з'єднання з мережею за допомогою ff_debug.</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Дозволи, які ви надаєте додатку <ph name="APP_NAME" />, також поширюються на цей додаток. <ph name="MANAGE_LINK" />}one{Дозволи, які ви надаєте додатку <ph name="APP_NAME" />, також поширюються на ці додатки. <ph name="MANAGE_LINK" />}few{Дозволи, які ви надаєте додатку <ph name="APP_NAME" />, також поширюються на ці додатки. <ph name="MANAGE_LINK" />}many{Дозволи, які ви надаєте додатку <ph name="APP_NAME" />, також поширюються на ці додатки. <ph name="MANAGE_LINK" />}other{Дозволи, які ви надаєте додатку <ph name="APP_NAME" />, також поширюються на ці додатки. <ph name="MANAGE_LINK" />}}</translation>
@@ -4766,7 +4765,6 @@
 <translation id="4681512854288453141">Джерело правил</translation>
 <translation id="4681930562518940301">Відкрити оригінальне зображення в новій вкладці</translation>
 <translation id="4682481611456523884">Вбудований контент на цьому сайті не може використовувати збережену про вас інформацію</translation>
-<translation id="4682830185876172415">Нещодавні завантаження</translation>
 <translation id="4683629100208651599">Застосувати нижній регістр</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (за умовчанням)</translation>
 <translation id="4684427112815847243">Синхронізувати все</translation>
@@ -8939,7 +8937,6 @@
 <translation id="8014154204619229810">Триває оновлення. Оновіть сторінку за хвилину.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> не може повернутися до попередньої встановленої версії. Виконайте Powerwash на пристрої.</translation>
 <translation id="8015565302826764056">{NUM_OF_FILES,plural, =1{Скопійовано 1 файл}one{Скопійовано {NUM_OF_FILES} файл}few{Скопійовано {NUM_OF_FILES} файли}many{Скопійовано {NUM_OF_FILES} файлів}other{Скопійовано {NUM_OF_FILES} файлу}}</translation>
-<translation id="8015812716978143">Показати всі завантаження на новій вкладці</translation>
 <translation id="8017176852978888182">Спільні каталоги Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">Ярлик змінено</translation>

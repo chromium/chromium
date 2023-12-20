@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Ukuran halaman</translation>
 <translation id="1082009148392559545">Mendownload screensaver</translation>
 <translation id="1094693127011229778">Alamat IP tidak tersedia</translation>
+<translation id="1116694919640316211">Tentang</translation>
 <translation id="1118572504348554005">Kami mungkin membagikan masukan yang dikirim melalui formulir ini kepada partner kami untuk memecahkan masalah bug dan masalah lain yang Anda laporkan kepada kami. Jangan sertakan informasi sensitif seperti sandi.</translation>
 <translation id="1119447706177454957">Kesalahan internal</translation>
 <translation id="1124772482545689468">Pengguna</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Kapasitas baterai menurun seiring penggunaan</translation>
 <translation id="6191293864534840972">Format server nama salah</translation>
+<translation id="6196607555925437199">Buat ulang</translation>
 <translation id="6205145102504628069">Aliran Awan</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Tidak ada pemindai yang tersedia</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">Alamat IPv6</translation>
 <translation id="7513770521371759388">bawah</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Buat</translation>
 <translation id="7528507600602050979">Konten bantuan tidak tersedia</translation>
+<translation id="753556296624075801">Dengan teknologi Google</translation>
 <translation id="7535791657097741517">Aktifkan tema terang</translation>
 <translation id="7550715992156305117">Rutinitas Diagnostik</translation>
 <translation id="7551123448725492271">Perangkat adalah perangkat audio.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Lampirkan file</translation>
 <translation id="8230672074305416752">Gagal melakukan ping ke gateway jaringan default</translation>
 <translation id="8246209727385807362">Operator tidak diketahui</translation>
+<translation id="8261506727792406068">Hapus</translation>
 <translation id="8262870577632766028">1 jam</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Hubungkan ke jaringan dan muat ulang halaman untuk melihat wallpaper.</translation>

@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Page size</translation>
 <translation id="1082009148392559545">Downloading the screen saver</translation>
 <translation id="1094693127011229778">IP address is unavailable</translation>
+<translation id="1116694919640316211">About</translation>
 <translation id="1118572504348554005">We may share feedback submitted via this form with our partners to troubleshoot bugs and other issues that you report to us. Don’t include sensitive information such as passwords.</translation>
 <translation id="1119447706177454957">Internal error</translation>
 <translation id="1124772482545689468">User</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Battery capacity declines with usage</translation>
 <translation id="6191293864534840972">Malformed name servers</translation>
+<translation id="6196607555925437199">Recreate</translation>
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">No scanners available</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 address</translation>
 <translation id="7513770521371759388">bottom</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Create</translation>
 <translation id="7528507600602050979">Help content isn't available</translation>
+<translation id="753556296624075801">Powered by Google</translation>
 <translation id="7535791657097741517">Turn Light theme on</translation>
 <translation id="7550715992156305117">Diagnostic routines</translation>
 <translation id="7551123448725492271">Device is an audio device.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Attach file</translation>
 <translation id="8230672074305416752">Failed to ping the default network gateway</translation>
 <translation id="8246209727385807362">Unknown operator</translation>
+<translation id="8261506727792406068">Delete</translation>
 <translation id="8262870577632766028">1 hour</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Please connect to a network and reload the page to view wallpaper.</translation>

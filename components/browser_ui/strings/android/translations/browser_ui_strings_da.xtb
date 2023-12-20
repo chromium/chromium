@@ -148,6 +148,7 @@
 <translation id="3448554387819310837">Når dette er slået til, kan websites anmode om at anvende dit kamera. Når dette er slået fra, kan websites ikke anvende dit kamera.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{I morgen blokerer Chrome cookies igen}one{Chrome blokerer cookies igen om # dag}other{Chrome blokerer cookies igen om # dage}}</translation>
 <translation id="3521663503435878242">Websites på <ph name="DOMAIN" /></translation>
+<translation id="3536227077203206203">Der er givet adgang denne gang</translation>
 <translation id="3538390592868664640">Bloker oprettelsen af 3D-kort over dine omgivelser eller registrering af kamerapositionen for websites</translation>
 <translation id="3544058026430919413">En virksomhed kan definere en gruppe af websites, der kan bruge cookies til at dele din aktivitet i gruppen. Dette er deaktiveret i inkognitotilstand.</translation>
 <translation id="3551268116566418498">Forlad inkognitotilstand?</translation>

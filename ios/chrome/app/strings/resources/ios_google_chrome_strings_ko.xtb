@@ -63,6 +63,7 @@
 <translation id="2427791862912929107">Chrome에는 사용자가 간편하게 인터넷 데이터를 관리하고 웹페이지 로드 시간을 제어할 수 있도록 돕는 기능이 있습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">저장된 비밀번호를 다른 앱에서 쉽게 입력하려면 Chrome 자동 완성 기능을 사용하세요</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Chrome을 {THRESHOLD}분 동안 사용하지 않으면 유휴 상태가 됩니다. 여기에는 방문 기록 및 자동 완성이 포함될 수 있습니다}other{Chrome을 {THRESHOLD}분 동안 사용하지 않으면 유휴 상태가 됩니다. 여기에는 방문 기록 및 자동 완성이 포함될 수 있습니다}}</translation>
 <translation id="2561231791489583059">Chrome을 기본 브라우저로 사용하여 위험한 사이트를 차단하고 비밀번호를 안전하게 보호하세요.</translation>
 <translation id="2574249610672786438">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 모든 기기에서 로그인하세요.</translation>
 <translation id="2576431527583832481">한층 개선된 Chrome의 최신 버전이 출시되었습니다.</translation>
@@ -91,6 +92,7 @@
 <translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3340938510625667914">Chrome 작업</translation>
 <translation id="3345341804167540816">어디서나 Chrome 사용</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome을 {THRESHOLD}분 동안 사용하지 않으면 유휴 상태가 됩니다}other{Chrome을 {THRESHOLD}분 동안 사용하지 않으면 유휴 상태가 됩니다}}</translation>
 <translation id="3399930248910934354">Chrome 설정 열기</translation>
 <translation id="3472587960215700950">Chrome에서 Google 지도를 사용하여 감지된 주소의 경로 및 지역 정보를 제공합니다.</translation>
 <translation id="3503014945441706099">이 Chrome 프로필에 향상된 세이프 브라우징도 사용해 보세요.</translation>

@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">حجم الصفحة</translation>
 <translation id="1082009148392559545">جارٍ تنزيل شاشة الاستراحة</translation>
 <translation id="1094693127011229778">‏عنوان IP غير متوفّر.</translation>
+<translation id="1116694919640316211">لمحة</translation>
 <translation id="1118572504348554005">قد نشارك مع شركائنا الملاحظات التي يتم إرسالها من خلال هذا النموذج، وذلك لتحديد وحلّ المشاكل والأخطاء التي يتم الإبلاغ عنها، لذا يُرجى عدم إدراج معلومات حساسة، مثل كلمات المرور.</translation>
 <translation id="1119447706177454957">خطأ داخلي</translation>
 <translation id="1124772482545689468">المستخدم</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">تقلّ قدرة البطارية مع الاستخدام.</translation>
 <translation id="6191293864534840972">خوادم الأسماء غير صالحة.</translation>
+<translation id="6196607555925437199">إعادة إنشاء</translation>
 <translation id="6205145102504628069">منظر انسيابي للسُحب</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">لا يتوفّر ماسح ضوئي.</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">‏عنوان IPv6</translation>
 <translation id="7513770521371759388">الأسفل</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">إنشاء</translation>
 <translation id="7528507600602050979">المحتوى المساعِد غير متوفّر.</translation>
+<translation id="753556296624075801">‏بواسطة Google</translation>
 <translation id="7535791657097741517">تشغيل المظهر الفاتح</translation>
 <translation id="7550715992156305117">سلسلة إجراءات بيانات التشخيص</translation>
 <translation id="7551123448725492271">الجهاز هو جهاز سماعي.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">إرفاق ملف</translation>
 <translation id="8230672074305416752">تعذَّر فحص اتصال بوابة الشبكة التلقائية.</translation>
 <translation id="8246209727385807362">مشغل شبكة جوّال غير معروف</translation>
+<translation id="8261506727792406068">حذف</translation>
 <translation id="8262870577632766028">ساعة واحدة</translation>
 <translation id="827422111966801947">نيلي</translation>
 <translation id="8286154143153872371">يُرجى الاتصال بإحدى الشبكات وإعادة تحميل الصفحة لعرض الخلفية.</translation>

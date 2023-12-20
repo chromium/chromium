@@ -40,6 +40,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1153356358378277386">Paired devices</translation>
 <translation id="1155734730463845512">Current battery level <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">on and in use</translation>
+<translation id="1163437384438183174">Remove Phone Hub from shelf</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Your USB-C cable may not connect to displays properly</translation>
 <translation id="1175572348579024023">Scroll</translation>
@@ -70,6 +71,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is connected.</translation>
 <translation id="1240638468526743569">An app</translation>
 <translation id="1242883863226959074">device</translation>
+<translation id="1245644940275736236">Go to Assistant</translation>
 <translation id="124678866338384709">Close current tab</translation>
 <translation id="1246890715821376239">Unsupported apps</translation>
 <translation id="1247372569136754018">Microphone (internal)</translation>
@@ -692,6 +694,7 @@ Connect your device to power.</translation>
 <translation id="383629559565718788">Show keyboard settings</translation>
 <translation id="384082539148746321">Delete template?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, then <ph name="KEY_ONE" /> or <ph name="KEY_TWO" /> or <ph name="KEY_THREE" /> or <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">No network information available</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="385300504083504382">Beginning</translation>
@@ -926,6 +929,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + up arrow</translation>
 <translation id="4762573482154983647">Hide apps</translation>
+<translation id="4762802395013012237">5 ft in m</translation>
 <translation id="4763885921995354846">This allows camera access for all apps and websites with the camera permission. You may need to refresh the web page or restart the app.</translation>
 <translation id="4774338217796918551">Come back tomorrow at <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Your password still couldn't be verified. Try again.</translation>
@@ -968,6 +972,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="491504982845934899">Activate after device setup <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Strong</translation>
 <translation id="4918086044614829423">Accept</translation>
+<translation id="491907188205944472">Search for what you need directly in Launcher</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> is currently using your camera</translation>
 <translation id="492453977506755176">Capture mode key</translation>
 <translation id="4925542575807923399">The administrator for this account requires this account to be the first signed-in account in a multiple sign-in session.</translation>
@@ -1118,6 +1123,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5518068085000130971">Those were the basics! Continue in Explore, our built-in app for tips and help. You’ll find tips for getting started, recommended apps, special offers and the newest Chromebook features.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Your administrator has removed all eSIM profiles. Contact your administrator for more info.</translation>
+<translation id="5520909879404821039">Hi in French</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> is connecting.</translation>
 <translation id="5529587891732734495">Pause casting</translation>
 <translation id="5532994612895037630">Tap anywhere to record full screen</translation>
@@ -1695,6 +1701,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7886277072580235377">Your Internet session will be cleared when you sign out. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Send an email</translation>
 <translation id="7893503627044934815">Don't want this file shown</translation>
+<translation id="7893547474469215105">Define zenith</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">You pressed the keyboard shortcut for screen rotation. Do you want to rotate the screen?</translation>
 <translation id="7897626842031123113">Status tray, time <ph name="TIME" />,
@@ -1710,6 +1717,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7904094684485781019">The administrator for this account has disallowed multiple sign-in.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> devices connected</translation>
+<translation id="7923534281713082605">Weather</translation>
 <translation id="7926080067315048321">See all tasks on Google tasks on web</translation>
 <translation id="7930731167419639574">Speech is now processed locally and dictation works offline</translation>
 <translation id="7932451802722951285">Open in Google Calendar</translation>
@@ -1856,6 +1864,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8555757996376137129">Remove current desk</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> recommends that you update your <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Notification Settings</translation>
+<translation id="8569751806372591456">Here are a few suggestions to try</translation>
 <translation id="857201607579416096">Menu moved to the bottom-right corner of the screen.</translation>
 <translation id="8581946341807941670">Press <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> and click a link</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1899,6 +1908,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="875593634123171288">Show VPN settings</translation>
 <translation id="8759408218731716181">Can't set up multiple sign-in</translation>
 <translation id="8763883995157866248">Put device in sleep mode</translation>
+<translation id="877404052021108314">32°C in F</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, installed app, blocked</translation>
 <translation id="8785070478575117577">Connect to <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1907,6 +1917,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">'Help'</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">Press the screenshot shortcut, Ctrl plus Shift plus Overview mode key</translation>
 <translation id="881757059229893486">Input methods settings</translation>
 <translation id="8819728065740986820">Adaptive charging is on</translation>
 <translation id="8825863694328519386">Swipe from the left to go back</translation>

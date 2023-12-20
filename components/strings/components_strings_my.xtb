@@ -517,6 +517,7 @@
 <translation id="1975457531113383421">ထည့်ရန် ဗန်း</translation>
 <translation id="1975584088563498795">စာတိုက်ပုံး ၁၀</translation>
 <translation id="1978555033938440688">Firmware ဗားရှင်း</translation>
+<translation id="1979156660928743046">မီဒီယာအချက်အလက်</translation>
 <translation id="1988881251331415125">စာလုံးပေါင်း မှန်ကန်ပါက <ph name="BEGIN_LINK" />ချိတ်ဆက်မှု အမှားရှာဖွေမှုများပြုလုပ်ရန် ကြိုးစားကြည့်ပါ<ph name="END_LINK" />။</translation>
 <translation id="1991453785879639515">ကျောက်တောင်တက်ခြင်းနှင့် တောင်တက်ခြင်း</translation>
 <translation id="1991830984769263878">ကားအာမခံ</translation>
@@ -633,6 +634,7 @@
 <translation id="219906046732893612">အိမ်မွမ်းမံရေး</translation>
 <translation id="2202627062836089804">သင့်ကတ်၏ ကျောဘက်ခြမ်း</translation>
 <translation id="2204482073374652408">အပ်ဒိတ်လုပ်ခြင်း ပြီးသွားပြီ။</translation>
+<translation id="2207770355672215546">အမြဲခွင့်ပြုရန်၊ မည်သည့်ကတ်ဖြင့်မဆို</translation>
 <translation id="2208053750671792556">ကုဒ်မရရှိဘူးလား။ <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">ဗန်း ၃</translation>
 <translation id="2210794033760923560">တိုင်ကြားချက် အပ်လုဒ်လုပ်ရန်</translation>
@@ -1524,6 +1526,7 @@
 <translation id="4050599136622776556">Chromium က ငွေပေးချေနည်းလမ်းများကို ပြင်ရန် ကြိုးပမ်းနေသည်။</translation>
 <translation id="405399507749852140">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရယူနိုင်သည်</translation>
 <translation id="4056223980640387499">Sepia</translation>
+<translation id="4059523390906550209">‘သတိထားရမည့်ဒေတာ’ အကာအကွယ်အကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="4063063121357725926">သင့်ဈေးခြင်းတောင်းအတွက် လျှော့ဈေးရှာဖွေရန် Google ထံမှ အကူအညီယူနိုင်သည်</translation>
 <translation id="406358100705415968">လုပ်ငန်းခွင်ဘေးကင်းမှု အကာအကွယ်ပစ္စည်း</translation>
 <translation id="4063924980214801036">ကတ်များကို ပိုမိုမြန်ဆန်စွာ အတည်ပြုရန် စက်လော့ခ်ဖွင့်ခြင်းကို သုံးပါ</translation>
@@ -1683,6 +1686,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">ပိတ်ဆို့ရန် (မူရင်း)</translation>
 <translation id="4314815835985389558">စင့်ခ်ကို စီမံရန်</translation>
+<translation id="4316057107946726368">စာလုံးရေ <ph name="MAX_CHAR_COUNT" /> လုံး အများဆုံးရှိသော အတည်ပြုမက်ဆေ့ဂျ် ထည့်ပါ။ စာလုံးရေ <ph name="MAX_CHAR_COUNT" /> လုံးအနက် <ph name="ACTUAL_CHAR_COUNT" /> လုံး သုံးထားသည်။</translation>
 <translation id="4318213823155573975">ခေါင်းဆောင်း</translation>
 <translation id="4318312030194671742">Paint Preview Compositor Service</translation>
 <translation id="4318566738941496689">သင့်စက်၏ အမည်နှင့် ကွန်ရက်လိပ်စာ</translation>
@@ -2356,6 +2360,7 @@
 <translation id="5695542892312572833">သင့်ဝယ်ယူမှုကို စိစစ်ရန်နှင့် အပြီးသတ်ရန် Windows Hello ကို သုံးမလား။</translation>
 <translation id="5699628521141772782">နို့ထွက်ပစ္စည်းနှင့် ကြက်ဥ</translation>
 <translation id="5700761515355162635">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများ ခွင့်ပြုထားသည်</translation>
+<translation id="5701023235904684227"><ph name="READERNAME" /> ကို ထိန်းချုပ်ပြီး ၎င်းကို သုံးနိုင်သော စမတ်ကတ်သုံးခွင့် ရယူမလား။</translation>
 <translation id="5701381305118179107">အလယ်</translation>
 <translation id="5707154300732650394">သင့်ခရီးစဉ်ကို ဆက်လုပ်ရန်</translation>
 <translation id="57094364128775171">ခိုင်မာသည့် စကားဝှက် အကြံပြုရန်…</translation>
@@ -2427,7 +2432,6 @@
 <translation id="5866898949289125849">သင်သည် ဆော့ဖ်ဝဲအင်ဂျင်နီယာတူးလ်များ စာမျက်နှာကို ကြည့်နေသည်</translation>
 <translation id="5869405914158311789">ဤဆိုက်ကို ဆက်သွယ်၍မရပါ</translation>
 <translation id="5869522115854928033">သိမ်းဆည်းထားသည့် စကားဝှက်များ</translation>
-<translation id="5872318519182427835">ဤနေရာတွင် စာရင်းသွင်းထားသည့် ဝဘ်ဆိုက်များနှင့် ၎င်းတို့၏ ဒိုမိန်းအပိုင်းခွဲများအပေါ် သက်ရောက်မှုရှိသည်။ ဥပမာ “google.com” ကိုထည့်ခြင်းဖြင့် google.com ၏ တစ်စိတ်တစ်ပိုင်းဖြစ်သော mail.google.com အတွက်လည်း ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ဖွင့်နိုင်သည်။</translation>
 <translation id="5872692522325383488">IBAN သိမ်းလိုက်သည်</translation>
 <translation id="5873297634595728366">ဒီဇယ်ယာဉ်</translation>
 <translation id="5877831137320480913">အလှအပနှင့် ကြံ့ခိုင်ရေး</translation>
@@ -2638,6 +2642,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC-</translation>
 <translation id="6295855836753816081">သိမ်းဆည်းနေသည်...</translation>
+<translation id="6298456705131259420">ဤနေရာတွင် ဖော်ပြထားသော ဝဘ်ဆိုက်များတွင် သက်ရောက်သည်။ ဒိုမိန်းအမည်ရှေ့တွင် “[*.]” ကိုထည့်ခြင်းဖြင့် ဒိုမိန်းတစ်ခုလုံးအတွက် ခြွင်းချက်ပြုလုပ်ပါမည်။ ဥပမာ “[*.]google.com” ကိုထည့်ခြင်းဖြင့် google.com ၏ တစ်စိတ်တစ်ပိုင်းဖြစ်သော mail.google.com အတွက်လည်း ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ဖွင့်နိုင်သည်။</translation>
 <translation id="6300452962057769623">{0,plural, =0{သင့်စက်ကို ယခုပြန်စမည်}=1{သင့်စက်ကို 1 စက္ကန့်အတွင်း ပြန်စမည်}other{သင့်စက်ကို # စက္ကန့်အတွင်း ပြန်စမည်}}</translation>
 <translation id="6301104306974789820">ဈေးနှုန်းစောင့်ကြည့်မှု အကြောင်းကြားချက်များ ရယူရန်</translation>
 <translation id="6304398603974202180">မာလ်တီမီဒီယာ ဆော့ဖ်ဝဲ</translation>
@@ -2669,6 +2674,7 @@
 <translation id="6355392890578844978">ဤဘရောင်ဇာကို ကုမ္ပဏီ သို့မဟုတ် အခြားအဖွဲ့အစည်းက စီမံခန့်ခွဲမထားပါ။ ဤစက်ပေါ်ရှိ လုပ်ဆောင်ချက်ကို Chromium ပြင်ပမှ စီမံခန့်ခွဲထားခြင်း ဖြစ်နိုင်သည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">ငွေပေးချေနည်းလမ်းများကို ပြင်ပါ</translation>
 <translation id="6358450015545214790">ဒါတွေက ဘာကို ဆိုလိုတာလဲ?</translation>
+<translation id="6360213755783740931">‘မဲလ်ဝဲ’ အကာအကွယ်အကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">မှတ်တမ်းများ ကြည့်ရန်</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ပရောက်စီ၊ firewall နှင့် လုံခြုံသော DNS စီစဉ်သတ်မှတ်မှုကို စစ်ဆေးနေသည်<ph name="END_LINK" /></translation>
@@ -2726,6 +2732,7 @@
 <translation id="6443406338865242315">သင်ထည့်သွင်းထားသည့် နောက်ဆက်တွဲနှင့် ပလတ်အင်များ</translation>
 <translation id="6446608382365791566">နောက်ထပ် အချက်အလက်များကို ထည့်ပါ</translation>
 <translation id="6447842834002726250">ကူကီးများ</translation>
+<translation id="6448371595882710519">‘ဒေတာသတ်မှတ်ချက်များ’ အကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="6450077999570164268">ကွာတို</translation>
 <translation id="6450212216969386944">Chou 40 စာအိတ်</translation>
 <translation id="6451458296329894277">ပုံစံ ပြန်လည်တင်မှုကို အတည်ပြုရန်</translation>

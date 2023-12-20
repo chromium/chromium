@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">పేజీ సైజ్‌</translation>
 <translation id="1082009148392559545">స్క్రీన్ సేవర్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="1094693127011229778">IP అడ్రస్ అందుబాటులో లేదు</translation>
+<translation id="1116694919640316211">గురించి</translation>
 <translation id="1118572504348554005">ఈ ఫారమ్ ద్వారా మీరు సబ్‌మిట్ చేసిన ఫీడ్‌బ్యాక్‌ను మా పార్ట్‌నర్‌లతో షేర్ చేసే అవకాశం ఉంది. బగ్‌లను, ఇతర సమస్యలను పరిష్కరించడానికి మీ ఫీడ్‌బ్యాక్ ఉపయోగపడవచ్చు. పాస్‌వర్డ్‌ల వంటి గోప్యమైన సమాచారాన్ని ఇవ్వకండి.</translation>
 <translation id="1119447706177454957">అంతర్గత ఎర్రర్</translation>
 <translation id="1124772482545689468">వినియోగదారు</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">వినియోగంతో బ్యాటరీ సామర్థ్యం క్షీణిస్తుంది</translation>
 <translation id="6191293864534840972">పేరు తప్పుగా ఉన్న సర్వర్లు</translation>
+<translation id="6196607555925437199">రీక్రియేట్ చేయండి</translation>
 <translation id="6205145102504628069">క్లౌడ్ ఫ్లో</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">స్కానర్‌లు ఏవీ అందుబాటులో లేవు</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 అడ్రస్‌</translation>
 <translation id="7513770521371759388">దిగువ</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">క్రియేట్ చేయండి</translation>
 <translation id="7528507600602050979">సహాయక కంటెంట్ అందుబాటులో లేదు</translation>
+<translation id="753556296624075801">Google అందిస్తోంది</translation>
 <translation id="7535791657097741517">లేత రంగు రూపాన్ని ఆన్ చేయండి</translation>
 <translation id="7550715992156305117">సమస్య విశ్లేషణ రొటీన్‌లు</translation>
 <translation id="7551123448725492271">పరికరం రకం ఆడియో పరికరం.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">ఫైల్‌ను జోడించండి</translation>
 <translation id="8230672074305416752">డిఫాల్ట్ నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
 <translation id="8246209727385807362">తెలియని క్యారియర్</translation>
+<translation id="8261506727792406068">తొలగించండి</translation>
 <translation id="8262870577632766028">1 గంట</translation>
 <translation id="827422111966801947">నీలిమందు రంగు</translation>
 <translation id="8286154143153872371">వాల్‌పేపర్‌ను చూడటానికి, దయచేసి నెట‌వర్క్‌కు కనెక్ట్ చేసి, పేజీని రీలోడ్ చేయండి.</translation>

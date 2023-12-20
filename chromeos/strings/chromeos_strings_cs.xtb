@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Velikost stránky</translation>
 <translation id="1082009148392559545">Stahování spořiče obrazovky</translation>
 <translation id="1094693127011229778">Není k dispozici IP adresa</translation>
+<translation id="1116694919640316211">Informace</translation>
 <translation id="1118572504348554005">Zpětnou vazbu odeslanou prostřednictvím tohoto formuláře můžeme za účelem odstraňování chyb a jiných nahlášených problémů sdílet s našimi partnery. Nezahrnujte citlivé informace, jako jsou hesla.</translation>
 <translation id="1119447706177454957">Interní chyba</translation>
 <translation id="1124772482545689468">Uživatel</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Kapacita baterie se používáním snižuje</translation>
 <translation id="6191293864534840972">Názvové servery nemají správný formát</translation>
+<translation id="6196607555925437199">Vytvořit znovu</translation>
 <translation id="6205145102504628069">Plynoucí oblaka</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nejsou k dispozici žádné skenery</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7513770521371759388">dole</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Vytvořit</translation>
 <translation id="7528507600602050979">Obsah nápovědy není k dispozici</translation>
+<translation id="753556296624075801">Používá technologii Google</translation>
 <translation id="7535791657097741517">Zapnout světlý motiv</translation>
 <translation id="7550715992156305117">Diagnostické rutiny</translation>
 <translation id="7551123448725492271">Zařízení je audiozařízení.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Přiložit soubor</translation>
 <translation id="8230672074305416752">Nepodařilo se pingnout bránu výchozí sítě</translation>
 <translation id="8246209727385807362">Neznámý operátor</translation>
+<translation id="8261506727792406068">Smazat</translation>
 <translation id="8262870577632766028">1 hodina</translation>
 <translation id="827422111966801947">Indigová</translation>
 <translation id="8286154143153872371">Pokud chcete zobrazit tapetu, připojte se k síti a znovu načtěte stránku.</translation>

@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">पेजचा आकार</translation>
 <translation id="1082009148392559545">स्क्रीन सेव्हर डाउनलोड करत आहे</translation>
 <translation id="1094693127011229778">आयपी अ‍ॅड्रेस उपलब्ध नाही</translation>
+<translation id="1116694919640316211">बद्दल</translation>
 <translation id="1118572504348554005">बग आणि तुम्ही आमच्याकडे तक्रार केलेल्या इतर समस्यांचे निराकरण करण्यासाठी या फॉर्मद्वारे सबमिट केलेला फीडबॅक आम्ही आमच्या भागीदारांसोबत शेअर करू शकतो. पासवर्डसारखी संवेदनशील माहिती समाविष्ट करू नका.</translation>
 <translation id="1119447706177454957">अंतर्गत एरर</translation>
 <translation id="1124772482545689468">वापरकर्ता</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">वापरानुसार बॅटरीची क्षमता कमी होत जाते</translation>
 <translation id="6191293864534840972">समस्या असलेले नेम सर्व्हर</translation>
+<translation id="6196607555925437199">पुन्हा तयार करा</translation>
 <translation id="6205145102504628069">ढगांचा प्रवाह</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">कोणतेही स्कॅनर उपलब्ध नाहीत</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 पत्ता</translation>
 <translation id="7513770521371759388">तळाशी</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">तयार करा</translation>
 <translation id="7528507600602050979">मदत आशय उपलब्ध नाही</translation>
+<translation id="753556296624075801">Google द्वारे प्रायोजित</translation>
 <translation id="7535791657097741517">फिकट थीम सुरू करा</translation>
 <translation id="7550715992156305117">निदानाशी संबंधित रूटीन</translation>
 <translation id="7551123448725492271">डिव्हाइस हे ऑडिओ डिव्हाइस आहे.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">फाइल अटॅच करा</translation>
 <translation id="8230672074305416752">डीफॉल्ट नेटवर्क गेटवे पिंग करता आला नाही</translation>
 <translation id="8246209727385807362">माहीत नसलेला वाहक</translation>
+<translation id="8261506727792406068">हटवा</translation>
 <translation id="8262870577632766028">१ तास</translation>
 <translation id="827422111966801947">नीळ</translation>
 <translation id="8286154143153872371">कृपया वॉलपेपर पाहण्यासाठी नेटवर्कशी कनेक्ट करा आणि पेज रीलोड करा.</translation>

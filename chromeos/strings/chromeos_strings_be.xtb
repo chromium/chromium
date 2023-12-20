@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Памер старонкі</translation>
 <translation id="1082009148392559545">Ідзе спампоўванне застаўкі</translation>
 <translation id="1094693127011229778">IP-адрас недаступны</translation>
+<translation id="1116694919640316211">Інфармацыя</translation>
 <translation id="1118572504348554005">Каб знаходзіць і выпраўляць памылкі і іншыя непаладкі, аб якіх вы паведамляеце нам, мы можам абагульваць водгукі, адпраўленыя праз гэту форму, з нашымі партнёрамі. Не ўказвайце асабістую інфармацыю (напрыклад, паролі).</translation>
 <translation id="1119447706177454957">Унутраная памылка</translation>
 <translation id="1124772482545689468">Карыстальнік</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Ёмістасць акумулятара зніжаецца па меры яго выкарыстання</translation>
 <translation id="6191293864534840972">Серверы даменных імён маюць няправільны фармат</translation>
+<translation id="6196607555925437199">Стварыць нанава</translation>
 <translation id="6205145102504628069">Рух аблокаў</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Няма даступных сканераў</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">Адрас IPv6</translation>
 <translation id="7513770521371759388">знізу</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Стварыць</translation>
 <translation id="7528507600602050979">Даведачнае змесціва недаступнае</translation>
+<translation id="753556296624075801">Тэхналогіі Google</translation>
 <translation id="7535791657097741517">Уключыць светлую тэму</translation>
 <translation id="7550715992156305117">Паслядоўнасці дзеянняў для дыягностыкі</translation>
 <translation id="7551123448725492271">Гэта аўдыяпрылада.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Далучыць файл</translation>
 <translation id="8230672074305416752">Не ўдалося праверыць сувязь са стандартным сеткавым шлюзам</translation>
 <translation id="8246209727385807362">Невядомы аператар</translation>
+<translation id="8261506727792406068">Выдаліць</translation>
 <translation id="8262870577632766028">1 гадзіна</translation>
 <translation id="827422111966801947">Індыга</translation>
 <translation id="8286154143153872371">Каб праглядаць шпалеры, падключыце прыладу да інтэрнэту і перазагрузіце старонку.</translation>

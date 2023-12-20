@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">ପୃଷ୍ଠାର ଆକାର</translation>
 <translation id="1082009148392559545">ସ୍କ୍ରିନ ସେଭର ଡାଉନଲୋଡ କରାଯାଉଛି</translation>
 <translation id="1094693127011229778">IP ଠିକଣା ଉପଲବ୍ଧ ନାହିଁ</translation>
+<translation id="1116694919640316211">ବିଷୟରେ</translation>
 <translation id="1118572504348554005">ଆପଣ ଆମକୁ ରିପୋର୍ଟ କରିଥିବା ବଗ ଏବଂ ଅନ୍ୟ ସମସ୍ୟାଗୁଡ଼ିକର ଟ୍ରବୁଲସୁଟ କରିବା ପାଇଁ ଏହି ଫର୍ମ ମାଧ୍ୟମରେ ଦାଖଲ କରାଯାଇଥିବା ମତାମତକୁ ଆମେ ଆମ ପାର୍ଟନରମାନଙ୍କ ସହ ସେୟାର କରିପାରୁ। ପାସୱାର୍ଡଗୁଡ଼ିକ ପରି ସମ୍ବେଦନଶୀଳ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ।</translation>
 <translation id="1119447706177454957">ଇଣ୍ଟର୍ନଲ୍‌ ତ୍ରୁଟି</translation>
 <translation id="1124772482545689468">ୟୁଜର</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ବ୍ୟବହାର ଯୋଗୁଁ ବ୍ୟାଟେରୀର କ୍ଷମତା ହ୍ରାସ ପାଏ</translation>
 <translation id="6191293864534840972">ତ୍ରୁଟିପୂର୍ଣ୍ଣ ନେମ୍ ସର୍ଭର୍</translation>
+<translation id="6196607555925437199">ପୁଣି ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6205145102504628069">କ୍ଲାଉଡ ଫ୍ଲୋ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">କୌଣସି ସ୍କାନର୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 ଠିକଣା</translation>
 <translation id="7513770521371759388">ନିମ୍ନ</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">ତିଆରି କରନ୍ତୁ</translation>
 <translation id="7528507600602050979">ସହାୟତା ବିଷୟବସ୍ତୁ ଉପଲବ୍ଧ ନାହିଁ</translation>
+<translation id="753556296624075801">Google ଦ୍ଵାରା ପରିଚାଳିତ</translation>
 <translation id="7535791657097741517">ହାଲୁକା ଥିମ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="7550715992156305117">ଡାଇଗ୍ନୋଷ୍ଟିକ୍ ରୁଟିନ୍</translation>
 <translation id="7551123448725492271">ଡିଭାଇସଟି ଏକ ଅଡିଓ ଡିଭାଇସ ଅଟେ।</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">ଫାଇଲ୍ ସଂଲଗ୍ନ କରନ୍ତୁ</translation>
 <translation id="8230672074305416752">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8246209727385807362">ଅଜଣା ବାହକ</translation>
+<translation id="8261506727792406068">ବିଲୋପ</translation>
 <translation id="8262870577632766028">1 ଘଣ୍ଟା</translation>
 <translation id="827422111966801947">ଘନନୀଳ</translation>
 <translation id="8286154143153872371">ୱାଲପେପର୍ ଦେଖିବାକୁ ଦୟାକରି ଏକ ନେଟୱାର୍କରେ ସଂଯୋଗ କରି ପୃଷ୍ଠାଟିକୁ ପୁଣି ଲୋଡ୍ କରନ୍ତୁ।</translation>

@@ -40,6 +40,7 @@
 <translation id="1153356358378277386">페어링된 기기</translation>
 <translation id="1155734730463845512">현재 배터리 잔량 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">켜져 있으며 사용 중임</translation>
+<translation id="1163437384438183174">앱 표시줄에서 휴대전화 허브 삭제</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">사용 중인 USB-C 케이블이 디스플레이에 제대로 연결되지 않을 수 있습니다.</translation>
 <translation id="1175572348579024023">스크롤</translation>
@@ -70,6 +71,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" />이 연결되었습니다.</translation>
 <translation id="1240638468526743569">앱</translation>
 <translation id="1242883863226959074">기기</translation>
+<translation id="1245644940275736236">어시스턴트로 이동</translation>
 <translation id="124678866338384709">현재 탭 닫기</translation>
 <translation id="1246890715821376239">지원되지 않는 앱</translation>
 <translation id="1247372569136754018">마이크(내부)</translation>
@@ -692,6 +694,7 @@
 <translation id="383629559565718788">키보드 설정 표시</translation>
 <translation id="384082539148746321">템플릿을 삭제할까요?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> 키를 누른 상태에서 <ph name="KEY_ONE" /> 또는 <ph name="KEY_TWO" /> 또는 <ph name="KEY_THREE" /> 또는 <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">네트워크 정보 없음</translation>
 <translation id="385051799172605136">뒤로</translation>
 <translation id="385300504083504382">시작</translation>
@@ -926,6 +929,7 @@
 <translation id="4759238208242260848">다운로드</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + 위쪽 화살표</translation>
 <translation id="4762573482154983647">앱 숨기기</translation>
+<translation id="4762802395013012237">5피트를 m로</translation>
 <translation id="4763885921995354846">카메라 액세스 권한이 있는 모든 앱과 웹사이트에서 카메라에 액세스할 수 있게 됩니다. 웹페이지를 새로고침하거나 앱을 다시 시작해야 할 수도 있습니다.</translation>
 <translation id="4774338217796918551">내일 <ph name="COME_BACK_TIME" />에 다시 사용해 주세요.</translation>
 <translation id="4776584068981882959">여전히 비밀번호를 확인할 수 없습니다. 다시 시도하세요.</translation>
@@ -968,6 +972,7 @@
 <translation id="491504982845934899">기기 설정 후 <ph name="NETWORK_NAME" /> 활성화</translation>
 <translation id="4917385247580444890">강함</translation>
 <translation id="4918086044614829423">수락</translation>
+<translation id="491907188205944472">런처에서 직접 필요한 항목을 검색합니다</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" />에서 카메라를 사용 중입니다.</translation>
 <translation id="492453977506755176">캡처 모드 키</translation>
 <translation id="4925542575807923399">이 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되도록 계정 관리자가 요청합니다.</translation>
@@ -1118,6 +1123,7 @@
 <translation id="5518068085000130971">기본 앱입니다. 팁과 도움말은 기본 제공되는 앱인 살펴보기를 참고하세요. 시작 도움말, 추천 앱, 특별 이벤트, 최신 Chromebook 기능을 확인할 수 있습니다.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">관리자가 모든 eSIM 프로필을 삭제했습니다. 자세한 내용은 관리자에게 문의하세요.</translation>
+<translation id="5520909879404821039">프랑스어로 안녕</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" />이 연결을 시도하는 중입니다.</translation>
 <translation id="5529587891732734495">전송 일시중지</translation>
 <translation id="5532994612895037630">전체 화면을 녹화하려면 아무 곳이나 탭하세요.</translation>
@@ -1695,6 +1701,7 @@
 <translation id="7886277072580235377">로그아웃하면 인터넷 세션이 삭제됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">이메일 보내 줘</translation>
 <translation id="7893503627044934815">파일을 표시하지 않음</translation>
+<translation id="7893547474469215105">천정의 정의</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">화면 회전 단축키를 누르셨습니다. 화면을 회전하시겠습니까?</translation>
 <translation id="7897626842031123113">상태 표시줄, 시간 <ph name="TIME" />,
@@ -1710,6 +1717,7 @@
 <translation id="7904094684485781019">이 계정의 관리자가 멀티 로그인을 허용하지 않습니다.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">기기 <ph name="DEVICECOUNT" />대 연결됨</translation>
+<translation id="7923534281713082605">날씨</translation>
 <translation id="7926080067315048321">웹에서 Google Tasks 할 일 모두 보기</translation>
 <translation id="7930731167419639574">음성이 이제 로컬에서 처리되고 음성기록이 오프라인에서 작동합니다.</translation>
 <translation id="7932451802722951285">Google Calendar에서 열기</translation>
@@ -1856,6 +1864,7 @@
 <translation id="8555757996376137129">현재 데스크를 삭제합니다.</translation>
 <translation id="856298576161209842"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기의 업데이트를 권장합니다.</translation>
 <translation id="8563862697512465947">알림 설정</translation>
+<translation id="8569751806372591456">다음은 몇 가지 제안사항입니다.</translation>
 <translation id="857201607579416096">메뉴가 화면 오른쪽 하단으로 이동했습니다.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> 키를 누른 상태에서 링크 클릭</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1899,6 +1908,7 @@
 <translation id="875593634123171288">VPN 설정 표시</translation>
 <translation id="8759408218731716181">멀티 로그인을 설정할 수 없음</translation>
 <translation id="8763883995157866248">기기를 절전 모드로 설정</translation>
+<translation id="877404052021108314">화씨 90도를 섭씨로</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, 설치된 앱, 차단됨</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />에 연결</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1907,6 +1917,7 @@
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> 폴더</translation>
 <translation id="880709030178078220">"도와줘"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">스크린샷 바로가기, Ctrl + Shift + 전체보기 모드 키 누르기</translation>
 <translation id="881757059229893486">입력 방법 설정</translation>
 <translation id="8819728065740986820">자동 조절 충전 사용 설정됨</translation>
 <translation id="8825863694328519386">돌아가려면 왼쪽에서 스와이프하세요.</translation>

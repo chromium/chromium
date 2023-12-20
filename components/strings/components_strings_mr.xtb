@@ -633,6 +633,7 @@
 <translation id="219906046732893612">घराच्या सजावटीशी संबंधित सेवा</translation>
 <translation id="2202627062836089804">तुमच्या कार्डची मागील बाजू</translation>
 <translation id="2204482073374652408">अपडेट करणे संपले!</translation>
+<translation id="2207770355672215546">कोणतेही कार्ड वापरून नेहमी अनुमती द्या</translation>
 <translation id="2208053750671792556">तुमचा कोड मिळाला नाही? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">ट्रे ३</translation>
 <translation id="2210794033760923560">अहवाल अपलोड करा</translation>
@@ -2428,7 +2429,6 @@
 <translation id="5866898949289125849">तुम्ही डेव्हलपर टूल पेज पाहत आहात</translation>
 <translation id="5869405914158311789">या साइटवर पोहचणे शक्य नाही</translation>
 <translation id="5869522115854928033">सेव्ह केलेले पासवर्ड</translation>
-<translation id="5872318519182427835">इथे सूचिबद्ध केलेल्या साइट आणि त्यांच्या सबडोमेनवर परिणाम करते. उदाहरणार्थ, “google.com” जोडण्याचा अर्थ असा आहे, की तृतीय पक्ष कुकीदेखील mail.google.com साठी अ‍ॅक्टिव्ह राहू शकतात, कारण त्या google.com चा भाग आहेत.</translation>
 <translation id="5872692522325383488">IBAN सेव्ह केला</translation>
 <translation id="5873297634595728366">डिझेलवर चालणारी वाहने</translation>
 <translation id="5877831137320480913">सौंदर्य आणि फिटनेस</translation>
@@ -2641,6 +2641,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6295855836753816081">सेव्ह करत आहे...</translation>
+<translation id="6298456705131259420">येथे सूचीबद्ध केलेल्या साइटवर परिणाम करते. डोमेन नेमच्या आधी “[*.]” घातल्याने संपूर्ण डोमेनसाठी एक्सेप्शन तयार होते. उदाहरणार्थ, “[*.]google.com” जोडण्याचा अर्थ असा आहे, की तृतीय पक्ष कुकी mail.google.com साठीदेखील अ‍ॅक्टिव्ह असू शकतात, कारण ते google.com चा भाग आहे.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Your device will restart now}=1{तुमचे डिव्हाइस एका सेकंदामध्ये रीस्टार्ट होईल}other{तुमचे डिव्हाइस # सेकंदांमध्ये रीस्टार्ट होईल}}</translation>
 <translation id="6301104306974789820">किमतीचा माग ठेवणाऱ्या सूचना मिळवा</translation>
 <translation id="6304398603974202180">मल्‍टीमीडिया सॉफ्‍टवेअर</translation>

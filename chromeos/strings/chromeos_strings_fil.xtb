@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Laki ng page</translation>
 <translation id="1082009148392559545">Dina-download ang screen saver</translation>
 <translation id="1094693127011229778">Hindi available ang IP address</translation>
+<translation id="1116694919640316211">Tungkol sa</translation>
 <translation id="1118572504348554005">Posibleng mag-share kami ng feedback na isinumite sa pamamagitan ng form na ito sa aming mga partner para mag-troubleshoot ng mga bug at iba pang isyu na iuulat mo sa amin. Huwag magsama ng sensitibong impormasyon tulad ng mga password.</translation>
 <translation id="1119447706177454957">Panloob na error</translation>
 <translation id="1124772482545689468">User</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Nababawasan ang kapasidad ng baterya sa paggamit</translation>
 <translation id="6191293864534840972">Mali ang format ng mga name server</translation>
+<translation id="6196607555925437199">Gawin ulit</translation>
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Walang available na scanner</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 address</translation>
 <translation id="7513770521371759388">ibaba</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Gumawa</translation>
 <translation id="7528507600602050979">Hindi available ang content ng tulong</translation>
+<translation id="753556296624075801">Pinapagana ng Google</translation>
 <translation id="7535791657097741517">I-on ang maliwanag na tema</translation>
 <translation id="7550715992156305117">Mga Diagnostic na Routine</translation>
 <translation id="7551123448725492271">Audio device ang device.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Mag-attach ng file</translation>
 <translation id="8230672074305416752">Hindi na-ping ang default na network gateway</translation>
 <translation id="8246209727385807362">Hindi kilalang carrier</translation>
+<translation id="8261506727792406068">I-delete</translation>
 <translation id="8262870577632766028">1 oras</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Kumonekta sa network at i-reload ang page para makita ang wallpaper.</translation>

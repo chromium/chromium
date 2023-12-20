@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Sidestørrelse</translation>
 <translation id="1082009148392559545">Downloader pauseskærmen</translation>
 <translation id="1094693127011229778">IP-adresse er ikke tilgængelig</translation>
+<translation id="1116694919640316211">Om</translation>
 <translation id="1118572504348554005">Vi deler muligvis feedback, der indsendes via denne formular, med vores partnere for at finde og rette fejl samt løse andre problemer, du rapporterer til os. Medtag ikke følsomme oplysninger som f.eks. adgangskoder.</translation>
 <translation id="1119447706177454957">Intern fejl</translation>
 <translation id="1124772482545689468">Bruger</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Batterikapaciteten falder løbende, når enheden er i brug</translation>
 <translation id="6191293864534840972">Ugyldige navneservere</translation>
+<translation id="6196607555925437199">Genskab</translation>
 <translation id="6205145102504628069">Flow med skyer</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Der er ingen tilgængelige scannere</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6-adresse</translation>
 <translation id="7513770521371759388">nederst</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Opret</translation>
 <translation id="7528507600602050979">Indholdet i Hjælp er ikke tilgængeligt</translation>
+<translation id="753556296624075801">Leveret af Google</translation>
 <translation id="7535791657097741517">Aktivér Lyst tema</translation>
 <translation id="7550715992156305117">Diagnostikrutiner</translation>
 <translation id="7551123448725492271">Enheden er en lydenhed.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Vedhæft fil</translation>
 <translation id="8230672074305416752">Kunne ikke pinge standardnetværkets gateway</translation>
 <translation id="8246209727385807362">Ukendt mobilselskab</translation>
+<translation id="8261506727792406068">Slet</translation>
 <translation id="8262870577632766028">1 time</translation>
 <translation id="827422111966801947">Indigoblå</translation>
 <translation id="8286154143153872371">Opret forbindelse til et netværk, og genindlæs siden for at se baggrunden.</translation>

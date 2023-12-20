@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">पेजको आकार</translation>
 <translation id="1082009148392559545">स्क्रिन सेभर डाउनलोड गरिँदै छ</translation>
 <translation id="1094693127011229778">IP ठेगाना उपलब्ध छैन</translation>
+<translation id="1116694919640316211">बारेमा</translation>
 <translation id="1118572504348554005">हामी यो फाराममार्फत पेस गरिएका प्रतिक्रिया त्रुटि सच्याउने र तपाईंले हामीलाई जानकारी गराउने अन्य समस्याहरू निवारण गर्ने प्रयोजनका लागि हाम्रा साझेदारसँग सेयर गर्न सक्छौँ। आफ्नो पासवर्ड जस्ता संवेदनशील जानकारी समावेश नगर्नुहोस्।</translation>
 <translation id="1119447706177454957">आन्तरिक त्रुटि</translation>
 <translation id="1124772482545689468">प्रयोगकर्ता</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">प्रयोग गर्दै जाँदा ब्याट्री टिक्ने दर घट्दै जान्छ</translation>
 <translation id="6191293864534840972">डोमेन नेम सर्भरहरूको ढाँचा मिलेको छैन</translation>
+<translation id="6196607555925437199">फेरि बनाउनुहोस्</translation>
 <translation id="6205145102504628069">क्लाउड फ्लो</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">कुनै पनि स्क्यानर उपलब्ध छैन</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 ठेगाना</translation>
 <translation id="7513770521371759388">पुछार</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">सिर्जना गर्नुहोस्</translation>
 <translation id="7528507600602050979">मद्दतसम्बन्धी सामग्री उपलब्ध छैन</translation>
+<translation id="753556296624075801">Google ले सञ्चालन गरेको</translation>
 <translation id="7535791657097741517">उज्यालो थिम अन गर्नुहोस्</translation>
 <translation id="7550715992156305117">डायग्नोस्टिक रुटिनहरू</translation>
 <translation id="7551123448725492271">यो डिभाइस अडियो डिभाइस हो।</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">फाइल समावेश गर्नुहोस्</translation>
 <translation id="8230672074305416752">डिफल्ट नेटवर्कको गेटवे पिङ गर्न सकिएन</translation>
 <translation id="8246209727385807362">अज्ञात सेवा प्रदायक</translation>
+<translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8262870577632766028">१ घण्टा</translation>
 <translation id="827422111966801947">इन्डिगो</translation>
 <translation id="8286154143153872371">वालपेपर हेर्न कृपया इन्टरनेटमा कनेक्ट गर्नुहोस् र पेज रिलोड गर्नुहोस्।</translation>

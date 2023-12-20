@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Sivun koko</translation>
 <translation id="1082009148392559545">Ladataan näytönsäästäjää</translation>
 <translation id="1094693127011229778">IP-osoite ei ole käytettävissä</translation>
+<translation id="1116694919640316211">Tietoja asetuksista</translation>
 <translation id="1118572504348554005">Saatamme jakaa tämän lomakkeen kautta lähetetyn palautteen yhteistyökumppaneillemme bugien ja muiden ilmoittamiesi virheiden korjausta varten. Älä kerro arkaluontoisia tietoja, esimerkiksi salasanaa.</translation>
 <translation id="1119447706177454957">Sisäinen virhe</translation>
 <translation id="1124772482545689468">Käyttäjä</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Akun kapasiteetti pienenee käytössä</translation>
 <translation id="6191293864534840972">Nimipalvelimet väärän muotoisia</translation>
+<translation id="6196607555925437199">Luo uudelleen</translation>
 <translation id="6205145102504628069">Pilvityönkulku</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Skannereita ei saatavilla</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6-osoite</translation>
 <translation id="7513770521371759388">alareuna</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Luo</translation>
 <translation id="7528507600602050979">Ohjesisältöä ei ole saatavilla</translation>
+<translation id="753556296624075801">Palvelun tarjoaa Google</translation>
 <translation id="7535791657097741517">Laita vaalea teema päälle</translation>
 <translation id="7550715992156305117">Diagnostiikkaohjelmat</translation>
 <translation id="7551123448725492271">Laite on audiolaite.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Liitä tiedosto</translation>
 <translation id="8230672074305416752">Oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
 <translation id="8246209727385807362">Tuntematon operaattori</translation>
+<translation id="8261506727792406068">Poista</translation>
 <translation id="8262870577632766028">1 tunti</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Yhdistä verkkoon ja päivitä sivu nähdäksesi taustakuvan.</translation>

@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">পৃষ্ঠার সাইজ</translation>
 <translation id="1082009148392559545">স্ক্রিন সেভার ডাউনলোড করা হচ্ছে</translation>
 <translation id="1094693127011229778">IP অ্যাড্রেস উপলভ্য নয়</translation>
+<translation id="1116694919640316211">সম্পর্কে</translation>
 <translation id="1118572504348554005">আমরা আমাদের পার্টনারদের সাথে এই ফর্মের মাধ্যমে জমা দেওয়া মতামত শেয়ার করতে পারি, যাতে আপনার অভিযোগ করা সমস্যা এবং অন্যান্য সমস্যার সমাধান করা যায়। পাসওয়ার্ডের মতো সংবেদনশীল তথ্য দেবেন না।</translation>
 <translation id="1119447706177454957">অভ্যন্তরীণ ত্রুটি</translation>
 <translation id="1124772482545689468">ব্যবহারকারী</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ব্যবহার করতে করতে ব্যাটারির ক্ষমতা কমে আসতে থাকে</translation>
 <translation id="6191293864534840972">ডোমেন নেম সার্ভারের ফর্ম্যাট ঠিক নেই</translation>
+<translation id="6196607555925437199">আবার তৈরি করুন</translation>
 <translation id="6205145102504628069">ক্লাউড ফ্লো</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">কোনও স্ক্যানার উপলভ্য নেই</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 ঠিকানা</translation>
 <translation id="7513770521371759388">নিচে</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">তৈরি করুন</translation>
 <translation id="7528507600602050979">সহায়তা কন্টেন্ট উপলভ্য নেই</translation>
+<translation id="753556296624075801">Google দ্বারা পরিচালিত</translation>
 <translation id="7535791657097741517">হালকা থিম চালু করুন</translation>
 <translation id="7550715992156305117">ডায়াগনস্টিক রুটিন</translation>
 <translation id="7551123448725492271">ডিভাইস একটি অডিও ডিভাইস।</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">ফাইল সংযুক্ত করুন</translation>
 <translation id="8230672074305416752">ডিফল্ট নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
 <translation id="8246209727385807362">অজানা পরিষেবা প্রদানকারী</translation>
+<translation id="8261506727792406068">মুছুন</translation>
 <translation id="8262870577632766028">১ ঘণ্টা</translation>
 <translation id="827422111966801947">নীল</translation>
 <translation id="8286154143153872371">ওয়ালপেপার দেখার জন্য কোনও নেটওয়ার্কে কানেক্ট করে পৃষ্ঠা আবার লোড করুন।</translation>

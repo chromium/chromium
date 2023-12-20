@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Tamanho da página</translation>
 <translation id="1082009148392559545">Fazendo o download do protetor de tela</translation>
 <translation id="1094693127011229778">O endereço IP está indisponível</translation>
+<translation id="1116694919640316211">Sobre</translation>
 <translation id="1118572504348554005">Podemos compartilhar o feedback enviado pelo formulário com nossos parceiros a fim de solucionar bugs e outros problemas informados por você. Não inclua informações sensíveis, como senhas.</translation>
 <translation id="1119447706177454957">Erro interno</translation>
 <translation id="1124772482545689468">Usuário</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">A capacidade da bateria diminui com o uso</translation>
 <translation id="6191293864534840972">Servidores de nomes incorretos</translation>
+<translation id="6196607555925437199">Recriar</translation>
 <translation id="6205145102504628069">Fluxo das nuvens</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nenhum scanner disponível</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">Endereço IPv6</translation>
 <translation id="7513770521371759388">parte de baixo</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Criar</translation>
 <translation id="7528507600602050979">O conteúdo de ajuda não está disponível</translation>
+<translation id="753556296624075801">Tecnologia do Google</translation>
 <translation id="7535791657097741517">Ativar o tema claro</translation>
 <translation id="7550715992156305117">Rotinas de diagnóstico</translation>
 <translation id="7551123448725492271">Este é um dispositivo de áudio.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Anexar arquivo</translation>
 <translation id="8230672074305416752">Falha no ping do gateway de rede padrão</translation>
 <translation id="8246209727385807362">Operadora desconhecida</translation>
+<translation id="8261506727792406068">Excluir</translation>
 <translation id="8262870577632766028">1 hora</translation>
 <translation id="827422111966801947">Índigo</translation>
 <translation id="8286154143153872371">Conecte-se a uma rede e atualize a página para ver o plano de fundo.</translation>

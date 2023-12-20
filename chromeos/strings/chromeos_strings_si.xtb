@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">පිටු තරම</translation>
 <translation id="1082009148392559545">තිර සුරැකුම බාගැනීම</translation>
 <translation id="1094693127011229778">IP ලිපිනය ලබා ගත නොහැකිය</translation>
+<translation id="1116694919640316211">ගැන</translation>
 <translation id="1118572504348554005">ඔබ අප වෙත වාර්තා කරන දෝෂ සහ වෙනත් ගැටලු නිරාකරණය කිරීම සඳහා අපි මෙම පෝරමය හරහා ඉදිරිපත් කරන ලද ප්‍රතිපෝෂණ අපගේ හවුල්කරුවන් සමග බෙදා ගත හැක. මුරපද වැනි සංවේදී තොරතුරු ඇතුළත් නොකරන්න.</translation>
 <translation id="1119447706177454957">අභ්‍යන්තර දෝෂය</translation>
 <translation id="1124772482545689468">පරිශීලක</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">භාවිතය සමඟ බැටරි ධාරිතාව පහත වැටේ</translation>
 <translation id="6191293864534840972">විකෘති වූ නම් සේවාදායක</translation>
+<translation id="6196607555925437199">නැවත තනන්න</translation>
 <translation id="6205145102504628069">ක්ලවුඩ් ප්‍රවාහය</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ස්කෑනර ලබා ගත නොහැකිය</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 ලිපිනය</translation>
 <translation id="7513770521371759388">පහළ</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">නිර්මාණය කරන්න</translation>
 <translation id="7528507600602050979">උදවු අන්තර්ගතය නොමැත</translation>
+<translation id="753556296624075801">Google මඟින් බලගැන්වේ</translation>
 <translation id="7535791657097741517">ආලෝක තේමාව ක්‍රියාත්මක කරන්න</translation>
 <translation id="7550715992156305117">දෝෂ නිර්ණ දින චර්යා</translation>
 <translation id="7551123448725492271">උපාංගය ශ්‍රව්‍ය උපාංගයකි.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">ගොනුව අමුණන්න</translation>
 <translation id="8230672074305416752">පෙරනිමි ජාල වාහල පින්ග් කිරීම අසාර්ථක විය</translation>
 <translation id="8246209727385807362">නොදන්නා වාහකයෙකි</translation>
+<translation id="8261506727792406068">මකන්න</translation>
 <translation id="8262870577632766028">පැය 1</translation>
 <translation id="827422111966801947">අවරිය</translation>
 <translation id="8286154143153872371">වෝල්පේපරය බැලීමට කරුණාකර ජාලයකට සම්බන්ධ වී පිටුව නැවත පූරණය කරන්න.</translation>

@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Tamaño de la página</translation>
 <translation id="1082009148392559545">Descargando el protector de pantalla</translation>
 <translation id="1094693127011229778">La dirección IP no está disponible</translation>
+<translation id="1116694919640316211">Acerca de</translation>
 <translation id="1118572504348554005">Es posible que compartamos con nuestros socios los comentarios que se envían con este formulario para solucionar los errores y otros problemas que nos informes. No incluyas información sensible, como contraseñas.</translation>
 <translation id="1119447706177454957">Error interno</translation>
 <translation id="1124772482545689468">Usuario</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">La capacidad de la batería se reduce con el uso</translation>
 <translation id="6191293864534840972">el formato de los servidores de nombres es incorrecto</translation>
+<translation id="6196607555925437199">Volver a crear</translation>
 <translation id="6205145102504628069">Flujo de nubes</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">No hay escáneres disponibles</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">Dirección IPv6</translation>
 <translation id="7513770521371759388">inferior</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Crear</translation>
 <translation id="7528507600602050979">El contenido de ayuda no está disponible</translation>
+<translation id="753556296624075801">Con la tecnología de Google</translation>
 <translation id="7535791657097741517">Activar el tema claro</translation>
 <translation id="7550715992156305117">Rutinas de diagnóstico</translation>
 <translation id="7551123448725492271">El dispositivo es un dispositivo de audio.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Adjuntar un archivo</translation>
 <translation id="8230672074305416752">no se pudo hacer ping en la puerta de enlace de la red predeterminada</translation>
 <translation id="8246209727385807362">El proveedor es desconocido</translation>
+<translation id="8261506727792406068">Borrar</translation>
 <translation id="8262870577632766028">1 hora</translation>
 <translation id="827422111966801947">Índigo</translation>
 <translation id="8286154143153872371">Conéctate a una red y vuelve a cargar la página para ver el fondo de pantalla.</translation>

@@ -2057,7 +2057,6 @@
 <translation id="2540449034743108469">Чтобы включить прослушиватель событий для расширений, нажмите "Запустить".</translation>
 <translation id="2540651571961486573">Что-то пошло не так. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Оптимизировать трансляцию в полноэкранном режиме?</translation>
-<translation id="2541423446708352368">Все загрузки</translation>
 <translation id="2541706104884128042">Время сна изменено.</translation>
 <translation id="2542050502251273923">Позволяет установить уровень отладки менеджера сетевых подключений и других сервисов при помощи команды ff_debug.</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Разрешения, которые вы предоставили приложению "<ph name="APP_NAME" />", будут действовать и для этого приложения. <ph name="MANAGE_LINK" />}one{Разрешения, которые вы предоставили приложению "<ph name="APP_NAME" />", будут действовать и для этих приложений. <ph name="MANAGE_LINK" />}few{Разрешения, которые вы предоставили приложению "<ph name="APP_NAME" />", будут действовать и для этих приложений. <ph name="MANAGE_LINK" />}many{Разрешения, которые вы предоставили приложению "<ph name="APP_NAME" />", будут действовать и для этих приложений. <ph name="MANAGE_LINK" />}other{Разрешения, которые вы предоставили приложению "<ph name="APP_NAME" />", будут действовать и для этих приложений. <ph name="MANAGE_LINK" />}}</translation>
@@ -4749,7 +4748,6 @@
 <translation id="4681512854288453141">Исходное правило</translation>
 <translation id="4681930562518940301">Открыть оригинальное изображение в новой вкладке</translation>
 <translation id="4682481611456523884">Страницы, с которых на этот сайт встроен контент, не могут использовать сохраненную информацию о вас</translation>
-<translation id="4682830185876172415">Последние скачанные файлы</translation>
 <translation id="4683629100208651599">Заменить на строчные</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (по умолчанию)</translation>
 <translation id="4684427112815847243">Синхронизировать все</translation>
@@ -6805,6 +6803,7 @@
 <translation id="6347010704471250799">Показывать уведомление</translation>
 <translation id="6348805481186204412">Офлайн-хранилище</translation>
 <translation id="6349101878882523185">Установите приложение "<ph name="APP_NAME" />"</translation>
+<translation id="6350821834561350243">Ясно опишите проблему и укажите, какие действия к ней привели</translation>
 <translation id="6354918092619878358">Эллиптическая кривая SECG secp256r1 (она же ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Получение информации об аккаунте Google…</translation>
 <translation id="635609604405270300">Не выключайте устройство.</translation>
@@ -7743,6 +7742,7 @@
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Удалить приложение}one{Удалить приложения}few{Удалить приложения}many{Удалить приложения}other{Удалить приложения}}</translation>
 <translation id="7099337801055912064">Размер файла PPD не должен превышать 250 КБ.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Нет раскрытых паролей}=1{{COUNT} раскрытый пароль}one{{COUNT} раскрытый пароль}few{{COUNT} раскрытых пароля}many{{COUNT} раскрытых паролей}other{{COUNT} раскрытого пароля}}</translation>
+<translation id="7100379916748214860">Браузер Chrome заблокировал скачивание вредоносного файла. Чтобы работать в интернете было ещё безопаснее, используйте улучшенную защиту.</translation>
 <translation id="710047887584828070">К контенту на этой вкладке открыт общий доступ</translation>
 <translation id="710224247908684995">Расширение отключило Безопасный просмотр.</translation>
 <translation id="7102832101143475489">Время, отведенное на обработку запроса, истекло.</translation>
@@ -8923,7 +8923,6 @@
 <translation id="8014154204619229810">Работает программа обновлений. Повторите попытку через пару минут.</translation>
 <translation id="8014206674403687691">Невозможно вернуться к предыдущей установленной версии <ph name="IDS_SHORT_PRODUCT_NAME" />. Воспользуйтесь функцией Powerwash.</translation>
 <translation id="8015565302826764056">{NUM_OF_FILES,plural, =1{Скопирован 1 файл}one{Скопирован {NUM_OF_FILES} файл}few{Скопировано {NUM_OF_FILES} файла}many{Скопировано {NUM_OF_FILES} файлов}other{Скопировано {NUM_OF_FILES} файла}}</translation>
-<translation id="8015812716978143">Показывать все скачанные файлы в новой вкладке</translation>
 <translation id="8017176852978888182">Общие каталоги Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">Ярлык изменен</translation>
@@ -9232,6 +9231,7 @@
 <translation id="8256319818471787266">Дружок</translation>
 <translation id="8257950718085972371">Всегда блокировать доступ к камере</translation>
 <translation id="8258027225380843424">Импортировано</translation>
+<translation id="8260177673299865994">Улучшите защиту от опасных файлов</translation>
 <translation id="8260864402787962391">Мышь</translation>
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не содержит сведений об этом расширении, то есть оно могло быть установлено без вашего ведома.</translation>
 <translation id="8261506727792406068">Удалить</translation>

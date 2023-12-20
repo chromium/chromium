@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Размер на страницата</translation>
 <translation id="1082009148392559545">Скрийнсейвърът се изтегля</translation>
 <translation id="1094693127011229778">IP адресът не е налице</translation>
+<translation id="1116694919640316211">Информация</translation>
 <translation id="1118572504348554005">Може да споделим отзивите, изпратени чрез този формуляр, с партньорите си с цел отстраняване на програмни грешки и други проблеми, за които ни сигнализирате. Не въвеждайте поверителна информация, като например пароли.</translation>
 <translation id="1119447706177454957">Вътрешна грешка</translation>
 <translation id="1124772482545689468">Потребител</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Капацитетът на батерията намалява с течение на използването ѝ</translation>
 <translation id="6191293864534840972">Неправилно образувани сървъри за имена</translation>
+<translation id="6196607555925437199">Повторно създаване</translation>
 <translation id="6205145102504628069">Облаци</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Няма налични скенери</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 адрес</translation>
 <translation id="7513770521371759388">долна част</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Създаване</translation>
 <translation id="7528507600602050979">Помощното съдържание не е налично</translation>
+<translation id="753556296624075801">Предоставено от Google</translation>
 <translation id="7535791657097741517">Включване на светлата тема</translation>
 <translation id="7550715992156305117">Диагностични процедури</translation>
 <translation id="7551123448725492271">Устройството е за аудио.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Прикачване на файл</translation>
 <translation id="8230672074305416752">Неуспех при команда ping към шлюза на основната мрежа</translation>
 <translation id="8246209727385807362">Неизвестен оператор</translation>
+<translation id="8261506727792406068">Изтриване</translation>
 <translation id="8262870577632766028">1 час</translation>
 <translation id="827422111966801947">индиго</translation>
 <translation id="8286154143153872371">Моля, свържете се с мрежа и презаредете страницата, за да прегледате тапета.</translation>

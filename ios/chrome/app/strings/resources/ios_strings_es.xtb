@@ -508,6 +508,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="371398631992790800">Ocultar Marcadores</translation>
 <translation id="37207012422556617">Tendencias de búsqueda</translation>
 <translation id="3725081662140949903">Para impedir que otras personas usen tu contraseña, abre la aplicación <ph name="APP" /> y cambia tu contraseña</translation>
+<translation id="3738428049780661523">Creado: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ocultar Descargas</translation>
 <translation id="3745190878148784130">Ocultar Ampliar texto</translation>
 <translation id="3762232513783804601">Diseñado para tu iPad</translation>
@@ -791,6 +792,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5245322853195994030">¿Quieres cancelar la sincronización?</translation>
 <translation id="5248640482715684545">Este sitio está intentando abrir otra aplicación.</translation>
 <translation id="5256661381001734217">Este sitio está intentando abrir una aplicación.  Como resultado, saldrás del modo Incógnito.</translation>
+<translation id="5266104675489036658">Añadir pestaña a un nuevo grupo</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un campo obligatorio está vacío. Rellénalo antes de guardar.}other{Algunos campos obligatorios están vacíos. Rellénalos antes de guardar.}}</translation>
 <translation id="5271549068863921519">Guardar contraseña</translation>
 <translation id="5283494734135414249">Toca el acceso directo que aparece debajo de la barra de direcciones.</translation>
@@ -1191,6 +1193,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7425346204213733349">Los cambios que hagas en los marcadores, el historial, las contraseñas y otras opciones no se sincronizarán con tu cuenta de Google. Sin embargo, tus datos actuales seguirán almacenados en tu cuenta.</translation>
 <translation id="7431991332293347422">Controla cómo se usa el historial de navegación para personalizar la Búsqueda y más</translation>
 <translation id="7435356471928173109">Desactivada por tu administrador</translation>
+<translation id="7436239899443308800">{count,plural, =1{1 pestaña}other{{count} pestañas}}</translation>
 <translation id="7438481509621345350">Ahora verás contenido de <ph name="CHANNEL_NAME" /> cuando abras una pestaña nueva.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Marcador guardado en "{title}"}other{Marcadores guardados en "{title}"}}</translation>
 <translation id="7454057999980797137">Región</translation>

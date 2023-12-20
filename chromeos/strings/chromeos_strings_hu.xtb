@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Oldal mérete</translation>
 <translation id="1082009148392559545">Képernyővédő letöltése</translation>
 <translation id="1094693127011229778">Az IP-cím nem áll rendelkezésre</translation>
+<translation id="1116694919640316211">Névjegy</translation>
 <translation id="1118572504348554005">Az ezen az űrlapon keresztül beküldött visszajelzést partnereinkkel is megoszthatjuk az Ön által bejelentett programhibák és további problémák megoldása érdekében. Ne adjon meg bizalmas adatokat, például jelszavakat.</translation>
 <translation id="1119447706177454957">Belső hiba</translation>
 <translation id="1124772482545689468">Felhasználó</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Az akkumulátor kapacitása egyre csökken a folyamatos használat során</translation>
 <translation id="6191293864534840972">Rosszul formázott névszerverek</translation>
+<translation id="6196607555925437199">Újbóli létrehozás</translation>
 <translation id="6205145102504628069">Szálló felhők</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nem áll rendelkezésre szkenner</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6-cím</translation>
 <translation id="7513770521371759388">alsó</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Létrehozás</translation>
 <translation id="7528507600602050979">A súgótartalom nem áll rendelkezésre</translation>
+<translation id="753556296624075801">Üzemeltető: Google</translation>
 <translation id="7535791657097741517">Világos téma bekapcsolása</translation>
 <translation id="7550715992156305117">Diagnosztikai rutinok</translation>
 <translation id="7551123448725492271">Az eszköz egy audioeszköz.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Fájl csatolása</translation>
 <translation id="8230672074305416752">Nem sikerült az alapértelmezett hálózati átjáró pingelése</translation>
 <translation id="8246209727385807362">Ismeretlen szolgáltató</translation>
+<translation id="8261506727792406068">Törlés</translation>
 <translation id="8262870577632766028">1 óra</translation>
 <translation id="827422111966801947">Indigókék</translation>
 <translation id="8286154143153872371">A háttérkép megtekintése érdekében csatlakozzon egy hálózathoz, majd töltse be újra az oldalt.</translation>

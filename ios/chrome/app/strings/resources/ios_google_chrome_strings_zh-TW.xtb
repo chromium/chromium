@@ -61,6 +61,7 @@
 <translation id="2427791862912929107">Chrome 的功能可讓你輕鬆管理網際網路數據傳輸和網頁載入速度。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">只要使用 Chrome 的自動填入功能，即可在其他應用程式中輕鬆使用已儲存的密碼</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{如果 Chrome 閒置 {THRESHOLD} 分鐘，就會執行這些動作。影響範圍可能包含歷史記錄和自動填入功能。}other{如果 Chrome 閒置 {THRESHOLD} 分鐘，就會執行這些動作。影響範圍可能包含歷史記錄和自動填入功能。}}</translation>
 <translation id="2561231791489583059">使用 Chrome 做為預設瀏覽器可保護你免於危險網站的威脅，同時確保你的密碼安全無虞</translation>
 <translation id="2574249610672786438">在你所有的裝置上登入帳戶後，不論從何處使用 Chrome 都能查看你的分頁</translation>
 <translation id="2576431527583832481">Chrome 現在變得更進步了！歡迎你升級使用新版本。</translation>
@@ -89,6 +90,7 @@
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3340938510625667914">Chrome 快捷操作</translation>
 <translation id="3345341804167540816">隨時隨地使用 Chrome</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{如果 Chrome 閒置 {THRESHOLD} 分鐘，就會執行這些動作}other{如果 Chrome 閒置 {THRESHOLD} 分鐘，就會執行這些動作}}</translation>
 <translation id="3399930248910934354">開啟 Chrome 設定</translation>
 <translation id="3472587960215700950">偵測到地址後，Chrome 會使用 Google 地圖規劃路線及提供當地資訊。</translation>
 <translation id="3503014945441706099">一併為這個 Chrome 設定檔啟用安全瀏覽強化防護功能</translation>

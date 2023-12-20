@@ -148,6 +148,7 @@
 <translation id="3448554387819310837">如果啟用，網站就可以要求使用攝影機。如果停用，網站將無法使用攝影機。</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome 將於明天再次封鎖 Cookie}other{Chrome 將於 # 天後再次封鎖 Cookie}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> 底下的網站</translation>
+<translation id="3536227077203206203">這次允許</translation>
 <translation id="3538390592868664640">禁止網站根據你的周遭環境建立 3D 地圖或追蹤攝影機位置</translation>
 <translation id="3544058026430919413">公司可定義網站群組，指定哪些網站能夠使用 Cookie 分享你在群組中的活動。網站群組不會在無痕模式下啟用。</translation>
 <translation id="3551268116566418498">要退出無痕模式嗎？</translation>
@@ -392,6 +393,7 @@
 <translation id="7641339528570811325">清除瀏覽資料…</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7661013017773688458">分頁中的降價資訊</translation>
 <translation id="7667547420449112975">綠野仙蹤</translation>
 <translation id="7684642910516280563">不允許網站使用第三方 Cookie</translation>
 <translation id="7719367874908701697">頁面縮放</translation>

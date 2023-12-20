@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">اندازه صفحه</translation>
 <translation id="1082009148392559545">درحال بارگیری محافظ صفحه‌نمایش</translation>
 <translation id="1094693127011229778">‏نشانی IP دردسترس نیست</translation>
+<translation id="1116694919640316211">درباره</translation>
 <translation id="1118572504348554005">برای عیب‌یابی اشکالات و دیگر مشکلاتی که به ما گزارش می‌کنید، ممکن است بازخورد ارسال‌شده ازطریق این فرم را با شریکانمان هم‌رسانی کنیم. از وارد کردن اطلاعات حساس مثل گذرواژه خودداری کنید.</translation>
 <translation id="1119447706177454957">خطای داخلی</translation>
 <translation id="1124772482545689468">کاربر</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ظرفیت باتری با استفاده کاهش می‌یابد</translation>
 <translation id="6191293864534840972">سرورهای نام دامنه ناقص است</translation>
+<translation id="6196607555925437199">ایجاد مجدد</translation>
 <translation id="6205145102504628069">جریان ابر</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">اسکنری دردسترس نیست</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">‏نشانی IPv6</translation>
 <translation id="7513770521371759388">پایین</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">ایجاد</translation>
 <translation id="7528507600602050979">محتوای راهنما دردسترس نیست</translation>
+<translation id="753556296624075801">‏قدرت‌گرفته از Google</translation>
 <translation id="7535791657097741517">روشن کردن زمینه روشن</translation>
 <translation id="7550715992156305117">روال‌های عیب‌یابی</translation>
 <translation id="7551123448725492271">دستگاه صوتی است.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">پیوست کردن فایل</translation>
 <translation id="8230672074305416752">پینگ کردن دروازه شبکه پیش‌فرض انجام نشد</translation>
 <translation id="8246209727385807362">شرکت مخابراتی ناشناس</translation>
+<translation id="8261506727792406068">حذف</translation>
 <translation id="8262870577632766028">۱ ساعت</translation>
 <translation id="827422111966801947">نیلی سیر</translation>
 <translation id="8286154143153872371">لطفاً برای مشاهده کاغذدیواری، به شبکه متصل شوید و صفحه را بار کردن مجدد کنید.</translation>

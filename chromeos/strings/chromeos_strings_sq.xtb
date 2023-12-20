@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Madhësia e faqes</translation>
 <translation id="1082009148392559545">Mbrojtësi i ekranit po shkarkohet</translation>
 <translation id="1094693127011229778">Adresa IP nuk ofrohet</translation>
+<translation id="1116694919640316211">Informacione</translation>
 <translation id="1118572504348554005">Ne mund t'i ndajmë komentet e dërguara nëpërmjet këtij formulari me partnerët tanë për të zgjidhur problemet për defektet në kod dhe probleme të tjera që ti i raporton te ne. Mos përfshi informacione delikate si p.sh. fjalëkalime.</translation>
 <translation id="1119447706177454957">Gabim i brendshëm</translation>
 <translation id="1124772482545689468">Përdoruesi</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Kapaciteti i baterisë bie me përdorimin e saj</translation>
 <translation id="6191293864534840972">Serverë DNS të keqformuar</translation>
+<translation id="6196607555925437199">Rikrijo</translation>
 <translation id="6205145102504628069">Rrjedha e reve</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nuk ofrohet asnjë skaner</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7513770521371759388">në fund</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Krijo</translation>
 <translation id="7528507600602050979">Përmbajtja e ndihmës nuk ofrohet</translation>
+<translation id="753556296624075801">Mundësuar nga Google</translation>
 <translation id="7535791657097741517">Aktivizo temën e ndriçuar</translation>
 <translation id="7550715992156305117">Rutinat diagnostikuese</translation>
 <translation id="7551123448725492271">Pajisja është një pajisje audio.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Bashkëngjit skedarin</translation>
 <translation id="8230672074305416752">Dështoi verifikimi "ping" për portën e parazgjedhur të kalimit</translation>
 <translation id="8246209727385807362">Operator celular i panjohur</translation>
+<translation id="8261506727792406068">Fshi</translation>
 <translation id="8262870577632766028">1 orë</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Lidhu në një rrjet dhe ringarko faqen për të parë imazhin e sfondit.</translation>

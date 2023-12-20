@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">പേജിന്റെ വലുപ്പം</translation>
 <translation id="1082009148392559545">സ്ക്രീൻ സേവർ ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
 <translation id="1094693127011229778">IP വിലാസം ലഭ്യമല്ല</translation>
+<translation id="1116694919640316211">വിവരം</translation>
 <translation id="1118572504348554005">ബഗുകളും നിങ്ങൾ ഞങ്ങൾക്ക് റിപ്പോർട്ട് ചെയ്യുന്ന മറ്റ് പ്രശ്‌നങ്ങളും പരിഹരിക്കാൻ, ഈ ഫോമിലൂടെ സമർപ്പിക്കുന്ന ഫീഡ്ബാക്ക് ഞങ്ങളുടെ പങ്കാളികളുമായി ഞങ്ങൾ പങ്കിട്ടേക്കാം. പാസ്‌വേഡുകൾ പോലുള്ള, സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട വിവരങ്ങൾ ഉൾപ്പെടുത്തരുത്.</translation>
 <translation id="1119447706177454957">ആന്തരിക പിശക്</translation>
 <translation id="1124772482545689468">ഉപയോക്താവ്</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ഉപയോഗത്തിനനുസരിച്ച് ബാറ്ററി ശേഷി കുറയുന്നു</translation>
 <translation id="6191293864534840972">തകരാറുള്ള നെയിം സെർവറുകൾ</translation>
+<translation id="6196607555925437199">പുനരാവിഷ്‌കരിക്കുക</translation>
 <translation id="6205145102504628069">ക്ലൗഡ് ഫ്ലോ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">സ്‌കാനറുകളൊന്നും ലഭ്യമല്ല</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 വിലാസം</translation>
 <translation id="7513770521371759388">താഴേക്ക്</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">സൃഷ്‌ടിക്കുക</translation>
 <translation id="7528507600602050979">സഹായ ഉള്ളടക്കം ലഭ്യമല്ല</translation>
+<translation id="753556296624075801">Google നൽകുന്നത്</translation>
 <translation id="7535791657097741517">ലൈറ്റ് തീം ഓണാക്കുക</translation>
 <translation id="7550715992156305117">പ്രശ്‌നനിർണ്ണയ ദിനചര്യകൾ</translation>
 <translation id="7551123448725492271">ഉപകരണം ഒരു ഓഡിയോ ഉപകരണമാണ്.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">ഫയൽ അറ്റാച്ചുചെയ്യുക</translation>
 <translation id="8230672074305416752">ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് ഗേറ്റ്‍വേ പിംഗ് ചെയ്യാനായില്ല</translation>
 <translation id="8246209727385807362">അജ്ഞാത സേവനദാതാവ്</translation>
+<translation id="8261506727792406068">ഇല്ലാതാക്കുക</translation>
 <translation id="8262870577632766028">1 മണിക്കൂർ</translation>
 <translation id="827422111966801947">ഇൻഡിഗോ</translation>
 <translation id="8286154143153872371">വാൾപേപ്പർ കാണാൻ ഒരു നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്‌ത് പേജ് റീലോഡ് ചെയ്യുക.</translation>

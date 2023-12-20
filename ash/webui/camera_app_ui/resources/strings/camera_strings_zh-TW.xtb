@@ -143,6 +143,7 @@
 <translation id="7726641833034062494">錄製一般影片</translation>
 <translation id="7748344063862150053">文件右上角</translation>
 <translation id="7933675232020478311">向右下移動</translation>
+<translation id="7983668134180549431">偵測到文字。</translation>
 <translation id="8079255378695216066">無法開始錄影</translation>
 <translation id="8120146556401698679">平移 傾斜 縮放</translation>
 <translation id="8131740175452115882">確認</translation>
@@ -162,7 +163,6 @@
 <translation id="8870695351537079478">無法開始錄影</translation>
 <translation id="8880167521484863515">4:3</translation>
 <translation id="8903921497873541725">放大</translation>
-<translation id="8926890870105777777">加入「<ph name="WIFINAME" />」網路</translation>
 <translation id="9045010116236796332">將鏡頭對準文件，確認各邊都在方框內</translation>
 <translation id="9045155556724273246">10 秒</translation>
 <translation id="906331135292332864">正在處理圖片…</translation>

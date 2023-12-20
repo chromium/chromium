@@ -63,6 +63,7 @@
 <translation id="2427791862912929107">Chrome 擁有多項功能，助您管理互聯網的資料及網頁載入速度。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">如要在其他應用程式中輕鬆取得已儲存的密碼，請使用 Chrome 的自動填入功能</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{如果 Chrome 閒置 {THRESHOLD} 分鐘，就會執行這些動作。影響範圍可能包含歷史記錄和自動填入功能。}other{如果 Chrome 閒置 {THRESHOLD} 分鐘，就會執行這些動作。影響範圍可能包含歷史記錄和自動填入功能。}}</translation>
 <translation id="2561231791489583059">使用 Chrome 作為預設瀏覽器可保護您免受危險網站威脅，同時確保密碼安全</translation>
 <translation id="2574249610672786438">如要在任何使用 Chrome 的裝置上查看分頁，請在所有裝置上登入</translation>
 <translation id="2576431527583832481">Chrome 現在更進一步！歡迎您升級使用新版本。</translation>
@@ -91,6 +92,7 @@
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3340938510625667914">Chrome 操作</translation>
 <translation id="3345341804167540816">隨時隨地使用 Chrome</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{如果 Chrome 閒置 {THRESHOLD} 分鐘，就會執行這些動作}other{如果 Chrome 閒置 {THRESHOLD} 分鐘，就會執行這些動作}}</translation>
 <translation id="3399930248910934354">開啟 Chrome 設定</translation>
 <translation id="3472587960215700950">偵測到地址後，Chrome 會使用「Google 地圖」規劃路線及提供當地資訊。</translation>
 <translation id="3503014945441706099">同時為此 Chrome 個人檔案取得「強化安全瀏覽」功能</translation>

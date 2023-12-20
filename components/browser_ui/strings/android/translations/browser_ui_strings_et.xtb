@@ -148,6 +148,7 @@
 <translation id="3448554387819310837">Kui see on sisse lülitatud, võivad saidid küsida luba teie kaamera kasutamiseks. Kui see on välja lülitatud, ei saa saidid teie kaamerat kasutada.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome blokeerib homme küpsisefailid uuesti}other{Chrome blokeerib # päeva pärast küpsisefailid uuesti}}</translation>
 <translation id="3521663503435878242">Saidid domeenil <ph name="DOMAIN" /></translation>
+<translation id="3536227077203206203">Seekord lubatud</translation>
 <translation id="3538390592868664640">Saitide jaoks blokeeritakse teid ümbritsevast 3D-kaardi loomine või kaamera asendi jälgimine</translation>
 <translation id="3544058026430919413">Ettevõte saab määratleda saitide grupi, mis saavad kasutada küpsisefaile, et teie tegevusi grupis jagada. See on inkognito režiimis välja lülitatud.</translation>
 <translation id="3551268116566418498">Kas lahkuda inkognito režiimist?</translation>
@@ -392,6 +393,7 @@
 <translation id="7641339528570811325">Sirvimisandmete kustutamine …</translation>
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7658239707568436148">Tühista</translation>
+<translation id="7661013017773688458">Hinnaalandused teie vahekaardil</translation>
 <translation id="7667547420449112975">Võlur Oz</translation>
 <translation id="7684642910516280563">Saidil ei lubata kasutada kolmanda osapoole küpsisefaile</translation>
 <translation id="7719367874908701697">Lehe suum</translation>

@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{‏اکنون ۱ پنجره Chromium درحال نمایش است}one{‏اکنون {count} پنجره Chromium درحال نمایش است}other{‏اکنون {count} پنجره Chromium درحال نمایش است}}</translation>
 <translation id="3344973607274501920">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. اتصال اینترنت را بررسی کنید.</translation>
 <translation id="3366305173356742781">‏داده‌های Chromium در حساب شما</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{‏این اتفاق زمانی رخ می‌دهد که از Chromium به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد. داده‌ها می‌تواند شامل سابقه و تکمیل خودکار باشد.}one{‏این اتفاق زمانی رخ می‌دهد که از Chromium به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد. داده‌ها می‌تواند شامل سابقه و تکمیل خودکار باشد.}other{‏این اتفاق زمانی رخ می‌دهد که از Chromium به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد. داده‌ها می‌تواند شامل سابقه و تکمیل خودکار باشد.}}</translation>
 <translation id="3472200483164753384">‏در Chromium Canary پشتیبانی نمی‌شود</translation>
 <translation id="3478750326643748149">‏پنهان کردن «بیشترین بهره را از Chromium ببرید»</translation>
 <translation id="3512168799938877162">‏گذرواژه شما هم‌رسانی نشد. اتصال اینترنت را بررسی کنید و مطمئن شوید به سیستم Chromium وارد شده باشید. سپس، دوباره امتحان کنید.</translation>
@@ -284,6 +285,7 @@
 <translation id="8909995017390087892">‏Chromium برای iOS</translation>
 <translation id="8924617840944134898">‏باز کردن برگه ناشناس Chromium</translation>
 <translation id="894437814105052438">‏وقتی از سیستم خارج شوید، Chromium هیچ‌کدام از داده‌های جدید را با «حساب Google» شما همگام‌سازی نخواهد کرد. داده‌هایی که قبلاً همگام‌سازی شده‌اند در حساب می‌مانند.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{‏این اتفاق زمانی رخ می‌دهد که از Chromium به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد}one{‏این اتفاق زمانی رخ می‌دهد که از Chromium به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد}other{‏این اتفاق زمانی رخ می‌دهد که از Chromium به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد}}</translation>
 <translation id="8963279154877372067">‏اجازه دادن به اعلان‌های Chromium برای دریافت هشدارهای کاهش قیمت</translation>
 <translation id="900560297598578021">‏با ایمیل <ph name="EMAIL" /> به سیستم وارد شده‌اید.
 

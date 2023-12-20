@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Orriaren tamaina</translation>
 <translation id="1082009148392559545">Pantaila-babeslea deskargatzen</translation>
 <translation id="1094693127011229778">IP helbidea ez dago erabilgarri</translation>
+<translation id="1116694919640316211">Honi buruz</translation>
 <translation id="1118572504348554005">Salatzen dituzun akatsak eta bestelako arazoak konpontzeko, baliteke inprimaki honen bidez bidalitako oharrak gure bazkideekin partekatzea. Ez eman kontuzko informaziorik, hala nola pasahitzak.</translation>
 <translation id="1119447706177454957">Barneko errorea</translation>
 <translation id="1124772482545689468">Erabiltzailea</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Bateria erabili ahala, ahalmena galtzen doa</translation>
 <translation id="6191293864534840972">Gaizki eratuta daude izenen zerbitzariak</translation>
+<translation id="6196607555925437199">Sortu berriro</translation>
 <translation id="6205145102504628069">Hodeien fluxua</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Ez dago eskanerrik erabilgarri</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6 helbidea</translation>
 <translation id="7513770521371759388">behealdea</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Sortu</translation>
 <translation id="7528507600602050979">Ez dago laguntza-edukirik erabilgarri</translation>
+<translation id="753556296624075801">Google-ren teknologiarekin</translation>
 <translation id="7535791657097741517">Aktibatu gai argia</translation>
 <translation id="7550715992156305117">Diagnostiko-errutinak</translation>
 <translation id="7551123448725492271">Gailua audio-gailu bat da.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Erantsi fitxategia</translation>
 <translation id="8230672074305416752">Ezin izan da egin ping sarerako atebide lehenetsian</translation>
 <translation id="8246209727385807362">Operadore ezezaguna</translation>
+<translation id="8261506727792406068">Ezabatu</translation>
 <translation id="8262870577632766028">Ordubete</translation>
 <translation id="827422111966801947">Anila</translation>
 <translation id="8286154143153872371">Konektatu sare batera eta kargatu orria berriro horma-papera ikusteko.</translation>

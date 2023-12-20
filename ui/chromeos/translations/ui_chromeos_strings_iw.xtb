@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">פרח גזניה</translation>
 <translation id="4943368462779413526">פוטבול</translation>
 <translation id="4961158930123534723">‏תיקייה אחת שותפה עם Parallels Desktop</translation>
+<translation id="4965874878399872778">המערכת בודקת אם הקבצים עומדים בדרישות של מדיניות האבטחה של הארגון שלך…</translation>
 <translation id="496656650103537022">הקובץ <ph name="FILE_NAME" /> שוחזר</translation>
 <translation id="4969785127455456148">אלבום</translation>
 <translation id="4972330214479971536">לא ניתן היה לסיים את ההגדרה לסנכרון הקבצים</translation>
@@ -711,6 +712,7 @@
 <translation id="6430271654280079150">נותר לך עוד ניסיון אחד.</translation>
 <translation id="643243556292470964">הקבצים שנמחקו מועברים עכשיו לאשפה</translation>
 <translation id="6438480100790416671">נפח האחסון נבדק…</translation>
+<translation id="6451527188465304418">המערכת בודקת אם הקובץ עומד בדרישות של מדיניות האבטחה של הארגון שלך…</translation>
 <translation id="6485131920355264772">נכשל בקבלת מידע על שטח האחסון</translation>
 <translation id="6495925982925244349">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, פרטים</translation>
 <translation id="649877868557234318">מתבצע חילוץ של הקובץ <ph name="FILE_NAME" /> אל <ph name="FOLDER_NAME" /></translation>

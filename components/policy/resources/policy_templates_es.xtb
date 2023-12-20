@@ -1655,8 +1655,6 @@ La función no está disponible si la sincronización de contraseñas está desa
 
       Esta política solo afecta al acceso a los dispositivos USB a través de la API WebUSB. Para conceder acceso a dispositivos USB a través de la API Web Serial, consulta la política <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318583605563438459">Permitir que los padres añadan cuentas supervisadas</translation>
-<translation id="2319139030891093109">Una lista de certificados TLS en los que <ph name="PRODUCT_NAME" /> debe confiar.
-Los certificados deben estar codificados en Base64.</translation>
 <translation id="2326031114717677574">Intervalo con el que los datos de audio se muestrean y recogen. El valor mínimo permitido es 1 minuto.
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 15 minutos.</translation>
@@ -4583,7 +4581,6 @@ Esta política es temporal y se eliminará en cuanto se lance la cancelación de
 <translation id="4802905909524200151">Configurar comportamiento de actualización del firmware de <ph name="TPM_FIRMWARE_UPDATE_TPM" /></translation>
 <translation id="4804828344300125154">Reiniciar siempre cuando el usuario cierre sesión.</translation>
 <translation id="4807950475297505572">Eliminar usuarios utilizados hace más tiempo hasta que haya suficiente espacio libre</translation>
-<translation id="4808396444416188826">Certificados de servidor TLS en los que <ph name="PRODUCT_NAME" /> debe confiar</translation>
 <translation id="4812270373673968774">Si se asigna el valor "Siempre" a esta política, se ocultará automáticamente la estantería de <ph name="PRODUCT_OS_NAME" />. Si se le asigna el valor "Nunca", la estantería nunca se ocultará automáticamente.
 
       Si le asignas un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ninguno, los usuarios decidirán si la estantería se oculta automáticamente.</translation>

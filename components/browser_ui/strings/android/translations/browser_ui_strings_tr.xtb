@@ -148,6 +148,7 @@
 <translation id="3448554387819310837">Bu düğme açıkken siteler kameranızı kullanmak isteyebilir. Düğme kapalıyken siteler kameranızı kullanamaz.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome yarın çerezleri tekrar engelleyecek}other{Chrome'un çerezleri tekrar engellemesine # gün kaldı}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> altındaki siteler</translation>
+<translation id="3536227077203206203">Şu anda izin veriliyor</translation>
 <translation id="3538390592868664640">Sitelerin çevremin 3D haritasını oluşturmasını veya kamera konumunu takip etmesini engelle</translation>
 <translation id="3544058026430919413">Bir şirket, bir site grubu tanımlayabilir ve çerezleri kullanarak gruptaki etkinliğinizi paylaşabilir. Bu ayar Gizli modda kapalıdır.</translation>
 <translation id="3551268116566418498">Gizli moddan çıkılsın mı?</translation>
@@ -392,6 +393,7 @@
 <translation id="7641339528570811325">Tarama verilerini temizle…</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7658239707568436148">İptal</translation>
+<translation id="7661013017773688458">Sekmenizdeki fiyat düşüşleri</translation>
 <translation id="7667547420449112975">Muhteşem Oz Büyücüsü</translation>
 <translation id="7684642910516280563">Bir sitenin, üçüncü taraf çerezlerini kullanmasına izin vermeyin</translation>
 <translation id="7719367874908701697">Sayfa yakınlaştırma</translation>

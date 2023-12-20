@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Sidestørrelse</translation>
 <translation id="1082009148392559545">Laster ned skjermspareren</translation>
 <translation id="1094693127011229778">IP-adressen er ikke tilgjengelig</translation>
+<translation id="1116694919640316211">Info</translation>
 <translation id="1118572504348554005">Vi kan dele tilbakemeldinger som sendes inn via dette skjemaet, med partnerne våre for å feilsøke feil og andre problemer du rapporterer til oss. Ikke skriv inn sensitiv informasjon, som passord.</translation>
 <translation id="1119447706177454957">Intern feil</translation>
 <translation id="1124772482545689468">Bruker</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Batterikapasiteten avtar med bruken</translation>
 <translation id="6191293864534840972">Navnetjenerne inneholder feil</translation>
+<translation id="6196607555925437199">Lag på nytt</translation>
 <translation id="6205145102504628069">Skyflyt</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Ingen skannere er tilgjengelige</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">IPv6-adresse</translation>
 <translation id="7513770521371759388">bunn</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Opprett</translation>
 <translation id="7528507600602050979">Hjelpeinnhold er ikke tilgjengelig</translation>
+<translation id="753556296624075801">Drevet av Google</translation>
 <translation id="7535791657097741517">Slå på lyst tema</translation>
 <translation id="7550715992156305117">Diagnostikkrutiner</translation>
 <translation id="7551123448725492271">Enheten er en lydenhet.</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">Legg ved fil</translation>
 <translation id="8230672074305416752">Kunne ikke pinge gatewayen for standardnettverket</translation>
 <translation id="8246209727385807362">Ukjent operatør</translation>
+<translation id="8261506727792406068">Slett</translation>
 <translation id="8262870577632766028">1 time</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Koble til et nettverk og last inn siden på nytt for å se bakgrunnsbildet.</translation>

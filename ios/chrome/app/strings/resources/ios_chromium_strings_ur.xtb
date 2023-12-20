@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{‏اب 1 Chromium ونڈو نظر آ رہا ہے}other{‏اب {count} Chromium ونڈوز نظر آ رہے ہیں}}</translation>
 <translation id="3344973607274501920">‏Chromium آپ کے پاس ورڈز چیک نہیں کر سکا۔ اپنا انٹرنیٹ کنکشن چیک کرنے کی کوشش کریں۔</translation>
 <translation id="3366305173356742781">‏آپ کے اکاؤنٹ میں Chromium ڈیٹا</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{‏یہ اس وقت ہوتا ہے جب Chromium {THRESHOLD} منٹ کے لیے استعمال نہیں ہوتا ہے۔ اس میں سرگزشت اور آٹو فل شامل ہو سکتے ہیں۔}other{‏ایسا اس وقت ہوتا ہے جب Chromium {THRESHOLD} منٹوں تک استعمال نہیں ہوتا ہے۔ اس میں سرگزشت اور آٹو فل شامل ہو سکتے ہیں۔}}</translation>
 <translation id="3472200483164753384">‏Chromium Canary پر تعاون یافتہ نہیں ہے</translation>
 <translation id="3478750326643748149">‏"Chromium سے زیادہ سے زیادہ فائدہ اٹھائیں" کو چھپائیں</translation>
 <translation id="3512168799938877162">‏آپ کے پاس ورڈ کا اشتراک نہیں کیا گیا۔ اپنا انٹرنیٹ کنکشن چیک کریں اور یقینی بنائیں کہ آپ Chromium میں سائن ان ہیں۔ پھر، دوبارہ کوشش کریں۔</translation>
@@ -282,6 +283,7 @@
 <translation id="8909995017390087892">‏Chromium برائے iOS</translation>
 <translation id="8924617840944134898">‏Chromium کا پوشیدگی ٹیب کھولیں</translation>
 <translation id="894437814105052438">‏آپ کے سائن آؤٹ کرنے پر، Chromium کوئی بھی نیا ڈیٹا آپ کے Google اکاؤنٹ کے ساتھ سِنک نہیں کرے گا۔ پہلے کا سِنک کردہ ڈیٹا اکاؤنٹ میں باقی رہے گا۔</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{‏ایسا اس وقت ہوتا ہے جب Chromium {THRESHOLD} منٹ تک استعمال نہیں ہوتا ہے۔}other{‏ایسا اس وقت ہوتا ہے جب Chromium {THRESHOLD} منٹ تک استعمال نہیں ہوتا ہے۔}}</translation>
 <translation id="8963279154877372067">‏قیمت میں کمی کے الرٹس موصول کرنے کے لیے Chromium کی اطلاعات کو اجازت دیں</translation>
 <translation id="900560297598578021">‏<ph name="EMAIL" /> کے بطور سائن ان کردہ۔
 

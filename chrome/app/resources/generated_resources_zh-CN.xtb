@@ -2049,7 +2049,6 @@
 <translation id="2540449034743108469">请按“开始”以监听扩展程序活动</translation>
 <translation id="2540651571961486573">出了点问题。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="2541002089857695151">优化全屏投放？</translation>
-<translation id="2541423446708352368">显示所有下载内容</translation>
 <translation id="2541706104884128042">已设定新的就寝时间</translation>
 <translation id="2542050502251273923">使用 ff_debug 设定网络连接管理器和其他服务的调试级别。</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{您授予“<ph name="APP_NAME" />”的权限也会授予此应用。<ph name="MANAGE_LINK" />}other{您授予“<ph name="APP_NAME" />”的权限也会授予这些应用。<ph name="MANAGE_LINK" />}}</translation>
@@ -3088,6 +3087,7 @@
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">分隔符</translation>
 <translation id="3387023983419383865">、</translation>
+<translation id="3387588771342841525">当此设置处于开启状态时，密码会保存到 <ph name="EMAIL" /> 中。当此设置处于关闭状态时，密码只会保存在此设备上。</translation>
 <translation id="3387614642886316601">使用增强的“拼写检查”功能</translation>
 <translation id="3387829698079331264">不允许以下网站了解您何时在主动使用设备</translation>
 <translation id="3388094447051599208">出纸盘快满了</translation>
@@ -3276,6 +3276,7 @@
 <translation id="3532521178906420528">正在建立网络连接…</translation>
 <translation id="3532852121563960103">{NUM_OF_FILES,plural, =1{正在将 1 个文件移到 <ph name="CLOUD_PROVIDER" />}other{正在将 {NUM_OF_FILES} 个文件移到 <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - 音频已静音</translation>
+<translation id="3537099313456411235">关联 <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> 即可在“文件”应用内访问您的云端硬盘文件</translation>
 <translation id="3537881477201137177">日后需要时，您可在“设置”中修改</translation>
 <translation id="3538066758857505094">卸载 Linux 时出错。请重试。</translation>
 <translation id="3540173484406326944">未通过“<ph name="HOST_DEVICE_NAME" />”连接到网络</translation>
@@ -4185,6 +4186,7 @@
 <translation id="4246980464509998944">其他评论：</translation>
 <translation id="424726838611654458">始终用Adobe Reader打开</translation>
 <translation id="4248401726442101648">未连接到摄像头</translation>
+<translation id="4249116869350613769">省电模式</translation>
 <translation id="4249248555939881673">正在等待建立网络连接…</translation>
 <translation id="4249373718504745892">已禁止此网页使用您的摄像头和麦克风。</translation>
 <translation id="424963718355121712">应用的安装来源必须是其自己发挥作用的主机</translation>
@@ -4744,7 +4746,6 @@
 <translation id="4681512854288453141">来源政策</translation>
 <translation id="4681930562518940301">在新标签页中打开原始图片(&amp;I)</translation>
 <translation id="4682481611456523884">此网站上的嵌入式内容无法使用它们保存的与您相关的信息</translation>
-<translation id="4682830185876172415">近期的下载内容</translation>
 <translation id="4683629100208651599">转换为小写</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（默认）</translation>
 <translation id="4684427112815847243">同步所有数据类型</translation>
@@ -5015,6 +5016,7 @@
 <translation id="4893522937062257019">屏幕锁定时</translation>
 <translation id="4895799941222633551">创建快捷方式(&amp;S)…</translation>
 <translation id="4898011734382862273">证书“<ph name="CERTIFICATE_NAME" />”代表一个证书授权中心</translation>
+<translation id="4898913189644355814">网站可能会保存您的首选语言或您想购买的商品。这些信息可供该网站及其子网域使用。</translation>
 <translation id="4899052647152077033">反色</translation>
 <translation id="4899696330053002588">包含广告</translation>
 <translation id="490031510406860025">不允许在此网站上使用</translation>
@@ -5359,6 +5361,7 @@
 <translation id="5185359571430619712">查看扩展程序</translation>
 <translation id="5185386675596372454">由于最新版的“<ph name="EXTENSION_NAME" />”需要更多权限，因此已将其停用。</translation>
 <translation id="5185500136143151980">未连接到互联网</translation>
+<translation id="5186381005592669696">自定义受支持应用的显示语言</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869">已使用 <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">启用此端口</translation>
@@ -6137,6 +6140,7 @@
 <translation id="5828633471261496623">正在打印...</translation>
 <translation id="5830205393314753525">无法打开<ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">将页面存储为(&amp;A)...</translation>
+<translation id="583179300286794292">目前登录的账号是 <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">为 <ph name="SITE_NAME" />、其下属所有网站及其已安装的应用删除网站数据和权限？</translation>
 <translation id="5832813618714645810">个人资料</translation>
 <translation id="583281660410589416">未知</translation>
@@ -6210,6 +6214,7 @@
 <translation id="5883356647197510494">已自动禁用“<ph name="PERMISSION_1" />”和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="5884447826201752041">针对每款扩展程序进行自定义</translation>
 <translation id="5885314688092915589">贵组织将管理这份资料</translation>
+<translation id="5885470467814103868">开始扫描</translation>
 <translation id="5885631909150054232">复制令牌</translation>
 <translation id="5886009770935151472">手指 1</translation>
 <translation id="5886112770923972514">连接并快速设置附近的快速配对设备</translation>
@@ -6800,6 +6805,7 @@
 <translation id="6348805481186204412">离线存储空间</translation>
 <translation id="6349101878882523185">安装“<ph name="APP_NAME" />”</translation>
 <translation id="6350821834561350243">请清楚描述问题及其重现步骤（如果可能）</translation>
+<translation id="6351178441572658285">应用语言</translation>
 <translation id="6354918092619878358">SECG 椭圆曲线 secp256r1（又称 ANSI X9.62 prime256v1 或 NIST P-256）</translation>
 <translation id="6355395056805388423">正在获取 Google 账号信息…</translation>
 <translation id="635609604405270300">请勿关闭设备</translation>
@@ -7405,6 +7411,7 @@
 <translation id="6833479554815567477">此标签页已从“<ph name="GROUP_NAME" />”组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833996806551876956">隐私沙盒试用</translation>
 <translation id="6835762382653651563">请连接到互联网，以便更新您的<ph name="DEVICE_TYPE" />。</translation>
+<translation id="683630338945552556">将密码保存到您的 Google 账号并自动填充</translation>
 <translation id="6839225236531462745">证书删除错误</translation>
 <translation id="6839916869147598086">登录发生变化</translation>
 <translation id="6840155290835956714">发送前先询问</translation>
@@ -8023,6 +8030,7 @@
 <translation id="7347943691222276892">点击此按钮即可离开“<ph name="SUBPAGE_TITLE" />”子页面。</translation>
 <translation id="7348093485538360975">屏幕键盘</translation>
 <translation id="7349010927677336670">视频流畅性</translation>
+<translation id="7350327333026851413">{COUNT,plural, =1{有 {COUNT} 个密码仅保存在此设备上}other{有 {COUNT} 个密码仅保存在此设备上}}</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7352664183151911163">在您所用的各款应用和 Chrome 浏览器上保持同步</translation>
 <translation id="7353261921908507769">附近的所有联系人都可与您分享内容。仅当您接受后，系统才会开始传输内容。</translation>
@@ -8263,6 +8271,7 @@
 <translation id="7523117833414447032">读出大写字母时</translation>
 <translation id="7523585675576642403">重命名配置文件</translation>
 <translation id="7525067979554623046">创建</translation>
+<translation id="7525879597899798851">操作系统偏好设置中已关闭位置信息服务</translation>
 <translation id="7526989658317409655">占位符</translation>
 <translation id="7528224636098571080">不要打开</translation>
 <translation id="7529411698175791732">请检查您的互联网连接。如果问题仍然存在，请尝试退出账号并重新登录。</translation>
@@ -8457,6 +8466,7 @@
 <translation id="7670483791111801022">字幕</translation>
 <translation id="7671130400130574146">使用系统标题栏和边框</translation>
 <translation id="767127784612208024">轻触以确认重置</translation>
+<translation id="7671472752213333268">“<ph name="EXTENSION_NAME" />”想从“<ph name="SCANNER_NAME" />”扫描。</translation>
 <translation id="7672504401554182757">选择用于<ph name="APP_NAME" />的通行密钥在哪部设备中</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />（在 <ph name="PAGE_TITLE" /> 中）。</translation>
 <translation id="7673313156293624327">ChromeOS Shill（连接管理器）日志</translation>
@@ -8917,7 +8927,6 @@
 <translation id="8014154204619229810">更新程序正在运行，请稍后刷新并再次查看。</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" />无法还原到之前安装的版本。请重新尝试对您的设备执行 Powerwash 操作。</translation>
 <translation id="8015565302826764056">{NUM_OF_FILES,plural, =1{已复制 1 个文件}other{已复制 {NUM_OF_FILES} 个文件}}</translation>
-<translation id="8015812716978143">在新标签页中显示所有下载内容</translation>
 <translation id="8017176852978888182">Linux 共享目录</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">已修改快捷方式</translation>

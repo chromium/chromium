@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">ទំហំ​ទំព័រ</translation>
 <translation id="1082009148392559545">កំពុង​ទាញយក​ធាតុរក្សា​អេក្រង់</translation>
 <translation id="1094693127011229778">មិនមានអាសយដ្ឋាន IP ទេ</translation>
+<translation id="1116694919640316211">អំពី</translation>
 <translation id="1118572504348554005">យើង​អាច​ចែករំលែក​មតិកែលម្អ​ដែលបានដាក់បញ្ជូន​តាមរយៈទម្រង់បែបបទ​នេះ​ជាមួយ​ដៃគូ​របស់យើង ដើម្បីដោះស្រាយ​បញ្ហា និង​បញ្ហា​ផ្សេងៗទៀត​ដែល​អ្នក​រាយការណ៍​មកយើង។ សូមកុំរួមបញ្ចូល​ព័ត៌មាន​រសើប​ដូចជា​ពាក្យសម្ងាត់​ជាដើម។</translation>
 <translation id="1119447706177454957">កំហុសឆ្គងខាងក្នុង</translation>
 <translation id="1124772482545689468">អ្នកប្រើ</translation>
@@ -694,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">កម្រិតថ្ម​ធ្លាក់ចុះ​តាមរយៈ​ការប្រើប្រាស់</translation>
 <translation id="6191293864534840972">DNS មានទម្រង់មិនត្រឹមត្រូវ</translation>
+<translation id="6196607555925437199">បង្កើត​ឡើងវិញ</translation>
 <translation id="6205145102504628069">លំហូរ​ពពក</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">មិនមាន​ម៉ាស៊ីនស្កេន​ទេ</translation>
@@ -870,7 +872,9 @@
 <translation id="7502658306369382406">អាសយដ្ឋាន IPv6</translation>
 <translation id="7513770521371759388">ក្រោម</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">បង្កើត</translation>
 <translation id="7528507600602050979">មិនអាចចូលមើល​ខ្លឹមសារ​ជំនួយ​បានទេ</translation>
+<translation id="753556296624075801">ដំណើរការ​ដោយ Google</translation>
 <translation id="7535791657097741517">បើក​រចនាប័ទ្ម​ភ្លឺ</translation>
 <translation id="7550715992156305117">ការធ្វើតេស្ត​តាមការកំណត់</translation>
 <translation id="7551123448725492271">ឧបករណ៍គឺជាឧបករណ៍សំឡេង។</translation>
@@ -961,6 +965,7 @@
 <translation id="8227119283605456246">ភ្ជាប់ឯកសារ</translation>
 <translation id="8230672074305416752">មិនអាចភីងច្រកបណ្ដាញលំនាំដើមបានទេ</translation>
 <translation id="8246209727385807362">ក្រុមហ៊ុនបម្រើសេវាទូរសព្ទ​ដែលមិនស្គាល់</translation>
+<translation id="8261506727792406068">លុប</translation>
 <translation id="8262870577632766028">1 ម៉ោង</translation>
 <translation id="827422111966801947">ទឹកប៊ិក</translation>
 <translation id="8286154143153872371">សូមភ្ជាប់​បណ្ដាញ រួចផ្ទុកទំព័រ​ឡើងវិញ ដើម្បីមើល​ផ្ទាំងរូបភាព។</translation>

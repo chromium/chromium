@@ -516,6 +516,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1975457531113383421">Input tray</translation>
 <translation id="1975584088563498795">Mailbox 10</translation>
 <translation id="1978555033938440688">Firmware Version</translation>
+<translation id="1979156660928743046">Media information</translation>
 <translation id="1988881251331415125">If spelling is correct, <ph name="BEGIN_LINK" />try running connectivity Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">Climbing and mountaineering</translation>
 <translation id="1991830984769263878">Vehicle insurance</translation>
@@ -632,6 +633,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="219906046732893612">Home improvement</translation>
 <translation id="2202627062836089804">back of your card</translation>
 <translation id="2204482073374652408">Finished updating!</translation>
+<translation id="2207770355672215546">Always allow, with any card</translation>
 <translation id="2208053750671792556">Didn't receive your code? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Tray 3</translation>
 <translation id="2210794033760923560">Upload report</translation>
@@ -1524,6 +1526,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4050599136622776556">Chromium is trying to edit payment methods.</translation>
 <translation id="405399507749852140">Get alerts if the price drops on any site</translation>
 <translation id="4056223980640387499">Sepia</translation>
+<translation id="4059523390906550209">Learn more about Sensitive Data Protection</translation>
 <translation id="4063063121357725926">Let Google help you find discounts for your baskets</translation>
 <translation id="406358100705415968">Work Safety Protective Gear</translation>
 <translation id="4063924980214801036">Use device unlock to confirm cards faster</translation>
@@ -1682,6 +1685,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Block (default)</translation>
 <translation id="4314815835985389558">Manage sync</translation>
+<translation id="4316057107946726368">Please enter a justification message containing no more than <ph name="MAX_CHAR_COUNT" /> characters. Used <ph name="ACTUAL_CHAR_COUNT" /> out of <ph name="MAX_CHAR_COUNT" /> characters.</translation>
 <translation id="4318213823155573975">Headwear</translation>
 <translation id="4318312030194671742">Paint preview compositor service</translation>
 <translation id="4318566738941496689">Your device name and network address</translation>
@@ -1742,6 +1746,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="443673843213245140">Use of a proxy is disabled but an explicit proxy configuration is specified.</translation>
 <translation id="4438821706955556403">Typical price</translation>
 <translation id="4441832193888514600">Ignored because the policy can only be set as a cloud user policy.</translation>
+<translation id="4445133368066241428">Popular topics</translation>
 <translation id="4449116177348980384">Manage site settings button, activate to manage permissions and data stored across sites in Chrome settings</translation>
 <translation id="4451135742916150903">Can ask to connect to HID devices</translation>
 <translation id="4451684391620232683">Text presented to user:</translation>
@@ -2354,6 +2359,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5695542892312572833">Use Windows Hello to verify and complete your purchase?</translation>
 <translation id="5699628521141772782">Dairy and Eggs</translation>
 <translation id="5700761515355162635">Third-party cookies allowed</translation>
+<translation id="5701023235904684227">Control <ph name="READERNAME" /> and gain access to the smart card accessible to it?</translation>
 <translation id="5701381305118179107">Centre</translation>
 <translation id="5707154300732650394">Resume your journey</translation>
 <translation id="57094364128775171">Suggest strong password…</translation>
@@ -2425,7 +2431,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5866898949289125849">You're viewing a developer tools page</translation>
 <translation id="5869405914158311789">This site can’t be reached</translation>
 <translation id="5869522115854928033">Saved passwords</translation>
-<translation id="5872318519182427835">Affects the sites listed here and their subdomains. For example, adding 'google.com' means that third-party cookies can also be active for mail.google.com, because it’s part of google.com.</translation>
 <translation id="5872692522325383488">IBAN saved</translation>
 <translation id="5873297634595728366">Diesel Vehicles</translation>
 <translation id="5877831137320480913">Beauty and fitness</translation>
@@ -2637,6 +2642,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6295855836753816081">Saving...</translation>
+<translation id="6298456705131259420">Affects the sites listed here. Inserting “[*.]” before a domain name creates an exception for the entire domain. For example, adding “[*.]google.co.uk” means that third-party cookies can also be active for mail.google.co.uk, because it’s part of google.co.uk.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Your device will restart now}=1{Your device will restart in 1 second}other{Your device will restart in # seconds}}</translation>
 <translation id="6301104306974789820">Get price tracking notifications</translation>
 <translation id="6304398603974202180">Multimedia Software</translation>
@@ -2668,6 +2674,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6355392890578844978">This browser is not managed by a company or other organisation. Activity on this device may be managed outside of Chromium. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">edit payment methods</translation>
 <translation id="6358450015545214790">What do these mean?</translation>
+<translation id="6360213755783740931">Learn more about malware protection</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">View logs</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Checking the proxy, firewall and secure DNS configuration<ph name="END_LINK" /></translation>
@@ -2725,6 +2732,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6443406338865242315">Which extensions and plug-ins you have installed</translation>
 <translation id="6446608382365791566">Add more information</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6448371595882710519">Learn more about data controls</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Envelope Chou 40</translation>
 <translation id="6451458296329894277">Confirm Form Resubmission</translation>

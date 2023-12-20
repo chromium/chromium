@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">进纸匣</translation>
 <translation id="1975584088563498795">信箱 10</translation>
 <translation id="1978555033938440688">固件版本</translation>
+<translation id="1979156660928743046">媒体信息</translation>
 <translation id="1988881251331415125">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行连接诊断工具<ph name="END_LINK" />。</translation>
 <translation id="1991453785879639515">攀岩与登山</translation>
 <translation id="1991830984769263878">汽车保险</translation>
@@ -632,6 +633,7 @@
 <translation id="219906046732893612">家居改善</translation>
 <translation id="2202627062836089804">卡背面</translation>
 <translation id="2204482073374652408">更新已完成！</translation>
+<translation id="2207770355672215546">始终允许；支持所有卡</translation>
 <translation id="2208053750671792556">没收到验证码？<ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">纸匣 3</translation>
 <translation id="2210794033760923560">上传报告</translation>
@@ -1520,6 +1522,7 @@
 <translation id="4050599136622776556">Chromium 正在尝试修改付款方式。</translation>
 <translation id="405399507749852140">当任一网站上的商品降价时，您会收到提醒</translation>
 <translation id="4056223980640387499">棕褐色调</translation>
+<translation id="4059523390906550209">详细了解敏感数据保护</translation>
 <translation id="4063063121357725926">让 Google 根据您购物车中的商品为您查找相符的折扣信息</translation>
 <translation id="406358100705415968">工作安全防护装备</translation>
 <translation id="4063924980214801036">使用设备解锁功能可更快确认银行卡信息</translation>
@@ -1678,6 +1681,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">屏蔽（默认）</translation>
 <translation id="4314815835985389558">管理同步数据</translation>
+<translation id="4316057107946726368">请输入理由，长度不得超过 <ph name="MAX_CHAR_COUNT" /> 个字符。已输入 <ph name="ACTUAL_CHAR_COUNT" /> 个字符（最多可输入 <ph name="MAX_CHAR_COUNT" /> 个字符）。</translation>
 <translation id="4318213823155573975">头饰</translation>
 <translation id="4318312030194671742">绘图预览合成器服务</translation>
 <translation id="4318566738941496689">您的设备名称和网络地址</translation>
@@ -2351,6 +2355,7 @@
 <translation id="5695542892312572833">使用 Windows Hello 验证并完成您的购买交易？</translation>
 <translation id="5699628521141772782">乳制品和鸡蛋</translation>
 <translation id="5700761515355162635">已允许使用第三方 Cookie</translation>
+<translation id="5701023235904684227">是否允许操作 <ph name="READERNAME" />，并获得对其可访问智能卡的访问权限？</translation>
 <translation id="5701381305118179107">居中</translation>
 <translation id="5707154300732650394">继续您的历程</translation>
 <translation id="57094364128775171">建议安全系数高的密码…</translation>
@@ -2422,7 +2427,6 @@
 <translation id="5866898949289125849">您当前查看的是一个开发者工具页面</translation>
 <translation id="5869405914158311789">无法访问此网站</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
-<translation id="5872318519182427835">此设置会影响这里列出的网站及其子网域。例如，添加“google.com”意味着也可为 mail.google.com 启用第三方 Cookie，因为此网域是 google.com 的一部分。</translation>
 <translation id="5872692522325383488">已保存 IBAN</translation>
 <translation id="5873297634595728366">柴油车</translation>
 <translation id="5877831137320480913">美容与健身</translation>
@@ -2633,6 +2637,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC：</translation>
 <translation id="6295855836753816081">正在保存…</translation>
+<translation id="6298456705131259420">此设置会影响这里列出的网站。在域名前插入“[*.]”可以为整个域创建例外情况。例如，添加“[*.]google.com”意味着也可为 mail.google.com 启用第三方 Cookie，因为此网域是 google.com 的一部分。</translation>
 <translation id="6300452962057769623">{0,plural, =0{您的设备将立即重启}=1{您的设备将在 1 秒后重启}other{您的设备将在 # 秒后重启}}</translation>
 <translation id="6301104306974789820">接收价格跟踪通知</translation>
 <translation id="6304398603974202180">多媒体软件</translation>
@@ -2664,6 +2669,7 @@
 <translation id="6355392890578844978">此浏览器并未由某个公司或其他组织管理。此设备上的活动可能在接受 Chromium 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">修改付款方式</translation>
 <translation id="6358450015545214790">这分别意味着什么？</translation>
+<translation id="6360213755783740931">详细了解恶意软件防护</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">查看日志</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />检查代理服务器、防火墙和安全 DNS 配置<ph name="END_LINK" /></translation>
@@ -2721,6 +2727,7 @@
 <translation id="6443406338865242315">您已安装的扩展程序和插件</translation>
 <translation id="6446608382365791566">添加更多信息</translation>
 <translation id="6447842834002726250">Cookie</translation>
+<translation id="6448371595882710519">详细了解数据控制</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Chou 40 信封</translation>
 <translation id="6451458296329894277">确认重新提交表单</translation>
