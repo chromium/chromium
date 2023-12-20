@@ -137,6 +137,13 @@ void SoftNavigationHeuristics::InteractionCallbackCalled(
     ScriptState* script_state,
     EventScopeType type,
     bool is_new_interaction) {
+  // TODO(crbug.com/1503284): return early to avoid check failure crashes.
+  if (is_new_interaction || !last_interaction_task_id_) {
+    if (pending_interaction_timestamp_.is_null()) {
+      return;
+    }
+  }
+
   // Set task ID to the current one.
   initial_interaction_encountered_ = true;
   ThreadScheduler* scheduler = ThreadScheduler::Current();
