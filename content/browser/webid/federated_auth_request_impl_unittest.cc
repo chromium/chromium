@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -906,7 +907,8 @@ class TestIdentityRegistry : public NiceMock<MockIdentityRegistry> {
 
 class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
  protected:
-  FederatedAuthRequestImplTest() {
+  FederatedAuthRequestImplTest(std::string_view rp_url = kRpUrl)
+      : rp_url_(rp_url) {
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
   ~FederatedAuthRequestImplTest() override = default;
@@ -923,7 +925,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         url::Origin::Create(GURL(kIdpUrl)));
 
     static_cast<TestWebContents*>(web_contents())
-        ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
+        ->NavigateAndCommit(GURL(rp_url_), ui::PAGE_TRANSITION_LINK);
 
     federated_auth_request_impl_ = &FederatedAuthRequestImpl::CreateForTesting(
         *main_test_rfh(), test_api_permission_delegate_.get(),
@@ -1457,6 +1459,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   }
 
  protected:
+  std::string rp_url_;
+
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
   raw_ptr<FederatedAuthRequestImpl, AcrossTasksDanglingUntriaged>
       federated_auth_request_impl_;
@@ -6270,6 +6274,44 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowNotAffectEmbargo) {
   EXPECT_FALSE(DidFetch(FetchedEndpoint::TOKEN));
   EXPECT_FALSE(test_api_permission_delegate_->embargoed_origins_.count(
       main_test_rfh()->GetLastCommittedOrigin()));
+}
+
+class FederatedAuthRequestExampleOrgTest : public FederatedAuthRequestImplTest {
+ public:
+  FederatedAuthRequestExampleOrgTest()
+      : FederatedAuthRequestImplTest("https://rp.example.org/") {}
+};
+
+TEST_F(FederatedAuthRequestExampleOrgTest, WellKnownSameSiteFlag) {
+  static const char kExampleOrgProviderUrl[] =
+      "https://idp.example.org/fedcm.json";
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmSkipWellKnownForSameSite);
+
+  MockIdpInfo idp_info = kDefaultIdentityProviderInfo;
+  idp_info.well_known.fetch_status.parse_status =
+      ParseStatus::kInvalidContentTypeError;
+  idp_info.config.accounts_endpoint = "https://idp.example.org/accounts";
+  idp_info.config.token_endpoint = "https://idp.example.org/token";
+  idp_info.config.client_metadata_endpoint =
+      "https://idp.example.org/client_metadata";
+  idp_info.config.metrics_endpoint = "";
+  idp_info.config.idp_login_url = "https://idp.example.org/login";
+  idp_info.config.disconnect_endpoint = "";
+
+  // We make the request from rp.example to idp.example, so it should
+  // only succeed despite the well-known failure if the flag is on.
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info.clear();
+  configuration.idp_info[kExampleOrgProviderUrl] = idp_info;
+
+  RequestParameters request{kDefaultRequestParameters};
+  request.identity_providers[0].provider = kExampleOrgProviderUrl;
+
+  RequestExpectations expectation = kExpectationSuccess;
+  expectation.selected_idp_config_url = kExampleOrgProviderUrl;
+
+  RunAuthTest(request, expectation, configuration);
 }
 
 }  // namespace content

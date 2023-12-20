@@ -402,9 +402,10 @@ std::string FormatUrlWithDomain(const GURL& url, bool for_display) {
       url_formatter::kFormatUrlOmitDefaults &
       ~(url_formatter::kFormatUrlOmitHTTP | url_formatter::kFormatUrlOmitHTTPS |
         url_formatter::kFormatUrlOmitFileScheme);
-  return base::UTF16ToUTF8(url_formatter::FormatUrl(
+  std::string out = base::UTF16ToUTF8(url_formatter::FormatUrl(
       GURL(url.scheme() + "://" + formatted_url_str), types,
       base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+  return out;
 }
 
 bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(

@@ -1725,6 +1725,12 @@ const char kFedCmSelectiveDisclosureDescription[] =
     "Allows a relying party to selectively request a set of identity "
     "attributes to be disclosed.";
 
+const char kFedCmSkipWellKnownForSameSiteName[] =
+    "FedCmSkipWellKnownForSameSite";
+const char kFedCmSkipWellKnownForSameSiteDescription[] =
+    "Skips .well-known checks for FedCM requests when the RP and IDP are "
+    "in the same site (eTLD+1)";
+
 const char kFedCmWithoutThirdPartyCookiesName[] =
     "FedCmWithoutThirdPartyCookies";
 const char kFedCmWithoutThirdPartyCookiesDescription[] =

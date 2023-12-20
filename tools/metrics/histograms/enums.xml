@@ -30786,6 +30786,7 @@ from previous Chrome versions.
   <int value="-1125840399" label="ViewsBrowserWindows:enabled"/>
   <int value="-1125133283" label="disable-threaded-scrolling"/>
   <int value="-1124684239" label="LensEnableImageTranslate:enabled"/>
+  <int value="-1124129866" label="FedCmSkipWellKnownForSameSite:enabled"/>
   <int value="-1123054362" label="MicrosoftOfficeWebAppExperiment:enabled"/>
   <int value="-1122899696" label="PluginVmShowMicrophonePermissions:disabled"/>
   <int value="-1122895401"
@@ -31555,6 +31556,7 @@ from previous Chrome versions.
   <int value="-755068996" label="AutofillEnableCardArtImage:disabled"/>
   <int value="-754726495" label="WebUITabStripContextMenuAfterTap:enabled"/>
   <int value="-754479863" label="SmartCard:disabled"/>
+  <int value="-754475378" label="FedCmSkipWellKnownForSameSite:disabled"/>
   <int value="-753988121" label="FlossIsAvailabilityCheckNeeded:enabled"/>
   <int value="-753833897" label="AppLaunchAutomation:disabled"/>
   <int value="-752321357" label="AutofillEnableGoogleIssuedCard:enabled"/>

@@ -4133,6 +4133,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "fedcm-skip-well-known-for-same-site",
+    "owners": ["cbiesinger@chromium.org", "web-identity-eng@google.com"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "fedcm-without-third-party-cookies",
     "owners": ["tanzachary@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 125

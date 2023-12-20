@@ -8792,6 +8792,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmSelectiveDisclosureDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmSelectiveDisclosure)},
 
+    {"fedcm-skip-well-known-for-same-site",
+     flag_descriptions::kFedCmSkipWellKnownForSameSiteName,
+     flag_descriptions::kFedCmSkipWellKnownForSameSiteDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmSkipWellKnownForSameSite)},
+
     {"fedcm-without-third-party-cookies",
      flag_descriptions::kFedCmWithoutThirdPartyCookiesName,
      flag_descriptions::kFedCmWithoutThirdPartyCookiesDescription, kOsAll,

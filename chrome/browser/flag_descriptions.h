@@ -969,6 +969,9 @@ extern const char kFedCmMultiIdpDescription[];
 extern const char kFedCmSelectiveDisclosureName[];
 extern const char kFedCmSelectiveDisclosureDescription[];
 
+extern const char kFedCmSkipWellKnownForSameSiteName[];
+extern const char kFedCmSkipWellKnownForSameSiteDescription[];
+
 extern const char kFedCmIdpSigninStatusName[];
 extern const char kFedCmIdpSigninStatusDescription[];
 

@@ -426,6 +426,12 @@ BASE_FEATURE(kFedCmSelectiveDisclosure,
              "FedCmSelectiveDisclosure",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Skips the .well-known file checks if the RP and IDP are under the same
+// eTLD+1.
+BASE_FEATURE(kFedCmSkipWellKnownForSameSite,
+             "FedCmSkipWellKnownForSameSite",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables bypassing the well-known file enforcement.
 BASE_FEATURE(kFedCmWithoutWellKnownEnforcement,
              "FedCmWithoutWellKnownEnforcement",

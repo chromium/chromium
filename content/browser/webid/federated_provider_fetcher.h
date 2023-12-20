@@ -91,6 +91,8 @@ class CONTENT_EXPORT FederatedProviderFetcher {
 
   void RunCallbackIfDone();
 
+  bool ShouldSkipWellKnownEnforcementForIdp(const GURL& idp_url);
+
   raw_ref<RenderFrameHost> render_frame_host_;
 
   RequesterCallback callback_;
