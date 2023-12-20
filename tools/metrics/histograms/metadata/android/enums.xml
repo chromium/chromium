@@ -84,6 +84,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Site settings exception list"/>
 </enum>
 
+<enum name="AndroidDefaultBrowserPromoOutcomeType">
+  <int value="0" label="No Default"/>
+  <int value="1" label="Other Default"/>
+  <int value="2" label="Chrome Default"/>
+</enum>
+
+<enum name="AndroidDefaultBrowserPromoType">
+  <int value="0" label="No Default"/>
+  <int value="1" label="Other Default"/>
+</enum>
+
 <enum name="AndroidDownloadFilterType">
   <int value="0" label="All"/>
   <int value="1" label="Page"/>

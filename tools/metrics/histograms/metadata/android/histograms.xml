@@ -881,6 +881,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DefaultBrowserPromo.Outcome.{CurrentState}"
+    enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="M130">
+  <owner>lazzzis@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    The final default browser state (outcome) after the user has been prompted
+    to set Chrome as the default when {CurrentState} is set as the default
+    initially. Recorded when the system UI prompting the user to change their
+    default is dismissed.
+  </summary>
+  <token key="CurrentState">
+    <variant name="NoDefault" summary="no browser"/>
+    <variant name="OtherDefault" summary="another browser"/>
+  </token>
+</histogram>
+
+<histogram name="Android.DefaultBrowserPromo.RoleManagerShown"
+    enum="AndroidDefaultBrowserPromoType" expires_after="M130">
+  <owner>lazzzis@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the default browser state when the Android Q+ role manager dialog is
+    shown.
+  </summary>
+</histogram>
+
 <histogram name="Android.DeviceAuthenticator.AuthSource"
     enum="DeviceAuthSource" expires_after="2024-02-04">
   <owner>ioanap@chromium.org</owner>
