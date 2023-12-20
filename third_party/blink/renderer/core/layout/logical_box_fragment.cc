@@ -16,8 +16,14 @@ FontHeight LogicalBoxFragment::BaselineMetrics(
     FontBaseline baseline_type) const {
   // For checkbox and radio controls, we always use the border edge instead of
   // the margin edge.
-  if (physical_fragment_.Style().IsCheckboxOrRadioPart())
-    return FontHeight(margins.line_over + BlockSize(), margins.line_under);
+  if (physical_fragment_.Style().IsCheckboxOrRadioPart()) {
+    if (baseline_type == kAlphabeticBaseline) {
+      return FontHeight(margins.line_over + BlockSize(), margins.line_under);
+    }
+    // For a central baseline, center within the checkbox/radio part.
+    return FontHeight(margins.line_over + BlockSize() / 2,
+                      BlockSize() - BlockSize() / 2 + margins.line_under);
+  }
 
   absl::optional<LayoutUnit> baseline;
   switch (physical_fragment_.Style().BaselineSource()) {
