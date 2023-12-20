@@ -92,7 +92,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         value: () => {
           return isRevampWayfindingEnabled();
         },
-        readOnly: true,
       },
 
       selectedModePref_: {
@@ -263,7 +262,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private displaySettingsProvider: DisplaySettingsProviderInterface;
   private displayTabNames_: string[];
   private invalidDisplayId_: string;
-  private readonly isRevampWayfindingEnabled_: boolean;
+  private isRevampWayfindingEnabled_: boolean;
   private isTabletMode_: boolean;
   private listAllDisplayModes_: boolean;
   private logicalResolutionText_: string;

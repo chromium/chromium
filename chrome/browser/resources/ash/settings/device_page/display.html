@@ -76,7 +76,8 @@
     <template is="dom-if"
         if="[[showMirror(unifiedDesktopMode_, displays)]]" restamp>
       <!-- Mirror display toggle button -->
-      <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+      <template is="dom-if"
+          if="[[isRevampWayfindingEnabled_]]" restamp>
         <div id="mirrorDisplayToggleButton" class="text-area">
           <div id="mirrorDisplayToggleLabel" class="start">
             [[getDisplayMirrorText_(displays)]]
@@ -91,7 +92,8 @@
       </template>
 
       <!-- Mirror display checkbox -->
-      <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+      <template is="dom-if"
+          if="[[!isRevampWayfindingEnabled_]]" restamp>
         <div class="secondary self-start">
           <cr-checkbox id="displayMirrorCheckbox"
               checked="[[isMirrored(displays)]]"
