@@ -761,6 +761,93 @@ TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListZeroconf) {
   EXPECT_EQ(scanner.model(), expected_scanner.model);
 }
 
+// Test that a non-escl zeroconf scanner can be retrieved.
+TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListNonEsclZeroconf) {
+  auto zeroconf_scanner = CreateZeroconfScanner();
+  auto non_escl_scanner = CreateNonEsclEpsonZeroconfScanner();
+  fake_zeroconf_scanner_detector()->AddDetections(
+      {zeroconf_scanner, non_escl_scanner});
+  CompleteTasks();
+
+  // When the scanner list is retrieved and it contains non-escl network
+  // scanners, those are verified by attempting to open the scanner.  Provide an
+  // open response to our fake client.
+  lorgnette::ScannerConfig config;
+  config.mutable_scanner()->set_token("scanner-token");
+  lorgnette::OpenScannerResponse response;
+  response.mutable_scanner_id()->set_connection_string("connection-string");
+  response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+  *response.mutable_config() = std::move(config);
+  GetLorgnetteManagerClient()->SetOpenScannerResponse(response);
+
+  GetScannerInfoList(LocalScannerFilter::kIncludeNetworkScanners,
+                     SecureScannerFilter::kIncludeUnsecureScanners);
+  WaitForResult();
+  ASSERT_TRUE(list_scanners_response());
+  ASSERT_EQ(list_scanners_response().value().scanners_size(), 2);
+
+  std::vector<std::string> actual_names = {
+      list_scanners_response().value().scanners(0).name(),
+      list_scanners_response().value().scanners(1).name()};
+  EXPECT_THAT(actual_names,
+              UnorderedElementsAreArray(
+                  {"epsonds:net:192.168.0.3",
+                   "airscan:escl:Test MX3100:https://192.168.0.3:5/"}));
+}
+
+// Test that a non-escl zeroconf scanner can be retrieved when it's busy.
+TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListNonEsclZeroconfBusy) {
+  auto non_escl_scanner = CreateNonEsclEpsonZeroconfScanner();
+  fake_zeroconf_scanner_detector()->AddDetections({non_escl_scanner});
+  CompleteTasks();
+
+  // When the scanner list is retrieved and it contains non-escl network
+  // scanners, those are verified by attempting to open the scanner.  Provide an
+  // open response to our fake client.
+  lorgnette::ScannerConfig config;
+  config.mutable_scanner()->set_token("scanner-token");
+  lorgnette::OpenScannerResponse response;
+  response.mutable_scanner_id()->set_connection_string("connection-string");
+  response.set_result(lorgnette::OPERATION_RESULT_DEVICE_BUSY);
+  *response.mutable_config() = std::move(config);
+  GetLorgnetteManagerClient()->SetOpenScannerResponse(response);
+
+  GetScannerInfoList(LocalScannerFilter::kIncludeNetworkScanners,
+                     SecureScannerFilter::kIncludeUnsecureScanners);
+  WaitForResult();
+  ASSERT_TRUE(list_scanners_response());
+  ASSERT_EQ(list_scanners_response().value().scanners_size(), 1);
+
+  const lorgnette::ScannerInfo scanner =
+      list_scanners_response().value().scanners(0);
+  EXPECT_EQ(scanner.name(), "epsonds:net:192.168.0.3");
+}
+
+// Test that a non-escl zeroconf scanner is not returned if it's unreachable.
+TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListNonEsclZeroconfDead) {
+  auto non_escl_scanner = CreateNonEsclEpsonZeroconfScanner();
+  fake_zeroconf_scanner_detector()->AddDetections({non_escl_scanner});
+
+  CompleteTasks();
+
+  // When the scanner list is retrieved and it contains non-escl network
+  // scanners, those are verified by attempting to open the scanner.  Provide an
+  // open response to our fake client.
+  lorgnette::ScannerConfig config;
+  config.mutable_scanner()->set_token("scanner-token");
+  lorgnette::OpenScannerResponse response;
+  response.mutable_scanner_id()->set_connection_string("connection-string");
+  response.set_result(lorgnette::OPERATION_RESULT_INVALID);
+  *response.mutable_config() = std::move(config);
+  GetLorgnetteManagerClient()->SetOpenScannerResponse(response);
+
+  GetScannerInfoList(LocalScannerFilter::kIncludeNetworkScanners,
+                     SecureScannerFilter::kIncludeUnsecureScanners);
+  WaitForResult();
+  ASSERT_TRUE(list_scanners_response());
+  EXPECT_EQ(list_scanners_response().value().scanners_size(), 0);
+}
+
 // Test that unusable zeroconf scanner is not retrieved.
 TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListZeroconfUnusable) {
   auto scanner = CreateZeroconfScanner(false);
