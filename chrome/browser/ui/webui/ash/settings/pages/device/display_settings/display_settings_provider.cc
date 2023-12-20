@@ -36,12 +36,13 @@ const std::string GetUserOverrideDefaultSettingsHistogramName(
   CHECK(type == mojom::DisplaySettingsType::kResolution ||
         type == mojom::DisplaySettingsType::kScaling);
 
-  std::string histogram_name("ChromeOS.Settings.Display.");
-  histogram_name.append(is_internal_display ? "Internal." : "External.");
-  histogram_name.append("UserOverrideDisplayDefaultSettingsTimeElapsed.");
+  std::string histogram_name(
+      DisplaySettingsProvider::kDisplaySettingsHistogramName);
+  histogram_name.append(is_internal_display ? ".Internal" : ".External");
+  histogram_name.append(".UserOverrideDisplayDefaultSettingsTimeElapsed");
   histogram_name.append(type == mojom::DisplaySettingsType::kResolution
-                            ? "Resolution"
-                            : "Scaling");
+                            ? ".Resolution"
+                            : ".Scaling");
   return histogram_name;
 }
 
@@ -128,17 +129,12 @@ void DisplaySettingsProvider::OnDisplayAdded(
 void DisplaySettingsProvider::RecordChangingDisplaySettings(
     mojom::DisplaySettingsType type,
     mojom::DisplaySettingsValuePtr value) {
+  std::string histogram_name(kDisplaySettingsHistogramName);
   std::optional<bool> is_internal_display = value->is_internal_display;
-  if (!is_internal_display.has_value()) {
-    // TODO(zhangwenyu): handle settings that apply to both internal and
-    // external display, such as toggling mirror mode.
-    return;
+  if (is_internal_display.has_value()) {
+    histogram_name.append(is_internal_display.value() ? ".Internal"
+                                                      : ".External");
   }
-
-  // Record display settings usage metrics.
-  const std::string histogram_name =
-      is_internal_display.value() ? kInternalDisplaySettingsHistogramName
-                                  : kExternalDisplaySettingsHistogramName;
   base::UmaHistogramEnumeration(histogram_name, type);
 
   // Record default display settings performance metrics.

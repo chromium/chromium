@@ -155,15 +155,25 @@ TEST_F(DisplaySettingsProviderTest, ChangeDisplaySettingsHistogram) {
        typeInt++) {
     mojom::DisplaySettingsType type =
         static_cast<mojom::DisplaySettingsType>(typeInt);
-    for (bool internal : {true, false}) {
+    // Settings applied to both internal and external displays.
+    if (type == mojom::DisplaySettingsType::kDisplayPage ||
+        type == mojom::DisplaySettingsType::kMirrorMode) {
       auto value = mojom::DisplaySettingsValue::New();
-      value->is_internal_display = internal;
       provider_->RecordChangingDisplaySettings(type, std::move(value));
       histogram_tester_.ExpectBucketCount(
-          internal
-              ? DisplaySettingsProvider::kInternalDisplaySettingsHistogramName
-              : DisplaySettingsProvider::kExternalDisplaySettingsHistogramName,
-          type, 1);
+          DisplaySettingsProvider::kDisplaySettingsHistogramName, type, 1);
+    } else {
+      // Settings applied to either internal or external displays.
+      for (bool internal : {true, false}) {
+        auto value = mojom::DisplaySettingsValue::New();
+        value->is_internal_display = internal;
+        provider_->RecordChangingDisplaySettings(type, std::move(value));
+
+        std::string histogram_name(
+            DisplaySettingsProvider::kDisplaySettingsHistogramName);
+        histogram_name.append(internal ? ".Internal" : ".External");
+        histogram_tester_.ExpectBucketCount(histogram_name, type, 1);
+      }
     }
   }
 }

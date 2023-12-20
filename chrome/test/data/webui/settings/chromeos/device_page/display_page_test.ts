@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrLinkRowElement, DevicePageBrowserProxyImpl, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrCheckboxElement, CrLinkRowElement, DevicePageBrowserProxyImpl, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -139,6 +139,13 @@ suite('<settings-display>', () => {
 
   test('display settings histogram tests', async function() {
     await initPage();
+
+    // Verify histogram count for display settings page opened.
+    const displayHistogram = displaySettingsProvider.getDisplayHistogram();
+    assertEquals(
+        1,
+        displayHistogram.get(
+            displaySettingsProviderMojom.DisplaySettingsType.kDisplayPage));
 
     // Add a display.
     addDisplay(1);
@@ -304,6 +311,19 @@ suite('<settings-display>', () => {
         externalDisplayHistogram.get(
             displaySettingsProviderMojom.DisplaySettingsType
                 .kNightLightSchedule));
+
+    // Mock user toggling mirror mode setting.
+    const displayMirrorCheckbox =
+        displayPage.shadowRoot!.querySelector<CrCheckboxElement>(
+            '#displayMirrorCheckbox');
+    assertTrue(!!displayMirrorCheckbox);
+    displayMirrorCheckbox.click();
+
+    // Verify histogram count for mirror mode setting.
+    assertEquals(
+        1,
+        displayHistogram.get(
+            displaySettingsProviderMojom.DisplaySettingsType.kMirrorMode));
   });
 
   test('display tests', async function() {

@@ -42,10 +42,9 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
     kMaxValue = kInternalDisplay,
   };
 
-  static constexpr char kInternalDisplaySettingsHistogramName[] =
-      "ChromeOS.Settings.Display.Internal";
-  static constexpr char kExternalDisplaySettingsHistogramName[] =
-      "ChromeOS.Settings.Display.External";
+  // The UMA histogram that records display settings usage.
+  static constexpr char kDisplaySettingsHistogramName[] =
+      "ChromeOS.Settings.Display";
   // The UMA histogram that records new display connected metrics.
   static constexpr char kNewDisplayConnectedHistogram[] =
       "ChromeOS.Settings.Display.NewDisplayConnected";

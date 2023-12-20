@@ -34,6 +34,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Overscan"/>
   <int value="5" label="NightLight"/>
   <int value="6" label="NightLightSchedule"/>
+  <int value="7" label="DisplayPage"/>
+  <int value="8" label="MirrorMode"/>
 </enum>
 
 <enum name="DisplayType">

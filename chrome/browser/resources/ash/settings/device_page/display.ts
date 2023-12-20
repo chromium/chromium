@@ -342,6 +342,10 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     this.displaySettingsProvider.observeDisplayConfiguration(
         new DisplayConfigurationObserverReceiver(this)
             .$.bindNewPipeAndPassRemote());
+
+    // Record metrics that user has opened the display settings page.
+    this.displaySettingsProvider.recordChangingDisplaySettings(
+        DisplaySettingsType.kDisplayPage, /*value=*/ {});
   }
 
   override disconnectedCallback(): void {
@@ -1266,6 +1270,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         console.error('setMirrorMode Error: ' + error.message);
       }
     });
+    this.displaySettingsProvider.recordChangingDisplaySettings(
+        DisplaySettingsType.kMirrorMode, /*value=*/ {});
   }
 
   private onUnifiedDesktopClick_(): void {
