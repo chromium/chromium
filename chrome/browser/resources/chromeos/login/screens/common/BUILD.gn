@@ -52,7 +52,6 @@ js_type_check("closure_compile_local") {
     ":remote_activity_notification",
     ":saml_confirm_password",
     ":signin_fatal_error",
-    ":smart_privacy_protection",
     ":sync_consent",
     ":theme_selection",
     ":touchpad_scroll",
@@ -434,18 +433,6 @@ js_library("signin_fatal_error") {
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("smart_privacy_protection") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/smart_privacy_protection.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//ash/webui/common/resources:load_time_data.m",
   ]
   extra_deps = [ ":web_components" ]
 }

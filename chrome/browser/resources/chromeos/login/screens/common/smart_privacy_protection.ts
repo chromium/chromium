@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,48 +12,43 @@ import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 
-import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
-import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {getTemplate} from './smart_privacy_protection.html.js';
 
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- */
-const SmartPrivacyProtectionScreenElementBase = mixinBehaviors(
-    [OobeDialogHostBehavior, OobeI18nBehavior, LoginScreenBehavior],
-    PolymerElement);
 
-/**
- * @polymer
- */
-class SmartPrivacyProtectionScreen extends
+export const SmartPrivacyProtectionScreenElementBase =
+    mixinBehaviors(
+        [OobeI18nBehavior, LoginScreenBehavior, OobeDialogHostBehavior],
+        PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
+    };
+
+
+export class SmartPrivacyProtectionScreen extends
     SmartPrivacyProtectionScreenElementBase {
   static get is() {
-    return 'smart-privacy-protection-element';
+    return 'smart-privacy-protection-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * True screen lock is enabled.
-       * @private
        */
-      isQuickDimEnabled_: {
+      isQuickDimEnabled: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isQuickDimEnabled');
@@ -63,9 +58,8 @@ class SmartPrivacyProtectionScreen extends
 
       /**
        * Indicates whether user is minor mode user (e.g. under age of 18).
-       * @private
        */
-      isMinorMode_: {
+      isMinorMode: {
         type: Boolean,
         // TODO(dkuzmin): change the default value once appropriate capability
         // is available on C++ side.
@@ -74,11 +68,14 @@ class SmartPrivacyProtectionScreen extends
     };
   }
 
-  get EXTERNAL_API() {
+  private isQuickDimEnabled: boolean;
+  private isMinorMode: boolean;
+
+  override get EXTERNAL_API(): string[] {
     return ['setIsMinorMode'];
   }
 
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('SmartPrivacyProtectionScreen');
   }
@@ -86,18 +83,23 @@ class SmartPrivacyProtectionScreen extends
   /**
    * Set the minor mode flag, which controls whether we could use nudge
    * techinuque on the UI.
-   * @param {boolean} isMinorMode
    */
-  setIsMinorMode(isMinorMode) {
-    this.isMinorMode_ = isMinorMode;
+  setIsMinorMode(isMinorMode: boolean): void {
+    this.isMinorMode = isMinorMode;
   }
 
-  onTurnOnButtonClicked_() {
+  private onTurnOnButtonClicked(): void {
     this.userActed('continue-feature-on');
   }
 
-  onNoThanksButtonClicked_() {
+  private onNoThanksButtonClicked(): void {
     this.userActed('continue-feature-off');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SmartPrivacyProtectionScreen.is]: SmartPrivacyProtectionScreen;
   }
 }
 

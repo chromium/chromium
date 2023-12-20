@@ -160,7 +160,7 @@ common_screens_js_files = [
   "screens/common/recommend_apps.js",
   "screens/common/saml_confirm_password.js",
   "screens/common/signin_fatal_error.js",
-  "screens/common/smart_privacy_protection.js",
+  "screens/common/smart_privacy_protection.ts",
   "screens/common/sync_consent.js",
   "screens/common/theme_selection.js",
   "screens/common/touchpad_scroll.js",
