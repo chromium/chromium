@@ -458,19 +458,20 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             return;
         }
 
-        // Find the title/url width threshold that turns the maximize button visible.
+        // Find the title/url width threshold that turns the minimize button visible.
         int containerWidthPx = mLocationBar.mTitleUrlContainer.getWidth();
         int minUrlWidthPx =
                 getResources().getDimensionPixelSize(R.dimen.location_bar_min_url_width);
         if (containerWidthPx == 0) return;
         if (containerWidthPx < minUrlWidthPx) {
-            // We expect to see at least as much URL text as the width of the maximize button.
+            // We expect to see at least as much URL text as the width of the minimize button.
             // Hide the button if we can't.
             mMinimizeButton.setVisibility(View.GONE);
         } else {
             mMinimizeButton.setVisibility(View.VISIBLE);
             mLocationBar.removeButtonsVisibilityUpdater();
         }
+        updateToolbarLayoutMargin();
     }
 
     private boolean isInMultiWindowMode() {
@@ -1381,7 +1382,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             if (mSecurityButton.getVisibility() == View.GONE) {
                 leftMargin -= mSecurityButton.getMeasuredWidth();
             }
-
             lp.leftMargin = leftMargin;
             mTitleUrlContainer.setLayoutParams(lp);
         }
