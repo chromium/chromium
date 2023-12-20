@@ -19,13 +19,13 @@ class DeviceLockBridge {
   DeviceLockBridge();
   virtual ~DeviceLockBridge();
 
-  using DeviceLockConfirmedCallback = base::OnceCallback<void(bool)>;
+  using DeviceLockRequirementMetCallback = base::OnceCallback<void(bool)>;
 
   // Launches the Device Lock setup UI (explainer dialog and PIN/password setup
-  // flow) before allowing users to continue.
-  virtual void LaunchDeviceLockUiBeforeRunningCallback(
+  // flow) if needed before allowing users to continue.
+  virtual void LaunchDeviceLockUiIfNeededBeforeRunningCallback(
       ui::WindowAndroid* window_android,
-      DeviceLockConfirmedCallback callback);
+      DeviceLockRequirementMetCallback callback);
 
   // Invokes a callback to save a pending password (if device lock was set up)
   // and clean up pointers and other data.
@@ -53,8 +53,10 @@ class DeviceLockBridge {
   // to this class).
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 
-  // The callback to run after user successfully finishes device lock UI.
-  DeviceLockConfirmedCallback device_lock_confirmed_callback_;
+  // The callback to run after either Chrome determines that the device lock UI
+  // does not need to be shown or the user successfully finishes the device lock
+  // UI.
+  DeviceLockRequirementMetCallback device_lock_confirmed_callback_;
 };
 
 #endif  // COMPONENTS_BROWSER_UI_DEVICE_LOCK_ANDROID_DEVICE_LOCK_BRIDGE_H_

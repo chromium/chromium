@@ -1,4 +1,3 @@
-
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -20,24 +19,20 @@ class TestDeviceLockBridge : public DeviceLockBridge {
 
   ~TestDeviceLockBridge() override;
 
-  bool ShouldShowDeviceLockUi() override;
-
-  bool RequiresDeviceLock() override;
-
-  void LaunchDeviceLockUiBeforeRunningCallback(
+  void LaunchDeviceLockUiIfNeededBeforeRunningCallback(
       ui::WindowAndroid* window_android,
-      DeviceLockConfirmedCallback callback) override;
+      DeviceLockRequirementMetCallback callback) override;
 
-  void SimulateDeviceLockComplete(bool is_device_lock_set);
+  void SimulateFinishedCheckingDeviceLockRequirements(
+      bool are_device_lock_requirements_met);
 
-  void SetShouldShowDeviceLockUi(bool should_show_device_lock_ui);
-
-  bool device_lock_ui_was_shown();
+  bool did_start_checking_device_lock_requirements() {
+    return did_start_checking_device_lock_requirements_;
+  }
 
  private:
-  bool should_show_device_lock_ui_ = false;
-  bool device_lock_ui_was_shown_ = false;
-  DeviceLockConfirmedCallback callback_;
+  bool did_start_checking_device_lock_requirements_ = false;
+  DeviceLockRequirementMetCallback callback_;
 };
 
 }  // namespace autofill

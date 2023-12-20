@@ -29,38 +29,22 @@ AutofillSaveCardDelegateAndroid::~AutofillSaveCardDelegateAndroid() = default;
 
 void AutofillSaveCardDelegateAndroid::GatherAdditionalConsentIfApplicable(
     AutofillClient::UserProvidedCardDetails user_provided_details) {
-  if (device_lock_bridge_->ShouldShowDeviceLockUi()) {
-    PromptUserToSetDeviceLock(user_provided_details);
-  } else {
-    OnFinishedGatheringConsent(
-        AutofillClient::SaveCardOfferUserDecision::kAccepted,
-        user_provided_details);
-  }
-}
-
-void AutofillSaveCardDelegateAndroid::PromptUserToSetDeviceLock(
-    AutofillClient::UserProvidedCardDetails user_provided_details) {
-  if (auto* window = web_contents_->GetNativeView()->GetWindowAndroid()) {
-    device_lock_bridge_->LaunchDeviceLockUiBeforeRunningCallback(
-        window,
-        base::BindOnce(&AutofillSaveCardDelegateAndroid::OnAfterDeviceLockUi,
-                       weak_ptr_factory_.GetWeakPtr(), user_provided_details));
-  } else {
-    OnFinishedGatheringConsent(
-        AutofillClient::SaveCardOfferUserDecision::kIgnored,
-        /*user_provided_details=*/{});
-  }
+  device_lock_bridge_->LaunchDeviceLockUiIfNeededBeforeRunningCallback(
+      web_contents_->GetNativeView()->GetWindowAndroid(),
+      base::BindOnce(&AutofillSaveCardDelegateAndroid::OnAfterDeviceLockUi,
+                     weak_ptr_factory_.GetWeakPtr(), user_provided_details));
 }
 
 void AutofillSaveCardDelegateAndroid::OnAfterDeviceLockUi(
     AutofillClient::UserProvidedCardDetails user_provided_details,
-    bool is_device_lock_set) {
+    bool is_device_lock_requirement_met) {
   OnFinishedGatheringConsent(
-      /*user_decision=*/is_device_lock_set
+      /*user_decision=*/is_device_lock_requirement_met
           ? AutofillClient::SaveCardOfferUserDecision::kAccepted
           : AutofillClient::SaveCardOfferUserDecision::kIgnored,
-      is_device_lock_set ? user_provided_details
-                         : AutofillClient::UserProvidedCardDetails());
+      is_device_lock_requirement_met
+          ? user_provided_details
+          : AutofillClient::UserProvidedCardDetails());
 }
 
 }  // namespace autofill

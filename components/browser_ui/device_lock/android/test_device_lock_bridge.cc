@@ -9,32 +9,16 @@ namespace autofill {
 TestDeviceLockBridge::TestDeviceLockBridge() = default;
 TestDeviceLockBridge::~TestDeviceLockBridge() = default;
 
-bool TestDeviceLockBridge::ShouldShowDeviceLockUi() {
-  return should_show_device_lock_ui_;
-}
-
-bool TestDeviceLockBridge::RequiresDeviceLock() {
-  return should_show_device_lock_ui_;
-}
-
-void TestDeviceLockBridge::LaunchDeviceLockUiBeforeRunningCallback(
+void TestDeviceLockBridge::LaunchDeviceLockUiIfNeededBeforeRunningCallback(
     ui::WindowAndroid* window_android,
-    DeviceLockConfirmedCallback callback) {
+    DeviceLockRequirementMetCallback callback) {
+  did_start_checking_device_lock_requirements_ = true;
   callback_ = std::move(callback);
-  device_lock_ui_was_shown_ = true;
 }
 
-void TestDeviceLockBridge::SimulateDeviceLockComplete(bool is_device_lock_set) {
-  std::move(callback_).Run(is_device_lock_set);
-}
-
-void TestDeviceLockBridge::SetShouldShowDeviceLockUi(
-    bool should_show_device_lock_ui) {
-  should_show_device_lock_ui_ = should_show_device_lock_ui;
-}
-
-bool TestDeviceLockBridge::device_lock_ui_was_shown() {
-  return device_lock_ui_was_shown_;
+void TestDeviceLockBridge::SimulateFinishedCheckingDeviceLockRequirements(
+    bool are_device_lock_requirements_met) {
+  std::move(callback_).Run(are_device_lock_requirements_met);
 }
 
 }  // namespace autofill

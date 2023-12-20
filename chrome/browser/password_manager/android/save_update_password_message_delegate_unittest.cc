@@ -95,9 +95,9 @@ class TestDeviceLockBridge : public DeviceLockBridge {
 
   bool RequiresDeviceLock() override { return requires_device_lock_; }
 
-  void LaunchDeviceLockUiBeforeRunningCallback(
+  void LaunchDeviceLockUiIfNeededBeforeRunningCallback(
       ui::WindowAndroid* window_android,
-      DeviceLockConfirmedCallback callback) override {
+      DeviceLockRequirementMetCallback callback) override {
     callback_ = std::move(callback);
     device_lock_ui_shown_count_++;
   }
@@ -117,7 +117,7 @@ class TestDeviceLockBridge : public DeviceLockBridge {
   bool requires_device_lock_ = false;
   bool should_show_device_lock_ui_ = false;
   int device_lock_ui_shown_count_ = 0;
-  DeviceLockConfirmedCallback callback_;
+  DeviceLockRequirementMetCallback callback_;
 };
 
 }  // namespace
@@ -1191,10 +1191,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
                  /*update_password=*/false);
   EXPECT_NE(nullptr, GetMessageWrapper());
   TriggerActionClick(messages::DismissReason::UNKNOWN);
-
-  // Verify that device lock UI is not shown if window android is null, and
-  // password is not saved.
-  EXPECT_EQ(0, test_bridge()->device_lock_ui_shown_count());
 }
 
 // Tests parameterized with different feature states

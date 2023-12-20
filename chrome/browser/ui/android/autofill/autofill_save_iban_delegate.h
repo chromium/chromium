@@ -35,24 +35,7 @@ class AutofillSaveIbanDelegate {
   void SetDeviceLockBridgeForTesting(
       std::unique_ptr<DeviceLockBridge> device_lock_bridge);
 
- protected:
-  // Called when all of the prerequisites for saving a IBAN have been met.
-  void OnFinishedGatheringConsent(
-      const AutofillClient::SaveIbanOfferUserDecision& user_decision,
-      std::u16string_view user_provided_nickname = u"");
-
  private:
-  // This function by default saves the IBAN, but allows subclasses to
-  // override if there are prerequisites to saving the IBAN (ex: Android
-  // automotive requires a pin/password to be set on the device and must
-  // redirect to that flow before saving IBAN information).
-  void GatherAdditionalConsentIfApplicable(
-      std::u16string_view user_provided_nickname);
-
-  // Shows users an explainer dialog describing why they need to set a device
-  // lock and then redirects them to the Android OS device lock setup flow.
-  void PromptUserToSetDeviceLock(std::u16string_view user_provided_nickname);
-
   // Attempt to save IBAN if user successfully sets a device lock, and runs
   // appropriate callbacks such as cleaning up pointers to this delegate that
   // have their lifecycle extended.

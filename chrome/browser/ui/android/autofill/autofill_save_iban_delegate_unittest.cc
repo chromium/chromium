@@ -120,22 +120,20 @@ TEST_F(AutofillSaveIbanDelegateTest, OnUiIgnoredRunsLocalCallback) {
                                          /*user_provided_nickname=*/u"")));
 }
 
-// Tests that IBAN is saved if device lock UI is shown and device lock is set.
-TEST_F(AutofillSaveIbanDelegateTest, DeviceLockUiShown_DeviceLockSet) {
-  // Simulate user clicking save IBAN button and not having previously set up a
-  // device lock.
-  test_bridge_->SetShouldShowDeviceLockUi(true);
-
+// Tests that IBAN is saved if device lock requirements are met (example: device
+// lock is set).
+TEST_F(AutofillSaveIbanDelegateTest, DeviceLockRequirementsMet) {
   base::MockOnceClosure mock_finish_gathering_consent_callback;
   delegate_->OnUiAccepted(mock_finish_gathering_consent_callback.Get(),
                           kUserProvidedNickname);
 
-  // Verify that device lock UI is shown but IBAN is not saved yet.
-  EXPECT_EQ(true, test_bridge_->device_lock_ui_was_shown());
+  // Verify that device lock requirements check was started but that IBAN is not
+  // saved yet.
+  EXPECT_TRUE(test_bridge_->did_start_checking_device_lock_requirements());
   EXPECT_FALSE(local_offer_decision_.has_value());
 
-  // Verify that IBAN is saved after user sets a device lock.
-  test_bridge_->SimulateDeviceLockComplete(true);
+  test_bridge_->SimulateFinishedCheckingDeviceLockRequirements(
+      /*are_device_lock_requirements_met=*/true);
   EXPECT_THAT(local_offer_decision_,
               testing::Optional(EqualToLocalCallbackArgs(
                   SaveIbanOfferUserDecision::kAccepted,
@@ -144,85 +142,20 @@ TEST_F(AutofillSaveIbanDelegateTest, DeviceLockUiShown_DeviceLockSet) {
 
 // Tests that IBAN is not saved if device lock UI is shown but device lock is
 // not set.
-TEST_F(AutofillSaveIbanDelegateTest, DeviceLockUiShown_DeviceLockNotSet) {
-  // Simulate user clicking save IBAN button and not having previously set up a
-  // device lock.
-  test_bridge_->SetShouldShowDeviceLockUi(true);
-
+TEST_F(AutofillSaveIbanDelegateTest, DeviceLockRequirementsNotMet) {
   base::MockOnceClosure mock_finish_gathering_consent_callback;
   delegate_->OnUiAccepted(mock_finish_gathering_consent_callback.Get(), u"");
 
-  // Verify that device lock UI is shown but IBAN is not saved yet.
-  EXPECT_EQ(true, test_bridge_->device_lock_ui_was_shown());
+  // Verify that device lock requirements check was started but that IBAN is not
+  // saved yet.
+  EXPECT_TRUE(test_bridge_->did_start_checking_device_lock_requirements());
   EXPECT_FALSE(local_offer_decision_.has_value());
 
-  // Verify that IBAN not saved because user didn't set a device lock.
-  test_bridge_->SimulateDeviceLockComplete(false);
+  test_bridge_->SimulateFinishedCheckingDeviceLockRequirements(
+      /*are_device_lock_requirements_met=*/false);
   EXPECT_THAT(local_offer_decision_, testing::Optional(EqualToLocalCallbackArgs(
                                          SaveIbanOfferUserDecision::kDeclined,
                                          /*user_provided_nickname=*/u"")));
-}
-
-// Tests that IBAN is not saved if device lock UI is not shown because
-// WindowAndroid is null in the case of a non-empty nickname.
-TEST_F(AutofillSaveIbanDelegateTest,
-       DeviceLockUiNotShown_WindowAndroidIsNullNonEmptyNickname) {
-  // Set WindowAndroid to null.
-  window_.reset(nullptr);
-
-  // Simulate user clicking save IBAN button and getting prompted to set a
-  // device lock.
-  test_bridge_->SetShouldShowDeviceLockUi(true);
-
-  base::MockOnceClosure mock_finish_gathering_consent_callback;
-  delegate_->OnUiAccepted(mock_finish_gathering_consent_callback.Get(),
-                          kUserProvidedNickname);
-
-  // Verify that device lock UI is not shown and IBAN is not saved.
-  EXPECT_EQ(false, test_bridge_->device_lock_ui_was_shown());
-  EXPECT_THAT(local_offer_decision_, testing::Optional(EqualToLocalCallbackArgs(
-                                         SaveIbanOfferUserDecision::kIgnored,
-                                         /*user_provided_nickname=*/u"")));
-}
-
-// Tests that IBAN is not saved if device lock UI is not shown because
-// WindowAndroid is null in the case of an empty nickname.
-TEST_F(AutofillSaveIbanDelegateTest,
-       DeviceLockUiNotShown_WindowAndroidIsNullEmptyNickname) {
-  // Set WindowAndroid to null.
-  window_.reset(nullptr);
-
-  // Simulate user clicking save IBAN button and getting prompted to set a
-  // device lock.
-  test_bridge_->SetShouldShowDeviceLockUi(true);
-
-  base::MockOnceClosure mock_finish_gathering_consent_callback;
-  delegate_->OnUiAccepted(mock_finish_gathering_consent_callback.Get(), u"");
-
-  // Verify that device lock UI is not shown and IBAN is not saved.
-  EXPECT_EQ(false, test_bridge_->device_lock_ui_was_shown());
-  EXPECT_THAT(local_offer_decision_, testing::Optional(EqualToLocalCallbackArgs(
-                                         SaveIbanOfferUserDecision::kIgnored,
-                                         /*user_provided_nickname=*/u"")));
-}
-
-// Tests that IBAN is saved right away if device lock is already set.
-TEST_F(AutofillSaveIbanDelegateTest,
-       DeviceLockUiNotShown_DeviceLockAlreadySet) {
-  // Simulate user clicking save IBAN button and having previously set up a
-  // device lock.
-  test_bridge_->SetShouldShowDeviceLockUi(false);
-
-  base::MockOnceClosure mock_finish_gathering_consent_callback;
-  delegate_->OnUiAccepted(mock_finish_gathering_consent_callback.Get(),
-                          kUserProvidedNickname);
-
-  // Verify that device lock UI is not shown and IBAN is saved.
-  EXPECT_EQ(false, test_bridge_->device_lock_ui_was_shown());
-  EXPECT_THAT(local_offer_decision_,
-              testing::Optional(EqualToLocalCallbackArgs(
-                  SaveIbanOfferUserDecision::kAccepted,
-                  /*user_provided_nickname=*/kUserProvidedNickname)));
 }
 
 }  // namespace autofill

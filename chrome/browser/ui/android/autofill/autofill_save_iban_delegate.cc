@@ -25,7 +25,10 @@ void AutofillSaveIbanDelegate::OnUiAccepted(
     base::OnceClosure callback,
     std::u16string_view user_provided_nickname) {
   on_finished_gathering_consent_callback_ = std::move(callback);
-  GatherAdditionalConsentIfApplicable(user_provided_nickname);
+  device_lock_bridge_->LaunchDeviceLockUiIfNeededBeforeRunningCallback(
+      web_contents_->GetNativeView()->GetWindowAndroid(),
+      base::BindOnce(&AutofillSaveIbanDelegate::OnAfterDeviceLockUi,
+                     weak_ptr_factory_.GetWeakPtr(), user_provided_nickname));
 }
 
 void AutofillSaveIbanDelegate::OnUiCanceled() {
@@ -45,44 +48,14 @@ void AutofillSaveIbanDelegate::SetDeviceLockBridgeForTesting(
   device_lock_bridge_ = std::move(device_lock_bridge);
 }
 
-void AutofillSaveIbanDelegate::OnFinishedGatheringConsent(
-    const AutofillClient::SaveIbanOfferUserDecision& user_decision,
-    std::u16string_view user_provided_nickname) {
-  std::move(save_iban_callback_).Run(user_decision, user_provided_nickname);
-  std::move(on_finished_gathering_consent_callback_).Run();
-}
-
-void AutofillSaveIbanDelegate::GatherAdditionalConsentIfApplicable(
-    std::u16string_view user_provided_nickname) {
-  if (device_lock_bridge_->ShouldShowDeviceLockUi()) {
-    PromptUserToSetDeviceLock(user_provided_nickname);
-  } else {
-    OnFinishedGatheringConsent(
-        AutofillClient::SaveIbanOfferUserDecision::kAccepted,
-        user_provided_nickname);
-  }
-}
-
-void AutofillSaveIbanDelegate::PromptUserToSetDeviceLock(
-    std::u16string_view user_provided_nickname) {
-  if (auto* window = web_contents_->GetNativeView()->GetWindowAndroid()) {
-    device_lock_bridge_->LaunchDeviceLockUiBeforeRunningCallback(
-        window,
-        base::BindOnce(&AutofillSaveIbanDelegate::OnAfterDeviceLockUi,
-                       weak_ptr_factory_.GetWeakPtr(), user_provided_nickname));
-  } else {
-    OnFinishedGatheringConsent(
-        AutofillClient::SaveIbanOfferUserDecision::kIgnored);
-  }
-}
-
 void AutofillSaveIbanDelegate::OnAfterDeviceLockUi(
     std::u16string_view user_provided_nickname,
     bool user_decision) {
-  OnFinishedGatheringConsent(
-      user_decision ? AutofillClient::SaveIbanOfferUserDecision::kAccepted
-                    : AutofillClient::SaveIbanOfferUserDecision::kDeclined,
-      user_provided_nickname);
+  std::move(save_iban_callback_)
+      .Run(user_decision ? AutofillClient::SaveIbanOfferUserDecision::kAccepted
+                         : AutofillClient::SaveIbanOfferUserDecision::kDeclined,
+           user_decision ? user_provided_nickname : u"");
+  std::move(on_finished_gathering_consent_callback_).Run();
 }
 
 }  // namespace autofill
