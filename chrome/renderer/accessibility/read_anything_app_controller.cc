@@ -541,6 +541,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   ax_position_ = ui::AXNodePosition::AXPosition::CreateNullPosition();
   previously_spoken_ids_.clear();
   current_text_index_ = 0;
+  processed_sentence_index_ = -1;
   processed_sentences_on_current_page_.clear();
 
   // Reset state, including the current side panel selection so we can update
@@ -1362,23 +1363,42 @@ void ReadAnythingAppController::InitAXPositionWithNode(
         ui::AXNodePosition::CreateTreePositionAtStartOfAnchor(*ax_node);
     previously_spoken_ids_.clear();
     current_text_index_ = 0;
+    processed_sentence_index_ = -1;
     processed_sentences_on_current_page_.clear();
   }
+}
+
+std::vector<ui::AXNodeID> ReadAnythingAppController::GetNextText(
+    int max_text_length) {
+  bool was_sentence_previously_processed =
+      processed_sentence_index_ <
+      processed_sentences_on_current_page_.size() - 1;
+
+  // If we've previously processed the triples at this location, return the
+  // previously processed node information. Otherwise, get this information
+  // GetNextNodes.
+  ReadAnythingAppController::ReadAloudCurrentGranularity current_granularity =
+      (was_sentence_previously_processed)
+          ? processed_sentences_on_current_page_[processed_sentence_index_ + 1]
+          : GetNextNodes(max_text_length);
+
+  // If the list of nodes is empty, don't adjust the processed nodes
+  // information.
+  if (current_granularity.node_ids.size() == 0) {
+    return current_granularity.node_ids;
+  }
+
+  if (!was_sentence_previously_processed) {
+    processed_sentences_on_current_page_.push_back(current_granularity);
+  }
+  processed_sentence_index_++;
+
+  return current_granularity.node_ids;
 }
 
 // TODO(crbug.com/1474951): Update to use AXRange to better handle multiple
 // nodes. This may require updating GetText in ax_range.h to return AXNodeIds.
 // AXRangeType#ExpandToEnclosingTextBoundary may also be useful.
-std::vector<ui::AXNodeID> ReadAnythingAppController::GetNextText(
-    int max_text_length) {
-  ReadAnythingAppController::ReadAloudCurrentGranularity current_granularity =
-      GetNextNodes(max_text_length);
-  if (current_granularity.node_ids.size() > 0) {
-    processed_sentences_on_current_page_.push_back(current_granularity);
-  }
-
-  return current_granularity.node_ids;
-}
 ReadAnythingAppController::ReadAloudCurrentGranularity
 ReadAnythingAppController::GetNextNodes(int max_text_length) {
   ReadAnythingAppController::ReadAloudCurrentGranularity current_granularity =
@@ -1541,15 +1561,19 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
   return current_granularity;
 }
 
+// TODO(crbug.com/1474951): Random access to processed nodes might not always
+// work (e.g. if we're switching granularities or jumping to a specific node),
+// so we should implement a method of retrieving previous text from AXPosition
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetPreviousText(
     int max_text_length) {
-  // TODO(crbug.com/1474951): Reset AXPosition to the previous position before
-  // getting the next spoken text. Use MoveDirection to move backwards in the
-  // tree.
-  // If the current text index is 0, go back to the previous node and return
-  // the last sentence in that node.
-  // Otherwise, return the previous sentence.
-  return GetNextText(max_text_length);
+  // If we've reached the beginning of the content, we should continue to return
+  // the text grouping, so don't decrement below 0.
+  if (processed_sentence_index_ > 0) {
+    processed_sentence_index_--;
+  }
+
+  return processed_sentences_on_current_page_[processed_sentence_index_]
+      .node_ids;
 }
 
 // Returns either the node or the lowest platform ancestor of the node, if it's
@@ -1635,7 +1659,7 @@ int ReadAnythingAppController::GetNextTextStartIndex(ui::AXNodeID node_id) {
   }
 
   ReadAnythingAppController::ReadAloudCurrentGranularity current_granularity =
-      processed_sentences_on_current_page_.back();
+      processed_sentences_on_current_page_[processed_sentence_index_];
   if (!current_granularity.segments.count(node_id)) {
     return -1;
   }
@@ -1651,7 +1675,7 @@ int ReadAnythingAppController::GetNextTextEndIndex(ui::AXNodeID node_id) {
   }
 
   ReadAnythingAppController::ReadAloudCurrentGranularity current_granularity =
-      processed_sentences_on_current_page_.back();
+      processed_sentences_on_current_page_[processed_sentence_index_];
   if (!current_granularity.segments.count(node_id)) {
     return -1;
   }

@@ -246,9 +246,14 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetNextText(160);
   }
 
+  std::vector<ui::AXNodeID> GetPreviousText() {
+    return controller_->GetPreviousText(160);
+  }
+
   int GetNextTextStartIndex(ui::AXNodeID id) {
     return controller_->GetNextTextStartIndex(id);
   }
+
   int GetNextTextEndIndex(ui::AXNodeID id) {
     return controller_->GetNextTextEndIndex(id);
   }
@@ -2533,4 +2538,194 @@ TEST_F(ReadAnythingAppControllerTest, GetNextText_EmptyTree) {
   // invalid id.
   EXPECT_EQ(GetNextTextStartIndex(0), -1);
   EXPECT_EQ(GetNextTextEndIndex(0), -1);
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetPreviousText_AfterAXTreeRefresh) {
+  std::u16string sentence1 = u"This is a sentence. ";
+  std::u16string sentence2 = u"This is another sentence. ";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData staticText1;
+  staticText1.id = 2;
+  staticText1.role = ax::mojom::Role::kStaticText;
+  staticText1.SetNameChecked(sentence1);
+
+  ui::AXNodeData staticText2;
+  staticText2.id = 3;
+  staticText2.role = ax::mojom::Role::kStaticText;
+  staticText2.SetNameChecked(sentence2);
+
+  ui::AXNodeData staticText3;
+  staticText3.id = 4;
+  staticText3.role = ax::mojom::Role::kStaticText;
+  staticText3.SetNameChecked(sentence3);
+  update.nodes = {staticText1, staticText2, staticText3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({staticText1.id, staticText2.id, staticText3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  std::vector<ui::AXNodeID> next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], staticText1.id);
+  EXPECT_EQ(GetNextTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(next_node_ids[0]), (int)sentence1.length());
+
+  // Simulate updating the page text.
+  std::u16string new_sentence1 = u"Welcome to the show to the histo-remix. ";
+  std::u16string new_sentence2 =
+      u"Switching up the flow, as we add the prefix. ";
+  std::u16string new_sentence3 =
+      u"Everybody knows that we used to be six wives. ";
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2, id_1);
+  ui::AXNodeData root;
+  root.id = 1;
+
+  ui::AXNodeData new_static_text1;
+  new_static_text1.id = 10;
+  new_static_text1.role = ax::mojom::Role::kStaticText;
+  new_static_text1.SetNameChecked(new_sentence1);
+
+  ui::AXNodeData new_static_text2;
+  new_static_text2.id = 12;
+  new_static_text2.role = ax::mojom::Role::kStaticText;
+  new_static_text2.SetNameChecked(new_sentence2);
+
+  ui::AXNodeData new_static_text3;
+  new_static_text3.id = 16;
+  new_static_text3.role = ax::mojom::Role::kStaticText;
+  new_static_text3.SetNameChecked(new_sentence3);
+
+  root.child_ids = {new_static_text1.id, new_static_text2.id,
+                    new_static_text3.id};
+  update2.root_id = root.id;
+  update2.nodes = {root, new_static_text1, new_static_text2, new_static_text3};
+  OnActiveAXTreeIDChanged(id_1);
+  OnAXTreeDistilled({});
+  AccessibilityEventReceived({update2});
+  OnAXTreeDistilled(
+      id_1, {new_static_text1.id, new_static_text2.id, new_static_text3.id});
+  InitAXPosition(update2.nodes[1].id);
+
+  // The nodes from the new tree are used.
+  // Move to the end of the content.
+  GetNextText();
+  GetNextText();
+  GetNextText();
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+
+  std::vector<ui::AXNodeID> previous_node_ids = GetPreviousText();
+  EXPECT_EQ((int)previous_node_ids.size(), 1);
+  EXPECT_EQ(previous_node_ids[0], new_static_text2.id);
+  EXPECT_EQ(GetNextTextStartIndex(previous_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(previous_node_ids[0]),
+            (int)new_sentence2.length());
+
+  previous_node_ids = GetPreviousText();
+  EXPECT_EQ((int)previous_node_ids.size(), 1);
+  EXPECT_EQ(previous_node_ids[0], new_static_text1.id);
+  EXPECT_EQ(GetNextTextStartIndex(previous_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(previous_node_ids[0]),
+            (int)new_sentence1.length());
+
+  // We're at the beginning of the content again, so the first sentence
+  // should be retrieved next.
+  previous_node_ids = GetPreviousText();
+  EXPECT_EQ((int)previous_node_ids.size(), 1);
+  EXPECT_EQ(previous_node_ids[0], new_static_text1.id);
+  EXPECT_EQ(GetNextTextStartIndex(previous_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(previous_node_ids[0]),
+            (int)new_sentence1.length());
+
+  // After navigating previous text, navigating forwards should continue
+  // to work as expected.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], new_static_text2.id);
+  EXPECT_EQ(GetNextTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(next_node_ids[0]), (int)new_sentence2.length());
+
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], new_static_text3.id);
+  EXPECT_EQ(GetNextTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(next_node_ids[0]), (int)new_sentence3.length());
+
+  // Attempt to move to another node.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetPreviousText_ReturnsExpectedNodes) {
+  std::u16string sentence1 = u"See the line where the sky meets the sea? ";
+  std::u16string sentence2 = u"It calls me. ";
+  std::u16string sentence3 = u"And no one knows how far it goes.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData staticText1;
+  staticText1.id = 2;
+  staticText1.role = ax::mojom::Role::kStaticText;
+  staticText1.SetNameChecked(sentence1);
+
+  ui::AXNodeData staticText2;
+  staticText2.id = 3;
+  staticText2.role = ax::mojom::Role::kStaticText;
+  staticText2.SetNameChecked(sentence2);
+
+  ui::AXNodeData staticText3;
+  staticText3.id = 4;
+  staticText3.role = ax::mojom::Role::kStaticText;
+  staticText3.SetNameChecked(sentence3);
+  update.nodes = {staticText1, staticText2, staticText3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({staticText1.id, staticText2.id, staticText3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // Move to the end of the content.
+  GetNextText();
+  GetNextText();
+  GetNextText();
+  std::vector<ui::AXNodeID> next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+
+  std::vector<ui::AXNodeID> previous_node_ids = GetPreviousText();
+  EXPECT_EQ((int)previous_node_ids.size(), 1);
+  EXPECT_EQ(previous_node_ids[0], staticText2.id);
+  EXPECT_EQ(GetNextTextStartIndex(previous_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(previous_node_ids[0]), (int)sentence2.length());
+
+  previous_node_ids = GetPreviousText();
+  EXPECT_EQ((int)previous_node_ids.size(), 1);
+  EXPECT_EQ(previous_node_ids[0], staticText1.id);
+  EXPECT_EQ(GetNextTextStartIndex(previous_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(previous_node_ids[0]), (int)sentence1.length());
+
+  // We're at the beginning of the content again, so the first sentence
+  // should be retrieved next.
+  previous_node_ids = GetPreviousText();
+  EXPECT_EQ((int)previous_node_ids.size(), 1);
+  EXPECT_EQ(previous_node_ids[0], staticText1.id);
+  EXPECT_EQ(GetNextTextStartIndex(previous_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(previous_node_ids[0]), (int)sentence1.length());
+
+  // After navigating previous text, navigating forwards should continue
+  // to work as expected.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], staticText2.id);
+  EXPECT_EQ(GetNextTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(next_node_ids[0]), (int)sentence2.length());
+
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], staticText3.id);
+  EXPECT_EQ(GetNextTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(next_node_ids[0]), (int)sentence3.length());
+
+  // Attempt to move to another node.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
 }
