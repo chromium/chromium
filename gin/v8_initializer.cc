@@ -341,6 +341,21 @@ void SetFlags(IsolateHolder::ScriptMode mode,
     }
   }
 
+  if (base::FeatureList::IsEnabled(features::kV8EfficiencyModeTiering)) {
+    int delay = features::kV8EfficiencyModeTieringDelayTurbofan.Get();
+    if (delay == 0) {
+      SetV8FlagsFormatted(
+          "--efficiency-mode-for-tiering-heuristics "
+          "--efficiency-mode-disable-turbofan");
+    } else {
+      SetV8FlagsFormatted(
+          "--efficiency-mode-for-tiering-heuristics "
+          "--noefficiency-mode-disable-turbofan "
+          "--efficiency-mode-delay-turbofan=%i",
+          delay);
+    }
+  }
+
   if (base::FeatureList::IsEnabled(
           features::kWebAssemblyMoreAggressiveCodeCaching)) {
     SetV8FlagsFormatted(
