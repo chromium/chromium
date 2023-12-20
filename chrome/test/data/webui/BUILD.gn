@@ -94,6 +94,7 @@ source_set("browser_tests") {
 
   if (is_chromeos_ash) {
     sources += [
+      "chromeos/ash_common/cr_elements/ash_common_cr_elements_browsertest.cc",
       "chromeos/ash_common/sea_pen/sea_pen_browsertest.cc",
       "chromeos/ash_common/webui_resource_browsertest.cc",
       "chromeos/enterprise_reporting/enterprise_reporting_browsertest.cc",
@@ -474,6 +475,7 @@ generate_grd("build_grd") {
       "chromeos:build_web_ui_test_mojo_grdp",
       "chromeos:build_web_ui_test_mojo_lite_grdp",
       "chromeos/ash_common:build_grdp",
+      "chromeos/ash_common/cr_elements:build_grdp",
       "chromeos/borealis_installer:build_grdp",
       "chromeos/cloud_upload:build_grdp",
       "chromeos/diagnostics:build_grdp",
@@ -499,6 +501,7 @@ generate_grd("build_grd") {
     ]
     grdp_files += [
       "$target_gen_dir/chromeos/ash_common/resources.grdp",
+      "$target_gen_dir/chromeos/ash_common/cr_elements/resources.grdp",
       "$target_gen_dir/chromeos/borealis_installer/resources.grdp",
       "$target_gen_dir/chromeos/cloud_upload/resources.grdp",
       "$target_gen_dir/chromeos/diagnostics/resources.grdp",

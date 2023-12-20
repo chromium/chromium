@@ -1,0 +1,18 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../../../build_webui_tests.gni")
+
+build_webui_tests("build") {
+  files = [
+    "cr_toast_manager_test.ts",
+    "cr_toast_test.ts",
+  ]
+
+  ts_deps = [
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+  ]
+}

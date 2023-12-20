@@ -61,6 +61,10 @@ def _add_ash_mappings(path_mappings, root_gen_dir, root_src_dir):
       '//resources/ash/common/*',
       f'{root_gen_dir}/ash/webui/common/resources/preprocessed/*',
   )]
+  path_mappings['//ash/webui/common/resources/cr_elements:build_ts'] = [(
+      '//resources/ash/common/cr_elements/*',
+      f'{root_gen_dir}/ash/webui/common/resources/preprocessed/cr_elements/*',
+  )]
   path_mappings['//third_party/cros-components:cros_components_ts'] = [(
       '//resources/cros_components/*',
       f'{root_gen_dir}/ui/webui/resources/tsc/cros_components/to_be_rewritten/*',
