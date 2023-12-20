@@ -9,6 +9,7 @@
 #include <utility>
 #include <variant>
 #include <vector>
+
 #include "base/barrier_callback.h"
 #include "base/base64.h"
 #include "base/containers/contains.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
+#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -132,8 +134,13 @@ WallpaperSearchHandler::WallpaperSearchHandler(
 }
 
 WallpaperSearchHandler::~WallpaperSearchHandler() {
-  auto backround_id =
-      wallpaper_search_background_manager_->SaveCurrentBackgroundToHistory();
+  absl::optional<base::Token> background_id;
+  if (history_entry_) {
+    background_id =
+        wallpaper_search_background_manager_->SaveCurrentBackgroundToHistory(
+            *history_entry_);
+  }
+
   if (!log_entries_.empty()) {
     auto& [log_entry, render_time] = log_entries_.back();
     auto* quality =
@@ -144,10 +151,10 @@ WallpaperSearchHandler::~WallpaperSearchHandler() {
       quality->set_complete_latency_ms(
           (base::Time::Now() - *render_time).InMilliseconds());
     }
-    if (backround_id.has_value() &&
-        base::Contains(wallpaper_search_results_, *backround_id)) {
+    if (background_id.has_value() &&
+        base::Contains(wallpaper_search_results_, *background_id)) {
       auto* image_quality =
-          std::get<0>(wallpaper_search_results_[*backround_id]);
+          std::get<0>(wallpaper_search_results_[*background_id]);
       if (image_quality) {
         image_quality->set_selected(true);
       }
@@ -297,6 +304,7 @@ void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
               .InMilliseconds());
     }
   }
+  history_entry_ = std::make_unique<HistoryEntry>(result_id);
   wallpaper_search_background_manager_->SelectLocalBackgroundImage(
       result_id, bitmap, base::ElapsedTimer());
 }
@@ -537,6 +545,7 @@ void WallpaperSearchHandler::OnHistoryDecoded(
 void WallpaperSearchHandler::SelectHistoryImage(const base::Token& id,
                                                 base::ElapsedTimer timer,
                                                 const gfx::Image& image) {
+  history_entry_ = std::make_unique<HistoryEntry>(id);
   wallpaper_search_background_manager_->SelectHistoryImage(id, image,
                                                            std::move(timer));
 }

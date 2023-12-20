@@ -235,7 +235,8 @@ TEST_F(WallpaperSearchBackgroundManagerTest, SaveCurrentBackgroundToHistory) {
   ON_CALL(mock_ntp_custom_background_service(), GetCustomBackground())
       .WillByDefault(Return(absl::make_optional(custom_background)));
 
-  wallpaper_search_background_manager().SaveCurrentBackgroundToHistory();
+  wallpaper_search_background_manager().SaveCurrentBackgroundToHistory(
+      HistoryEntry(token));
   task_environment().RunUntilIdle();
 
   const base::Value::List& history =
@@ -271,7 +272,8 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   ON_CALL(mock_ntp_custom_background_service(), GetCustomBackground())
       .WillByDefault(Return(absl::make_optional(custom_background)));
 
-  wallpaper_search_background_manager().SaveCurrentBackgroundToHistory();
+  wallpaper_search_background_manager().SaveCurrentBackgroundToHistory(
+      HistoryEntry(theme_token));
   task_environment().RunUntilIdle();
 
   // Check that the history is still 6 long and the first entry is the new one.
@@ -315,7 +317,8 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   ON_CALL(mock_ntp_custom_background_service(), GetCustomBackground())
       .WillByDefault(Return(absl::make_optional(custom_background)));
 
-  wallpaper_search_background_manager().SaveCurrentBackgroundToHistory();
+  wallpaper_search_background_manager().SaveCurrentBackgroundToHistory(
+      HistoryEntry(theme_token));
   task_environment().RunUntilIdle();
 
   // Check that the history is still 6 long and in the correct order.
@@ -374,7 +377,8 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   ON_CALL(mock_ntp_custom_background_service(), GetCustomBackground())
       .WillByDefault(Return(absl::make_optional(custom_background)));
 
-  wallpaper_search_background_manager().SaveCurrentBackgroundToHistory();
+  wallpaper_search_background_manager().SaveCurrentBackgroundToHistory(
+      HistoryEntry(theme_token));
   task_environment().RunUntilIdle();
 
   // Check that the history is still 6 long and in the correct order.
@@ -400,6 +404,27 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   for (int i = 0; i < 6; ++i) {
     EXPECT_TRUE(base::PathExists(GetFilePathForBackground(tokens[i])));
   }
+}
+
+// Check that absl::nullopt is returned if the history entry passed in is
+// not the current theme, and history is not changed.
+TEST_F(WallpaperSearchBackgroundManagerTest,
+       SaveCurrentBackgroundToHistory_NotCurrentBackground) {
+  base::Token token = base::Token::CreateRandom();
+  CustomBackground custom_background;
+  custom_background.local_background_id = token;
+  ON_CALL(mock_ntp_custom_background_service(), GetCustomBackground())
+      .WillByDefault(Return(absl::make_optional(custom_background)));
+
+  auto response =
+      wallpaper_search_background_manager().SaveCurrentBackgroundToHistory(
+          HistoryEntry(base::Token::CreateRandom()));
+  task_environment().RunUntilIdle();
+
+  const base::Value::List& history =
+      pref_service().GetList(prefs::kNtpWallpaperSearchHistory);
+  EXPECT_EQ(history.size(), 0u);
+  EXPECT_FALSE(response.has_value());
 }
 
 // Test that a wallpaper search background is removed if it is not in history

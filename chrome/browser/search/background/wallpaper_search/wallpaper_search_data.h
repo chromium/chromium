@@ -11,6 +11,7 @@
 
 // Represents a history entry in wallpaper search.
 struct HistoryEntry {
+  HistoryEntry() = default;
   explicit HistoryEntry(const base::Token& id);
   HistoryEntry(const HistoryEntry&);
   HistoryEntry(HistoryEntry&&);

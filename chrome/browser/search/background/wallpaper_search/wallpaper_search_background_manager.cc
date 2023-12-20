@@ -191,18 +191,18 @@ void WallpaperSearchBackgroundManager::SelectLocalBackgroundImage(
 }
 
 absl::optional<base::Token>
-WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory() {
+WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory(
+    const HistoryEntry& history_entry) {
   absl::optional<CustomBackground> current_theme =
       ntp_custom_background_service_->GetCustomBackground();
+  std::string entry_id_str = history_entry.id.ToString();
   if (current_theme.has_value() &&
-      current_theme->local_background_id.has_value()) {
-    HistoryEntry background_history_obj =
-        HistoryEntry(*current_theme->local_background_id);
-    std::string background_id_str = background_history_obj.id.ToString();
+      current_theme->local_background_id.has_value() &&
+      current_theme->local_background_id->ToString() == entry_id_str) {
     const base::Value::List& current_history =
         pref_service_->GetList(prefs::kNtpWallpaperSearchHistory);
     base::Value::List new_history =
-        base::Value::List().Append(GetHistoryEntryDict(background_history_obj));
+        base::Value::List().Append(GetHistoryEntryDict(history_entry));
     // Add each value in |current_history| to |new_history| until
     // |new_history| reaches the max size of 6. Do not append the
     // value if it is the same as the id of |current_theme|.
@@ -210,7 +210,7 @@ WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory() {
       const auto value_obj = GetHistoryEntryFromPrefValue(value);
       if (value_obj) {
         const std::string id_str = value_obj->id.ToString();
-        if (id_str != background_id_str) {
+        if (id_str != entry_id_str) {
           if (new_history.size() >= 6) {
             // Delete values that will no longer be in the history.
             DeleteWallpaperSearchImage(id_str, profile_->GetPath());
@@ -223,7 +223,7 @@ WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory() {
     }
     pref_service_->SetList(prefs::kNtpWallpaperSearchHistory,
                            std::move(new_history));
-    return current_theme->local_background_id;
+    return history_entry.id;
   }
   return absl::nullopt;
 }
