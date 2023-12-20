@@ -9546,7 +9546,18 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   // We should still have an `observer_`.
   ASSERT_TRUE(observer_);
 
-  // We need to reinitialize `subresource_or_subframe_url_` after network
+  // We need to reinitialize and renavigate to `main_url_` after network service
+  // restart, if we want to prevent the shared storage operations below from
+  // being deferred then dropped due to switching to a new
+  // `NavigationOrDocumentHandle` for the main frame which hasn't yet seen a
+  // commit.
+  main_url_ = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url_));
+
+  // We will still have an `observer_` after renavigating.
+  ASSERT_TRUE(observer_);
+
+  // We also need to reinitialize `subresource_or_subframe_url_` after network
   // service restart. Fetching with `sharedStorageWritable` works as expected.
   subresource_or_subframe_url_ = https_server()->GetURL("a.test", kTitle1Path);
   FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);

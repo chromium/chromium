@@ -920,6 +920,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Storage.SharedStorage.HeaderObserver.CreatedOpaqueOriginForPrefsCheck"
+    enum="Boolean" expires_after="2024-12-01">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Tracks whether or not it was necessary to create a new opaque origin to use
+    as the top-frame origin for the call to
+    `ContentBrowserClient::IsSharedStorageAllowed()` from
+    `SharedStorageHeaderObserver::IsSharedStorageAllowedBySiteSettings()`.
+    Recorded in
+    `SharedStorageHeaderObserver::IsSharedStorageAllowedBySiteSettings()`.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.HeaderObserver.PermissionsPolicyDoubleCheckStatus"
+    enum="SharedStorageHeaderObserverPermissionsPolicyDoubleCheckStatus"
+    expires_after="2024-12-01">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whether or not a double-check of `PermissionsPolicy` was able to run in the
+    `SharedStorageHeaderObserver`, and if so, what the result was (enabled or
+    disabled), as well as if not, why not. (Note that the initial
+    `PermissionsPolicy` check occurs before the request is sent to the network
+    service, whereas this double-check occurs after the response is received.)
+    Recorded in `SharedStorageHeaderObserver::HeaderReceived()`.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.OnShutdown.NumSqlErrors" units="Errors"
     expires_after="2024-06-02">
   <owner>cammie@chromium.org</owner>

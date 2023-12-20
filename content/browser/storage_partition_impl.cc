@@ -2375,12 +2375,22 @@ void StoragePartitionImpl::OnSharedStorageHeaderReceived(
     std::move(callback).Run();
     return;
   }
+
+  // Currently, shared-storage-writable headers aren't available for requests
+  // initiated by service workers, so `navigation_or_document` should be
+  // non-null.
+  //
+  // TODO(cammie): If we handle the service worker case by allowing service
+  // workers to initiate shared-storage-writable requests, the assumption that
+  // `navigation_or_document` must be non-null may become incorrect.
   auto* navigation_or_document =
       url_loader_network_observers_.current_context().navigation_or_document();
   DCHECK(navigation_or_document);
-  RenderFrameHost* rfh = navigation_or_document->GetDocument();
+
   shared_storage_header_observer_->HeaderReceived(
-      request_origin, rfh, std::move(operations), std::move(callback));
+      request_origin, url_loader_network_observers_.current_context().type(),
+      navigation_or_document, std::move(operations), std::move(callback),
+      mojo::GetBadMessageCallback(), /*can_defer=*/true);
 }
 
 void StoragePartitionImpl::Clone(

@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <cstdint>
+#include <deque>
 #include <list>
 #include <map>
 #include <memory>
@@ -3031,6 +3032,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Subframe: RenderWidgetHost is owned by this RenderFrameHost.
   RenderWidgetHostImpl* GetLocalRenderWidgetHost() const;
 
+  // Called by `SharedStorageHeaderObserver` to add operation deferral callbacks
+  // to `deferred_shared_storage_header_callbacks_` to be run by
+  // `RunDeferredSharedStorageHeaderCallbacks()` after commit.
+  void AddDeferredSharedStorageHeaderCallback(
+      base::OnceCallback<void(NavigationOrDocumentHandle*)> callback);
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -5137,6 +5144,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // If true, the renderer side widget is created after the navigation is
   // committed.
   bool waiting_for_renderer_widget_creation_after_commit_ = false;
+
+  // Deferred shared storage operations to run after navigation commit in the
+  // event of a race between navigation and subresource request(s).
+  std::deque<base::OnceCallback<void(NavigationOrDocumentHandle*)>>
+      deferred_shared_storage_header_callbacks_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Holds a reference to a pending remote WebAuthn RP ID validation while one

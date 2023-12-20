@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
 #include <cstdint>
+#include <deque>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -13300,6 +13301,14 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
       this, *params, std::move(navigation_request),
       is_same_document_navigation);
 
+  // Run any deferred shared storage operations from response headers now that
+  // commit has occurred.
+  while (!deferred_shared_storage_header_callbacks_.empty()) {
+    std::move(deferred_shared_storage_header_callbacks_.front())
+        .Run(GetNavigationOrDocumentHandle().get());
+    deferred_shared_storage_header_callbacks_.pop_front();
+  }
+
   // Reset back the state to false after navigation commits.
   // TODO(https://crbug.com/1072817): Undo this plumbing after removing the
   // early post-crash CommitPending() call.
@@ -16080,6 +16089,11 @@ RenderFrameHostImpl::MakeUrgentMessageScopeIfNeeded() {
   }
 
   return mojo::UrgentMessageScope();
+}
+
+void RenderFrameHostImpl::AddDeferredSharedStorageHeaderCallback(
+    base::OnceCallback<void(NavigationOrDocumentHandle*)> callback) {
+  deferred_shared_storage_header_callbacks_.push_back(std::move(callback));
 }
 
 }  // namespace content

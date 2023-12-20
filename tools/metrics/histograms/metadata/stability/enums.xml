@@ -478,6 +478,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="313" label="RFH_FENCED_DOCUMENT_DATA_NOT_FOUND"/>
   <int value="314" label="MSDH_SET_ZOOM_LEVEL_BUT_CSC_FEATURE_DISABLED"/>
   <int value="315" label="MSDH_SET_ZOOM_LEVEL_INVALID_LEVEL"/>
+  <int value="316"
+      label="SSHO_RECEIVED_SHARED_STORAGE_WRITE_HEADER_FROM_UNTRUSTWORTHY_ORIGIN"/>
+  <int value="317"
+      label="SSHO_RECEIVED_SHARED_STORAGE_WRITE_HEADER_FROM_OPAQUE_ORIGIN"/>
+  <int value="318"
+      label="SSHO_RECEIVED_SHARED_STORAGE_WRITE_HEADER_WITH_PERMISSION_DISABLED"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
