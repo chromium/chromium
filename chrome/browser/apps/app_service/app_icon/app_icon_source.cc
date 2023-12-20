@@ -98,8 +98,7 @@ void AppIconSource::StartDataRequest(
       apps::AppServiceProxyFactory::GetForProfile(profile_);
   const std::string app_id = path_parts[0];
   app_service_proxy->LoadIcon(
-      app_service_proxy->AppRegistryCache().GetAppType(app_id), app_id,
-      IconType::kCompressed, size_in_dip,
+      app_id, IconType::kCompressed, size_in_dip,
       /*allow_placeholder_icon=*/false,
       base::BindOnce(&RunCallback, std::move(callback)));
 }

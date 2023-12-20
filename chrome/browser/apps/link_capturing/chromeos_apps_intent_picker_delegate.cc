@@ -56,23 +56,6 @@ PickerEntryType GetPickerEntryType(AppType app_type) {
   return picker_entry_type;
 }
 
-apps::AppType GetAppType(apps::PickerEntryType picker_entry_type) {
-  apps::AppType app_type = apps::AppType::kUnknown;
-  switch (picker_entry_type) {
-    case apps::PickerEntryType::kUnknown:
-    case apps::PickerEntryType::kDevice:
-    case apps::PickerEntryType::kMacOs:
-      break;
-    case apps::PickerEntryType::kArc:
-      app_type = apps::AppType::kArc;
-      break;
-    case apps::PickerEntryType::kWeb:
-      app_type = apps::AppType::kWeb;
-      break;
-  }
-  return app_type;
-}
-
 void CloseOrGoBack(content::WebContents* web_contents) {
   DCHECK(web_contents);
   if (web_contents->GetController().CanGoBack()) {
@@ -152,8 +135,7 @@ void ChromeOsAppsIntentPickerDelegate::LoadSingleAppIcon(
 
         return ui::ImageModel::FromImageSkia(icon_ptr->uncompressed);
       });
-  proxy_->LoadIcon(GetAppType(entry_type), app_id, apps::IconType::kStandard,
-                   size_in_dep,
+  proxy_->LoadIcon(app_id, apps::IconType::kStandard, size_in_dep,
                    /*allow_placeholder_icon=*/false,
                    std::move(transform_icon_to_metadata)
                        .Then(std::move(icon_loaded_callback)));

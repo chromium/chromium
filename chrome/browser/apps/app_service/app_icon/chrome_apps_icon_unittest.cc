@@ -207,9 +207,9 @@ class AppServiceChromeAppIconTest : public ChromeAppsIconFactoryTest {
 
   apps::IconValuePtr LoadIcon(const std::string& app_id, IconType icon_type) {
     base::test::TestFuture<apps::IconValuePtr> result;
-    app_service_proxy().LoadIcon(
-        AppType::kChromeApp, app_id, icon_type, kSizeInDip,
-        /*allow_placeholder_icon=*/false, result.GetCallback());
+    app_service_proxy().LoadIcon(app_id, icon_type, kSizeInDip,
+                                 /*allow_placeholder_icon=*/false,
+                                 result.GetCallback());
     return result.Take();
   }
 
@@ -218,7 +218,7 @@ class AppServiceChromeAppIconTest : public ChromeAppsIconFactoryTest {
                                              IconType icon_type) {
     base::test::TestFuture<apps::IconValuePtr> result;
     app_service_proxy().LoadIconWithIconEffects(
-        AppType::kChromeApp, app_id, icon_effects, icon_type, kSizeInDip,
+        app_id, icon_effects, icon_type, kSizeInDip,
         /*allow_placeholder_icon=*/false, result.GetCallback());
     return result.Take();
   }
@@ -235,10 +235,10 @@ class AppServiceChromeAppIconTest : public ChromeAppsIconFactoryTest {
         base::BarrierCallback<apps::IconValuePtr>(2, result.GetCallback());
 
     app_service_proxy().LoadIconWithIconEffects(
-        AppType::kChromeApp, app_id, icon_effects, icon_type, kSizeInDip,
+        app_id, icon_effects, icon_type, kSizeInDip,
         /*allow_placeholder_icon=*/false, barrier_callback);
     app_service_proxy().LoadIconWithIconEffects(
-        AppType::kChromeApp, app_id, icon_effects, icon_type, kSizeInDip,
+        app_id, icon_effects, icon_type, kSizeInDip,
         /*allow_placeholder_icon=*/false, barrier_callback);
 
     return result.Take();

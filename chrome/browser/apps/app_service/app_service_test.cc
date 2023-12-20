@@ -57,9 +57,9 @@ gfx::ImageSkia AppServiceTest::LoadAppIconBlocking(AppType app_type,
                                                    const std::string& app_id,
                                                    int32_t size_hint_in_dip) {
   base::test::TestFuture<apps::IconValuePtr> future;
-  app_service_proxy_->LoadIcon(
-      app_type, app_id, IconType::kStandard, size_hint_in_dip,
-      /*allow_placeholder_icon=*/false, future.GetCallback());
+  app_service_proxy_->LoadIcon(app_id, IconType::kStandard, size_hint_in_dip,
+                               /*allow_placeholder_icon=*/false,
+                               future.GetCallback());
 
   auto icon = future.Take();
   DCHECK_EQ(IconType::kStandard, icon->icon_type);

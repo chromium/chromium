@@ -1029,7 +1029,7 @@ void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,
   // For non_child profile, load the app icon, because the app is blocked by
   // admin.
   if (!dialog_created_callback_.is_null() || !profile_->IsChild()) {
-    LoadIcon(update.AppType(), update.AppId(), icon_type, kAppDialogIconSize,
+    LoadIcon(update.AppId(), icon_type, kAppDialogIconSize,
              kAllowPlaceholderIcon, std::move(callback));
     return;
   }
@@ -1358,8 +1358,7 @@ void AppServiceProxyAsh::OnShortcutIconLoaded(
     IconValuePtr shortcut_icon) {
   std::string host_app_id =
       ShortcutRegistryCache()->GetShortcutHostAppId(shortcut_id);
-  AppType app_type = AppRegistryCache().GetAppType(host_app_id);
-  LoadIcon(app_type, host_app_id, icon_type, badge_size_hint_in_dip,
+  LoadIcon(host_app_id, icon_type, badge_size_hint_in_dip,
            allow_placeholder_icon,
            base::BindOnce(&AppServiceProxyAsh::OnHostAppIconForShortcutLoaded,
                           weak_ptr_factory_.GetWeakPtr(),
