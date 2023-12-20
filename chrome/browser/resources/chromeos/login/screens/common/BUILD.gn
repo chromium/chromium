@@ -39,7 +39,6 @@ js_type_check("closure_compile_local") {
     ":gesture_navigation",
     ":guest_tos",
     ":hw_data_collection",
-    ":local_state_error",
     ":managed_terms_of_service",
     ":marketing_opt_in",
     ":offline_ad_login",
@@ -219,18 +218,6 @@ js_library("hw_data_collection") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("local_state_error") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/local_state_error.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]
 }

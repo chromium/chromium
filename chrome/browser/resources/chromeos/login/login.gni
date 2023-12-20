@@ -142,7 +142,7 @@ common_screens_js_files = [
   "screens/common/gesture_navigation.js",
   "screens/common/guest_tos.js",
   "screens/common/hw_data_collection.js",
-  "screens/common/local_state_error.js",
+  "screens/common/local_state_error.ts",
   "screens/common/managed_terms_of_service.js",
   "screens/common/marketing_opt_in.js",
   "screens/common/multidevice_setup.js",
