@@ -885,9 +885,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     UpdateBorderlessModeEnabled();
   }
 
-  // Initialize Blink's 'resizable' CSS @media feature state.
-  OnWidgetSizeConstraintsChanged(GetWidget());
-
   // TabStrip takes ownership of the controller.
   auto tabstrip_controller = std::make_unique<BrowserTabStripController>(
       browser_->tab_strip_model(), this, std::move(tab_menu_model_factory));
