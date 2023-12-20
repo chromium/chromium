@@ -108911,6 +108911,19 @@
        {}
       ]
      ],
+     "contain-size-grid-indefinite-height-min-height-flex-row.html": [
+      "5899475fc2550c52421ee5d9b2fe65b209e68aec",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "contain-size-grid-stretches-auto-rows.html": [
       "10b84665aa91edc2245fae08c9ee259c8bc1863a",
       [
@@ -436267,6 +436280,15 @@
       }
      ]
     ],
+    "fedcm-too-many-disconnect-calls.https.html": [
+     "cb5dfa615f34bc7de4ecdd9ab4c4a11b3ce0eb2d",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "fedcm-userinfo.https.html": [
      "d460d82845282f00e0164590c552bcd73ca15255",
      [
@@ -582834,7 +582856,7 @@
    },
    "intersection-observer": {
     "bounding-box.html": [
-     "367243d558ddb00748d13e4be8af8a38b70e50a0",
+     "0206bfe419298758a69ea8e4144e88e75810ab2f",
      [
       null,
       {}
@@ -583541,6 +583563,13 @@
     ],
     "zero-area-element-visible.html": [
      "b012b65c1894b4fcaaf101af95d3d2b7fe7dd1f9",
+     [
+      null,
+      {}
+     ]
+    ],
+    "zoom-scaled-target.html": [
+     "6ad75598497a6ff9628cdef7e9962e5136df9bb6",
      [
       null,
       {}
@@ -625889,7 +625918,7 @@
      ]
     ],
     "dropped-entries.tentative.html": [
-     "425f91a7c3ca4810d023661967c6550af92442af",
+     "d27ad452be07b778aea1aff5525d1670fb66ec5f",
      [
       null,
       {
@@ -626198,6 +626227,15 @@
     ],
     "softnav-between-lcp-render-and-paint.tentative.html": [
      "56c7073de63036d92d342de610cba49ae5e9be00",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "softnav-painted-area-is-reset.tentative.html": [
+     "0f5a1f427008f80f0bccc2613b5917ce30ce811f",
      [
       null,
       {
@@ -699238,6 +699276,15 @@
      ],
      "nested-multicol-with-spanner-and-oof-crash-008.html": [
       "a8d0f3e77ea62d9976a5e1606e74cd0602a38b02",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
+    "css-contain": {
+     "contain-inline-size-grid-indefinite-height-min-height-flex-row.html": [
+      "4c27b1cc9f63a49fb66ab54c3eb6eed049398592",
       [
        null,
        {}
