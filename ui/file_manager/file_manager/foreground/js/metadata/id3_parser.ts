@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 import {ByteReader, SeekOrigin} from './byte_reader.js';
-import {FunctionParallel} from './function_parallel.js';
-import {FunctionSequence} from './function_sequence.js';
 import {Id3v2Frame, ParserMetadata} from './metadata_item.js';
 import {MetadataParser, MetadataParserLogger} from './metadata_parser.js';
 
@@ -238,8 +236,131 @@ export class Id3Parser extends MetadataParser {
   }
 
   /**
-   * @param file File object to parse.
-   * @param metadata Metadata object of the file.
+   * Parse the `file` and attempt to extract id3v1 metadata from it, and place
+   * these properties on the `metadata` object.
+   * @param file Input File object to parse.
+   * @param metadata Output metadata object of the file.
+   */
+  private async parseId3v1(file: File, metadata: ParserMetadata) {
+    // Reads last 128 bytes of file in bytebuffer, which passes further. In
+    // last 128 bytes should be placed ID3v1 tag if available.
+    const reader = await MetadataParser.readFileBytesAsync(
+        file, file.size - 128, file.size);
+
+    // Attempts to extract ID3v1 tag from 128 bytes long ByteBuffer
+    if (reader.readString(3) == 'TAG') {
+      this.vlog('id3v1 found');
+      const title = reader.readNullTerminatedString(30).trim();
+
+      if (title.length > 0) {
+        metadata.title = title;
+      }
+
+      reader.seek(3 + 30, SeekOrigin.SEEK_BEG);
+
+      const artist = reader.readNullTerminatedString(30).trim();
+      if (artist.length > 0) {
+        metadata.artist = artist;
+      }
+
+      reader.seek(3 + 30 + 30, SeekOrigin.SEEK_BEG);
+
+      const album = reader.readNullTerminatedString(30).trim();
+      if (album.length > 0) {
+        metadata.album = album;
+      }
+    }
+  }
+
+  /**
+   * Parse the `file` and attempt to extract id3v2 metadata from it, and place
+   * these properties on the `metadata` object.
+   * @param file Input File object to parse.
+   * @param metadata Output metadata object of the file.
+   */
+  private async parseId3v2(file: File, metadata: ParserMetadata) {
+    let reader = await MetadataParser.readFileBytesAsync(file, 0, 10);
+
+    // Check if the first 10 bytes contains ID3 header.
+    if (reader.readString(3) !== 'ID3') {
+      return;
+    }
+    this.vlog('id3v2 found');
+    const major = reader.readScalar(1, false);
+    const minor = reader.readScalar(1, false);
+    const flags = reader.readScalar(1, false);
+    const size = Id3Parser.readSynchSafe_(reader, 4);
+    const id3v2 = metadata.id3v2 = {
+      majorVersion: major,
+      minorVersion: minor,
+      flags: flags,
+      size: size,
+      frames: {} as {[frameName: string]: Id3v2Frame},
+    };
+
+    // Extract all ID3v2 frames
+    reader = await MetadataParser.readFileBytesAsync(file, 10, 10 + id3v2.size);
+
+    if ((id3v2.majorVersion > 2) &&
+        ((id3v2.flags & Id3Parser.V2.FLAG_EXTENDED_HEADER) != 0)) {
+      // Skip extended header if found
+      if (id3v2.majorVersion == 3) {
+        reader.seek(reader.readScalar(4, false) - 4);
+      } else if (id3v2.majorVersion == 4) {
+        reader.seek(Id3Parser.readSynchSafe_(reader, 4) - 4);
+      }
+    }
+
+    let frame;
+    while (frame = this.readFrame_(reader, id3v2.majorVersion)) {
+      id3v2.frames[frame.name] = frame;
+    }
+    if (id3v2.frames['APIC']) {
+      metadata.thumbnailURL = id3v2.frames['APIC'].imageUrl;
+    } else if (id3v2.frames['PIC']) {
+      metadata.thumbnailURL = id3v2.frames['PIC'].imageUrl;
+    }
+
+    // Adds 'description' object to metadata. 'description' is used to unify
+    // different parsers and make metadata parser-aware. The key of each
+    // description item should be used to properly format the value before
+    // displaying to users.
+    metadata.description = [];
+
+    for (const [key, frame] of Object.entries(id3v2.frames)) {
+      const mappedKey = Id3Parser.V2.MAPPERS[key];
+      if (mappedKey && frame.value && frame.value.trim().length > 0) {
+        metadata.description.push({
+          key: mappedKey,
+          value: frame.value.trim(),
+        });
+      }
+    }
+
+    function extract(
+        propName: 'album'|'title'|'artist', ...tagNames: string[]) {
+      for (const tagName of tagNames) {
+        const tag = id3v2.frames[tagName];
+        if (tag && tag.value) {
+          metadata[propName] = tag.value;
+          break;
+        }
+      }
+    }
+
+    extract('album', 'TALB', 'TAL');
+    extract('title', 'TIT2', 'TT2');
+    extract('artist', 'TPE1', 'TP1');
+
+    metadata.description.sort((a, b) => {
+      return Id3Parser.METADATA_ORDER.indexOf(a.key) -
+          Id3Parser.METADATA_ORDER.indexOf(b.key);
+    });
+  }
+
+  /**
+   * @param file Input File object to parse.
+   * @param metadata Output metadata object of the file.
    * @param callback Success callback.
    * @param onError Error callback.
    */
@@ -247,192 +368,16 @@ export class Id3Parser extends MetadataParser {
       file: File, metadata: ParserMetadata,
       callback: (metadata: ParserMetadata) => void,
       onError: (error: string) => void) {
-    const self = this;
-
     this.log('Starting id3 parser for ' + file.name);
 
-    const id3v1Parser = new FunctionSequence(
-        [
-          /**
-           * Reads last 128 bytes of file in bytebuffer,
-           * which passes further.
-           * In last 128 bytes should be placed ID3v1 tag if available.
-           * @param file File which bytes to read.
-           */
-          function readTail(this: FunctionSequence, file: File) {
-            MetadataParser.readFileBytes(
-                file, file.size - 128, file.size, this.nextStep, this.onError);
-          },
-
-          /**
-           * Attempts to extract ID3v1 tag from 128 bytes long ByteBuffer
-           * @param file File which tags are being extracted. Could be
-           *     used for logging purposes.
-           * @param reader ByteReader of 128 bytes.
-           */
-          function extractId3v1(
-              this: FunctionSequence, _file: File, reader: ByteReader) {
-            if (reader.readString(3) == 'TAG') {
-              this.logger.vlog('id3v1 found');
-              const title = reader.readNullTerminatedString(30).trim();
-
-              if (title.length > 0) {
-                metadata.title = title;
-              }
-
-              reader.seek(3 + 30, SeekOrigin.SEEK_BEG);
-
-              const artist = reader.readNullTerminatedString(30).trim();
-              if (artist.length > 0) {
-                metadata.artist = artist;
-              }
-
-              reader.seek(3 + 30 + 30, SeekOrigin.SEEK_BEG);
-
-              const album = reader.readNullTerminatedString(30).trim();
-              if (album.length > 0) {
-                metadata.album = album;
-              }
-            }
-            this.nextStep();
-          },
-        ],
-        this, () => {}, _error => {});
-
-    const id3v2Parser = new FunctionSequence(
-        [
-          function readHead(this: FunctionSequence, file: File) {
-            MetadataParser.readFileBytes(
-                file, 0, 10, this.nextStep, this.onError);
-          },
-
-          /**
-           * Check if passed array of 10 bytes contains ID3 header.
-           * @param file File to check and continue reading if ID3
-           *     metadata found.
-           * @param reader Reader to fill with stream bytes.
-           */
-          function checkId3v2(
-              this: FunctionSequence, file: File, reader: ByteReader) {
-            if (reader.readString(3) == 'ID3') {
-              this.logger.vlog('id3v2 found');
-              const major = reader.readScalar(1, false);
-              const minor = reader.readScalar(1, false);
-              const flags = reader.readScalar(1, false);
-              const size = Id3Parser.readSynchSafe_(reader, 4);
-              const id3v2 = metadata.id3v2 = {
-                majorVersion: major,
-                minorVersion: minor,
-                flags: flags,
-                size: size,
-                frames: {},
-              };
-
-              MetadataParser.readFileBytes(
-                  file, 10, 10 + id3v2.size, this.nextStep, this.onError);
-            } else {
-              this.finish();
-            }
-          },
-
-          /**
-           * Extracts all ID3v2 frames from given bytebuffer.
-           * @param file File being parsed.
-           * @param reader Reader to use for metadata extraction.
-           */
-          function extractFrames(
-              this: FunctionSequence, _file: File, reader: ByteReader) {
-            const id3v2 = metadata.id3v2!;
-
-            if ((id3v2.majorVersion > 2) &&
-                ((id3v2.flags & Id3Parser.V2.FLAG_EXTENDED_HEADER) != 0)) {
-              // Skip extended header if found
-              if (id3v2.majorVersion == 3) {
-                reader.seek(reader.readScalar(4, false) - 4);
-              } else if (id3v2.majorVersion == 4) {
-                reader.seek(Id3Parser.readSynchSafe_(reader, 4) - 4);
-              }
-            }
-
-            let frame;
-
-            while (frame = self.readFrame_(reader, id3v2.majorVersion)) {
-              id3v2.frames[frame.name] = frame;
-            }
-
-            this.nextStep();
-          },
-
-          /**
-           * Adds 'description' object to metadata.
-           * 'description' used to unify different parsers and make
-           * metadata parser-aware.
-           * Description is array if value-type pairs. Type should be used
-           * to properly format value before displaying to user.
-           */
-          function prepareDescription(this: FunctionSequence) {
-            const id3v2 = metadata.id3v2!;
-
-            if (id3v2.frames['APIC']) {
-              metadata.thumbnailURL = id3v2.frames['APIC'].imageUrl;
-            } else if (id3v2.frames['PIC']) {
-              metadata.thumbnailURL = id3v2.frames['PIC'].imageUrl;
-            }
-
-            metadata.description = [];
-
-            for (const [key, frame] of Object.entries(id3v2.frames)) {
-              const mappedKey = Id3Parser.V2.MAPPERS[key];
-              if (mappedKey && frame.value && frame.value.trim().length > 0) {
-                metadata.description.push({
-                  key: mappedKey,
-                  value: frame.value.trim(),
-                });
-              }
-            }
-
-            function extract(
-                propName: 'album'|'title'|'artist', ...tagNames: string[]) {
-              for (const tagName of tagNames) {
-                const tag = id3v2.frames[tagName];
-                if (tag && tag.value) {
-                  metadata[propName] = tag.value;
-                  break;
-                }
-              }
-            }
-
-            extract('album', 'TALB', 'TAL');
-            extract('title', 'TIT2', 'TT2');
-            extract('artist', 'TPE1', 'TP1');
-
-            metadata.description.sort((a, b) => {
-              return Id3Parser.METADATA_ORDER.indexOf(a.key) -
-                  Id3Parser.METADATA_ORDER.indexOf(b.key);
-            });
-            this.nextStep();
-          },
-        ],
-        this, () => {}, _error => {});
-
-    const metadataParser = new FunctionParallel(
-        [
-          id3v1Parser.start.bind(id3v1Parser),
-          id3v2Parser.start.bind(id3v2Parser),
-        ],
-        this, () => {
-          callback.call(null, metadata);
-        }, onError);
-
-    id3v1Parser.setCallback(metadataParser.nextStep);
-    id3v2Parser.setCallback(metadataParser.nextStep);
-
-    id3v1Parser.setFailureCallback(metadataParser.onError);
-    id3v2Parser.setFailureCallback(metadataParser.onError);
-
-    this.vlog('Passed argument : ' + file);
-
-    metadataParser.start(file);
+    Promise
+        .all([this.parseId3v1(file, metadata), this.parseId3v2(file, metadata)])
+        .then(() => {
+          callback(metadata);
+        })
+        .catch((e: unknown) => {
+          onError(e!.toString());
+        });
   }
 
   /**

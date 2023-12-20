@@ -99,6 +99,19 @@ export abstract class MetadataParser implements MetadataParserLogger {
     fileReader.readAsArrayBuffer(file.slice(begin, end));
   }
 
+  static async readFileBytesAsync(file: File, begin: number, end: number) {
+    const fileReader = new FileReader();
+    return new Promise<ByteReader>((resolve, reject) => {
+      fileReader.onerror = event => {
+        reject(event.type);
+      };
+      fileReader.onloadend = () => {
+        resolve(new ByteReader(fileReader.result as ArrayBuffer));
+      };
+      fileReader.readAsArrayBuffer(file.slice(begin, end));
+    });
+  }
+
   /**
    * Parses the file and fills out the given metadata object, returning the
    * result via the passed in callback.

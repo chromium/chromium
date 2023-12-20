@@ -345,8 +345,6 @@ ts_files = [
   "file_manager/foreground/js/metadata/exif_parser.ts",
   "file_manager/foreground/js/metadata/external_metadata_provider.ts",
   "file_manager/foreground/js/metadata/file_system_metadata_provider.ts",
-  "file_manager/foreground/js/metadata/function_parallel.ts",
-  "file_manager/foreground/js/metadata/function_sequence.ts",
   "file_manager/foreground/js/metadata/id3_parser.ts",
   "file_manager/foreground/js/metadata/image_parsers.ts",
   "file_manager/foreground/js/metadata/metadata_cache_item.ts",
