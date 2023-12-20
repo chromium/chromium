@@ -221,6 +221,46 @@ IN_PROC_BROWSER_TEST_F(WebAppRunOnOsLoginManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppRunOnOsLoginManagerBrowserTest,
+                       ClickOnLearnMoreOpensManagementUI) {
+  // Wait for ROOL.
+  RunOsLoginAndWait();
+
+  // Should have 2 browsers: normal and app.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+
+  bool notification_shown = base::test::RunUntil([&]() {
+    return notification_tester_->GetNotification(kRunOnOsLoginNotificationId)
+        .has_value();
+  });
+  // Should have notification
+  ASSERT_TRUE(notification_shown);
+
+  message_center::Notification notification =
+      notification_tester_->GetNotification(kRunOnOsLoginNotificationId)
+          .value();
+  EXPECT_THAT(
+      notification,
+      AllOf(Property(&message_center::Notification::id, Eq("run_on_os_login")),
+            Property(&message_center::Notification::notifier_id,
+                     Field(&message_center::NotifierId::id,
+                           Eq("run_on_os_login_notifier"))),
+            Property(&message_center::Notification::title,
+                     Eq(u"A Web App was started automatically")),
+            Property(&message_center::Notification::message,
+                     Eq(u"Your administrator has set A Web App to start "
+                        u"automatically every time you log in."))));
+
+  notification_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
+                                      kRunOnOsLoginNotificationId, 1,
+                                      absl::nullopt);
+
+  content::WebContents* active_contents =
+      chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(active_contents);
+  EXPECT_EQ(GURL(chrome::kChromeUIManagementURL), active_contents->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppRunOnOsLoginManagerBrowserTest,
                        WebAppRunOnOsLoginNotificationWithTwoApps) {
   AddForceInstalledApp(kTestApp2, kTestAppName);
 

@@ -22,6 +22,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/notifier_catalogs.h"
@@ -62,11 +63,12 @@ message_center::Notification CreateNotification(
                                  web_app::kRunOnOsLoginNotifierId);
 #endif  // (BUILDFLAG(IS_CHROMEOS_ASH))
 
-  base::RepeatingClosure click_callback = base::BindRepeating(
-      [](base::WeakPtr<Profile> profile) {
+  auto click_callback = base::BindRepeating(
+      [](base::WeakPtr<Profile> profile, absl::optional<int> index) -> void {
         if (!profile) {
           return;
         }
+
         NavigateParams params(
             profile.get(), GURL(chrome::kChromeUIManagementURL),
             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
@@ -76,18 +78,13 @@ message_center::Notification CreateNotification(
       },
       profile);
 
-  message_center::Notification notification{
+  message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE,
-      std::string(web_app::kRunOnOsLoginNotificationId),
-      title,
-      message,
-      ui::ImageModel(),
-      /* display_source= */ std::u16string(),
-      /* origin_url */ GURL(),
-      notifier_id,
-      notification_data,
+      web_app::kRunOnOsLoginNotificationId, title, message, ui::ImageModel(),
+      /*display_source=*/std::u16string(),
+      /*origin_url=*/GURL(), notifier_id, notification_data,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          click_callback)};
+          std::move(click_callback)));
 
   notification.SetSystemPriority();
 
@@ -110,7 +107,7 @@ void DisplayRunOnOsLoginNotification(const std::vector<std::string>& app_names,
       CreateNotification(app_names, profile);
 
   NotificationDisplayService::GetForProfile(profile.get())
-      ->Display(NotificationHandler::Type ::TRANSIENT, notification,
+      ->Display(NotificationHandler::Type::TRANSIENT, notification,
                 /*metadata=*/nullptr);
 }
 }  // namespace web_app
