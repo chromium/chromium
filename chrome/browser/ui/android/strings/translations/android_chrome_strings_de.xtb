@@ -453,7 +453,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3443221991560634068">Aktuelle Seite neu laden</translation>
 <translation id="3444179773590444986">Feedback zu dunklem Design für Websites teilen?</translation>
 <translation id="3452832259067974318">Um deine Daten zu schützen, füllt Chrome dieses Feld nicht automatisch mit deinem Passwort aus.</translation>
-<translation id="3474624961160222204">Als "<ph name="NAME" />" fortfahren</translation>
+<translation id="3474624961160222204">Als „<ph name="NAME" />“ fortfahren</translation>
 <translation id="3478363558367712427">Du kannst deine Suchmaschine auswählen</translation>
 <translation id="3479552764303398839">Jetzt nicht</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> zu vorgeschlagenen Inhalten</translation>
@@ -1220,7 +1220,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7403691278183511381">Eindruck beim ersten Ausführen von Chrome</translation>
 <translation id="7411224099004328643">Nutzer des Google-Kontos</translation>
 <translation id="741204030948306876">Ja, bitte</translation>
-<translation id="7419565702166471774">Immer sichere Verbindungen verwenden</translation>
+<translation id="7419565702166471774">Immer verschlüsselte Verbindungen verwenden</translation>
 <translation id="7431991332293347422">Lege fest, wie dein Browserverlauf zur Personalisierung der Google Suche verwendet wird</translation>
 <translation id="7435356471928173109">Von deinem Administrator deaktiviert</translation>
 <translation id="7437998757836447326">Von Chrome abmelden</translation>

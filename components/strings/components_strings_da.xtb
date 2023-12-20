@@ -471,7 +471,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="186539747722034544">Kabel- og satellitudbydere</translation>
 <translation id="1870473978371099486">Private undervisningstjenester</translation>
 <translation id="1871208020102129563">Proxy er indstillet til at bruge faste proxyservere, ikke webadresser til .pac-scripts.</translation>
-<translation id="1871284979644508959">Skal udfyldes</translation>
+<translation id="1871284979644508959">Påkrævet</translation>
 <translation id="1871739799120352748">Prisen er høj</translation>
 <translation id="1873899211667975540">Rockmusik</translation>
 <translation id="1874224422119691492">Du kan ændre, om du vil bruge din skærmlås til at udfylde adgangskoder, i <ph name="SETTINGS" /></translation>
@@ -2888,7 +2888,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6799145206637008376">Angiv det virtuelle korts CVC</translation>
 <translation id="6805030849054648206">Konvolut B6/C4</translation>
 <translation id="6807791860691150411">Uddannelse</translation>
-<translation id="681021252041861472">Skal udfyldes</translation>
+<translation id="681021252041861472">Påkrævet</translation>
 <translation id="6810899417690483278">Tilpasnings-id</translation>
 <translation id="681459028290894216">Udfyld hele adressen</translation>
 <translation id="6816109178681043245">Sportsudstyr</translation>
