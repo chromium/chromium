@@ -102,6 +102,14 @@ void DeskAnimationBase::OnStartingDeskScreenshotTaken(int ending_desk_index) {
       return;
   }
 
+  // If ending desk index goes out of sync with the one provided due to screenshot delay 
+  // and user action, end animation. Speculative fix for http://b/307304567.
+  if (ending_desk_index != ending_desk_index_) {
+    // This will effectively delete `this`.
+    ActivateTargetDeskWithoutAnimation();
+    return;
+  }
+
   // Extend the compositors' timeouts in order to prevents any repaints until
   // the desks are switched and overview mode exits.
   const auto roots = Shell::GetAllRootWindows();
