@@ -186,6 +186,11 @@ BASE_FEATURE(kRoundedWindows,
              "RoundedWindows",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a content cache for FileSystemProvider extensions.
+BASE_FEATURE(kFileSystemProviderContentCache,
+             "FileSystemProviderContentCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kRoundedWindowsRadius[] = "window_radius";
 
 bool IsAppInstallServiceUriEnabled() {

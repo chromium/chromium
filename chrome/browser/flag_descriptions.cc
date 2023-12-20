@@ -6374,6 +6374,12 @@ const char kFilesTrashDriveName[] = "Enable Files Trash for Drive.";
 const char kFilesTrashDriveDescription[] =
     "Enable trash for Drive volume in Files App.";
 
+const char kFileSystemProviderContentCacheName[] =
+    "Enable content caching for FileSystemProvider extensions.";
+const char kFileSystemProviderContentCacheDescription[] =
+    "Enable the ability for individual FileSystemProvider extensions to "
+    "leverage a content cache.";
+
 const char kFilesGoogleDriveSettingsPageName[] =
     "Enable Google Drive settings page";
 const char kFilesGoogleDriveSettingsPageDescription[] =
