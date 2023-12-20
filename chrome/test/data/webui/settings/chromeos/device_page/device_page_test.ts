@@ -919,6 +919,10 @@ suite('<settings-device-page>', () => {
     });
 
     test('simulate noise cancellation', async () => {
+      const mockController = new MockController();
+      const setNoiseCancellationEnabled = mockController.createFunctionMock(
+          crosAudioConfig, 'setNoiseCancellationEnabled');
+
       const noiseCancellationSubsection = audioPage.shadowRoot!.querySelector(
           '#audioInputNoiseCancellationSubsection');
       const noiseCancellationToggle =
@@ -934,6 +938,9 @@ suite('<settings-device-page>', () => {
 
       assertTrue(isVisible(noiseCancellationSubsection));
       assertTrue(noiseCancellationToggle.checked);
+      assertEquals(
+          /* expected_call_count */ 1,
+          setNoiseCancellationEnabled['calls_'].length);
 
       crosAudioConfig.setAudioSystemProperties(
           noiseCancellationNotSupportedAudioSystemProperties);
@@ -991,7 +998,9 @@ suite('<settings-device-page>', () => {
       assertTrue(outputSlider.disabled);
     });
 
-    test('noise cancellation called twice with same value', async () => {
+    test('noise cancellation after system properties change', async () => {
+      // System properties change should not trigger setNoiseCancellationEnabled
+      // to be called.
       const mockController = new MockController();
       const setNoiseCancellationEnabled = mockController.createFunctionMock(
           crosAudioConfig, 'setNoiseCancellationEnabled');
@@ -1013,7 +1022,7 @@ suite('<settings-device-page>', () => {
       await flushTasks();
 
       assertEquals(
-          /* expected_call_count */ 1,
+          /* expected_call_count */ 0,
           setNoiseCancellationEnabled['calls_'].length);
     });
 
