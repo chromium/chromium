@@ -13,8 +13,9 @@ class CommandUpdater;
 // The location bar icon to show the Translate bubble where the user can have
 // the page translated.
 class TranslateIconView : public PageActionIconView {
+  METADATA_HEADER(TranslateIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(TranslateIconView);
   TranslateIconView(CommandUpdater* command_updater,
                     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
                     PageActionIconView::Delegate* page_action_icon_delegate);

@@ -49,9 +49,9 @@ class View;
 class TranslateBubbleView : public LocationBarBubbleDelegateView,
                             public ui::SimpleMenuModel::Delegate,
                             public views::TabbedPaneListener {
- public:
-  METADATA_HEADER(TranslateBubbleView);
+  METADATA_HEADER(TranslateBubbleView, LocationBarBubbleDelegateView)
 
+ public:
   // Item IDs for the option button's menu.
   enum OptionsMenuItem {
     ALWAYS_TRANSLATE_LANGUAGE,

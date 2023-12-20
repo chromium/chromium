@@ -270,8 +270,9 @@ bool PartialTranslateBubbleView::AcceleratorPressed(
 
 gfx::Size PartialTranslateBubbleView::CalculatePreferredSize() const {
   int width = 0;
-  for (const views::View* child : children())
+  for (const views::View* child : children()) {
     width = std::max(width, child->GetPreferredSize().width());
+  }
   return gfx::Size(width, GetCurrentView()->GetPreferredSize().height());
 }
 
@@ -362,9 +363,10 @@ PartialTranslateBubbleView::PartialTranslateBubbleView(
   previous_source_language_index_ = model_->GetSourceLanguageIndex();
   previous_target_language_index_ = model_->GetTargetLanguageIndex();
 
-  if (web_contents)  // web_contents can be null in unit_tests.
+  if (web_contents) {  // web_contents can be null in unit_tests.
     mouse_handler_ =
         std::make_unique<WebContentMouseHandler>(this, web_contents);
+  }
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetFootnoteView(CreateWordmarkView());
   SetProperty(views::kElementIdentifierKey, kIdentifier);
@@ -467,8 +469,9 @@ void PartialTranslateBubbleView::TargetLanguageChanged() {
 }
 
 void PartialTranslateBubbleView::UpdateChildVisibilities() {
-  for (views::View* view : children())
+  for (views::View* view : children()) {
     view->SetVisible(view == GetCurrentView());
+  }
 
   // BoxLayout only considers visible children, so ensure any newly visible
   // child views are positioned correctly.
@@ -1138,5 +1141,5 @@ void PartialTranslateBubbleView::SetTextAlignmentForLocaleTextDirection(
   }
 }
 
-BEGIN_METADATA(PartialTranslateBubbleView, LocationBarBubbleDelegateView)
+BEGIN_METADATA(PartialTranslateBubbleView)
 END_METADATA

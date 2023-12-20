@@ -44,8 +44,9 @@ views::BubbleDialogDelegate* TranslateIconView::GetBubble() const {
     TranslateBubbleController* translate_bubble_controller =
         TranslateBubbleController::FromWebContents(GetWebContents());
 
-    if (translate_bubble_controller)
+    if (translate_bubble_controller) {
       return translate_bubble_controller->GetTranslateBubble();
+    }
   }
 
   return nullptr;
@@ -57,8 +58,9 @@ views::BubbleDialogDelegate* TranslateIconView::GetPartialTranslateBubble()
     TranslateBubbleController* translate_bubble_controller =
         TranslateBubbleController::FromWebContents(GetWebContents());
 
-    if (translate_bubble_controller)
+    if (translate_bubble_controller) {
       return translate_bubble_controller->GetPartialTranslateBubble();
+    }
   }
 
   return nullptr;
@@ -74,8 +76,9 @@ bool TranslateIconView::IsBubbleShowing() const {
 }
 
 void TranslateIconView::UpdateImpl() {
-  if (!GetWebContents())
+  if (!GetWebContents()) {
     return;
+  }
 
   const translate::LanguageState& language_state =
       ChromeTranslateClient::FromWebContents(GetWebContents())
@@ -93,8 +96,10 @@ void TranslateIconView::UpdateImpl() {
   }
 
   SetVisible(enabled);
-  if (!enabled && TranslateBubbleController::FromWebContents(GetWebContents()))
+  if (!enabled &&
+      TranslateBubbleController::FromWebContents(GetWebContents())) {
     TranslateBubbleController::FromWebContents(GetWebContents())->CloseBubble();
+  }
 }
 
 void TranslateIconView::OnExecuting(
@@ -106,5 +111,5 @@ const gfx::VectorIcon& TranslateIconView::GetVectorIcon() const {
              : kTranslateIcon;
 }
 
-BEGIN_METADATA(TranslateIconView, PageActionIconView)
+BEGIN_METADATA(TranslateIconView)
 END_METADATA
