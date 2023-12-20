@@ -833,6 +833,12 @@ const char kRemoveExcessNTPsExperimentDescription[] =
     "When enabled, extra tabs with the New Tab Page open and no navigation "
     "history will be removed.";
 
+const char kRemoveOldWebStateRestoreName[] = "Remove Old WebState Restoration";
+const char kRemoveOldWebStateRestoreDescription[] =
+    "When enabled, skips "
+    "attempting to restore WebState navigation history using "
+    "session_restore.html.";
+
 const char kReplaceSyncPromosWithSignInPromosName[] =
     "Replace all sync-related UI with sign-in ones";
 const char kReplaceSyncPromosWithSignInPromosDescription[] =

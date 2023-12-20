@@ -740,6 +740,10 @@ extern const char kNotificationSettingsMenuItemDescription[];
 extern const char kRemoveExcessNTPsExperimentName[];
 extern const char kRemoveExcessNTPsExperimentDescription[];
 
+// Title and description for the flag to remove unsafe restore.
+extern const char kRemoveOldWebStateRestoreName[];
+extern const char kRemoveOldWebStateRestoreDescription[];
+
 // Title and description for the flag to replace all sync-related UI with
 // sign-in ones.
 extern const char kReplaceSyncPromosWithSignInPromosName[];

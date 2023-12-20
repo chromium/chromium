@@ -1613,6 +1613,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-external-action-urls", flag_descriptions::kIOSExternalActionURLsName,
      flag_descriptions::kIOSExternalActionURLsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSExternalActionURLs)},
+    {"remove-old-web-state-restore",
+     flag_descriptions::kRemoveOldWebStateRestoreName,
+     flag_descriptions::kRemoveOldWebStateRestoreDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(web::features::kRemoveOldWebStateRestoration)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

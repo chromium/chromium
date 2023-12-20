@@ -6895,6 +6895,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "remove-old-web-state-restore",
+    "owners": [ "michaeldo@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 127
+  },
+  {
     "name": "remove-upm-unenrollment",
     "owners": [ "vsemeniuk@google.com", "ioanap@chromium.org" ],
     "expiry_milestone": 125
