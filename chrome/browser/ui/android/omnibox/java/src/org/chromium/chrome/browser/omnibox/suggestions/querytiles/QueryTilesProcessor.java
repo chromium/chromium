@@ -69,12 +69,19 @@ public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
 
     @Override
     public PropertyModel createModel() {
+        var padding =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_query_tiles_carousel_vertical_padding);
         return new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
                 .with(BaseCarouselSuggestionViewProperties.TILES, new ArrayList<>())
                 .with(
                         BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION,
                         mContext.getResources()
                                 .getString(R.string.accessibility_omnibox_query_tiles_list))
+                .with(BaseCarouselSuggestionViewProperties.TOP_PADDING, padding)
+                .with(BaseCarouselSuggestionViewProperties.BOTTOM_PADDING, padding)
+                .with(BaseCarouselSuggestionViewProperties.APPLY_BACKGROUND, true)
                 .build();
     }
 

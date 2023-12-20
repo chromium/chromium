@@ -8,6 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
@@ -27,6 +28,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -38,12 +40,16 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.SuggestTile;
@@ -68,6 +74,7 @@ public final class MostVisitedTilesProcessorUnitTest {
     private static final GURL SEARCH_URL = JUnitTestGURLs.SEARCH_URL;
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
+    public @Rule TestRule mFeatures = new Features.JUnitProcessor();
 
     private Context mContext;
     private PropertyModel mPropertyModel;
@@ -152,6 +159,31 @@ public final class MostVisitedTilesProcessorUnitTest {
         var resultingTiles = mPropertyModel.get(BaseCarouselSuggestionViewProperties.TILES);
         assertEquals(tiles.length, resultingTiles.size());
         return resultingTiles;
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    public void createModel_padding() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
+
+        var model = mProcessor.createModel();
+
+        assertEquals(
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding_smaller),
+                model.get(BaseCarouselSuggestionViewProperties.TOP_PADDING));
+        assertEquals(
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding),
+                model.get(BaseCarouselSuggestionViewProperties.BOTTOM_PADDING));
+    }
+
+    @Test
+    public void createModel_carouselBackground() {
+        var model = mProcessor.createModel();
+
+        assertFalse(model.get(BaseCarouselSuggestionViewProperties.APPLY_BACKGROUND));
     }
 
     @Test

@@ -424,7 +424,7 @@ public class OmniboxResourceProvider {
     }
 
     /** Get the top padding for the MV carousel. */
-    public static @Px int getCarouselTopPadding(Context context) {
+    public static @Px int getMostVisitedCarouselTopPadding(Context context) {
         if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
             return context.getResources()
                     .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
@@ -436,7 +436,7 @@ public class OmniboxResourceProvider {
     }
 
     /** Get the bottom padding for the MV carousel. */
-    public static @Px int getCarouselBottomPadding(Context context) {
+    public static @Px int getMostVisitedCarouselBottomPadding(Context context) {
         if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
             return context.getResources()
                     .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);

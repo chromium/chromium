@@ -8,6 +8,8 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonPropertie
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -31,8 +33,24 @@ public @interface BaseCarouselSuggestionViewProperties {
     public static final ReadableObjectPropertyKey<String> CONTENT_DESCRIPTION =
             new ReadableObjectPropertyKey<>();
 
+    /** Specifies carousel padding dimensions. */
+    static final ReadableIntPropertyKey TOP_PADDING = new ReadableIntPropertyKey();
+
+    static final ReadableIntPropertyKey BOTTOM_PADDING = new ReadableIntPropertyKey();
+
+    /** Specifies whether carousel's background should match this used by all suggestions. */
+    static final ReadableBooleanPropertyKey APPLY_BACKGROUND = new ReadableBooleanPropertyKey();
+
     static final PropertyKey[] ALL_UNIQUE_KEYS =
-            new PropertyKey[] {TILES, HORIZONTAL_FADE, ITEM_WIDTH, CONTENT_DESCRIPTION};
+            new PropertyKey[] {
+                TOP_PADDING,
+                BOTTOM_PADDING,
+                APPLY_BACKGROUND,
+                TILES,
+                HORIZONTAL_FADE,
+                ITEM_WIDTH,
+                CONTENT_DESCRIPTION
+            };
 
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionCommonProperties.ALL_KEYS);

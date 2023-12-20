@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.querytiles;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -181,6 +182,28 @@ public class QueryTilesProcessorUnitTest {
         assertEquals(bitmap, drawable.getBitmap());
 
         verifyNoMoreInteractions(mImageSupplier, mSuggestionHost);
+    }
+
+    @Test
+    public void createModel_padding() {
+        var model = mProcessor.createModel();
+
+        assertEquals(
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_query_tiles_carousel_vertical_padding),
+                model.get(BaseCarouselSuggestionViewProperties.TOP_PADDING));
+        assertEquals(
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_query_tiles_carousel_vertical_padding),
+                model.get(BaseCarouselSuggestionViewProperties.BOTTOM_PADDING));
+    }
+
+    @Test
+    public void createModel_carouselBackground() {
+        var model = mProcessor.createModel();
+        assertTrue(model.get(BaseCarouselSuggestionViewProperties.APPLY_BACKGROUND));
     }
 
     @Test

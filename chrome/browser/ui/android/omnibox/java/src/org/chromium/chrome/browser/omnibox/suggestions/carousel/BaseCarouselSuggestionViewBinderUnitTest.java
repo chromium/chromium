@@ -4,11 +4,20 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,6 +35,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
 import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -91,17 +101,98 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
-    public void padding_smallestMargins() {
-        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
-        Assert.assertEquals(
-                mResources.getDimensionPixelSize(
-                        R.dimen.omnibox_carousel_suggestion_padding_smaller),
-                mView.getPaddingTop());
-        Assert.assertEquals(
-                mResources.getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding),
-                mView.getPaddingBottom());
+    public void createModel_noPaddingValues() {
+        var view = mock(BaseCarouselSuggestionView.class);
+        var model =
+                new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS).build();
+        PropertyModelChangeProcessor.create(model, view, BaseCarouselSuggestionViewBinder::bind);
+
+        verify(view, never()).setPaddingRelative(anyInt(), anyInt(), anyInt(), anyInt());
+    }
+
+    @Test
+    public void createModel_specificPaddingValues() {
+        var view = mock(BaseCarouselSuggestionView.class);
+        var model =
+                new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
+                        .with(BaseCarouselSuggestionViewProperties.TOP_PADDING, 13)
+                        .with(BaseCarouselSuggestionViewProperties.BOTTOM_PADDING, 75)
+                        .build();
+        PropertyModelChangeProcessor.create(model, view, BaseCarouselSuggestionViewBinder::bind);
+
+        verify(view, atLeastOnce()).setPaddingRelative(0, 13, 0, 75);
+    }
+
+    @Test
+    public void createModel_backgroundDisabled() {
+        var layoutParams = new MarginLayoutParams(/* width= */ 0, /* height= */ 0);
+        var view = spy(new BaseCarouselSuggestionView(mContext, mAdapter));
+        view.setLayoutParams(layoutParams);
+        clearInvocations(view);
+
+        var model =
+                new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
+                        .with(BaseCarouselSuggestionViewProperties.APPLY_BACKGROUND, false)
+                        .build();
+
+        PropertyModelChangeProcessor.create(model, view, BaseCarouselSuggestionViewBinder::bind);
+
+        verify(view).setBackgroundColor(Color.TRANSPARENT);
+        verify(view).setOutlineProvider(null);
+        verify(view).setClipToOutline(false);
+        verify(view).setLayoutParams(layoutParams);
+        assertEquals(0, layoutParams.getMarginStart());
+        assertEquals(0, layoutParams.getMarginEnd());
+    }
+
+    @Test
+    public void createModel_backgroundEnabled_nonIncognito() {
+        var layoutParams = new MarginLayoutParams(/* width= */ 0, /* height= */ 0);
+        var view = spy(new BaseCarouselSuggestionView(mContext, mAdapter));
+        view.setLayoutParams(layoutParams);
+        clearInvocations(view);
+
+        var model =
+                new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
+                        .with(BaseCarouselSuggestionViewProperties.APPLY_BACKGROUND, true)
+                        .build();
+
+        PropertyModelChangeProcessor.create(model, view, BaseCarouselSuggestionViewBinder::bind);
+
+        verify(view)
+                .setBackgroundColor(
+                        OmniboxResourceProvider.getStandardSuggestionBackgroundColor(mContext));
+        verify(view).setOutlineProvider(notNull());
+        verify(view).setClipToOutline(true);
+        verify(view).setLayoutParams(layoutParams);
+        assertEquals(
+                OmniboxResourceProvider.getSideSpacing(mContext), layoutParams.getMarginStart());
+        assertEquals(OmniboxResourceProvider.getSideSpacing(mContext), layoutParams.getMarginEnd());
+    }
+
+    @Test
+    public void createModel_backgroundEnabled_incognito() {
+        var layoutParams = new MarginLayoutParams(/* width= */ 0, /* height= */ 0);
+        var view = spy(new BaseCarouselSuggestionView(mContext, mAdapter));
+        view.setLayoutParams(layoutParams);
+        clearInvocations(view);
+
+        var model =
+                new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
+                        .with(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.INCOGNITO)
+                        .with(BaseCarouselSuggestionViewProperties.APPLY_BACKGROUND, true)
+                        .build();
+
+        PropertyModelChangeProcessor.create(model, view, BaseCarouselSuggestionViewBinder::bind);
+
+        verify(view).setBackgroundColor(mContext.getColor(R.color.omnibox_suggestion_bg_incognito));
+        // Same as in the non-incognito variant.
+        verify(view).setOutlineProvider(notNull());
+        verify(view).setClipToOutline(true);
+        verify(view).setLayoutParams(layoutParams);
+        assertEquals(
+                OmniboxResourceProvider.getSideSpacing(mContext), layoutParams.getMarginStart());
+        assertEquals(OmniboxResourceProvider.getSideSpacing(mContext), layoutParams.getMarginEnd());
     }
 
     @Test
