@@ -16,7 +16,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManager.ASPECT_RATIO;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
@@ -98,7 +98,7 @@ public class MinimizedCardViewBinderTest extends BlankUiTestActivityTestCase {
         onView(withId(R.id.title)).check(matches(withText(SHORT_TITLE)));
         onView(withId(R.id.url)).check(matches(withText(SHORT_URL)));
         onView(withId(R.id.favicon)).check(matches(isCompletelyDisplayed()));
-        assertEquals(favicon, ((BitmapDrawable) mFavicon.getDrawable()).getBitmap());
+        assertEquals(favicon, ((RoundedBitmapDrawable) mFavicon.getDrawable()).getBitmap());
     }
 
     @Test
@@ -117,7 +117,7 @@ public class MinimizedCardViewBinderTest extends BlankUiTestActivityTestCase {
         onView(withId(R.id.url)).check(matches(withText(LONG_URL)));
         assertEquals(1, mUrl.getLineCount());
         onView(withId(R.id.favicon)).check(matches(isCompletelyDisplayed()));
-        assertEquals(favicon, ((BitmapDrawable) mFavicon.getDrawable()).getBitmap());
+        assertEquals(favicon, ((RoundedBitmapDrawable) mFavicon.getDrawable()).getBitmap());
     }
 
     @Test

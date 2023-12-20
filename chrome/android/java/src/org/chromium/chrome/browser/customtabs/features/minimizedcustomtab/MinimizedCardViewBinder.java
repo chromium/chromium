@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import org.chromium.chrome.R;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -39,7 +40,11 @@ public class MinimizedCardViewBinder {
                                 R.color.default_icon_color_tint_list);
                 favicon.setImageDrawable(icon);
             } else {
-                favicon.setImageBitmap(model.get(FAVICON));
+                var res = view.getResources();
+                int radius = res.getDimensionPixelSize(R.dimen.default_favicon_corner_radius);
+                var roundedIcon = ViewUtils.createRoundedBitmapDrawable(res, bitmap, radius);
+
+                favicon.setImageDrawable(roundedIcon);
             }
         }
     }
