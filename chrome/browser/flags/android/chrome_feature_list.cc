@@ -295,8 +295,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &language::kDetailedLanguageSettings,
     &messages::kMessagesForAndroidSaveCard,
     &offline_pages::kOfflinePagesCTFeature,  // See crbug.com/620421.
-    &offline_pages::kOfflinePagesDescriptiveFailStatusFeature,
-    &offline_pages::kOfflinePagesDescriptivePendingStatusFeature,
     &omnibox::kMostVisitedTilesHorizontalRenderGroup,
     &omnibox::kOmniboxMatchToolbarAndStatusBarColor,
     &omnibox::kOmniboxModernizeVisualUpdate,

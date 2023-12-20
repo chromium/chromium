@@ -32157,7 +32157,6 @@ from previous Chrome versions.
   <int value="-472013317" label="WebRTC-H264WithOpenH264FFmpeg:disabled"/>
   <int value="-471405972" label="ViewsProfileChooser:disabled"/>
   <int value="-471085510" label="MultiDeviceApi:enabled"/>
-  <int value="-470948890" label="OfflinePagesDescriptivePendingStatus:enabled"/>
   <int value="-470247915"
       label="AutofillUpstreamEditableExpirationDate:enabled"/>
   <int value="-468697885" label="ArcInputMethod:enabled"/>
@@ -33021,7 +33020,6 @@ from previous Chrome versions.
   <int value="-68225452" label="enable-translate-new-ux"/>
   <int value="-67616014" label="PDFAnnotations:enabled"/>
   <int value="-67604092" label="LanguagePacksInSettings:enabled"/>
-  <int value="-67297229" label="OfflinePagesDescriptivePendingStatus:disabled"/>
   <int value="-67176255" label="PeripheralNotification:disabled"/>
   <int value="-66834375" label="SharesheetCopyToClipboard:enabled"/>
   <int value="-66535194" label="DesktopMinimalUI:enabled"/>
@@ -35094,7 +35092,6 @@ from previous Chrome versions.
   <int value="919605713"
       label="QuickAnswersAlwaysTriggerForSingleWord:disabled"/>
   <int value="920563204" label="AndroidHatsRefactor:enabled"/>
-  <int value="921536672" label="OfflinePagesDescriptiveFailStatus:enabled"/>
   <int value="921561616" label="WebAssemblyTiering:disabled"/>
   <int value="923359298" label="ContentSettingsPartitioning:enabled"/>
   <int value="923752712" label="WelcomeTour:enabled"/>
@@ -35247,7 +35244,6 @@ from previous Chrome versions.
   <int value="998748600" label="SyncErrorInfoBarAndroid:disabled"/>
   <int value="998857679" label="DiscardExceptionsImprovements:enabled"/>
   <int value="1000045846" label="OverlayNewLayout:disabled"/>
-  <int value="1000587036" label="OfflinePagesDescriptiveFailStatus:disabled"/>
   <int value="1000630368" label="lacros-stability"/>
   <int value="1000706989" label="AutomaticTabDiscarding:disabled"/>
   <int value="1002247842" label="WebGPUService:enabled"/>

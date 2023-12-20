@@ -283,10 +283,6 @@ public abstract class ChromeFeatureList {
     public static final String NOTIFICATION_PERMISSION_VARIANT = "NotificationPermissionVariant";
     public static final String NOTIFICATION_PERMISSION_BOTTOM_SHEET =
             "NotificationPermissionBottomSheet";
-    public static final String OFFLINE_PAGES_DESCRIPTIVE_FAIL_STATUS =
-            "OfflinePagesDescriptiveFailStatus";
-    public static final String OFFLINE_PAGES_DESCRIPTIVE_PENDING_STATUS =
-            "OfflinePagesDescriptivePendingStatus";
     public static final String OMAHA_MIN_SDK_VERSION_ANDROID = "OmahaMinSdkVersionAndroid";
     public static final String OMNIBOX_CACHE_SUGGESTION_RESOURCES =
             "OmniboxCacheSuggestionResources";
