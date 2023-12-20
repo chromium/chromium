@@ -37,12 +37,17 @@ class ChromeML {
   // Whether or not the GPU is blocklisted.
   bool IsGpuBlocked() const;
 
+  void SetAllowGpuForTesting(bool allow_gpu) {
+    allow_gpu_for_testing_ = allow_gpu;
+  }
+
  private:
   static std::unique_ptr<ChromeML> Create(
       const std::optional<std::string>& library_name);
 
   const base::ScopedNativeLibrary library_;
   const raw_ptr<const ChromeMLAPI> api_;
+  bool allow_gpu_for_testing_ = false;
 };
 
 }  // namespace ml

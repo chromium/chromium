@@ -134,6 +134,10 @@ std::unique_ptr<ChromeML> ChromeML::Create(
 
 DISABLE_CFI_DLSYM
 bool ChromeML::IsGpuBlocked() const {
+  if (allow_gpu_for_testing_) {
+    return false;
+  }
+
   GpuConfig gpu_config;
   if (!api().GetGpuConfig(gpu_config)) {
     LogGpuBlocked(GpuBlockedReason::kGpuConfigError);
