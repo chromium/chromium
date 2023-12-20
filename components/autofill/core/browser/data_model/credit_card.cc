@@ -48,18 +48,18 @@ namespace autofill {
 
 namespace {
 
-const char16_t kCreditCardObfuscationSymbol = '*';
+constexpr char16_t kCreditCardObfuscationSymbol = '*';
 
-const char16_t kWhiteSpaceSeparator = ' ';
+constexpr char16_t kWhiteSpaceSeparator = ' ';
 
-const int kMaxNicknameLength = 25;
+constexpr int kMaxNicknameLength = 25;
 
 constexpr std::array<int, 3> k15DigitAmexNumberSegmentations = {4, 6, 5};
 constexpr std::array<int, 4> k16DigitNumberSegmentations = {4, 4, 4, 4};
 
 // Suffix for GUID of a virtual card to differentiate it from it's corresponding
 // masked server card..
-const char kVirtualCardIdentifierSuffix[] = "_vcn";
+constexpr char kVirtualCardIdentifierSuffix[] = "_vcn";
 
 std::u16string NetworkForFill(const std::string& network) {
   if (network == kAmericanExpressCard)
@@ -1092,7 +1092,7 @@ std::u16string CreditCard::Label() const {
   if (pieces.first.empty() || pieces.second.empty())
     return pieces.first + pieces.second;
 
-  return pieces.first + u", " + pieces.second;
+  return base::StrCat({pieces.first, u", ", pieces.second});
 }
 
 std::u16string CreditCard::LastFourDigits() const {
@@ -1274,10 +1274,8 @@ std::u16string CreditCard::GetInfoImpl(const AutofillType& type,
     if (record_type() == RecordType::kMaskedServerCard) {
       return NetworkAndLastFourDigits();
     }
-
     return StripSeparators(number_);
   }
-
   return GetRawInfo(storable_type);
 }
 

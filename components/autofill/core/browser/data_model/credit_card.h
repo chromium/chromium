@@ -26,6 +26,19 @@ namespace autofill {
 inline constexpr char16_t kMidlineEllipsisDot[] = u"\u2022\u2060\u2006\u2060";
 inline constexpr char16_t kMidlineEllipsisPlainDot = u'\u2022';
 
+// The string identifiers for credit card icon resources.
+inline constexpr char kAmericanExpressCard[] = "americanExpressCC";
+inline constexpr char kDinersCard[] = "dinersCC";
+inline constexpr char kDiscoverCard[] = "discoverCC";
+inline constexpr char kEloCard[] = "eloCC";
+inline constexpr char kGenericCard[] = "genericCC";
+inline constexpr char kJCBCard[] = "jcbCC";
+inline constexpr char kMasterCard[] = "masterCardCC";
+inline constexpr char kMirCard[] = "mirCC";
+inline constexpr char kTroyCard[] = "troyCC";
+inline constexpr char kUnionPay[] = "unionPayCC";
+inline constexpr char kVisaCard[] = "visaCC";
+
 struct AutofillMetadata;
 
 namespace internal {
@@ -599,19 +612,6 @@ class CreditCard : public AutofillDataModel {
 
 // So we can compare CreditCards with EXPECT_EQ().
 std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card);
-
-// The string identifiers for credit card icon resources.
-inline constexpr char kAmericanExpressCard[] = "americanExpressCC";
-inline constexpr char kDinersCard[] = "dinersCC";
-inline constexpr char kDiscoverCard[] = "discoverCC";
-inline constexpr char kEloCard[] = "eloCC";
-inline constexpr char kGenericCard[] = "genericCC";
-inline constexpr char kJCBCard[] = "jcbCC";
-inline constexpr char kMasterCard[] = "masterCardCC";
-inline constexpr char kMirCard[] = "mirCC";
-inline constexpr char kTroyCard[] = "troyCC";
-inline constexpr char kUnionPay[] = "unionPayCC";
-inline constexpr char kVisaCard[] = "visaCC";
 
 }  // namespace autofill
 
