@@ -189,7 +189,6 @@ void CandidateView::SetHighlighted(bool highlighted) {
 
   highlighted_ = highlighted;
   if (highlighted) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kSelection, false);
     SetBackground(views::CreateThemedSolidBackground(
         ui::kColorTextfieldSelectionBackground));
     SetBorder(

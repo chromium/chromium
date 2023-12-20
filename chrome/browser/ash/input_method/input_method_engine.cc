@@ -780,6 +780,7 @@ void InputMethodEngine::SetCandidateWindowProperty(
   dest_property.is_auxiliary_text_visible = property.is_auxiliary_text_visible;
   dest_property.current_candidate_index = property.current_candidate_index;
   dest_property.total_candidates = property.total_candidates;
+  dest_property.is_user_selecting = candidate_window_.is_user_selecting();
 
   candidate_window_.SetProperty(dest_property);
   candidate_window_property_ = {engine_id, property};
@@ -847,6 +848,8 @@ bool InputMethodEngine::SetCandidates(int context_id,
 
     candidate_window_.mutable_candidates()->push_back(entry);
   }
+  candidate_window_.set_is_user_selecting(InferIsUserSelecting(candidates));
+
   if (IsActive()) {
     IMECandidateWindowHandlerInterface* cw_handler =
         IMEBridge::Get()->GetCandidateWindowHandler();
@@ -1094,6 +1097,23 @@ void InputMethodEngine::OnScreenProjectionChanged(bool is_projected) {
   if (observer_) {
     observer_->OnScreenProjectionChanged(is_projected);
   }
+}
+
+bool InputMethodEngine::InferIsUserSelecting(
+    base::span<const Candidate> candidates) {
+  if (candidates.empty()) {
+    return false;
+  }
+
+  // Only infer for Japanese IME.
+  if (!active_component_id_.starts_with("nacl_mozc_")) {
+    return true;
+  }
+
+  const bool any_non_empty_label = base::ranges::any_of(
+      candidates,
+      [](const Candidate& candidate) { return !candidate.label.empty(); });
+  return any_non_empty_label;
 }
 
 void InputMethodEngine::NotifyInputMethodExtensionReadyForTesting() {

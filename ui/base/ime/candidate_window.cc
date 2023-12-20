@@ -33,8 +33,10 @@ bool CandidateWindow::IsEqual(const CandidateWindow& cw) const {
       show_window_at_composition() != cw.show_window_at_composition() ||
       is_auxiliary_text_visible() != cw.is_auxiliary_text_visible() ||
       auxiliary_text() != cw.auxiliary_text() ||
-      candidates_.size() != cw.candidates_.size())
+      candidates_.size() != cw.candidates_.size() ||
+      is_user_selecting() != cw.is_user_selecting()) {
     return false;
+  }
 
   for (size_t i = 0; i < candidates_.size(); ++i) {
     const Entry& left = candidates_[i];
@@ -92,7 +94,8 @@ CandidateWindow::CandidateWindowProperty::CandidateWindowProperty()
       show_window_at_composition(false),
       is_auxiliary_text_visible(false),
       current_candidate_index(-1),
-      total_candidates(0) {}
+      total_candidates(0),
+      is_user_selecting(false) {}
 
 CandidateWindow::CandidateWindowProperty::~CandidateWindowProperty() {
 }

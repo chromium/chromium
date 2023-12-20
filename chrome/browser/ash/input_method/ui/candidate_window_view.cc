@@ -101,6 +101,15 @@ int ComputePageIndex(const ui::CandidateWindow& candidate_window) {
   return -1;
 }
 
+// Returns 0-indexed cursor position in a page. See also |ComputePageIndex|.
+// Returns -1 on error.
+int ComputeIndexInPage(const ui::CandidateWindow& candidate_window) {
+  if (candidate_window.page_size() > 0) {
+    return candidate_window.cursor_position() % candidate_window.page_size();
+  }
+  return -1;
+}
+
 }  // namespace
 
 class InformationTextArea : public views::View {
@@ -351,6 +360,21 @@ void CandidateWindowView::UpdateCandidates(
     GetBubbleFrameView()->SetBubbleBorder(std::move(border));
     GetBubbleFrameView()->OnThemeChanged();
   }
+
+  const int new_candidate_index_in_page =
+      ComputeIndexInPage(new_candidate_window);
+  // Notify accessibility if selection changes.
+  // Don't notify while showing suggestions, because it interrupts user typing.
+  if (new_candidate_window.is_user_selecting()) {
+    // Notify when index changes, or when candidate window type changes.
+    if (!candidate_window_.is_user_selecting() ||
+        (selected_candidate_index_in_page_ != new_candidate_index_in_page &&
+         new_candidate_index_in_page != -1)) {
+      candidate_views_[new_candidate_index_in_page]->NotifyAccessibilityEvent(
+          ax::mojom::Event::kSelection, false);
+    }
+  }
+
   // Update the current candidate window. We'll use candidate_window_ from here.
   // Note that SelectCandidateAt() uses candidate_window_.
   candidate_window_.CopyFrom(new_candidate_window);
@@ -358,9 +382,7 @@ void CandidateWindowView::UpdateCandidates(
   // Select the current candidate in the page.
   if (candidate_window_.is_cursor_visible()) {
     if (candidate_window_.page_size()) {
-      const int current_candidate_in_page =
-          candidate_window_.cursor_position() % candidate_window_.page_size();
-      SelectCandidateAt(current_candidate_in_page);
+      SelectCandidateAt(new_candidate_index_in_page);
     }
   } else {
     // Unselect the currently selected candidate.

@@ -24,6 +24,7 @@
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
+#include "ui/base/ime/ash/mock_ime_candidate_window_handler.h"
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 #include "ui/base/ime/ash/text_input_method.h"
@@ -37,9 +38,12 @@ namespace ash::input_method {
 
 namespace {
 
+using ::testing::SizeIs;
+
 const char kTestExtensionId[] = "mppnpdlheglhdfmldimlhpnegondlapf";
 const char kTestExtensionId2[] = "dmpipdbjkoajgdeppkffbjhngfckdloi";
 const char kTestImeComponentId[] = "test_engine_id";
+const char kFakeMozcComponentId[] = "nacl_mozc_test";
 
 enum CallsBitmap {
   NONE = 0U,
@@ -50,14 +54,14 @@ enum CallsBitmap {
   RESET = 16U
 };
 
-void InitInputMethod() {
+void InitInputMethod(const std::string& engine_id) {
   auto delegate = std::make_unique<MockComponentExtensionIMEManagerDelegate>();
 
   ComponentExtensionIME ext1;
   ext1.id = kTestExtensionId;
 
   ComponentExtensionEngine ext1_engine1;
-  ext1_engine1.engine_id = kTestImeComponentId;
+  ext1_engine1.engine_id = engine_id;
   ext1_engine1.language_codes.emplace_back("en-US");
   ext1_engine1.layout = "us";
   ext1.engines.push_back(ext1_engine1);
@@ -126,10 +130,13 @@ class TestObserver : public StubInputMethodEngineObserver {
 
 class InputMethodEngineTest : public testing::Test {
  public:
-  InputMethodEngineTest() : observer_(nullptr), input_view_("inputview.html") {
+  InputMethodEngineTest() : InputMethodEngineTest(kTestImeComponentId) {}
+
+  explicit InputMethodEngineTest(const std::string& engine_id)
+      : observer_(nullptr), input_view_("inputview.html") {
     languages_.emplace_back("en-US");
     layouts_.emplace_back("us");
-    InitInputMethod();
+    InitInputMethod(engine_id);
     mock_ime_input_context_handler_ =
         std::make_unique<MockIMEInputContextHandler>();
     IMEBridge::Get()->SetInputContextHandler(
@@ -439,4 +446,55 @@ TEST_F(InputMethodEngineTest,
   EXPECT_EQ(deleteSurroundingTextArg.num_char16s_after_cursor, 0u);
   EXPECT_EQ(u"suggestion", mock_ime_input_context_handler_->last_commit_text());
 }
+
+class InputMethodEngineWithJpIdTest : public InputMethodEngineTest {
+ public:
+  InputMethodEngineWithJpIdTest()
+      : InputMethodEngineTest(kFakeMozcComponentId) {}
+};
+
+TEST_F(InputMethodEngineWithJpIdTest, SetCandidatesUpdatesUserSelecting) {
+  auto mock_cw_handler = std::make_unique<MockIMECandidateWindowHandler>();
+  IMEBridge::Get()->SetCandidateWindowHandler(mock_cw_handler.get());
+  CreateEngine(true);
+  Focus(ui::TEXT_INPUT_TYPE_TEXT);
+  engine_->Enable(kFakeMozcComponentId);
+
+  std::vector<InputMethodEngine::Candidate> candidates(2);
+  // It's okay to use default values for Candidate instances.
+  std::string error;
+  ASSERT_TRUE(engine_->SetCandidateWindowVisible(true, &error));
+  ASSERT_TRUE(engine_->SetCandidates(engine_->GetContextIdForTesting(),
+                                     candidates, &error));
+
+  EXPECT_EQ("", error);
+  const ui::CandidateWindow& candidate_window =
+      mock_cw_handler->last_update_lookup_table_arg().lookup_table;
+  EXPECT_THAT(candidate_window.candidates(), SizeIs(2));
+  EXPECT_FALSE(candidate_window.is_user_selecting());
+}
+
+TEST_F(InputMethodEngineWithJpIdTest,
+       SetCandidatesWithLabelEnableUserSelecting) {
+  auto mock_cw_handler = std::make_unique<MockIMECandidateWindowHandler>();
+  IMEBridge::Get()->SetCandidateWindowHandler(mock_cw_handler.get());
+  CreateEngine(true);
+  Focus(ui::TEXT_INPUT_TYPE_TEXT);
+  engine_->Enable(kFakeMozcComponentId);
+
+  std::vector<InputMethodEngine::Candidate> candidates(2);
+  candidates[0].label = "L1";
+  candidates[1].label = "L2";
+  std::string error;
+  ASSERT_TRUE(engine_->SetCandidateWindowVisible(true, &error));
+  ASSERT_TRUE(engine_->SetCandidates(engine_->GetContextIdForTesting(),
+                                     candidates, &error));
+
+  EXPECT_EQ("", error);
+  const ui::CandidateWindow& candidate_window =
+      mock_cw_handler->last_update_lookup_table_arg().lookup_table;
+  EXPECT_THAT(candidate_window.candidates(), SizeIs(2));
+  EXPECT_TRUE(candidate_window.is_user_selecting());
+}
+
 }  // namespace ash::input_method
