@@ -6,16 +6,17 @@ import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {FakeEntryImpl, GuestOsPlaceholder, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FileData, State} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
-import {convertEntryToFileData} from '../ducks/all_entries.js';
+import {convertEntryToFileData, readSubDirectories} from '../ducks/all_entries.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
-import {getEmptyState} from '../store.js';
+import {getEmptyState, getEntry} from '../store.js';
 
 import {addUiEntry, removeUiEntry} from './ui_entries.js';
-import {convertVolumeInfoAndMetadataToVolume} from './volumes.js';
+import {addVolume, convertVolumeInfoAndMetadataToVolume} from './volumes.js';
 
 export function setUp() {
   // sortEntries() from addUiEntry() reducer requires volumeManager and
@@ -307,4 +308,61 @@ export async function testRemoveUiEntryFromMyFiles(done: () => void) {
   assertEquals(0, myFilesEntry.getUiChildren().length);
 
   done();
+}
+
+/**
+ * Test MyFiles children should include PlayFiles even PlayFiles ui entry is
+ * added when there's an ongoing scanning call for MyFiles.
+ */
+export async function testPlayFilesAddedDuringScanningMyFiles() {
+  const store = setupStore();
+  const {volumeInfo} = createMyFilesDataWithVolumeEntry();
+  const myFilesEntry = new VolumeEntry(volumeInfo);
+  // Populate one sub folder for MyFiles.
+  const downloadsFS = volumeInfo.fileSystem as MockFileSystem;
+  downloadsFS.populate([
+    '/sub-dir/',
+  ]);
+  const subDirEntry = downloadsFS.entries['/sub-dir']!;
+  // Add MyFiles to the store.
+  store.dispatch(addVolume(
+      {volumeInfo, volumeMetadata: createFakeVolumeMetadata(volumeInfo)}));
+  await waitUntil(() => {
+    return !!store.getState().allEntries[myFilesEntry.toURL()];
+  });
+  const myFilesEntryInStore =
+      getEntry(store.getState(), myFilesEntry.toURL()) as VolumeEntry;
+
+  // Dispatch an action to read children of MyFiles. At this moment, the
+  // UiChildren of MyFiles is empty so no `StaticReader` will be added to
+  // MyFiles.
+  store.dispatch(readSubDirectories(myFilesEntryInStore));
+
+  // Dispatch an action to add an ui entry at the same time.
+  const playFilesUiEntry = new GuestOsPlaceholder(
+      'Play files', 0, chrome.fileManagerPrivate.VmType.ARCVM);
+  store.dispatch(addUiEntry(playFilesUiEntry));
+
+  // Expect PlayFiles should be in the store eventually.
+  myFilesEntry.addEntry(playFilesUiEntry);
+  const want: Partial<State> = {
+    allEntries: {
+      [myFilesEntry.toURL()]: {
+        ...convertEntryToFileData(myFilesEntry),
+        children: [
+          subDirEntry.toURL(),
+          playFilesUiEntry.toURL(),
+        ],
+      },
+      [playFilesUiEntry.toURL()]: convertEntryToFileData(playFilesUiEntry),
+      [subDirEntry.toURL()]: convertEntryToFileData(subDirEntry),
+    },
+  };
+
+  await waitDeepEquals(store, want, (state) => ({
+                                      allEntries: state.allEntries,
+                                    }));
+  const uiChildren = myFilesEntryInStore.getUiChildren();
+  assertEquals(1, uiChildren.length);
+  assertEquals(playFilesUiEntry, uiChildren[0]);
 }
