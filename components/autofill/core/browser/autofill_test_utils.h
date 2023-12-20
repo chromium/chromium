@@ -36,12 +36,12 @@ namespace autofill {
 
 class AutofillExternalDelegate;
 class AutofillProfile;
-class AutofillTable;
 class BankAccount;
 struct FormData;
 struct FormFieldData;
 struct FormDataPredictions;
 struct FormFieldDataPredictions;
+class PaymentsAutofillTable;
 
 // Defined by pair-wise equality of all members.
 bool operator==(const FormFieldDataPredictions& a,
@@ -281,8 +281,9 @@ void DisableSystemServices(PrefService* prefs);
 void ReenableSystemServices();
 
 // Sets |cards| for |table|. |cards| may contain full, unmasked server cards,
-// whereas AutofillTable::SetServerCreditCards can only contain masked cards.
-void SetServerCreditCards(AutofillTable* table,
+// whereas PaymentsAutofillTable::SetServerCreditCards can only contain masked
+// cards.
+void SetServerCreditCards(PaymentsAutofillTable* table,
                           const std::vector<CreditCard>& cards);
 
 // Adds an element at the end of |possible_field_types| and

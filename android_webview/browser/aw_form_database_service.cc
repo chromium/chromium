@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/autocomplete_table.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/webdata/common/webdata_constants.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -50,7 +50,7 @@ AwFormDatabaseService::AwFormDatabaseService(const base::FilePath path)
   // This is likely a bug.
   // Once crbug.com/1501199 is resolved, all tables can be removed.
   web_database_->AddTable(std::make_unique<autofill::AddressAutofillTable>());
-  web_database_->AddTable(std::make_unique<autofill::AutofillTable>());
+  web_database_->AddTable(std::make_unique<autofill::PaymentsAutofillTable>());
   web_database_->LoadDatabase();
 
   autofill_data_ = new autofill::AutofillWebDataService(

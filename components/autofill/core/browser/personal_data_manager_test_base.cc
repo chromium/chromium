@@ -32,7 +32,7 @@ void PersonalDataManagerTestBase::SetUpTest() {
 
   profile_web_database_->AddTable(std::make_unique<AddressAutofillTable>());
   // Hacky: hold onto a pointer but pass ownership.
-  profile_autofill_table_ = new AutofillTable;
+  profile_autofill_table_ = new PaymentsAutofillTable;
   profile_web_database_->AddTable(
       std::unique_ptr<WebDatabaseTable>(profile_autofill_table_));
   profile_web_database_->LoadDatabase();
@@ -45,7 +45,7 @@ void PersonalDataManagerTestBase::SetUpTest() {
       new WebDatabaseService(base::FilePath(WebDatabase::kInMemoryPath),
                              base::SingleThreadTaskRunner::GetCurrentDefault(),
                              base::SingleThreadTaskRunner::GetCurrentDefault());
-  account_autofill_table_ = new AutofillTable;
+  account_autofill_table_ = new PaymentsAutofillTable;
   account_web_database_->AddTable(
       std::unique_ptr<WebDatabaseTable>(account_autofill_table_));
   account_web_database_->LoadDatabase();

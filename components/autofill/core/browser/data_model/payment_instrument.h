@@ -13,7 +13,7 @@
 
 namespace autofill {
 
-class AutofillTable;
+class PaymentsAutofillTable;
 class PaymentInstrument;
 
 // Base class for all payment instruments. A payment instrument is considered to
@@ -45,12 +45,12 @@ class PaymentInstrument {
   virtual InstrumentType GetInstrumentType() const = 0;
 
   // Database operations to be implemented by derived class. The derived class
-  // is expected to call the corresponding database method on the AutofillTable
-  // object. This is required for callers to call these methods on the base
-  // class without knowing the type of the derived class.
-  virtual bool AddToDatabase(AutofillTable* database) const = 0;
-  virtual bool UpdateInDatabase(AutofillTable* database) const = 0;
-  virtual bool DeleteFromDatabase(AutofillTable* database) const = 0;
+  // is expected to call the corresponding database method on the
+  // PaymentsAutofillTable object. This is required for callers to call these
+  // methods on the base class without knowing the type of the derived class.
+  virtual bool AddToDatabase(PaymentsAutofillTable* database) const = 0;
+  virtual bool UpdateInDatabase(PaymentsAutofillTable* database) const = 0;
+  virtual bool DeleteFromDatabase(PaymentsAutofillTable* database) const = 0;
 
   int64_t instrument_id() const { return instrument_id_; }
 

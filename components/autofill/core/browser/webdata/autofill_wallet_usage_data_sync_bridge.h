@@ -19,9 +19,9 @@
 namespace autofill {
 
 class AutofillSyncMetadataTable;
-class AutofillTable;
 class AutofillWebDataBackend;
 class AutofillWebDataService;
+class PaymentsAutofillTable;
 
 // Sync bridge responsible for applying remote changes of usage data to the
 // local database.
@@ -68,7 +68,7 @@ class AutofillWalletUsageDataSyncBridge : public base::SupportsUserData::Data,
 
  private:
   // Returns the table associated with the |web_data_backend_|.
-  AutofillTable* GetAutofillTable();
+  PaymentsAutofillTable* GetAutofillTable();
 
   AutofillSyncMetadataTable* GetSyncMetadataStore();
 

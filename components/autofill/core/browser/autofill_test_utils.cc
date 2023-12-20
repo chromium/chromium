@@ -26,7 +26,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -723,7 +723,7 @@ void ReenableSystemServices() {
   OSCryptMocker::TearDown();
 }
 
-void SetServerCreditCards(AutofillTable* table,
+void SetServerCreditCards(PaymentsAutofillTable* table,
                           const std::vector<CreditCard>& cards) {
   std::vector<CreditCard> as_masked_cards = cards;
   for (CreditCard& card : as_masked_cards) {

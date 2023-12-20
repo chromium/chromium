@@ -5213,8 +5213,8 @@ class SaveCvcTest
   base::test::ScopedFeatureList feature_list;
 };
 
-// Tests that server CVC is added to AutofillTable during credit card upload
-// save.
+// Tests that server CVC is added to PaymentsAutofillTable during credit card
+// upload save.
 TEST_P(SaveCvcTest, OnDidUploadCard_SaveServerCvc) {
   prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
                               IsSaveCvcPrefEnabled());
@@ -5230,8 +5230,8 @@ TEST_P(SaveCvcTest, OnDidUploadCard_SaveServerCvc) {
       upload_card_response_details;
   upload_card_response_details.instrument_id = kInstrumentId;
 
-  // Confirm CVC is added to AutofillTable only if CVC storage feature and
-  // pref were enabled.
+  // Confirm CVC is added to PaymentsAutofillTable only if CVC storage feature
+  // and pref were enabled.
   if (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled()) {
     EXPECT_CALL(personal_data(), AddServerCvc(kInstrumentId, kCvc));
   } else {
@@ -5505,8 +5505,8 @@ INSTANTIATE_TEST_SUITE_P(
             FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard),
         testing::Bool()));
 
-// Tests that server CVC is not added to AutofillTable during credit card
-// upload save if CVC was empty.
+// Tests that server CVC is not added to PaymentsAutofillTable during credit
+// card upload save if CVC was empty.
 TEST_F(CreditCardSaveManagerTest,
        OnDidUploadCard_DoNotAddServerCvcIfCvcIsEmpty) {
   // Set up the flags and prefs.
@@ -5525,7 +5525,7 @@ TEST_F(CreditCardSaveManagerTest,
       upload_card_response_details;
   upload_card_response_details.instrument_id = 12345L;
 
-  // Confirm CVC is not added to AutofillTable if CVC was empty.
+  // Confirm CVC is not added to PaymentsAutofillTable if CVC was empty.
   EXPECT_CALL(personal_data(), AddServerCvc).Times(0);
 
   credit_card_save_manager_->OnDidUploadCard(
@@ -5533,8 +5533,8 @@ TEST_F(CreditCardSaveManagerTest,
       upload_card_response_details);
 }
 
-// Tests that server CVC is not added to AutofillTable during credit card
-// upload save if instrument_id was empty.
+// Tests that server CVC is not added to PaymentsAutofillTable during credit
+// card upload save if instrument_id was empty.
 TEST_F(CreditCardSaveManagerTest,
        OnDidUploadCard_DoNotAddServerCvcIfInstrumentIdIsEmpty) {
   // Set up the flags and prefs.
@@ -5551,7 +5551,8 @@ TEST_F(CreditCardSaveManagerTest,
   payments::PaymentsNetworkInterface::UploadCardResponseDetails
       upload_card_response_details_without_instrument_id;
 
-  // Confirm CVC is not added to AutofillTable if instrument_id was empty.
+  // Confirm CVC is not added to PaymentsAutofillTable if instrument_id was
+  // empty.
   EXPECT_CALL(personal_data(), AddServerCvc).Times(0);
 
   credit_card_save_manager_->OnDidUploadCard(

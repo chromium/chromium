@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/data_model/bank_account.h"
 
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 
 namespace autofill {
 
@@ -30,15 +30,15 @@ PaymentInstrument::InstrumentType BankAccount::GetInstrumentType() const {
   return PaymentInstrument::InstrumentType::kBankAccount;
 }
 
-bool BankAccount::AddToDatabase(AutofillTable* database) const {
+bool BankAccount::AddToDatabase(PaymentsAutofillTable* database) const {
   return database->AddBankAccount(*this);
 }
 
-bool BankAccount::UpdateInDatabase(AutofillTable* database) const {
+bool BankAccount::UpdateInDatabase(PaymentsAutofillTable* database) const {
   return database->UpdateBankAccount(*this);
 }
 
-bool BankAccount::DeleteFromDatabase(AutofillTable* database) const {
+bool BankAccount::DeleteFromDatabase(PaymentsAutofillTable* database) const {
   return database->RemoveBankAccount(*this);
 }
 

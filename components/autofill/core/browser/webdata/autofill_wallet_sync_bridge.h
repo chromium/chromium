@@ -21,12 +21,12 @@
 namespace autofill {
 
 class AutofillSyncMetadataTable;
-class AutofillTable;
 class AutofillWebDataBackend;
 class AutofillWebDataService;
 class CreditCard;
 class Iban;
 struct CreditCardCloudTokenData;
+class PaymentsAutofillTable;
 struct PaymentsCustomerData;
 
 // Sync bridge responsible for propagating local changes to the processor and
@@ -112,7 +112,7 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
       const std::vector<CreditCardCloudTokenData>& cloud_token_data);
 
   // Returns the table associated with the |web_data_backend_|.
-  AutofillTable* GetAutofillTable();
+  PaymentsAutofillTable* GetAutofillTable();
 
   AutofillSyncMetadataTable* GetSyncMetadataStore();
 

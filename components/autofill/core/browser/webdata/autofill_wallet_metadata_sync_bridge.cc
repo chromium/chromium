@@ -20,8 +20,8 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/sync/base/model_type.h"
@@ -230,7 +230,7 @@ bool IsAnyMetadataDeletable(
   return false;
 }
 
-bool AddServerMetadata(AutofillTable* table,
+bool AddServerMetadata(PaymentsAutofillTable* table,
                        WalletMetadataSpecifics::Type type,
                        const AutofillMetadata& metadata) {
   switch (type) {
@@ -245,7 +245,7 @@ bool AddServerMetadata(AutofillTable* table,
   }
 }
 
-bool RemoveServerMetadata(AutofillTable* table,
+bool RemoveServerMetadata(PaymentsAutofillTable* table,
                           WalletMetadataSpecifics::Type type,
                           const std::string& id) {
   switch (type) {
@@ -260,7 +260,7 @@ bool RemoveServerMetadata(AutofillTable* table,
   }
 }
 
-bool UpdateServerMetadata(AutofillTable* table,
+bool UpdateServerMetadata(PaymentsAutofillTable* table,
                           WalletMetadataSpecifics::Type type,
                           const AutofillMetadata& metadata) {
   switch (type) {
@@ -432,8 +432,9 @@ void AutofillWalletMetadataSyncBridge::CreditCardChanged(
   LocalMetadataChanged(WalletMetadataSpecifics::CARD, change);
 }
 
-AutofillTable* AutofillWalletMetadataSyncBridge::GetAutofillTable() {
-  return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
+PaymentsAutofillTable* AutofillWalletMetadataSyncBridge::GetAutofillTable() {
+  return PaymentsAutofillTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
 }
 
 AutofillSyncMetadataTable*
@@ -580,7 +581,7 @@ AutofillWalletMetadataSyncBridge::MergeRemoteChanges(
     syncer::EntityChangeList entity_data) {
   bool is_any_local_modified = false;
 
-  AutofillTable* table = GetAutofillTable();
+  PaymentsAutofillTable* table = GetAutofillTable();
 
   for (const std::unique_ptr<EntityChange>& change : entity_data) {
     TypeAndMetadataId parsed_storage_key =

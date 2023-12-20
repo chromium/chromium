@@ -24,9 +24,9 @@
 namespace autofill {
 
 class AutofillSyncMetadataTable;
-class AutofillTable;
 class AutofillWebDataBackend;
 class AutofillWebDataService;
+class PaymentsAutofillTable;
 
 // Sync bridge responsible for applying changes of autofill wallet
 // credential data between the local database and the Chrome sync server.
@@ -83,7 +83,7 @@ class AutofillWalletCredentialSyncBridge
   const raw_ptr<AutofillWebDataBackend> web_data_backend_;
 
   // Returns the table associated with the `web_data_backend_`.
-  AutofillTable* GetAutofillTable();
+  PaymentsAutofillTable* GetAutofillTable();
 
   AutofillSyncMetadataTable* GetSyncMetadataStore();
 

@@ -436,7 +436,7 @@ void CreditCardSaveManager::OnDidUploadCard(
         !upload_request_.card.cvc().empty() &&
         upload_card_response_details.instrument_id.has_value()) {
       // After a card is successfully saved to server, if CVC storage is
-      // enabled, save server CVC to AutofillTable if it exists.
+      // enabled, save server CVC to PaymentsAutofillTable if it exists.
       personal_data_manager_->AddServerCvc(
           upload_card_response_details.instrument_id.value(),
           upload_request_.card.cvc());

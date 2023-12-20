@@ -536,8 +536,6 @@ static_library("browser") {
     "webdata/autofill_sync_bridge_util.h",
     "webdata/autofill_sync_metadata_table.cc",
     "webdata/autofill_sync_metadata_table.h",
-    "webdata/autofill_table.cc",
-    "webdata/autofill_table.h",
     "webdata/autofill_table_encryptor.h",
     "webdata/autofill_table_encryptor_factory.cc",
     "webdata/autofill_table_encryptor_factory.h",
@@ -563,6 +561,8 @@ static_library("browser") {
     "webdata/contact_info_model_type_controller.h",
     "webdata/contact_info_sync_bridge.cc",
     "webdata/contact_info_sync_bridge.h",
+    "webdata/payments/payments_autofill_table.cc",
+    "webdata/payments/payments_autofill_table.h",
     "webdata/system_encryptor.cc",
     "webdata/system_encryptor.h",
   ]
@@ -1156,13 +1156,13 @@ source_set("unit_tests") {
     "webdata/autofill_profile_sync_difference_tracker_unittest.cc",
     "webdata/autofill_sync_bridge_util_unittest.cc",
     "webdata/autofill_sync_metadata_table_unittest.cc",
-    "webdata/autofill_table_unittest.cc",
     "webdata/autofill_wallet_credential_sync_bridge_unittest.cc",
     "webdata/autofill_wallet_metadata_sync_bridge_unittest.cc",
     "webdata/autofill_wallet_offer_sync_bridge_unittest.cc",
     "webdata/autofill_wallet_sync_bridge_unittest.cc",
     "webdata/autofill_wallet_usage_data_sync_bridge_unittest.cc",
     "webdata/contact_info_sync_bridge_unittest.cc",
+    "webdata/payments/payments_autofill_table_unittest.cc",
     "webdata/web_data_service_unittest.cc",
   ]
 

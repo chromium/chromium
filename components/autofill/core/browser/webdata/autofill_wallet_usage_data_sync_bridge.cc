@@ -12,9 +12,9 @@
 #include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
@@ -88,7 +88,7 @@ AutofillWalletUsageDataSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  AutofillTable* table = GetAutofillTable();
+  PaymentsAutofillTable* table = GetAutofillTable();
 
   // Only Virtual Card Usage Data is currently supported.
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
@@ -130,7 +130,7 @@ AutofillWalletUsageDataSyncBridge::ApplyIncrementalSyncChanges(
   web_data_backend_->CommitChanges();
 
   // False positives can occur here if an update doesn't change the profile.
-  // Since such false positives are fine, and since AutofillTable's API
+  // Since such false positives are fine, and since PaymentsAutofillTable's API
   // currently doesn't provide a way to detect such cases, we don't distinguish.
   if (!entity_data.empty()) {
     web_data_backend_->NotifyOnAutofillChangedBySync(
@@ -181,7 +181,7 @@ std::string AutofillWalletUsageDataSyncBridge::GetStorageKey(
 
 void AutofillWalletUsageDataSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  AutofillTable* table = GetAutofillTable();
+  PaymentsAutofillTable* table = GetAutofillTable();
   if (table && !table->RemoveAllVirtualCardUsageData()) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to delete usage data from table."});
@@ -198,8 +198,9 @@ bool AutofillWalletUsageDataSyncBridge::IsEntityDataValid(
              .has_virtual_card_usage_data();
 }
 
-AutofillTable* AutofillWalletUsageDataSyncBridge::GetAutofillTable() {
-  return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
+PaymentsAutofillTable* AutofillWalletUsageDataSyncBridge::GetAutofillTable() {
+  return PaymentsAutofillTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
 }
 
 AutofillSyncMetadataTable*

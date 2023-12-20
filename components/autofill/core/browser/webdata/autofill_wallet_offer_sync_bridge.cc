@@ -14,9 +14,9 @@
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -179,7 +179,7 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
     autofill_metrics::LogSyncedOfferDataBeingValid(offer_valid);
   }
 
-  AutofillTable* table = GetAutofillTable();
+  PaymentsAutofillTable* table = GetAutofillTable();
 
   // Only do a write operation if there is any difference between server data
   // and local data.
@@ -204,8 +204,9 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
   }
 }
 
-AutofillTable* AutofillWalletOfferSyncBridge::GetAutofillTable() {
-  return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
+PaymentsAutofillTable* AutofillWalletOfferSyncBridge::GetAutofillTable() {
+  return PaymentsAutofillTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
 }
 
 AutofillSyncMetadataTable*

@@ -28,8 +28,8 @@ struct EntityData;
 namespace autofill {
 
 class AutofillSyncMetadataTable;
-class AutofillTable;
 class AutofillWebDataService;
+class PaymentsAutofillTable;
 
 // Sync bridge responsible for propagating local changes to the processor and
 // applying remote changes to the local database.
@@ -85,7 +85,7 @@ class AutofillWalletMetadataSyncBridge
 
  private:
   // Returns the table associated with the |web_data_backend_|.
-  AutofillTable* GetAutofillTable();
+  PaymentsAutofillTable* GetAutofillTable();
 
   AutofillSyncMetadataTable* GetSyncMetadataStore();
 

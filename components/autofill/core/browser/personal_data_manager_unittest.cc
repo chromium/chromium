@@ -278,7 +278,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
     EXPECT_EQ(1U, personal_data_->GetProfiles().size());
   }
 
-  AutofillTable* GetServerDataTable() {
+  PaymentsAutofillTable* GetServerDataTable() {
     return personal_data_->IsSyncFeatureEnabledForPaymentsServerMetrics()
                ? profile_autofill_table_.get()
                : account_autofill_table_.get();

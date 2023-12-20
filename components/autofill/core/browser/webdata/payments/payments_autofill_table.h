@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_TABLE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_TABLE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_PAYMENTS_AUTOFILL_TABLE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_PAYMENTS_AUTOFILL_TABLE_H_
 
 #include <stddef.h>
 
@@ -74,8 +74,8 @@ struct PaymentInstrumentFields {
   std::set<PaymentInstrument::PaymentRail> payment_rails;
 };
 
-// This class manages the various Autofill tables within the SQLite database
-// passed to the constructor. It expects the following schemas:
+// This class manages the various payments Autofill tables within the SQLite
+// database passed to the constructor. It expects the following schemas:
 //
 // Note: The database stores time in seconds, UTC.
 //
@@ -412,17 +412,17 @@ struct PaymentInstrumentFields {
 //   merchant_domain    Origin for merchant websites on which this benefit
 //                      would apply.
 //
-class AutofillTable : public WebDatabaseTable {
+class PaymentsAutofillTable : public WebDatabaseTable {
  public:
-  AutofillTable();
+  PaymentsAutofillTable();
 
-  AutofillTable(const AutofillTable&) = delete;
-  AutofillTable& operator=(const AutofillTable&) = delete;
+  PaymentsAutofillTable(const PaymentsAutofillTable&) = delete;
+  PaymentsAutofillTable& operator=(const PaymentsAutofillTable&) = delete;
 
-  ~AutofillTable() override;
+  ~PaymentsAutofillTable() override;
 
-  // Retrieves the AutofillTable* owned by |db|.
-  static AutofillTable* FromWebDatabase(WebDatabase* db);
+  // Retrieves the PaymentsAutofillTable* owned by |db|.
+  static PaymentsAutofillTable* FromWebDatabase(WebDatabase* db);
 
   // WebDatabaseTable:
   WebDatabaseTable::TypeKey GetTypeKey() const override;
@@ -718,4 +718,4 @@ class AutofillTable : public WebDatabaseTable {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_TABLE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_PAYMENTS_AUTOFILL_TABLE_H_

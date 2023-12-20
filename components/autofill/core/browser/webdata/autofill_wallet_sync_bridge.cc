@@ -18,9 +18,9 @@
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -183,8 +183,8 @@ std::optional<syncer::ModelError> AutofillWalletSyncBridge::MergeFullSyncData(
   // metadata bridge can track changes in the data bridge and react accordingly.
   SetSyncData(entity_data, /*notify_webdata_backend=*/true);
 
-  // TODO(crbug.com/853688): Update the AutofillTable API to know about write
-  // errors and report them here.
+  // TODO(crbug.com/853688): Update the PaymentsAutofillTable API to know about
+  // write errors and report them here.
   return std::nullopt;
 }
 
@@ -333,7 +333,7 @@ bool AutofillWalletSyncBridge::SetWalletCards(
   // Wallet CVC data is decoupled from the Wallet card data, so if
   // CVC data is present on the locally saved server card, copy that onto
   // `wallet_cards` to prevent deletion of CVC data.
-  AutofillTable* table = GetAutofillTable();
+  PaymentsAutofillTable* table = GetAutofillTable();
   CopyRelevantWalletMetadataAndCvc(*table, &wallet_cards);
 
   std::vector<std::unique_ptr<CreditCard>> existing_cards;
@@ -380,7 +380,7 @@ bool AutofillWalletSyncBridge::SetWalletCards(
 
 bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
                                               bool notify_webdata_backend) {
-  AutofillTable* table = GetAutofillTable();
+  PaymentsAutofillTable* table = GetAutofillTable();
 
   std::vector<std::unique_ptr<Iban>> existing_ibans;
   if (!table->GetServerIbans(existing_ibans)) {
@@ -420,7 +420,7 @@ bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
 
 bool AutofillWalletSyncBridge::SetPaymentsCustomerData(
     std::vector<PaymentsCustomerData> customer_data) {
-  AutofillTable* table = GetAutofillTable();
+  PaymentsAutofillTable* table = GetAutofillTable();
   std::unique_ptr<PaymentsCustomerData> existing_entry;
   table->GetPaymentsCustomerData(existing_entry);
 
@@ -450,7 +450,7 @@ bool AutofillWalletSyncBridge::SetPaymentsCustomerData(
 
 bool AutofillWalletSyncBridge::SetCreditCardCloudTokenData(
     const std::vector<CreditCardCloudTokenData>& cloud_token_data) {
-  AutofillTable* table = GetAutofillTable();
+  PaymentsAutofillTable* table = GetAutofillTable();
   std::vector<std::unique_ptr<CreditCardCloudTokenData>> existing_data;
   table->GetCreditCardCloudTokenData(existing_data);
 
@@ -461,8 +461,9 @@ bool AutofillWalletSyncBridge::SetCreditCardCloudTokenData(
   return false;
 }
 
-AutofillTable* AutofillWalletSyncBridge::GetAutofillTable() {
-  return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
+PaymentsAutofillTable* AutofillWalletSyncBridge::GetAutofillTable() {
+  return PaymentsAutofillTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
 }
 
 AutofillSyncMetadataTable* AutofillWalletSyncBridge::GetSyncMetadataStore() {

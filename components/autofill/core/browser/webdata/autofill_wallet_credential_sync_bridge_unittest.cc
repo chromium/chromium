@@ -15,8 +15,8 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -97,7 +97,7 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
 
   AutofillWalletCredentialSyncBridge* bridge() { return bridge_.get(); }
 
-  AutofillTable* table() { return &table_; }
+  PaymentsAutofillTable* table() { return &table_; }
 
   MockAutofillWebDataBackend& backend() { return backend_; }
 
@@ -149,7 +149,7 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
  private:
   NiceMock<MockAutofillWebDataBackend> backend_;
   AutofillSyncMetadataTable sync_metadata_table_;
-  AutofillTable table_;
+  PaymentsAutofillTable table_;
   WebDatabase db_;
   NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;

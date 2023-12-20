@@ -9,8 +9,8 @@
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/strike_databases/test_inmemory_strike_database.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/prefs/pref_service.h"
@@ -50,8 +50,8 @@ class PersonalDataManagerTestBase {
   scoped_refptr<AutofillWebDataService> account_database_service_;
   scoped_refptr<WebDatabaseService> profile_web_database_;
   scoped_refptr<WebDatabaseService> account_web_database_;
-  raw_ptr<AutofillTable> profile_autofill_table_;  // weak ref
-  raw_ptr<AutofillTable> account_autofill_table_;  // weak ref
+  raw_ptr<PaymentsAutofillTable> profile_autofill_table_;  // weak ref
+  raw_ptr<PaymentsAutofillTable> account_autofill_table_;  // weak ref
   std::unique_ptr<StrikeDatabaseBase> strike_database_;
   testing::NiceMock<PersonalDataLoadedObserverMock> personal_data_observer_;
 };

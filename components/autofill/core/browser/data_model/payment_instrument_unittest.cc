@@ -20,11 +20,13 @@ class TestPaymentInstrument : public PaymentInstrument {
     return PaymentInstrument::InstrumentType::kBankAccount;
   }
 
-  bool AddToDatabase(AutofillTable* database) const override { return false; }
-  bool UpdateInDatabase(AutofillTable* database) const override {
+  bool AddToDatabase(PaymentsAutofillTable* database) const override {
     return false;
   }
-  bool DeleteFromDatabase(AutofillTable* database) const override {
+  bool UpdateInDatabase(PaymentsAutofillTable* database) const override {
+    return false;
+  }
+  bool DeleteFromDatabase(PaymentsAutofillTable* database) const override {
     return false;
   }
 };

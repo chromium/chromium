@@ -19,17 +19,17 @@
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
 using autofill::AutofillMetadata;
-using autofill::AutofillTable;
 using autofill::AutofillWebDataService;
 using autofill::CreditCard;
 using autofill::CreditCardCloudTokenData;
+using autofill::PaymentsAutofillTable;
 using autofill::PaymentsCustomerData;
 using autofill::PersonalDataManager;
 using autofill::data_util::TruncateUTF8;
@@ -141,7 +141,7 @@ void WaitForPDMToRefresh(int profile) {
 void SetServerCardsOnDBSequence(AutofillWebDataService* wds,
                                 const std::vector<CreditCard>& credit_cards) {
   DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
-  AutofillTable::FromWebDatabase(wds->GetDatabase())
+  PaymentsAutofillTable::FromWebDatabase(wds->GetDatabase())
       ->SetServerCreditCards(credit_cards);
 }
 
@@ -149,7 +149,7 @@ void SetPaymentsCustomerDataOnDBSequence(
     AutofillWebDataService* wds,
     const PaymentsCustomerData& customer_data) {
   DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
-  AutofillTable::FromWebDatabase(wds->GetDatabase())
+  PaymentsAutofillTable::FromWebDatabase(wds->GetDatabase())
       ->SetPaymentsCustomerData(&customer_data);
 }
 
@@ -157,7 +157,7 @@ void SetCreditCardCloudTokenDataOnDBSequence(
     AutofillWebDataService* wds,
     const std::vector<CreditCardCloudTokenData>& cloud_token_data) {
   DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
-  AutofillTable::FromWebDatabase(wds->GetDatabase())
+  PaymentsAutofillTable::FromWebDatabase(wds->GetDatabase())
       ->SetCreditCardCloudTokenData(cloud_token_data);
 }
 
@@ -165,7 +165,7 @@ void GetServerCardsMetadataOnDBSequence(
     AutofillWebDataService* wds,
     std::vector<AutofillMetadata>* cards_metadata) {
   DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
-  AutofillTable::FromWebDatabase(wds->GetDatabase())
+  PaymentsAutofillTable::FromWebDatabase(wds->GetDatabase())
       ->GetServerCardsMetadata(*cards_metadata);
 }
 

@@ -19,9 +19,9 @@
 namespace autofill {
 
 class AutofillSyncMetadataTable;
-class AutofillTable;
 class AutofillWebDataBackend;
 class AutofillWebDataService;
+class PaymentsAutofillTable;
 
 // Sync bridge responsible for applying remote changes of offer data to the
 // local database.
@@ -72,7 +72,7 @@ class AutofillWalletOfferSyncBridge : public base::SupportsUserData::Data,
   void MergeRemoteData(const syncer::EntityChangeList& entity_data);
 
   // Returns the table associated with the |web_data_backend_|.
-  AutofillTable* GetAutofillTable();
+  PaymentsAutofillTable* GetAutofillTable();
 
   AutofillSyncMetadataTable* GetSyncMetadataStore();
 

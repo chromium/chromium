@@ -93,7 +93,7 @@ AutofillWalletCredentialSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  AutofillTable* table = GetAutofillTable();
+  PaymentsAutofillTable* table = GetAutofillTable();
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     sync_pb::AutofillWalletCredentialSpecifics wallet_credential_specifics =
@@ -109,7 +109,8 @@ AutofillWalletCredentialSyncBridge::ApplyIncrementalSyncChanges(
               "Failed to delete the Wallet credential data from the table");
         }
         break;
-      // TODO(crbug/1472122): Merge the Add and Update APIs for AutofillTable.
+      // TODO(crbug/1472122): Merge the Add and Update APIs for
+      // PaymentsAutofillTable.
       case syncer::EntityChange::ACTION_ADD:
         if (!table ||
             !table->AddServerCvc(
@@ -189,7 +190,7 @@ std::string AutofillWalletCredentialSyncBridge::GetStorageKey(
 void AutofillWalletCredentialSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  AutofillTable* table = GetAutofillTable();
+  PaymentsAutofillTable* table = GetAutofillTable();
   // Check if we have data to delete.
   if (table->GetAllServerCvcs().size() == 0) {
     return;
@@ -242,8 +243,9 @@ void AutofillWalletCredentialSyncBridge::ServerCvcChanged(
   ActOnLocalChange(change);
 }
 
-AutofillTable* AutofillWalletCredentialSyncBridge::GetAutofillTable() {
-  return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
+PaymentsAutofillTable* AutofillWalletCredentialSyncBridge::GetAutofillTable() {
+  return PaymentsAutofillTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
 }
 
 AutofillSyncMetadataTable*

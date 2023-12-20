@@ -64,7 +64,7 @@
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -246,7 +246,7 @@ class LocalCardMigrationBrowserTest
       AutofillWebDataService* wds,
       const PaymentsCustomerData& customer_data) {
     DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
-    AutofillTable::FromWebDatabase(wds->GetDatabase())
+    PaymentsAutofillTable::FromWebDatabase(wds->GetDatabase())
         ->SetPaymentsCustomerData(&customer_data);
   }
 

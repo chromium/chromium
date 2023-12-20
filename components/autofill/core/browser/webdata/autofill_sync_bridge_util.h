@@ -16,10 +16,10 @@ namespace autofill {
 class AutofillOfferData;
 struct ServerCvc;
 class AutofillWalletUsageData;
-class AutofillTable;
 class CreditCard;
 struct CreditCardCloudTokenData;
 class Iban;
+class PaymentsAutofillTable;
 struct PaymentsCustomerData;
 class VirtualCardUsageData;
 
@@ -104,7 +104,7 @@ VirtualCardUsageData VirtualCardUsageDataFromUsageSpecifics(
 // "Remove + Add" operation is handled by the AutofillWalletMetadataSyncBridge
 // and AutofillWalletCredentialSyncBridge.
 void CopyRelevantWalletMetadataAndCvc(
-    const AutofillTable& table,
+    const PaymentsAutofillTable& table,
     std::vector<CreditCard>* cards_from_server);
 
 // Populates the wallet datatypes from the sync data.

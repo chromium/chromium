@@ -21,7 +21,7 @@
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/sync/protocol/entity_data.h"
 
@@ -555,7 +555,7 @@ VirtualCardUsageData VirtualCardUsageDataFromUsageSpecifics(
 }
 
 void CopyRelevantWalletMetadataAndCvc(
-    const AutofillTable& table,
+    const PaymentsAutofillTable& table,
     std::vector<CreditCard>* cards_from_server) {
   std::vector<std::unique_ptr<CreditCard>> cards_from_local_storage;
   table.GetServerCreditCards(cards_from_local_storage);

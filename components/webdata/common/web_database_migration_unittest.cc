@@ -21,7 +21,7 @@
 #include "components/autofill/core/browser/webdata/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/signin/public/webdata/token_service_table.h"
@@ -75,8 +75,8 @@ class WebDatabaseMigrationTest : public testing::Test {
   void DoMigration() {
     autofill::AddressAutofillTable address_autofill_table;
     autofill::AutocompleteTable autocomplete_table;
-    autofill::AutofillTable autofill_table;
     autofill::AutofillSyncMetadataTable autofill_sync_metadata_table;
+    autofill::PaymentsAutofillTable payments_autofill_table;
     KeywordTable keyword_table;
     TokenServiceTable token_service_table;
 
@@ -84,7 +84,7 @@ class WebDatabaseMigrationTest : public testing::Test {
     db.AddTable(&address_autofill_table);
     db.AddTable(&autocomplete_table);
     db.AddTable(&autofill_sync_metadata_table);
-    db.AddTable(&autofill_table);
+    db.AddTable(&payments_autofill_table);
     db.AddTable(&keyword_table);
     db.AddTable(&token_service_table);
 
