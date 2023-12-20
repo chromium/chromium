@@ -353,6 +353,22 @@ void SoftNavigationHeuristics::RecordPaint(
     uint64_t considered_area = std::min(initial_painted_area_, viewport_area_);
     uint64_t paint_threshold =
         considered_area * SOFT_NAVIGATION_PAINT_AREA_PRECENTAGE;
+
+    float softnav_painted_area_ratio =
+        paint_threshold != 0
+            ? (float)softnav_painted_area_ / (float)paint_threshold
+            : 0;
+
+    bool is_above_threshold =
+        ((softnav_painted_area_ * HUNDRED_PERCENT) > paint_threshold);
+
+    TRACE_EVENT_INSTANT("loading", "SoftNavigationHeuristics_RecordPaint",
+                        "softnav_painted_area", softnav_painted_area_,
+                        "softnav_painted_area_ratio",
+                        softnav_painted_area_ratio, "url",
+                        soft_navigation_interaction_data_.url,
+                        "is_above_threshold", is_above_threshold);
+
     if (soft_navigation_conditions_met_ &&
         ((softnav_painted_area_ * HUNDRED_PERCENT) > paint_threshold)) {
       EmitSoftNavigationEntry(frame);
