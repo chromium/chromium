@@ -10543,6 +10543,10 @@ if (!is_android) {
       deps += [ "//extensions/browser" ]
     }
 
+    if (is_chromeos) {
+      deps += [ "//chromeos/constants" ]
+    }
+
     if (is_chromeos_lacros) {
       deps += [
         "//chromeos/lacros",

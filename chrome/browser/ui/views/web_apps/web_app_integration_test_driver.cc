@@ -152,6 +152,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
+#include "chromeos/constants/chromeos_features.h"
 #else
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
@@ -1208,11 +1209,20 @@ void WebAppIntegrationTestDriver::EnableFileHandling(Site site) {
 
 void WebAppIntegrationTestDriver::CreateShortcut(Site site,
                                                  WindowOptions options) {
+  bool open_in_window = options == WindowOptions::kWindowed;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::IsCrosShortstandEnabled() && open_in_window) {
+    GTEST_SKIP() << "With project Shortstand, users are no longer allowed to "
+                    "create shortcut and open in window.";
+  }
+#endif
+
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
   MaybeNavigateTabbedBrowserInScope(site);
-  bool open_in_window = options == WindowOptions::kWindowed;
+
   SetAutoAcceptWebAppDialogForTesting(
       /*auto_accept=*/true,
       /*auto_open_in_window=*/open_in_window);
