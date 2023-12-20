@@ -440,4 +440,62 @@ suite('<file-handler-page>', () => {
         assertEquals(localTaskCard.style.display, 'none');
         assertTrue(actionButton.disabled);
       });
+
+  /**
+   * Test that clicking the cancel button triggers the right
+   * `respondWithUserActionAndClose` mojo request.
+   */
+  test('Cancel', async () => {
+    const numTasks = 5;
+    await setUp({
+      fileNames: ['file.docx'],
+      officeWebAppInstalled: true,
+      installOfficeWebAppResult: false,
+      odfsMounted: false,
+      dialogSpecificArgs: {
+        fileHandlerDialogArgs: {
+          localTasks: createTasks(numTasks),
+          showGoogleWorkspaceTask: true,
+          showMicrosoftOfficeTask: true,
+        },
+      },
+    });
+
+    fileHandlerPageApp.$('.cancel-button').click();
+    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(
+        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    assertDeepEquals(
+        [UserAction.kCancel],
+        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+  });
+
+  /**
+   * Test that an Escape keydown triggers the right
+   * `respondWithUserActionAndClose` mojo request.
+   */
+  test('Escape', async () => {
+    const numTasks = 5;
+    await setUp({
+      fileNames: ['file.docx'],
+      officeWebAppInstalled: true,
+      installOfficeWebAppResult: false,
+      odfsMounted: false,
+      dialogSpecificArgs: {
+        fileHandlerDialogArgs: {
+          localTasks: createTasks(numTasks),
+          showGoogleWorkspaceTask: true,
+          showMicrosoftOfficeTask: true,
+        },
+      },
+    });
+
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(
+        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    assertDeepEquals(
+        [UserAction.kCancel],
+        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+  });
 });

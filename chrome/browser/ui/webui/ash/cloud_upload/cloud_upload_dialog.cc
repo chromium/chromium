@@ -1179,6 +1179,8 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
     cloud_open_metrics_->LogTaskResult(
         OfficeTaskResult::kCancelledAtConfirmation);
   } else {
+    // TODO(b/315727684): mark an empty user response case NOTREACHED() once
+    // Escape is handled for all dialogs.
     cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kLocalFileTask);
     LaunchLocalFileTask(user_response);
   }
@@ -1319,10 +1321,13 @@ ui::ModalType CloudUploadDialog::GetDialogModalType() const {
 }
 
 bool CloudUploadDialog::ShouldCloseDialogOnEscape() const {
-  // The One Drive setup dialog handles escape in the webui as it needs to
-  // display a confirmation dialog on cancellation.
+  // TODO(b/315727684): Handle escape for all dialogs to ensure dialog is
+  // properly closed.
+  // The One Drive setup and File Handler dialogs handle escape.
   CHECK(dialog_args_);
-  return !dialog_args_->dialog_specific_args->is_one_drive_setup_dialog_args();
+  return !(
+      dialog_args_->dialog_specific_args->is_one_drive_setup_dialog_args() ||
+      dialog_args_->dialog_specific_args->is_file_handler_dialog_args());
 }
 
 bool CloudUploadDialog::ShouldShowCloseButton() const {

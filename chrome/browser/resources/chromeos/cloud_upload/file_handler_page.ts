@@ -33,6 +33,10 @@ export class FileHandlerPageElement extends HTMLElement {
   private proxy: CloudUploadBrowserProxy =
       CloudUploadBrowserProxy.getInstance();
 
+  // Save reference to listener so it can be removed from the document in
+  // disconnectedCallback().
+  private boundKeyDownListener_: (e: KeyboardEvent) => void;
+
   constructor() {
     super();
     const shadowRoot = this.attachShadow({mode: 'open'});
@@ -40,17 +44,34 @@ export class FileHandlerPageElement extends HTMLElement {
     shadowRoot.innerHTML = getTemplate();
     const openButton = this.$<CrButtonElement>('.action-button');
     const cancelButton = this.$<CrButtonElement>('.cancel-button');
-    const header = this.$<HTMLDialogElement>('#header');
     assert(openButton);
     assert(cancelButton);
-    assert(header);
 
     openButton.disabled = true;
     openButton.addEventListener('click', () => this.onOpenButtonClick());
     cancelButton.addEventListener('click', () => this.onCancelButtonClick());
-    header.addEventListener('keydown', this.handleKeyDown.bind(this));
+    this.boundKeyDownListener_ = this.handleKeyDown.bind(this);
 
     this.initDynamicContent();
+  }
+
+  // Initialises the scrollable content styles and add document event listeners.
+  connectedCallback(): void {
+    const contentElement = this.$<HTMLElement>('#content')!;
+    window.requestAnimationFrame(() => {
+      this.updateContentFade(contentElement);
+    });
+    contentElement.addEventListener(
+        'scroll', this.updateContentFade.bind(undefined, contentElement),
+        {passive: true});
+    contentElement.addEventListener('keydown', this.boundKeyDownListener_);
+
+    document.addEventListener('keydown', this.boundKeyDownListener_);
+  }
+
+  // Remove document event listeners.
+  disconnectedCallback(): void {
+    document.removeEventListener('keydown', this.boundKeyDownListener_);
   }
 
   $<T extends HTMLElement>(query: string): T {
@@ -188,18 +209,6 @@ export class FileHandlerPageElement extends HTMLElement {
         'click', () => this.selectCard(localHandlerCard));
   }
 
-  // Initialises the scrollable content styles.
-  connectedCallback(): void {
-    const contentElement = this.$<HTMLElement>('#content')!;
-    window.requestAnimationFrame(() => {
-      this.updateContentFade(contentElement);
-    });
-    contentElement.addEventListener(
-        'scroll', this.updateContentFade.bind(undefined, contentElement),
-        {passive: true});
-    contentElement.addEventListener('keydown', this.handleKeyDown.bind(this));
-  }
-
   private selectCard(card: FileHandlerCardElement) {
     assert(card.style.display != 'none', 'Attempting to select a hidden card');
     for (const providerCard of this.cloudProviderCards) {
@@ -248,6 +257,14 @@ export class FileHandlerPageElement extends HTMLElement {
   }
 
   handleKeyDown(e: KeyboardEvent): void {
+    if (e.key === 'Escape') {
+      // Handle Escape as a "cancel".
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      this.onCancelButtonClick();
+      return;
+    }
+
     // Prevent scroll on spacebar.
     if (e.key === ' ') {
       e.preventDefault();
