@@ -18,6 +18,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {isCrostiniSupported, isExternalStorageEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
+import {PrefsState} from '../common/types.js';
 import {Route, Router, routes} from '../router.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, StorageSpaceState} from './device_page_browser_proxy.js';
@@ -53,6 +54,11 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
 
   static get properties() {
     return {
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
       showCrostiniStorage_: {
         type: Boolean,
         value: false,
@@ -106,6 +112,7 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
     ];
   }
 
+  prefs: PrefsState;
   private browserProxy_: DevicePageBrowserProxy;
   private isEphemeralUser_: boolean;
   private showCrostiniStorage_: boolean;

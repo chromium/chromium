@@ -720,12 +720,28 @@ TEST_F('OSSettingsCrostiniPageCrostiniSubpageRevampTest', 'AllJsTests', () => {
    },
  ],
  [
-   'DevicePageStorage', 'device_page/storage_test.js', {
+   'DevicePageStorage',
+   'device_page/storage_test.js',
+   {
+     disabled: [
+       'ash::features::kOsSettingsRevampWayfinding',
+     ],
      enabled: [
        'ash::features::kInputDeviceSettingsSplit',
        'ash::features::kPeripheralCustomization'
      ],
-   }
+   },
+ ],
+ [
+   'DevicePageStorageRevamp',
+   'device_page/storage_test.js',
+   {
+     enabled: [
+       'ash::features::kInputDeviceSettingsSplit',
+       'ash::features::kPeripheralCustomization',
+       'ash::features::kOsSettingsRevampWayfinding',
+     ],
+   },
  ],
  [
    'DevicePageStylus', 'device_page/stylus_test.js', {
