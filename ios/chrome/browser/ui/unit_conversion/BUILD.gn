@@ -44,6 +44,7 @@ source_set("unit_conversion_ui") {
   ]
   deps = [
     ":constants",
+    "//components/crash/core/common",
     "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
