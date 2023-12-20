@@ -148,12 +148,10 @@ void EyeDropperView::PreEventDispatchHandler::OnTouchEvent(
   }
 }
 
-void EyeDropperView::CaptureInputIfNeeded() {
-#if BUILDFLAG(IS_LINUX)
+void EyeDropperView::CaptureInput() {
   // The eye dropper needs to capture input since it is not activated
   // in order to avoid dismissing the color picker.
   GetWidget()->GetNativeWindow()->SetCapture();
-#endif
 }
 
 void EyeDropperView::HideCursor() {
