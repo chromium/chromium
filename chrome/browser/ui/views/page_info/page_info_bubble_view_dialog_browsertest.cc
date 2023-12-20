@@ -56,11 +56,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/base_paths_win.h"
-#include "base/test/scoped_path_override.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 namespace {
 
 constexpr int kTopicsAPITestTaxonomyVersion = 1;
@@ -947,11 +942,8 @@ class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
   GURL start_url_;
   webapps::AppId app_id_;
 
-#if BUILDFLAG(IS_WIN)
-  // This stops web app installation from creating a shortcut in the real
-  // desktop start menu dir.
-  base::ScopedPathOverride override_start_menu_dir_{base::DIR_START_MENU};
-#endif  // BUILDFLAG(IS_WIN)
+  // Stop test from installing OS hooks.
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 // Test renamed, as currently Skia Gold doesn't support resetting test
