@@ -978,7 +978,6 @@ const OffsetMapping* InlineNode::ComputeOffsetMappingIfNeeded() const {
   if (!data->offset_mapping) {
     DCHECK(!data->text_content.IsNull());
     ComputeOffsetMapping(GetLayoutBlockFlow(), data);
-    DCHECK(data->offset_mapping);
   }
 
   return data->offset_mapping.Get();
@@ -1020,9 +1019,11 @@ void InlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
   // TODO(xiaochengh): This doesn't compute offset mapping correctly when
   // text-transform CSS property changes text length.
   OffsetMappingBuilder& mapping_builder = builder.GetOffsetMappingBuilder();
-  mapping_builder.SetDestinationString(data->text_content);
-  data->offset_mapping = mapping_builder.Build();
-  DCHECK(data->offset_mapping);
+  data->offset_mapping = nullptr;
+  if (mapping_builder.SetDestinationString(data->text_content)) {
+    data->offset_mapping = mapping_builder.Build();
+    DCHECK(data->offset_mapping);
+  }
 }
 
 const OffsetMapping* InlineNode::GetOffsetMapping(
@@ -1104,7 +1105,7 @@ const SvgTextChunkOffsets* InlineNode::FindSvgTextChunks(
   data.svg_node_data_ = svg_attr_builder.CreateSvgInlineNodeData();
 
   // Compute DOM offsets of text chunks.
-  mapping_builder.SetDestinationString(ifc_text_content);
+  CHECK(mapping_builder.SetDestinationString(ifc_text_content));
   OffsetMapping* mapping = mapping_builder.Build();
   StringView ifc_text_view(ifc_text_content);
   for (wtf_size_t i = 0; i < data.svg_node_data_->character_data_list.size();

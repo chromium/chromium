@@ -119,7 +119,9 @@ class CORE_EXPORT OffsetMappingBuilder {
                                        unsigned offset);
 
   // Set the destination string of the offset mapping.
-  void SetDestinationString(String);
+  // Returns false if the specified string is inconsistent with
+  // `destination_length_`. We can't build an OffstMapping in such case.
+  bool SetDestinationString(const String&);
 
   // Finalize and return the offset mapping.
   // This method can only be called once, as it can invalidate the stored data.

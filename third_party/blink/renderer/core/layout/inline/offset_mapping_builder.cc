@@ -213,9 +213,17 @@ void OffsetMappingBuilder::RestoreTrailingCollapsibleSpace(
   return;
 }
 
-void OffsetMappingBuilder::SetDestinationString(String string) {
+bool OffsetMappingBuilder::SetDestinationString(const String& string) {
   DCHECK_EQ(destination_length_, string.length());
+  if (RuntimeEnabledFeatures::NoOffsetMappingForInconsistentTextEnabled() &&
+      destination_length_ != string.length()) {
+    // If we continue building an OffsetMapping with the inconsistent IFC text
+    // content, it might cause out-of-bounds accesses. It happens only if we
+    // have a bug, and we should fail safely.
+    return false;
+  }
   destination_string_ = string;
+  return true;
 }
 
 OffsetMapping* OffsetMappingBuilder::Build() {

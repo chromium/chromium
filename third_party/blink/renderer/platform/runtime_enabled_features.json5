@@ -2581,6 +2581,10 @@
       name: "NonStandardAppearanceValuesLowUsage",
     },
     {
+      name: "NoOffsetMappingForInconsistentText",
+      status: "stable",
+    },
+    {
       name: "NotificationConstructor",
       // Android won't be able to reliably support non-persistent notifications, the
       // intended behavior for which is in flux by itself.
