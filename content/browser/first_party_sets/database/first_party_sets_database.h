@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -32,6 +33,8 @@ class Statement;
 }  // namespace sql
 
 namespace content {
+
+BASE_DECLARE_FEATURE(kFirstPartySetsDatabaseUseBuiltInRecoveryIfSupported);
 
 // Wraps its own `sql::Database` instance on behalf of the First-Party Sets
 // database implementation. This class must be accessed and destroyed on the
