@@ -413,6 +413,8 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kJavaScriptArrayFromAsync,
                          "--harmony-array-from-async",
                          "--no-harmony-array-from-async");
+  SetV8FlagsIfOverridden(features::kJavaScriptRegExpModifiers,
+                         "--js-regexp-modifiers", "--no-js-regexp-modifiers");
 
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");

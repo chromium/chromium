@@ -244,6 +244,11 @@ BASE_FEATURE(kJavaScriptArrayFromAsync,
              "JavaScriptArrayFromAsync",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the RegExp modifiers proposal.
+BASE_FEATURE(kJavaScriptRegExpModifiers,
+             "JavaScriptRegExpModifiers",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // WebAssembly features.
 
 // Enable support for the WebAssembly tail-call proposal:
