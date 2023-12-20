@@ -180,7 +180,8 @@ class AuthenticationService : public KeyedService,
   // nil if there is no such additional identity to ignore.
   //
   // `should_prompt` indicates whether the user should be prompted with the
-  // resign-in infobar if the method signs out.
+  // resign-in infobar if the method signs the user out.
+  //
   // `device_restore` should be true only when called from `Initialize()` and
   // Chrome is started after a device restore.
   void HandleForgottenIdentity(id<SystemIdentity> invalid_identity,
@@ -190,16 +191,17 @@ class AuthenticationService : public KeyedService,
   // Checks if the authenticated identity was removed by calling
   // `HandleForgottenIdentity`. Reloads the OAuth2 token service accounts if the
   // authenticated identity is still present.
-  // `keychain_reload` indicates if the identity list has to be reloaded because
-  // the keychain has changed.
-  void ReloadCredentialsFromIdentities(bool keychain_reload);
+  //
+  // `should_prompt` indicates whether the user should be prompted with the
+  // resign-in infobar if the method signs the user out of Chrome.
+  void ReloadCredentialsFromIdentities(bool should_prompt);
 
   // signin::IdentityManager::Observer implementation.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // ChromeAccountManagerService::Observer implementation.
-  void OnIdentityListChanged(bool need_user_approval) override;
+  void OnIdentityListChanged(bool notify_user) override;
   void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                   id<RefreshAccessTokenError> error) override;
 
