@@ -12,7 +12,7 @@ import './strings.m.js';
 import './tab_organization_shared_style.css.js';
 import './tab_search_item.js';
 
-import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import {CrFeedbackButtonsElement, CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
@@ -28,7 +28,9 @@ const NON_SCROLLABLE_VERTICAL_SPACING: number = 120;
 
 export interface TabOrganizationResultsElement {
   $: {
+    feedbackButtons: CrFeedbackButtonsElement,
     input: CrInputElement,
+    learnMore: HTMLElement,
     scrollable: HTMLElement,
     selector: IronSelectorElement,
   };
@@ -208,6 +210,33 @@ export class TabOrganizationResultsElement extends PolymerElement {
     if (event.key === 'Enter') {
       this.onLearnMoreClick_();
     }
+  }
+
+  private onFeedbackKeyDown_(event: KeyboardEvent) {
+    if ((event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')) {
+      return;
+    }
+    const feedbackButtons =
+        this.$.feedbackButtons.shadowRoot!.querySelectorAll(`cr-icon-button`);
+    const focusableElements = [
+      this.$.learnMore,
+      feedbackButtons[0]!,
+      feedbackButtons[1]!,
+    ];
+    const focusableElementCount = focusableElements.length;
+    const focusedIndex =
+        focusableElements.findIndex((element) => element.matches(':focus'));
+    if (focusedIndex < 0) {
+      return;
+    }
+    let nextFocusedIndex = 0;
+    if (event.key === 'ArrowLeft') {
+      nextFocusedIndex =
+          (focusedIndex + focusableElementCount - 1) % focusableElementCount;
+    } else if (event.key === 'ArrowRight') {
+      nextFocusedIndex = (focusedIndex + 1) % focusableElementCount;
+    }
+    focusableElements[nextFocusedIndex]!.focus();
   }
 
   private onFeedbackSelectedOptionChanged_(
