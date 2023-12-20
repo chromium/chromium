@@ -106,11 +106,6 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
 
  public:
 
-  // ComputedStyle sub-objects are heavily inlined, and on relatively hot
-  // codepaths. Disable pointer-compression.
-  template <typename T>
-  using DataMember = subtle::UncompressedMember<T>;
-
   inline bool IndependentInheritedEqual(const ComputedStyleBase& o) const {
     return (
         {{fieldwise_compare(computed_style, computed_style.all_fields
@@ -262,7 +257,7 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
 
   // Storage.
   {% for subgroup in computed_style.subgroups %}
-  DataMember<{{subgroup.type_name}}> {{subgroup.member_name}};
+  Member<{{subgroup.type_name}}> {{subgroup.member_name}};
   {% endfor %}
 
   {# Members #}
@@ -329,7 +324,7 @@ class ComputedStyleBuilderBase {
   }
 
   template <typename T>
-  static T* Access(ComputedStyleBase::DataMember<T>& data, bool& access_flag) {
+  static T* Access(Member<T>& data, bool& access_flag) {
     if (!access_flag) {
       access_flag = true;
       data = data->Copy();

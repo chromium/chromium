@@ -110,14 +110,12 @@ namespace blink {
 struct SameSizeAsComputedStyleBase
     : public GarbageCollected<SameSizeAsComputedStyleBase> {
   SameSizeAsComputedStyleBase() {
-    base::debug::Alias(&data_refs);
     base::debug::Alias(&pointers);
     base::debug::Alias(&bitfields);
   }
 
  private:
-  void* data_refs[8];
-  Member<void*> pointers[1];
+  Member<void*> pointers[9];
   unsigned bitfields[5];
 };
 
