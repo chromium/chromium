@@ -353,4 +353,142 @@ TEST_F(InspectorHighlightTest, BuildElementInfo_Colors) {
               Eq("lab(20 -10 -10)"));
 }
 
+TEST_F(InspectorHighlightTest, GridLineNames) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+    #grid {
+      display: grid;
+      grid-template-columns: [a] 1fr [b] 1fr [c] 1fr;
+      grid-template-rows: [d] 1fr [e] 1fr [f] 1fr;
+    }
+    #subgrid {
+      display: grid;
+      grid-column: 1 / 4;
+      grid-row: 1 / 4;
+      grid-template-columns: subgrid [a_sub] [b_sub] [c_sub];
+      grid-template-rows: subgrid [d_sub] [e_sub] [f_sub];
+    }
+    </style>
+    <div id="grid">
+      <div id="subgrid">
+        <div class="griditem"></div>
+        <div class="griditem"></div>
+        <div class="griditem"></div>
+        <div class="griditem"></div>
+        <div class="griditem"></div>
+        <div class="griditem"></div>
+        <div class="griditem"></div>
+        <div class="griditem"></div>
+        <div class="griditem"></div>
+      </div>
+    </div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  Node* subgrid = GetDocument().getElementById(AtomicString("subgrid"));
+  EXPECT_TRUE(subgrid);
+  auto info =
+      InspectorGridHighlight(subgrid, InspectorHighlight::DefaultGridConfig());
+  EXPECT_TRUE(info);
+
+  auto CompareLineNames = [](protocol::ListValue* row_or_column_list,
+                             WTF::Vector<WTF::String>& expected_names) -> void {
+    for (wtf_size_t i = 0; i < row_or_column_list->size(); ++i) {
+      protocol::DictionaryValue* current_value =
+          static_cast<protocol::DictionaryValue*>(row_or_column_list->at(i));
+
+      WTF::String string_value;
+      EXPECT_TRUE(current_value->getString("name", &string_value));
+
+      EXPECT_EQ(expected_names[i], string_value);
+    }
+  };
+
+  protocol::ListValue* row_info = info->getArray("rowLineNameOffsets");
+  EXPECT_EQ(row_info->size(), 6u);
+  WTF::Vector<WTF::String> expected_row_names = {"d", "e_sub", "e",
+                                                 "f", "d_sub", "f_sub"};
+  CompareLineNames(row_info, expected_row_names);
+
+  protocol::ListValue* column_info = info->getArray("columnLineNameOffsets");
+  EXPECT_EQ(column_info->size(), 6u);
+  WTF::Vector<WTF::String> expected_column_names = {"b", "a_sub", "b_sub",
+                                                    "c", "a",     "c_sub"};
+  CompareLineNames(column_info, expected_column_names);
+}
+
+TEST_F(InspectorHighlightTest, GridAreaNames) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+    #grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      grid-template-areas:
+            "a a a"
+            "b b b"
+            "c c c";
+    }
+    #subgrid {
+      display: grid;
+      grid-column: 1 / 4;
+      grid-row: 1 / 4;
+      grid-template-columns: subgrid;
+      grid-template-rows: subgrid;
+      grid-template-areas:
+            "d d d"
+            "e e e"
+            "f f f";
+    }
+    </style>
+    <div id="grid">
+      <div id="subgrid">
+        <div class="griditem"></div>
+        <div class="griditem"></div>
+        <div class="griditem"></div>
+        <div class="griditem"></div>
+        <div class="griditem"></div>
+        <div class="griditem"></div>
+        <div class="griditem"></div>
+        <div class="griditem"></div>
+        <div class="griditem"></div>
+      </div>
+    </div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  auto CompareAreaNames = [](protocol::DictionaryValue* area_names,
+                             WTF::Vector<WTF::String>& expected_names) -> void {
+    for (WTF::String& name : expected_names) {
+      EXPECT_TRUE(area_names->get(name));
+    }
+  };
+
+  Node* grid = GetDocument().getElementById(AtomicString("grid"));
+  EXPECT_TRUE(grid);
+  auto grid_info =
+      InspectorGridHighlight(grid, InspectorHighlight::DefaultGridConfig());
+  EXPECT_TRUE(grid_info);
+  protocol::DictionaryValue* grid_area_names =
+      grid_info->getObject("areaNames");
+  EXPECT_EQ(grid_area_names->size(), 3u);
+
+  WTF::Vector<WTF::String> expected_grid_area_names = {"a", "b", "c"};
+  CompareAreaNames(grid_area_names, expected_grid_area_names);
+
+  Node* subgrid = GetDocument().getElementById(AtomicString("subgrid"));
+  EXPECT_TRUE(subgrid);
+  auto subgrid_info =
+      InspectorGridHighlight(subgrid, InspectorHighlight::DefaultGridConfig());
+  EXPECT_TRUE(subgrid_info);
+
+  protocol::DictionaryValue* subgrid_area_names =
+      subgrid_info->getObject("areaNames");
+  EXPECT_EQ(subgrid_area_names->size(), 3u);
+
+  // TODO(kschmi): This should include "a", "b", and "c", but it's not
+  // currently. See TODO in `BuildAreaNamePaths`.
+  WTF::Vector<WTF::String> expected_subgrid_area_names = {"d", "e", "f"};
+  CompareAreaNames(subgrid_area_names, expected_subgrid_area_names);
+}
+
 }  // namespace blink

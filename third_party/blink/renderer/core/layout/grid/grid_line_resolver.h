@@ -70,13 +70,13 @@ class GridLineResolver {
       const ComputedStyle& grid_item_style,
       GridTrackSizingDirection track_direction) const;
 
- private:
   const NamedGridLinesMap& ImplicitNamedLinesMap(
       GridTrackSizingDirection track_direction) const;
 
   const NamedGridLinesMap& ExplicitNamedLinesMap(
       GridTrackSizingDirection track_direction) const;
 
+ private:
   const NamedGridLinesMap& AutoRepeatLineNamesMap(
       GridTrackSizingDirection track_direction) const;
 

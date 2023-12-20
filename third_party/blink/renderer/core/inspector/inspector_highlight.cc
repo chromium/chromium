@@ -874,6 +874,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePaths(
   LayoutUnit row_gap = grid->GridGap(kForRows);
   LayoutUnit column_gap = grid->GridGap(kForColumns);
 
+  // TODO(kschmi) - merge area names in `GridLineResolver` so that
+  // subgrid-inherited grid areas are included.
   for (const auto& item : grid->StyleRef().GridTemplateAreas()->named_areas) {
     const GridArea& area = item.value;
     const String& name = item.key;
@@ -959,19 +961,13 @@ std::unique_ptr<protocol::ListValue> BuildGridLineNames(
   };
 
   const NamedGridLinesMap& explicit_lines_map =
-      (direction == kForColumns)
-          ? grid_container_style.GridTemplateColumns().named_grid_lines
-          : grid_container_style.GridTemplateRows().named_grid_lines;
+      grid->CachedPlacementData().line_resolver.ExplicitNamedLinesMap(
+          direction);
   process_grid_lines_map(explicit_lines_map);
-
-  if (const auto& grid_template_areas =
-          grid_container_style.GridTemplateAreas()) {
-    const NamedGridLinesMap& implicit_lines_map =
-        (direction == kForColumns)
-            ? grid_template_areas->implicit_named_grid_column_lines
-            : grid_template_areas->implicit_named_grid_row_lines;
-    process_grid_lines_map(implicit_lines_map);
-  }
+  const NamedGridLinesMap& implicit_lines_map =
+      grid->CachedPlacementData().line_resolver.ImplicitNamedLinesMap(
+          direction);
+  process_grid_lines_map(implicit_lines_map);
 
   return lines;
 }
