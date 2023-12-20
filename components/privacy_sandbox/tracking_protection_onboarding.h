@@ -145,7 +145,8 @@ class TrackingProtectionOnboarding : public KeyedService {
   };
 
   TrackingProtectionOnboarding(PrefService* pref_service,
-                               version_info::Channel channel);
+                               version_info::Channel channel,
+                               bool is_silent_onboarding_enabled = false);
   ~TrackingProtectionOnboarding() override;
 
   virtual void AddObserver(Observer* observer);
@@ -242,6 +243,7 @@ class TrackingProtectionOnboarding : public KeyedService {
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   version_info::Channel channel_;
+  bool is_silent_onboarding_enabled_;
 };
 
 }  // namespace privacy_sandbox
