@@ -108,7 +108,7 @@ Security Critical: no
 Shipped: no
 
 Description:
-This package contains type definitions for d3.
+This package contains type definitions for d3 library.
 
 The types are only used when type checking in Chrome.
 

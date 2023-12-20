@@ -296,9 +296,9 @@ class ToolTip {
 
     // Make each row clickable.
     tr.on('click',
-          (d: unknown, i: number, nodes: ArrayLike<unknown>) => {
+          (event: any, d: ToolTipRowData) => {
             toggleTooltipRows(
-                nodes[i] as HTMLElement, (d as ToolTipRowData).objectIndex);
+                event.currentTarget as HTMLElement, d.objectIndex);
           })
         // And add classes to them.
         .each((d: unknown, i: number, nodes: ArrayLike<unknown>) => {
@@ -316,9 +316,9 @@ class ToolTip {
     this.floating = false;
   }
 
-  private onDrag_() {
-    this.x = d3.event.x;
-    this.y = d3.event.y;
+  private onDrag_(event: any) {
+    this.x = event.x;
+    this.y = event.y;
     this.div_.style('left', `${this.x}px`).style('top', `${this.y}px`);
 
     this.graph_.updateToolTipLinks();
@@ -888,7 +888,7 @@ export class Graph implements GraphChangeStreamInterface {
     }
   }
 
-  private onGraphNodeClick_(node: GraphNode) {
+  private onGraphNodeClick_(_event: any, node: GraphNode) {
     if (node.tooltip) {
       node.tooltip.goAway();
       node.tooltip = null;
@@ -1071,8 +1071,8 @@ export class Graph implements GraphChangeStreamInterface {
   /**
    * @param d The dragged node.
    */
-  private onDragStart_(d: GraphNode) {
-    if (!d3.event.active) {
+  private onDragStart_(event: any, d: GraphNode) {
+    if (!event.active) {
       this.restartSimulation_();
     }
     d.fx = d.x;
@@ -1082,22 +1082,22 @@ export class Graph implements GraphChangeStreamInterface {
   /**
    * @param d The dragged node.
    */
-  private onDrag_(d: GraphNode) {
-    d.fx = d3.event.x;
-    d.fy = d3.event.y;
+  private onDrag_(event: any, d: GraphNode) {
+    d.fx = event.x;
+    d.fy = event.y;
   }
 
   /**
    * @param d The dragged node.
    */
-  private onDragEnd_(d: GraphNode) {
-    if (!d3.event.active) {
+  private onDragEnd_(event: any, d: GraphNode) {
+    if (!event.active) {
       this.simulation_!.alphaTarget(0);
     }
     // Leave the node pinned where it was dropped. Return it to free
     // positioning if it's dropped outside its designated area.
     const bounds = d.allowedRangeY(this.height_);
-    if (d3.event.y < bounds[0] || d3.event.y > bounds[1]) {
+    if (event.y < bounds[0] || event.y > bounds[1]) {
       d.fx = null;
       d.fy = null;
     }
