@@ -356,14 +356,12 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
           {NonConfigurableActions::kAmbientDeleteNextWord,
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_DELETE, ui::EF_NONE)})},
-          // TODO(longbowei): Re-enable these shortcuts. these conflict with
-          // kBrowserTopPage(Search + <) and kBrowserBottomPage(Search + >);
-          //    {NonConfigurableActions::kAmbientGoToBeginningOfLine,
-          //    NonConfigurableAcceleratorDetails(
-          //        {ui::Accelerator(ui::VKEY_LEFT, ui::EF_COMMAND_DOWN)})},
-          //    {NonConfigurableActions::kAmbientGoToEndOfLine,
-          //    NonConfigurableAcceleratorDetails(
-          //        {ui::Accelerator(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kAmbientGoToBeginningOfLine,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_LEFT, ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kAmbientGoToEndOfLine,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN)})},
           {NonConfigurableActions::kBrowserNextPane,
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_BROWSER_BACK,
