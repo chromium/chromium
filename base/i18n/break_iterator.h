@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/i18n/base_i18n_export.h"
 #include "base/memory/raw_ptr.h"
@@ -134,7 +135,7 @@ class BASE_I18N_EXPORT BreakIterator {
   // Updates the text used by the iterator, resetting the iterator as if
   // if Init() had been called again. Any old state is lost. Returns true
   // unless there is an error setting the text.
-  bool SetText(const char16_t* text, const size_t length);
+  bool SetText(std::u16string_view text);
 
   // Under BREAK_WORD mode, returns true if the break we just hit is the
   // end of a word. (Otherwise, the break iterator just skipped over e.g.
@@ -189,7 +190,7 @@ class BASE_I18N_EXPORT BreakIterator {
   UBreakIteratorPtr iter_;
 
   // The string we're iterating over. Can be changed with SetText(...)
-  StringPiece16 string_;
+  std::u16string_view string_;
 
   // Rules for our iterator. Mutually exclusive with break_type_.
   const std::u16string rules_;

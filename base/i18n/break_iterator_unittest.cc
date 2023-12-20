@@ -520,7 +520,7 @@ TEST(BreakIteratorTest, GetStringAfterSetText) {
   ASSERT_TRUE(iter.Init());
 
   const std::u16string long_string(u"another,string");
-  EXPECT_TRUE(iter.SetText(long_string.c_str(), long_string.size()));
+  EXPECT_TRUE(iter.SetText(long_string));
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.Advance());  // Advance to ',' in |long_string|
 

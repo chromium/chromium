@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <ostream>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/lazy_instance.h"
@@ -200,16 +201,16 @@ bool BreakIterator::Advance() {
   }
 }
 
-bool BreakIterator::SetText(const char16_t* text, const size_t length) {
+bool BreakIterator::SetText(std::u16string_view text) {
   UErrorCode status = U_ZERO_ERROR;
-  ubrk_setText(iter_.get(), text, length, &status);
+  ubrk_setText(iter_.get(), text.data(), text.length(), &status);
   pos_ = 0;  // implicit when ubrk_setText is done
   prev_ = npos;
   if (U_FAILURE(status)) {
     NOTREACHED() << "ubrk_setText failed";
     return false;
   }
-  string_ = StringPiece16(text, length);
+  string_ = text;
   return true;
 }
 

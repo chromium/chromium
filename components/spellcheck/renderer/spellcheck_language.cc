@@ -4,6 +4,7 @@
 
 #include "components/spellcheck/renderer/spellcheck_language.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
@@ -68,7 +69,8 @@ SpellcheckLanguage::SpellcheckWordResult SpellcheckLanguage::SpellCheckWord(
       return IS_CORRECT;
   }
 
-  text_iterator_.SetText(text_begin + position_in_text, remaining_text_len);
+  text_iterator_.SetText(
+      std::u16string_view(text_begin + position_in_text, remaining_text_len));
   DCHECK(platform_spelling_engine_);
   for (SpellcheckWordIterator::WordIteratorStatus status =
            text_iterator_.GetNextWord(&word, &word_start, &word_length);
@@ -125,7 +127,7 @@ bool SpellcheckLanguage::IsValidContraction(
     return true;
   }
 
-  contraction_iterator_.SetText(contraction.c_str(), contraction.length());
+  contraction_iterator_.SetText(contraction);
 
   std::u16string word;
   size_t word_start;
