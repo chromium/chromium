@@ -2573,8 +2573,18 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
           object_.IsLayoutView() &&
           ViewTransitionUtils::GetTransition(object_.GetDocument());
 
+      // Overflow controls are not clipped by InnerBorderRadiusClip or
+      // OverflowClip, so the output clip should skip them.
+      const auto* overflow_control_effect_output_clip = context_.current.clip;
+      if (const auto* clip_to_skip = properties_->InnerBorderRadiusClip()
+                                         ? properties_->InnerBorderRadiusClip()
+                                         : properties_->OverflowClip()) {
+        overflow_control_effect_output_clip = clip_to_skip->Parent();
+      }
+
       auto setup_scrollbar_effect_node =
-          [this, scrollable_area, transition_forces_scrollbar_effect_nodes](
+          [this, scrollable_area, transition_forces_scrollbar_effect_nodes,
+           overflow_control_effect_output_clip](
               ScrollbarOrientation orientation) {
             Scrollbar* scrollbar = scrollable_area->GetScrollbar(orientation);
 
@@ -2588,19 +2598,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
             if (needs_effect_node) {
               EffectPaintPropertyNode::State effect_state;
               effect_state.local_transform_space = context_.current.transform;
-
-              // Scrollbars are not clipped by InnerBorderRadiusClip or
-              // OverflowClip, so the output clip should skip them.
-              auto* clip_to_skip = properties_->InnerBorderRadiusClip();
-              if (!clip_to_skip) {
-                clip_to_skip = properties_->OverflowClip();
-              }
-              if (clip_to_skip) {
-                effect_state.output_clip = clip_to_skip->Parent();
-              } else {
-                effect_state.output_clip = context_.current.clip;
-              }
-
+              effect_state.output_clip = overflow_control_effect_output_clip;
               effect_state.compositor_element_id =
                   scrollable_area->GetScrollbarElementId(orientation);
 
@@ -2646,7 +2644,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
         // are only painted for non-overlay scrollbars.
         EffectPaintPropertyNode::State effect_state;
         effect_state.local_transform_space = context_.current.transform;
-        effect_state.output_clip = context_.current.clip;
+        effect_state.output_clip = overflow_control_effect_output_clip;
         effect_state.compositor_element_id =
             scrollable_area->GetScrollCornerElementId();
         OnUpdateEffect(properties_->UpdateScrollCornerEffect(
