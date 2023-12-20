@@ -838,10 +838,6 @@ bool ProfileDataController::AddAutofillProfileInfo(
     if (type == autofill::CREDIT_CARD_VERIFICATION_CODE) {
       cvc_ = base::UTF8ToUTF16(field_value);
     }
-    if (type == autofill::CREDIT_CARD_NAME_FIRST ||
-        type == autofill::CREDIT_CARD_NAME_LAST) {
-      card_.SetRawInfo(autofill::CREDIT_CARD_NAME_FULL, u"");
-    }
     card_.SetRawInfo(type.value(), base::UTF8ToUTF16(field_value));
   } else {
     profile_.SetRawInfo(type.value(), base::UTF8ToUTF16(field_value));
