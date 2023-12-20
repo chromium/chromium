@@ -44,6 +44,10 @@ crbug.com/1507773 external/wpt/webdriver/tests/classic/forward/forward.py [ Fail
 crbug.com/1507773 external/wpt/webdriver/tests/classic/get_element_attribute/get.py [ Failure Pass Timeout ]
 crbug.com/1507773 external/wpt/webdriver/tests/classic/is_element_enabled/enabled.py [ Failure Pass Timeout ]
 
+# Gardener 2023-12-19
+crbug.com/1512897 external/wpt/webdriver/tests/bidi/network/combined/network_events.py [ Failure ]
+crbug.com/1512119 external/wpt/webdriver/tests/classic/perform_actions/pointer_touch.py [ Failure ]
+
 # Those tests (flaky) fail when DCHECK enabled
 crbug.com/1499775 external/wpt/html/browsers/the-window-object/window-open-windowfeatures-values.html [ Pass Timeout ]
 crbug.com/1499775 external/wpt/media-capabilities/encodingInfo.any.worker.html [ Crash ]

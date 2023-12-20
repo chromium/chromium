@@ -6880,7 +6880,3 @@ crbug.com/1511492 [ Linux ] external/wpt/event-timing/external/wpt/event-timing/
 # TODO(crbug.com/1496375): Re-enable these tests.
 crbug.com/1496375 [ Linux ] http/tests/loading/image-picture-download-after-shrink.html [ Failure Pass ]
 crbug.com/1496375 [ Mac ] http/tests/loading/image-picture-download-after-shrink.html [ Failure Pass ]
-
-# Gardener 2023-12-19
-crbug.com/1512897 [ Linux ] external/wpt/webdriver/tests/bidi/network/combined/network_events.py [ Failure ]
-crbug.com/1512119 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/pointer_touch.py [ Failure ]
