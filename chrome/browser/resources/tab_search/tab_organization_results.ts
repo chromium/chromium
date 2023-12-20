@@ -175,6 +175,13 @@ export class TabOrganizationResultsElement extends PolymerElement {
     this.$.selector.selected = event.model.index;
   }
 
+  private onTabBlur_(_event: DomRepeatEvent<TabData>) {
+    // Ensure the selector deselects its current selection on blur. If
+    // selection should move to another element in the list, this will be done
+    // in onTabFocus_.
+    this.$.selector.selectIndex(-1);
+  }
+
   private onRefreshClick_() {
     this.dispatchEvent(new CustomEvent('refresh-click', {
       bubbles: true,

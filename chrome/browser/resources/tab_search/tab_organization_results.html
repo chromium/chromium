@@ -50,10 +50,6 @@
     min-height: var(--mwb-item-height);
   }
 
-  .mwb-list-item.selected {
-    background-color: transparent;
-  }
-
   .results {
     background-color: var(--color-tab-search-card-background);
     border-radius: 8px;
@@ -89,6 +85,7 @@
               tabindex$="[[getTabIndex_(index, lastFocusedIndex_)]]"
               on-close="onTabRemove_"
               on-focus="onTabFocus_"
+              on-blur="onTabBlur_"
               in-suggested-group>
           </tab-search-item>
         </template>
