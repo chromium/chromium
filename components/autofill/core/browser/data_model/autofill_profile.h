@@ -54,11 +54,11 @@ class AutofillProfile : public AutofillDataModel {
   // The values used to represent Autofill in the `initial_creator_id()` and
   // `last_modifier_id()`.
   static constexpr int kInitialCreatorOrModifierChrome = 70073;
-  explicit AutofillProfile(AddressCountryCode country_code);
   AutofillProfile(const std::string& guid,
                   Source source,
                   AddressCountryCode country_code);
   AutofillProfile(Source source, AddressCountryCode country_code);
+  explicit AutofillProfile(AddressCountryCode country_code);
 
   AutofillProfile(const AutofillProfile& profile);
   ~AutofillProfile() override;

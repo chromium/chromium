@@ -263,8 +263,6 @@ AutofillProfile CreateStarterProfile(
 
 }  // namespace
 
-AutofillProfile::AutofillProfile(AddressCountryCode country_code)
-    : AutofillProfile(Source::kLocalOrSyncable, country_code) {}
 
 AutofillProfile::AutofillProfile(const std::string& guid,
                                  Source source,
@@ -282,8 +280,12 @@ AutofillProfile::AutofillProfile(Source source, AddressCountryCode country_code)
                       source,
                       country_code) {}
 
+AutofillProfile::AutofillProfile(AddressCountryCode country_code)
+    : AutofillProfile(Source::kLocalOrSyncable, country_code) {}
+
 AutofillProfile::AutofillProfile(const AutofillProfile& profile)
-    : phone_number_(this),
+    : AutofillDataModel(profile),
+      phone_number_(this),
       address_(profile.GetAddress()),
       token_quality_(this) {
   operator=(profile);
