@@ -73,6 +73,9 @@ NSString* GetPrimaryActionTitle(WhatsNewPrimaryAction action) {
       return l10n_util::GetNSString(IDS_IOS_OPEN_CHROME_SETTINGS);
     case WhatsNewPrimaryAction::kIOSSettingsPasswords:
       return l10n_util::GetNSString(IDS_IOS_OPEN_IOS_SETTINGS);
+    case WhatsNewPrimaryAction::kLens:
+      // TODO(crbug.com/1502927): Use the Lens action title when it
+      // is available.
     case WhatsNewPrimaryAction::kNoAction:
     case WhatsNewPrimaryAction::kError:
       return nil;
