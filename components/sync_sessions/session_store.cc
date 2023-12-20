@@ -15,7 +15,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
@@ -132,8 +132,7 @@ absl::optional<syncer::ModelError> ParseInitialDataOnBackendSequence(
 }  // namespace
 
 struct SessionStore::Builder {
-  raw_ptr<SyncSessionsClient, AcrossTasksDanglingUntriaged> sessions_client =
-      nullptr;
+  base::WeakPtr<SyncSessionsClient> sessions_client;
   OpenCallback callback;
   SessionInfo local_session_info;
   std::unique_ptr<syncer::ModelTypeStore> underlying_store;
@@ -150,7 +149,7 @@ void SessionStore::Open(const std::string& cache_guid,
   DVLOG(1) << "Opening session store";
 
   auto builder = std::make_unique<Builder>();
-  builder->sessions_client = sessions_client;
+  builder->sessions_client = sessions_client->AsWeakPtr();
   builder->callback = std::move(callback);
 
   builder->local_session_info.device_type = syncer::GetLocalDeviceType();
@@ -399,7 +398,8 @@ void SessionStore::OnReadAllData(
   auto session_store = base::WrapUnique(new SessionStore(
       builder->local_session_info, std::move(builder->underlying_store),
       std::move(builder->initial_data),
-      builder->metadata_batch->GetAllMetadata(), builder->sessions_client));
+      builder->metadata_batch->GetAllMetadata(),
+      builder->sessions_client.get()));
 
   std::move(builder->callback)
       .Run(/*error=*/absl::nullopt, std::move(session_store),
@@ -421,6 +421,7 @@ SessionStore::SessionStore(
       local_session_info_.device_type, local_session_info_.device_form_factor);
 
   DCHECK(store_);
+  DCHECK(sessions_client_);
 
   DVLOG(1) << "Initializing session store with " << initial_data.size()
            << " restored entities and " << initial_metadata.size()
