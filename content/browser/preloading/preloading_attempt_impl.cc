@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/preloading_attempt_impl.h"
 
+#include "base/containers/span.h"
 #include "base/metrics/crc32.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/state_transitions.h"
@@ -232,8 +233,8 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptMetrics(
 
   PreloadingConfig& config = PreloadingConfig::GetInstance();
   uint32_t sampled_num = sampling_seed_;
-  sampled_num =
-      base::Crc32(sampled_num, &sampling_source, sizeof(sampling_source));
+  sampled_num = base::Crc32(
+      sampled_num, base::as_bytes(base::make_span(&sampling_source, 1u)));
 
   double sampling_likelihood =
       config.SamplingLikelihood(preloading_type_, predictor_type_);

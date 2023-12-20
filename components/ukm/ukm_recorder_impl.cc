@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/crc32.h"
 #include "base/metrics/field_trial.h"
@@ -1186,8 +1187,10 @@ bool UkmRecorderImpl::IsSampledIn(int64_t source_id,
   // behavior. CRC32 is fast and statistically random enough for these
   // purposes.
   uint32_t sampled_num = sampling_seed_;
-  sampled_num = base::Crc32(sampled_num, &source_id, sizeof(source_id));
-  sampled_num = base::Crc32(sampled_num, &event_id, sizeof(event_id));
+  sampled_num =
+      base::Crc32(sampled_num, base::as_bytes(base::make_span(&source_id, 1u)));
+  sampled_num =
+      base::Crc32(sampled_num, base::as_bytes(base::make_span(&event_id, 1u)));
 
   return sampled_num % sampling_rate == 0;
 }
