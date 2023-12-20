@@ -21,8 +21,10 @@ void EnableTrustedTypesCSP(content::WebUIDataSource* source) {
       "lottie-worker-script-loader "
       // Add TrustedTypes policy for <cros-lottie-renderer>.
       "cros-lottie-worker-script-loader "
-      // Add TrustedTypes policy for lit.
+      // Add TrustedTypes policies necessary for using CrOS' Lit bundle.
       "lit-html "
+      // Add TrustedTypes policies necessary for using Desktop's Lit bundle.
+      "lit-html-desktop "
       // Add TrustedTypes policies used during tests.
       "webui-test-script webui-test-html "
       // Add TrustedTypes policy used during Ash WebUI tests created in
