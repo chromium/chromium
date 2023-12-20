@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_UI_WEBUI_WEB_APP_INTERNALS_WEB_APP_INTERNALS_HANDLER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -44,14 +46,17 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
   void SelectFileAndInstallIsolatedWebAppFromDevBundle(
       SelectFileAndInstallIsolatedWebAppFromDevBundleCallback callback)
       override;
+  void SelectFileAndUpdateIsolatedWebAppFromDevBundle(
+      const webapps::AppId& app_id,
+      SelectFileAndUpdateIsolatedWebAppFromDevBundleCallback callback) override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void ClearExperimentalWebAppIsolationData(
       ClearExperimentalWebAppIsolationDataCallback callback) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   void SearchForIsolatedWebAppUpdates(
       SearchForIsolatedWebAppUpdatesCallback callback) override;
-  void GetIsolatedWebAppDevModeProxyAppInfo(
-      GetIsolatedWebAppDevModeProxyAppInfoCallback callback) override;
+  void GetIsolatedWebAppDevModeAppInfo(
+      GetIsolatedWebAppDevModeAppInfoCallback callback) override;
   void UpdateDevProxyIsolatedWebApp(
       const webapps::AppId& app_id,
       UpdateDevProxyIsolatedWebAppCallback callback) override;
@@ -62,10 +67,22 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
   void OnIsolatedWebAppDevModeBundleSelected(
       SelectFileAndInstallIsolatedWebAppFromDevBundleCallback callback,
       std::optional<base::FilePath> path);
+  void OnIsolatedWebAppDevModeBundleSelectedForUpdate(
+      const webapps::AppId& app_id,
+      SelectFileAndUpdateIsolatedWebAppFromDevBundleCallback callback,
+      std::optional<base::FilePath> path);
   void OnInstallIsolatedWebAppFromDevModeProxy(
       InstallIsolatedWebAppFromDevProxyCallback callback,
       web_app::IsolatedWebAppInstallationManager::
           MaybeInstallIsolatedWebAppCommandSuccess result);
+
+  // Discovers and applies an update for a dev mode Isolated Web App identified
+  // by its app id. If `location` is set, then the update will be read from the
+  // provided location, otherwise the existing location will be used.
+  void ApplyDevModeUpdate(
+      const webapps::AppId& app_id,
+      base::optional_ref<const web_app::IsolatedWebAppLocation> location,
+      base::OnceCallback<void(const std::string&)> callback);
 
   const raw_ref<content::WebUI> web_ui_;
   const raw_ref<Profile> profile_;
