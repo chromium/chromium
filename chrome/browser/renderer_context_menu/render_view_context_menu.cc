@@ -1187,7 +1187,14 @@ void RenderViewContextMenu::InitMenu() {
   }
 
   // Show Read Anything option if it's not already open in the side panel.
-  if (features::IsReadAnythingEnabled()) {
+  // Only show it on the context menu for the page, selections without links,
+  // and editables.
+  if (features::IsReadAnythingEnabled() &&
+      (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE) ||
+       content_type_->SupportsGroup(
+           ContextMenuContentType::ITEM_GROUP_SMART_SELECTION) ||
+       content_type_->SupportsGroup(
+           ContextMenuContentType::ITEM_GROUP_EDITABLE))) {
     if (GetBrowser() && GetBrowser()->is_type_normal() &&
         !IsReadAnythingEntryShowing(GetBrowser())) {
       AppendReadingModeItem();
@@ -2203,9 +2210,7 @@ void RenderViewContextMenu::AppendMediaRouterItem() {
 void RenderViewContextMenu::AppendReadingModeItem() {
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
                                   IDS_CONTENT_CONTEXT_READING_MODE);
-  menu_model_.SetIsNewFeatureAt(
-      menu_model_.GetItemCount() - 1,
-      !content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_LINK));
+  menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
