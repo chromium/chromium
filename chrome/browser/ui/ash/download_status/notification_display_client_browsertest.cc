@@ -418,4 +418,69 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   EXPECT_THAT(GetDisplayedNotificationIds(), Not(Contains(notification_id)));
 }
 
+// Verifies pausing download from a notification.
+IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, PauseDownload) {
+  // Add a pausable download. Cache the notification ID.
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  std::string notification_id;
+  EXPECT_CALL(service_observer(), OnNotificationDisplayed)
+      .WillOnce(WithArg<0>(
+          [&notification_id](const message_center::Notification& notification) {
+            notification_id = notification.id();
+          }));
+  crosapi::mojom::DownloadStatusPtr download =
+      CreateInProgressDownloadStatus(profile,
+                                     /*received_bytes=*/0,
+                                     /*target_bytes=*/1024);
+  download->pausable = true;
+  Update(download->Clone());
+  Mock::VerifyAndClearExpectations(&service_observer());
+
+  // Implement download pause for the mock client.
+  ON_CALL(download_status_updater_client(), Pause(download->guid, _))
+      .WillByDefault([&](const std::string& guid,
+                         crosapi::MockDownloadStatusUpdaterClient::PauseCallback
+                             callback) {
+        download->pausable = false;
+        Update(download->Clone());
+        std::move(callback).Run(/*handled=*/true);
+      });
+
+  // Get the pause button.
+  AshNotificationView* const popup_view =
+      GetPopupView(profile, notification_id);
+  ASSERT_TRUE(popup_view);
+  std::vector<views::LabelButton*> action_buttons =
+      popup_view->GetActionButtonsForTest();
+  const std::u16string pause_button_text =
+      l10n_util::GetStringUTF16(GetCommandTextId(CommandType::kPause));
+  auto pause_button_iter = base::ranges::find(action_buttons, pause_button_text,
+                                              &views::LabelButton::GetText);
+  ASSERT_NE(pause_button_iter, action_buttons.end());
+
+  // Click on the pause button and wait until download is paused.
+  base::RunLoop run_loop;
+  EXPECT_CALL(service_observer(), OnNotificationDisplayed)
+      .WillOnce(WithArg<0>(
+          [&run_loop](const message_center::Notification& notification) {
+            run_loop.Quit();
+          }));
+  test::Click(*pause_button_iter, ui::EF_NONE);
+  run_loop.Run();
+
+  // After pausing, `popup_view` is hidden. Therefore, get the notification view
+  // from the notification center bubble.
+  NotificationCenterTestApi().ToggleBubble();
+  auto* const notification_view = views::AsViewClass<AshNotificationView>(
+      NotificationCenterTestApi().GetNotificationViewForId(
+          ProfileNotification::GetProfileNotificationId(
+              notification_id, ProfileNotification::GetProfileID(profile))));
+
+  // The pause button should not show because the download is already paused.
+  action_buttons = notification_view->GetActionButtonsForTest();
+  pause_button_iter = base::ranges::find(action_buttons, pause_button_text,
+                                         &views::LabelButton::GetText);
+  EXPECT_EQ(pause_button_iter, action_buttons.end());
+}
+
 }  // namespace ash::download_status

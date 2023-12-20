@@ -44,7 +44,8 @@ constexpr char kNotificationOrigin[] = "chrome://downloads";
 
 // The commands supported by notification buttons.
 // TODO(http://b/316368295): Support pause and resume.
-constexpr std::array<CommandType, 1> kButtonCommands = {CommandType::kCancel};
+constexpr std::array<CommandType, 2> kButtonCommands = {CommandType::kCancel,
+                                                        CommandType::kPause};
 
 // DownloadNotificationDelegate ------------------------------------------------
 
