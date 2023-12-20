@@ -179,6 +179,9 @@ PasswordManagerClient::GetWebAuthnCredManDelegateForDriver(
     PasswordManagerDriver* driver) {
   return nullptr;
 }
+
+void PasswordManagerClient::MarkSharedCredentialsAsNotified(const GURL& url) {}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 version_info::Channel PasswordManagerClient::GetChannel() const {

@@ -184,6 +184,13 @@ namespace {
 static const char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/1513384): Get rid of DeprecatedGetOriginAsURL().
+url::Origin URLToOrigin(GURL url) {
+  return url::Origin::Create(url.DeprecatedGetOriginAsURL());
+}
+#endif
+
 const syncer::SyncService* GetSyncServiceForProfile(Profile* profile) {
   if (SyncServiceFactory::HasSyncService(profile))
     return SyncServiceFactory::GetForProfile(profile);
@@ -455,8 +462,7 @@ bool ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
               should_show_hybrid_option));
   return GetOrCreateTouchToFillController()->Show(
       credential_cache_
-          .GetCredentialStore(url::Origin::Create(
-              driver->GetLastCommittedURL().DeprecatedGetOriginAsURL()))
+          .GetCredentialStore(URLToOrigin(driver->GetLastCommittedURL()))
           .GetCredentials(),
       passkeys, std::move(ttf_controller_autofill_delegate),
       GetWebAuthnCredManDelegateForDriver(driver),
@@ -1027,6 +1033,23 @@ ChromePasswordManagerClient::GetWebAuthnCredManDelegateForDriver(
   return webauthn::WebAuthnCredManDelegateFactory::GetFactory(web_contents())
       ->GetRequestDelegate(frame_host);
 }
+
+void ChromePasswordManagerClient::MarkSharedCredentialsAsNotified(
+    const GURL& url) {
+  for (const PasswordForm& form :
+       credential_cache_.GetCredentialStore(URLToOrigin(url))
+           .GetUnnotifiedSharedCredentials()) {
+    // Make a non-const copy so we can modify it.
+    password_manager::PasswordForm updatedForm = form;
+    updatedForm.sharing_notification_displayed = true;
+    if (updatedForm.IsUsingAccountStore()) {
+      GetAccountPasswordStore()->UpdateLogin(std::move(updatedForm));
+    } else {
+      GetProfilePasswordStore()->UpdateLogin(std::move(updatedForm));
+    }
+  }
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 version_info::Channel ChromePasswordManagerClient::GetChannel() const {
