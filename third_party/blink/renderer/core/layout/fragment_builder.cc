@@ -250,8 +250,18 @@ void FragmentBuilder::PropagateFromFragment(
   PropagateSnapAreas(child);
   PropagateScrollStartTarget(child);
 
+  // Propagate info about OOF descendants if necessary. This part must be
+  // skipped when adding OOF children to fragmentainers, as propagation is
+  // special and performed manually from the OOF code in such cases, and cannot
+  // be done as part of adding child fragments. First of all, the parameters to
+  // PropagateOOFPositionedInfo() will be different from what we can provide
+  // here, and furthermore, OOFs in fragmentation are added by recreating
+  // fragmentainers, by adding old children and then appending new OOF
+  // children. This may take place in several passes (if there are nested OOFs
+  // that are discovered as part of laying out an outer OOF), and repropagating
+  // for OOFs that were laid out previously over and over again would be wrong.
   if (child.NeedsOOFPositionedInfoPropagation() &&
-      !disable_oof_descendants_propagation_) {
+      (!IsFragmentainerBoxType() || !child.IsOutOfFlowPositioned())) {
     LayoutUnit adjustment_for_oof_propagation =
         BlockOffsetAdjustmentForFragmentainer();
 

@@ -26,7 +26,6 @@ SimplifiedOofLayoutAlgorithm::SimplifiedOofLayoutAlgorithm(
   container_builder_.SetPageNameIfNeeded(previous_fragment.PageName());
   container_builder_.SetFragmentBlockSize(
       params.space.FragmentainerBlockSize());
-  container_builder_.SetDisableOOFDescendantsPropagation();
   container_builder_.SetHasOutOfFlowFragmentChild(true);
 
   const BlockBreakToken* old_fragment_break_token =

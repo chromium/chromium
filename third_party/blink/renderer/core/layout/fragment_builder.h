@@ -299,10 +299,6 @@ class CORE_EXPORT FragmentBuilder {
   LayoutUnit BlockOffsetAdjustmentForFragmentainer(
       LayoutUnit fragmentainer_consumed_block_size = LayoutUnit()) const;
 
-  void SetDisableOOFDescendantsPropagation() {
-    disable_oof_descendants_propagation_ = true;
-  }
-
   bool HasOutOfFlowFragmentChild() const {
     return has_out_of_flow_fragment_child_;
   }
@@ -635,7 +631,6 @@ class CORE_EXPORT FragmentBuilder {
   bool should_add_break_tokens_manually_ = false;
   bool has_out_of_flow_fragment_child_ = false;
   bool has_out_of_flow_in_fragmentainer_subtree_ = false;
-  bool disable_oof_descendants_propagation_ = false;
 
 #if DCHECK_IS_ON()
   bool is_may_have_descendant_above_block_start_explicitly_set_ = false;
