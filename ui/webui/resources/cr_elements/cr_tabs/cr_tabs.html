@@ -90,6 +90,10 @@
 
       @media (prefers-color-scheme: dark) {
         .tab-indicator {
+          background: var(--cr-tabs-unselected-color, var(--google-blue-300));
+        }
+
+        .selected .tab-indicator {
           background: var(--cr-tabs-selected-color, var(--google-blue-300));
         }
       }
