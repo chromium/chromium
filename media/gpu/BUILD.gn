@@ -335,6 +335,10 @@ source_set("common") {
     "h264_decoder.h",
     "h264_dpb.cc",
     "h264_dpb.h",
+    "h264_rate_control_util.cc",
+    "h264_rate_control_util.h",
+    "h264_rate_controller.cc",
+    "h264_rate_controller.h",
     "hrd_buffer.cc",
     "hrd_buffer.h",
     "macros.h",
@@ -609,6 +613,8 @@ source_set("unit_tests") {
     "exponential_moving_average_unittest.cc",
     "frame_size_estimator_unittest.cc",
     "h264_decoder_unittest.cc",
+    "h264_rate_control_util_unittest.cc",
+    "h264_rate_controller_unittest.cc",
     "hrd_buffer_unittest.cc",
   ]
   if (enable_hevc_parser_and_hw_decoder) {
