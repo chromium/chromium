@@ -45,8 +45,6 @@ import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.query_tiles.QueryTileSection;
-import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup.Delegate;
@@ -91,7 +89,6 @@ public class NewTabPageLayout extends LinearLayout {
 
     private LogoCoordinator mLogoCoordinator;
     private SearchBoxCoordinator mSearchBoxCoordinator;
-    private QueryTileSection mQueryTileSection;
     private ViewGroup mMvTilesContainerLayout;
     private MostVisitedTilesCoordinator mMostVisitedTilesCoordinator;
 
@@ -314,12 +311,6 @@ public class NewTabPageLayout extends LinearLayout {
         initializeLensButton();
         initializeLayoutChangeListener();
 
-        if (searchProviderIsGoogle && QueryTileUtils.isQueryTilesEnabledOnNtp()) {
-            mQueryTileSection =
-                    new QueryTileSection(
-                            findViewById(R.id.query_tiles), profile, mManager::performSearchQuery);
-        }
-
         manager.addDestructionObserver(NewTabPageLayout.this::onDestroy);
         mInitialized = true;
 
@@ -478,9 +469,6 @@ public class NewTabPageLayout extends LinearLayout {
         assert mMvTilesContainerLayout != null;
 
         int maxRows = 2;
-        if (searchProviderIsGoogle && QueryTileUtils.isQueryTilesEnabledOnNtp()) {
-            maxRows = QueryTileSection.getMaxRowsForMostVisitedTiles(getContext());
-        }
 
         mMostVisitedTilesCoordinator =
                 new MostVisitedTilesCoordinator(
@@ -839,11 +827,6 @@ public class NewTabPageLayout extends LinearLayout {
                                 - mSearchBoxBoundsVerticalInset);
 
         setTranslationY(percent * (basePosition - target));
-        if (mQueryTileSection != null) mQueryTileSection.onUrlFocusAnimationChanged(percent);
-    }
-
-    void onLoadUrl(boolean isNtpUrl) {
-        if (isNtpUrl && mQueryTileSection != null) mQueryTileSection.reloadTiles();
     }
 
     /**

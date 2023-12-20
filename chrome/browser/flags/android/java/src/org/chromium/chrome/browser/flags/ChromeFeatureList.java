@@ -338,10 +338,7 @@ public abstract class ChromeFeatureList {
     public static final String PWA_UPDATE_DIALOG_FOR_ICON = "PwaUpdateDialogForIcon";
     public static final String PWA_RESTORE_UI = "PwaRestoreUi";
     public static final String QUERY_TILES = "QueryTiles";
-    public static final String QUERY_TILES_IN_NTP = "QueryTilesInNTP";
     public static final String QUERY_TILES_IN_ZPS_ON_NTP = "OmniboxQueryTilesInZPSOnNTP";
-    public static final String QUERY_TILES_ON_START = "QueryTilesOnStart";
-    public static final String QUERY_TILES_SEGMENTATION = "QueryTilesSegmentation";
     public static final String QUICK_DELETE_FOR_ANDROID = "QuickDeleteForAndroid";
     public static final String QUIET_NOTIFICATION_PROMPTS = "QuietNotificationPrompts";
     public static final String REACHED_CODE_PROFILER = "ReachedCodeProfiler";
@@ -536,7 +533,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sPaintPreviewNewColdStartHeuristic =
             new CachedFlag(PAINT_PREVIEW_NEW_COLD_START_HEURISTIC, true);
     public static final CachedFlag sQueryTiles = new CachedFlag(QUERY_TILES, false);
-    public static final CachedFlag sQueryTilesOnStart = new CachedFlag(QUERY_TILES_ON_START, false);
     public static final CachedFlag sRedirectExplicitCTAIntentsToExistingActivity =
             new CachedFlag(REDIRECT_EXPLICIT_CTA_INTENTS_TO_EXISTING_ACTIVITY, true);
     public static final CachedFlag sSearchEngineChoice =
@@ -626,7 +622,6 @@ public abstract class ChromeFeatureList {
                     sOptimizationGuidePushNotifications,
                     sPaintPreviewDemo,
                     sQueryTiles,
-                    sQueryTilesOnStart,
                     sRedirectExplicitCTAIntentsToExistingActivity,
                     sSearchEngineChoice,
                     sShowNtpAtStartupAndroid,

@@ -1724,28 +1724,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ShowQueryTilesSegmentationResult.UNINITIALIZED, ShowQueryTilesSegmentationResult.DONT_SHOW, ShowQueryTilesSegmentationResult.SHOW"
-        errorLine1="        return segmentationResult;"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java"
-            line="179"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ShowQueryTilesSegmentationResult.UNINITIALIZED, ShowQueryTilesSegmentationResult.DONT_SHOW, ShowQueryTilesSegmentationResult.SHOW"
-        errorLine1="        return segmentationResult;"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java"
-            line="179"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: PageTransition.FIRST, PageTransition.LINK, PageTransition.TYPED, PageTransition.AUTO_BOOKMARK, PageTransition.AUTO_SUBFRAME, PageTransition.MANUAL_SUBFRAME, PageTransition.GENERATED, PageTransition.AUTO_TOPLEVEL, PageTransition.FORM_SUBMIT, PageTransition.RELOAD, PageTransition.KEYWORD, PageTransition.KEYWORD_GENERATED, PageTransition.LAST_CORE, PageTransition.CORE_MASK, PageTransition.BLOCKED, PageTransition.FORWARD_BACK, PageTransition.FROM_ADDRESS_BAR, PageTransition.HOME_PAGE, PageTransition.FROM_API, PageTransition.CHAIN_START, PageTransition.CHAIN_END, PageTransition.CLIENT_REDIRECT, PageTransition.SERVER_REDIRECT, PageTransition.IS_REDIRECT_MASK, PageTransition.QUALIFIER_MASK"
         errorLine1="                    false, url, params.getTransitionType());"
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~">

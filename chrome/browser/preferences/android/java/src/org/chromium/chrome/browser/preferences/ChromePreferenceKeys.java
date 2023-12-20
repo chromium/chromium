@@ -655,17 +655,6 @@ public final class ChromePreferenceKeys {
      */
     public static final String PWA_RESTORE_PROMO_STAGE = "Chrome.PwaRestore.PromoStage";
 
-    /** Whether query tiles should be shown on NTP. Default value is false. */
-    public static final String QUERY_TILES_SHOW_ON_NTP = "Chrome.Querytiles.ShowOnNTP";
-
-    /** Keys used to store result from segmentation model of showing query tiles on NTP. */
-    public static final String QUERY_TILES_SHOW_SEGMENTATION_RESULT =
-            "Chrome.QueryTiles.ShowSegmentationResult";
-
-    /** Whether query tiles is already shown on Start surface. Default value is false. */
-    public static final String QUERY_TILES_SHOWN_ON_START_SURFACE =
-            "Chrome.QueryTiles.ShownOnStartSurface";
-
     /**
      * Keys used to store user actions for behavioral targeting of showing Start surface on startup.
      */
@@ -1041,9 +1030,6 @@ public final class ChromePreferenceKeys {
                 PROMO_TIMES_SEEN.pattern(),
                 PWA_RESTORE_APPS_AVAILABLE,
                 PWA_RESTORE_PROMO_STAGE,
-                QUERY_TILES_SHOW_ON_NTP,
-                QUERY_TILES_SHOW_SEGMENTATION_RESULT,
-                QUERY_TILES_SHOWN_ON_START_SURFACE,
                 REGULAR_TAB_COUNT,
                 SEARCH_ENGINE_CHOICE_OS_CHOICE_APPLIED_TIMESTAMP,
                 SEGMENTATION_FEED_ACTIVE_USER,

@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
-import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleCoordinator;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleUtils;
@@ -274,12 +273,6 @@ public class NewTabPage
         }
 
         @Override
-        public void performSearchQuery(QueryInfo queryInfo) {
-            if (mOmniboxStub == null) return;
-            mOmniboxStub.performSearchQuery(queryInfo.queryText, queryInfo.searchParams);
-        }
-
-        @Override
         public boolean isCurrentPage() {
             if (mIsDestroyed) return false;
             if (mOmniboxStub == null) return false;
@@ -468,7 +461,6 @@ public class NewTabPage
 
                     @Override
                     public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
-                        mNewTabPageLayout.onLoadUrl(UrlUtilities.isNtpUrl(tab.getUrl()));
                     }
                 };
         mTab.addObserver(mTabObserver);
