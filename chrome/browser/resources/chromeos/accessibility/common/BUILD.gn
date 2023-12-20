@@ -41,14 +41,14 @@ ts_library("ts_build") {
   in_files = ts_modules
   out_dir = tsc_out_dir
   definitions = [
-    "../definitions/tts.d.ts",
     "../definitions/automation.d.ts",
     "../definitions/command_line_private.d.ts",
     "../definitions/extensions.d.ts",
+    "../definitions/extension_types.d.ts",
     "../definitions/runtime.d.ts",
     "../definitions/i18n.d.ts",
     "../definitions/tabs.d.ts",
-    "../definitions/extension_types.d.ts",
+    "../definitions/tts.d.ts",
     "//tools/typescript/definitions/windows.d.ts",
   ]
 

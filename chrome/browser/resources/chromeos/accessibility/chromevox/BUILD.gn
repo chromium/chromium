@@ -21,7 +21,10 @@ tsc_out_dir = "$target_gen_dir/tsc"
 # chromevox scripts.
 #
 # TS files to compile.
-ts_modules = [ "background/input/background_keyboard_handler.ts" ]
+ts_modules = [
+  "background/event/desktop_automation_interface.ts",
+  "background/input/background_keyboard_handler.ts",
+]
 
 # These files all use older Closure provide/require support for dependency management and will be transitioned to ES6 modules (see below).
 chromevox_modules = [
@@ -81,7 +84,6 @@ chromevox_es6_modules = [
   "background/es6_loader.js",
   "background/event/base_automation_handler.js",
   "background/event/desktop_automation_handler.js",
-  "background/event/desktop_automation_interface.js",
   "background/event/focus_automation_handler.js",
   "background/event/media_automation_handler.js",
   "background/event/page_load_sound_handler.js",
@@ -189,7 +191,7 @@ chromevox_gen_dir =
 chromevox_out_dir = "$root_out_dir/resources/chromeos/accessibility/chromevox"
 
 # JS files needed for the TS compiler.
-js_deps = []
+js_deps = [ "background/editing/text_edit_handler.js" ]
 
 # Root dir must be the parent directory so it can reach common/.
 ts_library("ts_build") {

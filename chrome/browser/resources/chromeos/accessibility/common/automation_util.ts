@@ -426,8 +426,8 @@ export class AutomationUtil {
    */
   static getLeastCommonAncestor(
       prevNode: chrome.automation.AutomationNode,
-      node: chrome.automation.AutomationNode):
-      chrome.automation.AutomationNode {
+      node: chrome.automation.AutomationNode): chrome.automation.AutomationNode
+      |undefined {
     if (prevNode === node) {
       return node;
     }
