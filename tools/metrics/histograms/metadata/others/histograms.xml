@@ -8764,20 +8764,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="ResourceScheduler.NonDelayableLastStartToNonDelayableStart.NonDelayableInFlight"
-    units="ms" expires_after="2021-09-01">
-  <owner>tbansal@chromium.org</owner>
-  <owner>dougarnett@chromium.org</owner>
-  <summary>
-    The duration of time between the start of a non-delayable resource request
-    to the start of the next non-delayable resource request. Recorded at the
-    start of all non-delayable requests that are preceeded by at least one
-    started non-delayable request in the same resource scheduler client.
-    Recorded only when a delayable request is in-flight.
-  </summary>
-</histogram>
-
 <histogram name="ResourceScheduler.PeakObservedQueueingDelay" units="ms"
     expires_after="2021-09-01">
   <owner>tbansal@chromium.org</owner>
