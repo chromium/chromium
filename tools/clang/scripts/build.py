@@ -848,8 +848,7 @@ def main():
   if sys.platform == 'darwin':
     isysroot = subprocess.check_output(['xcrun', '--show-sdk-path'],
                                        universal_newlines=True).rstrip()
-  else:
-    base_cmake_args += ['-DLLVM_ENABLE_UNWIND_TABLES=OFF']
+  base_cmake_args += ['-DLLVM_ENABLE_UNWIND_TABLES=OFF']
 
   # See https://crbug.com/1302636#c49 - #c56 -- intercepting crypt_r() does not
   # work with the sysroot for not fully understood reasons. Disable it.
