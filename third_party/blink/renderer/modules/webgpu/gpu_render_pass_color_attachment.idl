@@ -6,6 +6,7 @@
 
 dictionary GPURenderPassColorAttachment {
     required GPUTextureView view;
+    GPUSize32 depthSlice;
     GPUTextureView resolveTarget;
 
     GPUColor clearValue;
