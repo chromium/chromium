@@ -18,7 +18,7 @@ switch_access_dir =
 tsc_out_dir = "$target_gen_dir/tsc"
 
 # TS files to compile.
-ts_modules = []
+ts_modules = [ "commands.ts" ]
 
 # JS files needed to compile TS.
 js_deps = []
@@ -27,8 +27,17 @@ js_deps = []
 ts_library("ts_build") {
   root_dir = "../"
   out_dir = tsc_out_dir
-  deps = [ "../common:ts_build" ]
-  definitions = []
+  definitions = [
+    "../definitions/accessibility_private_mv2.d.ts",
+    "../definitions/automation.d.ts",
+    "../definitions/command_line_private.d.ts",
+    "../definitions/extension_types.d.ts",
+    "../definitions/extensions.d.ts",
+    "../definitions/runtime.d.ts",
+    "../definitions/tabs.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
+  ]
 
   in_files = []
   foreach(_js_file, js_deps) {
@@ -59,7 +68,6 @@ run_jsbundler("copied_files") {
     "auto_scan_manager.js",
     "background.html",
     "cache.js",
-    "commands.js",
     "focus_ring_manager.js",
     "history.js",
     "icons/back.svg",
