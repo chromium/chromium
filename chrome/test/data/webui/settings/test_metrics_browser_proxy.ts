@@ -10,7 +10,6 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'recordAction',
-      'recordSafetyHubCardStateClicked',
       'recordSafetyCheckInteractionHistogram',
       'recordSafetyCheckNotificationsListCountHistogram',
       'recordSafetyCheckNotificationsModuleInteractionsHistogram',
@@ -26,23 +25,22 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordPrivacyGuideSettingsStatesHistogram',
       'recordPrivacyGuideStepsEligibleAndReachedHistogram',
       'recordDeleteBrowsingDataAction',
+      'recordSafetyHubCardStateClicked',
+      'recordSafetyHubDashboardAnyWarning',
+      'recordSafetyHubEntryPointClicked',
+      'recordSafetyHubEntryPointShown',
       'recordSafetyHubImpression',
       'recordSafetyHubInteraction',
-      'recordSafetyHubEntryPointShown',
-      'recordSafetyHubEntryPointClicked',
       'recordSafetyHubModuleWarningImpression',
-      'recordSafetyHubDashboardAnyWarning',
+      'recordSafetyHubNotificationPermissionsModuleInteractionsHistogram',
+      'recordSafetyHubNotificationPermissionsModuleListCountHistogram',
+      'recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram',
+      'recordSafetyHubUnusedSitePermissionsModuleListCountHistogram',
     ]);
   }
 
   recordAction(action: string) {
     this.methodCalled('recordAction', action);
-  }
-
-  recordSafetyHubCardStateClicked(
-      histogramName: string, state: SafetyHubCardState) {
-    this.methodCalled(
-        'recordSafetyHubCardStateClicked', [histogramName, state]);
   }
 
   recordSafetyCheckInteractionHistogram(interaction: SafetyCheckInteractions) {
@@ -122,6 +120,24 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('recordDeleteBrowsingDataAction', action);
   }
 
+  recordSafetyHubCardStateClicked(
+      histogramName: string, state: SafetyHubCardState) {
+    this.methodCalled(
+        'recordSafetyHubCardStateClicked', [histogramName, state]);
+  }
+
+  recordSafetyHubDashboardAnyWarning(visible: boolean) {
+    this.methodCalled('recordSafetyHubDashboardAnyWarning', visible);
+  }
+
+  recordSafetyHubEntryPointClicked(page: SafetyHubEntryPoint) {
+    this.methodCalled('recordSafetyHubEntryPointClicked', page);
+  }
+
+  recordSafetyHubEntryPointShown(page: SafetyHubEntryPoint) {
+    this.methodCalled('recordSafetyHubModuleWarningImpression', page);
+  }
+
   recordSafetyHubImpression(surface: SafetyHubSurfaces) {
     this.methodCalled('recordSafetyHubImpression', surface);
   }
@@ -130,19 +146,35 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('recordSafetyHubInteraction', surface);
   }
 
-  recordSafetyHubEntryPointShown(page: SafetyHubEntryPoint) {
-    this.methodCalled('recordSafetyHubModuleWarningImpression', page);
-  }
-
-  recordSafetyHubEntryPointClicked(page: SafetyHubEntryPoint) {
-    this.methodCalled('recordSafetyHubEntryPointClicked', page);
-  }
-
   recordSafetyHubModuleWarningImpression(module: SafetyHubModuleType) {
     this.methodCalled('recordSafetyHubModuleWarningImpression', module);
   }
 
-  recordSafetyHubDashboardAnyWarning(visible: boolean) {
-    this.methodCalled('recordSafetyHubDashboardAnyWarning', visible);
+  recordSafetyHubNotificationPermissionsModuleInteractionsHistogram(
+      interaction: SafetyCheckNotificationsModuleInteractions) {
+    this.methodCalled(
+        'recordSafetyHubNotificationPermissionsModuleInteractionsHistogram',
+        interaction);
+  }
+
+  recordSafetyHubNotificationPermissionsModuleListCountHistogram(suggestions:
+                                                                     number) {
+    this.methodCalled(
+        'recordSafetyHubNotificationPermissionsModuleListCountHistogram',
+        suggestions);
+  }
+
+  recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(
+      interaction: SafetyCheckUnusedSitePermissionsModuleInteractions) {
+    this.methodCalled(
+        'recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram',
+        interaction);
+  }
+
+  recordSafetyHubUnusedSitePermissionsModuleListCountHistogram(suggestions:
+                                                                   number) {
+    this.methodCalled(
+        'recordSafetyHubUnusedSitePermissionsModuleListCountHistogram',
+        suggestions);
   }
 }

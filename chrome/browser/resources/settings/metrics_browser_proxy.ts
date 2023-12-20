@@ -109,8 +109,10 @@ export enum SafetyCheckNotificationsModuleInteractions {
   UNDO_IGNORE = 6,
   UNDO_RESET = 7,
   OPEN_REVIEW_UI = 8,
+  UNDO_BLOCK_ALL = 9,
+  GO_TO_SETTINGS = 10,
   // Max value should be updated whenever new entries are added.
-  MAX_VALUE = 9,
+  MAX_VALUE = 11,
 }
 
 /**
@@ -130,8 +132,9 @@ export enum SafetyCheckUnusedSitePermissionsModuleInteractions {
   UNDO_ALLOW_AGAIN = 3,
   UNDO_ACKNOWLEDGE_ALL = 4,
   MINIMIZE = 5,
+  GO_TO_SETTINGS = 6,
   // Max value should be updated whenever new entries are added.
-  MAX_VALUE = 6,
+  MAX_VALUE = 7,
 }
 
 /**
@@ -410,6 +413,33 @@ export interface MetricsBrowserProxy {
   recordSafetyHubCardStateClicked(
       histogramName: string, state: SafetyHubCardState): void;
 
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.SafetyHub.NotificationPermissionsModule.Interactions histogram
+   */
+  recordSafetyHubNotificationPermissionsModuleInteractionsHistogram(
+      interaction: SafetyCheckNotificationsModuleInteractions): void;
+
+  /**
+   * Helper function that calls recordHistogram for
+   * Settings.SafetyHub.NotificationPermissionsModule.ListCount histogram
+   */
+  recordSafetyHubNotificationPermissionsModuleListCountHistogram(
+      suggestions: number): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.SafetyHub.UnusedSitePermissionsModule.Interactions histogram
+   */
+  recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(
+      interaction: SafetyCheckUnusedSitePermissionsModuleInteractions): void;
+
+  /**
+   * Helper function that calls recordHistogram for
+   * Settings.SafetyHub.UnusedSitePermissionsModule.ListCount histogram
+   */
+  recordSafetyHubUnusedSitePermissionsModuleListCountHistogram(
+      suggestions: number): void;
 
   /**
    * Helper function that calls recordHistogram for the
@@ -575,6 +605,42 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     chrome.send('metricsHandler:recordBooleanHistogram', [
       'Settings.SafetyHub.HasDashboardShowAnyWarning',
       visible,
+    ]);
+  }
+
+  recordSafetyHubNotificationPermissionsModuleInteractionsHistogram(
+      interaction: SafetyCheckNotificationsModuleInteractions) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.NotificationPermissionsModule.Interactions',
+      interaction,
+      SafetyCheckNotificationsModuleInteractions.MAX_VALUE,
+    ]);
+  }
+
+  recordSafetyHubNotificationPermissionsModuleListCountHistogram(suggestions:
+                                                                     number) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.NotificationPermissionsModuleListCount',
+      suggestions,
+      99 /*max value for Notification Permissions suggestions*/,
+    ]);
+  }
+
+  recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(
+      interaction: SafetyCheckUnusedSitePermissionsModuleInteractions) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.UnusedSitePermissionsModule.Interactions',
+      interaction,
+      SafetyCheckUnusedSitePermissionsModuleInteractions.MAX_VALUE,
+    ]);
+  }
+
+  recordSafetyHubUnusedSitePermissionsModuleListCountHistogram(suggestions:
+                                                                   number) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.UnusedSitePermissionsModuleListCount',
+      suggestions,
+      99 /*max value for Unused Site Permissions suggestions*/,
     ]);
   }
 

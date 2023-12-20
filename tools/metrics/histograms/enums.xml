@@ -46720,6 +46720,8 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Undo ignore"/>
   <int value="7" label="Undo reset"/>
   <int value="8" label="Open review UI"/>
+  <int value="9" label="Undo block all"/>
+  <int value="10" label="Go to settings"/>
 </enum>
 
 <enum name="SafetyCheckPasswordsStatus">
@@ -46755,6 +46757,7 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Undo allow again"/>
   <int value="4" label="Undo acknowledge all"/>
   <int value="5" label="Minimize review UI"/>
+  <int value="6" label="Go to settings"/>
 </enum>
 
 <enum name="SafetyCheckUpdateStatus">
