@@ -18,10 +18,10 @@
 #include "base/path_service.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/safe_browsing_network_context.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -71,7 +71,7 @@ void AwSafeBrowsingUIManager::DisplayBlockingPage(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   WebContents* web_contents =
-      security_interstitials::GetWebContentsForResource(resource);
+      safe_browsing::unsafe_resource_util::GetWebContentsForResource(resource);
   // Check the size of the view
   UIManagerClient* client = UIManagerClient::FromWebContents(web_contents);
   if (!client || !client->CanShowInterstitial()) {

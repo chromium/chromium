@@ -11,12 +11,13 @@
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/safe_browsing_controller_client.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/safe_browsing_loud_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -68,7 +69,7 @@ BaseBlockingPage::BaseBlockingPage(
           base::Time::NowFromSystemTime(),
           controller(),
           /* created_prior_to_navigation */
-          IsMainPageLoadBlocked(unsafe_resources))) {}
+          IsMainPageLoadPending(unsafe_resources))) {}
 
 BaseBlockingPage::~BaseBlockingPage() {}
 
@@ -77,7 +78,7 @@ const security_interstitials::BaseSafeBrowsingErrorUI::SBErrorDisplayOptions
 BaseBlockingPage::CreateDefaultDisplayOptions(
     const UnsafeResourceList& unsafe_resources) {
   return BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
-      IsMainPageLoadBlocked(unsafe_resources),
+      IsMainPageLoadPending(unsafe_resources),
       false,                 // kSafeBrowsingExtendedReportingOptInAllowed
       false,                 // is_off_the_record
       false,                 // is_extended_reporting
@@ -92,12 +93,12 @@ BaseBlockingPage::CreateDefaultDisplayOptions(
 }
 
 // static
-bool BaseBlockingPage::IsMainPageLoadBlocked(
+bool BaseBlockingPage::IsMainPageLoadPending(
     const UnsafeResourceList& unsafe_resources) {
   // If there is more than one unsafe resource, the main page load must not be
-  // blocked. Otherwise, check if the one resource is.
+  // pending. Otherwise, check if the one resource is.
   return unsafe_resources.size() == 1 &&
-         unsafe_resources[0].IsMainPageLoadBlocked();
+         AsyncCheckTracker::IsMainPageLoadPending(unsafe_resources[0]);
 }
 
 void BaseBlockingPage::SetThreatDetailsProceedDelayForTesting(int64_t delay) {

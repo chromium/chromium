@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/content/browser/url_checker_on_sb.h"
+#include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -34,6 +35,13 @@ class AsyncCheckTracker
   static AsyncCheckTracker* GetOrCreateForWebContents(
       content::WebContents* web_contents,
       scoped_refptr<BaseUIManager> ui_manager);
+
+  // Returns true if the main frame load is pending (i.e. the navigation has not
+  // yet committed). Note that a main frame hit may not be pending, eg. 1)
+  // client side detection happens after the load is committed, or 2) async Safe
+  // Browsing check is enabled.
+  static bool IsMainPageLoadPending(
+      const security_interstitials::UnsafeResource& resource);
 
   AsyncCheckTracker(const AsyncCheckTracker&) = delete;
   AsyncCheckTracker& operator=(const AsyncCheckTracker&) = delete;

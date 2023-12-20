@@ -5,6 +5,7 @@
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -20,6 +21,14 @@ AsyncCheckTracker* AsyncCheckTracker::GetOrCreateForWebContents(
   // CreateForWebContents does nothing if the delegate instance already exists.
   AsyncCheckTracker::CreateForWebContents(web_contents, std::move(ui_manager));
   return AsyncCheckTracker::FromWebContents(web_contents);
+}
+
+// static
+bool AsyncCheckTracker::IsMainPageLoadPending(
+    const security_interstitials::UnsafeResource& resource) {
+  // TODO(crbug.com/1501194): Implement this function when
+  // async Safe Browsing check is enabled.
+  return resource.IsMainPageLoadPendingWithSyncCheck();
 }
 
 AsyncCheckTracker::AsyncCheckTracker(content::WebContents* web_contents,

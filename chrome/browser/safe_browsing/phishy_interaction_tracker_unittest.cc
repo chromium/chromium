@@ -18,8 +18,8 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -229,8 +229,8 @@ TEST_F(PhishyInteractionTrackerTest, CheckHistogramCountsOnPhishyUserEvents) {
   safe_browsing::SBThreatType threat_type;
   EXPECT_TRUE(ui_manager_->IsUrlAllowlistedOrPendingForWebContents(
       resource.url, resource.is_subresource, /*entry=*/nullptr,
-      security_interstitials::GetWebContentsForResource(resource), true,
-      &threat_type));
+      safe_browsing::unsafe_resource_util::GetWebContentsForResource(resource),
+      true, &threat_type));
 
   const std::string phishy_interaction_histogram = "SafeBrowsing.PhishySite.";
   const int kExpectedClickEventCount = 3;

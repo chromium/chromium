@@ -14,11 +14,11 @@
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/content/browser/safe_browsing_controller_client.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -108,7 +108,7 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
                 manager->default_safe_page(),
                 /*settings_helper=*/nullptr),
             BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
-                BaseBlockingPage::IsMainPageLoadBlocked(unsafe_resources),
+                BaseBlockingPage::IsMainPageLoadPending(unsafe_resources),
                 false,                 // is_extended_reporting_opt_in_allowed
                 false,                 // is_off_the_record
                 false,                 // is_extended_reporting_enabled
@@ -349,7 +349,7 @@ TEST_F(SafeBrowsingUIManagerTest, AllowlistRemembersThreatType) {
   ASSERT_TRUE(entry);
   EXPECT_TRUE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
       resource.url, resource.is_subresource, entry,
-      security_interstitials::GetWebContentsForResource(resource), true,
+      unsafe_resource_util::GetWebContentsForResource(resource), true,
       &threat_type));
   EXPECT_EQ(resource.threat_type, threat_type);
 }
@@ -695,7 +695,7 @@ TEST_F(SafeBrowsingUIManagerTest, InvalidRenderFrameHostId) {
   content::GlobalRenderFrameHostId invalid_rfh_id;
   resource.render_process_id = invalid_rfh_id.child_id;
   resource.render_frame_token = base::UnguessableToken::Create();
-  ASSERT_FALSE(security_interstitials::GetWebContentsForResource(resource));
+  ASSERT_FALSE(unsafe_resource_util::GetWebContentsForResource(resource));
 
   EXPECT_FALSE(IsAllowlisted(resource));
 }

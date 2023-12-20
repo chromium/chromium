@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/content/browser/client_report_util.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 
@@ -236,7 +236,7 @@ GURL GetPageUrl(const security_interstitials::UnsafeResource& resource) {
     // |GetNavigationEntryForResource| can only be called from the UI thread.
     if (content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
       content::NavigationEntry* nav_entry =
-          GetNavigationEntryForResource(resource);
+          unsafe_resource_util::GetNavigationEntryForResource(resource);
       if (nav_entry) {
         page_url = nav_entry->GetURL();
       }
@@ -253,7 +253,7 @@ GURL GetReferrerUrl(const security_interstitials::UnsafeResource& resource) {
     // |GetNavigationEntryForResource| can only be called from the UI thread.
     if (content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
       content::NavigationEntry* nav_entry =
-          GetNavigationEntryForResource(resource);
+          unsafe_resource_util::GetNavigationEntryForResource(resource);
       if (nav_entry) {
         referrer_url = nav_entry->GetReferrer().url;
       }

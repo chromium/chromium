@@ -11,10 +11,11 @@
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
+#include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -157,11 +158,11 @@ BaseUIManager::~BaseUIManager() = default;
 bool BaseUIManager::IsAllowlisted(const UnsafeResource& resource) {
   NavigationEntry* entry = nullptr;
   if (resource.is_subresource) {
-    entry = GetNavigationEntryForResource(resource);
+    entry = unsafe_resource_util::GetNavigationEntryForResource(resource);
   }
 
   content::WebContents* web_contents =
-      security_interstitials::GetWebContentsForResource(resource);
+      unsafe_resource_util::GetWebContentsForResource(resource);
   // |web_contents| can be null after RenderFrameHost is destroyed.
   if (!web_contents)
     return false;
@@ -252,7 +253,7 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   // The tab might have been closed. If it was closed, just act as if "Don't
   // Proceed" had been chosen.
   content::WebContents* web_contents =
-      security_interstitials::GetWebContentsForResource(resource);
+      unsafe_resource_util::GetWebContentsForResource(resource);
   if (!web_contents) {
     OnBlockingPageDone(std::vector<UnsafeResource>{resource},
                        false /* proceed */, web_contents,
@@ -288,16 +289,17 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
 
   // |entry| can be null if we are on a brand new tab, and a resource is added
   // via javascript without a navigation.
-  content::NavigationEntry* entry = GetNavigationEntryForResource(resource);
+  content::NavigationEntry* entry =
+      unsafe_resource_util::GetNavigationEntryForResource(resource);
 
   GURL unsafe_url = resource.url;
-  if (entry && !resource.IsMainPageLoadBlocked()) {
+  if (entry && !AsyncCheckTracker::IsMainPageLoadPending(resource)) {
     unsafe_url = entry->GetURL();
   }
 
-  // In top-document navigation cases, we just mark the resource unsafe and
-  // cancel the load from here, the actual interstitial will be shown from the
-  // SafeBrowsingNavigationThrottle when the navigation fails.
+  // If the top-level navigation is still pending, we just mark the resource
+  // unsafe and cancel the load from here, the actual interstitial will be shown
+  // from the SafeBrowsingNavigationThrottle when the navigation fails.
   //
   // In other cases, the error interstitial is manually loaded here, after the
   // load is canceled:
@@ -309,8 +311,11 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   // - Delayed Warning Experiment: When enabled, this method is only called
   //   after the navigation completes and a user action occurs so the throttle
   //   cannot be used.
+  // - Async check: If the check is not able to complete before
+  //   DidFinishNavigation, it won't hit the throttle.
   const bool load_post_commit_error_page =
-      !resource.IsMainPageLoadBlocked() || resource.is_delayed_warning;
+      !AsyncCheckTracker::IsMainPageLoadPending(resource) ||
+      resource.is_delayed_warning;
   if (!load_post_commit_error_page) {
     AddUnsafeResource(unsafe_url, resource);
   }
@@ -546,10 +551,11 @@ void BaseUIManager::RemoveAllowlistUrlSet(const GURL& allowlist_url,
 // static
 GURL BaseUIManager::GetMainFrameAllowlistUrlForResource(
     const security_interstitials::UnsafeResource& resource) {
-  return GetAllowlistUrl(resource.url, resource.is_subresource,
-                         resource.is_subresource
-                             ? GetNavigationEntryForResource(resource)
-                             : nullptr);
+  return GetAllowlistUrl(
+      resource.url, resource.is_subresource,
+      resource.is_subresource
+          ? unsafe_resource_util::GetNavigationEntryForResource(resource)
+          : nullptr);
 }
 
 }  // namespace safe_browsing

@@ -12,15 +12,16 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/client_report_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -62,7 +63,7 @@ void SafeBrowsingUIManager::Stop(bool shutdown) {
 void SafeBrowsingUIManager::CreateAndSendHitReport(
     const UnsafeResource& resource) {
   WebContents* web_contents =
-      security_interstitials::GetWebContentsForResource(resource);
+      unsafe_resource_util::GetWebContentsForResource(resource);
   DCHECK(web_contents);
   std::unique_ptr<HitReport> hit_report = std::make_unique<HitReport>();
   hit_report->malicious_url = resource.url;
@@ -71,7 +72,8 @@ void SafeBrowsingUIManager::CreateAndSendHitReport(
   hit_report->threat_source = resource.threat_source;
   hit_report->population_id = resource.threat_metadata.population_id;
 
-  NavigationEntry* entry = GetNavigationEntryForResource(resource);
+  NavigationEntry* entry =
+      unsafe_resource_util::GetNavigationEntryForResource(resource);
   if (entry) {
     hit_report->page_url = entry->GetURL();
     hit_report->referrer_url = entry->GetReferrer().url;
@@ -105,7 +107,7 @@ void SafeBrowsingUIManager::CreateAndSendHitReport(
 void SafeBrowsingUIManager::CreateAndSendClientSafeBrowsingWarningShownReport(
     const UnsafeResource& resource) {
   WebContents* web_contents =
-      security_interstitials::GetWebContentsForResource(resource);
+      unsafe_resource_util::GetWebContentsForResource(resource);
   DCHECK(web_contents);
   std::unique_ptr<ClientSafeBrowsingReportRequest> report =
       std::make_unique<ClientSafeBrowsingReportRequest>();
@@ -139,7 +141,7 @@ void SafeBrowsingUIManager::CreateAndSendClientSafeBrowsingWarningShownReport(
 void SafeBrowsingUIManager::StartDisplayingBlockingPage(
     const security_interstitials::UnsafeResource& resource) {
   content::WebContents* web_contents =
-      security_interstitials::GetWebContentsForResource(resource);
+      unsafe_resource_util::GetWebContentsForResource(resource);
 
   if (!web_contents) {
     // Tab is gone.
@@ -215,13 +217,13 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
     return;
   }
 
-  // With committed interstitials, if this is a main frame load, we need to
-  // get the navigation URL and referrer URL from the navigation entry now,
-  // since they are required for threat reporting, and the entry will be
-  // destroyed once the request is failed.
-  if (resource.IsMainPageLoadBlocked()) {
+  // If the main frame load is still pending, we need to get the navigation URL
+  // and referrer URL from the navigation entry now, since they are required for
+  // threat reporting, and the entry will be destroyed once the request is
+  // failed.
+  if (AsyncCheckTracker::IsMainPageLoadPending(resource)) {
     content::NavigationEntry* entry =
-        security_interstitials::GetNavigationEntryForResource(resource);
+        unsafe_resource_util::GetNavigationEntryForResource(resource);
     if (entry) {
       security_interstitials::UnsafeResource resource_copy(resource);
       resource_copy.navigation_url = entry->GetURL();
@@ -238,7 +240,7 @@ void SafeBrowsingUIManager::CheckLookupMechanismExperimentEligibility(
     base::OnceCallback<void(bool)> callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
   content::WebContents* web_contents =
-      security_interstitials::GetWebContentsForResource(resource);
+      unsafe_resource_util::GetWebContentsForResource(resource);
   auto determine_if_is_prerender = [resource, web_contents]() {
     content::RenderFrameHost* rfh = nullptr;
     if (resource.render_frame_token) {

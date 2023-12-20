@@ -22,7 +22,7 @@ UnsafeResource::UnsafeResource(const UnsafeResource& other) = default;
 
 UnsafeResource::~UnsafeResource() = default;
 
-bool UnsafeResource::IsMainPageLoadBlocked() const {
+bool UnsafeResource::IsMainPageLoadPendingWithSyncCheck() const {
   // Subresource hits cannot happen until after main page load is committed.
   if (is_subresource)
     return false;
