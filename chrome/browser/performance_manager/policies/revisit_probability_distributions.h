@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_REVISIT_PROBABILITY_DISTRIBUTIONS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_REVISIT_PROBABILITY_DISTRIBUTIONS_H_
 
+#include <cstdint>
 #include <map>
 
 #include "chrome/browser/performance_manager/policies/probability_distribution.h"
