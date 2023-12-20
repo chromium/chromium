@@ -183,6 +183,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, InstallLinuxPackageDialogTest) {
   RunTestURL("foreground/js/ui/install_linux_package_dialog_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Id3Parser) {
+  RunTestURL("foreground/js/metadata/id3_parser_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, List) {
   RunTestURL("foreground/js/ui/list_unittest.js");
 }

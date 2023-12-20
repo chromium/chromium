@@ -518,7 +518,6 @@ ts_test_files = [
   "file_manager/foreground/js/file_transfer_controller_unittest.ts",
   "file_manager/foreground/js/file_type_filters_controller_unittest.ts",
   "file_manager/foreground/js/list_thumbnail_loader_unittest.ts",
-  "file_manager/foreground/js/metadata/dlp_metadata_provider_unittest.ts",
   "file_manager/foreground/js/path_component_unittest.ts",
   "file_manager/foreground/js/providers_model_unittest.ts",
   "file_manager/foreground/js/spinner_controller_unittest.ts",
@@ -557,9 +556,11 @@ ts_test_files = [
   # These lines will be removed at the end of the TS migration.
   # Metadata:
   "file_manager/foreground/js/metadata/content_metadata_provider_unittest.ts",
+  "file_manager/foreground/js/metadata/dlp_metadata_provider_unittest.ts",
   "file_manager/foreground/js/metadata/exif_parser_unittest.ts",
   "file_manager/foreground/js/metadata/external_metadata_provider_unittest.ts",
   "file_manager/foreground/js/metadata/file_system_metadata_provider_unittest.ts",
+  "file_manager/foreground/js/metadata/id3_parser_unittest.ts",
   "file_manager/foreground/js/metadata/metadata_cache_item_unittest.ts",
   "file_manager/foreground/js/metadata/metadata_cache_set_unittest.ts",
   "file_manager/foreground/js/metadata/metadata_model_unittest.ts",
