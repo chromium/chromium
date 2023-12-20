@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_VIDEO_DECODER_ADAPTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_VIDEO_DECODER_ADAPTER_H_
 
+#include <atomic>
 #include <memory>
 #include <vector>
 
@@ -15,20 +16,24 @@
 #include "build/build_config.h"
 #include "media/base/decoder.h"
 #include "media/base/video_decoder_config.h"
+#include "media/filters/resolution_monitor.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_decoder.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
 namespace media {
+class DecoderBuffer;
 class GpuVideoAcceleratorFactories;
 }  // namespace media
 
 namespace blink {
+
 // This class decodes video for WebRTC using a media::VideoDecoder. In
 // particular, MojoVideoDecoder are used to provide access to hardware decoding
 // in the GPU process.
@@ -44,9 +49,9 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   // of falling back to software.
 #if BUILDFLAG(IS_CHROMEOS)
   // Effectively opt-out CrOS, since it may cause tests to fail (b/179724180).
-  static constexpr int32_t kMinResolution = 2 * 2;
+  static constexpr gfx::Size kMinResolution{2, 2};
 #else
-  static constexpr int32_t kMinResolution = 320 * 240;
+  static constexpr gfx::Size kMinResolution{320, 240};
 #endif
 
   // Maximum number of decoder instances we'll allow before fallback to software
@@ -59,7 +64,8 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   // Called on the worker thread.
   static std::unique_ptr<RTCVideoDecoderAdapter> Create(
       media::GpuVideoAcceleratorFactories* gpu_factories,
-      const webrtc::SdpVideoFormat& format);
+      const webrtc::SdpVideoFormat& format,
+      std::unique_ptr<media::ResolutionMonitor> resolution_monitor = nullptr);
 
   RTCVideoDecoderAdapter(const RTCVideoDecoderAdapter&) = delete;
   RTCVideoDecoderAdapter& operator=(const RTCVideoDecoderAdapter&) = delete;
@@ -86,6 +92,8 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   static void IncrementCurrentDecoderCountForTesting();
   static void DecrementCurrentDecoderCountForTesting();
 
+  static std::atomic<int> g_num_decoders_;
+
  private:
   class Impl;
 
@@ -100,8 +108,10 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   };
 
   // Called on the worker thread.
-  RTCVideoDecoderAdapter(media::GpuVideoAcceleratorFactories* gpu_factories,
-                         const media::VideoDecoderConfig& config);
+  RTCVideoDecoderAdapter(
+      media::GpuVideoAcceleratorFactories* gpu_factories,
+      const media::VideoDecoderConfig& config,
+      std::unique_ptr<media::ResolutionMonitor> resolution_monitor);
 
   bool InitializeSync(const media::VideoDecoderConfig& config);
   absl::optional<DecodeResult> DecodeInternal(
@@ -112,13 +122,16 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
       const webrtc::EncodedImage& input_image) const;
   bool ReinitializeSync(const media::VideoDecoderConfig& config);
   void ChangeStatus(Status new_status);
-
+  bool CheckResolutionAndNumInstances(const media::DecoderBuffer& buffer);
   // Construction parameters.
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   std::unique_ptr<Impl> impl_ GUARDED_BY_CONTEXT(decoding_sequence_checker_);
 
   // Construction parameters.
   media::VideoDecoderConfig config_;
+
+  const std::unique_ptr<media::ResolutionMonitor> resolution_monitor_
+      GUARDED_BY_CONTEXT(decoding_sequence_checker_);
 
   // Decoding thread members.
   // Has anything been sent to Decode() yet?
@@ -127,6 +140,9 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
 
   // DecoderInfo is constant after InitializeSync() is complete.
   DecoderInfo decoder_info_;
+
+  bool have_started_decoding_ GUARDED_BY_CONTEXT(decoding_sequence_checker_){
+      false};
 
   media::VideoDecoderType decoder_type_ GUARDED_BY_CONTEXT(
       decoding_sequence_checker_){media::VideoDecoderType::kUnknown};
