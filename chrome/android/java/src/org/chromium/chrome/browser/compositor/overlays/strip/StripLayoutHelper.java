@@ -1497,11 +1497,15 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             showTabMenu(clickedTab);
         } else {
             resetResizeTimeout(false);
-            startReorderMode(time, x, x);
 
             // Allow the user to drag the selected tab out of the tab toolbar.
             if (clickedTab != null) {
-                allowMovingTabOutOfStripLayout(clickedTab, new PointF(x, y));
+                if (TabUiFeatureUtilities.isTabDragEnabled()) {
+                    // The subsequent drag events will trigger reorder mode.
+                    allowMovingTabOutOfStripLayout(clickedTab, new PointF(x, y));
+                } else {
+                    startReorderMode(time, x, x);
+                }
             } else {
                 // Broadcast to start moving the window instance as the user has long pressed on the
                 // open space of the tab strip.

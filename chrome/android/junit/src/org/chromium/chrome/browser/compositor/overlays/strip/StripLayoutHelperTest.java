@@ -1338,6 +1338,10 @@ public class StripLayoutHelperTest {
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testOnLongPress_OnTab() {
         onLongPress_OnTab();
+        // Verify we directly enter reorder mode.SS
+        assertTrue(
+                "Should be in reorder mode after long press on tab.",
+                mStripLayoutHelper.getInReorderModeForTesting());
     }
 
     @Test
@@ -1363,9 +1367,6 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onLongPress(TIMESTAMP, 150f, 0f);
 
         // Verify that we enter reorder mode.
-        assertTrue(
-                "Should be in reorder mode after long press on tab.",
-                mStripLayoutHelper.getInReorderModeForTesting());
         assertFalse(
                 "Should not show tab menu after long press on tab.",
                 mStripLayoutHelper.isTabMenuShowingForTesting());
