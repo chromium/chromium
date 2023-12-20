@@ -520,6 +520,9 @@ class MediaDevicesDispatcherHostTest
     render_frame_host_ = web_contents_->GetPrimaryMainFrame();
   }
 
+  std::unique_ptr<media::AudioManager> audio_manager_;
+  std::unique_ptr<media::AudioSystem> audio_system_;
+
   // The order of these members is important on teardown:
   // MediaDevicesDispatcherHost expects to be destroyed on the IO thread while
   // MediaStreamManager expects to be destroyed after the IO thread has been
@@ -528,8 +531,6 @@ class MediaDevicesDispatcherHostTest
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<MediaDevicesDispatcherHost> host_;
 
-  std::unique_ptr<media::AudioManager> audio_manager_;
-  std::unique_ptr<media::AudioSystem> audio_system_;
   raw_ptr<media::FakeVideoCaptureDeviceFactory> video_capture_device_factory_;
   MediaDeviceEnumeration physical_devices_;
   url::Origin origin_;

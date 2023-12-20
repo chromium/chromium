@@ -95,10 +95,6 @@ class VideoCaptureTest : public testing::Test,
  public:
   VideoCaptureTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
-        audio_manager_(std::make_unique<media::MockAudioManager>(
-            std::make_unique<media::TestAudioThread>())),
-        audio_system_(
-            std::make_unique<media::AudioSystemImpl>(audio_manager_.get())),
         task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   VideoCaptureTest(const VideoCaptureTest&) = delete;
@@ -108,6 +104,10 @@ class VideoCaptureTest : public testing::Test,
 
   void SetUp() override {
     SetBrowserClientForTesting(&browser_client_);
+    audio_manager_ = std::make_unique<media::MockAudioManager>(
+        std::make_unique<media::TestAudioThread>());
+    audio_system_ =
+        std::make_unique<media::AudioSystemImpl>(audio_manager_.get());
 
     media_stream_manager_ = std::make_unique<MediaStreamManager>(
         audio_system_.get(), std::make_unique<FakeVideoCaptureProvider>());
@@ -351,12 +351,13 @@ class VideoCaptureTest : public testing::Test,
     std::move(quit_closure).Run();
   }
 
+  std::unique_ptr<media::AudioManager> audio_manager_;
+  std::unique_ptr<media::AudioSystem> audio_system_;
+
   // |media_stream_manager_| needs to outlive |task_environment_| because it is
   // a CurrentThread::DestructionObserver.
   std::unique_ptr<MediaStreamManager> media_stream_manager_;
   const content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<media::AudioManager> audio_manager_;
-  std::unique_ptr<media::AudioSystem> audio_system_;
   content::TestBrowserContext browser_context_;
   content::TestContentBrowserClient browser_client_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

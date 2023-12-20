@@ -704,6 +704,9 @@ class MediaStreamManagerTest : public ::testing::Test
     return audio_device;
   }
 
+  std::unique_ptr<MockAudioManager> audio_manager_;
+  std::unique_ptr<media::AudioSystem> audio_system_;
+
   // media_stream_manager_ needs to outlive task_environment_ because it is a
   // CurrentThread::DestructionObserver. audio_manager_ needs to outlive
   // task_environment_ because it uses the underlying message loop.
@@ -715,8 +718,6 @@ class MediaStreamManagerTest : public ::testing::Test
   chromeos::ScopedLacrosServiceTestHelper lacros_service_test_helper_;
   mojo::Receiver<crosapi::mojom::MultiCaptureService> receiver_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<MockAudioManager> audio_manager_;
-  std::unique_ptr<media::AudioSystem> audio_system_;
   raw_ptr<MockVideoCaptureProvider> video_capture_provider_;
   std::unique_ptr<MediaStreamProviderListenerMock> stream_provider_listener_;
   size_t screen_count_ = 0;
