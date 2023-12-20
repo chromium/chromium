@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Element which shows toasts with optional undo button. */
+/**
+ * @fileoverview Element which shows toasts with optional undo button.
+ *
+ * Forked from ui/webui/resources/cr_elements/cr_toast/cr_toast_manager.ts
+ */
 
 import './cr_toast.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';

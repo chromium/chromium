@@ -215,6 +215,12 @@ source_set("interactive_ui_tests") {
     sources += [ "print_preview/print_preview_focus_test.cc" ]
   }
 
+  if (is_chromeos_ash) {
+    sources += [
+      "chromeos/ash_common/cr_elements/ash_common_cr_elements_focus_test.cc",
+    ]
+  }
+
   data = [ "//chrome/test/data/" ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

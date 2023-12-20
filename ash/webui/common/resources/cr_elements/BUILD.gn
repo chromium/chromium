@@ -11,6 +11,7 @@ build_webui("build") {
   grd_prefix = "ash_common_cr_elements"
 
   web_component_files = [
+    "cr_checkbox/cr_checkbox.ts",
     "cr_toast/cr_toast.ts",
     "cr_toast/cr_toast_manager.ts",
   ]
