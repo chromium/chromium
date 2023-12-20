@@ -1114,8 +1114,8 @@ TEST_F(PageInfoTest, InsecureContent) {
   };
 
   for (const auto& test : kTestCases) {
-    ResetMockUI();
     ClearPageInfo();
+    ResetMockUI();
     security_level_ = test.security_level;
     visible_security_state_.url = GURL("https://scheme-is-cryptographic.test");
     visible_security_state_.certificate = cert();
@@ -1818,8 +1818,8 @@ TEST_F(PageInfoTest, MAYBE_SafetyTipMetrics) {
     base::HistogramTester histograms;
     SetURL("https://example.test");
     visible_security_state_.safety_tip_info = test.safety_tip_info;
-    ResetMockUI();
     ClearPageInfo();
+    ResetMockUI();
     SetDefaultUIExpectations(mock_ui());
 
     histograms.ExpectTotalCount(kGenericHistogram, 0);
@@ -1912,8 +1912,8 @@ TEST_F(PageInfoTest, SubresourceFilterSetting_MatchesActivation) {
   EXPECT_FALSE(showing_setting(last_permission_info_list()));
 
   // Reset state.
-  ResetMockUI();
   ClearPageInfo();
+  ResetMockUI();
   SetDefaultUIExpectations(mock_ui());
 
   // Now, explicitly set site activation metadata to simulate activation on
