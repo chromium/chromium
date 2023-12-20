@@ -8145,85 +8145,74 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsTest) {
 TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsWithMinimumSizeTest) {
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> window1(CreateTestWindow(bounds));
-  const int work_area_length =
+  const gfx::Rect work_area =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
-          Shell::GetPrimaryRootWindow())
-          .width();
+          window1.get());
   std::unique_ptr<aura::Window> window2(CreateWindowWithMinimumSize(
-      bounds, gfx::Size(work_area_length / 3 + 20, 0)));
+      bounds, gfx::Size(work_area.width() / 3 + 20, 0)));
 
+  // Snap `window1` in split view, then resize it to 1/3 the work area, which is
+  // less than the minimum size of `window2`.
   ToggleOverview();
   split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
   split_view_divider()->StartResizeWithDivider(
       GetSplitViewDividerBounds(/*is_dragging=*/false).CenterPoint());
   split_view_divider()->EndResizeWithDivider(
-      gfx::Point(work_area_length / 3, 10));
-  SkipDividerSnapAnimation();
-  // Use |EXPECT_NEAR| for reasons related to rounding and divider thickness.
-  EXPECT_NEAR(
-      work_area_length / 3,
-      split_view_controller()
-          ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
-                                           /*window_for_minimum_size=*/nullptr,
-                                           chromeos::kDefaultSnapRatio)
-          .width(),
-      8);
-  EXPECT_NEAR(work_area_length / 2,
-              split_view_controller()
-                  ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
-                                                   window2.get(),
-                                                   chromeos::kDefaultSnapRatio)
-                  .width(),
-              8);
-  EXPECT_NEAR(
-      work_area_length * 2 / 3,
-      split_view_controller()
-          ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                           /*window_for_minimum_size=*/nullptr,
-                                           chromeos::kDefaultSnapRatio)
-          .width(),
-      8);
-  EXPECT_NEAR(work_area_length * 2 / 3,
-              split_view_controller()
-                  ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                                   window2.get(),
-                                                   chromeos::kDefaultSnapRatio)
-                  .width(),
-              8);
+      gfx::Point(work_area.width() / 3, 10));
+  ASSERT_TRUE(GetOverviewController()->InOverviewSession());
+  ASSERT_TRUE(split_view_controller()->InSplitViewMode());
+  // Use `EXPECT_NEAR` for reasons related to rounding and divider thickness.
+  constexpr int kDividerWidth = kSplitviewDividerShortSideLength;
+  ASSERT_NEAR(work_area.width() / 3, window1->GetBoundsInScreen().width(),
+              kDividerWidth);
+
+  // Long press to start a drag on `item2` to the left, on top of `window1`, to
+  // show the left highlight preview.
+  auto* item2 = GetOverviewItemForWindow(window2.get());
+  const gfx::Point drag_starting_point(
+      gfx::ToRoundedPoint(item2->GetTransformedBounds().CenterPoint()));
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  LongGestureTap(drag_starting_point, generator, /*release_touch=*/false);
+  DragItemToPoint(item2, gfx::Point(0, 0), generator,
+                  /*by_touch_gestures=*/true, /*drop=*/false);
+  ASSERT_TRUE(GetOverviewController()->InOverviewSession());
+  ASSERT_TRUE(split_view_controller()->InSplitViewMode());
+
+  // Test that the highlight bounds are 1/2 the work area, since that's the
+  // closest fixed divider ratio for `window2`.
+  gfx::Rect left_highlight_bounds(work_area);
+  left_highlight_bounds.set_width(work_area.width() / 2 - kDividerWidth / 2);
+  left_highlight_bounds.Inset(kHighlightScreenEdgePaddingDp);
+  auto* overview_grid =
+      GetOverviewSession()->GetGridWithRootWindow(window1->GetRootWindow());
+  EXPECT_EQ(left_highlight_bounds, overview_grid->split_view_drag_indicators()
+                                       ->GetLeftHighlightViewBounds());
+
+  // Drop `item2` back at its starting point.
+  generator->MoveTouch(drag_starting_point);
+  generator->ReleaseTouch();
+
+  // Now resize `window1` where `window2` can't fit in the secondary position.
   split_view_divider()->StartResizeWithDivider(
       GetSplitViewDividerBounds(/*is_dragging=*/false).CenterPoint());
   split_view_divider()->EndResizeWithDivider(
-      gfx::Point(work_area_length * 2 / 3, 10));
-  EXPECT_NEAR(
-      work_area_length * 2 / 3,
-      split_view_controller()
-          ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
-                                           /*window_for_minimum_size=*/nullptr,
-                                           chromeos::kDefaultSnapRatio)
-          .width(),
-      8);
-  EXPECT_NEAR(work_area_length * 2 / 3,
-              split_view_controller()
-                  ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
-                                                   window2.get(),
-                                                   chromeos::kDefaultSnapRatio)
-                  .width(),
-              8);
-  EXPECT_NEAR(
-      work_area_length / 3,
-      split_view_controller()
-          ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                           /*window_for_minimum_size=*/nullptr,
-                                           chromeos::kDefaultSnapRatio)
-          .width(),
-      8);
-  EXPECT_NEAR(work_area_length / 2,
-              split_view_controller()
-                  ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                                   window2.get(),
-                                                   chromeos::kDefaultSnapRatio)
-                  .width(),
-              8);
+      gfx::Point(work_area.width() * 2 / 3, 10));
+  ASSERT_NEAR(work_area.width() * 2 / 3, window1->GetBoundsInScreen().width(),
+              kDividerWidth);
+
+  // Drag `window2` to show the right highlight preview.
+  DragItemToPoint(item2, work_area.top_right(), generator,
+                  /*by_touch_gestures=*/false, /*drop=*/false);
+
+  // Test that the highlight bounds are 1/2 the work area.
+  gfx::Rect right_highlight_bounds(work_area);
+  right_highlight_bounds.set_x(work_area.width() / 2 + kDividerWidth / 2);
+  right_highlight_bounds.set_width(work_area.width() / 2 - kDividerWidth / 2);
+  right_highlight_bounds.Inset(kHighlightScreenEdgePaddingDp);
+  EXPECT_EQ(right_highlight_bounds,
+            overview_grid->split_view_drag_indicators()
+                ->GetRightHighlightViewBoundsForTesting());
+  generator->ReleaseTouch();
 }
 
 // Verify that if the split view divider is dragged all the way to the edge, the
@@ -9332,68 +9321,65 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   std::unique_ptr<aura::Window> window2(
       CreateWindowWithMinimumSize(bounds, gfx::Size(window2_minimum_size, 0)));
 
+  // Snap `window1` in split view, then resize it to `window1_size`, which is
+  // less than `window2_minimum_size`.
   ToggleOverview();
   split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
-  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
-                                     window1.get());
-  int divider_position = window1->GetBoundsInScreen().width();
-  generator.MoveMouseTo(divider_position, 10);
-  divider_position = 300;
-  generator.DragMouseTo(divider_position, 10);
-  EXPECT_EQ(divider_position, split_view_controller()
-                                  ->GetSnappedWindowBoundsInScreen(
-                                      SnapPosition::kPrimary,
-                                      /*window_for_minimum_size=*/nullptr,
-                                      chromeos::kDefaultSnapRatio)
-                                  .width());
-  EXPECT_EQ(window2_minimum_size, split_view_controller()
-                                      ->GetSnappedWindowBoundsInScreen(
-                                          SnapPosition::kPrimary, window2.get(),
-                                          chromeos::kDefaultSnapRatio)
-                                      .width());
-  const int work_area_length =
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  ASSERT_TRUE(RootWindowController::ForWindow(window1.get())
+                  ->split_view_overview_session());
+  generator->MoveMouseTo(window1->GetBoundsInScreen().width(), 10);
+  int window1_size = 300;
+  generator->DragMouseTo(window1_size, 10);
+  ASSERT_EQ(window1_size, window1->GetBoundsInScreen().width());
+
+  // Drag `window2` to the left, on top of `window1`, to show the left highlight
+  // preview.
+  const gfx::Rect work_area =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
-          window1.get())
-          .width();
-  EXPECT_EQ(
-      work_area_length - divider_position,
-      split_view_controller()
-          ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                           /*window_for_minimum_size=*/nullptr,
-                                           chromeos::kDefaultSnapRatio)
-          .width());
-  EXPECT_EQ(work_area_length - divider_position,
-            split_view_controller()
-                ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                                 window2.get(),
-                                                 chromeos::kDefaultSnapRatio)
-                .width());
-  divider_position = 500;
-  generator.DragMouseTo(divider_position, 10);
-  EXPECT_EQ(divider_position, split_view_controller()
-                                  ->GetSnappedWindowBoundsInScreen(
-                                      SnapPosition::kPrimary,
-                                      /*window_for_minimum_size=*/nullptr,
-                                      chromeos::kDefaultSnapRatio)
-                                  .width());
-  EXPECT_EQ(divider_position, split_view_controller()
-                                  ->GetSnappedWindowBoundsInScreen(
-                                      SnapPosition::kPrimary, window2.get(),
-                                      chromeos::kDefaultSnapRatio)
-                                  .width());
-  EXPECT_EQ(
-      work_area_length - divider_position,
-      split_view_controller()
-          ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                           /*window_for_minimum_size=*/nullptr,
-                                           chromeos::kDefaultSnapRatio)
-          .width());
-  EXPECT_EQ(window2_minimum_size,
-            split_view_controller()
-                ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                                 window2.get(),
-                                                 chromeos::kDefaultSnapRatio)
-                .width());
+          window1.get());
+  auto* item2 = GetOverviewItemForWindow(window2.get());
+  const gfx::Point drag_starting_point(
+      gfx::ToRoundedPoint(item2->GetTransformedBounds().CenterPoint()));
+  DragItemToPoint(item2, gfx::Point(0, 0), generator,
+                  /*by_touch_gestures=*/false, /*drop=*/false);
+
+  // Test that the highlight bounds are adjusted for `window2_minimum_size`.
+  gfx::Rect left_highlight_bounds(work_area.x(), work_area.y(),
+                                  window2_minimum_size, work_area.height());
+  left_highlight_bounds.Inset(kHighlightScreenEdgePaddingDp);
+  auto* overview_grid =
+      GetOverviewSession()->GetGridWithRootWindow(window1->GetRootWindow());
+  EXPECT_EQ(left_highlight_bounds, overview_grid->split_view_drag_indicators()
+                                       ->GetLeftHighlightViewBounds());
+
+  // Drop the `window2` item back at its starting point.
+  generator->MoveMouseTo(drag_starting_point);
+  generator->ReleaseLeftButton();
+  ASSERT_TRUE(RootWindowController::ForWindow(window1.get())
+                  ->split_view_overview_session());
+
+  // Now resize `window1` where `window2` can't fit in the secondary position.
+  window1_size = 500;
+  generator->MoveMouseTo(window1->GetBoundsInScreen().width(), 10);
+  generator->DragMouseTo(window1_size, 0);
+  ASSERT_TRUE(RootWindowController::ForWindow(window1.get())
+                  ->split_view_overview_session());
+  ASSERT_EQ(window1_size, window1->GetBoundsInScreen().width());
+
+  // Drag `window2` to show the right highlight preview.
+  DragItemToPoint(item2, work_area.top_right(), generator,
+                  /*by_touch_gestures=*/false, /*drop=*/false);
+
+  // Test that the highlight bounds are adjusted for `window2_minimum_size`.
+  gfx::Rect right_highlight_bounds(work_area.right() - window2_minimum_size,
+                                   work_area.y(), window2_minimum_size,
+                                   work_area.height());
+  right_highlight_bounds.Inset(kHighlightScreenEdgePaddingDp);
+  EXPECT_EQ(right_highlight_bounds,
+            overview_grid->split_view_drag_indicators()
+                ->GetRightHighlightViewBoundsForTesting());
+  generator->ReleaseLeftButton();
 }
 
 // Tests that on a display in portrait orientation, clamshell split view still
