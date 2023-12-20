@@ -10,7 +10,7 @@ import type {VolumeManager} from '../../externs/volume_manager.js';
 import {ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
 import type {DirectoryItem} from '../../foreground/js/ui/directory_tree.js';
 import type {TreeItem} from '../../foreground/js/ui/tree.js';
-import {driveRootEntryListKey, myFilesEntryListKey} from '../../state/ducks/volumes.js';
+import {driveRootEntryListKey, myFilesEntryListKey, recentRootKey, trashRootKey} from '../../state/ducks/volumes.js';
 import {getEntry, getStore} from '../../state/store.js';
 import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
@@ -420,18 +420,17 @@ export function isDescendantEntry(
 
   // For EntryList and VolumeEntry they can contain entries from different
   // files systems, so we should check its getUiChildren.
-  if ('getUiChildren' in ancestorEntry) {
-    const volumeOrEntryList = ancestorEntry as VolumeEntry | EntryList;
+  if (isEntrySupportUiChildren(ancestorEntry)) {
     // VolumeEntry has to check to root entry descendant entry.
-    if ('getNativeEntry' in volumeOrEntryList) {
-      const nativeEntry = volumeOrEntryList.getNativeEntry();
+    if ('getNativeEntry' in ancestorEntry) {
+      const nativeEntry = ancestorEntry.getNativeEntry();
       if (nativeEntry &&
           isSameFileSystem(nativeEntry.filesystem, childEntry.filesystem)) {
         return isDescendantEntry(nativeEntry, childEntry);
       }
     }
 
-    return volumeOrEntryList.getUiChildren().some(
+    return ancestorEntry.getUiChildren().some(
         (ancestorChild: Entry|FilesAppEntry) => {
           if (isSameEntry(ancestorChild, childEntry)) {
             return true;
@@ -921,4 +920,70 @@ export function getTreeItemEntry(treeItem: DirectoryItem|XfTreeItem|TreeItem|
 
   const item = treeItem as DirectoryItem;
   return item.entry;
+}
+
+/**
+ * Check if the entry support `getUiChildren()` method.
+ */
+export function isEntrySupportUiChildren(entry: FilesAppEntry|Entry):
+    entry is EntryList|VolumeEntry {
+  return 'getUiChildren' in entry;
+}
+
+/**
+ * A generator version of `entry.readEntries`.
+ *
+ * Example usage:
+ * ```
+ * const childEntries = []
+ * for await (const partialEntries of readEntries(...)) {
+     childEntries.push(...partialEntries);
+  }
+ * ```
+ */
+export async function*
+    readEntries(entry: DirectoryEntry|FilesAppDirEntry):
+        AsyncGenerator<Entry[], void, void> {
+  const ls = (reader: DirectoryReader): Promise<Entry[]> => {
+    return new Promise((resolve, reject) => {
+      reader.readEntries(results => resolve(results), error => reject(error));
+    });
+  };
+
+  const reader = entry.createReader();
+  while (true) {
+    const entries = await ls(reader);
+    if (entries.length === 0) {
+      break;
+    }
+    yield entries;
+  }
+
+  // The final return here is void.
+}
+
+/**
+ * Check if the given entry is scannable or not, e.g. can we call `readEntries`
+ * on it. If the return value is true, its type is guaranteed to be a Directory
+ * like entry.
+ */
+export function isEntryScannable(entry: Entry|FilesAppEntry|null):
+    entry is DirectoryEntry|FilesAppDirEntry {
+  if (!entry) {
+    return false;
+  }
+  if (!entry.isDirectory) {
+    return false;
+  }
+  if ('disabled' in entry && entry.disabled) {
+    return false;
+  }
+  const entryKeysWithoutChildren = new Set([
+    recentRootKey,
+    trashRootKey,
+  ]);
+  if (entryKeysWithoutChildren.has(entry.toURL())) {
+    return false;
+  }
+  return true;
 }

@@ -6,7 +6,7 @@ import {isRTL} from 'chrome://resources/ash/common/util.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {maybeShowTooltip} from '../common/js/dom_utils.js';
-import {isEntryInsideDrive, isGrandRootEntryInDrives, isMyFilesEntry, isOneDrive, isOneDriveId, isTrashEntry, isVolumeEntry, shouldSupportDriveSpecificIcons} from '../common/js/entry_utils.js';
+import {isDriveRootEntryList, isEntryInsideDrive, isEntryScannable, isGrandRootEntryInDrives, isMyFilesEntry, isOneDrive, isOneDriveId, isTrashEntry, isVolumeEntry, shouldSupportDriveSpecificIcons} from '../common/js/entry_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../common/js/files_app_entry_types.js';
 import {vmTypeToIconName} from '../common/js/icon_util.js';
 import {recordEnum, recordUserAction} from '../common/js/metrics.js';
@@ -19,25 +19,18 @@ import {DirectoryModel} from '../foreground/js/directory_model.js';
 import {Command} from '../foreground/js/ui/command.js';
 import {contextMenuHandler} from '../foreground/js/ui/context_menu_handler.js';
 import {Menu} from '../foreground/js/ui/menu.js';
-import {convertEntryToFileData, readSubDirectories, traverseAndExpandPathEntries, updateFileData} from '../state/ducks/all_entries.js';
+import {convertEntryToFileData, readSubDirectories, readSubDirectoriesToCheckDirectoryChildren, shouldDelayLoadingChildren, traverseAndExpandPathEntries, updateFileData} from '../state/ducks/all_entries.js';
 import {changeDirectory} from '../state/ducks/current_directory.js';
 import {refreshNavigationRoots} from '../state/ducks/navigation.js';
 import {clearSearch} from '../state/ducks/search.js';
 import {driveRootEntryListKey} from '../state/ducks/volumes.js';
-import {getEntry, getFileData, getStore, getVolume, getVolumeType, type Store} from '../state/store.js';
+import {getEntry, getFileData, getStore, getVolume, type Store} from '../state/store.js';
 import {type TreeSelectedChangedEvent, XfTree} from '../widgets/xf_tree.js';
 import {type TreeItemCollapsedEvent, type TreeItemExpandedEvent, XfTreeItem} from '../widgets/xf_tree_item.js';
 
 /**
  * @fileoverview The Directory Tree aka Navigation Tree.
  */
-
-const NAVIGATION_TYPES_WITHOUT_CHILDREN = new Set([
-  NavigationType.ANDROID_APPS,
-  NavigationType.RECENT,
-  NavigationType.SHORTCUT,
-  NavigationType.TRASH,
-]);
 
 /**
  * The navigation item data structure, which includes:
@@ -373,6 +366,8 @@ export class DirectoryTreeContainer {
     (element as any).entry = fileData.entry;
 
     element.expanded = fileData.expanded;
+    element.mayHaveChildren =
+        fileData.children.length > 0 || fileData.canExpand;
     element.label = fileData.label;
     if (navigationRoot) {
       element.separator = navigationRoot.separator;
@@ -385,11 +380,13 @@ export class DirectoryTreeContainer {
       this.setupEjectButton_(element, fileData.label);
     }
 
-    if (!(navigationRoot?.type &&
-          NAVIGATION_TYPES_WITHOUT_CHILDREN.has(navigationRoot.type)) &&
-        // For disabled tree root, we don't render any children inside.
-        !fileData.disabled) {
-      // Handle navigation item's children.
+    // Handle navigation item's children.
+    // For disabled tree or collapsed items, we don't render any children
+    // inside, but we always render children for Drive even it's collapsed.
+    // TODO(b/308504417): remove the special case for Drive.
+    const shouldRenderChildren = !fileData.disabled &&
+        (fileData.expanded || isDriveRootEntryList(fileData.entry));
+    if (shouldRenderChildren) {
       const newChildren = fileData.children || [];
       // Remove non-exist navigation items.
       const newChildrenSet = new Set(newChildren);
@@ -458,10 +455,6 @@ export class DirectoryTreeContainer {
           // Item with entry to rename is rendered for the first time (e.g. "New
           // folder" case), attach the rename input here.
           this.entryKeyToRename_ = null;
-          // The parent element for the renaming item might not be expanded
-          // (e.g. Create a new folder on a collapsed parent element), we need
-          // to expand it first otherwise the renaming item won't show.
-          element.expanded = true;
           this.attachRename_(navigationItem);
         }
 
@@ -608,56 +601,14 @@ export class DirectoryTreeContainer {
     // Expand MyFiles by default.
     const entry = fileData.entry;
     if (isMyFilesEntry(entry)) {
-      element.mayHaveChildren = true;
       element.expanded = true;
       return;
     }
-    if (fileData.shouldDelayLoadingChildren) {
-      // For navigation root items, even if its children loading should be
-      // delayed, we don't show expand icon (e.g. SMB).
-      if (!navigationRoot) {
-        element.mayHaveChildren = true;
-      }
-      // For SMB shares, avoid prefetching sub directories to delay
-      // authentication.
-      if (isVolumeEntry(entry) && entry.volumeInfo.providerId !== '@smb' &&
-          getVolumeType(this.store_.getState(), fileData) !== VolumeType.SMB) {
-        this.store_.dispatch(readSubDirectories(entry));
-      }
-      return;
+    // Only read the sub entries when it's the top level item (navigation root).
+    // For other items, its children will be read when it's expanded.
+    if (navigationRoot && navigationRoot.type !== NavigationType.SHORTCUT) {
+      this.store_.dispatch(readSubDirectoriesToCheckDirectoryChildren(entry));
     }
-
-    if (this.shouldUpdateSubEntriesInitially_(
-            element, fileData, navigationRoot)) {
-      this.store_.dispatch(readSubDirectories(entry));
-    }
-  }
-
-  /**
-   * Should we update sub entries initially when the navigation item is
-   * created.
-   */
-  private shouldUpdateSubEntriesInitially_(
-      element: XfTreeItem, fileData: FileData,
-      navigationRoot?: NavigationRoot): boolean {
-    const entry = fileData.entry;
-    // MyFile will be expanded by default, which will trigger a update for sub
-    // entries, no need to update again.
-    if (isMyFilesEntry(entry)) {
-      return false;
-    }
-    // For curtain root types, we know there's no child navigation items.
-    if (navigationRoot?.type &&
-        NAVIGATION_TYPES_WITHOUT_CHILDREN.has(navigationRoot.type)) {
-      return false;
-    }
-    // Only read the sub entries when it's the top level (where parentItem =
-    // null) or its parent item has expanded.
-    const parentItem = element.parentItem;
-    if (!parentItem || parentItem.expanded) {
-      return true;
-    }
-    return false;
   }
 
   /** Delete the navigation item by navigation key. */
@@ -776,9 +727,9 @@ export class DirectoryTreeContainer {
     }
 
     this.recordUmaForItemExpandedOrCollapsed_(fileData);
-    if (fileData.shouldDelayLoadingChildren) {
+    if (shouldDelayLoadingChildren(fileData.entry)) {
       // For file systems where it is performance intensive
-      // to update recursively when items expand this proactively
+      // to update recursively when items expand, this proactively
       // collapses all children to avoid having to traverse large
       // parts of the tree when reopened.
       for (const item of treeItem.items) {
@@ -845,14 +796,17 @@ export class DirectoryTreeContainer {
     // entries we have in the map.
     this.store_.beginBatchUpdate();
     for (const navigationRoot of this.navigationRoots_) {
-      if (NAVIGATION_TYPES_WITHOUT_CHILDREN.has(navigationRoot.type)) {
+      if (navigationRoot.type === NavigationType.SHORTCUT) {
         continue;
       }
       const {fileData} = this.navigationRootMap_.get(navigationRoot.key)!;
       if (!fileData) {
         continue;
       }
-      if (fileData.shouldDelayLoadingChildren && !fileData.expanded) {
+      if (!isEntryScannable(fileData.entry)) {
+        continue;
+      }
+      if (shouldDelayLoadingChildren(fileData.entry) && !fileData.expanded) {
         continue;
       }
       this.store_.dispatch(
@@ -947,6 +901,7 @@ export class DirectoryTreeContainer {
       if (isRoot) {
         const navigationRootData = this.navigationRoots_.find(
             navigationRoot => navigationRoot.key === fileData.entry.toURL());
+        // TODO(b/308504417): remove the special case for Drive.
         if (navigationRootData?.type === NavigationType.DRIVE) {
           if (fileData.children.length === 0) {
             // Drive volume is not mounted, we can only change directory to the
@@ -998,9 +953,10 @@ export class DirectoryTreeContainer {
 
       // For delayed loading navigation items, read children when it's
       // selected.
-      if (fileData.shouldDelayLoadingChildren &&
+      if (shouldDelayLoadingChildren(fileData.entry) &&
           fileData.children.length === 0) {
-        this.store_.dispatch(readSubDirectories(fileData.entry));
+        this.store_.dispatch(
+            readSubDirectoriesToCheckDirectoryChildren(fileData.entry));
       }
 
       this.store_.dispatch(changeDirectory({toKey: entry.toURL()}));
@@ -1165,10 +1121,9 @@ export class DirectoryTreeContainer {
    */
   private async restoreFocus_(element: XfTreeItem, isExisting: boolean) {
     if (!isExisting) {
+      // This focus() call below requires the tree item to finish the first
+      // render, hence the await above.
       await element.updateComplete;
-      // This call requires the tree item to finish the first render, hence the
-      // await above.
-      this.tree.focusedItem = element;
     }
     element.focus();
   }
@@ -1196,7 +1151,6 @@ export class DirectoryTreeContainer {
         element.selected = true;
         if (this.shouldFocusOnNextSelectedItem_) {
           this.shouldFocusOnNextSelectedItem_ = false;
-          this.tree.focusedItem = element;
           // Wait for the selected change finishes (e.g. expand all its parents)
           // before we can focus on the element below.
           await element.updateComplete;

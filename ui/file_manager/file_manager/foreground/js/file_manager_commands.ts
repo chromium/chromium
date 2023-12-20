@@ -26,7 +26,7 @@ import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_ap
 import {DialogType} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
-import {readSubDirectories} from '../../state/ducks/all_entries.js';
+import {readSubDirectories, updateFileData} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {getStore} from '../../state/store.js';
 import type {XfTree} from '../../widgets/xf_tree.js';
@@ -345,8 +345,13 @@ export class NewFolderCommand extends FilesCommand {
                   const directoryTree = fileManager.ui.directoryTree;
                   if (isXfTree(directoryTree)) {
                     // After new directory is created on parent directory, we
-                    // need to trigger a re-read for the parent directory to the
-                    // store.
+                    // need to expand it otherwise the new child item won't
+                    // show, and also trigger a re-scan for the parent
+                    // directory.
+                    getStore().dispatch(updateFileData({
+                      key: directoryEntry.toURL(),
+                      partialFileData: {expanded: true},
+                    }));
                     getStore().dispatch(readSubDirectories(directoryEntry));
                     fileManager.ui.directoryTreeContainer
                         ?.renameItemWithKeyWhenRendered(newDirectory.toURL());

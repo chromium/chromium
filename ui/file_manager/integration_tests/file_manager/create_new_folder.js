@@ -85,10 +85,6 @@ async function createNewFolder(appId, initialEntrySet, label) {
       TestEntryInfo.getExpectedRows(initialEntrySet));
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
-  // Check: a new folder should be present in the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.waitForChildItemByLabel(label, newFolderName);
-
   // Check: the text input should be shown in the file list.
   await remoteCall.waitForElement(appId, textInput);
 
@@ -132,12 +128,14 @@ async function createNewFolder(appId, initialEntrySet, label) {
       TestEntryInfo.getExpectedRows(initialEntrySet));
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
-  // Check: the test folder should be present in the directory tree.
-  await directoryTree.waitForChildItemByLabel(label, newFolderName);
-
   // Wait for the new folder to become selected in the file list.
   await remoteCall.waitForElement(
       appId, [`#file-list .table-row[file-name="${newFolderName}"][selected]`]);
+
+  // Check: a new folder should be present in the directory tree.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.expandTreeItemByLabel(label);
+  await directoryTree.waitForChildItemByLabel(label, newFolderName);
 }
 
 testcase.selectCreateFolderDownloads = async () => {
@@ -163,7 +161,7 @@ testcase.createFolderNestedDownloads = async () => {
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.recursiveExpand('/My files/Downloads');
   await directoryTree.navigateToPath('/My files/Downloads/photos');
-  await createNewFolder(appId, [], TREEITEM_DOWNLOADS);
+  await createNewFolder(appId, [], 'photos');
 };
 
 testcase.createFolderDrive = async () => {

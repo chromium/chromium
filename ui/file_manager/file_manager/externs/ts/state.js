@@ -67,7 +67,7 @@ export const EntryType = {
  *   type: EntryType,
  *   isRootEntry: boolean,
  *   isEjectable: boolean,
- *   shouldDelayLoadingChildren: boolean,
+ *   canExpand: boolean,
  *   children: (Array<FileKey>),
  *   expanded: boolean,
  *   disabled: boolean,

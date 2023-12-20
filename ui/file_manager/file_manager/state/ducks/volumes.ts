@@ -129,15 +129,12 @@ function addVolumeReducer(currentState: State, payload: {
   cacheEntries(currentState, [newVolumeEntry]);
   const volumeRootKey = newVolumeEntry.toURL();
 
-  // Update isEjectable/shouldDelayLoadingChildren fields in the FileData.
+  // Update isEjectable fields in the FileData.
   currentState.allEntries[volumeRootKey] = {
     ...currentState.allEntries[volumeRootKey]!,
     isEjectable: (volumeInfo.source === Source.DEVICE &&
                   volumeInfo.volumeType !== VolumeType.MTP) ||
         volumeInfo.source === Source.FILE,
-    shouldDelayLoadingChildren: volumeInfo.source === Source.NETWORK &&
-        (volumeInfo.volumeType === VolumeType.PROVIDED ||
-         volumeInfo.volumeType === VolumeType.SMB),
   };
 
   const volume =

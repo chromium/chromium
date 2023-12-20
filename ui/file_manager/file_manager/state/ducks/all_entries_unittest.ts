@@ -300,9 +300,6 @@ export async function testAddChildEntries(done: () => void) {
   };
   await waitDeepEquals(store, want1, (state) => state.allEntries);
 
-  // Set shouldDelayLoadingChildren=true for /a/2.
-  store.getState().allEntries[a2Entry.toURL()]!.shouldDelayLoadingChildren =
-      true;
   // Dispatch an action to add child entries for /a/2.
   const bEntry = fileSystem.entries['/a/2/b']!;
   store.dispatch(addChildEntries({
@@ -310,17 +307,14 @@ export async function testAddChildEntries(done: () => void) {
     entries: [bEntry],
   }));
 
-  // Expect child entry /a/2/b also has shouldDelayLoadingChildren=true.
   const want2: State['allEntries'] = {
     ...want1,
     [a2Entry.toURL()]: {
       ...convertEntryToFileData(a2Entry),
-      shouldDelayLoadingChildren: true,
       children: [bEntry.toURL()],
     },
     [bEntry.toURL()]: {
       ...convertEntryToFileData(bEntry),
-      shouldDelayLoadingChildren: true,
     },
   };
   await waitDeepEquals(store, want2, (state) => state.allEntries);
@@ -357,7 +351,7 @@ export async function testConvertVolumeEntryToFileData(done: () => void) {
     disabled: false,
     isRootEntry: true,
     isEjectable: false,
-    shouldDelayLoadingChildren: false,
+    canExpand: false,
     children: [],
   };
   assertDeepEquals(want, got);
@@ -397,7 +391,7 @@ export async function testGenericIconInDocumentsProviderFileData(
     disabled: false,
     isRootEntry: true,
     isEjectable: false,
-    shouldDelayLoadingChildren: false,
+    canExpand: false,
     children: [],
   };
   assertDeepEquals(want, got);
@@ -422,7 +416,7 @@ export async function testConvertEntryListToFileData(done: () => void) {
     disabled: false,
     isRootEntry: true,
     isEjectable: false,
-    shouldDelayLoadingChildren: false,
+    canExpand: false,
     children: [],
   };
   assertDeepEquals(want, got);
@@ -448,7 +442,7 @@ export async function testConvertFakeEntryToFileData(done: () => void) {
     disabled: false,
     isRootEntry: true,
     isEjectable: false,
-    shouldDelayLoadingChildren: false,
+    canExpand: false,
     children: [],
   };
   assertDeepEquals(want, got);
@@ -473,7 +467,7 @@ export async function testConvertNativeFileEntryToFileData(done: () => void) {
     disabled: false,
     isRootEntry: false,
     isEjectable: false,
-    shouldDelayLoadingChildren: false,
+    canExpand: false,
     children: [],
   };
   assertDeepEquals(want, got);
@@ -499,7 +493,7 @@ export async function testConvertNativeDirectoryEntryToFileData(
     disabled: false,
     isRootEntry: false,
     isEjectable: false,
-    shouldDelayLoadingChildren: false,
+    canExpand: false,
     children: [],
   };
   assertDeepEquals(want, got);
@@ -577,9 +571,12 @@ export async function testReadSubDirectoriesRecursively(done: () => void) {
   const bDirEntry = fakeFs.entries['/Downloads/b']!;
   // The entry to be read should be in the store before reading.
   const downloadsEntryFileData = convertEntryToFileData(downloadsEntry);
-  // Set downloadsEntry.expanded = true, so it will be read recursively.
+  const bEntryFileData = convertEntryToFileData(bDirEntry);
+  // Set expanded = true, so it will be read deeper.
   downloadsEntryFileData.expanded = true;
+  bEntryFileData.expanded = true;
   initialState.allEntries[downloadsEntry.toURL()] = downloadsEntryFileData;
+  initialState.allEntries[bDirEntry.toURL()] = bEntryFileData;
   const store = setupStore(initialState);
 
   // Dispatch read sub directories action producer.
@@ -587,19 +584,27 @@ export async function testReadSubDirectoriesRecursively(done: () => void) {
 
   // Expect store to have all its sub directories.
   const aDirEntry = fakeFs.entries['/Downloads/a']!;
-  const dirEntry1 = fakeFs.entries['/Downloads/a/111']!;
   const dirEntry2 = fakeFs.entries['/Downloads/b/222']!;
   const want: State['allEntries'] = {
-    [downloadsEntry.toURL()]: downloadsEntryFileData,
-    [aDirEntry.toURL()]: convertEntryToFileData(aDirEntry),
-    [bDirEntry.toURL()]: convertEntryToFileData(bDirEntry),
-    [dirEntry1.toURL()]: convertEntryToFileData(dirEntry1),
+    [downloadsEntry.toURL()]: {
+      ...downloadsEntryFileData,
+      children: [aDirEntry.toURL(), bDirEntry.toURL()],
+    },
+    [aDirEntry.toURL()]: {
+      ...convertEntryToFileData(aDirEntry),
+      // Partial scan for a/ (no `children` but `canExpand: true`) because it's
+      // not expanded.
+      canExpand: true,
+      children: [],
+    },
+    // Full scan for b/ (updated `children`) because it's expanded.
+    [bDirEntry.toURL()]: {
+      ...bEntryFileData,
+      children: [dirEntry2.toURL()],
+    },
     [dirEntry2.toURL()]: convertEntryToFileData(dirEntry2),
+    // Entry /a/111/ is not here because its parent a/ is not expanded.
   };
-  want[downloadsEntry.toURL()]!.children =
-      [aDirEntry.toURL(), bDirEntry.toURL()];
-  want[aDirEntry.toURL()]!.children = [dirEntry1.toURL()];
-  want[bDirEntry.toURL()]!.children = [dirEntry2.toURL()];
 
   await waitDeepEquals(store, want, (state) => state.allEntries);
 

@@ -537,10 +537,12 @@ testcase.searchRemovableDevice = async () => {
  */
 testcase.searchPartitionedRemovableDevice = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
-  await mountUsb(appId, true);
+  await mountUsb(appId, /* withPartitions= */ true);
 
   // Wait for removable partition-1 to appear in the directory tree.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.expandTreeItemByLabel(
+      getUsbVolumeQuery(/* withPartitions= */ true));
   const partitionOne = await directoryTree.waitForItemByLabel('partition-1');
   chrome.test.assertEq(
       'removable', directoryTree.getItemVolumeType(partitionOne));

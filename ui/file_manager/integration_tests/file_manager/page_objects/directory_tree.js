@@ -291,6 +291,10 @@ export class DirectoryTreePageObject {
    * @return {!Promise<!ElementObject>}
    */
   async waitForItemToHaveChildrenByLabel(label, hasChildren) {
+    // Expand the item first before checking its children.
+    if (hasChildren) {
+      await this.expandTreeItemByLabel(label);
+    }
     return this.remoteCall_.waitForElement(
         this.appId_,
         this.selectors_.itemByLabel(label, {hasChildren: hasChildren}));
@@ -305,6 +309,10 @@ export class DirectoryTreePageObject {
    * @return {!Promise<!ElementObject>}
    */
   async waitForItemToHaveChildrenByType(type, hasChildren) {
+    // Expand the item first before checking its children.
+    if (hasChildren) {
+      await this.expandTreeItemByType(type);
+    }
     return this.remoteCall_.waitForElement(
         this.appId_,
         this.selectors_.itemByType(
@@ -357,6 +365,18 @@ export class DirectoryTreePageObject {
    */
   async expandTreeItemByLabel(label, allowEmpty) {
     await this.expandTreeItem_(this.selectors_.itemByLabel(label), allowEmpty);
+  }
+
+  /**
+   * Expands a single tree item with the specified type by clicking on its
+   * expand icon.
+   * @param {string} type Type of the tree item we want to expand on.
+   * @param {boolean=} allowEmpty Allow expanding tree item without
+   *     any children.
+   * @return {!Promise<void>}
+   */
+  async expandTreeItemByType(type, allowEmpty) {
+    await this.expandTreeItem_(this.selectors_.itemByType(type), allowEmpty);
   }
 
   /**
@@ -1328,11 +1348,15 @@ class DirectoryTreeSelectors_ {
    * @return {string}
    */
   nonEmptyChildItems(itemSelector) {
-    const nestedItemSelector = this.useNewTree ?
-        `${this.item}:has(${this.item})` :
-        `.tree-children > ${this.item} > .tree-row`;
-    return this.attachModifier(
-        `${itemSelector} > ${nestedItemSelector}`, {hasChildren: true});
+    // For new tree implementation, `hasChildren` will only be true when there's
+    // actual tree item rendered inside, hence the use of `mayHaveChildren`
+    // here instead of `hasChildren`.
+    return this.useNewTree ?
+        this.attachModifier(
+            `${itemSelector} > ${this.item}`, {mayHaveChildren: true}) :
+        this.attachModifier(
+            `${itemSelector} > .tree-children > ${this.item} > .tree-row`,
+            {hasChildren: true});
   }
 
   /**
