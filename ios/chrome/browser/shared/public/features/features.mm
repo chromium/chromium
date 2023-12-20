@@ -363,6 +363,10 @@ BASE_FEATURE(kEnableReviewAccountSettingsPromo,
              "EnableReviewAccountSettingsPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLinkAccountSettingsToPrivacyFooter,
+             "LinkAccountSettingsToPrivacyFooter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableWebChannels,
              "EnableWebChannels",
              base::FEATURE_DISABLED_BY_DEFAULT);

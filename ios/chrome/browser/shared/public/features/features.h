@@ -306,6 +306,10 @@ BASE_DECLARE_FEATURE(kEnableBatchUploadFromBookmarksManager);
 // used if kReplaceSyncPromosWithSignInPromos is enabled.
 BASE_DECLARE_FEATURE(kEnableReviewAccountSettingsPromo);
 
+// Enables linking account settings in the Privacy Settings page footer for
+// signed in non syncing users.
+BASE_DECLARE_FEATURE(kLinkAccountSettingsToPrivacyFooter);
+
 // Engagement criteria type for a feed refresh.
 enum class FeedRefreshEngagementCriteriaType {
   // Any scroll or interaction.

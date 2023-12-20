@@ -660,7 +660,9 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
      "IOSPasswordSettingsBulkUploadLocalPasswords,"
      "HistoryOptInForRestoreShortyAndReSignin,"
      "EnableBatchUploadFromBookmarksManager,"
-     "EnableReviewAccountSettingsPromo"},
+     "EnableReviewAccountSettingsPromo,"
+     "LinkAccountSettingsToPrivacyFooter,"
+     "IPH_iOSReplaceSyncPromosWithSignInPromos"},
 };
 
 const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDefault[] = {
