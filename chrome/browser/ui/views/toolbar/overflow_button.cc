@@ -49,5 +49,5 @@ void OverflowButton::RunMenu() {
 
 OverflowButton::~OverflowButton() = default;
 
-BEGIN_METADATA(OverflowButton, ToolbarButton)
+BEGIN_METADATA(OverflowButton)
 END_METADATA

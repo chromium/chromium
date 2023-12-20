@@ -20,9 +20,9 @@
 // A general view container for any type of toolbar icons.
 class ToolbarIconContainerView : public views::View,
                                  public views::ViewObserver {
- public:
-  METADATA_HEADER(ToolbarIconContainerView);
+  METADATA_HEADER(ToolbarIconContainerView, views::View)
 
+ public:
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnHighlightChanged() = 0;

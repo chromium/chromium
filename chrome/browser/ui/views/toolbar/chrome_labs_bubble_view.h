@@ -24,8 +24,9 @@ class FlexLayoutView;
 
 // TODO(elainechien): Use composition instead of inheritance.
 class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(ChromeLabsBubbleView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(ChromeLabsBubbleView);
   explicit ChromeLabsBubbleView(ChromeLabsButton* anchor_view);
   ~ChromeLabsBubbleView() override;
 

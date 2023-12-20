@@ -18,8 +18,10 @@ class WebContents;
 // Dialog that displays a hover card with extensions information.
 class ToolbarActionHoverCardBubbleView
     : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(ToolbarActionHoverCardBubbleView,
+                  views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(ToolbarActionHoverCardBubbleView);
   explicit ToolbarActionHoverCardBubbleView(ToolbarActionView* action_view);
   ToolbarActionHoverCardBubbleView(const ToolbarActionHoverCardBubbleView&) =
       delete;

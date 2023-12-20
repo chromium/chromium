@@ -1221,6 +1221,6 @@ void ToolbarView::OnTouchUiChanged() {
   }
 }
 
-BEGIN_METADATA(ToolbarView, views::AccessiblePaneView)
+BEGIN_METADATA(ToolbarView)
 ADD_READONLY_PROPERTY_METADATA(bool, AppMenuFocused)
 END_METADATA

@@ -254,6 +254,6 @@ void ReloadButton::OnStopToReloadTimer() {
   ChangeMode(intended_mode_, true);
 }
 
-BEGIN_METADATA(ReloadButton, ToolbarButton)
+BEGIN_METADATA(ReloadButton)
 ADD_PROPERTY_METADATA(bool, MenuEnabled)
 END_METADATA

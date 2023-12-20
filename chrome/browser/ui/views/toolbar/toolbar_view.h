@@ -80,9 +80,9 @@ class ToolbarView : public views::AccessiblePaneView,
                     public AppMenuIconController::Delegate,
                     public ToolbarButtonProvider,
                     public BrowserRootView::DropTarget {
- public:
-  METADATA_HEADER(ToolbarView);
+  METADATA_HEADER(ToolbarView, views::AccessiblePaneView)
 
+ public:
   // Types of display mode this toolbar can have.
   enum class DisplayMode {
     NORMAL,     // Normal toolbar with buttons, etc.

@@ -187,5 +187,5 @@ void HomeButton::UpdateHomePage(
   output_drag_op = ui::mojom::DragOperation::kNone;
 }
 
-BEGIN_METADATA(HomeButton, ToolbarButton)
+BEGIN_METADATA(HomeButton)
 END_METADATA

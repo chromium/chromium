@@ -267,6 +267,5 @@ bool ToolbarActionHoverCardBubbleView::IsPolicyLabelVisible() const {
 
 ToolbarActionHoverCardBubbleView::~ToolbarActionHoverCardBubbleView() = default;
 
-BEGIN_METADATA(ToolbarActionHoverCardBubbleView,
-               views::BubbleDialogDelegateView)
+BEGIN_METADATA(ToolbarActionHoverCardBubbleView)
 END_METADATA

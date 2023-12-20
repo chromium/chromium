@@ -209,5 +209,5 @@ bool ChromeLabsBubbleView::IsRestartPromptVisibleForTesting() {
   return restart_prompt_->GetVisible();
 }
 
-BEGIN_METADATA(ChromeLabsBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(ChromeLabsBubbleView)
 END_METADATA

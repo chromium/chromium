@@ -15,8 +15,9 @@
 class Browser;
 
 class SidePanelToolbarButton : public ToolbarButton {
+  METADATA_HEADER(SidePanelToolbarButton, ToolbarButton)
+
  public:
-  METADATA_HEADER(SidePanelToolbarButton);
   explicit SidePanelToolbarButton(Browser* browser);
   SidePanelToolbarButton(const SidePanelToolbarButton&) = delete;
   SidePanelToolbarButton& operator=(const SidePanelToolbarButton&) = delete;

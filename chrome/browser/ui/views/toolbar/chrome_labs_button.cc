@@ -81,5 +81,5 @@ void ChromeLabsButton::UpdateDotIndicator() {
     new_experiments_indicator_->Hide();
 }
 
-BEGIN_METADATA(ChromeLabsButton, ToolbarButton)
+BEGIN_METADATA(ChromeLabsButton)
 END_METADATA
