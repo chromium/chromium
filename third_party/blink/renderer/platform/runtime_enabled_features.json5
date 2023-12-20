@@ -3663,11 +3663,6 @@
       origin_trial_feature_name: "StorageAccessAPIBeyondCookies",
     },
     {
-      name: "StorageAccessAPIForOriginExtension",
-      public: true,
-      status: "stable",
-    },
-    {
       name: "StorageBuckets",
       status: "experimental",
       origin_trial_feature_name: "StorageBuckets",

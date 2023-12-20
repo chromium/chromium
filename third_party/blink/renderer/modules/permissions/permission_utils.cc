@@ -328,11 +328,6 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     return CreatePermissionDescriptor(PermissionName::STORAGE_ACCESS);
   }
   if (name == V8PermissionName::Enum::kTopLevelStorageAccess) {
-    if (!RuntimeEnabledFeatures::StorageAccessAPIForOriginExtensionEnabled()) {
-      exception_state.ThrowTypeError(
-          "The requestStorageAccessFor API is not enabled.");
-      return nullptr;
-    }
     TopLevelStorageAccessPermissionDescriptor*
         top_level_storage_access_permission =
             NativeValueTraits<TopLevelStorageAccessPermissionDescriptor>::

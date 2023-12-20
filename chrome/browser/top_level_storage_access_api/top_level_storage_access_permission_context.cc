@@ -65,8 +65,6 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
       request_data.id.global_render_frame_host_id());
   CHECK(rfh);
   if (!request_data.user_gesture ||
-      !base::FeatureList::IsEnabled(
-          blink::features::kStorageAccessAPIForOriginExtension) ||
       !request_data.requesting_origin.is_valid() ||
       !request_data.embedding_origin.is_valid()) {
     if (!request_data.user_gesture) {
@@ -129,11 +127,6 @@ TopLevelStorageAccessPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kStorageAccessAPIForOriginExtension)) {
-    return CONTENT_SETTING_BLOCK;
-  }
-
   if (render_frame_host && !render_frame_host->IsInPrimaryMainFrame()) {
     // Note that portal and other main but non-outermost frames are
     // currently disallowed from queries by the PermissionService. This check
@@ -188,11 +181,6 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
     ContentSetting content_setting,
     TopLevelStorageAccessRequestOutcome outcome) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kStorageAccessAPIForOriginExtension)) {
-    return;
-  }
 
   RecordOutcomeSample(outcome);
 

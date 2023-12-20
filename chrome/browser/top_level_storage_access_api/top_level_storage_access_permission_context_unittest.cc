@@ -51,16 +51,7 @@ GURL GetDummyEmbeddingUrl() {
 class TopLevelStorageAccessPermissionContextTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  explicit TopLevelStorageAccessPermissionContextTest(bool saa_enabled) {
-    std::vector<base::test::FeatureRef> enabled;
-    std::vector<base::test::FeatureRef> disabled;
-    if (saa_enabled) {
-      enabled.push_back(blink::features::kStorageAccessAPIForOriginExtension);
-    } else {
-      disabled.push_back(blink::features::kStorageAccessAPIForOriginExtension);
-    }
-    features_.InitWithFeatures(enabled, disabled);
-  }
+  TopLevelStorageAccessPermissionContextTest() = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -88,22 +79,17 @@ class TopLevelStorageAccessPermissionContextTest
         request_id_generator_.GenerateNextId());
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
-  base::test::ScopedFeatureList features_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<permissions::MockPermissionPromptFactory>
       mock_permission_prompt_factory_;
   permissions::PermissionRequestID::RequestLocalId::Generator
       request_id_generator_;
 };
 
-class TopLevelStorageAccessPermissionContextTestAPIDisabledTest
-    : public TopLevelStorageAccessPermissionContextTest {
- public:
-  TopLevelStorageAccessPermissionContextTestAPIDisabledTest()
-      : TopLevelStorageAccessPermissionContextTest(false) {}
-};
-
-TEST_F(TopLevelStorageAccessPermissionContextTestAPIDisabledTest,
+TEST_F(TopLevelStorageAccessPermissionContextTest,
        InsecureOriginsAreDisallowed) {
   GURL insecure_url = GURL("http://www.example.com");
   TopLevelStorageAccessPermissionContext permission_context(profile());
@@ -113,47 +99,8 @@ TEST_F(TopLevelStorageAccessPermissionContextTestAPIDisabledTest,
       insecure_url, GetRequesterURL()));
 }
 
-// When the Storage Access API feature is disabled (the default) we
-// should block the permission request.
-TEST_F(TopLevelStorageAccessPermissionContextTestAPIDisabledTest,
-       PermissionBlocked) {
-  TopLevelStorageAccessPermissionContext permission_context(profile());
-  permissions::PermissionRequestID fake_id = CreateFakeID();
-
-  base::test::TestFuture<ContentSetting> future;
-  permission_context.DecidePermissionForTesting(
-      permissions::PermissionRequestData(&permission_context, fake_id,
-                                         /*user_gesture=*/true,
-                                         GetRequesterURL(), GetTopLevelURL()),
-      future.GetCallback());
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
-}
-
-TEST_F(TopLevelStorageAccessPermissionContextTestAPIDisabledTest,
-       PermissionStatusBlocked) {
-  TopLevelStorageAccessPermissionContext permission_context(profile());
-
-  EXPECT_EQ(PermissionStatus::DENIED,
-            permission_context
-                .GetPermissionStatus(/*render_frame_host=*/nullptr,
-                                     GetRequesterURL(), GetTopLevelURL())
-                .status);
-}
-
-class TopLevelStorageAccessPermissionContextTestAPIEnabledTest
-    : public TopLevelStorageAccessPermissionContextTest {
- public:
-  TopLevelStorageAccessPermissionContextTestAPIEnabledTest()
-      : TopLevelStorageAccessPermissionContextTest(true) {}
-
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
- private:
-  base::HistogramTester histogram_tester_;
-};
-
 // No user gesture should force a permission rejection.
-TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
+TEST_F(TopLevelStorageAccessPermissionContextTest,
        PermissionDeniedWithoutUserGesture) {
   TopLevelStorageAccessPermissionContext permission_context(profile());
   permissions::PermissionRequestID fake_id = CreateFakeID();
@@ -172,7 +119,7 @@ TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
             1);
 }
 
-TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
+TEST_F(TopLevelStorageAccessPermissionContextTest,
        PermissionStatusAsksWhenFeatureEnabled) {
   TopLevelStorageAccessPermissionContext permission_context(profile());
 
@@ -184,18 +131,12 @@ TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
 }
 
 class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
-    : public TopLevelStorageAccessPermissionContextTestAPIEnabledTest {
+    : public TopLevelStorageAccessPermissionContextTest {
  public:
-  TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest() {
-    features_.InitWithFeatures(
-        /*enabled_features=*/
-        {
-            blink::features::kStorageAccessAPIForOriginExtension,
-        },
-        /*disabled_features=*/{});
-  }
+  TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest() = default;
+
   void SetUp() override {
-    TopLevelStorageAccessPermissionContextTestAPIEnabledTest::SetUp();
+    TopLevelStorageAccessPermissionContextTest::SetUp();
 
     const net::SchemefulSite top_level(GetTopLevelURL());
     first_party_sets_handler_.SetGlobalSets(net::GlobalFirstPartySets(
@@ -211,7 +152,6 @@ class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
   }
 
  private:
-  base::test::ScopedFeatureList features_;
   first_party_sets::ScopedMockFirstPartySetsHandler first_party_sets_handler_;
 };
 

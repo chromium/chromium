@@ -215,18 +215,11 @@ void UpdateAntiAbuseSettings(Profile* profile) {
       });
 }
 
-// TODO(crbug.com/1385156): Separate the two flags entirely.
-bool TopLevelStorageAccessAPIEnabled() {
-  return base::FeatureList::IsEnabled(
-      blink::features::kStorageAccessAPIForOriginExtension);
-}
-
 bool IsContentSettingsTypeEnabled(ContentSettingsType type) {
   switch (type) {
     case ContentSettingsType::STORAGE_ACCESS:
-      return true;
     case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
-      return TopLevelStorageAccessAPIEnabled();
+      return true;
     default:
       return content_settings::CookieSettings::GetContentSettingsTypes()
           .contains(type);
