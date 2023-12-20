@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_sink_bundle.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/p2p/empty_network_manager.h"
@@ -443,8 +444,8 @@ PeerConnectionDependencyFactory::PeerConnectionDependencyFactory(
   context.GetBrowserInterfaceBroker().GetInterface(
       perf_recorder.InitWithNewPipeAndPassReceiver());
 
-  webrtc_video_perf_reporter_.Initialize(
-      context.GetTaskRunner(TaskType::kInternalMedia),
+  webrtc_video_perf_reporter_ = MakeGarbageCollected<WebrtcVideoPerfReporter>(
+      context.GetTaskRunner(TaskType::kInternalMedia), &context,
       std::move(perf_recorder));
 }
 
@@ -626,7 +627,7 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
       base::FeatureList::IsEnabled(features::kWebRtcSendPacketBatch));
 
   gpu_factories_ = gpu_factories;
-  // base::Unretained is safe below, because
+  // WrapCrossThreadWeakPersistent is safe below, because
   // PeerConnectionDependencyFactory (that holds `webrtc_video_perf_reporter_`)
   // outlives the encoders and decoders that are using the callback. The
   // lifetime of PeerConnectionDependencyFactory is tied to the ExecutionContext
@@ -637,13 +638,15 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
       blink::CreateWebrtcVideoEncoderFactory(
           gpu_factories, std::move(video_encoder_metrics_provider_factory),
           base::BindRepeating(&WebrtcVideoPerfReporter::StoreWebrtcVideoStats,
-                              base::Unretained(&webrtc_video_perf_reporter_)));
+                              WrapCrossThreadWeakPersistent(
+                                  webrtc_video_perf_reporter_.Get())));
   std::unique_ptr<webrtc::VideoDecoderFactory> webrtc_decoder_factory =
       blink::CreateWebrtcVideoDecoderFactory(
           gpu_factories, media_decoder_factory, std::move(media_task_runner),
           render_color_space,
           base::BindRepeating(&WebrtcVideoPerfReporter::StoreWebrtcVideoStats,
-                              base::Unretained(&webrtc_video_perf_reporter_)));
+                              WrapCrossThreadWeakPersistent(
+                                  webrtc_video_perf_reporter_.Get())));
 
   // Enable Multiplex codec in SDP optionally.
   if (base::FeatureList::IsEnabled(blink::features::kWebRtcMultiplexCodec)) {
@@ -903,7 +906,6 @@ void PeerConnectionDependencyFactory::ContextDestroyed() {
 void PeerConnectionDependencyFactory::CleanupPeerConnectionFactory() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(1) << "PeerConnectionDependencyFactory::CleanupPeerConnectionFactory()";
-  webrtc_video_perf_reporter_.Shutdown();
   socket_factory_ = nullptr;
   // Not obtaining `signaling_thread` using GetWebRtcSignalingTaskRunner()
   // because that method triggers EnsureInitialized() and we're trying to
@@ -1013,5 +1015,7 @@ void PeerConnectionDependencyFactory::Trace(Visitor* visitor) const {
   Supplement<ExecutionContext>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(p2p_socket_dispatcher_);
+  visitor->Trace(webrtc_video_perf_reporter_);
 }
+
 }  // namespace blink
