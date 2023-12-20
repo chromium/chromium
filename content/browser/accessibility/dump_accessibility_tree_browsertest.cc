@@ -3652,9 +3652,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
       FILE_PATH_LITERAL("frozen-ancestor-cannot-change-descendants.html"));
 }
 
-// TODO(crbug.com/1454778) Flaky on ChromeOS, Linux, Mac, Windows for parameter
-// "blink".
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DISABLED_HiddenTable) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, HiddenTable) {
+  RunRegressionTest(FILE_PATH_LITERAL("hidden-table.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest, HiddenTable) {
   RunRegressionTest(FILE_PATH_LITERAL("hidden-table.html"));
 }
 
