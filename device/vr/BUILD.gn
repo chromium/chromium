@@ -236,6 +236,8 @@ if (enable_vr) {
           "openxr/android/openxr_hand_tracker_android.cc",
           "openxr/android/openxr_hand_tracker_android.h",
           "openxr/android/openxr_platform_helper_android_statics.cc",
+          "openxr/android/openxr_stage_bounds_provider_android.cc",
+          "openxr/android/openxr_stage_bounds_provider_android.h",
         ]
 
         configs += [ "//third_party/khronos:khronos_headers" ]
