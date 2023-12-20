@@ -1512,19 +1512,6 @@ crbug.com/649444 external/wpt/css/selectors/xml-class-selector.xml [ Failure ]
 # Bug in <select multiple> tap behavior:
 crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
 
-# ========== Unload deprecation pending
-
-# unload-deprecate is a large virtual test suite. Rather than adding
-# the tests one-by-one (which requires a VirtualTestSuites-owner
-# review for each CL), they have been added as "Skip". They will be
-# removed from this section as we address each one as part of
-# https://crbug.com/1488371.
-# See https://docs.google.com/document/d/1FH0iG8G8mEebjMpVA_zvSfHBWUhWqC92jRFctaGcxrc/edit#heading=h.pacsgp238vkn
-
-crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/image-load-in-unload-handler.html [ Failure Skip Timeout ]
-
-# ========== End of Unload deprecation pending
-
 ######## Unload Deprecation
 # This is for tests in the "deprecate-unload" virtual suite that
 # cannot be fixed and require a timeout expecation.

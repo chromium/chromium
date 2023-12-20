@@ -2508,7 +2508,6 @@
       "http/tests/inspector-protocol/permissions-policy.js",
       "http/tests/navigation/history-back-across-form-submission-to-fragment.html",
       "http/tests/navigation/image-css-load-in-subframe-unload-handler.html",
-      "http/tests/navigation/image-load-in-unload-handler.html",
       "http/tests/navigation/redirect-on-back-updates-history-item.html",
       "http/tests/navigation/redirect-on-reload-updates-history-item.html",
       "http/tests/navigation/targeted-navigation-in-unload-handler.html",
