@@ -70,7 +70,8 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
 
   void set_run_async(bool run_async) { run_async_ = run_async; }
 
-  const std::vector<DisplaySnapshot*> GetOutputs() const;
+  const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> GetOutputs()
+      const;
 
   // Sets and takes ownership of the provided |outputs|.
   void SetOutputs(std::vector<std::unique_ptr<DisplaySnapshot>> outputs);

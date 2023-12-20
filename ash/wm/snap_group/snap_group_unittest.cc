@@ -1192,7 +1192,8 @@ TEST_F(SnapGroupTest, WindowStackingOrderTest) {
 
   MruWindowTracker::WindowList window_list =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  EXPECT_EQ(std::vector<aura::Window*>({w1.get(), w3.get(), w2.get()}),
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<aura::Window>>(
+                {w1.get(), w3.get(), w2.get()}),
             window_list);
 
   // `w3` is stacked below `w2` even though the activation order of `w3` is
@@ -1993,7 +1994,7 @@ TEST_F(SnapGroupTest, OverviewItemBoundsTest) {
       overview_session->GetOverviewItemForWindow(w1.get());
   const gfx::RectF& group_item_bounds = overview_group_item->target_bounds();
   gfx::RectF cumulative_bounds;
-  for (auto* window : overview_group_item->GetWindows()) {
+  for (aura::Window* window : overview_group_item->GetWindows()) {
     auto* overview_item = overview_session->GetOverviewItemForWindow(window);
     cumulative_bounds.Union(overview_item->target_bounds());
     EXPECT_GT(cumulative_bounds.width(), 0u);
@@ -2800,7 +2801,7 @@ TEST_F(SnapGroupTest, WindowCycleItemRoundedCorners) {
   const auto* cycle_view = window_cycle_list->cycle_view();
   auto& cycle_item_views = cycle_view->cycle_views_for_testing();
   ASSERT_EQ(cycle_item_views.size(), 2u);
-  for (auto* cycle_item_view : cycle_item_views) {
+  for (ash::WindowMiniViewBase* cycle_item_view : cycle_item_views) {
     EXPECT_EQ(cycle_item_view->GetRoundedCorners(),
               gfx::RoundedCornersF(kWindowMiniViewCornerRadius));
   }
@@ -2812,7 +2813,7 @@ TEST_F(SnapGroupTest, WindowCycleItemRoundedCorners) {
 
   // Verify that the visuals of the cycling items will be refreshed so that the
   // exposed corners will be rounded corners.
-  for (auto* cycle_item_view : new_cycle_item_views) {
+  for (ash::WindowMiniViewBase* cycle_item_view : new_cycle_item_views) {
     EXPECT_EQ(cycle_item_view->GetRoundedCorners(),
               gfx::RoundedCornersF(kWindowMiniViewCornerRadius));
   }

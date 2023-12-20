@@ -110,7 +110,7 @@ void TemplateURLTableModel::Reload() {
   TemplateURL::TemplateURLVector default_entries, active_entries, other_entries,
       extension_entries;
   // Keywords that can be made the default first.
-  for (auto* template_url : urls) {
+  for (TemplateURL* template_url : urls) {
     if (template_url_service_->ShowInDefaultList(template_url)) {
       default_entries.push_back(template_url);
     } else if (!template_url_service_->HiddenFromLists(template_url)) {

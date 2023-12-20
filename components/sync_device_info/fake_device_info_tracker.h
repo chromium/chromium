@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -71,7 +72,7 @@ class FakeDeviceInfoTracker : public DeviceInfoTracker {
 
  private:
   // DeviceInfo stored here are not owned.
-  std::vector<const DeviceInfo*> devices_;
+  std::vector<raw_ptr<const DeviceInfo, VectorExperimental>> devices_;
   std::string local_device_cache_guid_;
   absl::optional<std::map<DeviceInfo::FormFactor, int>>
       device_count_per_type_override_;

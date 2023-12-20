@@ -92,7 +92,8 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
   std::map<views::View*, std::string> view_to_sink_map_;
 
   // A mapping of sink id to the associated extra views.
-  std::map<std::string, std::vector<views::View*>> sink_extra_views_map_;
+  std::map<std::string, std::vector<raw_ptr<views::View, VectorExperimental>>>
+      sink_extra_views_map_;
 
   // Special list item that, if clicked, launches the access code casting dialog
   raw_ptr<HoverHighlightView, ExperimentalAsh> add_access_code_device_ =

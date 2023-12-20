@@ -78,9 +78,10 @@ class AutofillCrowdsourcingManager {
   // Starts a query request to Autofill servers. The observer is called with the
   // list of the fields of all requested forms.
   // |forms| - array of forms aggregated in this request.
-  virtual bool StartQueryRequest(const std::vector<FormStructure*>& forms,
-                                 net::IsolationInfo isolation_info,
-                                 base::WeakPtr<Observer> observer);
+  virtual bool StartQueryRequest(
+      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
+      net::IsolationInfo isolation_info,
+      base::WeakPtr<Observer> observer);
 
   // Starts an upload request for `upload_contents`. If `upload_contents` has
   // more than one element, then `upload_contents[0]` is expected to correspond

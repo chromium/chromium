@@ -16,6 +16,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -774,7 +775,8 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
   EXPECT_TRUE(augmented_forms.front().SameFormAs(form));
 
   FormStructure form_structure(form);
-  std::vector<FormStructure*> form_structures(1, &form_structure);
+  std::vector<raw_ptr<FormStructure, VectorExperimental>> form_structures(
+      1, &form_structure);
   std::vector<FormDataPredictions> expected_type_predictions =
       FormStructure::GetFieldTypePredictions(form_structures);
 

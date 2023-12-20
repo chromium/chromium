@@ -68,7 +68,7 @@ class SoftNavigationTest : public MetricIntegrationTest,
       const ukm::TestUkmRecorder& ukm_recorder,
       base::StringPiece metric_name) {
     std::map<int64_t, double> source_id_to_metric_name;
-    for (auto* entry : ukm_recorder.GetEntriesByName(
+    for (const ukm::mojom::UkmEntry* entry : ukm_recorder.GetEntriesByName(
              ukm::builders::SoftNavigation::kEntryName)) {
       if (auto* rs = ukm_recorder.GetEntryMetric(entry, metric_name)) {
         source_id_to_metric_name[entry->source_id] = *rs;

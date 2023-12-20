@@ -68,7 +68,7 @@ bool DeviceOffHoursController::IsCurrentSessionAllowedOnlyForOffHours() const {
   const user_manager::UserList& logged_in_users =
       user_manager->GetLoggedInUsers();
   user_manager::UserList users_to_check;
-  for (auto* user : logged_in_users) {
+  for (user_manager::User* user : logged_in_users) {
     if (user->GetType() == user_manager::USER_TYPE_REGULAR ||
         user->GetType() == user_manager::USER_TYPE_GUEST ||
         user->GetType() == user_manager::USER_TYPE_CHILD) {

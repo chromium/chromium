@@ -226,8 +226,10 @@ void ConsistencyCookieManager::UpdateCookieIfNeeded(bool force_creation) {
     // Cancel any ongoing operation and set the cookie immediately.
     pending_cookie_update_ = absl::nullopt;
     SetCookieValue(signin_client_->GetCookieManager(), cookie_value_.value());
-    for (auto* extra_manager : extra_cookie_managers_)
+    for (network::mojom::CookieManager* extra_manager :
+         extra_cookie_managers_) {
       SetCookieValue(extra_manager, cookie_value_.value());
+    }
     return;
   }
 
@@ -286,8 +288,9 @@ void ConsistencyCookieManager::UpdateCookieIfExists(
   }
   cookie_value_ = target_value;
   SetCookieValue(signin_client_->GetCookieManager(), target_value);
-  for (auto* extra_manager : extra_cookie_managers_)
+  for (network::mojom::CookieManager* extra_manager : extra_cookie_managers_) {
     SetCookieValue(extra_manager, target_value);
+  }
 }
 
 }  // namespace signin

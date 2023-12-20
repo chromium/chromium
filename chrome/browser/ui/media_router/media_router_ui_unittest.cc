@@ -257,7 +257,8 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  std::vector<MediaSinksObserver*> media_sinks_observers_;
+  std::vector<raw_ptr<MediaSinksObserver, VectorExperimental>>
+      media_sinks_observers_;
   raw_ptr<MockMediaRouter, DanglingUntriaged> mock_router_ = nullptr;
   std::unique_ptr<MediaRouterUI> ui_;
   std::unique_ptr<StartPresentationContext> start_presentation_context_;

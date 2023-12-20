@@ -73,11 +73,11 @@ class AutofillSuggestionGenerator {
   // user, sorted by their relevance. This involves many steps from fetching the
   // profiles to matching with `field_contents`, and deduplicating based on
   // `field_types`, which are the relevant types for the current suggestion.
-  std::vector<const AutofillProfile*> GetProfilesToSuggest(
-      FieldType trigger_field_type,
-      const std::u16string& field_contents,
-      bool field_is_autofilled,
-      const FieldTypeSet& field_types);
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+  GetProfilesToSuggest(FieldType trigger_field_type,
+                       const std::u16string& field_contents,
+                       bool field_is_autofilled,
+                       const FieldTypeSet& field_types);
 
   // Returns a list of Suggestion objects, each representing an element in
   // `profiles`.
@@ -88,7 +88,8 @@ class AutofillSuggestionGenerator {
   // were not displayed prior to the effects of the Finch feature
   // kAutofillUseAddressRewriterInProfileSubsetComparison.
   std::vector<Suggestion> CreateSuggestionsFromProfiles(
-      const std::vector<const AutofillProfile*>& profiles,
+      const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+          profiles,
       const FieldTypeSet& field_types,
       std::optional<FieldTypeSet> last_targeted_fields,
       FieldType trigger_field_type,
@@ -171,7 +172,8 @@ class AutofillSuggestionGenerator {
   // `kMaxUniqueSuggestedProfilesCount` profiles. `field_types` stores all of
   // the FieldTypes relevant for the current suggestions, including that
   // of the field on which the user is currently focused.
-  std::vector<const AutofillProfile*> DeduplicatedProfilesForSuggestions(
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+  DeduplicatedProfilesForSuggestions(
       const std::vector<const AutofillProfile*>& matched_profiles,
       FieldType trigger_field_type,
       const FieldTypeSet& field_types,

@@ -19,6 +19,7 @@
 #include "base/check_op.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
@@ -83,7 +84,7 @@ OverviewGroupItem::OverviewGroupItem(const Windows& windows,
 
   const aura::Window* topmost_window = window_util::GetTopMostWindow(windows);
   OverviewItem* bottom_item = nullptr;
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     // Create the overview items hosted by `this`, which will be the delegate to
     // handle the window destroying if the overview representation for the
     // window is hosted by `this`. We also need to explicitly disable the shadow
@@ -118,8 +119,9 @@ aura::Window* OverviewGroupItem::GetWindow() {
   return overview_items_.empty() ? nullptr : overview_items_[0]->GetWindow();
 }
 
-std::vector<aura::Window*> OverviewGroupItem::GetWindows() {
-  std::vector<aura::Window*> windows;
+std::vector<raw_ptr<aura::Window, VectorExperimental>>
+OverviewGroupItem::GetWindows() {
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows;
   for (const auto& item : overview_items_) {
     windows.push_back(item->GetWindow());
   }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 // DELETE LATER
 #include "base/logging.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
@@ -120,7 +122,8 @@ BookmarkContextMenuController::BookmarkContextMenuController(
     Profile* profile,
     BookmarkLaunchLocation opened_from,
     const BookmarkNode* parent,
-    const std::vector<const BookmarkNode*>& selection)
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+        selection)
     : parent_window_(parent_window),
       delegate_(delegate),
       browser_(browser),
@@ -275,7 +278,7 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       base::RecordAction(
           UserMetricsAction("BookmarkBar_ContextMenu_AddToBookmarkBar"));
       const BookmarkNode* bookmark_bar_node = model_->bookmark_bar_node();
-      for (const auto* node : selection_) {
+      for (const bookmarks::BookmarkNode* node : selection_) {
         model_->Move(node, bookmark_bar_node,
                      bookmark_bar_node->children().size());
       }
@@ -286,7 +289,7 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       base::RecordAction(
           UserMetricsAction("BookmarkBar_ContextMenu_RemoveFromBookmarkBar"));
       const BookmarkNode* other_node = model_->other_node();
-      for (const auto* node : selection_) {
+      for (const bookmarks::BookmarkNode* node : selection_) {
         model_->Move(node, other_node, other_node->children().size());
       }
       break;
@@ -311,8 +314,9 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       RecordBookmarkRemoved(opened_from_);
 
       bookmarks::ScopedGroupBookmarkActions group_remove(model_);
-      for (const auto* node : selection_)
+      for (const bookmarks::BookmarkNode* node : selection_) {
         model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser);
+      }
       selection_.clear();
       break;
     }
@@ -492,7 +496,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
       return selection_.size() == 1 && !is_root_node && can_edit;
 
     case IDC_BOOKMARK_BAR_ADD_TO_BOOKMARKS_BAR:
-      for (auto* node : selection_) {
+      for (const bookmarks::BookmarkNode* node : selection_) {
         if (node->is_permanent_node() ||
             node->parent() == model_->bookmark_bar_node()) {
           return false;
@@ -500,7 +504,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
       }
       return can_edit && !model_->client()->IsNodeManaged(parent_);
     case IDC_BOOKMARK_BAR_REMOVE_FROM_BOOKMARKS_BAR:
-      for (auto* node : selection_) {
+      for (const bookmarks::BookmarkNode* node : selection_) {
         if (node->is_permanent_node() ||
             node->parent() != model_->bookmark_bar_node()) {
           return false;

@@ -86,7 +86,8 @@ class ASH_EXPORT AppListSearchView : public views::View,
   // `search_notifier_` is either accepted or timeout.
   void RemoveSearchNotifierView();
 
-  std::vector<SearchResultContainerView*> result_container_views_for_test() {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+  result_container_views_for_test() {
     return result_container_views_;
   }
 
@@ -162,7 +163,8 @@ class ASH_EXPORT AppListSearchView : public views::View,
 
   // Containers for search result views. The contained views are owned by the
   // views hierarchy. Used by result_selection_controller_.
-  std::vector<SearchResultContainerView*> result_container_views_;
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_container_views_;
 
   // The notifier that shows the search privacy notice or educational nudge.
   raw_ptr<AppListToastView, ExperimentalAsh> search_notifier_ = nullptr;

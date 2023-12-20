@@ -397,7 +397,7 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
           this, kPlayPauseIconSize, MediaSessionAction::kPause,
           l10n_util::GetStringUTF16(
               IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_ACTION_PAUSE)));
-  media_action_buttons_.push_back(play_pause_button_);
+  media_action_buttons_.push_back(play_pause_button_.get());
 
   media_action_buttons_.push_back(
       right_control_group->AddChildView(std::make_unique<MediaActionButton>(

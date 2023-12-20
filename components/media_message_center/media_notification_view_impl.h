@@ -99,7 +99,10 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
     return playback_button_container_;
   }
 
-  std::vector<views::View*> get_buttons_for_testing() { return GetButtons(); }
+  std::vector<raw_ptr<views::View, VectorExperimental>>
+  get_buttons_for_testing() {
+    return GetButtons();
+  }
 
   views::Button* GetHeaderRowForTesting() const;
   std::u16string GetSourceTitleForTesting() const;
@@ -135,7 +138,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
 
   // Returns the buttons contained in the button row and playback button
   // container.
-  std::vector<views::View*> GetButtons();
+  std::vector<raw_ptr<views::View, VectorExperimental>> GetButtons();
 
   // Container that receives OnExpanded events.
   const raw_ptr<MediaNotificationContainer> container_;

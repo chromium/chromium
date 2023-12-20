@@ -139,7 +139,7 @@ void AutofillDriverIOS::ExtractForm(
 void AutofillDriverIOS::HandleParsedForms(const std::vector<FormData>& forms) {
   const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& map =
       browser_autofill_manager_->form_structures();
-  std::vector<FormStructure*> form_structures;
+  std::vector<raw_ptr<FormStructure, VectorExperimental>> form_structures;
   form_structures.reserve(forms.size());
   for (const FormData& form : forms) {
     auto it = map.find(form.global_id());
@@ -155,7 +155,7 @@ void AutofillDriverIOS::HandleParsedForms(const std::vector<FormData>& forms) {
 }
 
 void AutofillDriverIOS::SendAutofillTypePredictionsToRenderer(
-    const std::vector<FormStructure*>& forms) {
+    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
   web::WebFrame* frame = web_frame();
   if (!frame) {
     return;

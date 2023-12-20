@@ -39,9 +39,10 @@ SyncedSessions::SyncedSessions(
   if (open_tabs) {
     // Iterating through all remote sessions, then retrieving the tabs to
     // display to the user.
-    std::vector<const sync_sessions::SyncedSession*> sessions;
+    std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+        sessions;
     open_tabs->GetAllForeignSessions(&sessions);
-    for (const auto* session : sessions) {
+    for (const sync_sessions::SyncedSession* session : sessions) {
       auto distant_session = std::make_unique<DistantSession>();
       distant_session->InitWithSyncedSession(session, open_tabs);
       // Don't display sessions with no tabs.

@@ -148,7 +148,7 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness,
     auto entries = ukm_recorder_->GetEntriesByName(
         "ThirdPartyCookies.CookieControlsActivated");
     ASSERT_EQ(1u, entries.size());
-    auto* entry = entries.front();
+    auto* entry = entries.front().get();
 
     ukm_recorder_->ExpectEntryMetric(entry, "FedCmInitiated", fed_cm_initiated);
     ukm_recorder_->ExpectEntryMetric(entry, "StorageAccessAPIRequested",

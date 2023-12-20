@@ -66,7 +66,7 @@ std::unique_ptr<Node> DOMAgentViews::BuildTreeForView(UIElement* view_element) {
       UIElement::GetBackingElement<views::View, ViewElement>(view_element);
   auto children = std::make_unique<protocol::Array<Node>>();
 
-  for (auto* child : view->GetChildrenInZOrder()) {
+  for (views::View* child : view->GetChildrenInZOrder()) {
     // When building the subtree, a particular view could be visited multiple
     // times because for each view of the subtree, we would call
     // BuildTreeForView(..) on that view which causes the subtree with that view

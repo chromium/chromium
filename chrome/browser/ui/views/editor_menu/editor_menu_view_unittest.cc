@@ -32,6 +32,7 @@ using ::testing::Each;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::NiceMock;
+using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::SizeIs;
 
@@ -79,7 +80,7 @@ TEST_F(EditorMenuViewTest, CreatesChips) {
   // Chips should be in a single row.
   const auto* chips_container = editor_menu_view->chips_container_for_testing();
   ASSERT_THAT(chips_container->children(), SizeIs(1));
-  const auto* chip_row = chips_container->children()[0];
+  const auto* chip_row = chips_container->children()[0].get();
   ASSERT_THAT(chip_row->children(), SizeIs(queries.size()));
   // Chips should have correct text labels.
   EXPECT_EQ(GetChipLabel(chip_row->children()[0]), queries[0].name);
@@ -102,9 +103,10 @@ TEST_F(EditorMenuViewTest, CreatesChipsInMultipleRows) {
       views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
 
   // Chips should be in two rows.
-  EXPECT_THAT(editor_menu_view->chips_container_for_testing()->children(),
-              ElementsAre(Property(&views::View::children, SizeIs(3)),
-                          Property(&views::View::children, SizeIs(2))));
+  EXPECT_THAT(
+      editor_menu_view->chips_container_for_testing()->children(),
+      ElementsAre(Pointee(Property(&views::View::children, SizeIs(3))),
+                  Pointee(Property(&views::View::children, SizeIs(2)))));
 }
 
 TEST_F(EditorMenuViewTest, TabKeyMovesFocus) {
@@ -173,7 +175,7 @@ TEST_F(EditorMenuViewTest, EnterKeySubmitsPresetQuery) {
   auto* editor_menu_view =
       views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
   auto* chip_row =
-      editor_menu_view->chips_container_for_testing()->children()[0];
+      editor_menu_view->chips_container_for_testing()->children()[0].get();
   chip_row->children()[0]->RequestFocus();
 
   EXPECT_TRUE(views::IsViewClass<EditorMenuChipView>(
@@ -229,9 +231,9 @@ TEST_F(EditorMenuViewTest, DisablesMenu) {
 
   // Chips should be disabled.
   const auto* chip_row =
-      editor_menu_view->chips_container_for_testing()->children()[0];
+      editor_menu_view->chips_container_for_testing()->children()[0].get();
   EXPECT_THAT(chip_row->children(),
-              Each(Property(&views::View::GetEnabled, false)));
+              Each(Pointee(Property(&views::View::GetEnabled, false))));
   // Textfield should be disabled.
   EXPECT_FALSE(
       editor_menu_view->textfield_for_testing()->textfield()->GetEnabled());

@@ -169,7 +169,7 @@ void AnswerRanker::PromoteChosenAnswer() {
   }
 
   // Filter out unsuccessful Omnibox candidates.
-  for (auto* result : omnibox_candidates_) {
+  for (ChromeSearchResult* result : omnibox_candidates_) {
     if (result && result->id() != chosen_answer_->id()) {
       result->scoring().set_filtered(true);
     }

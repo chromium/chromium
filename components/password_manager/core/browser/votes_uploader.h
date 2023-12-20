@@ -46,7 +46,8 @@ struct SingleUsernameVoteData {
       autofill::FieldRendererId renderer_id,
       const std::u16string& username_value,
       const FormPredictions& form_predictions,
-      const std::vector<const PasswordForm*>& stored_credentials,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          stored_credentials,
       PasswordFormHadMatchingUsername password_form_had_matching_username);
   SingleUsernameVoteData(const SingleUsernameVoteData&);
   SingleUsernameVoteData& operator=(const SingleUsernameVoteData&);
@@ -124,10 +125,12 @@ class VotesUploader {
   ~VotesUploader();
 
   // Send appropriate votes based on what is currently being saved.
-  void SendVotesOnSave(const autofill::FormData& observed,
-                       const PasswordForm& submitted_form,
-                       const std::vector<const PasswordForm*>& best_matches,
-                       PasswordForm* pending_credentials);
+  void SendVotesOnSave(
+      const autofill::FormData& observed,
+      const PasswordForm& submitted_form,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          best_matches,
+      PasswordForm* pending_credentials);
 
   // Check to see if |pending| corresponds to an account creation form. If we
   // think that it does, we label it as such and upload this state to the
@@ -148,7 +151,8 @@ class VotesUploader {
   // Sends USERNAME and PASSWORD votes, when a credential is used to login for
   // the first time. |form_to_upload| is the submitted login form.
   void UploadFirstLoginVotes(
-      const std::vector<const PasswordForm*>& best_matches,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          best_matches,
       const PasswordForm& pending_credentials,
       const PasswordForm& form_to_upload);
 
@@ -157,7 +161,8 @@ class VotesUploader {
   // value of the match is equal to |password|, the match is saved to
   // |username_correction_vote_| and the method returns true.
   bool FindCorrectedUsernameElement(
-      const std::vector<const PasswordForm*>& matches,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          matches,
       const std::u16string& username,
       const std::u16string& password);
 
@@ -277,9 +282,11 @@ class VotesUploader {
 
   // Sets the known-value flag for each field, indicating that the field
   // contained a previously stored credential on submission.
-  void SetKnownValueFlag(const PasswordForm& pending_credentials,
-                         const std::vector<const PasswordForm*>& best_matches,
-                         autofill::FormStructure* form_to_upload);
+  void SetKnownValueFlag(
+      const PasswordForm& pending_credentials,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          best_matches,
+      autofill::FormStructure* form_to_upload);
 
   // Searches for |username| in |all_alternative_usernames| of |match|. If the
   // username value is found, the match is saved to |username_correction_vote_|

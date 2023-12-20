@@ -261,7 +261,7 @@ class AnimatingLayoutManagerTest : public testing::Test {
   ProposedLayout layout1_;
   ProposedLayout layout2_;
   raw_ptr<View, DanglingUntriaged> view_;
-  std::vector<TestView*> children_;
+  std::vector<raw_ptr<TestView, VectorExperimental>> children_;
   raw_ptr<AnimatingLayoutManager, DanglingUntriaged> animating_layout_manager_ =
       nullptr;
   base::test::TaskEnvironment task_environment_;
@@ -2704,7 +2704,8 @@ TEST_F(AnimatingLayoutManagerTest, ZOrder_FadingOutViewMovedToBack) {
                                       {child(1), false},
                                       {child(2), true, {5, 5, 2, 2}}}};
 
-  const std::vector<View*> expected_order{child(1), child(0), child(2)};
+  const std::vector<raw_ptr<View, VectorExperimental>> expected_order{
+      child(1), child(0), child(2)};
 
   layout()->SetBoundsAnimationMode(
       AnimatingLayoutManager::BoundsAnimationMode::kAnimateBothAxes);
@@ -2744,7 +2745,8 @@ TEST_F(AnimatingLayoutManagerTest, ZOrder_FadingInViewMovedToBack) {
                                       {child(1), true, {3, 3, 2, 2}},
                                       {child(2), true, {7, 7, 2, 2}}}};
 
-  const std::vector<View*> expected_order{child(1), child(0), child(2)};
+  const std::vector<raw_ptr<View, VectorExperimental>> expected_order{
+      child(1), child(0), child(2)};
 
   layout()->SetBoundsAnimationMode(
       AnimatingLayoutManager::BoundsAnimationMode::kAnimateBothAxes);

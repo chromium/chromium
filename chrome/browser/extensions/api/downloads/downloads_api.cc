@@ -1333,7 +1333,7 @@ ExtensionFunction::ResponseAction DownloadsEraseFunction::Run() {
   if (!error.empty())
     return RespondNow(Error(std::move(error)));
   base::Value::List json_results;
-  for (auto* result : results) {
+  for (download::DownloadItem* result : results) {
     json_results.Append(static_cast<int>(result->GetId()));
     result->Remove();
   }
@@ -1587,7 +1587,7 @@ ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
 
   BrowserList* browsers = BrowserList::GetInstance();
   if (browsers) {
-    for (auto* browser : *browsers) {
+    for (Browser* browser : *browsers) {
       DownloadCoreService* current_service =
           DownloadCoreServiceFactory::GetForBrowserContext(browser->profile());
       // The following code is to hide the download UI explicitly if the UI is
@@ -1643,7 +1643,7 @@ ExtensionFunction::ResponseAction DownloadsSetUiOptionsFunction::Run() {
 
   BrowserList* browsers = BrowserList::GetInstance();
   if (browsers) {
-    for (auto* browser : *browsers) {
+    for (Browser* browser : *browsers) {
       DownloadCoreService* current_service =
           DownloadCoreServiceFactory::GetForBrowserContext(browser->profile());
       // The following code is to hide the download UI explicitly if the UI is

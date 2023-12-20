@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -110,9 +111,10 @@ AutoResumptionHandler::~AutoResumptionHandler() {
 }
 
 void AutoResumptionHandler::SetResumableDownloads(
-    const std::vector<download::DownloadItem*>& downloads) {
+    const std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>&
+        downloads) {
   resumable_downloads_.clear();
-  for (auto* download : downloads) {
+  for (download::DownloadItem* download : downloads) {
     if (!IsAutoResumableDownload(download))
       continue;
     resumable_downloads_.insert(std::make_pair(download->GetGuid(), download));

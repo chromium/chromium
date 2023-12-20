@@ -20,6 +20,7 @@
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
@@ -106,7 +107,7 @@ bool InTabletMode() {
 }
 
 bool TopTwoVisibleWindowsBothSnapped(
-    const std::vector<aura::Window*>& windows) {
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
   int windows_size = windows.size();
   if (windows_size < 2)
     return false;
@@ -117,7 +118,7 @@ bool TopTwoVisibleWindowsBothSnapped(
   if (!top_snap_window_state->IsSnapped())
     return false;
 
-  for (auto* window : base::Reversed(windows)) {
+  for (aura::Window* window : base::Reversed(windows)) {
     // Skip the top one.
     if (window == windows.back())
       continue;
@@ -579,7 +580,7 @@ void SplitViewMetricsController::InitObservedWindowsOnActiveDesk() {
       current_desk_
           ->GetDeskContainerForRoot(split_view_controller_->root_window())
           ->children();
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     if (!CanIncludeWindowInMruList(window))
       continue;
     AddObservedWindow(window);
@@ -630,7 +631,7 @@ bool SplitViewMetricsController::
     return false;
 
   return TopTwoVisibleWindowsBothSnapped(
-      std::vector<aura::Window*>(begin_iter, iter));
+      std::vector<raw_ptr<aura::Window, VectorExperimental>>(begin_iter, iter));
 }
 
 void SplitViewMetricsController::RecordSnapTwoWindowsDuration(

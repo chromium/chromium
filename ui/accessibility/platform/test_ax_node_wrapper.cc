@@ -353,7 +353,7 @@ bool TestAXNodeWrapper::IsReadOnlyOrDisabled() const {
 // Walk the AXTree and ensure that all wrappers are created
 void TestAXNodeWrapper::BuildAllWrappers(AXTree* tree, AXNode* node) {
   TestAXNodeWrapper::GetOrCreate(tree, node);
-  for (auto* child : node->children()) {
+  for (ui::AXNode* child : node->children()) {
     TestAXNodeWrapper::GetOrCreate(tree, child);
     BuildAllWrappers(tree, child);
   }

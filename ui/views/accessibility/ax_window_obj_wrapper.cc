@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
@@ -72,8 +73,9 @@ void FireLocationChangesRecursively(aura::Window* window,
   FireEventOnWindowChildWidgetAndRootView(
       window, ax::mojom::Event::kLocationChanged, cache);
 
-  for (auto* child : window->children())
+  for (aura::Window* child : window->children()) {
     FireLocationChangesRecursively(child, cache);
+  }
 }
 
 std::string GetWindowName(aura::Window* window) {
@@ -166,7 +168,7 @@ AXAuraObjWrapper* AXWindowObjWrapper::GetParent() {
 }
 
 void AXWindowObjWrapper::GetChildren(
-    std::vector<AXAuraObjWrapper*>* out_children) {
+    std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>* out_children) {
   // Ignore this window's descendants if it has a child tree.
   if (window_->GetProperty(ui::kChildAXTreeID) &&
       ui::AXTreeID::FromString(*(window_->GetProperty(ui::kChildAXTreeID))) !=
@@ -178,8 +180,9 @@ void AXWindowObjWrapper::GetChildren(
   if (window_->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren))
     return;
 
-  for (auto* child : window_->children())
+  for (aura::Window* child : window_->children()) {
     out_children->push_back(aura_obj_cache_->GetOrCreate(child));
+  }
 
   // Also consider any associated widgets as children.
   Widget* widget = GetWidgetForWindow(window_);

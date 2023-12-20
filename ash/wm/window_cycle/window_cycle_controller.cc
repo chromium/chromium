@@ -420,7 +420,7 @@ WindowCycleController::BuildWindowListForWindowCycling(
   }
 
   MruWindowTracker::WindowList adjusted_window_list;
-  for (auto* window : window_list) {
+  for (aura::Window* window : window_list) {
     // The latter-activated window in a snap group should have been added. Skip
     // inserting to avoid duplicates.
     if (base::Contains(adjusted_window_list, window)) {

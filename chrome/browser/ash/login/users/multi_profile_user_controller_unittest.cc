@@ -214,7 +214,7 @@ class MultiProfileUserControllerTest : public testing::Test {
 
   std::unique_ptr<MultiProfileUserController> controller_;
 
-  std::vector<TestingProfile*> user_profiles_;
+  std::vector<raw_ptr<TestingProfile, VectorExperimental>> user_profiles_;
 
   std::vector<AccountId> test_users_;
 };

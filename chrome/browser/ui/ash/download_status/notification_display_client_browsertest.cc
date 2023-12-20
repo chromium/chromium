@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CancelDownload) {
   AshNotificationView* const uncancellable_download_notification =
       GetPopupView(profile, notification_id);
   ASSERT_TRUE(uncancellable_download_notification);
-  std::vector<views::LabelButton*> action_buttons =
+  std::vector<raw_ptr<views::LabelButton, VectorExperimental>> action_buttons =
       uncancellable_download_notification->GetActionButtonsForTest();
   const std::u16string cancel_button_text =
       l10n_util::GetStringUTF16(GetCommandTextId(CommandType::kCancel));
@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   AshNotificationView* const popup_view =
       GetPopupView(profile, notification_id);
   ASSERT_TRUE(popup_view);
-  std::vector<views::LabelButton*> action_buttons =
+  std::vector<raw_ptr<views::LabelButton, VectorExperimental>> action_buttons =
       popup_view->GetActionButtonsForTest();
   const std::u16string resume_button_text =
       l10n_util::GetStringUTF16(GetCommandTextId(CommandType::kResume));

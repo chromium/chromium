@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/language_code.h"
@@ -274,7 +275,8 @@ class PasswordManagerClient {
   // Currently only implemented on Android.
   virtual void UpdateCredentialCache(
       const url::Origin& origin,
-      const std::vector<const PasswordForm*>& best_matches,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          best_matches,
       bool is_blocklisted);
 
   // Called when a password is saved in an automated fashion. Embedder may
@@ -292,9 +294,11 @@ class PasswordManagerClient {
   // implementation is a noop. |was_autofilled_on_pageload| contains information
   // if password form was autofilled on pageload.
   virtual void PasswordWasAutofilled(
-      const std::vector<const PasswordForm*>& best_matches,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          best_matches,
       const url::Origin& origin,
-      const std::vector<const PasswordForm*>* federated_matches,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
+          federated_matches,
       bool was_autofilled_on_pageload);
 
   // Sends username/password from |preferred_match| for filling in the http auth

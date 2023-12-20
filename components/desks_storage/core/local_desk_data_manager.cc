@@ -14,6 +14,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -187,7 +188,7 @@ LocalDeskDataManager::DeleteTaskResult::DeleteTaskResult(
 LocalDeskDataManager::DeleteTaskResult::~DeleteTaskResult() = default;
 
 DeskModel::GetAllEntriesResult LocalDeskDataManager::GetAllEntries() {
-  std::vector<const ash::DeskTemplate*> entries;
+  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> entries;
   if (cache_status_ != CacheStatus::kOk) {
     LOG(WARNING) << "Unable to get all entries: Cache failure";
     return GetAllEntriesResult(GetAllEntriesStatus::kFailure,

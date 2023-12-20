@@ -156,7 +156,7 @@ void PushMessagingNotificationManager::DidCountVisibleNotifications(
     Profile* profile = model->GetProfile();
     WebContents* active_web_contents = model->GetActiveWebContents();
 #else
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     Profile* profile = browser->profile();
     WebContents* active_web_contents =
         browser->tab_strip_model()->GetActiveWebContents();

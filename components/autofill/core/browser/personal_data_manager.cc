@@ -161,6 +161,11 @@ const T& Deref(T* x) {
   return *x;
 }
 
+template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+const T& Deref(const raw_ptr<T, Traits>& x) {
+  return *x;
+}
+
 template <typename T>
 const T& Deref(const std::unique_ptr<T>& x) {
   return *x;

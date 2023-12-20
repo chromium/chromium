@@ -62,8 +62,9 @@ void DescribeNodesWithAnnotations(const ui::AXNode& node,
     else
       descriptions->push_back(role_str + " " + annotation);
   }
-  for (const auto* child : node.children())
+  for (const ui::AXNode* child : node.children()) {
     DescribeNodesWithAnnotations(*child, descriptions);
+  }
 }
 
 std::vector<std::string> DescribeNodesWithAnnotations(

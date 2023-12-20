@@ -11,7 +11,7 @@
 
 // This file contains the code to create the patch.
 
-
+#include "base/memory/raw_ptr.h"
 #include "courgette/ensemble.h"
 
 #include <stddef.h>
@@ -138,8 +138,10 @@ Status FindGenerators(Ensemble* old_ensemble, Ensemble* new_ensemble,
   VLOG(1) << "done FindEmbeddedElements "
           << (base::Time::Now() - start_find_time).InSecondsF();
 
-  std::vector<Element*> old_elements(old_ensemble->elements());
-  std::vector<Element*> new_elements(new_ensemble->elements());
+  std::vector<raw_ptr<Element, VectorExperimental>> old_elements(
+      old_ensemble->elements());
+  std::vector<raw_ptr<Element, VectorExperimental>> new_elements(
+      new_ensemble->elements());
 
   VLOG(1) << "old has " << old_elements.size() << " elements";
   VLOG(1) << "new has " << new_elements.size() << " elements";

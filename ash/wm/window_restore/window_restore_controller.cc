@@ -29,6 +29,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
@@ -193,7 +194,7 @@ bool WindowRestoreController::CanActivateRestoredWindow(
 
   // Only the topmost unminimize restored window can be activated.
   auto siblings = desk_container->children();
-  for (auto* const sibling : base::Reversed(siblings)) {
+  for (aura::Window* const sibling : base::Reversed(siblings)) {
     if (WindowState::Get(sibling)->IsMinimized())
       continue;
 
@@ -213,7 +214,7 @@ bool WindowRestoreController::CanActivateAppList(const aura::Window* window) {
   if (!app_list_controller || app_list_controller->GetWindow() != window)
     return true;
 
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     auto active_desk_children =
         desks_util::GetActiveDeskContainerForRoot(root_window)->children();
 
@@ -235,10 +236,10 @@ bool WindowRestoreController::CanActivateAppList(const aura::Window* window) {
 }
 
 // static
-std::vector<aura::Window*>::const_iterator
+std::vector<raw_ptr<aura::Window, VectorExperimental>>::const_iterator
 WindowRestoreController::GetWindowToInsertBefore(
     aura::Window* window,
-    const std::vector<aura::Window*>& windows) {
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
   const int32_t* activation_index =
       window->GetProperty(app_restore::kActivationIndexKey);
   DCHECK(activation_index);

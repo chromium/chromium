@@ -155,7 +155,8 @@ void DesktopCapturerLacros::InitializeWidgetMap() {
   // On desktop aura there is one WindowTreeHost per top-level window. Thus, by
   // iterating through the set of window_tree_hosts, we're essentially iterating
   // through the list of known windows.
-  for (auto* host : aura::Env::GetInstance()->window_tree_hosts()) {
+  for (aura::WindowTreeHost* host :
+       aura::Env::GetInstance()->window_tree_hosts()) {
     OnHostInitialized(host);
   }
 }

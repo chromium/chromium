@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -83,7 +84,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
   }
 
   bool GetAllForeignSessions(
-      std::vector<const sync_sessions::SyncedSession*>* sessions) override {
+      std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                          VectorExperimental>>* sessions) override {
     *sessions = foreign_sessions_;
     base::ranges::sort(*sessions, std::greater(),
                        [](const sync_sessions::SyncedSession* session) {
@@ -117,7 +119,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
  private:
   std::vector<std::unique_ptr<sync_sessions::SyncedSession>>
       foreign_sessions_owned_;
-  std::vector<const sync_sessions::SyncedSession*> foreign_sessions_;
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      foreign_sessions_;
   std::unique_ptr<sync_sessions::SyncedSession> local_session_;
 };
 
@@ -245,11 +248,12 @@ TEST_F(TabSessionSourceTest, ProcessLocal) {
 }
 
 TEST_F(TabSessionSourceTest, ProcessForeign) {
-  std::vector<const sync_sessions::SyncedSession*> foreign_sessions;
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      foreign_sessions;
   ASSERT_TRUE(
       session_sync_service_.GetOpenTabsUIDelegate()->GetAllForeignSessions(
           &foreign_sessions));
-  const auto* picked_session = foreign_sessions[0];
+  const auto* picked_session = foreign_sessions[0].get();
   auto& picked_tab =
       picked_session->windows.begin()->second->wrapped_window.tabs[0];
   const base::TimeDelta kNavTime1 = base::Seconds(40);

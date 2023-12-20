@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/drag_drop/tab_drag_drop_windows_hider.h"
+#include "base/memory/raw_ptr.h"
 
 #include <vector>
 
@@ -32,7 +33,7 @@ TabDragDropWindowsHider::TabDragDropWindowsHider(aura::Window* source_window)
 
   DCHECK(!Shell::Get()->overview_controller()->InOverviewSession());
 
-  std::vector<aura::Window*> windows =
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   for (aura::Window* window : windows) {
     if (window == source_window_ || window->GetRootWindow() != root_window_) {

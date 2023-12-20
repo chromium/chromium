@@ -11,6 +11,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/sessions/core/session_id.h"
 
@@ -27,7 +28,7 @@ class WebContents;
 // Stores a list of all TabModel objects.
 class TabModelList {
  public:
-  typedef std::vector<TabModel*> TabModelVector;
+  typedef std::vector<raw_ptr<TabModel, VectorExperimental>> TabModelVector;
   typedef TabModelVector::iterator iterator;
   typedef TabModelVector::const_iterator const_iterator;
 

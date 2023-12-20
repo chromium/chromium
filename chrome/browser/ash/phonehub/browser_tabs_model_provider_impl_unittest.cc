@@ -69,9 +69,9 @@ class OpenTabsUIDelegateMock : public sync_sessions::OpenTabsUIDelegate {
   OpenTabsUIDelegateMock() {}
   ~OpenTabsUIDelegateMock() override {}
 
-  MOCK_METHOD1(
-      GetAllForeignSessions,
-      bool(std::vector<const sync_sessions::SyncedSession*>* sessions));
+  MOCK_METHOD1(GetAllForeignSessions,
+               bool(std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                                        VectorExperimental>>* sessions));
   MOCK_METHOD3(GetForeignTab,
                bool(const std::string& tag,
                     const SessionID tab_id,
@@ -245,7 +245,8 @@ class BrowserTabsModelProviderImplTest
   }
 
   bool MockGetAllForeignSessions(
-      std::vector<const sync_sessions::SyncedSession*>* sessions) {
+      std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                          VectorExperimental>>* sessions) {
     if (sessions_) {
       *sessions = *sessions_;
       return !sessions->empty();
@@ -270,7 +271,8 @@ class BrowserTabsModelProviderImplTest
   }
 
   void set_synced_sessions(
-      std::vector<const sync_sessions::SyncedSession*>* sessions) {
+      std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                          VectorExperimental>>* sessions) {
     sessions_ = sessions;
   }
 
@@ -292,7 +294,9 @@ class BrowserTabsModelProviderImplTest
   testing::NiceMock<OpenTabsUIDelegateMock> open_tabs_ui_delegate_;
 
   bool enable_tab_sync_ = true;
-  raw_ptr<std::vector<const sync_sessions::SyncedSession*>, ExperimentalAsh>
+  raw_ptr<std::vector<
+              raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>,
+          ExperimentalAsh>
       sessions_ = nullptr;
   base::RepeatingClosure foreign_sessions_changed_callback_;
 };
@@ -331,7 +335,8 @@ TEST_F(BrowserTabsModelProviderImplTest, AttemptBrowserTabsModelUpdate) {
       fake_browser_tabs_metadata_fetcher()->DoesPendingCallbackExist());
 
   // Test enabling tab sync with no matching pii name with session_name.
-  std::vector<const sync_sessions::SyncedSession*> sessions;
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      sessions;
   std::unique_ptr<sync_sessions::SyncedSession> session =
       CreateNewSession(kPhoneNameTwo);
   sessions.emplace_back(session.get());
@@ -471,8 +476,8 @@ TEST_F(BrowserTabsModelProviderImplTest, ClearTabMetadataDuringMetadataFetch) {
   SetPiiFreeName(kPhoneNameOne);
   std::unique_ptr<sync_sessions::SyncedSession> new_session =
       CreateNewSession(kPhoneNameOne);
-  std::vector<const sync_sessions::SyncedSession*> sessions(
-      {new_session.get()});
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      sessions({new_session.get()});
 
   set_enable_tab_sync(true);
   set_synced_sessions(&sessions);
@@ -504,8 +509,9 @@ TEST_F(BrowserTabsModelProviderImplTest, SessionCorrectlySelected) {
   std::unique_ptr<sync_sessions::SyncedSession> session_d = CreateNewSession(
       kPhoneNameTwo, base::Time::FromSecondsSinceUnixEpoch(10));
 
-  std::vector<const sync_sessions::SyncedSession*> sessions(
-      {session_a.get(), session_b.get(), session_c.get(), session_d.get()});
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      sessions(
+          {session_a.get(), session_b.get(), session_c.get(), session_d.get()});
 
   set_enable_tab_sync(true);
   set_synced_sessions(&sessions);

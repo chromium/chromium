@@ -53,7 +53,7 @@ void RadioButtonGroup::OnButtonSelected(OptionButtonBase* button) {
   if (!button->selected())
     return;
 
-  for (auto* b : buttons_) {
+  for (ash::OptionButtonBase* b : buttons_) {
     if (b != button)
       b->SetSelected(false);
   }

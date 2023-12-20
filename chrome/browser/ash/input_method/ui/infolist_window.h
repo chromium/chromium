@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/ime/infolist_entry.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -49,7 +50,7 @@ class UI_CHROMEOS_EXPORT InfolistWindow
   void WindowClosing() override;
 
   // The list of visible entries. Owned by views hierarchy.
-  std::vector<InfolistEntryView*> entry_views_;
+  std::vector<raw_ptr<InfolistEntryView, VectorExperimental>> entry_views_;
 
   // Information title font.
   gfx::FontList title_font_list_;

@@ -177,7 +177,7 @@ views::View* GetBubbleContainer(views::View* view) {
   // An arbitrary id that no other child of root view should use.
   const int kMenuContainerId = 1000;
   views::View* container = nullptr;
-  for (auto* child : root_view->children()) {
+  for (views::View* child : root_view->children()) {
     if (child->GetID() == kMenuContainerId) {
       container = child;
       break;

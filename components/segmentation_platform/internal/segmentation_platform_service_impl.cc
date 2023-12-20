@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
@@ -227,7 +228,9 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
 
   signal_handler_.OnSignalListUpdated();
 
-  std::vector<ModelExecutionSchedulerImpl::Observer*> observers;
+  std::vector<
+      raw_ptr<ModelExecutionSchedulerImpl::Observer, VectorExperimental>>
+      observers;
   for (auto& key_and_selector : segment_selectors_)
     observers.push_back(key_and_selector.second.get());
   observers.push_back(proxy_.get());

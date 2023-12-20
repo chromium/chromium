@@ -15,6 +15,7 @@
 #include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/i18n/string_compare.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -124,7 +125,7 @@ void SavedDeskGridView::SortEntries(const base::Uuid& order_first_uuid) {
 }
 
 void SavedDeskGridView::AddOrUpdateEntries(
-    const std::vector<const DeskTemplate*>& entries,
+    const std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>& entries,
     const base::Uuid& order_first_uuid,
     bool animate) {
   std::vector<SavedDeskItemView*> new_grid_items;
@@ -197,7 +198,7 @@ bool SavedDeskGridView::IsSavedDeskNameBeingModified() const {
   if (!GetWidget()->IsActive())
     return false;
 
-  for (auto* grid_item : grid_items_) {
+  for (ash::SavedDeskItemView* grid_item : grid_items_) {
     if (grid_item->IsNameBeingModified())
       return true;
   }

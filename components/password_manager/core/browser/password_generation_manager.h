@@ -64,24 +64,30 @@ class PasswordGenerationManager {
   // - The actual form submission doesn't succeed for some reason.
   void GeneratedPasswordAccepted(
       PasswordForm generated,
-      const std::vector<const PasswordForm*>& non_federated_matches,
-      const std::vector<const PasswordForm*>& federated_matches,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          non_federated_matches,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          federated_matches,
       base::WeakPtr<PasswordManagerDriver> driver);
 
   // Called when generated password is accepted or changed by user.
-  void PresaveGeneratedPassword(PasswordForm generated,
-                                const std::vector<const PasswordForm*>& matches,
-                                FormSaver* form_saver);
+  void PresaveGeneratedPassword(
+      PasswordForm generated,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          matches,
+      FormSaver* form_saver);
 
   // Signals that the user cancels password generation.
   void PasswordNoLongerGenerated(FormSaver* form_saver);
 
   // Finish the generation flow by saving the final credential |generated|.
   // |matches| and |old_password| have the same meaning as in FormSaver.
-  void CommitGeneratedPassword(PasswordForm generated,
-                               const std::vector<const PasswordForm*>& matches,
-                               const std::u16string& old_password,
-                               FormSaver* form_saver);
+  void CommitGeneratedPassword(
+      PasswordForm generated,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          matches,
+      const std::u16string& old_password,
+      FormSaver* form_saver);
 
  private:
   void OnPresaveBubbleResult(const base::WeakPtr<PasswordManagerDriver>& driver,

@@ -253,7 +253,8 @@ TEST_F(RecentAppButtonsViewTest, MultipleRecentAppButtonsView) {
   EXPECT_EQ(expected_recent_app_button,
             recent_apps_view()->recent_app_buttons_view_->children().size());
 
-  for (auto* child : recent_apps_view()->recent_app_buttons_view_->children()) {
+  for (views::View* child :
+       recent_apps_view()->recent_app_buttons_view_->children()) {
     PhoneHubRecentAppButton* recent_app =
         static_cast<PhoneHubRecentAppButton*>(child);
     // Simulate clicking button using placeholder event.
@@ -283,7 +284,8 @@ TEST_F(RecentAppButtonsViewTest,
   for (std::size_t i = 0;
        i != recent_apps_view()->recent_app_buttons_view_->children().size();
        i++) {
-    auto* child = recent_apps_view()->recent_app_buttons_view_->children()[i];
+    auto* child =
+        recent_apps_view()->recent_app_buttons_view_->children()[i].get();
     if (i == 6) {
       break;
     }

@@ -7,6 +7,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace ui {
@@ -64,9 +65,11 @@ void CompositorLockManager::RemoveCompositorLock(CompositorLock* lock) {
 
 void CompositorLockManager::TimeoutLocks() {
   // Make a copy, we're going to cause |active_locks_| to become empty.
-  std::vector<CompositorLock*> locks = active_locks_;
-  for (auto* lock : locks)
+  std::vector<raw_ptr<CompositorLock, VectorExperimental>> locks =
+      active_locks_;
+  for (ui::CompositorLock* lock : locks) {
     lock->TimeoutLock();
+  }
   DCHECK(active_locks_.empty());
 }
 

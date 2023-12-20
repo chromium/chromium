@@ -44,9 +44,11 @@ class StackedNotificationBar : public views::View,
   // Sets the icons and overflow count for hidden notifications as well as the
   // total/pinned notifications count. Returns true if the state of the bar
   // has changed.
-  bool Update(int total_notification_count,
-              int pinned_notification_count,
-              std::vector<message_center::Notification*> stacked_notifications);
+  bool Update(
+      int total_notification_count,
+      int pinned_notification_count,
+      std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+          stacked_notifications);
 
   // message_center::MessageCenterObserver:
   void OnNotificationAdded(const std::string& id) override;
@@ -76,16 +78,19 @@ class StackedNotificationBar : public views::View,
 
   // Move all icons left when notifications are scrolled up.
   void ShiftIconsLeft(
-      std::vector<message_center::Notification*> stacked_notifications);
+      std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+          stacked_notifications);
 
   // Move icons right to make space for additional icons when notifications are
   // scrolled down.
   void ShiftIconsRight(
-      std::vector<message_center::Notification*> stacked_notifications);
+      std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+          stacked_notifications);
 
   // Update state for stacked notification icons and move them as necessary.
   void UpdateStackedNotifications(
-      std::vector<message_center::Notification*> stacked_notifications);
+      std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+          stacked_notifications);
 
   int total_notification_count_ = 0;
   int pinned_notification_count_ = 0;

@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "components/version_info/channel.h"
@@ -198,7 +199,8 @@ class ASH_EXPORT ShellDelegate {
   // Tells browsers not to ask the user to confirm that they want to close a
   // window when that window is closed.
   virtual void ForceSkipWarningUserOnClose(
-      const std::vector<aura::Window*>& windows) = 0;
+      const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+          windows) = 0;
 
   // Retrieves the official Chrome version string e.g. 105.0.5178.0.
   virtual std::string GetVersionString() = 0;

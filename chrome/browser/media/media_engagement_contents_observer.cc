@@ -511,7 +511,7 @@ void MediaEngagementContentsObserver::ReadyToCommitNavigation(
 
 content::WebContents* MediaEngagementContentsObserver::GetOpener() const {
 #if !BUILDFLAG(IS_ANDROID)
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() != service_->profile())
       continue;
 

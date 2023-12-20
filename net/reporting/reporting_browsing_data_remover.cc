@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
 #include "net/reporting/reporting_report.h"
@@ -18,10 +19,11 @@ void ReportingBrowsingDataRemover::RemoveBrowsingData(
     uint64_t data_type_mask,
     const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter) {
   if ((data_type_mask & DATA_TYPE_REPORTS) != 0) {
-    std::vector<const ReportingReport*> all_reports;
+    std::vector<raw_ptr<const ReportingReport, VectorExperimental>> all_reports;
     cache->GetReports(&all_reports);
 
-    std::vector<const ReportingReport*> reports_to_remove;
+    std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+        reports_to_remove;
     for (const ReportingReport* report : all_reports) {
       if (origin_filter.Run(url::Origin::Create(report->url)))
         reports_to_remove.push_back(report);

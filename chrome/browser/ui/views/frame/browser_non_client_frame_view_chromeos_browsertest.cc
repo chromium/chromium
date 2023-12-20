@@ -771,8 +771,9 @@ class WebAppNonClientFrameViewAshTest
       frame_header_ = nullptr;
   raw_ptr<WebAppFrameToolbarView, DanglingUntriaged | ExperimentalAsh>
       web_app_frame_toolbar_ = nullptr;
-  raw_ptr<const std::vector<ContentSettingImageView*>,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<
+      const std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>,
+      DanglingUntriaged | ExperimentalAsh>
       content_setting_views_ = nullptr;
   raw_ptr<AppMenuButton, DanglingUntriaged | ExperimentalAsh>
       web_app_menu_button_ = nullptr;
@@ -1128,12 +1129,13 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest,
 // Tests that a web app's content settings icons can be interacted with.
 IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, ContentSettingIcons) {
   SetUpWebApp();
-  for (auto* view : *content_setting_views_)
+  for (ContentSettingImageView* view : *content_setting_views_) {
     EXPECT_FALSE(view->GetVisible());
+  }
 
   ContentSettingImageView* geolocation_icon = GrantGeolocationPermission();
 
-  for (auto* view : *content_setting_views_) {
+  for (ContentSettingImageView* view : *content_setting_views_) {
     bool is_geolocation_icon = view == geolocation_icon;
     EXPECT_EQ(is_geolocation_icon, view->GetVisible());
   }

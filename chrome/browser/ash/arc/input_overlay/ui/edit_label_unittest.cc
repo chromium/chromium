@@ -144,7 +144,7 @@ class EditLabelTest : public OverlayViewTestBase {
     if (editing_list_->is_zero_state_) {
       return nullptr;
     }
-    for (auto* child : scroll_content->children()) {
+    for (views::View* child : scroll_content->children()) {
       if (auto* list_item = static_cast<ActionViewListItem*>(child);
           list_item->action() == action) {
         return list_item;

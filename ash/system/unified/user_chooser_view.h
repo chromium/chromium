@@ -72,7 +72,7 @@ class ASH_EXPORT UserChooserView : public views::View,
                                  capture_states) override;
 
  private:
-  std::vector<UserItemButton*> user_item_buttons_;
+  std::vector<raw_ptr<UserItemButton, VectorExperimental>> user_item_buttons_;
 };
 
 }  // namespace ash

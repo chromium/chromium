@@ -120,7 +120,7 @@ TEST_F(SearchEngineTabHelperTest, AddTemplateURLByOpenSearch) {
   GURL osdd_url = server_.GetURL(kOpenSearchXmlFilePath);
 
   // Record the original TemplateURLs in TemplateURLService.
-  std::vector<TemplateURL*> old_urls =
+  std::vector<raw_ptr<TemplateURL, VectorExperimental>> old_urls =
       template_url_service()->GetTemplateURLs();
 
   // Load an empty page, and send a message of openSearchUrl from Js.
@@ -169,7 +169,7 @@ TEST_F(SearchEngineTabHelperTest, AddTemplateURLBySearchableURL) {
                        server_.GetURL(kPonyHtmlFilePath).spec().c_str()];
 
   // Record the original TemplateURLs in TemplateURLService.
-  std::vector<TemplateURL*> old_urls =
+  std::vector<raw_ptr<TemplateURL, VectorExperimental>> old_urls =
       template_url_service()->GetTemplateURLs();
 
   // Load an empty page, and send a message of openSearchUrl from Js.
@@ -256,7 +256,7 @@ TEST_F(SearchEngineTabHelperIncognitoTest,
   GURL osdd_url = server_.GetURL(kOpenSearchXmlFilePath);
 
   // Record the original TemplateURLs in TemplateURLService.
-  std::vector<TemplateURL*> old_urls =
+  std::vector<raw_ptr<TemplateURL, VectorExperimental>> old_urls =
       template_url_service()->GetTemplateURLs();
 
   // Load an empty page, and send a message of openSearchUrl from Js.
@@ -288,7 +288,7 @@ TEST_F(SearchEngineTabHelperIncognitoTest,
                        server_.GetURL(kPonyHtmlFilePath).spec().c_str()];
 
   // Record the original TemplateURLs in TemplateURLService.
-  std::vector<TemplateURL*> old_urls =
+  std::vector<raw_ptr<TemplateURL, VectorExperimental>> old_urls =
       template_url_service()->GetTemplateURLs();
 
   // Load an empty page, and send a message of openSearchUrl from Js.

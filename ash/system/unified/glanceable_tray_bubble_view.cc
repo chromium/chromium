@@ -181,7 +181,7 @@ class ContainerView : public views::FlexLayoutView,
 
  private:
   views::View* GetChildThatContains(views::View* view) {
-    for (auto* child : children()) {
+    for (views::View* child : children()) {
       if (child->Contains(view)) {
         return child;
       }
@@ -415,13 +415,13 @@ void GlanceableTrayBubbleView::AdjustChildrenFocusOrder() {
   // enabled, the nearest common ancestor of the calendar view and other
   // glanceables is `this`, or `scroll_view_->contents()`.
   if (is_calendar_for_glanceables) {
-    auto* default_focused_child = GetChildrenFocusList().front();
+    auto* default_focused_child = GetChildrenFocusList().front().get();
     if (default_focused_child != calendar_container_) {
       calendar_container_->InsertBeforeInFocusList(default_focused_child);
     }
   } else {
     auto* default_focused_child =
-        scroll_view_->contents()->GetChildrenFocusList().front();
+        scroll_view_->contents()->GetChildrenFocusList().front().get();
     if (default_focused_child != calendar_view_) {
       calendar_view_->InsertBeforeInFocusList(default_focused_child);
     }

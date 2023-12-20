@@ -67,7 +67,8 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
   ~AutoResumptionHandler() override;
 
   void SetResumableDownloads(
-      const std::vector<download::DownloadItem*>& downloads);
+      const std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>&
+          downloads);
   bool IsActiveNetworkMetered() const;
   void OnStartScheduledTask(DownloadTaskType type,
                             TaskFinishedCallback callback);

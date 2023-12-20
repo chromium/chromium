@@ -278,7 +278,7 @@
   BOOL hasNonLocalCard = NO;
   NSMutableArray<id<PaymentsSuggestionBottomSheetData>>* creditCardData =
       [[NSMutableArray alloc] initWithCapacity:creditCards.size()];
-  for (const auto* creditCard : creditCards) {
+  for (const autofill::CreditCard* creditCard : creditCards) {
     CHECK(creditCard);
     [creditCardData
         addObject:[[PaymentsSuggestionBottomSheetCreditCardInfo alloc]

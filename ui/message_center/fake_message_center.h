@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/message_center_types.h"
@@ -108,7 +109,7 @@ class FakeMessageCenter : public MessageCenter {
   base::ObserverList<MessageCenterObserver> observers_;
   NotificationList notifications_;
   NotificationList::Notifications visible_notifications_;
-  std::vector<NotificationBlocker*> blockers_;
+  std::vector<raw_ptr<NotificationBlocker, VectorExperimental>> blockers_;
   bool has_message_center_view_ = true;
 };
 

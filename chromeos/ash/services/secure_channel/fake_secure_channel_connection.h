@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/connection.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
@@ -54,7 +55,9 @@ class FakeSecureChannelConnection : public SecureChannel {
   void ReceiveMessage(const std::string& feature, const std::string& payload);
   void CompleteSendingMessage(int sequence_number);
 
-  std::vector<Observer*> observers() { return observers_; }
+  std::vector<raw_ptr<Observer, VectorExperimental>> observers() {
+    return observers_;
+  }
 
   std::vector<SentMessage> sent_messages() { return sent_messages_; }
 
@@ -82,7 +85,7 @@ class FakeSecureChannelConnection : public SecureChannel {
  private:
   int next_sequence_number_ = 0;
   bool was_initialized_ = false;
-  std::vector<Observer*> observers_;
+  std::vector<raw_ptr<Observer, VectorExperimental>> observers_;
   std::vector<SentMessage> sent_messages_;
   std::vector<RegisterPayloadFileRequest> register_payload_file_requests_;
   std::optional<int32_t> rssi_to_return_;

@@ -260,7 +260,7 @@ class SplitViewMetricsController : public SplitViewObserver,
   raw_ptr<const Desk, ExperimentalAsh> current_desk_ = nullptr;
 
   // Observed windows on the active desk.
-  std::vector<aura::Window*> observed_windows_;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> observed_windows_;
 
   // Windows that recovered by window restore have no parents at the initialize
   // stage, so their window states cannot be observed when are inserted into

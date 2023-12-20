@@ -666,8 +666,8 @@ void CheckThatNoFieldHasThisPossibleType(const FormStructure& form_structure,
 
 // Returns a matcher that checks a `FormStructure`'s renderer id.
 auto FormStructureHasRendererId(FormRendererId form_renderer_id) {
-  return Property(&FormStructure::global_id,
-                  Field(&FormGlobalId::renderer_id, form_renderer_id));
+  return Pointee(Property(&FormStructure::global_id,
+                          Field(&FormGlobalId::renderer_id, form_renderer_id)));
 }
 
 class MockAutofillDriver : public TestAutofillDriver {
@@ -692,10 +692,11 @@ class MockAutofillDriver : public TestAutofillDriver {
                const FieldGlobalId& field_id,
                const std::u16string& value),
               (override));
-  MOCK_METHOD(void,
-              SendAutofillTypePredictionsToRenderer,
-              (const std::vector<FormStructure*>& forms),
-              (override));
+  MOCK_METHOD(
+      void,
+      SendAutofillTypePredictionsToRenderer,
+      (const std::vector<vector_experimental_raw_ptr<FormStructure>>& forms),
+      (override));
   MOCK_METHOD(void,
               SendFieldsEligibleForManualFillingToRenderer,
               (const std::vector<FieldGlobalId>& fields),

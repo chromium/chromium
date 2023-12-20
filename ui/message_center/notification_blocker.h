@@ -90,7 +90,8 @@ class MESSAGE_CENTER_EXPORT NotificationBlocker {
   raw_ptr<MessageCenter> message_center_;  // weak
 };
 
-typedef std::vector<NotificationBlocker*> NotificationBlockers;
+typedef std::vector<raw_ptr<NotificationBlocker, VectorExperimental>>
+    NotificationBlockers;
 
 }  // namespace message_center
 

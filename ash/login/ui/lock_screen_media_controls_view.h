@@ -244,7 +244,7 @@ class ASH_EXPORT LockScreenMediaControlsView
   raw_ptr<media_message_center::MediaControlsProgressView, ExperimentalAsh>
       progress_ = nullptr;
 
-  std::vector<views::Button*> media_action_buttons_;
+  std::vector<raw_ptr<views::Button, VectorExperimental>> media_action_buttons_;
 
   // Callbacks.
   const MediaControlsEnabled media_controls_enabled_;

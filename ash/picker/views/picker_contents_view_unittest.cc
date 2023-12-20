@@ -15,6 +15,7 @@ namespace {
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Pointee;
 using ::testing::Property;
 
 using PickerContentsViewTest = AshTestBase;
@@ -36,8 +37,9 @@ TEST_F(PickerContentsViewTest, AddPageCreatesHiddenChildren) {
 
   EXPECT_THAT(
       view->children(),
-      ElementsAre(AllOf(page1, Property(&views::View::GetVisible, false)),
-                  AllOf(page2, Property(&views::View::GetVisible, false))));
+      ElementsAre(
+          AllOf(page1, Pointee(Property(&views::View::GetVisible, false))),
+          AllOf(page2, Pointee(Property(&views::View::GetVisible, false)))));
 }
 
 TEST_F(PickerContentsViewTest, SetActivePageChangesVisibility) {
@@ -50,15 +52,17 @@ TEST_F(PickerContentsViewTest, SetActivePageChangesVisibility) {
 
   EXPECT_THAT(
       view->children(),
-      ElementsAre(AllOf(page1, Property(&views::View::GetVisible, true)),
-                  AllOf(page2, Property(&views::View::GetVisible, false))));
+      ElementsAre(
+          AllOf(page1, Pointee(Property(&views::View::GetVisible, true))),
+          AllOf(page2, Pointee(Property(&views::View::GetVisible, false)))));
 
   view->SetActivePage(page2);
 
   EXPECT_THAT(
       view->children(),
-      ElementsAre(AllOf(page1, Property(&views::View::GetVisible, false)),
-                  AllOf(page2, Property(&views::View::GetVisible, true))));
+      ElementsAre(
+          AllOf(page1, Pointee(Property(&views::View::GetVisible, false))),
+          AllOf(page2, Pointee(Property(&views::View::GetVisible, true)))));
 }
 
 }  // namespace

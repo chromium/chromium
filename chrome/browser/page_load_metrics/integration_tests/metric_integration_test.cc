@@ -157,7 +157,7 @@ const ukm::mojom::UkmEntryPtr MetricIntegrationTest::GetEntry() {
 std::vector<double> MetricIntegrationTest::GetPageLoadMetricsAsList(
     base::StringPiece metric_name) {
   std::vector<double> metrics;
-  for (auto* entry :
+  for (const ukm::mojom::UkmEntry* entry :
        ukm_recorder_->GetEntriesByName(ukm::builders::PageLoad::kEntryName)) {
     if (auto* rs = ukm_recorder_->GetEntryMetric(entry, metric_name)) {
       metrics.push_back(*rs);

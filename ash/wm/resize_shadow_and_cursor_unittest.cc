@@ -597,7 +597,7 @@ TEST_F(ResizeShadowAndCursorTest, NoCrashOnRootWindowChange) {
   // Add an secondary display.
   display_manager()->AddRemoveDisplay();
   aura::Window* secondary_root = nullptr;
-  for (auto* root : Shell::GetAllRootWindows()) {
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
     if (root != Shell::GetPrimaryRootWindow()) {
       secondary_root = root;
       break;

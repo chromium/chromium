@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -195,7 +196,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void UpdateWebauthnOfferDialogWithError() override;
   bool CloseWebauthnDialog() override;
   void OfferVirtualCardOptions(
-      const std::vector<CreditCard*>& candidates,
+      const std::vector<raw_ptr<CreditCard, VectorExperimental>>& candidates,
       base::OnceCallback<void(const std::string&)> callback) override;
 #else  // !BUILDFLAG(IS_ANDROID)
   void ConfirmAccountNameFixFlow(

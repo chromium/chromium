@@ -63,7 +63,8 @@ class ASH_EXPORT PrivacyScreenController
 
   // DisplayConfigurator::Observer:
   void OnDisplayModeChanged(
-      const std::vector<display::DisplaySnapshot*>& displays) override;
+      const std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>&
+          displays) override;
 
  private:
   // Calculates PrivacyScreen's logical status.

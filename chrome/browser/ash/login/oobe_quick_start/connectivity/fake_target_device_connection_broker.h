@@ -34,7 +34,9 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
 
     // Returns all FakeTargetDeviceConnectionBroker instances created by
     // CreateInstance().
-    const std::vector<FakeTargetDeviceConnectionBroker*>& instances() {
+    const std::vector<
+        raw_ptr<FakeTargetDeviceConnectionBroker, VectorExperimental>>&
+    instances() {
       return instances_;
     }
 
@@ -52,7 +54,8 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
         QuickStartConnectivityService* quick_start_connectivity_service)
         override;
 
-    std::vector<FakeTargetDeviceConnectionBroker*> instances_;
+    std::vector<raw_ptr<FakeTargetDeviceConnectionBroker, VectorExperimental>>
+        instances_;
   };
 
   explicit FakeTargetDeviceConnectionBroker(

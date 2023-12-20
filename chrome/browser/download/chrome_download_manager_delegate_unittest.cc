@@ -1847,7 +1847,7 @@ TEST_F(ChromeDownloadManagerDelegateTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ChromeDownloadManagerDelegateTest, CancelAllEphemeralWarnings) {
-  std::vector<download::DownloadItem*> items;
+  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
   auto safe_item = CreateActiveDownloadItem(0);
   EXPECT_CALL(*safe_item, GetDangerType())
       .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));

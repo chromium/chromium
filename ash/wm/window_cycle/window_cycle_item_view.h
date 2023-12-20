@@ -68,7 +68,8 @@ class GroupContainerCycleView : public WindowMiniViewBase {
   GroupContainerCycleView& operator=(const GroupContainerCycleView&) = delete;
   ~GroupContainerCycleView() override;
 
-  const std::vector<WindowCycleItemView*>& mini_views() const {
+  const std::vector<raw_ptr<WindowCycleItemView, VectorExperimental>>&
+  mini_views() const {
     return mini_views_;
   }
 
@@ -86,7 +87,7 @@ class GroupContainerCycleView : public WindowMiniViewBase {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
-  std::vector<WindowCycleItemView*> mini_views_;
+  std::vector<raw_ptr<WindowCycleItemView, VectorExperimental>> mini_views_;
 
   // True if `this` is the first time a focus selection request is made to this
   // item.

@@ -24,8 +24,10 @@ class PictureLayerTilingSet;
 class CC_EXPORT TilesWithResourceIterator {
  public:
   TilesWithResourceIterator(
-      const std::vector<PictureLayerImpl*>* picture_layers,
-      const std::vector<PictureLayerImpl*>* secondary_picture_layers);
+      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>*
+          picture_layers,
+      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>*
+          secondary_picture_layers);
   TilesWithResourceIterator(const TilesWithResourceIterator&) = delete;
   TilesWithResourceIterator& operator=(const TilesWithResourceIterator&) =
       delete;
@@ -54,16 +56,21 @@ class CC_EXPORT TilesWithResourceIterator {
   PictureLayerTiling* CurrentPictureLayerTiling();
 
   // Iteration occurs over this vector first.
-  const raw_ptr<const std::vector<PictureLayerImpl*>> picture_layers_;
+  const raw_ptr<
+      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>>
+      picture_layers_;
 
   // The secondary set of layers to iterate through, may be null.
-  const raw_ptr<const std::vector<PictureLayerImpl*>> secondary_picture_layers_;
+  const raw_ptr<
+      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>>
+      secondary_picture_layers_;
 
   // Indicates whether `active_layers_` is referencing `picture_layers_` or
   // `secondary_picture_layers_`.
   bool is_active_layers_secondary_layers_ = false;
 
-  raw_ptr<const std::vector<PictureLayerImpl*>> active_layers_;
+  raw_ptr<const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>>
+      active_layers_;
 
   // Index into `active_layers_` the current tile comes from.
   size_t current_picture_layer_index_ = 0;

@@ -343,7 +343,8 @@ BOOL AreCredentialsAtIndexesConnected(
 
   password_manager::PasswordManagerDriver* driver =
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(webState, frame);
-  const std::vector<const password_manager::PasswordForm*>* passwordForms =
+  const std::vector<raw_ptr<const password_manager::PasswordForm,
+                            VectorExperimental>>* passwordForms =
       passwordManager->GetBestMatches(driver, formId);
   if (!passwordForms) {
     return @[];
@@ -351,7 +352,7 @@ BOOL AreCredentialsAtIndexesConnected(
 
   NSMutableArray<ManualFillCredential*>* credentials =
       [[NSMutableArray alloc] initWithCapacity:passwordForms->size()];
-  for (const auto* form : *passwordForms) {
+  for (const password_manager::PasswordForm* form : *passwordForms) {
     ManualFillCredential* credential =
         [[ManualFillCredential alloc] initWithPasswordForm:*form];
     [credentials addObject:credential];

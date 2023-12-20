@@ -166,7 +166,8 @@ class PlatformSensorProviderChromeOSTest : public ::testing::Test {
   }
 
   std::unique_ptr<chromeos::sensors::FakeSensorHalServer> sensor_hal_server_;
-  std::vector<chromeos::sensors::FakeSensorDevice*> sensor_devices_;
+  std::vector<raw_ptr<chromeos::sensors::FakeSensorDevice, VectorExperimental>>
+      sensor_devices_;
 
   std::unique_ptr<PlatformSensorProviderChromeOS> provider_;
 

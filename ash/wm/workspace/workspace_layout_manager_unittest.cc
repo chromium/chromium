@@ -2249,7 +2249,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   // Test that backdrop window is visible and is the second child in the
   // container. Its bounds should be the same as the container bounds.
   EXPECT_EQ(2U, default_container()->children().size());
-  for (auto* child : default_container()->children()) {
+  for (aura::Window* child : default_container()->children()) {
     EXPECT_TRUE(child->IsVisible());
   }
 
@@ -2298,7 +2298,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
   EXPECT_EQ(4U, default_container()->children().size());
-  for (auto* child : default_container()->children()) {
+  for (aura::Window* child : default_container()->children()) {
     EXPECT_TRUE(child->IsVisible());
   }
 

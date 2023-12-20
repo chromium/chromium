@@ -8,6 +8,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/common/url_load_stats.h"
@@ -88,8 +89,9 @@ void UrlIndex::GetNodesWithIconUrl(const GURL& icon_url,
   }
 }
 
-void UrlIndex::GetNodesByUrl(const GURL& url,
-                             std::vector<const BookmarkNode*>* nodes) {
+void UrlIndex::GetNodesByUrl(
+    const GURL& url,
+    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>* nodes) {
   base::AutoLock url_lock(url_lock_);
   auto i = nodes_ordered_by_url_set_.find<GURL>(url);
   while (i != nodes_ordered_by_url_set_.end() && (*i)->url() == url) {

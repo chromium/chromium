@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -1094,8 +1095,9 @@ TEST_F(LocalDataMigrationHelperTest, ShouldIgnoreManagedBookmarks) {
             account_bookmark_model_->bookmark_bar_node()->children().size());
 
   // Managed nodes should be ignored.
-  std::vector<const bookmarks::BookmarkNode*> nodes =
-      account_bookmark_model_->GetNodesByURL(GURL("https://www.facebook.com"));
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+      nodes = account_bookmark_model_->GetNodesByURL(
+          GURL("https://www.facebook.com"));
   EXPECT_TRUE(nodes.empty());
 
   // The local bookmark is not empty since managed bookmarks were not moved.

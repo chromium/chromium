@@ -244,7 +244,8 @@ class FakeBluetoothLowEnergyScanSessionDelegate
     return devices_lost_;
   }
 
-  const std::vector<device::BluetoothLowEnergyScanSession*>&
+  const std::vector<
+      raw_ptr<device::BluetoothLowEnergyScanSession, VectorExperimental>>&
   sessions_invalidated() const {
     return sessions_invalidated_;
   }
@@ -264,7 +265,9 @@ class FakeBluetoothLowEnergyScanSessionDelegate
   std::vector<std::pair<device::BluetoothLowEnergyScanSession*,
                         device::BluetoothDevice*>>
       devices_lost_;
-  std::vector<device::BluetoothLowEnergyScanSession*> sessions_invalidated_;
+  std::vector<
+      raw_ptr<device::BluetoothLowEnergyScanSession, VectorExperimental>>
+      sessions_invalidated_;
 
   base::WeakPtrFactory<FakeBluetoothLowEnergyScanSessionDelegate>
       weak_ptr_factory_{this};

@@ -25,6 +25,7 @@
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
@@ -567,7 +568,8 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingChromevox) {
 // Tests that tabbing with desk items and multiple displays works as expected.
 TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
   UpdateDisplay("600x400,600x400,600x400");
-  std::vector<aura::Window*> roots = Shell::GetAllRootWindows();
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> roots =
+      Shell::GetAllRootWindows();
   ASSERT_EQ(3u, roots.size());
 
   // Create two windows on the first display, and one each on the second and
@@ -721,7 +723,7 @@ TEST_P(DesksOverviewFocusCyclerTest, CloseHighlightOnMiniView) {
   ToggleOverview();
   const auto* desk_bar_view =
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
-  auto* mini_view2 = desk_bar_view->mini_views()[1];
+  auto* mini_view2 = desk_bar_view->mini_views()[1].get();
 
   // Use keyboard to navigate to the miniview associated with desk 2.
   SendKey(ui::VKEY_TAB);
@@ -865,7 +867,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ZeroStateOfDesksBar) {
   ASSERT_EQ(2u, desks_bar_view->mini_views().size());
 
   // Remove one desk to enter zero state desks bar.
-  auto* mini_view = desks_bar_view->mini_views()[1];
+  auto* mini_view = desks_bar_view->mini_views()[1].get();
   GetEventGenerator()->MoveMouseTo(
       mini_view->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(GetDeskActionVisibilityForMiniView(mini_view));
@@ -944,7 +946,7 @@ TEST_P(DesksOverviewFocusCyclerTest, SwitchingToZeroStateWhileTabbing) {
             GetHighlightedView());
 
   // Remove one desk to have only one desk left.
-  auto* mini_view = desks_bar_view->mini_views()[1];
+  auto* mini_view = desks_bar_view->mini_views()[1].get();
   GetEventGenerator()->MoveMouseTo(
       mini_view->GetBoundsInScreen().CenterPoint());
   ASSERT_TRUE(GetDeskActionVisibilityForMiniView(mini_view));

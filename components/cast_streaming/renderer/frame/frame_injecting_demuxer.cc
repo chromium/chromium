@@ -400,11 +400,12 @@ void FrameInjectingDemuxer::OnStreamInitializationComplete() {
   std::move(initialized_cb_).Run(media::PIPELINE_OK);
 }
 
-std::vector<media::DemuxerStream*> FrameInjectingDemuxer::GetAllStreams() {
+std::vector<raw_ptr<media::DemuxerStream, VectorExperimental>>
+FrameInjectingDemuxer::GetAllStreams() {
   DVLOG(1) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
-  std::vector<media::DemuxerStream*> streams;
+  std::vector<raw_ptr<media::DemuxerStream, VectorExperimental>> streams;
   if (video_stream_) {
     streams.push_back(video_stream_.get());
   }

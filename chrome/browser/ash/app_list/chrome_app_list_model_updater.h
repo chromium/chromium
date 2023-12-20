@@ -57,10 +57,12 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void SetSearchEngineIsGoogle(bool is_google) override;
   void RecalculateWouldTriggerLauncherSearchIph() override;
   void PublishSearchResults(
-      const std::vector<ChromeSearchResult*>& results,
+      const std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>&
+          results,
       const std::vector<ash::AppListSearchResultCategory>& categories) override;
   void ClearSearchResults() override;
-  std::vector<ChromeSearchResult*> GetPublishedSearchResultsForTest() override;
+  std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
+  GetPublishedSearchResultsForTest() override;
   void SetAccessibleName(const std::string& id,
                          const std::string& name) override;
 
@@ -231,7 +233,8 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   bool is_active_ = false;
 
   // The most recently list of search results.
-  std::vector<ChromeSearchResult*> published_results_;
+  std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
+      published_results_;
   base::ObserverList<AppListModelUpdaterObserver> observers_;
   bool search_engine_is_google_ = false;
 

@@ -14,6 +14,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -59,9 +60,10 @@ std::string RefreshRateThrottleStateToString(RefreshRateThrottleState state) {
          ")";
 }
 
-int GetDisplayPower(const std::vector<DisplaySnapshot*>& displays,
-                    chromeos::DisplayPowerState state,
-                    std::vector<bool>* display_power) {
+int GetDisplayPower(
+    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
+    chromeos::DisplayPowerState state,
+    std::vector<bool>* display_power) {
   int num_on_displays = 0;
   if (display_power) {
     display_power->resize(displays.size());

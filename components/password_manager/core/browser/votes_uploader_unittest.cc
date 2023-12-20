@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/hash/hash.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -269,7 +270,8 @@ TEST_F(VotesUploaderTest, SendVotesOnSaveOverwrittenFlow) {
     field.name = GetFieldNameByIndex(i);
     match_form.form_data.fields.push_back(field);
   }
-  std::vector<const PasswordForm*> matches = {&match_form};
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches = {
+      &match_form};
 
   EXPECT_TRUE(votes_uploader.FindCorrectedUsernameElement(
       matches, u"correct_username", u"password_value"));

@@ -85,7 +85,7 @@ class MockPermissionPromptFactory {
   std::vector<RequestType> request_types_seen_;
   std::vector<GURL> request_origins_seen_;
 
-  std::vector<MockPermissionPrompt*> prompts_;
+  std::vector<raw_ptr<MockPermissionPrompt, VectorExperimental>> prompts_;
   PermissionRequestManager::AutoResponseType response_type_;
 
   base::RepeatingClosure show_bubble_quit_closure_;

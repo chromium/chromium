@@ -100,13 +100,14 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
                const url::Origin& origin,
                CredentialsCallback callback),
               ());
-  MOCK_METHOD(void,
-              PasswordWasAutofilled,
-              (const std::vector<const PasswordForm*>&,
-               const url::Origin&,
-               const std::vector<const PasswordForm*>*,
-               bool was_autofilled_on_pageload),
-              (override));
+  MOCK_METHOD(
+      void,
+      PasswordWasAutofilled,
+      (const std::vector<vector_experimental_raw_ptr<const PasswordForm>>&,
+       const url::Origin&,
+       const std::vector<vector_experimental_raw_ptr<const PasswordForm>>*,
+       bool was_autofilled_on_pageload),
+      (override));
 
   explicit MockPasswordManagerClient(PasswordStoreInterface* profile_store,
                                      PasswordStoreInterface* account_store)

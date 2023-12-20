@@ -29,7 +29,7 @@ namespace actions {
 
 class ActionItem;
 using ActionListVector = std::vector<std::unique_ptr<ActionItem>>;
-using ActionItemVector = std::vector<ActionItem*>;
+using ActionItemVector = std::vector<raw_ptr<ActionItem, VectorExperimental>>;
 
 class COMPONENT_EXPORT(ACTIONS) ActionList {
  public:

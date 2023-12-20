@@ -5,6 +5,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/test/integration/contact_info_helper.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -36,7 +37,8 @@ class AutofillProfilesEqualChecker
     : public StatusChangeChecker,
       public autofill::PersonalDataManagerObserver {
  public:
-  explicit AutofillProfilesEqualChecker(std::vector<Profile*> profiles) {
+  explicit AutofillProfilesEqualChecker(
+      std::vector<raw_ptr<Profile, VectorExperimental>> profiles) {
     for (Profile* profile : profiles) {
       pdms_.push_back(contact_info_helper::GetPersonalDataManager(profile));
       pdms_.back()->AddObserver(this);
@@ -72,7 +74,7 @@ class AutofillProfilesEqualChecker
   void OnPersonalDataChanged() override { CheckExitCondition(); }
 
  private:
-  std::vector<PersonalDataManager*> pdms_;
+  std::vector<raw_ptr<PersonalDataManager, VectorExperimental>> pdms_;
 };
 
 class TwoClientContactInfoSyncTest : public SyncTest {

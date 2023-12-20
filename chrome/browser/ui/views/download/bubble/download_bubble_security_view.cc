@@ -7,6 +7,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -202,7 +203,7 @@ class ParagraphsView : public views::View {
   int default_text_style_ = views::style::STYLE_PRIMARY;
   int after_paragraph_ = 0;
   int fixed_width_ = 0;
-  std::vector<views::StyledLabel*> paragraphs_;
+  std::vector<raw_ptr<views::StyledLabel, VectorExperimental>> paragraphs_;
 };
 
 BEGIN_METADATA(ParagraphsView)

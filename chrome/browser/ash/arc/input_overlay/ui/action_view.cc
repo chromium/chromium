@@ -57,7 +57,7 @@ void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
   // Set display mode for ActionLabel first and then other components update the
   // layout according to ActionLabel.
   if (!editing_label) {
-    for (auto* label : labels_) {
+    for (arc::input_overlay::ActionLabel* label : labels_) {
       label->SetDisplayMode(mode);
     }
   } else {
@@ -159,7 +159,7 @@ void ActionView::OnChildLabelUpdateFocus(ActionLabel* child, bool focus) {
     return;
   }
 
-  for (auto* label : labels_) {
+  for (arc::input_overlay::ActionLabel* label : labels_) {
     if (label == child) {
       continue;
     }
@@ -168,7 +168,7 @@ void ActionView::OnChildLabelUpdateFocus(ActionLabel* child, bool focus) {
 }
 
 void ActionView::RemoveNewState() {
-  for (auto* label : labels_) {
+  for (arc::input_overlay::ActionLabel* label : labels_) {
     label->RemoveNewState();
   }
 }

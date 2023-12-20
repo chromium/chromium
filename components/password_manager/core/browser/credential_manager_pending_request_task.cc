@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
@@ -221,8 +222,10 @@ void CredentialManagerPendingRequestTask::ProcessForms(
     }
 
     if (!results.empty()) {
-      std::vector<const PasswordForm*> non_federated_matches;
-      std::vector<const PasswordForm*> federated_matches;
+      std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+          non_federated_matches;
+      std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+          federated_matches;
       for (const auto& result : results) {
         if (result->IsFederatedCredential()) {
           federated_matches.emplace_back(result.get());

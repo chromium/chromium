@@ -13,6 +13,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -406,7 +407,8 @@ ExtensionFunction::ResponseAction SessionsGetDevicesFunction::Run() {
 
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       service->GetOpenTabsUIDelegate();
-  std::vector<const sync_sessions::SyncedSession*> sessions;
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      sessions;
   // If the user has disabled tab sync, GetOpenTabsUIDelegate() returns null.
   if (!(open_tabs && open_tabs->GetAllForeignSessions(&sessions))) {
     return RespondNow(ArgumentList(
@@ -424,8 +426,9 @@ ExtensionFunction::ResponseAction SessionsGetDevicesFunction::Run() {
   std::vector<api::sessions::Device> result;
   // Sort sessions from most recent to least recent.
   std::sort(sessions.begin(), sessions.end(), SortSessionsByRecency);
-  for (const auto* session : sessions)
+  for (const sync_sessions::SyncedSession* session : sessions) {
     result.push_back(CreateDeviceModel(session));
+  }
 
   return RespondNow(ArgumentList(GetDevices::Results::Create(result)));
 }

@@ -36,6 +36,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -103,7 +104,7 @@ bool ContainsSystemModalWindow(const aura::Window* window) {
     return true;
   }
 
-  for (const auto* child : window->children()) {
+  for (const aura::Window* child : window->children()) {
     if (ContainsSystemModalWindow(child)) {
       return true;
     }
@@ -372,7 +373,8 @@ bool ShouldExcludeForOverview(const aura::Window* window) {
              : should_exclude_in_clamshell();
 }
 
-void EnsureTransientRoots(std::vector<aura::Window*>* out_window_list) {
+void EnsureTransientRoots(
+    std::vector<raw_ptr<aura::Window, VectorExperimental>>* out_window_list) {
   for (auto it = out_window_list->begin(); it != out_window_list->end();) {
     aura::Window* transient_root = ::wm::GetTransientRoot(*it);
     if (*it != transient_root) {
@@ -389,8 +391,8 @@ void EnsureTransientRoots(std::vector<aura::Window*>* out_window_list) {
 }
 
 void MinimizeAndHideWithoutAnimation(
-    const std::vector<aura::Window*>& windows) {
-  for (auto* window : windows) {
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
+  for (aura::Window* window : windows) {
     ScopedAnimationDisabler disable(window);
 
     // ARC windows are minimized asynchronously, so we hide them after

@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
   // Make sure the deleted match's OmniboxResultView was hidden.
   // (OmniboxResultViews are never deleted.)
   int visible_children = 0;
-  for (auto* child : popup_view()->children()) {
+  for (views::View* child : popup_view()->children()) {
     if (child->GetVisible()) {
       visible_children++;
     }

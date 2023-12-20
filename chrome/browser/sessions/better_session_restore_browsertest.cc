@@ -589,7 +589,7 @@ class RestartTest : public BetterSessionRestoreTest {
  protected:
   void Restart() {
     // Simulate restarting the browser, but let the test exit peacefully.
-    for (auto* browser : *BrowserList::GetInstance()) {
+    for (Browser* browser : *BrowserList::GetInstance()) {
       browser->profile()->SaveSessionState();
       SessionDataServiceFactory::GetForProfile(browser->profile())
           ->SetForceKeepSessionState();

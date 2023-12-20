@@ -73,7 +73,7 @@ void SecureDnsManager::LoadProviders() {
               net::DohProviderEntry::GetList(),
               country_codes::GetCurrentCountryID()));
 
-  for (const auto* provider : local_providers) {
+  for (const net::DohProviderEntry* provider : local_providers) {
     std::vector<std::string> ip_addrs;
     base::ranges::transform(provider->ip_addresses,
                             std::back_inserter(ip_addrs),

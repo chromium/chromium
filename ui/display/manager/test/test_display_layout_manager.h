@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_layout_manager.h"
 
@@ -14,15 +15,18 @@ namespace display::test {
 
 class TestDisplayLayoutManager : public DisplayLayoutManager {
  public:
-  TestDisplayLayoutManager(const std::vector<DisplaySnapshot*>& displays,
-                           MultipleDisplayState display_state);
+  TestDisplayLayoutManager(
+      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
+      MultipleDisplayState display_state);
 
   TestDisplayLayoutManager(const TestDisplayLayoutManager&) = delete;
   TestDisplayLayoutManager& operator=(const TestDisplayLayoutManager&) = delete;
 
   ~TestDisplayLayoutManager() override;
 
-  void set_displays(const std::vector<DisplaySnapshot*>& displays) {
+  void set_displays(
+      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
+          displays) {
     displays_ = displays;
   }
 
@@ -37,17 +41,18 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
   MultipleDisplayState GetDisplayState() const override;
   chromeos::DisplayPowerState GetPowerState() const override;
   bool GetDisplayLayout(
-      const std::vector<DisplaySnapshot*>& displays,
+      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
       RefreshRateThrottleState new_throttle_state,
       bool new_vrr_enabled_state,
       std::vector<DisplayConfigureRequest>* requests) const override;
-  std::vector<DisplaySnapshot*> GetDisplayStates() const override;
+  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> GetDisplayStates()
+      const override;
   bool IsMirroring() const override;
 
  private:
-  std::vector<DisplaySnapshot*> displays_;
+  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> displays_;
   MultipleDisplayState display_state_;
 };
 

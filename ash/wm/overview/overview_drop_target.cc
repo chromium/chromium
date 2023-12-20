@@ -10,6 +10,7 @@
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -80,7 +81,8 @@ aura::Window* OverviewDropTarget::GetWindow() {
   return nullptr;
 }
 
-std::vector<aura::Window*> OverviewDropTarget::GetWindows() {
+std::vector<raw_ptr<aura::Window, VectorExperimental>>
+OverviewDropTarget::GetWindows() {
   return {};
 }
 

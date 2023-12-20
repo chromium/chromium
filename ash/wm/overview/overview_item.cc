@@ -41,6 +41,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -258,7 +259,8 @@ aura::Window* OverviewItem::GetWindow() {
   return transform_window_.window();
 }
 
-std::vector<aura::Window*> OverviewItem::GetWindows() {
+std::vector<raw_ptr<aura::Window, VectorExperimental>>
+OverviewItem::GetWindows() {
   return {transform_window_.window()};
 }
 

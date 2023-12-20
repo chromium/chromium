@@ -14,6 +14,7 @@
 #include "ash/system/notification_center/stacked_notification_bar.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -131,7 +132,7 @@ void NotificationCenterView::OnContentsScrolled() {
   UpdateNotificationBar();
 }
 
-std::vector<message_center::Notification*>
+std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
 NotificationCenterView::GetStackedNotifications() const {
   // CountNotificationsAboveY() only works after SetBoundsRect() is called at
   // least once.

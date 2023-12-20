@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,7 +28,8 @@ using ::bookmarks::BookmarkNodeData;
 using ::ui::mojom::DragOperation;
 
 BookmarkDragParams::BookmarkDragParams(
-    std::vector<const bookmarks::BookmarkNode*> nodes,
+    std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+        nodes,
     int drag_node_index,
     content::WebContents* web_contents,
     ui::mojom::DragEventSource source,
@@ -50,8 +52,8 @@ DragOperation DropBookmarks(Profile* profile,
   bookmarks::ScopedGroupBookmarkActions group_drops(model);
 #endif
   if (data.IsFromProfilePath(profile->GetPath())) {
-    const std::vector<const BookmarkNode*> dragged_nodes =
-        data.GetNodes(model, profile->GetPath());
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
+        dragged_nodes = data.GetNodes(model, profile->GetPath());
     DCHECK(!model->client()->IsNodeManaged(parent_node));
     DCHECK(copy ||
            bookmarks::CanAllBeEditedByUser(model->client(), dragged_nodes));

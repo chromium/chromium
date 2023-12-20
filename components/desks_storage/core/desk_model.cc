@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
@@ -34,7 +35,7 @@ DeskModel::GetTemplateJsonStatus ConvertGetEntryStatusToTemplateJsonStatus(
 
 DeskModel::GetAllEntriesResult::GetAllEntriesResult(
     GetAllEntriesStatus status,
-    std::vector<const ash::DeskTemplate*> entries)
+    std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> entries)
     : status(status), entries(std::move(entries)) {}
 DeskModel::GetAllEntriesResult::GetAllEntriesResult(
     GetAllEntriesResult& other) = default;

@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, Pipeline) {
   using PageLinkEntry = ukm::builders::NavigationPredictorPageLinkMetrics;
   auto entries = test_ukm_recorder->GetEntriesByName(PageLinkEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   auto get_metric = [&](auto name) {
     return *test_ukm_recorder->GetEntryMetric(entry, name);
   };
@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, MultipleNavigations) {
   using PageLinkEntry = ukm::builders::NavigationPredictorPageLinkMetrics;
   auto entries = test_ukm_recorder->GetEntriesByName(PageLinkEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   auto get_metric = [&](auto name) {
     return *test_ukm_recorder->GetEntryMetric(entry, name);
   };
@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, PageWithIframe) {
   using PageLinkEntry = ukm::builders::NavigationPredictorPageLinkMetrics;
   auto entries = test_ukm_recorder->GetEntriesByName(PageLinkEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   auto get_metric = [&](auto name) {
     return *test_ukm_recorder->GetEntryMetric(entry, name);
   };
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
   using PageLinkEntry = ukm::builders::NavigationPredictorPageLinkMetrics;
   auto entries = test_ukm_recorder->GetEntriesByName(PageLinkEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   auto get_metric = [&](auto name) {
     return *test_ukm_recorder->GetEntryMetric(entry, name);
   };
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
   using UkmEntry = ukm::builders::NavigationPredictorPageLinkMetrics;
   auto entries = test_ukm_recorder->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   auto get_metric = [&](auto name) {
     return *test_ukm_recorder->GetEntryMetric(entry, name);
   };

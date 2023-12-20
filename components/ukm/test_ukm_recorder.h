@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/ukm/ukm_recorder_impl.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -75,8 +76,8 @@ class TestUkmRecorder : public UkmRecorderImpl {
                              base::RepeatingClosure on_add_entry);
 
   // Gets all of the entries recorded for entry name.
-  std::vector<const mojom::UkmEntry*> GetEntriesByName(
-      base::StringPiece entry_name) const;
+  std::vector<raw_ptr<const mojom::UkmEntry, VectorExperimental>>
+  GetEntriesByName(base::StringPiece entry_name) const;
 
   // Gets the data for all entries with given entry name, merged to one entry
   // for each source id. Intended for singular="true" metrics.

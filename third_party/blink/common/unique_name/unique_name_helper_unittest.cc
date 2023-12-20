@@ -144,7 +144,7 @@ class TestFrameAdapter : public UniqueNameHelper::FrameAdapter {
   bool CheckUniqueness(base::StringPiece name) const {
     if (name == GetNameForCurrentMode())
       return false;
-    for (auto* child : children_) {
+    for (TestFrameAdapter* child : children_) {
       if (!child->CheckUniqueness(name))
         return false;
     }
@@ -152,7 +152,7 @@ class TestFrameAdapter : public UniqueNameHelper::FrameAdapter {
   }
 
   const raw_ptr<TestFrameAdapter> parent_;
-  std::vector<TestFrameAdapter*> children_;
+  std::vector<raw_ptr<TestFrameAdapter, VectorExperimental>> children_;
   const int virtual_index_in_parent_;
   UniqueNameHelper unique_name_helper_;
   std::string legacy_name_;

@@ -296,7 +296,8 @@ class ASH_EXPORT LoginShelfView : public views::View,
   gfx::Rect button_union_bounds_;
 
   // Maintains a list of LoginShelfButton children of LoginShelfView.
-  std::vector<LoginShelfButton*> login_shelf_buttons_;
+  std::vector<raw_ptr<LoginShelfButton, VectorExperimental>>
+      login_shelf_buttons_;
 
   // Number of active scoped Guest button blockers.
   int scoped_guest_button_blockers_ = 0;

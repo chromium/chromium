@@ -339,7 +339,8 @@ class FormField {
 
   // Removes checkable fields and returns fields to be processed for field
   // detection.
-  static std::vector<AutofillField*> RemoveCheckableFields(
+  static std::vector<raw_ptr<AutofillField, VectorExperimental>>
+  RemoveCheckableFields(
       const std::vector<std::unique_ptr<AutofillField>>& fields);
 
   // Matches |pattern| to the contents of the field at the head of the
@@ -367,15 +368,16 @@ class FormField {
   // holds any remaining unclassified fields for further processing.
   // Classification results of the processed fields are stored in
   // |field_candidates|.
-  static void ParseFormFieldsPass(ParseFunction parse,
-                                  ParsingContext& context,
-                                  const std::vector<AutofillField*>& fields,
-                                  FieldCandidatesMap& field_candidates);
+  static void ParseFormFieldsPass(
+      ParseFunction parse,
+      ParsingContext& context,
+      const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields,
+      FieldCandidatesMap& field_candidates);
 
   // Interpret the fields' `parsable_name()` (id or name attribute) as an
   // autocomplete type and classify them by it. E.g. <input id=given-name>.
   static void ParseUsingAutocompleteAttributes(
-      const std::vector<AutofillField*>& fields,
+      const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields,
       FieldCandidatesMap& field_candidates);
 };
 

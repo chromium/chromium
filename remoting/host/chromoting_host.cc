@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -312,7 +313,7 @@ void ChromotingHost::OnIncomingSession(
   }
 
   // Create a ClientSession object.
-  std::vector<HostExtension*> extension_ptrs;
+  std::vector<raw_ptr<HostExtension, VectorExperimental>> extension_ptrs;
   for (const auto& extension : extensions_) {
     extension_ptrs.push_back(extension.get());
   }

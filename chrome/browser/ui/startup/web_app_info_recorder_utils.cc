@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -81,7 +82,7 @@ class GetWebApps {
   const base::FilePath output_file_;
   const base::FilePath profile_base_name_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
-  std::vector<Profile*> profiles_;
+  std::vector<raw_ptr<Profile, VectorExperimental>> profiles_;
   std::vector<std::unique_ptr<ScopedProfileKeepAlive>> profiles_keep_alive_;
 };
 
@@ -135,7 +136,7 @@ void GetWebApps::SerializeAndScheduleWrite(const base::Value& output_info) {
 
 base::Value GetWebApps::GetInstalledWebApps() {
   base::Value::List installed_apps_list;
-  for (auto* item : profiles_) {
+  for (Profile* item : profiles_) {
     web_app::WebAppProvider* web_app_provider =
         web_app::WebAppProvider::GetForWebApps(item);
     base::Value::Dict item_info;

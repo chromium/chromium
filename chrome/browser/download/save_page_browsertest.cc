@@ -254,7 +254,8 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
   // Note that this class provides no protection against the download
   // being destroyed between creation and return of WaitForNewDownloadItem();
   // the caller must guarantee that in some other fashion.
-  void WaitForDownloadItem(std::vector<DownloadItem*>* items_seen) {
+  void WaitForDownloadItem(
+      std::vector<raw_ptr<DownloadItem, VectorExperimental>>* items_seen) {
     if (!manager_) {
       // The manager went away before we were asked to wait; return
       // what we have, even if it's null.
@@ -292,7 +293,7 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
 
   base::OnceClosure quit_waiting_callback_;
   raw_ptr<DownloadManager> manager_;
-  std::vector<DownloadItem*> items_seen_;
+  std::vector<raw_ptr<DownloadItem, VectorExperimental>> items_seen_;
 };
 
 class SavePageBrowserTest : public InProcessBrowserTest {
@@ -345,7 +346,7 @@ class SavePageBrowserTest : public InProcessBrowserTest {
     // Generally, there should only be one download item created
     // in all of these tests.  If it's already here, grab it; if not,
     // wait for it to show up.
-    std::vector<DownloadItem*> items;
+    std::vector<raw_ptr<DownloadItem, VectorExperimental>> items;
     DownloadManager* manager = browser->profile()->GetDownloadManager();
     manager->GetAllDownloads(&items);
     if (items.empty())
@@ -480,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, MAYBE_SaveHTMLOnlyCancel) {
   GURL url = NavigateToMockURL("a");
   DownloadManager* manager = GetDownloadManager();
-  std::vector<DownloadItem*> downloads;
+  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
   manager->GetAllDownloads(&downloads);
   ASSERT_EQ(0u, downloads.size());
 
@@ -497,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, MAYBE_SaveHTMLOnlyCancel) {
 
   ASSERT_TRUE(GetCurrentTab(browser())->SavePage(full_file_name, dir,
                                         content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
-  std::vector<DownloadItem*> items;
+  std::vector<raw_ptr<DownloadItem, VectorExperimental>> items;
   creation_observer.WaitForDownloadItem(&items);
   ASSERT_EQ(1UL, items.size());
   ASSERT_EQ(url.spec(), items[0]->GetOriginalUrl().spec());
@@ -567,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, DISABLED_SaveHTMLOnlyTabDestroy) {
   DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile())
       ->SetDownloadManagerDelegateForTesting(std::move(delaying_delegate));
   DownloadManager* manager = GetDownloadManager();
-  std::vector<DownloadItem*> downloads;
+  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
   manager->GetAllDownloads(&downloads);
   ASSERT_EQ(0u, downloads.size());
 
@@ -576,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, DISABLED_SaveHTMLOnlyTabDestroy) {
   DownloadItemCreatedObserver creation_observer(manager);
   ASSERT_TRUE(GetCurrentTab(browser())->SavePage(full_file_name, dir,
                                         content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
-  std::vector<DownloadItem*> items;
+  std::vector<raw_ptr<DownloadItem, VectorExperimental>> items;
   creation_observer.WaitForDownloadItem(&items);
   ASSERT_EQ(1u, items.size());
 
@@ -721,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, RemoveFromList) {
   ASSERT_FALSE(HasFailure());
 
   DownloadManager* manager = GetDownloadManager();
-  std::vector<DownloadItem*> downloads;
+  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
   manager->GetAllDownloads(&downloads);
   ASSERT_EQ(1UL, downloads.size());
 
@@ -940,10 +941,11 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveDownloadableIFrame) {
 
     ASSERT_TRUE(VerifySavePackageExpectations(browser(), download_url));
     persisted.WaitForPersisted();
-    std::vector<download::DownloadItem*> downloads;
+    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
     GetDownloadManager()->GetAllDownloads(&downloads);
-    for (auto* download : downloads)
+    for (download::DownloadItem* download : downloads) {
       download->Remove();
+    }
   }
 
   base::FilePath full_file_name, dir;

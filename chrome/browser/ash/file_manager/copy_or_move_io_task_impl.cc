@@ -253,7 +253,8 @@ void CopyOrMoveIOTaskImpl::VerifyTransfer() {
                                      progress_->GetDestinationFolder()) &&
       user_manager::UserManager::Get()->GetLoggedInUsers().size() > 1) {
     // Check none of the logged in users are managed.
-    for (auto* user : user_manager::UserManager::Get()->GetLoggedInUsers()) {
+    for (user_manager::User* user :
+         user_manager::UserManager::Get()->GetLoggedInUsers()) {
       Profile* user_profile = Profile::FromBrowserContext(
           ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
       if (user_profile->GetProfilePolicyConnector()->IsManaged()) {

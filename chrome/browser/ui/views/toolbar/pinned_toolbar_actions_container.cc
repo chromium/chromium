@@ -430,7 +430,8 @@ void PinnedToolbarActionsContainer::UpdateActionState(actions::ActionId id,
 
 void PinnedToolbarActionsContainer::UpdateDividerFlexSpecification() {
   bool force_divider_visibility = false;
-  for (auto* const pinned_button : pinned_buttons_) {
+  for (PinnedToolbarActionsContainer::PinnedActionToolbarButton* const
+           pinned_button : pinned_buttons_) {
     if (pinned_button->IsActive()) {
       force_divider_visibility = true;
       break;
@@ -463,7 +464,8 @@ void PinnedToolbarActionsContainer::MovePinnedActionBy(actions::ActionId id,
 }
 
 void PinnedToolbarActionsContainer::UpdateAllIcons() {
-  for (auto* const pinned_button : pinned_buttons_) {
+  for (PinnedToolbarActionsContainer::PinnedActionToolbarButton* const
+           pinned_button : pinned_buttons_) {
     pinned_button->UpdateIcon();
   }
 }
@@ -597,7 +599,7 @@ void PinnedToolbarActionsContainer::WriteDragDataForView(
 
   const auto iter = base::ranges::find(pinned_buttons_, sender);
   DCHECK(iter != pinned_buttons_.end());
-  auto* button = *iter;
+  auto* button = (*iter).get();
 
   ui::ImageModel icon =
       ui::ImageModel::FromImageSkia(button->GetImage(button->GetState()));
@@ -651,9 +653,11 @@ PinnedToolbarActionsContainer::AddPopOutButtonFor(const actions::ActionId& id) {
 
 void PinnedToolbarActionsContainer::RemovePoppedOutButtonFor(
     const actions::ActionId& id) {
-  const auto iter =
-      base::ranges::find(popped_out_buttons_, id,
-                         [](auto* button) { return button->GetActionId(); });
+  const auto iter = base::ranges::find(
+      popped_out_buttons_, id,
+      [](PinnedToolbarActionsContainer::PinnedActionToolbarButton* button) {
+        return button->GetActionId();
+      });
   if (iter == popped_out_buttons_.end()) {
     return;
   }
@@ -672,9 +676,11 @@ void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
     return;
   }
   if (GetPoppedOutButtonFor(id)) {
-    const auto iter =
-        base::ranges::find(popped_out_buttons_, id,
-                           [](auto* button) { return button->GetActionId(); });
+    const auto iter = base::ranges::find(
+        popped_out_buttons_, id,
+        [](PinnedToolbarActionsContainer::PinnedActionToolbarButton* button) {
+          return button->GetActionId();
+        });
     (*iter)->SetPinned(true);
     pinned_buttons_.push_back(*iter);
     popped_out_buttons_.erase(iter);
@@ -692,7 +698,10 @@ void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
 void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
     const actions::ActionId& id) {
   const auto iter = base::ranges::find(
-      pinned_buttons_, id, [](auto* button) { return button->GetActionId(); });
+      pinned_buttons_, id,
+      [](PinnedToolbarActionsContainer::PinnedActionToolbarButton* button) {
+        return button->GetActionId();
+      });
   if (iter == pinned_buttons_.end()) {
     return;
   }
@@ -712,16 +721,21 @@ void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
 PinnedToolbarActionsContainer::PinnedActionToolbarButton*
 PinnedToolbarActionsContainer::GetPinnedButtonFor(const actions::ActionId& id) {
   const auto iter = base::ranges::find(
-      pinned_buttons_, id, [](auto* button) { return button->GetActionId(); });
+      pinned_buttons_, id,
+      [](PinnedToolbarActionsContainer::PinnedActionToolbarButton* button) {
+        return button->GetActionId();
+      });
   return iter == pinned_buttons_.end() ? nullptr : *iter;
 }
 
 PinnedToolbarActionsContainer::PinnedActionToolbarButton*
 PinnedToolbarActionsContainer::GetPoppedOutButtonFor(
     const actions::ActionId& id) {
-  const auto iter =
-      base::ranges::find(popped_out_buttons_, id,
-                         [](auto* button) { return button->GetActionId(); });
+  const auto iter = base::ranges::find(
+      popped_out_buttons_, id,
+      [](PinnedToolbarActionsContainer::PinnedActionToolbarButton* button) {
+        return button->GetActionId();
+      });
   return iter == popped_out_buttons_.end() ? nullptr : *iter;
 }
 
@@ -781,7 +795,8 @@ void PinnedToolbarActionsContainer::ReorderViews() {
     toolbar_divider_->SetVisible(false);
   }
   // Popped out buttons appear last.
-  for (auto* popped_out_button : popped_out_buttons_) {
+  for (PinnedToolbarActionsContainer::PinnedActionToolbarButton*
+           popped_out_button : popped_out_buttons_) {
     ReorderChildView(popped_out_button, index);
     index++;
   }

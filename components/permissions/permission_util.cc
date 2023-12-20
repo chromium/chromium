@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -435,7 +436,8 @@ GURL PermissionUtil::GetCanonicalOrigin(ContentSettingsType permission,
 }
 
 bool PermissionUtil::HasUserGesture(PermissionPrompt::Delegate* delegate) {
-  const std::vector<permissions::PermissionRequest*>& requests =
+  const std::vector<
+      raw_ptr<permissions::PermissionRequest, VectorExperimental>>& requests =
       delegate->Requests();
   return std::any_of(
       requests.begin(), requests.end(),

@@ -52,9 +52,11 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionKeyManager {
   // Check for the key prop of |displays_states|, request the key by calling
   // |provisioned_key_request_| and inject the key into the kernel if
   // required. When the displays config is done, call |on_key_set|.
-  void SetKeyIfRequired(const std::vector<DisplaySnapshot*>& displays_states,
-                        int64_t display_id,
-                        KeySetCallback on_key_set);
+  void SetKeyIfRequired(
+      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
+          displays_states,
+      int64_t display_id,
+      KeySetCallback on_key_set);
 
  private:
   void FetchKeyFromServer();

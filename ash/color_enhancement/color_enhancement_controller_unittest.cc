@@ -48,11 +48,11 @@ TEST_F(ColorEnhancementControllerTest, HighContrast) {
   PrefService* prefs = GetPrefs();
   prefs->SetBoolean(prefs::kAccessibilityHighContrastEnabled, true);
   EXPECT_TRUE(IsCursorCompositingEnabled());
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     EXPECT_TRUE(root_window->layer()->layer_inverted());
   }
   prefs->SetBoolean(prefs::kAccessibilityHighContrastEnabled, false);
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     EXPECT_FALSE(root_window->layer()->layer_inverted());
   }
   EXPECT_FALSE(IsCursorCompositingEnabled());
@@ -65,7 +65,7 @@ TEST_F(ColorEnhancementControllerTest, Greyscale) {
   prefs->SetInteger(prefs::kAccessibilityColorVisionCorrectionType,
                     ColorVisionCorrectionType::kGrayscale);
   EXPECT_FALSE(IsCursorCompositingEnabled());
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     EXPECT_FLOAT_EQ(0.f, root_window->layer()->layer_grayscale());
     // No other color filters were set.
     EXPECT_FALSE(root_window->layer()->LayerHasCustomColorMatrix());
@@ -73,14 +73,14 @@ TEST_F(ColorEnhancementControllerTest, Greyscale) {
 
   prefs->SetInteger(prefs::kAccessibilityColorVisionCorrectionAmount, 100);
   EXPECT_FALSE(IsCursorCompositingEnabled());
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     EXPECT_FLOAT_EQ(1, root_window->layer()->layer_grayscale());
     // No other color filters were set.
     EXPECT_FALSE(root_window->layer()->LayerHasCustomColorMatrix());
   }
 
   prefs->SetInteger(prefs::kAccessibilityColorVisionCorrectionAmount, 50);
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     EXPECT_FLOAT_EQ(0.5f, root_window->layer()->layer_grayscale());
     // No other color filters were set.
     EXPECT_FALSE(root_window->layer()->LayerHasCustomColorMatrix());
@@ -88,14 +88,14 @@ TEST_F(ColorEnhancementControllerTest, Greyscale) {
 
   // Greyscale larger than 100% or smaller than 0% does nothing.
   prefs->SetInteger(prefs::kAccessibilityColorVisionCorrectionAmount, 500);
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     EXPECT_FLOAT_EQ(0.5f, root_window->layer()->layer_grayscale());
     // No other color filters were set.
     EXPECT_FALSE(root_window->layer()->LayerHasCustomColorMatrix());
   }
 
   prefs->SetInteger(prefs::kAccessibilityColorVisionCorrectionAmount, -10);
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     EXPECT_FLOAT_EQ(0.5f, root_window->layer()->layer_grayscale());
     // No other color filters were set.
     EXPECT_FALSE(root_window->layer()->LayerHasCustomColorMatrix());
@@ -112,20 +112,20 @@ TEST_F(ColorEnhancementControllerTest, ColorVisionCorrectionFilters) {
 
     // With severity at 0, no matrix should be applied.
     prefs->SetInteger(prefs::kAccessibilityColorVisionCorrectionAmount, 0);
-    for (auto* root_window : Shell::GetAllRootWindows()) {
+    for (aura::Window* root_window : Shell::GetAllRootWindows()) {
       EXPECT_FALSE(root_window->layer()->LayerHasCustomColorMatrix());
       EXPECT_FLOAT_EQ(0.f, root_window->layer()->layer_grayscale());
     }
 
     // With a non-zero severity, a matrix should be applied.
     prefs->SetInteger(prefs::kAccessibilityColorVisionCorrectionAmount, 50);
-    for (auto* root_window : Shell::GetAllRootWindows()) {
+    for (aura::Window* root_window : Shell::GetAllRootWindows()) {
       EXPECT_TRUE(root_window->layer()->LayerHasCustomColorMatrix());
       // Grayscale was not impacted.
       EXPECT_FLOAT_EQ(0.f, root_window->layer()->layer_grayscale());
     }
     prefs->SetInteger(prefs::kAccessibilityColorVisionCorrectionAmount, 100);
-    for (auto* root_window : Shell::GetAllRootWindows()) {
+    for (aura::Window* root_window : Shell::GetAllRootWindows()) {
       const cc::FilterOperation::Matrix* matrix =
           root_window->layer()->GetLayerCustomColorMatrix();
       EXPECT_TRUE(matrix);
@@ -153,14 +153,14 @@ TEST_F(ColorEnhancementControllerTest, GrayscaleBehindColorCorrectionOption) {
                     ColorVisionCorrectionType::kGrayscale);
 
   // Default values.
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     EXPECT_FLOAT_EQ(0.0f, root_window->layer()->layer_grayscale());
     EXPECT_FALSE(root_window->layer()->LayerHasCustomColorMatrix());
   }
 
   // Turn on color filtering, values should now be from prefs.
   prefs->SetBoolean(prefs::kAccessibilityColorCorrectionEnabled, true);
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     EXPECT_FLOAT_EQ(0.5f, root_window->layer()->layer_grayscale());
     EXPECT_FALSE(root_window->layer()->LayerHasCustomColorMatrix());
   }
@@ -168,14 +168,14 @@ TEST_F(ColorEnhancementControllerTest, GrayscaleBehindColorCorrectionOption) {
   prefs->SetInteger(prefs::kAccessibilityColorVisionCorrectionType,
                     ColorVisionCorrectionType::kDeuteranomaly);
   prefs->SetBoolean(prefs::kAccessibilityColorCorrectionEnabled, true);
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     EXPECT_FLOAT_EQ(0.0f, root_window->layer()->layer_grayscale());
     EXPECT_TRUE(root_window->layer()->LayerHasCustomColorMatrix());
   }
 
   // Turn it off again, expect defaults to be restored.
   prefs->SetBoolean(prefs::kAccessibilityColorCorrectionEnabled, false);
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     EXPECT_FLOAT_EQ(0.0f, root_window->layer()->layer_grayscale());
     EXPECT_FALSE(root_window->layer()->LayerHasCustomColorMatrix());
   }

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -194,8 +195,8 @@ AddressEntryList GenerateAddressList(
   // TODO(crbug.com/1487119): Replace by `profiles` when
   // `GetProfilesForSettings` starts returning a list of const AutofillProfile*.
   autofill::AutofillProfile::CreateDifferentiatingLabels(
-      std::vector<const autofill::AutofillProfile*>(profiles.begin(),
-                                                    profiles.end()),
+      std::vector<raw_ptr<const autofill::AutofillProfile, VectorExperimental>>(
+          profiles.begin(), profiles.end()),
       g_browser_process->GetApplicationLocale(), &labels);
   DCHECK_EQ(labels.size(), profiles.size());
 

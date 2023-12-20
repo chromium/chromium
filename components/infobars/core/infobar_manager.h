@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/infobars/core/infobar_delegate.h"
 
@@ -84,7 +85,9 @@ class InfoBarManager {
                           std::unique_ptr<InfoBar> new_infobar);
 
   // Returns managed infobars.
-  const std::vector<InfoBar*>& infobars() const { return infobars_; }
+  const std::vector<raw_ptr<InfoBar, VectorExperimental>>& infobars() const {
+    return infobars_;
+  }
 
   // Must be called when a navigation happens.
   void OnNavigation(const InfoBarDelegate::NavigationDetails& details);
@@ -113,7 +116,7 @@ class InfoBarManager {
   // infobars directly once they've been added to this; instead, when we're
   // done with an infobar, we instruct it to delete itself and then orphan it.
   // See RemoveInfoBarInternal().
-  using InfoBars = std::vector<InfoBar*>;
+  using InfoBars = std::vector<raw_ptr<InfoBar, VectorExperimental>>;
 
   void RemoveInfoBarInternal(InfoBar* infobar, bool animate);
 

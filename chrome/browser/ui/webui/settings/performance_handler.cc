@@ -73,7 +73,7 @@ base::Value PerformanceHandler::GetCurrentOpenSites() {
   std::set<std::pair<base::TimeTicks, std::string>, std::greater<>>
       last_active_time_host_pairs;
   const Profile* profile = Profile::FromWebUI(web_ui());
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     // Exclude browsers not signed into the current profile
     if (browser->profile() != profile) {
       continue;

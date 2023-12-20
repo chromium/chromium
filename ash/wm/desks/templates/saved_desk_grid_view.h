@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/bounds_animator.h"
@@ -33,7 +34,8 @@ class SavedDeskGridView : public views::View {
   SavedDeskGridView& operator=(const SavedDeskGridView&) = delete;
   ~SavedDeskGridView() override;
 
-  const std::vector<SavedDeskItemView*>& grid_items() const {
+  const std::vector<raw_ptr<SavedDeskItemView, VectorExperimental>>&
+  grid_items() const {
     return grid_items_;
   }
 
@@ -49,9 +51,11 @@ class SavedDeskGridView : public views::View {
   // corresponding entry will be placed first. This will animate the entries to
   // their final positions if `animate` is true. Currently only allows a maximum
   // of 6 saved desks to be shown in the grid.
-  void AddOrUpdateEntries(const std::vector<const DeskTemplate*>& entries,
-                          const base::Uuid& order_first_uuid,
-                          bool animate);
+  void AddOrUpdateEntries(
+      const std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>&
+          entries,
+      const base::Uuid& order_first_uuid,
+      bool animate);
 
   // Removes saved desks from the grid by UUID. Will trigger an animation to
   // shuffle `grid_items_` to their final positions. If `delete_animation` is
@@ -96,7 +100,7 @@ class SavedDeskGridView : public views::View {
   void AnimateGridItems(const std::vector<SavedDeskItemView*>& new_grid_items);
 
   // The views representing saved desks. They're owned by views hierarchy.
-  std::vector<SavedDeskItemView*> grid_items_;
+  std::vector<raw_ptr<SavedDeskItemView, VectorExperimental>> grid_items_;
 
   // Controls how the grid items are laid out.
   LayoutMode layout_mode_ = LayoutMode::LANDSCAPE;

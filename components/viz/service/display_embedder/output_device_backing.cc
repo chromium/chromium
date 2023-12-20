@@ -50,8 +50,9 @@ void OutputDeviceBacking::ClientResized() {
 
   // Otherwise we need to allocate a new shared memory region and clients
   // should re-request it.
-  for (auto* client : clients_)
+  for (OutputDeviceBacking::Client* client : clients_) {
     client->ReleaseCanvas();
+  }
 
   region_ = {};
   created_shm_bytes_ = 0;
@@ -98,7 +99,7 @@ base::UnsafeSharedMemoryRegion* OutputDeviceBacking::GetSharedMemoryRegion(
 size_t OutputDeviceBacking::GetMaxViewportBytes() {
   // Minimum byte size is 1 because creating a 0-byte-long SharedMemory fails.
   size_t max_bytes = 1;
-  for (auto* client : clients_) {
+  for (OutputDeviceBacking::Client* client : clients_) {
     size_t current_bytes;
     if (!GetViewportSizeInBytes(client->GetViewportPixelSize(), &current_bytes))
       continue;

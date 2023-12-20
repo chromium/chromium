@@ -480,7 +480,7 @@ class DownloadHistoryTest : public testing::Test {
     }
 #endif
 
-    std::vector<download::DownloadItem*> items;
+    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
     for (size_t i = 0; i < items_.size(); ++i) {
       items.push_back(&item(i));
     }

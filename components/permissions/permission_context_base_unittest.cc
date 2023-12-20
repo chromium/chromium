@@ -286,7 +286,7 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     if (action.has_value()) {
       auto entries = ukm_recorder.GetEntriesByName("Permission");
       EXPECT_EQ(1u, entries.size());
-      auto* entry = entries.front();
+      auto* entry = entries.front().get();
       ukm_recorder.ExpectEntrySourceHasUrl(entry, url);
 
       EXPECT_NE(content_settings_uma_util::ContentSettingTypeToHistogramValue(

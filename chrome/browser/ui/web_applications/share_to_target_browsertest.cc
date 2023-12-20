@@ -105,7 +105,7 @@ class ShareToTargetBrowserTest : public WebAppControllerBrowserTest {
   }
 
   static void CloseAppWindows(const webapps::AppId& app_id) {
-    for (auto* browser : *BrowserList::GetInstance()) {
+    for (Browser* browser : *BrowserList::GetInstance()) {
       const AppBrowserController* app_controller = browser->app_controller();
       if (app_controller && app_controller->app_id() == app_id)
         browser->window()->Close();

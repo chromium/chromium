@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "components/desks_storage/core/desk_model_wrapper.h"
 
 #include <stddef.h>
@@ -79,11 +80,12 @@ std::string GetPolicyStringWithOneTemplate() {
 // found, false if not.
 bool FindUuidInUuidList(
     const std::string& uuid_query,
-    const std::vector<const ash::DeskTemplate*>& entry_list) {
+    const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+        entry_list) {
   base::Uuid guid = base::Uuid::ParseCaseInsensitive(uuid_query);
   DCHECK(guid.is_valid());
 
-  for (auto* entry : entry_list) {
+  for (const ash::DeskTemplate* entry : entry_list) {
     if (entry->uuid() == guid)
       return true;
   }
@@ -155,7 +157,8 @@ class MockDeskModelObserver : public DeskModelObserver {
  public:
   MOCK_METHOD0(DeskModelLoaded, void());
   MOCK_METHOD1(EntriesAddedOrUpdatedRemotely,
-               void(const std::vector<const ash::DeskTemplate*>&));
+               void(const std::vector<
+                    raw_ptr<const ash::DeskTemplate, VectorExperimental>>&));
   MOCK_METHOD1(EntriesRemovedRemotely, void(const std::vector<base::Uuid>&));
 };
 

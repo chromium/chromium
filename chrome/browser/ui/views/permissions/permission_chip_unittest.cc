@@ -53,10 +53,16 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
                   : permissions::PermissionRequestGestureType::NO_GESTURE);
         });
     raw_requests_ = base::test::ToVector(
-        requests_, &std::unique_ptr<permissions::PermissionRequest>::get);
+        requests_,
+        [](const auto& request)
+            -> raw_ptr<permissions::PermissionRequest, VectorExperimental> {
+          return request.get();
+        });
   }
 
-  const std::vector<permissions::PermissionRequest*>& Requests() override {
+  const std::vector<
+      raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
+  Requests() override {
     return raw_requests_;
   }
 
@@ -113,7 +119,8 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
 
  private:
   std::vector<std::unique_ptr<permissions::PermissionRequest>> requests_;
-  std::vector<permissions::PermissionRequest*> raw_requests_;
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      raw_requests_;
   bool was_current_request_already_displayed_ = false;
   std::optional<permissions::PermissionUiSelector::QuietUiReason>
       quiet_ui_reason_;

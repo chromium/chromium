@@ -1713,7 +1713,7 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
   }
 
   const BookmarkNode* parent = nullptr;
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   if (source == all_bookmarks_button_) {
     parent = bookmark_model_->other_node();
     // Do this so the user can open all bookmarks. BookmarkContextMenu makes
@@ -2345,7 +2345,7 @@ void BookmarkBarView::InsertBookmarkButtonAtIndex(
   if (saved_tab_group_bar_) {
     DCHECK_EQ(*i++, saved_tab_group_bar_);
   }
-  const auto is_bookmark_button = [this](const auto* v) {
+  const auto is_bookmark_button = [this](const View* v) {
     return (views::IsViewClass<BookmarkButton>(v) ||
             views::IsViewClass<BookmarkFolderButton>(v)) &&
            v != overflow_button_ && v != all_bookmarks_button_;

@@ -189,7 +189,7 @@ aura::Window* AshFocusRules::GetNextActivatableWindow(
   } else {
     MruWindowTracker* mru = Shell::Get()->mru_window_tracker();
     aura::Window::Windows windows = mru->BuildMruWindowList(kActiveDesk);
-    starting_window = windows.empty() ? ignore : windows[0];
+    starting_window = windows.empty() ? ignore : windows[0].get();
   }
   DCHECK(starting_window);
 

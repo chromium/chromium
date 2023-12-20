@@ -115,8 +115,8 @@ class BrowserViewLayout : public views::LayoutManager {
   void Layout(views::View* host) override;
   gfx::Size GetMinimumSize(const views::View* host) const override;
   gfx::Size GetPreferredSize(const views::View* host) const override;
-  std::vector<views::View*> GetChildViewsInPaintOrder(
-      const views::View* host) const override;
+  std::vector<raw_ptr<views::View, VectorExperimental>>
+  GetChildViewsInPaintOrder(const views::View* host) const override;
 
   // Returns the minimum acceptable width for the browser web contents.
   int GetMinWebContentsWidthForTesting() const;

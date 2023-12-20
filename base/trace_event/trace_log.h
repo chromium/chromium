@@ -18,6 +18,7 @@
 #include "base/base_export.h"
 #include "base/containers/stack.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
@@ -568,16 +569,16 @@ class BASE_EXPORT TraceLog :
   // The lock protects observers access.
   mutable Lock observers_lock_;
   bool dispatching_to_observers_ = false;
-  std::vector<EnabledStateObserver*> enabled_state_observers_
-      GUARDED_BY(observers_lock_);
+  std::vector<raw_ptr<EnabledStateObserver, VectorExperimental>>
+      enabled_state_observers_ GUARDED_BY(observers_lock_);
   std::map<AsyncEnabledStateObserver*, RegisteredAsyncObserver> async_observers_
       GUARDED_BY(observers_lock_);
   // Manages ownership of the owned observers. The owned observers will also be
   // added to |enabled_state_observers_|.
   std::vector<std::unique_ptr<EnabledStateObserver>>
       owned_enabled_state_observer_copy_ GUARDED_BY(observers_lock_);
-  std::vector<IncrementalStateObserver*> incremental_state_observers_
-      GUARDED_BY(observers_lock_);
+  std::vector<raw_ptr<IncrementalStateObserver, VectorExperimental>>
+      incremental_state_observers_ GUARDED_BY(observers_lock_);
 
   std::unordered_map<int, std::string> process_labels_;
   int process_sort_index_;

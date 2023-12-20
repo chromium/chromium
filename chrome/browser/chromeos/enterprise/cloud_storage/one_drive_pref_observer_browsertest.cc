@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -69,7 +70,7 @@ class OneDrivePrefObserverBrowserTest : public policy::PolicyTest {
   }
 
   bool OneDrivePrefObserverServiceExists() {
-    std::vector<DependencyNode*> nodes;
+    std::vector<raw_ptr<DependencyNode, VectorExperimental>> nodes;
     const bool success = BrowserContextDependencyManager::GetInstance()
                              ->GetDependencyGraphForTesting()
                              .GetConstructionOrder(&nodes);

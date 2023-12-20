@@ -100,9 +100,9 @@ class OpenTabsUIDelegateMock : public sync_sessions::OpenTabsUIDelegate {
   OpenTabsUIDelegateMock() {}
   ~OpenTabsUIDelegateMock() override {}
 
-  MOCK_METHOD1(
-      GetAllForeignSessions,
-      bool(std::vector<const sync_sessions::SyncedSession*>* sessions));
+  MOCK_METHOD1(GetAllForeignSessions,
+               bool(std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                                        VectorExperimental>>* sessions));
   MOCK_METHOD3(GetForeignTab,
                bool(const std::string& tag,
                     const SessionID tab_id,
@@ -296,7 +296,8 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
 
   syncer::TestSyncService* sync_service_;
   sync_sessions::SyncedSession sync_session_;
-  std::vector<const sync_sessions::SyncedSession*> sessions_;
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      sessions_;
 
   sessions::SessionTab open_tab_;
   std::vector<const sessions::SessionTab*> open_tabs_;

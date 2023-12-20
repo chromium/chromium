@@ -236,7 +236,7 @@ const user_manager::User* ProfileHelperImpl::GetUserByProfile(
 
     // Walk through all users in UserManager.
     const std::string& user_name = profile->GetProfileUserName();
-    for (auto* user : user_manager->GetUsers()) {
+    for (user_manager::User* user : user_manager->GetUsers()) {
       if (user->GetAccountId().GetUserEmail() == user_name) {
         return user;
       }

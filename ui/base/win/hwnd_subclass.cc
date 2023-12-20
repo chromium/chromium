@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/ranges/algorithm.h"
 #include "ui/base/win/touch_input.h"
@@ -100,7 +101,7 @@ void HWNDSubclass::AddFilter(HWNDMessageFilter* filter) {
 }
 
 void HWNDSubclass::RemoveFilter(HWNDMessageFilter* filter) {
-  std::vector<HWNDMessageFilter*>::iterator it =
+  std::vector<raw_ptr<HWNDMessageFilter, VectorExperimental>>::iterator it =
       base::ranges::find(filters_, filter);
   if (it != filters_.end())
     filters_.erase(it);
@@ -138,8 +139,9 @@ LRESULT HWNDSubclass::OnWndProc(HWND hwnd,
     }
   }
 
-  for (std::vector<HWNDMessageFilter*>::iterator it = filters_.begin();
-      it != filters_.end(); ++it) {
+  for (std::vector<raw_ptr<HWNDMessageFilter, VectorExperimental>>::iterator
+           it = filters_.begin();
+       it != filters_.end(); ++it) {
     LRESULT l_result = 0;
     if ((*it)->FilterMessage(hwnd, message, w_param, l_param, &l_result))
       return l_result;

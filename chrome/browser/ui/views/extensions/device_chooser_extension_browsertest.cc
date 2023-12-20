@@ -108,7 +108,7 @@ class DeviceChooserExtensionBrowserTest
     };
 
     std::vector<ToolbarActionView*> result;
-    for (auto* child : extensions_container()->children()) {
+    for (views::View* child : extensions_container()->children()) {
       // Ensure we don't downcast the ExtensionsToolbarButton.
       if (views::IsViewClass<ToolbarActionView>(child)) {
         auto* action = static_cast<ToolbarActionView*>(child);

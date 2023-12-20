@@ -1939,7 +1939,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
       ukm::builders::Blink_UseCounter::kEntryName);
   EXPECT_THAT(entries, SizeIs(3));
   std::vector<int64_t> ukm_features;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, url);
     test_ukm_recorder_->ExpectEntryMetric(
         entry, ukm::builders::Blink_UseCounter::kIsMainFrameFeatureName, 1);
@@ -1989,7 +1989,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAutoupgradesDisabled,
       ukm::builders::Blink_UseCounter::kEntryName);
   EXPECT_THAT(entries, SizeIs(6));
   std::vector<int64_t> ukm_features;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, url);
     test_ukm_recorder_->ExpectEntryMetric(
         entry, ukm::builders::Blink_UseCounter::kIsMainFrameFeatureName, 1);
@@ -3900,7 +3900,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithBackForwardCache,
       ukm::builders::Blink_UseCounter::kEntryName);
   EXPECT_THAT(entries, SizeIs(4));
   std::vector<int64_t> ukm_features;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder_->ExpectEntryMetric(
         entry, ukm::builders::Blink_UseCounter::kIsMainFrameFeatureName, 1);
     const auto* metric = test_ukm_recorder_->GetEntryMetric(
@@ -4155,7 +4155,7 @@ void PageLoadMetricsBackForwardCacheBrowserTest::VerifyPageEndReasons(
     const GURL& url,
     bool is_bfcache_enabled) {
   unsigned int reason_index = 0;
-  for (auto* entry :
+  for (const ukm::mojom::UkmEntry* entry :
        test_ukm_recorder_->GetEntriesByName(PageLoad::kEntryName)) {
     auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
     if (source->url() != url)
@@ -4178,7 +4178,7 @@ void PageLoadMetricsBackForwardCacheBrowserTest::VerifyPageEndReasons(
   } else {
     EXPECT_EQ(reason_index, reasons.size());
   }
-  for (auto* entry :
+  for (const ukm::mojom::UkmEntry* entry :
        test_ukm_recorder_->GetEntriesByName(HistoryNavigation::kEntryName)) {
     auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
     if (source->url() != url)
@@ -4203,7 +4203,8 @@ int64_t PageLoadMetricsBackForwardCacheBrowserTest::CountForMetricForURL(
     base::StringPiece metric_name,
     const GURL& url) {
   int64_t count = 0;
-  for (auto* entry : test_ukm_recorder_->GetEntriesByName(entry_name)) {
+  for (const ukm::mojom::UkmEntry* entry :
+       test_ukm_recorder_->GetEntriesByName(entry_name)) {
     auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
     if (source->url() != url)
       continue;

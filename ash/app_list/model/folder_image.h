@@ -116,7 +116,7 @@ class APP_LIST_MODEL_EXPORT FolderImage : public AppListItemListObserver,
   raw_ptr<const AppListItem, ExperimentalAsh> dragged_item_ = nullptr;
 
   // Top items for generating folder icon.
-  std::vector<AppListItem*> top_items_;
+  std::vector<raw_ptr<AppListItem, VectorExperimental>> top_items_;
 
   base::ObserverList<FolderImageObserver> observers_;
 };

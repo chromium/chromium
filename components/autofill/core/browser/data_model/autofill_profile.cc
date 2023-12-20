@@ -17,6 +17,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -887,7 +888,8 @@ bool AutofillProfile::SaveAdditionalInfo(const AutofillProfile& profile,
 
 // static
 void AutofillProfile::CreateDifferentiatingLabels(
-    const std::vector<const AutofillProfile*>& profiles,
+    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+        profiles,
     const std::string& app_locale,
     std::vector<std::u16string>* labels) {
   const size_t kMinimalFieldsShown = 2;
@@ -898,7 +900,8 @@ void AutofillProfile::CreateDifferentiatingLabels(
 
 // static
 void AutofillProfile::CreateInferredLabels(
-    const std::vector<const AutofillProfile*>& profiles,
+    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+        profiles,
     const std::optional<FieldTypeSet>& suggested_fields,
     FieldTypeSet excluded_fields,
     size_t minimal_fields_shown,
@@ -1072,7 +1075,8 @@ bool AutofillProfile::SetInfoWithVerificationStatusImpl(
 
 // static
 void AutofillProfile::CreateInferredLabelsHelper(
-    const std::vector<const AutofillProfile*>& profiles,
+    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+        profiles,
     const std::list<size_t>& indices,
     const std::vector<FieldType>& fields,
     size_t num_fields_to_include,

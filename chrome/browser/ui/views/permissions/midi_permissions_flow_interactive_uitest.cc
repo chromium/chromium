@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
           base::BindLambdaForTesting([](ui::TrackedElement* element) {
             bool includes_midi = false;
             bool includes_midi_sysex = false;
-            for (auto* permission_toggle_row :
+            for (PermissionToggleRowView* permission_toggle_row :
                  AsView<PageInfoMainView>(element)->GetToggleRowsForTesting()) {
               if (permission_toggle_row->GetRowTitleForTesting() ==
                   l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_MIDI)) {
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
           base::BindLambdaForTesting([](ui::TrackedElement* element) {
             bool includes_midi = false;
             bool includes_midi_sysex = false;
-            for (auto* permission_toggle_row :
+            for (PermissionToggleRowView* permission_toggle_row :
                  AsView<PageInfoMainView>(element)->GetToggleRowsForTesting()) {
               if (permission_toggle_row->GetRowTitleForTesting() ==
                   l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_MIDI)) {

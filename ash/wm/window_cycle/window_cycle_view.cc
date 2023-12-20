@@ -26,6 +26,7 @@
 #include "ash/wm/window_mini_view.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
@@ -106,8 +107,8 @@ constexpr base::TimeDelta kToggleModeScaleDuration = base::Milliseconds(150);
 WindowMiniViewBase* BuildAndConfigureCycleView(
     aura::Window* window,
     views::View* mirror_container,
-    std::vector<WindowMiniViewBase*>& cycle_views,
-    const std::vector<aura::Window*>& windows,
+    std::vector<raw_ptr<WindowMiniViewBase, VectorExperimental>>& cycle_views,
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
     const bool same_app_only) {
   if (auto* snap_group_controller = SnapGroupController::Get()) {
     if (auto* snap_group =
@@ -248,7 +249,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
                       kInsideBorderVerticalPaddingDp + 8));
   }
 
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     if (auto* view = BuildAndConfigureCycleView(
             window, mirror_container_, cycle_views_, windows, same_app_only)) {
       cycle_views_.push_back(view);
@@ -347,7 +348,7 @@ void WindowCycleView::UpdateWindows(const WindowList& windows) {
   if (no_windows)
     return;
 
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     if (auto* view = BuildAndConfigureCycleView(
             window, mirror_container_, cycle_views_, windows, same_app_only_)) {
       cycle_views_.push_back(view);
@@ -520,7 +521,7 @@ bool WindowCycleView::IsTabSliderFocused() const {
 
 aura::Window* WindowCycleView::GetWindowAtPoint(
     const gfx::Point& screen_point) {
-  for (const auto* view : cycle_views_) {
+  for (const ash::WindowMiniViewBase* view : cycle_views_) {
     if (auto* window = view->GetWindowAtPoint(screen_point)) {
       return window;
     }
@@ -721,7 +722,7 @@ gfx::Rect WindowCycleView::GetContentContainerBounds() const {
 
 WindowMiniViewBase* WindowCycleView::GetCycleViewForWindow(
     aura::Window* window) const {
-  for (auto* view : cycle_views_) {
+  for (ash::WindowMiniViewBase* view : cycle_views_) {
     if (view->Contains(window)) {
       return view;
     }

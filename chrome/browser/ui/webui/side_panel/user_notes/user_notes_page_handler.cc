@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
@@ -49,7 +50,7 @@ side_panel::mojom::NoteOverviewPtr PowerOverviewToMojo(
 
   // Set title to the first bookmark with the same URL, otherwise fall back to
   // url.
-  std::vector<const bookmarks::BookmarkNode*> nodes;
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>> nodes;
   if (bookmark_model) {
     nodes = bookmark_model->GetNodesByURL(power->url());
   }

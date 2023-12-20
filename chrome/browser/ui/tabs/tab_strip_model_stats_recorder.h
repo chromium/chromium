@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
@@ -66,7 +67,8 @@ class TabStripModelStatsRecorder : public TabStripModelObserver {
 
   class TabInfo;
 
-  std::vector<content::WebContents*> active_tab_history_;
+  std::vector<raw_ptr<content::WebContents, VectorExperimental>>
+      active_tab_history_;
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 };

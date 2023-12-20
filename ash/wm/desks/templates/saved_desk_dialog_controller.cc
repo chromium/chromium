@@ -49,7 +49,8 @@ SavedDeskDialogController::~SavedDeskDialogController() {
 
 void SavedDeskDialogController::ShowUnsupportedAppsDialog(
     aura::Window* root_window,
-    const std::vector<aura::Window*>& unsupported_apps,
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+        unsupported_apps,
     size_t incognito_window_count,
     DesksController::GetDeskTemplateCallback callback,
     std::unique_ptr<DeskTemplate> desk_template) {
@@ -181,7 +182,8 @@ void SavedDeskDialogController::OnWidgetDestroying(views::Widget* widget) {
   for (auto& overview_grid :
        Shell::Get()->overview_controller()->overview_session()->grid_list()) {
     if (auto* library_view = overview_grid->GetSavedDeskLibraryView()) {
-      for (auto* templates_grid_view : library_view->grid_views()) {
+      for (ash::SavedDeskGridView* templates_grid_view :
+           library_view->grid_views()) {
         for (SavedDeskItemView* saved_desk_item :
              templates_grid_view->grid_items()) {
           // Update the button visibility when a dialog is closed.

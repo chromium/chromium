@@ -696,7 +696,7 @@ void SavedTabGroupBar::UpdateOverflowMenu() {
   overflow_menu_->RemoveAllChildViews();
 
   // Add all buttons that are not currently visible to the overflow menu.
-  for (const auto* const child : children()) {
+  for (const views::View* const child : children()) {
     if (child->GetVisible() ||
         !views::IsViewClass<SavedTabGroupButton>(child)) {
       continue;

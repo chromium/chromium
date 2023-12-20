@@ -256,8 +256,8 @@ class BookmarkModel final : public BookmarkUndoProvider,
   void SetDateAdded(const BookmarkNode* node, base::Time date_added);
 
   // Returns the set of nodes with the `url`.
-  [[nodiscard]] std::vector<const BookmarkNode*> GetNodesByURL(
-      const GURL& url) const;
+  [[nodiscard]] std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
+  GetNodesByURL(const GURL& url) const;
 
   // Returns the node with the given UUID or null if no node exists with this
   // UUID. Please note that this doesn't return account bookmarks.

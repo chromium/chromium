@@ -55,6 +55,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -143,7 +144,8 @@ constexpr int kDeskDefaultNameIds[] = {
 // Appends the given |windows| to the end of the currently active overview mode
 // session such that the most-recently used window is added first. If
 // The windows will animate to their positions in the overview grid.
-void AppendWindowsToOverview(const std::vector<aura::Window*>& windows) {
+void AppendWindowsToOverview(
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
   DCHECK(Shell::Get()->overview_controller()->InOverviewSession());
 
   // TODO(dandersson): See if we can remove this code and just let
@@ -151,7 +153,7 @@ void AppendWindowsToOverview(const std::vector<aura::Window*>& windows) {
   auto* overview_session =
       Shell::Get()->overview_controller()->overview_session();
   overview_session->set_auto_add_windows_enabled(false);
-  for (auto* window :
+  for (aura::Window* window :
        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
     if (!base::Contains(windows, window) ||
         window_util::ShouldExcludeForOverview(window)) {
@@ -200,8 +202,10 @@ void RemoveAllWindowsFromOverview() {
 // given windows will be updated, while the rest will remain unchanged. Either
 // or both window lists can be empty.
 void MaybeUpdateShelfItems(
-    const std::vector<aura::Window*>& windows_on_inactive_desk,
-    const std::vector<aura::Window*>& windows_on_active_desk) {
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+        windows_on_inactive_desk,
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+        windows_on_active_desk) {
   if (!features::IsPerDeskShelfEnabled())
     return;
 
@@ -221,10 +225,12 @@ void MaybeUpdateShelfItems(
     shelf_items_updates.push_back({index, is_on_active_desk});
   };
 
-  for (auto* window : windows_on_inactive_desk)
+  for (aura::Window* window : windows_on_inactive_desk) {
     add_shelf_item_update(window, /*is_on_active_desk=*/false);
-  for (auto* window : windows_on_active_desk)
+  }
+  for (aura::Window* window : windows_on_active_desk) {
     add_shelf_item_update(window, /*is_on_active_desk=*/true);
+  }
 
   shelf_model->UpdateItemsForDeskChange(shelf_items_updates);
 }
@@ -742,7 +748,7 @@ void DesksController::ReorderDesk(int old_index, int new_index) {
   // 4. For restoring windows to the right desks, update workspaces of all
   // windows in the affected desks for all simultaneously logged-in users.
   for (int i = starting_affected_index; i <= ending_affected_index; i++) {
-    for (auto* window : desks_[i]->windows()) {
+    for (aura::Window* window : desks_[i]->windows()) {
       if (desks_util::IsWindowVisibleOnAllWorkspaces(window))
         continue;
       window->SetProperty(aura::client::kWindowWorkspaceKey, i);
@@ -869,8 +875,9 @@ bool DesksController::ActivateAdjacentDesk(bool going_left,
           ui::HapticTouchpadEffect::kKnock,
           ui::HapticTouchpadEffectStrength::kMedium);
     }
-    for (auto* root : Shell::GetAllRootWindows())
+    for (aura::Window* root : Shell::GetAllRootWindows()) {
       desks_animations::PerformHitTheWallAnimation(root, going_left);
+    }
   }
 
   return true;
@@ -1786,7 +1793,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   // removed desk since indices of those desks shift by one.
   for (int i = removed_desk_index + 1; i < static_cast<int>(desks_.size());
        i++) {
-    for (auto* window : desks_[i]->windows()) {
+    for (aura::Window* window : desks_[i]->windows()) {
       if (desks_util::IsWindowVisibleOnAllWorkspaces(window))
         continue;
       window->SetProperty(aura::client::kWindowWorkspaceKey, i - 1);
@@ -2114,7 +2121,8 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
       Desk::ScopedContentUpdateNotificationDisabler(
           /*desks=*/{removed_desk}, /*notify_when_destroyed=*/false);
 
-  std::vector<aura::Window*> app_windows = removed_desk->GetAllAppWindows();
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> app_windows =
+      removed_desk->GetAllAppWindows();
 
   // We use `closing_window_tracker` to track all app windows that should be
   // closed from the removed desk, `WindowTracker` will handle windows that may

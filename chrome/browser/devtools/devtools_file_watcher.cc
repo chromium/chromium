@@ -14,6 +14,7 @@
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -56,7 +57,7 @@ class DevToolsFileWatcher::SharedFileWatcher
   void DirectoryChanged(const base::FilePath& path, bool error);
   void DispatchNotifications();
 
-  std::vector<DevToolsFileWatcher*> listeners_;
+  std::vector<raw_ptr<DevToolsFileWatcher, VectorExperimental>> listeners_;
   std::map<base::FilePath, std::unique_ptr<base::FilePathWatcher>> watchers_;
   std::map<base::FilePath, FilePathTimesMap> file_path_times_;
   std::set<base::FilePath> pending_paths_;
@@ -211,7 +212,7 @@ void DevToolsFileWatcher::SharedFileWatcher::DispatchNotifications() {
   }
   pending_paths_.clear();
 
-  for (auto* watcher : listeners_) {
+  for (DevToolsFileWatcher* watcher : listeners_) {
     watcher->client_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(watcher->callback_, changed_paths,
                                   added_paths, removed_paths));

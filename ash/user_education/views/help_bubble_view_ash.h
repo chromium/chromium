@@ -112,10 +112,11 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   const HelpBubbleStyle style_;
 
   raw_ptr<views::ImageView> icon_view_ = nullptr;
-  std::vector<views::Label*> labels_;
+  std::vector<raw_ptr<views::Label, VectorExperimental>> labels_;
 
   // If the bubble has buttons, it must be focusable.
-  std::vector<views::LabelButton*> non_default_buttons_;
+  std::vector<raw_ptr<views::LabelButton, VectorExperimental>>
+      non_default_buttons_;
   raw_ptr<views::LabelButton> default_button_ = nullptr;
   raw_ptr<views::Button> close_button_ = nullptr;
 

@@ -181,7 +181,8 @@ class TabStripTestBase : public ChromeViewsTestBase {
   int GetInactiveTabWidth() { return tab_strip_->GetInactiveTabWidth(); }
 
   // End any outstanding drag and animate tabs back to their ideal bounds.
-  void StopDragging(const std::vector<TabSlotView*> views) {
+  void StopDragging(
+      const std::vector<raw_ptr<TabSlotView, VectorExperimental>> views) {
     tab_strip_->GetDragContext()->StoppedDragging(views);
   }
 
@@ -693,7 +694,7 @@ TEST_P(TabStripTest, RelayoutAfterDraggedTabBoundsUpdate) {
   dragged_tab->set_dragging(true);
 
   constexpr int kXOffset = 20;
-  std::vector<TabSlotView*> tabs{dragged_tab};
+  std::vector<raw_ptr<TabSlotView, VectorExperimental>> tabs{dragged_tab};
   std::vector<gfx::Rect> bounds{gfx::Rect({kXOffset, 0}, dragged_tab->size())};
   SizeChangeObserver view_observer(tab_strip_);
   tab_strip_->GetDragContext()->SetBoundsForDrag(tabs, bounds);

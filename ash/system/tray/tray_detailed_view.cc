@@ -142,9 +142,10 @@ void TrayDetailedView::CreateTitleRow(int string_id) {
   // so the header text will be in the center of the `QuickSettingsView`
   // horizontally.
   auto* start_view =
-      tri_view_->children()[static_cast<size_t>(TriView::Container::START)];
+      tri_view_->children()[static_cast<size_t>(TriView::Container::START)]
+          .get();
   auto* end_view =
-      tri_view_->children()[static_cast<size_t>(TriView::Container::END)];
+      tri_view_->children()[static_cast<size_t>(TriView::Container::END)].get();
   int start_width = start_view->GetPreferredSize().width();
   int end_width = end_view->GetPreferredSize().width();
   if (start_width < end_width) {

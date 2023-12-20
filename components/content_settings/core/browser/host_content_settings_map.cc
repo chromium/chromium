@@ -668,8 +668,10 @@ base::WeakPtr<HostContentSettingsMap> HostContentSettingsMap::GetWeakPtr() {
 
 void HostContentSettingsMap::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
-  for (auto* provider : user_modifiable_providers_)
+  for (content_settings::UserModifiableProvider* provider :
+       user_modifiable_providers_) {
     provider->SetClockForTesting(clock);
+  }
 }
 
 void HostContentSettingsMap::RecordExceptionMetrics() {
@@ -801,7 +803,8 @@ void HostContentSettingsMap::UpdateLastUsedTime(const GURL& primary_url,
                                                 const GURL& secondary_url,
                                                 ContentSettingsType type,
                                                 const base::Time time) {
-  for (auto* provider : user_modifiable_providers_) {
+  for (content_settings::UserModifiableProvider* provider :
+       user_modifiable_providers_) {
     provider->UpdateLastUsedTime(primary_url, secondary_url, type, time);
   }
 }
@@ -810,7 +813,8 @@ void HostContentSettingsMap::ResetLastVisitedTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType type) {
-  for (auto* provider : user_modifiable_providers_) {
+  for (content_settings::UserModifiableProvider* provider :
+       user_modifiable_providers_) {
     provider->ResetLastVisitTime(primary_pattern, secondary_pattern, type);
   }
 }
@@ -819,7 +823,8 @@ void HostContentSettingsMap::UpdateLastVisitedTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType type) {
-  for (auto* provider : user_modifiable_providers_) {
+  for (content_settings::UserModifiableProvider* provider :
+       user_modifiable_providers_) {
     provider->UpdateLastVisitTime(primary_pattern, secondary_pattern, type);
   }
 }
@@ -830,7 +835,8 @@ absl::optional<base::TimeDelta> HostContentSettingsMap::RenewContentSetting(
     ContentSettingsType type,
     absl::optional<ContentSetting> setting_to_match) {
   absl::optional<base::TimeDelta> delta_to_nearest_expiration = absl::nullopt;
-  for (auto* provider : user_modifiable_providers_) {
+  for (content_settings::UserModifiableProvider* provider :
+       user_modifiable_providers_) {
     absl::optional<base::TimeDelta> delta_to_expiration =
         provider->RenewContentSetting(primary_url, secondary_url, type,
                                       setting_to_match);
@@ -884,7 +890,8 @@ void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
   for (const ContentSettingPatternSource& setting :
        GetSettingsForOneType(content_type)) {
     if (predicate(setting)) {
-      for (auto* provider : user_modifiable_providers_) {
+      for (content_settings::UserModifiableProvider* provider :
+           user_modifiable_providers_) {
         provider->SetWebsiteSetting(
             setting.primary_pattern, setting.secondary_pattern, content_type,
             base::Value(), {}, content_settings::PartitionKey::WipGetDefault());

@@ -70,7 +70,7 @@ void DialogTestBrowserWindow::RemoveObserver(
 }
 
 Browser* DialogTestBrowserWindow::FindBrowser() const {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->window() == this)
       return browser;
   }

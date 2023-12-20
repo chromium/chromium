@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/stack.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/events/events_export.h"
 
@@ -63,7 +64,7 @@ class EVENTS_EXPORT EventHandler {
   base::stack<EventDispatcher*> dispatchers_;
 };
 
-using EventHandlerList = std::vector<EventHandler*>;
+using EventHandlerList = std::vector<raw_ptr<EventHandler, VectorExperimental>>;
 
 }  // namespace ui
 

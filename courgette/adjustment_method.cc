@@ -182,7 +182,7 @@ static std::string ToString(Node* node) {
   return s;
 }
 
-typedef std::vector<LabelInfo*> Trace;
+typedef std::vector<raw_ptr<LabelInfo, VectorExperimental>> Trace;
 
 struct OrderNodeByCountDecreasing {
   bool operator()(Node* a, Node* b) const {
@@ -566,7 +566,7 @@ class AssignmentProblem {
   NodeQueue worklist_;
   NodeQueue unsolved_;
 
-  std::vector<Node*> all_nodes_;
+  std::vector<raw_ptr<Node, VectorExperimental>> all_nodes_;
 };
 
 class GraphAdjuster : public AdjustmentMethod {

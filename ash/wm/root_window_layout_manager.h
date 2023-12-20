@@ -38,7 +38,7 @@ class RootWindowLayoutManager : public aura::LayoutManager {
 
  private:
   raw_ptr<aura::Window, ExperimentalAsh> owner_;
-  std::vector<aura::Window*> containers_;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> containers_;
 };
 
 }  // namespace ash

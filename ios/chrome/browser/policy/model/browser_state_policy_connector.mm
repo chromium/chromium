@@ -50,7 +50,7 @@ void BrowserStatePolicyConnector::Init(
 }
 
 void BrowserStatePolicyConnector::UseLocalTestPolicyProvider() {
-  for (auto* provider : policy_providers_) {
+  for (policy::ConfigurationPolicyProvider* provider : policy_providers_) {
     provider->set_active(false);
   }
 
@@ -62,7 +62,7 @@ void BrowserStatePolicyConnector::UseLocalTestPolicyProvider() {
 }
 
 void BrowserStatePolicyConnector::RevertUseLocalTestPolicyProvider() {
-  for (auto* provider : policy_providers_) {
+  for (policy::ConfigurationPolicyProvider* provider : policy_providers_) {
     provider->set_active(true);
   }
 

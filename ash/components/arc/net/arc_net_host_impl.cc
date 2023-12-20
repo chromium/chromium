@@ -1105,7 +1105,7 @@ void ArcNetHostImpl::AddPasspointCredentials(
 
 aura::Window* ArcNetHostImpl::GetAppWindow(const std::string& package_name) {
   std::queue<aura::Window*> windows = {};
-  for (auto* window : ash::Shell::GetAllRootWindows()) {
+  for (aura::Window* window : ash::Shell::GetAllRootWindows()) {
     windows.push(window);
   }
   while (!windows.empty()) {
@@ -1114,7 +1114,7 @@ aura::Window* ArcNetHostImpl::GetAppWindow(const std::string& package_name) {
     if (!window) {
       continue;
     }
-    for (auto* child_window : window->children()) {
+    for (aura::Window* child_window : window->children()) {
       windows.push(child_window);
     }
     const std::string* app_id = window->GetProperty(ash::kAppIDKey);

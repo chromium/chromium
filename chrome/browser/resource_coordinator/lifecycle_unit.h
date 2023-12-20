@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/decision_details.h"
@@ -160,7 +161,8 @@ class LifecycleUnit {
 };
 
 using LifecycleUnitSet = base::flat_set<LifecycleUnit*>;
-using LifecycleUnitVector = std::vector<LifecycleUnit*>;
+using LifecycleUnitVector =
+    std::vector<raw_ptr<LifecycleUnit, VectorExperimental>>;
 
 }  // namespace resource_coordinator
 

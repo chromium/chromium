@@ -182,7 +182,8 @@ std::unique_ptr<ShortcutsListScrollView> CreateScrollView(
 }
 
 void UpdateAXNodeDataPosition(
-    std::vector<KeyboardShortcutItemView*>& shortcut_items) {
+    std::vector<raw_ptr<KeyboardShortcutItemView, VectorExperimental>>&
+        shortcut_items) {
   // Update list item AXNodeData position for assistive tool.
   const int number_shortcut_items = shortcut_items.size();
   for (int i = 0; i < number_shortcut_items; ++i) {
@@ -456,7 +457,8 @@ void KeyboardShortcutView::InitCategoriesTabbedPane(
 
   ash::ShortcutCategory current_category = ash::ShortcutCategory::kUnknown;
   KeyboardShortcutItemListView* item_list_view = nullptr;
-  std::vector<KeyboardShortcutItemView*> shortcut_items;
+  std::vector<raw_ptr<KeyboardShortcutItemView, VectorExperimental>>
+      shortcut_items;
   const bool already_has_tabs = categories_tabbed_pane_->GetTabCount() > 0;
   size_t tab_index = 0;
   views::View* const tab_contents = categories_tabbed_pane_->children()[1];
@@ -644,7 +646,7 @@ KSVSearchBoxView* KeyboardShortcutView::GetSearchBoxViewForTesting() {
   return search_box_view_;
 }
 
-const std::vector<KeyboardShortcutItemView*>&
+const std::vector<raw_ptr<KeyboardShortcutItemView, VectorExperimental>>&
 KeyboardShortcutView::GetFoundShortcutItemsForTesting() const {
   return found_shortcut_items_;
 }

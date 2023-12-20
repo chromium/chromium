@@ -690,7 +690,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
     EXPECT_LE(index, static_cast<int>(
                          ukm_recorder->GetEntriesByName(entry_name).size()));
-    auto* entry = ukm_recorder->GetEntriesByName(entry_name)[index];
+    auto* entry = ukm_recorder->GetEntriesByName(entry_name)[index].get();
 
     // Verify the metric.
     ukm_recorder->EntryHasMetric(entry, metric_name);
@@ -703,7 +703,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
     EXPECT_LE(index, static_cast<int>(
                          ukm_recorder->GetEntriesByName(entry_name).size()));
-    auto* entry = ukm_recorder->GetEntriesByName(entry_name)[index];
+    auto* entry = ukm_recorder->GetEntriesByName(entry_name)[index].get();
 
     EXPECT_FALSE(ukm_recorder->EntryHasMetric(entry, metric_name));
   }

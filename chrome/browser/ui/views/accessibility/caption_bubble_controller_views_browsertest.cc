@@ -1340,8 +1340,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HeaderView) {
   // caption settings icon.
   EXPECT_EQ(2u, left_header_container->children().size());
 
-  auto* language_label = left_header_container->children()[0];
-  auto* caption_settings_icon = left_header_container->children()[1];
+  auto* language_label = left_header_container->children()[0].get();
+  auto* caption_settings_icon = left_header_container->children()[1].get();
   ASSERT_TRUE(language_label->GetVisible());
   ASSERT_TRUE(caption_settings_icon->GetVisible());
   ASSERT_EQ(4, static_cast<views::BoxLayout*>(

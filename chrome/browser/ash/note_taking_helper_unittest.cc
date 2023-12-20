@@ -154,7 +154,8 @@ class TestObserver : public NoteTakingHelper::Observer {
   int num_updates() const { return num_updates_; }
   void reset_num_updates() { num_updates_ = 0; }
 
-  const std::vector<Profile*> preferred_app_updates() const {
+  const std::vector<raw_ptr<Profile, VectorExperimental>>
+  preferred_app_updates() const {
     return preferred_app_updates_;
   }
   void clear_preferred_app_updates() { preferred_app_updates_.clear(); }
@@ -171,7 +172,7 @@ class TestObserver : public NoteTakingHelper::Observer {
   int num_updates_ = 0;
 
   // Profiles for which OnPreferredNoteTakingAppUpdated was called.
-  std::vector<Profile*> preferred_app_updates_;
+  std::vector<raw_ptr<Profile, VectorExperimental>> preferred_app_updates_;
 };
 
 }  // namespace
@@ -1321,7 +1322,8 @@ TEST_F(NoteTakingHelperTest, NotifyObserverAboutPreferredAppChanges) {
 
   // Observers should be notified when preferred app is set.
   helper()->SetPreferredApp(profile(), prod_keep_extension->id());
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // If the preferred app is not changed, observers should not be notified.
@@ -1330,12 +1332,14 @@ TEST_F(NoteTakingHelperTest, NotifyObserverAboutPreferredAppChanges) {
 
   // Observers should be notified when preferred app is changed.
   helper()->SetPreferredApp(profile(), dev_keep_extension->id());
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Observers should be notified when preferred app is cleared.
   helper()->SetPreferredApp(profile(), "");
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // No change to preferred app.
@@ -1353,14 +1357,14 @@ TEST_F(NoteTakingHelperTest, NotifyObserverAboutPreferredAppChanges) {
   // profile preferred app changes.
   helper()->SetPreferredApp(second_profile,
                             second_profile_prod_keep_extension->id());
-  EXPECT_EQ(std::vector<Profile*>{second_profile},
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{second_profile},
             observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Clearing preferred app in secondary ptofile should fire observers with the
   // secondary profile.
   helper()->SetPreferredApp(second_profile, "");
-  EXPECT_EQ(std::vector<Profile*>{second_profile},
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{second_profile},
             observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
@@ -1384,12 +1388,14 @@ TEST_F(NoteTakingHelperTest,
 
   // Set the app that supports lock screen note taking as preferred.
   helper()->SetPreferredApp(profile(), dev_extension->id());
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Disable the preferred app on the lock screen.
   EXPECT_TRUE(helper()->SetPreferredAppEnabledOnLockScreen(profile(), false));
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Disabling lock screen support for already enabled app should be no-op.
@@ -1399,7 +1405,8 @@ TEST_F(NoteTakingHelperTest,
   // Change the state of the preferred app - it should succeed, and a
   // notification should be fired.
   EXPECT_TRUE(helper()->SetPreferredAppEnabledOnLockScreen(profile(), true));
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // No-op, because the preferred app state is not changing.
@@ -1408,7 +1415,8 @@ TEST_F(NoteTakingHelperTest,
 
   // Set an app that does not support lock screen as primary.
   helper()->SetPreferredApp(profile(), prod_extension->id());
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Chaning state for an app that does not support lock screen note taking
@@ -1443,7 +1451,8 @@ TEST_F(NoteTakingHelperTest, SetAppEnabledOnLockScreen) {
   helper()->SetPreferredApp(profile(), prod_app->id());
 
   // Setting preferred app should fire observers.
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Verify dev and prod apps are enabled for lock screen, with prod preferred.
@@ -1475,7 +1484,8 @@ TEST_F(NoteTakingHelperTest, SetAppEnabledOnLockScreen) {
                                  base::Value::List().Append(dev_app->id()));
 
   // The preferred app status changed, so observers are expected to be notified.
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Preferred app is not enabled on lock screen - chaning the lock screen
@@ -1494,7 +1504,8 @@ TEST_F(NoteTakingHelperTest, SetAppEnabledOnLockScreen) {
   // Switch preferred note taking app to one that does not support lock screen.
   helper()->SetPreferredApp(profile(), unsupported_app->id());
 
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Policy with an empty allowlist - this should disallow all apps from the
@@ -1544,7 +1555,8 @@ TEST_F(NoteTakingHelperTest,
                                  base::Value::List());
 
   // Preferred app settings changed - observers should be notified.
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Verify the app is reported as not allowed by policy.
@@ -1556,7 +1568,8 @@ TEST_F(NoteTakingHelperTest,
   // lock screen again.
   profile_prefs_->RemoveManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist);
 
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   EXPECT_TRUE(AvailableAppsMatch(
@@ -1581,7 +1594,8 @@ TEST_F(NoteTakingHelperTest,
 
   // Set test app as preferred note taking app.
   helper()->SetPreferredApp(profile(), app->id());
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Changing policy before the app's lock screen availability has been reported
@@ -1615,7 +1629,7 @@ TEST_F(NoteTakingHelperTest, LockScreenSupportInSecondaryProfile) {
 
   // Setting preferred app should fire observers for secondary profile.
   helper()->SetPreferredApp(second_profile, prod_app->id());
-  EXPECT_EQ(std::vector<Profile*>{second_profile},
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{second_profile},
             observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 

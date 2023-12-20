@@ -98,7 +98,8 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
       permissions::PermissionPrompt::Delegate& delegate);
 
   static std::u16string GetAllowAlwaysText(
-      const std::vector<permissions::PermissionRequest*>& visible_requests);
+      const std::vector<raw_ptr<permissions::PermissionRequest,
+                                VectorExperimental>>& visible_requests);
 
  private:
   void SetPromptStyle(PermissionPromptStyle prompt_style);

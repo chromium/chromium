@@ -312,7 +312,7 @@ ProposedLayout FlowLayout::CalculateProposedLayout(
   int x = 0;
   int y = 0;
   int max_height = 0;
-  for (auto* view : host_view()->children()) {
+  for (views::View* view : host_view()->children()) {
     bool view_visible = view->GetVisible();
     gfx::Size preferred_size = view->GetPreferredSize();
     if (view_visible) {

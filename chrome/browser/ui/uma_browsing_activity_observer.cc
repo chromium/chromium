@@ -112,7 +112,7 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
   int customized_tab_group_count = 0;
   int pinned_tab_count = 0;
 
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     // Record how many tabs each window has open.
     UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.TabCountPerWindow",
                                 browser->tab_strip_model()->count(), 1, 200,

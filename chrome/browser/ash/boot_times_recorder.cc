@@ -43,7 +43,7 @@ using ::content::RenderWidgetHostView;
 using ::content::WebContents;
 
 const std::string GetTabUrl(RenderWidgetHost* rwh) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     for (int i = 0, tab_count = browser->tab_strip_model()->count();
          i < tab_count;
          ++i) {

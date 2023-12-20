@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
 #include "services/accessibility/android/accessibility_window_info_data_wrapper.h"
 #include "services/accessibility/android/android_accessibility_util.h"
@@ -356,7 +357,8 @@ void AXTreeSourceAndroid::ComputeEnclosingBoundsInternal(
 
   // NOTE: |AXTreeSourceAndroid::GetChildren| depends on ComputeEnclosingBounds.
   // To get children, directly call wrapper's GetChildren here.
-  std::vector<AccessibilityInfoDataWrapper*> children;
+  std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>
+      children;
   info_data->GetChildren(&children);
   for (AccessibilityInfoDataWrapper* child : children) {
     ComputeEnclosingBoundsInternal(child, computed_bounds);
@@ -672,7 +674,8 @@ void AXTreeSourceAndroid::PerformAction(const ui::AXActionData& data) {
   delegate_->OnAction(data);
 }
 
-std::vector<AccessibilityInfoDataWrapper*>& AXTreeSourceAndroid::GetChildren(
+std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>&
+AXTreeSourceAndroid::GetChildren(
     AccessibilityInfoDataWrapper* info_data) const {
   DCHECK(info_data);
   ComputeAndCacheChildren(info_data);
@@ -685,8 +688,8 @@ void AXTreeSourceAndroid::ComputeAndCacheChildren(
     return;
   }
 
-  std::vector<AccessibilityInfoDataWrapper*>& children =
-      info_data->cached_children_.emplace();
+  std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>&
+      children = info_data->cached_children_.emplace();
 
   info_data->GetChildren(&children);
   if (children.size() < 2) {

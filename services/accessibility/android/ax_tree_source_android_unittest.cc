@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
 #include "services/accessibility/android/accessibility_window_info_data_wrapper.h"
@@ -138,7 +139,8 @@ class AXTreeSourceAndroidTest : public testing::Test,
     tree_source_->NotifyAccessibilityEvent(event_data);
   }
 
-  const std::vector<ui::AXNode*>& GetChildren(int32_t node_id) {
+  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>& GetChildren(
+      int32_t node_id) {
     ui::AXNode* ax_node = tree()->GetFromId(node_id);
     return ax_node->children();
   }
@@ -249,7 +251,7 @@ TEST_F(AXTreeSourceAndroidTest, ReorderChildrenByLayout) {
 
   // Trigger an update which refreshes the computed bounds used for reordering.
   CallNotifyAccessibilityEvent(event.get());
-  std::vector<ui::AXNode*> top_to_bottom;
+  std::vector<raw_ptr<ui::AXNode, VectorExperimental>> top_to_bottom;
   top_to_bottom = GetChildren(root->id);
   ASSERT_EQ(2U, top_to_bottom.size());
   EXPECT_EQ(12, top_to_bottom[0]->id());
@@ -268,7 +270,7 @@ TEST_F(AXTreeSourceAndroidTest, ReorderChildrenByLayout) {
   button1->bounds_in_screen = gfx::Rect(101, 100, 99, 100);
   button2->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
   CallNotifyAccessibilityEvent(event.get());
-  std::vector<ui::AXNode*> left_to_right;
+  std::vector<raw_ptr<ui::AXNode, VectorExperimental>> left_to_right;
   left_to_right = GetChildren(root->id);
   ASSERT_EQ(2U, left_to_right.size());
   EXPECT_EQ(12, left_to_right[0]->id());
@@ -305,7 +307,7 @@ TEST_F(AXTreeSourceAndroidTest, ReorderChildrenByLayout) {
   button1->bounds_in_screen = gfx::Rect(100, 100, 100, 10);
   button2->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
   CallNotifyAccessibilityEvent(event.get());
-  std::vector<ui::AXNode*> dimension;
+  std::vector<raw_ptr<ui::AXNode, VectorExperimental>> dimension;
   dimension = GetChildren(event->node_data[0].get()->id);
   ASSERT_EQ(2U, dimension.size());
   EXPECT_EQ(12, dimension[0]->id());
@@ -579,7 +581,7 @@ TEST_F(AXTreeSourceAndroidTest, ComplexTreeStructure) {
   CallNotifyAccessibilityEvent(event.get());
 
   // Check that each node subtree tree was added, and that it is correct.
-  std::vector<ui::AXNode*> children;
+  std::vector<raw_ptr<ui::AXNode, VectorExperimental>> children;
   for (int i = 0; i < num_trees; i++) {
     children = GetChildren(event->node_data.at(i * tree_size).get()->id);
     ASSERT_EQ(1U, children.size());
@@ -1191,7 +1193,7 @@ TEST_F(AXTreeSourceAndroidTest, SerializeVirtualNode) {
   ASSERT_FALSE(data.IsIgnored());
 
   // Children are not reordered under WebView.
-  std::vector<ui::AXNode*> children;
+  std::vector<raw_ptr<ui::AXNode, VectorExperimental>> children;
   children = GetChildren(webview->id);
   ASSERT_EQ(2U, children.size());
   EXPECT_EQ(button1->id, children[0]->id());

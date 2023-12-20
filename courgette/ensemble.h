@@ -80,16 +80,19 @@ class Ensemble {
   Status FindEmbeddedElements();
 
   // Returns the elements found by 'FindEmbeddedElements'.
-  const std::vector<Element*>& elements() const { return elements_; }
-
+  const std::vector<raw_ptr<Element, VectorExperimental>>& elements() const {
+    return elements_;
+  }
 
  private:
   Region region_;       // The memory, owned by caller, containing the
                         // Ensemble's data.
   std::string name_;    // A debugging/logging name for the Ensemble.
 
-  std::vector<Element*> elements_;        // Embedded elements discovered.
-  std::vector<Element*> owned_elements_;  // For deallocation.
+  std::vector<raw_ptr<Element, VectorExperimental>>
+      elements_;  // Embedded elements discovered.
+  std::vector<raw_ptr<Element, VectorExperimental>>
+      owned_elements_;  // For deallocation.
 };
 
 inline size_t Element::offset_in_ensemble() const {

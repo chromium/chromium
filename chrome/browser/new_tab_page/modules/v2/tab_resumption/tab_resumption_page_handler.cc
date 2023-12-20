@@ -156,7 +156,8 @@ TabResumptionPageHandler::GetOpenTabsUIDelegate() {
 
 std::vector<history::mojom::TabPtr> TabResumptionPageHandler::GetForeignTabs() {
   sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate();
-  std::vector<const sync_sessions::SyncedSession*> sessions;
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      sessions;
 
   std::vector<history::mojom::TabPtr> tabs_mojom;
   if (open_tabs && open_tabs->GetAllForeignSessions(&sessions)) {

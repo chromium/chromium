@@ -137,9 +137,9 @@ class DragWindowFromShelfController::WindowsHider
  public:
   WindowsHider(aura::Window* dragged_window, aura::Window* other_window)
       : dragged_window_(dragged_window) {
-    std::vector<aura::Window*> windows =
+    std::vector<raw_ptr<aura::Window, VectorExperimental>> windows =
         Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-    for (auto* window : windows) {
+    for (aura::Window* window : windows) {
       if (window == dragged_window_ || window == other_window) {
         continue;
       }
@@ -166,7 +166,7 @@ class DragWindowFromShelfController::WindowsHider
   WindowsHider& operator=(const WindowsHider&) = delete;
 
   ~WindowsHider() override {
-    for (auto* window : hidden_windows_) {
+    for (aura::Window* window : hidden_windows_) {
       window->RemoveObserver(this);
       window->ClearProperty(kHideDuringWindowDragging);
     }
@@ -174,7 +174,7 @@ class DragWindowFromShelfController::WindowsHider
   }
 
   void RestoreWindowsVisibility() {
-    for (auto* window : hidden_windows_) {
+    for (aura::Window* window : hidden_windows_) {
       window->RemoveObserver(this);
       ScopedAnimationDisabler disabler(window);
       window->Show();
@@ -200,7 +200,7 @@ class DragWindowFromShelfController::WindowsHider
 
  private:
   raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> dragged_window_;
-  std::vector<aura::Window*> hidden_windows_;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> hidden_windows_;
 };
 
 // static

@@ -90,7 +90,7 @@ void CheckUkmMetricsExpectations(
     LeakDialogDismissalReason expected_dismissal_reason) {
   const auto& entries = recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     EXPECT_EQ(kTestSourceId, entry->source_id);
     recorder.ExpectEntryMetric(entry,
                                UkmEntry::kPasswordLeakDetectionDialogTypeName,

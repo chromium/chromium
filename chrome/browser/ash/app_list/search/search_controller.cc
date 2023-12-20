@@ -13,6 +13,7 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/system/federated/federated_service_controller_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -357,7 +358,7 @@ void SearchController::Publish() {
 
   // Compile a single list of results and sort first by their category with best
   // match first, then by burn-in iteration number, and finally by relevance.
-  std::vector<ChromeSearchResult*> all_results;
+  std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>> all_results;
   for (const auto& type_results : results_) {
     for (const auto& result : type_results.second) {
       double score = result->scoring().FinalScore();
@@ -379,7 +380,7 @@ void SearchController::Publish() {
 
   if (!observer_list_.empty()) {
     std::vector<const ChromeSearchResult*> observer_results;
-    for (auto* result : all_results) {
+    for (ChromeSearchResult* result : all_results) {
       observer_results.push_back(const_cast<const ChromeSearchResult*>(result));
     }
 

@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -295,10 +296,12 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
   NOTREACHED_NORETURN();
 }
 
-size_t CountActiveFieldsInForms(const std::vector<FormStructure*>& forms) {
+size_t CountActiveFieldsInForms(
+    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
   size_t active_field_count = 0;
-  for (const auto* form : forms)
+  for (const autofill::FormStructure* form : forms) {
     active_field_count += form->active_field_count();
+  }
   return active_field_count;
 }
 
@@ -621,7 +624,7 @@ bool AutofillCrowdsourcingManager::IsEnabled() const {
 }
 
 bool AutofillCrowdsourcingManager::StartQueryRequest(
-    const std::vector<FormStructure*>& forms,
+    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
     net::IsolationInfo isolation_info,
     base::WeakPtr<Observer> observer) {
   if (!IsEnabled())

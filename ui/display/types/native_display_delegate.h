@@ -25,8 +25,8 @@ struct ColorTemperatureAdjustment;
 struct DisplayConfigurationParams;
 struct GammaAdjustment;
 
-using GetDisplaysCallback =
-    base::OnceCallback<void(const std::vector<DisplaySnapshot*>&)>;
+using GetDisplaysCallback = base::OnceCallback<void(
+    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&)>;
 using ConfigureCallback = base::OnceCallback<void(bool)>;
 using SetHdcpKeyPropCallback = base::OnceCallback<void(bool)>;
 using GetHDCPStateCallback =

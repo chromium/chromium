@@ -316,7 +316,7 @@ views::View* PieSubMenuContainerView::AddMenuButton(
 }
 
 void PieSubMenuContainerView::RemoveAllButtons() {
-  for (auto* button : buttons_) {
+  for (ash::PieMenuButton* button : buttons_) {
     owner_menu_view_->OnPieMenuButtonRemoved(button);
     RemoveChildViewT(button);
   }
@@ -402,7 +402,7 @@ void PieMenuView::Layout() {
   // `PieSubMenuContainerView`s) should fill the entire bounds of this view. The
   // back button however should be centered.
   auto local_bounds = GetLocalBounds();
-  for (auto* child : children()) {
+  for (views::View* child : children()) {
     if (child != back_button_)
       child->SetBoundsRect(local_bounds);
   }

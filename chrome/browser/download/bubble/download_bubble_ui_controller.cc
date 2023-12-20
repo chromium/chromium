@@ -83,7 +83,7 @@ bool IsForDownload(Browser* browser, download::DownloadItem* item) {
 // static
 DownloadBubbleUIController* DownloadBubbleUIController::GetForDownload(
     download::DownloadItem* item) {
-  for (auto* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     if (IsForDownload(browser, item) && browser->window() &&
         browser->window()->GetDownloadBubbleUIController()) {
       return browser->window()->GetDownloadBubbleUIController();

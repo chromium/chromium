@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
 #include "content/browser/devtools/devtools_io_context.h"
@@ -137,7 +138,10 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   DevToolsIOContext* GetIOContext() { return &io_context_; }
   DevToolsRendererChannel* GetRendererChannel() { return &renderer_channel_; }
 
-  const std::vector<DevToolsSession*>& sessions() const { return sessions_; }
+  const std::vector<raw_ptr<DevToolsSession, VectorExperimental>>& sessions()
+      const {
+    return sessions_;
+  }
   // Returns refptr retaining `this`. All other references may be removed
   // at this point, so `this` will become invalid as soon as returned refptr
   // gets destroyed.
@@ -171,7 +175,7 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   DevToolsSession* SessionByClient(DevToolsAgentHostClient* client);
 
   const std::string id_;
-  std::vector<DevToolsSession*> sessions_;
+  std::vector<raw_ptr<DevToolsSession, VectorExperimental>> sessions_;
   base::flat_map<DevToolsAgentHostClient*, std::unique_ptr<DevToolsSession>>
       session_by_client_;
   DevToolsIOContext io_context_;

@@ -41,7 +41,7 @@ using AuraAXTreeSerializer =
 size_t GetSize(AXAuraObjWrapper* tree) {
   size_t count = 1;
 
-  std::vector<AXAuraObjWrapper*> out_children;
+  std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>> out_children;
   tree->GetChildren(&out_children);
 
   for (size_t i = 0; i < out_children.size(); ++i)

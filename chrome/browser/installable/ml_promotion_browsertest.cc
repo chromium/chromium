@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, CompletelyFilledManifestUKM) {
       test_ukm_recorder().GetEntriesByName(ManifestUkmEntry::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
 
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   test_ukm_recorder().ExpectEntrySourceHasUrl(
       entry, GetUrlWithManifestAllFieldsLoadedForML());
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, PartiallyFilledManifestUKM) {
       test_ukm_recorder().GetEntriesByName(ManifestUkmEntry::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
 
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   test_ukm_recorder().ExpectEntrySourceHasUrl(entry, GetInstallableAppURL());
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, ManifestUkmEntry::kDisplayModeName, /*standalone=*/3);
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, NoManifestUKM) {
       test_ukm_recorder().GetEntriesByName(ManifestUkmEntry::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
 
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   test_ukm_recorder().ExpectEntrySourceHasUrl(entry, GetUrlWithNoManifest());
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, ManifestUkmEntry::kDisplayModeName, -1);
@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, ManifestUpdateChangesUKM) {
       test_ukm_recorder().GetEntriesByName(ManifestUkmEntry::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
 
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
 
   // Verify UKM records empty manifest data.
   test_ukm_recorder().ExpectEntrySourceHasUrl(entry, GetUrlWithNoManifest());
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, ManifestUpdateChangesUKM) {
   auto updated_entries =
       test_ukm_recorder().GetEntriesByName(ManifestUkmEntry::kEntryName);
   ASSERT_EQ(updated_entries.size(), 2u);
-  auto* updated_entry = updated_entries[1];
+  auto* updated_entry = updated_entries[1].get();
   test_ukm_recorder().ExpectEntrySourceHasUrl(updated_entry,
                                               GetUrlWithNoManifest());
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
@@ -462,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, FullyInstalledAppMeasurement) {
       test_ukm_recorder().GetEntriesByName(InstallUkmEntry::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
 
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   test_ukm_recorder().ExpectEntrySourceHasUrl(entry, GetInstallableAppURL());
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, InstallUkmEntry::kIsFullyInstalledName, true);
@@ -484,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
       test_ukm_recorder().GetEntriesByName(InstallUkmEntry::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
 
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   test_ukm_recorder().ExpectEntrySourceHasUrl(entry, GetInstallableAppURL());
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, InstallUkmEntry::kIsFullyInstalledName, false);

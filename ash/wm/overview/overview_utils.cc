@@ -348,7 +348,7 @@ void SetWindowsVisibleDuringItemDragging(const aura::Window::Windows& windows,
                                          bool visible,
                                          bool animate) {
   float new_opacity = visible ? 1.f : 0.f;
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     ui::Layer* layer = window->layer();
     if (layer->GetTargetOpacity() == new_opacity) {
       continue;

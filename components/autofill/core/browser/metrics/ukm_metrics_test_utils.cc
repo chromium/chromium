@@ -84,7 +84,7 @@ void VerifyDeveloperEngagementUkm(
   auto entries =
       ukm_recorder->GetEntriesByName(UkmDeveloperEngagementType::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     ukm_recorder->ExpectEntrySourceHasUrl(
         entry, GURL(form.main_frame_origin.GetURL()));
     EXPECT_EQ(4u, entry->metrics.size());

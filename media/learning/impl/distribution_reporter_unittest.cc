@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "media/learning/common/learning_task.h"
@@ -88,7 +89,7 @@ TEST_F(DistributionReporterTest, CallbackRecordsRegressionPredictions) {
   std::move(cb).Run(predicted);
 
   // The record should show the correct averages, scaled by |fixed_point_scale|.
-  std::vector<const ukm::mojom::UkmEntry*> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
       ukm_recorder_->GetEntriesByName("Media.Learning.PredictionRecord");
   EXPECT_EQ(entries.size(), 1u);
   ukm::TestUkmRecorder::ExpectEntryMetric(entries[0], "LearningTask",
@@ -169,7 +170,7 @@ TEST_F(DistributionReporterTest, UkmBucketizesProperly) {
   info.observed = TargetValue(2100);
   reporter_->GetPredictionCallback(info).Run(HistogramFor(1000));
 
-  std::vector<const ukm::mojom::UkmEntry*> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
       ukm_recorder_->GetEntriesByName("Media.Learning.PredictionRecord");
   EXPECT_EQ(entries.size(), 5u);
 

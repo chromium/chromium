@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_status_updater.h"
 
 #include <memory>
@@ -363,7 +364,7 @@ class DownloadStatusUpdaterBrowserTest : public DownloadTestBase {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
     waiter->WaitForFinished();
 
-    std::vector<download::DownloadItem*> items;
+    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
     DownloadManagerForBrowser(browser)->GetAllDownloads(&items);
     EXPECT_FALSE(items.empty());
 

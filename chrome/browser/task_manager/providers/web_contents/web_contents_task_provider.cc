@@ -576,8 +576,9 @@ void WebContentsTaskProvider::StartUpdating() {
 
   // 1- Collect all pre-existing WebContents from the WebContentsTagsManager.
   WebContentsTagsManager* tags_manager = WebContentsTagsManager::GetInstance();
-  for (const auto* tag : tags_manager->tracked_tags())
+  for (const task_manager::WebContentsTag* tag : tags_manager->tracked_tags()) {
     OnWebContentsTagCreated(tag);
+  }
 
   // 2- Start observing newly connected ones.
   tags_manager->SetProvider(this);

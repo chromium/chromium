@@ -28,9 +28,9 @@ class Window;
 namespace ax::android {
 class AXTreeSourceAndroidTest;
 
-using AXTreeAndroidSerializer =
-    ui::AXTreeSerializer<AccessibilityInfoDataWrapper*,
-                         std::vector<AccessibilityInfoDataWrapper*>>;
+using AXTreeAndroidSerializer = ui::AXTreeSerializer<
+    AccessibilityInfoDataWrapper*,
+    std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>>;
 
 // This class represents the accessibility tree from the focused ARC window.
 class AXTreeSourceAndroid
@@ -227,8 +227,8 @@ class AXTreeSourceAndroid
   // AXActionHandlerBase:
   void PerformAction(const ui::AXActionData& data) override;
 
-  std::vector<AccessibilityInfoDataWrapper*>& GetChildren(
-      AccessibilityInfoDataWrapper* info_data) const;
+  std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>&
+  GetChildren(AccessibilityInfoDataWrapper* info_data) const;
 
   void ComputeAndCacheChildren(AccessibilityInfoDataWrapper* info_data) const;
 

@@ -298,7 +298,8 @@ std::u16string GetExpectedPrefix() {
                                     std::u16string());
 }
 
-const std::vector<task_manager::WebContentsTag*>& GetTrackedTags() {
+const std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>>&
+GetTrackedTags() {
   return task_manager::WebContentsTagsManager::GetInstance()->tracked_tags();
 }
 

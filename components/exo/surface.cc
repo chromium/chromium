@@ -365,8 +365,9 @@ Surface* Surface::AsSurface(const aura::Window* window) {
   return window->GetProperty(kSurfaceKey);
 }
 
-std::vector<aura::Window*> Surface::GetChildWindows() const {
-  std::vector<aura::Window*> children;
+std::vector<raw_ptr<aura::Window, VectorExperimental>>
+Surface::GetChildWindows() const {
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> children;
   for (const auto& [sub_surface, _] : sub_surfaces_) {
     children.push_back(sub_surface->window());
   }

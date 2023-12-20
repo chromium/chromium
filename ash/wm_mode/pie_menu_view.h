@@ -65,7 +65,7 @@ class ASH_EXPORT PieSubMenuContainerView : public views::View {
 
   // The buttons on this container, which will be painted as slices of a circle
   // in their same order in this vector.
-  std::vector<PieMenuButton*> buttons_;
+  std::vector<raw_ptr<PieMenuButton, VectorExperimental>> buttons_;
 };
 
 // -----------------------------------------------------------------------------

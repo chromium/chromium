@@ -1033,7 +1033,7 @@ void UserManagerBase::EnsureUsersLoaded() {
     users_.push_back(user);
   }
 
-  for (auto* user : users_) {
+  for (user_manager::User* user : users_) {
     auto& account_id = user->GetAccountId();
     const std::string* display_name =
         prefs_display_names.FindString(account_id.GetUserEmail());

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/gfx/animation/tween.h"
@@ -181,7 +182,8 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   gfx::Size GetPreferredSize(const View* host) const override;
   gfx::Size GetMinimumSize(const View* host) const override;
   int GetPreferredHeightForWidth(const View* host, int width) const override;
-  std::vector<View*> GetChildViewsInPaintOrder(const View* host) const override;
+  std::vector<raw_ptr<View, VectorExperimental>> GetChildViewsInPaintOrder(
+      const View* host) const override;
   bool OnViewRemoved(View* host, View* view) override;
 
   // Queues an action to take place after the current animation completes.

@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/immediate_crash.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -368,8 +369,8 @@ void PageActionIconController::OnPageActionIconViewShown(
       page_actions_excluded_from_logging_.end()) {
     page_actions_excluded_from_logging_[url] = {};
   }
-  std::vector<PageActionIconView*> excluded_actions_on_page =
-      page_actions_excluded_from_logging_[url];
+  std::vector<raw_ptr<PageActionIconView, VectorExperimental>>
+      excluded_actions_on_page = page_actions_excluded_from_logging_[url];
   if (!view->ephemeral() || base::Contains(excluded_actions_on_page, view)) {
     return;
   }
@@ -437,8 +438,8 @@ void PageActionIconController::RecordMetricsOnURLChange(GURL url) {
       page_actions_excluded_from_logging_.end()) {
     page_actions_excluded_from_logging_[url] = {};
   }
-  std::vector<PageActionIconView*> excluded_actions_on_page =
-      page_actions_excluded_from_logging_[url];
+  std::vector<raw_ptr<PageActionIconView, VectorExperimental>>
+      excluded_actions_on_page = page_actions_excluded_from_logging_[url];
   RecordOverallMetrics();
   for (auto icon_item : page_action_icon_views_) {
     if (!icon_item.second->ephemeral() || !icon_item.second->GetVisible() ||

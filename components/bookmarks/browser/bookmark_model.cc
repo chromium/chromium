@@ -726,7 +726,8 @@ void BookmarkModel::OnFaviconsChanged(const std::set<GURL>& page_urls,
 
   std::set<const BookmarkNode*> to_update;
   for (const GURL& page_url : page_urls) {
-    std::vector<const BookmarkNode*> nodes = GetNodesByURL(page_url);
+    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+        GetNodesByURL(page_url);
     to_update.insert(nodes.begin(), nodes.end());
   }
 
@@ -767,11 +768,11 @@ void BookmarkModel::SetDateAdded(const BookmarkNode* node, Time date_added) {
   }
 }
 
-std::vector<const BookmarkNode*> BookmarkModel::GetNodesByURL(
-    const GURL& url) const {
+std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
+BookmarkModel::GetNodesByURL(const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
 
   if (url_index_) {
     url_index_->GetNodesByUrl(url, &nodes);
@@ -801,7 +802,8 @@ const BookmarkNode* BookmarkModel::GetMostRecentlyAddedUserNodeForURL(
     const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<const BookmarkNode*> nodes = GetNodesByURL(url);
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+      GetNodesByURL(url);
   std::sort(nodes.begin(), nodes.end(), &MoreRecentlyAdded);
 
   // Look for the first node that the user can edit.

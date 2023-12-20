@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/wm/core/transient_window_controller.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/observer_list.h"
 #include "ui/aura/client/transient_window_client_observer.h"
@@ -46,8 +47,8 @@ const aura::Window* TransientWindowController::GetTransientParent(
   return window_manager ? window_manager->transient_parent() : nullptr;
 }
 
-std::vector<aura::Window*> TransientWindowController::GetTransientChildren(
-    const aura::Window* parent) {
+std::vector<raw_ptr<aura::Window, VectorExperimental>>
+TransientWindowController::GetTransientChildren(const aura::Window* parent) {
   const TransientWindowManager* window_manager =
       TransientWindowManager::GetIfExists(parent);
   if (!window_manager)

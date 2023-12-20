@@ -136,13 +136,15 @@ class TabDragController : public views::WidgetObserver,
   // and is only non-empty if the original selection isn't the same as the
   // dragging set. Returns Liveness::DELETED if `this` was deleted during this
   // call, and Liveness::ALIVE if `this` still exists.
-  [[nodiscard]] Liveness Init(TabDragContext* source_context,
-                              TabSlotView* source_view,
-                              const std::vector<TabSlotView*>& dragging_views,
-                              const gfx::Point& mouse_offset,
-                              int source_view_offset,
-                              ui::ListSelectionModel initial_selection_model,
-                              ui::mojom::DragEventSource event_source);
+  [[nodiscard]] Liveness Init(
+      TabDragContext* source_context,
+      TabSlotView* source_view,
+      const std::vector<raw_ptr<TabSlotView, VectorExperimental>>&
+          dragging_views,
+      const gfx::Point& mouse_offset,
+      int source_view_offset,
+      ui::ListSelectionModel initial_selection_model,
+      ui::mojom::DragEventSource event_source);
 
   // Returns true if there is a drag underway and the drag is attached to
   // |tab_strip|.
@@ -461,8 +463,8 @@ class TabDragController : public views::WidgetObserver,
   // Finds the TabSlotViews within the specified TabDragContext that
   // corresponds to the WebContents of the dragged views. Also finds the group
   // header if it is dragging. Returns an empty vector if not attached.
-  std::vector<TabSlotView*> GetViewsMatchingDraggedContents(
-      TabDragContext* context);
+  std::vector<raw_ptr<TabSlotView, VectorExperimental>>
+  GetViewsMatchingDraggedContents(TabDragContext* context);
 
   // Does the work for EndDrag(). If we actually started a drag and |how_end| is
   // not TAB_DESTROYED then one of CompleteDrag() or RevertDrag() is invoked.
@@ -688,7 +690,7 @@ class TabDragController : public views::WidgetObserver,
   size_t source_view_index_;
 
   // The attached views. Also found in |drag_data_|, but cached for convenience.
-  std::vector<TabSlotView*> attached_views_;
+  std::vector<raw_ptr<TabSlotView, VectorExperimental>> attached_views_;
 
   // Whether the drag originated from a group header.
   bool header_drag_;

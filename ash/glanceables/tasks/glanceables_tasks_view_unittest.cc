@@ -246,7 +246,8 @@ TEST_F(GlanceablesTasksViewTest,
 TEST_F(GlanceablesTasksViewTest, DoesNotAllowEditingToBlankTitle) {
   tasks_client()->set_paused(true);
 
-  const auto* const task_view = GetTaskItemsContainerView()->children()[0];
+  const auto* const task_view =
+      GetTaskItemsContainerView()->children()[0].get();
 
   {
     const auto* const title_label =

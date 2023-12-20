@@ -4,6 +4,7 @@
 
 #include <inttypes.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
 
@@ -110,7 +111,7 @@ struct GraphicsEventsContext {
   // To keep in correct order of creation. This converts pair of 'B' and 'E'
   // events to the completed event, 'X'.
   ArcTracingModel::TracingEvents converted_events;
-  std::map<uint32_t, std::vector<ArcTracingEvent*>>
+  std::map<uint32_t, std::vector<raw_ptr<ArcTracingEvent, VectorExperimental>>>
       per_thread_pending_events_stack;
 
   std::map<std::pair<char, std::string>, std::unique_ptr<ArcTracingEvent>>

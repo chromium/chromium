@@ -14,6 +14,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -194,7 +195,8 @@ class AutofillProfile : public AutofillDataModel {
   // 4. Phone.
   // 5. Company name.
   static void CreateDifferentiatingLabels(
-      const std::vector<const AutofillProfile*>& profiles,
+      const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+          profiles,
       const std::string& app_locale,
       std::vector<std::u16string>* labels);
 
@@ -206,7 +208,8 @@ class AutofillProfile : public AutofillDataModel {
   // an empty set when `suggested_fields` is nullopt. Each label includes at
   // least `minimal_fields_shown` fields, if possible.
   static void CreateInferredLabels(
-      const std::vector<const AutofillProfile*>& profiles,
+      const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+          profiles,
       const std::optional<FieldTypeSet>& suggested_fields,
       FieldTypeSet excluded_fields,
       size_t minimal_fields_shown,
@@ -312,7 +315,8 @@ class AutofillProfile : public AutofillDataModel {
   // profiles, if possible; and also at least |num_fields_to_include| fields, if
   // possible. The label fields are drawn from |fields|.
   static void CreateInferredLabelsHelper(
-      const std::vector<const AutofillProfile*>& profiles,
+      const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+          profiles,
       const std::list<size_t>& indices,
       const std::vector<FieldType>& fields,
       size_t num_fields_to_include,

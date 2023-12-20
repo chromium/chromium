@@ -373,7 +373,7 @@ TabDragController::~TabDragController() {
 TabDragController::Liveness TabDragController::Init(
     TabDragContext* source_context,
     TabSlotView* source_view,
-    const std::vector<TabSlotView*>& dragging_views,
+    const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& dragging_views,
     const gfx::Point& mouse_offset,
     int source_view_offset,
     ui::ListSelectionModel initial_selection_model,
@@ -421,7 +421,7 @@ TabDragController::Liveness TabDragController::Init(
   if (source_browser->app_controller() &&
       source_browser->app_controller()->has_tab_strip() &&
       web_app::HasPinnedHomeTab(source_browser->tab_strip_model())) {
-    for (auto* dragging_view : dragging_views) {
+    for (TabSlotView* dragging_view : dragging_views) {
       if (source_context->GetIndexOf(dragging_view) == 0) {
         detach_behavior_ = NOT_DETACHABLE;
       }
@@ -1188,7 +1188,8 @@ void TabDragController::MoveAttached(const gfx::Point& point_in_screen,
 
   const int threshold = attached_context_->GetHorizontalDragThreshold();
 
-  std::vector<TabSlotView*> views(drag_data_.size());
+  std::vector<raw_ptr<TabSlotView, VectorExperimental>> views(
+      drag_data_.size());
   for (size_t i = 0; i < drag_data_.size(); ++i)
     views[i] = drag_data_[i].attached_view;
 
@@ -1381,7 +1382,7 @@ void TabDragController::Attach(TabDragContext* attached_context,
 
   attached_context_ = attached_context;
 
-  std::vector<TabSlotView*> views =
+  std::vector<raw_ptr<TabSlotView, VectorExperimental>> views =
       GetViewsMatchingDraggedContents(attached_context_);
 
   if (views.empty()) {
@@ -1454,7 +1455,7 @@ void TabDragController::Attach(TabDragContext* attached_context,
 
   // The size of the dragged tab may have changed. Adjust the x offset so that
   // ratio of mouse_offset_ to original width is maintained.
-  std::vector<TabSlotView*> tabs_to_source(views);
+  std::vector<raw_ptr<TabSlotView, VectorExperimental>> tabs_to_source(views);
   tabs_to_source.erase(tabs_to_source.begin() + source_view_index_ + 1,
                        tabs_to_source.end());
   int new_x = TabStrip::GetSizeNeededForViews(tabs_to_source) -
@@ -1781,15 +1782,15 @@ gfx::Point TabDragController::GetAttachedDragPoint(
   return gfx::Point(std::clamp(x, 0, max_x), 0);
 }
 
-std::vector<TabSlotView*> TabDragController::GetViewsMatchingDraggedContents(
-    TabDragContext* context) {
+std::vector<raw_ptr<TabSlotView, VectorExperimental>>
+TabDragController::GetViewsMatchingDraggedContents(TabDragContext* context) {
   const TabStripModel* const model = context->GetTabStripModel();
-  std::vector<TabSlotView*> views;
+  std::vector<raw_ptr<TabSlotView, VectorExperimental>> views;
   for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
     const int model_index =
         model->GetIndexOfWebContents(drag_data_[i].contents);
     if (model_index == TabStripModel::kNoTab)
-      return std::vector<TabSlotView*>();
+      return std::vector<raw_ptr<TabSlotView, VectorExperimental>>();
     views.push_back(context->GetTabAt(model_index));
   }
   if (header_drag_)
@@ -1895,13 +1896,13 @@ void TabDragController::AttachTabsToNewBrowserOnDrop() {
 }
 
 void TabDragController::RevertDrag() {
-  std::vector<TabSlotView*> views;
+  std::vector<raw_ptr<TabSlotView, VectorExperimental>> views;
   if (header_drag_)
-    views.push_back(drag_data_[0].attached_view);
+    views.push_back(drag_data_[0].attached_view.get());
   for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
     if (drag_data_[i].contents) {
       // Contents is NULL if a tab was destroyed while the drag was under way.
-      views.push_back(drag_data_[i].attached_view);
+      views.push_back(drag_data_[i].attached_view.get());
       RevertDragAt(i);
     }
   }
@@ -2551,7 +2552,7 @@ TabDragController::Liveness TabDragController::GetLocalProcessWindow(
   // window which was used for dragging is not hidden once all of its tabs are
   // attached to another browser window in DragBrowserToNewTabStrip().
   // TODO(pkotwicz): Fix this properly (crbug.com/358482)
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->tab_strip_model()->empty())
       exclude.insert(browser->window()->GetNativeWindow());
   }

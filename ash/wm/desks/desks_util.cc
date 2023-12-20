@@ -19,6 +19,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -224,8 +225,9 @@ bool IsZOrderTracked(aura::Window* window) {
              ui::ZOrderLevel::kNormal;
 }
 
-std::optional<size_t> GetWindowZOrder(const std::vector<aura::Window*>& windows,
-                                      aura::Window* window) {
+std::optional<size_t> GetWindowZOrder(
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
+    aura::Window* window) {
   size_t position = 0;
   for (aura::Window* w : base::Reversed(windows)) {
     if (IsZOrderTracked(w)) {

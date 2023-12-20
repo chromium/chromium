@@ -121,7 +121,7 @@ void PrintLayerHierarchyImp(const Layer* layer,
 
   *out << '\n';
 
-  std::vector<ui::Layer*> children =
+  std::vector<raw_ptr<ui::Layer, VectorExperimental>> children =
       child_cb ? child_cb.Run(layer) : layer->children();
   for (ui::Layer* child : children) {
     PrintLayerHierarchyImp(child, indent + 3, mouse_location_in_layer, out,

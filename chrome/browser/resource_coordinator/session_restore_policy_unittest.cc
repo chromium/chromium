@@ -244,8 +244,9 @@ class SessionRestorePolicyTest : public ChromeRenderViewHostTestHarness {
     policy_->SetTabScoreChangedCallback(base::BindRepeating(
         &TabScoreChangeMock::NotifyTabScoreChanged, base::Unretained(&mock_)));
 
-    for (auto* tab : tab_for_scoring_)
+    for (content::WebContents* tab : tab_for_scoring_) {
       policy_->AddTabForScoring(tab);
+    }
   }
 
   void WaitForFinalTabScores() {
@@ -275,7 +276,8 @@ class SessionRestorePolicyTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<content::WebContents> contents2_;
   std::unique_ptr<content::WebContents> contents3_;
 
-  std::vector<content::WebContents*> tab_for_scoring_;
+  std::vector<raw_ptr<content::WebContents, VectorExperimental>>
+      tab_for_scoring_;
 };
 
 TEST_F(SessionRestorePolicyTest, CalculateSimultaneousTabLoads) {

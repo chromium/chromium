@@ -80,7 +80,8 @@ class HUDTabStrip : public views::View {
 
  private:
   raw_ptr<HUDDisplayView, ExperimentalAsh> hud_;
-  std::vector<HUDTabButton*> tabs_;  // Ordered list of child tabs.
+  std::vector<raw_ptr<HUDTabButton, VectorExperimental>>
+      tabs_;  // Ordered list of child tabs.
 };
 
 }  // namespace hud_display

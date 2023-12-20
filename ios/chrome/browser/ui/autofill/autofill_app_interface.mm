@@ -374,7 +374,8 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
       chrome_test_util::GetOriginalBrowserState();
   autofill::PersonalDataManager* personalDataManager =
       autofill::PersonalDataManagerFactory::GetForBrowserState(browserState);
-  for (const auto* profile : personalDataManager->GetProfiles()) {
+  for (const autofill::AutofillProfile* profile :
+       personalDataManager->GetProfiles()) {
     personalDataManager->RemoveByGUID(profile->guid());
   }
 
@@ -406,7 +407,8 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 + (void)clearCreditCardStore {
   autofill::PersonalDataManager* personalDataManager =
       [self personalDataManager];
-  for (const auto* creditCard : personalDataManager->GetCreditCards()) {
+  for (const autofill::CreditCard* creditCard :
+       personalDataManager->GetCreditCards()) {
     // This will not remove server cards, as they have no guid.
     personalDataManager->RemoveByGUID(creditCard->guid());
   }

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/screen_position_client.h"
 
 namespace ash {
@@ -23,7 +24,8 @@ class ASH_EXPORT ScreenPositionController
   // returns the other root window.
   static void ConvertHostPointToRelativeToRootWindow(
       aura::Window* root_window,
-      const std::vector<aura::Window*>& root_windows,
+      const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+          root_windows,
       gfx::Point* point_in_host,
       aura::Window** target_window);
 

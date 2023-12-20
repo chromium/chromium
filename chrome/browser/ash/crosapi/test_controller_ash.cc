@@ -159,7 +159,7 @@ class TestControllerAsh::SelfOwnedAshBrowserWindowCloser
             &SelfOwnedAshBrowserWindowCloser::OnAllBrowserWindowsClosed,
             base::Unretained(this), /*success=*/false));
 
-    for (auto* browser : *BrowserList::GetInstance()) {
+    for (Browser* browser : *BrowserList::GetInstance()) {
       // Close the browser asynchronously.
       browser->window()->Close();
     }
@@ -617,7 +617,7 @@ void TestControllerAsh::GetOpenAshBrowserWindows(
 
 void TestControllerAsh::CloseAllBrowserWindows(
     CloseAllBrowserWindowsCallback callback) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     browser->window()->Close();
   }
 

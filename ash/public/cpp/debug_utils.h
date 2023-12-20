@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace aura {
 class Window;
@@ -25,11 +26,11 @@ namespace debug {
 class ASH_EXPORT DebugWindowHierarchyDelegate {
  public:
   virtual ~DebugWindowHierarchyDelegate() = default;
-  virtual std::vector<aura::Window*> GetAdjustedWindowChildren(
-      aura::Window* window) const = 0;
+  virtual std::vector<raw_ptr<aura::Window, VectorExperimental>>
+  GetAdjustedWindowChildren(aura::Window* window) const = 0;
 
-  virtual std::vector<ui::Layer*> GetAdjustedLayerChildren(
-      const ui::Layer* layer) const = 0;
+  virtual std::vector<raw_ptr<ui::Layer, VectorExperimental>>
+  GetAdjustedLayerChildren(const ui::Layer* layer) const = 0;
 };
 
 ASH_EXPORT void SetDebugWindowHierarchyDelegate(

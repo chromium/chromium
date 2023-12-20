@@ -56,7 +56,9 @@ class SendTabToSelfToolbarIconController
 
   std::unique_ptr<SendTabToSelfEntry> entry_;
 
-  std::vector<SendTabToSelfToolbarIconControllerDelegate*> delegate_list_;
+  std::vector<
+      raw_ptr<SendTabToSelfToolbarIconControllerDelegate, VectorExperimental>>
+      delegate_list_;
 
   SendTabToSelfToolbarIconControllerDelegate* GetActiveDelegate();
 };

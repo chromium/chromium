@@ -271,8 +271,9 @@ void ToastManagerImpl::ShowLatest() {
   serial_++;
 
   if (current_toast_data_->show_on_all_root_windows) {
-    for (auto* root_window : Shell::GetAllRootWindows())
+    for (aura::Window* root_window : Shell::GetAllRootWindows()) {
       CreateToastOverlayForRoot(root_window);
+    }
   } else {
     CreateToastOverlayForRoot(Shell::GetRootWindowForNewWindows());
   }

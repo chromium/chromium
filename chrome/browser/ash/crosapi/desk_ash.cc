@@ -254,14 +254,15 @@ void DeskAsh::GetSavedDesks(GetSavedDesksCallback callback) {
   DesksClient::Get()->GetDeskTemplates(base::BindOnce(
       [](GetSavedDesksCallback callback,
          std::optional<DesksClient::DeskActionError> error,
-         const std::vector<const ash::DeskTemplate*>& desk_templates) {
+         const std::vector<raw_ptr<const ash::DeskTemplate,
+                                   VectorExperimental>>& desk_templates) {
         if (error) {
           std::move(callback).Run(crosapi::mojom::GetSavedDesksResult::NewError(
               ToCrosApiError(error.value())));
           return;
         }
         std::vector<crosapi::mojom::SavedDeskModelPtr> saved_desks;
-        for (auto* desk_template : desk_templates) {
+        for (const ash::DeskTemplate* desk_template : desk_templates) {
           crosapi::mojom::SavedDeskModelPtr saved_desk =
               ToSavedDeskModel(desk_template);
           saved_desks.push_back(std::move(saved_desk));

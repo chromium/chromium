@@ -31,6 +31,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -502,7 +503,7 @@ user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
   if (logged_in_users.size() == 1 ||
       primary_policy == MultiUserSignInPolicy::kPrimaryOnly) {
     if (can_primary_lock) {
-      unlock_users.push_back(primary_user_);
+      unlock_users.push_back(primary_user_.get());
     }
   } else {
     // Fill list of potential unlock users based on multi-profile policy state.
@@ -704,7 +705,7 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
     ScopedListPrefUpdate prefs_users_update(GetLocalState(),
                                             user_manager::kRegularUsersPref);
     // Take snapshot because DeleteUser called in the loop will update it.
-    std::vector<user_manager::User*> users = users_;
+    std::vector<raw_ptr<user_manager::User, VectorExperimental>> users = users_;
     for (user_manager::User* user : users) {
       const AccountId account_id = user->GetAccountId();
       if (user->HasGaiaAccount() && account_id != GetOwnerAccountId() &&
@@ -962,7 +963,7 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
 
   // Get the current list of device local accounts.
   std::vector<std::string> old_accounts;
-  for (auto* user : users_) {
+  for (user_manager::User* user : users_) {
     if (user->IsDeviceLocalAccount()) {
       old_accounts.push_back(user->GetAccountId().GetUserEmail());
     }
@@ -995,7 +996,7 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
 
   // Remove the old device local accounts from the user list.
   // Take snapshot because DeleteUser will update |user_|.
-  std::vector<user_manager::User*> users = users_;
+  std::vector<raw_ptr<user_manager::User, VectorExperimental>> users = users_;
   for (user_manager::User* user : users) {
     if (user->IsDeviceLocalAccount()) {
       if (user != GetActiveUser()) {

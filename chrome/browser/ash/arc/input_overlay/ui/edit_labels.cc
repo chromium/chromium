@@ -59,7 +59,7 @@ void EditLabels::Init() {
 }
 
 void EditLabels::OnActionInputBindingUpdated() {
-  for (auto* label : labels_) {
+  for (arc::input_overlay::EditLabel* label : labels_) {
     label->OnActionInputBindingUpdated();
   }
 
@@ -83,7 +83,7 @@ void EditLabels::FocusLabel() {
   // Clicking the edit labels with an already focused edit label causes the next
   // label to gain focus.
   for (size_t i = 0; i < labels_.size(); i++) {
-    if (auto* label = labels_[i]; label->HasFocus()) {
+    if (auto* label = labels_[i].get(); label->HasFocus()) {
       labels_[(i + 1) % labels_.size()]->RequestFocus();
       return;
     }
@@ -99,7 +99,7 @@ std::u16string EditLabels::CalculateActionName() {
   // If at least one label is unassigned, it needs to show error state.
   missing_assign_ = false;
   DCHECK_GE(labels_.size(), 1u);
-  for (auto* label : labels_) {
+  for (arc::input_overlay::EditLabel* label : labels_) {
     if (label->IsInputUnbound()) {
       missing_assign_ = true;
     } else {
@@ -185,7 +185,7 @@ void EditLabels::UpdateNameTag() {
   // If at least one label is unassigned, it needs to show error state.
   missing_assign_ = false;
   DCHECK_GE(labels_.size(), 1u);
-  for (auto* label : labels_) {
+  for (arc::input_overlay::EditLabel* label : labels_) {
     if (label->IsInputUnbound()) {
       missing_assign_ = true;
       break;
@@ -206,7 +206,7 @@ void EditLabels::UpdateNameTag() {
 }
 
 void EditLabels::RemoveNewState() {
-  for (auto* label : labels_) {
+  for (arc::input_overlay::EditLabel* label : labels_) {
     label->RemoveNewState();
   }
 

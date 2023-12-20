@@ -270,7 +270,7 @@ class WaylandBufferManagerTest : public WaylandTest {
           // vector.
           EXPECT_EQ(params_vector.size(), expected_size);
 
-          for (auto* mock_params : params_vector) {
+          for (wl::TestZwpLinuxBufferParamsV1* mock_params : params_vector) {
             if (!fail) {
               zwp_linux_buffer_params_v1_send_created(
                   mock_params->resource(), mock_params->buffer_resource());
@@ -3170,9 +3170,10 @@ class WaylandBufferManagerViewportTest : public WaylandBufferManagerTest {
 
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
       // Creates a handle for a subsurface.
-      const std::vector<wl::TestZwpLinuxBufferParamsV1*>& params_vector =
+      const std::vector<raw_ptr<wl::TestZwpLinuxBufferParamsV1,
+                                VectorExperimental>>& params_vector =
           server->zwp_linux_dmabuf_v1()->buffer_params();
-      for (auto* mock_params : params_vector) {
+      for (wl::TestZwpLinuxBufferParamsV1* mock_params : params_vector) {
         zwp_linux_buffer_params_v1_send_created(mock_params->resource(),
                                                 mock_params->buffer_resource());
       }

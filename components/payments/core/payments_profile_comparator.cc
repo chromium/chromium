@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -49,11 +50,13 @@ PaymentsProfileComparator::GetMissingProfileFields(
   return cache_[profile->guid()];
 }
 
-std::vector<autofill::AutofillProfile*>
+std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
 PaymentsProfileComparator::FilterProfilesForContact(
-    const std::vector<autofill::AutofillProfile*>& profiles) const {
+    const std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>&
+        profiles) const {
   // We will be removing profiles, so we operate on a copy.
-  std::vector<autofill::AutofillProfile*> processed = profiles;
+  std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
+      processed = profiles;
 
   // Stable sort, since profiles are expected to be passed in frecency order.
   std::stable_sort(
@@ -138,12 +141,14 @@ bool PaymentsProfileComparator::IsContactInfoComplete(
            GetRequiredProfileFieldsForContact());
 }
 
-std::vector<autofill::AutofillProfile*>
+std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
 PaymentsProfileComparator::FilterProfilesForShipping(
-    const std::vector<autofill::AutofillProfile*>& profiles) const {
+    const std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>&
+        profiles) const {
   // Since we'll be changing the order/contents of the const input vector,
   // we make a copy.
-  std::vector<autofill::AutofillProfile*> processed = profiles;
+  std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
+      processed = profiles;
 
   std::stable_sort(
       processed.begin(), processed.end(),

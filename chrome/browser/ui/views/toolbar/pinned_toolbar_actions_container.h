@@ -170,8 +170,10 @@ class PinnedToolbarActionsContainer
 
   const raw_ptr<BrowserView> browser_view_;
 
-  std::vector<PinnedActionToolbarButton*> pinned_buttons_;
-  std::vector<PinnedActionToolbarButton*> popped_out_buttons_;
+  std::vector<raw_ptr<PinnedActionToolbarButton, VectorExperimental>>
+      pinned_buttons_;
+  std::vector<raw_ptr<PinnedActionToolbarButton, VectorExperimental>>
+      popped_out_buttons_;
   raw_ptr<views::View> toolbar_divider_;
   raw_ptr<PinnedToolbarActionsModel> model_;
 

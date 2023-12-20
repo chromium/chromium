@@ -497,7 +497,8 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
   password_manager::PasswordManagerDriver* driver =
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(webState, frame);
-  const std::vector<const password_manager::PasswordForm*>* passwordForms =
+  const std::vector<raw_ptr<const password_manager::PasswordForm,
+                            VectorExperimental>>* passwordForms =
       passwordManager->GetBestMatches(driver, formId);
   if (!passwordForms) {
     return;
@@ -505,7 +506,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
   bool sharingNotificationEnabled = base::FeatureList::IsEnabled(
       password_manager::features::kSharedPasswordNotificationUI);
-  for (const auto* form : *passwordForms) {
+  for (const password_manager::PasswordForm* form : *passwordForms) {
     if (sharingNotificationEnabled &&
         form->type ==
             password_manager::PasswordForm::Type::kReceivedViaSharing &&

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -319,12 +320,12 @@ void FillUploadField(AutofillUploadContents::Field* field,
 // Perhaps a neater way would be to move this to TestFormStructure.
 std::vector<FormSignature> GetEncodedSignatures(const FormStructure& form);
 std::vector<FormSignature> GetEncodedSignatures(
-    const std::vector<FormStructure*>& forms);
+    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
 
 std::vector<FormSignature> GetEncodedAlternativeSignatures(
     const FormStructure& form);
 std::vector<FormSignature> GetEncodedAlternativeSignatures(
-    const std::vector<FormStructure*>& forms);
+    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
 
 // Calls the required functions on the given external delegate to cause the
 // delegate to display a popup.

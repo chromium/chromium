@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/save_unsynced_credentials_locally_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -39,7 +40,7 @@ class PasswordSaveUnsyncedCredentialsLocallyView
 
   SaveUnsyncedCredentialsLocallyBubbleController controller_;
   int num_selected_checkboxes_ = 0;
-  std::vector<views::Checkbox*> checkboxes_;
+  std::vector<raw_ptr<views::Checkbox, VectorExperimental>> checkboxes_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UNSYNCED_CREDENTIALS_LOCALLY_VIEW_H_

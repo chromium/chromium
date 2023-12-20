@@ -123,7 +123,8 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
 
     // Convert the LifecycleUnits to a vector of TabDiscardsInfos.
     size_t rank = 1;
-    for (auto* lifecycle_unit : lifecycle_units) {
+    for (resource_coordinator::LifecycleUnit* lifecycle_unit :
+         lifecycle_units) {
       discards::mojom::TabDiscardsInfoPtr info(
           discards::mojom::TabDiscardsInfo::New());
 

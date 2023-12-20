@@ -48,7 +48,7 @@ std::vector<EmbeddedPermissionPromptAskView::RequestLineConfiguration>
 EmbeddedPermissionPromptAskView::GetRequestLinesConfiguration() const {
   std::vector<RequestLineConfiguration> lines;
 
-  for (auto* request : delegate()->Requests()) {
+  for (permissions::PermissionRequest* request : delegate()->Requests()) {
     lines.emplace_back(&permissions::GetIconId(request->request_type()),
                        request->GetMessageTextFragment());
   }

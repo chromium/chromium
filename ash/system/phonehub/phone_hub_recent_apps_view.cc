@@ -92,7 +92,7 @@ void LayoutAppButtonsView(views::View* buttons_view) {
   views::View::Views visible_children;
   base::ranges::copy_if(
       buttons_view->children(), std::back_inserter(visible_children),
-      [](const auto* v) {
+      [](const views::View* v) {
         return v->GetVisible() && (v->GetPreferredSize().width() > 0);
       });
   if (visible_children.empty()) {
@@ -100,7 +100,7 @@ void LayoutAppButtonsView(views::View* buttons_view) {
   }
   const int visible_child_width =
       std::accumulate(visible_children.cbegin(), visible_children.cend(), 0,
-                      [](int width, const auto* v) {
+                      [](int width, const views::View* v) {
                         return width + v->GetPreferredSize().width();
                       });
 
@@ -116,7 +116,7 @@ void LayoutAppButtonsView(views::View* buttons_view) {
   int child_x = child_area.x() + kRecentAppButtonsViewHorizontalPadding;
   int child_y = child_area.y() + kRecentAppButtonsViewTopPadding +
                 kRecentAppButtonFocusPadding.bottom();
-  for (auto* child : visible_children) {
+  for (views::View* child : visible_children) {
     // Most recent apps be added to the left and shift right as the other apps
     // are streamed.
     int width = child->GetPreferredSize().width();

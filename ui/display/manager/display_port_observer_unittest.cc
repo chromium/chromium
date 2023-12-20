@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -98,7 +99,7 @@ TEST_F(DisplayPortObserverTest, OnNoDisplayConnected) {
   ASSERT_TRUE(CreateFakeDpConn(temp_dir_.Append("card0-DP-4"), 284, 3));
 
   // Only internal display with an id not dedicated to any DP connector
-  std::vector<DisplaySnapshot*> display_states;
+  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> display_states;
   auto display_state = CreateDisplaySnapshot(236, temp_dir_);
   display_states.push_back(display_state.get());
 
@@ -116,7 +117,7 @@ TEST_F(DisplayPortObserverTest, OnMultipleDisplaysConnected) {
   ASSERT_TRUE(CreateFakeDpConn(temp_dir_.Append("card0-DP-4"), 284, 3));
 
   // 2 displays on port 0 and 1 display on port 2
-  std::vector<DisplaySnapshot*> display_states;
+  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> display_states;
   auto display_state1 = CreateDisplaySnapshot(256, temp_dir_);
   display_states.push_back(display_state1.get());
 

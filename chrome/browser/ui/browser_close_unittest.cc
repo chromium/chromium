@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -174,8 +175,8 @@ class BrowserCloseTest : public testing::Test {
     CHECK(browser_windows_.end() == browser_windows_.find(profile));
     CHECK(browsers_.end() == browsers_.find(profile));
 
-    std::vector<TestBrowserWindow*> windows;
-    std::vector<Browser*> browsers;
+    std::vector<raw_ptr<TestBrowserWindow, VectorExperimental>> windows;
+    std::vector<raw_ptr<Browser, VectorExperimental>> browsers;
     for (int i = 0; i < num_windows; ++i) {
       TestBrowserWindow* window = new TestBrowserWindow();
       Browser::CreateParams params(profile, true);
@@ -193,8 +194,11 @@ class BrowserCloseTest : public testing::Test {
 
   // Note that the vector elements are all owned by this class and must be
   // cleaned up.
-  std::map<Profile*, std::vector<TestBrowserWindow*>> browser_windows_;
-  std::map<Profile*, std::vector<Browser*>> browsers_;
+  std::map<Profile*,
+           std::vector<raw_ptr<TestBrowserWindow, VectorExperimental>>>
+      browser_windows_;
+  std::map<Profile*, std::vector<raw_ptr<Browser, VectorExperimental>>>
+      browsers_;
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;

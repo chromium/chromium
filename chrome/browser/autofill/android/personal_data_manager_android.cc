@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -656,7 +657,8 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileLabels(
   // TODO(crbug.com/1487119): Replace by `profiles` when `GetProfilesToSuggest`
   // starts returning a list of const AutofillProfile*.
   AutofillProfile::CreateInferredLabels(
-      std::vector<const AutofillProfile*>(profiles.begin(), profiles.end()),
+      std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>(
+          profiles.begin(), profiles.end()),
       address_only ? absl::make_optional(suggested_fields) : absl::nullopt,
       {excluded_field}, minimal_fields_shown,
       g_browser_process->GetApplicationLocale(), &labels);

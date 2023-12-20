@@ -103,11 +103,11 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
 
   // List of pages that contain `RowContainer` elements.
   // Owned by views hierarchy.
-  std::vector<PageContainer*> pages_;
+  std::vector<raw_ptr<PageContainer, VectorExperimental>> pages_;
 
   // List of rows that contain `FeatureTile` elements.
   // Owned by views hierarchy.
-  std::vector<RowContainer*> rows_;
+  std::vector<raw_ptr<RowContainer, VectorExperimental>> rows_;
 
   // Number of rows that can be displayed based on the available
   // max height.

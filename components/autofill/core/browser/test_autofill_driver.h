@@ -70,7 +70,8 @@ class TestAutofillDriverTemplate : public T {
                         const std::u16string& value) override {}
   void HandleParsedForms(const std::vector<FormData>& forms) override {}
   void SendAutofillTypePredictionsToRenderer(
-      const std::vector<FormStructure*>& forms) override {}
+      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms)
+      override {}
   void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field,
       const std::u16string& value) override {}

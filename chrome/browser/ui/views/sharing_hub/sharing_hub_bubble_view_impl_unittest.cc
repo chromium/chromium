@@ -28,7 +28,7 @@ namespace {
 void EnumerateDescendants(views::View* root,
                           std::vector<views::View*>& result) {
   result.push_back(root);
-  for (auto* child : root->children()) {
+  for (views::View* child : root->children()) {
     EnumerateDescendants(child, result);
   }
 }

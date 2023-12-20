@@ -430,19 +430,19 @@ int AnimatingLayoutManager::GetPreferredHeightForWidth(const View* host,
   return target_layout_manager()->GetPreferredHeightForWidth(host, width);
 }
 
-std::vector<View*> AnimatingLayoutManager::GetChildViewsInPaintOrder(
-    const View* host) const {
+std::vector<raw_ptr<View, VectorExperimental>>
+AnimatingLayoutManager::GetChildViewsInPaintOrder(const View* host) const {
   DCHECK_EQ(host_view(), host);
 
   if (!is_animating())
     return LayoutManagerBase::GetChildViewsInPaintOrder(host);
 
-  std::vector<View*> result;
+  std::vector<raw_ptr<View, VectorExperimental>> result;
   std::set<View*> fading;
 
   // Put all fading views to the front of the list (back of the Z-order).
   for (const LayoutFadeInfo& fade_info : fade_infos_) {
-    result.push_back(fade_info.child_view);
+    result.push_back(fade_info.child_view.get());
     fading.insert(fade_info.child_view);
   }
 

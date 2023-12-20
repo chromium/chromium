@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1029,7 +1030,7 @@ class WebContentsBarrier {
   WebContentsBarrier(std::initializer_list<Predicate> predicates)
       : predicates_(predicates) {}
 
-  std::vector<content::WebContents*> Await() {
+  std::vector<raw_ptr<content::WebContents, VectorExperimental>> Await() {
     if (!IsReady()) {
       base::RunLoop run_loop;
       ready_callback_ = run_loop.QuitClosure();
@@ -1081,8 +1082,8 @@ class WebContentsBarrier {
 
   const std::vector<Predicate> predicates_;
 
-  std::vector<content::WebContents*> ready_web_contents_{predicates_.size(),
-                                                         nullptr};
+  std::vector<raw_ptr<content::WebContents, VectorExperimental>>
+      ready_web_contents_{predicates_.size(), nullptr};
   size_t pending_contents_count_{predicates_.size()};
   base::CallbackListSubscription creation_subscription_{
       content::RegisterWebContentsCreationCallback(
@@ -1109,7 +1110,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest, TabTargetWithGuestView) {
 
   LaunchApp(extension->id());
 
-  std::vector<content::WebContents*> wcs = barrier.Await();
+  std::vector<raw_ptr<content::WebContents, VectorExperimental>> wcs =
+      barrier.Await();
   ASSERT_THAT(wcs, testing::SizeIs(2));
   EXPECT_NE(wcs[0], wcs[1]);
   // Assure host and view have different DevTools hosts.

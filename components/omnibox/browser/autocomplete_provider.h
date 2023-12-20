@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
@@ -362,7 +363,8 @@ class AutocompleteProvider
   // string unconditionally.
   static FixupReturn FixupUserInput(const AutocompleteInput& input);
 
-  std::vector<AutocompleteProviderListener*> listeners_;
+  std::vector<raw_ptr<AutocompleteProviderListener, VectorExperimental>>
+      listeners_;
 
   const size_t provider_max_matches_;
   const size_t provider_max_matches_in_keyword_mode_{7};

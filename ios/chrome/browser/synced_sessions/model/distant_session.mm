@@ -56,9 +56,10 @@ DistantSession::DistantSession(sync_sessions::SessionSyncService* sync_service,
       sync_service->GetOpenTabsUIDelegate();
 
   if (open_tabs) {
-    std::vector<const sync_sessions::SyncedSession*> sessions;
+    std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+        sessions;
     open_tabs->GetAllForeignSessions(&sessions);
-    for (const auto* session : sessions) {
+    for (const sync_sessions::SyncedSession* session : sessions) {
       if (tag == session->GetSessionTag()) {
         this->InitWithSyncedSession(session, open_tabs);
       }

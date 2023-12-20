@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/display/manager/test/action_logger.h"
@@ -42,9 +43,9 @@ TestNativeDisplayDelegate::TestNativeDisplayDelegate(ActionLogger* log)
 
 TestNativeDisplayDelegate::~TestNativeDisplayDelegate() = default;
 
-const std::vector<DisplaySnapshot*> TestNativeDisplayDelegate::GetOutputs()
-    const {
-  std::vector<DisplaySnapshot*> outputs;
+const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>
+TestNativeDisplayDelegate::GetOutputs() const {
+  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> outputs;
   for (const auto& output : outputs_) {
     outputs.push_back(output.get());
   }

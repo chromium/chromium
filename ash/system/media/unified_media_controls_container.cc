@@ -38,8 +38,9 @@ bool UnifiedMediaControlsContainer::MaybeShowMediaControls() {
 void UnifiedMediaControlsContainer::SetExpandedAmount(double expanded_amount) {
   SetVisible(expanded_amount > 0 && should_show_media_controls_);
   expanded_amount_ = expanded_amount;
-  for (auto* child : children())
+  for (views::View* child : children()) {
     child->layer()->SetOpacity(expanded_amount);
+  }
   InvalidateLayout();
 }
 
@@ -48,8 +49,9 @@ int UnifiedMediaControlsContainer::GetExpandedHeight() const {
 }
 
 void UnifiedMediaControlsContainer::Layout() {
-  for (auto* child : children())
+  for (views::View* child : children()) {
     child->SetBoundsRect(GetContentsBounds());
+  }
   views::View::Layout();
 }
 

@@ -318,8 +318,8 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
     return;
   }
 
-  std::vector<const bookmarks::BookmarkNode*> nodesMatchingURL =
-      [self nodesByURL:URL];
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+      nodesMatchingURL = [self nodesByURL:URL];
 
   NSMutableArray* itemKeywords = [[NSMutableArray alloc] init];
 
@@ -444,12 +444,13 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
   return _accountBookmarkModel;
 }
 
-- (std::vector<const bookmarks::BookmarkNode*>)nodesByURL:(const GURL&)url {
-  std::vector<const bookmarks::BookmarkNode*> localOrSyncableNodes =
-      _localOrSyncableBookmarkModel->GetNodesByURL(url);
+- (std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>)
+    nodesByURL:(const GURL&)url {
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+      localOrSyncableNodes = _localOrSyncableBookmarkModel->GetNodesByURL(url);
   if (_accountBookmarkModel) {
-    std::vector<const bookmarks::BookmarkNode*> accountNodes =
-        _accountBookmarkModel->GetNodesByURL(url);
+    std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+        accountNodes = _accountBookmarkModel->GetNodesByURL(url);
     localOrSyncableNodes.insert(localOrSyncableNodes.end(),
                                 accountNodes.begin(), accountNodes.end());
   }

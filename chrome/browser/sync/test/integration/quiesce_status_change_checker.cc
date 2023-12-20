@@ -8,6 +8,7 @@
 
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
@@ -116,7 +117,7 @@ class QuiesceStatusChangeChecker::NestedUpdatedProgressMarkerChecker
 };
 
 QuiesceStatusChangeChecker::QuiesceStatusChangeChecker(
-    std::vector<syncer::SyncServiceImpl*> services)
+    std::vector<raw_ptr<syncer::SyncServiceImpl, VectorExperimental>> services)
     : MultiClientStatusChangeChecker(services) {
   DCHECK_LE(1U, services.size());
   for (syncer::SyncServiceImpl* service : services) {

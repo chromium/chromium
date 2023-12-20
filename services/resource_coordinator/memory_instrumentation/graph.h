@@ -169,7 +169,8 @@ class GlobalDumpGraph {
     const std::map<std::string, Node*>& const_children() const {
       return children_;
     }
-    std::vector<GlobalDumpGraph::Edge*>* owned_by_edges() {
+    std::vector<raw_ptr<GlobalDumpGraph::Edge, VectorExperimental>>*
+    owned_by_edges() {
       return &owned_by_edges_;
     }
     const Node* parent() const { return parent_; }
@@ -195,7 +196,8 @@ class GlobalDumpGraph {
     double cumulative_owning_coefficient_ = 1;
 
     raw_ptr<GlobalDumpGraph::Edge, DanglingUntriaged> owns_edge_;
-    std::vector<GlobalDumpGraph::Edge*> owned_by_edges_;
+    std::vector<raw_ptr<GlobalDumpGraph::Edge, VectorExperimental>>
+        owned_by_edges_;
   };
 
   // An edge in the dump graph which indicates ownership between the
@@ -219,7 +221,7 @@ class GlobalDumpGraph {
   // An iterator-esque class which yields nodes in a depth-first pre order.
   class PreOrderIterator {
    public:
-    PreOrderIterator(std::vector<Node*> root_nodes);
+    PreOrderIterator(std::vector<raw_ptr<Node, VectorExperimental>> root_nodes);
     PreOrderIterator(PreOrderIterator&& other);
     ~PreOrderIterator();
 
@@ -227,14 +229,15 @@ class GlobalDumpGraph {
     Node* next();
 
    private:
-    std::vector<Node*> to_visit_;
+    std::vector<raw_ptr<Node, VectorExperimental>> to_visit_;
     std::set<const Node*> visited_;
   };
 
   // An iterator-esque class which yields nodes in a depth-first post order.
   class PostOrderIterator {
    public:
-    PostOrderIterator(std::vector<Node*> root_nodes);
+    PostOrderIterator(
+        std::vector<raw_ptr<Node, VectorExperimental>> root_nodes);
     PostOrderIterator(PostOrderIterator&& other);
     ~PostOrderIterator();
 
@@ -242,9 +245,9 @@ class GlobalDumpGraph {
     Node* next();
 
    private:
-    std::vector<Node*> to_visit_;
+    std::vector<raw_ptr<Node, VectorExperimental>> to_visit_;
     std::set<Node*> visited_;
-    std::vector<Node*> path_;
+    std::vector<raw_ptr<Node, VectorExperimental>> path_;
   };
 
   using ProcessDumpGraphMap =

@@ -115,7 +115,7 @@ class AdminTemplateWindowObserver : public aura::WindowObserver {
     // iterate through siblings and update the Z-ordering.  Z ordering is
     // determined via the reverse order of `window->parent()->children()`
     int32_t activation_index = 0;
-    for (auto* child : window->parent()->children()) {
+    for (aura::Window* child : window->parent()->children()) {
       int32_t rwid = child->GetProperty(app_restore::kRestoreWindowIdKey);
 
       // ignore windows not being tracked.

@@ -59,7 +59,8 @@ class SaveAddressProfileView : public AutofillBubbleBase,
 
   // The following are used for UI elements alignment upon changes in theme.
   raw_ptr<views::View> address_components_view_;
-  std::vector<views::ImageView*> address_section_icons_;
+  std::vector<raw_ptr<views::ImageView, VectorExperimental>>
+      address_section_icons_;
   raw_ptr<views::ImageButton> edit_button_;
 };
 

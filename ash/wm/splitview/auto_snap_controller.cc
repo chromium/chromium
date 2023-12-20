@@ -26,7 +26,7 @@ AutoSnapController::AutoSnapController(aura::Window* root_window)
   Shell::Get()->activation_client()->AddObserver(this);
 
   AddWindow(root_window);
-  for (auto* window :
+  for (aura::Window* window :
        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
     AddWindow(window);
   }

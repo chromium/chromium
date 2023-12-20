@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -167,7 +168,8 @@ std::u16string GetProfileSuggestionMainTextForNonAddressField(
 // Check comment of method above:
 // `GetProfileSuggestionMainTextForNonAddressField`.
 std::vector<std::u16string> GetProfileSuggestionLabelForNonAddressField(
-    const std::vector<const AutofillProfile*>& profiles,
+    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+        profiles,
     const std::string& app_locale) {
   std::vector<std::u16string> labels;
   AutofillProfile::CreateDifferentiatingLabels(profiles, app_locale, &labels);
@@ -691,7 +693,8 @@ bool ShouldAddAddressLine1ToGranularFillingLabels(
 // behaviour. Returns an empty vector when no granular filling label needs to be
 // applied for a profile.
 std::vector<std::vector<std::u16string>> GetGranularFillingLabels(
-    const std::vector<const AutofillProfile*>& profiles,
+    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+        profiles,
     std::optional<FieldTypeSet> last_targeted_fields,
     FieldType triggering_field_type,
     const std::string& app_locale) {
@@ -784,7 +787,8 @@ FieldTypeSet GetFieldTypesToExcludeFromDifferentiatingLabelsGeneration(
 // used as a secondary text in the corresponding suggestion bubble.
 // `field_types` the types of the fields that will be filled by the suggestion.
 std::vector<std::u16string> GetProfileSuggestionLabels(
-    const std::vector<const AutofillProfile*>& profiles,
+    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+        profiles,
     const FieldTypeSet& field_types,
     FieldType trigger_field_type,
     std::optional<FieldTypeSet> last_targeted_fields,
@@ -814,7 +818,8 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
 std::vector<std::vector<Suggestion::Text>>
 CreateSuggestionLabelsWithGranularFillingDetails(
     base::span<const Suggestion> suggestions,
-    const std::vector<const AutofillProfile*>& profiles,
+    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+        profiles,
     const FieldTypeSet& field_types,
     std::optional<FieldTypeSet> last_targeted_fields,
     FieldType trigger_field_type,
@@ -1099,9 +1104,10 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
           ? trigger_field.value
           : u"";
 
-  std::vector<const AutofillProfile*> profiles_to_suggest =
-      GetProfilesToSuggest(trigger_field_type, field_value_for_filtering,
-                           trigger_field.is_autofilled, field_types);
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+      profiles_to_suggest =
+          GetProfilesToSuggest(trigger_field_type, field_value_for_filtering,
+                               trigger_field.is_autofilled, field_types);
 
   // Find the profiles that were hidden prior to the effects of the feature
   // kAutofillUseAddressRewriterInProfileSubsetComparison.
@@ -1118,12 +1124,14 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   // Autofill already considers suggestions as different if the suggestion's
   // main text, to be filled in the triggering field, differs regardless of
   // the other fields.
-  std::vector<const AutofillProfile*> previously_suggested_profiles =
-      street_address_field_types.contains(trigger_field_type)
-          ? profiles_to_suggest
-          : GetProfilesToSuggest(trigger_field_type, field_value_for_filtering,
-                                 trigger_field.is_autofilled,
-                                 field_types_without_address_types);
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+      previously_suggested_profiles =
+          street_address_field_types.contains(trigger_field_type)
+              ? profiles_to_suggest
+              : GetProfilesToSuggest(trigger_field_type,
+                                     field_value_for_filtering,
+                                     trigger_field.is_autofilled,
+                                     field_types_without_address_types);
   for (const AutofillProfile* profile : previously_suggested_profiles) {
     previously_hidden_profiles_guid.erase(profile->guid());
   }
@@ -1135,7 +1143,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
                                        previously_hidden_profiles_guid);
 }
 
-std::vector<const AutofillProfile*>
+std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
 AutofillSuggestionGenerator::GetProfilesToSuggest(
     FieldType trigger_field_type,
     const std::u16string& field_contents,
@@ -1164,16 +1172,17 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
   const AutofillProfileComparator comparator(personal_data_->app_locale());
   // Don't show two suggestions if one is a subset of the other.
   // Duplicates across sources are resolved in favour of `kAccount` profiles.
-  std::vector<const AutofillProfile*> unique_matched_profiles =
-      DeduplicatedProfilesForSuggestions(matched_profiles, trigger_field_type,
-                                         field_types, comparator);
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+      unique_matched_profiles = DeduplicatedProfilesForSuggestions(
+          matched_profiles, trigger_field_type, field_types, comparator);
 
   return unique_matched_profiles;
 }
 
 std::vector<Suggestion>
 AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
-    const std::vector<const AutofillProfile*>& profiles,
+    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+        profiles,
     const FieldTypeSet& field_types,
     std::optional<FieldTypeSet> last_targeted_fields,
     FieldType trigger_field_type,
@@ -1275,7 +1284,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
 
 // TODO(crbug.com/1417975): Remove `trigger_field_type` when
 // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
-std::vector<const AutofillProfile*>
+std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
 AutofillSuggestionGenerator::DeduplicatedProfilesForSuggestions(
     const std::vector<const AutofillProfile*>& matched_profiles,
     FieldType trigger_field_type,
@@ -1289,7 +1298,8 @@ AutofillSuggestionGenerator::DeduplicatedProfilesForSuggestions(
         *profile, personal_data_->app_locale(), trigger_field_type));
   }
 
-  std::vector<const AutofillProfile*> unique_matched_profiles;
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+      unique_matched_profiles;
   // Limit number of unique profiles as having too many makes the
   // browser hang due to drawing calculations (and is also not
   // very useful for the user).

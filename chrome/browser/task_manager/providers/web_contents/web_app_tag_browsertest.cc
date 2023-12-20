@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tag.h"
@@ -24,6 +25,7 @@
 #include "url/origin.h"
 
 using testing::Contains;
+using testing::Pointee;
 using testing::Property;
 
 namespace task_manager {
@@ -39,7 +41,8 @@ class WebAppTagWebAppTest : public web_app::WebAppControllerBrowserTest {
     return browser;
   }
 
-  const std::vector<WebContentsTag*>& tracked_tags() const {
+  const std::vector<raw_ptr<WebContentsTag, VectorExperimental>>& tracked_tags()
+      const {
     return WebContentsTagsManager::GetInstance()->tracked_tags();
   }
 
@@ -82,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, WebAppTaskCreatedForTab) {
   EXPECT_EQ(2U, task_manager.tasks().size());
 
   EXPECT_THAT(task_manager.tasks(),
-              Contains(Property(&Task::title, u"App: Google")));
+              Contains(Pointee(Property(&Task::title, u"App: Google"))));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, WebAppTaskCreatedForStandalone) {
@@ -111,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, WebAppTaskCreatedForStandalone) {
   EXPECT_EQ(2U, task_manager.tasks().size());
 
   EXPECT_THAT(task_manager.tasks(),
-              Contains(Property(&Task::title, u"App: Google")));
+              Contains(Pointee(Property(&Task::title, u"App: Google"))));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, TabNavigatedAwayNotWebAppTask) {
@@ -140,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, TabNavigatedAwayNotWebAppTask) {
   EXPECT_EQ(2U, task_manager.tasks().size());
 
   EXPECT_THAT(task_manager.tasks(),
-              Contains(Property(&Task::title, u"App: Google")));
+              Contains(Pointee(Property(&Task::title, u"App: Google"))));
 
   const GURL not_app_url =
       https_server()->GetURL("notapp.com", "/google/google.html");
@@ -150,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, TabNavigatedAwayNotWebAppTask) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(task_manager.tasks(),
-              Contains(Property(&Task::title, u"Tab: Google")));
+              Contains(Pointee(Property(&Task::title, u"Tab: Google"))));
 }
 
 class WebAppTagIsolatedWebAppTest
@@ -164,7 +167,8 @@ class WebAppTagIsolatedWebAppTest
     return url_info.app_id();
   }
 
-  const std::vector<WebContentsTag*>& tracked_tags() const {
+  const std::vector<raw_ptr<WebContentsTag, VectorExperimental>>& tracked_tags()
+      const {
     return WebContentsTagsManager::GetInstance()->tracked_tags();
   }
 
@@ -209,8 +213,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest, IsolatedWebAppTaskCreated) {
 
   EXPECT_EQ(2U, task_manager.tasks().size());
 
-  EXPECT_THAT(task_manager.tasks(),
-              Contains(Property(&Task::title, u"App: Isolated Web App")));
+  EXPECT_THAT(
+      task_manager.tasks(),
+      Contains(Pointee(Property(&Task::title, u"App: Isolated Web App"))));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest,
@@ -237,8 +242,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest,
 
   EXPECT_EQ(2U, task_manager.tasks().size());
 
-  EXPECT_THAT(task_manager.tasks(),
-              Contains(Property(&Task::title, u"App: Isolated Web App")));
+  EXPECT_THAT(
+      task_manager.tasks(),
+      Contains(Pointee(Property(&Task::title, u"App: Isolated Web App"))));
 
   GURL iwa_url =
       browser->tab_strip_model()->GetActiveWebContents()->GetLastCommittedURL();
@@ -251,8 +257,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest,
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_THAT(task_manager.tasks(),
-              Contains(Property(&Task::title, u"App: Simple Isolated App")));
+  EXPECT_THAT(
+      task_manager.tasks(),
+      Contains(Pointee(Property(&Task::title, u"App: Simple Isolated App"))));
 }
 
 }  // namespace task_manager

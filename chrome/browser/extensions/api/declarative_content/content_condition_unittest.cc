@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -69,12 +70,14 @@ class TestPredicateFactoryGeneratingPredicate : public ContentPredicateFactory {
     return predicate;
   }
 
-  const std::vector<const ContentPredicate*>& created_predicates() const {
+  const std::vector<raw_ptr<const ContentPredicate, VectorExperimental>>&
+  created_predicates() const {
     return created_predicates_;
   }
 
  private:
-  std::vector<const ContentPredicate*> created_predicates_;
+  std::vector<raw_ptr<const ContentPredicate, VectorExperimental>>
+      created_predicates_;
 };
 
 }  // namespace

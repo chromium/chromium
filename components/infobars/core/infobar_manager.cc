@@ -71,7 +71,7 @@ InfoBar* InfoBarManager::AddInfoBar(std::unique_ptr<InfoBar> new_infobar,
     return nullptr;
   }
 
-  for (auto* infobar : infobars_) {
+  for (infobars::InfoBar* infobar : infobars_) {
     if (infobar->delegate()->EqualsDelegate(new_infobar->delegate())) {
       DCHECK_NE(infobar->delegate(), new_infobar->delegate());
       return replace_existing ? ReplaceInfoBar(infobar, std::move(new_infobar))

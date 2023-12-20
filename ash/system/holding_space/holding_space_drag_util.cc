@@ -124,12 +124,12 @@ class DragImageLayoutManager : public views::LayoutManagerBase {
     return proposed_layout;
   }
 
-  std::vector<views::View*> GetChildViewsInPaintOrder(
-      const views::View* host) const override {
+  std::vector<raw_ptr<views::View, VectorExperimental>>
+  GetChildViewsInPaintOrder(const views::View* host) const override {
     // Paint `children` in reverse order so that earlier views paint at a higher
     // z-index than later views, like a deck of cards with the first `child`
     // stacked on top.
-    std::vector<views::View*> children;
+    std::vector<raw_ptr<views::View, VectorExperimental>> children;
     for (views::View* child : base::Reversed(host->children()))
       children.push_back(child);
     return children;
@@ -487,7 +487,7 @@ class DragImageView : public views::View {
     // Cache the first `DragImageItemView` so `drag_image_overflow_badge_` can
     // be relatively positioned if `kDragImageViewMaxItemsToPaint` is met.
     DCHECK(!container->children().empty());
-    first_drag_image_item_view_ = container->children()[0];
+    first_drag_image_item_view_ = container->children()[0].get();
   }
 
   void AddDragImageOverflowBadge(views::FillLayout* layout, size_t count) {

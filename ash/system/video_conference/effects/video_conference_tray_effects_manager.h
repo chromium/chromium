@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
@@ -109,7 +110,7 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
   void RemoveTileControllers(VcEffectsDelegate* delegate);
 
   // This list of registered effect delegates, unowned.
-  std::vector<VcEffectsDelegate*> effect_delegates_;
+  std::vector<raw_ptr<VcEffectsDelegate, VectorExperimental>> effect_delegates_;
 
   // A map from `VcEffectId` to (unique pointer to)
   // `video_conference::VcTileUiController`. This (potentially) gets updated

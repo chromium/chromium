@@ -675,7 +675,7 @@ void SurfaceManager::CommitFramesInRangeRecursively(
                            range.end().local_surface_id().embed_token()) {
     if (auto* allocation_group =
             GetAllocationGroupForSurfaceId(*range.start())) {
-      for (auto* surface : allocation_group->surfaces()) {
+      for (Surface* surface : allocation_group->surfaces()) {
         if (range.IsInRangeInclusive(surface->surface_id()))
           surface->CommitFramesRecursively(predicate);
       }
@@ -684,7 +684,7 @@ void SurfaceManager::CommitFramesInRangeRecursively(
 
   // Process the allocation group of the end of the range.
   if (auto* allocation_group = GetAllocationGroupForSurfaceId(range.end())) {
-    for (auto* surface : allocation_group->surfaces()) {
+    for (Surface* surface : allocation_group->surfaces()) {
       if (range.IsInRangeInclusive(surface->surface_id()))
         surface->CommitFramesRecursively(predicate);
     }

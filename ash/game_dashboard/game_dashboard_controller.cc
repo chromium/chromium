@@ -195,10 +195,12 @@ void GameDashboardController::GetWindowGameState(aura::Window* window) {
   } else if (IsArcWindow(window)) {
     // For ARC apps, the "app_id" is equivalent to its package name.
     delegate_->GetIsGame(
-        *app_id, base::BindOnce(&GameDashboardController::OnArcWindowIsGame,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                std::make_unique<aura::WindowTracker>(
-                                    std::vector<aura::Window*>({window}))));
+        *app_id, base::BindOnce(
+                     &GameDashboardController::OnArcWindowIsGame,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::make_unique<aura::WindowTracker>(
+                         std::vector<raw_ptr<aura::Window, VectorExperimental>>(
+                             {window}))));
   } else {
     RefreshWindowTracking(window, (*app_id == extension_misc::kGeForceNowAppId)
                                       ? WindowGameState::kGame

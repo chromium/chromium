@@ -4908,7 +4908,7 @@ TEST_P(OverviewRasterScaleTest,
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
   ASSERT_EQ(3u, desks_bar_view->mini_views().size());
-  auto* mini_view = desks_bar_view->mini_views()[2];
+  auto* mini_view = desks_bar_view->mini_views()[2].get();
   EXPECT_EQ(desk3, mini_view->desk());
   CombineDesksViaMiniView(mini_view, GetEventGenerator());
 
@@ -8288,8 +8288,8 @@ TEST_F(
 
   // Verify the grid arrangement.
   ASSERT_TRUE(InOverviewSession());
-  const std::vector<aura::Window*> expected_mru_list = {
-      window2.get(), window1.get(), window3.get()};
+  const std::vector<raw_ptr<aura::Window, VectorExperimental>>
+      expected_mru_list = {window2.get(), window1.get(), window3.get()};
   const std::vector<aura::Window*> expected_overview_list = {
       window2.get(), window1.get(), window3.get()};
   EXPECT_EQ(
@@ -8337,8 +8337,9 @@ TEST_F(
 
   // Verify the grid arrangement.
   ASSERT_TRUE(InOverviewSession());
-  const std::vector<aura::Window*> expected_mru_list = {
-      window3.get(), window2.get(), window1.get(), window4.get()};
+  const std::vector<raw_ptr<aura::Window, VectorExperimental>>
+      expected_mru_list = {window3.get(), window2.get(), window1.get(),
+                           window4.get()};
   const std::vector<aura::Window*> expected_overview_list = {
       window2.get(), window1.get(), window4.get()};
   EXPECT_EQ(

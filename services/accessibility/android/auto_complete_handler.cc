@@ -4,6 +4,7 @@
 
 #include "services/accessibility/android/auto_complete_handler.h"
 
+#include "base/memory/raw_ptr.h"
 #include "services/accessibility/android/accessibility_info_data_wrapper.h"
 #include "services/accessibility/android/android_accessibility_util.h"
 #include "services/accessibility/android/ax_tree_source_android.h"
@@ -70,7 +71,8 @@ AutoCompleteHandler::CreateIfNecessary(
   std::vector<IdAndHandler> results;
 
   // Check all updated nodes under the event source.
-  std::vector<AccessibilityInfoDataWrapper*> to_visit;
+  std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>
+      to_visit;
   to_visit.push_back(tree_source->GetFromId(event_data.source_id));
   while (!to_visit.empty()) {
     AccessibilityInfoDataWrapper* node_ptr = to_visit.back();

@@ -198,7 +198,7 @@ Browser* FindOneOtherBrowser(Browser* browser) {
 
   // Find the new browser.
   Browser* other_browser = nullptr;
-  for (auto* b : *BrowserList::GetInstance()) {
+  for (Browser* b : *BrowserList::GetInstance()) {
     if (b != browser)
       other_browser = b;
   }
@@ -317,7 +317,7 @@ class StartupBrowserCreatorTest : public extensions::ExtensionBrowserTest {
 
   Browser* FindOneOtherBrowserForProfile(Profile* profile,
                                          Browser* not_this_browser) {
-    for (auto* browser : *BrowserList::GetInstance()) {
+    for (Browser* browser : *BrowserList::GetInstance()) {
       if (browser != not_this_browser && browser->profile() == profile)
         return browser;
     }
@@ -711,8 +711,9 @@ class StartupBrowserCreatorChromeAppShortcutTest
               other_tab_strip->GetWebContentsAt(0)->GetVisibleURL());
 
     std::set<Browser*> initial_browsers;
-    for (auto* initial_browser : *BrowserList::GetInstance())
+    for (Browser* initial_browser : *BrowserList::GetInstance()) {
       initial_browsers.insert(initial_browser);
+    }
 
     content::TestNavigationObserver same_tab_observer(
         other_tab_strip->GetActiveWebContents(), 1,
@@ -2932,7 +2933,7 @@ IN_PROC_BROWSER_TEST_F(
   Browser* app_browser2;
   // There should be 3 browser windows opened at the moment.
   ASSERT_EQ(3u, chrome::GetBrowserCount(browser()->profile()));
-  for (auto* b : *BrowserList::GetInstance()) {
+  for (Browser* b : *BrowserList::GetInstance()) {
     if (b != browser() && b != app_browser1)
       app_browser2 = b;
   }
@@ -3000,7 +3001,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolHandlingTest,
   Browser* app_browser2;
   // There should be 3 browser windows opened at the moment.
   ASSERT_EQ(3u, chrome::GetBrowserCount(browser()->profile()));
-  for (auto* b : *BrowserList::GetInstance()) {
+  for (Browser* b : *BrowserList::GetInstance()) {
     if (b != browser() && b != app_browser1)
       app_browser2 = b;
   }

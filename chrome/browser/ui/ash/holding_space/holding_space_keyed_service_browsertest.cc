@@ -164,8 +164,9 @@ void WaitForItemInitialization(
   ON_CALL(mock, OnHoldingSpaceItemsRemoved)
       .WillByDefault([&](const std::vector<const HoldingSpaceItem*>& items) {
         for (const HoldingSpaceItem* item : items) {
-          if (item != item_it->get())
+          if (item != item_it->get()) {
             continue;
+          }
           ADD_FAILURE() << "Item unexpectedly removed: " << item->id();
           run_loop.Quit();
           return;

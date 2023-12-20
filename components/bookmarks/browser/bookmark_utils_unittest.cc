@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -314,7 +315,7 @@ TEST_F(BookmarkUtilsTest, MAYBE_CopyPaste) {
                                            GURL("http://www.google.com"));
 
   // Copy a node to the clipboard.
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(node);
   CopyToClipboard(model.get(), nodes, false,
                   metrics::BookmarkEditSource::kOther);
@@ -348,7 +349,7 @@ TEST_F(BookmarkUtilsTest, MakeTitleUnique) {
   EXPECT_EQ(title_text, bookmark_bar_node->children()[0]->GetTitle());
 
   // Copy a node to the clipboard.
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(node);
   CopyToClipboard(model.get(), nodes, false,
                   metrics::BookmarkEditSource::kOther);
@@ -375,7 +376,7 @@ TEST_F(BookmarkUtilsTest, CopyPasteMetaInfo) {
   model->SetNodeMetaInfo(node, "someotherkey", "someothervalue");
 
   // Copy a node to the clipboard.
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(node);
   CopyToClipboard(model.get(), nodes, false,
                   metrics::BookmarkEditSource::kOther);
@@ -420,7 +421,7 @@ TEST_F(BookmarkUtilsTest, MAYBE_CutToClipboard) {
   const BookmarkNode* n2 = model->AddURL(model->other_node(), 1, title, url);
 
   // Cut the nodes to the clipboard.
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(n1);
   nodes.push_back(n2);
   CopyToClipboard(model.get(), nodes, true,
@@ -453,7 +454,7 @@ TEST_F(BookmarkUtilsTest, MAYBE_PasteNonEditableNodes) {
                                            GURL("http://www.google.com"));
 
   // Copy a node to the clipboard.
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(node);
   CopyToClipboard(model.get(), nodes, false,
                   metrics::BookmarkEditSource::kOther);
@@ -472,7 +473,7 @@ TEST_F(BookmarkUtilsTest, GetParentForNewNodes) {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   // This tests the case where selection contains one item and that item is a
   // folder.
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(model->bookmark_bar_node());
   size_t index = static_cast<size_t>(-1);
   const BookmarkNode* real_parent =
@@ -579,7 +580,8 @@ TEST_F(BookmarkUtilsTest, RemoveAllBookmarks) {
   model->AddURL(model->mobile_node(), 0, title, url);
   model->AddURL(managed_node, 0, title, url);
 
-  std::vector<const BookmarkNode*> nodes = model->GetNodesByURL(url);
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+      model->GetNodesByURL(url);
   ASSERT_EQ(4u, nodes.size());
 
   RemoveAllBookmarks(model.get(), url);

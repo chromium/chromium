@@ -30,8 +30,9 @@ MockPermissionPromptFactory::MockPermissionPromptFactory(
 MockPermissionPromptFactory::~MockPermissionPromptFactory() {
   manager_->set_view_factory_for_testing(
       base::BindRepeating(&MockPermissionPromptFactory::DoNotCreate));
-  for (auto* prompt : prompts_)
+  for (permissions::MockPermissionPrompt* prompt : prompts_) {
     prompt->factory_ = nullptr;
+  }
   prompts_.clear();
 }
 

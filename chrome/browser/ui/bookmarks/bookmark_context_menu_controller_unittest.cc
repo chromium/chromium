@@ -95,7 +95,7 @@ class BookmarkContextMenuControllerTest : public testing::Test {
 
 // Tests Deleting from the menu.
 TEST_F(BookmarkContextMenuControllerTest, DeleteURL) {
-  std::vector<const BookmarkNode*> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
       model_->bookmark_bar_node()->children().front().get(),
   };
   BookmarkContextMenuController controller(
@@ -113,7 +113,8 @@ TEST_F(BookmarkContextMenuControllerTest, DeleteURL) {
 TEST_F(BookmarkContextMenuControllerTest, EmptyNodes) {
   BookmarkContextMenuController controller(
       nullptr, nullptr, nullptr, profile_.get(), BookmarkLaunchLocation::kNone,
-      model_->other_node(), std::vector<const BookmarkNode*>());
+      model_->other_node(),
+      std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>());
   EXPECT_FALSE(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_OPEN_ALL));
   EXPECT_FALSE(
       controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW));
@@ -129,7 +130,7 @@ TEST_F(BookmarkContextMenuControllerTest, EmptyNodes) {
 // Tests the enabled state of the menus when supplied a vector with a single
 // url.
 TEST_F(BookmarkContextMenuControllerTest, SingleURL) {
-  std::vector<const BookmarkNode*> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
       model_->bookmark_bar_node()->children().front().get(),
   };
   BookmarkContextMenuController controller(
@@ -150,7 +151,7 @@ TEST_F(BookmarkContextMenuControllerTest, SingleURL) {
 // Tests the enabled state of the menus when supplied a vector with multiple
 // urls.
 TEST_F(BookmarkContextMenuControllerTest, MultipleURLs) {
-  std::vector<const BookmarkNode*> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
       model_->bookmark_bar_node()->children()[0].get(),
       model_->bookmark_bar_node()->children()[1]->children()[0].get(),
   };
@@ -172,7 +173,7 @@ TEST_F(BookmarkContextMenuControllerTest, MultipleURLs) {
 // Tests the enabled state of the menus when supplied an vector with a single
 // folder.
 TEST_F(BookmarkContextMenuControllerTest, SingleFolder) {
-  std::vector<const BookmarkNode*> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
       model_->bookmark_bar_node()->children()[2].get(),
   };
   BookmarkContextMenuController controller(
@@ -193,7 +194,7 @@ TEST_F(BookmarkContextMenuControllerTest, SingleFolder) {
 // Tests the enabled state of the menus when supplied a vector with multiple
 // folders, all of which are empty.
 TEST_F(BookmarkContextMenuControllerTest, MultipleEmptyFolders) {
-  std::vector<const BookmarkNode*> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
       model_->bookmark_bar_node()->children()[2].get(),
       model_->bookmark_bar_node()->children()[3].get(),
   };
@@ -215,7 +216,7 @@ TEST_F(BookmarkContextMenuControllerTest, MultipleEmptyFolders) {
 // Tests the enabled state of the menus when supplied a vector with multiple
 // folders, some of which contain URLs.
 TEST_F(BookmarkContextMenuControllerTest, MultipleFoldersWithURLs) {
-  std::vector<const BookmarkNode*> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
       model_->bookmark_bar_node()->children()[3].get(),
       model_->bookmark_bar_node()->children()[4].get(),
   };
@@ -245,7 +246,7 @@ TEST_F(BookmarkContextMenuControllerTest, DisableIncognito) {
   bookmarks::test::WaitForBookmarkModelToLoad(model);
   AddTestData(model);
 
-  std::vector<const BookmarkNode*> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
       model_->bookmark_bar_node()->children().front().get(),
   };
   BookmarkContextMenuController controller(nullptr, nullptr, nullptr, incognito,
@@ -258,7 +259,7 @@ TEST_F(BookmarkContextMenuControllerTest, DisableIncognito) {
 
 // Tests that you can't remove/edit when showing the other node.
 TEST_F(BookmarkContextMenuControllerTest, DisabledItemsWithOtherNode) {
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(model_->other_node());
   BookmarkContextMenuController controller(
       nullptr, nullptr, nullptr, profile_.get(), BookmarkLaunchLocation::kNone,
@@ -272,7 +273,7 @@ TEST_F(BookmarkContextMenuControllerTest, DisabledItemsWithOtherNode) {
 TEST_F(BookmarkContextMenuControllerTest, EmptyNodesNullParent) {
   BookmarkContextMenuController controller(
       nullptr, nullptr, nullptr, profile_.get(), BookmarkLaunchLocation::kNone,
-      nullptr, std::vector<const BookmarkNode*>());
+      nullptr, std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>());
   EXPECT_FALSE(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_OPEN_ALL));
   EXPECT_FALSE(
       controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW));
@@ -288,7 +289,7 @@ TEST_F(BookmarkContextMenuControllerTest, EmptyNodesNullParent) {
 // Tests the enabled state of the menus when supplied a vector containing just
 // the top-level bookmark bar node.
 TEST_F(BookmarkContextMenuControllerTest, BookmarkBar) {
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(model_->bookmark_bar_node());
   BookmarkContextMenuController controller(
       nullptr, nullptr, nullptr, profile_.get(), BookmarkLaunchLocation::kNone,
@@ -307,7 +308,7 @@ TEST_F(BookmarkContextMenuControllerTest, BookmarkBar) {
 
 TEST_F(BookmarkContextMenuControllerTest, CutCopyPasteNode) {
   const BookmarkNode* bb_node = model_->bookmark_bar_node();
-  std::vector<const BookmarkNode*> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
       model_->bookmark_bar_node()->children()[0].get(),
   };
   std::unique_ptr<BookmarkContextMenuController> controller(
@@ -344,7 +345,8 @@ TEST_F(BookmarkContextMenuControllerTest,
        ManagedShowAppsShortcutInBookmarksBar) {
   BookmarkContextMenuController controller(
       nullptr, nullptr, nullptr, profile_.get(), BookmarkLaunchLocation::kNone,
-      model_->bookmark_bar_node(), std::vector<const BookmarkNode*>());
+      model_->bookmark_bar_node(),
+      std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>());
 
   // By default, the pref is not managed and the command is enabled.
   sync_preferences::TestingPrefServiceSyncable* prefs =

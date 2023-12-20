@@ -89,7 +89,7 @@ content::WebContents* FindTelemetryExtensionOpenAndSecureAppUi(
     return nullptr;
   }
 
-  for (auto* target_browser : *BrowserList::GetInstance()) {
+  for (Browser* target_browser : *BrowserList::GetInstance()) {
     if (target_browser->profile() != profile) {
       continue;
     }

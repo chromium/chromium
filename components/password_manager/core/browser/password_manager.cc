@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -207,8 +208,10 @@ bool IsMutedInsecureCredential(const PasswordForm* credential,
   return it != credential->password_issues.end() && it->second.is_muted;
 }
 
-bool HasMutedCredentials(const std::vector<const PasswordForm*>& credentials,
-                         const std::u16string& username) {
+bool HasMutedCredentials(
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        credentials,
+    const std::u16string& username) {
   return base::ranges::any_of(credentials, [&username](const auto& credential) {
     return credential->username_value == username &&
            (IsMutedInsecureCredential(credential, InsecureType::kLeaked) ||
@@ -546,9 +549,9 @@ void PasswordManager::DropFormManagers() {
   predictions_.clear();
 }
 
-const std::vector<const PasswordForm*>* PasswordManager::GetBestMatches(
-    PasswordManagerDriver* driver,
-    autofill::FormRendererId form_id) {
+const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
+PasswordManager::GetBestMatches(PasswordManagerDriver* driver,
+                                autofill::FormRendererId form_id) {
   PasswordFormManager* manager = GetMatchedManager(driver, form_id);
   return manager ? &(manager->GetBestMatches()) : nullptr;
 }

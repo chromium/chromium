@@ -22,8 +22,9 @@ RootWindowLayoutManager::~RootWindowLayoutManager() = default;
 
 void RootWindowLayoutManager::OnWindowResized() {
   gfx::Rect bounds(owner_->bounds().size());
-  for (auto* container : containers_)
+  for (aura::Window* container : containers_) {
     container->SetBounds(bounds);
+  }
 }
 
 void RootWindowLayoutManager::OnWindowAddedToLayout(aura::Window* child) {}

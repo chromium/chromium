@@ -19,6 +19,7 @@
 #include "ash/app_list/views/search_result_container_view.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "ui/events/event.h"
 
@@ -633,7 +634,8 @@ class ResultSelectionTest : public testing::Test,
 
   std::unique_ptr<test::AppListTestViewDelegate> app_list_test_delegate_;
   std::unique_ptr<ResultSelectionController> result_selection_controller_;
-  std::vector<SearchResultContainerView*> containers_;
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      containers_;
 
   // Set up key events for test. These will never be marked as 'handled'.
   ui::KeyEvent down_arrow_ =

@@ -144,7 +144,7 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
   }
 
   std::vector<Browser*> browsers;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile()->GetOriginalProfile() ==
         profile->GetOriginalProfile()) {
       browsers.push_back(browser);

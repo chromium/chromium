@@ -197,7 +197,7 @@ class BlockableProxyResolverFactory : public ProxyResolverFactory {
     return OK;
   }
 
-  std::vector<BlockableProxyResolver*> resolvers() {
+  std::vector<raw_ptr<BlockableProxyResolver, VectorExperimental>> resolvers() {
     base::AutoLock lock(lock_);
     return resolvers_;
   }
@@ -208,7 +208,7 @@ class BlockableProxyResolverFactory : public ProxyResolverFactory {
   }
 
  private:
-  std::vector<BlockableProxyResolver*> resolvers_;
+  std::vector<raw_ptr<BlockableProxyResolver, VectorExperimental>> resolvers_;
   std::vector<scoped_refptr<PacFileData>> script_data_;
   base::Lock lock_;
 };

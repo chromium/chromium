@@ -161,7 +161,7 @@ void CustomHomePagesTableModel::SetToCurrentlyOpenPages(
 
   // Add tabs from appropriate browser windows.
   size_t add_index = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (!ShouldIncludeBrowser(browser))
       continue;
 

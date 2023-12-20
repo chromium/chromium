@@ -152,7 +152,8 @@ class PowerBookmarkService : public KeyedService,
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   base::ObserverList<PowerBookmarkObserver>::Unchecked observers_;
-  std::vector<PowerBookmarkDataProvider*> data_providers_;
+  std::vector<raw_ptr<PowerBookmarkDataProvider, VectorExperimental>>
+      data_providers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PowerBookmarkService> weak_ptr_factory_{this};

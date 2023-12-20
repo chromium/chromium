@@ -88,7 +88,10 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
   virtual ~ClassMetaData();
 
   const std::string& type_name() const { return type_name_; }
-  const std::vector<MemberMetaDataBase*>& members() const { return members_; }
+  const std::vector<raw_ptr<MemberMetaDataBase, VectorExperimental>>& members()
+      const {
+    return members_;
+  }
   const std::string& file() const { return file_; }
   const int& line() const { return line_; }
   const std::string& GetUniqueName() const;
@@ -163,7 +166,7 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
  private:
   std::string type_name_;
   mutable std::string unique_name_;
-  std::vector<MemberMetaDataBase*> members_;
+  std::vector<raw_ptr<MemberMetaDataBase, VectorExperimental>> members_;
   raw_ptr<ClassMetaData> parent_class_meta_data_ = nullptr;
   std::string file_;
   const int line_ = 0;

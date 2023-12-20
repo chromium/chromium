@@ -99,7 +99,8 @@ class SidePanelToolbarContainer : public ToolbarIconContainerView {
 
   const raw_ptr<SidePanelToolbarButton> side_panel_button_;
 
-  std::vector<PinnedSidePanelToolbarButton*> pinned_entry_buttons_;
+  std::vector<raw_ptr<PinnedSidePanelToolbarButton, VectorExperimental>>
+      pinned_entry_buttons_;
   base::CallbackListSubscription side_panel_visibility_change_subscription_;
   base::CallbackListSubscription pinned_button_visibility_change_subscription_;
   PrefChangeRegistrar pref_change_registrar_;

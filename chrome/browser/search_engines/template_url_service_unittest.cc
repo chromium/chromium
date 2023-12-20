@@ -2760,7 +2760,7 @@ TEST_P(TemplateURLServiceTest,
 
   // Once the policy no longer applies, the user should be able to continue
   // using the site search engines originally defined.
-  for (const auto* user_engine : existing_engines) {
+  for (const TemplateURL* user_engine : existing_engines) {
     const TemplateURL* actual_turl =
         model()->GetTemplateURLForKeyword(user_engine->keyword());
     ASSERT_TRUE(actual_turl);
@@ -2837,7 +2837,7 @@ TEST_P(TemplateURLServiceTest,
 
   // Once the policy no longer applies, the user should be able to continue
   // using the site search engines originally defined.
-  for (const auto* user_engine : existing_engines) {
+  for (const TemplateURL* user_engine : existing_engines) {
     const TemplateURL* actual_turl =
         model()->GetTemplateURLForKeyword(user_engine->keyword());
     ASSERT_TRUE(actual_turl);

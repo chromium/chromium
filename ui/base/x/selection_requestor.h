@@ -124,7 +124,7 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionRequestor {
   // In progress requests. Requests are added to the list at the start of
   // PerformBlockingConvertSelection() and are removed and destroyed right
   // before the method terminates.
-  std::vector<Request*> requests_;
+  std::vector<raw_ptr<Request, VectorExperimental>> requests_;
 
   // The index of the currently active request in |requests_|. The active
   // request is the request for which XConvertSelection() has been

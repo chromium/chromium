@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/raster/raster_source.h"
@@ -237,7 +238,8 @@ void PictureLayerTilingSet::VerifyTilings(
 void PictureLayerTilingSet::CleanUpTilings(
     float min_acceptable_high_res_scale_key,
     float max_acceptable_high_res_scale_key,
-    const std::vector<PictureLayerTiling*>& needed_tilings,
+    const std::vector<raw_ptr<PictureLayerTiling, VectorExperimental>>&
+        needed_tilings,
     PictureLayerTilingSet* twin_set) {
   std::vector<PictureLayerTiling*> to_remove;
   for (const auto& tiling : tilings_) {

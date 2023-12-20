@@ -78,14 +78,14 @@ class ASH_EXPORT NotificationListView
   // Returns the notifications in the view hierarchy that are also in the
   // MessageCenter, whose bottom position is above |y_offset|. O(n) where n is
   // number of notifications.
-  std::vector<message_center::Notification*> GetNotificationsAboveY(
-      int y_offset) const;
+  std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+  GetNotificationsAboveY(int y_offset) const;
 
   // Returns the notifications in the view hierarchy that are also in the
   // MessageCenter, whose bottom position is below |y_offset|. O(n) where n is
   // number of notifications.
-  std::vector<message_center::Notification*> GetNotificationsBelowY(
-      int y_offset) const;
+  std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+  GetNotificationsBelowY(int y_offset) const;
 
   // Same as GetNotificationsAboveY, but returns notifications that are not in
   // the MessageCenter. This is useful for the clear all animation which first
@@ -163,8 +163,8 @@ class ASH_EXPORT NotificationListView
   void ConfigureMessageView(message_center::MessageView* message_view);
 
   // Virtual for testing.
-  virtual std::vector<message_center::Notification*> GetStackedNotifications()
-      const;
+  virtual std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+  GetStackedNotifications() const;
 
   // Virtual for testing.
   virtual std::vector<std::string> GetNonVisibleNotificationIdsInViewHierarchy()

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/compositor_export.h"
 
 namespace gfx {
@@ -20,7 +21,8 @@ namespace ui {
 class Layer;
 
 using DebugLayerChildCallback =
-    base::RepeatingCallback<std::vector<Layer*>(const Layer*)>;
+    base::RepeatingCallback<std::vector<raw_ptr<Layer, VectorExperimental>>(
+        const Layer*)>;
 
 // Log the layer hierarchy. Mark layers which contain |mouse_location| with '*'.
 COMPOSITOR_EXPORT void PrintLayerHierarchy(const Layer* layer,

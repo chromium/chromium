@@ -28,7 +28,8 @@ class ExtensionMessage;
 // set of capabilities negotiated between client and host.
 class HostExtensionSessionManager {
  public:
-  using HostExtensions = std::vector<HostExtension*>;
+  using HostExtensions =
+      std::vector<raw_ptr<HostExtension, VectorExperimental>>;
 
   // Creates an extension manager for the specified |extensions|.
   HostExtensionSessionManager(const HostExtensions& extensions,

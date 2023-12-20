@@ -288,7 +288,7 @@ bool PermissionPromptBubbleBaseView::IsOneTimePermission(
     return false;
   }
   CHECK_GT(delegate.Requests().size(), 0u);
-  for (auto* request : delegate.Requests()) {
+  for (permissions::PermissionRequest* request : delegate.Requests()) {
     auto content_setting_type =
         permissions::RequestTypeToContentSettingsType(request->request_type());
     if (!content_setting_type.has_value() ||
@@ -301,7 +301,8 @@ bool PermissionPromptBubbleBaseView::IsOneTimePermission(
 }
 
 std::u16string PermissionPromptBubbleBaseView::GetAllowAlwaysText(
-    const std::vector<permissions::PermissionRequest*>& visible_requests) {
+    const std::vector<raw_ptr<permissions::PermissionRequest,
+                              VectorExperimental>>& visible_requests) {
   CHECK_GT(visible_requests.size(), 0u);
 
   if (visible_requests.size() == 1 &&

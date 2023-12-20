@@ -222,7 +222,7 @@ TEST(DecisionDetailsTest, TabManagerLifecycleStateChangeUkm) {
   EXPECT_EQ(1u, ukm_recorder.entries_count());
   auto entries = ukm_recorder.GetEntriesByName(ukm_builder.kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   ukm_recorder.ExpectEntryMetric(
       entry, ukm_builder.kFailureLifecyclesEnterprisePolicyOptOutName, 1);
   ukm_recorder.ExpectEntryMetric(entry,

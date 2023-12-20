@@ -13,6 +13,7 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 #include "base/synchronization/lock.h"
@@ -203,7 +204,8 @@ class BASE_EXPORT PoissonAllocationSampler {
   // operations under the lock) as such the SamplesObservers themselves need
   // to be thread-safe and support being invoked racily after
   // RemoveSamplesObserver().
-  std::vector<SamplesObserver*> observers_ GUARDED_BY(mutex_);
+  std::vector<raw_ptr<SamplesObserver, VectorExperimental>> observers_
+      GUARDED_BY(mutex_);
 
   // Fast, thread-safe access to the current profiling state.
   static std::atomic<ProfilingStateFlagMask> profiling_state_;

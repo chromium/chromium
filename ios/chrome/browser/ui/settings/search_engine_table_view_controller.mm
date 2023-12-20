@@ -497,7 +497,8 @@ const char kUmaSelectDefaultSearchEngine[] =
   // engines directly (for both choice-screen-eligible users and
   // non-choice-screen-eligible users). This way we don't have to worry about
   // calling two different methods anymore.
-  std::vector<TemplateURL*> urls = _templateURLService->GetTemplateURLs();
+  std::vector<raw_ptr<TemplateURL, VectorExperimental>> urls =
+      _templateURLService->GetTemplateURLs();
   _firstList.clear();
   _firstList.reserve(urls.size());
   _secondList.clear();

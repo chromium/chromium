@@ -289,7 +289,7 @@ AccountId GetPublicSessionAutoLoginAccountId(
 int CountRegularUsers(const user_manager::UserList& users) {
   // Counts regular device users that can log in.
   int regular_users_counter = 0;
-  for (auto* user : users) {
+  for (user_manager::User* user : users) {
     // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
     // kiosk UI) is currently disabled and it gets the apps directly from
     // KioskChromeAppManager, ArcKioskAppManager and WebKioskAppManager.
@@ -1103,7 +1103,7 @@ user_manager::UserList ExistingUserController::ExtractLoginUsers(
   CrosSettings::Get()->GetBoolean(kAccountsPrefShowUserNamesOnSignIn,
                                   &show_users_on_signin);
   user_manager::UserList filtered_users;
-  for (auto* user : users) {
+  for (user_manager::User* user : users) {
     // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
     // kiosk UI) is currently disabled and it gets the apps directly from
     // KioskChromeAppManager, ArcKioskAppManager and WebKioskAppManager.

@@ -37,7 +37,7 @@ void Minimize(aura::Window* window) {
 // Minimizes all windows in a `aura::WindowTracker`, if they are in containers
 // that should have their windows minimized. Can be called asynchronously.
 void MaybeMinimize(aura::WindowTracker* window_tracker) {
-  for (auto* window : window_tracker->windows()) {
+  for (aura::Window* window : window_tracker->windows()) {
     if (ShouldMinimizeChildren(window->parent())) {
       ScopedAnimationDisabler animation_disabler(window);
       Minimize(window);
@@ -50,7 +50,7 @@ void MaybeMinimize(aura::WindowTracker* window_tracker) {
 // WelcomeTourWindowMinimizer --------------------------------------------------
 
 WelcomeTourWindowMinimizer::WelcomeTourWindowMinimizer() {
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     OnRootWindowAdded(root_window);
   }
 
@@ -89,7 +89,7 @@ void WelcomeTourWindowMinimizer::OnRootWindowAdded(aura::Window* root_window) {
 
   for (auto* container : containers) {
     if (ShouldMinimizeChildren(container)) {
-      for (auto* child : container->children()) {
+      for (aura::Window* child : container->children()) {
         app_window_minimizer_.AddWindow(child);
       }
     }

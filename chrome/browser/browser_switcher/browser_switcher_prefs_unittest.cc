@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_switcher/browser_switcher_sitelist.h"
 
 #include <algorithm>
@@ -59,8 +60,9 @@ class BrowserSwitcherPrefsTest : public testing::Test {
     policy_provider_->SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
         /*is_first_policy_load_complete_return=*/true);
-    std::vector<policy::ConfigurationPolicyProvider*> providers = {
-        policy_provider_.get()};
+    std::vector<
+        raw_ptr<policy::ConfigurationPolicyProvider, VectorExperimental>>
+        providers = {policy_provider_.get()};
     policy_service_ = std::make_unique<policy::PolicyServiceImpl>(providers);
     prefs_ = std::make_unique<TestBrowserSwitcherPrefs>(&prefs_backend_,
                                                         policy_service_.get());

@@ -243,8 +243,9 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Manages the automatic image annotations, if enabled.
   std::unique_ptr<AXImageAnnotator> ax_image_annotator_;
 
-  using PluginAXTreeSerializer =
-      ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>;
+  using PluginAXTreeSerializer = ui::AXTreeSerializer<
+      const ui::AXNode*,
+      std::vector<raw_ptr<const ui::AXNode, VectorExperimental>>>;
   std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;
   raw_ptr<PluginAXTreeSource, ExperimentalRenderer> plugin_tree_source_;
 

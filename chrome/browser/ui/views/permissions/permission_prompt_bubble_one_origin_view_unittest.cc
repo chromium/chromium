@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_one_origin_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -35,10 +36,16 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
               origin, request_type);
         });
     raw_requests_ = base::test::ToVector(
-        requests_, &std::unique_ptr<permissions::PermissionRequest>::get);
+        requests_,
+        [](const auto& request)
+            -> raw_ptr<permissions::PermissionRequest, VectorExperimental> {
+          return request.get();
+        });
   }
 
-  const std::vector<permissions::PermissionRequest*>& Requests() override {
+  const std::vector<
+      raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
+  Requests() override {
     return raw_requests_;
   }
 
@@ -84,7 +91,8 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
 
  private:
   std::vector<std::unique_ptr<permissions::PermissionRequest>> requests_;
-  std::vector<permissions::PermissionRequest*> raw_requests_;
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      raw_requests_;
   base::WeakPtrFactory<TestDelegate> weak_factory_{this};
 };
 

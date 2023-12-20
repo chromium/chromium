@@ -7702,8 +7702,9 @@ class SitePerProcessAndroidImeTest : public SitePerProcessBrowserTest {
         "  input.select();"
         "};";
 
-    for (auto* frame : frames_)
+    for (content::RenderFrameHostImpl* frame : frames_) {
       ASSERT_TRUE(ExecJs(frame, add_input_script));
+    }
   }
 
   // This methods tries to commit |text| by simulating a native call from Java.
@@ -7725,7 +7726,7 @@ class SitePerProcessAndroidImeTest : public SitePerProcessBrowserTest {
         base::android::JavaParamRef<jstring>(env, jtext.obj()), 0);
   }
 
-  std::vector<RenderFrameHostImpl*> frames_;
+  std::vector<raw_ptr<RenderFrameHostImpl, VectorExperimental>> frames_;
 };
 
 // This test verifies that committing text will be applied on the focused

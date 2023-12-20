@@ -39,7 +39,7 @@ class ActiveTabObserver : public TabStripModelObserver,
  public:
   ActiveTabObserver() {
     BrowserList::AddObserver(this);
-    for (auto* browser : *BrowserList::GetInstance()) {
+    for (Browser* browser : *BrowserList::GetInstance()) {
       AddBrowserTabStripObservation(browser);
     }
   }

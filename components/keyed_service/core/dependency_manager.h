@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/dependency_graph.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 
@@ -117,11 +118,14 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   virtual void DumpContextDependencies(void* context) const = 0;
 #endif  // NDEBUG
 
-  std::vector<DependencyNode*> GetDestructionOrder();
-  static void ShutdownFactoriesInOrder(void* context,
-                                       std::vector<DependencyNode*>& order);
-  static void DestroyFactoriesInOrder(void* context,
-                                      std::vector<DependencyNode*>& order);
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>>
+  GetDestructionOrder();
+  static void ShutdownFactoriesInOrder(
+      void* context,
+      std::vector<raw_ptr<DependencyNode, VectorExperimental>>& order);
+  static void DestroyFactoriesInOrder(
+      void* context,
+      std::vector<raw_ptr<DependencyNode, VectorExperimental>>& order);
 
   DependencyGraph dependency_graph_;
 

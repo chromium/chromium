@@ -7,6 +7,7 @@
 #include <map>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -79,7 +80,7 @@ FakeDeviceInfoTracker::CountActiveDevicesByType() const {
   }
 
   std::map<DeviceInfo::FormFactor, int> count_by_type;
-  for (const auto* device : devices_) {
+  for (const syncer::DeviceInfo* device : devices_) {
     count_by_type[device->form_factor()]++;
   }
   return count_by_type;
@@ -118,7 +119,7 @@ void FakeDeviceInfoTracker::Remove(const DeviceInfo* device) {
 
 void FakeDeviceInfoTracker::Replace(const DeviceInfo* old_device,
                                     const DeviceInfo* new_device) {
-  std::vector<const DeviceInfo*>::iterator it =
+  std::vector<raw_ptr<const DeviceInfo, VectorExperimental>>::iterator it =
       base::ranges::find(devices_, old_device);
   DCHECK(devices_.end() != it) << "Tracker doesn't contain device";
   *it = new_device;

@@ -125,7 +125,7 @@ class EnterpriseBadgeLayout : public views::LayoutManager {
     DCHECK_EQ(host->children().size(), 1U);
     const gfx::Rect content_bounds(host->GetContentsBounds());
     const int offset = content_bounds.width() - size_;
-    auto* child = host->children()[0];
+    auto* child = host->children()[0].get();
     child->SetPosition({offset, offset});
     child->SetSize({size_, size_});
   }

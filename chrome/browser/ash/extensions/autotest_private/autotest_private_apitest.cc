@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/extensions/autotest_private/autotest_private_api.h"
 
 #include <memory>
@@ -560,7 +561,8 @@ class AutotestPrivateSearchTest
   AutotestPrivateSearchTest& operator=(const AutotestPrivateSearchTest&) =
       delete;
 
-  std::vector<ChromeSearchResult*> PublishedResults() {
+  std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
+  PublishedResults() {
     return AppListClientImpl::GetInstance()
         ->GetModelUpdaterForTest()
         ->GetPublishedSearchResultsForTest();
@@ -636,7 +638,7 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
   results_waiter.Wait();
 
   std::vector<ChromeSearchResult*> results;
-  for (auto* result : PublishedResults()) {
+  for (ChromeSearchResult* result : PublishedResults()) {
     // There may be zero state results that are also published, but not visible
     // in the UI. This test should only check search list results.
     if (result->display_type() != ash::SearchResultDisplayType::kList) {

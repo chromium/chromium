@@ -58,7 +58,8 @@ namespace internal {
 // possible so that decoding can progress smoothly.
 // Templated on the image type for testing.
 template <typename Image>
-void MEDIA_GPU_EXPORT MaybeRenderEarly(std::vector<Image*>* image_vector_ptr) {
+void MEDIA_GPU_EXPORT MaybeRenderEarly(
+    std::vector<raw_ptr<Image, VectorExperimental>>* image_vector_ptr) {
   auto& images = *image_vector_ptr;
   if (images.empty())
     return;

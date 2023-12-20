@@ -258,7 +258,7 @@ class WebXrPresentationState {
   raw_ptr<WebXrFrame> animating_frame_ = nullptr;
   raw_ptr<WebXrFrame> processing_frame_ = nullptr;
   raw_ptr<WebXrFrame> rendering_frame_ = nullptr;
-  std::vector<WebXrFrame*> rendering_frames_;
+  std::vector<raw_ptr<WebXrFrame, VectorExperimental>> rendering_frames_;
   base::queue<WebXrFrame*> idle_frames_;
 
   bool mailbox_bridge_ready_ = false;

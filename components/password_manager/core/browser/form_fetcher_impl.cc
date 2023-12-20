@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -47,9 +48,10 @@ std::vector<std::unique_ptr<PasswordForm>> ConvertToUniquePtr(
 
 // Create a vector of const PasswordForm from a vector of
 // unique_ptr<PasswordForm> by applying get() item-wise.
-std::vector<const PasswordForm*> MakeWeakCopies(
+std::vector<raw_ptr<const PasswordForm, VectorExperimental>> MakeWeakCopies(
     const std::vector<std::unique_ptr<PasswordForm>>& owning) {
-  std::vector<const PasswordForm*> result(owning.size());
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> result(
+      owning.size());
   base::ranges::transform(owning, result.begin(),
                           &std::unique_ptr<PasswordForm>::get);
   return result;
@@ -159,17 +161,18 @@ const std::vector<InteractionsStats>& FormFetcherImpl::GetInteractionsStats()
   return interactions_stats_;
 }
 
-std::vector<const PasswordForm*> FormFetcherImpl::GetInsecureCredentials()
-    const {
+std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+FormFetcherImpl::GetInsecureCredentials() const {
   return MakeWeakCopies(insecure_credentials_);
 }
 
-std::vector<const PasswordForm*> FormFetcherImpl::GetNonFederatedMatches()
-    const {
+std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+FormFetcherImpl::GetNonFederatedMatches() const {
   return MakeWeakCopies(non_federated_);
 }
 
-std::vector<const PasswordForm*> FormFetcherImpl::GetFederatedMatches() const {
+std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+FormFetcherImpl::GetFederatedMatches() const {
   return MakeWeakCopies(federated_);
 }
 
@@ -206,13 +209,13 @@ bool FormFetcherImpl::IsMovingBlocked(const signin::GaiaIdHash& destination,
   return false;
 }
 
-const std::vector<const PasswordForm*>& FormFetcherImpl::GetAllRelevantMatches()
-    const {
+const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+FormFetcherImpl::GetAllRelevantMatches() const {
   return non_federated_same_scheme_;
 }
 
-const std::vector<const PasswordForm*>& FormFetcherImpl::GetBestMatches()
-    const {
+const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+FormFetcherImpl::GetBestMatches() const {
   return best_matches_;
 }
 

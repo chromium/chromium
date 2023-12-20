@@ -119,7 +119,7 @@ bool PreTargetHandler::DoDispatchEvent(views::View* view,
 
   // Post-order dispatch the event on child views in reverse Z-order.
   auto children = view->GetChildrenInZOrder();
-  for (auto* child : base::Reversed(children)) {
+  for (views::View* child : base::Reversed(children)) {
     // Dispatch a fresh event to preserve the |event| for the parent target.
     std::unique_ptr<ui::Event> to_dispatch;
     if (event->IsMouseEvent()) {

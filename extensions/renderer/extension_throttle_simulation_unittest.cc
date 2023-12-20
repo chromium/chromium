@@ -108,7 +108,7 @@ class DiscreteTimeSimulation {
   }
 
  private:
-  std::vector<Actor*> actors_;
+  std::vector<raw_ptr<Actor, VectorExperimental>> actors_;
 };
 
 // Represents a web server in a simulation of a server under attack by

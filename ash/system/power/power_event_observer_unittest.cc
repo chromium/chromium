@@ -51,7 +51,7 @@ class PowerEventObserverTest : public AshTestBase {
  protected:
   int GetNumVisibleCompositors() {
     int result = 0;
-    for (auto* window : Shell::GetAllRootWindows()) {
+    for (aura::Window* window : Shell::GetAllRootWindows()) {
       if (window->GetHost()->compositor()->IsVisible())
         ++result;
     }
@@ -698,7 +698,8 @@ TEST_F(PowerEventObserverTest, LockOnLidCloseWhenDocked) {
           .Build();
 
   auto set_docked = [&](bool docked) {
-    std::vector<display::DisplaySnapshot*> displays({internal_display.get()});
+    std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>> displays(
+        {internal_display.get()});
     if (docked) {
       displays.push_back(external_display.get());
     }

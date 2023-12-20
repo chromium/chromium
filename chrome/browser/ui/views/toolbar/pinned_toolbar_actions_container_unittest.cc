@@ -88,12 +88,14 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
     if (should_be_popped_out) {
       ASSERT_NE(base::ranges::find(
                     container->popped_out_buttons_, id,
-                    [](auto* button) { return button->GetActionId(); }),
+                    [](PinnedToolbarActionsContainer::PinnedActionToolbarButton*
+                           button) { return button->GetActionId(); }),
                 container->popped_out_buttons_.end());
     } else {
       ASSERT_EQ(base::ranges::find(
                     container->popped_out_buttons_, id,
-                    [](auto* button) { return button->GetActionId(); }),
+                    [](PinnedToolbarActionsContainer::PinnedActionToolbarButton*
+                           button) { return button->GetActionId(); }),
                 container->popped_out_buttons_.end());
     }
   }
@@ -104,12 +106,14 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
     if (should_be_pinned) {
       ASSERT_NE(base::ranges::find(
                     container->pinned_buttons_, id,
-                    [](auto* button) { return button->GetActionId(); }),
+                    [](PinnedToolbarActionsContainer::PinnedActionToolbarButton*
+                           button) { return button->GetActionId(); }),
                 container->pinned_buttons_.end());
     } else {
       ASSERT_EQ(base::ranges::find(
                     container->pinned_buttons_, id,
-                    [](auto* button) { return button->GetActionId(); }),
+                    [](PinnedToolbarActionsContainer::PinnedActionToolbarButton*
+                           button) { return button->GetActionId(); }),
                 container->pinned_buttons_.end());
     }
   }

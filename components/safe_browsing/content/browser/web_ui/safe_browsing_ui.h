@@ -545,7 +545,8 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   }
 
   // Get the list of WebUI listener objects.
-  const std::vector<SafeBrowsingUIHandler*>& webui_instances() const {
+  const std::vector<raw_ptr<SafeBrowsingUIHandler, VectorExperimental>>&
+  webui_instances() const {
     return webui_instances_;
   }
 
@@ -722,7 +723,8 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // List of WebUI listener objects. "SafeBrowsingUIHandler*" cannot be const,
   // due to being used by functions that call AllowJavascript(), which is not
   // marked const.
-  std::vector<SafeBrowsingUIHandler*> webui_instances_;
+  std::vector<raw_ptr<SafeBrowsingUIHandler, VectorExperimental>>
+      webui_instances_;
 
   // List of messages logged since the oldest currently open
   // chrome://safe-browsing tab was opened.

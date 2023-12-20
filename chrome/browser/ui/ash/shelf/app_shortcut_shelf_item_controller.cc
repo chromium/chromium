@@ -81,9 +81,9 @@ ash::ShelfAction ActivateContentOrMinimize(content::WebContents* content,
 // |activate_callback| will activate the next window selected by this function.
 template <class T>
 std::optional<ash::ShelfAction> AdvanceApp(
-    const std::vector<T*>& items,
-    base::OnceCallback<T*(const std::vector<T*>&, aura::Window**)>
-        active_item_callback,
+    const std::vector<raw_ptr<T, VectorExperimental>>& items,
+    base::OnceCallback<T*(const std::vector<raw_ptr<T, VectorExperimental>>&,
+                          aura::Window**)> active_item_callback,
     base::OnceCallback<void(T*)> activate_callback) {
   if (items.empty())
     return std::nullopt;
@@ -381,13 +381,13 @@ AppShortcutShelfItemController::GetAppMenuItems(
   if (IsWindowedWebApp() && !(event_flags & ui::EF_SHIFT_DOWN)) {
     app_menu_browsers_ = GetAppBrowsers(filter_predicate);
     app_menu_cached_by_browsers_ = true;
-    for (auto* browser : app_menu_browsers_) {
+    for (Browser* browser : app_menu_browsers_) {
       add_menu_item(browser->tab_strip_model()->GetActiveWebContents());
     }
   } else {
     app_menu_web_contents_ = GetAppWebContents(filter_predicate);
     app_menu_cached_by_browsers_ = false;
-    for (auto* web_contents : app_menu_web_contents_) {
+    for (content::WebContents* web_contents : app_menu_web_contents_) {
       add_menu_item(web_contents);
     }
   }
@@ -483,7 +483,7 @@ void AppShortcutShelfItemController::OnBrowserClosing(Browser* browser) {
     *it = nullptr;
 }
 
-std::vector<content::WebContents*>
+std::vector<raw_ptr<content::WebContents, VectorExperimental>>
 AppShortcutShelfItemController::GetAppWebContents(
     const ItemFilterPredicate& filter_predicate) {
   URLPattern refocus_pattern(URLPattern::SCHEME_ALL);
@@ -497,12 +497,12 @@ AppShortcutShelfItemController::GetAppWebContents(
   Profile* const profile = ChromeShelfController::instance()->profile();
   AppMatcher matcher(profile, app_id(), refocus_pattern);
 
-  std::vector<content::WebContents*> items;
+  std::vector<raw_ptr<content::WebContents, VectorExperimental>> items;
   // It is possible to come here while an app gets loaded.
   if (!matcher.CanMatchWebContents())
     return items;
 
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (!filter_predicate.is_null() &&
         !filter_predicate.Run(browser->window()->GetNativeWindow())) {
       continue;
@@ -521,10 +521,11 @@ AppShortcutShelfItemController::GetAppWebContents(
   return items;
 }
 
-std::vector<Browser*> AppShortcutShelfItemController::GetAppBrowsers(
+std::vector<raw_ptr<Browser, VectorExperimental>>
+AppShortcutShelfItemController::GetAppBrowsers(
     const ItemFilterPredicate& filter_predicate) {
   DCHECK(IsWindowedWebApp());
-  std::vector<Browser*> browsers;
+  std::vector<raw_ptr<Browser, VectorExperimental>> browsers;
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (!filter_predicate.is_null() &&
         !filter_predicate.Run(browser->window()->GetNativeWindow())) {
@@ -550,42 +551,47 @@ AppShortcutShelfItemController::AdvanceToNextApp(
     return std::nullopt;
 
   if (IsWindowedWebApp()) {
-    return AdvanceApp(GetAppBrowsers(filter_predicate),
-                      base::BindOnce([](const std::vector<Browser*>& browsers,
-                                        aura::Window** out_window) -> Browser* {
-                        for (auto* browser : browsers) {
-                          if (browser->window()->IsActive()) {
-                            *out_window = browser->window()->GetNativeWindow();
-                            return browser;
-                          }
-                        }
-                        return nullptr;
-                      }),
-                      base::BindOnce([](Browser* browser) -> void {
-                        browser->window()->Show();
-                        browser->window()->Activate();
-                      }));
+    return AdvanceApp(
+        GetAppBrowsers(filter_predicate),
+        base::BindOnce(
+            [](const std::vector<raw_ptr<Browser, VectorExperimental>>&
+                   browsers,
+               aura::Window** out_window) -> Browser* {
+              for (Browser* browser : browsers) {
+                if (browser->window()->IsActive()) {
+                  *out_window = browser->window()->GetNativeWindow();
+                  return browser;
+                }
+              }
+              return nullptr;
+            }),
+        base::BindOnce([](Browser* browser) -> void {
+          browser->window()->Show();
+          browser->window()->Activate();
+        }));
   }
 
   return AdvanceApp(
       GetAppWebContents(filter_predicate),
-      base::BindOnce([](const std::vector<content::WebContents*>& web_contents,
-                        aura::Window** out_window) -> content::WebContents* {
-        for (auto* web_content : web_contents) {
-          Browser* browser = chrome::FindBrowserWithTab(web_content);
-          // The active web contents is on the active browser, and matches the
-          // index of the current active tab.
-          if (browser->window()->IsActive()) {
-            TabStripModel* tab_strip = browser->tab_strip_model();
-            int index = tab_strip->GetIndexOfWebContents(web_content);
-            if (tab_strip->active_index() == index) {
-              *out_window = browser->window()->GetNativeWindow();
-              return web_content;
+      base::BindOnce(
+          [](const std::vector<raw_ptr<content::WebContents,
+                                       VectorExperimental>>& web_contents,
+             aura::Window** out_window) -> content::WebContents* {
+            for (content::WebContents* web_content : web_contents) {
+              Browser* browser = chrome::FindBrowserWithTab(web_content);
+              // The active web contents is on the active browser, and matches
+              // the index of the current active tab.
+              if (browser->window()->IsActive()) {
+                TabStripModel* tab_strip = browser->tab_strip_model();
+                int index = tab_strip->GetIndexOfWebContents(web_content);
+                if (tab_strip->active_index() == index) {
+                  *out_window = browser->window()->GetNativeWindow();
+                  return web_content;
+                }
+              }
             }
-          }
-        }
-        return nullptr;
-      }),
+            return nullptr;
+          }),
       base::BindOnce([](content::WebContents* web_contents) -> void {
         ActivateContentOrMinimize(web_contents, /*allow_minimize=*/false);
       }));

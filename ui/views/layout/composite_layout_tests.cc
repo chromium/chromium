@@ -203,7 +203,7 @@ class SimulatedExtensionsContainer : public SimulatedToolbarElement {
   void SetIconVisibility(int position, bool visible) {
     DCHECK_GE(position, 0);
     DCHECK_LT(position, static_cast<int>(children().size()) - 1);
-    auto* const button = children()[position];
+    auto* const button = children()[position].get();
     if (visible) {
       layout()->FadeIn(button);
       visible_views_.insert(button);

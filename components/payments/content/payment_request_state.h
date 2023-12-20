@@ -221,10 +221,12 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
 
   // Returns the appropriate Autofill Profiles for this user. The profiles
   // returned are owned by the PaymentRequestState.
-  const std::vector<autofill::AutofillProfile*>& shipping_profiles() {
+  const std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>&
+  shipping_profiles() {
     return shipping_profiles_;
   }
-  const std::vector<autofill::AutofillProfile*>& contact_profiles() {
+  const std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>&
+  contact_profiles() {
     return contact_profiles_;
   }
   const std::vector<std::unique_ptr<PaymentApp>>& available_apps() {
@@ -405,8 +407,10 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   // loading and owned here. They are populated once only, and ordered by
   // frecency.
   std::vector<std::unique_ptr<autofill::AutofillProfile>> profile_cache_;
-  std::vector<autofill::AutofillProfile*> shipping_profiles_;
-  std::vector<autofill::AutofillProfile*> contact_profiles_;
+  std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
+      shipping_profiles_;
+  std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
+      contact_profiles_;
 
   std::vector<std::unique_ptr<PaymentApp>> available_apps_;
 

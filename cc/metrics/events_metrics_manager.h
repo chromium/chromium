@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
 
@@ -80,7 +81,8 @@ class CC_EXPORT EventsMetricsManager {
   void OnScopedMonitorEnded(std::unique_ptr<EventMetrics> metrics);
 
   // Stack of active, potentially nested, scoped monitors.
-  std::vector<ScopedMonitorImpl*> active_scoped_monitors_;
+  std::vector<raw_ptr<ScopedMonitorImpl, VectorExperimental>>
+      active_scoped_monitors_;
 
   // List of event metrics saved for reporting.
   EventMetrics::List saved_events_;

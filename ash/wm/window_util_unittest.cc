@@ -13,6 +13,7 @@
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/wm_event.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -162,7 +163,8 @@ TEST_F(WindowUtilTest, EnsureTransientRoots) {
   // neither of them get removed when running EnsureTransientRoots.
   auto window1 = CreateTestWindow();
   auto window2 = CreateTestWindow();
-  std::vector<aura::Window*> window_list = {window1.get(), window2.get()};
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> window_list = {
+      window1.get(), window2.get()};
   EnsureTransientRoots(&window_list);
   ASSERT_EQ(2u, window_list.size());
 
@@ -217,7 +219,8 @@ TEST_F(WindowUtilTest,
   WindowState::Get(window.get())
       ->SetStateObject(std::unique_ptr<WindowState::State>(state));
 
-  std::vector<aura::Window*> windows = {window.get()};
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows = {
+      window.get()};
   MinimizeAndHideWithoutAnimation(windows);
 
   EXPECT_FALSE(window->IsVisible());

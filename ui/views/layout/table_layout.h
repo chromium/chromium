@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/layout_manager_base.h"
@@ -169,7 +170,8 @@ class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
   // Calculates the preferred width of each view, as well as updating the
   // ViewStates' `remaining_width`.
   void CalculateSize(SizeCalculationType type,
-                     const std::vector<ViewState*>& view_states) const;
+                     const std::vector<raw_ptr<ViewState, VectorExperimental>>&
+                         view_states) const;
 
   // Distributes `delta` among the resizable columns.
   void Resize(int delta) const;
@@ -200,7 +202,8 @@ class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
   mutable std::vector<std::unique_ptr<ViewState>> view_states_by_row_span_;
 
   // ViewStates sorted based on column_span in ascending order.
-  mutable std::vector<ViewState*> view_states_by_col_span_;
+  mutable std::vector<raw_ptr<ViewState, VectorExperimental>>
+      view_states_by_col_span_;
 };
 
 }  // namespace views

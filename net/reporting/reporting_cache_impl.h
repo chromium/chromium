@@ -55,15 +55,20 @@ class ReportingCacheImpl : public ReportingCache {
                  base::TimeTicks queued,
                  int attempts) override;
   void GetReports(
-      std::vector<const ReportingReport*>* reports_out) const override;
+      std::vector<raw_ptr<const ReportingReport, VectorExperimental>>*
+          reports_out) const override;
   base::Value GetReportsAsValue() const override;
-  std::vector<const ReportingReport*> GetReportsToDeliver() override;
-  std::vector<const ReportingReport*> GetReportsToDeliverForSource(
+  std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  GetReportsToDeliver() override;
+  std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  GetReportsToDeliverForSource(
       const base::UnguessableToken& reporting_source) override;
   void ClearReportsPending(
-      const std::vector<const ReportingReport*>& reports) override;
+      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+          reports) override;
   void IncrementReportsAttempts(
-      const std::vector<const ReportingReport*>& reports) override;
+      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+          reports) override;
   base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
   GetV1ReportingEndpointsByOrigin() const override;
   void IncrementEndpointDeliveries(const ReportingEndpointGroupKey& group_key,
@@ -75,9 +80,12 @@ class ReportingCacheImpl : public ReportingCache {
   const base::flat_set<base::UnguessableToken>& GetExpiredSources()
       const override;
   void RemoveReports(
-      const std::vector<const ReportingReport*>& reports) override;
-  void RemoveReports(const std::vector<const ReportingReport*>& reports,
-                     bool delivery_success) override;
+      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+          reports) override;
+  void RemoveReports(
+      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+          reports,
+      bool delivery_success) override;
   void RemoveAllReports() override;
   size_t GetFullReportCountForTesting() const override;
   size_t GetReportCountWithStatusForTesting(

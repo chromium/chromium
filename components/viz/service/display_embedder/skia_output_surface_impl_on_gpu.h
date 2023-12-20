@@ -161,7 +161,7 @@ class SkiaOutputSurfaceImplOnGpu
       sk_sp<GrDeferredDisplayList> ddl,
       sk_sp<GrDeferredDisplayList> overdraw_ddl,
       std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
-      std::vector<ImageContextImpl*> image_contexts,
+      std::vector<raw_ptr<ImageContextImpl, VectorExperimental>> image_contexts,
       std::vector<gpu::SyncToken> sync_tokens,
       base::OnceClosure on_finished,
       base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
@@ -188,7 +188,7 @@ class SkiaOutputSurfaceImplOnGpu
       sk_sp<GrDeferredDisplayList> ddl,
       sk_sp<GrDeferredDisplayList> overdraw_ddl,
       std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
-      std::vector<ImageContextImpl*> image_contexts,
+      std::vector<raw_ptr<ImageContextImpl, VectorExperimental>> image_contexts,
       std::vector<gpu::SyncToken> sync_tokens,
       base::OnceClosure on_finished,
       base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
@@ -204,9 +204,11 @@ class SkiaOutputSurfaceImplOnGpu
                   std::unique_ptr<CopyOutputRequest> request,
                   const gpu::Mailbox& mailbox);
 
-  void BeginAccessImages(const std::vector<ImageContextImpl*>& image_contexts,
-                         std::vector<GrBackendSemaphore>* begin_semaphores,
-                         std::vector<GrBackendSemaphore>* end_semaphores);
+  void BeginAccessImages(
+      const std::vector<raw_ptr<ImageContextImpl, VectorExperimental>>&
+          image_contexts,
+      std::vector<GrBackendSemaphore>* begin_semaphores,
+      std::vector<GrBackendSemaphore>* end_semaphores);
   void ResetStateOfImages();
   void EndAccessImages(const base::flat_set<ImageContextImpl*>& image_contexts);
 
@@ -551,7 +553,8 @@ class SkiaOutputSurfaceImplOnGpu
 
     ~PromiseImageAccessHelper();
 
-    void BeginAccess(std::vector<ImageContextImpl*> image_contexts,
+    void BeginAccess(std::vector<raw_ptr<ImageContextImpl, VectorExperimental>>
+                         image_contexts,
                      std::vector<GrBackendSemaphore>* begin_semaphores,
                      std::vector<GrBackendSemaphore>* end_semaphores);
     void EndAccess();

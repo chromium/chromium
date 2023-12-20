@@ -81,7 +81,7 @@ class SystemUIComponentsStyleViewerView : public views::WidgetDelegateView,
   raw_ptr<views::View, ExperimentalAsh> menu_contents_view_;
   raw_ptr<views::View, ExperimentalAsh> components_grid_view_;
   // Buttons used to toggle the component instances.
-  std::vector<ComponentButton*> buttons_;
+  std::vector<raw_ptr<ComponentButton, VectorExperimental>> buttons_;
   // Factories of `SystemUIComponentsGridView` for different
   // UI components.
   std::map<std::u16string, ComponentsGridViewFactory>

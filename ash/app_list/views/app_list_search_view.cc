@@ -284,7 +284,7 @@ void AppListSearchView::VisibilityChanged(View* starting_from,
                                           bool is_visible) {
   if (!is_visible) {
     result_selection_controller_->ClearSelection();
-    for (auto* container : result_container_views_) {
+    for (ash::SearchResultContainerView* container : result_container_views_) {
       container->ResetAndHide();
     }
   }
@@ -357,7 +357,7 @@ void AppListSearchView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void AppListSearchView::OnActiveAppListModelsChanged(
     AppListModel* model,
     SearchModel* search_model) {
-  for (auto* container : result_container_views_) {
+  for (ash::SearchResultContainerView* container : result_container_views_) {
     container->SetResults(search_model->results());
   }
 }
@@ -376,7 +376,7 @@ bool AppListSearchView::OverrideKeyNavigationAboveSearchResults(
 }
 
 void AppListSearchView::UpdateForNewSearch(bool search_active) {
-  for (auto* container : result_container_views_) {
+  for (ash::SearchResultContainerView* container : result_container_views_) {
     container->SetActive(search_active);
   }
 

@@ -6,6 +6,7 @@
 
 #include <gtest/gtest.h>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/vector_icons/vector_icons.h"
@@ -299,7 +300,9 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
   views::View* toolbar_container_view() { return toolbar_container_view_; }
   const views::View* overflow_button() { return overflow_button_; }
-  const std::vector<views::View*>& test_buttons() { return test_buttons_; }
+  const std::vector<raw_ptr<views::View, VectorExperimental>>& test_buttons() {
+    return test_buttons_;
+  }
   const ui::SimpleMenuModel* overflow_menu() {
     return overflow_button_->menu_model_for_testing();
   }
@@ -324,7 +327,7 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
   std::unique_ptr<TestDelegate> test_delegate_;
 
   // Buttons being tested.
-  std::vector<views::View*> test_buttons_;
+  std::vector<raw_ptr<views::View, VectorExperimental>> test_buttons_;
 };
 
 TEST_F(ToolbarControllerUnitTest, OverflowButtonVisibility) {

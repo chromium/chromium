@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/form_structure.h"
 
@@ -21,7 +22,7 @@ class FormStructureTestApi {
 
   static void ParseApiQueryResponse(
       std::string_view payload,
-      const std::vector<FormStructure*>& forms,
+      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
       const std::vector<FormSignature>& queried_form_signatures,
       AutofillMetrics::FormInteractionsUkmLogger* ukm_logger,
       LogManager* log_manager = nullptr) {
@@ -31,7 +32,7 @@ class FormStructureTestApi {
 
   static void ProcessQueryResponse(
       const AutofillQueryResponse& response,
-      const std::vector<FormStructure*>& forms,
+      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
       const std::vector<FormSignature>& queried_form_signatures,
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       LogManager* log_manager = nullptr) {

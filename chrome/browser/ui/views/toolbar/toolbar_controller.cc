@@ -394,7 +394,7 @@ views::View* ToolbarController::FindToolbarElementWithId(
   if (view->GetProperty(views::kElementIdentifierKey) == id) {
     return view;
   }
-  for (auto* child : view->children()) {
+  for (views::View* child : view->children()) {
     if (auto* result = FindToolbarElementWithId(child, id)) {
       return result;
     }

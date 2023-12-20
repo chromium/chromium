@@ -210,7 +210,7 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   unsigned next_framebuffer_id_ = 1;
   std::unordered_set<unsigned> framebuffer_set_;
   unsigned current_framebuffer_ = 0;
-  std::vector<TestGLES2Interface*> shared_contexts_;
+  std::vector<raw_ptr<TestGLES2Interface, VectorExperimental>> shared_contexts_;
   bool reshape_called_ = false;
   int width_ = 0;
   int height_ = 0;

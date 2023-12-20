@@ -103,10 +103,11 @@ TabAndroid* TabAndroid::GetNativeTab(JNIEnv* env, const JavaRef<jobject>& obj) {
   return reinterpret_cast<TabAndroid*>(Java_TabImpl_getNativePtr(env, obj));
 }
 
-std::vector<TabAndroid*> TabAndroid::GetAllNativeTabs(
+std::vector<raw_ptr<TabAndroid, VectorExperimental>>
+TabAndroid::GetAllNativeTabs(
     JNIEnv* env,
     const ScopedJavaLocalRef<jobjectArray>& obj_array) {
-  std::vector<TabAndroid*> tab_native_ptrs;
+  std::vector<raw_ptr<TabAndroid, VectorExperimental>> tab_native_ptrs;
   ScopedJavaLocalRef<jlongArray> j_tabs_ptr =
       Java_TabImpl_getAllNativePtrs(env, obj_array);
   if (j_tabs_ptr.is_null())

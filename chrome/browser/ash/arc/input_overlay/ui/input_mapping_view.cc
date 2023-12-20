@@ -74,7 +74,7 @@ void InputMappingView::SetDisplayMode(const DisplayMode mode) {
       break;
   }
 
-  for (auto* view : children()) {
+  for (views::View* view : children()) {
     auto* action_view = static_cast<ActionView*>(view);
     action_view->SetDisplayMode(mode);
   }
@@ -83,9 +83,10 @@ void InputMappingView::SetDisplayMode(const DisplayMode mode) {
 
 void InputMappingView::ProcessPressedEvent(const ui::LocatedEvent& event) {
   auto event_location = event.root_location();
-  for (auto* const child : children()) {
+  for (views::View* const child : children()) {
     auto* action_view = static_cast<ActionView*>(child);
-    for (auto* action_label : action_view->labels()) {
+    for (arc::input_overlay::ActionLabel* action_label :
+         action_view->labels()) {
       if (!action_label->HasFocus()) {
         continue;
       }
@@ -104,7 +105,7 @@ void InputMappingView::ProcessPressedEvent(const ui::LocatedEvent& event) {
 void InputMappingView::SortChildren() {
   std::vector<ActionView*> left, right;
   const float aspect_ratio = (float)width() / height();
-  for (auto* child : children()) {
+  for (views::View* child : children()) {
     auto* action_view = static_cast<ActionView*>(child);
     if (aspect_ratio > 1 &&
         action_view->GetTouchCenterInWindow().x() < width() / 2) {
@@ -161,7 +162,7 @@ void InputMappingView::OnActionRemoved(const Action& action) {
   // No remove function for pre-beta version.
   DCHECK(IsBeta());
 
-  for (auto* const child : children()) {
+  for (views::View* const child : children()) {
     if (auto* action_view = views::AsViewClass<ActionView>(child);
         action_view->action() == &action) {
       RemoveChildViewT(action_view);
@@ -171,7 +172,7 @@ void InputMappingView::OnActionRemoved(const Action& action) {
 }
 
 void InputMappingView::OnActionNewStateRemoved(const Action& action) {
-  for (auto* const child : children()) {
+  for (views::View* const child : children()) {
     if (auto* action_view = views::AsViewClass<ActionView>(child);
         action_view->action() == &action) {
       action_view->RemoveNewState();
@@ -193,7 +194,7 @@ void InputMappingView::OnActionInputBindingUpdated(const Action& action) {
     return;
   }
 
-  for (auto* const child : children()) {
+  for (views::View* const child : children()) {
     if (auto* action_view = views::AsViewClass<ActionView>(child);
         action_view->action() == &action) {
       action_view->OnActionInputBindingUpdated();
@@ -207,7 +208,7 @@ void InputMappingView::OnContentBoundsSizeChanged() {
     return;
   }
 
-  for (auto* const child : children()) {
+  for (views::View* const child : children()) {
     static_cast<ActionView*>(child)->OnContentBoundsSizeChanged();
   }
 }

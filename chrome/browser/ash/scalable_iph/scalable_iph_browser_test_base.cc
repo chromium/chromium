@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/scalable_iph/scalable_iph_browser_test_base.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
@@ -315,7 +316,8 @@ bool ScalableIphBrowserTestBase::IsMockDelegateCreatedFor(Profile* profile) {
 }
 
 void ScalableIphBrowserTestBase::EnableTestIphFeatures(
-    const std::vector<const base::Feature*> test_iph_features) {
+    const std::vector<raw_ptr<const base::Feature, VectorExperimental>>
+        test_iph_features) {
   CHECK(mock_delegate_)
       << "To enable a test iph feature, mocks have to be set up.";
 

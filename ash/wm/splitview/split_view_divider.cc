@@ -93,7 +93,7 @@ SplitViewDivider::~SplitViewDivider() {
 
   divider_widget_->Close();
 
-  for (auto* window : observed_windows_) {
+  for (aura::Window* window : observed_windows_) {
     window->RemoveObserver(this);
     wm::TransientWindowManager::GetOrCreate(window)->RemoveObserver(this);
   }
@@ -257,7 +257,8 @@ void SplitViewDivider::AddObservedWindow(aura::Window* window) {
   wm::TransientWindowManager* transient_manager =
       wm::TransientWindowManager::GetOrCreate(window);
   transient_manager->AddObserver(this);
-  for (auto* transient_window : transient_manager->transient_children()) {
+  for (aura::Window* transient_window :
+       transient_manager->transient_children()) {
     StartObservingTransientChild(transient_window);
   }
   RefreshStackingOrder();
@@ -271,7 +272,8 @@ void SplitViewDivider::RemoveObservedWindow(aura::Window* window) {
     wm::TransientWindowManager* transient_manager =
         wm::TransientWindowManager::GetOrCreate(window);
     transient_manager->RemoveObserver(this);
-    for (auto* transient_window : transient_manager->transient_children()) {
+    for (aura::Window* transient_window :
+         transient_manager->transient_children()) {
       StopObservingTransientChild(transient_window);
     }
     RefreshStackingOrder();
@@ -304,7 +306,7 @@ void SplitViewDivider::OnWindowBoundsChanged(aura::Window* window,
   // |window|'s transient parent must be one of the windows in
   // |observed_windows_|.
   aura::Window* transient_parent = nullptr;
-  for (auto* observed_window : observed_windows_) {
+  for (aura::Window* observed_window : observed_windows_) {
     if (wm::HasTransientAncestor(window, observed_window)) {
       transient_parent = observed_window;
       break;
@@ -400,7 +402,7 @@ void SplitViewDivider::RefreshStackingOrder() {
   }
 
   aura::Window::Windows visible_observed_windows;
-  for (auto* window : observed_windows_) {
+  for (aura::Window* window : observed_windows_) {
     if (window->IsVisible()) {
       visible_observed_windows.push_back(window);
     }
@@ -450,7 +452,7 @@ void SplitViewDivider::RefreshStackingOrder() {
 
   // Iterate through the siblings of the top window in an increasing z-order
   // which reflects the relative order of siblings.
-  for (auto* window : children) {
+  for (aura::Window* window : children) {
     if (!base::Contains(visible_observed_windows, window) ||
         window == top_window) {
       continue;

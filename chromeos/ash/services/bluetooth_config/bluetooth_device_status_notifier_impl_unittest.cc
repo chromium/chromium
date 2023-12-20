@@ -153,8 +153,10 @@ class BluetoothDeviceStatusNotifierImplTest : public testing::Test {
   }
 
  private:
-  std::vector<const device::BluetoothDevice*> GenerateDevices() {
-    std::vector<const device::BluetoothDevice*> devices;
+  std::vector<raw_ptr<const device::BluetoothDevice, VectorExperimental>>
+  GenerateDevices() {
+    std::vector<raw_ptr<const device::BluetoothDevice, VectorExperimental>>
+        devices;
     for (auto& device : mock_devices_)
       devices.push_back(device.get());
     return devices;

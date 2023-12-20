@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
@@ -1179,7 +1180,8 @@ void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
   continue_button_ = nullptr;
   auto_reauthn_checkbox_ = nullptr;
 
-  const std::vector<views::View*> child_views = children();
+  const std::vector<raw_ptr<views::View, VectorExperimental>> child_views =
+      children();
   for (views::View* child_view : child_views) {
     if (child_view != header_view_) {
       RemoveChildView(child_view);

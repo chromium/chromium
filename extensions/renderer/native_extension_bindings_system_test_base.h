@@ -173,7 +173,7 @@ class NativeExtensionBindingsSystemUnittest
   ExtensionIdSet extension_ids_;
   std::unique_ptr<content::MockRenderThread> render_thread_;
   std::unique_ptr<ScriptContextSet> script_context_set_;
-  std::vector<ScriptContext*> raw_script_contexts_;
+  std::vector<raw_ptr<ScriptContext, VectorExperimental>> raw_script_contexts_;
   std::unique_ptr<NativeExtensionBindingsSystem> bindings_system_;
   // The TestIPCMessageSender; owned by the bindings system.
   raw_ptr<TestIPCMessageSender, DanglingUntriaged> ipc_message_sender_ =

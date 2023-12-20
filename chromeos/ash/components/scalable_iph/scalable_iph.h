@@ -9,6 +9,7 @@
 #include <ostream>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -127,7 +128,8 @@ class ScalableIph : public KeyedService,
   void PerformActionForIphSession(ActionType action_type) override;
 
   void OverrideFeatureListForTesting(
-      const std::vector<const base::Feature*> features);
+      const std::vector<raw_ptr<const base::Feature, VectorExperimental>>
+          features);
   void OverrideTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
@@ -182,7 +184,8 @@ class ScalableIph : public KeyedService,
   bool CheckHasSavedPrinters(const base::Feature& feature);
   bool CheckPhoneHubOnboardingEligible(const base::Feature& feature);
 
-  const std::vector<const base::Feature*>& GetFeatureList() const;
+  const std::vector<raw_ptr<const base::Feature, VectorExperimental>>&
+  GetFeatureList() const;
 
   raw_ptr<feature_engagement::Tracker> tracker_;
   std::unique_ptr<ScalableIphDelegate> delegate_;
@@ -195,7 +198,8 @@ class ScalableIph : public KeyedService,
   std::unique_ptr<Logger> logger_;
 
   base::RepeatingClosure has_saved_printers_closure_for_testing_;
-  std::vector<const base::Feature*> feature_list_for_testing_;
+  std::vector<raw_ptr<const base::Feature, VectorExperimental>>
+      feature_list_for_testing_;
 
   base::ScopedObservation<ScalableIphDelegate, ScalableIph>
       delegate_observation_{this};

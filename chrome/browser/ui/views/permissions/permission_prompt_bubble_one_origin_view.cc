@@ -60,7 +60,8 @@ namespace {
 
 std::u16string GetAccessibleWindowTitleInternal(
     const std::u16string display_name,
-    std::vector<permissions::PermissionRequest*> visible_requests) {
+    std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+        visible_requests) {
   // Generate one of:
   //   $origin wants to: $permission
   //   $origin wants to: $permission and $permission
@@ -102,9 +103,10 @@ bool ShouldShowRequest(permissions::PermissionPrompt::Delegate& delegate,
   return true;
 }
 
-std::vector<permissions::PermissionRequest*> GetVisibleRequests(
-    permissions::PermissionPrompt::Delegate& delegate) {
-  std::vector<permissions::PermissionRequest*> visible_requests;
+std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+GetVisibleRequests(permissions::PermissionPrompt::Delegate& delegate) {
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      visible_requests;
   for (permissions::PermissionRequest* request : delegate.Requests()) {
     if (ShouldShowRequest(delegate, request->request_type())) {
       visible_requests.push_back(request);
@@ -159,8 +161,8 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
                                      delegate,
                                      permission_requested_time,
                                      prompt_style) {
-  std::vector<permissions::PermissionRequest*> visible_requests =
-      GetVisibleRequests(*delegate.get());
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      visible_requests = GetVisibleRequests(*delegate.get());
 
   SetAccessibleTitle(GetAccessibleWindowTitleInternal(
       GetUrlIdentityObject().name, visible_requests));

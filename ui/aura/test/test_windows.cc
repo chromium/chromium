@@ -66,7 +66,7 @@ template <typename T>
 bool ObjectIsAbove(T* upper, T* lower) {
   DCHECK_EQ(upper->parent(), lower->parent());
   DCHECK_NE(upper, lower);
-  const std::vector<T*>& children = upper->parent()->children();
+  const auto& children = upper->parent()->children();
   const size_t upper_i = base::ranges::find(children, upper) - children.begin();
   const size_t lower_i = base::ranges::find(children, lower) - children.begin();
   return upper_i > lower_i;

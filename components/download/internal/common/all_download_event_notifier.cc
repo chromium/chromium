@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/download/public/common/all_download_event_notifier.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 
 namespace download {
@@ -12,9 +13,9 @@ AllDownloadEventNotifier::AllDownloadEventNotifier(
     : simple_download_manager_coordinator_(simple_download_manager_coordinator),
       download_initialized_(false) {
   simple_download_manager_coordinator_->AddObserver(this);
-  std::vector<DownloadItem*> downloads;
+  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
   simple_download_manager_coordinator_->GetAllDownloads(&downloads);
-  for (auto* download : downloads) {
+  for (download::DownloadItem* download : downloads) {
     download->AddObserver(this);
     observing_.insert(download);
   }

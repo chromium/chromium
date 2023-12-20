@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/autofill_client.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
@@ -199,9 +200,8 @@ bool AutofillClient::CloseWebauthnDialog() {
 }
 
 void AutofillClient::OfferVirtualCardOptions(
-    const std::vector<CreditCard*>& candidates,
-    base::OnceCallback<void(const std::string&)> callback) {
-}
+    const std::vector<raw_ptr<CreditCard, VectorExperimental>>& candidates,
+    base::OnceCallback<void(const std::string&)> callback) {}
 #else
 void AutofillClient::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {

@@ -111,7 +111,7 @@ AppServiceAppWindowShelfController::AppServiceAppWindowShelfController(
 
   profile_list_.push_back(owner->profile());
 
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser && browser->window() && browser->window()->GetNativeWindow()) {
       observed_windows_.AddObservation(browser->window()->GetNativeWindow());
     }
@@ -122,7 +122,7 @@ AppServiceAppWindowShelfController::~AppServiceAppWindowShelfController() {
   aura::Env::GetInstance()->RemoveObserver(this);
 
   // We need to remove all Registry observers for added users.
-  for (auto* profile : profile_list_) {
+  for (Profile* profile : profile_list_) {
     apps::AppServiceProxy* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile);
     proxy->InstanceRegistry().RemoveObserver(this);
@@ -151,7 +151,7 @@ void AppServiceAppWindowShelfController::ActiveUserChanged(
   proxy_ = apps::AppServiceProxyFactory::GetForProfile(owner()->profile());
   // Deactivates the running app windows in InstanceRegistry for the inactive
   // user, and activates the app windows for the active user.
-  for (auto* window : window_list_) {
+  for (aura::Window* window : window_list_) {
     ash::ShelfID shelf_id = proxy_->InstanceRegistry().GetShelfId(window);
     if (!shelf_id.IsNull()) {
       RegisterWindow(window, shelf_id);
@@ -696,7 +696,7 @@ ash::ShelfID AppServiceAppWindowShelfController::GetShelfId(
 
   std::string shelf_app_id;
   if (borealis::BorealisWindowManager::IsBorealisWindow(window)) {
-    for (auto* profile : profile_list_) {
+    for (Profile* profile : profile_list_) {
       shelf_app_id = borealis::BorealisService::GetForProfile(profile)
                          ->WindowManager()
                          .GetShelfAppId(window);
@@ -724,7 +724,7 @@ ash::ShelfID AppServiceAppWindowShelfController::GetShelfId(
 
   // If the window exists in InstanceRegistry, get the shelf id from
   // InstanceRegistry.
-  for (auto* profile : profile_list_) {
+  for (Profile* profile : profile_list_) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     shelf_id = proxy->InstanceRegistry().GetShelfId(window);
     if (!shelf_id.IsNull())
@@ -742,7 +742,7 @@ ash::ShelfID AppServiceAppWindowShelfController::GetShelfId(
 
 apps::AppType AppServiceAppWindowShelfController::GetAppType(
     const std::string& app_id) const {
-  for (auto* profile : profile_list_) {
+  for (Profile* profile : profile_list_) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
     if (app_type != apps::AppType::kUnknown) {
@@ -770,7 +770,7 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
   MultiUserWindowManagerHelper* helper =
       MultiUserWindowManagerHelper::GetInstance();
   aura::Window* other_window = nullptr;
-  for (auto* it : profile_list_) {
+  for (Profile* it : profile_list_) {
     apps::AppServiceProxy* proxy =
         apps::AppServiceProxyFactory::GetForProfile(it);
     if (proxy == proxy_)

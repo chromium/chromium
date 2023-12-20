@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/browser.h"
@@ -61,7 +62,7 @@ constexpr float kCheckboxIconDipSize = 16;
 
 // Returns the site access button in a site permissions `page`.
 std::vector<views::RadioButton*> GetSiteAccessButtons(views::View* page) {
-  std::vector<views::View*> buttons;
+  std::vector<raw_ptr<views::View, VectorExperimental>> buttons;
   page->GetViewsInGroup(kSiteAccessButtonsId, &buttons);
 
   std::vector<views::RadioButton*> site_access_buttons;

@@ -9,6 +9,7 @@
 #include <iterator>
 #include <numeric>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -128,7 +129,8 @@ void FormField::ParseFormFields(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     bool is_form_tag,
     FieldCandidatesMap& field_candidates) {
-  std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
+  std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields =
+      RemoveCheckableFields(fields);
 
   // Email pass.
   ParseFormFieldsPass(EmailField::Parse, context, processed_fields,
@@ -306,8 +308,8 @@ void FormField::ParseSingleFieldForms(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     bool is_form_tag,
     FieldCandidatesMap& field_candidates) {
-  std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
-
+  std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields =
+      RemoveCheckableFields(fields);
   // Merchant promo code pass.
   ParseFormFieldsPass(MerchantPromoCodeField::Parse, context, processed_fields,
                       field_candidates);
@@ -328,7 +330,8 @@ void FormField::ParseStandaloneCVCFields(
     ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     FieldCandidatesMap& field_candidates) {
-  std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
+  std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields =
+      RemoveCheckableFields(fields);
   ParseFormFieldsPass(StandaloneCvcField::Parse, context, processed_fields,
                       field_candidates);
 }
@@ -337,7 +340,8 @@ void FormField::ParseStandaloneEmailFields(
     ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     FieldCandidatesMap& field_candidates) {
-  std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
+  std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields =
+      RemoveCheckableFields(fields);
   ParseFormFieldsPass(EmailField::Parse, context, processed_fields,
                       field_candidates);
 }
@@ -554,10 +558,11 @@ void FormField::AddClassification(const AutofillField* field,
 }
 
 // static
-std::vector<AutofillField*> FormField::RemoveCheckableFields(
+std::vector<raw_ptr<AutofillField, VectorExperimental>>
+FormField::RemoveCheckableFields(
     const std::vector<std::unique_ptr<AutofillField>>& fields) {
   // Set up a working copy of the fields to be processed.
-  std::vector<AutofillField*> processed_fields;
+  std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields;
   for (const auto& field : fields) {
     // Ignore checkable fields as they interfere with parsers assuming context.
     // Eg., while parsing address, "Is PO box" checkbox after ADDRESS_LINE1
@@ -660,10 +665,11 @@ bool FormField::Match(ParsingContext& context,
 }
 
 // static
-void FormField::ParseFormFieldsPass(ParseFunction parse,
-                                    ParsingContext& context,
-                                    const std::vector<AutofillField*>& fields,
-                                    FieldCandidatesMap& field_candidates) {
+void FormField::ParseFormFieldsPass(
+    ParseFunction parse,
+    ParsingContext& context,
+    const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields,
+    FieldCandidatesMap& field_candidates) {
   AutofillScanner scanner(fields);
   while (!scanner.IsEnd()) {
     std::unique_ptr<FormField> form_field = parse(context, &scanner);
@@ -717,7 +723,7 @@ bool FormField::IsSingleFieldParseableType(FieldType field_type) {
 
 // static
 void FormField::ParseUsingAutocompleteAttributes(
-    const std::vector<AutofillField*>& fields,
+    const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields,
     FieldCandidatesMap& field_candidates) {
   for (const AutofillField* field : fields) {
     HtmlFieldType html_type = FieldTypeFromAutocompleteAttributeValue(

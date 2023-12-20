@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -21,9 +22,9 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
   MockOpenTabsUIDelegate& operator=(const MockOpenTabsUIDelegate&) = delete;
   ~MockOpenTabsUIDelegate() override;
 
-  MOCK_METHOD1(
-      GetAllForeignSessions,
-      bool(std::vector<const sync_sessions::SyncedSession*>* sessions));
+  MOCK_METHOD1(GetAllForeignSessions,
+               bool(std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                                        VectorExperimental>>* sessions));
 
   MOCK_METHOD3(GetForeignTab,
                bool(const std::string& tag,

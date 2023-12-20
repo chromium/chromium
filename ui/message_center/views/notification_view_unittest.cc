@@ -235,7 +235,8 @@ class NotificationViewTest : public views::ViewObserver,
   views::View* inline_settings_row() {
     return notification_view_->inline_settings_row();
   }
-  std::vector<views::LabelButton*> action_buttons() {
+  std::vector<raw_ptr<views::LabelButton, VectorExperimental>>
+  action_buttons() {
     return notification_view()->action_buttons();
   }
   views::RadioButton* block_all_button() {

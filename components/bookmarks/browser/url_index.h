@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/history_bookmark_model.h"
@@ -63,7 +64,9 @@ class UrlIndex : public HistoryBookmarkModel {
   void GetNodesWithIconUrl(const GURL& icon_url,
                            std::set<const BookmarkNode*>* nodes);
 
-  void GetNodesByUrl(const GURL& url, std::vector<const BookmarkNode*>* nodes);
+  void GetNodesByUrl(
+      const GURL& url,
+      std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>* nodes);
 
   // Returns true if there is at least one bookmark.
   bool HasBookmarks() const;

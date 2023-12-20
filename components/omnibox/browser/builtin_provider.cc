@@ -72,7 +72,7 @@ void BuiltinProvider::DoStarterPackAutocompletion(
   if (starts_with_starter_pack_symbol) {
     TemplateURLService::TemplateURLVector matches;
     template_url_service_->AddMatchingKeywords(input.text(), false, &matches);
-    for (auto* match : matches) {
+    for (TemplateURL* match : matches) {
       if (match->starter_pack_id() > 0 &&
           match->is_active() == TemplateURLData::ActiveStatus::kTrue) {
         AddStarterPackMatch(*match, input);

@@ -1088,9 +1088,11 @@ class MockReportingService : public net::ReportingService {
     return nullptr;
   }
 
-  std::vector<const net::ReportingReport*> GetReports() const override {
+  std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>>
+  GetReports() const override {
     NOTREACHED();
-    return std::vector<const net::ReportingReport*>();
+    return std::vector<
+        raw_ptr<const net::ReportingReport, VectorExperimental>>();
   }
 
   base::flat_map<url::Origin, std::vector<net::ReportingEndpoint>>

@@ -97,8 +97,9 @@ void RunAccessibilityPaintChecks(View* view) {
 
 void RunAccessibilityPaintChecksRecursive(View* view) {
   RunAccessibilityPaintChecks(view);
-  for (auto* v : view->children())
+  for (views::View* v : view->children()) {
     RunAccessibilityPaintChecksRecursive(v);
+  }
 }
 
 void RunAccessibilityPaintChecks(Widget* widget) {

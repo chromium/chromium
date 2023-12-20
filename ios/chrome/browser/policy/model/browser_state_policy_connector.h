@@ -68,7 +68,8 @@ class BrowserStatePolicyConnector {
   // use the policies exposed by the PolicyService!
   // The default ConfigurationPolicyProvider::IsInitializationComplete()
   // result is true, so take care if a provider overrides that.
-  std::vector<policy::ConfigurationPolicyProvider*> policy_providers_;
+  std::vector<raw_ptr<policy::ConfigurationPolicyProvider, VectorExperimental>>
+      policy_providers_;
 
   raw_ptr<policy::LocalTestPolicyProvider> local_test_policy_provider_ =
       nullptr;

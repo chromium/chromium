@@ -279,7 +279,7 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
     if (rendering_mode_ == MediaFoundationRenderingMode::FrameServer) {
       gfx::Size max_video_size;
       bool has_video = false;
-      for (auto* stream : media_resource->GetAllStreams()) {
+      for (media::DemuxerStream* stream : media_resource->GetAllStreams()) {
         if (stream->type() == media::DemuxerStream::VIDEO) {
           has_video = true;
           gfx::Size video_size = stream->video_decoder_config().natural_size();

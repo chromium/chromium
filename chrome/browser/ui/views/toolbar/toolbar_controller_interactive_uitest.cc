@@ -79,7 +79,7 @@ class ToolbarControllerUiTest : public InteractiveBrowserTest {
   // dropped out.
   int GetOverflowThresholdWidth() {
     int diff_sum = 0;
-    for (auto* element : toolbar_container_view_->children()) {
+    for (views::View* element : toolbar_container_view_->children()) {
       diff_sum += element->GetPreferredSize().width() -
                   element->GetMinimumSize().width();
     }

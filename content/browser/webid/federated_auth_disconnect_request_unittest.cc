@@ -288,7 +288,7 @@ class FederatedAuthDisconnectRequestTest
     // There are multiple types of metrics under the same FedCM UKM. We need to
     // make sure that the metric only includes the expected one.
     bool metric_found = false;
-    for (const auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
       if (!should_record_duration) {
         EXPECT_FALSE(ukm_recorder()->GetEntryMetric(entry, "Timing.Disconnect"))
             << "Timing.Disconnect must not be present";
