@@ -190,6 +190,17 @@ enum class ModelDeliveryEvent {
   kMaxValue = kModelDownloadDueToModelLoadFailure,
 };
 
+// The various model quality user feedback.
+enum class ModelQualityUserFeedback {
+  kUnknown = 0,
+  kThumbsUp = 1,
+  kThumbsDown = 2,
+
+  // Keep in sync with OptimizationGuideUserFeedback in
+  // tools/metrics/histograms/metadata/optimization/enums.xml.
+  kMaxValue = kThumbsDown,
+};
+
 // The various results of an access token request.
 //
 // Keep in sync with OptimizationGuideAccessTokenResult in enums.xml.
