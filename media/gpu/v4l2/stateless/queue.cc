@@ -157,27 +157,13 @@ bool InputQueue::PrepareBuffers() {
   return AllocateBuffers(kNumberInputPlanes);
 }
 
-void InputQueue::Reclaim() {
-  DVLOGF(4) << Description();
-  CHECK(device_);
-
-  // There may be more than one buffer available. Keep trying to dequeue buffers
-  // until there aren't anymore.
-  while (true) {
-    auto buffer =
-        device_->DequeueBuffer(buffer_type_, memory_type_, kNumberInputPlanes);
-    if (!buffer) {
-      return;
-    }
-
-    const uint32_t index = buffer->GetIndex();
-    DVLOGF(3) << "#" << index << " returned, now "
-              << free_buffer_indices_.size() + 1 << " " << Description()
-              << " available.";
-    if (!free_buffer_indices_.insert(index).second) {
-      // There is no way that a reclaimed buffer is already present in the list.
-      NOTREACHED();
-    }
+void InputQueue::Reclaim(Buffer& buffer) {
+  DVLOGF(3) << "#" << buffer.GetIndex() << " returned, now "
+            << free_buffer_indices_.size() + 1 << " " << Description()
+            << " available.";
+  if (!free_buffer_indices_.insert(buffer.GetIndex()).second) {
+    // There is no way that a reclaimed buffer is already present in the list.
+    NOTREACHED();
   }
 }
 
@@ -415,19 +401,7 @@ bool OutputQueue::PrepareBuffers() {
   return true;
 }
 
-bool OutputQueue::DequeueBuffer() {
-  CHECK(device_);
-  // The assumption is there is only one buffer in flight at a time.
-  const auto buffer = device_->DequeueBuffer(buffer_type_, memory_type_,
-                                             buffer_format_.NumPlanes());
-
-  // So there should never be more than one buffer ready to dequeue. If there
-  // is another buffer to be dequeued then this will fail.
-  // TODO: Should this be a return value? The function is a bool, so this could
-  // be returned but it would incur an extra dequeue attempt
-  DCHECK(absl::nullopt == device_->DequeueBuffer(buffer_type_, memory_type_,
-                                                 buffer_format_.NumPlanes()));
-
+void OutputQueue::RegisterDequeuedBuffer(Buffer& buffer) {
   // Once the buffer is dequeued it needs to be tracked. The index is all that
   // is needed to track the buffer. That index is what will be used when passing
   // the buffer off. The time is need to tell which buffer should be passed off.
@@ -442,15 +416,15 @@ bool OutputQueue::DequeueBuffer() {
   // know which output buffer index corresponds to the input buffer. Using
   // the timestamp this can be found.
   const auto result = decoded_and_dequeued_frames_.insert(
-      {buffer->GetTimeAsFrameID(), buffer->GetIndex()});
+      {buffer.GetTimeAsFrameID(), buffer.GetIndex()});
 
-  DVLOGF(3) << "Inserted buffer (" << buffer->GetIndex()
-            << ") with a frame id of " << buffer->GetTimeAsFrameID();
+  DVLOGF(3) << "Inserted buffer " << buffer.GetIndex() << " with a frame id of "
+            << buffer.GetTimeAsFrameID();
 
-  return result.second;
+  CHECK(result.second) << "Buffer already in map";
 }
 
-absl::optional<uint32_t> OutputQueue::UseDequeuedBuffer(uint64_t frame_id) {
+scoped_refptr<VideoFrame> OutputQueue::GetVideoFrame(uint64_t frame_id) {
   DVLOGF(3) << "Attempting to use frame with id : " << frame_id;
   // The frame_id is copied from the input buffer to the output buffer. This is
   // the only way to know which output buffer contains the decoded picture for
@@ -458,43 +432,39 @@ absl::optional<uint32_t> OutputQueue::UseDequeuedBuffer(uint64_t frame_id) {
   auto it = decoded_and_dequeued_frames_.find(frame_id);
   if (it != decoded_and_dequeued_frames_.end()) {
     const uint32_t index = it->second;
-    decoded_and_dequeued_frames_.erase(it);
     DVLOGF(3) << "Found match (" << index << ") for frame id of (" << frame_id
               << ").";
-    return index;
+    return video_frames_[index];
   }
 
   // The corresponding frame may not have been dequeued when this function has
   // been called. This is not an error, but expected. When this occurs the
   // caller should try again after waiting for another buffer to be dequeued.
-  return absl::nullopt;
+  return nullptr;
 }
 
-scoped_refptr<VideoFrame> OutputQueue::DecodedFrameByIndex(uint32_t index) {
-  DVLOGF(4) << Description() << " index : " << index;
-  CHECK(device_);
+bool OutputQueue::QueueBufferByFrameID(uint64_t frame_id) {
+  DVLOGF(4) << "frame id : " << frame_id;
 
-  // This frame can not be re-enqueued right away.
-  // 1. it hasn't been displayed yet. the underlying buffer is passed on
-  //    to the display/image processor. it can only be requeued after that
-  //    has occurred.
-  // 2. the frame can be used as a reference frame. it can only re-enqueued
-  //    after all of the frames that reference it are decoded (but not
-  //    necessarily displayed)
+  auto it = decoded_and_dequeued_frames_.find(frame_id);
+  if (it != decoded_and_dequeued_frames_.end()) {
+    const uint32_t buffer_index = it->second;
+    decoded_and_dequeued_frames_.erase(it);
 
-  return video_frames_[index];
-}
+    DVLOGF(3) << "buffer " << buffer_index << " returned";
 
-bool OutputQueue::QueueBufferByIndex(uint32_t index) {
-  DVLOGF(4) << Description() << " index : " << index;
-  if (!device_->QueueBuffer(buffers_[index], base::ScopedFD(-1))) {
-    NOTREACHED() << "Failed to queue buffer.";
-    return false;
+    Buffer& buffer = buffers_[buffer_index];
+
+    if (!device_->QueueBuffer(buffer, base::ScopedFD(-1))) {
+      NOTREACHED() << "Failed to queue buffer.";
+      return false;
+    }
+
+    return true;
   }
 
-  free_buffer_indices_.erase(index);
-
-  return true;
+  NOTREACHED();
+  return false;
 }
 
 std::string OutputQueue::Description() {

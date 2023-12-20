@@ -94,19 +94,24 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   bool SetupOutputFormatForPipeline();
 
   // Restart the thread that will wait on a dequeue event from the driver.
-  void ArmOutputBufferMonitor();
+  void ArmBufferMonitor();
 
-  // Take the uncompressed buffers out of the v4l2 queue so that they can be
-  // passed along to the display.
-  void DequeueDecodedBuffers();
+  // Callbacks used to handle buffers that have been dequeued.
+  void HandleDequeuedOutputBuffers(Buffer buffer);
+  void HandleDequeuedInputBuffers(Buffer buffer);
 
-  void EnqueueDecodedBufferByIndex(uint32_t index);
+  // Callback for VideoFrame destructor observer that will enqueue the output
+  // buffer after it is done being used.
+  void EnqueueDecodedOutputBufferByFrameID(uint64_t frame_id);
 
   // Process the data in the |compressed_buffer| using the |decoder_|.
   void ProcessCompressedBuffer(scoped_refptr<DecoderBuffer> compressed_buffer,
                                VideoDecoder::DecodeCB decode_cb,
                                int32_t bitstream_id);
 
+  // Match up frames that have been decoded and are sitting in the
+  // |output_queue_| with |display_queue_| which holds the frames in display
+  // order.
   void ServiceDisplayQueue();
 
   SEQUENCE_CHECKER(decoder_sequence_checker_);
@@ -147,12 +152,14 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
 
   base::LRUCache<int32_t, base::TimeDelta> bitstream_id_to_timestamp_;
 
-  base::CancelableTaskTracker cancelable_task_tracker_;
+  base::CancelableTaskTracker cancelable_output_queue_tracker_;
+  base::CancelableTaskTracker cancelable_input_queue_tracker_;
 
-  // A sequenced TaskRunner to wait for events coming from |CAPTURE_queue_| or
-  // |wake_event_|.
-  scoped_refptr<base::SequencedTaskRunner> event_task_runner_;
+  // Workers that block and wait for buffers to be ready to be dequeued.
+  scoped_refptr<base::SequencedTaskRunner> input_queue_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> output_queue_task_runner_;
 
+  // Queue holding surfaces in display order.
   std::queue<scoped_refptr<StatelessDecodeSurface>> display_queue_;
 
   // Weak factories associated with the main thread

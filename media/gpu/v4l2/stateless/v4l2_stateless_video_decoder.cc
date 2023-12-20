@@ -15,6 +15,40 @@
 #include "media/gpu/v4l2/stateless/vp9_delegate.h"
 #include "media/gpu/v4l2/v4l2_status.h"
 
+namespace {
+using DequeueCB = base::RepeatingCallback<void(media::Buffer)>;
+
+void DequeueOutput(scoped_refptr<media::StatelessDevice> device,
+                   DequeueCB dequeue_cb) {
+  while (true) {
+    DVLOGF(1) << "blocking on dequeue of output";
+    auto buffer = device->DequeueBuffer(media::BufferType::kRawFrames,
+                                        media::MemoryType::kMemoryMapped, 2);
+    if (buffer) {
+      DVLOGF(1) << "output buffer dequeued " << buffer->GetIndex();
+      dequeue_cb.Run(std::move(*buffer));
+    } else {
+      break;
+    }
+  }
+}
+
+void DequeueInput(scoped_refptr<media::StatelessDevice> device,
+                  DequeueCB dequeue_cb) {
+  while (true) {
+    DVLOGF(1) << "blocking on dequeue on input";
+    auto buffer = device->DequeueBuffer(media::BufferType::kCompressedData,
+                                        media::MemoryType::kMemoryMapped, 1);
+    if (buffer) {
+      DVLOGF(1) << "input buffer dequeued " << buffer->GetIndex();
+      dequeue_cb.Run(std::move(*buffer));
+    } else {
+      break;
+    }
+  }
+}
+
+}  // namespace
 namespace media {
 
 constexpr size_t kTimestampCacheSize = 128;
@@ -123,10 +157,16 @@ void V4L2StatelessVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   const int32_t bitstream_id =
       bitstream_id_generator_.GenerateNextId().GetUnsafeValue();
 
-  if (!event_task_runner_) {
-    event_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+  if (!input_queue_task_runner_) {
+    input_queue_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-    CHECK(event_task_runner_);
+    CHECK(input_queue_task_runner_);
+  }
+
+  if (!output_queue_task_runner_) {
+    output_queue_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+    CHECK(output_queue_task_runner_);
   }
 
   decode_done_ = std::move(decode_cb);
@@ -188,19 +228,17 @@ V4L2StatelessVideoDecoder::CreateSurface() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4);
 
-  // This function is called before decoding of the bitstream. A place to
-  // store the decoded frame should be available before the decode occurs. But
-  // that is not how the V4L2 stateless model works. The compressed buffer queue
-  // is independent of the decoded frame queue.
-  // The two queues need to be matched up. The metadata associated with the
-  // compressed data needs to be tracked. In V4L2 m2m model this is done by
-  // copying the timestamps from the compressed buffer to the decoded buffer.
-  //
-  // The surface needs to match up the decompressed buffer to the originating
-  // metadata. This can't be done with |bitstream_id| because |bitstream_id| is
-  // a per packet, not per frame, designator. But it is used to match up the
-  // incoming timestamp with the displayed frame.
-
+  // If there are no buffers to put the compressed bitstream into then there is
+  // no way to proceed. There only needs to be a buffer for the compressed
+  // bitstream, the uncompressed bitstream buffer will block later.
+  // |output_queue_| is checked here because the first time through the queues
+  // are not setup.
+  if (output_queue_) {
+    if (input_queue_->FreeBufferCount() == 0) {
+      DVLOGF(1) << "No free input buffers";
+      return nullptr;
+    }
+  }
   const uint32_t frame_id =
       frame_id_generator_.GenerateNextId().GetUnsafeValue();
 
@@ -239,21 +277,12 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(void* ctrls,
     }
 
     output_queue_->StartStreaming();
+
+    ArmBufferMonitor();
   }
 
-  // Reclaim input buffers that are done being processed.
-  input_queue_->Reclaim();
-
   DVLOGF(2) << "Submitting compressed frame " << frame_id << " to be decoded.";
-  const bool queue_submission =
-      input_queue_->SubmitCompressedFrameData(ctrls, data, size, frame_id);
-
-  // Start waiting on the output buffer signal. The polling that the buffer
-  // monitor does requires buffers to be queues the best place to arm the
-  // monitor is after a buffer has been submitted to the queue.
-  ArmOutputBufferMonitor();
-
-  return queue_submission;
+  return input_queue_->SubmitCompressedFrameData(ctrls, data, size, frame_id);
 }
 
 void V4L2StatelessVideoDecoder::SurfaceReady(
@@ -290,7 +319,7 @@ void V4L2StatelessVideoDecoder::SurfaceReady(
 
 void V4L2StatelessVideoDecoder::ServiceDisplayQueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DVLOGF(3) << display_queue_.size();
+  DVLOGF(3) << display_queue_.size() << " surfaces ready to be displayed";
 
   // The display queue holds the order that frames are to be displayed in.
   // At the head of the queue is the next frame to display, but it may not be
@@ -314,8 +343,9 @@ void V4L2StatelessVideoDecoder::ServiceDisplayQueue() {
 
     // Retrieve the index of the corresponding dequeued buffer. It is expected
     // that a buffer may not be ready.
-    const auto buffer_index = output_queue_->UseDequeuedBuffer(frame_id);
-    if (!buffer_index) {
+    scoped_refptr<VideoFrame> video_frame =
+        output_queue_->GetVideoFrame(frame_id);
+    if (!video_frame) {
       DVLOGF(2) << "No dequeued buffer ready for frame id : " << frame_id;
       return;
     }
@@ -324,9 +354,6 @@ void V4L2StatelessVideoDecoder::ServiceDisplayQueue() {
     // is removed because it is going to the display.
     const auto surface = std::move(display_queue_.front());
     display_queue_.pop();
-
-    scoped_refptr<VideoFrame> video_frame =
-        output_queue_->DecodedFrameByIndex(*buffer_index);
 
     auto wrapped_frame = VideoFrame::WrapVideoFrame(
         video_frame, video_frame->format(), decoder_->GetVisibleRect(),
@@ -341,26 +368,26 @@ void V4L2StatelessVideoDecoder::ServiceDisplayQueue() {
     surface->ClearReferenceSurfaces();
 
     // Add a reference to the video frame so that underlying resource will not
-    // be requeued until both the video frame has been displayed and all of the
+    // be queued until both the video frame has been displayed and all of the
     // references have been dropped.
     surface->SetVideoFrame(wrapped_frame);
 
-    // The frames are shipped off to be displayed (or converted via the image
-    // processor). If the display buffer queue is deep this could take some
-    // time. These buffers can't be used in the meantime. This destructor
-    // observer will fire when the buffer is displayed (or converted) and give a
-    // signal that the buffer is ready for reuse.
+    // When the |wrapped_frame| is done being used the underlying buffer is
+    // queued again. A reference needs to be held by the |surface| in the
+    // situation where this frame is used as a reference frame. The other
+    // reference held will be released when the image is displayed or processed
+    // by the image converter.
     wrapped_frame->AddDestructionObserver(
         base::BindPostTaskToCurrentDefault(base::BindOnce(
-            &V4L2StatelessVideoDecoder::EnqueueDecodedBufferByIndex,
-            weak_ptr_factory_for_events_.GetWeakPtr(), *buffer_index)));
+            &V4L2StatelessVideoDecoder::EnqueueDecodedOutputBufferByFrameID,
+            weak_ptr_factory_for_events_.GetWeakPtr(), frame_id)));
 
     DVLOGF(3) << wrapped_frame->AsHumanReadableString();
 
-    // After the frame is prepared the frame output callback needs to be
-    // called with that frame.
+    // |output_cb_| passes the video frame off to the pipeline for further
+    // processing or display.
     output_cb_.Run(std::move(wrapped_frame));
-  };
+  }
 }
 
 bool V4L2StatelessVideoDecoder::CreateDecoder(VideoCodecProfile profile,
@@ -436,54 +463,58 @@ bool V4L2StatelessVideoDecoder::SetupOutputFormatForPipeline() {
   return true;
 }
 
-void V4L2StatelessVideoDecoder::ArmOutputBufferMonitor() {
+void V4L2StatelessVideoDecoder::ArmBufferMonitor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4);
 
-  // This callback is run once a buffers is ready to be dequeued. It is posted
-  // as a task instead of being run directly from |WaitOnceForEvents|. Doing
-  // this avoids servicing the buffers while other tasks are running.
-  auto dequeue_callback = base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&V4L2StatelessVideoDecoder::DequeueDecodedBuffers,
-                     weak_ptr_factory_for_events_.GetWeakPtr()));
+  auto input_cb = base::BindPostTaskToCurrentDefault(base::BindRepeating(
+      &V4L2StatelessVideoDecoder::HandleDequeuedInputBuffers,
+      weak_ptr_factory_for_events_.GetWeakPtr()));
 
-  // V4L2 |v4l2_m2m_poll_for_data| the default handler for polling, requires
-  // that there be a buffer queued in both input and output queues, otherwise
-  // it will error out immediately. This condition can occur when running with a
-  // small number of buffers. The solution is to rearm the monitor.
-  auto error_callback = base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&V4L2StatelessVideoDecoder::ArmOutputBufferMonitor,
-                     weak_ptr_factory_for_events_.GetWeakPtr()));
+  cancelable_input_queue_tracker_.PostTask(
+      input_queue_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&DequeueInput, device_, std::move(input_cb)));
 
-  cancelable_task_tracker_.PostTask(
-      event_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&WaitOnceForEvents, device_->GetPollEvent(),
-                     std::move(dequeue_callback), std::move(error_callback)));
+  auto output_cb = base::BindPostTaskToCurrentDefault(base::BindRepeating(
+      &V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers,
+      weak_ptr_factory_for_events_.GetWeakPtr()));
+
+  cancelable_output_queue_tracker_.PostTask(
+      output_queue_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&DequeueOutput, device_, std::move(output_cb)));
 }
 
-void V4L2StatelessVideoDecoder::DequeueDecodedBuffers() {
+void V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers(Buffer buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4);
 
-  // There is a buffer ready, that is why this method was called. The buffer
-  // needs to be dequeued from the hardware so that it is can be used as a
-  // reference frame or displayed.
-  output_queue_->DequeueBuffer();
-
-  // Check the display queue to see if there are buffers that are ready to
-  // be displayed.
-  ServiceDisplayQueue();
+  // |output_queue_| is responsible for tracking which buffers correspond to
+  // which frames. The queue needs to know that the buffer is done, ready for
+  // display, and should not be queued.
+  output_queue_->RegisterDequeuedBuffer(buffer);
 
   // Only one frame is in the queue at a time. The callback needs to be run
   // after the frame is dequeued so the next frame can be processed.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(decode_done_), DecoderStatus::Codes::kOk));
+
+  // Check the display queue to see if there are buffers that are ready to
+  // be displayed.
+  ServiceDisplayQueue();
 }
 
-void V4L2StatelessVideoDecoder::EnqueueDecodedBufferByIndex(uint32_t index) {
+void V4L2StatelessVideoDecoder::HandleDequeuedInputBuffers(Buffer buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  output_queue_->QueueBufferByIndex(index);
+  DVLOGF(1);
+  input_queue_->Reclaim(buffer);
+}
+
+void V4L2StatelessVideoDecoder::EnqueueDecodedOutputBufferByFrameID(
+    uint64_t frame_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  DVLOGF(4) << "frame id: " << frame_id;
+  output_queue_->QueueBufferByFrameID(frame_id);
 }
 
 void V4L2StatelessVideoDecoder::ProcessCompressedBuffer(

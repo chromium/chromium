@@ -35,6 +35,7 @@ class MEDIA_GPU_EXPORT BaseQueue {
   bool DeallocateBuffers();
   bool StartStreaming();
   bool StopStreaming();
+  uint32_t FreeBufferCount() const { return free_buffer_indices_.size(); }
 
  protected:
   bool AllocateBuffers(uint32_t num_planes);
@@ -70,7 +71,10 @@ class MEDIA_GPU_EXPORT InputQueue : public BaseQueue {
                                  size_t length,
                                  uint32_t frame_id);
   bool PrepareBuffers() override;
-  void Reclaim();
+
+  // Add buffers that have been dequeued into the list of buffers available
+  // to be used again.
+  void Reclaim(Buffer& buffer);
 
  private:
   bool SetupFormat(const gfx::Size resolution);
@@ -96,18 +100,9 @@ class MEDIA_GPU_EXPORT OutputQueue : public BaseQueue {
   // Allocate and prepare the buffers that will store the decoded raw frames.
   bool PrepareBuffers() override;
 
-  // Return the video frame that corresponds to a buffer index. The buffer
-  // index is tracked as it moves through the queue. When it is completed
-  // processing the corresponding video frame can be retrieved.
-  scoped_refptr<VideoFrame> DecodedFrameByIndex(uint32_t index);
-
   // After a buffer has been used it needs to be returned to the pool of
-  // available buffers.
-  bool QueueBufferByIndex(uint32_t index);
-
-  // Retrieved the index of a buffer given a |frame_id|. Raw frame buffers have
-  // the |frame_id| from the compressed frame copied into their structure.
-  absl::optional<uint32_t> UseDequeuedBuffer(uint64_t frame_id);
+  // available buffers. The client tracks using buffers using |frame_id|.
+  bool QueueBufferByFrameID(uint64_t frame_id);
 
   // Return the raw frame format chosen by |NegotiateFormat|
   Fourcc GetQueueFormat() const { return buffer_format_.fourcc; }
@@ -115,9 +110,14 @@ class MEDIA_GPU_EXPORT OutputQueue : public BaseQueue {
   // Return the resolution of the raw frames.
   gfx::Size GetVideoResolution() const { return buffer_format_.resolution; }
 
-  // Removes the raw frame from the queue of the driver and prepares it for
-  // usage.
-  bool DequeueBuffer();
+  // Record buffers that have finished decoded and have been dequeued so that
+  // they can later be referenced.
+  void RegisterDequeuedBuffer(Buffer& buffer);
+
+  // Retrieve a |VideoFrame| by |frame_id| that has already been decoded and
+  // dequeued. Returns |nullptr| if there isn't a corresponding frame that has
+  // been dequeued yet.
+  scoped_refptr<VideoFrame> GetVideoFrame(uint64_t frame_id);
 
  private:
   // Create |VideoFrame| by exporting the dmabuf backing the buffer.
