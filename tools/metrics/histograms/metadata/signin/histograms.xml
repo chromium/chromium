@@ -553,6 +553,21 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram
+    name="Signin.BoundSessionCredentials.SessionRegistrationGenerateRegistrationTokenDuration"
+    units="ms" expires_after="2024-04-28">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records how long the generation of a registration token for the bound
+    session registration has taken. Recorded every time Chrome attempts to
+    register a bound session after an invitation from the server via an HTTP
+    header. This will not be recorded if Chrome couldn't parse the server
+    invitation or just decided to ignore it.
+  </summary>
+</histogram>
+
 <histogram name="Signin.BoundSessionCredentials.SessionRegistrationResult"
     enum="BoundSessionCredentialsSessionRegistrationResult"
     expires_after="2024-04-28">
@@ -564,6 +579,20 @@ prefs when the profile is loaded.  -->
     time Chrome attempts to register a bound session after an invitation from
     the server via an HTTP header. This will not be recorded if Chrome couldn't
     parse the server invitation or just decided to ignore it.
+  </summary>
+</histogram>
+
+<histogram
+    name="Signin.BoundSessionCredentials.SessionRegistrationTotalDuration"
+    units="ms" expires_after="2024-04-28">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records how long the bound session registration flow has taken. Recorded
+    every time Chrome attempts to register a bound session after an invitation
+    from the server via an HTTP header. This will not be recorded if Chrome
+    couldn't parse the server invitation or just decided to ignore it.
   </summary>
 </histogram>
 

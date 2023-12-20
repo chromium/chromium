@@ -62,6 +62,10 @@ void BoundSessionRegistrationFetcherImpl::Start(
   TRACE_EVENT("browser", "BoundSessionRegistrationFetcherImpl::Start",
               perfetto::Flow::FromPointer(this), "endpoint",
               registration_params_.RegistrationEndpoint());
+  CHECK(!registration_duration_.has_value());
+  CHECK(!callback_);
+  CHECK(!registration_token_helper_);
+  registration_duration_.emplace();  // Starts the timer.
   callback_ = std::move(callback);
   // base::Unretained() is safe since `this` owns
   // `registration_token_helper_`.
@@ -70,7 +74,7 @@ void BoundSessionRegistrationFetcherImpl::Start(
       registration_params_.RegistrationEndpoint(),
       base::BindOnce(
           &BoundSessionRegistrationFetcherImpl::OnRegistrationTokenCreated,
-          base::Unretained(this)));
+          base::Unretained(this), base::ElapsedTimer()));
   registration_token_helper_->Start();
 }
 
@@ -138,10 +142,15 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
 }
 
 void BoundSessionRegistrationFetcherImpl::OnRegistrationTokenCreated(
+    base::ElapsedTimer generate_registration_token_timer,
     absl::optional<RegistrationTokenHelper::Result> result) {
   TRACE_EVENT("browser",
               "BoundSessionRegistrationFetcherImpl::OnRegistrationTokenCreated",
               perfetto::Flow::FromPointer(this), "success", result.has_value());
+  base::UmaHistogramMediumTimes(
+      "Signin.BoundSessionCredentials."
+      "SessionRegistrationGenerateRegistrationTokenDuration",
+      generate_registration_token_timer.Elapsed());
   if (!result.has_value()) {
     RunCallbackAndRecordMetrics(
         base::unexpected(RegistrationError::kGenerateRegistrationTokenFailed));
@@ -234,6 +243,11 @@ void BoundSessionRegistrationFetcherImpl::RunCallbackAndRecordMetrics(
   base::UmaHistogramEnumeration(
       "Signin.BoundSessionCredentials.SessionRegistrationResult",
       error_for_metrics);
+  CHECK(registration_duration_.has_value());
+  base::UmaHistogramMediumTimes(
+      "Signin.BoundSessionCredentials.SessionRegistrationTotalDuration",
+      registration_duration_->Elapsed());
+  registration_duration_.reset();
 
   std::move(callback_).Run(
       params_or_error.has_value()
