@@ -174,8 +174,8 @@ void AppServiceWrapper::GetAppIcon(
   DCHECK(!app_service_id.empty());
 
   GetAppProxy()->LoadIconWithIconEffects(
-      app_id.app_type(), app_service_id, apps::IconEffects::kNone,
-      apps::IconType::kStandard, size_hint_in_dp,
+      app_service_id, apps::IconEffects::kNone, apps::IconType::kStandard,
+      size_hint_in_dp,
       /* allow_placeholder_icon */ false,
       base::BindOnce(
           [](base::OnceCallback<void(std::optional<gfx::ImageSkia>)> callback,

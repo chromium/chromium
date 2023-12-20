@@ -272,7 +272,7 @@ void AppServiceAppItem::Launch(int event_flags,
 
 void AppServiceAppItem::CallLoadIcon(bool allow_placeholder_icon) {
   apps::AppServiceProxyFactory::GetForProfile(profile())->LoadIcon(
-      app_type_, id(), apps::IconType::kStandard,
+      id(), apps::IconType::kStandard,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       allow_placeholder_icon,
       base::BindOnce(&AppServiceAppItem::OnLoadIcon,

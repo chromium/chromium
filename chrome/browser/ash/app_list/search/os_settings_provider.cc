@@ -309,8 +309,8 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
   // changed.
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   if (update.ReadinessChanged() || update.IconKeyChanged()) {
-    proxy->LoadIcon(update.AppType(), web_app::kOsSettingsAppId,
-                    apps::IconType::kStandard, kAppIconDimension,
+    proxy->LoadIcon(web_app::kOsSettingsAppId, apps::IconType::kStandard,
+                    kAppIconDimension,
                     /*allow_placeholder_icon=*/false,
                     base::BindOnce(&OsSettingsProvider::OnLoadIcon,
                                    weak_factory_.GetWeakPtr(),

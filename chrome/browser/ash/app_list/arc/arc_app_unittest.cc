@@ -3042,7 +3042,7 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderCompressed) {
   ASSERT_NE(nullptr, proxy);
 
   proxy->LoadIcon(
-      apps::AppType::kArc, app_id, apps::IconType::kCompressed, icon_size,
+      app_id, apps::IconType::kCompressed, icon_size,
       false /*allow_placeholder_icon*/,
       base::BindLambdaForTesting([&](apps::IconValuePtr icon_value) {
         EXPECT_EQ(apps::IconType::kCompressed, icon_value->icon_type);
