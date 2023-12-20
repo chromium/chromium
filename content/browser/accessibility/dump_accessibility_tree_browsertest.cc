@@ -2361,9 +2361,22 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 #define AccessibilityInputDateWithPopupOpenMultiple_TestFile \
   FILE_PATH_LITERAL("input-date-with-popup-open-multiple.html")
 #endif
-// Flaky on all platforms. http://crbug.com/1055764
+
+// TODO(crbug.com/1506091): Test times out on android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccessibilityInputDateWithPopupOpenMultiple \
+  DISABLED_AccessibilityInputDateWithPopupOpenMultiple
+#else
+#define MAYBE_AccessibilityInputDateWithPopupOpenMultiple \
+  AccessibilityInputDateWithPopupOpenMultiple
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityInputDateWithPopupOpenMultiple) {
+                       MAYBE_AccessibilityInputDateWithPopupOpenMultiple) {
+  RunHtmlTest(AccessibilityInputDateWithPopupOpenMultiple_TestFile);
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityInputDateWithPopupOpenMultiple) {
   RunHtmlTest(AccessibilityInputDateWithPopupOpenMultiple_TestFile);
 }
 
