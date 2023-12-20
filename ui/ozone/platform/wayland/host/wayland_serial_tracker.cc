@@ -70,7 +70,7 @@ std::string SerialTracker::ToString() const {
     if (!serial) {
       out << "<none>";
     } else {
-      out << "serial=" << serial->value << ", time=" << serial->timestamp;
+      out << "tracker_id=" << serial->value << ", time=" << serial->timestamp;
     };
   };
   std::ostringstream out;

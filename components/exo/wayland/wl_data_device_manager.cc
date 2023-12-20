@@ -319,7 +319,7 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
       if (serial_tracker_->GetPointerDownSerial() != serial) {
         LOG(ERROR)
             << "The serial passed to StartDrag for pointer does not match its "
-               "expected types. serial="
+               "expected types. tracker_id="
             << serial << ", " << serial_tracker_->ToString();
         source->Cancelled();
         return;
@@ -331,7 +331,7 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
       if (serial_tracker_->GetTouchDownSerial() != serial) {
         LOG(ERROR)
             << "The serial passed to StartDrag for touch does not match its "
-               "expected types. serial="
+               "expected types. tracker_id="
             << serial << ", " << serial_tracker_->ToString();
         source->Cancelled();
         return;
@@ -341,7 +341,7 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
                              ui::mojom::DragEventSource::kTouch);
     } else {
       LOG(ERROR) << "Invalid event type for StartDrag:" << (int)*event_type
-                 << ", serial=" << serial << ", "
+                 << ", tracker_id=" << serial << ", "
                  << serial_tracker_->ToString();
       source->Cancelled();
       return;
