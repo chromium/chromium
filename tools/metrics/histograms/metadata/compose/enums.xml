@@ -47,6 +47,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Compose opened from context menu"/>
 </enum>
 
+<enum name="ComposeFirstRunSessionCloseReasonType">
+  <int value="0"
+      label="Session implicitly closed, often by web contents destruction"/>
+  <int value="1" label="Close button on the FRE dialog"/>
+  <int value="2"
+      label="FRE disclaimer was acknowledged and no insertion resulted"/>
+  <int value="3"
+      label="FRE disclaimer was acknowledged and followed by an inserted
+             suggestion"/>
+  <int value="4" label="New session with selected text opened"/>
+</enum>
+
 <enum name="ComposeMSBBSessionCloseReasonType">
   <int value="0"
       label="Session implicitly closed, often by web contents destruction"/>

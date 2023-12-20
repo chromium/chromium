@@ -194,6 +194,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Compose.Session.FRE.Disclaimer.CloseReason"
+    enum="ComposeFirstRunSessionCloseReasonType" expires_after="2024-06-30">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Histogram for recording the reason why a Compose dialog that had shown the
+    FRE UI closed. Recorded once per session when it is closed or destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Compose.Session.FRE.Disclaimer.DialogShownCount.{FinalStatus}"
+    units="count" expires_after="2024-06-30">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Count of the number of times the Compose dialog was shown in a consent UI
+    state where the {FinalStatus}. Recorded once per session when it is closed,
+    destroyed, or progressed past the FRE.
+  </summary>
+  <token key="FinalStatus">
+    <variant name="Acknowledged" summary="disclaimer was acknowledged"/>
+    <variant name="Ignored" summary="disclaimer was ignored"/>
+  </token>
+</histogram>
+
 <histogram name="Compose.Session.FRE.MSBB.CloseReason"
     enum="ComposeMSBBSessionCloseReasonType" expires_after="2024-11-01">
   <owner>jeffreycohen@chromium.org</owner>

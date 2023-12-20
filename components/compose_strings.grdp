@@ -15,6 +15,24 @@
     Re-open to continue
   </message>
 
+  <!-- FRE dialog -->
+  <message name="IDS_COMPOSE_FRE_TITLE" desc="The title of the Help me write disclaimer dialog." translateable="false">
+    Write better and with more confidence anywhere on the web
+  </message>
+  <message name="IDS_COMPOSE_FRE_MAIN_TOP" desc="The top main text of the Help me write disclaimer dialog." translateable="false">
+    Just start with a few words or enter a first draft to get writing and editing suggestions.
+  </message>
+  <message name="IDS_COMPOSE_FRE_MAIN_MID" desc="The middle main text of the Help me write disclaimer dialog." translateable="false">
+    Your text and the content and url of the page you're writing on will be sent to Google, reviewed by humans, and used to improve this feature. Avoid entering personal information (like medical or financial details) or using this tool on sites that contain private or sensitive information.
+  </message>
+  <message name="IDS_COMPOSE_FRE_MAIN_BOTTOM" desc="The bottom main text of the Help me write disclaimer dialog." translateable="false">
+    This is an experimental AI writing aid and won't always get it right.
+    <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_COMPOSE_FRE_LETS_GO_BUTTON" desc="The button to acknowledge the Help me write disclaimer message.">
+    Let's go
+  </message>
+
   <!-- Consent dialog -->
   <message name="IDS_COMPOSE_CONSENT_TITLE" desc="The title of the consent dialog." translateable="false">
     Get contextual writing suggestions for reviews, posts and more

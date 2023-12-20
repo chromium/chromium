@@ -36,6 +36,10 @@ const char kComposeMSBBSessionDialogShownCount[] =
     "Compose.Session.FRE.MSBB.DialogShownCount";
 const char kComposeSessionConsentGivenInSession[] =
     "Compose.Session.Consent.GivenInSession";
+const char kComposeFirstRunSessionCloseReason[] =
+    "Compose.Session.FRE.Disclaimer.CloseReason";
+const char kComposeFirstRunSessionDialogShownCount[] =
+    "Compose.Session.FRE.Disclaimer.DialogShownCount";
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event) {
   UMA_HISTOGRAM_ENUMERATION("Compose.ContextMenu.CTR", event);
@@ -49,6 +53,31 @@ void LogComposeRequestDuration(base::TimeDelta duration, bool is_valid) {
   base::UmaHistogramMediumTimes(
       is_valid ? kComposeResponseDurationOk : kComposeResponseDurationError,
       duration);
+}
+
+void LogComposeFirstRunSessionCloseReason(
+    ComposeFirstRunSessionCloseReason reason) {
+  base::UmaHistogramEnumeration(kComposeFirstRunSessionCloseReason, reason);
+}
+
+void LogComposeFirstRunSessionDialogShownCount(
+    ComposeFirstRunSessionCloseReason reason,
+    int dialog_shown_count) {
+  std::string status;
+  switch (reason) {
+    case ComposeFirstRunSessionCloseReason::
+        kFirstRunDisclaimerAcknowledgedWithoutInsert:
+    case ComposeFirstRunSessionCloseReason::
+        kFirstRunDisclaimerAcknowledgedWithInsert:
+      status = ".Acknowledged";
+      break;
+    case ComposeFirstRunSessionCloseReason::kCloseButtonPressed:
+    case ComposeFirstRunSessionCloseReason::kEndedImplicitly:
+    case ComposeFirstRunSessionCloseReason::kNewSessionWithSelectedText:
+      status = ".Ignored";
+  }
+  base::UmaHistogramCounts1000(kComposeFirstRunSessionDialogShownCount + status,
+                               dialog_shown_count);
 }
 
 void LogComposeConsentSessionCloseReason(

@@ -29,6 +29,8 @@ extern const char kComposeConsentSessionDialogShownCount[];
 extern const char kComposeMSBBSessionDialogShownCount[];
 extern const char kComposeSessionConsentGivenInSession[];
 extern const char kComposeSessionMSBBEnabledInSession[];
+extern const char kComposeFirstRunSessionCloseReason[];
+extern const char kComposeFirstRunSessionDialogShownCount[];
 
 // Enum for calculating the CTR of the Compose context menu item.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -62,6 +64,17 @@ enum class ComposeMSBBSessionCloseReason {
   kMSBBAcceptedWithoutInsert = 2,
   kMSBBAcceptedWithInsert = 3,
   kMaxValue = kMSBBAcceptedWithInsert,
+};
+
+// Keep in sync with ComposeFirstRunSessionCloseReasonType in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
+enum class ComposeFirstRunSessionCloseReason {
+  kEndedImplicitly = 0,
+  kCloseButtonPressed = 1,
+  kFirstRunDisclaimerAcknowledgedWithoutInsert = 2,
+  kFirstRunDisclaimerAcknowledgedWithInsert = 3,
+  kNewSessionWithSelectedText = 4,
+  kMaxValue = kNewSessionWithSelectedText,
 };
 
 // Keep in sync with ComposeSessionCloseReasonType in
@@ -100,6 +113,14 @@ void LogComposeContextMenuShowStatus(ComposeShowStatus status);
 // Log the duration of a compose request. |is_valid| indicates the status of
 // the request.
 void LogComposeRequestDuration(base::TimeDelta duration, bool is_ok);
+
+void LogComposeFirstRunSessionCloseReason(
+    ComposeFirstRunSessionCloseReason reason);
+
+// Log session based metrics when a FRE session ends.
+void LogComposeFirstRunSessionDialogShownCount(
+    ComposeFirstRunSessionCloseReason reason,
+    int dialog_shown_count);
 
 void LogComposeConsentSessionCloseReason(
     ComposeConsentSessionCloseReason reason);
