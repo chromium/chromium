@@ -1327,12 +1327,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.QuicSession.SendPacketSize"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ExtensionSource" separator="_" ordering="prefix">
-  <suffix name="OffStore" label="Extension hosted off the Chrome Web Store"/>
-  <suffix name="WebStore" label="Extension from the Chrome Web Store"/>
-  <affected-histogram name="Extensions.ForceInstalledFailureReason3"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="FeedLoadLatencyStep" separator=".">
   <suffix name="ActionUpload"
       label="Time taken read stored actions and upload them if necessary."/>
@@ -4611,13 +4605,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Setup.Install.LzmaUnPackStatus"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="UserScriptRunLocation" separator=".">
-  <suffix name="DocumentEnd" label="Scripts with run_at: document_end."/>
-  <suffix name="DocumentIdle" label="Scripts with run_at: document_idle."/>
-  <suffix name="DocumentStart" label="Scripts with run_at: document_start."/>
-  <affected-histogram name="Extensions.InjectedScriptExecutionTime"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="V8SpecialApps" separator=".">
   <suffix name="calendar" label="Custom histogram for Calendar"/>
   <suffix name="docs" label="Custom histogram for Google Docs and Drive"/>
@@ -4739,13 +4726,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Localhost" label=""/>
   <suffix name="NotLocalhost" label=""/>
   <affected-histogram name="Net.WebSocket.ErrorCodes"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="WebStoreLinkExperiment" separator="_">
-  <suffix name="Disabled" label="Neither extra webstore link is visible"/>
-  <suffix name="FooterLink" label="Link in bottom right of footer"/>
-  <suffix name="PlusIcon" label="Plus icon in apps page"/>
-  <affected-histogram name="Extensions.AppLaunch"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="WebUITabStripTabCount" separator=".">

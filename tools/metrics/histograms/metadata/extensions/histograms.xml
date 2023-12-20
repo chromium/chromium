@@ -2570,18 +2570,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.InjectedScriptExecutionTime" units="ms"
-    expires_after="never">
+<histogram name="Extensions.InjectedScriptExecutionTime{UserScriptRunLocation}"
+    units="ms" expires_after="never">
 <!-- expires-never: Monitoring performance of a core extension API. -->
 
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Time taken to execute all scripts for one location within an extension.
-    Recorded every time content scripts injected by extensions are executed.
-    Unlike Extensions.InjectScriptTime, this includes execution time of
-    asynchronously injected scripts.
+    Recorded every time content scripts injected by extensions are executed
+    {UserScriptRunLocation}. Unlike Extensions.InjectScriptTime, this includes
+    execution time of asynchronously injected scripts.
   </summary>
+  <token key="UserScriptRunLocation">
+    <variant name="" summary="for all script run locations"/>
+    <variant name=".DocumentEnd"
+        summary="with run location of `run_at: document_end`"/>
+    <variant name=".DocumentIdle"
+        summary="with run location of `run_at: document_idle`"/>
+    <variant name=".DocumentStart"
+        summary="with run location of `run_at: document_start`"/>
+  </token>
 </histogram>
 
 <histogram name="Extensions.InjectEnd_BlockingScriptCount" units="units"
