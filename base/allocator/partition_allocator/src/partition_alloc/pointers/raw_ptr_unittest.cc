@@ -1788,18 +1788,24 @@ void RunBackupRefPtrImplAdvanceTest(
   EXPECT_CHECK_DEATH(--protected_ptr);
 
 #if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
-  // An array type that should be more than a third the size of the available
-  // memory for the allocation such that incrementing a pointer to this type
-  // twice causes it to point to a memory location that is too small to fit a
-  // complete element of this type.
-  typedef int OverThirdArray[200 / sizeof(int)];
-  raw_ptr<OverThirdArray> protected_arr_ptr =
-      reinterpret_cast<OverThirdArray*>(ptr);
+  // An array of a size that doesn't cleanly fit into the allocation. This is to
+  // check that one can't access elements that don't fully fit in the
+  // allocation.
+  const size_t kArraySize = 199;
+  ASSERT_LT(kArraySize, requested_size);
+  ASSERT_NE(requested_size % kArraySize, 0U);
+  typedef char FunkyArray[kArraySize];
+  raw_ptr<FunkyArray, AllowPtrArithmetic> protected_arr_ptr =
+      reinterpret_cast<FunkyArray*>(ptr);
 
-  protected_arr_ptr++;
+  **protected_arr_ptr = 4;
+  protected_arr_ptr += requested_size / kArraySize;
+  EXPECT_CHECK_DEATH(** protected_arr_ptr = 4);
+  protected_arr_ptr--;
   **protected_arr_ptr = 4;
   protected_arr_ptr++;
-  EXPECT_DEATH_IF_SUPPORTED(** protected_arr_ptr = 4, "");
+  EXPECT_CHECK_DEATH(** protected_arr_ptr = 4);
+  protected_arr_ptr = nullptr;
 #endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
 
   protected_ptr = nullptr;
@@ -1893,6 +1899,8 @@ TEST_F(BackupRefPtrTest, GetDeltaElems) {
   allocator_.root()->Free(ptr2);
 }
 
+volatile char g_volatile_char_to_ignore;
+
 TEST_F(BackupRefPtrTest, IndexOperator) {
   size_t requested_size = GetRequestSizeThatFills512BSlot();
   char* ptr = static_cast<char*>(allocator_.root()->Alloc(requested_size));
@@ -1900,10 +1908,11 @@ TEST_F(BackupRefPtrTest, IndexOperator) {
     raw_ptr<char, AllowPtrArithmetic> array = ptr;
     std::ignore = array[0];
     std::ignore = array[requested_size - 1];
-    EXPECT_DEATH_IF_SUPPORTED(std::ignore = array[-1], "");
-    EXPECT_DEATH_IF_SUPPORTED(std::ignore = array[requested_size + 1], "");
+    EXPECT_CHECK_DEATH(std::ignore = array[-1]);
+    EXPECT_CHECK_DEATH(std::ignore = array[requested_size + 1]);
 #if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
-    EXPECT_DEATH_IF_SUPPORTED(std::ignore = array[requested_size], "");
+    EXPECT_DEATH_IF_SUPPORTED(g_volatile_char_to_ignore = array[requested_size],
+                              "");
 #endif
   }
   allocator_.root()->Free(ptr);
@@ -2138,22 +2147,18 @@ TEST_F(BackupRefPtrTest, RawPtrDeleteWithoutExtractAsDangling) {
 TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
   size_t requested_size = GetRequestSizeThatFills512BSlot();
   size_t requested_elements = requested_size / sizeof(uint32_t);
+
   uint32_t* ptr =
       reinterpret_cast<uint32_t*>(allocator_.root()->Alloc(requested_size));
   uint32_t* ptr_end = ptr + requested_elements;
 
-  CountingRawPtr<uint32_t> protected_ptr = ptr;
-  CountingRawPtr<uint32_t> protected_ptr_end =
-      protected_ptr + requested_elements;
-
-#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
-  EXPECT_DEATH_IF_SUPPORTED(*protected_ptr_end = 1, "");
-#endif
+  CountingRawPtr<uint32_t> counting_ptr = ptr;
+  CountingRawPtr<uint32_t> counting_ptr_end = counting_ptr + requested_elements;
 
   RawPtrCountingImpl::ClearCounters();
 
   uint32_t gen_val = 1;
-  std::generate(protected_ptr, protected_ptr_end, [&gen_val]() {
+  std::generate(counting_ptr, counting_ptr_end, [&gen_val]() {
     gen_val ^= gen_val + 1;
     return gen_val;
   });
@@ -2167,9 +2172,9 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
 
   RawPtrCountingImpl::ClearCounters();
 
-  for (CountingRawPtr<uint32_t> protected_ptr_i = protected_ptr;
-       protected_ptr_i < protected_ptr_end; protected_ptr_i++) {
-    *protected_ptr_i ^= *protected_ptr_i + 1;
+  for (CountingRawPtr<uint32_t> counting_ptr_i = counting_ptr;
+       counting_ptr_i < counting_ptr_end; counting_ptr_i++) {
+    *counting_ptr_i ^= *counting_ptr_i + 1;
   }
 
   EXPECT_THAT((CountingRawPtrExpectations{
@@ -2181,9 +2186,9 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
 
   RawPtrCountingImpl::ClearCounters();
 
-  for (CountingRawPtr<uint32_t> protected_ptr_i = protected_ptr;
-       protected_ptr_i < ptr_end; protected_ptr_i++) {
-    *protected_ptr_i ^= *protected_ptr_i + 1;
+  for (CountingRawPtr<uint32_t> counting_ptr_i = counting_ptr;
+       counting_ptr_i < ptr_end; counting_ptr_i++) {
+    *counting_ptr_i ^= *counting_ptr_i + 1;
   }
 
   EXPECT_THAT((CountingRawPtrExpectations{
@@ -2195,7 +2200,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
 
   RawPtrCountingImpl::ClearCounters();
 
-  for (uint32_t* ptr_i = ptr; ptr_i < protected_ptr_end; ptr_i++) {
+  for (uint32_t* ptr_i = ptr; ptr_i < counting_ptr_end; ptr_i++) {
     *ptr_i ^= *ptr_i + 1;
   }
 
@@ -2209,7 +2214,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
   RawPtrCountingImpl::ClearCounters();
 
   size_t iter_cnt = 0;
-  for (uint32_t *ptr_i = protected_ptr, *ptr_i_end = protected_ptr_end;
+  for (uint32_t *ptr_i = counting_ptr, *ptr_i_end = counting_ptr_end;
        ptr_i < ptr_i_end; ptr_i++) {
     *ptr_i ^= *ptr_i + 1;
     iter_cnt++;
@@ -2223,8 +2228,8 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
               }),
               CountersMatch());
 
-  protected_ptr = nullptr;
-  protected_ptr_end = nullptr;
+  counting_ptr = nullptr;
+  counting_ptr_end = nullptr;
   allocator_.root()->Free(ptr);
 }
 
@@ -2232,24 +2237,27 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
 TEST_F(BackupRefPtrTest, Duplicate) {
   size_t requested_size = allocator_.root()->AdjustSizeForExtrasSubtract(512);
   char* ptr = static_cast<char*>(allocator_.root()->Alloc(requested_size));
-  raw_ptr<char> protected_ptr1 = ptr;
+  raw_ptr<char, AllowPtrArithmetic> protected_ptr1 = ptr;
   protected_ptr1 += requested_size;  // Pointer should now be poisoned.
 
   // Duplicating a poisoned pointer should be allowed.
-  raw_ptr<char> protected_ptr2 = protected_ptr1;
+  raw_ptr<char, AllowPtrArithmetic> protected_ptr2 = protected_ptr1;
 
   // The poison bit should be propagated to the duplicate such that the OOB
   // access is disallowed:
   EXPECT_DEATH_IF_SUPPORTED(*protected_ptr2 = ' ', "");
 
   // Assignment from a poisoned pointer should be allowed.
-  raw_ptr<char> protected_ptr3;
+  raw_ptr<char, AllowPtrArithmetic> protected_ptr3;
   protected_ptr3 = protected_ptr1;
 
   // The poison bit should be propagated via the assignment such that the OOB
   // access is disallowed:
   EXPECT_DEATH_IF_SUPPORTED(*protected_ptr3 = ' ', "");
 
+  protected_ptr1 = nullptr;
+  protected_ptr2 = nullptr;
+  protected_ptr3 = nullptr;
   allocator_.root()->Free(ptr);
 }
 #endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
