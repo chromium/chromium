@@ -9,13 +9,16 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions_win.h"
+#include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/win/scoped_localalloc.h"
 #include "chrome/updater/app/app_install_progress.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
@@ -651,9 +654,31 @@ HRESULT ProgressWnd::LaunchCmdLine(const AppCompletionInfo& app_info) {
   CHECK(SUCCEEDED(app_info.error_code));
   CHECK(!app_info.is_noupdate);
 
-  auto process = base::LaunchProcess(
-      base::UTF8ToWide(app_info.post_install_launch_command_line), {});
-  return process.IsValid() ? S_OK : HRESULTFromLastError();
+  if (!IsElevatedWithUACOn()) {
+    auto process = base::LaunchProcess(
+        base::UTF8ToWide(app_info.post_install_launch_command_line), {});
+    return process.IsValid() ? S_OK : HRESULTFromLastError();
+  }
+
+  std::wstring command_format =
+      base::UTF8ToWide(app_info.post_install_launch_command_line);
+  int num_args = 0;
+  base::win::ScopedLocalAllocTyped<wchar_t*> argv(
+      ::CommandLineToArgvW(&command_format[0], &num_args));
+  if (!argv || num_args < 1) {
+    LOG(ERROR) << __func__ << "!argv || num_args < 1: " << num_args;
+    return E_INVALIDARG;
+  }
+
+  return RunDeElevated(argv.get()[0],
+                       base::JoinString(
+                           [&]() -> std::vector<std::wstring> {
+                             if (num_args <= 1) {
+                               return {};
+                             }
+                             return {argv.get() + 1, argv.get() + num_args};
+                           }(),
+                           L" "));
 }
 
 bool ProgressWnd::LaunchCmdLines(const ObserverCompletionInfo& info) {
