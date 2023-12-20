@@ -995,7 +995,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="CompositorLatency.Type" enum="FrameReportType"
+<histogram name="CompositorLatency.Type{Sequence}" enum="FrameReportType"
     expires_after="2024-05-19">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -1003,6 +1003,22 @@ chromium-metrics-reviews@google.com.
     Whether frame is dropped or presented meeting or missing the deadline or is
     a compositor only frame.
   </summary>
+  <token key="Sequence">
+    <variant name="" summary="All Sequences"/>
+    <variant name=".AnyInteraction" summary="At least one active interaction"/>
+    <variant name=".CanvasAnimation" summary="Main-thread canvas animation"/>
+    <variant name=".CompositorAnimation" summary="Compositor-driven animation"/>
+    <variant name=".JSAnimation" summary="JS-driven animation"/>
+    <variant name=".MainThreadAnimation"
+        summary="Main-thread driven animation"/>
+    <variant name=".NoInteraction" summary="No active interaction"/>
+    <variant name=".PinchZoom" summary="Pinch-to-zoom interaction"/>
+    <variant name=".RAF" summary="rAF callback driven animation"/>
+    <variant name=".ScrollbarScroll" summary="Scrollbar driven scrolls"/>
+    <variant name=".TouchScroll" summary="Touchscreen driven interaction"/>
+    <variant name=".Video" summary="Video playback"/>
+    <variant name=".WheelScroll" summary="Mousewheel driven interaction"/>
+  </token>
 </histogram>
 
 <histogram name="CompositorLatency{ReportType}{InteractionType}.{StageType}"

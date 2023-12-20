@@ -4341,12 +4341,6 @@ chromium-metrics-reviews@google.com.
       name="SmartLock.Performance.StartScanToReceiveFirstRemoteStatusDuration.Unlock"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SmoothnessSequenceTypeAggregates" separator=".">
-  <suffix name="AnyInteraction" label="At least one active interaction"/>
-  <suffix name="NoInteraction" label="No active interaction"/>
-  <affected-histogram name="CompositorLatency.Type"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SmoothnessSequenceTypes" separator=".">
   <suffix name="CanvasAnimation" label="Main-thread canvas animation"/>
   <suffix name="CompositorAnimation" label="Compositor-driven animation"/>
@@ -4358,7 +4352,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="TouchScroll" label="Touchscreen driven interaction"/>
   <suffix name="Video" label="Video playback"/>
   <suffix name="WheelScroll" label="Mousewheel driven interaction"/>
-  <affected-histogram name="CompositorLatency.Type"/>
   <affected-histogram name="Graphics.Smoothness.MaxStale"/>
   <affected-histogram name="Graphics.Smoothness.Stale"/>
 </histogram_suffixes>
