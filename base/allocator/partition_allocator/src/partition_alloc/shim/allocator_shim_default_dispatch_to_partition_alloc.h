@@ -12,7 +12,9 @@
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/shim/allocator_shim.h"
 
-namespace allocator_shim::internal {
+namespace allocator_shim {
+
+namespace internal {
 
 class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) PartitionAllocMalloc {
  public:
@@ -72,7 +74,25 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
                                 void* address,
                                 void* context);
 
-}  // namespace allocator_shim::internal
+}  // namespace internal
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+// Provide a ConfigurePartitions() helper, to mimic what Chromium uses. This way
+// we're making it more resilient to ConfigurePartitions() interface changes, so
+// that we don't have to modify multiple callers. This is particularly important
+// when callers are in a different repo, like PDFium or Dawn.
+PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
+  ConfigurePartitions(allocator_shim::EnableBrp(true),
+                      allocator_shim::EnableMemoryTagging(false),
+                      allocator_shim::SplitMainPartition(true),
+                      allocator_shim::UseDedicatedAlignedPartition(true), 0,
+                      BucketDistribution::kNeutral);
+
+  internal::PartitionAllocMalloc::Allocator()->EnableThreadCacheIfSupported();
+}
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+}  // namespace allocator_shim
 
 #endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 

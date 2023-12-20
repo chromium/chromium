@@ -242,17 +242,6 @@ void ConfigurePartitions(
     size_t ref_count_size,
     BucketDistribution distribution);
 
-// Provide a `ConfigurePartitions` helper for PDFium, so that its signature
-// changes don't require cross-repo changes.
-PA_ALWAYS_INLINE void ConfigurePartitionsForPdfiumTesting(
-    EnableBrp enable_brp,
-    EnableMemoryTagging enable_memory_tagging,
-    SplitMainPartition split_main_partition) {
-  ConfigurePartitions(enable_brp, enable_memory_tagging, split_main_partition,
-                      UseDedicatedAlignedPartition(true), 0,
-                      BucketDistribution::kNeutral);
-}
-
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) uint32_t GetMainPartitionRootExtrasSize();
 
 #if BUILDFLAG(USE_STARSCAN)
