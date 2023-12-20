@@ -14,7 +14,6 @@
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/system/federated/federated_service_controller_impl.h"
 #include "base/feature_list.h"
@@ -72,10 +71,6 @@ AppListClientImpl* g_app_list_client_instance = nullptr;
 constexpr base::TimeDelta kTimeMetricsMin = base::Seconds(1);
 constexpr base::TimeDelta kTimeMetricsMax = base::Days(7);
 constexpr int kTimeMetricsBucketCount = 100;
-
-bool IsTabletMode() {
-  return ash::TabletMode::IsInTabletMode();
-}
 
 // Returns whether the session is active.
 bool IsSessionActive() {
@@ -167,7 +162,7 @@ AppListClientImpl::~AppListClientImpl() {
 
     // Prefer the function to the macro because the usage data is recorded no
     // more than once per second.
-    if (IsTabletMode()) {
+    if (display::Screen::GetScreen()->InTabletMode()) {
       base::UmaHistogramEnumeration(
           "Apps.AppListUsageByNewUsers.TabletMode",
           AppListUsageStateByNewUsers::kNotUsedBeforeDestruction);
@@ -220,7 +215,8 @@ void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
       if (!state_for_new_user_->first_search_result_recorded &&
           state_for_new_user_->started_search && trimmed_query.empty()) {
         state_for_new_user_->first_search_result_recorded = true;
-        RecordFirstSearchResult(ash::NO_RESULT, IsTabletMode());
+        RecordFirstSearchResult(ash::NO_RESULT,
+                                display::Screen::GetScreen()->InTabletMode());
       } else if (!trimmed_query.empty()) {
         state_for_new_user_->started_search = true;
       }
@@ -278,7 +274,7 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
   }
 
   if (launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox) {
-    if (IsTabletMode()) {
+    if (display::Screen::GetScreen()->InTabletMode()) {
       base::UmaHistogramCounts100("Apps.AppListSearchQueryLengthV2.TabletMode",
                                   last_query_length);
     } else {
@@ -294,8 +290,9 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
       result->display_type(),
       ash::AppListNotifier::Result(result_id, result->metrics_type()));
 
-  RecordSearchResultOpenTypeHistogram(launched_from, result->metrics_type(),
-                                      IsTabletMode());
+  RecordSearchResultOpenTypeHistogram(
+      launched_from, result->metrics_type(),
+      display::Screen::GetScreen()->InTabletMode());
 
   if (launch_as_default) {
     RecordDefaultSearchResultOpenTypeHistogram(result->metrics_type());
@@ -315,7 +312,8 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
   if (state_for_new_user_ && state_for_new_user_->started_search &&
       !state_for_new_user_->first_search_result_recorded) {
     state_for_new_user_->first_search_result_recorded = true;
-    RecordFirstSearchResult(result->metrics_type(), IsTabletMode());
+    RecordFirstSearchResult(result->metrics_type(),
+                            display::Screen::GetScreen()->InTabletMode());
   }
 
   // OpenResult may cause |result| to be deleted.
@@ -438,7 +436,8 @@ void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
     if (state_for_new_user_ && state_for_new_user_->started_search &&
         !state_for_new_user_->first_search_result_recorded) {
       state_for_new_user_->first_search_result_recorded = true;
-      RecordFirstSearchResult(ash::NO_RESULT, IsTabletMode());
+      RecordFirstSearchResult(ash::NO_RESULT,
+                              display::Screen::GetScreen()->InTabletMode());
     }
   }
 }
@@ -469,7 +468,7 @@ void AppListClientImpl::ActiveUserChanged(user_manager::User* active_user) {
     if (!state_for_new_user_->showing_recorded) {
       // We assume that the previous user before switching was new if
       // `state_for_new_user_` is not null.
-      if (IsTabletMode()) {
+      if (display::Screen::GetScreen()->InTabletMode()) {
         base::UmaHistogramEnumeration(
             "Apps.AppListUsageByNewUsers.TabletMode",
             AppListUsageStateByNewUsers::kNotUsedBeforeSwitchingAccounts);
@@ -795,7 +794,8 @@ void AppListClientImpl::RecordViewShown() {
   }
 
   state_for_new_user_->showing_recorded = true;
-  state_for_new_user_->shown_in_tablet_mode = IsTabletMode();
+  state_for_new_user_->shown_in_tablet_mode =
+      display::Screen::GetScreen()->InTabletMode();
 
   CHECK(new_user_session_activation_time_.has_value());
   const base::TimeDelta opening_duration =
@@ -879,7 +879,7 @@ void AppListClientImpl::MaybeRecordLauncherAction(
   }
 
   state_for_new_user_->action_recorded = true;
-  if (IsTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     base::UmaHistogramEnumeration("Apps.NewUserFirstLauncherAction.TabletMode",
                                   launched_from);
   } else {
@@ -893,7 +893,7 @@ void AppListClientImpl::MaybeRecordLauncherAction(
   if (launcher_action_duration >= base::TimeDelta()) {
     // `base::Time` may skew. Therefore only record when the time duration is
     // non-negative.
-    if (IsTabletMode()) {
+    if (display::Screen::GetScreen()->InTabletMode()) {
       UMA_HISTOGRAM_CUSTOM_TIMES(
           /*name=*/
           "Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction."

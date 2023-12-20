@@ -14,7 +14,6 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -32,6 +31,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "extensions/common/constants.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/display/screen.h"
 
 namespace {
 
@@ -1268,9 +1268,8 @@ void ChromeAppListModelUpdater::ResetPrefSortOrderInNonTemporaryMode(
 
   order_delegate_->SetAppListPreferredOrder(ash::AppListSortOrder::kCustom);
 
-  // The tablet mode controller may not exist in tests.
-  if (ash::TabletMode::Get())
-    ReportPrefOrderClearAction(event, ash::TabletMode::Get()->IsInTabletMode());
+  ReportPrefOrderClearAction(event,
+                             display::Screen::GetScreen()->InTabletMode());
 }
 
 void ChromeAppListModelUpdater::MaybeUpdatePositionWhenIconColorChange(

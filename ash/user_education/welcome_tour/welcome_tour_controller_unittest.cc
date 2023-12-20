@@ -448,7 +448,7 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
                 LaunchSystemWebAppAsync(
                     Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
                     Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
-        .Times(TabletMode::IsInTabletMode() ? 0u : 1u);
+        .Times(display::Screen::GetScreen()->InTabletMode() ? 0u : 1u);
     std::move(ended_callback).Run();
     Mock::VerifyAndClearExpectations(&observer);
     Mock::VerifyAndClearExpectations(user_education_delegate);

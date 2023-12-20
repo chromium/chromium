@@ -51,13 +51,6 @@ class ASH_PUBLIC_EXPORT TabletMode {
   virtual void AddObserver(TabletModeObserver* observer) = 0;
   virtual void RemoveObserver(TabletModeObserver* observer) = 0;
 
-  // Deprecated, do NOT use this. Please use
-  // display::Screen::GetScreen()->InTabletMode() instead.
-  // TODO(crbug.com/1502114): Remove this.
-  //
-  // Returns true if TabletMode singleton exists and is in the tablet mode.
-  static bool IsInTabletMode();
-
   // Whether the events from the internal mouse/keyboard are blocked.
   virtual bool AreInternalInputDeviceEventsBlocked() const = 0;
 

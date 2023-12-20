@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
@@ -50,6 +49,7 @@
 #include "ui/base/base_window.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -452,7 +452,8 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
                                     owner.android_task_id.has_value() ||
                                     owner.lacros_window_id.has_value();
 
-  can_resize_ = !ash::TabletMode::IsInTabletMode() && !is_for_capture_mode;
+  can_resize_ =
+      !display::Screen::GetScreen()->InTabletMode() && !is_for_capture_mode;
 
   // Obtain BaseWindow and WebContents if the owner window is browser.
   if (!skip_finding_browser)

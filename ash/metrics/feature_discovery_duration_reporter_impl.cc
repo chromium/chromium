@@ -5,7 +5,6 @@
 #include "ash/metrics/feature_discovery_duration_reporter_impl.h"
 
 #include "ash/public/cpp/feature_discovery_metric_util.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
@@ -13,6 +12,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -134,7 +134,7 @@ void FeatureDiscoveryDurationReporterImpl::MaybeActivateObservation(
     // Record the current tablet mode if `feature`'s discovery duration data
     // should be separated by tablet mode.
     observed_feature_data.Set(kActivatedInTablet,
-                              TabletMode::Get()->IsInTabletMode());
+                              display::Screen::GetScreen()->InTabletMode());
   }
 
   ScopedDictPrefUpdate update(active_pref_service_, kObservedFeatures);

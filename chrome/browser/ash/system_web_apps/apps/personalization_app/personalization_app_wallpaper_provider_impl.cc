@@ -16,7 +16,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/controls/contextual_tooltip.h"
 #include "ash/public/cpp/image_util.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
@@ -62,6 +61,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
@@ -777,7 +777,7 @@ void PersonalizationAppWallpaperProviderImpl::UpdateDailyRefreshWallpaper(
 
 void PersonalizationAppWallpaperProviderImpl::IsInTabletMode(
     IsInTabletModeCallback callback) {
-  std::move(callback).Run(ash::TabletMode::IsInTabletMode());
+  std::move(callback).Run(display::Screen::GetScreen()->InTabletMode());
 }
 
 void PersonalizationAppWallpaperProviderImpl::ConfirmPreviewWallpaper() {

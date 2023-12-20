@@ -13,7 +13,6 @@
 #include "ash/public/cpp/system/scoped_toast_pause.h"
 #include "ash/public/cpp/system/system_nudge_pause_manager.h"
 #include "ash/public/cpp/system/toast_manager.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -394,7 +393,7 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   // prevented provided that (a) the user is new, and (b) the device is not in
   // tablet mode. This is in keeping with existing first run behavior.
   base::ScopedClosureRunner maybe_launch_explore_app_async(
-      TabletMode::IsInTabletMode()
+      display::Screen::GetScreen()->InTabletMode()
           ? base::DoNothing()
           : base::BindOnce(&LaunchExploreAppAsync,
                            UserEducationPrivateApiKey()));
@@ -407,7 +406,7 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   }
 
   // Welcome Tour is not supported in tablet mode.
-  if (TabletMode::IsInTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     welcome_tour_metrics::RecordTourPrevented(
         welcome_tour_metrics::PreventedReason::kTabletModeEnabled);
     return;
@@ -536,7 +535,7 @@ void WelcomeTourController::OnWelcomeTourEnded(
   // Attempt to launch the Explore app regardless of tour completion so long as
   // the device is not in tablet mode. This is in keeping with existing first
   // run behavior.
-  if (!TabletMode::IsInTabletMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     LaunchExploreAppAsync(UserEducationPrivateApiKey());
     SetCurrentStep(welcome_tour_metrics::Step::kExploreAppWindow);
   }
