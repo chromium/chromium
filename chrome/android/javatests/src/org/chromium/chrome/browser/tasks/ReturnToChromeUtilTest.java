@@ -274,9 +274,6 @@ public class ReturnToChromeUtilTest {
                                     mActivityTestRule
                                             .getActivity()
                                             .getLayoutStateProviderSupplier(),
-                                    () -> {
-                                        return -1L;
-                                    },
                                     false);
                         });
     }

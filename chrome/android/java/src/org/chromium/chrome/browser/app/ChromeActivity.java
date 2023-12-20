@@ -2504,7 +2504,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     new OnBackPressedCallback(true) {
                         @Override
                         public void handleOnBackPressed() {
-                            mBackPressManager.recordLastPressInterval();
                             if (!ChromeActivity.this.handleOnBackPressed()) {
                                 if (BackPressManager.shouldMoveToBackDuringStartup()) {
                                     moveTaskToBack(true);

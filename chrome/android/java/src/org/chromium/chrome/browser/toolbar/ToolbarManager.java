@@ -34,7 +34,6 @@ import com.google.android.material.appbar.AppBarLayout;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -320,7 +319,6 @@ public class ToolbarManager
 
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
-    @Nullable private Supplier<Long> mLastBackPressMsSupplier;
 
     private boolean mIsDestroyed;
     private static boolean sSkipRecreateForTesting;
@@ -661,7 +659,6 @@ public class ToolbarManager
         if (backPressManager != null && BackPressManager.isEnabled()) {
             OnBackPressHandler handler = new OnBackPressHandler();
             backPressManager.addHandler(handler, BackPressHandler.Type.TAB_HISTORY);
-            mLastBackPressMsSupplier = backPressManager::getLastPressMs;
             mBackPressManager = backPressManager;
         } else {
             mBackPressManager = null;
@@ -2575,37 +2572,6 @@ public class ToolbarManager
 
     public @BackPressResult int handleBackPress() {
         boolean ret = back();
-        if (!ret) {
-            var bc =
-                    mBottomControlsCoordinatorSupplier != null
-                            ? mBottomControlsCoordinatorSupplier.get()
-                            : null;
-            var tab = mActivityTabProvider.get();
-            var t2 = mTabModelSelector != null ? mTabModelSelector.getCurrentTab() : null;
-            var layout =
-                    mLayoutStateProviderSupplier.hasValue()
-                            ? mLayoutStateProviderSupplier.get().getActiveLayoutType()
-                            : LayoutType.NONE;
-            long interval = -1;
-            if (mLastBackPressMsSupplier != null && mLastBackPressMsSupplier.get() != -1) {
-                interval = TimeUtils.elapsedRealtimeMillis() - mLastBackPressMsSupplier.get();
-            }
-            var msg =
-                    String.format(
-                            "BottomCtrl %s %s; actTab %s %s; urlBarTab %s, sTab %s, layout %s,"
-                                    + " interval %s",
-                            bc,
-                            bc != null
-                                    && Boolean.TRUE.equals(
-                                            bc.getHandleBackPressChangedSupplier().get()),
-                            tab,
-                            tab.getWebContents(),
-                            mLocationBarModel.getTab(),
-                            t2,
-                            layout,
-                            interval);
-            assert false : msg;
-        }
         onBackPressStateChanged();
         return ret ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }

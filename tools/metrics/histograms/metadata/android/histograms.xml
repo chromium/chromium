@@ -634,16 +634,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Android.BackPress.Interval" units="ms"
-    expires_after="2024-05-05">
-  <owner>lazzzis@chromium.org</owner>
-  <owner>src/chrome/browser/back_press/android/OWNERS</owner>
-  <summary>
-    Records the time interval between the occurrence of two consecutive back
-    press events. Emits when a back press event is intercepted.
-  </summary>
-</histogram>
-
 <histogram name="Android.BackPress.MinimizeAppAndCloseTab"
     enum="MinimizeAppAndCloseTabType" expires_after="2024-05-12">
   <owner>lazzzis@chromium.org</owner>

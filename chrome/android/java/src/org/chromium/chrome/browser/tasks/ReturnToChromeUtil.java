@@ -22,7 +22,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.lifetime.Destroyable;
@@ -162,7 +161,6 @@ public final class ReturnToChromeUtil {
         private final ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
         private final ActivityTabProvider mActivityTabProvider;
         private final Supplier<Tab> mTabSupplier; // for debugging only
-        private final Supplier<Long> mLastBackPressMsSupplier;
         private LayoutStateProvider mLayoutStateProvider;
         private LayoutStateObserver mLayoutStateObserver;
         private boolean mIsHandleTabSwitcherShownEnabled;
@@ -172,7 +170,6 @@ public final class ReturnToChromeUtil {
                 Callback<Boolean> onBackPressedCallback,
                 Supplier<Tab> tabSupplier,
                 OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-                Supplier<Long> lastBackPressMsSupplier,
                 boolean isHandleTabSwitcherShownEnabled) {
             mActivityTabProvider = activityTabProvider;
             mActivityTabObserver =
@@ -184,7 +181,6 @@ public final class ReturnToChromeUtil {
                     };
             mOnBackPressedCallback = onBackPressedCallback;
             mTabSupplier = tabSupplier;
-            mLastBackPressMsSupplier = lastBackPressMsSupplier;
             mIsHandleTabSwitcherShownEnabled = isHandleTabSwitcherShownEnabled;
             if (mIsHandleTabSwitcherShownEnabled) {
                 layoutStateProviderSupplier.onAvailable(this::onLayoutStateProviderAvailable);
@@ -229,13 +225,8 @@ public final class ReturnToChromeUtil {
                         mLayoutStateProvider != null
                                 ? mLayoutStateProvider.getActiveLayoutType()
                                 : LayoutType.NONE;
-                long interval = -1;
-                if (mLastBackPressMsSupplier.get() != -1) {
-                    interval = TimeUtils.elapsedRealtimeMillis() - mLastBackPressMsSupplier.get();
-                }
                 String msg =
-                        "tab %s; control tab %s; back press state %s; layout %s; isFromSS: %s;"
-                                + " interval %s";
+                        "tab %s; control tab %s; back press state %s; layout %s; isFromSS: %s;";
                 boolean isFromSS = tab != null && isTabFromStartSurface(tab);
                 assert false
                         : String.format(
@@ -244,8 +235,7 @@ public final class ReturnToChromeUtil {
                                 controlTab,
                                 tab != null && tab.canGoBack(),
                                 layoutType,
-                                isFromSS,
-                                interval);
+                                isFromSS);
                 if (BackPressManager.correctTabNavigationOnFallback()) {
                     return BackPressResult.FAILURE;
                 }

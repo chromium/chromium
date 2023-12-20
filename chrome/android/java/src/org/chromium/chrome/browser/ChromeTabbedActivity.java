@@ -3025,7 +3025,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             this::returnToOverviewModeOnBackPressed,
                             this::getActivityTab,
                             mLayoutStateProviderSupplier,
-                            mBackPressManager::getLastPressMs,
                             mIsHandleTabSwitcherShownEnabled);
             mBackPressManager.addHandler(
                     mReturnToChromeBackPressHandler,
@@ -3043,8 +3042,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             getActivityTabProvider(),
                             this::backShouldCloseTab,
                             this::sendToBackground,
-                            this::assertOnLastBackPress,
-                            mBackPressManager::getLastPressMs);
+                            this::assertOnLastBackPress);
             mBackPressManager.addHandler(
                     mMinimizeAppAndCloseTabBackPressHandler,
                     BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);

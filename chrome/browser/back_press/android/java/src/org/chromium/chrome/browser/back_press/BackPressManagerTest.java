@@ -9,11 +9,9 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -28,7 +26,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class BackPressManagerTest {
-    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     private class EmptyBackPressHandler implements BackPressHandler {
         private ObservableSupplierImpl<Boolean> mSupplier = new ObservableSupplierImpl<>();
@@ -192,38 +189,6 @@ public class BackPressManagerTest {
         triggerBackPressWithoutAssertionError(manager);
         callbackHelper.waitForFirst("Fallback should be triggered if all handlers failed.");
         watcher.assertExpected();
-    }
-
-    @Test
-    @SmallTest
-    public void testInterval() {
-        var histogramWatcher =
-                HistogramWatcher.newBuilder().expectNoRecords("Android.BackPress.Interval").build();
-
-        BackPressManager manager = new BackPressManager();
-        EmptyBackPressHandler h1 =
-                TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    manager.addHandler(h1, BackPressHandler.Type.FIND_TOOLBAR);
-                    h1.getHandleBackPressChangedSupplier().set(true);
-                    manager.getCallback().handleOnBackPressed();
-                });
-
-        histogramWatcher.assertExpected(
-                "Handler's histogram should be not recorded for the first time");
-
-        histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Android.BackPress.Interval", 42);
-        mFakeTimeTestRule.advanceMillis(42);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    h1.getHandleBackPressChangedSupplier().set(true);
-                    manager.getCallback().handleOnBackPressed();
-                });
-        histogramWatcher.assertExpected(
-                "The interval histogram should be recorded if two back press events have been"
-                        + " intercepted");
     }
 
     @Test
