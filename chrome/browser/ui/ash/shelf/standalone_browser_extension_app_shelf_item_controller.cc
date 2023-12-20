@@ -45,8 +45,7 @@ StandaloneBrowserExtensionAppShelfItemController::
       ProfileManager::GetPrimaryUserProfile());
 
   icon_loader_releaser_ = proxy->LoadIconWithIconEffects(
-      apps::AppType::kStandaloneBrowserChromeApp, shelf_id.app_id,
-      apps::IconEffects::kNone, apps::IconType::kStandard,
+      shelf_id.app_id, apps::IconEffects::kNone, apps::IconType::kStandard,
       /*size_hint_in_dip=*/48,
       /*allow_placeholder_icon=*/false,
       base::BindOnce(

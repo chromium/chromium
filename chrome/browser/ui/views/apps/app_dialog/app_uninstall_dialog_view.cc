@@ -513,8 +513,7 @@ void AppUninstallDialogView::GetSubAppsInfo(
         });
 
     app_service_proxy->LoadIcon(
-        apps::AppType::kWeb, sub_app_id, apps::IconType::kUncompressed,
-        web_app::kWebAppIconSmall,
+        sub_app_id, apps::IconType::kUncompressed, web_app::kWebAppIconSmall,
         /*allow_placeholder_icon=*/false,
         base::BindOnce(
             [](std::u16string sub_app_name, apps::IconValuePtr icon_value_ptr) {

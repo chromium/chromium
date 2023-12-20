@@ -339,8 +339,7 @@ void BrowserAppShelfItemController::LoadIcon(int32_t size_hint_in_dip,
   const std::string& app_id = shelf_id().app_id;
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   icon_loader_releaser_ =
-      proxy->LoadIcon(proxy->AppRegistryCache().GetAppType(app_id), app_id,
-                      apps::IconType::kStandard,
+      proxy->LoadIcon(app_id, apps::IconType::kStandard,
                       // matches favicon size
                       /* size_hint_in_dip= */ size_hint_in_dip,
                       /* allow_placeholder_icon= */ false, std::move(callback));

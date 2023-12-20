@@ -431,11 +431,10 @@ void ChromeSavedDeskDelegate::GetIconForAppId(
     return;
   }
 
-  app_service_proxy->LoadIcon(
-      app_service_proxy->AppRegistryCache().GetAppType(app_id), app_id,
-      apps::IconType::kStandard, desired_icon_size,
-      /*allow_placeholder_icon=*/false,
-      AppIconResultToImageSkia(std::move(callback)));
+  app_service_proxy->LoadIcon(app_id, apps::IconType::kStandard,
+                              desired_icon_size,
+                              /*allow_placeholder_icon=*/false,
+                              AppIconResultToImageSkia(std::move(callback)));
 }
 
 bool ChromeSavedDeskDelegate::IsAppAvailable(const std::string& app_id) const {
