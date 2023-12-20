@@ -15,6 +15,7 @@
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
+#include "chrome/browser/performance_manager/test_support/fake_render_tuning_delegate.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -126,7 +127,9 @@ class BatteryDischargeReporterTest : public testing::Test {
         new performance_manager::user_tuning::BatterySaverModeManager(
             &testing_local_state_,
             std::make_unique<performance_manager::FakeFrameThrottlingDelegate>(
-                &throttling_enabled_)));
+                &throttling_enabled_),
+            std::make_unique<performance_manager::FakeRenderTuningDelegate>(
+                &render_tuning_enabled_)));
     test_battery_saver_mode_manager_->Start();
   }
 
@@ -166,6 +169,7 @@ class BatteryDischargeReporterTest : public testing::Test {
 
   TestingPrefServiceSimple testing_local_state_;
   bool throttling_enabled_ = false;
+  bool render_tuning_enabled_ = false;
   std::unique_ptr<performance_manager::user_tuning::BatterySaverModeManager>
       test_battery_saver_mode_manager_;
 };

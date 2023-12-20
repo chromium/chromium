@@ -47,6 +47,14 @@ class BatterySaverModeManager {
     virtual ~FrameThrottlingDelegate() = default;
   };
 
+  class RenderTuningDelegate {
+   public:
+    virtual void EnableRenderBatterySaverMode() = 0;
+    virtual void DisableRenderBatterySaverMode() = 0;
+
+    virtual ~RenderTuningDelegate() = default;
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // Raised when the browser level battery saver mode is enabled or disabled.
@@ -155,9 +163,11 @@ class BatterySaverModeManager {
     virtual bool IsBatterySaverModeDisabledForSession() const = 0;
   };
 
-  explicit BatterySaverModeManager(PrefService* local_state,
-                                   std::unique_ptr<FrameThrottlingDelegate>
-                                       frame_throttling_delegate = nullptr);
+  explicit BatterySaverModeManager(
+      PrefService* local_state,
+      std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate =
+          nullptr,
+      std::unique_ptr<RenderTuningDelegate> render_tuning_delegate = nullptr);
 
   void Start();
 
@@ -170,6 +180,7 @@ class BatterySaverModeManager {
   void NotifyOnBatteryThresholdReached();
 
   std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate_;
+  std::unique_ptr<RenderTuningDelegate> render_tuning_delegate_;
   std::unique_ptr<BatterySaverProvider> battery_saver_provider_;
 
   PrefChangeRegistrar pref_change_registrar_;

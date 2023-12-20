@@ -49,6 +49,9 @@ BASE_DECLARE_FEATURE(kBackgroundTabLoadingFromPerformanceManager);
 // toggling it.
 BASE_DECLARE_FEATURE(kBatterySaverModeAvailable);
 
+// If enabled, makes battery saver request render process tuning.
+BASE_DECLARE_FEATURE(kBatterySaverModeRenderTuning);
+
 // Flag to control a baseline HaTS survey for Chrome performance.
 BASE_DECLARE_FEATURE(kPerformanceControlsPerformanceSurvey);
 BASE_DECLARE_FEATURE(kPerformanceControlsBatteryPerformanceSurvey);

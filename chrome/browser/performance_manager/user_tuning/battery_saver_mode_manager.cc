@@ -15,10 +15,15 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/run_loop.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/frame_rate_throttling.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -67,6 +72,68 @@ class FrameThrottlingDelegateImpl
   }
 
   ~FrameThrottlingDelegateImpl() override = default;
+};
+
+class RenderTuningDelegateImpl
+    : public BatterySaverModeManager::RenderTuningDelegate,
+      public content::RenderProcessHostCreationObserver,
+      public content::RenderProcessHostObserver {
+ public:
+  ~RenderTuningDelegateImpl() override = default;
+  RenderTuningDelegateImpl() = default;
+
+ private:
+  void ToggleRenderBatterySaverModeForAllRenderProcessHosts(bool enabled) {
+    for (content::RenderProcessHost::iterator iter(
+             content::RenderProcessHost::AllHostsIterator());
+         !iter.IsAtEnd(); iter.Advance()) {
+      content::RenderProcessHost* host = iter.GetCurrentValue();
+
+      if (host->IsReady()) {
+        host->SetBatterySaverMode(enabled);
+      }
+    }
+
+    battery_saver_mode_enabled_ = enabled;
+  }
+
+  void EnableRenderBatterySaverMode() override {
+    ToggleRenderBatterySaverModeForAllRenderProcessHosts(true);
+  }
+
+  void DisableRenderBatterySaverMode() override {
+    ToggleRenderBatterySaverModeForAllRenderProcessHosts(false);
+  }
+
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override {
+    // The RenderProcessHost can be reused for a new process, sending a new
+    // `OnRenderProcessHostCreated` notification. In this case, the RPH is
+    // already being observed so no need to observe it again.
+    if (!observed_render_process_hosts_.IsObservingSource(host)) {
+      observed_render_process_hosts_.AddObservation(host);
+    }
+  }
+
+  // content::RenderProcessHostObserver:
+  void RenderProcessReady(content::RenderProcessHost* host) override {
+    // The default state is false, so only do the mojo call if the state should
+    // be set to true.
+    if (battery_saver_mode_enabled_) {
+      host->SetBatterySaverMode(battery_saver_mode_enabled_);
+    }
+  }
+
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override {
+    CHECK(observed_render_process_hosts_.IsObservingSource(host));
+    observed_render_process_hosts_.RemoveObservation(host);
+  }
+
+  bool battery_saver_mode_enabled_ = false;
+
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      observed_render_process_hosts_{this};
 };
 
 }  // namespace
@@ -451,11 +518,16 @@ bool BatterySaverModeManager::IsBatterySaverModeDisabledForSession() const {
 
 BatterySaverModeManager::BatterySaverModeManager(
     PrefService* local_state,
-    std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate)
+    std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate,
+    std::unique_ptr<RenderTuningDelegate> render_tuning_delegate)
     : frame_throttling_delegate_(
           frame_throttling_delegate
               ? std::move(frame_throttling_delegate)
-              : std::make_unique<FrameThrottlingDelegateImpl>()) {
+              : std::make_unique<FrameThrottlingDelegateImpl>()),
+      render_tuning_delegate_(
+          render_tuning_delegate
+              ? std::move(render_tuning_delegate)
+              : std::make_unique<RenderTuningDelegateImpl>()) {
   DCHECK(!g_battery_saver_mode_manager);
   g_battery_saver_mode_manager = this;
 
@@ -490,6 +562,14 @@ void BatterySaverModeManager::NotifyOnBatterySaverActiveChanged(
     frame_throttling_delegate_->StartThrottlingAllFrameSinks();
   } else {
     frame_throttling_delegate_->StopThrottlingAllFrameSinks();
+  }
+
+  if (base::FeatureList::IsEnabled(features::kBatterySaverModeRenderTuning)) {
+    if (battery_saver_mode_active) {
+      render_tuning_delegate_->EnableRenderBatterySaverMode();
+    } else {
+      render_tuning_delegate_->DisableRenderBatterySaverMode();
+    }
   }
 
   for (auto& obs : observers_) {

@@ -635,6 +635,8 @@ static_library("test_support") {
       "../browser/performance_manager/test_support/fake_memory_saver_mode_delegate.h",
       "../browser/performance_manager/test_support/fake_power_monitor_source.cc",
       "../browser/performance_manager/test_support/fake_power_monitor_source.h",
+      "../browser/performance_manager/test_support/fake_render_tuning_delegate.cc",
+      "../browser/performance_manager/test_support/fake_render_tuning_delegate.h",
       "../browser/performance_manager/test_support/page_discarding_utils.cc",
       "../browser/performance_manager/test_support/page_discarding_utils.h",
       "../browser/performance_manager/test_support/site_data_utils.cc",

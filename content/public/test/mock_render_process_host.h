@@ -293,6 +293,8 @@ class MockRenderProcessHost : public RenderProcessHost {
                            base::ScopedFD log_file_descriptor) override;
 #endif
 
+  void SetBatterySaverMode(bool battery_saver_mode_enabled) override {}
+
   void PauseSocketManagerForRenderFrameHost(
       const GlobalRenderFrameHostId& render_frame_host_id) override {}
   void ResumeSocketManagerForRenderFrameHost(

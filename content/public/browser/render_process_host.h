@@ -745,6 +745,12 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
                                    base::ScopedFD log_file_descriptor) = 0;
 #endif
 
+  // Asks the renderer process to prioritize energy efficiency because the
+  // embedder is in battery saver mode. This signal is propagated to blink and
+  // v8. The default state is `false`, meaning the power/speed tuning is left up
+  // to the different components to figure out.
+  virtual void SetBatterySaverMode(bool battery_saver_mode_enabled) = 0;
+
   // Static management functions -----------------------------------------------
 
   // Possibly start an unbound, spare RenderProcessHost. A subsequent creation

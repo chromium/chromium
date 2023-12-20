@@ -140,6 +140,11 @@ interface Renderer {
   SetProcessState(RenderProcessBackgroundState background_state,
                   RenderProcessVisibleState visible_state);
 
+  // Asks the renderer process to modify its internal settings to bias towards
+  // energy efficiency because the embedder is in battery saver mode. The
+  // default is `false`.
+  SetBatterySaverMode(bool battery_saver_mode_enabled);
+
   // Tells the renderer process that it has been locked to a site (i.e., a
   // scheme plus eTLD+1, such as https://google.com), or to a more specific
   // origin.

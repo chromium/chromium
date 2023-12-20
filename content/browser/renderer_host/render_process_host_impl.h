@@ -776,6 +776,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
                            base::ScopedFD log_file_descriptor) override;
 #endif
 
+  void SetBatterySaverMode(bool battery_saver_mode_enabled) override;
+
   int keep_alive_ref_count() const { return keep_alive_ref_count_; }
   int worker_ref_count() const { return worker_ref_count_; }
 

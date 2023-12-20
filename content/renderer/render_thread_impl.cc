@@ -24,6 +24,7 @@
 #include "base/logging.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
@@ -1308,6 +1309,21 @@ void RenderThreadImpl::SetProcessState(
 
   background_state_ = background_state;
   visible_state_ = visible_state;
+}
+
+void RenderThreadImpl::SetBatterySaverMode(bool battery_saver_mode_enabled) {
+  if (battery_saver_mode_enabled) {
+    base::MessagePump::OverrideAlignWakeUpsState(true, base::Milliseconds(32));
+  } else {
+    base::MessagePump::ResetAlignWakeUpsState();
+  }
+
+  if (!blink::MainThreadIsolate()) {
+    return;
+  }
+
+  blink::MainThreadIsolate()->SetBatterySaverMode(battery_saver_mode_enabled);
+  blink::SetBatterySaverModeForWorkerThreadIsolates(battery_saver_mode_enabled);
 }
 
 void RenderThreadImpl::SetIsLockedToSite() {

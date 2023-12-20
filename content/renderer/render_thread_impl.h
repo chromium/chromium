@@ -426,6 +426,7 @@ class CONTENT_EXPORT RenderThreadImpl
   void PurgeResourceCache(PurgeResourceCacheCallback callback) override;
   void SetProcessState(mojom::RenderProcessBackgroundState background_state,
                        mojom::RenderProcessVisibleState visible_state) override;
+  void SetBatterySaverMode(bool battery_saver_mode_enabled) override;
   void SetIsLockedToSite() override;
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   void WriteClangProfilingProfile(
