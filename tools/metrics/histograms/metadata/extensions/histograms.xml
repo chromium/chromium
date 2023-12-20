@@ -1726,25 +1726,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ForceInstalledFailureReason3"
-    enum="ExtensionInstallationFailureReason" expires_after="2024-04-28">
-<!-- Name completed by histogram_suffixes name="ExtensionSource" -->
-
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
-  <owner>managed-devices@google.com</owner>
-  <summary>
-    The reason why enterprise policy forced extensions were not installed.
-    Recorded for each forced extension that failed to install after 5 minutes.
-    Recorded together with &quot;Extensions.ForceInstalledTimedOutCount&quot;
-    histogram, but for every extension not installed at the moment.
-
-    Replaced Extensions.ForceInstalledFailureReason2 because of reporting
-    MANIFEST_INVALID instead of MANIFEST_FETCH_FAILED in case parsing update
-    manifest failed with different reasons for the extensions.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ForceInstalledFailureSandboxUnpackFailureReason2"
     enum="ExtensionUnpackFailureReason" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
@@ -4687,6 +4668,31 @@ chromium-metrics-reviews@google.com.
         summary="Detailed failure reason for OffStore extensions"/>
     <variant name="WebStore_"
         summary="Detailed failure reason for WebStore extensions"/>
+  </token>
+</histogram>
+
+<histogram name="Extensions.{ExtensionSource}ForceInstalledFailureReason3"
+    enum="ExtensionInstallationFailureReason" expires_after="2024-04-28">
+  <owner>vkovalova@google.com</owner>
+  <owner>burunduk@chromium.org</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    The reason why enterprise policy forced extensions were not installed
+    {ExtensionSource}. Recorded for each forced extension that failed to install
+    after 5 minutes. Recorded together with
+    &quot;Extensions.ForceInstalledTimedOutCount&quot; histogram, but for every
+    extension not installed at the moment.
+
+    Replaced Extensions.ForceInstalledFailureReason2 because of reporting
+    MANIFEST_INVALID instead of MANIFEST_FETCH_FAILED in case parsing update
+    manifest failed with different reasons for the extensions.
+  </summary>
+  <token key="ExtensionSource">
+    <variant name="" summary="for all extension sources"/>
+    <variant name="OffStore_"
+        summary="for extensions hosted off the Chrome Web Store"/>
+    <variant name="WebStore_"
+        summary="for extensions from the Chrome Web Store"/>
   </token>
 </histogram>
 
