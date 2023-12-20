@@ -248,6 +248,9 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Net Error">
     Upload was not successful because of network error.
   </int>
+  <int value="4" label="No User Metrics Consent">
+    Upload was not allowed due to user metrics consent.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideOnDeviceAddContextResult">

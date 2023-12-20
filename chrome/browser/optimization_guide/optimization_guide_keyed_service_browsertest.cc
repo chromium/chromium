@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
@@ -44,6 +46,7 @@
 #include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -57,6 +60,26 @@ namespace {
 
 using optimization_guide::OnDeviceModelComponentStateManager;
 using optimization_guide::proto::OptimizationType;
+
+class ScopedSetMetricsConsent {
+ public:
+  // Enables or disables metrics consent based off of |consent|.
+  explicit ScopedSetMetricsConsent(bool consent) : consent_(consent) {
+    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+        &consent_);
+  }
+
+  ScopedSetMetricsConsent(const ScopedSetMetricsConsent&) = delete;
+  ScopedSetMetricsConsent& operator=(const ScopedSetMetricsConsent&) = delete;
+
+  ~ScopedSetMetricsConsent() {
+    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+        nullptr);
+  }
+
+ private:
+  const bool consent_;
+};
 
 // A WebContentsObserver that asks whether an optimization type can be applied.
 class OptimizationGuideConsumerWebContentsObserver
@@ -305,6 +328,17 @@ class OptimizationGuideKeyedServiceBrowserTest
     return consumer_->last_can_apply_optimization_decision();
   }
 
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+  GetModelQualityLogEntryForCompose() {
+    std::unique_ptr<optimization_guide::proto::LogAiDataRequest>
+        log_ai_data_request(new optimization_guide::proto::LogAiDataRequest());
+    optimization_guide::proto::ComposeLoggingData compose_logging_data;
+    *(log_ai_data_request->mutable_compose()) = compose_logging_data;
+
+    return std::make_unique<optimization_guide::ModelQualityLogEntry>(
+        std::move(log_ai_data_request));
+  }
+
   GURL url_with_hints() { return url_with_hints_; }
 
   GURL url_that_redirects_to_hints() { return url_that_redirects_; }
@@ -332,6 +366,10 @@ class OptimizationGuideKeyedServiceBrowserTest
         ->IsSettingVisible(feature);
   }
 
+  void SetMetricsConsent(bool consent) {
+    scoped_metrics_consent_.emplace(consent);
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -357,6 +395,8 @@ class OptimizationGuideKeyedServiceBrowserTest
   GURL url_with_hints_;
   GURL url_that_redirects_;
   GURL url_that_redirects_to_no_hints_;
+
+  absl::optional<ScopedSetMetricsConsent> scoped_metrics_consent_;
 
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
@@ -1396,4 +1436,46 @@ IN_PROC_BROWSER_TEST_F(
       static_cast<int>(optimization_guide::OptimizationTypeDecision::
                            kNotAllowedByOptimizationFilter),
       1);
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       CheckUploadWithMetricsConsent) {
+  // Enable metrics consent.
+  SetMetricsConsent(true);
+  ASSERT_TRUE(
+      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
+
+  auto* profile = browser()->profile();
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+
+  // Create a new ModelQualityLogEntry and pass it to the
+  // UploadModelQualityLogs.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry_1 =
+      GetModelQualityLogEntryForCompose();
+
+  ogks->UploadModelQualityLogs(std::move(log_entry_1));
+
+  // Upload shouldn't be blocked by metrics consent.
+  histogram_tester()->ExpectBucketCount(
+      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      optimization_guide::ModelQualityLogsUploadStatus::kNoMetricsConsent, 0);
+
+  // Disable metrics consent.
+  SetMetricsConsent(false);
+  ASSERT_FALSE(
+      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
+
+  // Create a new ModelQualityLogEntry and pass it to the
+  // UploadModelQualityLogs.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry_2 =
+      GetModelQualityLogEntryForCompose();
+
+  ogks->UploadModelQualityLogs(std::move(log_entry_2));
+
+  // Upload should be disabled as there is no metrics consent, so total
+  // histogram bucket count will be 1.
+  histogram_tester()->ExpectBucketCount(
+      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      optimization_guide::ModelQualityLogsUploadStatus::kNoMetricsConsent, 1);
 }

@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "components/optimization_guide/core/access_token_helper.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/model_quality/model_quality_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -47,26 +48,6 @@ GURL GetModelQualityLogsUploaderServiceURL() {
         command_line->GetSwitchValueASCII(switches::kModelQualityServiceURL));
   }
   return GURL(kOptimizationGuideServiceModelQualtiyDefaultURL);
-}
-
-proto::ModelExecutionFeature GetModelExecutionFeature(
-    proto::LogAiDataRequest::FeatureCase feature) {
-  switch (feature) {
-    case proto::LogAiDataRequest::FeatureCase::kCompose:
-      return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE;
-    case proto::LogAiDataRequest::FeatureCase::kTabOrganization:
-      return proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION;
-    case proto::LogAiDataRequest::FeatureCase::kWallpaperSearch:
-      return proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH;
-    case proto::LogAiDataRequest::FeatureCase::kDefault:
-      NOTREACHED();
-      return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED;
-    case proto::LogAiDataRequest::FeatureCase::FEATURE_NOT_SET:
-      NOTREACHED();
-      return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED;
-  }
 }
 
 // URL load completion callback.

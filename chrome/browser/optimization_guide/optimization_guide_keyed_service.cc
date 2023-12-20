@@ -30,6 +30,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/pref_names.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
@@ -38,6 +39,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
+#include "components/optimization_guide/core/model_quality/model_quality_util.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -197,6 +199,16 @@ class OnDeviceModelComponentStateManagerDelegate
         state_manager);
   }
 };
+
+void RecordUploadStatusHistogram(
+    optimization_guide::proto::ModelExecutionFeature feature,
+    optimization_guide::ModelQualityLogsUploadStatus status) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.",
+           optimization_guide::GetStringNameForModelExecutionFeature(feature)}),
+      status);
+}
 
 }  // namespace
 
@@ -608,6 +620,24 @@ void OptimizationGuideKeyedService::UploadModelQualityLogs(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!model_quality_logs_uploader_service_) {
+    return;
+  }
+
+  // Don't trigger upload for an empty log entry.
+  if (!log_entry && log_entry->log_ai_data_request()) {
+    return;
+  }
+
+  // Model quality logging requires user consent. Skip upload if consent is
+  // missing.
+  if (!g_browser_process->GetMetricsServicesManager()
+           ->IsMetricsConsentGiven()) {
+    optimization_guide::proto::ModelExecutionFeature feature =
+        optimization_guide::GetModelExecutionFeature(
+            log_entry->log_ai_data_request()->feature_case());
+    RecordUploadStatusHistogram(
+        feature,
+        optimization_guide::ModelQualityLogsUploadStatus::kNoMetricsConsent);
     return;
   }
 
