@@ -681,16 +681,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.DirectComposition.NumPendingFrames" units="frames"
-    expires_after="2020-10-11">
-  <owner>sunnyps@chromium.org</owner>
-  <owner>zmo@chromium.org</owner>
-  <summary>
-    Number of presented frames for which presentation queries haven't completed.
-    Recorded on each vblank.
-  </summary>
-</histogram>
-
 <histogram name="GPU.DirectComposition.OverlayFormatUsed3" enum="DXGI_FORMAT"
     expires_after="2024-05-19">
   <owner>sunnyps@chromium.org</owner>
