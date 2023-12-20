@@ -36,9 +36,6 @@
   cell.snippetLabel.text = self.snippetDescription;
   cell.snippetState = self.snippetState;
   cell.checked = self.checked;
-  cell.accessibilityTraits |= UIAccessibilityTraitButton;
-  cell.userInteractionEnabled = YES;
-  cell.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
   cell.faviconImage = self.faviconImage;
   if (styler.cellTitleColor) {
     cell.nameLabel.textColor = styler.cellTitleColor;

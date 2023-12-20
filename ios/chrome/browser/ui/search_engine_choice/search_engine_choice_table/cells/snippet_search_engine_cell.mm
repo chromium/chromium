@@ -185,6 +185,10 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
     [NSLayoutConstraint activateConstraints:constraints];
     [self updateCellWithSnippetSate:SnippetState::kHidden animate:NO];
     [self updateCircleImageView];
+    // Set the button/accessibility settings.
+    self.accessibilityTraits |= UIAccessibilityTraitButton;
+    self.userInteractionEnabled = YES;
+    self.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
   }
   return self;
 }
@@ -208,6 +212,12 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
 
 - (UIImage*)faviconImage {
   return _faviconImageView.image;
+}
+
+- (void)setSnippetState:(SnippetState)snippetState {
+  // This method should be called only when being configured, before to be
+  // added to the view. Therefore there should be no animation.
+  [self updateCellWithSnippetSate:snippetState animate:NO];
 }
 
 #pragma mark - Private
@@ -296,6 +306,11 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
 - (void)prepareForReuse {
   [super prepareForReuse];
   _faviconImageView.image = nil;
+  self.nameLabel.text = nil;
+  self.nameLabel.textColor = UIColor.labelColor;
+  self.snippetLabel.text = nil;
+  [self updateCellWithSnippetSate:SnippetState::kHidden animate:NO];
+  self.checked = NO;
   self.chevronToggledBlock = nil;
 }
 
