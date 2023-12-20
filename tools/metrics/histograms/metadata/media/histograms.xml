@@ -718,9 +718,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.Open" enum="AudioStreamOpenResult"
-    expires_after="2024-01-07">
+    expires_after="2024-12-01">
   <owner>gudiou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>fhernqvist@google.com</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Success/error cases for opening an audio input stream on Windows.
