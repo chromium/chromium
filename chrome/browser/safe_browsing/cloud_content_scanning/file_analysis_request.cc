@@ -93,8 +93,8 @@ GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
   std::unique_ptr<crypto::SecureHash> secure_hash =
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);
   size_t bytes_read = 0;
-  std::string buf;
-  buf.reserve(kReadFileChunkSize);
+  std::vector<char> buf;
+  buf.resize(kReadFileChunkSize);
 
   while (bytes_read < file_data.size) {
     int64_t bytes_currently_read =
