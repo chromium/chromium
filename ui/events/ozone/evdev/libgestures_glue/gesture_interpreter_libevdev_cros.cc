@@ -201,6 +201,11 @@ void GestureInterpreterLibevdevCros::OnLibEvdevCrosEvent(Evdev* evdev,
   hwstate.rel_wheel_hi_res = evstate->rel_wheel_hi_res;
   hwstate.rel_hwheel = evstate->rel_hwheel;
 
+  if (received_mouse_input_) {
+    received_mouse_input_.Run(evstate->rel_x);
+    received_mouse_input_.Run(evstate->rel_y);
+  }
+
   // Touch.
   FingerState fingers[Event_Get_Slot_Count(evdev)];
   memset(&fingers, 0, sizeof(fingers));
@@ -573,6 +578,11 @@ void GestureInterpreterLibevdevCros::DispatchMouseButton(unsigned int button,
 void GestureInterpreterLibevdevCros::SetReceivedValidKeyboardInputCallback(
     base::RepeatingCallback<void(uint64_t)> callback) {
   received_keyboard_input_ = std::move(callback);
+}
+
+void GestureInterpreterLibevdevCros::SetReceivedValidMouseInputCallback(
+    base::RepeatingCallback<void(int)> callback) {
+  received_mouse_input_ = std::move(callback);
 }
 
 void GestureInterpreterLibevdevCros::DispatchChangedKeys(

@@ -34573,6 +34573,7 @@ from previous Chrome versions.
   <int value="673960072" label="ViewportSegments:enabled"/>
   <int value="674627327" label="MagnifierNewFocusFollowing:enabled"/>
   <int value="674788251" label="EnableNewBadgeOnMenuItems:enabled"/>
+  <int value="675427884" label="EnableFakeMouseHeuristic:enabled"/>
   <int value="676353150" label="OmniboxRetainSuggestionsWithHeaders:disabled"/>
   <int value="677866592" label="ClickToCallUI:disabled"/>
   <int value="677883800" label="DiagnosticsAppNavigation:disabled"/>
@@ -35909,6 +35910,7 @@ from previous Chrome versions.
   <int value="1302421166" label="NativeNotifications:disabled"/>
   <int value="1304523073" label="RetryGetVideoCaptureDeviceInfos:enabled"/>
   <int value="1304636193" label="ArcEnableUnifiedAudioFocus:enabled"/>
+  <int value="1304791513" label="EnableFakeMouseHeuristic:disabled"/>
   <int value="1305792241" label="SafeBrowsingEnhancedProtection:disabled"/>
   <int value="1306412559" label="FastPairPwaCompanion:disabled"/>
   <int value="1306473273" label="BluetoothFlossCoredump:enabled"/>

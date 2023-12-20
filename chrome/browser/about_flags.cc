@@ -9407,6 +9407,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFakeKeyboardHeuristicName,
      flag_descriptions::kEnableFakeKeyboardHeuristicDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kEnableFakeKeyboardHeuristic)},
+    {"enable-fake-mouse-heuristic",
+     flag_descriptions::kEnableFakeMouseHeuristicName,
+     flag_descriptions::kEnableFakeMouseHeuristicDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ui::kEnableFakeMouseHeuristic)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-isolated-sandboxed-iframes",

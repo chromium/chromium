@@ -32,7 +32,8 @@ namespace {
 
 bool InputDeviceEquals(const ui::InputDevice& a, const ui::InputDevice& b) {
   return a.id == b.id && a.enabled == b.enabled &&
-         a.suspected_keyboard_imposter == b.suspected_keyboard_imposter;
+         a.suspected_keyboard_imposter == b.suspected_keyboard_imposter &&
+         a.suspected_mouse_imposter == b.suspected_mouse_imposter;
 }
 
 }  // namespace

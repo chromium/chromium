@@ -52,6 +52,7 @@ member class=ui::InputDevice id=1
  phys=""
  enabled=0
  suspected_keyboard_imposter=0
+ suspected_mouse_imposter=0
  sys_path=""
  vendor_id=045E
  product_id=028E

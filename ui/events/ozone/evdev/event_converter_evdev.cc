@@ -99,6 +99,14 @@ bool EventConverterEvdev::IsSuspectedKeyboardImposter() const {
   return input_device_.suspected_keyboard_imposter;
 }
 
+void EventConverterEvdev::SetSuspectedMouseImposter(bool is_suspected) {
+  input_device_.suspected_mouse_imposter = is_suspected;
+}
+
+bool EventConverterEvdev::IsSuspectedMouseImposter() const {
+  return input_device_.suspected_mouse_imposter;
+}
+
 void EventConverterEvdev::OnStopped() {}
 
 void EventConverterEvdev::OnEnabled() {}

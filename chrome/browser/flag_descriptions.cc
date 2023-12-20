@@ -5914,6 +5914,12 @@ const char kEnableFakeKeyboardHeuristicDescription[] =
     "to be keyboards. Primarily assists in preventing the virtual keyboard "
     "from being disabled unintentionally.";
 
+const char kEnableFakeMouseHeuristicName[] = "Enable Fake Mouse Heuristic";
+const char kEnableFakeMouseHeuristicDescription[] =
+    "Enable heuristic to prevent non-mouse devices from pretending "
+    "to be mice. Primarily assists in preventing fake entries "
+    "appearing in the input settings menu.";
+
 const char kEnableRuntimeCountersTelemetryName[] =
     "Enable Runtime Counters Telemetry";
 const char kEnableRuntimeCountersTelemetryDescription[] =

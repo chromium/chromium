@@ -36,6 +36,8 @@ class COMPONENT_EXPORT(EVDEV) ImposterCheckerEvdev {
   std::string StandardizedPhys(const std::string& phys_path);
   bool IsSuspectedKeyboardImposter(EventConverterEvdev* converter,
                                    bool shared_phys);
+  bool IsSuspectedMouseImposter(EventConverterEvdev* converter,
+                                bool shared_phys);
 
   // Number of devices per phys path.
   std::multimap<std::string, int> devices_on_phys_path_;
