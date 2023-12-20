@@ -372,6 +372,49 @@ class FormStructure {
   // Returns the possible form types.
   DenseSet<FormType> GetFormTypes() const;
 
+  bool passwords_were_revealed() const { return passwords_were_revealed_; }
+  void set_passwords_were_revealed(bool passwords_were_revealed) {
+    passwords_were_revealed_ = passwords_were_revealed;
+  }
+
+  void set_password_attributes_vote(
+      const std::pair<PasswordAttribute, bool>& vote) {
+    password_attributes_vote_ = vote;
+  }
+
+  std::optional<std::pair<PasswordAttribute, bool>>
+  get_password_attributes_vote() const {
+    return password_attributes_vote_;
+  }
+
+  void set_password_length_vote(const size_t noisified_password_length) {
+    DCHECK(password_attributes_vote_.has_value())
+        << "|password_length_vote_| doesn't make sense if "
+           "|password_attributes_vote_| has no value.";
+    password_length_vote_ = noisified_password_length;
+  }
+
+  size_t get_password_length_vote() const {
+    DCHECK(password_attributes_vote_.has_value())
+        << "|password_length_vote_| doesn't make sense if "
+           "|password_attributes_vote_| has no value.";
+    return password_length_vote_;
+  }
+
+  void set_password_symbol_vote(int noisified_symbol) {
+    DCHECK(password_attributes_vote_.has_value())
+        << "password_symbol_vote_| doesn't make sense if "
+           "|password_attributes_vote_| has no value.";
+    password_symbol_vote_ = noisified_symbol;
+  }
+
+  int get_password_symbol_vote() const {
+    DCHECK(password_attributes_vote_.has_value())
+        << "|password_symbol_vote_| doesn't make sense if "
+           "|password_attributes_vote_| has no value";
+    return password_symbol_vote_;
+  }
+
   mojom::SubmissionSource submission_source() const {
     return submission_source_;
   }
@@ -587,6 +630,24 @@ class FormStructure {
 
   // If phone number rationalization has been performed for a given section.
   std::set<Section> phone_rationalized_;
+
+  // True iff the form is a password form and the user has seen the password
+  // value before accepting the prompt to save. Used for crowdsourcing.
+  bool passwords_were_revealed_ = false;
+
+  // The vote about password attributes (e.g. whether the password has a numeric
+  // character).
+  std::optional<std::pair<PasswordAttribute, bool>> password_attributes_vote_;
+
+  // If |password_attribute_vote_| contains (kHasSpecialSymbol, true), this
+  // field contains noisified information about a special symbol in a
+  // user-created password stored as ASCII code. The default value of 0
+  // indicates that no symbol was set.
+  int password_symbol_vote_ = 0;
+
+  // Noisified password length for crowdsourcing. If |password_attributes_vote_|
+  // has no value, |password_length_vote_| should be ignored.
+  size_t password_length_vote_;
 
   // Used to record whether developer has used autocomplete markup or
   // UPI-VPA hints, This is a bitmask of DeveloperEngagementMetric and set in

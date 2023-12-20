@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -82,21 +81,6 @@ struct SingleUsernameVoteData {
   // If set to true, sends `SingleUsernameVoteType::IN_FORM_OVERRULE` vote. Read
   // more about this vote type in proto file.
   bool is_form_overrule;
-};
-
-struct PasswordAttributesMetadata {
-  // The vote about password attributes (e.g. whether the password has a
-  // numeric character).
-  std::pair<autofill::PasswordAttribute, bool> password_attributes_vote;
-
-  // If `password_attribute_vote` contains (kHasSpecialSymbol, true), this
-  // field contains noisified information about a special symbol in a
-  // user-created password stored as ASCII code. The default value of 0
-  // indicates that no symbol was set.
-  int password_symbol_vote = 0;
-
-  // Noisified password length for crowdsourcing.
-  int password_length_vote = 0;
 };
 
 // This class manages vote uploads for password forms.
@@ -177,10 +161,10 @@ class VotesUploader {
       const std::u16string& username,
       const std::u16string& password);
 
-  // Returns a password attributes vote based on `password_value` . Declared as
-  // public for testing.
-  std::optional<PasswordAttributesMetadata> GeneratePasswordAttributesMetadata(
-      const std::u16string& password_value);
+  // Generates a password attributes vote based on |password_value| and saves it
+  // to |form_structure|. Declared as public for testing.
+  void GeneratePasswordAttributesVote(const std::u16string& password_value,
+                                      autofill::FormStructure* form_structure);
 
   // Stores the |unique_renderer_id| and |values| of the fields in
   // |observed_form| to |initial_field_values_|.
@@ -238,7 +222,6 @@ class VotesUploader {
     username_change_state_ = username_change_state;
   }
 
-  bool passwords_revealed_vote() const { return has_passwords_revealed_vote_; }
   void set_has_passwords_revealed_vote(bool has_passwords_revealed_vote) {
     has_passwords_revealed_vote_ = has_passwords_revealed_vote;
   }
@@ -388,10 +371,10 @@ class VotesUploader {
   UsernameChangeState username_change_state_ = UsernameChangeState::kUnchanged;
 
   // If the user typed username that doesn't match any saved credentials, but
-  // matches an entry from `all_alternative_usernames` of a saved credential,
-  // `username_correction_vote_` stores the credential with matched username.
-  // The matched credential is copied to `username_correction_vote_`, but
-  // `username_correction_vote_.username_element` is set to the name of the
+  // matches an entry from |all_alternative_usernames| of a saved credential,
+  // |username_correction_vote_| stores the credential with matched username.
+  // The matched credential is copied to |username_correction_vote_|, but
+  // |username_correction_vote_.username_element| is set to the name of the
   // field where the matched username was found.
   std::optional<PasswordForm> username_correction_vote_;
 
