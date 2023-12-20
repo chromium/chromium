@@ -388,16 +388,7 @@ TEST_P(SurfaceTest, SubsurfaceDamageSynchronizedCommitBehavior) {
   }
 }
 
-// TODO(crbug.com/1427023): Flaky test on Linux ChromiumOS MSan Tests.
-// Re-enable it.
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_SubsurfaceDamageDesynchronizedCommitBehavior \
-  DISABLED_SubsurfaceDamageDesynchronizedCommitBehavior
-#else
-#define MAYBE_SubsurfaceDamageDesynchronizedCommitBehavior \
-  SubsurfaceDamageDesynchronizedCommitBehavior
-#endif
-TEST_P(SurfaceTest, MAYBE_SubsurfaceDamageDesynchronizedCommitBehavior) {
+TEST_P(SurfaceTest, SubsurfaceDamageDesynchronizedCommitBehavior) {
   gfx::Size buffer_size(256, 512);
   auto buffer = std::make_unique<Buffer>(
       exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
@@ -1377,16 +1368,7 @@ TEST_P(SurfaceTest, SetClientSurfaceId) {
   EXPECT_EQ(kTestId, surface->GetClientSurfaceId());
 }
 
-// TODO(crbug.com/1427023): Flaky test on Linux ChromiumOS MSan Tests.
-// Re-enable it.
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_DestroyWithAttachedBufferReleasesBuffer \
-  DISABLED_DestroyWithAttachedBufferReleasesBuffer
-#else
-#define MAYBE_DestroyWithAttachedBufferReleasesBuffer \
-  DestroyWithAttachedBufferReleasesBuffer
-#endif
-TEST_P(SurfaceTest, MAYBE_DestroyWithAttachedBufferReleasesBuffer) {
+TEST_P(SurfaceTest, DestroyWithAttachedBufferReleasesBuffer) {
   gfx::Size buffer_size(1, 1);
   auto buffer = std::make_unique<Buffer>(
       exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
@@ -1487,16 +1469,7 @@ TEST_P(SurfaceTest, OcclusionNotRecomputedOnWidgetCommit) {
             window_occlusion_tracker_test_api.GetNumTimesOcclusionRecomputed());
 }
 
-// TODO(crbug.com/1427023): Flaky test on Linux ChromiumOS MSan Tests.
-// Re-enable it.
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_HasPendingPerCommitBufferReleaseCallback \
-  DISABLED_HasPendingPerCommitBufferReleaseCallback
-#else
-#define MAYBE_HasPendingPerCommitBufferReleaseCallback \
-  HasPendingPerCommitBufferReleaseCallback
-#endif
-TEST_P(SurfaceTest, MAYBE_HasPendingPerCommitBufferReleaseCallback) {
+TEST_P(SurfaceTest, HasPendingPerCommitBufferReleaseCallback) {
   auto buffer = std::make_unique<Buffer>(
       exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(1, 1)));
   auto surface = std::make_unique<Surface>();
