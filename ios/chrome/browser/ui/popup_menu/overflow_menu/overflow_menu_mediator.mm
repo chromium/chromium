@@ -689,8 +689,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 - (OverflowMenuAction*)newFollowAction {
   return [self
-      createOverflowMenuActionWithName:l10n_util::GetNSStringF(
-                                           IDS_IOS_TOOLS_MENU_FOLLOW, u"")
+      createOverflowMenuActionWithName:l10n_util::GetNSString(
+                                           IDS_IOS_TOOLS_MENU_CUSTOMIZE_FOLLOW)
                             actionType:overflow_menu::ActionType::Follow
                             symbolName:kPlusSymbol
                           systemSymbol:YES
