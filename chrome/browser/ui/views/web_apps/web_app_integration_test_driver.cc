@@ -1153,6 +1153,10 @@ void WebAppIntegrationTestDriver::EnableRunOnOsLoginFromAppHome(Site site) {
 }
 
 void WebAppIntegrationTestDriver::EnterFullScreenApp() {
+// TODO(crbug.com/1481727): Fullscreen is flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  GTEST_SKIP() << "Flaky on Lacros (crbug.com/1481727)";
+#else
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
@@ -1164,9 +1168,14 @@ void WebAppIntegrationTestDriver::EnterFullScreenApp() {
   fullscreen_observer.Wait();
   ASSERT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
   AfterStateChangeAction();
+#endif  // IS_CHROMEOS_LACROS
 }
 
 void WebAppIntegrationTestDriver::ExitFullScreenApp() {
+// TODO(crbug.com/1481727): Fullscreen is flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  GTEST_SKIP() << "Flaky on Lacros (crbug.com/1481727)";
+#else
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
@@ -1178,6 +1187,7 @@ void WebAppIntegrationTestDriver::ExitFullScreenApp() {
   fullscreen_observer.Wait();
   ASSERT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
   AfterStateChangeAction();
+#endif  // IS_CHROMEOS_LACROS
 }
 
 void WebAppIntegrationTestDriver::DisableFileHandling(Site site) {
@@ -3771,6 +3781,9 @@ bool WebAppIntegrationTestDriver::BeforeStateChangeAction(
   if (testing::Test::HasFatalFailure() && !in_tear_down_) {
     return false;
   }
+  if (testing::Test::IsSkipped() && !in_tear_down_) {
+    return false;
+  }
   LOG(INFO) << "BeforeStateChangeAction: "
             << std::string(executing_action_level_, ' ') << function;
   ++executing_action_level_;
@@ -3862,6 +3875,9 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
 bool WebAppIntegrationTestDriver::BeforeStateCheckAction(const char* function) {
   CHECK(base::StartsWith(function, "Check"));
   if (testing::Test::HasFatalFailure() && !in_tear_down_) {
+    return false;
+  }
+  if (testing::Test::IsSkipped() && !in_tear_down_) {
     return false;
   }
   ++executing_action_level_;
