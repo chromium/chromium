@@ -15098,66 +15098,6 @@
             ]
         }
     ],
-    "RequestDesktopSiteDefaultsControlCohort": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RequestDesktopSiteDefaultsControlSynthetic"
-                    ]
-                }
-            ]
-        }
-    ],
-    "RequestDesktopSiteDefaultsEnabledCohort": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RequestDesktopSiteDefaultsSynthetic"
-                    ]
-                }
-            ]
-        }
-    ],
-    "RequestDesktopSiteOptInControlCohort": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RequestDesktopSiteOptInControlSynthetic"
-                    ]
-                }
-            ]
-        }
-    ],
-    "RequestDesktopSiteOptInEnabledCohort": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RequestDesktopSiteOptInSynthetic"
-                    ]
-                }
-            ]
-        }
-    ],
     "ResponsiveToolbar": [
         {
             "platforms": [

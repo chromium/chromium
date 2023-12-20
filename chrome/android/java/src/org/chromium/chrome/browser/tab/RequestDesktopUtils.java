@@ -84,11 +84,10 @@ public class RequestDesktopUtils {
     private static final String ENABLED_GROUP_SUFFIX = "_Enabled";
     private static final String CONTROL_GROUP_SUFFIX = "_Control";
     private static final String DEFAULT_ON_GROUP_NAME_PREFIX = "DefaultOn_";
-    private static final String OPT_IN_GROUP_NAME_PREFIX = "OptIn_";
     // This is used to lookup the name of a feature used to track a cohort of users who triggered
     // the global default experiment, or would have triggered for control groups.
     private static final String PARAM_GLOBAL_DEFAULTS_COHORT_ID = "global_setting_cohort_id";
-    private static final int DEFAULT_GLOBAL_DEFAULTS_COHORT_ID = 0;
+    private static final int DEFAULT_GLOBAL_DEFAULTS_COHORT_ID = 1;
     private static final String GLOBAL_DEFAULTS_COHORT_NAME = "RequestDesktopSiteDefaultsCohort";
     private static final String GLOBAL_DEFAULTS_ENABLED_COHORT_NAME =
             "RequestDesktopSiteDefaultsEnabledCohort";
@@ -982,12 +981,10 @@ public class RequestDesktopUtils {
             return;
         }
 
-        // For backward compatibility.
-        if (cohortId == 0) {
-            maybeRegisterSyntheticFieldTrials(isControlGroup, screenSizeThreshold, isOptInArm);
+        if (isOptInArm) {
+            // Opt-in arm is not supported for the new cohort tracking.
             return;
         }
-        assert !isOptInArm : "Opt-in arm is not supported for the new cohort tracking.";
 
         String thresholdAsString = String.valueOf(screenSizeThreshold).replace('.', '_');
         String baseGroupName = DEFAULT_ON_GROUP_NAME_PREFIX + thresholdAsString + "_" + cohortId;
@@ -1014,37 +1011,6 @@ public class RequestDesktopUtils {
                 syntheticFeatureNameForUma,
                 baseGroupName,
                 SyntheticTrialAnnotationMode.CURRENT_LOG);
-    }
-
-    private static void maybeRegisterSyntheticFieldTrials(
-            boolean isControlGroup, double screenSizeThreshold, boolean isOptInArm) {
-        String thresholdAsString = String.valueOf(screenSizeThreshold).replace('.', '_');
-        String baseGroupName =
-                (isOptInArm ? OPT_IN_GROUP_NAME_PREFIX : DEFAULT_ON_GROUP_NAME_PREFIX)
-                        + thresholdAsString;
-
-        String syntheticFeatureName =
-                isControlGroup
-                        ? ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL_SYNTHETIC
-                        : ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_SYNTHETIC;
-        if (isOptInArm) {
-            syntheticFeatureName =
-                    isControlGroup
-                            ? ChromeFeatureList.REQUEST_DESKTOP_SITE_OPT_IN_CONTROL_SYNTHETIC
-                            : ChromeFeatureList.REQUEST_DESKTOP_SITE_OPT_IN_SYNTHETIC;
-        }
-
-        if (!isControlGroup && !ChromeFeatureList.isEnabled(syntheticFeatureName)) {
-            UmaSessionStats.registerSyntheticFieldTrial(
-                    syntheticFeatureName,
-                    baseGroupName + ENABLED_GROUP_SUFFIX,
-                    SyntheticTrialAnnotationMode.CURRENT_LOG);
-        } else if (isControlGroup && !ChromeFeatureList.isEnabled(syntheticFeatureName)) {
-            UmaSessionStats.registerSyntheticFieldTrial(
-                    syntheticFeatureName,
-                    baseGroupName + CONTROL_GROUP_SUFFIX,
-                    SyntheticTrialAnnotationMode.CURRENT_LOG);
-        }
     }
 
     @VisibleForTesting

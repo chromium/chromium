@@ -247,14 +247,10 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRequestDesktopSiteDefaultsControlCohort2,
     &kRequestDesktopSiteDefaultsControlCohort3,
     &kRequestDesktopSiteDefaultsControlCohort4,
-    &kRequestDesktopSiteDefaultsControlSynthetic,
     &kRequestDesktopSiteDefaultsEnabledCohort1,
     &kRequestDesktopSiteDefaultsEnabledCohort2,
     &kRequestDesktopSiteDefaultsEnabledCohort3,
     &kRequestDesktopSiteDefaultsEnabledCohort4,
-    &kRequestDesktopSiteDefaultsSynthetic,
-    &kRequestDesktopSiteOptInControlSynthetic,
-    &kRequestDesktopSiteOptInSynthetic,
     &kRequestDesktopSiteDefaultsDowngrade,
     &kRequestDesktopSiteDefaultsLogging,
     &kRestoreTabsOnFRE,
@@ -756,10 +752,6 @@ BASE_FEATURE(kRequestDesktopSiteDefaultsControlCohort4,
              "RequestDesktopSiteDefaultsControlCohort4",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRequestDesktopSiteDefaultsControlSynthetic,
-             "RequestDesktopSiteDefaultsControlSynthetic",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRequestDesktopSiteDefaultsEnabledCohort1,
              "RequestDesktopSiteDefaultsEnabledCohort1",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -774,18 +766,6 @@ BASE_FEATURE(kRequestDesktopSiteDefaultsEnabledCohort3,
 
 BASE_FEATURE(kRequestDesktopSiteDefaultsEnabledCohort4,
              "RequestDesktopSiteDefaultsEnabledCohort4",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRequestDesktopSiteDefaultsSynthetic,
-             "RequestDesktopSiteDefaultsSynthetic",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRequestDesktopSiteOptInControlSynthetic,
-             "RequestDesktopSiteOptInControlSynthetic",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRequestDesktopSiteOptInSynthetic,
-             "RequestDesktopSiteOptInSynthetic",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRequestDesktopSiteDefaultsDowngrade,
