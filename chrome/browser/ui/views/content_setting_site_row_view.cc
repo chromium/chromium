@@ -92,4 +92,5 @@ void ContentSettingSiteRowView::OnFaviconLoaded(
   }
 }
 
-BEGIN_METADATA(ContentSettingSiteRowView, views::View) END_METADATA
+BEGIN_METADATA(ContentSettingSiteRowView)
+END_METADATA

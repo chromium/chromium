@@ -98,5 +98,5 @@ base::WeakPtr<ComposeDialogView> ComposeDialogView::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-BEGIN_METADATA(ComposeDialogView, views::View)
+BEGIN_METADATA(ComposeDialogView)
 END_METADATA

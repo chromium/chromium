@@ -30,9 +30,9 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kSubpageViewId);
 // ||content view|                                  |
 // *-------------------------------------------------*
 class SubpageView : public views::View {
- public:
-  METADATA_HEADER(SubpageView);
+  METADATA_HEADER(SubpageView, views::View)
 
+ public:
   enum SubpageViewID {
     VIEW_ID_SUBPAGE_BACK_BUTTON = 0,
     VIEW_ID_SUBPAGE_CONTENT_VIEW

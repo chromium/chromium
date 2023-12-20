@@ -38,8 +38,9 @@ class DownloadShelfView : public DownloadShelf,
                           public views::AccessiblePaneView,
                           public views::AnimationDelegateViews,
                           public views::MouseWatcherListener {
+  METADATA_HEADER(DownloadShelfView, views::AccessiblePaneView)
+
  public:
-  METADATA_HEADER(DownloadShelfView);
   DownloadShelfView(Browser* browser, BrowserView* parent);
   DownloadShelfView(const DownloadShelfView&) = delete;
   DownloadShelfView& operator=(const DownloadShelfView&) = delete;

@@ -37,9 +37,9 @@ class PageInfoBubbleViewBrowserTest;
 // A button taking the full width of its parent that shows a background color
 // when hovered over.
 class HoverButton : public views::LabelButton {
- public:
-  METADATA_HEADER(HoverButton);
+  METADATA_HEADER(HoverButton, views::LabelButton)
 
+ public:
   enum Style { STYLE_PROMINENT, STYLE_ERROR };
 
   // Creates a single line hover button with no icon.

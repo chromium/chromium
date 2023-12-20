@@ -73,5 +73,5 @@ void DownloadStartedAnimationViews::AnimateToState(double state) {
   }
 }
 
-BEGIN_METADATA(DownloadStartedAnimationViews, views::ImageView)
+BEGIN_METADATA(DownloadStartedAnimationViews)
 END_METADATA

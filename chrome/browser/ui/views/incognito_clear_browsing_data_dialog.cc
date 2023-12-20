@@ -168,6 +168,5 @@ void IncognitoClearBrowsingDataDialog::OnCancelButtonClicked() {
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
-BEGIN_METADATA(IncognitoClearBrowsingDataDialog,
-               views::BubbleDialogDelegateView)
+BEGIN_METADATA(IncognitoClearBrowsingDataDialog)
 END_METADATA

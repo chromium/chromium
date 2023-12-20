@@ -54,8 +54,9 @@ constexpr char kFullBubbleVisibleHistogramName[] =
     "Download.Bubble.FullView.VisibleTime";
 
 class ShowAllDownloadsButton : public RichHoverButton {
+  METADATA_HEADER(ShowAllDownloadsButton, RichHoverButton)
+
  public:
-  METADATA_HEADER(ShowAllDownloadsButton);
   explicit ShowAllDownloadsButton(
       base::RepeatingClosure show_all_downloads_callback)
       : RichHoverButton(
@@ -117,7 +118,7 @@ class ShowAllDownloadsButton : public RichHoverButton {
   }
 };
 
-BEGIN_METADATA(ShowAllDownloadsButton, RichHoverButton)
+BEGIN_METADATA(ShowAllDownloadsButton)
 END_METADATA
 
 }  // namespace
@@ -205,5 +206,5 @@ base::StringPiece DownloadDialogView::GetVisibleTimeHistogramName() const {
   return kFullBubbleVisibleHistogramName;
 }
 
-BEGIN_METADATA(DownloadDialogView, DownloadBubblePrimaryView)
+BEGIN_METADATA(DownloadDialogView)
 END_METADATA

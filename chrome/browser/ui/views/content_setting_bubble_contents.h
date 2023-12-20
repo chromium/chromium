@@ -36,9 +36,10 @@ class LabelButton;
 class ContentSettingBubbleContents : public content::WebContentsObserver,
                                      public views::BubbleDialogDelegateView,
                                      public ContentSettingBubbleModel::Owner {
+  METADATA_HEADER(ContentSettingBubbleContents, views::BubbleDialogDelegateView)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainElementId);
-  METADATA_HEADER(ContentSettingBubbleContents);
   ContentSettingBubbleContents(
       std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model,
       content::WebContents* web_contents,

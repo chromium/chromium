@@ -13,8 +13,9 @@
 // views with animation.
 // TODO(crbug.com/1188101): Implement animation when switching.
 class PageSwitcherView : public views::View {
+  METADATA_HEADER(PageSwitcherView, views::View)
+
  public:
-  METADATA_HEADER(PageSwitcherView);
   explicit PageSwitcherView(std::unique_ptr<views::View> initial_page);
   PageSwitcherView(const PageSwitcherView&) = delete;
   PageSwitcherView& operator=(const PageSwitcherView&) = delete;

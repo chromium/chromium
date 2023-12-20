@@ -291,7 +291,7 @@ void CertificateSelector::OnDoubleClick() {
     AcceptDialog();
 }
 
-BEGIN_METADATA(CertificateSelector, views::DialogDelegateView)
+BEGIN_METADATA(CertificateSelector)
 END_METADATA
 
 }  // namespace chrome

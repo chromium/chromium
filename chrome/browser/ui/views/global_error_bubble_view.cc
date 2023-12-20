@@ -131,5 +131,5 @@ void GlobalErrorBubbleView::CloseBubbleView() {
   GetWidget()->Close();
 }
 
-BEGIN_METADATA(GlobalErrorBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(GlobalErrorBubbleView)
 END_METADATA

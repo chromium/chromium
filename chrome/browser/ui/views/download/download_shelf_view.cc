@@ -355,5 +355,5 @@ DownloadItemView* DownloadShelfView::GetViewOfLastDownloadItemForTesting() {
   return download_views_.empty() ? nullptr : download_views_.back();
 }
 
-BEGIN_METADATA(DownloadShelfView, views::AccessiblePaneView)
+BEGIN_METADATA(DownloadShelfView)
 END_METADATA

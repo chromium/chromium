@@ -80,9 +80,9 @@ class DownloadToolbarButtonView : public ToolbarButton,
                                   public DownloadBubbleNavigationHandler,
                                   public BrowserListObserver,
                                   public DownloadBubbleRowListViewInfoObserver {
- public:
-  METADATA_HEADER(DownloadToolbarButtonView);
+  METADATA_HEADER(DownloadToolbarButtonView, ToolbarButton)
 
+ public:
   // Identifies the bubble dialog widget for testing.
   static constexpr char kBubbleName[] = "DownloadBubbleDialog";
 

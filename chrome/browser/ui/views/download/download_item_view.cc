@@ -139,9 +139,9 @@ constexpr int kMinimumVerticalPadding = 2 + kTopBottomPadding;
 
 // A stub subclass of Button that has no visuals.
 class TransparentButton : public views::Button {
- public:
-  METADATA_HEADER(TransparentButton);
+  METADATA_HEADER(TransparentButton, views::Button)
 
+ public:
   explicit TransparentButton(DownloadItemView* parent)
       : Button(Button::PressedCallback()) {
     views::InstallRectHighlightPathGenerator(this);
@@ -186,7 +186,7 @@ class TransparentButton : public views::Button {
   }
 };
 
-BEGIN_METADATA(TransparentButton, views::Button)
+BEGIN_METADATA(TransparentButton)
 END_METADATA
 
 int GetFilenameStyle(const views::Label& label) {
@@ -238,9 +238,9 @@ float GetDPIScaleForView(views::View* view) {
 }  // namespace
 
 class DownloadItemView::ContextMenuButton : public views::ImageButton {
- public:
-  METADATA_HEADER(ContextMenuButton);
+  METADATA_HEADER(ContextMenuButton, views::ImageButton)
 
+ public:
   explicit ContextMenuButton(DownloadItemView* owner)
       : views::ImageButton(
             base::BindRepeating(&DownloadItemView::DropdownButtonPressed,
@@ -1304,7 +1304,7 @@ DEFINE_ENUM_CONVERTERS(download::DownloadItemMode,
                        {download::DownloadItemMode::kInsecureDownloadBlock,
                         u"kInsecureDownloadBlock"})
 
-BEGIN_METADATA(DownloadItemView, views::View)
+BEGIN_METADATA(DownloadItemView)
 ADD_READONLY_PROPERTY_METADATA(download::DownloadItemMode, Mode)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, InProgressAccessibleAlertText)
 ADD_READONLY_PROPERTY_METADATA(gfx::RectF, IconBounds)

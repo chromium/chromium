@@ -31,9 +31,9 @@ views::Widget* ShowCrostiniForceCloseDialog(
 // Displays a dialog that allows the user to force close an associated widget
 // via CloseNow().
 class CrostiniForceCloseView : public views::BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(CrostiniForceCloseView);
+  METADATA_HEADER(CrostiniForceCloseView, views::BubbleDialogDelegateView)
 
+ public:
   CrostiniForceCloseView(const CrostiniForceCloseView&) = delete;
   CrostiniForceCloseView& operator=(const CrostiniForceCloseView&) = delete;
 

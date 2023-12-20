@@ -36,13 +36,13 @@ BASE_DECLARE_FEATURE(kDisplayMediaPickerRedesign);
 // TODO(crbug.com/987001): Consider renaming this class.
 class DesktopMediaPickerDialogView : public views::DialogDelegateView,
                                      public views::TabbedPaneListener {
+  METADATA_HEADER(DesktopMediaPickerDialogView, views::DialogDelegateView)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
       kDesktopMediaPickerDialogViewIdentifier);
   // Used for UMA. Visible to this class's .cc file, but opaque beyond.
   enum class DialogType : int;
-
-  METADATA_HEADER(DesktopMediaPickerDialogView);
   DesktopMediaPickerDialogView(
       const DesktopMediaPicker::Params& params,
       DesktopMediaPickerViews* parent,

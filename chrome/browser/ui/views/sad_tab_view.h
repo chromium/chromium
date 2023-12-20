@@ -37,9 +37,9 @@ class RoundedCornersF;
 //
 ///////////////////////////////////////////////////////////////////////////////
 class SadTabView : public SadTab, public views::View {
- public:
-  METADATA_HEADER(SadTabView);
+  METADATA_HEADER(SadTabView, views::View)
 
+ public:
   SadTabView(content::WebContents* web_contents, SadTabKind kind);
 
   SadTabView(const SadTabView&) = delete;

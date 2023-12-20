@@ -31,9 +31,9 @@ void ShowCrostiniRecoveryView(Profile* profile,
 // Provides a warning to the user that an upgrade is required and and internet
 // connection is needed.
 class CrostiniRecoveryView : public views::BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(CrostiniRecoveryView);
+  METADATA_HEADER(CrostiniRecoveryView, views::BubbleDialogDelegateView)
 
+ public:
   static void Show(Profile* profile,
                    const std::string& app_id,
                    int64_t display_id,

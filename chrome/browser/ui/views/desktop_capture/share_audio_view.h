@@ -10,8 +10,9 @@
 #include "ui/views/controls/button/toggle_button.h"
 
 class ShareAudioView : public views::View {
+  METADATA_HEADER(ShareAudioView, views::View)
+
  public:
-  METADATA_HEADER(ShareAudioView);
   ShareAudioView(const std::u16string& label_text, bool audio_offered);
   ShareAudioView(const ShareAudioView&) = delete;
   ShareAudioView& operator=(const ShareAudioView&) = delete;

@@ -9,8 +9,9 @@
 #include "ui/views/controls/button/menu_button.h"
 
 class SavedTabGroupOverflowButton : public views::MenuButton {
+  METADATA_HEADER(SavedTabGroupOverflowButton, views::MenuButton)
+
  public:
-  METADATA_HEADER(SavedTabGroupOverflowButton);
   explicit SavedTabGroupOverflowButton(PressedCallback callback);
   ~SavedTabGroupOverflowButton() override;
 

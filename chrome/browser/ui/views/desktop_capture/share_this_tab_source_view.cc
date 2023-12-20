@@ -187,5 +187,5 @@ void ShareThisTabSourceView::OnCaptureHandled(
       kUpdatePeriodMs);
 }
 
-BEGIN_METADATA(ShareThisTabSourceView, views::View)
+BEGIN_METADATA(ShareThisTabSourceView)
 END_METADATA

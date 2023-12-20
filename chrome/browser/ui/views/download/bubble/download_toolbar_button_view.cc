@@ -860,5 +860,5 @@ void DownloadToolbarButtonView::SetBubbleControllerForTesting(
   bubble_controller_ = std::move(bubble_controller);
 }
 
-BEGIN_METADATA(DownloadToolbarButtonView, ToolbarButton)
+BEGIN_METADATA(DownloadToolbarButtonView)
 END_METADATA

@@ -225,5 +225,5 @@ views::View* RichHoverButton::GetTooltipHandlerForPoint(
   return Button::GetTooltipHandlerForPoint(point);
 }
 
-BEGIN_METADATA(RichHoverButton, HoverButton)
+BEGIN_METADATA(RichHoverButton)
 END_METADATA

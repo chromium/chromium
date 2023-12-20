@@ -401,7 +401,7 @@ void TaskManagerView::RetrieveSavedAlwaysOnTopState() {
   is_always_on_top_ = dictionary.FindBool("always_on_top").value_or(false);
 }
 
-BEGIN_METADATA(TaskManagerView, views::DialogDelegateView)
+BEGIN_METADATA(TaskManagerView)
 END_METADATA
 
 }  // namespace task_manager

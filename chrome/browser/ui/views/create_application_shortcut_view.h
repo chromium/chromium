@@ -30,8 +30,10 @@ class Checkbox;
 // A dialog allowing the user to create a desktop shortcut pointing to Chrome
 // app.
 class CreateChromeApplicationShortcutView : public views::DialogDelegateView {
+  METADATA_HEADER(CreateChromeApplicationShortcutView,
+                  views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(CreateChromeApplicationShortcutView);
   CreateChromeApplicationShortcutView(
       Profile* profile,
       const extensions::Extension* app,

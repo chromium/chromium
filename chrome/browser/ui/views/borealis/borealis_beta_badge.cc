@@ -23,7 +23,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_utils.h"
 
-namespace views {
 
 namespace {
 // Padding that appears around the "Beta" label.
@@ -87,8 +86,6 @@ void BorealisBetaBadge::OnPaint(gfx::Canvas* canvas) {
                          badge_text_bounds);
 }
 
-BEGIN_METADATA(BorealisBetaBadge, View)
+BEGIN_METADATA(BorealisBetaBadge)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, Text)
 END_METADATA
-
-}  // namespace views

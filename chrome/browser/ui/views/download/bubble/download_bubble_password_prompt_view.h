@@ -14,14 +14,14 @@ class Textfield;
 }  // namespace views
 
 class DownloadBubblePasswordPromptView : public views::TableLayoutView {
+  METADATA_HEADER(DownloadBubblePasswordPromptView, views::TableLayoutView)
+
  public:
   enum class State {
     kValid,
     kInvalid,
     kInvalidEmpty,
   };
-
-  METADATA_HEADER(DownloadBubblePasswordPromptView);
   DownloadBubblePasswordPromptView();
   ~DownloadBubblePasswordPromptView() override;
 

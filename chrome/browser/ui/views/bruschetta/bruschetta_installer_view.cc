@@ -75,10 +75,10 @@ BruschettaInstallerView* BruschettaInstallerView::GetActiveViewForTesting() {
 // We need a separate class so that we can alert screen readers appropriately
 // when the text changes.
 class BruschettaInstallerView::TitleLabel : public views::Label {
+  METADATA_HEADER(TitleLabel, views::Label)
+
  public:
   using Label::Label;
-
-  METADATA_HEADER(TitleLabel);
 
   TitleLabel() = default;
   ~TitleLabel() override = default;
@@ -484,7 +484,7 @@ void BruschettaInstallerView::UninstallBruschettaFinished(bool success) {
   }
 }
 
-BEGIN_METADATA(BruschettaInstallerView, views::DialogDelegateView)
+BEGIN_METADATA(BruschettaInstallerView)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, PrimaryMessage)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, SecondaryMessage)
 ADD_READONLY_PROPERTY_METADATA(int, CurrentDialogButtons)

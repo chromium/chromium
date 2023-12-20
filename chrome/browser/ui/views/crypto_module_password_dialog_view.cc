@@ -129,7 +129,7 @@ void CryptoModulePasswordDialogView::Init(const std::string& hostname,
   password_container->SetFlexForView(password_entry_, 1);
 }
 
-BEGIN_METADATA(CryptoModulePasswordDialogView, views::DialogDelegateView)
+BEGIN_METADATA(CryptoModulePasswordDialogView)
 END_METADATA
 
 void ShowCryptoModulePasswordDialog(const std::string& slot_name,

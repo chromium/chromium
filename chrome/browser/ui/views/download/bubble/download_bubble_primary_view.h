@@ -31,9 +31,9 @@ class View;
 // an optional header, a scrolling view for the download rows, and an optional
 // footer.
 class DownloadBubblePrimaryView : public views::FlexLayoutView {
- public:
-  METADATA_HEADER(DownloadBubblePrimaryView);
+  METADATA_HEADER(DownloadBubblePrimaryView, views::FlexLayoutView)
 
+ public:
   DownloadBubblePrimaryView();
   ~DownloadBubblePrimaryView() override;
 

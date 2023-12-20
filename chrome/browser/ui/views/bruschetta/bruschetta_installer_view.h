@@ -30,9 +30,9 @@ class BruschettaInstallerView
     : public views::DialogDelegateView,
       public bruschetta::BruschettaInstaller::Observer,
       public ash::ColorModeObserver {
- public:
-  METADATA_HEADER(BruschettaInstallerView);
+  METADATA_HEADER(BruschettaInstallerView, views::DialogDelegateView)
 
+ public:
   using InstallerState = bruschetta::BruschettaInstaller::State;
   using InstallerFactory =
       base::RepeatingCallback<std::unique_ptr<bruschetta::BruschettaInstaller>(

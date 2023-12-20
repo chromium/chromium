@@ -17,19 +17,17 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
-class BorealisBetaBadge;
 class BoxLayout;
 class ImageView;
 class Label;
 class ProgressBar;
 }  // namespace views
 
+class BorealisBetaBadge;
 class Profile;
 
 namespace borealis {
-
 void ShowBorealisInstallerView(Profile* profile);
-
 }  // namespace borealis
 
 // The front end for the Borealis installation process, works closely with
@@ -37,9 +35,9 @@ void ShowBorealisInstallerView(Profile* profile);
 class BorealisInstallerView : public views::DialogDelegateView,
                               public borealis::BorealisInstaller::Observer,
                               public ash::ColorModeObserver {
- public:
-  METADATA_HEADER(BorealisInstallerView);
+  METADATA_HEADER(BorealisInstallerView, views::DialogDelegateView)
 
+ public:
   using InstallingState = borealis::BorealisInstaller::InstallingState;
 
   explicit BorealisInstallerView(Profile* profile);
@@ -109,7 +107,7 @@ class BorealisInstallerView : public views::DialogDelegateView,
   raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> primary_message_label_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> secondary_message_label_ = nullptr;
-  raw_ptr<views::BorealisBetaBadge, ExperimentalAsh> beta_badge_ = nullptr;
+  raw_ptr<BorealisBetaBadge, ExperimentalAsh> beta_badge_ = nullptr;
   raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh>
       installation_progress_percentage_label_ = nullptr;

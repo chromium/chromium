@@ -34,9 +34,9 @@ void SetCrostiniUpdateFilesystemSkipDelayForTesting(bool should_skip);
 // Provides a warning to the user that an upgrade is occurring and Crostini
 // start will take longer than usual.
 class CrostiniUpdateFilesystemView : public views::BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(CrostiniUpdateFilesystemView);
+  METADATA_HEADER(CrostiniUpdateFilesystemView, views::BubbleDialogDelegateView)
 
+ public:
   static void Show(Profile* profile);
 
   static CrostiniUpdateFilesystemView* GetActiveViewForTesting();

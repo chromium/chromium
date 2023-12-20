@@ -16,8 +16,9 @@ class Profile;
 // price insight information. Upon clicking, it opens the side panel with more
 // price information.
 class PriceInsightsIconView : public PageActionIconView {
+  METADATA_HEADER(PriceInsightsIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(PriceInsightsIconView);
   PriceInsightsIconView(
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       PageActionIconView::Delegate* page_action_icon_delegate,

@@ -341,5 +341,5 @@ base::OneShotTimer& PriceTrackingIconView::AnimateOutTimer() {
                                         : animate_out_timer_;
 }
 
-BEGIN_METADATA(PriceTrackingIconView, PageActionIconView)
+BEGIN_METADATA(PriceTrackingIconView)
 END_METADATA

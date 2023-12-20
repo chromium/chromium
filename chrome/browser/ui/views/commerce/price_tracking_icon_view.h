@@ -19,8 +19,9 @@ class Profile;
 // price tracking. Upon clicking, it shows a bubble where the user can choose to
 // track or untrack the current page.
 class PriceTrackingIconView : public PageActionIconView {
+  METADATA_HEADER(PriceTrackingIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(PriceTrackingIconView);
   PriceTrackingIconView(IconLabelBubbleView::Delegate* parent_delegate,
                         Delegate* delegate,
                         Browser* browser);

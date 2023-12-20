@@ -191,5 +191,5 @@ bool PriceInsightsIconView::IsIconHighlightedForTesting() {
          views::InkDropState::ACTIVATED;
 }
 
-BEGIN_METADATA(PriceInsightsIconView, PageActionIconView)
+BEGIN_METADATA(PriceInsightsIconView)
 END_METADATA

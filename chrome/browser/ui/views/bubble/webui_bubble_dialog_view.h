@@ -25,9 +25,9 @@ class WebView;
 class WebUIBubbleDialogView : public views::WidgetObserver,
                               public views::BubbleDialogDelegateView,
                               public BubbleContentsWrapper::Host {
- public:
-  METADATA_HEADER(WebUIBubbleDialogView);
+  METADATA_HEADER(WebUIBubbleDialogView, views::BubbleDialogDelegateView)
 
+ public:
   // An optional anchor_rect can be passed to anchor the dialog to a specific
   // point on the screen. The provided anchor_rect will take precedent over the
   // anchor_view.

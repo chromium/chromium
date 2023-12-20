@@ -139,5 +139,5 @@ int RichControlsContainerView::GetMinBubbleWidth() const {
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
 }
 
-BEGIN_METADATA(RichControlsContainerView, views::FlexLayoutView)
+BEGIN_METADATA(RichControlsContainerView)
 END_METADATA

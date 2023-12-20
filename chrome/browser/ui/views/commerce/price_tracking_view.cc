@@ -248,5 +248,5 @@ void PriceTrackingView::OnPriceTrackingStateUpdated(bool success) {
   }
 }
 
-BEGIN_METADATA(PriceTrackingView, views::FlexLayoutView)
+BEGIN_METADATA(PriceTrackingView)
 END_METADATA

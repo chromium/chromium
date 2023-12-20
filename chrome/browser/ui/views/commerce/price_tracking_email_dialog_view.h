@@ -25,8 +25,9 @@ class StyledLabel;
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPriceTrackingEmailConsentDialogId);
 
 class PriceTrackingEmailDialogView : public LocationBarBubbleDelegateView {
+  METADATA_HEADER(PriceTrackingEmailDialogView, LocationBarBubbleDelegateView)
+
  public:
-  METADATA_HEADER(PriceTrackingEmailDialogView);
   PriceTrackingEmailDialogView(View* anchor_view,
                                content::WebContents* web_contents,
                                Profile* profile);

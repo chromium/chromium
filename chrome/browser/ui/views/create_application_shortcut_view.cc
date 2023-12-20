@@ -260,5 +260,5 @@ void CreateChromeApplicationShortcutView::OnAppInfoLoaded(
   DialogModelChanged();
 }
 
-BEGIN_METADATA(CreateChromeApplicationShortcutView, views::DialogDelegateView)
+BEGIN_METADATA(CreateChromeApplicationShortcutView)
 END_METADATA

@@ -59,7 +59,7 @@ void MdTextButtonWithDownArrow::SetDropArrowImage() {
   SetImageModel(Button::STATE_NORMAL, drop_arrow_image);
 }
 
-BEGIN_METADATA(MdTextButtonWithDownArrow, views::MdTextButton)
+BEGIN_METADATA(MdTextButtonWithDownArrow)
 END_METADATA
 
 }  // namespace views

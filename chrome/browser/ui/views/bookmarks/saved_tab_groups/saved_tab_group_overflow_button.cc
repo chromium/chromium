@@ -73,5 +73,5 @@ void SavedTabGroupOverflowButton::OnThemeChanged() {
   return;
 }
 
-BEGIN_METADATA(SavedTabGroupOverflowButton, views::MenuButton)
+BEGIN_METADATA(SavedTabGroupOverflowButton)
 END_METADATA

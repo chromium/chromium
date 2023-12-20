@@ -491,5 +491,5 @@ void DesktopMediaTabList::RecordSourceDiscardedStatus(
   }
 }
 
-BEGIN_METADATA(DesktopMediaTabList, DesktopMediaListController::ListView)
+BEGIN_METADATA(DesktopMediaTabList)
 END_METADATA

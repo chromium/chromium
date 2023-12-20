@@ -102,6 +102,5 @@ CrostiniExpiredContainerWarningView::~CrostiniExpiredContainerWarningView() {
   g_crostini_expired_container_warning_view = nullptr;
 }
 
-BEGIN_METADATA(CrostiniExpiredContainerWarningView,
-               views::BubbleDialogDelegateView)
+BEGIN_METADATA(CrostiniExpiredContainerWarningView)
 END_METADATA

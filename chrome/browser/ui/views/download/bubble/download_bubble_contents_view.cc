@@ -243,5 +243,5 @@ DownloadUIModel* DownloadBubbleContentsView::GetDownloadModel(
   return nullptr;
 }
 
-BEGIN_METADATA(DownloadBubbleContentsView, views::View)
+BEGIN_METADATA(DownloadBubbleContentsView)
 END_METADATA

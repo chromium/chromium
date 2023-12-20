@@ -13,9 +13,9 @@
 
 // A view for the contents area of the Compose dialog.
 class ComposeDialogView : public WebUIBubbleDialogView {
- public:
-  METADATA_HEADER(ComposeDialogView);
+  METADATA_HEADER(ComposeDialogView, WebUIBubbleDialogView)
 
+ public:
   explicit ComposeDialogView(
       View* anchor_view,
       std::unique_ptr<BubbleContentsWrapperT<ComposeUI>> bubble_wrapper,

@@ -84,5 +84,5 @@ DownloadInProgressDialogView::DownloadInProgressDialogView(
 
 DownloadInProgressDialogView::~DownloadInProgressDialogView() = default;
 
-BEGIN_METADATA(DownloadInProgressDialogView, views::DialogDelegateView)
+BEGIN_METADATA(DownloadInProgressDialogView)
 END_METADATA

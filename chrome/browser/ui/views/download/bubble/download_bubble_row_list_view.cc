@@ -89,5 +89,5 @@ void DownloadBubbleRowListView::OnRowWillBeRemoved(
   RemoveRow(GetRow(id));
 }
 
-BEGIN_METADATA(DownloadBubbleRowListView, views::FlexLayoutView)
+BEGIN_METADATA(DownloadBubbleRowListView)
 END_METADATA

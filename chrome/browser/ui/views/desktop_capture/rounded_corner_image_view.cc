@@ -23,5 +23,5 @@ void RoundedCornerImageView::OnPaint(gfx::Canvas* canvas) {
   ImageView::OnPaint(canvas);
 }
 
-BEGIN_METADATA(RoundedCornerImageView, views::ImageView)
+BEGIN_METADATA(RoundedCornerImageView)
 END_METADATA

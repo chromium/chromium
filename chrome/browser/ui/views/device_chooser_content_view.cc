@@ -435,6 +435,6 @@ views::Label* DeviceChooserContentView::ThrobberLabelForTesting() {
   return throbber_label_;
 }
 
-BEGIN_METADATA(DeviceChooserContentView, views::View)
+BEGIN_METADATA(DeviceChooserContentView)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, WindowTitle)
 END_METADATA
