@@ -5412,24 +5412,6 @@ bool ChromeContentBrowserClient::IsPluginAllowedToUseDevChannelAPIs(
 #endif
 }
 
-void ChromeContentBrowserClient::OverridePageVisibilityState(
-    RenderFrameHost* render_frame_host,
-    content::PageVisibilityState* visibility_state) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host);
-  DCHECK(web_contents);
-
-  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
-      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-          web_contents->GetBrowserContext());
-  if (no_state_prefetch_manager &&
-      no_state_prefetch_manager->IsWebContentsPrefetching(web_contents)) {
-    *visibility_state = content::PageVisibilityState::kHidden;
-  }
-}
-
 void ChromeContentBrowserClient::InitOnUIThread() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

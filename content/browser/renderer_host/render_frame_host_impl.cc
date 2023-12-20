@@ -2773,15 +2773,12 @@ PageVisibilityState RenderFrameHostImpl::GetVisibilityState() {
       break;
     frame = frame->GetParent();
   }
-  if (!frame)
+  if (!frame) {
     return PageVisibilityState::kHidden;
+  }
 
-  PageVisibilityState visibility_state = GetRenderWidgetHost()->is_hidden()
-                                             ? PageVisibilityState::kHidden
-                                             : PageVisibilityState::kVisible;
-  GetContentClient()->browser()->OverridePageVisibilityState(this,
-                                                             &visibility_state);
-  return visibility_state;
+  return GetRenderWidgetHost()->is_hidden() ? PageVisibilityState::kHidden
+                                            : PageVisibilityState::kVisible;
 }
 
 bool RenderFrameHostImpl::Send(IPC::Message* message) {

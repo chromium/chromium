@@ -492,9 +492,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsPluginAllowedToUseDevChannelAPIs(
       content::BrowserContext* browser_context,
       const GURL& url) override;
-  void OverridePageVisibilityState(
-      content::RenderFrameHost* render_frame_host,
-      content::PageVisibilityState* visibility_state) override;
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   void GetAdditionalMappedFilesForChildProcess(
       const base::CommandLine& command_line,

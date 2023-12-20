@@ -145,39 +145,6 @@
 namespace content {
 namespace {
 
-// Implementation of ContentBrowserClient that overrides
-// OverridePageVisibilityState() and allows consumers to set a value.
-class PrerenderTestContentBrowserClient
-    : public ContentBrowserTestContentBrowserClient {
- public:
-  PrerenderTestContentBrowserClient()
-      : override_enabled_(false),
-        visibility_override_(PageVisibilityState::kVisible) {}
-
-  PrerenderTestContentBrowserClient(const PrerenderTestContentBrowserClient&) =
-      delete;
-  PrerenderTestContentBrowserClient& operator=(
-      const PrerenderTestContentBrowserClient&) = delete;
-
-  ~PrerenderTestContentBrowserClient() override {}
-
-  void EnableVisibilityOverride(PageVisibilityState visibility_override) {
-    override_enabled_ = true;
-    visibility_override_ = visibility_override;
-  }
-
-  void OverridePageVisibilityState(
-      RenderFrameHost* render_frame_host,
-      PageVisibilityState* visibility_state) override {
-    if (override_enabled_)
-      *visibility_state = visibility_override_;
-  }
-
- private:
-  bool override_enabled_;
-  PageVisibilityState visibility_override_;
-};
-
 const char kTrustMeUrl[] = "trustme://host/path/";
 const char kTrustMeIfEmbeddingSecureUrl[] =
     "trustmeifembeddingsecure://host/path/";
@@ -481,22 +448,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   web_contents()->WasHidden();
   EXPECT_EQ(PageVisibilityState::kHidden,
-            web_contents()->GetPrimaryMainFrame()->GetVisibilityState());
-}
-
-// Test that a frame visibility can be overridden by the ContentBrowserClient.
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
-                       GetVisibilityState_Override) {
-  EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,foo")));
-
-  PrerenderTestContentBrowserClient new_client;
-
-  web_contents()->WasShown();
-  EXPECT_EQ(PageVisibilityState::kVisible,
-            web_contents()->GetPrimaryMainFrame()->GetVisibilityState());
-
-  new_client.EnableVisibilityOverride(PageVisibilityState::kHiddenButPainting);
-  EXPECT_EQ(PageVisibilityState::kHiddenButPainting,
             web_contents()->GetPrimaryMainFrame()->GetVisibilityState());
 }
 
