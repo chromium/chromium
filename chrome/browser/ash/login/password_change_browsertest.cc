@@ -105,9 +105,8 @@ class PasswordChangeTestBase : public LoginManagerTest {
   const AccountId test_account_id_ =
       AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaID);
   const LoginManagerMixin::TestUserInfo test_user_info_{
-      test_account_id_, test::kDefaultAuthSetup,
-      user_manager::UserType::USER_TYPE_REGULAR,
-      user_manager::User::OAuthTokenStatus::OAUTH2_TOKEN_STATUS_INVALID};
+      test_account_id_,
+      test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};
 };
 
 // Test fixture that uses a fake UserDataAuth in order to simulate password

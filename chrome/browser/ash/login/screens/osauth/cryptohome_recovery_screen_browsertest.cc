@@ -162,10 +162,9 @@ class CryptohomeRecoveryScreenTest : public CryptohomeRecoveryScreenTestBase {
       : CryptohomeRecoveryScreenTestBase(LoginManagerMixin::TestUserInfo{
             AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                            FakeGaiaMixin::kFakeUserGaiaId),
-            {ash::AshAuthFactor::kGaiaPassword, ash::AshAuthFactor::kRecovery},
-            user_manager::UserType::USER_TYPE_REGULAR,
-            user_manager::User::OAuthTokenStatus::
-                OAUTH2_TOKEN_STATUS_INVALID}) {}
+            test::UserAuthConfig::Create({ash::AshAuthFactor::kGaiaPassword,
+                                          ash::AshAuthFactor::kRecovery})
+                .RequireReauth()}) {}
   ~CryptohomeRecoveryScreenTest() override = default;
 
   CryptohomeRecoveryScreenTest(const CryptohomeRecoveryScreenTest& other) =
@@ -181,9 +180,8 @@ class CryptohomeRecoveryScreenNoRecoveryTest
       : CryptohomeRecoveryScreenTestBase(LoginManagerMixin::TestUserInfo{
             AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                            FakeGaiaMixin::kFakeUserGaiaId),
-            test::kDefaultAuthSetup, user_manager::UserType::USER_TYPE_REGULAR,
-            user_manager::User::OAuthTokenStatus::
-                OAUTH2_TOKEN_STATUS_INVALID}) {}
+            test::UserAuthConfig::Create(test::kDefaultAuthSetup)
+                .RequireReauth()}) {}
   ~CryptohomeRecoveryScreenNoRecoveryTest() override = default;
 
   CryptohomeRecoveryScreenNoRecoveryTest(
@@ -398,10 +396,10 @@ class CryptohomeRecoveryScreenChildTest
       : CryptohomeRecoveryScreenTestBase(LoginManagerMixin::TestUserInfo{
             AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                            FakeGaiaMixin::kFakeUserGaiaId),
-            {ash::AshAuthFactor::kGaiaPassword, ash::AshAuthFactor::kRecovery},
-            user_manager::UserType::USER_TYPE_CHILD,
-            user_manager::User::OAuthTokenStatus::
-                OAUTH2_TOKEN_STATUS_INVALID}) {}
+            test::UserAuthConfig::Create({ash::AshAuthFactor::kGaiaPassword,
+                                          ash::AshAuthFactor::kRecovery})
+                .RequireReauth(),
+            user_manager::UserType::USER_TYPE_CHILD}) {}
   ~CryptohomeRecoveryScreenChildTest() override = default;
 
   CryptohomeRecoveryScreenChildTest(
@@ -417,9 +415,9 @@ class CryptohomeRecoveryScreenChildNoRecoveryTest
       : CryptohomeRecoveryScreenTestBase(LoginManagerMixin::TestUserInfo{
             AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                            FakeGaiaMixin::kFakeUserGaiaId),
-            test::kDefaultAuthSetup, user_manager::UserType::USER_TYPE_CHILD,
-            user_manager::User::OAuthTokenStatus::
-                OAUTH2_TOKEN_STATUS_INVALID}) {}
+            test::UserAuthConfig::Create(test::kDefaultAuthSetup)
+                .RequireReauth(),
+            user_manager::UserType::USER_TYPE_CHILD}) {}
   ~CryptohomeRecoveryScreenChildNoRecoveryTest() override = default;
 
   CryptohomeRecoveryScreenChildNoRecoveryTest(

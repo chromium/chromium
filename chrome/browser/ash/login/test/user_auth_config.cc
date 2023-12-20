@@ -77,4 +77,10 @@ UserAuthConfig& UserAuthConfig::WithRecoveryFactor() {
   return *this;
 }
 
+UserAuthConfig& UserAuthConfig::RequireReauth() {
+  token_status =
+      user_manager::User::OAuthTokenStatus::OAUTH2_TOKEN_STATUS_INVALID;
+  return *this;
+}
+
 }  // namespace ash::test
