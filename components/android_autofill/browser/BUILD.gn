@@ -116,6 +116,7 @@ static_library("android") {
     "//components/autofill/content/browser",
     "//components/password_manager/core/browser/form_parsing",
     "//content/public/browser",
+    "//third_party/jni_zero",
     "//ui/android",
   ]
 }

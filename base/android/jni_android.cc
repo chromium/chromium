@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
+#include "third_party/jni_zero/core.h"
 
 namespace base {
 namespace android {
@@ -145,6 +146,7 @@ void DetachFromVM() {
 void InitVM(JavaVM* vm) {
   DCHECK(!g_jvm || g_jvm == vm);
   g_jvm = vm;
+  jni_zero::InitVM(vm);
   JNIEnv* env = base::android::AttachCurrentThread();
   g_out_of_memory_error_class = static_cast<jclass>(
       env->NewGlobalRef(env->FindClass("java/lang/OutOfMemoryError")));
@@ -161,6 +163,7 @@ JavaVM* GetVM() {
 
 void DisableJvmForTesting() {
   g_jvm = nullptr;
+  jni_zero::DisableJvmForTesting();
 }
 
 void InitGlobalClassLoader(JNIEnv* env) {

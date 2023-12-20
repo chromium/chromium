@@ -594,7 +594,10 @@ target(link_target_type, "gles2_sources") {
       ]
     }
 
-    deps += [ "//base" ]
+    deps += [
+      "//base",
+      "//third_party/jni_zero",
+    ]
 
     # TODO(cblume): http://crbug.com/911313
     # Abstract out the platform specific defines. Right now we need the android

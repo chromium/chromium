@@ -1326,7 +1326,6 @@ component("base") {
       "android/library_loader/library_loader_hooks.cc",
       "android/library_loader/library_loader_hooks.h",
       "android/native_uma_recorder.cc",
-      "android/scoped_java_ref.cc",
       "android/scoped_java_ref.h",
       "android/trace_event_binding.cc",
       "android/trace_event_binding.h",
@@ -1334,6 +1333,7 @@ component("base") {
     deps += [
       ":base_jni",
       ":process_launcher_jni",
+      "//third_party/jni_zero:jni_zero_utils",
     ]
   }  # is_android || is_robolectric
 
