@@ -34,6 +34,7 @@ ts_modules = [
   "automation_util.ts",
   "tree_walker.ts",
   "word_utils.ts",
+  "settings.ts",
   "string_util.ts",
 ]
 
@@ -45,8 +46,9 @@ ts_library("ts_build") {
     "../definitions/command_line_private.d.ts",
     "../definitions/extensions.d.ts",
     "../definitions/extension_types.d.ts",
-    "../definitions/runtime.d.ts",
     "../definitions/i18n.d.ts",
+    "../definitions/runtime.d.ts",
+    "../definitions/settings_private_mv2.d.ts",
     "../definitions/tabs.d.ts",
     "../definitions/tts.d.ts",
     "//tools/typescript/definitions/windows.d.ts",
@@ -78,7 +80,6 @@ run_jsbundler("copied_files") {
     "repeated_event_handler.js",
     "repeated_tree_change_handler.js",
     "sentence_utils.js",
-    "settings.js",
     "testing/accessibility_test_base.js",
     "testing/test_node_generator.js",
   ]
