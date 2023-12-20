@@ -4263,24 +4263,9 @@
     "expiry_milestone": 117
   },
   {
-    "name": "files-drive-shortcuts",
-    "owners": [ "benreich@chromium.org", "//ui/file_manager/OWNERS" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "files-google-drive-settings-page",
     "owners": [ "benreich@chromium.org", "fdegros@chromium.org" ],
     "expiry_milestone": 122
-  },
-  {
-    "name": "files-inline-sync-status",
-    "owners": [ "simmonsjosh@google.com", "benhartney@google.com", "msalomao@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "files-inline-sync-status-progress-events",
-    "owners": [ "simmonsjosh@google.com", "benhartney@google.com", "msalomao@chromium.org" ],
-    "expiry_milestone": 120
   },
   {
     "name": "files-local-image-search",
