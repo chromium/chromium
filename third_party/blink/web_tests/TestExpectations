@@ -6251,7 +6251,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] jquery/traversing.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/html/interaction/focus/chrome-object-tab-focus-bug.html [ Failure ]
 [ Debug Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/sandbox-attribute.https.html [ Failure ]
-[ Debug Mac13 ] accessibility/selection-change-notification-on-selection-removed.html [ Failure ]
 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.any.worker.html [ Failure ]
 [ Debug Mac13 ] external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
 [ Debug Mac13 ] http/tests/devtools/sources/debugger-breakpoints/breakpoint-manager-listeners-count.js [ Failure ]
@@ -6861,3 +6860,6 @@ crbug.com/1511492 [ Linux ] external/wpt/event-timing/external/wpt/event-timing/
 # TODO(crbug.com/1496375): Re-enable these tests.
 crbug.com/1496375 [ Linux ] http/tests/loading/image-picture-download-after-shrink.html [ Failure Pass ]
 crbug.com/1496375 [ Mac ] http/tests/loading/image-picture-download-after-shrink.html [ Failure Pass ]
+
+# Gardener 2023-12-20
+[ Mac ] accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass ]
