@@ -157,6 +157,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRedirectExplicitCTAIntentsToExistingActivity,
     &kAllowNewIncognitoTabIntents,
     &kAndroidAppIntegration,
+    &kAndroidElegantTextHeight,
     &kAndroidHatsRefactor,
     &kAndroidHub,
     &kAndroidImprovedBookmarks,
@@ -404,6 +405,10 @@ BASE_FEATURE(kFocusOmniboxInIncognitoTabIntents,
 BASE_FEATURE(kAndroidAppIntegration,
              "AndroidAppIntegration",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidElegantTextHeight,
+             "AndroidElegantTextHeight",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidHatsRefactor,
              "AndroidHatsRefactor",

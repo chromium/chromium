@@ -113,6 +113,7 @@ public abstract class ChromeFeatureList {
             "AdvancedPeripheralsSupportTabStrip";
     public static final String ALLOW_NEW_INCOGNITO_TAB_INTENTS = "AllowNewIncognitoTabIntents";
     public static final String ANDROID_APP_INTEGRATION = "AndroidAppIntegration";
+    public static final String ANDROID_ELEGANT_TEXT_HEIGHT = "AndroidElegantTextHeight";
     public static final String ANDROID_HATS_REFACTOR = "AndroidHatsRefactor";
     public static final String ANDROID_HUB = "AndroidHub";
     public static final String ANDROID_IMPROVED_BOOKMARKS = "AndroidImprovedBookmarks";
@@ -455,6 +456,10 @@ public abstract class ChromeFeatureList {
     /* Alphabetical: */
     public static final CachedFlag sAndroidAppIntegration =
             new CachedFlag(ANDROID_APP_INTEGRATION, false);
+
+    public static final CachedFlag sAndroidElegantTextHeight =
+            new CachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, false);
+
     public static final CachedFlag sAndroidHub = new CachedFlag(ANDROID_HUB, false);
     public static final CachedFlag sArchiveTabService = new CachedFlag(ARCHIVE_TAB_SERVICE, false);
     public static final CachedFlag sBackGestureActivityTabProvider =
@@ -578,6 +583,7 @@ public abstract class ChromeFeatureList {
     public static final List<CachedFlag> sFlagsCachedFullBrowser =
             List.of(
                     sAndroidAppIntegration,
+                    sAndroidElegantTextHeight,
                     sAndroidHub,
                     sArchiveTabService,
                     sBackGestureActivityTabProvider,

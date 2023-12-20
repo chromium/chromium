@@ -2223,6 +2223,9 @@ extern const char kAnimatedImageDragShadowDescription[];
 extern const char kAndroidImprovedBookmarksName[];
 extern const char kAndroidImprovedBookmarksDescription[];
 
+extern const char kAndroidElegantTextHeightName[];
+extern const char kAndroidElegantTextHeightDescription[];
+
 extern const char kAndroidHatsRefactorName[];
 extern const char kAndroidHatsRefactorDescription[];
 

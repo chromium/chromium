@@ -43,6 +43,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.base.ServiceTracingProxyProvider;
 import org.chromium.chrome.browser.base.SplitChromeApplication;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
@@ -331,6 +332,12 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                     R.style.ThemeOverlay_BrowserUI_Automotive_PersistentBackButtonToolbar;
             getTheme().applyStyle(automotiveOverlay, /* force= */ true);
             mThemeResIds.add(automotiveOverlay);
+        }
+
+        if (ChromeFeatureList.sAndroidElegantTextHeight.isEnabled()) {
+            int elegantTextHeightOverlay = R.style.ThemeOverlay_BrowserUI_ElegantTextHeight;
+            getTheme().applyStyle(elegantTextHeightOverlay, true);
+            mThemeResIds.add(elegantTextHeightOverlay);
         }
     }
 

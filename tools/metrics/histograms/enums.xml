@@ -29707,6 +29707,7 @@ from previous Chrome versions.
   <int value="-1618707999" label="enable-webfonts-intervention-v2"/>
   <int value="-1618030555" label="ArcAccountRestrictions:enabled"/>
   <int value="-1617805422" label="WebViewUseMetricsUploadService:enabled"/>
+  <int value="-1617666878" label="AndroidElegantTextHeight:enabled"/>
   <int value="-1617183455" label="OfflineRecentPages:disabled"/>
   <int value="-1616855537" label="enable-manual-password-generation:disabled"/>
   <int value="-1616638720" label="AutofillShadowDOM:enabled"/>
@@ -36695,6 +36696,7 @@ from previous Chrome versions.
   <int value="1680381128" label="SmartZoom:enabled"/>
   <int value="1680524929" label="AutofillEnableSupportForLandmark:disabled"/>
   <int value="1681219077" label="VoiceButtonInTopToolbar:enabled"/>
+  <int value="1681510941" label="AndroidElegantTextHeight:disabled"/>
   <int value="1681612611" label="CodeBasedRBD:disabled"/>
   <int value="1683560662" label="ChromeShareHighlightsAndroid:disabled"/>
   <int value="1684043382" label="AssistantKeyRemapping:enabled"/>

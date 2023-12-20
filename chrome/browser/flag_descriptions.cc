@@ -3834,6 +3834,10 @@ const char kAndroidImprovedBookmarksDescription[] =
     "More visual changes to the bookmarks surfaces, with more thumbnails and a "
     "focus on search instead of folders/hierarchy";
 
+const char kAndroidElegantTextHeightName[] = "Android Elegant Text Height";
+const char kAndroidElegantTextHeightDescription[] =
+    "Enables elegant text height in core BrowserUI theme.";
+
 const char kAndroidHatsRefactorName[] = "Android Hats Refactor";
 const char kAndroidHatsRefactorDescription[] =
     "Enables survey structure refactor.";

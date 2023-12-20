@@ -22,6 +22,7 @@ BASE_DECLARE_FEATURE(kAddToHomescreenIPH);
 BASE_DECLARE_FEATURE(kAdvancedPeripheralsSupportTabStrip);
 BASE_DECLARE_FEATURE(kAllowNewIncognitoTabIntents);
 BASE_DECLARE_FEATURE(kAndroidAppIntegration);
+BASE_DECLARE_FEATURE(kAndroidElegantTextHeight);
 BASE_DECLARE_FEATURE(kAndroidHatsRefactor);
 BASE_DECLARE_FEATURE(kAndroidHub);
 BASE_DECLARE_FEATURE(kAndroidImprovedBookmarks);
