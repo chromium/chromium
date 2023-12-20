@@ -2066,7 +2066,7 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
           non_empty_types, was_autofilled,
           /*login_form_signature=*/{}, observed_submission),
       submitted_form->submission_source(), submitted_form->active_field_count(),
-      client().GetPrefs(), GetWeakPtr());
+      client().GetPrefs());
 }
 
 const gfx::Image& BrowserAutofillManager::GetCardImage(

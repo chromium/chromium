@@ -424,7 +424,9 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   if (!queryable_forms.empty() && client().GetCrowdsourcingManager()) {
     NotifyObservers(&Observer::OnBeforeLoadedServerPredictions);
     if (!client().GetCrowdsourcingManager()->StartQueryRequest(
-            queryable_forms, driver().IsolationInfo(), GetWeakPtr())) {
+            queryable_forms, driver().IsolationInfo(),
+            base::BindOnce(&AutofillManager::OnLoadedServerPredictions,
+                           GetWeakPtr()))) {
       NotifyObservers(&Observer::OnAfterLoadedServerPredictions);
     }
   }
