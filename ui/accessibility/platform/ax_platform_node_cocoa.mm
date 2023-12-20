@@ -790,13 +790,6 @@ void CollectAncestorRoles(
               leafTextRange.focus()->GetAnchor())
         << "An anchor range should only span a single object.";
 
-    int leafTextLength = leafTextRange.GetText().length();
-    if (static_cast<unsigned long>(anchorStartOffset + leafTextLength) >
-        attributedString.length) {
-      // We've exceeded the maximum text requested by the caller.
-      break;
-    }
-
     ui::AXNode* anchor = leafTextRange.focus()->GetAnchor();
     DCHECK(anchor) << "A non-null position should have a non-null anchor node.";
 
@@ -830,6 +823,9 @@ void CollectAncestorRoles(
     }
 
     // Add annotation information
+    int leafTextLength = leafTextRange.GetText().length();
+    DCHECK_LE(static_cast<unsigned long>(anchorStartOffset + leafTextLength),
+              attributedString.length);
     NSRange leafRange = NSMakeRange(anchorStartOffset, leafTextLength);
 
     CollectAncestorRoles(*anchor, ancestor_roles);
@@ -2093,12 +2089,7 @@ void CollectAncestorRoles(
   if (axRange.IsNull())
     return nil;
 
-  NSString* text = base::SysUTF16ToNSString(axRange.GetText(
-      ui::AXTextConcatenationBehavior::kWithoutParagraphBreaks,
-      ui::AXEmbeddedObjectBehavior::kExposeCharacterForHypertext,
-      // Constrain the amount of text retrieved for performance.
-      /* max_count =*/200));
-
+  NSString* text = base::SysUTF16ToNSString(axRange.GetText());
   if (text.length == 0) {
     return nil;
   }
