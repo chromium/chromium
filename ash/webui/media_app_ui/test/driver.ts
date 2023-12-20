@@ -38,11 +38,10 @@ export class GuestDriver {
    * Sends a query to the guest that repeatedly runs a query selector until
    * it returns an element.
    *
-   * @param {string} query the querySelector to run in the guest.
-   * @param {string=} opt_property a property to request on the found element.
-   * @param {!Object=} opt_commands test commands to execute on the element.
-   * @return Promise<string> JSON.stringify()'d value of the property, or
-   *   tagName if unspecified.
+   * @param query the querySelector to run in the guest.
+   * @param property a property to request on the found element.
+   * @param commands test commands to execute on the element.
+   * @return JSON.stringify()'d value of the property or tagName if unspecified.
    */
   async waitForElementInGuest(
       query: string, property?: string, commands: Object = {}) {
@@ -56,7 +55,6 @@ export class GuestDriver {
 
 /**
  * Runs the given `testCase` in the guest context.
- * @param {string} testCase
  */
 export async function runTestInGuest(testCase: string) {
   const message: TestMessageRunTestCase = {testCase};
@@ -64,10 +62,6 @@ export async function runTestInGuest(testCase: string) {
   await guestMessagePipe.sendMessage('run-test-case', message);
 }
 
-/**
- * @param {!Object=} data
- * @return {!Promise<!TestMessageResponseData>}
- */
 export async function sendTestMessage(data?: Object):
     Promise<TestMessageResponseData> {
   await testMessageHandlersReady;
@@ -77,7 +71,6 @@ export async function sendTestMessage(data?: Object):
 /**
  * Gets a concatenated list of errors on the currently loaded files. Note the
  * currently open file is always at index 0.
- * @return {!Promise<string>}
  */
 export async function getFileErrors(): Promise<string> {
   await testMessageHandlersReady;
@@ -96,8 +89,6 @@ export class FakeWritableFileSink {
 
   constructor(public data = new Blob()) {}
 
-
-  /** @param {?BufferSource|!Blob|string|!WriteParams} data */
   async write(dataParam: BufferSource|Blob|string|WriteParams) {
     const position = 0;  // Assume no seeks.
     if (!dataParam) {
@@ -117,7 +108,6 @@ export class FakeWritableFileSink {
       this.data.slice(position + dataSize),
     ]);
   }
-  /** @param {number} size */
   async truncate(size: number) {
     this.data = this.data.slice(0, size);
   }
@@ -125,13 +115,11 @@ export class FakeWritableFileSink {
   async close() {
     this.resolveClose(this.data);
   }
-  /** @param {number} offset */
   async seek(_offset: number) {
     throw new Error('seek() not implemented.');
   }
 }
 
-/** @implements FileSystemHandle  */
 export class FakeFileSystemHandle implements FileSystemHandle {
   kind: FileSystemHandleKind = 'file';
   constructor(public name: string = 'fake_file.png') {}
@@ -140,7 +128,6 @@ export class FakeFileSystemHandle implements FileSystemHandle {
   }
 }
 
-/** @implements FileSystemFileHandle  */
 export class FakeFileSystemFileHandle extends FakeFileSystemHandle implements
     FileSystemFileHandle {
   override kind: 'file' = 'file';
@@ -172,12 +159,10 @@ export class FakeFileSystemFileHandle extends FakeFileSystemHandle implements
     writable.close = () => sink.close();
     return writable;
   }
-  /** @override */
   async getFile() {
     return this.getFileSync();
   }
 
-  /** @return {!File} */
   getFileSync() {
     return new File(
         [this.lastWritable.data], this.name,
@@ -185,7 +170,6 @@ export class FakeFileSystemFileHandle extends FakeFileSystemHandle implements
   }
 }
 
-/** @implements FileSystemDirectoryHandle  */
 export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle
     implements FileSystemDirectoryHandle {
   override kind: 'directory' = 'directory';
@@ -202,14 +186,12 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle
 
   /**
    * Use to populate `FileSystemFileHandle`s for tests.
-   * @param {!FakeFileSystemFileHandle} fileHandle
    */
   addFileHandleForTest(fileHandle: FakeFileSystemFileHandle) {
     this.files.push(fileHandle);
   }
   /**
    * Helper to get all entries as File.
-   * @return {!Array<!File>}
    */
   getFilesSync(): File[] {
     return this.files.map(f => f.getFileSync());
@@ -229,29 +211,17 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle
                         Promise.reject((createNamedError(
                             'NotFoundError', `File ${name} not found`)));
   }
-  /** @override */
   async getDirectoryHandle(
       _name: string, _options?: FileSystemGetDirectoryOptions):
       Promise<FakeFileSystemDirectoryHandle> {
     throw new Error('Not implemented');
   }
-  /**
-   * @override
-   * @return {!AsyncIterable<!Array<string|!FileSystemHandle>>}
-   * @suppress {reportUnknownTypes} suppress [JSC_UNKNOWN_EXPR_TYPE] for `yield
-   * [file.name, file]`.
-   */
+
   async * entries(): AsyncIterable<Array<string|FileSystemHandle>> {
     for (const file of this.files) {
       yield [file.name, file];
     }
   }
-  /**
-   * @override
-   * @return {!AsyncIterable<string>}
-   * @suppress {reportUnknownTypes} suppress [JSC_UNKNOWN_EXPR_TYPE] for `yield
-   * file.name`.
-   */
   async * keys(): AsyncIterable<string> {
     for (const file of this.files) {
       yield file.name;
@@ -267,7 +237,6 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle
       yield file;
     }
   }
-  /** @override */
   async removeEntry(name: string, _options: FileSystemRemoveOptions) {
     // Remove file handle from internal state.
     const fileHandleIndex = this.files.findIndex(f => f.name === name);
@@ -275,7 +244,6 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle
     this.lastDeleted = this.files.splice(fileHandleIndex, 1)[0];
   }
 
-  /** @override */
   resolve() {
     return Promise.resolve(null);
   }
@@ -283,12 +251,6 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle
 
 /**
  * Structure to define a test file.
- * @typedef{{
- *   name: (string|undefined),
- *   type: (string|undefined),
- *   lastModified: (number|undefined),
- *   arrayBuffer: (function(): (!Promise<!ArrayBuffer>)|undefined)
- * }}
  */
 export interface FileDesc {
   name?: string;
@@ -299,8 +261,6 @@ export interface FileDesc {
 
 /**
  * Creates a mock directory with the provided files in it.
- * @param {!Array<!FileDesc>=} files
- * @return {!Promise<!FakeFileSystemDirectoryHandle>}
  */
 export async function createMockTestDirectory(files: FileDesc[] = [{}]):
     Promise<FakeFileSystemDirectoryHandle> {
