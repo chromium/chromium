@@ -262,10 +262,11 @@ bool TestSyncUserSettings::SetDecryptionPassphrase(
   return false;
 }
 
-void TestSyncUserSettings::SetDecryptionNigoriKey(
+void TestSyncUserSettings::SetExplicitPassphraseDecryptionNigoriKey(
     std::unique_ptr<Nigori> nigori) {}
 
-std::unique_ptr<Nigori> TestSyncUserSettings::GetDecryptionNigoriKey() const {
+std::unique_ptr<Nigori>
+TestSyncUserSettings::GetExplicitPassphraseDecryptionNigoriKey() const {
   return nullptr;
 }
 

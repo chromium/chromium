@@ -275,7 +275,7 @@ TEST_F(SyncServiceCryptoTest,
   // Order of SetEncryptionBootstrapToken() and
   // ReconfigureDataTypesDueToCrypto() (assuming passphrase is not required upon
   // reconfiguration) is important as clients rely on this to detect whether
-  // GetDecryptionNigoriKey() can be called.
+  // GetExplicitPassphraseDecryptionNigoriKey() can be called.
   testing::InSequence seq;
   EXPECT_CALL(delegate_,
               SetEncryptionBootstrapToken(BootstrapTokenDerivedFrom(
@@ -431,7 +431,7 @@ TEST_F(SyncServiceCryptoTest, ShouldDecryptWithNigoriKey) {
   // Passing wrong decryption key should be ignored.
   EXPECT_CALL(delegate_, ReconfigureDataTypesDueToCrypto()).Times(0);
   EXPECT_CALL(engine_, SetExplicitPassphraseDecryptionKey).Times(0);
-  crypto_.SetDecryptionNigoriKey(Nigori::CreateByDerivation(
+  crypto_.SetExplicitPassphraseDecryptionNigoriKey(Nigori::CreateByDerivation(
       KeyDerivationParams::CreateForPbkdf2(), "wrongpassphrase"));
   EXPECT_TRUE(crypto_.IsPassphraseRequired());
   VerifyAndClearExpectations();
@@ -447,7 +447,7 @@ TEST_F(SyncServiceCryptoTest, ShouldDecryptWithNigoriKey) {
   EXPECT_CALL(delegate_,
               SetEncryptionBootstrapToken(BootstrapTokenDerivedFrom(
                   kTestPassphrase, KeyDerivationParams::CreateForPbkdf2())));
-  crypto_.SetDecryptionNigoriKey(Nigori::CreateByDerivation(
+  crypto_.SetExplicitPassphraseDecryptionNigoriKey(Nigori::CreateByDerivation(
       KeyDerivationParams::CreateForPbkdf2(), kTestPassphrase));
   EXPECT_FALSE(crypto_.IsPassphraseRequired());
 }
@@ -460,14 +460,14 @@ TEST_F(SyncServiceCryptoTest,
   EXPECT_CALL(delegate_, ReconfigureDataTypesDueToCrypto()).Times(0);
   EXPECT_CALL(engine_, SetExplicitPassphraseDecryptionKey).Times(0);
   EXPECT_CALL(delegate_, SetEncryptionBootstrapToken).Times(0);
-  crypto_.SetDecryptionNigoriKey(Nigori::CreateByDerivation(
+  crypto_.SetExplicitPassphraseDecryptionNigoriKey(Nigori::CreateByDerivation(
       KeyDerivationParams::CreateForPbkdf2(), "unexpected_passphrase"));
   EXPECT_FALSE(crypto_.IsPassphraseRequired());
 }
 
 // Regression test for crbug.com/1322687: engine initialization may happen after
-// SetDecryptionNigoriKey() call, verify it doesn't crash and that decryption
-// key populated to the engine later, upon initialization.
+// SetExplicitPassphraseDecryptionNigoriKey() call, verify it doesn't crash and
+// that decryption key populated to the engine later, upon initialization.
 TEST_F(SyncServiceCryptoTest,
        ShouldDeferDecryptionWithNigoriKeyUntilEngineInitialization) {
   const std::string kTestPassphrase = "somepassphrase";
@@ -490,7 +490,7 @@ TEST_F(SyncServiceCryptoTest,
       .WillByDefault(SaveArg<0>(&bootstrap_token));
   ON_CALL(delegate_, GetEncryptionBootstrapToken())
       .WillByDefault([&bootstrap_token]() { return bootstrap_token; });
-  crypto_.SetDecryptionNigoriKey(Nigori::CreateByDerivation(
+  crypto_.SetExplicitPassphraseDecryptionNigoriKey(Nigori::CreateByDerivation(
       KeyDerivationParams::CreateForPbkdf2(), kTestPassphrase));
   EXPECT_TRUE(crypto_.IsPassphraseRequired());
 
@@ -523,8 +523,10 @@ TEST_F(SyncServiceCryptoTest, ShouldGetDecryptionKeyFromBootstrapToken) {
   expected_nigori->ExportKeys(&deprecated_user_key, &expected_encryption_key,
                               &expected_mac_key);
 
-  // Verify that GetDecryptionNigoriKey() result equals to |expected_nigori|.
-  std::unique_ptr<Nigori> stored_nigori = crypto_.GetDecryptionNigoriKey();
+  // Verify that GetExplicitPassphraseDecryptionNigoriKey() result equals to
+  // |expected_nigori|.
+  std::unique_ptr<Nigori> stored_nigori =
+      crypto_.GetExplicitPassphraseDecryptionNigoriKey();
   ASSERT_THAT(stored_nigori, NotNull());
   std::string stored_encryption_key;
   std::string stored_mac_key;
@@ -537,7 +539,7 @@ TEST_F(SyncServiceCryptoTest, ShouldGetDecryptionKeyFromBootstrapToken) {
 TEST_F(SyncServiceCryptoTest,
        ShouldGetNullDecryptionKeyFromEmptyBootstrapToken) {
   // GetEncryptionBootstrapToken() returns empty string by default.
-  EXPECT_THAT(crypto_.GetDecryptionNigoriKey(), IsNull());
+  EXPECT_THAT(crypto_.GetExplicitPassphraseDecryptionNigoriKey(), IsNull());
 }
 
 TEST_F(SyncServiceCryptoTest,
@@ -545,7 +547,7 @@ TEST_F(SyncServiceCryptoTest,
   // Mimic corrupted bootstrap token being stored.
   ON_CALL(delegate_, GetEncryptionBootstrapToken)
       .WillByDefault(Return("corrupted_token"));
-  EXPECT_THAT(crypto_.GetDecryptionNigoriKey(), IsNull());
+  EXPECT_THAT(crypto_.GetExplicitPassphraseDecryptionNigoriKey(), IsNull());
 }
 
 TEST_F(SyncServiceCryptoTest,

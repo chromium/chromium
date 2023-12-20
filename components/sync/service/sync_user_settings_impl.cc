@@ -354,13 +354,14 @@ bool SyncUserSettingsImpl::SetDecryptionPassphrase(
   return crypto_->SetDecryptionPassphrase(passphrase);
 }
 
-void SyncUserSettingsImpl::SetDecryptionNigoriKey(
+void SyncUserSettingsImpl::SetExplicitPassphraseDecryptionNigoriKey(
     std::unique_ptr<Nigori> nigori) {
-  return crypto_->SetDecryptionNigoriKey(std::move(nigori));
+  return crypto_->SetExplicitPassphraseDecryptionNigoriKey(std::move(nigori));
 }
 
-std::unique_ptr<Nigori> SyncUserSettingsImpl::GetDecryptionNigoriKey() const {
-  return crypto_->GetDecryptionNigoriKey();
+std::unique_ptr<Nigori>
+SyncUserSettingsImpl::GetExplicitPassphraseDecryptionNigoriKey() const {
+  return crypto_->GetExplicitPassphraseDecryptionNigoriKey();
 }
 
 ModelTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {

@@ -175,11 +175,13 @@ class SyncUserSettings {
   // Asynchronously decrypts pending keys using |nigori|. |nigori| must not be
   // null. It's safe to call this method with wrong |nigori| and, unlike
   // SetDecryptionPassphrase(), when passphrase isn't required.
-  virtual void SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) = 0;
+  virtual void SetExplicitPassphraseDecryptionNigoriKey(
+      std::unique_ptr<Nigori> nigori) = 0;
   // Returns stored decryption key, corresponding to the last successfully
   // decrypted explicit passphrase Nigori. Returns nullptr if there is no such
   // stored decryption key.
-  virtual std::unique_ptr<Nigori> GetDecryptionNigoriKey() const = 0;
+  virtual std::unique_ptr<Nigori> GetExplicitPassphraseDecryptionNigoriKey()
+      const = 0;
 };
 
 }  // namespace syncer

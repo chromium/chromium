@@ -307,7 +307,8 @@ bool SyncServiceCrypto::SetDecryptionPassphrase(const std::string& passphrase) {
   return SetDecryptionKeyWithoutUpdatingBootstrapToken(std::move(nigori));
 }
 
-void SyncServiceCrypto::SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) {
+void SyncServiceCrypto::SetExplicitPassphraseDecryptionNigoriKey(
+    std::unique_ptr<Nigori> nigori) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(nigori);
@@ -329,7 +330,8 @@ void SyncServiceCrypto::SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) {
   }
 }
 
-std::unique_ptr<Nigori> SyncServiceCrypto::GetDecryptionNigoriKey() const {
+std::unique_ptr<Nigori>
+SyncServiceCrypto::GetExplicitPassphraseDecryptionNigoriKey() const {
   return ReadNigoriFromBootstrapToken(delegate_->GetEncryptionBootstrapToken());
 }
 
