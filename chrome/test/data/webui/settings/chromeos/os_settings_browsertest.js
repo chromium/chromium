@@ -50,6 +50,9 @@ var OSSettingsDevicePageTest = class extends OSSettingsBrowserTest {
         'ash::features::kInputDeviceSettingsSplit',
         'ash::features::kPeripheralCustomization',
       ],
+      disabled: [
+        'ash::features::kOsSettingsRevampWayfinding',
+      ],
     };
   }
 };
@@ -65,6 +68,21 @@ TEST_F_WITH_PREAMBLE(
     `,
     'OSSettingsDevicePageTest', 'MAYBE_All',
     () => mocha.grep('/^((?!arrow_key_arrangement_disabled).)*$/').run());
+
+var OSSettingsDevicePageRevampTest = class extends OSSettingsDevicePageTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled.concat([
+        'ash::features::kOsSettingsRevampWayfinding',
+      ]),
+    };
+  }
+};
+
+TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
+  mocha.run();
+});
 
 // TODO(crbug.com/1234871) Move this test back into the list of tests below once
 // Fast pair is launched.
@@ -725,8 +743,8 @@ TEST_F('OSSettingsCrostiniPageCrostiniSubpageRevampTest', 'AllJsTests', () => {
    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [
-   'DevicePageRevamp',
-   'device_page/device_page_revamp_test.js',
+   'DevicePageInputSettings',
+   'device_page/device_page_input_settings_test.js',
    {
      enabled: [
        'ash::features::kOsSettingsRevampWayfinding',

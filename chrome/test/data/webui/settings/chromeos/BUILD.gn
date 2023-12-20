@@ -91,7 +91,7 @@ build_webui_tests("build") {
     "device_page/customize_tablet_buttons_subpage_test.ts",
     "device_page/customize_pen_buttons_subpage_test.ts",
     "device_page/drag_and_drop_manager_test.ts",
-    "device_page/device_page_revamp_test.ts",
+    "device_page/device_page_input_settings_test.ts",
     "device_page/device_page_test.ts",
     "device_page/device_page_test_util.ts",
     "device_page/display_page_test.ts",

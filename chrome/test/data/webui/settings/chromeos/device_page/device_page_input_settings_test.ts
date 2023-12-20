@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview
- * Browser tests for the Device page, specific to when the
+ * Browser tests for Input settings on the Device page, specific to when the
  * OsSettingsRevampWayfinding feature is enabled.
  */
 
@@ -26,7 +26,7 @@ interface SubpageData {
   elementTagName: string;
 }
 
-suite('<settings-device-page> Revamp', () => {
+suite('<settings-device-page> Input settings', () => {
   let settingsPrefs: SettingsPrefsElement;
   let devicePage: SettingsDevicePageElement;
 

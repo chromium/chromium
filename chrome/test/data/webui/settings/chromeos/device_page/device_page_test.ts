@@ -8,27 +8,23 @@ import {CrIconButtonElement, crosAudioConfigMojom, CrSliderElement, CrToggleElem
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeSystemDisplay} from '../fake_system_display.js';
+import {clearBody} from '../utils.js';
 
 import {getFakePrefs} from './device_page_test_util.js';
 import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 
 suite('<settings-device-page>', () => {
+  const isRevampWayfindingEnabled =
+      loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let devicePage: SettingsDevicePageElement;
   let fakeSystemDisplay: FakeSystemDisplay;
   let browserProxy: TestDevicePageBrowserProxy;
-
-  suiteSetup(() => {
-    // Disable animations so sub-pages open within one event loop.
-    disableAnimationsAndTransitions();
-  });
 
   function showAndGetDeviceSubpage(
       subpage: string, expectedRoute: Route): HTMLElement {
@@ -47,21 +43,19 @@ suite('<settings-device-page>', () => {
     fakeSystemDisplay = new FakeSystemDisplay();
     setDisplayApiForTesting(fakeSystemDisplay);
 
-    Router.getInstance().navigateTo(routes.BASIC);
+    Router.getInstance().navigateTo(routes.DEVICE);
 
     browserProxy = new TestDevicePageBrowserProxy();
     DevicePageBrowserProxyImpl.setInstanceForTesting(browserProxy);
     setDeviceSplitEnabled(true);
-    // Allow the light DOM to be distributed to os-settings-animated-pages.
-    await flushTasks();
   });
 
   async function init(): Promise<void> {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
     devicePage = document.createElement('settings-device-page');
     devicePage.prefs = getFakePrefs();
     document.body.appendChild(devicePage);
-    flush();
+    await flushTasks();
   }
 
   teardown(() => {
@@ -1179,21 +1173,26 @@ suite('<settings-device-page>', () => {
         });
   });
 
-  suite('power', () => {
-    setup(async () => {
-      await init();
-    });
+  if (!isRevampWayfindingEnabled) {
+    // When the revamp is enabled, the power settings exist under the
+    // System Preferences page.
+    suite('power', () => {
+      setup(async () => {
+        await init();
+      });
 
-    test('power subpage visibility', () => {
-      const row = devicePage.shadowRoot!.querySelector<HTMLButtonElement>(
-          `#main #powerRow`);
-      assertTrue(!!row);
-      row.click();
-      assertEquals(routes.POWER, Router.getInstance().currentRoute);
-      const powerPage = devicePage.shadowRoot!.querySelector('settings-power');
-      assertTrue(!!powerPage);
+      test('power subpage visibility', () => {
+        const row = devicePage.shadowRoot!.querySelector<HTMLButtonElement>(
+            `#main #powerRow`);
+        assertTrue(!!row);
+        row.click();
+        assertEquals(routes.POWER, Router.getInstance().currentRoute);
+        const powerPage =
+            devicePage.shadowRoot!.querySelector('settings-power');
+        assertTrue(!!powerPage);
+      });
     });
-  });
+  }
 
   suite('per-device keyboard', () => {
     let perDeviceKeyboardPage: SettingsPerDeviceKeyboardElement;
@@ -1312,11 +1311,7 @@ suite('<settings-device-page>', () => {
     });
   });
 
-  suite('When OsSettingsRevampWayfinding feature is enabled', () => {
-    setup(() => {
-      loadTimeData.overrideValues({isRevampWayfindingEnabled: true});
-    });
-
+  if (isRevampWayfindingEnabled) {
     test('Power row is not visible', async () => {
       await init();
       const powerRow = devicePage.shadowRoot!.querySelector('#powerRow');
@@ -1335,5 +1330,5 @@ suite('<settings-device-page>', () => {
           devicePage.shadowRoot!.querySelector('printing-settings-card');
       assertTrue(isVisible(printingSettingsCard));
     });
-  });
+  }
 });
