@@ -104,13 +104,13 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
     NOT_DESTROYED();
   }
   virtual void FlowThreadDescendantStyleWillChange(
-      LayoutBox*,
+      LayoutBoxModelObject*,
       StyleDifference,
       const ComputedStyle& new_style) {
     NOT_DESTROYED();
   }
   virtual void FlowThreadDescendantStyleDidChange(
-      LayoutBox*,
+      LayoutBoxModelObject*,
       StyleDifference,
       const ComputedStyle& old_style) {
     NOT_DESTROYED();

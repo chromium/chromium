@@ -37,7 +37,7 @@
 namespace blink {
 
 #if DCHECK_IS_ON()
-const LayoutBox* LayoutMultiColumnFlowThread::style_changed_box_;
+const LayoutBoxModelObject* LayoutMultiColumnFlowThread::style_changed_object_;
 #endif
 bool LayoutMultiColumnFlowThread::could_contain_spanners_;
 bool LayoutMultiColumnFlowThread::toggle_spanners_if_needed_;
@@ -888,7 +888,7 @@ void LayoutMultiColumnFlowThread::FlowThreadDescendantWillBeRemoved(
 }
 
 static inline bool NeedsToReinsertIntoFlowThread(
-    const LayoutBox& box,
+    const LayoutBoxModelObject& object,
     const ComputedStyle& old_style,
     const ComputedStyle& new_style) {
   // If we've become (or are about to become) a container for absolutely
@@ -896,15 +896,17 @@ static inline bool NeedsToReinsertIntoFlowThread(
   // re-evaluate the need for column sets. There may be out-of-flow descendants
   // further down that become part of the flow thread, or cease to be part of
   // the flow thread, because of this change.
-  if (box.ComputeIsFixedContainer(&old_style) !=
-      box.ComputeIsFixedContainer(&new_style))
+  if (object.ComputeIsFixedContainer(&old_style) !=
+      object.ComputeIsFixedContainer(&new_style)) {
     return true;
+  }
   return old_style.GetPosition() != new_style.GetPosition();
 }
 
-static inline bool NeedsToRemoveFromFlowThread(const LayoutBox& box,
-                                               const ComputedStyle& old_style,
-                                               const ComputedStyle& new_style) {
+static inline bool NeedsToRemoveFromFlowThread(
+    const LayoutBoxModelObject& object,
+    const ComputedStyle& old_style,
+    const ComputedStyle& new_style) {
   // This function is called BEFORE computed style update. If an in-flow
   // descendant goes out-of-flow, we may have to remove column sets and spanner
   // placeholders. Note that we may end up with false positives here, since some
@@ -917,12 +919,12 @@ static inline bool NeedsToRemoveFromFlowThread(const LayoutBox& box,
   // been updated.
   return (new_style.HasOutOfFlowPosition() &&
           !old_style.HasOutOfFlowPosition()) ||
-         NeedsToReinsertIntoFlowThread(box, old_style, new_style);
+         NeedsToReinsertIntoFlowThread(object, old_style, new_style);
 }
 
 static inline bool NeedsToInsertIntoFlowThread(
     const LayoutMultiColumnFlowThread* flow_thread,
-    const LayoutBox* descendant,
+    const LayoutBoxModelObject* descendant,
     const ComputedStyle& old_style,
     const ComputedStyle& new_style) {
   // This function is called AFTER computed style update. If an out-of-flow
@@ -947,7 +949,7 @@ static inline bool NeedsToInsertIntoFlowThread(
 }
 
 void LayoutMultiColumnFlowThread::FlowThreadDescendantStyleWillChange(
-    LayoutBox* descendant,
+    LayoutBoxModelObject* descendant,
     StyleDifference diff,
     const ComputedStyle& new_style) {
   NOT_DESTROYED();
@@ -956,12 +958,12 @@ void LayoutMultiColumnFlowThread::FlowThreadDescendantStyleWillChange(
                                   new_style)) {
     FlowThreadDescendantWillBeRemoved(descendant);
 #if DCHECK_IS_ON()
-    style_changed_box_ = nullptr;
+    style_changed_object_ = nullptr;
 #endif
     return;
   }
 #if DCHECK_IS_ON()
-  style_changed_box_ = descendant;
+  style_changed_object_ = descendant;
 #endif
   // Keep track of whether this object was of such a type that it could contain
   // column-span:all descendants. If the style change in progress changes this
@@ -973,14 +975,14 @@ void LayoutMultiColumnFlowThread::FlowThreadDescendantStyleWillChange(
 }
 
 void LayoutMultiColumnFlowThread::FlowThreadDescendantStyleDidChange(
-    LayoutBox* descendant,
+    LayoutBoxModelObject* descendant,
     StyleDifference diff,
     const ComputedStyle& old_style) {
   NOT_DESTROYED();
 
 #if DCHECK_IS_ON()
-  const auto* style_changed_box = style_changed_box_;
-  style_changed_box_ = nullptr;
+  const auto* style_changed_box = style_changed_object_;
+  style_changed_object_ = nullptr;
 #endif
 
   bool toggle_spanners_if_needed = toggle_spanners_if_needed_;
@@ -1002,7 +1004,7 @@ void LayoutMultiColumnFlowThread::FlowThreadDescendantStyleDidChange(
     FlowThreadDescendantWillBeRemoved(descendant);
 
     CreateAndInsertSpannerPlaceholder(
-        descendant,
+        To<LayoutBox>(descendant),
         NextInPreOrderAfterChildrenSkippingOutOfFlow(this, descendant));
     return;
   }
@@ -1026,7 +1028,7 @@ void LayoutMultiColumnFlowThread::FlowThreadDescendantStyleDidChange(
 }
 
 void LayoutMultiColumnFlowThread::ToggleSpannersInSubtree(
-    LayoutBox* descendant) {
+    LayoutBoxModelObject* descendant) {
   NOT_DESTROYED();
   DCHECK_NE(could_contain_spanners_,
             CanContainSpannerInParentFragmentationContext(*descendant));

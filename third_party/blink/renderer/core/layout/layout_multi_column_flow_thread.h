@@ -244,14 +244,14 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final : public LayoutFlowThread {
   void FlowThreadDescendantWasInserted(LayoutObject*) final;
   void FlowThreadDescendantWillBeRemoved(LayoutObject*) final;
   void FlowThreadDescendantStyleWillChange(
-      LayoutBox*,
+      LayoutBoxModelObject*,
       StyleDifference,
       const ComputedStyle& new_style) override;
   void FlowThreadDescendantStyleDidChange(
-      LayoutBox*,
+      LayoutBoxModelObject*,
       StyleDifference,
       const ComputedStyle& old_style) override;
-  void ToggleSpannersInSubtree(LayoutBox*);
+  void ToggleSpannersInSubtree(LayoutBoxModelObject*);
   void UpdateGeometry();
 
   // The last set we worked on. It's not to be used as the "current set". The
@@ -264,7 +264,7 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final : public LayoutFlowThread {
   // Used to check consistency between calls to
   // flowThreadDescendantStyleWillChange() and
   // flowThreadDescendantStyleDidChange().
-  static const LayoutBox* style_changed_box_;
+  static const LayoutBoxModelObject* style_changed_object_;
 #endif
 
   // The used value of column-count

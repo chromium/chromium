@@ -539,10 +539,6 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
   NOT_DESTROYED();
   const ComputedStyle* old_style = Style();
   if (old_style) {
-    LayoutFlowThread* flow_thread = FlowThreadContainingBlock();
-    if (flow_thread && flow_thread != this)
-      flow_thread->FlowThreadDescendantStyleWillChange(this, diff, new_style);
-
     if (IsDocumentElement() || IsBody()) {
       // The background of the root element or the body element could propagate
       // up to the canvas. Just dirty the entire canvas when our style changes
@@ -674,9 +670,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
     if (LayoutMultiColumnSpannerPlaceholder* placeholder =
             SpannerPlaceholder()) {
       placeholder->LayoutObjectInFlowThreadStyleDidChange(old_style);
-    } else if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock()) {
-      if (flow_thread != this)
-        flow_thread->FlowThreadDescendantStyleDidChange(this, diff, *old_style);
     }
 
     UpdateScrollSnapMappingAfterStyleChange(*old_style);
