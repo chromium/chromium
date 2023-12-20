@@ -971,22 +971,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.IOSurface.CreateTime" units="ms"
-    expires_after="2022-07-03">
-  <owner>ccameron@chromium.org</owner>
-  <summary>
-    The time that it took for a call to IOSurfaceCreate to complete.
-  </summary>
-</histogram>
-
-<histogram name="GPU.IOSurface.GLFlushTime" units="ms" expires_after="M85">
-  <owner>ccameron@chromium.org</owner>
-  <summary>
-    The time that it took for a call to glFlush to complete. This is often
-    affected by IOSurface paging.
-  </summary>
-</histogram>
-
 <histogram name="Gpu.Mac.BackpressureUs" units="microseconds"
     expires_after="2024-04-28">
   <owner>magchen@chromium.org</owner>
