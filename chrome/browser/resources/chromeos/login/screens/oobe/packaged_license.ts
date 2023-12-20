@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,52 +12,39 @@ import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
-import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {getTemplate} from './packaged_license.html.js';
 
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- */
-const PackagedLicenseScreenBase = mixinBehaviors(
-    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    PolymerElement);
+export const PackagedLicenseScreenBase =
+    mixinBehaviors(
+        [OobeI18nBehavior, LoginScreenBehavior, OobeDialogHostBehavior],
+        PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
+    };
 
-/**
- * @typedef {{
- *   packagedLicenseDialog:  OobeAdaptiveDialog,
- * }}
- */
-PackagedLicenseScreenBase.$;
 
-/**
- * @polymer
- */
-class PackagedLicenseScreen extends PackagedLicenseScreenBase {
+export class PackagedLicenseScreen extends PackagedLicenseScreenBase {
   static get is() {
-    return 'packaged-license-element';
+    return 'packaged-license-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {};
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('PackagedLicenseScreen');
   }
@@ -65,24 +52,28 @@ class PackagedLicenseScreen extends PackagedLicenseScreenBase {
   /**
    * Returns the control which should receive initial focus.
    */
-  get defaultControl() {
-    return /** @type {HTMLElement} */ (this.$.packagedLicenseDialog);
+  override get defaultControl(): HTMLElement|null {
+    return this.shadowRoot!.querySelector('#packagedLicenseDialog');
   }
 
   /**
    * On-tap event handler for Don't Enroll button.
-   * @private
    */
-  onDontEnrollButtonPressed_() {
+  private onDontEnrollButtonPressed(): void {
     this.userActed('dont-enroll');
   }
 
   /**
    * On-tap event handler for Enroll button.
-   * @private
    */
-  onEnrollButtonPressed_() {
+  private onEnrollButtonPressed(): void {
     this.userActed('enroll');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [PackagedLicenseScreen.is]: PackagedLicenseScreen;
   }
 }
 
