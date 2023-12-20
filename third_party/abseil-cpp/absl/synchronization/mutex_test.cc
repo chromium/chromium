@@ -72,6 +72,11 @@ static void ScheduleAfter(absl::synchronization_internal::ThreadPool *tp,
   });
 }
 
+struct ScopedInvariantDebugging {
+  ScopedInvariantDebugging() { absl::EnableMutexInvariantDebugging(true); }
+  ~ScopedInvariantDebugging() { absl::EnableMutexInvariantDebugging(false); }
+};
+
 struct TestContext {
   int iterations;
   int threads;
@@ -395,13 +400,12 @@ static int RunTestWithInvariantDebugging(void (*test)(TestContext *cxt, int),
                                          int threads, int iterations,
                                          int operations,
                                          void (*invariant)(void *)) {
-  absl::EnableMutexInvariantDebugging(true);
+  ScopedInvariantDebugging scoped_debugging;
   SetInvariantChecked(false);
   TestContext cxt;
   cxt.mu.EnableInvariantDebugging(invariant, &cxt);
   int ret = RunTestCommon(&cxt, test, threads, iterations, operations);
   CHECK(GetInvariantChecked()) << "Invariant not checked";
-  absl::EnableMutexInvariantDebugging(false);  // Restore.
   return ret;
 }
 #endif
@@ -975,6 +979,15 @@ TEST(Mutex, FunctionPointerConditionWithDerivedToBaseConversion) {
                                      Derived *>::value));
   EXPECT_TRUE((std::is_constructible<absl::Condition, decltype(derived_pred),
                                      const Derived *>::value));
+}
+
+struct Constable {
+  bool WotsAllThisThen() const { return true; }
+};
+
+TEST(Mutex, FunctionPointerConditionWithConstMethod) {
+  const Constable chapman;
+  EXPECT_TRUE(absl::Condition(&chapman, &Constable::WotsAllThisThen).Eval());
 }
 
 struct True {
@@ -1711,6 +1724,7 @@ TEST(Mutex, Logging) {
 
 TEST(Mutex, LoggingAddressReuse) {
   // Repeatedly re-create a Mutex with debug logging at the same address.
+  ScopedInvariantDebugging scoped_debugging;
   alignas(absl::Mutex) char storage[sizeof(absl::Mutex)];
   auto invariant =
       +[](void *alive) { EXPECT_TRUE(*static_cast<bool *>(alive)); };
@@ -1730,9 +1744,36 @@ TEST(Mutex, LoggingAddressReuse) {
 
 TEST(Mutex, LoggingBankrupcy) {
   // Test the case with too many live Mutexes with debug logging.
+  ScopedInvariantDebugging scoped_debugging;
   std::vector<absl::Mutex> mus(1 << 20);
   for (auto &mu : mus) {
     mu.EnableDebugLog("Mutex");
+  }
+}
+
+TEST(Mutex, SynchEventRace) {
+  // Regression test for a false TSan race report in
+  // EnableInvariantDebugging/EnableDebugLog related to SynchEvent reuse.
+  ScopedInvariantDebugging scoped_debugging;
+  std::vector<std::thread> threads;
+  for (size_t i = 0; i < 5; i++) {
+    threads.emplace_back([&] {
+      for (size_t j = 0; j < (1 << 17); j++) {
+        {
+          absl::Mutex mu;
+          mu.EnableInvariantDebugging([](void *) {}, nullptr);
+          mu.Lock();
+          mu.Unlock();
+        }
+        {
+          absl::Mutex mu;
+          mu.EnableDebugLog("Mutex");
+        }
+      }
+    });
+  }
+  for (auto &thread : threads) {
+    thread.join();
   }
 }
 

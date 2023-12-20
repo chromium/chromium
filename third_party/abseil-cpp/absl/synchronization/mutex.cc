@@ -748,6 +748,13 @@ void Mutex::Dtor() {
 #endif
 
 void Mutex::EnableDebugLog(const char* name) {
+  // Need to disable writes here and in EnableInvariantDebugging to prevent
+  // false race reports on SynchEvent objects. TSan ignores synchronization
+  // on synch_event_mu in Lock/Unlock/etc methods due to mutex annotations,
+  // but it sees few accesses to SynchEvent in EvalConditionAnnotated.
+  // If we don't ignore accesses here, it can result in false races
+  // between EvalConditionAnnotated and SynchEvent reuse in EnsureSynchEvent.
+  ABSL_ANNOTATE_IGNORE_WRITES_BEGIN();
   SynchEvent* e = EnsureSynchEvent(&this->mu_, name, kMuEvent, kMuSpin);
   e->log = true;
   UnrefSynchEvent(e);
@@ -760,6 +767,7 @@ void Mutex::EnableDebugLog(const char* name) {
   // actual destructor code into the separate Dtor function and force the
   // compiler to emit this function even if it's inline by taking its address.
   ABSL_ATTRIBUTE_UNUSED volatile auto dtor = &Mutex::Dtor;
+  ABSL_ANNOTATE_IGNORE_WRITES_END();
 }
 
 void EnableMutexInvariantDebugging(bool enabled) {
@@ -767,6 +775,7 @@ void EnableMutexInvariantDebugging(bool enabled) {
 }
 
 void Mutex::EnableInvariantDebugging(void (*invariant)(void*), void* arg) {
+  ABSL_ANNOTATE_IGNORE_WRITES_BEGIN();
   if (synch_check_invariants.load(std::memory_order_acquire) &&
       invariant != nullptr) {
     SynchEvent* e = EnsureSynchEvent(&this->mu_, nullptr, kMuEvent, kMuSpin);
@@ -774,6 +783,7 @@ void Mutex::EnableInvariantDebugging(void (*invariant)(void*), void* arg) {
     e->arg = arg;
     UnrefSynchEvent(e);
   }
+  ABSL_ANNOTATE_IGNORE_WRITES_END();
 }
 
 void SetMutexDeadlockDetectionMode(OnDeadlockCycle mode) {

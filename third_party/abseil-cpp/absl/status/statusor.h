@@ -39,6 +39,7 @@
 #include <exception>
 #include <initializer_list>
 #include <new>
+#include <ostream>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -49,6 +50,9 @@
 #include "absl/meta/type_traits.h"
 #include "absl/status/internal/statusor_internal.h"
 #include "absl/status/status.h"
+#include "absl/strings/has_absl_stringify.h"
+#include "absl/strings/has_ostream_operator.h"
+#include "absl/strings/str_format.h"
 #include "absl/types/variant.h"
 #include "absl/utility/utility.h"
 
@@ -649,6 +653,41 @@ bool operator==(const StatusOr<T>& lhs, const StatusOr<T>& rhs) {
 template <typename T>
 bool operator!=(const StatusOr<T>& lhs, const StatusOr<T>& rhs) {
   return !(lhs == rhs);
+}
+
+// Prints the `value` or the status in brackets to `os`.
+//
+// Requires `T` supports `operator<<`.  Do not rely on the output format which
+// may change without notice.
+template <typename T, typename std::enable_if<
+                          absl::HasOstreamOperator<T>::value, int>::type = 0>
+std::ostream& operator<<(std::ostream& os, const StatusOr<T>& status_or) {
+  if (status_or.ok()) {
+    os << status_or.value();
+  } else {
+    os << internal_statusor::StringifyRandom::OpenBrackets()
+       << status_or.status()
+       << internal_statusor::StringifyRandom::CloseBrackets();
+  }
+  return os;
+}
+
+// As above, but supports `StrCat`, `StrFormat`, etc.
+//
+// Requires `T` has `AbslStringify`.  Do not rely on the output format which
+// may change without notice.
+template <
+    typename Sink, typename T,
+    typename std::enable_if<absl::HasAbslStringify<T>::value, int>::type = 0>
+void AbslStringify(Sink& sink, const StatusOr<T>& status_or) {
+  if (status_or.ok()) {
+    absl::Format(&sink, "%v", status_or.value());
+  } else {
+    absl::Format(&sink, "%s%v%s",
+                 internal_statusor::StringifyRandom::OpenBrackets(),
+                 status_or.status(),
+                 internal_statusor::StringifyRandom::CloseBrackets());
+  }
 }
 
 //------------------------------------------------------------------------------

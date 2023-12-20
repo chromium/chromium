@@ -105,6 +105,8 @@ cc_library(
         "//absl/base:raw_logging_internal",
         "//absl/meta:type_traits",
         "//absl/strings",
+        "//absl/strings:has_ostream_operator",
+        "//absl/strings:str_format",
         "//absl/types:variant",
         "//absl/utility",
     ],

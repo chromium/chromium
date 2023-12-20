@@ -173,8 +173,10 @@ class Span {
  public:
   using element_type = T;
   using value_type = absl::remove_cv_t<T>;
-  using pointer = absl::Nullable<T*>;
-  using const_pointer = absl::Nullable<const T*>;
+  // TODO(b/316099902) - pointer should be Nullable<T*>, but this makes it hard
+  // to recognize foreach loops as safe.
+  using pointer = T*;
+  using const_pointer = const T*;
   using reference = T&;
   using const_reference = const T&;
   using iterator = pointer;

@@ -221,26 +221,35 @@ void DropDeletesWithoutResize(CommonFields& common,
   common.infoz().RecordRehash(total_probe_length);
 }
 
-void EraseMetaOnly(CommonFields& c, ctrl_t* it, size_t slot_size) {
-  assert(IsFull(*it) && "erasing a dangling iterator");
-  c.decrement_size();
-  const auto index = static_cast<size_t>(it - c.control());
+static bool WasNeverFull(CommonFields& c, size_t index) {
+  if (is_single_group(c.capacity())) {
+    return true;
+  }
   const size_t index_before = (index - Group::kWidth) & c.capacity();
-  const auto empty_after = Group(it).MaskEmpty();
+  const auto empty_after = Group(c.control() + index).MaskEmpty();
   const auto empty_before = Group(c.control() + index_before).MaskEmpty();
 
   // We count how many consecutive non empties we have to the right and to the
   // left of `it`. If the sum is >= kWidth then there is at least one probe
   // window that might have seen a full group.
-  bool was_never_full = empty_before && empty_after &&
-                        static_cast<size_t>(empty_after.TrailingZeros()) +
-                                empty_before.LeadingZeros() <
-                            Group::kWidth;
+  return empty_before && empty_after &&
+         static_cast<size_t>(empty_after.TrailingZeros()) +
+                 empty_before.LeadingZeros() <
+             Group::kWidth;
+}
 
-  SetCtrl(c, index, was_never_full ? ctrl_t::kEmpty : ctrl_t::kDeleted,
-          slot_size);
-  c.set_growth_left(c.growth_left() + (was_never_full ? 1 : 0));
+void EraseMetaOnly(CommonFields& c, size_t index, size_t slot_size) {
+  assert(IsFull(c.control()[index]) && "erasing a dangling iterator");
+  c.decrement_size();
   c.infoz().RecordErase();
+
+  if (WasNeverFull(c, index)) {
+    SetCtrl(c, index, ctrl_t::kEmpty, slot_size);
+    c.set_growth_left(c.growth_left() + 1);
+    return;
+  }
+
+  SetCtrl(c, index, ctrl_t::kDeleted, slot_size);
 }
 
 void ClearBackingArray(CommonFields& c, const PolicyFunctions& policy,

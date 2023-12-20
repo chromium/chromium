@@ -77,9 +77,11 @@ absl_cc_library(
     absl::base
     absl::config
     absl::core_headers
+    absl::has_ostream_operator
     absl::nullability
     absl::raw_logging_internal
     absl::status
+    absl::str_format
     absl::strings
     absl::type_traits
     absl::utility
@@ -97,5 +99,6 @@ absl_cc_test(
   DEPS
     absl::status
     absl::statusor
+    absl::strings
     GTest::gmock_main
 )

@@ -57,7 +57,7 @@
 // (dangling else, missing switch case) and preserving noreturn semantics (e.g.
 // on `LOG(FATAL)`) without requiring braces.
 //
-// The `switch` ensures that this expansion is the begnning of a statement (as
+// The `switch` ensures that this expansion is the beginning of a statement (as
 // opposed to an expression) and prevents shenanigans like
 // `AFunction(LOG(INFO))` and `decltype(LOG(INFO))`.  The apparently-redundant
 // `default` case makes the condition more amenable to Clang dataflow analysis.

@@ -101,8 +101,16 @@ inline void SmallMemmove(char* dst, const char* src, size_t n) {
     if (nullify_tail) {
       memset(dst + 7, 0, 8);
     }
+    // GCC 12 has a false-positive -Wstringop-overflow warning here.
+#if ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(12, 0)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
+#endif
     memcpy(dst, &buf1, 8);
     memcpy(dst + n - 8, &buf2, 8);
+#if ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(12, 0)
+#pragma GCC diagnostic pop
+#endif
   } else if (n >= 4) {
     uint32_t buf1;
     uint32_t buf2;

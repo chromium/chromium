@@ -37,7 +37,7 @@ if [[ -z ${EXCEPTIONS_MODE:-} ]]; then
 fi
 
 source "${ABSEIL_ROOT}/ci/linux_docker_containers.sh"
-readonly DOCKER_CONTAINER=${LINUX_CLANG_LATEST_CONTAINER}
+readonly DOCKER_CONTAINER=${LINUX_ARM_CLANG_LATEST_CONTAINER}
 
 # USE_BAZEL_CACHE=1 only works on Kokoro.
 # Without access to the credentials this won't work.
@@ -64,39 +64,37 @@ for std in ${STD}; do
     for exceptions_mode in ${EXCEPTIONS_MODE}; do
       echo "--------------------------------------------------------------------"
       time docker run \
-        --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp,readonly \
+        --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp-ro,readonly \
+        --tmpfs=/abseil-cpp \
         --workdir=/abseil-cpp \
         --cap-add=SYS_PTRACE \
         --rm \
         -e CC="/opt/llvm/clang/bin/clang" \
         -e BAZEL_CXXOPTS="-std=${std}:-nostdinc++" \
-        -e BAZEL_LINKOPTS="-L/opt/llvm/libcxx/lib:-lc++:-lc++abi:-lm:-Wl,-rpath=/opt/llvm/libcxx/lib" \
-        -e CPLUS_INCLUDE_PATH="/opt/llvm/libcxx/include/c++/v1" \
+        -e BAZEL_LINKOPTS="-L/opt/llvm/clang/lib/aarch64-unknown-linux-gnu:-lc++:-lc++abi:-lm:-Wl,-rpath=/opt/llvm/clang/lib/aarch64-unknown-linux-gnu" \
+        -e CPLUS_INCLUDE_PATH="/opt/llvm/clang/include/aarch64-unknown-linux-gnu/c++/v1:/opt/llvm/clang/include/c++/v1" \
         ${DOCKER_EXTRA_ARGS:-} \
         ${DOCKER_CONTAINER} \
-        /usr/local/bin/bazel test ... \
-          --compilation_mode="${compilation_mode}" \
-          --copt="${exceptions_mode}" \
-          --copt="-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1" \
-          --copt="-fsanitize=address" \
-          --copt="-fsanitize=float-divide-by-zero" \
-          --copt="-fsanitize=nullability" \
-          --copt="-fsanitize=undefined" \
-          --copt="-fno-sanitize-blacklist" \
-          --copt=-Werror \
-          --enable_bzlmod=false \
-          --features=external_include_paths \
-          --keep_going \
-          --linkopt="-fsanitize=address" \
-          --linkopt="-fsanitize-link-c++-runtime" \
-          --show_timestamps \
-          --test_env="ASAN_SYMBOLIZER_PATH=/opt/llvm/clang/bin/llvm-symbolizer" \
-          --test_env="TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo" \
-          --test_env="UBSAN_OPTIONS=print_stacktrace=1" \
-          --test_env="UBSAN_SYMBOLIZER_PATH=/opt/llvm/clang/bin/llvm-symbolizer" \
-          --test_output=errors \
-          --test_tag_filters="-benchmark,-noasan" \
-          ${BAZEL_EXTRA_ARGS:-}
+        /bin/sh -c "
+          cp -r /abseil-cpp-ro/* /abseil-cpp/
+          if [ -n \"${ALTERNATE_OPTIONS:-}\" ]; then
+            cp ${ALTERNATE_OPTIONS:-} absl/base/options.h || exit 1
+          fi
+          /usr/local/bin/bazel test ... \
+            --compilation_mode=\"${compilation_mode}\" \
+            --copt=\"${exceptions_mode}\" \
+            --copt=\"-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1\" \
+            --copt=-Werror \
+            --define=\"absl=1\" \
+            --enable_bzlmod=false \
+            --features=external_include_paths \
+            --keep_going \
+            --show_timestamps \
+            --test_env=\"GTEST_INSTALL_FAILURE_SIGNAL_HANDLER=1\" \
+            --test_env=\"TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo\" \
+            --test_output=errors \
+            --test_tag_filters=-benchmark \
+            ${BAZEL_EXTRA_ARGS:-}"
     done
   done
 done
