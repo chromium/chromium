@@ -573,17 +573,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.DirectComposition.ApprovedPresentDuration" units="ms"
-    expires_after="2022-01-03">
-  <owner>sunnyps@chromium.org</owner>
-  <owner>zmo@chromium.org</owner>
-  <summary>
-    If the system approves a swap chain's custom present duration request, this
-    is the approved custom present duration. If the swap chain's custom present
-    duration request is not approved, this is zero.
-  </summary>
-</histogram>
-
 <histogram name="GPU.DirectComposition.CompositionMode2.VideoOrCanvas"
     enum="DxgiFramePresentationMode" expires_after="2024-02-04">
   <owner>sunnyps@chromium.org</owner>

@@ -1707,12 +1707,6 @@ void SwapChainPresenter::RecordPresentationStatistics() {
       base::UmaHistogramSparse(
           "GPU.DirectComposition.CompositionMode2.VideoOrCanvas",
           stats.CompositionMode);
-      if (frame_rate_ != 0) {
-        // [1ms, 10s] covers the fps between [0.1hz, 1000hz].
-        base::UmaHistogramTimes(
-            "GPU.DirectComposition.ApprovedPresentDuration",
-            base::Milliseconds(stats.ApprovedPresentDuration / 10000));
-      }
       presentation_history_.AddSample(stats.CompositionMode);
       mode = stats.CompositionMode;
     }
