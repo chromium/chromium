@@ -71,11 +71,9 @@ AXObject* AXMenuListOption::ComputeParentAXMenuPopupFor(
     return menu_list->GetOrCreateMockPopupChild();
   }
 
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
-
   // Otherwise, just return the AXObject for the parent <select>.
-  // We should not reach here, because if an AXObject existed for the
-  // select element, then it must be an AXMenuList.
+  // This could be the <select> if it was not rendered.
+  // Or, any parent node if the <option> was not inside an AXMenuList.
   return select_ax_object;
 }
 
