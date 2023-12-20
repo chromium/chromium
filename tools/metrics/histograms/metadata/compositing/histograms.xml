@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.DecodeLCPCandidateImage.{DecodeMethod}"
-    enum="Boolean" expires_after="2023-01-31">
+    enum="Boolean" expires_after="2024-12-01">
   <owner>mmocny@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -128,6 +128,8 @@ chromium-metrics-reviews@google.com.
     report LCP too soon.
 
     Recorded on every {DecodeMethod}
+
+    Note: this metric was expired from 2023-01-31 to 2023-12-20.
   </summary>
   <token key="DecodeMethod">
     <variant name="Hardware" summary="hardware image decode task completion."/>
