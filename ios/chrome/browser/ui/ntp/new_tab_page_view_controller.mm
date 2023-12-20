@@ -318,6 +318,11 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
   self.headerViewController.showing = NO;
 }
 
+- (void)viewWillLayoutSubviews {
+  [super viewWillLayoutSubviews];
+  [self updateModuleWidth];
+}
+
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:
            (id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -1627,8 +1632,7 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
 
 // Updates the width constraint of `moduleLayoutGuide`.
 - (void)updateModuleWidth {
-  BOOL existingConstraintActive = _moduleWidth.active;
-  _moduleWidth.active = NO;
+  CGFloat oldWidth = _moduleWidth.constant;
   CGFloat width;
   if (IsFeedContainmentEnabled()) {
     width = MIN(self.view.frame.size.width * content_suggestions::kModuleWidth,
@@ -1637,11 +1641,20 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
     width = content_suggestions::SearchFieldWidth(self.view.frame.size.width,
                                                   self.traitCollection);
   }
-  _moduleWidth =
-      [self.moduleLayoutGuide.widthAnchor constraintEqualToConstant:width];
-  _moduleWidth.active = YES;
-  if (existingConstraintActive) {
+
+  BOOL existingConstraintUpdated = NO;
+  if (!_moduleWidth) {
+    _moduleWidth =
+        [self.moduleLayoutGuide.widthAnchor constraintEqualToConstant:width];
+    _moduleWidth.active = YES;
+  } else {
+    _moduleWidth.constant = width;
+    existingConstraintUpdated = YES;
+  }
+  if (width != oldWidth) {
     [self.view layoutIfNeeded];
+  }
+  if (existingConstraintUpdated) {
     [self.contentSuggestionsViewController moduleWidthDidUpdate];
   }
 }
