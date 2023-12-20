@@ -3075,8 +3075,9 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   if (prefs.viewport_enabled &&
       base::FeatureList::IsEnabled(
           blink::features::kDefaultViewportIsDeviceWidth) &&
-      min_width_in_dp >= kAndroidMinimumTabletWidthDp &&
-      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TV) {
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_AUTOMOTIVE ||
+       (min_width_in_dp >= kAndroidMinimumTabletWidthDp &&
+        ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TV))) {
     prefs.viewport_style = blink::mojom::ViewportStyle::kDefault;
   }
 #endif
