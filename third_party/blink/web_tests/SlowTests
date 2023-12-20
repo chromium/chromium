@@ -259,7 +259,6 @@ crbug.com/402379 [ Release Win ] storage/indexeddb/mozilla/indexes.html [ Slow ]
 
 crbug.com/504703 inspector-protocol/debugger/debugger-step-into-dedicated-worker.js [ Slow ]
 
-crbug.com/331186 [ Debug Linux ] css3/flexbox/position-absolute-child.html [ Slow ]
 
 crbug.com/372424 [ Linux ] fast/dom/DOMImplementation/createDocument-with-used-doctype.html [ Slow ]
 crbug.com/372424 [ Mac11 Release ] fast/dom/DOMImplementation/createDocument-with-used-doctype.html [ Slow ]
@@ -1273,7 +1272,12 @@ crbug.com/1228246 http/tests/inspector-protocol/network-fetch-content-with-error
 crbug.com/1228246 http/tests/inspector-protocol/network/disable-interception-midway.js [ Slow ]
 crbug.com/1228246 http/tests/inspector-protocol/fetch/request-paused-network-id-cors.js [ Slow ]
 crbug.com/1228246 http/tests/inspector-protocol/fetch/fetch-cors-preflight-sw.js [ Slow ]
-crbug.com/1228246 http/tests/inspector-protocol/network/request-interception-patterns.js [ Slow ]
+crbug.com/1228246 [ Debug ] http/tests/inspector-protocol/network/request-interception-patterns.js [ Slow ]
+crbug.com/1228246 [ Linux Release ] http/tests/inspector-protocol/network/request-interception-patterns.js [ Slow ]
+crbug.com/1228246 [ Mac11 Release ] http/tests/inspector-protocol/network/request-interception-patterns.js [ Slow ]
+crbug.com/1228246 [ Mac12 Release ] http/tests/inspector-protocol/network/request-interception-patterns.js [ Slow ]
+crbug.com/1228246 [ Mac13 Release ] http/tests/inspector-protocol/network/request-interception-patterns.js [ Slow ]
+crbug.com/1228246 [ Release Win ] http/tests/inspector-protocol/network/request-interception-patterns.js [ Slow ]
 crbug.com/1228246 http/tests/inspector-protocol/fetch/disable-with-response-in-flight.js [ Slow ]
 crbug.com/1306770 http/tests/inspector-protocol/network/interception-download.js [ Slow ]
 crbug.com/1423781 http/tests/inspector-protocol/page/frame-navigated-secure-origin.js [ Slow ]
@@ -1377,7 +1381,9 @@ crbug.com/1473373 wpt_internal/scheduler/task-signal-any-memory-abort-1.any.work
 crbug.com/1473373 wpt_internal/scheduler/task-signal-any-memory-abort-2.any.html [ Slow ]
 crbug.com/1473373 wpt_internal/scheduler/task-signal-any-memory-abort-2.any.worker.html [ Slow ]
 
-crbug.com/1488860 virtual/threaded/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Slow ]
+crbug.com/1488860 [ Debug Linux ] virtual/threaded/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Slow ]
+crbug.com/1488860 [ Debug Mac13 ] virtual/threaded/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Slow ]
+crbug.com/1488860 [ Release ] virtual/threaded/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Slow ]
 crbug.com/1488860 virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Slow ]
 crbug.com/1493194 external/wpt/css/cssom/insert-dir-rule-in-iframe-crash.html [ Slow ]
 
