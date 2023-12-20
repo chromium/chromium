@@ -34,6 +34,7 @@
 #include "build/build_config.h"
 #include "partition_alloc/oom.h"
 #include "partition_alloc/partition_alloc_base/apple/mach_logging.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/shim/malloc_zone_functions_apple.h"
@@ -47,7 +48,7 @@
 
 // The patching of Objective-C runtime bits must be done without any
 // interference from the ARC machinery.
-#if defined(__has_feature) && __has_feature(objc_arc)
+#if PA_HAS_FEATURE(objc_arc)
 #error "This file must not be compiled with ARC."
 #endif
 
