@@ -78,38 +78,14 @@ export abstract class MetadataParser implements MetadataParserLogger {
   }
 
   /**
-   * Utility function to read specified range of bytes from file
+   * Get a ByteReader for a range of bytes from file. Rejects on error.
    * @param file The file to read.
-   * @param begin Starting byte(included).
-   * @param end Last byte(excluded).
-   * @param callback Callback to invoke.
-   * @param onError Error handler.
+   * @param begin Starting byte (included).
+   * @param end Last byte (excluded).
    */
-  static readFileBytes(
-      file: File, begin: number, end: number,
-      callback: (file: File, byteReader: ByteReader) => void,
-      onError: (s: string) => void) {
-    const fileReader = new FileReader();
-    fileReader.onerror = event => {
-      onError(event.type);
-    };
-    fileReader.onloadend = () => {
-      callback(file, new ByteReader(fileReader.result as ArrayBuffer));
-    };
-    fileReader.readAsArrayBuffer(file.slice(begin, end));
-  }
-
-  static async readFileBytesAsync(file: File, begin: number, end: number) {
-    const fileReader = new FileReader();
-    return new Promise<ByteReader>((resolve, reject) => {
-      fileReader.onerror = event => {
-        reject(event.type);
-      };
-      fileReader.onloadend = () => {
-        resolve(new ByteReader(fileReader.result as ArrayBuffer));
-      };
-      fileReader.readAsArrayBuffer(file.slice(begin, end));
-    });
+  static async readFileBytes(file: File, begin: number, end: number):
+      Promise<ByteReader> {
+    return new ByteReader(await file.slice(begin, end).arrayBuffer());
   }
 
   /**

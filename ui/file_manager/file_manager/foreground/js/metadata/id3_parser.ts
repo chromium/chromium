@@ -244,8 +244,8 @@ export class Id3Parser extends MetadataParser {
   private async parseId3v1(file: File, metadata: ParserMetadata) {
     // Reads last 128 bytes of file in bytebuffer, which passes further. In
     // last 128 bytes should be placed ID3v1 tag if available.
-    const reader = await MetadataParser.readFileBytesAsync(
-        file, file.size - 128, file.size);
+    const reader =
+        await MetadataParser.readFileBytes(file, file.size - 128, file.size);
 
     // Attempts to extract ID3v1 tag from 128 bytes long ByteBuffer
     if (reader.readString(3) == 'TAG') {
@@ -279,7 +279,7 @@ export class Id3Parser extends MetadataParser {
    * @param metadata Output metadata object of the file.
    */
   private async parseId3v2(file: File, metadata: ParserMetadata) {
-    let reader = await MetadataParser.readFileBytesAsync(file, 0, 10);
+    let reader = await MetadataParser.readFileBytes(file, 0, 10);
 
     // Check if the first 10 bytes contains ID3 header.
     if (reader.readString(3) !== 'ID3') {
@@ -299,7 +299,7 @@ export class Id3Parser extends MetadataParser {
     };
 
     // Extract all ID3v2 frames
-    reader = await MetadataParser.readFileBytesAsync(file, 10, 10 + id3v2.size);
+    reader = await MetadataParser.readFileBytes(file, 10, 10 + id3v2.size);
 
     if ((id3v2.majorVersion > 2) &&
         ((id3v2.flags & Id3Parser.V2.FLAG_EXTENDED_HEADER) != 0)) {
