@@ -3086,7 +3086,8 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
     if (matching_types.empty()) {
       matching_types.insert(UNKNOWN_TYPE);
       FieldTypeValidityStateMap matching_types_validities;
-      matching_types_validities[UNKNOWN_TYPE] = AutofillDataModel::UNVALIDATED;
+      matching_types_validities[UNKNOWN_TYPE] =
+          AutofillDataModel::ValidityState::kUnvalidated;
       field->add_possible_types_validities(matching_types_validities);
     }
 

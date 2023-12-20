@@ -2484,7 +2484,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   field.name = u"firstname";
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_FIRST},
-      {AutofillProfile::UNVALIDATED});
+      {AutofillProfile::ValidityState::kUnvalidated});
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2492,7 +2492,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   field.name = u"lastname";
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_LAST},
-      {AutofillProfile::UNVALIDATED});
+      {AutofillProfile::ValidityState::kUnvalidated});
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2501,7 +2501,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   field.form_control_type = FormControlType::kInputEmail;
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS},
-      {AutofillProfile::INVALID});
+      {AutofillProfile::ValidityState::kInvalid});
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2510,7 +2510,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   field.form_control_type = FormControlType::kInputNumber;
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities,
-      {PHONE_HOME_WHOLE_NUMBER}, {AutofillProfile::EMPTY});
+      {PHONE_HOME_WHOLE_NUMBER}, {AutofillProfile::ValidityState::kEmpty});
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2519,7 +2519,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   field.form_control_type = FormControlType::kSelectOne;
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities,
-      {ADDRESS_HOME_COUNTRY}, {AutofillProfile::VALID});
+      {ADDRESS_HOME_COUNTRY}, {AutofillProfile::ValidityState::kValid});
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2531,7 +2531,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   checkable_field.name = u"Checkable1";
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities,
-      {ADDRESS_HOME_COUNTRY}, {AutofillProfile::VALID});
+      {ADDRESS_HOME_COUNTRY}, {AutofillProfile::ValidityState::kValid});
   checkable_field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(checkable_field);
 
@@ -2601,7 +2601,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
     test::InitializePossibleTypesAndValidities(
         possible_field_types, possible_field_types_validities,
         {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2},
-        {AutofillProfile::VALID, AutofillProfile::VALID});
+        {AutofillProfile::ValidityState::kValid,
+         AutofillProfile::ValidityState::kValid});
   }
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -2647,7 +2648,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
   field.name = u"firstname";
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_FIRST},
-      {AutofillProfile::UNVALIDATED});
+      {AutofillProfile::ValidityState::kUnvalidated});
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2655,7 +2656,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
   field.name = u"lastname";
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_LAST},
-      {AutofillProfile::UNVALIDATED});
+      {AutofillProfile::ValidityState::kUnvalidated});
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2664,7 +2665,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
   field.form_control_type = FormControlType::kInputEmail;
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS},
-      {AutofillProfile::INVALID});
+      {AutofillProfile::ValidityState::kInvalid});
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2673,7 +2674,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
   field.form_control_type = FormControlType::kInputNumber;
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities,
-      {PHONE_HOME_WHOLE_NUMBER}, {AutofillProfile::EMPTY});
+      {PHONE_HOME_WHOLE_NUMBER}, {AutofillProfile::ValidityState::kEmpty});
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2682,7 +2683,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
   field.form_control_type = FormControlType::kSelectOne;
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities,
-      {ADDRESS_HOME_COUNTRY}, {AutofillProfile::VALID});
+      {ADDRESS_HOME_COUNTRY}, {AutofillProfile::ValidityState::kValid});
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2694,7 +2695,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
   checkable_field.name = u"Checkable1";
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities,
-      {ADDRESS_HOME_COUNTRY}, {AutofillProfile::VALID});
+      {ADDRESS_HOME_COUNTRY}, {AutofillProfile::ValidityState::kValid});
   checkable_field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(checkable_field);
 
@@ -2759,7 +2760,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
   field.name = u"firstname";
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_FIRST},
-      {AutofillProfile::UNVALIDATED, AutofillProfile::VALID});
+      {AutofillProfile::ValidityState::kUnvalidated,
+       AutofillProfile::ValidityState::kValid});
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2767,7 +2769,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
   field.name = u"lastname";
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_LAST},
-      {AutofillProfile::UNVALIDATED, AutofillProfile::VALID});
+      {AutofillProfile::ValidityState::kUnvalidated,
+       AutofillProfile::ValidityState::kValid});
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2776,7 +2779,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
   field.form_control_type = FormControlType::kInputEmail;
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS},
-      {AutofillProfile::INVALID, AutofillProfile::VALID});
+      {AutofillProfile::ValidityState::kInvalid,
+       AutofillProfile::ValidityState::kValid});
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2786,7 +2790,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities,
       {PHONE_HOME_WHOLE_NUMBER},
-      {AutofillProfile::EMPTY, AutofillProfile::VALID});
+      {AutofillProfile::ValidityState::kEmpty,
+       AutofillProfile::ValidityState::kValid});
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2795,7 +2800,9 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
   field.form_control_type = FormControlType::kSelectOne;
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities,
-      {ADDRESS_HOME_COUNTRY}, {AutofillProfile::VALID, AutofillProfile::VALID});
+      {ADDRESS_HOME_COUNTRY},
+      {AutofillProfile::ValidityState::kValid,
+       AutofillProfile::ValidityState::kValid});
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2807,7 +2814,9 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
   checkable_field.name = u"Checkable1";
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities,
-      {ADDRESS_HOME_COUNTRY}, {AutofillProfile::VALID, AutofillProfile::VALID});
+      {ADDRESS_HOME_COUNTRY},
+      {AutofillProfile::ValidityState::kValid,
+       AutofillProfile::ValidityState::kValid});
   checkable_field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(checkable_field);
 

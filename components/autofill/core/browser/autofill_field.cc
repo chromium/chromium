@@ -331,7 +331,7 @@ void AutofillField::set_server_predictions(
 std::vector<AutofillDataModel::ValidityState>
 AutofillField::get_validities_for_possible_type(FieldType type) {
   if (possible_types_validities_.find(type) == possible_types_validities_.end())
-    return {AutofillDataModel::UNVALIDATED};
+    return {AutofillDataModel::ValidityState::kUnvalidated};
   return possible_types_validities_[type];
 }
 
@@ -497,7 +497,7 @@ void AutofillField::NormalizePossibleTypesValidities() {
   for (auto possible_type : possible_types_) {
     if (possible_types_validities_[possible_type].empty()) {
       possible_types_validities_[possible_type].push_back(
-          AutofillDataModel::UNVALIDATED);
+          AutofillDataModel::ValidityState::kUnvalidated);
     }
   }
 }

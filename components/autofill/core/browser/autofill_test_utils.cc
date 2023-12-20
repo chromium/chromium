@@ -756,7 +756,7 @@ void InitializePossibleTypesAndValidities(
     for (const auto& possible_type : possible_types) {
       possible_field_types.back().insert(possible_type);
       possible_field_types_validities.back()[possible_type].push_back(
-          AutofillProfile::UNVALIDATED);
+          AutofillProfile::ValidityState::kUnvalidated);
     }
     return;
   }

@@ -1513,7 +1513,7 @@ void FormStructure::EncodeFormFieldsForUpload(
       auto* type_validities = added_field->add_autofill_type_validities();
       type_validities->set_type(field_type);
       for (const auto& validity : validities) {
-        type_validities->add_validity(validity);
+        type_validities->add_validity(base::to_underlying(validity));
       }
     }
 
