@@ -218,4 +218,8 @@ const base::FeatureParam<base::TimeDelta> kDelayBeforeLogging{
 const base::FeatureParam<int> kThresholdChromeCPUPercent{
     &kCPUInterventionEvaluationLogging, "threshold_chrome_cpu_percent", 25};
 
+BASE_FEATURE(kResourceAttributionValidation,
+             "ResourceAttributionValidation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace performance_manager::features

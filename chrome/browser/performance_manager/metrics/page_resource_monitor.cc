@@ -14,7 +14,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -26,6 +26,7 @@
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
+#include "chrome/browser/performance_manager/metrics/page_resource_cpu_monitor.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/resource_attribution/cpu_proportion_tracker.h"
@@ -144,6 +145,9 @@ PageResourceMonitor::PageResourceMonitor(bool enable_system_cpu_probe)
   resource_query_.Start(kCollectionDelay);
   cpu_result_converter_ = std::make_unique<CPUResultConverter>(
       enable_system_cpu_probe ? CpuProbe::Create() : nullptr);
+  if (base::FeatureList::IsEnabled(features::kResourceAttributionValidation)) {
+    cpu_monitor_ = std::make_unique<PageResourceCPUMonitor>();
+  }
 }
 
 PageResourceMonitor::~PageResourceMonitor() = default;
@@ -157,6 +161,24 @@ void PageResourceMonitor::OnResourceUsageUpdated(
       results);
 }
 
+void PageResourceMonitor::OnPassedToGraph(Graph* graph) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!graph_);
+  graph_ = graph;
+  if (cpu_monitor_) {
+    cpu_monitor_->StartMonitoring(graph);
+  }
+}
+
+void PageResourceMonitor::OnTakenFromGraph(Graph* graph) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(graph_, graph);
+  graph_ = nullptr;
+  if (cpu_monitor_) {
+    cpu_monitor_->StopMonitoring(graph);
+  }
+}
+
 base::TimeDelta PageResourceMonitor::GetCollectionDelayForTesting() const {
   return kCollectionDelay;
 }
@@ -164,6 +186,11 @@ base::TimeDelta PageResourceMonitor::GetCollectionDelayForTesting() const {
 base::TimeDelta PageResourceMonitor::GetDelayedMetricsTimeoutForTesting()
     const {
   return performance_manager::features::kDelayBeforeLogging.Get();
+}
+
+PageResourceCPUMonitor* PageResourceMonitor::GetCPUMonitorForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return cpu_monitor_.get();
 }
 
 void PageResourceMonitor::OnPageResourceUsageResult(
@@ -211,6 +238,45 @@ void PageResourceMonitor::OnPageResourceUsageResult(
     }
     ukm.Record(ukm::UkmRecorder::Get());
   }
+
+  if (base::FeatureList::IsEnabled(features::kResourceAttributionValidation)) {
+    // Also record the legacy calculation.
+    CHECK(cpu_monitor_);
+    const PageResourceCPUMonitor::CPUUsageMap cpu_usage_map =
+        cpu_monitor_->UpdateCPUMeasurements();
+
+    CHECK(graph_);
+    std::vector<std::pair<const PageNode*, double>> legacy_page_cpu_usage;
+    double total_legacy_cpu_usage = 0;
+    graph_->VisitAllPageNodes([&legacy_page_cpu_usage, &total_legacy_cpu_usage,
+                               &cpu_usage_map](const PageNode* page_node) {
+      if (page_node->GetType() == PageType::kTab) {
+        const double cpu_usage = PageResourceCPUMonitor::EstimatePageCPUUsage(
+            page_node, cpu_usage_map);
+        total_legacy_cpu_usage += cpu_usage;
+        legacy_page_cpu_usage.emplace_back(page_node, cpu_usage);
+      }
+      return true;
+    });
+
+    for (const auto& [page_node, cpu_usage] : legacy_page_cpu_usage) {
+      const ukm::SourceId source_id = page_node->GetUkmSourceID();
+      ukm::builders::PerformanceManager_PageResourceUsage2(source_id)
+          .SetBackgroundState(
+              static_cast<int64_t>(GetBackgroundStateForMeasurementPeriod(
+                  page_node, now - time_of_last_resource_usage_)))
+          .SetMeasurementAlgorithm(
+              static_cast<int64_t>(PageMeasurementAlgorithm::kLegacy))
+          .SetRecentCPUUsage(kCPUUsageFactor * cpu_usage)
+          .SetTotalRecentCPUUsageAllPages(kCPUUsageFactor *
+                                          total_legacy_cpu_usage)
+          .SetResidentSetSizeEstimate(page_node->EstimateResidentSetSize())
+          .SetPrivateFootprintEstimate(
+              page_node->EstimatePrivateFootprintSize())
+          .Record(ukm::UkmRecorder::Get());
+    }
+  }
+
   time_of_last_resource_usage_ = now;
 
 #if !BUILDFLAG(IS_ANDROID)

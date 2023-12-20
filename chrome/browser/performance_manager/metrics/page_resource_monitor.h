@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -20,6 +21,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager::metrics {
+
+class PageResourceCPUMonitor;
 
 // Periodically reports tab resource usage via UKM.
 class PageResourceMonitor : public resource_attribution::QueryResultObserver,
@@ -58,6 +61,10 @@ class PageResourceMonitor : public resource_attribution::QueryResultObserver,
   void OnResourceUsageUpdated(
       const resource_attribution::QueryResultMap& results) override;
 
+  // GraphOwned:
+  void OnPassedToGraph(Graph* graph) override;
+  void OnTakenFromGraph(Graph* graph) override;
+
   // Returns the time between calls to OnResourceUsageUpdated(). Tests can
   // advance the mock clock by this amount to trigger metrics collection.
   base::TimeDelta GetCollectionDelayForTesting() const;
@@ -67,6 +74,9 @@ class PageResourceMonitor : public resource_attribution::QueryResultObserver,
   // advance the mock clock by this amount after OnResourceUsageUpdated() to
   // trigger the delayed metrics logging.
   base::TimeDelta GetDelayedMetricsTimeoutForTesting() const;
+
+  // Gives tests access to the legacy CPU monitor.
+  PageResourceCPUMonitor* GetCPUMonitorForTesting();
 
  private:
   // Suffix for CPU intervention histograms.
@@ -136,6 +146,14 @@ class PageResourceMonitor : public resource_attribution::QueryResultObserver,
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<CPUResultConverter> delayed_cpu_result_converter_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Legacy CPU monitor that also records measurements if the
+  // kResourceAttributionValidation feature is enabled.
+  std::unique_ptr<PageResourceCPUMonitor> cpu_monitor_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Graph being monitored.
+  raw_ptr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   base::WeakPtrFactory<PageResourceMonitor> weak_factory_{this};
 };
