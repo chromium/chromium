@@ -198,7 +198,9 @@ class AutofillCrowdsourcingManagerWithCustomPayloadSize
 // go over the wire, but allow calling back HTTP responses directly.
 // The responses in test are out of order and verify: successful query request,
 // successful upload request, failed upload request.
-class AutofillCrowdsourcingManagerTest : public ::testing::Test {
+class AutofillCrowdsourcingManagerTest
+    : public AutofillCrowdsourcingManager::Observer,
+      public ::testing::Test {
  public:
   enum class ResponseType {
     kQuerySuccessful,
@@ -230,14 +232,13 @@ class AutofillCrowdsourcingManagerTest : public ::testing::Test {
       const std::vector<std::unique_ptr<FormStructure>>& form_structures) {
     return crowdsourcing_manager().StartQueryRequest(
         ToRawPointerVector(form_structures), driver().IsolationInfo(),
-        base::BindOnce(
-            &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
-            weak_ptr_factory_.GetWeakPtr()));
+        weak_ptr_factory_.GetWeakPtr());
   }
 
+  // AutofillCrowdsourcingManager::Observer implementation.
   void OnLoadedServerPredictions(
       std::string response_xml,
-      const std::vector<FormSignature>& form_signatures) {
+      const std::vector<FormSignature>& form_signatures) override {
     ResponseData response;
     response.response = std::move(response_xml);
     response.type_of_response = ResponseType::kQuerySuccessful;
@@ -304,9 +305,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
       ToRawPointerVector(form_structures), driver().IsolationInfo(),
-      base::BindOnce(
-          &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
-          GetWeakPtr())));
+      GetWeakPtr()));
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 1);
   histogram.ExpectUniqueSample(AutofillCrowdsourcingManager::kUmaMethod,
@@ -326,7 +325,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
                                               std::string(), true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
       std::move(upload_contents_1), form_structures[0]->submission_source(),
-      form_structures[0]->active_field_count(), &pref_service()));
+      form_structures[0]->active_field_count(), &pref_service(), GetWeakPtr()));
 
   // Request with id 2.
   std::vector<AutofillUploadContents> upload_contents_2 =
@@ -334,7 +333,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
                                               std::string(), true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
       std::move(upload_contents_2), form_structures[1]->submission_source(),
-      form_structures[1]->active_field_count(), &pref_service()));
+      form_structures[1]->active_field_count(), &pref_service(), GetWeakPtr()));
   // Request with id 3. Upload request with a non-empty additional password form
   // signature.
   std::vector<AutofillUploadContents> upload_contents_3 =
@@ -342,7 +341,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
                                               true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
       std::move(upload_contents_3), form_structures[1]->submission_source(),
-      form_structures[1]->active_field_count(), &pref_service()));
+      form_structures[1]->active_field_count(), &pref_service(), GetWeakPtr()));
 
   // Server responseses - returned  out of sequence.
   const char* response_contents[] = {
@@ -398,9 +397,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
   // Request with id 4, not successful.
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
       ToRawPointerVector(form_structures), driver().IsolationInfo(),
-      base::BindOnce(
-          &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
-          GetWeakPtr())));
+      GetWeakPtr()));
   request = url_loader_factory().GetPendingRequest(4);
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 2);
@@ -415,9 +412,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
   // Request with id 5. Let's pretend we hit the cache.
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
       ToRawPointerVector(form_structures), driver().IsolationInfo(),
-      base::BindOnce(
-          &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
-          GetWeakPtr())));
+      GetWeakPtr()));
   histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
                               AutofillMetrics::QUERY_SENT, 3);
   histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaMethod,
@@ -452,9 +447,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITest) {
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
       ToRawPointerVector(form_structures), driver().IsolationInfo(),
-      base::BindOnce(
-          &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
-          GetWeakPtr())));
+      GetWeakPtr()));
 
   // Verify if histograms are right.
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
@@ -545,9 +538,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITestWhenTooLongUrl) {
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager.StartQueryRequest(
       ToRawPointerVector(form_structures), driver().IsolationInfo(),
-      base::BindOnce(
-          &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
-          GetWeakPtr())));
+      GetWeakPtr()));
 
   // Verify request.
   // Verify if histograms are right.
@@ -652,7 +643,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, UploadToAPITest) {
                                          true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
       std::move(upload_contents), form_structure.submission_source(),
-      form_structure.active_field_count(), pref_service.get()));
+      form_structure.active_field_count(), pref_service.get(), GetWeakPtr()));
 
   // Inspect the request that the test URL loader sent.
   network::TestURLLoaderFactory::PendingRequest* request =
@@ -747,7 +738,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
                                          true);
   EXPECT_TRUE(crowdsourcing_manager().StartUploadRequest(
       std::move(upload_contents), form_structure.submission_source(),
-      form_structure.active_field_count(), &pref_service()));
+      form_structure.active_field_count(), &pref_service(), GetWeakPtr()));
 
   auto* request = url_loader_factory().GetPendingRequest(0);
 
@@ -773,7 +764,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
                                          true);
   EXPECT_TRUE(crowdsourcing_manager().StartUploadRequest(
       std::move(upload_contents_2), form_structure.submission_source(),
-      form_structure.active_field_count(), &pref_service()));
+      form_structure.active_field_count(), &pref_service(), GetWeakPtr()));
 
   request = url_loader_factory().GetPendingRequest(2);
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
@@ -848,7 +839,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Upload) {
                                          true);
   EXPECT_TRUE(crowdsourcing_manager().StartUploadRequest(
       std::move(upload_contents), form_structure.submission_source(),
-      form_structure.active_field_count(), &pref_service()));
+      form_structure.active_field_count(), &pref_service(), GetWeakPtr()));
 
   constexpr auto kTimeDeltaMargin = base::Milliseconds(100);
   const int max_attempts = crowdsourcing_manager().GetMaxServerAttempts();
@@ -1055,7 +1046,8 @@ enum ServerCommunicationMode {
 };
 
 class AutofillServerCommunicationTest
-    : public testing::TestWithParam<ServerCommunicationMode> {
+    : public AutofillCrowdsourcingManager::Observer,
+      public testing::TestWithParam<ServerCommunicationMode> {
  protected:
   void SetUp() override {
     testing::TestWithParam<ServerCommunicationMode>::SetUp();
@@ -1121,7 +1113,7 @@ class AutofillServerCommunicationTest
   // AutofillCrowdsourcingManager::Observer implementation.
   void OnLoadedServerPredictions(
       std::string /* response_xml */,
-      const std::vector<FormSignature>& /*form_signatures */) {
+      const std::vector<FormSignature>& /*form_signatures */) override {
     ASSERT_TRUE(run_loop_);
     run_loop_->QuitWhenIdle();
   }
@@ -1187,9 +1179,7 @@ class AutofillServerCommunicationTest
         &client(), version_info::Channel::UNKNOWN, nullptr);
     bool succeeded = crowdsourcing_manager.StartQueryRequest(
         ToRawPointerVector(form_structures), driver_.IsolationInfo(),
-        base::BindOnce(
-            &AutofillServerCommunicationTest::OnLoadedServerPredictions,
-            weak_ptr_factory_.GetWeakPtr()));
+        weak_ptr_factory_.GetWeakPtr());
     if (succeeded)
       run_loop_->Run();
     run_loop_.reset();
@@ -1213,7 +1203,8 @@ class AutofillServerCommunicationTest
                                  login_form_signature, observed_submission);
     bool succeeded = crowdsourcing_manager.StartUploadRequest(
         std::move(upload_contents), form.submission_source(),
-        form.active_field_count(), &pref_service());
+        form.active_field_count(), &pref_service(),
+        weak_ptr_factory_.GetWeakPtr());
     if (succeeded)
       run_loop_->Run();
     run_loop_.reset();

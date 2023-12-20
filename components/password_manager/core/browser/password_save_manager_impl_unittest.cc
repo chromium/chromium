@@ -990,7 +990,7 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordValueMultiplePasswordFields) {
   auto upload_contents_matcher = IsPasswordUpload(FieldsContain(
       UploadFieldIs(submitted_form.fields[0], FieldType::PASSWORD)));
   EXPECT_CALL(*mock_autofill_crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _, _));
+              StartUploadRequest(upload_contents_matcher, _, _, _, _));
 
   // Check that the password which was chosen by the user is saved.
   PasswordForm saved_form;
@@ -1336,14 +1336,14 @@ TEST_P(PasswordSaveManagerImplTest, UsernameCorrectionVote) {
   auto upload_contents_matcher = IsPasswordUpload(FieldsContain(UploadFieldIs(
       submitted_form_.fields[kPasswordFieldIndex], FieldType::PASSWORD)));
   EXPECT_CALL(*mock_autofill_crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _, _));
+              StartUploadRequest(upload_contents_matcher, _, _, _, _));
 
   // Check that a correction vote is sent for the earlier saved form.
   upload_contents_matcher = IsPasswordUpload(FieldsContain(
       UploadFieldIs(field1, FieldType::USERNAME),
       UploadFieldIs(field3, FieldType::ACCOUNT_CREATION_PASSWORD)));
   EXPECT_CALL(*mock_autofill_crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _, _));
+              StartUploadRequest(upload_contents_matcher, _, _, _, _));
 
   password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form);
 }

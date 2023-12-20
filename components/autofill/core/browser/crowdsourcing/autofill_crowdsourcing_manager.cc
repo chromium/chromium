@@ -578,7 +578,7 @@ void InitActiveExperiments() {
 }  // namespace
 
 struct AutofillCrowdsourcingManager::FormRequestData {
-  std::optional<QueryRequestCompleteCallback> callback = std::nullopt;
+  base::WeakPtr<Observer> observer;
   std::vector<FormSignature> form_signatures;
   RequestType request_type;
   std::optional<net::IsolationInfo> isolation_info;
@@ -623,7 +623,7 @@ bool AutofillCrowdsourcingManager::IsEnabled() const {
 bool AutofillCrowdsourcingManager::StartQueryRequest(
     const std::vector<FormStructure*>& forms,
     net::IsolationInfo isolation_info,
-    QueryRequestCompleteCallback callback) {
+    base::WeakPtr<Observer> observer) {
   if (!IsEnabled())
     return false;
 
@@ -659,7 +659,7 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
   }
 
   FormRequestData request_data = {
-      .callback = std::move(callback),
+      .observer = observer,
       .form_signatures = std::move(queried_form_signatures),
       .request_type = RequestType::kRequestQuery,
       .isolation_info = std::move(isolation_info),
@@ -671,9 +671,9 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
   if (CheckCacheForQueryRequest(request_data.form_signatures, &query_data)) {
     LOG_AF(log_manager_) << LoggingScope::kAutofillServer
                          << LogMessage::kCachedAutofillQuery << Br{} << query;
-    if (request_data.callback && *request_data.callback) {
-      std::move(*request_data.callback)
-          .Run(std::move(query_data), request_data.form_signatures);
+    if (request_data.observer) {
+      request_data.observer->OnLoadedServerPredictions(
+          std::move(query_data), request_data.form_signatures);
     }
     return true;
   }
@@ -688,7 +688,8 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
     std::vector<AutofillUploadContents> upload_contents,
     mojom::SubmissionSource form_submission_source,
     int form_active_field_count,
-    PrefService* prefs) {
+    PrefService* prefs,
+    base::WeakPtr<Observer> observer) {
   if (!IsEnabled()) {
     return false;
   }
@@ -731,6 +732,7 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
     }
 
     FormRequestData request_data = {
+        .observer = observer,
         .form_signatures = {form_signature},
         .request_type = RequestType::kRequestUpload,
         .isolation_info = std::nullopt,
@@ -999,9 +1001,9 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
 
   CacheQueryRequest(request_data.form_signatures, *response_body);
   base::UmaHistogramBoolean(kUmaWasInCache, simple_loader->LoadedFromCache());
-  if (request_data.callback && *request_data.callback) {
-    std::move(*request_data.callback)
-        .Run(std::move(*response_body), request_data.form_signatures);
+  if (request_data.observer) {
+    request_data.observer->OnLoadedServerPredictions(
+        std::move(*response_body), request_data.form_signatures);
   }
 }
 

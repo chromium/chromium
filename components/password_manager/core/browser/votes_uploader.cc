@@ -953,7 +953,8 @@ bool VotesUploader::StartUploadRequest(
           available_field_types, /*form_was_autofilled=*/false,
           login_form_signature, /*observed_submission=*/true),
       form_to_upload.submission_source(), form_to_upload.active_field_count(),
-      /*pref_service=*/nullptr);
+      /*pref_service=*/nullptr,
+      /*observer=*/nullptr);
 }
 
 bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
