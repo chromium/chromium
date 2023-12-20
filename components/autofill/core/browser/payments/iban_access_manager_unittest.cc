@@ -97,7 +97,7 @@ TEST_F(IbanAccessManagerTest, FetchValue_WithValueToFill) {
   suggestion.payload = Suggestion::ValueToFill(kFullIbanValue);
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
-  EXPECT_CALL(callback, Run(std::u16string_view(kFullIbanValue)));
+  EXPECT_CALL(callback, Run(std::u16string(kFullIbanValue)));
   iban_access_manager_->FetchValue(suggestion, callback.Get());
 }
 
@@ -141,7 +141,7 @@ TEST_F(IbanAccessManagerTest, ServerIban_BackendId_Success) {
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
-  EXPECT_CALL(callback, Run(std::u16string_view(kFullIbanValue)));
+  EXPECT_CALL(callback, Run(std::u16string(kFullIbanValue)));
   iban_access_manager_->FetchValue(suggestion, callback.Get());
 }
 

@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
+#include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -546,13 +547,23 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       FillFieldByFieldFillingSuggestion(suggestion, position, trigger_source_);
       break;
     case PopupItemId::kIbanEntry:
-      // User selected an IBAN suggestion, and we should fill the unmasked IBAN
-      // value.
-      manager_->FillOrPreviewField(
-          mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
-          query_form_, query_field_,
-          suggestion.GetPayload<Suggestion::ValueToFill>().value(),
-          PopupItemId::kIbanEntry);
+      // User chooses an IBAN suggestion and if it is a local IBAN, full IBAN
+      // value will directly populate the IBAN field. In the case of a server
+      // IBAN, a request to unmask the IBAN will be sent to the GPay server, and
+      // the IBAN value will be filled if the request is successful.
+      manager_->client().GetIbanAccessManager()->FetchValue(
+          suggestion, base::BindOnce(
+                          [](base::WeakPtr<AutofillExternalDelegate> delegate,
+                             const std::u16string& value) {
+                            if (delegate) {
+                              delegate->manager_->FillOrPreviewField(
+                                  mojom::ActionPersistence::kFill,
+                                  mojom::TextReplacement::kReplaceAll,
+                                  delegate->query_form_, delegate->query_field_,
+                                  value, PopupItemId::kIbanEntry);
+                            }
+                          },
+                          GetWeakPtr()));
       manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
                                                 suggestion.popup_item_id,
                                                 query_form_, query_field_);

@@ -72,6 +72,7 @@
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
+#include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -265,6 +266,13 @@ IbanManager* ChromeAutofillClient::GetIbanManager() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return IbanManagerFactory::GetForProfile(profile);
+}
+
+IbanAccessManager* ChromeAutofillClient::GetIbanAccessManager() {
+  if (!iban_access_manager_) {
+    iban_access_manager_ = std::make_unique<IbanAccessManager>(this);
+  }
+  return iban_access_manager_.get();
 }
 
 AutofillComposeDelegate* ChromeAutofillClient::GetComposeDelegate() {

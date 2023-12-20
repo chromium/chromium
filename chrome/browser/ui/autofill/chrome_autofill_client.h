@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
@@ -113,6 +114,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   IbanManager* GetIbanManager() override;
+  IbanAccessManager* GetIbanAccessManager() override;
   plus_addresses::PlusAddressService* GetPlusAddressService() override;
   AutofillComposeDelegate* GetComposeDelegate() override;
   void OfferPlusAddressCreation(
@@ -352,6 +354,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<FormDataImporter> form_data_importer_;
   std::unique_ptr<payments::MandatoryReauthManager>
       payments_mandatory_reauth_manager_;
+  std::unique_ptr<IbanAccessManager> iban_access_manager_;
 
   base::WeakPtr<AutofillPopupControllerImpl> popup_controller_;
   FormInteractionsFlowId flow_id_{};

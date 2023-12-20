@@ -98,6 +98,7 @@ class CreditCardOtpAuthenticator;
 class CreditCardRiskBasedAuthenticator;
 class FormDataImporter;
 class Iban;
+class IbanAccessManager;
 class IbanManager;
 class LogManager;
 class MerchantPromoCodeManager;
@@ -439,6 +440,9 @@ class AutofillClient : public RiskDataLoader {
 
   // Gets the IbanManager instance associated with the client.
   virtual IbanManager* GetIbanManager();
+
+  // Gets the IbanAccessManager instance associated with the client.
+  virtual IbanAccessManager* GetIbanAccessManager();
 
   // When the enterprise plus address feature is supported, gets the
   // KeyedService that manages that data.

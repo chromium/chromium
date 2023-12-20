@@ -28,7 +28,7 @@ class IbanAccessManager {
   // Callback to notify the caller of the access manager when fetching the value
   // of an IBAN has finished.
   using OnIbanFetchedCallback =
-      base::OnceCallback<void(std::u16string_view value)>;
+      base::OnceCallback<void(const std::u16string& value)>;
 
   explicit IbanAccessManager(AutofillClient* client);
   IbanAccessManager(const IbanAccessManager&) = delete;

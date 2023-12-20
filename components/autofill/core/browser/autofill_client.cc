@@ -70,6 +70,10 @@ IbanManager* AutofillClient::GetIbanManager() {
   return nullptr;
 }
 
+IbanAccessManager* AutofillClient::GetIbanAccessManager() {
+  return nullptr;
+}
+
 AutofillComposeDelegate* AutofillClient::GetComposeDelegate() {
   return nullptr;
 }
