@@ -280,6 +280,7 @@ void EditingList::ShowKeyEditNudge() {
   nudge_data.background_color_id = cros_tokens::kCrosSysBaseHighlight;
   nudge_data.image_background_color_id = cros_tokens::kCrosSysOnBaseHighlight;
   nudge_data.arrow = views::BubbleBorder::LEFT_CENTER;
+  nudge_data.duration = ash::NudgeDuration::kMediumDuration;
   ash::Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
 }
 

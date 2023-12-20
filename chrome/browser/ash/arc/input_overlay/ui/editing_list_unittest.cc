@@ -8,8 +8,8 @@
 
 #include "ash/style/icon_button.h"
 #include "ash/system/toast/anchored_nudge.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/check.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
@@ -384,10 +384,14 @@ TEST_F(EditingListTest, TestKeyEditNudge) {
   LeftClickOn(key_edit_nudge->GetContentsView());
   EXPECT_TRUE(GetEditingListWidget());
 
-  // Move mouse outside of the nudge and it will close in 6 seconds.
+  // Move mouse outside of the nudge and it will close in 10 seconds.
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(gfx::Point(0, 0));
-  task_environment()->FastForwardBy(base::Seconds(6));
+  task_environment()->FastForwardBy(
+      ash::AnchoredNudgeManagerImpl::kNudgeDefaultDuration);
+  EXPECT_TRUE(IsKeyEditNudgeShown());
+  task_environment()->FastForwardBy(
+      ash::AnchoredNudgeManagerImpl::kNudgeMediumDuration);
   EXPECT_FALSE(IsKeyEditNudgeShown());
 
   // Open the button options menu and close it again, it won't show eidt nudge
