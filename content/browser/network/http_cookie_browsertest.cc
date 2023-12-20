@@ -615,6 +615,14 @@ class ThirdPartyCookiesBlockedHttpCookieBrowserTest
     return EvalJs(frame, JsReplace(script, url)).ExtractString();
   }
 
+  std::string FetchWithCredentials(RenderFrameHost* frame, const GURL& url) {
+    constexpr char script[] = R"JS(
+      fetch($1, { credentials : 'include' }
+      ).then((result) => result.text());
+    )JS";
+    return EvalJs(frame, JsReplace(script, url)).ExtractString();
+  }
+
   bool CookieStoreEmpty(RenderFrameHost* frame) {
     constexpr char script[] = R"JS(
           (async () => {
@@ -804,6 +812,30 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
   // Check cookie store.
   EXPECT_TRUE(
       CookieStoreEmpty(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ThirdPartyCookiesBlockedHttpCookieBrowserTest,
+    SameSiteNoneCookieBlockedInCrossSiteFetchRequestFromTopLevelFrame) {
+  // Set and confirm SameSite=None cookie on Site A.
+  ASSERT_TRUE(SetCookie(
+      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
+      base::StrCat({kSameSiteNoneCookieName, "=1;Secure;SameSite=None;"})));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
+
+  ASSERT_THAT(
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+
+  // From site B make a fetch call (with credentials) from site B to site A; and
+  // check if cookies are present on the request.
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostB)));
+
+  EXPECT_TRUE(FetchWithCredentials(
+                  web_contents()->GetPrimaryMainFrame(),
+                  https_server()->GetURL(kHostA, kEchoCookiesWithCorsPath))
+                  .empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no label */,
