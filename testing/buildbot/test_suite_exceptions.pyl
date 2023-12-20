@@ -3251,6 +3251,13 @@
     },
   },
   'interactive_ui_tests_no_field_trial': {
+    'modifications': {
+      'Win10 Tests x64': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
+    },
     'remove_from': [
       'win10-rel-no-external-ip',
       'win-arm64-rel',
