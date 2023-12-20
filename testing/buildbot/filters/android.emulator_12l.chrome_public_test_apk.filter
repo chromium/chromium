@@ -120,3 +120,24 @@
 # crbug.com/1512916
 -org.chromium.chrome.browser.gesturenav.NavigationHandlerTest.testCloseChromeAtHistoryStackHead
 -org.chromium.chrome.browser.gesturenav.NavigationHandlerTest.testSwipeNavigateOnNativePage
+
+# crbug.com/1513294
+-org.chromium.chrome.browser.compositor.overlays.strip.TabStripTest.testScrollingStripStackerFadeOpacity
+
+# crbug.com/1513296
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testRedirectedExternalNavigationWithUserGesture
+
+# crbug.com/1513299
+-org.chromium.chrome.browser.omnibox.suggestions.OmniboxActionsTest.testHistoryClustersAction
+
+# crbug.com/1513300
+-org.chromium.chrome.browser.segmentation_platform.ContextualPageActionControllerTest.testContextualPageModelExecution_OnReaderModePage
+
+# crbug.com/1513301
+-org.chromium.chrome.browser.supervised_user.SupervisedUserCriticalJourneysIntegrationTest.incognitoModeIsUnavailableFromTabSwitcherActionMenu
+
+# crbug.com/1513302
+-org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardViewTest.testCardNameTooLong_cardNameTruncated_lastFourDigitsAlwaysShown
+
+# crbug.com/1513303
+-org.chromium.chrome.browser.ui.system.StatusBarColorControllerTest.testStatusBarColorForTabStripRedesignFolioTablet
