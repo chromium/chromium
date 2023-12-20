@@ -8,6 +8,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -6864,7 +6866,7 @@ TEST_P(FakeMLGraphTest, BuildTest) {
 }
 
 // Helper struct to create an ArrayBufferView for MLNamedArrayBufferViews test.
-struct ArrayBufferViewInfo {
+struct ArrayBufferViewHelper {
   size_t number_of_elements;
   V8MLOperandDataType::Enum data_type;
 
@@ -6878,6 +6880,70 @@ NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
     const MLOperand* operand) {
   return CreateDOMArrayBufferView(operand->NumberOfElements(),
                                   operand->DataType());
+}
+
+TEST_P(FakeMLGraphTest, CreateNamedArrayBufferViewsTest) {
+  constexpr auto kOperandDataTypes =
+      base::MakeFixedFlatSet<V8MLOperandDataType::Enum>(
+          {V8MLOperandDataType::Enum::kFloat32,
+           V8MLOperandDataType::Enum::kFloat16,
+           V8MLOperandDataType::Enum::kInt32,
+           V8MLOperandDataType::Enum::kUint32,
+           V8MLOperandDataType::Enum::kInt64,
+           V8MLOperandDataType::Enum::kUint64, V8MLOperandDataType::Enum::kInt8,
+           V8MLOperandDataType::Enum::kUint8});
+  static_assert(kOperandDataTypes.size() == V8MLOperandDataType::kEnumSize,
+                "The number of operand data types declared here needs to match "
+                "all possible enumeration values defined in the IDL.");
+
+  V8TestingScope scope;
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  {
+    for (auto operand_data_type : kOperandDataTypes) {
+      SCOPED_TRACE(testing::Message()
+                   << "Testing for MLOperandDataType: "
+                   << V8MLOperandDataType(operand_data_type).AsString());
+      auto* input = BuildInput(builder, "input", {3, 4}, operand_data_type,
+                               scope.GetExceptionState());
+      MLNamedArrayBufferViews inputs;
+      inputs.emplace_back("input", CreateArrayBufferViewForOperand(input));
+      auto inputs_info = TransferNamedArrayBufferViews(
+          scope.GetIsolate(), inputs, scope.GetExceptionState());
+      ASSERT_NE(inputs_info, nullptr);
+      auto* input_views = CreateNamedArrayBufferViews(std::move(inputs_info));
+      ASSERT_NE(input_views, nullptr);
+      EXPECT_EQ((*input_views)[0].first, "input");
+      auto input_data_type = (*input_views)[0].second->GetType();
+      switch (operand_data_type) {
+        case V8MLOperandDataType::Enum::kFloat32:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeFloat32);
+          break;
+        case V8MLOperandDataType::Enum::kFloat16:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeUint16);
+          break;
+        case V8MLOperandDataType::Enum::kInt32:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeInt32);
+          break;
+        case V8MLOperandDataType::Enum::kUint32:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeUint32);
+          break;
+        case V8MLOperandDataType::Enum::kInt64:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeBigInt64);
+          break;
+        case V8MLOperandDataType::Enum::kUint64:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeBigUint64);
+          break;
+        case V8MLOperandDataType::Enum::kInt8:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeInt8);
+          break;
+        case V8MLOperandDataType::Enum::kUint8:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeUint8);
+          break;
+      }
+    }
+  }
 }
 
 TEST_P(FakeMLGraphTest, ComputeTest) {
@@ -6989,9 +7055,10 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     // Test throwing exception if the input array buffer view type is wrong.
     MLNamedArrayBufferViews inputs;
     inputs.emplace_back(
-        "a", ArrayBufferViewInfo{.number_of_elements = 12,
-                                 .data_type = V8MLOperandDataType::Enum::kInt32}
-                 .ToArrayBufferView());
+        "a",
+        ArrayBufferViewHelper{.number_of_elements = 12,
+                              .data_type = V8MLOperandDataType::Enum::kInt32}
+            .ToArrayBufferView());
     inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
@@ -7009,8 +7076,8 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     MLNamedArrayBufferViews inputs;
     inputs.emplace_back(
         "a",
-        ArrayBufferViewInfo{.number_of_elements = 10,
-                            .data_type = V8MLOperandDataType::Enum::kFloat32}
+        ArrayBufferViewHelper{.number_of_elements = 10,
+                              .data_type = V8MLOperandDataType::Enum::kFloat32}
             .ToArrayBufferView());
     inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
     MLNamedArrayBufferViews outputs;
@@ -7030,9 +7097,10 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back(
-        "c", ArrayBufferViewInfo{.number_of_elements = 9,
-                                 .data_type = V8MLOperandDataType::Enum::kInt32}
-                 .ToArrayBufferView());
+        "c",
+        ArrayBufferViewHelper{.number_of_elements = 9,
+                              .data_type = V8MLOperandDataType::Enum::kInt32}
+            .ToArrayBufferView());
     auto* exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_NE(exception, nullptr);
     EXPECT_EQ(exception->name(),
@@ -7050,8 +7118,8 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back(
         "c",
-        ArrayBufferViewInfo{.number_of_elements = 8,
-                            .data_type = V8MLOperandDataType::Enum::kFloat32}
+        ArrayBufferViewHelper{.number_of_elements = 8,
+                              .data_type = V8MLOperandDataType::Enum::kFloat32}
             .ToArrayBufferView());
     auto* exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_NE(exception, nullptr);

@@ -147,6 +147,16 @@ DOMArrayBufferView* CreateArrayBufferView(ArrayBufferViewInfo view_info) {
       target_view = DOMUint32Array::Create(target_buffer, view_info.offset,
                                            view_info.length);
       break;
+    case DOMArrayBufferView::kTypeBigInt64:
+      // BigInt64Array is used for MLOperandDataType::int64.
+      target_view = DOMBigInt64Array::Create(target_buffer, view_info.offset,
+                                             view_info.length);
+      break;
+    case DOMArrayBufferView::kTypeBigUint64:
+      // BigUint64Array is used for MLOperandDataType::uint64.
+      target_view = DOMBigUint64Array::Create(target_buffer, view_info.offset,
+                                              view_info.length);
+      break;
     case DOMArrayBufferView::kTypeInt8:
       // Int8Array is used for MLOperandDataType::int8.
       target_view = DOMInt8Array::Create(target_buffer, view_info.offset,

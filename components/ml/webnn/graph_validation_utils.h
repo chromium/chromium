@@ -70,7 +70,8 @@ static constexpr DataTypeConstraintSet kSignedInteger = {
 
 static constexpr DataTypeConstraintSet kSignedNumber = {
     Operand::DataType::kFloat32, Operand::DataType::kFloat16,
-    Operand::DataType::kInt32, Operand::DataType::kInt8};
+    Operand::DataType::kInt32, Operand::DataType::kInt64,
+    Operand::DataType::kInt8};
 
 static constexpr DataTypeConstraintSet kGatherOperatorIndexDataTypes = {
     Operand::DataType::kInt32, Operand::DataType::kUint32,

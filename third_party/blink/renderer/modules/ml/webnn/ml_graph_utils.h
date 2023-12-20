@@ -68,12 +68,12 @@ struct ArrayBufferViewInfo {
 //
 // TODO(crbug.com/1273291): Revisit the error handling once the WebNN spec issue
 // is resolved: https://github.com/webmachinelearning/webnn/issues/351
-std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
+MODULES_EXPORT std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
 TransferNamedArrayBufferViews(v8::Isolate* isolate,
                               const MLNamedArrayBufferViews& source_views,
                               ExceptionState& exception_state);
 
-MLNamedArrayBufferViews* CreateNamedArrayBufferViews(
+MODULES_EXPORT MLNamedArrayBufferViews* CreateNamedArrayBufferViews(
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>> views_info);
 
 webnn::AutoPad BlinkAutoPadToComponent(blink::V8MLAutoPad::Enum type);
