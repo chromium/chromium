@@ -403,28 +403,6 @@ SPECIAL_CASES = {
         "License": "Apache 2.0",
         "License File": ["//third_party/dawn/third_party/khronos/LICENSE"],
     },
-    # Dependencies of Selenium Atoms
-    os.path.join('third_party', 'selenium-atoms', 'sizzle'): {
-        "Name": "Sizzle",
-        "URL": "https://sizzlejs.com/",
-        "Shipped": "yes",
-        "License": "MIT, BSD and GPL v2",
-        "License File": ["//third_party/selenium-atoms/LICENSE.sizzle"],
-    },
-    os.path.join('third_party', 'selenium-atoms', 'wgxpath'): {
-        "Name": "Wicked Good XPath",
-        "URL": "https://github.com/google/wicked-good-xpath",
-        "Shipped": "yes",
-        "License": "MIT",
-        "License File": ["//third_party/selenium-atoms/LICENSE.wgxpath"],
-    },
-    os.path.join('third_party', 'selenium-atoms', 'closure-lib'): {
-        "Name": "Closure Library",
-        "URL": "https://developers.google.com/closure/library",
-        "Shipped": "yes",
-        "License": "Apache 2.0",
-        "License File": ["//third_party/selenium-atoms/LICENSE.closure"],
-    },
 }
 
 # These buildtools/third_party directories only contain

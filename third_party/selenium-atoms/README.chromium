@@ -8,7 +8,6 @@ Shipped: yes
 License: Apache 2
 License File: LICENSE
 
-
 Description:
   Standard implementation of some WebDriver functions.
 
@@ -46,3 +45,38 @@ Contents:
 
 Local Modifications:
 - Applied changes in patch.diff to the selenium tree prior to building the atoms.
+
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: Sizzle
+URL: https://sizzlejs.com/
+Version: N/A
+Revision: bd5cbe5b3a3e60b5970d8168474dd69a996c392c
+Security Critical: no
+Shipped: yes
+License: MIT, BSD, GPL v2
+License File: LICENSE.sizzle
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: Wicked Good XPath
+Short Name: wgxpath
+URL: https://github.com/google/wicked-good-xpath
+Version: N/A
+Revision: bd5cbe5b3a3e60b5970d8168474dd69a996c392c
+Security Critical: no
+Shipped: yes
+License: MIT
+License File: LICENSE.wgxpath
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: Closure Library
+URL: https://developers.google.com/closure/library
+Version: N/A
+Revision: bd5cbe5b3a3e60b5970d8168474dd69a996c392c
+Security Critical: no
+Shipped: yes
+License: Apache 2.0
+License File: LICENSE.closure
