@@ -84,7 +84,7 @@ class EyeDropperView : public content::EyeDropper,
   // Moves the view to the specified position.
   void UpdatePosition(gfx::Point position);
 
-  void CaptureInputIfNeeded();
+  void CaptureInput();
 
   void HideCursor();
   void ShowCursor();

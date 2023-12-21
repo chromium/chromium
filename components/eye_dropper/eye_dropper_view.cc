@@ -233,7 +233,7 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
   pre_dispatch_handler_ =
       std::make_unique<PreEventDispatchHandler>(this, event_handler);
   widget->Show();
-  CaptureInputIfNeeded();
+  CaptureInput();
   auto* screen = display::Screen::GetScreen();
   gfx::Point initial_position = screen->GetCursorScreenPoint();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
