@@ -6,10 +6,13 @@
 
 #include "base/check.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -21,6 +24,32 @@ constexpr const char kTraceCategories[] = "loading,rail,devtools.timeline";
 constexpr const char kLCPCandidate[] = "largestContentfulPaint::Candidate";
 
 }  // namespace
+
+LargestContentfulPaintType GetLargestContentfulPaintTypeFromString(
+    const AtomicString& type_string) {
+  if (type_string.empty()) {
+    return LargestContentfulPaintType::kNone;
+  }
+
+  using LargestContentfulPaintTypeMap =
+      HashMap<AtomicString, LargestContentfulPaintType>;
+
+  DEFINE_STATIC_LOCAL(LargestContentfulPaintTypeMap,
+                      largest_contentful_paint_type_map,
+                      ({{"svg", LargestContentfulPaintType::kSVG},
+                        {"gif", LargestContentfulPaintType::kGIF},
+                        {"png", LargestContentfulPaintType::kPNG},
+                        {"jpg", LargestContentfulPaintType::kJPG},
+                        {"avif", LargestContentfulPaintType::kAVIF},
+                        {"webp", LargestContentfulPaintType::kWebP}}));
+
+  auto it = largest_contentful_paint_type_map.find(type_string);
+  if (it != largest_contentful_paint_type_map.end()) {
+    return it->value;
+  }
+
+  return LargestContentfulPaintType::kNone;
+}
 
 LargestContentfulPaintCalculator::LargestContentfulPaintCalculator(
     WindowPerformance* window_performance)
@@ -163,6 +192,147 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
   }
 }
 
+bool LargestContentfulPaintCalculator::HasLargestImagePaintChangedForMetrics(
+    base::TimeTicks largest_image_paint_time,
+    uint64_t largest_image_paint_size) const {
+  return largest_image_paint_time !=
+             latest_lcp_details_.largest_image_paint_time ||
+         largest_image_paint_size !=
+             latest_lcp_details_.largest_image_paint_size;
+}
+
+bool LargestContentfulPaintCalculator::HasLargestTextPaintChangedForMetrics(
+    base::TimeTicks largest_text_paint_time,
+    uint64_t largest_text_paint_size) const {
+  return largest_text_paint_time !=
+             latest_lcp_details_.largest_text_paint_time ||
+         largest_text_paint_size != latest_lcp_details_.largest_text_paint_size;
+}
+
+bool LargestContentfulPaintCalculator::NotifyMetricsIfLargestImagePaintChanged(
+    base::TimeTicks image_paint_time,
+    uint64_t image_paint_size,
+    ImageRecord* image_record,
+    double image_bpp,
+    absl::optional<WebURLRequest::Priority> priority) {
+  // (Experimental) Images with insufficient entropy are not considered
+  // candidates for LCP
+  if (base::FeatureList::IsEnabled(features::kExcludeLowEntropyImagesFromLCP)) {
+    if (image_bpp < features::kMinimumEntropyForLCP.Get()) {
+      return false;
+    }
+  }
+  if (!HasLargestImagePaintChangedForMetrics(image_paint_time,
+                                             image_paint_size)) {
+    return false;
+  }
+
+  latest_lcp_details_.largest_contentful_paint_type =
+      blink::LargestContentfulPaintType::kNone;
+  if (image_record) {
+    if (image_record->is_loaded_after_mouseover) {
+      latest_lcp_details_.largest_contentful_paint_type |=
+          blink::LargestContentfulPaintType::kAfterMouseover;
+    }
+    // TODO(yoav): Once we'd enable the kLCPAnimatedImagesReporting flag by
+    // default, we'd be able to use the value of
+    // largest_image_record->first_animated_frame_time directly.
+    if (image_record && image_record->media_timing) {
+      if (!image_record->media_timing->GetFirstVideoFrameTime().is_null()) {
+        // Set the video flag.
+        latest_lcp_details_.largest_contentful_paint_type |=
+            blink::LargestContentfulPaintType::kVideo;
+      } else if (image_record->media_timing->IsPaintedFirstFrame()) {
+        // Set the animated image flag.
+        latest_lcp_details_.largest_contentful_paint_type |=
+            blink::LargestContentfulPaintType::kAnimatedImage;
+      }
+
+      // Set image type flag.
+      latest_lcp_details_.largest_contentful_paint_type |=
+          blink::LargestContentfulPaintType::kImage;
+
+      // Set specific type of the image.
+      latest_lcp_details_.largest_contentful_paint_type |=
+          GetLargestContentfulPaintTypeFromString(
+              image_record->media_timing->MediaType());
+
+      // Set DataURI type.
+      if (image_record->media_timing->IsDataUrl()) {
+        latest_lcp_details_.largest_contentful_paint_type |=
+            blink::LargestContentfulPaintType::kDataURI;
+      }
+
+      latest_lcp_details_.largest_image_discovery_time =
+          image_record->media_timing->DiscoveryTime();
+      latest_lcp_details_.largest_image_load_start =
+          image_record->media_timing->LoadStart();
+      latest_lcp_details_.largest_image_load_end =
+          image_record->media_timing->LoadEnd();
+      latest_lcp_details_.is_loaded_from_memory_cache =
+          image_record->media_timing->IsLoadedFromMemoryCache();
+      latest_lcp_details_.is_preloaded_with_early_hints =
+          image_record->media_timing->IsPreloadedWithEarlyHints();
+    }
+  }
+  latest_lcp_details_.largest_image_paint_time = image_paint_time;
+  latest_lcp_details_.largest_image_paint_size = image_paint_size;
+  latest_lcp_details_.largest_contentful_paint_image_bpp = image_bpp;
+  latest_lcp_details_.largest_contentful_paint_image_request_priority =
+      std::move(priority);
+  UpdateLatestLcpDetails();
+  return true;
+}
+
+bool LargestContentfulPaintCalculator::NotifyMetricsIfLargestTextPaintChanged(
+    base::TimeTicks text_paint_time,
+    uint64_t text_paint_size) {
+  if (!HasLargestTextPaintChangedForMetrics(text_paint_time, text_paint_size)) {
+    return false;
+  }
+
+  DCHECK(!text_paint_time.is_null());
+  latest_lcp_details_.largest_text_paint_time = text_paint_time;
+  latest_lcp_details_.largest_text_paint_size = text_paint_size;
+  UpdateLatestLcpDetails();
+
+  return true;
+}
+
+void LargestContentfulPaintCalculator::UpdateLatestLcpDetails() {
+  if (latest_lcp_details_.largest_text_paint_size >
+      latest_lcp_details_.largest_image_paint_size) {
+    latest_lcp_details_.largest_contentful_paint_time =
+        latest_lcp_details_.largest_text_paint_time;
+
+    // We set latest_lcp_details_.largest_contentful_paint_type_ only here
+    // because we use latest_lcp_details_.largest_contentful_paint_type_ to
+    // track the LCP type of the largest image only. When the largest image gets
+    // updated, the latest_lcp_details_.largest_contentful_paint_type_ gets
+    // reset and updated accordingly in the
+    // NotifyMetricsIfLargestImagePaintChanged() method. If the LCP element
+    // turns out to be the largest text, we simply set the
+    // latest_lcp_details_.largest_contentful_paint_type_ to be kText here. This
+    // is possible because currently text elements have only 1 LCP type kText.
+    latest_lcp_details_.largest_contentful_paint_type =
+        LargestContentfulPaintType::kText;
+  } else if (latest_lcp_details_.largest_text_paint_size <
+             latest_lcp_details_.largest_image_paint_size) {
+    latest_lcp_details_.largest_contentful_paint_time =
+        latest_lcp_details_.largest_image_paint_time;
+  } else {
+    // Size is the same, take the shorter time.
+    latest_lcp_details_.largest_contentful_paint_time =
+        std::min(latest_lcp_details_.largest_text_paint_time,
+                 latest_lcp_details_.largest_image_paint_time);
+
+    if (latest_lcp_details_.largest_text_paint_time <
+        latest_lcp_details_.largest_image_paint_time) {
+      latest_lcp_details_.largest_contentful_paint_type =
+          LargestContentfulPaintType::kText;
+    }
+  }
+}
 void LargestContentfulPaintCalculator::Trace(Visitor* visitor) const {
   visitor->Trace(window_performance_);
 }

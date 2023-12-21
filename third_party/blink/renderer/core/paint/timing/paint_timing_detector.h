@@ -11,10 +11,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
+#include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_visualizer.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
@@ -131,38 +131,6 @@ class CORE_EXPORT PaintTimingDetector
  public:
   PaintTimingDetector(LocalFrameView*);
 
-  struct LargestContentfulPaintDetails {
-    base::TimeTicks largest_image_paint_time_;
-    uint64_t largest_image_paint_size_ = 0;
-    base::TimeTicks largest_image_load_start_;
-    base::TimeTicks largest_image_load_end_;
-    base::TimeTicks largest_image_discovery_time_;
-    blink::LargestContentfulPaintType largest_contentful_paint_type_ =
-        blink::LargestContentfulPaintType::kNone;
-    double largest_contentful_paint_image_bpp_ = 0.0;
-    base::TimeTicks largest_text_paint_time_;
-    uint64_t largest_text_paint_size_ = 0;
-    base::TimeTicks largest_contentful_paint_time_;
-    absl::optional<WebURLRequest::Priority>
-        largest_contentful_paint_image_request_priority_;
-    bool is_loaded_from_memory_cache_ = false;
-    bool is_preloaded_with_early_hints_ = false;
-
-    void Reset() {
-      this->largest_image_paint_time_ = base::TimeTicks();
-      this->largest_image_paint_size_ = 0;
-      this->largest_image_load_start_ = base::TimeTicks();
-      this->largest_image_load_end_ = base::TimeTicks();
-      this->largest_contentful_paint_type_ =
-          blink::LargestContentfulPaintType::kNone;
-      this->largest_contentful_paint_image_bpp_ = 0.0;
-      this->largest_text_paint_time_ = base::TimeTicks();
-      this->largest_text_paint_size_ = 0;
-      this->largest_contentful_paint_time_ = base::TimeTicks();
-      this->largest_contentful_paint_image_request_priority_ = absl::nullopt;
-    }
-  };
-
   // Returns true if the image might ultimately be a candidate for largest
   // paint, otherwise false. When this method is called we do not know the
   // largest status for certain, because we need to wait for presentation.
@@ -227,21 +195,23 @@ class CORE_EXPORT PaintTimingDetector
 
   LargestContentfulPaintCalculator* GetLargestContentfulPaintCalculator();
 
-  const PaintTimingDetector::LargestContentfulPaintDetails&
-  LargestContentfulPaintDetailsForMetrics() const {
+  const LargestContentfulPaintDetails& LargestContentfulPaintDetailsForMetrics()
+      const {
     return lcp_details_for_metrics_;
   }
 
-  const PaintTimingDetector::LargestContentfulPaintDetails&
+  const LargestContentfulPaintDetails&
   SoftNavigationLargestContentfulPaintDetailsForMetrics() const {
     return soft_navigation_lcp_details_for_metrics_;
   }
+
+  const LargestContentfulPaintDetails& LatestLcpDetailsForTest() const;
 
   base::TimeTicks FirstInputOrScrollNotifiedTimestamp() const {
     return first_input_or_scroll_notified_timestamp_;
   }
 
-  void UpdateLargestContentfulPaintCandidate();
+  void UpdateLcpCandidate();
 
   // Reports the largest image and text candidates painted under non-nested 0
   // opacity layer.
@@ -256,11 +226,10 @@ class CORE_EXPORT PaintTimingDetector
 
   // Method called to stop recording the Largest Contentful Paint.
   void OnInputOrScroll();
-  bool HasLargestImagePaintChangedForMetrics(base::TimeTicks,
-                                             uint64_t size) const;
+
   bool HasLargestTextPaintChangedForMetrics(base::TimeTicks,
                                             uint64_t size) const;
-  void UpdateLargestContentfulPaintTimeForMetrics();
+  void UpdateMetricsLcp();
   Member<LocalFrameView> frame_view_;
   // This member lives forever because it is also used for Text Element
   // Timing.
@@ -282,10 +251,6 @@ class CORE_EXPORT PaintTimingDetector
 
   absl::optional<PaintTimingVisualizer> visualizer_;
 
-  // The |latest_lcp_details_| struct is just for internal accounting purposes
-  // and is not reported anywhere (neither to metrics, nor to the web exposed
-  // API).
-  LargestContentfulPaintDetails latest_lcp_details_;
   // The LCP details reported to metrics (UKM).
   LargestContentfulPaintDetails lcp_details_for_metrics_;
   // The soft navigation LCP details reported to metrics (UKM).
@@ -376,20 +341,6 @@ inline void PaintTimingDetector::NotifyTextPaint(
   }
   ScopedPaintTimingDetectorBlockPaintHook::AggregateTextPaint(text_visual_rect);
 }
-
-class LCPRectInfo {
-  USING_FAST_MALLOC(LCPRectInfo);
-
- public:
-  LCPRectInfo(const gfx::Rect& frame_rect_info, const gfx::Rect& root_rect_info)
-      : frame_rect_info_(frame_rect_info), root_rect_info_(root_rect_info) {}
-
-  void OutputToTraceValue(TracedValue&) const;
-
- private:
-  gfx::Rect frame_rect_info_;
-  gfx::Rect root_rect_info_;
-};
 
 }  // namespace blink
 

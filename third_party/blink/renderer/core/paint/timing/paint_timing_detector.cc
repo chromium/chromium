@@ -66,32 +66,6 @@ bool IsBackgroundImageContentful(const LayoutObject& object,
   return true;
 }
 
-LargestContentfulPaintType GetLargestContentfulPaintTypeFromString(
-    const AtomicString& type_string) {
-  if (type_string.empty()) {
-    return LargestContentfulPaintType::kNone;
-  }
-
-  using LargestContentfulPaintTypeMap =
-      HashMap<AtomicString, LargestContentfulPaintType>;
-
-  DEFINE_STATIC_LOCAL(LargestContentfulPaintTypeMap,
-                      largest_contentful_paint_type_map,
-                      ({{"svg", LargestContentfulPaintType::kSVG},
-                        {"gif", LargestContentfulPaintType::kGIF},
-                        {"png", LargestContentfulPaintType::kPNG},
-                        {"jpg", LargestContentfulPaintType::kJPG},
-                        {"avif", LargestContentfulPaintType::kAVIF},
-                        {"webp", LargestContentfulPaintType::kWebP}}));
-
-  auto it = largest_contentful_paint_type_map.find(type_string);
-  if (it != largest_contentful_paint_type_map.end()) {
-    return it->value;
-  }
-
-  return LargestContentfulPaintType::kNone;
-}
-
 void ReportImagePixelInaccuracy(HTMLImageElement* image_element) {
   DCHECK(image_element);
   ImageResourceContent* image_content = image_element->CachedImage();
@@ -350,7 +324,7 @@ void PaintTimingDetector::RestartRecordingLCP() {
   image_paint_timing_detector_->RestartRecordingLargestImagePaint();
   lcp_was_restarted_ = true;
   soft_navigation_was_detected_ = false;
-  latest_lcp_details_.Reset();
+  GetLargestContentfulPaintCalculator()->ResetMetricsLcp();
 }
 
 void PaintTimingDetector::SoftNavigationDetected(LocalDOMWindow* window) {
@@ -374,7 +348,8 @@ void PaintTimingDetector::SoftNavigationDetected(LocalDOMWindow* window) {
 
   // Report the soft navigation LCP to metrics.
   CHECK(record_soft_navigation_lcp_for_metrics_);
-  soft_navigation_lcp_details_for_metrics_ = latest_lcp_details_;
+  soft_navigation_lcp_details_for_metrics_ =
+      largest_contentful_paint_calculator_->LatestLcpDetails();
   DidChangePerformanceTiming();
 }
 
@@ -385,7 +360,7 @@ void PaintTimingDetector::RestartRecordingLCPToUkm() {
   // Reset the lcp candidate and the soft navigation LCP for reporting to UKM
   // when a new soft navigation happens. When this resetting happens, the
   // previous lcp details should already be updated.
-  soft_navigation_lcp_details_for_metrics_.Reset();
+  soft_navigation_lcp_details_for_metrics_ = LargestContentfulPaintDetails();
 }
 
 LargestContentfulPaintCalculator*
@@ -405,173 +380,29 @@ PaintTimingDetector::GetLargestContentfulPaintCalculator() {
   return largest_contentful_paint_calculator_.Get();
 }
 
-bool PaintTimingDetector::NotifyMetricsIfLargestImagePaintChanged(
-    base::TimeTicks image_paint_time,
-    uint64_t image_paint_size,
-    ImageRecord* image_record,
-    double image_bpp,
-    absl::optional<WebURLRequest::Priority> priority) {
-  // (Experimental) Images with insufficient entropy are not considered
-  // candidates for LCP
-  if (base::FeatureList::IsEnabled(features::kExcludeLowEntropyImagesFromLCP)) {
-    if (image_bpp < features::kMinimumEntropyForLCP.Get()) {
-      return false;
-    }
-  }
-  if (!HasLargestImagePaintChangedForMetrics(image_paint_time,
-                                             image_paint_size)) {
-    return false;
-  }
-
-  latest_lcp_details_.largest_contentful_paint_type_ =
-      blink::LargestContentfulPaintType::kNone;
-  if (image_record) {
-    if (image_record->is_loaded_after_mouseover) {
-      latest_lcp_details_.largest_contentful_paint_type_ |=
-          blink::LargestContentfulPaintType::kAfterMouseover;
-    }
-    // TODO(yoav): Once we'd enable the kLCPAnimatedImagesReporting flag by
-    // default, we'd be able to use the value of
-    // largest_image_record->first_animated_frame_time directly.
-    if (image_record && image_record->media_timing) {
-      if (!image_record->media_timing->GetFirstVideoFrameTime().is_null()) {
-        // Set the video flag.
-        latest_lcp_details_.largest_contentful_paint_type_ |=
-            blink::LargestContentfulPaintType::kVideo;
-      } else if (image_record->media_timing->IsPaintedFirstFrame()) {
-        // Set the animated image flag.
-        latest_lcp_details_.largest_contentful_paint_type_ |=
-            blink::LargestContentfulPaintType::kAnimatedImage;
-      }
-
-      // Set image type flag.
-      latest_lcp_details_.largest_contentful_paint_type_ |=
-          blink::LargestContentfulPaintType::kImage;
-
-      // Set specific type of the image.
-      latest_lcp_details_.largest_contentful_paint_type_ |=
-          GetLargestContentfulPaintTypeFromString(
-              image_record->media_timing->MediaType());
-
-      // Set DataURI type.
-      if (image_record->media_timing->IsDataUrl()) {
-        latest_lcp_details_.largest_contentful_paint_type_ |=
-            blink::LargestContentfulPaintType::kDataURI;
-      }
-
-      latest_lcp_details_.largest_image_discovery_time_ =
-          image_record->media_timing->DiscoveryTime();
-      latest_lcp_details_.largest_image_load_start_ =
-          image_record->media_timing->LoadStart();
-      latest_lcp_details_.largest_image_load_end_ =
-          image_record->media_timing->LoadEnd();
-      latest_lcp_details_.is_loaded_from_memory_cache_ =
-          image_record->media_timing->IsLoadedFromMemoryCache();
-      latest_lcp_details_.is_preloaded_with_early_hints_ =
-          image_record->media_timing->IsPreloadedWithEarlyHints();
-    }
-  }
-  latest_lcp_details_.largest_image_paint_time_ = image_paint_time;
-  latest_lcp_details_.largest_image_paint_size_ = image_paint_size;
-  latest_lcp_details_.largest_contentful_paint_image_bpp_ = image_bpp;
-  latest_lcp_details_.largest_contentful_paint_image_request_priority_ =
-      std::move(priority);
-  UpdateLargestContentfulPaintTimeForMetrics();
-  return true;
-}
-
-bool PaintTimingDetector::NotifyMetricsIfLargestTextPaintChanged(
-    base::TimeTicks text_paint_time,
-    uint64_t text_paint_size) {
-  if (!HasLargestTextPaintChangedForMetrics(text_paint_time, text_paint_size)) {
-    return false;
-  }
-  // If soft nav LCP is being recorded for LCP, because lcp_details is not
-  // reset, if its text paint size is not smaller than the new text paint size
-  // corresponding to the 1st soft nav, this new text paint size would not be
-  // updated. The 2nd condition is to fix this. For subsequent soft
-  // navigations, because record_soft_navigation_lcp_for_metrics_ is true, the
-  // soft_navigation_lcp_details_for_metrics_ is always updated to the
-  // lcp_details_. the 2nd condition
-  // soft_navigation_lcp_details_for_metrics_.largest_text_paint_size_ <
-  // text_paint_size is effectively the same the 1st condition.
-  if (latest_lcp_details_.largest_text_paint_size_ < text_paint_size ||
-      (record_soft_navigation_lcp_for_metrics_ &&
-       soft_navigation_lcp_details_for_metrics_.largest_text_paint_size_ <
-           text_paint_size)) {
-    DCHECK(!text_paint_time.is_null());
-    latest_lcp_details_.largest_text_paint_time_ = text_paint_time;
-    latest_lcp_details_.largest_text_paint_size_ = text_paint_size;
-  }
-  UpdateLargestContentfulPaintTimeForMetrics();
-  return true;
-}
-
-void PaintTimingDetector::UpdateLargestContentfulPaintTimeForMetrics() {
-  if (latest_lcp_details_.largest_text_paint_size_ >
-      latest_lcp_details_.largest_image_paint_size_) {
-    latest_lcp_details_.largest_contentful_paint_time_ =
-        latest_lcp_details_.largest_text_paint_time_;
-
-    // We set latest_lcp_details_.largest_contentful_paint_type_ only here
-    // because we use latest_lcp_details_.largest_contentful_paint_type_ to
-    // track the LCP type of the largest image only. When the largest image gets
-    // updated, the latest_lcp_details_.largest_contentful_paint_type_ gets
-    // reset and updated accordingly in the
-    // NotifyMetricsIfLargestImagePaintChanged() method. If the LCP element
-    // turns out to be the largest text, we simply set the
-    // latest_lcp_details_.largest_contentful_paint_type_ to be kText here. This
-    // is possible because currently text elements have only 1 LCP type kText.
-    latest_lcp_details_.largest_contentful_paint_type_ =
-        LargestContentfulPaintType::kText;
-  } else if (latest_lcp_details_.largest_text_paint_size_ <
-             latest_lcp_details_.largest_image_paint_size_) {
-    latest_lcp_details_.largest_contentful_paint_time_ =
-        latest_lcp_details_.largest_image_paint_time_;
-  } else {
-    // Size is the same, take the shorter time.
-    latest_lcp_details_.largest_contentful_paint_time_ =
-        std::min(latest_lcp_details_.largest_text_paint_time_,
-                 latest_lcp_details_.largest_image_paint_time_);
-
-    if (latest_lcp_details_.largest_text_paint_time_ <
-        latest_lcp_details_.largest_image_paint_time_) {
-      latest_lcp_details_.largest_contentful_paint_type_ =
-          LargestContentfulPaintType::kText;
-    }
+void PaintTimingDetector::UpdateMetricsLcp() {
+  // The DidChangePerformanceTiming method which triggers the reporting of
+  // metrics LCP would not be called when we are not recording metrics LCP.
+  if (!record_lcp_to_metrics_ && !record_soft_navigation_lcp_for_metrics_) {
+    return;
   }
 
   if (record_lcp_to_metrics_) {
-    lcp_details_for_metrics_ = latest_lcp_details_;
+    auto latest_lcp_details =
+        GetLargestContentfulPaintCalculator()->LatestLcpDetails();
+    lcp_details_for_metrics_ = latest_lcp_details;
   }
 
-  if (record_soft_navigation_lcp_for_metrics_) {
-    // If we're waiting on a softnav and it wasn't detected yet, keep on waiting
-    // and don't update.
-    if (!soft_navigation_was_detected_) {
-      return;
-    }
-    soft_navigation_lcp_details_for_metrics_ = latest_lcp_details_;
+  // If we're waiting on a softnav and it wasn't detected yet, keep on waiting
+  // and don't update.
+  if (record_soft_navigation_lcp_for_metrics_ &&
+      soft_navigation_was_detected_) {
+    auto latest_lcp_details =
+        GetLargestContentfulPaintCalculator()->LatestLcpDetails();
+    soft_navigation_lcp_details_for_metrics_ = latest_lcp_details;
   }
+
   DidChangePerformanceTiming();
-}
-
-bool PaintTimingDetector::HasLargestImagePaintChangedForMetrics(
-    base::TimeTicks largest_image_paint_time,
-    uint64_t largest_image_paint_size) const {
-  return largest_image_paint_time !=
-             latest_lcp_details_.largest_image_paint_time_ ||
-         largest_image_paint_size !=
-             latest_lcp_details_.largest_image_paint_size_;
-}
-
-bool PaintTimingDetector::HasLargestTextPaintChangedForMetrics(
-    base::TimeTicks largest_text_paint_time,
-    uint64_t largest_text_paint_size) const {
-  return largest_text_paint_time !=
-             latest_lcp_details_.largest_text_paint_time_ ||
-         largest_text_paint_size !=
-             latest_lcp_details_.largest_text_paint_size_;
 }
 
 void PaintTimingDetector::DidChangePerformanceTiming() {
@@ -635,7 +466,7 @@ gfx::RectF PaintTimingDetector::CalculateVisualRect(
   return BlinkSpaceToDIPs(gfx::RectF(layout_visual_rect));
 }
 
-void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {
+void PaintTimingDetector::UpdateLcpCandidate() {
   auto* lcp_calculator = GetLargestContentfulPaintCalculator();
   if (!lcp_calculator) {
     return;
@@ -645,24 +476,29 @@ void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {
   // user input or no content show up on the page.
   // * Record.paint_time == 0 means there is an image but the image is still
   // loading. The perf API should wait until the paint-time is available.
-  TextRecord* largest_text_record = nullptr;
-  ImageRecord* largest_image_record = nullptr;
+  std::pair<TextRecord*, bool> text_update_result = {nullptr, false};
+  std::pair<ImageRecord*, bool> image_update_result = {nullptr, false};
+
   if (text_paint_timing_detector_->IsRecordingLargestTextPaint()) {
-    largest_text_record = text_paint_timing_detector_->UpdateMetricsCandidate();
+    text_update_result = text_paint_timing_detector_->UpdateMetricsCandidate();
   }
+
   if (image_paint_timing_detector_->IsRecordingLargestImagePaint()) {
-    largest_image_record =
+    image_update_result =
         image_paint_timing_detector_->UpdateMetricsCandidate();
   }
 
+  if (image_update_result.second || text_update_result.second) {
+    UpdateMetricsLcp();
+  }
   // If we stopped and then restarted LCP measurement (to support soft
   // navigations), and didn't yet detect a soft navigation, put aside the
   // records as potential soft navigation LCP ones, and don't update the web
   // exposed entries just yet. We'll do that once we actually detect the soft
   // navigation.
   if (lcp_was_restarted_ && !soft_navigation_was_detected_) {
-    potential_soft_navigation_text_record_ = largest_text_record;
-    potential_soft_navigation_image_record_ = largest_image_record;
+    potential_soft_navigation_text_record_ = text_update_result.first;
+    potential_soft_navigation_image_record_ = image_update_result.first;
     return;
   }
   potential_soft_navigation_text_record_ = nullptr;
@@ -672,7 +508,7 @@ void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {
   // restarted for soft navigations, fire the web exposed entry.
   if (record_lcp_to_metrics_ || lcp_was_restarted_) {
     lcp_calculator->UpdateWebExposedLargestContentfulPaintIfNeeded(
-        largest_text_record, largest_image_record,
+        text_update_result.first, image_update_result.first,
         /*is_triggered_by_soft_navigation=*/lcp_was_restarted_);
   }
 }
@@ -682,6 +518,11 @@ void PaintTimingDetector::ReportIgnoredContent() {
   if (image_paint_timing_detector_->IsRecordingLargestImagePaint()) {
     image_paint_timing_detector_->ReportLargestIgnoredImage();
   }
+}
+
+const LargestContentfulPaintDetails&
+PaintTimingDetector::LatestLcpDetailsForTest() const {
+  return largest_contentful_paint_calculator_->LatestLcpDetails();
 }
 
 ScopedPaintTimingDetectorBlockPaintHook*
@@ -779,23 +620,11 @@ void PaintTimingCallbackManagerImpl::ReportPaintTime(
     std::move(frame_callbacks->front()).Run(paint_time);
     frame_callbacks->pop();
   }
-  frame_view_->GetPaintTimingDetector().UpdateLargestContentfulPaintCandidate();
+  frame_view_->GetPaintTimingDetector().UpdateLcpCandidate();
 }
 
 void PaintTimingCallbackManagerImpl::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
   PaintTimingCallbackManager::Trace(visitor);
 }
-
-void LCPRectInfo::OutputToTraceValue(TracedValue& value) const {
-  value.SetInteger("frame_x", frame_rect_info_.x());
-  value.SetInteger("frame_y", frame_rect_info_.y());
-  value.SetInteger("frame_width", frame_rect_info_.width());
-  value.SetInteger("frame_height", frame_rect_info_.height());
-  value.SetInteger("root_x", root_rect_info_.x());
-  value.SetInteger("root_y", root_rect_info_.y());
-  value.SetInteger("root_width", root_rect_info_.width());
-  value.SetInteger("root_height", root_rect_info_.height());
-}
-
 }  // namespace blink

@@ -22,7 +22,7 @@ class DocumentParserTiming;
 class DocumentTiming;
 class InteractiveDetector;
 class PaintTiming;
-class PaintTimingDetector;
+struct LargestContentfulPaintDetails;
 
 // This class is only used for non-web-exposed reporting purposes (e.g. UKM).
 class CORE_EXPORT PerformanceTimingForReporting final
@@ -100,7 +100,7 @@ class CORE_EXPORT PerformanceTimingForReporting final
 
   LargestContentfulPaintDetailsForReporting
   PopulateLargestContentfulPaintDetailsForReporting(
-      PaintTimingDetector::LargestContentfulPaintDetails timing) const;
+      const LargestContentfulPaintDetails& timing) const;
 
   // The time at which the frame is first eligible for painting due to not
   // being throttled. A zero value indicates throttling.

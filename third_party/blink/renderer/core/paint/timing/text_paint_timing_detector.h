@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -69,7 +70,9 @@ class CORE_EXPORT LargestTextPaintManager final
                                      const uint64_t&,
                                      const gfx::Rect& frame_visual_rect,
                                      const gfx::RectF& root_visual_rect);
-  TextRecord* UpdateMetricsCandidate();
+
+  // Return the text LCP candidate and whether the candidate has changed.
+  std::pair<TextRecord*, bool> UpdateMetricsCandidate();
 
   void ReportCandidateToTrace(const TextRecord&);
   void PopulateTraceValue(TracedValue&, const TextRecord& first_text_paint);
@@ -143,7 +146,7 @@ class CORE_EXPORT TextPaintTimingDetector final
   inline bool IsRecordingLargestTextPaint() const {
     return recording_largest_text_paint_;
   }
-  inline TextRecord* UpdateMetricsCandidate() {
+  inline std::pair<TextRecord*, bool> UpdateMetricsCandidate() {
     return ltp_manager_->UpdateMetricsCandidate();
   }
   void ReportLargestIgnoredText();
