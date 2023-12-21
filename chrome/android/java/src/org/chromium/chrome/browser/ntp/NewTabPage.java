@@ -160,7 +160,7 @@ public class NewTabPage
     // Whether destroy() has been called.
     private boolean mIsDestroyed;
 
-    private final int mTabStripAndToolbarHeight;
+    private final int mToolbarHeight;
 
     private final Supplier<Toolbar> mToolbarSupplier;
     private final TabModelSelector mTabModelSelector;
@@ -525,8 +525,8 @@ public class NewTabPage
         DownloadManagerService.getDownloadManagerService()
                 .checkForExternallyRemovedDownloads(ProfileKey.getLastUsedRegularProfileKey());
 
-        mTabStripAndToolbarHeight =
-                activity.getResources().getDimensionPixelSize(R.dimen.tab_strip_and_toolbar_height);
+        mToolbarHeight =
+                activity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
 
         uma.recordContentSuggestionsDisplayStatus(profile);
 
@@ -692,7 +692,9 @@ public class NewTabPage
      *         strip.
      */
     private int getToolbarExtraYOffset() {
-        return mBrowserControlsStateProvider.getTopControlsHeight() - mTabStripAndToolbarHeight;
+        return mBrowserControlsStateProvider.getTopControlsHeight()
+                - mToolbarHeight
+                - mTabStripHeightSupplier.get();
     }
 
     /** @return The view container for the new tab layout. */
