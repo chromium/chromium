@@ -3675,7 +3675,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
       new_style = nullptr;
       NotifyAXOfAttachedSubtree();
     } else {
-      if (!new_style->IsContentVisibilityVisible()) {
+      if (!old_style && !new_style->IsContentVisibilityVisible()) {
         NotifyAXOfAttachedSubtree();
       }
       if (new_style->IsContainerForSizeContainerQueries()) {
