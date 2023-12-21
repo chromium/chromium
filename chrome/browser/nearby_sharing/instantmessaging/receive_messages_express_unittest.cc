@@ -81,8 +81,7 @@ class ReceiveMessagesExpressTest : public testing::Test {
  public:
   ReceiveMessagesExpressTest()
       : test_shared_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {
+            test_url_loader_factory_.GetSafeWeakWrapper()) {
     identity_test_environment_.MakePrimaryAccountAvailable(
         kTestAccount, signin::ConsentLevel::kSignin);
   }
