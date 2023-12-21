@@ -26,7 +26,7 @@
 #import "services/network/test/test_url_loader_factory.h"
 
 TestingApplicationContext::TestingApplicationContext()
-    : application_locale_("en"),
+    : application_locale_("en-US"),
       application_country_("us"),
       local_state_(nullptr),
       chrome_browser_state_manager_(nullptr),

@@ -220,7 +220,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestCacheCounterFormattingForAllTime) {
-  ASSERT_EQ("en", GetApplicationContext()->GetApplicationLocale());
+  ASSERT_EQ("en-US", GetApplicationContext()->GetApplicationLocale());
   PrefService* prefs = browser_state_->GetPrefs();
   prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
                     static_cast<int>(browsing_data::TimePeriod::ALL_TIME));
@@ -251,7 +251,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestCacheCounterFormattingForAllTime) {
 
 TEST_F(ClearBrowsingDataManagerTest,
        TestCacheCounterFormattingForLessThanAllTime) {
-  ASSERT_EQ("en", GetApplicationContext()->GetApplicationLocale());
+  ASSERT_EQ("en-US", GetApplicationContext()->GetApplicationLocale());
 
   PrefService* prefs = browser_state_->GetPrefs();
   prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
