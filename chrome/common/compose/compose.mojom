@@ -183,6 +183,10 @@ interface ComposeSessionPageHandler {
   // Buganizer.
   OpenBugReportingLink();
 
+  // Asks the Browser to open a new tab navigated to the Compose Learn More
+  // page.
+  OpenComposeLearnMorePage();
+
   // Asks the Browser to open a new tab navigated to the Dogfood feedback
   // survey.
   OpenFeedbackSurveyLink();

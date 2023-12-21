@@ -78,6 +78,8 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
     this.methodCalled('openBugReportingLink');
   }
 
+  openComposeLearnMorePage() {}
+
   openFeedbackSurveyLink() {
     this.methodCalled('openFeedbackSurveyLink');
   }

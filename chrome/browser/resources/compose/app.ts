@@ -318,6 +318,15 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.showMainAppDialog_ = true;
   }
 
+  private onFirstRunBottomTextClick_(e: Event) {
+    e.preventDefault();
+    // Embedded links do not work in WebUI so handle in the parent event
+    // listener.
+    if ((e.target as HTMLElement).tagName === 'A') {
+      this.apiProxy_.openComposeLearnMorePage();
+    }
+  }
+
   private onCancelEditClick_() {
     this.isEditingSubmittedInput_ = false;
   }
@@ -406,7 +415,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private onFooterClick_(e: Event) {
     e.preventDefault();
     // The "File a bug" and "survey" links are embedded into the string.
-    // Embededd links do not work in WebUI so handle each click in the parent
+    // Embedded links do not work in WebUI so handle each click in the parent
     // event listener.
     switch ((e.target as HTMLElement).id) {
       case 'bugLink':

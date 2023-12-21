@@ -14,6 +14,7 @@ export interface ComposeApiProxy {
   rewrite(style: StyleModifiers|null): void;
   getRouter(): ComposeDialogCallbackRouter;
   openBugReportingLink(): void;
+  openComposeLearnMorePage(): void;
   openFeedbackSurveyLink(): void;
   openComposeSettings(): void;
   setUserFeedback(reason: UserFeedback): void;
@@ -78,6 +79,10 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
 
   openBugReportingLink() {
     this.composeSessionPageHandler.openBugReportingLink();
+  }
+
+  openComposeLearnMorePage() {
+    this.composeSessionPageHandler.openComposeLearnMorePage();
   }
 
   openFeedbackSurveyLink() {
