@@ -191,17 +191,15 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     return r;
 
   for (const WebFormElement& form_element : document.Forms()) {
-    FormData form;
-    if (!WebFormElementToFormData(form_element, WebFormControlElement(),
-                                  field_data_manager, extract_options, &form,
-                                  nullptr)) {
-      continue;
-    }
-    if (!ProcessForm(
-            std::move(form),
-            form_util::ExtractAutofillableElementsInForm(form_element))) {
-      PruneInitialValueCaches(observed_unique_renderer_ids);
-      return r;
+    if (std::optional<FormData> form = WebFormElementToFormData(
+            form_element, WebFormControlElement(), field_data_manager,
+            extract_options, nullptr)) {
+      if (!ProcessForm(
+              std::move(*form),
+              form_util::ExtractAutofillableElementsInForm(form_element))) {
+        PruneInitialValueCaches(observed_unique_renderer_ids);
+        return r;
+      }
     }
   }
 
@@ -212,18 +210,17 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   std::vector<WebElement> iframe_elements =
       form_util::GetUnownedIframeElements(document);
 
-  FormData synthetic_form;
-  if (!UnownedFormElementsToFormData(
-          control_elements, iframe_elements, nullptr, document,
-          field_data_manager, extract_options, &synthetic_form, nullptr)) {
+  std::optional<FormData> synthetic_form = UnownedFormElementsToFormData(
+      control_elements, iframe_elements, nullptr, document, field_data_manager,
+      extract_options, nullptr);
+  if (!synthetic_form) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
     return r;
   }
-  if (!ProcessForm(std::move(synthetic_form), control_elements)) {
+  if (!ProcessForm(std::move(*synthetic_form), control_elements)) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
     return r;
   }
-
   PruneInitialValueCaches(observed_unique_renderer_ids);
   return r;
 }

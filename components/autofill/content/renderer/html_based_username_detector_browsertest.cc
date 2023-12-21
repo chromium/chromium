@@ -64,14 +64,10 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
   }
 
   FormData GetFormDataFromForm(const WebFormElement& form) {
-    FormData form_data;
-    EXPECT_TRUE(form_util::WebFormElementToFormData(
+    return *form_util::WebFormElementToFormData(
         form, WebFormControlElement(),
         *base::MakeRefCounted<FieldDataManager>(), /*extract_options=*/{},
-        &form_data,
-        /*field=*/nullptr));
-
-    return form_data;
+        /*field=*/nullptr);
   }
 
   FieldRendererId GetRendererIdFromWebElementId(const WebString& id) {

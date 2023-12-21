@@ -261,19 +261,18 @@ void WebFormControlElementToFormField(
     FormFieldData* field,
     ShadowFieldData* shadow_data = nullptr);
 
-// Fills |form| with the FormData object corresponding to the |form_element|.
-// If |field| is non-NULL, also fills |field| with the FormField object
-// corresponding to the |form_control_element|. |extract_options| controls what
-// data is extracted. Returns true if |form| is filled out.  Also returns false
-// if there are no fields or too many fields in the |form|. Field properties
-// will be copied from |field_data_manager|, if the argument is not null and
-// has entry for |element| (see properties in FieldPropertiesFlags).
-bool WebFormElementToFormData(
+// Returns a FormData object corresponding to `form_element`.
+// If `field` is non-NULL, also fills `field` with the FormFieldData object.
+// corresponding to `form_control_element`. `extract_options` controls what
+// data is extracted. Returns std::nullopt if there are no fields or too many
+// fields in the form. Field properties will be copied from
+// `field_data_manager`, if the argument is not null and has entry for the
+// corresponding element (see properties in FieldPropertiesFlags).
+std::optional<FormData> WebFormElementToFormData(
     const blink::WebFormElement& form_element,
     const blink::WebFormControlElement& form_control_element,
     const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
-    FormData* form,
     FormFieldData* field);
 
 // Returns the form that owns the `form_control`, or a null pointer if no form
@@ -304,17 +303,16 @@ std::vector<blink::WebElement> GetWebElementsFromIdList(
     const blink::WebDocument& document,
     const blink::WebString& id_list);
 
-// Returns false iff the extraction fails because the number of fields exceeds
-// |kMaxExtractableFields|, or |field| and |element| are not nullptr but
-// |element| is not among |control_elements|.
-bool UnownedFormElementsToFormData(
+// Returns std::nullopt iff the extraction fails because the number of fields
+// exceeds `kMaxExtractableFields`, or `field` and `element` are not nullptr but
+// `element` is not among `control_elements`.
+std::optional<FormData> UnownedFormElementsToFormData(
     const std::vector<blink::WebFormControlElement>& control_elements,
     const std::vector<blink::WebElement>& iframe_elements,
     const blink::WebFormControlElement* element,
     const blink::WebDocument& document,
     const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
-    FormData* form,
     FormFieldData* field);
 
 // Finds the field that represents `element`, and the form that contains

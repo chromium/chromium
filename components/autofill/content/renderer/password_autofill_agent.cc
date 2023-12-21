@@ -2167,11 +2167,11 @@ bool PasswordAutofillAgent::IsPasswordFieldFilledByUser(
 void PasswordAutofillAgent::NotifyPasswordManagerAboutClearedForm(
     const WebFormElement& cleared_form) {
   const auto extract_options = {ExtractOption::kValue, ExtractOption::kOptions};
-  FormData form_data;
-  if (WebFormElementToFormData(cleared_form, WebFormControlElement(),
-                               field_data_manager(), extract_options,
-                               &form_data, /*field=*/nullptr)) {
-    GetPasswordManagerDriver().PasswordFormCleared(form_data);
+  if (std::optional<FormData> form_data =
+          WebFormElementToFormData(cleared_form, WebFormControlElement(),
+                                   field_data_manager(), extract_options,
+                                   /*field=*/nullptr)) {
+    GetPasswordManagerDriver().PasswordFormCleared(*form_data);
   }
 }
 

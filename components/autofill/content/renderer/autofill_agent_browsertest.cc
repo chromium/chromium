@@ -504,11 +504,10 @@ TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
   blink::WebVector<blink::WebFormElement> forms =
       GetMainFrame()->GetDocument().Forms();
   EXPECT_EQ(1U, forms.size());
-  FormData form;
-  EXPECT_TRUE(form_util::WebFormElementToFormData(
+  FormData form = *form_util::WebFormElementToFormData(
       forms[0], blink::WebFormControlElement(),
       *base::MakeRefCounted<FieldDataManager>(),
-      {form_util::ExtractOption::kValue}, &form, nullptr));
+      {form_util::ExtractOption::kValue}, nullptr);
 
   ASSERT_TRUE(autofill_agent_->focused_element().IsNull());
   autofill_agent_->ApplyFormAction(mojom::ActionType::kUndo,

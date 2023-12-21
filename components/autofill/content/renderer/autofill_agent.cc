@@ -972,14 +972,10 @@ std::optional<FormData> AutofillAgent::CollectFormlessElements(
       form_util::GetUnownedIframeElements(document);
 
   FormData formless_elements_form;
-  // TODO(crbug.com/1007974): Make this function return std::optional too.
-  bool extraction_successful = form_util::UnownedFormElementsToFormData(
+  return form_util::UnownedFormElementsToFormData(
       control_elements, iframe_elements, nullptr, document,
-      field_data_manager(), extract_options, &formless_elements_form,
+      field_data_manager(), extract_options,
       /*field=*/nullptr);
-  return extraction_successful
-             ? std::optional(std::move(formless_elements_form))
-             : std::nullopt;
 }
 
 void AutofillAgent::ShowSuggestions(
@@ -1183,12 +1179,12 @@ void AutofillAgent::ExtractForm(
       return;
     }
   }
-  WebDocument doc = unsafe_render_frame()->GetWebFrame()->GetDocument();
-  if (WebFormElement fe = FindFormByRendererId(doc, form_id); !fe.IsNull()) {
-    FormData form;
-    if (WebFormElementToFormData(fe, WebFormControlElement(),
-                                 field_data_manager(), extract_options, &form,
-                                 nullptr)) {
+  WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
+  if (WebFormElement form_element = FindFormByRendererId(document, form_id);
+      !form_element.IsNull()) {
+    if (std::optional<FormData> form = WebFormElementToFormData(
+            form_element, WebFormControlElement(), field_data_manager(),
+            extract_options, nullptr)) {
       std::move(callback).Run(std::move(form));
       return;
     }
