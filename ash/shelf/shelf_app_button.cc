@@ -553,28 +553,31 @@ gfx::ImageSkia ShelfAppButton::GetImage() const {
 
 gfx::ImageSkia ShelfAppButton::GetIconImage(float icon_scale) const {
   gfx::ImageSkia icon_image;
-  const ui::ImageModel& image_model = !fallback_icon_image_model_.IsEmpty()
-                                          ? fallback_icon_image_model_
-                                          : icon_image_model_;
 
-    auto* color_provider = GetColorProvider();
-    if (!color_provider) {
-      color_provider = shelf_view_->GetColorProvider();
-    }
-    if (image_model.IsImage()) {
-      icon_image = image_model.GetImage().AsImageSkia();
-    } else if (image_model.IsVectorIcon()) {
-      icon_image = ui::ThemedVectorIcon(image_model.GetVectorIcon())
-                       .GetImageSkia(color_provider);
-    }
-    const gfx::Size preferred_size =
-        GetPreferredIconSize(image_model, icon_scale);
-    if (icon_image.size() != preferred_size) {
-      icon_image = gfx::ImageSkiaOperations::CreateResizedImage(
-          icon_image, skia::ImageOperations::RESIZE_BEST, preferred_size);
-    }
+  bool use_fallback_icon =
+      force_fallback_icon_ || !fallback_icon_image_model_.IsEmpty();
 
-  if (is_promise_app_ || force_fallback_icon_) {
+  const ui::ImageModel& image_model =
+      use_fallback_icon ? fallback_icon_image_model_ : icon_image_model_;
+
+  auto* color_provider = GetColorProvider();
+  if (!color_provider) {
+    color_provider = shelf_view_->GetColorProvider();
+  }
+  if (image_model.IsImage()) {
+    icon_image = image_model.GetImage().AsImageSkia();
+  } else if (image_model.IsVectorIcon()) {
+    icon_image = ui::ThemedVectorIcon(image_model.GetVectorIcon())
+                     .GetImageSkia(color_provider);
+  }
+  const gfx::Size preferred_size =
+      GetPreferredIconSize(image_model, icon_scale);
+  if (icon_image.size() != preferred_size) {
+    icon_image = gfx::ImageSkiaOperations::CreateResizedImage(
+        icon_image, skia::ImageOperations::RESIZE_BEST, preferred_size);
+  }
+
+  if (is_promise_app_ || use_fallback_icon) {
     icon_image = gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
         preferred_size.width(), icon_image);
   }
