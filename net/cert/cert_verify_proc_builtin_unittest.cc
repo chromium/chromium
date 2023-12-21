@@ -211,7 +211,8 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     auto mock_system_trust_store = std::make_unique<MockSystemTrustStore>();
     mock_system_trust_store_ = mock_system_trust_store.get();
     CertVerifyProc::InstanceParams instance_params;
-    instance_params.additional_trust_anchors = additional_trust_anchors;
+    instance_params.additional_trust_anchors =
+        net::x509_util::ParseAllCerts(additional_trust_anchors);
     std::vector<std::vector<uint8_t>> distrusted_spkis;
     for (const auto& x509_cert : additional_distrusted_certificates) {
       std::shared_ptr<const bssl::ParsedCertificate> cert =

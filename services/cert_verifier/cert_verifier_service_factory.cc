@@ -23,6 +23,7 @@
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/x509_util.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
 #include "services/cert_verifier/cert_verifier_service.h"
@@ -68,10 +69,11 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
   // Populate initial instance params from creation params.
   net::CertVerifyProc::InstanceParams instance_params;
   if (creation_params->initial_additional_certificates) {
-    instance_params.additional_trust_anchors =
-        creation_params->initial_additional_certificates->trust_anchors;
+    instance_params.additional_trust_anchors = net::x509_util::ParseAllCerts(
+        creation_params->initial_additional_certificates->trust_anchors);
     instance_params.additional_untrusted_authorities =
-        creation_params->initial_additional_certificates->all_certificates;
+        net::x509_util::ParseAllCerts(
+            creation_params->initial_additional_certificates->all_certificates);
     instance_params.additional_distrusted_spkis =
         creation_params->initial_additional_certificates->distrusted_spkis;
   }

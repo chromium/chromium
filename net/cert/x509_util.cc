@@ -167,6 +167,22 @@ bool AddName(CBB* cbb, base::StringPiece name) {
   return true;
 }
 
+bssl::ParsedCertificateList ParseAllCerts(
+    const net::CertificateList x509_certs) {
+  bssl::ParsedCertificateList parsed_certs;
+  for (const auto& x509_cert : x509_certs) {
+    std::shared_ptr<const bssl::ParsedCertificate> cert =
+        bssl::ParsedCertificate::Create(
+            bssl::UpRef(x509_cert->cert_buffer()),
+            net::x509_util::DefaultParseCertificateOptions(), NULL);
+    if (cert) {
+      parsed_certs.push_back(std::move(cert));
+    }
+  }
+
+  return parsed_certs;
+}
+
 bool CBBAddTime(CBB* cbb, base::Time time) {
   bssl::der::GeneralizedTime generalized_time;
   if (!EncodeTimeAsGeneralizedTime(time, &generalized_time)) {

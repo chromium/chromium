@@ -544,37 +544,29 @@ CertVerifyProcBuiltin::CertVerifyProcBuiltin(
     });
   }
 
-  // Parse the additional certificates and setup trust store.
-  for (const auto& x509_cert : instance_params.additional_trust_anchors) {
+  for (const auto& cert : instance_params.additional_trust_anchors) {
     bssl::CertErrors parsing_errors;
-    std::shared_ptr<const bssl::ParsedCertificate> cert =
-        ParseCertificateFromBuffer(x509_cert->cert_buffer(), &parsing_errors);
-    if (cert) {
-      additional_trust_store_.AddTrustAnchor(std::move(cert));
-    }
+    additional_trust_store_.AddTrustAnchor(std::move(cert));
     net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_CERT, [&] {
-      return NetLogAdditionalCert(x509_cert->cert_buffer(),
+      return NetLogAdditionalCert(cert->cert_buffer(),
                                   bssl::CertificateTrust::ForTrustAnchor(),
                                   parsing_errors);
     });
   }
 
-  for (const auto& x509_cert :
-       instance_params.additional_untrusted_authorities) {
+  for (const auto& cert : instance_params.additional_untrusted_authorities) {
     bssl::CertErrors parsing_errors;
-    std::shared_ptr<const bssl::ParsedCertificate> cert =
-        ParseCertificateFromBuffer(x509_cert->cert_buffer(), &parsing_errors);
     // Only add the untrusted cert if it isn't already present in
     // `additional_trust_store_`. If the same cert was already added as a
     // trust anchor then adding it again as an untrusted cert can lead to it
     // not being treated as a trust anchor since TrustStoreInMemory doesn't
     // expect to contain duplicates.
-    if (cert && !additional_trust_store_.Contains(cert.get())) {
+    if (!additional_trust_store_.Contains(cert.get())) {
       additional_trust_store_.AddCertificateWithUnspecifiedTrust(
           std::move(cert));
     }
     net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_CERT, [&] {
-      return NetLogAdditionalCert(x509_cert->cert_buffer(),
+      return NetLogAdditionalCert(cert->cert_buffer(),
                                   bssl::CertificateTrust::ForUnspecified(),
                                   parsing_errors);
     });

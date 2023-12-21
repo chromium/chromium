@@ -11,6 +11,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/x509_util.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
@@ -133,9 +134,9 @@ void CertVerifierServiceImpl::EnableNetworkAccess(
 void CertVerifierServiceImpl::UpdateAdditionalCertificates(
     mojom::AdditionalCertificatesPtr additional_certificates) {
   instance_params_.additional_trust_anchors =
-      additional_certificates->trust_anchors;
+      net::x509_util::ParseAllCerts(additional_certificates->trust_anchors);
   instance_params_.additional_untrusted_authorities =
-      additional_certificates->all_certificates;
+      net::x509_util::ParseAllCerts(additional_certificates->all_certificates);
   instance_params_.additional_distrusted_spkis =
       additional_certificates->distrusted_spkis;
 
