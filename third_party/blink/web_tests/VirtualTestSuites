@@ -1066,7 +1066,7 @@
     ],
     "args": ["--disable-features=DOMPartsAPI",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Feb 1, 2024"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "details-styling-disabled",
