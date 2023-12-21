@@ -15,7 +15,7 @@ import {getTemplate} from './emoji_group.html.js';
 import {EmojiImageComponent} from './emoji_image.js';
 import {EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {createCustomEvent, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_IMG_BUTTON_CLICK, EMOJI_TEXT_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN, EmojiClearRecentClickEvent, EmojiTextButtonClickEvent} from './events.js';
-import {CategoryEnum, EmojiVariants} from './types.js';
+import {CategoryEnum, EmojiVariants, PreferenceMapping} from './types.js';
 
 // Note - grid-layout and flex-layout names are used directly in CSS.
 export enum EmojiGroupLayoutType {
@@ -75,7 +75,7 @@ export class EmojiGroupComponent extends PolymerElement {
   }
   data: EmojiVariants[];
   group: string|null;
-  preferred: {[index: string]: string};
+  preferred: PreferenceMapping;
   clearable: boolean;
   category: CategoryEnum;
   layoutType: string|null;

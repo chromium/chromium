@@ -27,6 +27,8 @@ export enum Gender {
 
 // LINT.ThenChange(//chromeos/ash/components/emoji/tools/emoji_data.py)
 
+export type PreferenceMapping = Record<string, string>;
+
 export interface CategoryData {
   name: CategoryEnum;
   icon: string;
@@ -93,7 +95,7 @@ export interface EmojiGroupElement {
   active: boolean;
   disabled: boolean;
   pagination?: number;
-  preferences: {[index: string]: string};
+  preferences: PreferenceMapping;
   isHistory: boolean;
 }
 

@@ -4,7 +4,7 @@
 
 import {EmojiPickerApiProxy} from 'emoji_picker_api_proxy.js';
 
-import {CategoryEnum, EmojiVariants, VisualContent} from './types.js';
+import {CategoryEnum, EmojiVariants, PreferenceMapping, VisualContent} from './types.js';
 
 const MAX_RECENTS = 10;
 
@@ -58,7 +58,7 @@ class Store<T> {
 
 interface RecentlyUsed {
   history: EmojiVariants[];
-  preference: {[index: string]: string};
+  preference: PreferenceMapping;
 }
 
 export class RecentlyUsedStore {
@@ -103,7 +103,7 @@ export class RecentlyUsedStore {
     return this.store.data.history.length === 0;
   }
 
-  getPreferenceMapping(): {[index: string]: string} {
+  getPreferenceMapping(): PreferenceMapping {
     return this.store.data.preference;
   }
 

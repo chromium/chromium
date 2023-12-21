@@ -20,16 +20,16 @@ import {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_ico
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './app.html.js';
 import * as constants from './constants.js';
 import {EmojiGroupComponent} from './emoji_group.js';
-import {getTemplate} from './app.html.js';
 import {Feature, Status} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {EmojiSearch} from './emoji_search.js';
 import * as events from './events.js';
 import {CATEGORY_METADATA, CATEGORY_TABS, EMOJI_GROUP_TABS, GIF_CATEGORY_METADATA, gifCategoryTabs, SUBCATEGORY_TABS, TABS_CATEGORY_START_INDEX, TABS_CATEGORY_START_INDEX_GIF_SUPPORT} from './metadata_extension.js';
 import {GifNudgeHistoryStore, RecentlyUsedStore} from './store.js';
-import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, GifSubcategoryData, SubcategoryData, VisualContent} from './types.js';
+import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, GifSubcategoryData, PreferenceMapping, SubcategoryData, VisualContent} from './types.js';
 
 export interface EmojiPickerApp {
   $: {
@@ -1297,7 +1297,7 @@ export class EmojiPickerApp extends PolymerElement {
    * Create an instance of emoji group element.
    */
   private createEmojiGroupElement(
-      emoji: EmojiVariants[], preferences: {[index: string]: string},
+      emoji: EmojiVariants[], preferences: PreferenceMapping,
       isHistory: boolean, subcategoryIndex: number): EmojiGroupElement {
     const baseDetails = {
       'emoji': emoji,
@@ -1313,8 +1313,7 @@ export class EmojiPickerApp extends PolymerElement {
    * Gets preferences for an emoji group.
    *
    */
-  private getEmojiGroupPreference(category: CategoryEnum):
-      {[index: string]: string} {
+  private getEmojiGroupPreference(category: CategoryEnum): PreferenceMapping {
     return this.incognito ? {} :
                             // ! is safe as categories history must contain
                             // entries for all categories.
