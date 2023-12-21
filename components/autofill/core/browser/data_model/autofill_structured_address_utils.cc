@@ -238,15 +238,15 @@ std::string NoCapturePattern(const std::string& pattern,
   std::string quantifier;
   switch (options.quantifier) {
     // Makes the match optional.
-    case MATCH_OPTIONAL:
+    case MatchQuantifier::kOptional:
       quantifier = "?";
       break;
     // Makes the match lazy meaning that it is avoided if possible.
-    case MATCH_LAZY_OPTIONAL:
+    case MatchQuantifier::kLazyOptional:
       quantifier = "??";
       break;
     // Makes the match required.
-    case MATCH_REQUIRED:
+    case MatchQuantifier::kRequired:
       quantifier = "";
   }
 
@@ -264,15 +264,15 @@ std::string CaptureTypeWithAffixedPattern(const FieldType& type,
   std::string quantifier;
   switch (options.quantifier) {
     // Makes the match optional.
-    case MATCH_OPTIONAL:
+    case MatchQuantifier::kOptional:
       quantifier = "?";
       break;
     // Makes the match lazy meaning that it is avoided if possible.
-    case MATCH_LAZY_OPTIONAL:
+    case MatchQuantifier::kLazyOptional:
       quantifier = "??";
       break;
     // Makes the match required.
-    case MATCH_REQUIRED:
+    case MatchQuantifier::kRequired:
       quantifier = "";
   }
 

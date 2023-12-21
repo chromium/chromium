@@ -35,14 +35,14 @@ struct AddressToken {
 enum class RegEx;
 
 // Enum to express the few quantifiers needed to parse values.
-enum MatchQuantifier {
+enum class MatchQuantifier {
   // The capture group is required.
-  MATCH_REQUIRED,
+  kRequired,
   // The capture group is optional.
-  MATCH_OPTIONAL,
+  kOptional,
   // The capture group is lazy optional meaning that it is avoided if an overall
   // match is possible.
-  MATCH_LAZY_OPTIONAL,
+  kLazyOptional,
 };
 
 // The result status of comparing two sets of sorted tokens.
@@ -91,7 +91,7 @@ struct CaptureOptions {
   // empty.
   std::string separator = ",|\\s+|$";
   // Indicates if the group is required, optional or even lazy optional.
-  MatchQuantifier quantifier = MATCH_REQUIRED;
+  MatchQuantifier quantifier = MatchQuantifier::kRequired;
 };
 
 // Returns true if honorific prefixes are enabled.
