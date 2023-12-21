@@ -10,7 +10,7 @@ import { Button } from './button.js';
  * An elevated button component.
  */
 export class ElevatedButton extends Button {
-    renderElevation() {
+    renderElevationOrOutline() {
         return html `<md-elevation></md-elevation>`;
     }
 }

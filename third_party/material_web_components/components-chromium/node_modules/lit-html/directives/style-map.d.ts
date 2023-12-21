@@ -16,7 +16,7 @@ export interface StyleInfo {
     [name: string]: string | number | undefined | null;
 }
 declare class StyleMapDirective extends Directive {
-    _previousStyleProperties?: Set<string>;
+    private _previousStyleProperties?;
     constructor(partInfo: PartInfo);
     render(styleInfo: Readonly<StyleInfo>): string;
     update(part: AttributePart, [styleInfo]: DirectiveParameters<this>): string | typeof noChange;

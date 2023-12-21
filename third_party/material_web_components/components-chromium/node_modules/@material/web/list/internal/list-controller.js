@@ -3,7 +3,7 @@
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { activateFirstItem, activateLastItem, activateNextItem, activatePreviousItem, getActiveItem, getFirstActivatableItem } from './list-navigation-helpers.js';
+import { activateFirstItem, activateLastItem, activateNextItem, activatePreviousItem, getActiveItem, getFirstActivatableItem, } from './list-navigation-helpers.js';
 // TODO: move this file to List and make List use this
 /**
  * Default keys that trigger navigation.
@@ -43,8 +43,12 @@ export class ListController {
             }
             event.preventDefault();
             const isRtl = this.isRtl();
-            const inlinePrevious = isRtl ? NavigableKeys.ArrowRight : NavigableKeys.ArrowLeft;
-            const inlineNext = isRtl ? NavigableKeys.ArrowLeft : NavigableKeys.ArrowRight;
+            const inlinePrevious = isRtl
+                ? NavigableKeys.ArrowRight
+                : NavigableKeys.ArrowLeft;
+            const inlineNext = isRtl
+                ? NavigableKeys.ArrowLeft
+                : NavigableKeys.ArrowRight;
             switch (key) {
                 // Activate the next item
                 case NavigableKeys.ArrowDown:

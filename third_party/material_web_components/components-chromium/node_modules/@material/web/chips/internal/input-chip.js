@@ -10,6 +10,8 @@ import { MultiActionChip } from './multi-action-chip.js';
 import { renderRemoveButton } from './trailing-icons.js';
 /**
  * An input chip component.
+ *
+ * @fires remove {Event} Dispatched when the remove button is clicked.
  */
 export class InputChip extends MultiActionChip {
     constructor() {
@@ -56,12 +58,14 @@ export class InputChip extends MultiActionChip {
         const { ariaLabel } = this;
         if (this.href) {
             return html `
-        <a class="primary action"
+        <a
+          class="primary action"
           id="link"
           aria-label=${ariaLabel || nothing}
           href=${this.href}
           target=${this.target || nothing}
-        >${content}</a>
+          >${content}</a
+        >
       `;
         }
         if (this.removeOnly) {
@@ -72,12 +76,14 @@ export class InputChip extends MultiActionChip {
       `;
         }
         return html `
-      <button class="primary action"
+      <button
+        class="primary action"
         id="button"
         aria-label=${ariaLabel || nothing}
         ?disabled=${this.disabled && !this.alwaysFocusable}
         type="button"
-      >${content}</button>
+        >${content}</button
+      >
     `;
     }
     renderTrailingAction(focusListener) {

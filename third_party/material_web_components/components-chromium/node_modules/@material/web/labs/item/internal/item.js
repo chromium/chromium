@@ -26,14 +26,14 @@ export class Item extends LitElement {
       <slot name="container"></slot>
       <slot class="non-text" name="start"></slot>
       <div class="text">
-        <slot name="overline"
-            @slotchange=${this.handleTextSlotChange}></slot>
-        <slot class="default-slot"
-            @slotchange=${this.handleTextSlotChange}></slot>
-        <slot name="headline"
-            @slotchange=${this.handleTextSlotChange}></slot>
-        <slot name="supporting-text"
-            @slotchange=${this.handleTextSlotChange}></slot>
+        <slot name="overline" @slotchange=${this.handleTextSlotChange}></slot>
+        <slot
+          class="default-slot"
+          @slotchange=${this.handleTextSlotChange}></slot>
+        <slot name="headline" @slotchange=${this.handleTextSlotChange}></slot>
+        <slot
+          name="supporting-text"
+          @slotchange=${this.handleTextSlotChange}></slot>
       </div>
       <slot class="non-text" name="trailing-supporting-text"></slot>
       <slot class="non-text" name="end"></slot>

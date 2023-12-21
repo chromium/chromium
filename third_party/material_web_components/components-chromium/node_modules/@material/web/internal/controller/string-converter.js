@@ -9,6 +9,6 @@ export const stringConverter = {
     },
     toAttribute(value) {
         return value || null;
-    }
+    },
 };
 //# sourceMappingURL=string-converter.js.map

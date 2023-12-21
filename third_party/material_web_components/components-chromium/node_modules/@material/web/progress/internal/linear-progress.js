@@ -15,7 +15,7 @@ export class LinearProgress extends Progress {
     constructor() {
         super(...arguments);
         /**
-         * Buffer amount to display, a fraction between 0 and 1.
+         * Buffer amount to display, a fraction between 0 and `max`.
          */
         this.buffer = 1;
     }
@@ -24,10 +24,10 @@ export class LinearProgress extends Progress {
     // due to a now fixed Chrome bug: crbug.com/389359.
     renderIndicator() {
         const progressStyles = {
-            transform: `scaleX(${(this.indeterminate ? 1 : this.value / this.max) * 100}%)`
+            transform: `scaleX(${(this.indeterminate ? 1 : this.value / this.max) * 100}%)`,
         };
         const dotStyles = {
-            transform: `scaleX(${(this.indeterminate ? 1 : this.buffer / this.max) * 100}%)`
+            transform: `scaleX(${(this.indeterminate ? 1 : this.buffer / this.max) * 100}%)`,
         };
         return html `
       <div class="dots"></div>

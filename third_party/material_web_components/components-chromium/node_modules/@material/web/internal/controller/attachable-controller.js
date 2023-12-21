@@ -16,12 +16,11 @@ if (!isServer) {
      * `Attachable` elements. If the `for` attribute changes, the controller will
      * re-attach to the new referenced element.
      */
-    FOR_ATTRIBUTE_OBSERVER = new MutationObserver(records => {
+    FOR_ATTRIBUTE_OBSERVER = new MutationObserver((records) => {
         for (const record of records) {
             // When a control's `for` attribute changes, inform its
             // `AttachableController` to update to a new control.
-            record.target[ATTACHABLE_CONTROLLER]
-                ?.hostConnected();
+            record.target[ATTACHABLE_CONTROLLER]?.hostConnected();
         }
     });
 }
@@ -63,8 +62,7 @@ export class AttachableController {
             if (!this.htmlFor || !this.host.isConnected) {
                 return null;
             }
-            return this.host.getRootNode()
-                .querySelector(`#${this.htmlFor}`);
+            return this.host.getRootNode().querySelector(`#${this.htmlFor}`);
         }
         return this.currentControl || this.host.parentElement;
     }

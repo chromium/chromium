@@ -41,11 +41,11 @@ export function requestUpdateOnAriaChange(ctor) {
             reflect: true,
         });
     }
-    ctor.addInitializer(element => {
+    ctor.addInitializer((element) => {
         const controller = {
             hostConnected() {
                 element.setAttribute('role', 'presentation');
-            }
+            },
         };
         element.addController(controller);
     });

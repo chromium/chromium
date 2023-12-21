@@ -33,7 +33,11 @@ import { styles as sharedStyles } from './internal/shared-styles.css.js';
  */
 export let MdElevatedButton = class MdElevatedButton extends ElevatedButton {
 };
-MdElevatedButton.styles = [sharedStyles, sharedElevationStyles, elevatedStyles];
+MdElevatedButton.styles = [
+    sharedStyles,
+    sharedElevationStyles,
+    elevatedStyles,
+];
 MdElevatedButton = __decorate([
     customElement('md-elevated-button')
 ], MdElevatedButton);

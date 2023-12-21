@@ -10,7 +10,7 @@ import { Button } from './button.js';
  * A filled tonal button component.
  */
 export class FilledTonalButton extends Button {
-    renderElevation() {
+    renderElevationOrOutline() {
         return html `<md-elevation></md-elevation>`;
     }
 }

@@ -5,7 +5,7 @@
  */
 import { ChildPart, noChange } from '../lit-html.js';
 import { AsyncDirective, DirectiveParameters } from '../async-directive.js';
-declare type Mapper<T> = (v: T, index?: number) => unknown;
+type Mapper<T> = (v: T, index?: number) => unknown;
 export declare class AsyncReplaceDirective extends AsyncDirective {
     private __value?;
     private __weakThis;

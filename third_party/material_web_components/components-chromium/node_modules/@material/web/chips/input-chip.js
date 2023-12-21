@@ -18,7 +18,12 @@ import { styles as trailingIconStyles } from './internal/trailing-icon-styles.cs
  */
 export let MdInputChip = class MdInputChip extends InputChip {
 };
-MdInputChip.styles = [sharedStyles, trailingIconStyles, selectableStyles, styles];
+MdInputChip.styles = [
+    sharedStyles,
+    trailingIconStyles,
+    selectableStyles,
+    styles,
+];
 MdInputChip = __decorate([
     customElement('md-input-chip')
 ], MdInputChip);

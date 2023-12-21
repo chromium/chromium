@@ -11,6 +11,9 @@ import { requestUpdateOnAriaChange } from '../../../internal/aria/delegate.js';
 import { isRtl } from '../../../internal/controller/is-rtl.js';
 /**
  * TODO(b/265346501): add docs
+ *
+ * @fires navigation-bar-activated {CustomEvent<tab: NavigationTab, activeIndex: number>}
+ * Dispatched whenever the `activeIndex` changes. --bubbles --composed
  */
 export class NavigationBar extends LitElement {
     constructor() {
@@ -22,23 +25,27 @@ export class NavigationBar extends LitElement {
     render() {
         // Needed for closure conformance
         const { ariaLabel } = this;
-        return html `<div class="md3-navigation-bar"
-            role="tablist"
-            aria-label=${ariaLabel || nothing}
-            @keydown="${this.handleKeydown}"
-            @navigation-tab-interaction="${this.handleNavigationTabInteraction}"
-            @navigation-tab-rendered=${this.handleNavigationTabConnected}
-          ><md-elevation></md-elevation
-          ><div class="md3-navigation-bar__tabs-slot-container"
-        ><slot></slot></div></div>`;
+        return html `<div
+      class="md3-navigation-bar"
+      role="tablist"
+      aria-label=${ariaLabel || nothing}
+      @keydown="${this.handleKeydown}"
+      @navigation-tab-interaction="${this.handleNavigationTabInteraction}"
+      @navigation-tab-rendered=${this.handleNavigationTabConnected}
+      ><md-elevation></md-elevation
+      ><div class="md3-navigation-bar__tabs-slot-container"><slot></slot></div
+    ></div>`;
     }
     updated(changedProperties) {
         if (changedProperties.has('activeIndex')) {
             this.onActiveIndexChange(this.activeIndex);
             this.dispatchEvent(new CustomEvent('navigation-bar-activated', {
-                detail: { tab: this.tabs[this.activeIndex], activeIndex: this.activeIndex },
+                detail: {
+                    tab: this.tabs[this.activeIndex],
+                    activeIndex: this.activeIndex,
+                },
                 bubbles: true,
-                composed: true
+                composed: true,
             }));
         }
         if (changedProperties.has('hideInactiveLabels')) {

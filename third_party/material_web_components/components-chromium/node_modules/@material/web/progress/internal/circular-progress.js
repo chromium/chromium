@@ -24,7 +24,9 @@ export class CircularProgress extends Progress {
         return html `
       <svg viewBox="0 0 4800 4800">
         <circle class="track" pathLength="100"></circle>
-        <circle class="active-track" pathLength="100"
+        <circle
+          class="active-track"
+          pathLength="100"
           stroke-dashoffset=${dashOffset}></circle>
       </svg>
     `;
@@ -35,15 +37,14 @@ export class CircularProgress extends Progress {
     // This approach has 4.5x the FPS of rendering via svg on Chrome 111.
     // See https://lit.dev/playground/#gist=febb773565272f75408ab06a0eb49746.
     renderIndeterminateContainer() {
-        return html `
-      <div class="spinner">
-        <div class="left">
-          <div class="circle"></div>
-        </div>
-        <div class="right">
-          <div class="circle"></div>
-        </div>
-      </div>`;
+        return html ` <div class="spinner">
+      <div class="left">
+        <div class="circle"></div>
+      </div>
+      <div class="right">
+        <div class="circle"></div>
+      </div>
+    </div>`;
     }
 }
 //# sourceMappingURL=circular-progress.js.map

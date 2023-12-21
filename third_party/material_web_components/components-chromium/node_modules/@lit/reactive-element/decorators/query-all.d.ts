@@ -3,7 +3,12 @@
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-import { ReactiveElement } from '../reactive-element.js';
+import type { ReactiveElement } from '../reactive-element.js';
+import { type Interface } from './base.js';
+export type QueryAllDecorator = {
+    (proto: Interface<ReactiveElement>, name: PropertyKey, descriptor?: PropertyDescriptor): void | any;
+    <C extends Interface<ReactiveElement>, V extends NodeList>(value: ClassAccessorDecoratorTarget<C, V>, context: ClassAccessorDecoratorContext<C, V>): ClassAccessorDecoratorResult<C, V>;
+};
 /**
  * A property decorator that converts a class property into a getter
  * that executes a querySelectorAll on the element's renderRoot.
@@ -28,5 +33,5 @@ import { ReactiveElement } from '../reactive-element.js';
  * ```
  * @category Decorator
  */
-export declare function queryAll(selector: string): (protoOrDescriptor: import("./base.js").ClassElement | import("./base.js").Interface<ReactiveElement>, name?: PropertyKey | undefined) => any;
+export declare function queryAll(selector: string): QueryAllDecorator;
 //# sourceMappingURL=query-all.d.ts.map

@@ -6,5 +6,4 @@
 export * from '@lit/reactive-element';
 export * from 'lit-html';
 export * from './lit-element.js';
-export * from './decorators.js';
 //# sourceMappingURL=index.d.ts.map

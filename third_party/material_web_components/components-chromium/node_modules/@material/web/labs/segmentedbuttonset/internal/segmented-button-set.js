@@ -11,6 +11,11 @@ import { requestUpdateOnAriaChange } from '../../../internal/aria/delegate.js';
  * SegmentedButtonSet is the parent component for two or more
  * `SegmentedButton` components. **Only** `SegmentedButton` components may be
  * used as children.
+ *
+ * @fires segmented-button-set-selection {CustomEvent<{button: SegmentedButton, selected: boolean, index: number}>}
+ * Dispatched when a button is selected programattically with the
+ * `setButtonSelected` or the `toggleSelection` methods as well as on user
+ * interaction. --bubbles --composed
  */
 export class SegmentedButtonSet extends LitElement {
     constructor() {
@@ -76,21 +81,21 @@ export class SegmentedButtonSet extends LitElement {
                 index,
             },
             bubbles: true,
-            composed: true
+            composed: true,
         }));
     }
     render() {
         // Needed for closure conformance
         const { ariaLabel } = this;
         return html `
-     <span
-       role="group"
-       @segmented-button-interaction="${this.handleSegmentedButtonInteraction}"
-       aria-label=${ariaLabel || nothing}
-       class="md3-segmented-button-set">
-       <slot></slot>
-     </span>
-     `;
+      <span
+        role="group"
+        @segmented-button-interaction="${this.handleSegmentedButtonInteraction}"
+        aria-label=${ariaLabel || nothing}
+        class="md3-segmented-button-set">
+        <slot></slot>
+      </span>
+    `;
     }
     getRenderClasses() {
         return {};
