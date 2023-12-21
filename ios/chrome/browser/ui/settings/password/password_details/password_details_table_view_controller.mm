@@ -1513,6 +1513,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   [self.handler dismissPasswordDetailsTableViewController];
 }
 
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
 #pragma mark - UIResponder
 
 - (BOOL)canBecomeFirstResponder {
@@ -1525,6 +1526,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   }
   return NO;
 }
+#endif
 
 #pragma mark - Metrics
 
