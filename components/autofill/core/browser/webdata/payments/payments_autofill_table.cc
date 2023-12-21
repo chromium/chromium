@@ -1400,12 +1400,13 @@ bool PaymentsAutofillTable::RemoveServerIbanMetadata(const std::string& instrume
   return db_->GetLastChangeCount() > 0;
 }
 
-std::vector<AutofillMetadata> PaymentsAutofillTable::GetServerIbansMetadata() const {
+bool PaymentsAutofillTable::GetServerIbansMetadata(
+    std::vector<AutofillMetadata>& ibans_metadata) const {
+  ibans_metadata.clear();
   sql::Statement s;
   SelectBuilder(db_, s, kMaskedIbansMetadataTable,
                 {kInstrumentId, kUseCount, kUseDate});
 
-  std::vector<AutofillMetadata> ibans_metadata;
   while (s.Step()) {
     int index = 0;
     AutofillMetadata iban_metadata;
@@ -1415,7 +1416,7 @@ std::vector<AutofillMetadata> PaymentsAutofillTable::GetServerIbansMetadata() co
         base::Time::FromInternalValue(s.ColumnInt64(index++));
     ibans_metadata.push_back(iban_metadata);
   }
-  return ibans_metadata;
+  return s.Succeeded();
 }
 
 void PaymentsAutofillTable::SetServerCardsData(
