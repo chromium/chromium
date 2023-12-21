@@ -2,31 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://os-feedback/search_page.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {fakeEmptySearchResponse, fakeFeedbackContext, fakeInternalUserFeedbackContext, fakeLoginFlowFeedbackContext, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
-import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
+import {FeedbackFlowButtonClickEvent, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
-import {SearchResponse} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
 import {domainQuestions, questionnaireBegin} from 'chrome://os-feedback/questionnaire.js';
 import {OS_FEEDBACK_UNTRUSTED_ORIGIN, SearchPageElement} from 'chrome://os-feedback/search_page.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
-import {eventToPromise, isVisible} from '../test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('searchPageTestSuite', () => {
-  /** @type {?SearchPageElement} */
-  let page = null;
+  let page: SearchPageElement;
 
-  /** @type {?FakeHelpContentProvider} */
-  let provider = null;
+  let provider: FakeHelpContentProvider;
 
   setup(() => {
-    document.body.innerHTML = trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Create provider.
     provider = new FakeHelpContentProvider();
     // Setup search response.
@@ -35,18 +34,10 @@ suite('searchPageTestSuite', () => {
     setHelpContentProviderForTesting(provider);
   });
 
-  teardown(() => {
-    page.remove();
-    page = null;
-    provider = null;
-  });
-
   function initializePage() {
-    assertFalse(!!page);
-    page =
-        /** @type {!SearchPageElement} */ (
-            document.createElement('search-page'));
+    page = document.createElement('search-page');
     assertTrue(!!page);
+    page.feedbackContext = fakeFeedbackContext;
     document.body.appendChild(page);
 
     // Fire search immediately for input change.
@@ -56,26 +47,17 @@ suite('searchPageTestSuite', () => {
   }
 
   /**
-   * @param {string} selector
-   * @returns {!Element}
-   */
-  function getElement(selector) {
-    const element = page.shadowRoot.querySelector(selector);
-    assertTrue(!!element);
-    return /** @type {!Element} */ (element);
-  }
-
-  /**
    * Test that expected html elements are in the page after loaded.
    */
   test('SearchPageLoaded', async () => {
     await initializePage();
     // Verify the title is in the page.
-    const title = page.shadowRoot.querySelector('.page-title');
-    assertEquals('Send feedback', title.textContent.trim());
+    const title = strictQuery('.page-title', page!.shadowRoot, HTMLElement);
+    assertEquals('Send feedback', title.textContent!.trim());
 
     // Verify the iframe is in the page.
-    const untrustedFrame = getElement('iframe');
+    const untrustedFrame =
+        strictQuery('iframe', page!.shadowRoot, HTMLIFrameElement);
     assertEquals(
         'chrome-untrusted://os-feedback/untrusted_index.html',
         untrustedFrame.src);
@@ -83,16 +65,20 @@ suite('searchPageTestSuite', () => {
     // Focus is set after the iframe is loaded.
     await eventToPromise('load', untrustedFrame);
     // Verify the description input is focused.
-    assertEquals(getElement('textarea'), getDeepActiveElement());
+    assertEquals(
+        strictQuery('textarea', page!.shadowRoot, HTMLTextAreaElement),
+        getDeepActiveElement());
 
     // Verify the descriptionTitle is in the page.
-    const descriptionTitle = getElement('#descriptionTitle');
-    assertEquals('Description', descriptionTitle.textContent.trim());
+    const descriptionTitle =
+        strictQuery('#descriptionTitle', page!.shadowRoot, HTMLElement);
+    assertEquals('Description', descriptionTitle.textContent!.trim());
 
     // Verify the feedback writing guidance link is in the page.
-    const writingGuidanceLink = getElement('#feedbackWritingGuidance');
+    const writingGuidanceLink = strictQuery(
+        '#feedbackWritingGuidance', page!.shadowRoot, HTMLAnchorElement);
     assertEquals(
-        'Tips on writing feedback', writingGuidanceLink.textContent.trim());
+        'Tips on writing feedback', writingGuidanceLink.textContent!.trim());
     assertEquals('_blank', writingGuidanceLink.target);
     assertEquals(
         'https://support.google.com/chromebook/answer/2982029',
@@ -100,12 +86,13 @@ suite('searchPageTestSuite', () => {
 
     // Verify the help content is not in the page. For security reason, help
     // contents fetched online can't be displayed in trusted context.
-    const helpContent = page.shadowRoot.querySelector('help-content');
+    const helpContent = page!.shadowRoot!.querySelector('help-content');
     assertFalse(!!helpContent);
 
     // Verify the continue button is in the page.
-    const buttonContinue = getElement('#buttonContinue');
-    assertEquals('Continue', buttonContinue.textContent.trim());
+    const buttonContinue =
+        strictQuery('#buttonContinue', page!.shadowRoot, CrButtonElement);
+    assertEquals('Continue', buttonContinue.textContent!.trim());
   });
 
   /**
@@ -118,14 +105,12 @@ suite('searchPageTestSuite', () => {
    * - Case 3: When the text area is empty, search is NOT triggered.
    */
   test('HelpContentPopulated', async () => {
-    /** {?Element} */
-    let textAreaElement = null;
-
     await initializePage();
     // The 'input' event triggers a listener that checks for internal user
     // account, so we need to set up the context.
     page.feedbackContext = fakeFeedbackContext;
-    textAreaElement = getElement('#descriptionText');
+    const textAreaElement =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
     // Verify the textarea is empty and hint is showing.
     assertEquals('', textAreaElement.value);
     assertEquals(
@@ -142,7 +127,7 @@ suite('searchPageTestSuite', () => {
 
     await flushTasks();
     // Verify that getHelpContent() has been called with query 'abc'.
-    assertEquals('abc', provider.lastQuery);
+    assertEquals('abc', provider.getLastQuery());
     assertFalse(page.getIsPopularContentForTesting());
 
     // Enter 2 more characters. This should trigger another search.
@@ -152,7 +137,7 @@ suite('searchPageTestSuite', () => {
     await flushTasks();
     // Verify that getHelpContent() has been called with query
     // 'abc12'.
-    assertEquals('abc12', provider.lastQuery);
+    assertEquals('abc12', provider.getLastQuery());
 
     // Fire search after pausing typing for 10 seconds.
     page.searchTimoutInMs = 10000;
@@ -163,7 +148,7 @@ suite('searchPageTestSuite', () => {
     await flushTasks();
     // Verify that getHelpContent() has NOT been called with query
     // 'a'.
-    assertNotEquals('a', provider.lastQuery);
+    assertNotEquals('a', provider.getLastQuery());
 
     // Fire search immediately for input change.
     page.searchTimoutInMs = 0;
@@ -174,7 +159,7 @@ suite('searchPageTestSuite', () => {
 
     await flushTasks();
     // Verify that getHelpContent() has been called with query 'abc123'.
-    assertEquals('abc123', provider.lastQuery);
+    assertEquals('abc123', provider.getLastQuery());
     assertFalse(page.getIsPopularContentForTesting());
 
     // Remove all the text area characters. This should NOT trigger
@@ -185,16 +170,15 @@ suite('searchPageTestSuite', () => {
 
     // Verify that getHelpContent() is not called, and the help content
     // is the default popular content.
-    assertNotEquals('', provider.lastQuery);
+    assertNotEquals('', provider.getLastQuery());
     assertTrue(page.getIsPopularContentForTesting());
   });
 
   test('searchNotFired_on_oobeOrLogin', async () => {
-    /** {?Element} */
-    let textAreaElement = null;
     await initializePage();
     page.feedbackContext = fakeLoginFlowFeedbackContext;
-    textAreaElement = getElement('#descriptionText');
+    const textAreaElement =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
     const initCallCounts = provider.getHelpContentsCallCount();
 
     // Enter three chars.
@@ -217,14 +201,12 @@ suite('searchPageTestSuite', () => {
   });
 
   test('HelpContentSearchResultCountColdStart', async () => {
-    /** {?Element} */
-    let textAreaElement = null;
-
     await initializePage();
     // The 'input' event triggers a listener that checks for internal user
     // account, so we need to set up the context.
     page.feedbackContext = fakeFeedbackContext;
-    textAreaElement = getElement('#descriptionText');
+    const textAreaElement =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
     // Verify the textarea is empty now.
     assertEquals('', textAreaElement.value);
 
@@ -235,7 +217,7 @@ suite('searchPageTestSuite', () => {
     textAreaElement.dispatchEvent(new Event('input'));
     await flushTasks();
     // Verify that getHelpContent() has been called with query 'abc'.
-    assertEquals('abc', provider.lastQuery);
+    assertEquals('abc', provider.getLastQuery());
     // Search result count should be 5.
     assertEquals(5, page.getSearchResultCountForTesting());
 
@@ -251,7 +233,7 @@ suite('searchPageTestSuite', () => {
 
     // Verify that getHelpContent() has been called with query
     // longTextNoSearchResult.
-    assertEquals(longTextNoResult, provider.lastQuery);
+    assertEquals(longTextNoResult, provider.getLastQuery());
     // Search result count should be 0.
     assertEquals(0, page.getSearchResultCountForTesting());
     // Popular content should be displayed (i.e. isPopularContent = true).
@@ -263,14 +245,11 @@ suite('searchPageTestSuite', () => {
    * filtering but there were matches.
    */
   test('NoItemsReturnedButThereWereMatches', async () => {
-    /** {?Element} */
-    let textAreaElement = null;
-
     await initializePage();
     page.feedbackContext = fakeFeedbackContext;
-    textAreaElement = getElement('#descriptionText');
+    const textAreaElement =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
 
-    /** @type {!SearchResponse} */
     const fakeResponse = {
       results: [],  // None items returned after filtering out other languages.
       totalResults: 15,  // 15 matches.
@@ -282,7 +261,7 @@ suite('searchPageTestSuite', () => {
     textAreaElement.dispatchEvent(new Event('input'));
     await flushTasks();
     // Verify that getHelpContent() has been called with query 'abc'.
-    assertEquals('abc', provider.lastQuery);
+    assertEquals('abc', provider.getLastQuery());
     // Search result count should be 0.
     assertEquals(0, page.getSearchResultCountForTesting());
     // Popular content should be displayed (i.e. isPopularContent = true).
@@ -294,16 +273,13 @@ suite('searchPageTestSuite', () => {
    * results are ignored.
    */
   test('IgnoreOutOfOrderSearchResults', async () => {
-    /** {?Element} */
-    let textAreaElement = null;
-
     await initializePage();
     page.feedbackContext = fakeFeedbackContext;
-    textAreaElement = getElement('#descriptionText');
+    const textAreaElement =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
     await flushTasks();
 
-    const iframe = /** @type {!HTMLIFrameElement} */ (getElement('iframe'));
-    assertTrue(!!iframe);
+    const iframe = strictQuery('iframe', page!.shadowRoot, HTMLIFrameElement);
     // Wait for the iframe completes loading.
     await eventToPromise('load', iframe);
 
@@ -354,8 +330,7 @@ suite('searchPageTestSuite', () => {
 
     await initializePage();
 
-    const iframe = /** @type {!HTMLIFrameElement} */ (getElement('iframe'));
-    assertTrue(!!iframe);
+    const iframe = strictQuery('iframe', page!.shadowRoot, HTMLIFrameElement);
     // Wait for the iframe completes loading.
     await eventToPromise('load', iframe);
 
@@ -363,7 +338,7 @@ suite('searchPageTestSuite', () => {
     // the help content.
     const expectedMessageEventCount = 2;
     let messageEventCount = 0;
-    const resolver = new PromiseResolver();
+    const resolver = new PromiseResolver<void>();
 
     window.addEventListener('message', (event) => {
       if (OS_FEEDBACK_UNTRUSTED_ORIGIN === event.origin &&
@@ -382,7 +357,7 @@ suite('searchPageTestSuite', () => {
       isQueryEmpty: true,
       isPopularContent: true,
     };
-    iframe.contentWindow.postMessage(data, OS_FEEDBACK_UNTRUSTED_ORIGIN);
+    iframe.contentWindow!.postMessage(data, OS_FEEDBACK_UNTRUSTED_ORIGIN);
 
     // Wait for the "help-content-received" message has been received.
     await resolver.promise;
@@ -404,22 +379,25 @@ suite('searchPageTestSuite', () => {
     // account, so we need to set up the context.
     page.feedbackContext = fakeFeedbackContext;
 
-    const errorMsg = getElement('#emptyErrorContainer');
+    const errorMsg =
+        strictQuery('#emptyErrorContainer', page!.shadowRoot, HTMLElement);
     // Verify that the error message is hidden in the beginning.
     assertFalse(isVisible(errorMsg));
 
-    const textInput = getElement('#descriptionText');
+    const textInput =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
     assertTrue(textInput.value.length === 0);
     // Remove focus on the textarea.
     textInput.blur();
     assertNotEquals(getDeepActiveElement(), textInput);
 
-    const buttonContinue = getElement('#buttonContinue');
+    const buttonContinue =
+        strictQuery('#buttonContinue', page!.shadowRoot, CrButtonElement);
     buttonContinue.click();
 
     // Verify that the message is visible now.
     assertTrue(isVisible(errorMsg));
-    assertEquals('Description is required', errorMsg.textContent.trim());
+    assertEquals('Description is required', errorMsg.textContent!.trim());
     // Verify that the textarea received focus again.
     assertEquals(getDeepActiveElement(), textInput);
 
@@ -449,18 +427,20 @@ suite('searchPageTestSuite', () => {
   test('Continue', async () => {
     await initializePage();
 
-    const textInput = getElement('#descriptionText');
+    const textInput =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
     textInput.value = 'hello';
 
-    const clickPromise =
-        eventToPromise('continue-click', /** @type {!Element} */ (page));
+    const clickPromise = eventToPromise('continue-click', page);
     let actualCurrentState;
 
-    page.addEventListener('continue-click', (event) => {
-      actualCurrentState = event.detail.currentState;
-    });
+    page.addEventListener(
+        'continue-click', (event: FeedbackFlowButtonClickEvent) => {
+          actualCurrentState = event.detail.currentState;
+        });
 
-    const buttonContinue = getElement('#buttonContinue');
+    const buttonContinue =
+        strictQuery('#buttonContinue', page!.shadowRoot, CrButtonElement);
     buttonContinue.click();
 
     await clickPromise;
@@ -474,12 +454,15 @@ suite('searchPageTestSuite', () => {
    */
   test('HideHelpContentSection_oobe_or_login_screen', async () => {
     await initializePage();
-    assertTrue(isVisible(getElement('iframe')));
+    assertTrue(
+        isVisible(strictQuery('iframe', page!.shadowRoot, HTMLIFrameElement)));
     page.feedbackContext = fakeLoginFlowFeedbackContext;
     assertEquals('Login', page.feedbackContext.categoryTag);
 
-    assertFalse(isVisible(getElement('iframe')));
-    assertFalse(isVisible(getElement('#feedbackWritingGuidance')));
+    assertFalse(
+        isVisible(strictQuery('iframe', page!.shadowRoot, HTMLIFrameElement)));
+    assertFalse(isVisible(strictQuery(
+        '#feedbackWritingGuidance', page!.shadowRoot, HTMLAnchorElement)));
   });
 
   /**
@@ -491,18 +474,20 @@ suite('searchPageTestSuite', () => {
     page.feedbackContext = fakeFeedbackContext;
     assertEquals('MediaApp', page.feedbackContext.categoryTag);
 
-    assertTrue(isVisible(getElement('iframe')));
-    assertTrue(isVisible(getElement('#feedbackWritingGuidance')));
+    assertTrue(
+        isVisible(strictQuery('iframe', page!.shadowRoot, HTMLIFrameElement)));
+    assertTrue(isVisible(strictQuery(
+        '#feedbackWritingGuidance', page!.shadowRoot, HTMLAnchorElement)));
   });
 
   test('typingBluetoothWithInternalAccountShowsQuestionnaire', async () => {
-    let textAreaElement = null;
     await initializePage();
     // The questionnaire will be only shown if the account belongs to an
     // internal user.
     page.feedbackContext = fakeInternalUserFeedbackContext;
 
-    textAreaElement = getElement('#descriptionText');
+    const textAreaElement =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
     textAreaElement.value = 'My cat got a blue tooth because of ChromeOS.';
     // Setting the value of the textarea in code does not trigger the
     // input event. So we trigger it here.
@@ -518,13 +503,13 @@ suite('searchPageTestSuite', () => {
   });
 
   test('typingInternetWithInternalAccountShowsQuestionnaire', async () => {
-    let textAreaElement = null;
     await initializePage();
     // The questionnaire will be only shown if the account belongs to an
     // internal user.
     page.feedbackContext = fakeInternalUserFeedbackContext;
 
-    textAreaElement = getElement('#descriptionText');
+    const textAreaElement =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
     textAreaElement.value = 'The entire Internet is down.';
     // Setting the value of the textarea in code does not trigger the
     // input event. So we trigger it here.
@@ -540,13 +525,13 @@ suite('searchPageTestSuite', () => {
   });
 
   test('typing5GWithInternalAccountShowsQuestionnaire', async () => {
-    let textAreaElement = null;
     await initializePage();
     // The questionnaire will be only shown if the account belongs to an
     // internal user.
     page.feedbackContext = fakeInternalUserFeedbackContext;
 
-    textAreaElement = getElement('#descriptionText');
+    const textAreaElement =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
     textAreaElement.value = 'These 5G towers control my mind.';
     // Setting the value of the textarea in code does not trigger the
     // input event. So we trigger it here.
@@ -562,13 +547,13 @@ suite('searchPageTestSuite', () => {
   });
 
   test('typingDisplayWithInternalAccountShowsQuestionnaire', async () => {
-    let textAreaElement = null;
     await initializePage();
     // The questionnaire will be only shown if the account belongs to an
     // internal user.
     page.feedbackContext = fakeInternalUserFeedbackContext;
 
-    textAreaElement = getElement('#descriptionText');
+    const textAreaElement =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
     textAreaElement.value = 'My display is working great!';
     // Setting the value of the textarea in code does not trigger the
     // input event. So we trigger it here.
@@ -584,13 +569,13 @@ suite('searchPageTestSuite', () => {
   });
 
   test('typingScreenWithInternalAccountShowsQuestionnaire', async () => {
-    let textAreaElement = null;
     await initializePage();
     // The questionnaire will be only shown if the account belongs to an
     // internal user.
     page.feedbackContext = fakeInternalUserFeedbackContext;
 
-    textAreaElement = getElement('#descriptionText');
+    const textAreaElement =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
     textAreaElement.value = 'My screen is too awesome!';
     // Setting the value of the textarea in code does not trigger the
     // input event. So we trigger it here.
@@ -606,13 +591,13 @@ suite('searchPageTestSuite', () => {
   });
 
   test('typingWifiDisplayWithInternalAccountShowsQuestionnaire', async () => {
-    let textAreaElement = null;
     await initializePage();
     // The questionnaire will be only shown if the account belongs to an
     // internal user.
     page.feedbackContext = fakeInternalUserFeedbackContext;
 
-    textAreaElement = getElement('#descriptionText');
+    const textAreaElement =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
     textAreaElement.value = 'My wifi and display is working great!';
     // Setting the value of the textarea in code does not trigger the
     // input event. So we trigger it here.
@@ -631,13 +616,13 @@ suite('searchPageTestSuite', () => {
   });
 
   test('typingMultiDisplayWithInternalAccountShowsQuestionnaire', async () => {
-    let textAreaElement = null;
     await initializePage();
     // The questionnaire will be only shown if the account belongs to an
     // internal user.
     page.feedbackContext = fakeInternalUserFeedbackContext;
 
-    textAreaElement = getElement('#descriptionText');
+    const textAreaElement =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
     textAreaElement.value = 'My screen and display is working great over HDMI!';
     // Setting the value of the textarea in code does not trigger the
     // input event. So we trigger it here.
@@ -657,13 +642,13 @@ suite('searchPageTestSuite', () => {
   test(
       'typingSomethingElseWithInternalAccountDoesNotShowQuestionnaire',
       async () => {
-        let textAreaElement = null;
         await initializePage();
         // The questionnaire will be only shown if the account belongs to an
         // internal user.
         page.feedbackContext = fakeInternalUserFeedbackContext;
 
-        textAreaElement = getElement('#descriptionText');
+        const textAreaElement = strictQuery(
+            '#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
         textAreaElement.value = 'You should just make ChromeOS better.';
         // Setting the value of the textarea in code does not trigger the
         // input event. So we trigger it here.
@@ -677,13 +662,13 @@ suite('searchPageTestSuite', () => {
   test(
       'typingBluetoothWithoutInternalAccountDoesNotShowQuestionnaire',
       async () => {
-        let textAreaElement = null;
         await initializePage();
         // The questionnaire will be only shown if the account belongs to an
         // internal user.
         page.feedbackContext = fakeFeedbackContext;
 
-        textAreaElement = getElement('#descriptionText');
+        const textAreaElement = strictQuery(
+            '#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
         textAreaElement.value = 'My cat got a blue tooth because of ChromeOS.';
         // Setting the value of the textarea in code does not trigger the
         // input event. So we trigger it here.
@@ -695,13 +680,13 @@ suite('searchPageTestSuite', () => {
       });
 
   test('typingBluetoothTwiceOnlyPastesTheQuestionsOnce', async () => {
-    let textAreaElement = null;
     await initializePage();
     // The questionnaire will be only shown if the account belongs to an
     // internal user.
     page.feedbackContext = fakeInternalUserFeedbackContext;
 
-    textAreaElement = getElement('#descriptionText');
+    const textAreaElement =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
     textAreaElement.value = 'My cat got a blue tooth because of ChromeOS.';
     // Setting the value of the textarea in code does not trigger the
     // input event. So we trigger it here twice to simulate pressing two keys.
@@ -710,18 +695,18 @@ suite('searchPageTestSuite', () => {
     await flushTasks();
 
     // Check that there is only one instance of the first question.
-    assertEquals(
-        2, textAreaElement.value.split(domainQuestions['bluetooth'][0]).length);
+    const question = domainQuestions['bluetooth'][0] as string;
+    assertEquals(2, textAreaElement.value.split(question).length);
   });
 
   test('typingUsbWithInternalAccountShowsQuestionnaire', async () => {
-    let textAreaElement = null;
     await initializePage();
     // The questionnaire will be only shown if the account belongs to an
     // internal user.
     page.feedbackContext = fakeInternalUserFeedbackContext;
 
-    textAreaElement = getElement('#descriptionText');
+    const textAreaElement =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
     textAreaElement.value = 'My USB port stopped working!';
     // Setting the value of the textarea in code does not trigger the
     // input event. So we trigger it here.
@@ -736,13 +721,13 @@ suite('searchPageTestSuite', () => {
   });
 
   test('typingThunderboltWithInternalAccountShowsQuestionnaire', async () => {
-    let textAreaElement = null;
     await initializePage();
     // The questionnaire will be only shown if the account belongs to an
     // internal user.
     page.feedbackContext = fakeInternalUserFeedbackContext;
 
-    textAreaElement = getElement('#descriptionText');
+    const textAreaElement =
+        strictQuery('#descriptionText', page!.shadowRoot, HTMLTextAreaElement);
     textAreaElement.value = 'There is an issue with my Thunderbolt 3 device.';
     // Setting the value of the textarea in code does not trigger the
     // input event. So we trigger it here.
@@ -757,13 +742,13 @@ suite('searchPageTestSuite', () => {
   });
 
   test('thunderboltQuestionnaireIsPrioritizedOverUsb', async () => {
-    let textAreaElement = null;
     await initializePage();
     // The questionnaire will be only shown if the account belongs to an
     // internal user.
     page.feedbackContext = fakeInternalUserFeedbackContext;
 
-    textAreaElement = getElement('#descriptionText');
+    const textAreaElement =
+        strictQuery('#descriptionText', page.shadowRoot, HTMLTextAreaElement);
     textAreaElement.value = 'The USB-C connector on my TBT4 dock is broken';
     // Setting the value of the textarea in code does not trigger the
     // input event. So we trigger it here.

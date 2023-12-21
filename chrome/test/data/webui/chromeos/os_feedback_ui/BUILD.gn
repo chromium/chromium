@@ -19,7 +19,7 @@ build_webui_tests("build_webui_tests") {
     "feedback_flow_test.js",
     "help_content_test.ts",
     "file_attachment_test.ts",
-    "search_page_test.js",
+    "search_page_test.ts",
     "share_data_page_test.js",
   ]
 
