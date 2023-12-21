@@ -216,6 +216,7 @@ class FakeMediaMetricsProvider
   void SetRendererType(
       media::mojom::blink::RendererType renderer_type) override {}
   void SetKeySystem(const String& key_system) override {}
+  void SetHasWaitingForKey() override {}
   void SetIsHardwareSecure() override {}
   void SetHasPlayed() override {}
   void SetHaveEnough() override {}

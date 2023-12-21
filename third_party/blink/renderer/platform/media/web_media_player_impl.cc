@@ -2273,6 +2273,7 @@ void WebMediaPlayerImpl::OnWaiting(media::WaitingReason reason) {
     case media::WaitingReason::kNoCdm:
     case media::WaitingReason::kNoDecryptionKey:
       has_waiting_for_key_ = true;
+      media_metrics_provider_->SetHasWaitingForKey();
       encrypted_client_->DidBlockPlaybackWaitingForKey();
       // TODO(jrummell): didResumePlaybackBlockedForKey() should only be called
       // when a key has been successfully added (e.g. OnSessionKeysChange() with

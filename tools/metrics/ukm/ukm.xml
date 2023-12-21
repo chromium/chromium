@@ -14582,6 +14582,20 @@ be describing additional metrics about the same event.
       other values indicate the playback ended in an error.
     </summary>
   </metric>
+  <metric name="HasWaitingForKey" enum="Boolean">
+    <summary>
+      Boolean value indicating whether an EME playback has been blocked waiting
+      for the CDM to be set or waiting for decryption key. For an non-EME
+      playback, this is always reported as false.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="IsEME">
     <summary>
       Boolean value indicating if this event is for an EME playback. Note: EME

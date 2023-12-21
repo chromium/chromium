@@ -82,6 +82,7 @@ MediaMetricsProvider::~MediaMetricsProvider() {
   builder.SetIsMSE(media_info_->is_mse);
   builder.SetRendererType(static_cast<int>(renderer_type_));
   builder.SetKeySystem(GetKeySystemIntForUKM(key_system_));
+  builder.SetHasWaitingForKey(has_waiting_for_key_);
   builder.SetIsHardwareSecure(is_hardware_secure_);
   builder.SetAudioEncryptionType(
       static_cast<int>(uma_info_.audio_pipeline_info.encryption_type));
@@ -301,6 +302,10 @@ void MediaMetricsProvider::SetRendererType(RendererType renderer_type) {
 
 void MediaMetricsProvider::SetKeySystem(const std::string& key_system) {
   key_system_ = key_system;
+}
+
+void MediaMetricsProvider::SetHasWaitingForKey() {
+  has_waiting_for_key_ = true;
 }
 
 void MediaMetricsProvider::SetIsHardwareSecure() {

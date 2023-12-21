@@ -125,6 +125,7 @@ TEST_F(MediaMetricsProviderTest, TestUkm) {
   Initialize(false, false, false, kTestOrigin2, mojom::MediaURLScheme::kHttps);
   provider_->SetIsEME();
   provider_->SetKeySystem(kClearKeyKeySystem);
+  provider_->SetHasWaitingForKey();
   provider_->SetIsHardwareSecure();
   provider_->SetAudioPipelineInfo(
       {false, false, AudioDecoderType::kMojo, EncryptionType::kClear});
@@ -149,6 +150,7 @@ TEST_F(MediaMetricsProviderTest, TestUkm) {
       EXPECT_UKM(UkmEntry::kIsTopFrameName, false);
       EXPECT_UKM(UkmEntry::kIsEMEName, true);
       EXPECT_UKM(UkmEntry::kKeySystemName, 1);
+      EXPECT_UKM(UkmEntry::kHasWaitingForKeyName, true);
       EXPECT_UKM(UkmEntry::kIsHardwareSecureName, true);
       EXPECT_UKM(UkmEntry::kAudioEncryptionTypeName,
                  static_cast<int64_t>(EncryptionType::kClear));
