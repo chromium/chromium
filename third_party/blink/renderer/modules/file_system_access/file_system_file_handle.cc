@@ -145,18 +145,26 @@ ScriptPromise FileSystemFileHandle::createSyncAccessHandle(
   mojom::blink::FileSystemAccessAccessHandleLockMode lock_mode;
 
   // This assertion protects against the IDL enum changing without updating the
-  // corresponding mojom interface, or vice versa. The offset of 1 accounts for
-  // the zero-indexing of the mojom enum values.
+  // corresponding mojom interface, or vice versa.
+  //
   static_assert(
       V8FileSystemSyncAccessHandleMode::kEnumSize ==
           static_cast<size_t>(
-              mojom::blink::FileSystemAccessAccessHandleLockMode::kMaxValue) +
-              1,
+              mojom::blink::FileSystemAccessAccessHandleLockMode::kMaxValue)
+              // This offset of 1 accounts for the zero-indexing of the mojom
+              // enum values.
+              + 1
+              // TODO(crbug/1513463): This offset of 1 accounts for the
+              // "in-place" option. This should be removed.
+              + 1,
       "the number of values in the FileSystemAccessAccessHandleLockMode mojom "
       "enum must match the number of values in the "
       "FileSystemSyncAccessHandleMode blink enum");
 
   switch (options->mode().AsEnum()) {
+    // TODO(crbug/1513463): "in-place" acts as an alternative to "readwrite".
+    // This is for backwards compatibility and should be removed.
+    case V8FileSystemSyncAccessHandleMode::Enum::kInPlace:
     case V8FileSystemSyncAccessHandleMode::Enum::kReadwrite:
       lock_mode =
           mojom::blink::FileSystemAccessAccessHandleLockMode::kReadwrite;
