@@ -4315,9 +4315,8 @@ message CertProvBackendError {
     CA_FAILURE = 9;
     // The referenced certificate provisioning profile does not exist.
     PROFILE_NOT_FOUND = 10;
-    // A required attribute of the entity that is requesting a certificate was
-    // not present.
-    ESS_ATTRIBUTE_NOT_FOUND = 11;
+    // The user primary email cannot be found.
+    USER_PRIMARY_EMAIL_NOT_FOUND = 11;
     // The certificate provisioning profile is referencing a non-existent CA
     // connection.
     CA_CONNECTION_NOT_FOUND = 12;
