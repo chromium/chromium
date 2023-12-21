@@ -4721,7 +4721,7 @@
       </message>
 
       <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_LEARN_MORE" desc="This is the button-text of the notification when an application is automatically started on OS login.">
-        Learn more
+        Learn more about auto-launch
       </message>
 
       <message name="IDS_APP_CLOSE_BUTTON_DISABLED_BY_ADMIN" desc="Text for the close button when prevent close is enabled by the administrator">
