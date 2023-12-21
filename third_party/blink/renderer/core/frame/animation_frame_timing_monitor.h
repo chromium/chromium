@@ -44,7 +44,6 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
     virtual bool RequestedMainFramePending() = 0;
     virtual ukm::UkmRecorder* MainFrameUkmRecorder() = 0;
     virtual ukm::SourceId MainFrameUkmSourceId() = 0;
-    virtual bool IsMainFrameFullyLoaded() const = 0;
   };
   AnimationFrameTimingMonitor(Client&, CoreProbeSink*);
   AnimationFrameTimingMonitor(const AnimationFrameTimingMonitor&) = delete;
