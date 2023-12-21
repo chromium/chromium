@@ -277,6 +277,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sql.Recovery.Result.{DatabaseTag}" enum="SqlRecoveryResult"
+    expires_after="2024-04-28">
+  <owner>asully@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Outcome of attempting to recover the {DatabaseTag} database with
+    sql::BuiltInRecovery.
+  </summary>
+</histogram>
+
 <histogram name="Sql.Recovery.ResultCode" enum="SqliteLoggedResultCode"
     expires_after="2024-04-28">
   <owner>asully@chromium.org</owner>
@@ -287,6 +297,19 @@ chromium-metrics-reviews@google.com.
     recovery succeeded (see Sql.Recovery.Result for that information), since not
     all recoveries fail due to SQLite errors (e.g. if a version number could not
     be read from the meta table).
+  </summary>
+</histogram>
+
+<histogram name="Sql.Recovery.ResultCode.{DatabaseTag}"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-28">
+  <owner>asully@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    SQLite result code from attempting to recover the {DatabaseTag} database
+    with sql::BuiltInRecovery. Note that kNoError does not necessarily indicate
+    that recovery succeeded (see Sql.Recovery.Result for that information),
+    since not all recoveries fail due to SQLite errors (e.g. if a version number
+    could not be read from the meta table).
   </summary>
 </histogram>
 
