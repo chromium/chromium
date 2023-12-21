@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://os-feedback/file_attachment.js';
 import 'chrome://os-feedback/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
@@ -9,72 +10,50 @@ import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_se
 import {FileAttachmentElement} from 'chrome://os-feedback/file_attachment.js';
 import {setFeedbackServiceProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {FeedbackAppPreSubmitAction} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
-import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {eventToPromise, isVisible} from '../test_util.js';
-
-/** @type {string} */
 const fakeImageUrl = 'chrome://os_feedback/app_icon_48.png';
 
 const MAX_ATTACH_FILE_SIZE = 10 * 1024 * 1024;
 
 suite('fileAttachmentTestSuite', () => {
-  /** @type {?FileAttachmentElement} */
-  let page = null;
+  let page: FileAttachmentElement|null = null;
 
-  /** @type {?FakeFeedbackServiceProvider} */
-  let feedbackServiceProvider;
+  let feedbackServiceProvider: FakeFeedbackServiceProvider|null;
 
   setup(() => {
-    document.body.innerHTML = trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     feedbackServiceProvider = new FakeFeedbackServiceProvider();
     setFeedbackServiceProviderForTesting(feedbackServiceProvider);
   });
 
-  teardown(() => {
-    page.remove();
-    page = null;
-  });
-
   function initializePage() {
-    assertFalse(!!page);
-    page =
-        /** @type {!FileAttachmentElement} */ (
-            document.createElement('file-attachment'));
+    page = document.createElement('file-attachment');
     assertTrue(!!page);
     document.body.appendChild(page);
     return flushTasks();
   }
 
-  /**
-   * @param {string} selector
-   * @returns {?Element}
-   */
-  function getElement(selector) {
-    const element = page.shadowRoot.querySelector(selector);
-    return element;
+  function getElement(selector: string): HTMLElement|null {
+    return page!.shadowRoot!.querySelector(selector);
   }
 
-  /**
-   * @param {string} selector
-   * @returns {string}
-   */
-  function getElementContent(selector) {
+  function getElementContent(selector: string): string {
     const element = getElement(selector);
-    assertTrue(!!element);
-    return element.textContent.trim();
+    return element!.textContent!.trim();
   }
 
-  /**
-   * @param {number} callCounts
-   * @param {FeedbackAppPreSubmitAction} action
-   * @private
-   */
-  function verifyRecordPreSubmitActionCallCount(callCounts, action) {
+  function verifyRecordPreSubmitActionCallCount(
+      callCounts: number, action: FeedbackAppPreSubmitAction) {
     assertEquals(
         callCounts,
-        feedbackServiceProvider.getRecordPreSubmitActionCallCount(action));
+        feedbackServiceProvider!.getRecordPreSubmitActionCallCount(action));
   }
 
   // Test the page is loaded with expected HTML elements.
@@ -83,7 +62,7 @@ suite('fileAttachmentTestSuite', () => {
     // Verify the add file label is in the page.
     assertEquals('Add file', getElementContent('#addFileLabel'));
     // Verify the i18n string is added.
-    assertTrue(page.i18nExists('addFileLabel'));
+    assertTrue(page!.i18nExists('addFileLabel'));
     // Verify the replace file label is in the page.
     assertEquals('Replace file', getElementContent('#replaceFileButton'));
     // The addFileContainer should be visible when no file is selected.
@@ -99,21 +78,17 @@ suite('fileAttachmentTestSuite', () => {
   test('canOpenFileDialogByClickAddFileLabel', async () => {
     await initializePage();
     // Verify the add file label is in the page.
-    const addFileLabel = getElement('#addFileLabel');
+    const addFileLabel =
+        strictQuery('#addFileLabel', page!.shadowRoot, HTMLElement);
     assertTrue(!!addFileLabel);
-    /**@type {!HTMLInputElement} */
     const fileDialog =
-        /**@type {!HTMLInputElement} */ (getElement('#selectFileDialog'));
+        strictQuery('#selectFileDialog', page!.shadowRoot, HTMLInputElement);
     assertTrue(!!fileDialog);
 
-    // Create a new fake File object
-    const fakeFile = new File(
-        ['This is a fake file!'], 'fakeFile.txt',
-        /** @type {FilePropertyBag} */ ({
-          type: 'text/plain',
-          size: MAX_ATTACH_FILE_SIZE + 1,
-          lastModified: new Date(),
-        }));
+    const blob = new Blob(
+        [new Uint8Array(MAX_ATTACH_FILE_SIZE + 1)], {type: 'text/plain'});
+    const fakeFile = new File([blob], 'fakeFile.txt');
+
     // Set the selected file manually to simulate a file has been selected.
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(fakeFile);
@@ -123,7 +98,7 @@ suite('fileAttachmentTestSuite', () => {
 
     const fileDialogClickPromise = eventToPromise('click', fileDialog);
     let fileDialogClicked = false;
-    fileDialog.addEventListener('click', (event) => {
+    fileDialog.addEventListener('click', () => {
       fileDialogClicked = true;
     });
 
@@ -140,16 +115,18 @@ suite('fileAttachmentTestSuite', () => {
   test('canOpenFileDialogByClickReplaceFileButton', async () => {
     await initializePage();
     // Verify the add file label is in the page.
-    const replaceFileButton = getElement('#replaceFileButton');
+    const replaceFileButton =
+        strictQuery('#replaceFileButton', page!.shadowRoot, HTMLElement);
     assertTrue(!!replaceFileButton);
     /**@type {!HTMLInputElement} */
     const fileDialog =
-        /**@type {!HTMLInputElement} */ (getElement('#selectFileDialog'));
+        /**@type {!HTMLInputElement} */ (
+            strictQuery('#selectFileDialog', page!.shadowRoot, HTMLElement));
     assertTrue(!!fileDialog);
 
     const fileDialogClickPromise = eventToPromise('click', fileDialog);
     let fileDialogClicked = false;
-    fileDialog.addEventListener('click', (event) => {
+    fileDialog.addEventListener('click', () => {
       fileDialogClicked = true;
     });
 
@@ -168,19 +145,17 @@ suite('fileAttachmentTestSuite', () => {
     // The replaceFileContainer should be invisible when no file is selected.
     assertFalse(isVisible(getElement('#replaceFileContainer')));
 
+    const blob = new Blob([new Uint8Array(100)], {type: 'application/zip'});
+    const fakeFile = new File([blob], 'fake.zip');
     // Set selected file manually.
-    /** @type {!File} */
-    const fakeFile = /** @type {!File} */ ({
-      name: 'fake.zip',
-      type: 'application/zip',
-    });
-    page.setSelectedFileForTesting(fakeFile);
+    page!.setSelectedFileForTesting(fakeFile);
 
     // The selected file name is set properly.
     assertEquals('fake.zip', getElementContent('#selectedFileName'));
     // The select file checkbox is checked automatically when a file is
     // selected.
-    const selectFileCheckbox = getElement('#selectFileCheckbox');
+    const selectFileCheckbox =
+        strictQuery('#selectFileCheckbox', page!.shadowRoot, CrCheckboxElement);
     assertTrue(selectFileCheckbox.checked);
     assertEquals('Attach file', selectFileCheckbox.ariaDescription);
 
@@ -189,12 +164,14 @@ suite('fileAttachmentTestSuite', () => {
     // The replaceFileContainer should be visible.
     assertTrue(isVisible(getElement('#replaceFileContainer')));
     // The aria label of the replace file button is set.
-    assertEquals('Replace file', getElement('#replaceFileButton').ariaLabel);
+    assertEquals(
+        'Replace file',
+        strictQuery('#replaceFileButton', page!.shadowRoot, HTMLButtonElement)
+            .ariaLabel);
     // Verify the i18n string is added.
-    assertTrue(page.i18nExists('replaceFileLabel'));
+    assertTrue(page!.i18nExists('replaceFileLabel'));
     // Verify the image container is not visible for non-image files.
-    const selectedImageButton = getElement('#selectedImageButton');
-    assertFalse(isVisible(selectedImageButton));
+    assertFalse(isVisible(getElement('#selectedImageButton')));
   });
 
   // Test that when there is not a file selected, getAttachedFile returns null.
@@ -204,9 +181,11 @@ suite('fileAttachmentTestSuite', () => {
     // The selected file name is empty.
     assertEquals('', getElementContent('#selectedFileName'));
     // The select file checkbox is unchecked.
-    assertFalse(getElement('#selectFileCheckbox').checked);
+    assertFalse(
+        strictQuery('#selectFileCheckbox', page!.shadowRoot, CrCheckboxElement)
+            .checked);
 
-    const attachedFile = await page.getAttachedFile();
+    const attachedFile = await page!.getAttachedFile();
     assertEquals(null, attachedFile);
   });
 
@@ -215,20 +194,18 @@ suite('fileAttachmentTestSuite', () => {
   test('selectedAFileButUnchecked', async () => {
     await initializePage();
 
-    const selectFileCheckbox = getElement('#selectFileCheckbox');
+    const selectFileCheckbox =
+        strictQuery('#selectFileCheckbox', page!.shadowRoot, CrCheckboxElement);
     // Set selected file manually.
-    /** @type {!File} */
-    const fakeFile = /** @type {!File} */ ({
-      name: 'fake.zip',
-      type: 'application/zip',
-      size: MAX_ATTACH_FILE_SIZE,
-    });
-    page.setSelectedFileForTesting(fakeFile);
+    const blob = new Blob(
+        [new Uint8Array(MAX_ATTACH_FILE_SIZE)], {type: 'application/zip'});
+    const fakeFile = new File([blob], 'fake.zip');
+    page!.setSelectedFileForTesting(fakeFile);
     selectFileCheckbox.checked = false;
 
     assertFalse(selectFileCheckbox.checked);
     assertEquals('fake.zip', getElementContent('#selectedFileName'));
-    const attachedFile = await page.getAttachedFile();
+    const attachedFile = await page!.getAttachedFile();
     assertEquals(null, attachedFile);
   });
 
@@ -237,62 +214,58 @@ suite('fileAttachmentTestSuite', () => {
   test('selectedAFileAndchecked', async () => {
     await initializePage();
 
-    const selectFileCheckbox = getElement('#selectFileCheckbox');
-    const fakeData = [12, 11, 99];
+    const selectFileCheckbox =
+        strictQuery('#selectFileCheckbox', page!.shadowRoot, CrCheckboxElement);
 
-    /** @type {!File} */
-    const fakeFile = /** @type {!File} */ ({
-      name: 'fake.zip',
-      type: 'application/zip',
-      size: MAX_ATTACH_FILE_SIZE,
-      arrayBuffer: async () => {
-        return new Uint8Array(fakeData).buffer;
-      },
+    const blob = new Blob([new Uint8Array(100)], {type: 'application/zip'});
+    const fakeFile = new File([blob], 'fake.zip');
+
+    // Access the array buffer asynchronously
+    fakeFile.arrayBuffer().then(buffer => {
+      return buffer;
     });
     // Set selected file manually.
-    page.setSelectedFileForTesting(fakeFile);
+    page!.setSelectedFileForTesting(fakeFile);
     selectFileCheckbox.checked = true;
 
     assertEquals('fake.zip', getElementContent('#selectedFileName'));
-    const attachedFile = await page.getAttachedFile();
+    const attachedFile = await page!.getAttachedFile();
     // Verify the fileData field.
-    assertTrue(!!attachedFile);
-    assertTrue(!!attachedFile.fileData);
-    assertTrue(!!attachedFile.fileData.bytes);
-    assertArrayEquals(
-        fakeData, /** @type {!Array<Number>} */ (attachedFile.fileData.bytes));
+    assertEquals(100, attachedFile!.fileData!.bytes!.length);
     // Verify the fileName field.
-    assertEquals('fake.zip', attachedFile.fileName.path.path);
+    assertEquals('fake.zip', attachedFile!.fileName!.path!.path);
   });
 
   // Test that chosen file can' exceed 10MB.
   test('fileTooBig', async () => {
     await initializePage();
 
-    const selectFileCheckbox = getElement('#selectFileCheckbox');
-    const fakeData = [12, 11, 99];
+    const selectFileCheckbox =
+        strictQuery('#selectFileCheckbox', page!.shadowRoot, CrCheckboxElement);
 
-    /** @type {!File} */
-    const fakeFile = /** @type {!File} */ ({
-      name: 'fake.zip',
-      type: 'application/zip',
-      size: MAX_ATTACH_FILE_SIZE + 1,
-      arrayBuffer: async () => {
-        return new Uint8Array(fakeData).buffer;
-      },
+    const blob = new Blob(
+        [new Uint8Array(MAX_ATTACH_FILE_SIZE + 1)], {type: 'application/zip'});
+    const fakeFile = new File([blob], 'fake.zip');
+
+    // Access the array buffer asynchronously
+    fakeFile.arrayBuffer().then(buffer => {
+      return buffer;
     });
+
     // Set selected file manually. It should be ignored.
-    page.setSelectedFileForTesting(fakeFile);
+    page!.setSelectedFileForTesting(fakeFile);
     selectFileCheckbox.checked = true;
 
     // Error message should be visible.
-    assertTrue(getElement('#fileTooBigErrorMessage').open);
+    assertTrue(
+        strictQuery('#fileTooBigErrorMessage', page!.shadowRoot, CrToastElement)
+            .open);
     assertEquals(
         `Can't upload file larger than 10 MB`,
         getElementContent('#fileTooBigErrorMessage > #errorMessage'));
     // There should not be a selected file.
     assertEquals('', getElementContent('#selectedFileName'));
-    const attachedFile = await page.getAttachedFile();
+    const attachedFile = await page!.getAttachedFile();
     // AttachedFile should be null.
     assertTrue(!attachedFile);
   });
@@ -300,34 +273,33 @@ suite('fileAttachmentTestSuite', () => {
   // Test that files that are image type have a preview.
   test('imageFilePreview', async () => {
     await initializePage();
-    const selectFileCheckbox = getElement('#selectFileCheckbox');
-    const fakeData = [12, 11, 99];
 
-    /** @type {!File} */
-    const fakeImageFile = /** @type {!File} */ ({
-      name: 'fake.png',
-      type: 'image/png',
-      size: MAX_ATTACH_FILE_SIZE,
-      arrayBuffer: async () => {
-        return new Uint8Array(fakeData).buffer;
-      },
+    const blob = new Blob([new Uint8Array(100)], {type: 'image/png'});
+    const fakeImageFile = new File([blob], 'fake.png', {type: 'image/png'});
+    // Access the array buffer asynchronously
+    fakeImageFile.arrayBuffer().then(_buffer => {
+      return new Uint8Array([12, 11, 99]).buffer;
     });
 
-    page.setSelectedFileForTesting(fakeImageFile);
+    page!.setSelectedFileForTesting(fakeImageFile);
     await flushTasks();
 
     // The selected file name is set properly.
     assertEquals('fake.png', getElementContent('#selectedFileName'));
 
     // The selectedFileImage should have an url when file is image type.
-    const imageUrl = getElement('#selectedFileImage').src;
+    const imageUrl =
+        strictQuery('#selectedFileImage', page!.shadowRoot, HTMLImageElement)
+            .src;
     assertTrue(imageUrl.length > 0);
     // There should be a preview image.
-    page.selectedImageUrl = imageUrl;
-    const selectedImage = getElement('#selectedFileImage');
+    page!.setSelectedImageUrlForTesting(imageUrl);
+    const selectedImage =
+        strictQuery('#selectedFileImage', page!.shadowRoot, HTMLImageElement);
     assertTrue(!!selectedImage.src);
     assertEquals(imageUrl, selectedImage.src);
-    const selectedImageButton = getElement('#selectedImageButton');
+    const selectedImageButton = strictQuery(
+        '#selectedImageButton', page!.shadowRoot, HTMLButtonElement);
     assertEquals('Preview fake.png', selectedImageButton.ariaLabel);
     // Verify the image container is visible for image files.
     assertTrue(isVisible(selectedImageButton));
@@ -338,29 +310,31 @@ suite('fileAttachmentTestSuite', () => {
     await initializePage();
     verifyRecordPreSubmitActionCallCount(
         0, FeedbackAppPreSubmitAction.kViewedImage);
-    const fakeData = [12, 11, 99];
 
-    /** @type {!File} */
-    const fakeImageFile = /** @type {!File} */ ({
-      name: 'fake.png',
-      type: 'image/png',
-      size: MAX_ATTACH_FILE_SIZE,
-      arrayBuffer: async () => {
-        return new Uint8Array(fakeData).buffer;
-      },
+    const blob =
+        new Blob([new Uint8Array(MAX_ATTACH_FILE_SIZE)], {type: 'image/png'});
+    const fakeImageFile = new File([blob], 'fake.png');
+
+    // Access the array buffer asynchronously
+    fakeImageFile.arrayBuffer().then(buffer => {
+      return buffer;
     });
 
-    page.setSelectedFileForTesting(fakeImageFile);
-    page.selectedImageUrl = fakeImageUrl;
-    assertEquals(fakeImageUrl, getElement('#selectedFileImage').src);
+    page!.setSelectedFileForTesting(fakeImageFile);
+    page!.setSelectedImageUrlForTesting(fakeImageUrl);
+    assertEquals(
+        fakeImageUrl,
+        strictQuery('#selectedFileImage', page!.shadowRoot, HTMLImageElement)
+            .src);
 
-    const closeDialogButton = getElement('#closeDialogButton');
+    const closeDialogButton =
+        strictQuery('#closeDialogButton', page!.shadowRoot, CrButtonElement);
     // The preview dialog's close icon button is not visible.
     assertFalse(isVisible(closeDialogButton));
 
     // The selectedImage is displayed as an image button.
-    const imageButton =
-        /** @type {!Element} */ (getElement('#selectedImageButton'));
+    const imageButton = strictQuery(
+        '#selectedImageButton', page!.shadowRoot, HTMLButtonElement);
     const imageClickPromise = eventToPromise('click', imageButton);
     imageButton.click();
     await imageClickPromise;
