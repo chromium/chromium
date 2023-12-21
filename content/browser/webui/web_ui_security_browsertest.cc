@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
@@ -1005,6 +1006,40 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserSideSecurityTest,
 
   EXPECT_EQ(log_watcher.last_message(),
             "Failed to load resource: net::ERR_UNKNOWN_URL_SCHEME");
+}
+
+// Test base class that disables site isolation to ensure security properties
+// of WebUIs hold true even in that mode.
+class WebUISecurityTestSiteIsolationDisabled : public WebUISecurityTest {
+ public:
+  WebUISecurityTestSiteIsolationDisabled() = default;
+  ~WebUISecurityTestSiteIsolationDisabled() override = default;
+
+  WebUISecurityTestSiteIsolationDisabled(
+      const WebUISecurityTestSiteIsolationDisabled&) = delete;
+  WebUISecurityTestSiteIsolationDisabled& operator=(
+      const WebUISecurityTestSiteIsolationDisabled&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebUISecurityTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kDisableSiteIsolation);
+  }
+};
+
+// Verify that navigating to WebUI puts it in a locked process even when site
+// isolation is disabled.
+IN_PROC_BROWSER_TEST_F(WebUISecurityTestSiteIsolationDisabled,
+                       EnsureProcessLockWithoutSiteIsolation) {
+  // Verify that site isolation is indeed disabled.
+  EXPECT_FALSE(SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
+
+  GURL test_url(GetWebUIURL("web-ui/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+
+  RenderProcessHost* rph =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  EXPECT_TRUE(rph->GetProcessLock().is_locked_to_site());
+  EXPECT_EQ(test_url.GetWithEmptyPath(), rph->GetProcessLock().lock_url());
 }
 
 }  // namespace content
