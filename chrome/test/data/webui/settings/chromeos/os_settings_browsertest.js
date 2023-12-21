@@ -707,15 +707,6 @@ TEST_F('OSSettingsCrostiniPageCrostiniSubpageRevampTest', 'AllJsTests', () => {
    {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [
-   'DevicePagePowerForDevicePage', 'device_page/power_for_device_page_test.js',
-   {
-     enabled: [
-       'ash::features::kInputDeviceSettingsSplit',
-       'ash::features::kPeripheralCustomization'
-     ],
-   }
- ],
- [
    'DevicePagePowerRevamp',
    'device_page/power_test.js',
    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},

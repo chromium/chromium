@@ -115,7 +115,6 @@ build_webui_tests("build") {
     "device_page/per_device_touchpad_subsection_test.ts",
     "device_page/per_device_touchpad_test.ts",
     "device_page/pointers_test.ts",
-    "device_page/power_for_device_page_test.ts",
     "device_page/power_test.ts",
     "device_page/storage_test.ts",
     "device_page/stylus_test.ts",
