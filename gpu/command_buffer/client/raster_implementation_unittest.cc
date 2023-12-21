@@ -293,7 +293,7 @@ class RasterImplementationTest : public testing::Test {
   raw_ptr<MockClientGpuControl> gpu_control_;
   raw_ptr<RasterCmdHelper> helper_;
   raw_ptr<MockTransferBuffer> transfer_buffer_;
-  raw_ptr<RasterImplementation, DanglingUntriaged> gl_;
+  raw_ptr<RasterImplementation> gl_;
   raw_ptr<CommandBufferEntry> commands_;
 };
 
@@ -303,6 +303,7 @@ void RasterImplementationTest::SetUp() {
 }
 
 void RasterImplementationTest::TearDown() {
+  gl_ = nullptr;
   test_context_.TearDown();
 }
 

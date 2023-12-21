@@ -473,7 +473,7 @@ class GLES2ImplementationTest : public testing::Test {
   raw_ptr<MockClientGpuControl> gpu_control_;
   raw_ptr<GLES2CmdHelper> helper_;
   raw_ptr<MockTransferBuffer> transfer_buffer_;
-  raw_ptr<GLES2Implementation, DanglingUntriaged> gl_;
+  raw_ptr<GLES2Implementation> gl_;
   raw_ptr<CommandBufferEntry> commands_;
 };
 
@@ -483,6 +483,7 @@ void GLES2ImplementationTest::SetUp() {
 }
 
 void GLES2ImplementationTest::TearDown() {
+  gl_ = nullptr;
   for (int i = 0; i < kNumTestContexts; i++)
     test_contexts_[i].TearDown();
 }
