@@ -1461,7 +1461,7 @@ bool ChromePasswordProtectionService::IsPingingEnabled(
 #if BUILDFLAG(IS_ANDROID)
     if (password_type.account_type() ==
             ReusedPasswordAccountType::SAVED_PASSWORD ||
-        IsSyncingGMAILPasswordWithSignedInProtectionEnabled(password_type)) {
+        password_type.account_type() == ReusedPasswordAccountType::GMAIL) {
       return true;
     }
 

@@ -1372,13 +1372,7 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
     reused_password_account_type.set_account_type(
         ReusedPasswordAccountType::GMAIL);
     reused_password_account_type.set_is_account_syncing(false);
-// Currently password reuse warnings are not supported for non-sync gaia
-// passwords on Android.
-#if BUILDFLAG(IS_ANDROID)
-    EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
-#else
     EXPECT_TRUE(password_protection_service_->ShouldShowModalWarning(
-#endif
         LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
         reused_password_account_type, LoginReputationClientResponse::PHISHING));
   }
