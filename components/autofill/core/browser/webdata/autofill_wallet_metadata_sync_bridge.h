@@ -82,7 +82,6 @@ class AutofillWalletMetadataSyncBridge
 
   // AutofillWebDataServiceObserverOnDBSequence implementation.
   void CreditCardChanged(const CreditCardChange& change) override;
-  void IbanChanged(const IbanChange& change) override;
 
  private:
   // Returns the table associated with the |web_data_backend_|.

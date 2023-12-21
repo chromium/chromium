@@ -13,15 +13,6 @@ CreditCard CreateServerCreditCard(const std::string& server_id) {
   return CreditCard(CreditCard::RecordType::kMaskedServerCard, server_id);
 }
 
-Iban CreateServerIban(Iban::InstrumentId instrument_id) {
-  Iban iban(instrument_id);
-  iban.set_prefix(u"BE71");
-  iban.set_suffix(u"8676");
-  iban.set_length(16);
-  iban.set_nickname(u"My sister's IBAN");
-  return iban;
-}
-
 sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForCard(
     const std::string& client_tag,
     const std::string& billing_address_id,

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/iban.h"
 
 namespace sync_pb {
 class AutofillWalletSpecifics;
@@ -17,8 +16,6 @@ class AutofillWalletSpecifics;
 namespace autofill {
 
 CreditCard CreateServerCreditCard(const std::string& server_id);
-
-Iban CreateServerIban(Iban::InstrumentId instrument_id);
 
 sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForCard(
     const std::string& client_tag,

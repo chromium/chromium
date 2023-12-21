@@ -325,6 +325,12 @@ class AutofillWalletSyncBridgeTest : public testing::Test {
                                       gc_directive);
   }
 
+  void ExpectCountOfCreditCardMetadataInDB(unsigned int cards_count) {
+    std::vector<AutofillMetadata> cards_metadata;
+    ASSERT_TRUE(table()->GetServerCardsMetadata(cards_metadata));
+    EXPECT_EQ(cards_count, cards_metadata.size());
+  }
+
   EntityData SpecificsToEntity(const AutofillWalletSpecifics& specifics) {
     EntityData data;
     *data.specifics.mutable_autofill_wallet() = specifics;
@@ -596,9 +602,7 @@ TEST_F(AutofillWalletSyncBridgeTest,
   StartSyncing(
       {card_specifics, customer_data_specifics, cloud_token_data_specifics});
 
-  std::vector<AutofillMetadata> cards_metadata;
-  ASSERT_TRUE(table()->GetServerCardsMetadata(cards_metadata));
-  EXPECT_EQ(0u, cards_metadata.size());
+  ExpectCountOfCreditCardMetadataInDB(0u);
 
   // This bridge does not store metadata, i.e. billing_address_id. Strip it
   // off so that the expectations below pass.
@@ -609,31 +613,6 @@ TEST_F(AutofillWalletSyncBridgeTest,
       UnorderedElementsAre(EqualsSpecifics(card_specifics),
                            EqualsSpecifics(customer_data_specifics),
                            EqualsSpecifics(cloud_token_data_specifics)));
-}
-
-// Tests that in initial sync, no metadata are synced for new IBANs.
-TEST_F(AutofillWalletSyncBridgeTest,
-       MergeFullSyncData_NewWalletIbanNoMetadataInitialSync) {
-  ResetProcessor();
-  ResetBridge(/*initial_sync_done=*/false);
-
-  // Create a data set on the server.
-  Iban iban = test::GetServerIban();
-  AutofillWalletSpecifics iban_specifics;
-  SetAutofillWalletSpecificsFromMaskedIban(iban, &iban_specifics);
-
-  EXPECT_CALL(*backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
-  EXPECT_CALL(*backend(), CommitChanges());
-
-  StartSyncing({iban_specifics});
-
-  std::vector<AutofillMetadata> ibans_metadata;
-  ASSERT_TRUE(table()->GetServerIbansMetadata(ibans_metadata));
-  EXPECT_EQ(0u, ibans_metadata.size());
-
-  EXPECT_THAT(GetAllLocalData(),
-              UnorderedElementsAre(EqualsSpecifics(iban_specifics)));
 }
 
 // Tests that when a new payments customer data is sent by the server, the
@@ -731,26 +710,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NoWalletCard) {
 
   // This bridge should not touch the metadata; should get deleted by the
   // metadata bridge.
-  std::vector<AutofillMetadata> cards_metadata;
-  ASSERT_TRUE(table()->GetServerCardsMetadata(cards_metadata));
-  EXPECT_EQ(1u, cards_metadata.size());
-
-  EXPECT_TRUE(GetAllLocalData().empty());
-}
-
-// Tests that when the server sends no IBANs, the client should delete all it's
-// existing data.
-TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NoWalletIban) {
-  // Create one IBAN on the client.
-  Iban existing_iban = test::GetServerIban();
-  table()->SetServerIbansForTesting({existing_iban});
-
-  EXPECT_CALL(*backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
-  EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfIbanChanged(RemoveChange(
-                              IbanChangeKey(existing_iban.instrument_id()))));
-  StartSyncing({});
+  ExpectCountOfCreditCardMetadataInDB(1u);
 
   EXPECT_TRUE(GetAllLocalData().empty());
 }
@@ -996,7 +956,7 @@ TEST_F(AutofillWalletSyncBridgeTest, LoadMetadataCalled) {
   ResetBridge(/*initial_sync_done=*/true);
 }
 
-TEST_F(AutofillWalletSyncBridgeTest, ApplyDisableSyncChanges_Cards) {
+TEST_F(AutofillWalletSyncBridgeTest, ApplyDisableSyncChanges) {
   // Create one card and one cloud token data on the client.
   CreditCard local_card = test::GetMaskedServerCard();
   table()->SetServerCreditCards({local_card});
@@ -1016,27 +976,7 @@ TEST_F(AutofillWalletSyncBridgeTest, ApplyDisableSyncChanges_Cards) {
 
   // This bridge should not touch the metadata; should get deleted by the
   // metadata bridge.
-  std::vector<AutofillMetadata> cards_metadata;
-  ASSERT_TRUE(table()->GetServerCardsMetadata(cards_metadata));
-  EXPECT_EQ(1u, cards_metadata.size());
-
-  EXPECT_TRUE(GetAllLocalData().empty());
-}
-
-TEST_F(AutofillWalletSyncBridgeTest, ApplyDisableSyncChanges_Ibans) {
-  // Create one IBAN on the client.
-  Iban existing_iban = test::GetServerIban();
-  table()->SetServerIbansForTesting({existing_iban});
-
-  EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
-  EXPECT_CALL(*backend(), NotifyOfIbanChanged).Times(0);
-
-  // ApplyDisableSyncChanges indicates to the bridge that sync is stopping
-  // because it was disabled.
-  bridge()->ApplyDisableSyncChanges(
-      std::make_unique<syncer::InMemoryMetadataChangeList>());
+  ExpectCountOfCreditCardMetadataInDB(1u);
 
   EXPECT_TRUE(GetAllLocalData().empty());
 }

@@ -174,9 +174,7 @@ TEST_F(PaymentsAutofillTableTest, MaskedServerIban) {
   EXPECT_THAT(ibans, UnorderedElementsAre(*masked_server_ibans[0],
                                           *masked_server_ibans[1],
                                           *masked_server_ibans[2]));
-  std::vector<AutofillMetadata> outputs;
-  ASSERT_TRUE(table_->GetServerIbansMetadata(outputs));
-  ASSERT_FALSE(outputs.empty());
+  EXPECT_FALSE(table_->GetServerIbansMetadata().empty());
 }
 
 // Test that masked IBANs can be added and loaded successfully without updating
@@ -991,8 +989,7 @@ TEST_F(PaymentsAutofillTableTest, SetGetRemoveServerIbanMetadata) {
   EXPECT_TRUE(table_->AddOrUpdateServerIbanMetadata(iban.GetMetadata()));
 
   // Make sure it was added correctly.
-  std::vector<AutofillMetadata> outputs;
-  ASSERT_TRUE(table_->GetServerIbansMetadata(outputs));
+  std::vector<AutofillMetadata> outputs = table_->GetServerIbansMetadata();
   ASSERT_EQ(1U, outputs.size());
   EXPECT_EQ(iban.GetMetadata(), outputs[0]);
 
@@ -1000,7 +997,7 @@ TEST_F(PaymentsAutofillTableTest, SetGetRemoveServerIbanMetadata) {
   EXPECT_TRUE(table_->RemoveServerIbanMetadata(outputs[0].id));
 
   // Make sure it was removed correctly.
-  ASSERT_TRUE(table_->GetServerIbansMetadata(outputs));
+  outputs = table_->GetServerIbansMetadata();
   EXPECT_EQ(0u, outputs.size());
 }
 
@@ -1085,8 +1082,8 @@ TEST_F(PaymentsAutofillTableTest, UpdateServerIbanMetadata) {
   EXPECT_TRUE(table_->AddOrUpdateServerIbanMetadata(outputs[0]->GetMetadata()));
 
   // Make sure it was updated correctly.
-  std::vector<AutofillMetadata> output_metadata;
-  ASSERT_TRUE(table_->GetServerIbansMetadata(output_metadata));
+  std::vector<AutofillMetadata> output_metadata =
+      table_->GetServerIbansMetadata();
   ASSERT_EQ(1U, output_metadata.size());
   EXPECT_EQ(outputs[0]->GetMetadata(), output_metadata[0]);
 
