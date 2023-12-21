@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/actions/action_id.h"
@@ -297,6 +298,11 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
   if (features::IsChromeRefresh2023()) {
     browser_view_->unified_side_panel()->AddHeaderView(CreateHeader());
   }
+
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    browser_view_->MaybeShowStartupFeaturePromo(
+        feature_engagement::kIPHSidePanelGenericMenuFeature);
+  }
 }
 
 SidePanelCoordinator::~SidePanelCoordinator() {
@@ -513,6 +519,15 @@ void SidePanelCoordinator::UpdatePinState() {
     return;
   }
 
+  // Signal that the user has used the Pin feature.
+  browser_view_->NotifyFeatureEngagementEvent(
+      feature_engagement::events::kSidePanelPinned);
+
+  // Close IPH for side panel pinning, if shown.
+  browser_view_->CloseFeaturePromo(
+      feature_engagement::kIPHSidePanelGenericPinnableFeature,
+      user_education::EndFeaturePromoReason::kFeatureEngaged);
+
   std::optional<actions::ActionId> action_id =
       GetActionItem(current_entry_->key())->GetActionId();
   CHECK(action_id.has_value());
@@ -621,6 +636,12 @@ void SidePanelCoordinator::Show(
         feature_engagement::kIPHPowerBookmarksSidePanelFeature);
     browser_view_->browser()->window()->CloseFeaturePromo(
         feature_engagement::kIPHReadingModeSidePanelFeature);
+
+    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+      // Close IPH for side panel menu, if shown.
+      browser_view_->browser()->window()->CloseFeaturePromo(
+          feature_engagement::kIPHSidePanelGenericMenuFeature);
+    }
   }
 
   SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(open_trigger);
@@ -1296,6 +1317,12 @@ void SidePanelCoordinator::UpdateHeaderPinButtonState() {
   header_pin_button_->SetVisible(
       !profile->IsIncognitoProfile() && !profile->IsGuestSession() &&
       action_item->GetProperty(actions::kActionItemPinnableKey));
+
+  if (!current_pinned_state) {
+    // Show IPH for side panel pinning icon.
+    browser_view_->browser()->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHSidePanelGenericPinnableFeature);
+  }
 }
 
 void SidePanelCoordinator::UpdateToolbarButtonHighlight(

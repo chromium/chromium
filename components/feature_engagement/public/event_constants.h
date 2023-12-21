@@ -39,6 +39,11 @@ extern const char kMediaBackgrounded[];
 // The user opened the Global Media Controls dialog.
 extern const char kGlobalMediaControlsOpened[];
 
+// A side panel has been pinned.
+extern const char kSidePanelPinned[];
+// A side panel has been opened from the app menu.
+extern const char kSidePanelFromMenuShown[];
+
 // The side search panel was automatically triggered.
 extern const char kSideSearchAutoTriggered[];
 // The side search panel was opened by the user.

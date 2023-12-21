@@ -83,6 +83,7 @@
 #include "components/dom_distiller/content/browser/uma_helper.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "components/feature_engagement/public/event_constants.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -947,6 +948,9 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
             "WrenchMenu.TimeToAction.ShowBookmarkSidePanel", delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_BOOKMARK_SIDE_PANEL);
+      // Close IPH for side panel menu, if shown.
+      browser()->window()->NotifyFeatureEngagementEvent(
+          feature_engagement::events::kSidePanelFromMenuShown);
       break;
     case IDC_SHOW_BOOKMARK_MANAGER:
       if (!uma_action_recorded_) {
@@ -1219,6 +1223,9 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
             "WrenchMenu.TimeToAction.ShowReadingModeSidePanel", delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_READING_MODE_SIDE_PANEL);
+      // Close IPH for side panel menu, if shown.
+      browser()->window()->NotifyFeatureEngagementEvent(
+          feature_engagement::events::kSidePanelFromMenuShown);
       break;
 
     // Zoom menu
