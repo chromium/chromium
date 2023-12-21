@@ -287,6 +287,14 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     return request;
   }
 
+  optimization_guide::proto::ComposeRequest RegenerateRequest(
+      std::string previous_response) {
+    optimization_guide::proto::ComposeRequest request;
+    request.mutable_rewrite_params()->set_regenerate(true);
+    request.mutable_rewrite_params()->set_previous_response(previous_response);
+    return request;
+  }
+
   optimization_guide::proto::ComposeResponse ComposeResponse(
       bool ok,
       std::string output) {
@@ -1757,6 +1765,49 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityWasEdited) {
 
   EXPECT_FALSE(result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
                    ->was_generated_via_edit());
+}
+
+TEST_F(ChromeComposeClientTest, TestRegenerate) {
+  ShowDialogAndBindMojo();
+  std::string user_input = "a user typed this";
+  auto matcher = EqualsProto(ComposeRequest(user_input));
+  EXPECT_CALL(session(), ExecuteModel(matcher, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
+                nullptr);
+          })));
+  auto regen_matcher =
+      EqualsProto(RegenerateRequest(/*previous_response=*/"Cucumbers"));
+  EXPECT_CALL(session(), ExecuteModel(regen_matcher, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Tomatoes")),
+                nullptr);
+          })));
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillRepeatedly(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            test_future.SetValue(std::move(response));
+          }));
+
+  page_handler()->Compose(user_input, false);
+  compose::mojom::ComposeResponsePtr result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
+  EXPECT_EQ("Cucumbers", result->result);
+
+  page_handler()->Rewrite(nullptr);
+  result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
+  EXPECT_EQ("Tomatoes", result->result);
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)
