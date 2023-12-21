@@ -9,7 +9,7 @@
 
 namespace media {
 
-StatelessDecodeSurface::StatelessDecodeSurface(uint32_t frame_id,
+StatelessDecodeSurface::StatelessDecodeSurface(uint64_t frame_id,
                                                base::OnceClosure enqueue_cb)
     : frame_id_(frame_id), enqueue_cb_(std::move(enqueue_cb)) {
   DVLOGF(3) << "Creating surface with id  : " << frame_id_;

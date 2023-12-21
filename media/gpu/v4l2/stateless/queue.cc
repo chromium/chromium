@@ -170,7 +170,7 @@ void InputQueue::Reclaim(Buffer& buffer) {
 bool InputQueue::SubmitCompressedFrameData(void* ctrls,
                                            const void* data,
                                            size_t length,
-                                           uint32_t frame_id) {
+                                           uint64_t frame_id) {
   // Failing to acquire a buffer is a normal part of the process. All of the
   // input buffers can be full if the output buffers are not being cleared.
   auto buffer_index = GetFreeBufferIndex();

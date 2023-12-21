@@ -69,7 +69,7 @@ class MEDIA_GPU_EXPORT InputQueue : public BaseQueue {
   bool SubmitCompressedFrameData(void* ctrls,
                                  const void* data,
                                  size_t length,
-                                 uint32_t frame_id);
+                                 uint64_t frame_id);
   bool PrepareBuffers() override;
 
   // Add buffers that have been dequeued into the list of buffers available

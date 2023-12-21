@@ -180,7 +180,7 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // Unique enough identifier so that all outstanding reference frames have a
   // unique identifier
   struct FrameID {};
-  base::IdTypeU32<FrameID>::Generator frame_id_generator_
+  base::IdTypeU64<FrameID>::Generator frame_id_generator_
       GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
   base::LRUCache<int32_t, base::TimeDelta> bitstream_id_to_timestamp_;

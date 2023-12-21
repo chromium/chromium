@@ -264,7 +264,7 @@ V4L2StatelessVideoDecoder::CreateSurface() {
       return nullptr;
     }
   }
-  const uint32_t frame_id =
+  const uint64_t frame_id =
       frame_id_generator_.GenerateNextId().GetUnsafeValue();
 
   // This callback is used to enqueue the buffer. It is called by the
@@ -380,7 +380,7 @@ void V4L2StatelessVideoDecoder::ServiceDisplayQueue() {
   while (!display_queue_.empty()) {
     // frame_id is the link between the display_queue_ and the frames that
     // have been dequeued.
-    const uint32_t frame_id = display_queue_.front()->FrameID();
+    const uint64_t frame_id = display_queue_.front()->FrameID();
     DVLOGF(2) << "frame id(" << frame_id << ") is ready to be displayed.";
 
     // Retrieve the index of the corresponding dequeued buffer. It is expected
@@ -530,8 +530,7 @@ void V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers(Buffer buffer) {
   auto surface = std::move(surfaces_queued_.front());
   surfaces_queued_.pop();
 
-  DCHECK_EQ(static_cast<uint64_t>(surface->FrameID()),
-            buffer.GetTimeAsFrameID())
+  DCHECK_EQ(surface->FrameID(), buffer.GetTimeAsFrameID())
       << "The surfaces are queued as the buffer is submitted. They are "
          "expected to be dequeued in order.";
 
