@@ -162,8 +162,7 @@ class OmniboxResultTest : public testing::Test {
         BookmarkModelFactory::GetInstance(),
         BookmarkModelFactory::GetDefaultFactory());
     profile_builder.SetSharedURLLoaderFactory(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_));
+        test_url_loader_factory_.GetSafeWeakWrapper());
     profile_ = profile_builder.Build();
 
     app_list_controller_delegate_ =
