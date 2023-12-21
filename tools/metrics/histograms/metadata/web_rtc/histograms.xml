@@ -1296,14 +1296,6 @@ chromium-metrics-reviews@google.com.
   <summary>Records the reasons for ICE re-gathering.</summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.IceRestartState" enum="IceRestartState"
-    expires_after="M77">
-  <owner>honghaiz@chromium.org</owner>
-  <summary>
-    Records the transport channel states when ICE restart happens.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.PeerConnection.IPMetrics" enum="PeerConnectionCounters"
     expires_after="2024-06-15">
   <owner>hta@chromium.org</owner>
