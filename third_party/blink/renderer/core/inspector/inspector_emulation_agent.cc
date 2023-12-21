@@ -168,8 +168,7 @@ protocol::Response InspectorEmulationAgent::disable() {
   setUserAgentOverride(
       String(), protocol::Maybe<String>(), protocol::Maybe<String>(),
       protocol::Maybe<protocol::Emulation::UserAgentMetadata>());
-  if (!locale_override_.Get().empty())
-    setLocaleOverride(String());
+  setLocaleOverride(String());
   if (!web_local_frame_)
     return protocol::Response::Success();
   setScriptExecutionDisabled(false);
@@ -192,6 +191,7 @@ protocol::Response InspectorEmulationAgent::disable() {
   if (emulate_auto_dark_mode_.Get()) {
     setAutoDarkModeOverride(Maybe<bool>());
   }
+  setTimezoneOverride(String());
   setDefaultBackgroundColorOverride(Maybe<protocol::DOM::RGBA>());
   disabled_image_types_.Clear();
   return protocol::Response::Success();
