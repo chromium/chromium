@@ -1,4 +1,5 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2016 The Chromium Authors
+
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -4096,6 +4097,7 @@ enum WebFeature {
   kEventTargetOnObservable = 4757,
   kCredentialManagerCrossOriginPublicKeyCreateRequest = 4758,
   kViewTransitionNameAuto = 4759,
+  kV8WasmJavaScriptPromiseIntegration = 4760,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -22223,6 +22223,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4757" label="EventTargetOnObservable"/>
   <int value="4758" label="CredentialManagerCrossOriginPublicKeyCreateRequest"/>
   <int value="4759" label="ViewTransitionNameAuto"/>
+  <int value="4760" label="V8WasmJavaScriptPromiseIntegration"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
