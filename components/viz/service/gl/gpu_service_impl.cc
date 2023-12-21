@@ -309,22 +309,6 @@ bool IsAcceleratedJpegDecodeSupported() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-// Returns a callback which does a PostTask to run |callback| on the |runner|
-// task runner.
-template <typename... Params>
-base::OnceCallback<void(Params&&...)> WrapCallback(
-    scoped_refptr<base::SingleThreadTaskRunner> runner,
-    base::OnceCallback<void(Params...)> callback) {
-  return base::BindOnce(
-      [](base::SingleThreadTaskRunner* runner,
-         base::OnceCallback<void(Params && ...)> callback, Params&&... params) {
-        runner->PostTask(FROM_HERE,
-                         base::BindOnce(std::move(callback),
-                                        std::forward<Params>(params)...));
-      },
-      base::RetainedRef(std::move(runner)), std::move(callback));
-}
-
 bool WillGetGmbConfigFromGpu() {
 #if BUILDFLAG(IS_OZONE)
   // Ozone/X11 requires gpu initialization to be done before it can determine
@@ -979,7 +963,7 @@ void GpuServiceImpl::CopyGpuMemoryBuffer(
 void GpuServiceImpl::GetVideoMemoryUsageStats(
     GetVideoMemoryUsageStatsCallback callback) {
   if (io_runner_->BelongsToCurrentThread()) {
-    auto wrap_callback = WrapCallback(io_runner_, std::move(callback));
+    auto wrap_callback = base::BindPostTask(io_runner_, std::move(callback));
     main_runner_->PostTask(
         FROM_HERE, base::BindOnce(&GpuServiceImpl::GetVideoMemoryUsageStats,
                                   weak_ptr_, std::move(wrap_callback)));
@@ -1468,9 +1452,9 @@ void GpuServiceImpl::BeginCATransaction() {
 
 void GpuServiceImpl::CommitCATransaction(CommitCATransactionCallback callback) {
   DCHECK(io_runner_->BelongsToCurrentThread());
-  main_runner_->PostTaskAndReply(FROM_HERE,
-                                 base::BindOnce(&ui::CommitCATransaction),
-                                 WrapCallback(io_runner_, std::move(callback)));
+  main_runner_->PostTaskAndReply(
+      FROM_HERE, base::BindOnce(&ui::CommitCATransaction),
+      base::BindPostTask(io_runner_, std::move(callback)));
 }
 #endif
 
