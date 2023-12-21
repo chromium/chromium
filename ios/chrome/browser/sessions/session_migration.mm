@@ -363,7 +363,10 @@ void RecordTabsAsRecentlyClosed(::sessions::TabRestoreService* restore_service,
 
   int index = 0;
   for (CRWSessionStorage* session in sessions) {
-    ::sessions::RestoreIOSLiveTab live_tab(session);
+    web::proto::WebStateStorage storage;
+    [session serializeToProto:storage];
+
+    ::sessions::RestoreIOSLiveTab live_tab(storage.navigation());
     restore_service->CreateHistoricalTab(&live_tab, index++);
   }
 }

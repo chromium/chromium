@@ -9,26 +9,27 @@
 #import "components/sessions/ios/ios_restore_live_tab.h"
 #import "components/sessions/ios/ios_webstate_live_tab.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/session/proto/navigation.pb.h"
+#import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
-
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 BROWSER_USER_DATA_KEY_IMPL(ClosingWebStateObserverBrowserAgent)
 
 ClosingWebStateObserverBrowserAgent::ClosingWebStateObserverBrowserAgent(
     Browser* browser)
-    : restore_service_(IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-          browser->GetBrowserState())) {
-  browser->AddObserver(this);
-  browser->GetWebStateList()->AddObserver(this);
+    : browser_(browser) {
+  DCHECK(!browser_->GetBrowserState()->IsOffTheRecord());
+  browser_->AddObserver(this);
+  browser_->GetWebStateList()->AddObserver(this);
 }
 
 ClosingWebStateObserverBrowserAgent::~ClosingWebStateObserverBrowserAgent() {}
@@ -38,10 +39,6 @@ ClosingWebStateObserverBrowserAgent::~ClosingWebStateObserverBrowserAgent() {}
 void ClosingWebStateObserverBrowserAgent::RecordHistoryForWebStateAtIndex(
     web::WebState* web_state,
     int index) {
-  // The RestoreService will be null if navigation is off the record.
-  if (!restore_service_)
-    return;
-
   // No need to record history if the tab has no navigation or has only
   // presented the NTP or the bookmark UI.
   if (web_state->GetNavigationItemCount() <= 1) {
@@ -52,35 +49,46 @@ void ClosingWebStateObserverBrowserAgent::RecordHistoryForWebStateAtIndex(
     }
   }
 
-  // It is possible to call this method with "unrealized" WebState. Check if
-  // the WebState is in that state before accessing the NavigationManager as
-  // that would force the realization of the WebState. The serialized state
-  // can be retrieved in the same way as for a WebState whose restoration is
-  // in progress.
-  const web::NavigationManager* navigation_manager = nullptr;
-  if (web_state->IsRealized()) {
-    navigation_manager = web_state->GetNavigationManager();
-    DCHECK(navigation_manager);
-  }
-
-  if (!navigation_manager || navigation_manager->IsRestoreSessionInProgress()) {
-    if (!web::features::UseSessionSerializationOptimizations()) {
-      CRWSessionStorage* storage = web_state->BuildSessionStorage();
-      auto live_tab = std::make_unique<sessions::RestoreIOSLiveTab>(storage);
-      restore_service_->CreateHistoricalTab(live_tab.get(), index);
-    }
+  // If the WebState is unrealized, ask the SessionRestorationService to load
+  // the data from storage (it should exists otherwise the WebState could not
+  // transition to the realized state).
+  if (!web_state->IsRealized()) {
+    ChromeBrowserState* browser_state = browser_->GetBrowserState();
+    SessionRestorationServiceFactory::GetForBrowserState(browser_state)
+        ->LoadWebStateStorage(
+            browser_, web_state,
+            base::BindOnce(
+                &ClosingWebStateObserverBrowserAgent::RecordHistoryFromStorage,
+                weak_ptr_factory_.GetWeakPtr(), index));
     return;
   }
 
-  restore_service_->CreateHistoricalTab(
-      sessions::IOSWebStateLiveTab::GetForWebState(web_state), index);
+  IOSChromeTabRestoreServiceFactory::GetForBrowserState(
+      browser_->GetBrowserState())
+      ->CreateHistoricalTab(
+          sessions::IOSWebStateLiveTab::GetForWebState(web_state), index);
+}
+
+void ClosingWebStateObserverBrowserAgent::RecordHistoryFromStorage(
+    int index,
+    web::proto::WebStateStorage storage) {
+  DCHECK(browser_);
+  sessions::RestoreIOSLiveTab live_tab(storage.navigation());
+  IOSChromeTabRestoreServiceFactory::GetForBrowserState(
+      browser_->GetBrowserState())
+      ->CreateHistoricalTab(&live_tab, index);
 }
 
 #pragma mark - BrowserObserver
 
 void ClosingWebStateObserverBrowserAgent::BrowserDestroyed(Browser* browser) {
-  browser->RemoveObserver(this);
-  browser->GetWebStateList()->RemoveObserver(this);
+  DCHECK_EQ(browser, browser_.get());
+  // Prevent any posted callbacks to be invoked.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  browser_->RemoveObserver(this);
+  browser_->GetWebStateList()->RemoveObserver(this);
+  browser_ = nullptr;
 }
 
 #pragma mark - WebStateListObserving

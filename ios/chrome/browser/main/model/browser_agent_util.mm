@@ -67,7 +67,10 @@ void AttachBrowserAgents(Browser* browser) {
   WebNavigationBrowserAgent::CreateForBrowser(browser);
   TabParentingBrowserAgent::CreateForBrowser(browser);
 
-  ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser);
+  if (!browser_is_off_record) {
+    ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser);
+  }
+
   SnapshotBrowserAgent::CreateForBrowser(browser);
 
   if (!browser_is_off_record && !browser_is_inactive) {
