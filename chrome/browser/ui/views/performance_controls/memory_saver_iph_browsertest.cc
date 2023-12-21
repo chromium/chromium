@@ -6,6 +6,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/performance_controls/test_support/user_education_browser_test_mixin.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
@@ -26,7 +27,8 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 
-class MemorySaverHelpPromoTest : public InProcessBrowserTest {
+class MemorySaverHelpPromoTest
+    : public UserEducationBrowserTestMixin<InProcessBrowserTest> {
  public:
   MemorySaverHelpPromoTest() = default;
   ~MemorySaverHelpPromoTest() override = default;
@@ -35,15 +37,7 @@ class MemorySaverHelpPromoTest : public InProcessBrowserTest {
     iph_features_.InitAndEnableFeaturesWithParameters(
         {{feature_engagement::kIPHMemorySaverModeFeature, {}}});
 
-    InProcessBrowserTest::SetUp();
-  }
-
-  void TearDown() override { InProcessBrowserTest::TearDown(); }
-
-  BrowserFeaturePromoController* GetFeaturePromoController() {
-    auto* promo_controller = static_cast<BrowserFeaturePromoController*>(
-        browser()->window()->GetFeaturePromoController());
-    return promo_controller;
+    UserEducationBrowserTestMixin::SetUp();
   }
 
   void PressButton(views::Button* button) {

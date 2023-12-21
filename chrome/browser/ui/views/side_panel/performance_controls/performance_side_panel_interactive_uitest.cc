@@ -55,9 +55,7 @@ class PerformanceSidePanelInteractiveTest
 
   void SetUpOnMainThread() override {
     MemorySaverBrowserTestMixin::SetUpOnMainThread();
-    performance_manager::user_tuning::UserPerformanceTuningManager::
-        GetInstance()
-            ->SetMemorySaverModeEnabled(true);
+    SetMemorySaverModeEnabled(true);
   }
 
   void SetUpFakeBatterySampler() {
@@ -72,10 +70,6 @@ class PerformanceSidePanelInteractiveTest
         base::BatteryStateSampler::CreateInstanceForTesting(
             std::move(test_sampling_event_source),
             std::move(test_battery_level_provider));
-  }
-
-  GURL GetURL(base::StringPiece path) {
-    return embedded_test_server()->GetURL("example.com", path);
   }
 
   auto TryDiscardTab(int tab_index) {
@@ -187,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceSidePanelInteractiveTest,
             ->SetNoDelaysForTesting(true);
       }),
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       DiscardAndSelectTab(0, kFirstTabContents),
       PressButton(kMemorySaverChipElementId), WaitForShow(kSidePanelElementId),

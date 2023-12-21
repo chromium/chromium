@@ -8,6 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/performance_controls/test_support/user_education_browser_test_mixin.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
@@ -45,7 +46,8 @@ void SetBatterySaverModeEnabled(bool enabled) {
 
 }  // namespace
 
-class BatterySaverHelpPromoTest : public InProcessBrowserTest {
+class BatterySaverHelpPromoTest
+    : public UserEducationBrowserTestMixin<InProcessBrowserTest> {
  public:
   BatterySaverHelpPromoTest() = default;
   ~BatterySaverHelpPromoTest() override = default;
@@ -56,26 +58,12 @@ class BatterySaverHelpPromoTest : public InProcessBrowserTest {
 
     SetUpFakeBatterySampler();
 
-    InProcessBrowserTest::SetUp();
-  }
-
-  void TearDown() override { InProcessBrowserTest::TearDown(); }
-
-  BrowserFeaturePromoController* GetFeaturePromoController() {
-    auto* promo_controller = static_cast<BrowserFeaturePromoController*>(
-        browser()->window()->GetFeaturePromoController());
-    return promo_controller;
+    UserEducationBrowserTestMixin::SetUp();
   }
 
   void PressButton(views::Button* button) {
     views::test::InteractionTestUtilSimulatorViews::PressButton(
         button, ui::test::InteractionTestUtil::InputType::kMouse);
-  }
-
-  bool WaitForFeatureTrackerInitialization() {
-    feature_engagement::Tracker* tracker =
-        GetFeaturePromoController()->feature_engagement_tracker();
-    return user_education::test::WaitForFeatureEngagementReady(tracker);
   }
 
   void SetUpFakeBatterySampler() {

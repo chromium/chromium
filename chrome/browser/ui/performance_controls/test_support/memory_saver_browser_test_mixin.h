@@ -24,7 +24,7 @@ constexpr base::TimeDelta kShortDelay = base::Seconds(1);
 }  // namespace
 
 // Template to be used as a mixin class for memory saver tests extending
-// InteractiveBrowserTest.
+// InProcessBrowserTest.
 template <typename T,
           typename =
               std::enable_if_t<std::is_base_of_v<InProcessBrowserTest, T>>>
@@ -55,6 +55,17 @@ class MemorySaverBrowserTestMixin : public T {
 
     T::host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(T::embedded_test_server()->Start());
+  }
+
+  void SetMemorySaverModeEnabled(bool enabled) {
+    performance_manager::user_tuning::UserPerformanceTuningManager::
+        GetInstance()
+            ->SetMemorySaverModeEnabled(enabled);
+  }
+
+  GURL GetURL(base::StringPiece hostname = "example.com",
+              base::StringPiece path = "/title1.html") {
+    return T::embedded_test_server()->GetURL(hostname, path);
   }
 
   content::WebContents* GetWebContentsAt(int index) {

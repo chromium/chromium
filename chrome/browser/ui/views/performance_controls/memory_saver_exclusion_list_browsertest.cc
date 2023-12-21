@@ -59,10 +59,6 @@ class MemorySaverExclusionListBrowserTest
         tab_strip_model->GetWebContentsAt(0), url, 1);
     return TryDiscardTabAt(0);
   }
-
-  GURL GetURL(base::StringPiece host, base::StringPiece path = "/title1.html") {
-    return embedded_test_server()->GetURL(host, path);
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,

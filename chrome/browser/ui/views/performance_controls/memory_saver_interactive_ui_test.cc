@@ -70,9 +70,7 @@ class MemorySaverInteractiveTest
  public:
   void SetUpOnMainThread() override {
     MemorySaverBrowserTestMixin::SetUpOnMainThread();
-    performance_manager::user_tuning::UserPerformanceTuningManager::
-        GetInstance()
-            ->SetMemorySaverModeEnabled(true);
+    SetMemorySaverModeEnabled(true);
   }
 
   auto CheckTabIsDiscarded(int tab_index) {
@@ -105,14 +103,6 @@ class MemorySaverInteractiveTest
                  TryDiscardTab(discard_tab_index), WaitForHide(contents_id),
                  SelectTab(kTabStripElementId, discard_tab_index),
                  WaitForShow(contents_id));
-  }
-
-  GURL GetURL(base::StringPiece path) {
-    return embedded_test_server()->GetURL("example.com", path);
-  }
-
-  GURL GetURL(base::StringPiece hostname, base::StringPiece path) {
-    return embedded_test_server()->GetURL(hostname, path);
   }
 };
 
@@ -169,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverDiscardPolicyInteractiveTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents,
-                          GetURL("/media/bigbuck-player.html")),
+                          GetURL("example.com", "/media/bigbuck-player.html")),
       ExecuteJsAt(kFirstTabContents, video, kPlayVideo),
       WaitForStateChange(kFirstTabContents, video_is_playing),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
@@ -191,7 +181,8 @@ IN_PROC_BROWSER_TEST_F(MemorySaverDiscardPolicyInteractiveTest,
 
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/autoplay_audio.html")),
+      NavigateWebContents(kFirstTabContents,
+                          GetURL("example.com", "/autoplay_audio.html")),
       ExecuteJsAt(kFirstTabContents, audio, "(el) => { el.play(); }"),
       WaitForEvent(kFirstTabContents, kAudioIsAudible),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
@@ -221,8 +212,10 @@ IN_PROC_BROWSER_TEST_F(MemorySaverDiscardPolicyInteractiveTest,
 
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/form_search.html")),
-      WaitForWebContentsReady(kFirstTabContents, GetURL("/form_search.html")),
+      NavigateWebContents(kFirstTabContents,
+                          GetURL("example.com", "/form_search.html")),
+      WaitForWebContentsReady(kFirstTabContents,
+                              GetURL("example.com", "/form_search.html")),
 
       // Move focus off of the omnibox
       MoveMouseTo(kFirstTabContents, input_text_box), ClickMouse(),
@@ -245,8 +238,9 @@ IN_PROC_BROWSER_TEST_F(MemorySaverDiscardPolicyInteractiveTest,
                                  ContentSetting::CONTENT_SETTING_ALLOW);
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents,
-                          GetURL("/notifications/notification_tester.html")),
+      NavigateWebContents(
+          kFirstTabContents,
+          GetURL("example.com", "/notifications/notification_tester.html")),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       TryDiscardTab(0), CheckTabIsNotDiscarded(0));
 }
@@ -317,7 +311,7 @@ class MemorySaverChipInteractiveTest : public MemorySaverInteractiveTest {
 IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest, PageActionChipShows) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       SelectTab(kTabStripElementId, 0),
       EnsureNotPresent(kMemorySaverChipElementId),
@@ -329,17 +323,16 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest, PageActionChipShows) {
 // Page Action chip should collapses after navigating to a tab without a chip
 IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
                        PageActionChipCollapseOnTabSwitch) {
-  RunTestSequence(
-      InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
-      AddInstrumentedTab(kSecondTabContents, GetURL("/title1.html")),
-      EnsureNotPresent(kMemorySaverChipElementId),
-      DiscardAndSelectTab(0, kFirstTabContents), CheckChipIsExpandedState(),
-      SelectTab(kTabStripElementId, 1),
-      EnsureNotPresent(kMemorySaverChipElementId),
-      SelectTab(kTabStripElementId, 0), CheckChipIsCollapsedState(),
-      SelectTab(kTabStripElementId, 1),
-      EnsureNotPresent(kMemorySaverChipElementId));
+  RunTestSequence(InstrumentTab(kFirstTabContents, 0),
+                  NavigateWebContents(kFirstTabContents, GetURL()),
+                  AddInstrumentedTab(kSecondTabContents, GetURL()),
+                  EnsureNotPresent(kMemorySaverChipElementId),
+                  DiscardAndSelectTab(0, kFirstTabContents),
+                  CheckChipIsExpandedState(), SelectTab(kTabStripElementId, 1),
+                  EnsureNotPresent(kMemorySaverChipElementId),
+                  SelectTab(kTabStripElementId, 0), CheckChipIsCollapsedState(),
+                  SelectTab(kTabStripElementId, 1),
+                  EnsureNotPresent(kMemorySaverChipElementId));
 }
 
 // Page Action chip should stay collapsed when navigating between two
@@ -348,8 +341,8 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
                        ChipCollapseRemainCollapse) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
-      AddInstrumentedTab(kSecondTabContents, GetURL("/title1.html")),
+      NavigateWebContents(kFirstTabContents, GetURL()),
+      AddInstrumentedTab(kSecondTabContents, GetURL()),
       EnsureNotPresent(kMemorySaverChipElementId),
       DiscardAndSelectTab(0, kFirstTabContents), CheckChipIsExpandedState(),
       DiscardAndSelectTab(1, kSecondTabContents), CheckChipIsExpandedState(),
@@ -362,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
                        ChipShowsOnNonChromeSites) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       // Discards tab on non-chrome page
       DiscardAndSelectTab(0, kFirstTabContents),
@@ -379,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
                        CloseBubbleOnOkButtonClick) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       DiscardAndSelectTab(0, kFirstTabContents),
       PressButton(kMemorySaverChipElementId),
@@ -396,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
 
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       DiscardAndSelectTab(0, kFirstTabContents),
       PressButton(kMemorySaverChipElementId),
@@ -416,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
 IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest, CloseBubbleOnChipClick) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       DiscardAndSelectTab(0, kFirstTabContents),
       PressButton(kMemorySaverChipElementId),
@@ -432,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest, CloseBubbleOnTabSwitch) {
 
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       DiscardAndSelectTab(0, kFirstTabContents),
       PressButton(kMemorySaverChipElementId),
@@ -445,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
                        BubbleCorrectlyReportingMemorySaved) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       ForceRefreshMemoryMetrics(), DiscardAndSelectTab(0, kFirstTabContents),
       WaitForShow(kMemorySaverChipElementId),
@@ -478,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
                        ModifyExceptionsListOnCancelButtonClick) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       DiscardAndSelectTab(0, kFirstTabContents),
       PressButton(kMemorySaverChipElementId),
@@ -610,7 +603,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverFaviconTreatmentTest,
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kSkipPixelTestsReason),
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       Do(base::BindLambdaForTesting(
           [=]() { GetTabStrip()->StopAnimating(true); })),
@@ -663,7 +656,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverMemorySavingsReportingImprovementsTest,
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kSkipPixelTestsReason),
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       ForceRefreshMemoryMetrics(), DiscardAndSelectTab(0, kFirstTabContents),
       Do(base::BindLambdaForTesting([&]() {
