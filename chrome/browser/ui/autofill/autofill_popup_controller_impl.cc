@@ -252,6 +252,10 @@ void AutofillPopupControllerImpl::Show(
     // Currently, this is only relevant for Compose.
     if (suggestions_.size() == 1 &&
         suggestions_[0].popup_item_id == PopupItemId::kCompose) {
+      // We may already be observing from a previous `Show` call.
+      // TODO(crbug.com/1513659): Consider not to recycle views or controllers
+      // and only permit a single call to `Show`.
+      autofill_managers_observation_.Reset();
       autofill_managers_observation_.Observe(
           web_contents(),
           ScopedAutofillManagersObservation::InitializationPolicy::
