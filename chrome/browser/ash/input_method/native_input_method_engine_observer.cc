@@ -9,13 +9,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
@@ -600,29 +598,6 @@ void OverrideXkbLayoutIfNeeded(ImeKeyboard* keyboard,
   }
 }
 
-// Infers if the user is choosing from a candidate from the window.
-// TODO(b/300576550): get this information from IME.
-bool InferIsUserSelecting(
-    base::span<const ime::mojom::CandidatePtr> candidates) {
-  if (candidates.empty()) {
-    return false;
-  }
-
-  // Only infer for Japanese IME.
-  auto* manager = InputMethodManager::Get();
-  if (!manager ||
-      !IsJapaneseEngine(
-          manager->GetActiveIMEState()->GetCurrentInputMethod().id())) {
-    return true;
-  }
-
-  const bool any_non_empty_label = base::ranges::any_of(
-      candidates, [](const ime::mojom::CandidatePtr& candidate) {
-        return !candidate->label->empty();
-      });
-  return any_non_empty_label;
-}
-
 void UpdateCandidatesWindowSync(ime::mojom::CandidatesWindowPtr window) {
   IMECandidateWindowHandlerInterface* candidate_window_handler =
       IMEBridge::Get()->GetCandidateWindowHandler();
@@ -653,7 +628,6 @@ void UpdateCandidatesWindowSync(ime::mojom::CandidatesWindowPtr window) {
   property.is_auxiliary_text_visible =
       window->auxiliary_text.value_or("") != "";
   property.auxiliary_text = window->auxiliary_text.value_or("");
-  property.is_user_selecting = InferIsUserSelecting(window->candidates);
   candidate_window.SetProperty(property);
 
   candidate_window_handler->UpdateLookupTable(candidate_window);

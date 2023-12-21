@@ -2409,7 +2409,6 @@ IN_PROC_BROWSER_TEST_F(SpokenFeedbackWithCandidateWindowTest,
   candidate_window.set_page_size(2);
   candidate_window.mutable_candidates()->clear();
   candidate_window.set_orientation(ui::CandidateWindow::VERTICAL);
-  candidate_window.set_is_user_selecting(true);
   for (size_t i = 0; i < 2; ++i) {
     ui::CandidateWindow::Entry entry;
     entry.value = u"value " + base::NumberToString16(i);
