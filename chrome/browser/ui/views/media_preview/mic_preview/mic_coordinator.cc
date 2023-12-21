@@ -47,6 +47,9 @@ MicCoordinator::MicCoordinator(views::View& parent_view, bool needs_borders)
       *mic_view, needs_borders, combobox_model_,
       base::BindRepeating(&MicCoordinator::OnAudioSourceChanged,
                           base::Unretained(this)));
+
+  audio_stream_coordinator_.emplace(
+      mic_view_controller_->GetLiveFeedContainer());
 }
 
 MicCoordinator::~MicCoordinator() = default;
@@ -77,6 +80,7 @@ void MicCoordinator::OnAudioSourceInfosReceived(
 
   if (relevant_device_infos.empty()) {
     active_device_id_.clear();
+    audio_stream_coordinator_->Stop();
   }
   mic_view_controller_->UpdateAudioSourceInfos(
       std::move(relevant_device_infos));
@@ -108,8 +112,9 @@ void MicCoordinator::ConnectAudioStream(
     mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory;
     mic_mediator_.BindAudioStreamFactory(
         audio_stream_factory.InitWithNewPipeAndPassReceiver());
-    // TODO(ahmedmoussa): `audio_stream_factory` is to be passed to
-    // AudioStreamCoordiantor. Done in the following CL.
+    audio_stream_coordinator_->ConnectToDevice(std::move(audio_stream_factory),
+                                               device_id,
+                                               device_params->sample_rate());
   }
 }
 

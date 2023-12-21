@@ -24,6 +24,10 @@
     Microphone
   </message>
 
+  <message name="IDS_MEDIA_PREVIEW_AUDIO_STREAM_ACCESSIBLE_NAME" desc="Text for accessability description of the audio stream view">
+    Preview of your microphone
+  </message>
+
   <message name="IDS_MEDIA_PREVIEW_NO_MICS_FOUND" desc="Text shown when there are no mics found connected. This is shown instead of the audio stream">
     No microphone connected
   </message>

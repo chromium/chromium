@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/ui/views/media_preview/mic_preview/audio_stream_coordinator.h"
 #include "chrome/browser/ui/views/media_preview/mic_preview/mic_mediator.h"
 #include "chrome/browser/ui/views/media_preview/mic_preview/mic_selector_combobox_model.h"
 #include "chrome/browser/ui/views/media_preview/mic_preview/mic_view_controller.h"
@@ -53,6 +54,7 @@ class MicCoordinator {
   MicSelectorComboboxModel combobox_model_;
   std::string active_device_id_;
   std::optional<MicViewController> mic_view_controller_;
+  std::optional<AudioStreamCoordinator> audio_stream_coordinator_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_MIC_PREVIEW_MIC_COORDINATOR_H_
