@@ -47,13 +47,6 @@ class LogBuffer;
 class LogManager;
 struct ParsingContext;
 
-// Password attributes (whether a password has special symbols, numeric, etc.)
-enum class PasswordAttribute {
-  kHasLetter,
-  kHasSpecialSymbol,
-  kPasswordAttributesCount
-};
-
 // The structure of forms and fields, represented by their signatures, on a
 // page. These are sequence containers to reflect their order in the DOM.
 using FormAndFieldSignatures =

@@ -46,7 +46,6 @@ using ::autofill::FormData;
 using ::autofill::FormFieldData;
 using ::autofill::FormSignature;
 using ::autofill::FormStructure;
-using ::autofill::PasswordAttribute;
 using ::autofill::mojom::SubmissionIndicatorEvent;
 using ::autofill::upload_contents_matchers::AutofillUsedIs;
 using ::autofill::upload_contents_matchers::FieldAutofillTypeIs;

@@ -315,11 +315,11 @@ void EncodePasswordAttributesMetadata(
     const PasswordAttributesMetadata& password_attributes,
     AutofillUploadContents& upload) {
   switch (password_attributes.password_attributes_vote.first) {
-    case autofill::PasswordAttribute::kHasLetter:
+    case PasswordAttribute::kHasLetter:
       upload.set_password_has_letter(
           password_attributes.password_attributes_vote.second);
       break;
-    case autofill::PasswordAttribute::kHasSpecialSymbol:
+    case PasswordAttribute::kHasSpecialSymbol:
       upload.set_password_has_special_symbol(
           password_attributes.password_attributes_vote.second);
       if (password_attributes.password_attributes_vote.second) {
@@ -327,7 +327,7 @@ void EncodePasswordAttributesMetadata(
             password_attributes.password_symbol_vote);
       }
       break;
-    case autofill::PasswordAttribute::kPasswordAttributesCount:
+    case PasswordAttribute::kPasswordAttributesCount:
       NOTREACHED();
   }
   upload.set_password_length(password_attributes.password_length_vote);
@@ -896,14 +896,14 @@ VotesUploader::GeneratePasswordAttributesMetadata(
   // Select a character class attribute to upload. Upload special symbols more
   // often (8 in 9 cases) as most issues are due to missing or wrong special
   // symbols. Upload info about letters existence otherwise.
-  autofill::PasswordAttribute character_class_attribute;
+  PasswordAttribute character_class_attribute;
   bool (*predicate)(char16_t c) = nullptr;
   if (base::RandGenerator(9) == 0) {
     predicate = &password_manager_util::IsLetter;
-    character_class_attribute = autofill::PasswordAttribute::kHasLetter;
+    character_class_attribute = PasswordAttribute::kHasLetter;
   } else {
     predicate = &password_manager_util::IsSpecialSymbol;
-    character_class_attribute = autofill::PasswordAttribute::kHasSpecialSymbol;
+    character_class_attribute = PasswordAttribute::kHasSpecialSymbol;
   }
 
   // Apply the randomized response technique to noisify the actual value
@@ -916,8 +916,7 @@ VotesUploader::GeneratePasswordAttributesMetadata(
   password_attributes.password_attributes_vote = std::make_pair(
       character_class_attribute, randomized_value_for_character_class);
 
-  if (character_class_attribute ==
-          autofill::PasswordAttribute::kHasSpecialSymbol &&
+  if (character_class_attribute == PasswordAttribute::kHasSpecialSymbol &&
       randomized_value_for_character_class) {
     password_attributes.password_symbol_vote =
         respond_randomly ? GetRandomSpecialSymbol()

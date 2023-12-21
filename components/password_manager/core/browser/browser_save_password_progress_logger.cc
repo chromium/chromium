@@ -38,7 +38,6 @@ using autofill::FieldTypeToStringView;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::FormStructure;
-using autofill::PasswordAttribute;
 using base::NumberToString;
 
 namespace password_manager {

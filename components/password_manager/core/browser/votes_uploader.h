@@ -31,6 +31,13 @@ namespace password_manager {
 
 class PasswordManagerClient;
 
+// Password attributes (whether a password has special symbols, numeric, etc.)
+enum class PasswordAttribute {
+  kHasLetter,
+  kHasSpecialSymbol,
+  kPasswordAttributesCount
+};
+
 // Map from a field's renderer id to a field type.
 using FieldTypeMap = std::map<autofill::FieldRendererId, autofill::FieldType>;
 // A map from field's renderer id to a vote type (e.g. CREDENTIALS_REUSED).
@@ -88,7 +95,7 @@ struct SingleUsernameVoteData {
 struct PasswordAttributesMetadata {
   // The vote about password attributes (e.g. whether the password has a
   // numeric character).
-  std::pair<autofill::PasswordAttribute, bool> password_attributes_vote;
+  std::pair<PasswordAttribute, bool> password_attributes_vote;
 
   // If `password_attribute_vote` contains (kHasSpecialSymbol, true), this
   // field contains noisified information about a special symbol in a
