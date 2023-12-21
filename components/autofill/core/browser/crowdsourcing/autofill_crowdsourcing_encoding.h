@@ -48,7 +48,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
     const FormStructure& form,
     const FieldTypeSet& available_field_types,
     bool form_was_autofilled,
-    const std::string_view& login_form_signature,
+    std::string_view login_form_signature,
     bool observed_submission);
 
 }  // namespace autofill
