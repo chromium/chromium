@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_cell.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "url/gurl.h"
 
 namespace {
@@ -147,10 +146,6 @@ constexpr CGFloat kTableViewSeparatorLeadingInset = 56;
 - (void)reloadData {
   [self loadModel];
   [self.tableView reloadData];
-}
-
-- (void)faviconAttributesUpdatedForItem:(SnippetSearchEngineItem*)item {
-  [self reconfigureCellsForItems:@[ item ]];
 }
 
 #pragma mark - Private

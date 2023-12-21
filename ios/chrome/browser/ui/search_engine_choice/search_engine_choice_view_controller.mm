@@ -355,12 +355,6 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
                    completion:nil];
 }
 
-#pragma mark - SearchEngineChoiceFaviconUpdateConsumer
-
-- (void)updateFaviconImageForItem:(SnippetSearchEngineItem*)item {
-  _fakeOmniboxView.faviconImage = item.faviconImage;
-}
-
 #pragma mark - Private
 
 - (void)primaryButtonAction {

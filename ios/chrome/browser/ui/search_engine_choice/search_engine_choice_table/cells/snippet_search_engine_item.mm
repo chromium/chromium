@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
-#import "url/gurl.h"
 
 #pragma mark - SnippetSearchEngineItem
 
@@ -40,10 +39,6 @@
   if (styler.cellTitleColor) {
     cell.nameLabel.textColor = styler.cellTitleColor;
   }
-}
-
-- (BOOL)isEqual:(SnippetSearchEngineItem*)otherItem {
-  return (self.name == otherItem.name) && (self.URL == otherItem.URL);
 }
 
 @end

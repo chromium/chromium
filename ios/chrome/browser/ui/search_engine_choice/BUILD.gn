@@ -19,7 +19,6 @@ source_set("search_engine_choice") {
     "//components/search_engines",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -35,8 +34,6 @@ source_set("search_engine_choice") {
     "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells",
     "//ios/chrome/browser/ui/search_engine_choice/why_am_i_seeing_this",
     "//ios/chrome/common/ui/colors:colors",
-    "//ios/chrome/common/ui/favicon",
-    "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/common/ui/util",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -83,8 +80,6 @@ source_set("unit_tests") {
     "//components/search_engines",
     "//components/strings",
     "//components/sync_preferences:test_support",
-    "//ios/chrome/browser/favicon",
-    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/promos_manager:test_support",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

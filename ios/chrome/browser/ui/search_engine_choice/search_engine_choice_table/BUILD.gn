@@ -14,7 +14,6 @@ source_set("search_engine_choice_table") {
     "//base",
     "//components/search_engines",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -27,8 +26,6 @@ source_set("search_engine_choice_table") {
     "//ios/chrome/browser/ui/search_engine_choice:constants",
     "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/favicon",
-    "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/common/ui/util",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -44,8 +41,6 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/search_engines",
     "//components/sync_preferences/:test_support",
-    "//ios/chrome/browser/favicon",
-    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/ui/list_model",

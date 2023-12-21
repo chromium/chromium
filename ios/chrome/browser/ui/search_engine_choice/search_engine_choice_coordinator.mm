@@ -8,7 +8,6 @@
 #import "components/search_engines/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -79,13 +78,10 @@
   _searchEnginesTableViewController =
       [[SearchEngineChoiceTableViewController alloc]
           initWithStyle:ChromeTableViewStyle()];
-  FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
   _searchEnginesTableMediator = [[SearchEngineChoiceTableMediator alloc]
       initWithTemplateURLService:ios::TemplateURLServiceFactory::
                                      GetForBrowserState(browserState)
-                     prefService:browserState->GetPrefs()
-                   faviconLoader:faviconLoader];
+                     prefService:browserState->GetPrefs()];
   _searchEnginesTableMediator.consumer = _searchEnginesTableViewController;
   _searchEnginesTableViewController.delegate = self;
 
@@ -93,10 +89,8 @@
       initWithSearchEngineTableViewController:
           _searchEnginesTableViewController];
   _viewController.actionDelegate = self;
-  _searchEnginesTableMediator.faviconUpdateConsumer = _viewController;
 
-  _mediator =
-      [[SearchEngineChoiceMediator alloc] initWithFaviconLoader:faviconLoader];
+  _mediator = [[SearchEngineChoiceMediator alloc] init];
   _mediator.consumer = _viewController;
 
   _viewController.modalInPresentation = YES;

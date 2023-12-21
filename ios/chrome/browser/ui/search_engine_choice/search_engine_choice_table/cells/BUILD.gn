@@ -25,7 +25,6 @@ source_set("cells") {
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:image_util",
     "//ui/base",
-    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }

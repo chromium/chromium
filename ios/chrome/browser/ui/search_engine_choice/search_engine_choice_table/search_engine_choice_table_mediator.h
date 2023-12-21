@@ -7,10 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-class FaviconLoader;
 class PrefService;
 class TemplateURLService;
-@protocol SearchEngineChoiceFaviconUpdateConsumer;
 @protocol SearchEngineChoiceTableConsumer;
 
 @interface SearchEngineChoiceTableMediator : NSObject
@@ -18,7 +16,6 @@ class TemplateURLService;
 - (instancetype)initWithTemplateURLService:
                     (TemplateURLService*)templateURLService
                                prefService:(PrefService*)prefService
-                             faviconLoader:(FaviconLoader*)faviconLoader
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -26,11 +23,6 @@ class TemplateURLService;
 // The delegate object that manages interactions with the Search Engine Choice
 // table view.
 @property(nonatomic, weak) id<SearchEngineChoiceTableConsumer> consumer;
-
-// The delegate object that manages interactions with the Search Engine Choice
-// view.
-@property(nonatomic, weak) id<SearchEngineChoiceFaviconUpdateConsumer>
-    faviconUpdateConsumer;
 
 // Index of the row tapped by the user.
 @property(nonatomic, assign) NSInteger selectedRow;

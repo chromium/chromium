@@ -15,17 +15,6 @@
 
 - (void)reloadData;
 
-// Called when the favicon of `item` has been updated.
-- (void)faviconAttributesUpdatedForItem:(SnippetSearchEngineItem*)item;
-
-@end
-
-// Handles updates to the search engine favicons from the FaviconLoader
-@protocol SearchEngineChoiceFaviconUpdateConsumer
-
-// Called when the favicon of `item` has been updated.
-- (void)updateFaviconImageForItem:(SnippetSearchEngineItem*)item;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_TABLE_SEARCH_ENGINE_CHOICE_TABLE_CONSUMER_H_
