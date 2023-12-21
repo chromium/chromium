@@ -63,6 +63,18 @@ const mojom::ButtonRemapping button_remapping5(
     /*remapping_action=*/
     mojom::RemappingAction::NewStaticShortcutAction(
         mojom::StaticShortcutAction::kCopy));
+const mojom::ButtonRemapping button_remapping6(
+    /*name=*/"test6",
+    /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_A),
+    /*remapping_action=*/
+    mojom::RemappingAction::NewStaticShortcutAction(
+        mojom::StaticShortcutAction::kCopy));
+const mojom::ButtonRemapping button_remapping7(
+    /*name=*/"test7",
+    /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_LEFT),
+    /*remapping_action=*/
+    mojom::RemappingAction::NewStaticShortcutAction(
+        mojom::StaticShortcutAction::kCopy));
 }  // namespace
 
 class DeviceKeyTest : public testing::TestWithParam<
@@ -218,6 +230,30 @@ TEST_F(ButtonRemappingConversionTest,
       button_remapping3,
       mojom::CustomizationRestriction::kDisableKeyEventRewrites);
   EXPECT_TRUE(dict2.empty());
+
+  // Rewrite alphabet letter key event.
+  const base::Value::Dict dict3 = ConvertButtonRemappingToDict(
+      button_remapping6,
+      mojom::CustomizationRestriction::kAllowAlphabetKeyEventRewrites);
+  EXPECT_FALSE(dict3.empty());
+
+  // Rewrite non alphabet letter key event.
+  const base::Value::Dict dict4 = ConvertButtonRemappingToDict(
+      button_remapping3,
+      mojom::CustomizationRestriction::kAllowAlphabetKeyEventRewrites);
+  EXPECT_TRUE(dict4.empty());
+
+  // Rewrite number key event.
+  const base::Value::Dict dict5 = ConvertButtonRemappingToDict(
+      button_remapping3,
+      mojom::CustomizationRestriction::kAllowAlphabetOrNumberKeyEventRewrites);
+  EXPECT_FALSE(dict5.empty());
+
+  // Rewrite neither alphabet letter key event or number key event.
+  const base::Value::Dict dict6 = ConvertButtonRemappingToDict(
+      button_remapping7,
+      mojom::CustomizationRestriction::kAllowAlphabetOrNumberKeyEventRewrites);
+  EXPECT_TRUE(dict6.empty());
 }
 
 TEST_F(ButtonRemappingConversionTest, ConvertDictToButtonRemapping) {

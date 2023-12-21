@@ -360,6 +360,16 @@ int GetRemappedModifiersFromGraphicsTabletSettings(
   return modifiers;
 }
 
+// Verify if the keyboard code is an alphabet letter.
+bool IsAlphaKeyboardCode(ui::KeyboardCode key_code) {
+  return key_code >= ui::VKEY_A && key_code <= ui::VKEY_Z;
+}
+
+// Verify if the keyboard code is a number.
+bool IsNumberKeyboardCode(ui::KeyboardCode key_code) {
+  return key_code >= ui::VKEY_0 && key_code <= ui::VKEY_9;
+}
+
 }  // namespace
 
 // Compares the `DeviceIdButton` struct based on first the device id, and then
@@ -386,16 +396,6 @@ bool operator<(
   // Otherwise, return true if the lhs is a VKey as they mismatch and VKeys
   // should be considered less than customizable buttons.
   return left.button->is_vkey();
-}
-
-// Verify if the keyboard code is an alphabet letter.
-bool IsAlphaKeyboardCode(ui::KeyboardCode key_code) {
-  return key_code >= ui::VKEY_A && key_code <= ui::VKEY_Z;
-}
-
-// Verify if the keyboard code is a number.
-bool IsNumber(ui::KeyboardCode key_code) {
-  return key_code >= ui::VKEY_0 && key_code <= ui::VKEY_9;
 }
 
 PeripheralCustomizationEventRewriter::DeviceIdButton::DeviceIdButton(
@@ -531,7 +531,7 @@ bool PeripheralCustomizationEventRewriter::IsButtonCustomizable(
     case mojom::CustomizationRestriction::
         kAllowAlphabetOrNumberKeyEventRewrites:
       return IsAlphaKeyboardCode(key_event.key_code()) ||
-             IsNumber(key_event.key_code());
+             IsNumberKeyboardCode(key_event.key_code());
     case mojom::CustomizationRestriction::kDisallowCustomizations:
     case mojom::CustomizationRestriction::kDisableKeyEventRewrites:
       return false;
