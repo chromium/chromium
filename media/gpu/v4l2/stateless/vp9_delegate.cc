@@ -301,8 +301,7 @@ DecodeStatus VP9Delegate::SubmitDecode(
   dec_surface->SetReferenceSurfaces(std::move(ref_surfaces));
 
   if (!surface_handler_->SubmitFrame(&ctrls, frame_hdr->data,
-                                     frame_hdr->frame_size,
-                                     dec_surface->FrameID())) {
+                                     frame_hdr->frame_size, dec_surface)) {
     return DecodeStatus::kFail;
   }
 

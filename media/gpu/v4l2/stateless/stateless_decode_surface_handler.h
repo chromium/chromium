@@ -24,12 +24,12 @@ class StatelessDecodeSurfaceHandler
   // The stateless api requires that the client parse the header information
   // and send that separately. |ctrls| is the parsed header while |data| is
   // the complete frame of compressed data with |size| being the length of
-  // the buffer. |frame_id| is an identifier for the driver to use for
-  // reference frame designation.
-  virtual bool SubmitFrame(void* ctrls,
-                           const uint8_t* data,
-                           size_t size,
-                           uint32_t frame_id) = 0;
+  // the buffer.
+  virtual bool SubmitFrame(
+      void* ctrls,
+      const uint8_t* data,
+      size_t size,
+      scoped_refptr<StatelessDecodeSurface> dec_surface) = 0;
 };
 
 }  // namespace media

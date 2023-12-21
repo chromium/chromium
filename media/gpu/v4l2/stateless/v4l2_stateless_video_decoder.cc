@@ -270,11 +270,13 @@ V4L2StatelessVideoDecoder::CreateSurface() {
   return base::MakeRefCounted<StatelessDecodeSurface>(frame_id);
 }
 
-bool V4L2StatelessVideoDecoder::SubmitFrame(void* ctrls,
-                                            const uint8_t* data,
-                                            size_t size,
-                                            uint32_t frame_id) {
+bool V4L2StatelessVideoDecoder::SubmitFrame(
+    void* ctrls,
+    const uint8_t* data,
+    size_t size,
+    scoped_refptr<StatelessDecodeSurface> dec_surface) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  DCHECK(dec_surface);
   DVLOGF(4);
   if (!output_queue_) {
     if (!input_queue_->PrepareBuffers()) {
@@ -306,8 +308,15 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(void* ctrls,
     ArmBufferMonitor();
   }
 
-  DVLOGF(2) << "Submitting compressed frame " << frame_id << " to be decoded.";
-  return input_queue_->SubmitCompressedFrameData(ctrls, data, size, frame_id);
+  DVLOGF(2) << "Submitting compressed frame " << dec_surface->FrameID()
+            << " to be decoded.";
+  if (input_queue_->SubmitCompressedFrameData(ctrls, data, size,
+                                              dec_surface->FrameID())) {
+    surfaces_queued_.push(std::move(dec_surface));
+
+    return true;
+  }
+  return false;
 }
 
 void V4L2StatelessVideoDecoder::SurfaceReady(
@@ -387,10 +396,6 @@ void V4L2StatelessVideoDecoder::ServiceDisplayQueue() {
     // Move the metadata associated with the surface over to the video frame.
     wrapped_frame->set_color_space(surface->ColorSpace().ToGfxColorSpace());
     wrapped_frame->set_timestamp(surface->VideoFrameTimestamp());
-
-    // References that this frame holds can be removed once the frame is done
-    // decoding.
-    surface->ClearReferenceSurfaces();
 
     // Add a reference to the video frame so that underlying resource will not
     // be queued until both the video frame has been displayed and all of the
@@ -511,7 +516,20 @@ void V4L2StatelessVideoDecoder::ArmBufferMonitor() {
 
 void V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers(Buffer buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  DCHECK(!surfaces_queued_.empty());
   DVLOGF(4);
+
+  auto surface = std::move(surfaces_queued_.front());
+  surfaces_queued_.pop();
+
+  DCHECK_EQ(static_cast<uint64_t>(surface->FrameID()),
+            buffer.GetTimeAsFrameID())
+      << "The surfaces are queued as the buffer is submitted. They are "
+         "expected to be dequeued in order.";
+
+  // References that this frame holds can be removed once the frame is done
+  // decoding.
+  surface->ClearReferenceSurfaces();
 
   // |output_queue_| is responsible for tracking which buffers correspond to
   // which frames. The queue needs to know that the buffer is done, ready for
