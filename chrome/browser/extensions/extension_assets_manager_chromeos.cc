@@ -60,7 +60,7 @@ class ExtensionAssetsManagerHelper {
     raw_ptr<Profile, ExperimentalAsh> profile;
     ExtensionAssetsManager::InstallExtensionCallback callback;
   };
-  typedef std::vector<PendingInstallInfo> PendingInstallList;
+  using PendingInstallList = std::vector<PendingInstallInfo>;
 
   ExtensionAssetsManagerHelper(const ExtensionAssetsManagerHelper&) = delete;
   ExtensionAssetsManagerHelper& operator=(const ExtensionAssetsManagerHelper&) =
@@ -108,14 +108,14 @@ class ExtensionAssetsManagerHelper {
  private:
   friend struct base::DefaultSingletonTraits<ExtensionAssetsManagerHelper>;
 
-  ExtensionAssetsManagerHelper() {}
-  ~ExtensionAssetsManagerHelper() {}
+  ExtensionAssetsManagerHelper() = default;
+  ~ExtensionAssetsManagerHelper() = default;
 
   // Extension ID + version pair.
-  typedef std::pair<std::string, std::string> InstallItem;
+  using InstallItem = std::pair<std::string, std::string>;
 
   // Queue of pending installs in progress.
-  typedef std::map<InstallItem, std::vector<PendingInstallInfo> > InstallQueue;
+  using InstallQueue = std::map<InstallItem, std::vector<PendingInstallInfo>>;
 
   InstallQueue install_queue_;
 };

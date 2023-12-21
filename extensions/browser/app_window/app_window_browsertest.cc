@@ -12,7 +12,7 @@ namespace extensions {
 
 namespace {
 
-typedef PlatformAppBrowserTest AppWindowBrowserTest;
+using AppWindowBrowserTest = PlatformAppBrowserTest;
 
 // This test is disabled on Linux because of the unpredictable nature of native
 // windows. We cannot assume that the window manager will insert any title bar

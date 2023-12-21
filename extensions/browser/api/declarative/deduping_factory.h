@@ -81,10 +81,10 @@ class DedupingFactory {
   typedef std::string InstanceType;
   // Cache of previous prototypes in most-recently-used order. Most recently
   // used objects are at the end.
-  typedef std::list<scoped_refptr<const BaseClassT> > PrototypeList;
-  typedef base::flat_map<InstanceType, PrototypeList> ExistingPrototypes;
-  typedef base::flat_map<InstanceType, FactoryMethod> FactoryMethods;
-  typedef base::flat_set<InstanceType> ParameterizedTypes;
+  using PrototypeList = std::list<scoped_refptr<const BaseClassT>>;
+  using ExistingPrototypes = base::flat_map<InstanceType, PrototypeList>;
+  using FactoryMethods = base::flat_map<InstanceType, FactoryMethod>;
+  using ParameterizedTypes = base::flat_set<InstanceType>;
 
   const size_t max_number_prototypes_;
   ExistingPrototypes prototypes_;

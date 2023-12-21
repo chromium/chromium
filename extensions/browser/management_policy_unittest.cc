@@ -7,7 +7,7 @@
 #include "extensions/browser/test_management_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-typedef extensions::TestManagementPolicyProvider TestProvider;
+using TestProvider = extensions::TestManagementPolicyProvider;
 using extensions::Extension;
 
 class ManagementPolicyTest : public testing::Test {

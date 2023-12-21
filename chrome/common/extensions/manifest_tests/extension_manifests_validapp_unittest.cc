@@ -11,7 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-typedef ChromeManifestTest ValidAppManifestTest;
+using ValidAppManifestTest = ChromeManifestTest;
 
 TEST_F(ValidAppManifestTest, ValidApp) {
   scoped_refptr<extensions::Extension> extension(

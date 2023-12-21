@@ -15,7 +15,7 @@
 
 namespace extensions {
 
-typedef ExtensionBrowserTest ExtensionViewHostFactoryTest;
+using ExtensionViewHostFactoryTest = ExtensionBrowserTest;
 
 // Tests that ExtensionHosts are created with the correct type and profiles.
 IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest, CreateExtensionHosts) {

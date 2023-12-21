@@ -19,7 +19,7 @@
 
 namespace extensions {
 
-typedef EventFilter::MatcherID MatcherID;
+using MatcherID = EventFilter::MatcherID;
 
 // static
 std::unique_ptr<EventListener> EventListener::ForExtension(

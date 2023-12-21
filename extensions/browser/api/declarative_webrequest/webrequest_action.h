@@ -169,7 +169,7 @@ class WebRequestAction : public base::RefCounted<WebRequestAction> {
   const HostPermissionsStrategy host_permissions_strategy_;
 };
 
-typedef DeclarativeActionSet<WebRequestAction> WebRequestActionSet;
+using WebRequestActionSet = DeclarativeActionSet<WebRequestAction>;
 
 //
 // The following are concrete actions.
