@@ -10606,7 +10606,7 @@ class BrowserAutofillManagerVotingTest : public BrowserAutofillManagerTest {
     BrowserAutofillManagerTest::SetUp();
 
     // All uploads should be expected explicitly.
-    EXPECT_CALL(*crowdsourcing_manager(), StartUploadRequest(_, _, _, _, _))
+    EXPECT_CALL(*crowdsourcing_manager(), StartUploadRequest(_, _, _, _))
         .Times(0);
 
     form_.name = u"MyForm";
@@ -10644,7 +10644,7 @@ TEST_F(BrowserAutofillManagerVotingTest, Submission) {
                                      FieldType::CREDIT_CARD_NAME_FIRST}),
                                 FieldAutofillTypeIs({FieldType::EMPTY_TYPE})),
                       ObservedSubmissionIs(true))),
-                  _, _, _, _));
+                  _, _, _));
   FormSubmitted(form_);
 }
 
@@ -10677,7 +10677,7 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
                                        FieldType::CREDIT_CARD_NAME_LAST,
                                        FieldType::NAME_LAST_SECOND})),
               ObservedSubmissionIs(false))),
-          _, _, _, _));
+          _, _, _));
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
   // 5. Grow the form by one field, which changes the form signature.
@@ -10701,7 +10701,7 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
                                              FieldType::NAME_LAST_SECOND}),
                         FieldAutofillTypeIs({FieldType::EMPTY_TYPE})),
               ObservedSubmissionIs(true))),
-          _, _, _, _));
+          _, _, _));
   FormSubmitted(form_);
 }
 
@@ -10719,7 +10719,7 @@ TEST_F(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
                                      FieldType::CREDIT_CARD_NAME_FIRST}),
                                 FieldAutofillTypeIs({FieldType::EMPTY_TYPE})),
                       ObservedSubmissionIs(false))),
-                  _, _, _, _));
+                  _, _, _));
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
   // Simulate a navigation. This is when the vote is sent.
@@ -10743,7 +10743,7 @@ TEST_F(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
                                      FieldType::CREDIT_CARD_NAME_FIRST}),
                                 FieldAutofillTypeIs({FieldType::EMPTY_TYPE})),
                       ObservedSubmissionIs(true))),
-                  _, _, _, _));
+                  _, _, _));
   FormSubmitted(form_);
 }
 

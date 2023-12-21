@@ -61,8 +61,7 @@ class TouchToFillDelegateAndroidImpl;
 //
 // It is owned by the AutofillDriver.
 class AutofillManager
-    : public AutofillCrowdsourcingManager::Observer,
-      public translate::TranslateDriver::LanguageDetectionObserver {
+    : public translate::TranslateDriver::LanguageDetectionObserver {
  public:
   // Observer of AutofillManager events.
   //
@@ -500,10 +499,10 @@ class AutofillManager
  private:
   friend class AutofillManagerTestApi;
 
-  // AutofillCrowdsourcingManager::Observer:
+  // Invoked by `AutofillCrowdsourcingManager`.
   void OnLoadedServerPredictions(
       std::string response,
-      const std::vector<FormSignature>& queried_form_signatures) override;
+      const std::vector<FormSignature>& queried_form_signatures);
 
   // Invoked when forms from OnFormsSeen() have been parsed to
   // |form_structures|.

@@ -52,20 +52,6 @@ class AutofillCrowdsourcingManager {
   static constexpr char kUmaMethod[] = "Autofill.Query.Method";
   static constexpr char kUmaWasInCache[] = "Autofill.Query.WasInCache";
 
-  // An interface used to notify clients of AutofillCrowdsourcingManager.
-  class Observer {
-   public:
-    // Called when field type predictions are successfully received from the
-    // server. |response| contains the server response for the forms
-    // represented by |queried_form_signatures|.
-    virtual void OnLoadedServerPredictions(
-        std::string response,
-        const std::vector<FormSignature>& queried_form_signatures) = 0;
-
-   protected:
-    virtual ~Observer() = default;
-  };
-
   // `client` owns (and hence survives) this AutofillCrowdsourcingManager.
   // `channel` determines the value for the the Google-API-key HTTP header and
   // whether raw metadata uploading is enabled.
@@ -75,13 +61,19 @@ class AutofillCrowdsourcingManager {
 
   virtual ~AutofillCrowdsourcingManager();
 
+  // The callback executed on successful completion of a query request. The
+  // first parameter contains the server response and the second parameter the
+  // queried form signatures.
+  using QueryRequestCompleteCallback =
+      base::OnceCallback<void(std::string, const std::vector<FormSignature>&)>;
+
   // Starts a query request to Autofill servers. The observer is called with the
   // list of the fields of all requested forms.
-  // |forms| - array of forms aggregated in this request.
+  // `forms` - array of forms aggregated in this request.
   virtual bool StartQueryRequest(
       const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
       net::IsolationInfo isolation_info,
-      base::WeakPtr<Observer> observer);
+      QueryRequestCompleteCallback callback);
 
   // Starts an upload request for `upload_contents`. If `upload_contents` has
   // more than one element, then `upload_contents[0]` is expected to correspond
@@ -93,8 +85,7 @@ class AutofillCrowdsourcingManager {
       std::vector<AutofillUploadContents> upload_contents,
       mojom::SubmissionSource form_submission_source,
       int form_active_field_count,
-      PrefService* prefs,
-      base::WeakPtr<Observer> observer);
+      PrefService* prefs);
 
   // Returns true if the autofill server communication is enabled.
   bool IsEnabled() const;
