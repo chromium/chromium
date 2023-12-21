@@ -35,21 +35,21 @@ IntentPickerBubbleView* intent_picker_bubble() {
 }
 
 testing::AssertionResult AwaitIntentPickerTabHelperIconUpdateComplete(
-    Browser* browser) {
+    content::WebContents* web_contents) {
   base::test::TestFuture<void> future;
-  auto* tab_helper = IntentPickerTabHelper::FromWebContents(
-      browser->tab_strip_model()->GetActiveWebContents());
+  auto* tab_helper = IntentPickerTabHelper::FromWebContents(web_contents);
   tab_helper->SetIconUpdateCallbackForTesting(  // IN-TEST
       future.GetCallback(), /*include_latest_navigation=*/true);
   if (!future.Wait()) {
     return testing::AssertionFailure()
-           << "Intent picker app did not resolve an applicable app.";
+           << "Intent picker icon did not resolve an applicable app.";
   }
   return testing::AssertionSuccess();
 }
 
 testing::AssertionResult WaitForIntentPickerToShow(Browser* browser) {
-  auto result = AwaitIntentPickerTabHelperIconUpdateComplete(browser);
+  auto result = AwaitIntentPickerTabHelperIconUpdateComplete(
+      browser->tab_strip_model()->GetActiveWebContents());
   if (!result) {
     return result;
   }

@@ -178,7 +178,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerInteractiveUiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
 
   // Verify that no icon was shown.
-  EXPECT_TRUE(web_app::AwaitIntentPickerTabHelperIconUpdateComplete(browser()));
+  EXPECT_TRUE(web_app::AwaitIntentPickerTabHelperIconUpdateComplete(
+      browser()->tab_strip_model()->GetActiveWebContents()));
   ASSERT_FALSE(web_app::GetIntentPickerIcon(browser())->GetVisible());
 
   // Load a different page while simulating it having a native app.

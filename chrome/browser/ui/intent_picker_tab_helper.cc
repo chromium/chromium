@@ -115,6 +115,9 @@ bool IsShuttingDown(content::WebContents* web_contents) {
 IntentPickerTabHelper::~IntentPickerTabHelper() = default;
 
 void IntentPickerTabHelper::MaybeShowIntentPickerIcon() {
+  // Setting icon_resolved_ to false ensures testing callbacks can accurately
+  // wait for the entire async process to finish.
+  icon_resolved_ = false;
   CHECK(web_contents());
   if (!intent_picker_delegate_->ShouldShowIntentPickerWithApps() ||
       !IsValidWebContentsForIntentPicker(web_contents())) {
@@ -290,8 +293,9 @@ void IntentPickerTabHelper::UpdateExpandedState(bool should_show_icon) {
 
 void IntentPickerTabHelper::OnAppIconLoadedForChip(const std::string& app_id,
                                                    ui::ImageModel app_icon) {
-  if (app_id != current_app_id_)
+  if (app_id != current_app_id_) {
     return;
+  }
 
   if (!app_icon.IsEmpty()) {
     current_app_icon_ = app_icon;
@@ -320,7 +324,7 @@ void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
   }
   browser->window()->UpdatePageActionIcon(PageActionIconType::kIntentPicker);
 
-  icon_resolved_after_last_navigation_ = true;
+  icon_resolved_ = true;
   if (icon_update_closure_for_testing_) {
     std::move(icon_update_closure_for_testing_).Run();
   }
@@ -408,7 +412,7 @@ void IntentPickerTabHelper::OnIntentPickerClosedMaybeLaunch(
 void IntentPickerTabHelper::SetIconUpdateCallbackForTesting(
     base::OnceClosure callback,
     bool include_latest_navigation) {
-  if (icon_resolved_after_last_navigation_ && include_latest_navigation) {
+  if (icon_resolved_ && include_latest_navigation) {
     std::move(callback).Run();
     return;
   }
@@ -418,7 +422,7 @@ void IntentPickerTabHelper::SetIconUpdateCallbackForTesting(
 void IntentPickerTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (IsNavigatingToNewSite(navigation_handle)) {
-    icon_resolved_after_last_navigation_ = false;
+    icon_resolved_ = false;
   }
 }
 

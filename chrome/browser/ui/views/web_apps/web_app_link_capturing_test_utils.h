@@ -16,6 +16,10 @@ namespace views {
 class Button;
 }  // namespace views
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 class Browser;
 
 namespace web_app {
@@ -30,7 +34,7 @@ IntentChipButton* GetIntentPickerIcon(Browser* browser);
 IntentPickerBubbleView* intent_picker_bubble();
 
 testing::AssertionResult AwaitIntentPickerTabHelperIconUpdateComplete(
-    Browser* browser);
+    content::WebContents* web_contents);
 
 testing::AssertionResult WaitForIntentPickerToShow(Browser* browser);
 

@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
+#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -71,6 +72,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -1672,10 +1674,9 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
 
   NavigateTabbedBrowserToSite(GetInScopeURL(site), NavigationMode::kNewTab);
 
-  ASSERT_TRUE(intent_picker_view()->GetVisible());
   BrowserAddedWaiter browser_added_waiter;
 
-  intent_picker_view()->ExecuteForTesting();
+  EXPECT_TRUE(ClickIntentPickerChip(browser()));
   browser_added_waiter.Wait();
   app_browser_ = browser_added_waiter.browser_added();
   ASSERT_TRUE(app_browser_);
@@ -4008,18 +4009,12 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
         GURL url = tab->GetURL();
         tab_state_map.emplace(tab, TabState(url));
       }
-      content::WebContents* active_tab = tabs->GetActiveWebContents();
+      content::WebContents* active_tab_contents = tabs->GetActiveWebContents();
       bool launch_icon_shown = false;
       bool is_app_browser = AppBrowserController::IsWebApp(browser);
-      if (!is_app_browser && active_tab != nullptr) {
-        auto* tab_helper = IntentPickerTabHelper::FromWebContents(active_tab);
-        base::RunLoop run_loop;
-        tab_helper->SetIconUpdateCallbackForTesting(
-            run_loop.QuitClosure(),
-            /*include_latest_navigation*/ true);
-        run_loop.Run();
-
-        launch_icon_shown = intent_picker_view()->GetVisible();
+      if (!is_app_browser && active_tab_contents != nullptr) {
+        AwaitIntentPickerTabHelperIconUpdateComplete(active_tab_contents);
+        launch_icon_shown = intent_chip_view()->GetVisible();
       }
       webapps::AppId app_id;
       if (AppBrowserController::IsWebApp(browser)) {
@@ -4027,8 +4022,8 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
       }
 
       browser_state.emplace(
-          browser, BrowserState(browser, tab_state_map, active_tab, app_id,
-                                launch_icon_shown));
+          browser, BrowserState(browser, tab_state_map, active_tab_contents,
+                                app_id, launch_icon_shown));
     }
 
     WebAppProvider* provider = GetProviderForProfile(profile);
@@ -4559,13 +4554,10 @@ PageActionIconView* WebAppIntegrationTestDriver::pwa_install_view() {
   return pwa_install_view;
 }
 
-PageActionIconView* WebAppIntegrationTestDriver::intent_picker_view() {
-  PageActionIconView* intent_picker_view =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar_button_provider()
-          ->GetPageActionIconView(PageActionIconType::kIntentPicker);
-  CHECK(intent_picker_view);
-  return intent_picker_view;
+IntentChipButton* WebAppIntegrationTestDriver::intent_chip_view() {
+  IntentChipButton* intent_chip_button = GetIntentPickerIcon(browser());
+  CHECK(intent_chip_button);
+  return intent_chip_button;
 }
 
 const net::EmbeddedTestServer&
@@ -4602,10 +4594,10 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1357905): Update test driver to work with new UI.
-  disabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
+  enabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
 #else
   // TOOD(b/313492499): Update test driver to work with new intent picker UI.
-  disabled_features.push_back(features::kDesktopPWAsLinkCapturing);
+  enabled_features.push_back(features::kDesktopPWAsLinkCapturing);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }

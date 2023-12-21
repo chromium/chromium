@@ -33,8 +33,8 @@ class IntentPickerTabHelper
 
   ~IntentPickerTabHelper() override;
 
-  // Displays the intent picker icon in the omnibox, based on the last committed
-  // URL for the current web_contents.
+  // Starts an async icon update before maybe showing the intent picker icon in
+  // the omnibox, based on the last committed URL for the current web_contents.
   void MaybeShowIntentPickerIcon();
 
   // Shows the intent picker bubble to present a choice between apps to handle
@@ -127,7 +127,7 @@ class IntentPickerTabHelper
   const raw_ptr<web_app::WebAppInstallManager> install_manager_;
 
   bool should_show_icon_ = false;
-  bool icon_resolved_after_last_navigation_ = false;
+  bool icon_resolved_ = false;
   url::Origin last_shown_origin_;
   // True if the icon should be shown as in an expanded chip style due to usage
   // on this origin.

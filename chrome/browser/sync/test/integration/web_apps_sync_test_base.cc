@@ -26,13 +26,14 @@ namespace web_app {
 WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
     : SyncTest(test_type) {
   std::vector<base::test::FeatureRef> disabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1357905): Update test driver to work with new UI.
-  disabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
+  enabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
 #else
   // TOOD(b/313492499): Update test driver to work with new intent picker UI.
-  disabled_features.push_back(features::kDesktopPWAsLinkCapturing);
+  enabled_features.push_back(features::kDesktopPWAsLinkCapturing);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -41,7 +42,7 @@ WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
   base::Extend(disabled_features, ash::standalone_browser::GetFeatureRefs());
 #endif
 
-  scoped_feature_list_.InitWithFeatures({}, disabled_features);
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 WebAppsSyncTestBase::~WebAppsSyncTestBase() = default;
