@@ -5,13 +5,14 @@
 import './shimless_rma_shared.css.js';
 import './base_page.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './onboarding_choose_wp_disable_method_page.html.js';
 import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {disableNextButton, enableNextButton, focusPageTitle} from './shimless_rma_util.js';
+import {OnSelectedChangedEvent} from './events.js';
 
 /**
  * @fileoverview
@@ -22,19 +23,12 @@ import {disableNextButton, enableNextButton, focusPageTitle} from './shimless_rm
  * status.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const OnboardingChooseWpDisableMethodPageBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const OnboardingChooseWpDisableMethodPageBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class OnboardingChooseWpDisableMethodPage extends
-    OnboardingChooseWpDisableMethodPageBase {
+  OnboardingChooseWpDisableMethodPageBase {
   static get is() {
-    return 'onboarding-choose-wp-disable-method-page';
+    return 'onboarding-choose-wp-disable-method-page' as const;
   }
 
   static get template() {
@@ -44,12 +38,10 @@ export class OnboardingChooseWpDisableMethodPage extends
   static get properties() {
     return {
       /**
-       * Set by shimless_rma.js.
-       * @type {boolean}
+       * Set by shimless_rma.ts.
        */
       allButtonsDisabled: Boolean,
 
-      /** @private */
       hwwpMethod: {
         type: String,
         value: '',
@@ -57,24 +49,17 @@ export class OnboardingChooseWpDisableMethodPage extends
     };
   }
 
-  constructor() {
-    super();
-    /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService = getShimlessRmaService();
-  }
+  shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
+  allButtonsDisabled: boolean;
+  private hwwpMethod: string;
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     focusPageTitle(this);
   }
 
-  /**
-   * @param {!CustomEvent<{value: string}>} event
-   * @protected
-   */
-  onHwwpDisableMethodSelectionChanged(event) {
+  protected onHwwpDisableMethodSelectionChanged(event: OnSelectedChangedEvent) {
     this.hwwpMethod = event.detail.value;
     const disabled = !this.hwwpMethod;
     if (disabled) {
@@ -84,8 +69,7 @@ export class OnboardingChooseWpDisableMethodPage extends
     }
   }
 
-  /** @return {!Promise<!{stateResult: !StateResult}>} */
-  onNextButtonClick() {
+  onNextButtonClick(): Promise<{stateResult: StateResult}> {
     if (this.hwwpMethod === 'hwwpDisableMethodManual') {
       return this.shimlessRmaService.chooseManuallyDisableWriteProtect();
     } else if (this.hwwpMethod === 'hwwpDisableMethodRsu') {
@@ -96,6 +80,12 @@ export class OnboardingChooseWpDisableMethodPage extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [OnboardingChooseWpDisableMethodPage.is]: OnboardingChooseWpDisableMethodPage;
+  }
+}
+
 customElements.define(
-    OnboardingChooseWpDisableMethodPage.is,
-    OnboardingChooseWpDisableMethodPage);
+  OnboardingChooseWpDisableMethodPage.is,
+  OnboardingChooseWpDisableMethodPage);
