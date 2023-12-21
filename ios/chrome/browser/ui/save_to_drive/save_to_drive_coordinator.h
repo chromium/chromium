@@ -7,12 +7,17 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+namespace web {
+class WebState;
+}
+
 @interface SaveToDriveCoordinator : ChromeCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                   fileName:(NSString*)fileName
                                   fileSize:(int64_t)fileSize
+                                  webState:(web::WebState*)webState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

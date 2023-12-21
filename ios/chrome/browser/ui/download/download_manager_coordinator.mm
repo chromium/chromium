@@ -41,7 +41,6 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
-#import "ios/chrome/browser/shared/public/commands/show_save_to_drive_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
@@ -295,11 +294,7 @@
   CHECK(base::FeatureList::IsEnabled(kIOSSaveToDrive));
   id<SaveToDriveCommands> saveToDriveHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SaveToDriveCommands);
-  ShowSaveToDriveCommand* command = [[ShowSaveToDriveCommand alloc] init];
-  command.fileName =
-      base::apple::FilePathToNSString(_downloadTask->GenerateFileName());
-  command.fileSize = _downloadTask->GetTotalBytes();
-  [saveToDriveHandler showSaveToDrive:command];
+  [saveToDriveHandler showSaveToDriveForDownload:_downloadTask];
 }
 
 - (void)presentOpenInForDownloadManagerViewController:

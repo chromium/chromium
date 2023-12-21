@@ -10,6 +10,7 @@
 #import <memory>
 #import <optional>
 
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
@@ -99,7 +100,6 @@
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
-#import "ios/chrome/browser/shared/public/commands/show_save_to_drive_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
@@ -237,6 +237,7 @@
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
+#import "ios/web/public/download/download_task.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -1413,6 +1414,9 @@ enum class ToolbarKind {
 
   [self.miniMapCoordinator stop];
   self.miniMapCoordinator = nil;
+
+  [self.saveToDriveCoordinator stop];
+  self.saveToDriveCoordinator = nil;
 
   [self.saveToPhotosCoordinator stop];
   self.saveToPhotosCoordinator = nil;
@@ -2630,15 +2634,17 @@ enum class ToolbarKind {
 
 #pragma mark - SaveToDriveCommands
 
-- (void)showSaveToDrive:(ShowSaveToDriveCommand*)command {
+- (void)showSaveToDriveForDownload:(web::DownloadTask*)downloadTask {
   // If the Save to Drive coordinator is not nil, stop it.
   [self hideSaveToDrive];
 
   _saveToDriveCoordinator = [[SaveToDriveCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                        fileName:command.fileName
-                        fileSize:command.fileSize];
+                        fileName:base::apple::FilePathToNSString(
+                                     downloadTask->GenerateFileName())
+                        fileSize:downloadTask->GetTotalBytes()
+                        webState:downloadTask->GetWebState()];
   [_saveToDriveCoordinator start];
 }
 

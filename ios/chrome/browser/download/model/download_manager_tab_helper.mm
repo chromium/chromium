@@ -28,6 +28,8 @@ DownloadManagerTabHelper::~DownloadManagerTabHelper() {
   }
 }
 
+#pragma mark - Public methods
+
 void DownloadManagerTabHelper::Download(
     std::unique_ptr<web::DownloadTask> task) {
   // If downloads are persistent, they cannot be lost once completed.
@@ -59,6 +61,13 @@ void DownloadManagerTabHelper::SetDelegate(
   delegate_ = delegate;
 }
 
+void DownloadManagerTabHelper::StartDownloadTaskAndSaveToDrive(
+    id<SystemIdentity> selected_identity) {
+  // TODO(crbug.com/1495353): Start the download task through `delegate_`.
+}
+
+#pragma mark - web::WebStateObserver
+
 void DownloadManagerTabHelper::WasShown(web::WebState* web_state) {
   if (task_ && delegate_) {
     delegate_started_ = true;
@@ -83,6 +92,8 @@ void DownloadManagerTabHelper::WebStateDestroyed(web::WebState* web_state) {
   }
 }
 
+#pragma mark - web::DownloadTaskObserver
+
 void DownloadManagerTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
   DCHECK_EQ(task, task_.get());
   switch (task->GetState()) {
@@ -100,6 +111,8 @@ void DownloadManagerTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
       NOTREACHED();
   }
 }
+
+#pragma mark - Private
 
 void DownloadManagerTabHelper::DidCreateDownload(
     std::unique_ptr<web::DownloadTask> task) {

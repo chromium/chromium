@@ -55,8 +55,6 @@ source_set("commands") {
     "share_download_overlay_commands.h",
     "share_highlight_command.h",
     "share_highlight_command.mm",
-    "show_save_to_drive_command.h",
-    "show_save_to_drive_command.mm",
     "show_signin_command.h",
     "show_signin_command.mm",
     "snackbar_commands.h",

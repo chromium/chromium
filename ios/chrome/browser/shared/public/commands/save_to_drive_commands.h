@@ -10,8 +10,8 @@
 // Commands related to Save to Drive.
 @protocol SaveToDriveCommands
 
-// Starts Save to Drive UI.
-- (void)showSaveToDrive:(ShowSaveToDriveCommand*)command;
+// Starts Save to Drive UI for the given download task.
+- (void)showSaveToDriveForDownload:(web::DownloadTask*)downloadTask;
 
 // Stops Save to Drive UI.
 - (void)hideSaveToDrive;

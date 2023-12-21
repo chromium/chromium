@@ -5,16 +5,19 @@
 #import "ios/chrome/browser/ui/save_to_drive/save_to_drive_coordinator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_configuration.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_coordinator.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -57,17 +60,23 @@ NSString* GetAccountPickerBodyText(NSString* file_name, int64_t file_size) {
 @implementation SaveToDriveCoordinator {
   NSString* _fileName;
   int64_t _fileSize;
+  base::WeakPtr<web::WebState> _webState;
+  id<SystemIdentity> _selectedIdentity;
   AccountPickerCoordinator* _accountPickerCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                   fileName:(NSString*)fileName
-                                  fileSize:(int64_t)fileSize {
+                                  fileSize:(int64_t)fileSize
+                                  webState:(web::WebState*)webState {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _fileName = fileName;
     _fileSize = fileSize;
+    _webState = webState->GetWeakPtr();
+    _selectedIdentity = nil;
+    _accountPickerCoordinator = nil;
   }
   return self;
 }
@@ -126,7 +135,7 @@ NSString* GetAccountPickerBodyText(NSString* file_name, int64_t file_size) {
             (AccountPickerCoordinator*)accountPickerCoordinator
                didSelectIdentity:(id<SystemIdentity>)identity
                     askEveryTime:(BOOL)askEveryTime {
-  // TODO(crbug.com/1495353): Start download and save file to Drive.
+  _selectedIdentity = identity;
   [_accountPickerCoordinator startValidationSpinner];
   [_accountPickerCoordinator stopAnimated:YES];
 }
@@ -144,9 +153,29 @@ NSString* GetAccountPickerBodyText(NSString* file_name, int64_t file_size) {
 - (void)accountPickerCoordinatorDidStop:
     (AccountPickerCoordinator*)accountPickerCoordinator {
   _accountPickerCoordinator = nil;
+
+  // If an identity was selected, start the download and save to Drive.
+  if (_selectedIdentity) {
+    [self startDownloadAndSaveToDriveWithIdentity:_selectedIdentity];
+  }
+
   id<SaveToDriveCommands> saveToDriveCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SaveToDriveCommands);
   [saveToDriveCommandsHandler hideSaveToDrive];
+}
+
+#pragma mark - Private
+
+// If the web state still exists with its associated DownloadManagerTabHelper
+// instance, asks the DownloadManagerTabHelper to start the current download
+// task and remember to save the downloaded file to Drive.
+- (void)startDownloadAndSaveToDriveWithIdentity:(id<SystemIdentity>)identity {
+  if (!_webState) {
+    return;
+  }
+  DownloadManagerTabHelper* downloadManagerTabHelper =
+      DownloadManagerTabHelper::FromWebState(_webState.get());
+  downloadManagerTabHelper->StartDownloadTaskAndSaveToDrive(identity);
 }
 
 @end
