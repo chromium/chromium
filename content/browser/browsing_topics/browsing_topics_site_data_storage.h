@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -25,6 +26,9 @@ class Statement;
 }  // namespace sql
 
 namespace content {
+
+BASE_DECLARE_FEATURE(
+    kBrowsingTopicsSiteDataStorageUseBuiltInRecoveryIfSupported);
 
 class CONTENT_EXPORT BrowsingTopicsSiteDataStorage {
  public:

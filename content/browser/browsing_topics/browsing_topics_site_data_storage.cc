@@ -26,6 +26,14 @@ void RecordInitializationStatus(bool successful) {
 
 }  // namespace
 
+// When enabled, prefer to use the new recovery module to recover the
+// `BrowsingTopicsSiteDataStorage` database. See https://crbug.com/1385500 for
+// details. This is a kill switch and is not intended to be used in a field
+// trial.
+BASE_FEATURE(kBrowsingTopicsSiteDataStorageUseBuiltInRecoveryIfSupported,
+             "BrowsingTopicsSiteDataStorageUseBuiltInRecoveryIfSupported",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BrowsingTopicsSiteDataStorage::BrowsingTopicsSiteDataStorage(
     const base::FilePath& path_to_database)
     : path_to_database_(path_to_database) {
@@ -342,20 +350,15 @@ void BrowsingTopicsSiteDataStorage::DatabaseErrorCallback(
     int extended_error,
     sql::Statement* stmt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Attempt to recover a corrupt database.
-  if (sql::Recovery::ShouldRecover(extended_error)) {
-    // Prevent reentrant calls.
-    db_->reset_error_callback();
+  // Attempt to recover a corrupt database, if it is eligible to be recovered.
+  if (sql::BuiltInRecovery::RecoverIfPossible(
+          db_.get(), extended_error,
+          sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze,
+          &kBrowsingTopicsSiteDataStorageUseBuiltInRecoveryIfSupported)) {
+    // Recovery was attempted. The database handle has been poisoned and the
+    // error callback has been reset.
 
-    // After this call, the |db_| handle is poisoned so that future calls will
-    // return errors until the handle is re-opened.
-    sql::Recovery::RecoverDatabaseWithMetaVersion(db_.get(), path_to_database_);
-
-    // The DLOG(FATAL) below is intended to draw immediate attention to errors
-    // in newly-written code. Database corruption is generally a result of OS or
-    // hardware issues, not coding errors at the client level, so displaying the
-    // error would probably lead to confusion. The ignored call signals the
-    // test-expectation framework that the error was handled.
+    // Signal the test-expectation framework that the error was handled.
     std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
     return;
   }
