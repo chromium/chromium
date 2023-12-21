@@ -8,17 +8,45 @@
 #include "ash/ash_export.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/keyboard_device.h"
 
 namespace ash {
+
+enum class DeviceType {
+  kUnknown = 0,
+  kKeyboard = 1,
+  kKeyboardMouseCombo = 2,
+  kMouse = 3,
+};
 
 struct ASH_EXPORT MouseMetadata {
   mojom::CustomizationRestriction customization_restriction;
   bool operator==(const MouseMetadata& other) const;
 };
 
+struct ASH_EXPORT KeyboardMetadata {};
+
+struct ASH_EXPORT KeyboardMouseComboMetadata {
+  mojom::CustomizationRestriction customization_restriction;
+  bool operator==(const KeyboardMouseComboMetadata& other) const;
+};
+
 // This function returns mouse metadata. Returns nullptr if there is no metadata
 // on the mouse.
 ASH_EXPORT const MouseMetadata* GetMouseMetadata(const ui::InputDevice& device);
+
+// This function returns keyboard metadata. Returns nullptr if there is no
+// metadata on the keyboard.
+ASH_EXPORT const KeyboardMetadata* GetKeyboardMetadata(
+    const ui::InputDevice& device);
+
+// This function returns keyboard mouse combo metadata. Returns nullptr if there
+// is no metadata on the keyboard mouse combo.
+ASH_EXPORT const KeyboardMouseComboMetadata* GetKeyboardMouseComboMetadata(
+    const ui::InputDevice& device);
+
+// This function returns the device type of the input device.
+ASH_EXPORT DeviceType GetDeviceType(const ui::InputDevice& device);
 
 }  // namespace ash
 

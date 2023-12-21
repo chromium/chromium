@@ -12,6 +12,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_metadata.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "base/containers/contains.h"
@@ -111,13 +112,20 @@ bool IsDeviceASuspectedImposter<mojom::KeyboardPtr>(
     return false;
   }
 
-  if (IsKeyboardAKnownImposterFalsePositive(device)) {
-    return false;
+  // If the device type is keyboard or keyboard mouse combo, it should not be
+  // considered an imposter.
+  const auto device_type = GetDeviceType(device);
+  switch (device_type) {
+    case DeviceType::kKeyboard:
+    case DeviceType::kKeyboardMouseCombo:
+      return false;
+    case DeviceType::kMouse:
+      return true;
+    case DeviceType::kUnknown:
+      break;
   }
 
-  // If the device is a keyboard that is known to pretend to have mouse-like
-  // functionality, do not use the `suspected_imposter` field.
-  if (IsKeyboardPretendingToBeMouse(device)) {
+  if (IsKeyboardAKnownImposterFalsePositive(device)) {
     return false;
   }
 
@@ -151,10 +159,17 @@ bool IsDeviceASuspectedImposter<mojom::MousePtr>(
     return false;
   }
 
-  // If the device is a keyboard that is known to pretend to have mouse-like
-  // functionality, the device should always be considered an imposter.
-  if (IsKeyboardPretendingToBeMouse(device)) {
-    return true;
+  // If the device type is keyboard, the device should
+  // always be considered an imposter.
+  const auto device_type = GetDeviceType(device);
+  switch (device_type) {
+    case DeviceType::kKeyboard:
+      return true;
+    case DeviceType::kKeyboardMouseCombo:
+    case DeviceType::kMouse:
+      return false;
+    case DeviceType::kUnknown:
+      break;
   }
 
   // If the device is bluetooth, check the bluetooth device to see if it is a
