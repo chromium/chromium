@@ -962,8 +962,8 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, SetIcon) {
 
   gfx::ImageSkia image_skia;
   int32_t size_hint_in_dip = 48;
-  image_skia = app_service_test().LoadAppIconBlocking(
-      apps::AppType::kChromeApp, extension->id(), size_hint_in_dip);
+  image_skia =
+      app_service_test().LoadAppIconBlocking(extension->id(), size_hint_in_dip);
 
   // Create non-shelf window.
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
