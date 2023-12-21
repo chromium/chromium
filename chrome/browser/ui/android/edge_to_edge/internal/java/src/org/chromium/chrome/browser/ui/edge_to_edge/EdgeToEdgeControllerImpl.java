@@ -59,7 +59,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     private Tab mCurrentTab;
     private WebContentsObserver mWebContentsObserver;
     private boolean mIsActivityToEdge;
-    private Insets mSystemInsets;
+    private @Nullable Insets mSystemInsets;
     private boolean mDidSetDecorAndListener;
 
     /**
@@ -151,7 +151,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     @Override
     public void registerAdjuster(EdgeToEdgePadAdjuster adjuster) {
         mPadAdjusters.addObserver(adjuster);
-        adjuster.adjustToEdge(mIsActivityToEdge, mSystemInsets.bottom);
+        if (mSystemInsets != null) adjuster.adjustToEdge(mIsActivityToEdge, mSystemInsets.bottom);
     }
 
     @Override
