@@ -3296,8 +3296,8 @@ ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpace(
   }
 
   builder.SetPercentageResolutionSize(containing_grid_area_size);
-  builder.SetInlineAutoBehavior(grid_item.inline_auto_behavior);
-  builder.SetBlockAutoBehavior(grid_item.block_auto_behavior);
+  builder.SetInlineAutoBehavior(grid_item.column_auto_behavior);
+  builder.SetBlockAutoBehavior(grid_item.row_auto_behavior);
 
   if (container_constraint_space.HasBlockFragmentation() &&
       opt_fragment_relative_block_offset) {
@@ -3619,13 +3619,12 @@ void GridLayoutAlgorithm::PlaceGridItems(
         AlignmentOffset(containing_grid_area.size.inline_size,
                         fragment.InlineSize(), margins.inline_start,
                         margins.inline_end, inline_baseline_offset,
-                        grid_item.InlineAxisAlignment(),
-                        grid_item.IsInlineAxisOverflowSafe()),
-        AlignmentOffset(containing_grid_area.size.block_size,
-                        fragment.BlockSize(), margins.block_start,
-                        margins.block_end, block_baseline_offset,
-                        grid_item.BlockAxisAlignment(),
-                        grid_item.IsBlockAxisOverflowSafe()));
+                        grid_item.Alignment(kForColumns),
+                        grid_item.IsOverflowSafe(kForColumns)),
+        AlignmentOffset(
+            containing_grid_area.size.block_size, fragment.BlockSize(),
+            margins.block_start, margins.block_end, block_baseline_offset,
+            grid_item.Alignment(kForRows), grid_item.IsOverflowSafe(kForRows)));
 
     // Grid is special in that %-based offsets resolve against the grid-area.
     // Determine the relative offset here (instead of in the builder). This is
@@ -4174,8 +4173,8 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
     LogicalStaticPosition::InlineEdge inline_edge;
     LogicalStaticPosition::BlockEdge block_edge;
 
-    AlignmentOffsetForOutOfFlow(out_of_flow_item.InlineAxisAlignment(),
-                                out_of_flow_item.BlockAxisAlignment(),
+    AlignmentOffsetForOutOfFlow(out_of_flow_item.Alignment(kForColumns),
+                                out_of_flow_item.Alignment(kForRows),
                                 containing_block_size, &inline_edge,
                                 &block_edge, &child_offset);
 
