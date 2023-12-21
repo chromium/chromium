@@ -54,6 +54,10 @@ TEST(DeviceTypeTest, GetDeviceTypeAsh) {
     EXPECT_EQ(chromeos::GetDeviceType(), chromeos::DeviceType::kChromebox);
   }
   {
+    command_line->InitFromArgv({"", "--form-factor=OTHER"});
+    EXPECT_EQ(chromeos::GetDeviceType(), chromeos::DeviceType::kUnknown);
+  }
+  {
     command_line->InitFromArgv({"", ""});
     EXPECT_EQ(chromeos::GetDeviceType(), chromeos::DeviceType::kUnknown);
   }
