@@ -948,7 +948,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(IsChromeSignedIn());
   EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
-      syncer::prefs::kExplicitBrowserSignin));
+      prefs::kExplicitBrowserSignin));
   // Passwords are defaulted to disabled without an explicit signin.
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
       SyncServiceFactory::GetForProfile(GetProfile())));
@@ -967,7 +967,7 @@ IN_PROC_BROWSER_TEST_F(
   // Starting Chrome with a Signed in account prior to `switches::kUnoDesktop`
   // activation should not turn this pref on.
   EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
-      syncer::prefs::kExplicitBrowserSignin));
+      prefs::kExplicitBrowserSignin));
   // Since we did not interact with passwords before, passwords should remain
   // disabled as long as we did not explicitly sign in.
   syncer::SyncService* sync_service =
@@ -990,7 +990,7 @@ IN_PROC_BROWSER_TEST_F(
   // Explicit Signing in while `switches::kUnoDesktop` is active should be
   // stored.
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
-      syncer::prefs::kExplicitBrowserSignin));
+      prefs::kExplicitBrowserSignin));
   // Signing in with `switches::kUnoDesktop` enabled, should affect the
   // passwords default.
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
@@ -999,7 +999,7 @@ IN_PROC_BROWSER_TEST_F(
   // Sign out should clear the explicit signin pref.
   identity_test_env()->ClearPrimaryAccount();
   EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
-      syncer::prefs::kExplicitBrowserSignin));
+      prefs::kExplicitBrowserSignin));
 }
 
 // Test Suite where PRE_* tests are with `switches::kUnoDesktop` enabled, and
@@ -1034,7 +1034,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(IsChromeSignedIn());
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
-      syncer::prefs::kExplicitBrowserSignin));
+      prefs::kExplicitBrowserSignin));
   // Passwords are defaulted to enabled with an explicit sign in and
   // `switches::kUnoDesktop` active.
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
@@ -1050,7 +1050,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Disabling `switches::kUnoDesktop` should not reset the pref.
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
-      syncer::prefs::kExplicitBrowserSignin));
+      prefs::kExplicitBrowserSignin));
   // Disabling `switches::kUnoDesktop` feature should revert back to the
   // previous default state, since there were no interactions, defaults to
   // disabled.

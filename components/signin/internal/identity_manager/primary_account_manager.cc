@@ -195,6 +195,7 @@ void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kReverseAutologinRejectedEmailList);
   registry->RegisterBooleanPref(prefs::kSigninAllowed, true);
   registry->RegisterBooleanPref(prefs::kSignedInWithCredentialProvider, false);
+  registry->RegisterBooleanPref(prefs::kExplicitBrowserSignin, false);
 }
 
 // static
@@ -638,6 +639,33 @@ PrimaryAccountChangeEvent::State PrimaryAccountManager::GetPrimaryAccountState()
   return state;
 }
 
+void PrimaryAccountManager::ComputeExplicitBrowserSignin(
+    const PrimaryAccountChangeEvent& event_details,
+    const absl::variant<signin_metrics::AccessPoint,
+                        signin_metrics::ProfileSignout>& event_source) {
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case PrimaryAccountChangeEvent::Type::kNone:
+      return;
+    case PrimaryAccountChangeEvent::Type::kCleared:
+      client_->GetPrefs()->ClearPref(prefs::kExplicitBrowserSignin);
+      return;
+    case PrimaryAccountChangeEvent::Type::kSet:
+      CHECK(absl::holds_alternative<signin_metrics::AccessPoint>(event_source));
+      signin_metrics::AccessPoint access_point =
+          absl::get<signin_metrics::AccessPoint>(event_source);
+
+      if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN ||
+          access_point ==
+              signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+        client_->GetPrefs()->ClearPref(prefs::kExplicitBrowserSignin);
+      } else {
+        // All others access points are explicit sign ins except the Web
+        // Signin event.
+        client_->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+      }
+  }
+}
+
 void PrimaryAccountManager::FirePrimaryAccountChanged(
     const PrimaryAccountChangeEvent::State& previous_state,
     absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
@@ -652,6 +680,8 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
       << "PrimaryAccountChangeEvent with no change: " << event_details;
 
   LogPrimaryAccountChangeMetrics(event_details, event_source);
+
+  ComputeExplicitBrowserSignin(event_details, event_source);
 
   client_->OnPrimaryAccountChangedWithEventSource(event_details, event_source);
 

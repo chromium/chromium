@@ -959,6 +959,9 @@ constexpr char kIsolatedWebAppsEnabled[] = "ash.isolated_web_apps_enabled";
 const char kPrivacyBudgetReportedReidBlocks[] =
     "privacy_budget.reported_reid_blocks";
 
+// Deprecated 12/2023.
+const char kSync_ExplicitBrowserSignin[] = "sync.explicit_browser_signin";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1353,6 +1356,9 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 12/2023.
   registry->RegisterBooleanPref(kDownloadDuplicateFilePromptEnabled, true);
+
+  // Deprecated 12/2023.
+  registry->RegisterBooleanPref(kSync_ExplicitBrowserSignin, false);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2107,7 +2113,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-
   // Added 01/2023
   local_state->ClearPref(kSendDownloadToCloudPref);
 
@@ -2573,6 +2578,17 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Deprecated 12/2023.
   profile_prefs->ClearPref(kDownloadDuplicateFilePromptEnabled);
+
+  // Added 12/2023.
+  // Moving the `kExplicitBrowserSignin` from sync/ to signin/.
+  // If the sync (old) pref still exists, copy it to signin (new),
+  // and clear the sync part of the pref.
+  if (profile_prefs->HasPrefPath(kSync_ExplicitBrowserSignin)) {
+    profile_prefs->SetBoolean(
+        prefs::kExplicitBrowserSignin,
+        profile_prefs->GetBoolean(kSync_ExplicitBrowserSignin));
+    profile_prefs->ClearPref(kSync_ExplicitBrowserSignin);
+  }
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

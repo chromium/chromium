@@ -40,6 +40,7 @@ extern const char kProfileSeparationSettings[];
 extern const char kProfileSeparationDataMigrationSettings[];
 extern const char kProfileSeparationDomainExceptionList[];
 extern const char kUserCloudSigninPolicyResponseFromPolicyTestPage[];
+extern const char kExplicitBrowserSignin[];
 
 }  // namespace prefs
 

@@ -12,6 +12,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/pref_names.h"
@@ -442,7 +443,11 @@ TEST_F(PasswordManagerFeaturesUtilTest,
   // storage if the default store has not been set to kProfileStore.
   base::test::ScopedFeatureList scoped_feature_list{switches::kUnoDesktop};
   syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
-  pref_service_.SetBoolean(syncer::prefs::kExplicitBrowserSignin, true);
+  // Pref is registered in signin internal `PrimaryAccountManager`.
+  pref_service_.registry()->RegisterBooleanPref(::prefs::kExplicitBrowserSignin,
+                                                false);
+
+  pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
 
   CoreAccountInfo account1;
   account1.gaia = "gaia1";

@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -67,6 +68,9 @@ class SyncUserSettingsImplTest : public testing::Test,
  protected:
   SyncUserSettingsImplTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
+    // Pref is registered in signin internal `PrimaryAccountManager`.
+    pref_service_.registry()->RegisterBooleanPref(
+        ::prefs::kExplicitBrowserSignin, false);
     sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
 
     sync_service_crypto_ = std::make_unique<SyncServiceCrypto>(

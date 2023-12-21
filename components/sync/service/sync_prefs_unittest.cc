@@ -11,9 +11,11 @@
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
@@ -36,6 +38,9 @@ class SyncPrefsTest : public testing::Test {
  protected:
   SyncPrefsTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
+    // Pref is registered in signin internal `PrimaryAccountManager`.
+    pref_service_.registry()->RegisterBooleanPref(
+        ::prefs::kExplicitBrowserSignin, false);
     sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
     gaia_id_hash_ = signin::GaiaIdHash::FromGaiaId("account_gaia");
   }
@@ -377,12 +382,12 @@ TEST_F(SyncPrefsTest, PasswordsDefaultWithExplicitBrowserSignin) {
 
   // If no explicit browser sign in occurred, then passwords are still disabled
   // by default.
-  ASSERT_FALSE(pref_service_.GetBoolean(prefs::kExplicitBrowserSignin));
+  ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
   EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
                    .Has(UserSelectableType::kPasswords));
 
   // Set an explicit browser signin.
-  pref_service_.SetBoolean(prefs::kExplicitBrowserSignin, true);
+  pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
 
   // With an explicit sign in, passwords are enabled by default.
   EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)

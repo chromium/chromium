@@ -149,8 +149,6 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   SyncFeatureStatusForMigrationsRecorder::RegisterProfilePrefs(registry);
 
-  registry->RegisterBooleanPref(prefs::kExplicitBrowserSignin, false);
-
   // Obsolete prefs (registered for migrations only).
   registry->RegisterBooleanPref(kObsoleteAutofillWalletImportEnabled, true);
 }
@@ -230,8 +228,9 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
         // Otherwise the type requires a dedicated opt-in. Note: If
         // this changes, also update the migration logic in
         // MigrateGlobalDataTypePrefsToAccount().
-        type_enabled = base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
-                       pref_service_->GetBoolean(prefs::kExplicitBrowserSignin);
+        type_enabled =
+            base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
+            pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
 #endif
       } else if (type == UserSelectableType::kBookmarks ||
                  type == UserSelectableType::kReadingList) {
