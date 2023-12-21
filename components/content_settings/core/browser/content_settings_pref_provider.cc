@@ -365,6 +365,9 @@ void PrefProvider::ShutdownOnUIThread() {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
   RemoveAllObservers();
+  for (const auto& pref : content_settings_prefs_) {
+    pref.second->OnShutdown();
+  }
   pref_change_registrar_.RemoveAll();
   prefs_ = nullptr;
 }

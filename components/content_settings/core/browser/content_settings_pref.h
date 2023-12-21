@@ -61,6 +61,9 @@ class ContentSettingsPref {
 
   void ClearAllContentSettingsRules();
 
+  // Resets pointers that should be released in ShutdownOnUIThread().
+  void OnShutdown();
+
   size_t GetNumExceptions();
 
   // Tries to lock |lock_|. If successful, returns true and releases the lock.
@@ -92,10 +95,10 @@ class ContentSettingsPref {
   ContentSettingsType content_type_;
 
   // Weak; owned by the Profile and reset in ShutdownOnUIThread.
-  raw_ptr<PrefService, AcrossTasksDanglingUntriaged> prefs_;
+  raw_ptr<PrefService> prefs_;
 
   // Owned by the PrefProvider.
-  raw_ptr<PrefChangeRegistrar, DanglingUntriaged> registrar_;
+  raw_ptr<PrefChangeRegistrar> registrar_;
 
   // Name of the dictionary preference managed by this class.
   const std::string pref_name_;
