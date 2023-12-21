@@ -397,23 +397,36 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests that tapping Close All shows no tabs, shows Undo button, and displays
-// the empty state. Then tests tapping Undo shows Close All button again.
-// Validates this case when Tab Grid Bulk Actions feature is enabled.
+// the empty state, and ensures that it doesn't affect the other tab grid. Then
+// tests tapping Undo shows Close All button again. Validates this case when Tab
+// Grid Bulk Actions feature is enabled.
 - (void)testCloseAllAndUndoCloseAll {
-  [ChromeEarlGreyUI openTabGrid];
+  // Also add a tab in incognito.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
 
-  // Close all tabs
+  // Open tab grid and go to regular tab page.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridNormalModePageControl()]
+      performAction:grey_tap()];
+
+  // Close all tabs.
   [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridEditMenuCloseAllButton()]
       performAction:grey_tap()];
 
-  // Ensure tabs were closed
+  // Ensure normal tabs were closed.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       assertWithMatcher:grey_nil()];
 
-  // Ensure undo button is visible and edit button is not visible
+  // Ensure the incognito tab isn't closed.
+  GREYAssertEqual(1, [ChromeEarlGrey incognitoTabCount],
+                  @"Expected that the \"Close All Tabs\" button should not "
+                  @"close tabs in other pages.");
+
+  // Ensure undo button is visible and edit button is not visible.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -424,7 +437,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                                           TabGridRegularTabsEmptyStateView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Tap Undo button
+  // Tap Undo button.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
       performAction:grey_tap()];
@@ -909,6 +922,15 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  kWaitForUIElementTimeout, condition),
              @"Wait for select all button to appear in tab grid mode.");
+
+  // Confirm that the tab is selectable.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  NSString* tabSelected = base::SysUTF16ToNSString(
+      l10n_util::GetPluralStringFUTF16(IDS_IOS_TAB_GRID_SELECTED_TABS_TITLE,
+                                       /*number=*/1));
+  [[EarlGrey selectElementWithMatcher:grey_text(tabSelected)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 #pragma mark - Drag and drop in Multiwindow

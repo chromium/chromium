@@ -390,6 +390,11 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   // TODO(crbug.com/1457146): Implement.
 }
 
+- (void)switchToMode:(TabGridMode)mode {
+  CHECK(mode == TabGridModeNormal || mode == TabGridModeSearch)
+      << "remote tabs should only support normal and search modes.";
+}
+
 #pragma mark - TabGridToolbarsButtonsDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
