@@ -290,25 +290,6 @@ void IndexedDBTransaction::Start() {
   state_ = STARTED;
   DCHECK(!locks_receiver_.locks.empty());
   diagnostics_.start_time = base::Time::Now();
-
-  const base::TimeDelta time_queued =
-      diagnostics_.start_time - diagnostics_.creation_time;
-  switch (mode_) {
-    case blink::mojom::IDBTransactionMode::ReadOnly:
-      base::UmaHistogramMediumTimes(
-          "WebCore.IndexedDB.Transaction.ReadOnly.TimeQueued", time_queued);
-      break;
-    case blink::mojom::IDBTransactionMode::ReadWrite:
-      base::UmaHistogramMediumTimes(
-          "WebCore.IndexedDB.Transaction.ReadWrite.TimeQueued", time_queued);
-      break;
-    case blink::mojom::IDBTransactionMode::VersionChange:
-      base::UmaHistogramMediumTimes(
-          "WebCore.IndexedDB.Transaction.VersionChange.TimeQueued",
-          time_queued);
-      break;
-  }
-
   bucket_context_->QueueRunTasks();
 }
 
@@ -589,34 +570,19 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
   if (!used_) {
     committed = true;
   } else {
-    const base::TimeDelta active_time =
-        base::Time::Now() - diagnostics_.start_time;
+    base::TimeDelta active_time = base::Time::Now() - diagnostics_.start_time;
     uint64_t size_kb = backing_store_transaction_->GetTransactionSize() / 1024;
-
-    s = backing_store_transaction_->CommitPhaseTwo();
-
-    // This measurement includes the time it takes to commit to the backing
-    // store (i.e. LevelDB), not just the blobs. It should replace the
-    // `active_time` measurement.
-    const base::TimeDelta active_time2 =
-        base::Time::Now() - diagnostics_.start_time;
-
-    // SizeOnCommit2 histograms record 1KB to 1GB.
+    // All histograms record 1KB to 1GB.
     switch (mode_) {
       case blink::mojom::IDBTransactionMode::ReadOnly:
         UMA_HISTOGRAM_MEDIUM_TIMES(
             "WebCore.IndexedDB.Transaction.ReadOnly.TimeActive", active_time);
-        base::UmaHistogramMediumTimes(
-            "WebCore.IndexedDB.Transaction.ReadOnly.TimeActive2", active_time2);
         UMA_HISTOGRAM_COUNTS_1M(
             "WebCore.IndexedDB.Transaction.ReadOnly.SizeOnCommit2", size_kb);
         break;
       case blink::mojom::IDBTransactionMode::ReadWrite:
         UMA_HISTOGRAM_MEDIUM_TIMES(
             "WebCore.IndexedDB.Transaction.ReadWrite.TimeActive", active_time);
-        base::UmaHistogramMediumTimes(
-            "WebCore.IndexedDB.Transaction.ReadWrite.TimeActive2",
-            active_time2);
         UMA_HISTOGRAM_COUNTS_1M(
             "WebCore.IndexedDB.Transaction.ReadWrite.SizeOnCommit2", size_kb);
         break;
@@ -624,9 +590,6 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
         UMA_HISTOGRAM_MEDIUM_TIMES(
             "WebCore.IndexedDB.Transaction.VersionChange.TimeActive",
             active_time);
-        base::UmaHistogramMediumTimes(
-            "WebCore.IndexedDB.Transaction.VersionChange.TimeActive2",
-            active_time2);
         UMA_HISTOGRAM_COUNTS_1M(
             "WebCore.IndexedDB.Transaction.VersionChange.SizeOnCommit2",
             size_kb);
@@ -635,6 +598,7 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
         NOTREACHED();
     }
 
+    s = backing_store_transaction_->CommitPhaseTwo();
     committed = s.ok();
   }
 

@@ -137,14 +137,11 @@ void RecordHistogram(IDBRequest::TypeForMetrics type,
                           duration);
       break;
 
-    case IDBRequest::TypeForMetrics::kFactoryOpen:
-      UMA_HISTOGRAM_TIMES("WebCore.IndexedDB.RequestDuration.Open", duration);
-      break;
-
     case IDBRequest::TypeForMetrics::kCursorAdvance:
     case IDBRequest::TypeForMetrics::kCursorContinue:
     case IDBRequest::TypeForMetrics::kCursorContinuePrimaryKey:
     case IDBRequest::TypeForMetrics::kCursorDelete:
+    case IDBRequest::TypeForMetrics::kFactoryOpen:
     case IDBRequest::TypeForMetrics::kFactoryDeleteDatabase:
     case IDBRequest::TypeForMetrics::kIndexOpenCursor:
     case IDBRequest::TypeForMetrics::kIndexCount:
