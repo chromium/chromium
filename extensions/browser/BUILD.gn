@@ -1050,7 +1050,7 @@ source_set("unit_tests") {
   data = [
     "//extensions/browser/extension_event_histogram_value.h",
     "//extensions/browser/extension_function_histogram_value.h",
-    "//tools/metrics/histograms/enums.xml",
+    "//tools/metrics/histograms/metadata/extensions/enums.xml",
     "//extensions/browser/api/declarative_net_request/flat/extension_ruleset.fbs",
   ]
 }

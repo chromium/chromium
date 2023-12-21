@@ -677,7 +677,7 @@ source_set("unit_tests") {
 
   data = [
     "//extensions/common/mojom/api_permission_id.mojom",
-    "//tools/metrics/histograms/enums.xml",
+    "//tools/metrics/histograms/metadata/extensions/enums.xml",
   ]
 }
 

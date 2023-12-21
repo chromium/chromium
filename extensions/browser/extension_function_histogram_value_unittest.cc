@@ -19,8 +19,8 @@
 namespace extensions {
 
 TEST(ExtensionFunctionHistogramValueTest, CheckEnums) {
-  std::optional<base::HistogramEnumEntryMap> enums =
-      base::ReadEnumFromEnumsXml("ExtensionFunctions");
+  std::optional<base::HistogramEnumEntryMap> enums = base::ReadEnumFromEnumsXml(
+      "ExtensionFunctions", /*subdirectory=*/"extensions");
   ASSERT_TRUE(enums);
   // The number of enums in the histogram entry should be equal to the number of
   // enums in the C++ file.
