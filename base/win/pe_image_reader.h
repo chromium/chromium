@@ -12,6 +12,9 @@
 #include <memory>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
+#include "base/memory/raw_span.h"
+#include "base/numerics/safe_math.h"
 
 namespace base {
 namespace win {
@@ -49,7 +52,7 @@ class BASE_EXPORT PeImageReader {
   ~PeImageReader();
 
   // Returns false if the given data does not appear to be a valid PE image.
-  bool Initialize(const uint8_t* image_data, size_t image_size);
+  bool Initialize(span<const uint8_t> image_data);
 
   // Returns the machine word size for the image.
   WordSize GetWordSize();
@@ -156,16 +159,18 @@ class BASE_EXPORT PeImageReader {
   bool GetStructureAt(size_t offset,
                       size_t structure_size,
                       const T** structure) {
-    if (offset > image_size_)
+    size_t remaining_bytes = 0;
+    if (!CheckSub(image_data_.size(), offset).AssignIfValid(&remaining_bytes)) {
       return false;
-    if (structure_size > image_size_ - offset)
+    }
+    if (structure_size > remaining_bytes) {
       return false;
-    *structure = reinterpret_cast<const T*>(image_data_ + offset);
+    }
+    *structure = reinterpret_cast<const T*>(image_data_.subspan(offset).data());
     return true;
   }
 
-  const uint8_t* image_data_ = nullptr;
-  size_t image_size_ = 0;
+  raw_span<const uint8_t> image_data_;
   uint32_t validation_state_ = 0;
   std::unique_ptr<OptionalHeader> optional_header_;
 };

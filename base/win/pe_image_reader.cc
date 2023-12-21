@@ -70,9 +70,8 @@ PeImageReader::~PeImageReader() {
   Clear();
 }
 
-bool PeImageReader::Initialize(const uint8_t* image_data, size_t image_size) {
+bool PeImageReader::Initialize(span<const uint8_t> image_data) {
   image_data_ = image_data;
-  image_size_ = image_size;
 
   if (!ValidateDosHeader() || !ValidatePeSignature() ||
       !ValidateCoffFileHeader() || !ValidateOptionalHeader() ||
@@ -90,13 +89,16 @@ PeImageReader::WordSize PeImageReader::GetWordSize() {
 
 const IMAGE_DOS_HEADER* PeImageReader::GetDosHeader() {
   DCHECK_NE((validation_state_ & VALID_DOS_HEADER), 0U);
-  return reinterpret_cast<const IMAGE_DOS_HEADER*>(image_data_);
+  return reinterpret_cast<const IMAGE_DOS_HEADER*>(image_data_.data());
 }
 
 const IMAGE_FILE_HEADER* PeImageReader::GetCoffFileHeader() {
   DCHECK_NE((validation_state_ & VALID_COFF_FILE_HEADER), 0U);
   return reinterpret_cast<const IMAGE_FILE_HEADER*>(
-      image_data_ + GetDosHeader()->e_lfanew + sizeof(DWORD));
+      image_data_
+          .subspan(checked_cast<size_t>(GetDosHeader()->e_lfanew) +
+                   sizeof(DWORD))
+          .data());
 }
 
 const uint8_t* PeImageReader::GetOptionalHeaderData(
@@ -195,8 +197,7 @@ DWORD PeImageReader::GetSizeOfImage() {
 }
 
 void PeImageReader::Clear() {
-  image_data_ = nullptr;
-  image_size_ = 0;
+  image_data_ = raw_span<const uint8_t>();
   validation_state_ = 0;
   optional_header_.reset();
 }
@@ -254,18 +255,19 @@ bool PeImageReader::ValidateOptionalHeader() {
   if (*optional_header_magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC) {
     optional_header =
         std::make_unique<OptionalHeaderImpl<IMAGE_OPTIONAL_HEADER32>>(
-            image_data_ + optional_header_offset);
+            image_data_.subspan(optional_header_offset).data());
   } else if (*optional_header_magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC) {
     optional_header =
         std::make_unique<OptionalHeaderImpl<IMAGE_OPTIONAL_HEADER64>>(
-            image_data_ + optional_header_offset);
+            image_data_.subspan(optional_header_offset).data());
   } else {
     return false;
   }
 
   // Does all of the claimed optional header fit in the image?
-  if (optional_header_size > image_size_ - optional_header_offset)
+  if (optional_header_size > image_data_.size() - optional_header_offset) {
     return false;
+  }
 
   // Is the claimed optional header big enough for everything but the dir?
   if (optional_header->GetDataDirectoryOffset() > optional_header_size)
@@ -289,9 +291,10 @@ bool PeImageReader::ValidateSectionHeaders() {
   const size_t number_of_sections = GetNumberOfSections();
 
   // Do all section headers fit in the image?
-  if (!GetStructureAt(static_cast<size_t>(first_section_header - image_data_),
-                      number_of_sections * sizeof(IMAGE_SECTION_HEADER),
-                      &first_section_header)) {
+  if (!GetStructureAt(
+          static_cast<size_t>(first_section_header - image_data_.data()),
+          number_of_sections * sizeof(IMAGE_SECTION_HEADER),
+          &first_section_header)) {
     return false;
   }
 
@@ -301,8 +304,10 @@ bool PeImageReader::ValidateSectionHeaders() {
 
 const uint8_t* PeImageReader::GetOptionalHeaderStart() {
   DCHECK_NE((validation_state_ & VALID_OPTIONAL_HEADER), 0U);
-  return (image_data_ + GetDosHeader()->e_lfanew +
-          offsetof(IMAGE_NT_HEADERS32, OptionalHeader));
+  return image_data_
+      .subspan(checked_cast<size_t>(GetDosHeader()->e_lfanew) +
+               offsetof(IMAGE_NT_HEADERS32, OptionalHeader))
+      .data();
 }
 
 size_t PeImageReader::GetOptionalHeaderSize() {
@@ -352,12 +357,12 @@ const uint8_t* PeImageReader::GetImageData(size_t index, size_t* data_length) {
   // file pointer rather than an RVA.
   if (index == IMAGE_DIRECTORY_ENTRY_SECURITY) {
     // Does the data fit within the file.
-    if (entry->VirtualAddress > image_size_ ||
-        image_size_ - entry->VirtualAddress < entry->Size) {
+    if (entry->VirtualAddress > image_data_.size() ||
+        image_data_.size() - entry->VirtualAddress < entry->Size) {
       return nullptr;
     }
     *data_length = entry->Size;
-    return image_data_ + entry->VirtualAddress;
+    return image_data_.subspan(entry->VirtualAddress).data();
   }
 
   // Find the section containing the data.
@@ -378,7 +383,7 @@ const uint8_t* PeImageReader::GetImageData(size_t index, size_t* data_length) {
   }
 
   *data_length = entry->Size;
-  return image_data_ + header->PointerToRawData + data_offset;
+  return image_data_.subspan(header->PointerToRawData + data_offset).data();
 }
 
 }  // namespace win
