@@ -83,7 +83,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         if (suggestion.isSearchSuggestion()) {
             switch (suggestion.getType()) {
                 case OmniboxSuggestionType.VOICE_SUGGEST:
-                    icon = R.drawable.btn_mic;
+                    icon = R.drawable.ic_mic_white_24dp;
                     break;
 
                 case OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED:

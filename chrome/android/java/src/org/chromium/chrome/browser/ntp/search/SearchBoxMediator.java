@@ -80,7 +80,7 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
 
     @Override
     public void onFinishNativeInitialization() {
-        Drawable drawable = AppCompatResources.getDrawable(mContext, R.drawable.btn_mic);
+        Drawable drawable = AppCompatResources.getDrawable(mContext, R.drawable.ic_mic_white_24dp);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_DRAWABLE, drawable);
 
         ColorStateList colorStateList =

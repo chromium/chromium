@@ -160,7 +160,8 @@ public class OptionalButtonViewTest {
     }
 
     private ButtonDataImpl getDataForReaderModeIconButton() {
-        Drawable iconDrawable = AppCompatResources.getDrawable(mActivity, R.drawable.btn_mic);
+        Drawable iconDrawable =
+                AppCompatResources.getDrawable(mActivity, R.drawable.ic_mic_white_24dp);
         OnClickListener clickListener = mock(OnClickListener.class);
         OnLongClickListener longClickListener = mock(OnLongClickListener.class);
         String contentDescription = mActivity.getString(R.string.reader_view_text_alt);

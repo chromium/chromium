@@ -1312,7 +1312,7 @@ public class RootUiCoordinator
             VoiceToolbarButtonController voiceToolbarButtonController =
                     new VoiceToolbarButtonController(
                             mActivity,
-                            AppCompatResources.getDrawable(mActivity, R.drawable.btn_mic),
+                            AppCompatResources.getDrawable(mActivity, R.drawable.ic_mic_white_24dp),
                             mActivityTabProvider,
                             trackerSupplier,
                             mModalDialogManagerSupplier.get(),

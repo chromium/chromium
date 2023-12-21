@@ -64,7 +64,7 @@ public class BasicSuggestionProcessorUnitTest {
     private static final @DrawableRes int ICON_HISTORY = R.drawable.ic_history_googblue_24dp;
     private static final @DrawableRes int ICON_MAGNIFIER = R.drawable.ic_suggestion_magnifier;
     private static final @DrawableRes int ICON_TRENDS = R.drawable.trending_up_black_24dp;
-    private static final @DrawableRes int ICON_VOICE = R.drawable.btn_mic;
+    private static final @DrawableRes int ICON_VOICE = R.drawable.ic_mic_white_24dp;
     private static final @DrawableRes int ICON_FAVICON = 0; // Favicons do not come from resources.
 
     private static final Map<Integer, String> ICON_TYPE_NAMES;

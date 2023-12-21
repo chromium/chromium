@@ -343,7 +343,7 @@ class LocationBarMediator
         if (mProfileSupplier.hasValue()) setProfile(mProfileSupplier.get());
 
         mLocationBarLayout.setMicButtonDrawable(
-                AppCompatResources.getDrawable(mContext, R.drawable.btn_mic));
+                AppCompatResources.getDrawable(mContext, R.drawable.ic_mic_white_24dp));
         onPrimaryColorChanged();
 
         for (Runnable deferredRunnable : mDeferredNativeRunnables) {
