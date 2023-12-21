@@ -171,7 +171,7 @@ class Action {
   }
   int name_label_index() { return name_label_index_; }
 
-  bool is_new() { return is_new_; }
+  bool is_new() const { return is_new_; }
   void set_is_new(bool is_new) { is_new_ = is_new; }
 
  protected:

@@ -71,6 +71,7 @@ class EditLabels : public views::View {
  private:
   friend class ButtonOptionsMenuTest;
   friend class EditLabelTest;
+  friend class OverlayViewTestBase;
 
   void Init();
   void InitForActionTapKeyboard();

@@ -42,14 +42,6 @@ class EditingListTest : public OverlayViewTestBase {
     return touch_injector_->actions().size();
   }
 
-  // Add a new action in the center of the main window.
-  void AddNewAction() {
-    PressAddButton();
-    auto* target_view = GetTargetView();
-    DCHECK(target_view);
-    LeftClickOn(target_view);
-  }
-
   void LeftClickAtActionViewListItem(int index) {
     if (!editing_list_ || index < 0) {
       return;
@@ -235,7 +227,7 @@ TEST_F(EditingListTest, TestDragAtNewAction) {
   CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
                {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
                /*expect_ids=*/{0, 1, 2});
-  AddNewAction();
+  AddNewActionInCenter();
   EXPECT_TRUE(IsButtonOptionsMenuVisible());
   auto* action = GetButtonOptionsMenuAction();
   EXPECT_TRUE(action->is_new());
@@ -252,7 +244,7 @@ TEST_F(EditingListTest, TestPressAtActionViewListItem) {
                {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
                /*expect_ids=*/{0, 1, 2});
   // Test action view list press.
-  AddNewAction();
+  AddNewActionInCenter();
   EXPECT_TRUE(GetButtonOptionsMenu());
   auto* action_1 = GetButtonOptionsMenuAction();
   PressDoneButtonOnButtonOptionsMenu();
@@ -374,7 +366,7 @@ TEST_F(EditingListTest, TestKeyEditNudge) {
   }
 
   // Add the first action.
-  AddNewAction();
+  AddNewActionInCenter();
   PressDoneButtonOnButtonOptionsMenu();
   EXPECT_TRUE(IsKeyEditNudgeShown());
 
@@ -403,7 +395,7 @@ TEST_F(EditingListTest, TestKeyEditNudge) {
   EXPECT_FALSE(IsKeyEditNudgeShown());
 
   // No key edit nudge after adding another action.
-  AddNewAction();
+  AddNewActionInCenter();
   PressDoneButtonOnButtonOptionsMenu();
   EXPECT_FALSE(IsKeyEditNudgeShown());
 }
@@ -417,20 +409,20 @@ TEST_F(EditingListTest, TestScrollView) {
   EXPECT_LE(list_window->bounds().height(), window_content_height);
   EXPECT_FALSE(GetScrollBarVisible());
   // Add new actions until it shows scroll bar.
-  AddNewAction();
+  AddNewActionInCenter();
   PressDoneButtonOnButtonOptionsMenu();
   EXPECT_GT(list_window->bounds().height(), original_height);
-  AddNewAction();
+  AddNewActionInCenter();
   PressDoneButtonOnButtonOptionsMenu();
-  AddNewAction();
-  PressDoneButtonOnButtonOptionsMenu();
-  EXPECT_TRUE(GetScrollBarVisible());
-  EXPECT_EQ(window_content_height, list_window->bounds().height());
-  AddNewAction();
+  AddNewActionInCenter();
   PressDoneButtonOnButtonOptionsMenu();
   EXPECT_TRUE(GetScrollBarVisible());
   EXPECT_EQ(window_content_height, list_window->bounds().height());
-  AddNewAction();
+  AddNewActionInCenter();
+  PressDoneButtonOnButtonOptionsMenu();
+  EXPECT_TRUE(GetScrollBarVisible());
+  EXPECT_EQ(window_content_height, list_window->bounds().height());
+  AddNewActionInCenter();
   PressDoneButtonOnButtonOptionsMenu();
   EXPECT_TRUE(GetScrollBarVisible());
   EXPECT_EQ(window_content_height, list_window->bounds().height());

@@ -4,17 +4,25 @@
 
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 
+#include <algorithm>
+
 #include "ash/style/icon_button.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_edit_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/target_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
+#include "ui/views/view_utils.h"
 
 namespace arc::input_overlay {
 
@@ -34,6 +42,15 @@ void OverlayViewTestBase::PressAddButton() {
     return;
   }
   LeftClickOn(editing_list_->add_button_);
+}
+
+void OverlayViewTestBase::AddNewActionInCenter() {
+  DCHECK(editing_list_);
+
+  PressAddButton();
+  const auto* target_view = GetTargetView();
+  DCHECK(target_view);
+  LeftClickOn(target_view);
 }
 
 ButtonOptionsMenu* OverlayViewTestBase::ShowButtonOptionsMenu(Action* action) {
@@ -125,6 +142,32 @@ Action* OverlayViewTestBase::GetEditingListItemAction(size_t index) const {
   return nullptr;
 }
 
+void OverlayViewTestBase::VerifyUIDisplay(
+    Action* action,
+    const std::vector<std::u16string>& expected_labels,
+    const std::u16string& expected_name) const {
+  DCHECK(action);
+  VerifyActionView(action->action_view(), expected_labels);
+
+  auto* const list_item = GetEditingListItem(action);
+  EXPECT_TRUE(list_item);
+  VerifyEditingListItem(list_item, expected_labels, expected_name);
+
+  if (auto* menu = GetButtonOptionsMenu(); menu->action() == action) {
+    VerifyButtonOptionsMenu(menu, expected_labels, expected_name);
+  }
+}
+
+void OverlayViewTestBase::VerifyActionKeyBinding(
+    Action* action,
+    const std::vector<ui::DomCode>& expected_code) const {
+  const auto& current_keys = action->current_input()->keys();
+  const size_t size = current_keys.size();
+  EXPECT_EQ(expected_code.size(), size);
+  EXPECT_TRUE(std::equal(expected_code.begin(), expected_code.end(),
+                         current_keys.begin()));
+}
+
 // Create a GIO enabled window with default actions including two action tap and
 // one action move, enable it into edit mode.
 void OverlayViewTestBase::SetUp() {
@@ -147,6 +190,70 @@ void OverlayViewTestBase::SetUp() {
   move_action_list_item_ = static_cast<ActionViewListItem*>(items[2]);
   DCHECK(tap_action_list_item_);
   DCHECK(move_action_list_item_);
+}
+
+ActionViewListItem* OverlayViewTestBase::GetEditingListItem(
+    Action* action) const {
+  if (auto* const editing_list = GetEditingList()) {
+    for (const auto& child : editing_list->scroll_content_->children()) {
+      auto* const list_item = views::AsViewClass<ActionViewListItem>(child);
+      DCHECK(list_item);
+      if (list_item->action() == action) {
+        return list_item;
+      }
+    }
+  }
+  return nullptr;
+}
+
+void OverlayViewTestBase::VerifyButtonOptionsMenu(
+    ButtonOptionsMenu* menu,
+    const std::vector<std::u16string>& expected_labels,
+    const std::u16string& expected_name) const {
+  DCHECK(menu);
+  const auto& labels = menu->action_edit_->labels_view_->labels_;
+  const size_t size = labels.size();
+  EXPECT_EQ(expected_labels.size(), size);
+  EXPECT_TRUE(std::equal(expected_labels.begin(), expected_labels.end(),
+                         labels.begin(),
+                         [](std::u16string a, EditLabel* label) {
+                           return a == label->GetText();
+                         }));
+  EXPECT_EQ(menu->action_name_label_->GetText(), expected_name);
+}
+
+void OverlayViewTestBase::VerifyEditingListItem(
+    ActionViewListItem* list_item,
+    const std::vector<std::u16string>& expected_labels,
+    const std::u16string& expected_name) const {
+  DCHECK(list_item);
+  const auto& labels = list_item->labels_view_->labels_;
+  const size_t size = labels.size();
+  EXPECT_EQ(expected_labels.size(), size);
+  EXPECT_TRUE(std::equal(expected_labels.begin(), expected_labels.end(),
+                         labels.begin(),
+                         [](std::u16string a, EditLabel* label) {
+                           return a == label->GetText();
+                         }));
+  EXPECT_EQ(list_item->name_tag_->title_label_->GetText(), expected_name);
+}
+
+void OverlayViewTestBase::VerifyActionView(
+    ActionView* action_view,
+    const std::vector<std::u16string>& expected_labels) const {
+  DCHECK(action_view);
+  const auto* action = action_view->action();
+  DCHECK(action);
+
+  const auto& labels = action_view->labels();
+  const size_t size = labels.size();
+  EXPECT_EQ(expected_labels.size(), size);
+  for (size_t i = 0; i < size; i++) {
+    EXPECT_EQ(action->is_new()
+                  ? (expected_labels[i].empty() ? u"?" : expected_labels[i])
+                  : expected_labels[i],
+              labels[i]->GetText());
+  }
 }
 
 }  // namespace arc::input_overlay

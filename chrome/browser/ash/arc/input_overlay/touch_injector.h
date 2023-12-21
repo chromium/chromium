@@ -115,6 +115,8 @@ class TouchInjector : public ui::EventRewriter {
     return menu_entry_location_;
   }
 
+  void MaybeBindDefaultInputElement(Action* action);
+
   // Update `content_bounds_f_` and touch positions for each `actions_` for
   // different reasons.
   void UpdatePositionsForRegister();

@@ -209,6 +209,37 @@ TEST_F(ButtonOptionsMenuTest, TestChangeActionType) {
   EXPECT_EQ(list_index, GetIndexInEditingList(menu->action()));
 }
 
+TEST_F(ButtonOptionsMenuTest, TestActionMoveDefaultInputBinding) {
+  // Originally there is an `ActionMove` with WASD as default bindings. Add
+  // another new `ActionMove` and the new `ActionMove` will not assign default
+  // WASD bindings.
+  AddNewActionInCenter();
+  auto* menu = GetButtonOptionsMenu();
+  ASSERT_TRUE(menu);
+  PressActionMoveButton(menu);
+  auto* new_action = GetButtonOptionsMenuAction();
+  ASSERT_TRUE(new_action);
+  EXPECT_TRUE(new_action->current_input()->IsUnbound());
+  VerifyActionKeyBinding(new_action, {ui::DomCode::NONE, ui::DomCode::NONE,
+                                      ui::DomCode::NONE, ui::DomCode::NONE});
+  VerifyUIDisplay(new_action, {u"", u"", u"", u""}, u"Unassigned joystick");
+
+  // Delete the original action move and add another `ActionMove`. The new
+  // `ActionMove` will assign default WASD bindings.
+  ShowButtonOptionsMenu(move_action_);
+  PressDeleteButtonOnButtonOptionsMenu();
+  AddNewActionInCenter();
+  menu = GetButtonOptionsMenu();
+  ASSERT_TRUE(menu);
+  PressActionMoveButton(menu);
+  new_action = GetButtonOptionsMenuAction();
+  ASSERT_TRUE(new_action);
+  EXPECT_FALSE(new_action->current_input()->IsUnbound());
+  VerifyActionKeyBinding(new_action, {ui::DomCode::US_W, ui::DomCode::US_A,
+                                      ui::DomCode::US_S, ui::DomCode::US_D});
+  VerifyUIDisplay(new_action, {u"w", u"a", u"s", u"d"}, u"Joystick wasd");
+}
+
 TEST_F(ButtonOptionsMenuTest, TestClickActionEdit) {
   auto* menu = ShowButtonOptionsMenu(tap_action_);
   PressActionEdit(menu);

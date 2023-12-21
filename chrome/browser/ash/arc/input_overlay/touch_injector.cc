@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_ukm.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
@@ -431,6 +432,25 @@ void TouchInjector::SaveMenuEntryLocation(
   menu_entry_location_ = std::make_optional<gfx::Vector2dF>(
       menu_entry_location_point.x() / width,
       menu_entry_location_point.y() / height);
+}
+
+void TouchInjector::MaybeBindDefaultInputElement(Action* action) {
+  // It only supports to assign default keys WASD for `ActionMove` if there is
+  // no overlapped input binding.
+  if (action->GetType() != ActionType::MOVE) {
+    return;
+  }
+
+  auto input_element = InputElement::CreateActionMoveKeyElement(
+      {ui::DomCode::US_W, ui::DomCode::US_A, ui::DomCode::US_S,
+       ui::DomCode::US_D});
+  if (auto* overlapped_action = FindActionWithOverlapInputElement(
+          actions_, /*target_action=*/action, *input_element);
+      !overlapped_action) {
+    action->PrepareToBindInput(std::move(input_element));
+    action->BindPending();
+    NotifyActionInputBindingUpdated(*action);
+  }
 }
 
 void TouchInjector::UpdatePositionsForRegister() {
@@ -937,8 +957,10 @@ void TouchInjector::AddNewAction(ActionType action_type,
     return;
   }
 
+  auto* new_action_ptr = action.get();
   // Apply the change right away for beta.
   NotifyActionAdded(*actions_.emplace_back(std::move(action)));
+  MaybeBindDefaultInputElement(new_action_ptr);
 
   // It may need to turn off the flag `kEmpty` after adding an action.
   UpdateFlagAndProperty(window_, ash::ArcGameControlsFlag::kEmpty,
@@ -975,10 +997,10 @@ void TouchInjector::RemoveAction(Action* action) {
 void TouchInjector::ChangeActionType(Action* action, ActionType action_type) {
   auto new_action = CreateRawAction(action_type, this);
   new_action->InitByChangingActionType(action);
-  auto* new_action_raw = new_action.get();
-
+  auto* new_action_ptr = new_action.get();
   ReplaceActionInternal(action, std::move(new_action));
-  NotifyActionTypeChanged(action, new_action_raw);
+  NotifyActionTypeChanged(action, new_action_ptr);
+  MaybeBindDefaultInputElement(new_action_ptr);
 }
 
 void TouchInjector::ChangeActionName(Action* action, int index) {
