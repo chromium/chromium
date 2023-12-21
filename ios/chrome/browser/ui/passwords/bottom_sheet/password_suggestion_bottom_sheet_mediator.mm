@@ -504,26 +504,26 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
     return;
   }
 
-  bool sharingNotificationEnabled = base::FeatureList::IsEnabled(
-      password_manager::features::kSharedPasswordNotificationUI);
   for (const password_manager::PasswordForm* form : *passwordForms) {
-    if (sharingNotificationEnabled &&
-        form->type ==
+    if (form->type ==
             password_manager::PasswordForm::Type::kReceivedViaSharing &&
         !form->sharing_notification_displayed) {
-      _sharedUnnotifiedForms.push_back(form);
-      __weak __typeof__(self) weakSelf = self;
-      image_fetcher::ImageFetcherParams params(NO_TRAFFIC_ANNOTATION_YET,
-                                               kImageFetcherUmaClient);
-      _imageFetcher->FetchImage(
-          form->sender_profile_image_url,
-          base::BindOnce(^(const gfx::Image& image,
-                           const image_fetcher::RequestMetadata& metadata) {
-            if (!image.IsEmpty()) {
-              [weakSelf onSenderImageFetched:[image.ToUIImage() copy]];
-            }
-          }),
-          params);
+      if (base::FeatureList::IsEnabled(
+              password_manager::features::kSharedPasswordNotificationUI)) {
+        _sharedUnnotifiedForms.push_back(form);
+        __weak __typeof__(self) weakSelf = self;
+        image_fetcher::ImageFetcherParams params(NO_TRAFFIC_ANNOTATION_YET,
+                                                 kImageFetcherUmaClient);
+        _imageFetcher->FetchImage(
+            form->sender_profile_image_url,
+            base::BindOnce(^(const gfx::Image& image,
+                             const image_fetcher::RequestMetadata& metadata) {
+              if (!image.IsEmpty()) {
+                [weakSelf onSenderImageFetched:[image.ToUIImage() copy]];
+              }
+            }),
+            params);
+      }
     }
     _credentials.push_back(password_manager::CredentialUIEntry(*form));
   }
@@ -532,9 +532,9 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 // Returns whether the bottom sheet should contain a notification about shared
 // passwords.
 - (BOOL)shouldDisplaySharingNotification {
-  return base::FeatureList::IsEnabled(
-             password_manager::features::kSharedPasswordNotificationUI) &&
-         _sharedUnnotifiedForms.size() > 0;
+  return (_sharedUnnotifiedForms.size() > 0) &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kSharedPasswordNotificationUI);
 }
 
 // Marks sharing notification as displayed in password store for all credentials
