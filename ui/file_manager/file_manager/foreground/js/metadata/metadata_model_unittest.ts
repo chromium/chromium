@@ -216,7 +216,7 @@ export function testMetadataModelUnknownProperty() {
   const model = new MetadataModel(provider);
 
   assertThrows(() => {
-    model.get([entryA], ['unknown']);
+    model.get([entryA], ['unknown' as MetadataKey]);
   });
 }
 

@@ -11,7 +11,7 @@ import type {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesMetadataBox, type RawIfd} from '../elements/files_metadata_box.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
 
-import {MetadataItem} from './metadata/metadata_item.js';
+import {MetadataItem, type MetadataKey} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {PathComponent} from './path_component.js';
 import {QuickViewModel} from './quick_view_model.js';
@@ -91,8 +91,12 @@ export class MetadataBoxController {
     // Do not clear isSizeLoading and size fields when the entry is not changed.
     this.metadataBox.clear(sameEntry);
 
-    const metadata = GENERAL_METADATA_NAMES.concat(
-        ['alternateUrl', 'externalFileUrl', 'hosted']);
+    const metadata = [
+      ...GENERAL_METADATA_NAMES,
+      'alternateUrl',
+      'externalFileUrl',
+      'hosted',
+    ] as const;
     this.metadataModel_.get([entry], metadata)
         .then(this.onGeneralMetadataLoaded_.bind(this, entry, sameEntry));
   }
@@ -131,16 +135,17 @@ export class MetadataBoxController {
     this.updateModificationTime_(entry, items);
 
     if (!entry.isDirectory) {
-      let media: string[] = [];  // Extra metadata types for local video media.
+      // Extra metadata types for local video media.
+      let media: readonly MetadataKey[] = [];
 
-      let sniffMimeType = 'mediaMimeType';
+      let sniffMimeType: MetadataKey = 'mediaMimeType';
       if (item?.externalFileUrl || item?.alternateUrl) {
         sniffMimeType = 'contentMimeType';
       } else if (type === 'video') {
         media = EXTRA_METADATA_NAMES;
       }
 
-      this.metadataModel_.get([entry], [sniffMimeType].concat(media))
+      this.metadataModel_.get([entry], [sniffMimeType, ...media])
           .then(items => {
             let mimeType = items[0] &&
                     items[0][sniffMimeType as keyof MetadataItem] as string ||
@@ -159,13 +164,13 @@ export class MetadataBoxController {
 
     if (['image', 'video', 'audio'].includes(type)) {
       if (item?.externalFileUrl || item?.alternateUrl) {
-        const data = ['imageHeight', 'imageWidth'];
-        this.metadataModel_.get([entry], data).then(items => {
-          this.metadataBox.imageWidth = items[0]?.imageWidth || 0;
-          this.metadataBox.imageHeight = items[0]?.imageHeight || 0;
-          this.metadataBox.setFileTypeInfo(type);
-          this.metadataBox.metadataRendered('meta');
-        });
+        this.metadataModel_.get([entry], ['imageHeight', 'imageWidth'])
+            .then(items => {
+              this.metadataBox.imageWidth = items[0]?.imageWidth || 0;
+              this.metadataBox.imageHeight = items[0]?.imageHeight || 0;
+              this.metadataBox.setFileTypeInfo(type);
+              this.metadataBox.metadataRendered('meta');
+            });
       } else {
         const data = EXTRA_METADATA_NAMES;
         this.metadataModel_.get([entry], data).then(items => {
@@ -187,8 +192,7 @@ export class MetadataBoxController {
         });
       }
     } else if (type === 'raw') {
-      const data = ['ifd'];
-      this.metadataModel_.get([entry], data).then(items => {
+      this.metadataModel_.get([entry], ['ifd']).then(items => {
         const raw: RawIfd|null = items[0]?.ifd ? items[0].ifd as RawIfd : null;
         this.metadataBox.ifd = raw ? {raw} : undefined;
         this.metadataBox.imageWidth = raw?.width || 0;
@@ -296,7 +300,7 @@ export class MetadataBoxController {
 export const GENERAL_METADATA_NAMES = [
   'size',
   'modificationTime',
-];
+] as const;
 
 export const EXTRA_METADATA_NAMES = [
   'ifd',
@@ -309,4 +313,4 @@ export const EXTRA_METADATA_NAMES = [
   'mediaTitle',
   'mediaTrack',
   'mediaYearRecorded',
-];
+] as const;

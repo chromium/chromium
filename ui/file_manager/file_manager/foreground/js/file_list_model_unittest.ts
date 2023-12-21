@@ -8,7 +8,7 @@ import type {PermutationEvent, SpliceEvent} from '../../common/js/array_data_mod
 import {str} from '../../common/js/translations.js';
 
 import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, type GroupHeader} from './file_list_model.js';
-import {MetadataItem, type MetadataKey} from './metadata/metadata_item.js';
+import {MetadataItem} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 
 
@@ -77,10 +77,10 @@ function createFakeMetadataModel(data: Record<string, MetadataItem>):
         const metadata: MetadataItem = {};
         if (!entry.isDirectory && data[entry.name]) {
           for (const metadataField of names) {
-            const value = data[entry.name]![metadataField as MetadataKey];
+            const value = data[entry.name]![metadataField];
             // `undefined` is the intersection of all possible properties of
             // MetadataItem.
-            metadata[metadataField as MetadataKey] = value as undefined;
+            metadata[metadataField] = value as undefined;
           }
         }
         result.push(metadata);

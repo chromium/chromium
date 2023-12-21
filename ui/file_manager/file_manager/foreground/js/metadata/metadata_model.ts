@@ -36,8 +36,6 @@ export class MetadataStats {
   clearAllCount: number = 0;
 }
 
-// TODO(austinct): Update these functions so that `names` is passed in as
-// MetadataKey[] rather than string[] for type safety.
 export class MetadataModel {
   private cache_ = new MetadataCacheSet();
   private callbackRequests_: MetadataProviderCallbackRequest[] = [];
@@ -65,7 +63,7 @@ export class MetadataModel {
    * @param names Metadata property names to be obtained.
    */
   get(entries: Array<Entry|FilesAppEntry>,
-      names: string[]): Promise<MetadataItem[]> {
+      names: readonly MetadataKey[]): Promise<MetadataItem[]> {
     this.rawProvider_.checkPropertyNames(names);
 
     // Check if the results are cached or not.
@@ -167,7 +165,7 @@ export class MetadataModel {
    * @param entries Entries.
    * @param names Metadata property names to be obtained.
    */
-  getCache(entries: Array<Entry|FilesAppEntry>, names: string[]):
+  getCache(entries: Array<Entry|FilesAppEntry>, names: MetadataKey[]):
       MetadataItem[] {
     // Check if the property name is correct or not.
     this.rawProvider_.checkPropertyNames(names);
@@ -179,7 +177,7 @@ export class MetadataModel {
    * @param urls File URLs.
    * @param names Metadata property names to be obtained.
    */
-  getCacheByUrls(urls: string[], names: string[]): MetadataItem[] {
+  getCacheByUrls(urls: string[], names: MetadataKey[]): MetadataItem[] {
     // Check if the property name is correct or not.
     this.rawProvider_.checkPropertyNames(names);
     return this.cache_.getByUrls(urls, names);

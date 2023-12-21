@@ -14,7 +14,7 @@ export abstract class MetadataProvider {
     this.validPropertyNames_ = new Set(validPropertyNames);
   }
 
-  checkPropertyNames(names: string[]): asserts names is MetadataKey[] {
+  checkPropertyNames(names: readonly string[]): asserts names is MetadataKey[] {
     // Check if the property name is correct or not.
     for (const propertyName of names) {
       assert(this.validPropertyNames_.has(propertyName), propertyName);

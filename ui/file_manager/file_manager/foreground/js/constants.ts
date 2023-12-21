@@ -6,7 +6,7 @@ export const ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES = [
   'canPin',
   'hosted',
   'pinned',
-];
+] as const;
 
 /**
  * These metadata is expected to be cached to accelerate computeAdditional.
@@ -17,7 +17,7 @@ export const FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES = [
   'contentMimeType',
   'hosted',
   'canPin',
-];
+] as const;
 
 /**
  * Metadata property names used by FileTable and FileGrid.
@@ -45,7 +45,7 @@ export const LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES = [
   'isMachineRoot',
   'isExternalMedia',
   'isArbitrarySyncFolder',
-];
+] as const;
 
 /**
  * Metadata properties used to inform the user about DLP (Data Leak Prevention)
@@ -55,7 +55,7 @@ export const DLP_METADATA_PREFETCH_PROPERTY_NAMES = [
   'isDlpRestricted',
   'sourceUrl',
   'isRestrictedForDestination',
-];
+] as const;
 
 /**
  * Name of the default crostini VM: crostini::kCrostiniDefaultVmName

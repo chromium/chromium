@@ -622,10 +622,10 @@ export class DirectoryItem extends FilesTreeItem {
         true /* recursive */,
         () => {
           if (this.insideDrive) {
-            this.parentTree_.metadataModel_.get(
-                this.entries_,
-                LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES.concat(
-                    DLP_METADATA_PREFETCH_PROPERTY_NAMES));
+            this.parentTree_.metadataModel_.get(this.entries_, [
+              ...LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES,
+              ...DLP_METADATA_PREFETCH_PROPERTY_NAMES,
+            ]);
           }
 
           recordInterval(metricName);

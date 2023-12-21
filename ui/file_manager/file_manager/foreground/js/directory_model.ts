@@ -31,6 +31,7 @@ import {CROSTINI_CONNECT_ERR, DLP_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAIN
 import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, EmptyContentScanner, FileFilter, FileListContext, GuestOsMounter, MediaViewContentScanner, RecentContentScanner, SearchV2ContentScanner, TrashContentScanner} from './directory_contents.js';
 import {FileListModel} from './file_list_model.js';
 import {FileWatcher, type WatcherDirectoryChangedEvent} from './file_watcher.js';
+import type {MetadataKey} from './metadata/metadata_item.js';
 import type {MetadataModel} from './metadata/metadata_model.js';
 import {FileListSelectionModel, FileListSingleSelectionModel} from './ui/file_list_selection_model.js';
 import type {ListSelectionModel} from './ui/list_selection_model.js';
@@ -330,7 +331,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
   /**
    * Metadata property names that are expected to be Prefetched.
    */
-  getPrefetchPropertyNames(): string[] {
+  getPrefetchPropertyNames(): MetadataKey[] {
     return this.currentFileListContext_.prefetchPropertyNames;
   }
 
@@ -838,10 +839,10 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
         chrome.fileManagerPrivate.pollDriveHostedFilePinStates();
       }
       if (!isFakeEntry(currentEntry)) {
-        this.metadataModel_.get(
-            [currentEntry],
-            LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES.concat(
-                DLP_METADATA_PREFETCH_PROPERTY_NAMES));
+        this.metadataModel_.get([currentEntry], [
+          ...LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES,
+          ...DLP_METADATA_PREFETCH_PROPERTY_NAMES,
+        ]);
       }
     }
 

@@ -15,6 +15,7 @@ import type {VolumeManager} from '../../externs/volume_manager.js';
 import {DirectoryModel} from './directory_model.js';
 import {FileListModel} from './file_list_model.js';
 import {ListThumbnailLoader, ListThumbnailLoaderTask, TEST_VOLUME_TYPE, type ThumbnailLoadedEvent} from './list_thumbnail_loader.js';
+import type {MetadataKey} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {ThumbnailModel} from './metadata/thumbnail_model.js';
 import {MockThumbnailLoader} from './mock_thumbnail_loader.js';
@@ -74,8 +75,8 @@ export function setUp() {
   } as ThumbnailModel;
 
   metadataModel = {
-    get: (_entries: Array<Entry|FilesAppEntry>, _names: string[]) => {},
-    getCache: (_entries: Array<Entry|FilesAppEntry>, _names: string[]) => {
+    get: (_entries: Array<Entry|FilesAppEntry>, _names: MetadataKey[]) => {},
+    getCache: (_entries: Array<Entry|FilesAppEntry>, _names: MetadataKey[]) => {
       return [{}];
     },
   } as MetadataModel;

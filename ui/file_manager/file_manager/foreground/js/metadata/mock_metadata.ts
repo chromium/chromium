@@ -6,7 +6,7 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 
-import {MetadataItem} from './metadata_item.js';
+import {MetadataItem, type MetadataKey} from './metadata_item.js';
 import {MetadataModel} from './metadata_model.js';
 import {MetadataProvider} from './metadata_provider.js';
 import {MetadataRequest} from './metadata_request.js';
@@ -37,12 +37,12 @@ export class MockMetadataModel extends MetadataModel {
     super(new MockMetadataProvider([]));
   }
 
-  override get(entries: Array<Entry|FilesAppEntry>) {
+  override get(entries: Array<Entry|FilesAppEntry>, _names: MetadataKey[]) {
     return Promise.resolve(this.getCache(entries, []));
   }
 
   override getCache(
-      entries: Array<Entry|FilesAppEntry>, _names: string[] = []) {
+      entries: Array<Entry|FilesAppEntry>, _names: MetadataKey[] = []) {
     return entries.map(
         entry => this.propertiesMap_.get(entry.toURL()) || this.properties);
   }

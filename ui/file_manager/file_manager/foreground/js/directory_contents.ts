@@ -24,7 +24,7 @@ import {getStore} from '../../state/store.js';
 
 import {ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES, CROSTINI_CONNECT_ERR, DLP_METADATA_PREFETCH_PROPERTY_NAMES, FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from './constants.js';
 import {FileListModel} from './file_list_model.js';
-import {MetadataItem} from './metadata/metadata_item.js';
+import {MetadataItem, type MetadataKey} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 
 
@@ -999,7 +999,7 @@ export class FileFilter extends EventTarget {
  */
 export class FileListContext {
   readonly fileList: FileListModel;
-  readonly prefetchPropertyNames: string[];
+  readonly prefetchPropertyNames: MetadataKey[];
 
   constructor(
       readonly fileFilter: FileFilter, readonly metadataModel: MetadataModel,
