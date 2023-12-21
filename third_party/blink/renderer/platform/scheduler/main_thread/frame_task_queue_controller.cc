@@ -120,6 +120,9 @@ void FrameTaskQueueController::TaskQueueCreated(
 
   delegate_->OnTaskQueueCreated(task_queue.get(), voter.get());
 
+  recordreplay::Assert("[RUN-2734-3049] FrameTaskQueueController::TaskQueueCreated %d %d",
+    task_queue->CanBeThrottled(), recordreplay::PointerId(task_queue.get()));
+
   all_task_queues_and_voters_.push_back(
       TaskQueueAndEnabledVoterPair(task_queue.get(), voter.get()));
 
@@ -132,6 +135,9 @@ void FrameTaskQueueController::RemoveTaskQueueAndVoter(
     MainThreadTaskQueue* queue) {
   DCHECK(task_queue_enabled_voters_.Contains(queue));
   task_queue_enabled_voters_.erase(queue);
+
+  recordreplay::Assert("[RUN-2734-3049] FrameTaskQueueController::RemoveTaskQueueAndVoter %d %d",
+    queue->CanBeThrottled(), recordreplay::PointerId(queue));
 
   bool found_task_queue = false;
   for (auto* it = all_task_queues_and_voters_.begin();
