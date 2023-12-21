@@ -2104,12 +2104,6 @@ void CompositeEditCommand::AppliedEditing() {
   // Command will be equal to last edit command only in the case of typing
   if (last_edit_command == this) {
     DCHECK(IsTypingCommand());
-    if (Element* element = undo_step.StartingRootEditableElement()) {
-      element->GetDocument()
-          .GetPage()
-          ->GetChromeClient()
-          .DidUserChangeContentEditableContent(*element);
-    }
   } else if (last_edit_command && last_edit_command->IsDragAndDropCommand() &&
              (GetInputType() == InputEvent::InputType::kDeleteByDrag ||
               GetInputType() == InputEvent::InputType::kInsertFromDrop)) {
@@ -2132,6 +2126,14 @@ void CompositeEditCommand::AppliedEditing() {
     editor.GetUndoStack().RegisterUndoStep(EnsureUndoStep());
   }
 
+  if (Element* element = undo_step.StartingRootEditableElement()) {
+    if (element->GetDocument().IsPageVisible()) {
+      element->GetDocument()
+          .GetPage()
+          ->GetChromeClient()
+          .DidUserChangeContentEditableContent(*element);
+    }
+  }
   editor.RespondToChangedContents(new_selection.Base());
 
   if (auto* rc = GetDocument().GetResourceCoordinator()) {

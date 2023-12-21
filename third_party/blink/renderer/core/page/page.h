@@ -221,6 +221,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
     DCHECK(chrome_client_) << "No chrome client";
     return *chrome_client_;
   }
+  void SetChromeClientForTesting(ChromeClient* chrome_client) {
+    chrome_client_ = chrome_client;
+  }
   AutoscrollController& GetAutoscrollController() const {
     return *autoscroll_controller_;
   }
