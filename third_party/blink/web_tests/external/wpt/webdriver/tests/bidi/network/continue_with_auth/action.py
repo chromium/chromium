@@ -89,25 +89,13 @@ async def test_provideCredentials(
         request=request, action="provideCredentials", credentials=credentials
     )
 
+    # TODO: At the moment, the specification does not expect to receive a
+    # responseCompleted event for each authentication attempt, so only assert
+    # the last event. See https://github.com/w3c/webdriver-bidi/issues/627
+
+    # Wait until a a responseCompleted event with status 200 OK is received.
     wait = AsyncPoll(bidi_session, message="Didn't receive response completed events")
-    await wait.until(lambda _: len(events) >= 2)
-    assert len(events) == 2
-
-    assert_response_event(
-        events[0],
-        expected_response={
-            "status": 401,
-            "statusText": "Unauthorized",
-        },
-    )
-
-    assert_response_event(
-        events[1],
-        expected_response={
-            "status": 200,
-            "statusText": "OK",
-        },
-    )
+    await wait.until(lambda _: len(events) > 0 and events[-1]["response"]["status"] == 200)
 
     remove_listener()
 
@@ -149,32 +137,12 @@ async def test_provideCredentials_wrong_credentials(
         request=request, action="provideCredentials", credentials=correct_credentials
     )
 
+    # TODO: At the moment, the specification does not expect to receive a
+    # responseCompleted event for each authentication attempt, so only assert
+    # the last event. See https://github.com/w3c/webdriver-bidi/issues/627
+
+    # Wait until a a responseCompleted event with status 200 OK is received.
     wait = AsyncPoll(bidi_session, message="Didn't receive response completed events")
-    await wait.until(lambda _: len(events) >= 3)
-    assert len(events) == 3
-
-    assert_response_event(
-        events[0],
-        expected_response={
-            "status": 401,
-            "statusText": "Unauthorized",
-        },
-    )
-
-    assert_response_event(
-        events[1],
-        expected_response={
-            "status": 401,
-            "statusText": "Unauthorized",
-        },
-    )
-
-    assert_response_event(
-        events[2],
-        expected_response={
-            "status": 200,
-            "statusText": "OK",
-        },
-    )
+    await wait.until(lambda _: len(events) > 0 and events[-1]["response"]["status"] == 200)
 
     remove_listener()
