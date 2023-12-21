@@ -612,11 +612,11 @@ void VpxVideoEncoder::ChangeOptions(const Options& options,
   }
 
   // Libvpx is very peculiar about encoded frame size changes,
-  // - VP8: As long as the frame area doesn't increase, internal codec
-  //        structures don't need to be reallocated and codec can be simply
-  //        reconfigured.
-  // - VP9: The codec cannot increase encoded width or height larger than their
-  //        initial values.
+  // - VP8: vpx_codec_enc_config_set() returns VPX_CODEC_INVALID_PARAM if we
+  //        try to increase encoded width or height larger than their initial
+  //        values.
+  // - VP9: The codec may crash if we try to increase encoded width or height
+  //        larger than their initial values.
   //
   // Mind the difference between old frame sizes:
   // - |originally_configured_size_| is set only once when the vpx_codec_ctx_t
@@ -625,19 +625,7 @@ void VpxVideoEncoder::ChangeOptions(const Options& options,
   // More info can be found here:
   //   https://bugs.chromium.org/p/webm/issues/detail?id=1642
   //   https://bugs.chromium.org/p/webm/issues/detail?id=912
-  if (profile_ == VP8PROFILE_ANY) {
-    // VP8 resize restrictions
-    auto old_area = originally_configured_size_.GetCheckedArea();
-    auto new_area = options.frame_size.GetCheckedArea();
-    DCHECK(old_area.IsValid());
-    if (!new_area.IsValid() || new_area.ValueOrDie() > old_area.ValueOrDie()) {
-      auto status = EncoderStatus(
-          EncoderStatus::Codes::kEncoderUnsupportedConfig,
-          "libvpx/VP8 doesn't support dynamically increasing frame area");
-      std::move(done_cb).Run(std::move(status));
-      return;
-    }
-  } else {
+  if (profile_ != VP8PROFILE_ANY) {
     // VP9 resize restrictions
     if (options.frame_size.width() > originally_configured_size_.width() ||
         options.frame_size.height() > originally_configured_size_.height()) {
