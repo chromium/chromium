@@ -50,6 +50,7 @@ class CORE_EXPORT Part : public ScriptWrappable {
   Part(PartRoot& root, const Vector<String> metadata)
       : root_(root), metadata_(metadata) {}
   bool IsConnected() { return connected_; }
+  static bool IsAcceptableNodeType(Node& node);
 
  private:
   Member<PartRoot> root_;

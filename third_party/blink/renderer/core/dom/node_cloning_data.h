@@ -64,6 +64,9 @@ class CORE_EXPORT NodeCloningData final {
     cloned_part_root_stack_.pop_back();
   }
   bool PartRootStackInvalid() const { return cloned_part_root_stack_.empty(); }
+  bool PartRootStackHasOnlyDocumentRoot() const {
+    return cloned_part_root_stack_.size() <= 1;
+  }
 
   PartRoot& CurrentPartRoot() const {
     DCHECK(!PartRootStackInvalid());

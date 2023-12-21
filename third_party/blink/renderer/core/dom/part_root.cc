@@ -88,10 +88,10 @@ void PartRoot::CloneParts(const Node& source_node,
         continue;
       }
       // This should *only* be the nextSibling of a ChildNodePart.
-      DCHECK(part->GetAsPartRoot()) << "Should be a ChildNodePart";
+      CHECK(part->GetAsPartRoot()) << "Should be a ChildNodePart";
       DCHECK_EQ(static_cast<ChildNodePart*>(part)->nextSibling(), source_node)
           << "This should be the next sibling node";
-      if (data.PartRootStackInvalid()) {
+      if (data.PartRootStackHasOnlyDocumentRoot()) {
         // If there have been mis-nested parts, abort.
         continue;
       }

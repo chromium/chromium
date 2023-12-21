@@ -103,4 +103,16 @@ PartRootUnion* Part::rootForBindings() const {
   return PartRoot::GetUnionFromPartRoot(root_.Get());
 }
 
+// static
+bool Part::IsAcceptableNodeType(Node& node) {
+  if (Element* element = DynamicTo<Element>(node)) {
+    if (element->IsDocumentElement()) {
+      return false;
+    }
+  }
+  auto type = node.getNodeType();
+  return type == Node::kElementNode || type == Node::kTextNode ||
+         type == Node::kCommentNode;
+}
+
 }  // namespace blink
