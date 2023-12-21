@@ -7,6 +7,24 @@
 
 typedef WebUIMochaBrowserTest AshCommonCrElementsTest;
 
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrButton) {
+  RunTest("chromeos/ash_common/cr_elements/cr_button_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrDialog) {
+  RunTest("chromeos/ash_common/cr_elements/cr_dialog_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrExpandButton) {
+  RunTest("chromeos/ash_common/cr_elements/cr_expand_button_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrIconButton) {
+  RunTest("chromeos/ash_common/cr_elements/cr_icon_button_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrToast) {
   RunTest("chromeos/ash_common/cr_elements/cr_toast_test.js", "mocha.run()");
 }

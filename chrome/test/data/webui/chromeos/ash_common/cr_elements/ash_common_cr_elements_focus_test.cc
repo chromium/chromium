@@ -10,3 +10,7 @@ typedef WebUIMochaFocusTest AshCommonCrElementsFocusTest;
 IN_PROC_BROWSER_TEST_F(AshCommonCrElementsFocusTest, CrCheckbox) {
   RunTest("chromeos/ash_common/cr_elements/cr_checkbox_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsFocusTest, CrInput) {
+  RunTest("chromeos/ash_common/cr_elements/cr_input_test.js", "mocha.run()");
+}
