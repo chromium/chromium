@@ -91,9 +91,10 @@ int GetFieldTopMargin(LayoutProvider* layout_provider,
 
 int GetDialogTopMargins(LayoutProvider* layout_provider,
                         ui::DialogModelField* first_field) {
+  CHECK(first_field);
+
   const BubbleDialogModelHost::FieldType field_type =
-      first_field ? GetFieldTypeForField(first_field)
-                  : BubbleDialogModelHost::FieldType::kControl;
+      GetFieldTypeForField(first_field);
   switch (field_type) {
     case BubbleDialogModelHost::FieldType::kMenuItem:
       return 0;
@@ -109,9 +110,9 @@ int GetDialogTopMargins(LayoutProvider* layout_provider,
 int GetDialogBottomMargins(LayoutProvider* layout_provider,
                            ui::DialogModelField* last_field,
                            bool has_buttons) {
+  CHECK(last_field);
   const BubbleDialogModelHost::FieldType field_type =
-      last_field ? GetFieldTypeForField(last_field)
-                 : BubbleDialogModelHost::FieldType::kControl;
+      GetFieldTypeForField(last_field);
   switch (field_type) {
     case BubbleDialogModelHost::FieldType::kMenuItem:
       return has_buttons ? layout_provider->GetDistanceMetric(
@@ -315,11 +316,8 @@ class BubbleDialogModelHostContentsView final
                 base::Unretained(this)))) {
     // Note that between-child spacing is manually handled using kMarginsKey.
     SetOrientation(views::BoxLayout::Orientation::kVertical);
-  }
 
-  void Init() {
-    CHECK(children().empty()) << "This should only be called once.";
-
+    // Add all fields from the model.
     for (const auto& field : contents_->fields()) {
       OnFieldAdded(field.get());
     }
@@ -881,9 +879,8 @@ BubbleDialogModelHost::BubbleDialogModelHost(
       anchor_view ? DISTANCE_BUBBLE_PREFERRED_WIDTH
                   : DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
-  // TODO(pbos): See if it's safe to just call this at the end of ContentsView's
-  // constructor and remove Init.
-  contents_view_->Init();
+  // Make sure we're up to date with initial contents state.
+  UpdateSpacingAndMargins();
 }
 
 BubbleDialogModelHost::~BubbleDialogModelHost() {
@@ -960,10 +957,6 @@ void BubbleDialogModelHost::OnWidgetInitialized() {
     GetBubbleFrameView()->SetHeaderView(std::move(banner_view));
     SizeToContents();
   }
-}
-
-View* BubbleDialogModelHost::GetContentsViewForTesting() {
-  return contents_view_;
 }
 
 void BubbleDialogModelHost::Close() {
@@ -1078,6 +1071,14 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
   const views::View::Views& children = scroll_view
                                            ? scroll_view->contents()->children()
                                            : contents_view_->children();
+
+  if (children.empty()) {
+    // TODO(pbos): Copied from the BubbleDialogDelegate constructor. Maybe there
+    // should be a way to reset them if we become empty?
+    set_margins(layout_provider->GetDialogInsetsForContentType(
+        DialogContentType::kText, DialogContentType::kText));
+    return;
+  }
 
   for (View* const view : children) {
     ui::DialogModelField* const field =

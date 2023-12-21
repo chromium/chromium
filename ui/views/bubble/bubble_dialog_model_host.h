@@ -80,8 +80,6 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   View* GetInitiallyFocusedView() override;
   void OnWidgetInitialized() override;
 
-  View* GetContentsViewForTesting();
-
   // ui::DialogModelHost:
   void Close() override;
   void OnDialogButtonChanged() override;
