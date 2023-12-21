@@ -1333,8 +1333,8 @@ component("base") {
     deps += [
       ":base_jni",
       ":process_launcher_jni",
-      "//third_party/jni_zero:jni_zero_utils",
     ]
+    public_deps += [ "//third_party/jni_zero:jni_zero_utils" ]
   }  # is_android || is_robolectric
 
   # Chromeos.

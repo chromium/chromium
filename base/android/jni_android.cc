@@ -33,7 +33,6 @@ BASE_FEATURE(kHandleExceptionsInJava,
              "HandleJniExceptionsInJava",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-JavaVM* g_jvm = nullptr;
 jobject g_class_loader = nullptr;
 jclass g_out_of_memory_error_class = nullptr;
 jmethodID g_class_loader_load_class_method_id = nullptr;
@@ -91,80 +90,13 @@ const char kUncaughtExceptionHandlerFailedMessage[] =
 const char kOomInGetJavaExceptionInfoMessage[] =
     "Unable to obtain Java stack trace due to OutOfMemoryError";
 
-JNIEnv* AttachCurrentThread() {
-  DCHECK(g_jvm);
-  JNIEnv* env = nullptr;
-  jint ret = g_jvm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_2);
-  if (ret == JNI_EDETACHED || !env) {
-    JavaVMAttachArgs args;
-    args.version = JNI_VERSION_1_2;
-    args.group = nullptr;
-
-    // 16 is the maximum size for thread names on Android.
-    char thread_name[16];
-    int err = prctl(PR_GET_NAME, thread_name);
-    if (err < 0) {
-      DPLOG(ERROR) << "prctl(PR_GET_NAME)";
-      args.name = nullptr;
-    } else {
-      args.name = thread_name;
-    }
-
-#if BUILDFLAG(IS_ANDROID)
-    ret = g_jvm->AttachCurrentThread(&env, &args);
-#else
-    ret = g_jvm->AttachCurrentThread(reinterpret_cast<void**>(&env), &args);
-#endif
-    CHECK_EQ(JNI_OK, ret);
-  }
-  return env;
-}
-
-JNIEnv* AttachCurrentThreadWithName(const std::string& thread_name) {
-  DCHECK(g_jvm);
-  JavaVMAttachArgs args;
-  args.version = JNI_VERSION_1_2;
-  args.name = const_cast<char*>(thread_name.c_str());
-  args.group = nullptr;
-  JNIEnv* env = nullptr;
-#if BUILDFLAG(IS_ANDROID)
-  jint ret = g_jvm->AttachCurrentThread(&env, &args);
-#else
-  jint ret = g_jvm->AttachCurrentThread(reinterpret_cast<void**>(&env), &args);
-#endif
-  CHECK_EQ(JNI_OK, ret);
-  return env;
-}
-
-void DetachFromVM() {
-  // Ignore the return value, if the thread is not attached, DetachCurrentThread
-  // will fail. But it is ok as the native thread may never be attached.
-  if (g_jvm)
-    g_jvm->DetachCurrentThread();
-}
-
 void InitVM(JavaVM* vm) {
-  DCHECK(!g_jvm || g_jvm == vm);
-  g_jvm = vm;
   jni_zero::InitVM(vm);
   jni_zero::SetExceptionHandler(CheckException);
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   g_out_of_memory_error_class = static_cast<jclass>(
       env->NewGlobalRef(env->FindClass("java/lang/OutOfMemoryError")));
   DCHECK(g_out_of_memory_error_class);
-}
-
-bool IsVMInitialized() {
-  return g_jvm != nullptr;
-}
-
-JavaVM* GetVM() {
-  return g_jvm;
-}
-
-void DisableJvmForTesting() {
-  g_jvm = nullptr;
-  jni_zero::DisableJvmForTesting();
 }
 
 void InitGlobalClassLoader(JNIEnv* env) {
@@ -408,8 +340,9 @@ std::string GetJavaExceptionInfo(JNIEnv* env,
 
 std::string GetJavaStackTraceIfPresent() {
   JNIEnv* env = nullptr;
-  if (g_jvm) {
-    g_jvm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_2);
+  JavaVM* jvm = jni_zero::GetVM();
+  if (jvm) {
+    jvm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_2);
   }
   if (!env) {
     // JNI has not been initialized on this thread.

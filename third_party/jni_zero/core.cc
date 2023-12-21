@@ -41,9 +41,33 @@ JNIEnv* AttachCurrentThread() {
 #else
     ret = g_jvm->AttachCurrentThread(&env, &args);
 #endif
-    JNI_ZERO_CHECK(JNI_OK == ret);
+    JNI_ZERO_CHECK(ret == JNI_OK);
   }
   return env;
+}
+
+JNIEnv* AttachCurrentThreadWithName(const std::string& thread_name) {
+  JNI_ZERO_DCHECK(g_jvm);
+  JavaVMAttachArgs args;
+  args.version = JNI_VERSION_1_2;
+  args.name = const_cast<char*>(thread_name.c_str());
+  args.group = nullptr;
+  JNIEnv* env = nullptr;
+#if defined(JNI_ZERO_IS_ROBOLECTRIC)
+  jint ret = g_jvm->AttachCurrentThread(reinterpret_cast<void**>(&env), &args);
+#else
+  jint ret = g_jvm->AttachCurrentThread(&env, &args);
+#endif
+  JNI_ZERO_CHECK(ret == JNI_OK);
+  return env;
+}
+
+void DetachFromVM() {
+  // Ignore the return value, if the thread is not attached, DetachCurrentThread
+  // will fail. But it is ok as the native thread may never be attached.
+  if (g_jvm) {
+    g_jvm->DetachCurrentThread();
+  }
 }
 
 void InitVM(JavaVM* vm) {
@@ -52,6 +76,14 @@ void InitVM(JavaVM* vm) {
 
 void DisableJvmForTesting() {
   g_jvm = nullptr;
+}
+
+bool IsVMInitialized() {
+  return g_jvm != nullptr;
+}
+
+JavaVM* GetVM() {
+  return g_jvm;
 }
 
 void SetExceptionHandler(void (*callback)(JNIEnv*)) {
@@ -68,4 +100,5 @@ void CheckException(JNIEnv* env) {
   }
   JNI_ZERO_FLOG("jni_zero crashing due to uncaught Java exception");
 }
+
 }  // namespace jni_zero
