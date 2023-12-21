@@ -6837,3 +6837,6 @@ crbug.com/1496375 [ Mac ] http/tests/loading/image-picture-download-after-shrink
 
 # Gardener 2023-12-20
 [ Mac ] accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass ]
+
+# Gardener 2023-12-21
+crbug.com/1508113 virtual/automatic-lazy-frame-loading/wpt_internal/lazyembed/automatic-lazy-frame-loading.sub.html [ Timeout ]
