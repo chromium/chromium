@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -64,11 +65,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/base_paths_win.h"
-#include "base/test/scoped_path_override.h"
-#endif  // BUILDFLAG(IS_WIN)
 
 using base::test::FeatureRef;
 using base::test::FeatureRefAndParams;
@@ -376,14 +372,12 @@ class BrowsingDataModelBrowserTest
   network::test::TrustTokenRequestHandler request_handler_;
 
  private:
-#if BUILDFLAG(IS_WIN)
-  // This is used to prevent creating shortcuts in the start menu dir.
-  base::ScopedPathOverride override_start_dir_{base::DIR_START_MENU};
-#endif  // BUILDFLAG(IS_WIN)
-
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   privacy_sandbox::PrivacySandboxAttestationsMixin
       privacy_sandbox_attestations_mixin_{&mixin_host_};
+
+  // Stop test from installing OS hooks.
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -647,8 +641,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
     ASSERT_TRUE(ExecJs(web_contents(), content::JsReplace(R"(
       const img = document.createElement('img');
       img.attributionSrc = $1;)",
-                                                          register_url))
-    );
+                                                          register_url)));
 
     WaitForModelUpdate(allowed_browsing_data_model, 1);
 
