@@ -15,6 +15,13 @@
 
       cr-input {
         --cr-input-padding-start: 8px;
+
+        /* cr-inputs are by default isolated into their own stacking contexts
+         * but cr-searchable-drop-down requires a fixed overlay that floats over
+         * and covers other content outside their parent cr-input's stacking
+         * contexts.
+         */
+        isolation: auto;
       }
 
       iron-dropdown {
