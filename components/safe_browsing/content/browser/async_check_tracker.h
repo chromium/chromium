@@ -11,6 +11,7 @@
 #include "components/safe_browsing/content/browser/url_checker_on_sb.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace safe_browsing {
@@ -30,7 +31,8 @@ class BaseUIManager;
 // This class should only be called on the UI thread.
 // TODO(crbug.com/1501194): Implement this class.
 class AsyncCheckTracker
-    : public content::WebContentsUserData<AsyncCheckTracker> {
+    : public content::WebContentsUserData<AsyncCheckTracker>,
+      public content::WebContentsObserver {
  public:
   static AsyncCheckTracker* GetOrCreateForWebContents(
       content::WebContents* web_contents,
@@ -51,6 +53,9 @@ class AsyncCheckTracker
   // Takes ownership of `checker`.
   void TransferUrlChecker(std::unique_ptr<UrlCheckerOnSB> checker);
 
+  // content::WebContentsObserver methods:
+  void DidFinishNavigation(content::NavigationHandle* handle) override;
+
   bool HasPendingCheckerForTesting();
 
   base::WeakPtr<AsyncCheckTracker> GetWeakPtr();
@@ -58,9 +63,13 @@ class AsyncCheckTracker
  private:
   friend class content::WebContentsUserData<AsyncCheckTracker>;
   friend class SBBrowserUrlLoaderThrottleTestBase;
+  friend class AsyncCheckTrackerTest;
 
   AsyncCheckTracker(content::WebContents* web_contents,
                     scoped_refptr<BaseUIManager> ui_manager);
+
+  // Called by `UrlCheckerOnSB`, when the check completes.
+  void PendingCheckerCompleted(UrlCheckerOnSB::OnCompleteCheckResult result);
 
   // Used to display a warning.
   scoped_refptr<BaseUIManager> ui_manager_;
@@ -68,6 +77,10 @@ class AsyncCheckTracker
   // Pending Safe Browsing checks on the current page.
   // TODO(crbug.com/1501194): Support holding multiple checkers.
   std::unique_ptr<UrlCheckerOnSB> pending_checker_;
+
+  // Set to true if interstitial should be shown after DidFinishNavigation is
+  // called. Reset to false after interstitial is triggered.
+  bool show_interstitial_after_finish_navigation_ = false;
 
   base::WeakPtrFactory<AsyncCheckTracker> weak_factory_{this};
 

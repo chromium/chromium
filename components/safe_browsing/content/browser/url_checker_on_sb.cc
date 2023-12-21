@@ -148,6 +148,10 @@ void UrlCheckerOnSB::LogWillProcessResponseTime(base::TimeTicks reached_time) {
   }
 }
 
+void UrlCheckerOnSB::SwapCompleteCallback(OnCompleteCheckCallback callback) {
+  complete_callback_ = std::move(callback);
+}
+
 void UrlCheckerOnSB::SetUrlCheckerForTesting(
     std::unique_ptr<SafeBrowsingUrlCheckerImpl> checker) {
   url_checker_for_testing_ = std::move(checker);

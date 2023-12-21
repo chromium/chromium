@@ -103,6 +103,9 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
 
   void LogWillProcessResponseTime(base::TimeTicks reached_time);
 
+  // Replaces the current |complete_callback_| with the new |callback|.
+  void SwapCompleteCallback(OnCompleteCheckCallback callback);
+
   void SetUrlCheckerForTesting(
       std::unique_ptr<SafeBrowsingUrlCheckerImpl> checker);
 

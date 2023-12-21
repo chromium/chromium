@@ -349,6 +349,9 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
 
     // In some cases the interstitial must be loaded here since there will be
     // no navigation to intercept in the throttle.
+    // TODO(crbug.com/1501194): With async Safe Browsing check, this code path
+    // may be triggered for top-document warning. Update the below function and
+    // consolidate it with SafeBrowsingNavigationThrottle::WillFailRequest.
     std::unique_ptr<BaseBlockingPage> blocking_page = base::WrapUnique(
         CreateBlockingPageForSubresource(web_contents, unsafe_url, resource));
     base::WeakPtr<content::NavigationHandle> error_page_navigation_handle =

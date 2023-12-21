@@ -158,6 +158,7 @@ source_set("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "async_check_tracker_unittest.cc",
     "client_report_util_unittest.cc",
     "client_side_detection_feature_cache_unittest.cc",
     "client_side_phishing_model_unittest.cc",
@@ -176,6 +177,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/content/browser:browser",
     "//components/safe_browsing/core/browser:browser",
     "//components/safe_browsing/core/browser/db:test_database_manager",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/fbs:client_model",
