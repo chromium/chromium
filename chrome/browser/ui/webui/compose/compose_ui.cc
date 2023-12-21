@@ -72,8 +72,8 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"editUpdateButton", IDS_COMPOSE_EDIT_UPDATE_BUTTON},
       {"undo", IDS_COMPOSE_UNDO},
       {"resubmit", IDS_COMPOSE_RESUBMIT},
-      {"thumbsDown", IDS_THUMBS_DOWN},
-      {"thumbsUp", IDS_THUMBS_UP},
+      {"thumbsDown", IDS_COMPOSE_THUMBS_DOWN},
+      {"thumbsUp", IDS_COMPOSE_THUMBS_UP},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("enableAnimations",

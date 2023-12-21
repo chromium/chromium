@@ -94,7 +94,7 @@
 
   <!-- Result dialog -->
   <message name="IDS_COMPOSE_EDIT" desc="Label shown on hover and read by screen-readers for button that allows user to edit their input.">
-  Edit
+  Edit input
   </message>
   <message name="IDS_COMPOSE_MENU_LENGTH_TITLE" desc="Title for options to select the length of returned text.">
     Length
@@ -125,6 +125,12 @@
   </message>
   <message name="IDS_COMPOSE_REPLACE_BUTTON" desc="The button that replaces the highlighted text with the restult in the input textfield.">
   Replace
+  </message>
+  <message name="IDS_COMPOSE_THUMBS_DOWN" desc="Accessibility label for thumbs down button that opens a feedback form when pressed.">
+    Thumbs down opens a form for submitting detailed feedback on why you dislike the generated text.
+  </message>
+  <message name="IDS_COMPOSE_THUMBS_UP" desc="Accessibility label for thumbs up button that submits positive feedback for the generated text.">
+    Thumbs up submits feedback that you like the generated text.
   </message>
 
   <!-- Errors -->
