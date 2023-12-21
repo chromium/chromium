@@ -436,12 +436,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.BlocklistTestResultsPerEntry"
-    enum="GPUBlocklistTestResultPerEntry" expires_after="2022-07-03">
+    enum="GPUBlocklistTestResultPerEntry" expires_after="2024-06-30">
   <owner>vmiura@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Counts number of browser invocations for which the GPU process is blocked
     due to a blocklist entry match.
+
+    Warning: this histogram was expired from 2022-07-03 to 2023-12-20; data may
+    be missing.
   </summary>
 </histogram>
 
