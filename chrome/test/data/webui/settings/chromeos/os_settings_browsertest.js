@@ -555,7 +555,24 @@ TEST_F('OSSettingsCrostiniPageCrostiniSubpageRevampTest', 'AllJsTests', () => {
      ]
    }
  ],
- ['DevicePageDisplayPage', 'device_page/display_page_test.js'],
+ [
+   'DevicePageDisplayPage',
+   'device_page/display_page_test.js',
+   {
+     disabled: [
+       'ash::features::kOsSettingsRevampWayfinding',
+     ],
+   },
+ ],
+ [
+   'DevicePageDisplayPageRevamp',
+   'device_page/display_page_test.js',
+   {
+     enabled: [
+       'ash::features::kOsSettingsRevampWayfinding',
+     ],
+   },
+ ],
  [
    'DevicePageDisplaySettingsMojoInterfaceProvider',
    'device_page/display_settings_mojo_interface_provider_test.js'
