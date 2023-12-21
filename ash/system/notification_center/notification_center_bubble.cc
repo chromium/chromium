@@ -8,7 +8,7 @@
 
 #include "ash/shelf/shelf.h"
 #include "ash/system/notification_center/notification_center_tray.h"
-#include "ash/system/notification_center/notification_center_view.h"
+#include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ui/views/widget/widget.h"

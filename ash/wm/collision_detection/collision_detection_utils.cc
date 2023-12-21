@@ -11,7 +11,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
-#include "ash/system/message_center/ash_message_popup_collection.h"
+#include "ash/system/notification_center/ash_message_popup_collection.h"
 #include "ash/wm/work_area_insets.h"
 #include "ui/base/class_property.h"
 #include "ui/views/widget/widget.h"

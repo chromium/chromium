@@ -17,7 +17,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/notification_center/notification_center_tray.h"
-#include "ash/system/notification_center/notification_center_view.h"
+#include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/time/time_tray_item_view.h"

@@ -9,8 +9,8 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/system/message_center/ash_message_popup_collection.h"
-#include "ash/system/message_center/notification_grouping_controller.h"
+#include "ash/system/notification_center/ash_message_popup_collection.h"
+#include "ash/system/notification_center/notification_grouping_controller.h"
 #include "ash/system/notification_center/notification_center_bubble.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/unified/notification_icons_controller.h"

@@ -29,7 +29,7 @@
 #include "ash/shell_init_params.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
-#include "ash/system/message_center/session_state_notification_blocker.h"
+#include "ash/system/notification_center/session_state_notification_blocker.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/screen_layout_observer.h"
 #include "ash/test/ash_test_views_delegate.h"

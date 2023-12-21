@@ -17,7 +17,7 @@
 #include "ash/session/test_pref_service_provider.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell_delegate.h"
-#include "ash/system/message_center/test_notifier_settings_controller.h"
+#include "ash/system/notification_center/test_notifier_settings_controller.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_command_line.h"

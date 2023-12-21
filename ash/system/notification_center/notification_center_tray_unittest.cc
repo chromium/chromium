@@ -10,7 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "ash/system/message_center/message_center_utils.h"
+#include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"

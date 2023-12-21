@@ -6,7 +6,7 @@
 #define ASH_SCALABLE_IPH_SCALABLE_IPH_ASH_NOTIFICATION_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/message_center/ash_notification_view.h"
+#include "ash/system/notification_center/views/ash_notification_view.h"
 
 namespace message_center {
 class MessageView;

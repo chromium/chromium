@@ -16,7 +16,7 @@
 #include "ash/screen_util.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
-#include "ash/system/message_center/ash_message_popup_collection.h"
+#include "ash/system/notification_center/ash_message_popup_collection.h"
 #include "ash/wm/always_on_top_controller.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"

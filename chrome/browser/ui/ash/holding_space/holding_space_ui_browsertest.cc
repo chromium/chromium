@@ -26,7 +26,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
-#include "ash/system/message_center/message_popup_animation_waiter.h"
+#include "ash/system/notification_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "ash/system/status_area_widget.h"

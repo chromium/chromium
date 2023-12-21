@@ -19,7 +19,7 @@
 #include "ash/public/cpp/external_arc/message_center/mock_arc_notification_item.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/shell.h"
-#include "ash/system/message_center/message_view_factory.h"
+#include "ash/system/notification_center/message_view_factory.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"

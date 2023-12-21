@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
-#include "ash/system/message_center/message_center_controller.h"
+#include "ash/system/notification_center/message_center_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"

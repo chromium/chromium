@@ -10,7 +10,7 @@
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/system/message_center/message_center_constants.h"
+#include "ash/system/notification_center/message_center_constants.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"

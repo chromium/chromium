@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/message_center/notifier_settings_view.h"
+#include "ash/system/notification_center/views/notifier_settings_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/memory/raw_ptr.h"

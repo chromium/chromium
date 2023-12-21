@@ -15,7 +15,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
-#include "ash/system/notification_center/notification_center_view.h"
+#include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/time/calendar_event_list_view.h"
 #include "ash/system/time/calendar_model.h"
 #include "ash/system/time/calendar_month_view.h"

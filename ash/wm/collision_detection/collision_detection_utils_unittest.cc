@@ -15,7 +15,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
-#include "ash/system/message_center/ash_message_popup_collection.h"
+#include "ash/system/notification_center/ash_message_popup_collection.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"

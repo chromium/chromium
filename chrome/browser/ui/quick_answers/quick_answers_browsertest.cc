@@ -5,7 +5,7 @@
 #include <string>
 
 #include "ash/shell.h"
-#include "ash/system/message_center/ash_message_popup_collection.h"
+#include "ash/system/notification_center/ash_message_popup_collection.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"

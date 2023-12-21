@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ash/system/message_center/ash_notification_view.h"
+#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "base/memory/raw_ptr.h"
 
 namespace message_center {

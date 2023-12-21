@@ -14,7 +14,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/notification_center/notification_center_bubble.h"
-#include "ash/system/notification_center/notification_center_view.h"
+#include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/notification_center/notification_metrics_recorder.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/tray/tray_background_view.h"

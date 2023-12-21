@@ -18,7 +18,7 @@
 #include "ash/shell.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
 #include "ash/system/human_presence/snooping_protection_notification_blocker_internal.h"
-#include "ash/system/message_center/message_center_controller.h"
+#include "ash/system/notification_center/message_center_controller.h"
 #include "ash/system/network/sms_observer.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
