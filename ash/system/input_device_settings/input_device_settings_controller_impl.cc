@@ -1433,9 +1433,14 @@ void InputDeviceSettingsControllerImpl::DispatchGraphicsTabletSettingsChanged(
 mojom::CustomizationRestriction
 InputDeviceSettingsControllerImpl::GetMouseCustomizationRestriction(
     const ui::InputDevice& mouse) {
-  const auto* metadata = GetMouseMetadata(mouse);
-  if (metadata) {
-    return metadata->customization_restriction;
+  const auto* mouse_metadata = GetMouseMetadata(mouse);
+  if (mouse_metadata) {
+    return mouse_metadata->customization_restriction;
+  }
+  const auto* keyboard_mouse_combo_metadata =
+      GetKeyboardMouseComboMetadata(mouse);
+  if (keyboard_mouse_combo_metadata) {
+    return keyboard_mouse_combo_metadata->customization_restriction;
   }
 
   return mojom::CustomizationRestriction::kDisableKeyEventRewrites;

@@ -7,6 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/system/input_device_settings/input_device_settings_utils.h"
+#include "base/containers/flat_map.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
 
@@ -47,6 +49,18 @@ ASH_EXPORT const KeyboardMouseComboMetadata* GetKeyboardMouseComboMetadata(
 
 // This function returns the device type of the input device.
 ASH_EXPORT DeviceType GetDeviceType(const ui::InputDevice& device);
+
+// This function returns the mouse metadata list.
+ASH_EXPORT const base::flat_map<VendorProductId, MouseMetadata>&
+GetMouseMetadataList();
+
+// This function returns the keyboard mouse combo metadata list.
+ASH_EXPORT const base::flat_map<VendorProductId, KeyboardMouseComboMetadata>&
+GetKeyboardMouseComboMetadataList();
+
+// This function returns the keyboard metadata list.
+ASH_EXPORT const base::flat_map<VendorProductId, KeyboardMetadata>&
+GetKeyboardMetadataList();
 
 }  // namespace ash
 

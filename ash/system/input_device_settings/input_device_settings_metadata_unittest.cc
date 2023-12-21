@@ -13,7 +13,28 @@ namespace ash {
 
 class MetadataTest : public AshTestBase {};
 
+bool ValidateDeviceLists() {
+  for (auto keyboard_metadata : GetKeyboardMetadataList()) {
+    if (GetKeyboardMouseComboMetadataList().contains(keyboard_metadata.first)) {
+      return false;
+    }
+  }
+  for (auto keyboard_mouse_combo_metadata :
+       GetKeyboardMouseComboMetadataList()) {
+    if (GetMouseMetadataList().contains(keyboard_mouse_combo_metadata.first)) {
+      return false;
+    }
+  }
+  for (auto mouse_metadata : GetMouseMetadataList()) {
+    if (GetKeyboardMetadataList().contains(mouse_metadata.first)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 TEST_F(MetadataTest, MouseMetadata) {
+  ASSERT_TRUE(ValidateDeviceLists());
   const ui::InputDevice kSampleMouse1(0, ui::INPUT_DEVICE_USB, "kSampleMouse1",
                                       /*phys=*/"",
                                       /*sys_path=*/base::FilePath(),
@@ -39,6 +60,7 @@ TEST_F(MetadataTest, MouseMetadata) {
 }
 
 TEST_F(MetadataTest, GetDeviceType) {
+  ASSERT_TRUE(ValidateDeviceLists());
   const ui::InputDevice kSampleMouse(0, ui::INPUT_DEVICE_USB,
                                      "Razer Naga Pro (USB Dongle)",
                                      /*phys=*/"",

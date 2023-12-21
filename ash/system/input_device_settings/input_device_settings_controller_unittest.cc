@@ -153,7 +153,7 @@ const ui::InputDevice kSampleUncustomizableMouse(5,
                                                  /*vendor=*/0xffff,
                                                  /*product=*/0xffff,
                                                  /*version=*/0x0009);
-const ui::InputDevice kSampleCustomizableMouse(4,
+const ui::InputDevice kSampleCustomizableMouse(6,
                                                ui::INPUT_DEVICE_USB,
                                                "kSampleCustomizableMouse",
                                                /*phys=*/"",
@@ -161,6 +161,14 @@ const ui::InputDevice kSampleCustomizableMouse(4,
                                                /*vendor=*/0xffff,
                                                /*product=*/0xfffe,
                                                /*version=*/0x0009);
+const ui::InputDevice kSampleKeyboardMouseCombo(7,
+                                                ui::INPUT_DEVICE_USB,
+                                                "kSampleKeyboardMouseCombo",
+                                                /*phys=*/"",
+                                                /*sys_path=*/base::FilePath(),
+                                                /*vendor=*/0x046d,
+                                                /*product=*/0xc548,
+                                                /*version=*/0x0009);
 
 constexpr char kUserEmail1[] = "example1@abc.com";
 constexpr char kUserEmail2[] = "joy@abc.com";
@@ -1318,8 +1326,9 @@ TEST_F(InputDeviceSettingsControllerTest, ObservingButtons) {
 }
 
 TEST_F(InputDeviceSettingsControllerTest, ObservingMouseButtons) {
-  ui::DeviceDataManagerTestApi().SetMouseDevices(
-      {kSampleUncustomizableMouse, kSampleCustomizableMouse});
+  ui::DeviceDataManagerTestApi().SetMouseDevices({kSampleUncustomizableMouse,
+                                                  kSampleCustomizableMouse,
+                                                  kSampleKeyboardMouseCombo});
 
   auto* rewriter = Shell::Get()
                        ->event_rewriter_controller()
@@ -1334,6 +1343,17 @@ TEST_F(InputDeviceSettingsControllerTest, ObservingMouseButtons) {
   ASSERT_EQ(1u, rewriter->mice_to_observe().size());
   EXPECT_TRUE(
       rewriter->mice_to_observe().contains(kSampleCustomizableMouse.id));
+  EXPECT_EQ(
+      rewriter->mice_to_observe().find(kSampleCustomizableMouse.id)->second,
+      mojom::CustomizationRestriction::kAllowCustomizations);
+
+  controller_->StartObservingButtons(kSampleKeyboardMouseCombo.id);
+  ASSERT_EQ(2u, rewriter->mice_to_observe().size());
+  EXPECT_TRUE(
+      rewriter->mice_to_observe().contains(kSampleCustomizableMouse.id));
+  EXPECT_EQ(
+      rewriter->mice_to_observe().find(kSampleKeyboardMouseCombo.id)->second,
+      mojom::CustomizationRestriction::kDisableKeyEventRewrites);
 }
 
 TEST_F(InputDeviceSettingsControllerTest, ObservingButtonsDuplicateIds) {
