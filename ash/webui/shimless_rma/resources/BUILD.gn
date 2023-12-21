@@ -41,7 +41,7 @@ build_webui("build") {
     "hardware_error_page.ts",
     "onboarding_choose_destination_page.ts",
     "onboarding_choose_wp_disable_method_page.ts",
-    "onboarding_choose_wipe_device_page.js",
+    "onboarding_choose_wipe_device_page.ts",
     "onboarding_enter_rsu_wp_disable_code_page.js",
     "onboarding_landing_page.js",
     "onboarding_network_page.js",
