@@ -8,7 +8,7 @@
 <translation id="1013742170491673792">recherche</translation>
 <translation id="1014370462248694370">Balayer l'écran vers la droite avec deux doigts</translation>
 <translation id="1022586497894531524">Est-ce la première fois que vous utilisez les commentaires audio de ChromeVox ? Ce tutoriel rapide explique les bases pour commencer à utiliser ChromeVox.</translation>
-<translation id="1025074108959230262">Mode persistant désactivé</translation>
+<translation id="1025074108959230262">Mode rémanent désactivé</translation>
 <translation id="1031961866430398710">puis</translation>
 <translation id="1038643060055067718">Lignes :</translation>
 <translation id="1038795173450935438">Pour passer à l'élément suivant sur une page, appuyez sur la touche de recherche + la flèche vers la droite, et pour revenir directement à l'élément précédent, appuyez sur la touche de recherche + la flèche vers la gauche. Pour passer à la ligne suivante, appuyez sur la touche de recherche + la flèche vers le bas, et pour revenir à la ligne précédente, appuyez sur la touche de recherche + la flèche vers le haut. Si vous atteignez un élément sur lequel vous souhaitez cliquer, appuyez sur la touche de recherche + la barre d'espace.</translation>
@@ -86,7 +86,7 @@
 <translation id="1465097259579587977">Recommencer la présentation rapide</translation>
 <translation id="1480046233931937785">Remerciements</translation>
 <translation id="1487494366197411587">Sur un Chromebook, la touche de recherche se trouve juste au-dessus de la touche Maj.</translation>
-<translation id="1498498210836053409">Désactiver le mode persistant lors de la modification de texte (mode persistant intelligent)</translation>
+<translation id="1498498210836053409">Désactiver le mode rémanent lors de l'édition de texte (mode rémanent intelligent)</translation>
 <translation id="1499041187027566160">augmenter le volume</translation>
 <translation id="1502086903961450562">Élément graphique précédent</translation>
 <translation id="1506187449813838456">Augmenter le timbre de la voix</translation>
@@ -283,7 +283,7 @@
 <translation id="2909584066358367921">Aucun bouton suivant</translation>
 <translation id="2911433807131383493">Ouvrir le tutoriel ChromeVox</translation>
 <translation id="2912405967290226587">Balayer l'écran vers la droite avec trois doigts</translation>
-<translation id="2919107550468490321">Mode persistant intelligent activé</translation>
+<translation id="2919107550468490321">Mode rémanent intelligent activé</translation>
 <translation id="2937799153569150791">Aucun titre de niveau 3 suivant</translation>
 <translation id="2942710183375260152">Bleu ardoise foncé</translation>
 <translation id="2943596527105977722">Jaune paille foncé</translation>
@@ -536,7 +536,7 @@
 <translation id="4597532268155981612">formulaire</translation>
 <translation id="4601367666219428522">Tab <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">La prochaine touche actionnée sera ignorée.</translation>
-<translation id="4617384941327705512">Mode persistant intelligent désactivé</translation>
+<translation id="4617384941327705512">Mode rémanent intelligent désactivé</translation>
 <translation id="4623097797855662355">Achevé d'imprimer</translation>
 <translation id="4624970070706497034">TalkBack n'offre plus de personnalisation pour les Chromebooks. Vous pouvez encore l'utiliser, mais avec les raccourcis clavier par défaut. Pour voir les raccourcis disponibles, appuyez sur Recherche+A, puis sur K. Si vous voulez toujours utiliser TalkBack, appuyez de nouveau sur la touche Commande.</translation>
 <translation id="4649220074413114917">Appuyez sur l'écran avec deux doigts si vous ne voulez plus que ChromeVox énonce le texte affiché. Pour continuer, appuyez sur l'écran avec deux doigts.</translation>
@@ -632,7 +632,7 @@
 <translation id="5308380583665731573">Connexion</translation>
 <translation id="5310788376443009632">Éléments supprimés :</translation>
 <translation id="5316825363044614340">passer à la ligne suivante</translation>
-<translation id="5320727453979144100">Mode persistant activé</translation>
+<translation id="5320727453979144100">Mode rémanent activé</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{virgule}one{# virgule}other{# virgules}}</translation>
 <translation id="532485153932049746">Mise en forme du texte
     <ph name="FONT_SIZE_STRING" />
@@ -1172,7 +1172,7 @@
 <translation id="958854023026327378">Balayer l'écran vers le bas avec un doigt</translation>
 <translation id="962913030769097253">En-tête suivant de niveau 1</translation>
 <translation id="966588271015727539">Sélectionner une plage braille Bluetooth</translation>
-<translation id="973955474346881951">Activer/Désactiver le mode permanent</translation>
+<translation id="973955474346881951">Activer/Désactiver le mode rémanent</translation>
 <translation id="985654871861528815">Descendre d'une ligne</translation>
 <translation id="992256792861109788">Rose</translation>
 </translationbundle>

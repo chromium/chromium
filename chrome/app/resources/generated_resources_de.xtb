@@ -4163,7 +4163,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4218081191298393750">Klicke auf das Lautsprechersymbol, um diesen Tab stummzuschalten</translation>
 <translation id="4220157655212610908">Externen Sicherheitsschlüssel verwenden</translation>
 <translation id="4220648711404560261">Bei der Aktivierung ist ein Fehler aufgetreten.</translation>
-<translation id="4222917615373664617">Preisbeobachtung ist aktiviert. Aktueller Preis: <ph name="CURRENT_PRICE" />.</translation>
+<translation id="4222917615373664617">Preis-Tracking ist aktiviert. Aktueller Preis: <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223845867739585293">Passkey erstellen</translation>
 <translation id="4225397296022057997">Auf allen Websites</translation>
 <translation id="4228071595943929139">E-Mail-Adresse der Organisation verwenden</translation>
@@ -8194,7 +8194,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="747114903913869239">Fehler: Erweiterung kann nicht entschlüsselt werden.</translation>
 <translation id="7471520329163184433">Langsamer</translation>
 <translation id="747312361841682912">Angezeigte Daten löschen</translation>
-<translation id="7473891865547856676">Nein, danke</translation>
+<translation id="7473891865547856676">Nein, Danke</translation>
 <translation id="747459581954555080">Alle wiederherstellen</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Sofortige Rückgabe erforderlich}other{<ph name="DEVICE_TYPE" /> innerhalb von {NUM_DAYS} Tagen zurückgeben}}</translation>
 <translation id="7475671414023905704">Netscape-URL für vergessene Passwörter</translation>

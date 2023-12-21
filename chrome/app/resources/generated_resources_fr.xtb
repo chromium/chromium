@@ -636,7 +636,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1494349716233667318">Les sites peuvent demander à utiliser les polices installées sur votre appareil</translation>
 <translation id="1494429729245089920">La machine virtuelle "<ph name="VM_NAME" />" existe, mais elle ne semble pas être une machine virtuelle <ph name="APP_NAME" /> valide. Veuillez contacter votre administrateur.</translation>
 <translation id="1495677929897281669">Retour à l'onglet</translation>
-<translation id="1498498210836053409">Désactiver le mode persistant lors de la modification de texte (mode persistant intelligent)</translation>
+<translation id="1498498210836053409">Désactiver le mode rémanent lors de l'édition de texte (mode rémanent intelligent)</translation>
 <translation id="1499041187027566160">augmenter le volume</translation>
 <translation id="1500297251995790841">Appareil inconnu [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">En savoir plus sur les applis Chrome non compatibles</translation>
@@ -2005,7 +2005,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2501173422421700905">Certificat en attente</translation>
 <translation id="2501278716633472235">Retour</translation>
 <translation id="2501797496290880632">Tapez un raccourci</translation>
-<translation id="2501920221385095727">Touches persistantes</translation>
+<translation id="2501920221385095727">Touches rémanentes</translation>
 <translation id="2502441965851148920">Les mises à jour automatiques sont activées. L'administrateur a désactivé les mises à jour manuelles.</translation>
 <translation id="2502719318159902502">Accès total</translation>
 <translation id="2504801073028762184">Recommandations de sécurité</translation>
@@ -3875,7 +3875,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="397703832102027365">Finalisation en cours…</translation>
 <translation id="3977145907578671392">Il est possible que les fonctionnalités de certains sites ne fonctionnent pas en navigation privée</translation>
 <translation id="3977886311744775419">Les mises à jour automatiques ne sont pas téléchargées sur ce type de réseau. Cependant, vous pouvez rechercher les mises à jour manuellement.</translation>
-<translation id="3978325380690188371">Touches persistantes non disponibles quand ChromeVox est activé</translation>
+<translation id="3978325380690188371">Touches rémanentes non disponibles quand ChromeVox est activé</translation>
 <translation id="3979395879372752341">Nouvelle extension (<ph name="EXTENSION_NAME" />) ajoutée.</translation>
 <translation id="3979748722126423326">Activer <ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">Visible par les appareils à proximité sous le nom <ph name="DEVICE_NAME" /> pendant <ph name="REMAINING_TIME" />…</translation>

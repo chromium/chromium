@@ -236,7 +236,7 @@
 <translation id="263637551280112393">กดค้นหา + Shift + เว้นวรรค</translation>
 <translation id="2637227747952042642">คณิตศาสตร์</translation>
 <translation id="2638785836053527382">เริ่มดาวน์โหลด <ph name="FILE_NAME" /> ต่อ</translation>
-<translation id="2639750663247012216">คีย์ตัวปรับแต่ง ChromeVox</translation>
+<translation id="2639750663247012216">แป้นกดร่วม ChromeVox</translation>
 <translation id="2644542693584024604">สะกดผิด</translation>
 <translation id="2651441758640020174">ลองเลือกฤดูกาลโปรดของคุณจากรายการ</translation>
 <translation id="2654172656519784359">เลื่อนไปข้างหน้า 1 คำ</translation>
@@ -357,7 +357,7 @@
 <translation id="3300733168898541351">เลิกทำ</translation>
 <translation id="3307886118343381874">ไปที่ด้านล่างของตาราง</translation>
 <translation id="3312997241656799641">ลิงก์ที่เคยเข้าชมถัดไป</translation>
-<translation id="3313245066383501820">คีย์ตัวปรับแต่ง ChromeVox</translation>
+<translation id="3313245066383501820">แป้นกดร่วม ChromeVox</translation>
 <translation id="3317212938060708859">แถบเลื่อน</translation>
 <translation id="3321460131042519426">เปิดใช้การตัดคำ</translation>
 <translation id="3322936298410871309">ส่วนหัวระดับ 1 ก่อนหน้า</translation>
@@ -807,7 +807,7 @@
 <translation id="6508059270146105198">เลื่อนการแสดงผลเบรลล์ไปที่ด้านล่างของหน้า</translation>
 <translation id="6521550811716689390">สีม่วงเข้ม</translation>
 <translation id="6536157907112457272">สีลินิน</translation>
-<translation id="6540201937398578274">ใน ChromeVox แป้นค้นหาคือคีย์ตัวปรับแต่ง แป้นพิมพ์ลัดของ ChromeVox ส่วนใหญ่จะเริ่มต้นด้วยแป้นนี้ และใช้ปุ่มลูกศรสำหรับการนำทาง</translation>
+<translation id="6540201937398578274">ใน ChromeVox แป้นค้นหาคือแป้นกดร่วม แป้นพิมพ์ลัดของ ChromeVox ส่วนใหญ่จะเริ่มต้นด้วยแป้นนี้ และใช้ปุ่มลูกศรสำหรับการนำทาง</translation>
 <translation id="6544923685317771506">สีชมพูซีเชลล์</translation>
 <translation id="6551185905438378412">สีงาช้าง</translation>
 <translation id="6561818612645211875">ไปที่ด้านบนของแถวปัจจุบัน</translation>
@@ -1123,7 +1123,7 @@
 <translation id="8908714597367957477">colhdr</translation>
 <translation id="8910180774920883033">มีการดำเนินการที่ใช้ได้ กดค้นหา + Ctrl + A เพื่อดู</translation>
 <translation id="8937112856099038376">intlnk</translation>
-<translation id="8940925288729953902">คีย์ตัวปรับแต่ง</translation>
+<translation id="8940925288729953902">แป้นกดร่วม</translation>
 <translation id="8943282376843390568">เหลืองมะนาว</translation>
 <translation id="8944511129464116546">เลือกบางส่วน</translation>
 <translation id="8946628535652548639">ถ<ph name="TABLECELLROWINDEX" />ค<ph name="TABLECELLCOLUMNINDEX" /></translation>

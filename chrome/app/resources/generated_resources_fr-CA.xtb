@@ -8204,7 +8204,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="747114903913869239">Erreur : impossible de décoder l'extension</translation>
 <translation id="7471520329163184433">Plus lente</translation>
 <translation id="747312361841682912">Supprimer les données affichées</translation>
-<translation id="7473891865547856676">Non merci</translation>
+<translation id="7473891865547856676">Non, merci</translation>
 <translation id="747459581954555080">Tout restaurer</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Retour immédiat exigé}one{Retournez l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jour}other{Retournez l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jours}}</translation>
 <translation id="7475671414023905704">URL de mot de passe perdu Netscape</translation>
