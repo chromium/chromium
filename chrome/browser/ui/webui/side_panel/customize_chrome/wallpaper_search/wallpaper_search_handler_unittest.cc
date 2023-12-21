@@ -152,7 +152,7 @@ class WallpaperSearchHandlerTest : public testing::Test {
   }
 
   const std::string kDescriptorsBaseURL =
-      "https://static.corp.google.com/chrome-wallpaper-search/";
+      "https://www.gstatic.com/chrome-wallpaper-search/";
   const std::string kDescriptorsLoadURL =
       base::StrCat({kDescriptorsBaseURL, "descriptors_en-US.json"});
   void SetUpDescriptorsResponseWithData(const std::string& response) {
@@ -583,6 +583,13 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
             EXPECT_TRUE(log_entry->log_ai_data_request()
                             ->mutable_wallpaper_search()
                             ->has_quality_data());
+            // Images should be cleared for logging.
+            EXPECT_EQ(log_entry->log_ai_data_request()
+                          ->mutable_wallpaper_search()
+                          ->mutable_response_data()
+                          ->images_size(),
+                      0);
+
             qualities.push_back(
                 std::make_unique<
                     optimization_guide::proto::WallpaperSearchQuality>(
@@ -660,6 +667,10 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
             side_panel::customize_chrome::mojom::WallpaperSearchStatus::kError);
   ASSERT_EQ(static_cast<int>(images1.size()), response1.images_size());
 
+  // Simulate that front-end has received the images and rendered them.
+  handler->SetResultRenderTime(
+      {}, base::Time::Now().InMillisecondsFSinceUnixEpoch());
+
   // SECOND REQUEST.
   optimization_guide::proto::WallpaperSearchRequest request2;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
@@ -731,6 +742,13 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
                         ->quality_data()));
           }));
 
+  // Simulate that front-end has received the images and rendered them.
+  handler->SetResultRenderTime(
+      {}, base::Time::Now().InMillisecondsFSinceUnixEpoch());
+
+  // Advance clock to test complete latency.
+  task_environment().AdvanceClock(base::Milliseconds(567));
+
   // Quality logs on destruction and when a second request is made.
   handler.reset();
   EXPECT_EQ(2u, qualities.size());
@@ -739,12 +757,14 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
   EXPECT_EQ(0, qualities[0]->index());
   EXPECT_FALSE(qualities[0]->final_request_in_session());
   EXPECT_EQ(321, qualities[0]->request_latency_ms());
+  EXPECT_EQ(456, qualities[0]->complete_latency_ms());
   EXPECT_EQ(0, qualities[0]->images_quality_size());
   // Second request.
   EXPECT_EQ(123, qualities[1]->session_id());
   EXPECT_EQ(1, qualities[1]->index());
   EXPECT_TRUE(qualities[1]->final_request_in_session());
   EXPECT_EQ(456, qualities[1]->request_latency_ms());
+  EXPECT_EQ(567, qualities[1]->complete_latency_ms());
   EXPECT_EQ(0, qualities[1]->images_quality_size());
 }
 
@@ -1237,12 +1257,16 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
                         ->quality_data()));
           }));
 
+  // Advance clock to test complete latency.
+  task_environment().AdvanceClock(base::Milliseconds(432));
+
   // Quality logs on destruction.
   handler.reset();
   EXPECT_EQ(123, qualities[0]->session_id());
   EXPECT_EQ(0, qualities[0]->index());
   EXPECT_TRUE(qualities[0]->final_request_in_session());
   EXPECT_EQ(321, qualities[0]->request_latency_ms());
+  EXPECT_EQ(555, qualities[0]->complete_latency_ms());
   ASSERT_EQ(2, qualities[0]->images_quality_size());
   EXPECT_EQ(111, qualities[0]->images_quality(0).image_id());
   EXPECT_FALSE(qualities[0]->images_quality(0).previewed());

@@ -14,8 +14,10 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
+import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
 import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {ThemeHueSliderDialogElement} from 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
@@ -35,7 +37,7 @@ import {CustomizeChromeApiProxy} from '../customize_chrome_api_proxy.js';
 import {DescriptorA, DescriptorB, DescriptorDValue, Descriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
-import {CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
+import {ComboboxGroup, ComboboxItem, CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
 import {getTemplate} from './wallpaper_search.html.js';
 import {WallpaperSearchProxy} from './wallpaper_search_proxy.js';
 
@@ -74,6 +76,12 @@ interface ResultsDescriptors {
   c?: string|null;
 }
 
+interface ComboxItems {
+  a: ComboboxGroup[];
+  b: ComboboxItem[];
+  c: ComboboxItem[];
+}
+
 export interface ErrorState {
   title: string;
   description: string;
@@ -87,6 +95,7 @@ export interface WallpaperSearchElement {
     descriptorComboboxB: CustomizeChromeCombobox,
     descriptorComboboxC: CustomizeChromeCombobox,
     descriptorMenuD: CrActionMenuElement,
+    error: HTMLElement,
     feedbackButtons: CrFeedbackButtonsElement,
     heading: SpHeading,
     historyCard: HTMLElement,
@@ -117,6 +126,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   static get properties() {
     return {
+      comboboxItems_: Array,
       descriptors_: {
         type: Object,
         value: null,
@@ -137,21 +147,38 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         value: false,
       },
       history_: Object,
+      inspirationCardEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('wallpaperSearchInspirationCardEnabled'),
+      },
       resultsDescriptors_: Object,
       results_: Object,
       selectedFeedbackOption_: {
         type: Number,
         value: CrFeedbackOption.UNSPECIFIED,
       },
+      selectedDescriptorA_: {
+        type: String,
+        observer: 'onSubjectDescriptorChange_',
+      },
+      selectedDescriptorB_: {
+        type: String,
+        observer: 'onStyleDescriptorChange_',
+      },
+      selectedDescriptorC_: {
+        type: String,
+        observer: 'onMoodDescriptorChange_',
+      },
+      selectedDescriptorD_: {
+        type: Object,
+        observer: 'onColorDescriptorChange_',
+      },
       selectedHue_: Number,
       status_: {
         type: WallpaperSearchStatus,
         value: WallpaperSearchStatus.kOk,
-      },
-      submitBtnText_: {
-        type: String,
-        computed: 'computeSubmitBtnText_(results_)',
-        value: 'Search',
+        observer: 'onStatusChange_',
       },
       theme_: {
         type: Object,
@@ -160,6 +187,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     };
   }
 
+  private comboboxItems_: ComboxItems|null;
   private descriptors_: Descriptors|null;
   private descriptorD_: string[];
   private emptyHistoryContainers_: number[] = [];
@@ -168,6 +196,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private errorState_: ErrorState|null = null;
   private expandedCategories_: {[categoryIndex: number]: boolean} = {};
   private history_: WallpaperSearchResult[] = [];
+  private inspirationCardEnabled_: boolean;
   private loading_: boolean;
   private results_: WallpaperSearchResult[] = [];
   private resultsDescriptors_: ResultsDescriptors = {};
@@ -179,7 +208,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private selectedFeedbackOption_: CrFeedbackOption;
   private selectedHue_: number|undefined;
   private status_: WallpaperSearchStatus;
-  private submitBtnText_: string;
   private theme_: Theme|undefined;
 
   private callbackRouter_: CustomizeChromePageCallbackRouter;
@@ -274,12 +302,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     }
   }
 
-  private computeSubmitBtnText_() {
-    return this.results_ && this.results_.length > 0 ?
-        loadTimeData.getString('wallpaperSearchSubmitAgainBtn') :
-        loadTimeData.getString('wallpaperSearchSubmitBtn');
-  }
-
   private expandCategoryForDescriptorA_(label: string) {
     if (!this.descriptors_) {
       return;
@@ -295,6 +317,20 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.wallpaperSearchHandler_.getDescriptors().then(({descriptors}) => {
       if (descriptors) {
         this.descriptors_ = descriptors;
+        this.comboboxItems_ = {
+          a: descriptors.descriptorA.map((group) => {
+            return {
+              label: group.category,
+              items: group.labels.map((label) => {
+                return {label};
+              }),
+            };
+          }),
+          b: descriptors.descriptorB,
+          c: descriptors.descriptorC.map((label) => {
+            return {label};
+          }),
+        };
         this.errorCallback_ = undefined;
       } else {
         this.errorCallback_ = () => this.fetchDescriptors_();
@@ -349,11 +385,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     return this.isBackgroundSelected_(id) ? 'true' : 'false';
   }
 
-  private getCategoryIcon_(categoryIndex: number): string {
-    return this.expandedCategories_[categoryIndex] ? 'cr:expand-less' :
-                                                     'cr:expand-more';
-  }
-
   private getColorCheckedStatus_(defaultColor: string): string {
     return this.isColorSelected_(defaultColor) ? 'true' : 'false';
   }
@@ -400,10 +431,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         this.theme_.backgroundImage.localBackgroundId.high === id.high);
   }
 
-  private isCategoryExpanded_(categoryIndex: number): boolean {
-    return this.expandedCategories_[categoryIndex];
-  }
-
   private isColorSelected_(defaultColor: string): boolean {
     return defaultColor === this.selectedDefaultColor_;
   }
@@ -440,6 +467,26 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     };
   }
 
+  private onColorDescriptorChange_() {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_COLOR_DESCRIPTOR_UPDATED);
+  }
+
+  private onMoodDescriptorChange_() {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_MOOD_DESCRIPTOR_UPDATED);
+  }
+
+  private onStyleDescriptorChange_() {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_STYLE_DESCRIPTOR_UPDATED);
+  }
+
+  private onSubjectDescriptorChange_() {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_SUBJECT_DESCRIPTOR_UPDATED);
+  }
+
   private onFeedbackSelectedOptionChanged_(
       e: CustomEvent<{value: CrFeedbackOption}>) {
     this.selectedFeedbackOption_ = e.detail.value;
@@ -448,9 +495,13 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         this.wallpaperSearchHandler_.setUserFeedback(UserFeedback.kUnspecified);
         return;
       case CrFeedbackOption.THUMBS_UP:
+        recordCustomizeChromeAction(
+            CustomizeChromeAction.WALLPAPER_SEARCH_THUMBS_UP_SELECTED);
         this.wallpaperSearchHandler_.setUserFeedback(UserFeedback.kThumbsUp);
         return;
       case CrFeedbackOption.THUMBS_DOWN:
+        recordCustomizeChromeAction(
+            CustomizeChromeAction.WALLPAPER_SEARCH_THUMBS_DOWN_SELECTED);
         this.wallpaperSearchHandler_.setUserFeedback(UserFeedback.kThumbsDown);
         return;
     }
@@ -522,6 +573,17 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         CustomizeChromeAction.WALLPAPER_SEARCH_RESULT_IMAGE_SELECTED);
     this.wallpaperSearchHandler_.setBackgroundToWallpaperSearchResult(
         e.model.item.id, WindowProxy.getInstance().now());
+  }
+
+  private onStatusChange_() {
+    if (this.status_ === WallpaperSearchStatus.kOk) {
+      this.$.wallpaperSearch.focus();
+    } else {
+      this.$.error.focus();
+      chrome.metricsPrivate.recordEnumerationValue(
+          'NewTabPage.WallpaperSearch.Error', this.status_,
+          WallpaperSearchStatus.MAX_VALUE);
+    }
   }
 
   private shouldShowFeedbackButtons_() {

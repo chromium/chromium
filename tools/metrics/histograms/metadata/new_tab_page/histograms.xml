@@ -1869,6 +1869,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.WallpaperSearch.Error"
+    enum="NtpWallpaperSearchError" expires_after="2024-04-28">
+  <owner>tiborg@chromium.org</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Histogram of the errors shown for Wallpaper Search within the Customize
+    Chrome Side Panel. This records whenever an error status is set within the
+    UI of Wallpaper Search.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.WallpaperSearch.GetResultProcessingLatency"
     units="ms" expires_after="2024-04-28">
   <owner>tiborg@chromium.org</owner>

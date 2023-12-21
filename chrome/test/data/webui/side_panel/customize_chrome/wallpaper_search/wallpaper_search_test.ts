@@ -9,6 +9,7 @@ import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-ch
 import {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {Descriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
+import {CustomizeChromeCombobox} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/combobox/customize_chrome_combobox.js';
 import {DESCRIPTOR_D_VALUE, WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search_proxy.js';
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
@@ -47,6 +48,16 @@ suite('WallpaperSearchTest', () => {
       descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
       descriptorC: ['foo', 'bar', 'baz'],
     });
+  }
+
+  function updateCrFeedbackButtons(option: CrFeedbackOption) {
+    wallpaperSearchElement.$.feedbackButtons.selectedOption = option;
+    wallpaperSearchElement.$.feedbackButtons.dispatchEvent(
+        new CustomEvent('selected-option-changed', {
+          bubbles: true,
+          composed: true,
+          detail: {value: option},
+        }));
   }
 
   setup(async () => {
@@ -105,93 +116,23 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           1,
           wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorComboboxA .category-item')
-              .length);
+              .querySelector<CustomizeChromeCombobox>(
+                  '#descriptorComboboxA')!.items.length);
       assertEquals(
           1,
           wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorComboboxB .dropdown-item')
-              .length);
+              .querySelector<CustomizeChromeCombobox>(
+                  '#descriptorComboboxB')!.items.length);
       assertEquals(
           3,
           wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorComboboxC .dropdown-item')
-              .length);
+              .querySelector<CustomizeChromeCombobox>(
+                  '#descriptorComboboxC')!.items.length);
       assertEquals(
           6,
           wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorMenuD cr-button')
+              .querySelectorAll('#descriptorMenuD button')
               .length);
-    });
-
-    test('expands and collapses categories', async () => {
-      createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
-
-      // No dropdown items by default since all categories are collapsed.
-      assertEquals(
-          0,
-          wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorComboboxA .dropdown-item')
-              .length);
-
-      const categoryLabel =
-          wallpaperSearchElement.shadowRoot!.querySelector<HTMLElement>(
-              '#descriptorComboboxA .category-item')!;
-      const categoryLabelIcon = categoryLabel.querySelector('iron-icon')!;
-      assertEquals('cr:expand-more', categoryLabelIcon.icon);
-
-      // Clicking on a category expands the dropdown items below it.
-      categoryLabel.click();
-      await flushTasks();
-      assertEquals(
-          2,
-          wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorComboboxA .dropdown-item')
-              .length);
-      assertEquals('cr:expand-less', categoryLabelIcon.icon);
-
-      // Clicking on the category again hides the dropdown items below it.
-      categoryLabel.click();
-      await flushTasks();
-      assertEquals(
-          0,
-          wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorComboboxA .dropdown-item')
-              .length);
-      assertEquals('cr:expand-more', categoryLabelIcon.icon);
-    });
-
-    test('check marks selected descriptorComboboxB option', async () => {
-      createWallpaperSearchElement({
-        descriptorA: [],
-        descriptorB: [
-          {label: 'one', imagePath: 'one.png'},
-          {label: 'two', imagePath: 'two.png'},
-        ],
-        descriptorC: [],
-      });
-      await flushTasks();
-
-      const optionCheckmarks =
-          wallpaperSearchElement.$.descriptorComboboxB.querySelectorAll(
-              'customize-chrome-check-mark-wrapper');
-      assertEquals(2, optionCheckmarks.length);
-
-      const option1Checkmark = optionCheckmarks[0]!;
-      const option2Checkmark = optionCheckmarks[1]!;
-      assertFalse(option1Checkmark.checked);
-      assertFalse(option2Checkmark.checked);
-
-      wallpaperSearchElement.$.descriptorComboboxB.value = 'one';
-      await flushTasks();
-      assertTrue(option1Checkmark.checked);
-      assertFalse(option2Checkmark.checked);
-
-      wallpaperSearchElement.$.descriptorComboboxB.value = 'two';
-      await flushTasks();
-      assertFalse(option1Checkmark.checked);
-      assertTrue(option2Checkmark.checked);
     });
 
     test('check marks one item in descriptorMenuD at a time', async () => {
@@ -199,13 +140,13 @@ suite('WallpaperSearchTest', () => {
       await flushTasks();
 
       assertFalse(
-          !!$$(wallpaperSearchElement, '#descriptorMenuD cr-button [checked]'));
+          !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
 
       $$<HTMLElement>(wallpaperSearchElement, '.default-color')!.click();
 
       let checkedMarkedColors =
           wallpaperSearchElement.shadowRoot!.querySelectorAll(
-              '#descriptorMenuD cr-button [checked]');
+              '#descriptorMenuD button [checked]');
       assertEquals(1, checkedMarkedColors.length);
       assertEquals(
           checkedMarkedColors[0],
@@ -219,7 +160,7 @@ suite('WallpaperSearchTest', () => {
           new Event('selected-hue-changed'));
 
       checkedMarkedColors = wallpaperSearchElement.shadowRoot!.querySelectorAll(
-          '#descriptorMenuD cr-button [checked]');
+          '#descriptorMenuD button [checked]');
       assertEquals(1, checkedMarkedColors.length);
       assertEquals(
           checkedMarkedColors[0],
@@ -253,21 +194,14 @@ suite('WallpaperSearchTest', () => {
       });
       await flushTasks();
 
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxA')!.value = 'bar';
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxB')!.value = 'foo';
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxC')!.value = 'baz';
       $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .category-item')!.click();
-      await flushTasks();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .dropdown-item')!.click();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxB .dropdown-item')!.click();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxC .dropdown-item')!.click();
-      $$<HTMLElement>(
-          wallpaperSearchElement, '#descriptorMenuD cr-button')!.click();
+          wallpaperSearchElement, '#descriptorMenuD button')!.click();
       wallpaperSearchElement.$.submitButton.click();
 
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
@@ -288,7 +222,7 @@ suite('WallpaperSearchTest', () => {
       await flushTasks();
 
       $$<HTMLElement>(
-          wallpaperSearchElement, '#descriptorMenuD cr-button')!.click();
+          wallpaperSearchElement, '#descriptorMenuD button')!.click();
 
       wallpaperSearchElement.$.hueSlider.selectedHue = 10;
       wallpaperSearchElement.$.hueSlider.dispatchEvent(
@@ -313,14 +247,6 @@ suite('WallpaperSearchTest', () => {
 
           wallpaperSearchElement.$.submitButton.click();
           await flushTasks();
-
-          // Category is expanded to reveal dropdown items.
-          assertEquals(
-              2,
-              wallpaperSearchElement.shadowRoot!
-                  .querySelectorAll('#descriptorComboboxA .dropdown-item')
-                  .length);
-
           assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
           assertNotEquals(
               undefined, wallpaperSearchElement.$.descriptorComboboxA.value);
@@ -338,13 +264,9 @@ suite('WallpaperSearchTest', () => {
       });
       await flushTasks();
 
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .category-item')!.click();
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxA')!.value = 'bar';
       await flushTasks();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .dropdown-item')!.click();
       wallpaperSearchElement.$.submitButton.click();
 
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
@@ -513,23 +435,6 @@ suite('WallpaperSearchTest', () => {
       });
     });
 
-    test('handles changing submit button text', async () => {
-      handler.setResultFor(
-          'getWallpaperSearchResults',
-          Promise.resolve({results: [{image: '123', id: {high: 10, low: 1}}]}));
-      createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
-
-      // Check submit button text without results.
-      assertEquals(wallpaperSearchElement.$.submitButton.innerText, 'Create');
-
-      wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
-
-      // Check submit button text with results.
-      assertEquals(wallpaperSearchElement.$.submitButton.innerText, 'Recreate');
-    });
-
     test('current theme is checked', async () => {
       handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
         results: [
@@ -597,13 +502,9 @@ suite('WallpaperSearchTest', () => {
       await flushTasks();
 
       // Select only descriptor A.
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .category-item')!.click();
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxA')!.value = 'Label A1';
       await flushTasks();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .dropdown-item')!.click();
       wallpaperSearchElement.$.submitButton.click();
       await waitAfterNextRender(wallpaperSearchElement);
 
@@ -616,18 +517,18 @@ suite('WallpaperSearchTest', () => {
       assertEquals('Image 2 of Label A1', getAriaLabelOfTile(1));
 
       // Select descriptor B.
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxB .dropdown-item')!.click();
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxB')!.value = 'Label B';
+      await flushTasks();
       wallpaperSearchElement.$.submitButton.click();
       await waitAfterNextRender(wallpaperSearchElement);
       assertEquals('Image 1 of Label A1, Label B', getAriaLabelOfTile(0));
       assertEquals('Image 2 of Label A1, Label B', getAriaLabelOfTile(1));
 
       // Select descriptor C.
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxC .dropdown-item')!.click();
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxC')!.value = 'Label C';
+      await flushTasks();
       wallpaperSearchElement.$.submitButton.click();
       await waitAfterNextRender(wallpaperSearchElement);
       assertEquals(
@@ -643,16 +544,11 @@ suite('WallpaperSearchTest', () => {
         descriptorC: ['Label C'],
       });
       await flushTasks();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .category-item')!.click();
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxA')!.value = 'Label A1';
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxC')!.value = 'Label C';
       await flushTasks();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxA .dropdown-item')!.click();
-      $$<HTMLElement>(
-          wallpaperSearchElement,
-          '#descriptorComboboxC .dropdown-item')!.click();
       wallpaperSearchElement.$.submitButton.click();
       await waitAfterNextRender(wallpaperSearchElement);
       assertEquals('Image 1 of Label A1, Label C', getAriaLabelOfTile(0));
@@ -991,19 +887,67 @@ suite('WallpaperSearchTest', () => {
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
     });
+
+    test('maintains focus on error ui if error is unresolved', async () => {
+      windowProxy.setResultFor('onLine', false);
+      createWallpaperSearchElement();
+      await flushTasks();
+      assertEquals(
+          $$<HTMLElement>(
+              wallpaperSearchElement, '#errorDescription')!.textContent,
+          'Check your internet and try again.');
+      assertEquals(
+          wallpaperSearchElement.$.error,
+          wallpaperSearchElement.shadowRoot!.activeElement);
+
+      $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      assertEquals(
+          $$<HTMLElement>(
+              wallpaperSearchElement, '#errorDescription')!.textContent,
+          'Check your internet and try again.');
+      assertEquals(
+          wallpaperSearchElement.$.error,
+          wallpaperSearchElement.shadowRoot!.activeElement);
+    });
+
+    test('refocuses on search ui after error is resolved', async () => {
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({status: WallpaperSearchStatus.kError, results: []}));
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      assertEquals(
+          wallpaperSearchElement.$.wallpaperSearch,
+          wallpaperSearchElement.shadowRoot!.activeElement);
+
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      assertEquals(
+          wallpaperSearchElement.$.error,
+          wallpaperSearchElement.shadowRoot!.activeElement);
+      $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
+
+      assertEquals(
+          wallpaperSearchElement.$.wallpaperSearch,
+          wallpaperSearchElement.shadowRoot!.activeElement);
+
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      assertEquals(
+          wallpaperSearchElement.$.wallpaperSearch,
+          wallpaperSearchElement.shadowRoot!.activeElement);
+    });
   });
 
   suite('Feedback', () => {
-    function updateCrFeedbackButtons(option: CrFeedbackOption) {
-      wallpaperSearchElement.$.feedbackButtons.selectedOption = option;
-      wallpaperSearchElement.$.feedbackButtons.dispatchEvent(
-          new CustomEvent('selected-option-changed', {
-            bubbles: true,
-            composed: true,
-            detail: {value: option},
-          }));
-    }
-
     test('shows feedback buttons and submits', async () => {
       handler.setResultFor(
           'getWallpaperSearchResults',
@@ -1069,7 +1013,7 @@ suite('WallpaperSearchTest', () => {
       wallpaperSearchElement.$.submitButton.click();
 
       assertEquals(
-          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+          2, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
       assertEquals(
           1,
           metrics.count(
@@ -1093,7 +1037,7 @@ suite('WallpaperSearchTest', () => {
       assertTrue(!!result);
       (result as HTMLElement).click();
       assertEquals(
-          2, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+          3, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
       assertEquals(
           1,
           metrics.count(
@@ -1121,6 +1065,158 @@ suite('WallpaperSearchTest', () => {
           metrics.count(
               'NewTabPage.CustomizeChromeSidePanelAction',
               CustomizeChromeAction.WALLPAPER_SEARCH_HISTORY_IMAGE_SELECTED));
+    });
+
+    test('clicking feedback buttons sets metric', async () => {
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({results: [{image: '123', id: {high: 10, low: 1}}]}));
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      // Set metric on thumbs down.
+      updateCrFeedbackButtons(CrFeedbackOption.THUMBS_DOWN);
+      assertEquals(
+          3, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.WALLPAPER_SEARCH_THUMBS_DOWN_SELECTED));
+
+      // Set metric on thumbs up.
+      updateCrFeedbackButtons(CrFeedbackOption.THUMBS_UP);
+      assertEquals(
+          4, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.WALLPAPER_SEARCH_THUMBS_UP_SELECTED));
+    });
+
+    test('changing subject descriptor sets metric', async () => {
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxA')!.value = 'bar';
+      await flushTasks();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction
+                  .WALLPAPER_SEARCH_SUBJECT_DESCRIPTOR_UPDATED));
+    });
+
+    test('changing style descriptor sets metric', async () => {
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxB')!.value = 'foo';
+      await flushTasks();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.WALLPAPER_SEARCH_STYLE_DESCRIPTOR_UPDATED));
+    });
+
+    test('changing mood descriptor sets metric', async () => {
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      $$<CustomizeChromeCombobox>(
+          wallpaperSearchElement, '#descriptorComboboxC')!.value = 'foo';
+      await flushTasks();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.WALLPAPER_SEARCH_MOOD_DESCRIPTOR_UPDATED));
+    });
+
+    test('changing color descriptor sets metric', async () => {
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      // Set a default color.
+      $$<HTMLElement>(
+          wallpaperSearchElement, '#descriptorMenuD button')!.click();
+
+      // Set a custom color.
+      wallpaperSearchElement.$.hueSlider.selectedHue = 10;
+      wallpaperSearchElement.$.hueSlider.dispatchEvent(
+          new Event('selected-hue-changed'));
+
+      // Should have 2 calls to color being changed.
+      assertEquals(
+          2, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          2,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.WALLPAPER_SEARCH_COLOR_DESCRIPTOR_UPDATED));
+    });
+
+    [WallpaperSearchStatus.kError,
+     WallpaperSearchStatus.kRequestThrottled,
+     WallpaperSearchStatus.kOffline,
+    ].forEach((status) => {
+      test(`error ${status} sets metric`, async () => {
+        handler.setResultFor(
+            'getWallpaperSearchResults',
+            Promise.resolve({status: status, results: []}));
+        createWallpaperSearchElementWithDescriptors();
+        await flushTasks();
+
+        wallpaperSearchElement.$.submitButton.click();
+        await waitAfterNextRender(wallpaperSearchElement);
+
+        assertEquals(1, metrics.count('NewTabPage.WallpaperSearch.Error'));
+        assertEquals(
+            1, metrics.count('NewTabPage.WallpaperSearch.Error', status));
+      });
+    });
+  });
+
+  suite('Inspiration', () => {
+    test(
+        'inspiration card is not shown if inspiration is disabled',
+        async () => {
+          loadTimeData.overrideValues(
+              {wallpaperSearchInspirationCardEnabled: false});
+
+          createWallpaperSearchElementWithDescriptors();
+          await flushTasks();
+
+          assertFalse(!!wallpaperSearchElement.shadowRoot!.querySelector(
+              '#inspirationCard'));
+        });
+
+    test('inspiration card shows if inspiration is enabled', async () => {
+      loadTimeData.overrideValues(
+          {wallpaperSearchInspirationCardEnabled: true});
+
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      assertTrue(!!wallpaperSearchElement.shadowRoot!.querySelector(
+          '#inspirationCard'));
     });
   });
 });

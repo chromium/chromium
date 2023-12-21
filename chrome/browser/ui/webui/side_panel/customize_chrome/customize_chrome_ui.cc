@@ -161,7 +161,6 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"requestThrottledTitle",
        IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_TITLE},
       {"tryAgain", IDS_NTP_WALLPAPER_SEARCH_TRY_AGAIN_CTA},
-      {"wallpaperSearchHeader", IDS_NTP_WALLPAPER_SEARCH_HEADER},
       {"wallpaperSearchHistoryHeader", IDS_NTP_WALLPAPER_SEARCH_HISTORY_HEADER},
       {"wallpaperSearchHistoryTileTitle",
        IDS_NTP_WALLPAPER_SEARCH_HISTORY_TILE_TITLE},
@@ -169,8 +168,6 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"wallpaperSearchStyleLabel", IDS_NTP_WALLPAPER_SEARCH_STYLE_LABEL},
       {"wallpaperSearchSubjectLabel", IDS_NTP_WALLPAPER_SEARCH_SUBJECT_LABEL},
       {"wallpaperSearchSubmitBtn", IDS_NTP_WALLPAPER_SEARCH_SUBMIT_BTN_TEXT},
-      {"wallpaperSearchSubmitAgainBtn",
-       IDS_NTP_WALLPAPER_SEARCH_SUBMIT_AGAIN_BTN_TEXT},
       {"wallpaperSearchResultLabel", IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL},
       {"wallpaperSearchResultLabelB",
        IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTOR_B},
@@ -182,9 +179,12 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"learnMore", IDS_LEARN_MORE},
       {"learnMoreAboutFeatureA11yLabel",
        IDS_LEARN_MORE_ABOUT_FEATURE_A11Y_LABEL},
-      {"thumbsDown", IDS_THUMBS_DOWN},
-      {"thumbsUp", IDS_THUMBS_UP},
-  };
+      {"thumbsDown", IDS_THUMBS_DOWN_OPENS_FEEDBACK_FORM_A11Y_LABEL},
+      {"thumbsUp", IDS_THUMBS_UP_RESULTS_A11Y_LABEL},
+      {"wallpaperSearchPageHeader", IDS_NTP_WALLPAPER_SEARCH_PAGE_HEADER},
+      {"wallpaperSearchTileLabel", IDS_NTP_WALLPAPER_SEARCH_TILE_LABEL},
+      {"wallpaperSearchInspirationHeader",
+       IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_HEADER}};
   source->AddLocalizedStrings(kLocalizedStrings);
 
   source->AddBoolean(
@@ -221,6 +221,11 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
                    optimization_guide::proto::ModelExecutionFeature::
                        MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH)));
 
+  source->AddBoolean(
+      "wallpaperSearchInspirationCardEnabled",
+      wallpaper_search_flags_enabled &&
+          base::FeatureList::IsEnabled(
+              ntp_features::kCustomizeChromeWallpaperSearchInspirationCard));
   webui::SetupChromeRefresh2023(source);
 
   webui::SetupWebUIDataSource(

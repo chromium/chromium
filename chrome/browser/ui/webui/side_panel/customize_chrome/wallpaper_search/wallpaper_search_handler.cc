@@ -62,7 +62,7 @@ using side_panel::customize_chrome::mojom::UserFeedback;
 namespace {
 
 const char kDescriptorsBaseUrl[] =
-    "https://static.corp.google.com/chrome-wallpaper-search/";
+    "https://www.gstatic.com/chrome-wallpaper-search/";
 // Calculate new dimensions given the width and height that will make the
 // smaller dimension equal to goal_size but keep the current aspect ratio.
 // The first value in the pair is the width and the second is the height.
@@ -134,10 +134,15 @@ WallpaperSearchHandler::~WallpaperSearchHandler() {
   auto backround_id =
       wallpaper_search_background_manager_->SaveCurrentBackgroundToHistory();
   if (!log_entries_.empty()) {
+    auto& [log_entry, render_time] = log_entries_.back();
     auto* quality =
-        log_entries_.back()
+        log_entry
             ->quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>();
     quality->set_final_request_in_session(true);
+    if (render_time.has_value()) {
+      quality->set_complete_latency_ms(
+          (base::Time::Now() - *render_time).InMilliseconds());
+    }
     if (backround_id.has_value() &&
         base::Contains(wallpaper_search_results_, *backround_id)) {
       auto* image_quality =
@@ -152,7 +157,7 @@ WallpaperSearchHandler::~WallpaperSearchHandler() {
     if (optimization_guide_keyed_service) {
       for (auto& entry : log_entries_) {
         optimization_guide_keyed_service->UploadModelQualityLogs(
-            std::move(entry));
+            std::move(entry.first));
       }
     }
   }
@@ -335,6 +340,7 @@ void WallpaperSearchHandler::SetUserFeedback(UserFeedback selected_option) {
   if (!log_entries_.empty()) {
     auto* quality =
         log_entries_.back()
+            .first
             ->quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>();
     if (quality) {
       quality->set_user_feedback(user_feedback);
@@ -362,7 +368,7 @@ void WallpaperSearchHandler::ShowFeedbackPage() {
   base::Value::Dict feedback_metadata;
   if (!log_entries_.empty()) {
     feedback_metadata.Set("log_id", log_entries_.back()
-                                        ->log_ai_data_request()
+                                        .first->log_ai_data_request()
                                         ->mutable_model_execution_info()
                                         ->server_execution_id());
   }
@@ -529,12 +535,27 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
     base::ElapsedTimer request_timer,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  if (!log_entries_.empty()) {
+    auto& [prev_log_entry, render_time] = log_entries_.back();
+    if (render_time.has_value()) {
+      prev_log_entry
+          ->quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>()
+          ->set_complete_latency_ms(
+              (base::Time::Now() - *render_time).InMilliseconds());
+    }
+  }
   if (log_entry) {
-    log_entries_.push_back(std::move(log_entry));
+    // Clear out images in response to save bytes for logging.
+    log_entry->log_ai_data_request()
+        ->mutable_wallpaper_search()
+        ->mutable_response_data()
+        ->clear_images();
+    log_entries_.emplace_back(std::move(log_entry), absl::nullopt);
   }
   if (!log_entries_.empty()) {
     auto* quality =
         log_entries_.back()
+            .first
             ->quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>();
     quality->set_session_id(session_id_);
     quality->set_index(log_entries_.size() - 1);
@@ -577,7 +598,7 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
     if (!log_entries_.empty()) {
       auto* quality =
           log_entries_.back()
-              ->quality_data<
+              .first->quality_data<
                   optimization_guide::WallpaperSearchFeatureTypeMap>();
       image_quality = quality->add_images_quality();
       image_quality->set_image_id(image.image_id());
@@ -609,6 +630,10 @@ void WallpaperSearchHandler::SetResultRenderTime(
     CHECK(base::Contains(wallpaper_search_results_, id));
     auto& tuple = wallpaper_search_results_[id];
     std::get<1>(tuple) =
+        absl::make_optional(base::Time::FromMillisecondsSinceUnixEpoch(time));
+  }
+  if (!log_entries_.empty()) {
+    log_entries_.back().second =
         absl::make_optional(base::Time::FromMillisecondsSinceUnixEpoch(time));
   }
 }

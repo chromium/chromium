@@ -33,6 +33,9 @@ struct WallpaperSearchResult {
   string image;
 };
 
+// Must match |NtpWallpaperSearchError| in enums.xml, since this is used
+// for the NewTabPage.WallpaperSearchError histogram. The exception is
+// kOk, since the histogram only records errors.
 enum WallpaperSearchStatus {
   kOk,
   // Generic error, not specified.

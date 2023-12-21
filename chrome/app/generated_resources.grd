@@ -7885,7 +7885,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_TITLE" desc="The title of the generic error displayed when wallpaper search fails.">
         Something went wrong.
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_HEADER" desc="Header for the wallpaper search page of Customize Chrome Side Panel." >
+      <message name="IDS_NTP_WALLPAPER_SEARCH_TILE_LABEL" desc="Label for the wallpaper search tile in Customize Chrome Side Panel." >
+        Create with AI
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_PAGE_HEADER" desc="Header for the wallpaper search page of Customize Chrome Side Panel." >
         Create theme with AI
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_HEADER" desc="Header for the wallpaper search section for showing past themes." >
@@ -7927,9 +7930,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_TITLE" desc="The title of the message displayed when a wallpaper search request is throttled.">
         You've reached your limit for today.
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBMIT_AGAIN_BTN_TEXT" desc="Button text for submitting the form to get wallpaper search results when the user has already done it before." >
-        Recreate
-      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_SUBMIT_BTN_TEXT" desc="Button text for submitting the form to get wallpaper search results." >
         Create
       </message>
@@ -7959,6 +7959,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_LEARN_MORE_ABOUT_FEATURE_A11Y_LABEL" desc="Accessibility label for a link labeled 'Learn more' that links to a help article about creating themes with AI.">
         Learn more about creating themes with AI.
+      </message>
+      <message name="IDS_THUMBS_DOWN_OPENS_FEEDBACK_FORM_A11Y_LABEL" desc="Accessibility label for thumbs down button that opens a feedback form when pressed.">
+        Thumbs down opens a form for submitting detailed feedback on why you dislike these results.
+      </message>
+      <message name="IDS_THUMBS_UP_RESULTS_A11Y_LABEL" desc="Accessibility label for thumbs up button that submits feedback for results.">
+        Thumbs up submits feedback that you like these results.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_HEADER"  desc="Header for the wallpaper search section for showing example results.">
+        Inspiration
       </message>
 
       <!-- NTP Modules -->
@@ -16651,11 +16660,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <!-- Common WebUI elements. -->
-    <message name="IDS_THUMBS_DOWN" desc="Accessibility label for a thumbs down icon that a user can click to provide negative feedback about a feature." translateable="false">
-      Thumbs down
+    <message name="IDS_THUMBS_DOWN" desc="Accessibility label for a thumbs down icon that a user can click to provide negative feedback about a feature.">
+      Thumbs down submits feedback that you dislike this.
     </message>
-    <message name="IDS_THUMBS_UP" desc="Accessibility label for a thumbs up icon that a user can click to provide positive feedback about a feature." translateable="false">
-      Thumbs up
+    <message name="IDS_THUMBS_UP" desc="Accessibility label for a thumbs up icon that a user can click to provide positive feedback about a feature.">
+      Thumbs up submits feedback that you like this.
     </message>
     <message name="IDS_EXPERIMENTAL_FEATURE_DISCLAIMER" desc="Text used for experimental features.">
       This is an experimental AI feature.

@@ -56,50 +56,6 @@
     width: 100%;
   }
 
-  .category-item {
-    display: flex;
-    font-weight: 700;
-  }
-
-  .category-item iron-icon {
-    --iron-icon-height: 16px;
-    --iron-icon-width: 16px;
-    margin-inline-start: auto;
-  }
-
-  .category-item,
-  .dropdown-item {
-    align-items: center;
-    box-sizing: border-box;
-    border: none;
-    display: flex;
-    height: 28px;
-    padding: 0 20px;
-  }
-
-  .category-item[highlighted],
-  .dropdown-item[highlighted] {
-    background: var(--cr-active-neutral-on-subtle-background-color);
-  }
-
-  .dropdown-item iron-icon {
-    --iron-icon-height: 16px;
-    --iron-icon-width: 16px;
-    flex-shrink: 0;
-    visibility: hidden;
-    margin-inline-end: 8px;
-  }
-
-  .dropdown-item[selected] iron-icon {
-    visibility: visible;
-  }
-
-  .dropdown-item span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   #optionalDetails {
     display: flex;
     flex-wrap: wrap;
@@ -124,26 +80,6 @@
     flex-grow: 1;
   }
 
-  #descriptorComboboxB .dropdown-item {
-    height: 48px;
-  }
-
-  #descriptorComboboxB customize-chrome-check-mark-wrapper {
-    --customize-chrome-check-mark-wrapper-end: -8px;
-    --customize-chrome-check-mark-wrapper-size: 16px;
-    --customize-chrome-check-mark-wrapper-top: -3px;
-  }
-
-  #descriptorComboboxB img {
-    border-radius: 8px;
-    height: 40px;
-    width: 40px;
-  }
-
-  #descriptorComboboxB span {
-    padding-inline-start: 16px;
-  }
-
   #descriptorMenuD {
     --cr-column-width: 1fr;
     --cr-grid-gap: 6.5px;
@@ -152,13 +88,38 @@
     width: 100%;
   }
 
-  #descriptorMenuD cr-button {
+  #descriptorMenuD button {
+    appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: var(--color-menu-button-background);
     border-radius: 8px;
-    border-color: var(--color-menu-button-background);
-    height: 40px;
-    min-width: 40px;
-    padding: 0px;
+    border: 0;
+    padding: 0;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  #descriptorMenuD button:hover::before {
+    display: block;
+    content: '';
+    inset: 0;
+    position: absolute;
+    background-color: var(--cr-hover-background-color);
+  }
+
+  #descriptorMenuD button paper-ripple {
+    --paper-ripple-opacity: 1;
+    color: var(--cr-active-background-color);
+  }
+
+  :host-context(.focus-outline-visible) #descriptorMenuD button:focus {
+    outline: 2px solid var(--cr-focus-outline-color);
+    outline-offset: 2px;
   }
 
   .color-check-mark {
@@ -280,86 +241,62 @@
     line-height: 16px;
     color: var(--color-side-panel-card-secondary-foreground);
   }
+
+  #footer a {
+    color: var(--cr-link-color);
+    text-decoration: none;
+  }
 </style>
 <div class="sp-card">
   <sp-heading id="heading" on-back-button-click="onBackClick_"
       back-button-aria-label="$i18n{backButton}"
       back-button-title="$i18n{backButton}">
-    <h2 slot="heading">$i18n{wallpaperSearchHeader}</h2>
+    <h2 slot="heading">$i18n{wallpaperSearchPageHeader}</h2>
   </sp-heading>
-  <div class="content" id="error" hidden$="[[!errorState_]]">
+  <div class="content" id="error" hidden$="[[!errorState_]]" tabindex="-1">
     <div id="errorTitle">[[errorState_.title]]</div>
     <div id="errorDescription">[[errorState_.description]]</div>
     <cr-button id="errorCTA" on-click="onErrorClick_">
       [[errorState_.callToAction]]
     </cr-button>
   </div>
-  <div class="content" id="wallpaperSearch" hidden$="[[errorState_]]">
+  <div class="content" id="wallpaperSearch" hidden$="[[errorState_]]"
+      tabindex="-1">
     <customize-chrome-combobox id="descriptorComboboxA"
         label="$i18n{wallpaperSearchSubjectLabel}"
+        items="[[comboboxItems_.a]]"
         value="{{selectedDescriptorA_}}">
-      <template is="dom-repeat" items="[[descriptors_.descriptorA]]">
-        <div class="category" role="group">
-          <label class="category-item" on-click="onComboboxCategoryClick_">
-            [[item.category]]
-            <iron-icon icon="[[
-                getCategoryIcon_(index, expandedCategories_.*)]]">
-            </iron-icon>
-          </label>
-          <template is="dom-if" restamp if="[[
-              isCategoryExpanded_(index, expandedCategories_.*)]]">
-            <template is="dom-repeat" items="[[item.labels]]">
-              <div class="dropdown-item" role="option" value="[[item]]">
-                <iron-icon icon="cr:check"></iron-icon>
-                <span>[[item]]</span>
-              </div>
-            </template>
-          </template>
-        </div>
-      </template>
     </customize-chrome-combobox>
     <div id="optionalDetails">
       <div id="optionalDetailsLabel">$i18n{optionalDetailsLabel}</div>
       <customize-chrome-combobox id="descriptorComboboxB"
           label="$i18n{wallpaperSearchStyleLabel}"
+          items="[[comboboxItems_.b]]"
           value="{{selectedDescriptorB_}}">
-        <template is="dom-repeat" items="[[descriptors_.descriptorB]]">
-          <div class="dropdown-item" role="option" value="[[item.label]]">
-            <customize-chrome-check-mark-wrapper
-                checked="[[isOptionSelectedInDescriptorB_(
-                    item, selectedDescriptorB_)]]">
-              <img is="cr-auto-img" auto-src="[[item.imagePath]]"></img>
-            </customize-chrome-check-mark-wrapper>
-            <span>[[item.label]]</span>
-          </div>
-        </template>
       </customize-chrome-combobox>
       <customize-chrome-combobox id="descriptorComboboxC"
           label="$i18n{wallpaperSearchMoodLabel}"
+          items="[[comboboxItems_.c]]"
           value="{{selectedDescriptorC_}}" right-align-dropbox>
-        <template is="dom-repeat" items="[[descriptors_.descriptorC]]">
-          <div class="dropdown-item" role="option" value="[[item]]">
-            <iron-icon icon="cr:check"></iron-icon>
-            <span>[[item]]</span>
-          </div>
-        </template>
       </customize-chrome-combobox>
       <cr-grid columns="6" id="descriptorMenuD">
         <template is="dom-repeat" items="[[descriptorD_]]">
-          <cr-button class="default-color" on-click="onDefaultColorClick_"
+          <button class="default-color" on-click="onDefaultColorClick_"
               aria-current$="[[getColorCheckedStatus_(item, selectedDefaultColor_)]]"
               title$="[[getColorLabel_(item)]]">
+            <paper-ripple></paper-ripple>
             <customize-chrome-check-mark-wrapper class="color-check-mark"
                 checked="[[isColorSelected_(item, selectedDefaultColor_)]]"
                 checkmark-border-hidden>
               <span class="descriptor-d" style$="background-color: [[item]];">
               </span>
             </customize-chrome-check-mark-wrapper>
-          </cr-button>
+          </button>
         </template>
-        <cr-button id="customColorContainer" on-click="onCustomColorClick_"
+        <button id="customColorContainer" on-click="onCustomColorClick_"
             aria-current$="[[getCustomColorCheckedStatus_(selectedHue_)]]"
             title="$i18n{colorPickerLabel}">
+          <paper-ripple></paper-ripple>
           <customize-chrome-check-mark-wrapper class="color-check-mark"
               checked="[[selectedHue_]]" checkmark-border-hidden>
             <div class="descriptor-d"
@@ -367,7 +304,7 @@
               <div id="colorPickerIcon"></div>
             </div>
           </customize-chrome-check-mark-wrapper>
-        </cr-button>
+        </button>
       </div>
     </cr-grid>
     <cr-theme-hue-slider-dialog id="hueSlider"
@@ -379,7 +316,7 @@
           on-click="onSearchClick_"
           class="action-button">
         <div id="imageIcon" class="cr-icon" slot="prefix-icon"></div>
-        [[submitBtnText_]]
+        $i18n{wallpaperSearchSubmitBtn}
       </cr-button>
     </div>
     <hr class="sp-hr">
@@ -448,6 +385,14 @@
     </div>
   </div>
 </div>
+<template is="dom-if" if="[[inspirationCardEnabled_]]">
+  <hr class="sp-cards-separator">
+  <div class="sp-card" id="inspirationCard">
+    <sp-heading hide-back-button>
+      <h2 slot="heading">$i18n{wallpaperSearchInspirationHeader}</h2>
+    </sp-heading>
+  </div>
+</template>
 <hr class="sp-cards-separator" hidden$="[[!shouldShowHistory_(history_)]]">
 <div class="sp-card" id="historyCard"
     hidden$="[[!shouldShowHistory_(history_)]]">

@@ -121,7 +121,9 @@ class WallpaperSearchHandler
       wallpaper_search_background_manager_;
   // We keep all log entries alive until the session closes because whether and
   // which image was selected will only be known then.
-  std::vector<std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
+  std::vector<
+      std::pair<std::unique_ptr<optimization_guide::ModelQualityLogEntry>,
+                std::optional<base::Time>>>
       log_entries_;
   // `wallpaper_search_results_` points to entries in `log_entries_`. Therefore,
   // `wallpaper_search_results_` is defined below so that the pointers get

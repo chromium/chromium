@@ -32257,6 +32257,8 @@ from previous Chrome versions.
   <int value="-781625651"
       label="DisruptiveNotificationPermissionRevocation:enabled"/>
   <int value="-780798969" label="disable-single-click-autofill"/>
+  <int value="-780646596"
+      label="CustomizeChromeWallpaperSearchInspirationCard:enabled"/>
   <int value="-778126349" label="DownloadsLocationChange:enabled"/>
   <int value="-778098896" label="EnableAggregatedMlSearchRanking:disabled"/>
   <int value="-778047974" label="CrostiniUseBusterImage:disabled"/>
@@ -33238,6 +33240,8 @@ from previous Chrome versions.
       label="BrokerFileOperationsOnDiskCacheInNetworkService:enabled"/>
   <int value="-313812707" label="VideoTutorials:disabled"/>
   <int value="-312144677" label="TFLiteLanguageDetectionEnabled:disabled"/>
+  <int value="-311509777"
+      label="CustomizeChromeWallpaperSearchInspirationCard:disabled"/>
   <int value="-311148335" label="v8-pac-mojo-out-of-process"/>
   <int value="-310908854" label="new-wallpaper-picker"/>
   <int value="-310615515" label="EnableSuggestedFiles:disabled"/>
@@ -42144,6 +42148,12 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Wallpaper search recent theme selected as background."/>
   <int value="7" label="First party collection selected in categories."/>
   <int value="8" label="First party collection theme selected."/>
+  <int value="9" label="Wallpaper search thumbs up selected."/>
+  <int value="10" label="Wallpaper search thumbs down selected."/>
+  <int value="11" label="Wallpaper search subject value changed."/>
+  <int value="12" label="Wallpaper search style value changed."/>
+  <int value="13" label="Wallpaper search mood value changed."/>
+  <int value="14" label="Wallpaper search color value changed."/>
 </enum>
 
 <enum name="NTPCustomizedFeatures">
@@ -42320,6 +42330,12 @@ Called by update_net_error_codes.py.-->
     The item displays a default gray box in place of a thumbnail. Removed
     9/2019.
   </int>
+</enum>
+
+<enum name="NtpWallpaperSearchError">
+  <int value="1" label="Generic error"/>
+  <int value="2" label="Request throttled"/>
+  <int value="3" label="Offline"/>
 </enum>
 
 <enum name="NTSTATUS">
