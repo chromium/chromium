@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.readaloud;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -23,6 +26,7 @@ import android.app.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,6 +46,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
@@ -124,6 +129,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private RenderFrameHost mRenderFrameHost;
     @Mock private TemplateUrl mSearchEngine;
     private GlobalRenderFrameHostId mGlobalRenderFrameHostId = new GlobalRenderFrameHostId(1, 1);
+    public UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
@@ -192,6 +198,12 @@ public class ReadAloudControllerUnitTest {
         doReturn(List.of(new PlaybackVoice("en", "voiceA", "")))
                 .when(mPlaybackHooks)
                 .getVoicesFor(anyString());
+        mUserActionTester = new UserActionTester();
+    }
+
+    @After
+    public void tearDown() {
+        mUserActionTester.tearDown();
     }
 
     @Test
@@ -1230,6 +1242,13 @@ public class ReadAloudControllerUnitTest {
         mController.previewVoice(voice);
 
         histogram.assertExpected();
+    }
+
+    @Test
+    public void testMetricRecorded_playbackStarted() {
+        final String actionName = "ReadAloud.PlaybackStarted";
+        ReadAloudMetrics.recordPlaybackStarted();
+        assertThat(mUserActionTester.getActions(), hasItems(actionName));
     }
 
     private void onPlaybackSuccess(Playback playback) {

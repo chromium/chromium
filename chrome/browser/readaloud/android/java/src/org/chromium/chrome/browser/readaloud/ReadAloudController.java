@@ -385,6 +385,7 @@ public class ReadAloudController
                         playback -> {
                             mPlayerCoordinator.playbackReady(playback, PLAYING);
                             playback.play();
+                            ReadAloudMetrics.recordPlaybackStarted();
                         },
                         exception -> {
                             Log.d(TAG, "playTab failed: %s", exception.getMessage());

@@ -29776,6 +29776,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ReadAloud.PlaybackStarted">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <description>The user started a Read Aloud playback.</description>
+</action>
+
 <action name="ReadingList.Dialog.AddCurrentPage">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

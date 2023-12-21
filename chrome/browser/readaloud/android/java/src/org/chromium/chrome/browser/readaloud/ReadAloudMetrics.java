@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -68,5 +69,9 @@ public class ReadAloudMetrics {
 
     public static void recordIsTabPlaybackCreationSuccessful(boolean successful) {
         RecordHistogram.recordBooleanHistogram(IS_TAB_PLAYBACK_CREATION_SUCCESSFUL, successful);
+    }
+
+    public static void recordPlaybackStarted() {
+        RecordUserAction.record("ReadAloud.PlaybackStarted");
     }
 }
