@@ -1872,10 +1872,15 @@ const CGFloat kModuleMinMargin = 16;
 // Sets the y content offset of the NTP collection view.
 - (void)setContentOffset:(CGFloat)offset {
   UICollectionView* collectionView = self.collectionView;
-  CGFloat maxOffset = collectionView.contentSize.height +
-                      collectionView.contentInset.bottom -
-                      collectionView.bounds.size.height;
-  offset = MIN(maxOffset, offset);
+  if (!self.feedVisible) {
+    // When the feed is not visible, enforce a max scroll position so that it
+    // doesn't end up scrolled down when no content is there. When the feed is
+    // visible, its content might load after the content offset is restored.
+    CGFloat maxOffset = collectionView.contentSize.height +
+                        collectionView.contentInset.bottom -
+                        collectionView.bounds.size.height;
+    offset = MIN(maxOffset, offset);
+  }
   collectionView.contentOffset = CGPointMake(0, offset);
   self.scrolledIntoFeed = offset > [self offsetWhenScrolledIntoFeed];
   [self handleStickyElementsForScrollPosition:offset force:YES];
