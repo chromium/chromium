@@ -5922,6 +5922,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5631272057151918206">Time će se ukloniti do <ph name="OFFLINE_STORAGE_SIZE" /> prostora koji upotrebljavaju vaše offline datoteke. Neke će datoteke i dalje biti dostupne offline. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Zatraženo je dopuštenje. Da biste odgovorili, pritisnite Ctrl + naprijed</translation>
 <translation id="5632221585574759616">Saznajte više o dopuštenjima za proširenja</translation>
+<translation id="5632485077360054581">Pokaži mi kako</translation>
 <translation id="5632566673632479864">Vaš račun <ph name="EMAIL" /> više nije dopušten kao primarni račun. Budući da tim računom upravlja <ph name="DOMAIN" />, vaše oznake, povijest, zaporke i druge postavke izbrisat će se s ovog uređaja.</translation>
 <translation id="5633149627228920745">Saznajte više o zahtjevima sustava</translation>
 <translation id="563371367637259496">Mobilna mreža</translation>

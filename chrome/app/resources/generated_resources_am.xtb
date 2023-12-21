@@ -4202,6 +4202,7 @@
 <translation id="4246980464509998944">ተጨማሪ አስተያየቶች፦</translation>
 <translation id="424726838611654458">ሁልጊዜ በAdobe Reader ክፈት</translation>
 <translation id="4248401726442101648">ምንም ካሜራ አልተገናኘም</translation>
+<translation id="4249116869350613769">የባትሪ ኃይል ቆጣቢ</translation>
 <translation id="4249248555939881673">የአውታረ መረብ ግንኙነትን በመጠበቅ ላይ...</translation>
 <translation id="4249373718504745892">ይህ ገፅ ካሜራዎን እና ማይክሮፎንዎን እንዳይደርስባቸው ታግዷል።</translation>
 <translation id="424963718355121712">መተግበሪያዎች ተፅዕኖ ከሚያሳርፉበት አስተናጋጅ መቅረብ አለባቸው</translation>
@@ -5031,6 +5032,7 @@
 <translation id="4893522937062257019">በማያ ገፅ ቁልፉ ላይ</translation>
 <translation id="4895799941222633551">አቋራጭ ይፍጠሩ...</translation>
 <translation id="4898011734382862273">የ«<ph name="CERTIFICATE_NAME" />» እውቅና ማረጋገጫ አንድ የእውቅና ማረጋገጫ ባለሥልጣንን ይወክላል</translation>
+<translation id="4898913189644355814">አንድ ጣቢያ ተመራጭ ቋንቋዎን ወይም መግዛት የሚፈልጓቸውን ንጥሎች ሊያስቀምጥ ይችላል። ይህ መረጃ ለጣቢያው እና ለንዑስ ጎራዎቹ የሚገኝ ይሆናል።</translation>
 <translation id="4899052647152077033">ቀለማትን ገልብጥ</translation>
 <translation id="4899696330053002588">ማስታወቂያዎችን ይዟል</translation>
 <translation id="490031510406860025">በዚህ ጣቢያ ላይ የማይፈቀድ</translation>
@@ -5926,6 +5928,7 @@
 <translation id="5631272057151918206">ይህ በእርስዎ ከመስመር ውጭ በሆኑ ፋይሎችዎ ጥቅም ላይ የዋለውን እስከ <ph name="OFFLINE_STORAGE_SIZE" /> የሚደርሰውን ቦታ ያስወግዳል። አንዳንድ ፋይሎች አሁንም ከመስመር ውጭ ይገኛሉ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">ፈቃድ ተጠይቋል፣ ምላሽ ለመስጠት Ctrl + ወደፊት ይጫኑ</translation>
 <translation id="5632221585574759616">ስለቅጥያ ፈቃዶች የበለጠ ይወቁ</translation>
+<translation id="5632485077360054581">እንዴት እንደሆነ አሳየኝ</translation>
 <translation id="5632566673632479864">የእርስዎ <ph name="EMAIL" /> ከእንግዲህ እንደ ተቀዳሚ መለያ አይፈቀድም። ይህ መለያ በ<ph name="DOMAIN" /> የሚተዳደር ስለሆነ የእርስዎ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት፣እና ሌላ ቅንብሮች ከዚህ መሣሪያ ላይ ይጸዳሉ።</translation>
 <translation id="5633149627228920745">ስለ የስርዓት መስፈርቶች የበለጠ ይወቁ</translation>
 <translation id="563371367637259496">ተንቀሳቃሽ ስልክ</translation>

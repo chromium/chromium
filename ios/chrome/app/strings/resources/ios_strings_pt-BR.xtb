@@ -8,6 +8,7 @@
 <translation id="1035980983510608210">Ao fechar todas as guias, as fixadas também vão ser fechadas.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Desativar</translation>
+<translation id="1043592663436934089">Sua conta será desconectada e os dados de navegação serão excluídos</translation>
 <translation id="1044891598689252897">Os sites funcionarão normalmente</translation>
 <translation id="1049743911850919806">Modo anônimo</translation>
 <translation id="1053651653201045802">Conta desconectada. Faça login novamente para acessar os favoritos, as senhas e outros itens da sua conta.</translation>
@@ -86,6 +87,7 @@
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Últimas quatro semanas</translation>
 <translation id="1404330357948037222">Sua conta está desconectada</translation>
+<translation id="14066361343057390">Sua conta será desconectada</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1408847409015257906">Toque em "Privacidade e segurança".</translation>
 <translation id="1430915738399379752">Imprimir</translation>
@@ -328,6 +330,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2712127207578915686">Não foi possível abrir arquivo</translation>
 <translation id="2718352093833049315">Apenas com Wi-Fi</translation>
 <translation id="2738375676495545665">Ocultar as Novidades</translation>
+<translation id="2740910715135851329">Sua conta será desconectada, as guias serão fechadas e os dados de navegação serão excluídos</translation>
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">Seguindo <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Contas neste dispositivo</translation>
@@ -468,6 +471,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3482959374254649722">Sincronizando suas guias...</translation>
 <translation id="3484946776651937681">Abrir em "Downloads"</translation>
 <translation id="3485558910355485767">Nova janela anônima</translation>
+<translation id="3488501490964659223">As guias foram fechadas e os dados de navegação foram excluídos. Sua conta foi desconectada</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre o conteúdo sugerido</translation>
 <translation id="3494788280727468875">Confirmar limpeza de dados de navegação</translation>
 <translation id="35083190962747987">Abrir ${url}</translation>
@@ -508,6 +512,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="371398631992790800">Ocultar Favoritos</translation>
 <translation id="37207012422556617">Pesquisas em alta</translation>
 <translation id="3725081662140949903">Mude sua senha no app <ph name="APP" /> para impedir que ela seja usada por outras pessoas</translation>
+<translation id="3738428049780661523">Criação: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ocultar Downloads</translation>
 <translation id="3745190878148784130">Ocultar "Aplicar zoom no texto"</translation>
 <translation id="3762232513783804601">Criado para o iPad</translation>
@@ -542,7 +547,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3909222758573607742">Salvar senhas e outros itens na conta</translation>
 <translation id="3915450441834151894">Informações do site</translation>
 <translation id="3918585468378680136">Status do pacote pendente</translation>
-<translation id="3921585859122905677">Posição da barra de endereço</translation>
+<translation id="3921585859122905677">Posição da Barra de Endereço</translation>
 <translation id="3922310737605261887">Pesquisar texto copiado</translation>
 <translation id="3928666092801078803">Integrar meus dados</translation>
 <translation id="3929457972718048006">Endereços</translation>
@@ -552,6 +557,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3968505803272650567">Gerenciar interesses</translation>
 <translation id="3989635538409502728">Sair</translation>
 <translation id="3995521777587992544">Barra de progresso do carregamento de página, <ph name="EMAIL" /> carregada.</translation>
+<translation id="3997522473364371632">O compartilhamento de senhas foi desativado pelo administrador</translation>
 <translation id="4002019827078931033">Mover barra de endereço para cima</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4004204301268239848">As senhas são salvas na sua Conta do Google para que você possa usá-las em qualquer dispositivo.</translation>
@@ -700,6 +706,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4808744395915275922">Atualizações</translation>
 <translation id="4818522717893377262">Adicionar idioma…</translation>
 <translation id="481968316161811770">Dados do site e arquivos "cookies"</translation>
+<translation id="4821595350501541683">As guias foram fechadas e os dados de navegação foram excluídos</translation>
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e mais 1}one{{domain} e mais {count} outra}other{{domain} e mais {count} outras}}</translation>
 <translation id="4826218269716039351">Bloquear de terceiros</translation>
@@ -709,6 +716,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4833686396768033263">As guias recentes estão indisponíveis</translation>
 <translation id="4833786495304741580">Envia automaticamente estatísticas de uso e relatórios de erros para o Google.</translation>
 <translation id="4840495572919996524">Seus favoritos, histórico, senhas e outras configurações não serão mais sincronizados com sua Conta do Google.</translation>
+<translation id="484280513275854557">Sua conta foi desconectada e os dados de navegação foram excluídos</translation>
 <translation id="4844899002472726590">Ver e editar temas relevantes para você</translation>
 <translation id="4848999860252535517">Excluir a senha de <ph name="WEBSITE" />?</translation>
 <translation id="4850886885716139402">Ver</translation>
@@ -720,6 +728,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4883824756452868502">Detectar unidades</translation>
 <translation id="488785315393301722">Mostrar detalhes</translation>
 <translation id="4894963374040315706">Isso permite que você pesquise usando a voz</translation>
+<translation id="4896467949657706481">As guias foram fechadas e sua conta foi desconectada</translation>
 <translation id="489903206070130262">Sua última guia aberta</translation>
 <translation id="4901778704868714008">Salvar…</translation>
 <translation id="4904877109095351937">Marcar como lidas</translation>
@@ -748,6 +757,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5056446788882570708">Problemas encontrados <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Instalar o Google Drive</translation>
+<translation id="5083217068549651688">{TIME,plural, =0{Tempo restante: {TIME} segundo}=1{Tempo restante: {TIME} segundo}one{Tempo restante: {TIME} segundo}other{Tempo restante: {TIME} segundos}}</translation>
 <translation id="5083464117946352670">Não é possível saber o tamanho do arquivo.</translation>
 <translation id="5090832849094901128">Remover a senha não excluirá a conta em <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet concluído.</translation>
@@ -944,6 +954,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6103540626693881831">Criptografia no dispositivo</translation>
 <translation id="6119050551270742952">Esta pág. está no modo anônimo</translation>
 <translation id="6122191549521593678">On-line</translation>
+<translation id="6123514585040403489">As guias serão fechadas</translation>
 <translation id="6127379762771434464">Item removido</translation>
 <translation id="6136914049981179737">Segundos atrás</translation>
 <translation id="6144589619057374135">Abrir ${url} na navegação anônima</translation>
@@ -1084,6 +1095,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6753469262000681876">Modo de bloqueio total</translation>
 <translation id="6760509555861141183">Voltar à guia recente</translation>
 <translation id="6762812039470893796">Desmarcar tudo</translation>
+<translation id="6779455296366983087">Os dados de navegação serão excluídos</translation>
 <translation id="6780034285637185932">CEP</translation>
 <translation id="6781260999953472352">Ativar a sincronização?</translation>
 <translation id="6781405765516175232">Para conferir opções de trajeto, toque em "Conferir rotas".</translation>
@@ -1149,6 +1161,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7108762695052995889">Visitar site</translation>
 <translation id="7133798577887235672">Nome completo</translation>
 <translation id="7136892417564438900">A câmera não está disponível</translation>
+<translation id="7141960840225504692">As guias serão fechadas e os dados de navegação serão excluídos</translation>
 <translation id="7154343200458623869">Conclua sua tarefa.</translation>
 <translation id="7161230316646448869">Sincronize seus favoritos, histórico e muito mais em todos os dispositivos</translation>
 <translation id="7162168282402939716">Desbloquear guias anônimas com o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
@@ -1191,6 +1204,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7425346204213733349">Alterações feitas nos seus favoritos, histórico, senhas e outras configurações não serão mais sincronizadas com sua Conta do Google. No entanto, os dados já existentes permanecerão armazenados na Conta do Google.</translation>
 <translation id="7431991332293347422">Controla como o histórico de navegação é usado para personalizar a Pesquisa e muito mais</translation>
 <translation id="7435356471928173109">Desativado pelo administrador</translation>
+<translation id="7436239899443308800">{count,plural, =1{1 guia}one{{count} guia}other{{count} guias}}</translation>
 <translation id="7438481509621345350">Agora, você verá stories de <ph name="CHANNEL_NAME" /> quando abrir uma nova guia.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Favorito salvo em "{title}"}one{Favorito salvo em "{title}"}other{Favoritos salvos em "{title}"}}</translation>
 <translation id="7454057999980797137">Estado/Prov.</translation>
@@ -1198,7 +1212,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7459628154744868585">A proteção reforçada está ativa</translation>
 <translation id="7465351360025415755">Receba conteúdo importante para você</translation>
 <translation id="7472734401283673885">Nome da empresa</translation>
-<translation id="7473891865547856676">Agora não</translation>
+<translation id="7473891865547856676">Agora Não</translation>
 <translation id="7488874549363591659">Entregue</translation>
 <translation id="7491131399623468277">Acessar os Ajustes…</translation>
 <translation id="749854780843431406">É possível abrir uma nova guia com o botão <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
@@ -1394,6 +1408,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8517375800490286174">Licenças de código aberto</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} senha e outros itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}one{{count} senha e outros itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}other{{count} senhas e outros itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}}</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Guias <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
+<translation id="852576975834694248">Sua conta será desconectada e as guias serão fechadas</translation>
 <translation id="8528009254289981965">Abrir links de outros apps na navegação anônima</translation>
 <translation id="8529767659511976195">Novo</translation>
 <translation id="8532105204136943229">Ano de vencimento</translation>
@@ -1413,7 +1428,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8613883225817609844">Ocultar guias recentes</translation>
 <translation id="8620640915598389714">Editar</translation>
 <translation id="8624447588354561276">Número do pacote</translation>
-<translation id="8624753446837753970">Definir posição</translation>
+<translation id="8624753446837753970">Definir Posição</translation>
 <translation id="8626393685701737946">Você pode mudar a visualização padrão do site para computador em Configurações &gt; Configurações de conteúdo</translation>
 <translation id="8636825310635137004">Para acessar suas guias abertas em outros dispositivos, ative a sincronização.</translation>
 <translation id="8637431369725868556">Proteja-se contra sites perigosos.</translation>
@@ -1429,6 +1444,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8693663554456874301">{count,plural, =1{Fechar guia}one{Fechar guia}other{Fechar guias}}</translation>
 <translation id="8703536910991780768">Suas senhas parecem fortes</translation>
 <translation id="8706253136355675497">Temperatura</translation>
+<translation id="8709409604518538305">As guias foram fechadas</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8717864919010420084">Copiar link</translation>
 <translation id="8721297211384281569">Menu Ferramentas</translation>
@@ -1481,6 +1497,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8961757677053809960">Dispensar aviso?</translation>
 <translation id="8971545611707025079">Verificar novamente</translation>
 <translation id="8974714402877957201">1. Abra o app Ajustes do iPad</translation>
+<translation id="8975015774710126284">Os dados de navegação foram excluídos</translation>
 <translation id="8976382372951310360">Ajuda</translation>
 <translation id="8976414606286374109">Os cartões são salvos na sua Conta do Google.</translation>
 <translation id="8981454092730389528">Controles de atividades do Google</translation>
@@ -1491,6 +1508,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9000089900434778519">Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9012585441087414258">Protege contra extensões, sites e downloads perigosos. Se uma página fizer algo suspeito, os URLs e partes do conteúdo da página serão enviados ao recurso Navegação segura do Google.</translation>
+<translation id="9029650858822697271">Sua conta foi desconectada</translation>
 <translation id="9034759925968272072">Você não será desconectado da sua Conta do Google. É possível que sua Conta do Google tenha outras formas de histórico de navegação em <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar original</translation>
 <translation id="9039373489628511875">Largura de banda</translation>

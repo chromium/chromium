@@ -40,6 +40,7 @@
 <translation id="1153356358378277386">อุปกรณ์ที่จับคู่</translation>
 <translation id="1155734730463845512">ระดับแบตเตอรี่ปัจจุบัน <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">เปิดและใช้งานอยู่</translation>
+<translation id="1163437384438183174">นำฮับโทรศัพท์ออกจากแถบ</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" /> <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">สาย USB-C อาจเชื่อมต่อกับจอแสดงผลอย่างไม่ถูกต้อง</translation>
 <translation id="1175572348579024023">เลื่อน</translation>
@@ -70,6 +71,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> เชื่อมต่อแล้ว</translation>
 <translation id="1240638468526743569">แอป</translation>
 <translation id="1242883863226959074">อุปกรณ์</translation>
+<translation id="1245644940275736236">ไปที่ Assistant</translation>
 <translation id="124678866338384709">ปิดแท็บปัจจุบัน</translation>
 <translation id="1246890715821376239">แอปที่ไม่รองรับ</translation>
 <translation id="1247372569136754018">ไมโครโฟน (ภายใน)</translation>
@@ -688,6 +690,7 @@
 <translation id="383629559565718788">แสดงการตั้งค่าแป้นพิมพ์</translation>
 <translation id="384082539148746321">ลบเทมเพลตใช่ไหม</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> จากนั้น <ph name="KEY_ONE" /> หรือ <ph name="KEY_TWO" /> หรือ <ph name="KEY_THREE" /> หรือ <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">ไม่มีข้อมูลเครือข่ายที่สามารถใช้งานได้</translation>
 <translation id="385051799172605136">กลับ</translation>
 <translation id="385300504083504382">จุดเริ่มต้น</translation>
@@ -921,6 +924,7 @@
 <translation id="4759238208242260848">ดาวน์โหลด</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + ลูกศรขึ้น</translation>
 <translation id="4762573482154983647">ซ่อนแอป</translation>
+<translation id="4762802395013012237">5 ฟุตเท่ากับกี่เมตร</translation>
 <translation id="4763885921995354846">การดำเนินการนี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องได้ คุณอาจต้องรีเฟรชหน้าเว็บหรือรีสตาร์ทแอป</translation>
 <translation id="4774338217796918551">ใช้ได้อีกครั้งพรุ่งนี้ เวลา <ph name="COME_BACK_TIME" /></translation>
 <translation id="4776584068981882959">ยังคงยืนยันรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้ง</translation>
@@ -963,6 +967,7 @@
 <translation id="491504982845934899">เปิดใช้งานหลังจากตั้งค่าอุปกรณ์ <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">แรง</translation>
 <translation id="4918086044614829423">ยอมรับ</translation>
+<translation id="491907188205944472">ค้นหาสิ่งที่คุณต้องการใน Launcher โดยตรง</translation>
 <translation id="4919841137949306064">"<ph name="APP_NAME" />" กำลังใช้กล้อง</translation>
 <translation id="492453977506755176">แป้นสำหรับโหมดจับภาพ</translation>
 <translation id="4925542575807923399">ผู้ดูแลระบบต้องทำให้บัญชีนี้เป็นบัญชีที่ลงชื่อเข้าใช้เป็นบัญชีแรก ในเซสชันการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
@@ -1113,6 +1118,7 @@
 <translation id="5518068085000130971">นี่คือข้อมูลเบื้องต้น ดูต่อใน "สำรวจ" ซึ่งเป็นแอปในตัวที่มาพร้อมกับเคล็ดลับและความช่วยเหลือ คุณจะพบเคล็ดลับในการเริ่มต้นใช้งาน แอปที่แนะนำ ข้อเสนอพิเศษ และฟีเจอร์ใหม่ล่าสุดของ Chromebook</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">ผู้ดูแลระบบได้นำโปรไฟล์ eSIM ทั้งหมดออก ติดต่อผู้ดูแลระบบเพื่อสอบถามข้อมูลเพิ่มเติม</translation>
+<translation id="5520909879404821039">"สวัสดี" ภาษาฝรั่งเศส</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> กำลังเชื่อมต่อ</translation>
 <translation id="5529587891732734495">หยุดแคสต์ชั่วคราว</translation>
 <translation id="5532994612895037630">แตะที่ใดก็ได้เพื่อบันทึกแบบเต็มหน้าจอ</translation>
@@ -1690,6 +1696,7 @@
 <translation id="7886277072580235377">ระบบจะล้างเซสชันอินเทอร์เน็ตของคุณเมื่อออกจากระบบ <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ส่งอีเมล</translation>
 <translation id="7893503627044934815">ไม่ต้องการให้แสดงไฟล์นี้</translation>
+<translation id="7893547474469215105">Zenith แปลว่าอะไร</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">คุณกดแป้นพิมพ์ลัดสำหรับการหมุนหน้าจอ จะหมุนหน้าจอไหม</translation>
 <translation id="7897626842031123113">ถาดสถานะ เวลา <ph name="TIME" />,
@@ -1705,6 +1712,7 @@
 <translation id="7904094684485781019">ผู้ดูแลระบบของบัญชีนี้ไม่อนุญาตการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">เชื่อมต่ออุปกรณ์อยู่ <ph name="DEVICECOUNT" /> เครื่อง</translation>
+<translation id="7923534281713082605">สภาพอากาศ</translation>
 <translation id="7926080067315048321">ดูงานทั้งหมดใน Google Tasks บนเว็บ</translation>
 <translation id="7930731167419639574">คำพูดได้รับการประมวลผลในเครื่องและการพิมพ์ตามคำบอกทำงานแบบออฟไลน์ได้แล้วในขณะนี้</translation>
 <translation id="7932451802722951285">เปิดใน Google ปฏิทิน</translation>
@@ -1851,6 +1859,7 @@
 <translation id="8555757996376137129">นำเดสก์ปัจจุบันออก</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> แนะนำให้คุณอัปเดต <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">การตั้งค่าการแจ้งเตือน</translation>
+<translation id="8569751806372591456">ลองทำตามคำแนะนำต่อไปนี้</translation>
 <translation id="857201607579416096">เมนูได้ย้ายไปอยู่ที่มุมขวาล่างของหน้าจอ</translation>
 <translation id="8581946341807941670">กด <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> แล้วคลิกลิงก์</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1894,6 +1903,7 @@
 <translation id="875593634123171288">แสดงการตั้งค่า VPN</translation>
 <translation id="8759408218731716181">ไม่สามารถตั้งค่าการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชีได้</translation>
 <translation id="8763883995157866248">ให้อุปกรณ์เข้าสู่โหมดสลีป</translation>
+<translation id="877404052021108314">90°F เท่ากับกี่เซลเซียส</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, ติดตั้งแอปแล้ว, ถูกบล็อก</translation>
 <translation id="8785070478575117577">เชื่อมต่อกับ <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" /> <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1902,6 +1912,7 @@
 <translation id="8806053966018712535">โฟลเดอร์ <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"ช่วยเหลือ"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">กดแป้นพิมพ์ลัดสำหรับการจับภาพหน้าจอ ปุ่ม Ctrl + Shift + แป้นโหมดภาพรวม</translation>
 <translation id="881757059229893486">การตั้งค่าวิธีการป้อนข้อมูล</translation>
 <translation id="8819728065740986820">การชาร์จแบบปรับอัตโนมัติเปิดอยู่</translation>
 <translation id="8825863694328519386">เลื่อนจากด้านซ้ายเพื่อย้อนกลับ</translation>

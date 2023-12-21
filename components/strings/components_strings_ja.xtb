@@ -2359,7 +2359,6 @@
 <translation id="5695542892312572833">Windows Hello を使用して本人確認し、購入手続きを完了しますか？</translation>
 <translation id="5699628521141772782">乳製品、卵</translation>
 <translation id="5700761515355162635">サードパーティ Cookie が許可されています</translation>
-<translation id="5701023235904684227"><ph name="READERNAME" /> を管理し、挿入またはかざされたスマートカードにアクセスできるようにしますか？</translation>
 <translation id="5701381305118179107">中央揃え</translation>
 <translation id="5707154300732650394">ジャーニーを再開</translation>
 <translation id="57094364128775171">安全なパスワードを自動生成…</translation>
@@ -2494,6 +2493,7 @@
 <translation id="5997247540087773573">たった今使用したパスワードがデータ侵害で検出されました。Google パスワード マネージャーでは、アカウントを保護するために今すぐパスワードを変更して、保存したパスワードを確認することをおすすめします。</translation>
 <translation id="5999271311987646952">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、アクセスしようとしているサイトで<ph name="BEGIN_LINK" />最近マルウェアが検出<ph name="END_LINK" />されました。</translation>
 <translation id="6000758707621254961">「<ph name="SEARCH_TEXT" />」に対する <ph name="RESULT_COUNT" /> 件の検索結果</translation>
+<translation id="6001839398155993679">開始する</translation>
 <translation id="6002122790816966947">他のデバイス</translation>
 <translation id="6005659677094197001">連続</translation>
 <translation id="6005765687956866568">自動入力された情報をフォームから削除しました</translation>

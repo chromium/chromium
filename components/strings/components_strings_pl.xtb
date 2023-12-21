@@ -516,6 +516,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1975457531113383421">Taca wejściowa</translation>
 <translation id="1975584088563498795">Zestaw tac odbiorczych 10</translation>
 <translation id="1978555033938440688">Wersja oprogramowania</translation>
+<translation id="1979156660928743046">Informacje o multimediach</translation>
 <translation id="1988881251331415125">Jeśli pisownia jest poprawna, <ph name="BEGIN_LINK" />uruchom Diagnostykę problemów z łącznością<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">Wspinaczka i alpinizm</translation>
 <translation id="1991830984769263878">Ubezpieczenia komunikacyjne</translation>
@@ -1525,6 +1526,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4050599136622776556">Chromium próbuje edytować formy płatności.</translation>
 <translation id="405399507749852140">Jeśli na którejkolwiek stronie produkt stanieje, otrzymasz alert</translation>
 <translation id="4056223980640387499">Sepia</translation>
+<translation id="4059523390906550209">Więcej informacji o usłudze Sensitive Data Protection</translation>
 <translation id="4063063121357725926">Pozwól Google na wyszukiwanie rabatów na produkty, które masz koszykach</translation>
 <translation id="406358100705415968">Wyposażenie ochronne dla bezpieczeństwa w pracy</translation>
 <translation id="4063924980214801036">Używaj odblokowywania urządzenia, aby szybciej potwierdzać karty</translation>
@@ -1683,6 +1685,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokuj (domyślnie)</translation>
 <translation id="4314815835985389558">Zarządzanie synchronizacją</translation>
+<translation id="4316057107946726368">Wpisz wiadomość z uzasadnieniem, o długości do <ph name="MAX_CHAR_COUNT" /> znaków. Wpisano <ph name="ACTUAL_CHAR_COUNT" /> z <ph name="MAX_CHAR_COUNT" /> znaków.</translation>
 <translation id="4318213823155573975">Nakrycia głowy</translation>
 <translation id="4318312030194671742">Usługa kompozytora podglądu renderowania</translation>
 <translation id="4318566738941496689">Nazwa i adres sieciowy urządzenia</translation>
@@ -2490,6 +2493,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5997247540087773573">Znaleźliśmy użyte właśnie hasło wśród ujawnionych w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł Google zaleca natychmiastową zmianę tego hasła oraz sprawdzenie innych zapisanych haseł – pozwoli to zabezpieczyć Twoje konta.</translation>
 <translation id="5999271311987646952">Chrome ma wbudowane zabezpieczenia, które chronią Cię podczas korzystania z przeglądarki, takie jak Bezpieczne przeglądanie Google. Na stronie, którą chcesz otworzyć, <ph name="BEGIN_LINK" />niedawno wykryło ono złośliwe oprogramowanie<ph name="END_LINK" />.</translation>
 <translation id="6000758707621254961">Wyniki wyszukiwania dla zapytania „<ph name="SEARCH_TEXT" />”: <ph name="RESULT_COUNT" /></translation>
+<translation id="6001839398155993679">Do dzieła</translation>
 <translation id="6002122790816966947">Twoje urządzenia</translation>
 <translation id="6005659677094197001">Ciągły</translation>
 <translation id="6005765687956866568">Informacje autouzupełniania zostały usunięte z formularza</translation>
@@ -2670,6 +2674,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6355392890578844978">Ta przeglądarka nie jest zarządzana przez firmę ani inną organizację. Aktywność na tym urządzeniu może być zarządzana poza Chromium. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">edytować formy płatności</translation>
 <translation id="6358450015545214790">Co to oznacza?</translation>
+<translation id="6360213755783740931">Więcej informacji o ochronie przed złośliwym oprogramowaniem</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Wyświetl logi</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />sprawdzić konfigurację serwera proxy, zapory sieciowej i bezpiecznego DNS<ph name="END_LINK" /></translation>
@@ -2727,6 +2732,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6443406338865242315">Zainstalowane przez Ciebie rozszerzenia i wtyczki</translation>
 <translation id="6446608382365791566">Dodaj więcej informacji</translation>
 <translation id="6447842834002726250">Pliki cookie</translation>
+<translation id="6448371595882710519">Więcej informacji o zarządzaniu danymi</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Koperta Chou 40</translation>
 <translation id="6451458296329894277">Potwierdź ponowne przesłanie formularza</translation>

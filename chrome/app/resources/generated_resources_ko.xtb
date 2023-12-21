@@ -5937,6 +5937,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5631272057151918206">오프라인 파일이 차지하고 있는 최대 <ph name="OFFLINE_STORAGE_SIZE" />의 저장공간이 삭제됩니다. 일부 파일은 오프라인에서 계속 사용할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">권한 요청됨, Ctrl 키와 앞으로를 눌러 응답</translation>
 <translation id="5632221585574759616">확장 프로그램 권한에 관해 자세히 알아보기</translation>
+<translation id="5632485077360054581">방법 보기</translation>
 <translation id="5632566673632479864"><ph name="EMAIL" /> 계정이 더 이상 기본 계정으로 허용되지 않습니다. 이 계정은 <ph name="DOMAIN" />에 의해 관리되므로 북마크, 방문 기록, 비밀번호 및 기타 설정이 기기에서 삭제됩니다.</translation>
 <translation id="5633149627228920745">시스템 요구사항 자세히 알아보기</translation>
 <translation id="563371367637259496">모바일</translation>

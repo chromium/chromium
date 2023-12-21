@@ -512,6 +512,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="371398631992790800">Peida valik „Järjehoidjad“</translation>
 <translation id="37207012422556617">Populaarsust koguvad otsingud</translation>
 <translation id="3725081662140949903">Kui soovite, et teised ei saaks teie parooli kasutada, avage parooli muutmiseks rakendus <ph name="APP" /></translation>
+<translation id="3738428049780661523">Loodi <ph name="DATE" /></translation>
 <translation id="374357899112510277">Peida valik „Allalaadimised“</translation>
 <translation id="3745190878148784130">Peida valik Suumi tekst</translation>
 <translation id="3762232513783804601">Loodud teie iPadile</translation>
@@ -1203,6 +1204,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7425346204213733349">Järjehoidjates, ajaloos, paroolides ja muudes seadetes tehtud muudatusi ei sünkroonita enam teie Google'i kontoga. Teie olemasolevad andmed jäävad siiski teie Google'i kontole.</translation>
 <translation id="7431991332293347422">Juhtige, kuidas kasutatakse teie sirvimisajalugu otsingu ja muu isikupärastamiseks</translation>
 <translation id="7435356471928173109">Administraator on välja lülitanud</translation>
+<translation id="7436239899443308800">{count,plural, =1{1 vaheleht}other{{count} vahelehte}}</translation>
 <translation id="7438481509621345350">Uue vahelehe avamisel näete nüüd lugusid kanalist <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Järjehoidja salvestati kohta „{title}“}other{Järjehoidjad salvestati kohta „{title}“}}</translation>
 <translation id="7454057999980797137">Osariik/maakond</translation>

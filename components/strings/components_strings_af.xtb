@@ -633,6 +633,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="219906046732893612">Tuisverbetering</translation>
 <translation id="2202627062836089804">agterkant van jou kaart</translation>
 <translation id="2204482073374652408">Klaar opgedateer!</translation>
+<translation id="2207770355672215546">Altyd toegelaat, met enige kaart</translation>
 <translation id="2208053750671792556">Het jy nie die kode ontvang nie? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Laai 3</translation>
 <translation id="2210794033760923560">Laai verslag op</translation>
@@ -1745,6 +1746,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="443673843213245140">Die gebruik van 'n instaanbediener is gedeaktiveer, maar 'n eksplisiete instaanbedieneropstelling word gespesifiseer.</translation>
 <translation id="4438821706955556403">Tipiese prys</translation>
 <translation id="4441832193888514600">Geïgnoreer omdat die beleid slegs as ’n wolkgebruikerbeleid gestel kan word.</translation>
+<translation id="4445133368066241428">Gewilde onderwerpe</translation>
 <translation id="4449116177348980384">Knoppie om werfinstellings te bestuur; aktiveer om toestemmings en data wat op werwe geberg is in Chrome-instellings te bestuur</translation>
 <translation id="4451135742916150903">Kan vra om aan HID-toestelle te koppel</translation>
 <translation id="4451684391620232683">Teks voorgehou aan gebruiker:</translation>
@@ -2357,7 +2359,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5695542892312572833">Gebruik Windows Hello om jou aankoop te verifieer en te voltooi?</translation>
 <translation id="5699628521141772782">Suiwel en eiers</translation>
 <translation id="5700761515355162635">Derdepartywebkoekies toegelaat</translation>
-<translation id="5701023235904684227">Beheer <ph name="READERNAME" /> en kry toegang tot die slimkaart wat daarvoor toeganklik is?</translation>
 <translation id="5701381305118179107">Sentreer</translation>
 <translation id="5707154300732650394">Hervat jou reis</translation>
 <translation id="57094364128775171">Stel sterk wagwoord voor …</translation>
@@ -2492,6 +2493,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5997247540087773573">Die wagwoord wat jy gebruik het, is in 'n dataskending gekry. Google Wagwoordbestuurder beveel aan dat jy dit nou verander en jou gestoorde wagwoorde nagaan om jou rekeninge te beveilig.</translation>
 <translation id="5999271311987646952">Chrome het ingeboude veiligheidkenmerke om jou te beskerm terwyl jy blaai – soos Google Veiligblaai, <ph name="BEGIN_LINK" />wat onlangs wanware gevind het<ph name="END_LINK" /> op die werf wat jy probeer besoek.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultate vir "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Kom ons begin</translation>
 <translation id="6002122790816966947">Jou toestelle</translation>
 <translation id="6005659677094197001">Aaneenlopend</translation>
 <translation id="6005765687956866568">Die inligting wat outomaties op die vorm ingevul is, is uitgevee</translation>
@@ -3252,7 +3254,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7469935732330206581">Vorm is nie veilig nie</translation>
 <translation id="7470854469646445678">Verskaf rede vir kopiëring (vereis)</translation>
 <translation id="7471007961486718967">Verskaf rede vir oordrag (vereis)</translation>
-<translation id="7473891865547856676">Nee, dankie</translation>
+<translation id="7473891865547856676">Nee, Dankie</translation>
 <translation id="7481312909269577407">Vorentoe</translation>
 <translation id="7481603210197454575">Koevert Italiaans</translation>
 <translation id="7483482939016730822">Skoolvoorraad en klaskamertoerusting</translation>
@@ -3682,7 +3684,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8279611986089885641">Chrome-kennisgewings moet aan wees. Jy kan hulle in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> aanskakel.</translation>
 <translation id="8280630997017109758">Laai 11</translation>
 <translation id="8281730697546299650">Ander advertensieprivaatheidkenmerke is nou beskikbaar</translation>
-<translation id="8281886186245836920">Slaan oor</translation>
+<translation id="8281886186245836920">Slaan Oor</translation>
 <translation id="8282409409360764263">Erfinstandhouding</translation>
 <translation id="8282947398454257691">Jou unieke toestelidentifiseerder ken</translation>
 <translation id="8284769179630993263">Bestuur jou Veiligblaai en meer in Chrome-instellings</translation>

@@ -633,6 +633,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="219906046732893612">Domáci majstri</translation>
 <translation id="2202627062836089804">zadnej strany karty</translation>
 <translation id="2204482073374652408">Aktualizácia bola dokončená.</translation>
+<translation id="2207770355672215546">Vždy povoliť, s každou kartou</translation>
 <translation id="2208053750671792556">Nedostali ste kód? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Priehradka č. 3</translation>
 <translation id="2210794033760923560">Nahrať prehľad</translation>
@@ -2354,7 +2355,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5695542892312572833">Chcete svoj nákup overiť a dokončiť pomocou funkcie Windows Hello?</translation>
 <translation id="5699628521141772782">Mliečne výrobky a vajcia</translation>
 <translation id="5700761515355162635">Súbory cookie tretích strán sú povolené</translation>
-<translation id="5701023235904684227">Chcete ovládať zariadenie <ph name="READERNAME" /> a získať prístup k inteligentnej karte, ktorú má k dispozícii?</translation>
 <translation id="5701381305118179107">Na stred</translation>
 <translation id="5707154300732650394">Pokračovať v ceste</translation>
 <translation id="57094364128775171">Navrhnúť silné heslo…</translation>
@@ -2489,6 +2489,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5997247540087773573">Heslo, ktoré ste práve použili, bolo nájdené v zozname hesiel odhalených pri porušení ochrany údajov. Ak chcete svoje účty zabezpečiť, Správca hesiel Google odporúča heslo okamžite zmeniť a skontrolovať uložené heslá.</translation>
 <translation id="5999271311987646952">Chrome má integrované bezpečnostné funkcie na vašu ochranu pri prehliadaní – napríklad Bezpečné prehliadanie Google, ktoré <ph name="BEGIN_LINK" />nedávno našlo malvér<ph name="END_LINK" /> na webe, ktorý sa pokúšate navštíviť.</translation>
 <translation id="6000758707621254961">Viacero výsledkov (<ph name="RESULT_COUNT" />) pre hľadaný výraz „<ph name="SEARCH_TEXT" />“</translation>
+<translation id="6001839398155993679">Poďme na to</translation>
 <translation id="6002122790816966947">Vaše zariadenia</translation>
 <translation id="6005659677094197001">Nepretržité</translation>
 <translation id="6005765687956866568">Automaticky doplnené informácie boli z formulára vymazané</translation>

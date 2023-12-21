@@ -3095,6 +3095,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">Separator</translation>
 <translation id="3387023983419383865">,</translation>
+<translation id="3387588771342841525">Als dit aanstaat, worden wachtwoorden opgeslagen in <ph name="EMAIL" />. Als dit uitstaat, worden wachtwoorden alleen opgeslagen op dit apparaat.</translation>
 <translation id="3387614642886316601">Verbeterde spellingcontrole gebruiken</translation>
 <translation id="3387829698079331264">Mogen niet weten wanneer je je apparaat actief gebruikt</translation>
 <translation id="3388094447051599208">Uitvoervak is bijna vol</translation>
@@ -3283,6 +3284,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3532521178906420528">Verbinding met netwerk maken...</translation>
 <translation id="3532852121563960103">{NUM_OF_FILES,plural, =1{1 bestand verplaatsen naar <ph name="CLOUD_PROVIDER" />}other{{NUM_OF_FILES} bestanden verplaatsen naar <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" />: audio uitgezet</translation>
+<translation id="3537099313456411235">Koppel <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> om toegang te krijgen tot je Drive-bestanden in de app Bestanden</translation>
 <translation id="3537881477201137177">Dit kan later in Instellingen worden aangepast</translation>
 <translation id="3538066758857505094">Fout bij verwijderen van Linux. Probeer het opnieuw.</translation>
 <translation id="3540173484406326944">Geen netwerk via <ph name="HOST_DEVICE_NAME" /></translation>
@@ -5366,6 +5368,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5185359571430619712">Extensies controleren</translation>
 <translation id="5185386675596372454">De nieuwste versie van <ph name="EXTENSION_NAME" /> is uitgezet omdat er meer rechten voor nodig zijn.</translation>
 <translation id="5185500136143151980">Geen internet</translation>
+<translation id="5186381005592669696">Pas de weergavetaal aan voor ondersteunde apps</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> in gebruik</translation>
 <translation id="5190926251776387065">Poort activeren</translation>
@@ -5914,6 +5917,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5631272057151918206">Hiermee maak je maximaal <ph name="OFFLINE_STORAGE_SIZE" /> aan ruimte vrij die door je offline bestanden wordt gebruikt. Sommige bestanden zijn nog steeds offline beschikbaar. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Rechten gevraagd, druk op Ctrl + Volgende om te reageren</translation>
 <translation id="5632221585574759616">Meer informatie over extensierechten</translation>
+<translation id="5632485077360054581">Laten zien</translation>
 <translation id="5632566673632479864">Je account <ph name="EMAIL" /> is niet meer toegestaan als het primaire account. Omdat dit account wordt beheerd door <ph name="DOMAIN" />, worden je bookmarks, geschiedenis, wachtwoorden en andere instellingen gewist op dit apparaat.</translation>
 <translation id="5633149627228920745">Meer informatie over systeemvereisten</translation>
 <translation id="563371367637259496">Mobiel</translation>
@@ -6144,6 +6148,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5828633471261496623">Bezig met afdrukken....</translation>
 <translation id="5830205393314753525">Kan <ph name="APP_NAME" /> niet openen</translation>
 <translation id="5830720307094128296">Pagina opslaan &amp;als...</translation>
+<translation id="583179300286794292">Ingelogd als <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Sitegegevens en rechten verwijderen voor <ph name="SITE_NAME" />, alle onderliggende sites en de geïnstalleerde app?</translation>
 <translation id="5832813618714645810">Profielen</translation>
 <translation id="583281660410589416">Onbekend</translation>
@@ -6217,6 +6222,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5883356647197510494">Rechten voor <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> automatisch geblokkeerd</translation>
 <translation id="5884447826201752041">Aanpassen voor elke extensie</translation>
 <translation id="5885314688092915589">Je organisatie beheert dit profiel</translation>
+<translation id="5885470467814103868">Scan starten</translation>
 <translation id="5885631909150054232">Token kopiëren</translation>
 <translation id="5886009770935151472">Vinger 1</translation>
 <translation id="5886112770923972514">Maak verbinding en stel apparaten in de buurt makkelijk in via Snel koppelen</translation>
@@ -6806,6 +6812,7 @@ Zichtbaar als <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6348805481186204412">Offline opslag</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> installeren</translation>
 <translation id="6350821834561350243">Geef een duidelijke beschrijving van het probleem en de stappen om het probleem te reproduceren (indien mogelijk)</translation>
+<translation id="6351178441572658285">App-talen</translation>
 <translation id="6354918092619878358">Elliptische SECG-kromme secp256r1 (ook wel ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Google-accountgegevens ophalen...</translation>
 <translation id="635609604405270300">Apparaat aan laten</translation>
@@ -7411,6 +7418,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6833479554815567477">Tabblad verwijderd uit groep <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833996806551876956">Proef voor Privacy Sandbox</translation>
 <translation id="6835762382653651563">Maak verbinding met internet om je <ph name="DEVICE_TYPE" /> te updaten.</translation>
+<translation id="683630338945552556">Wachtwoorden in je Google-account gebruiken en opslaan</translation>
 <translation id="6839225236531462745">Fout tijdens verwijderen van certificaat</translation>
 <translation id="6839916869147598086">Inloggegevens zijn gewijzigd</translation>
 <translation id="6840155290835956714">Vragen vóór verzenden</translation>
@@ -8028,6 +8036,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7347943691222276892">Klik om <ph name="SUBPAGE_TITLE" /> te verlaten.</translation>
 <translation id="7348093485538360975">Schermtoetsenbord</translation>
 <translation id="7349010927677336670">Vloeiendheid van de video</translation>
+<translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} wachtwoord wordt alleen op dit apparaat opgeslagen}other{{COUNT} wachtwoorden worden alleen op dit apparaat opgeslagen}}</translation>
 <translation id="7352651011704765696">Er is iets misgegaan</translation>
 <translation id="7352664183151911163">In je apps en in de Chrome-browser</translation>
 <translation id="7353261921908507769">Je contacten kunnen met je delen als ze in de buurt zijn. Overdrachten worden pas gestart nadat je ze accepteert.</translation>
@@ -8267,6 +8276,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7523117833414447032">Bij voorlezen van hoofdletters</translation>
 <translation id="7523585675576642403">Naam van profiel wijzigen</translation>
 <translation id="7525067979554623046">Maken</translation>
+<translation id="7525879597899798851">Locatie staat uit in de voorkeuren van je besturingssysteem</translation>
 <translation id="7526989658317409655">Tijdelijke aanduiding</translation>
 <translation id="7528224636098571080">Niet openen</translation>
 <translation id="7529411698175791732">Controleer de internetverbinding. Als het probleem blijft optreden, log je uit en weer in.</translation>
@@ -8461,6 +8471,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7670483791111801022">Ondertiteling</translation>
 <translation id="7671130400130574146">Titelbalk en kaders van systeem gebruiken</translation>
 <translation id="767127784612208024">Tik hierop om het resetten te bevestigen</translation>
+<translation id="7671472752213333268"><ph name="EXTENSION_NAME" /> wil scannen vanuit <ph name="SCANNER_NAME" /></translation>
 <translation id="7672504401554182757">Kies welk apparaat de toegangssleutel voor <ph name="APP_NAME" /> heeft</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, in <ph name="PAGE_TITLE" />.</translation>
 <translation id="7673313156293624327">ChromeOS Shill-logboeken (verbindingsbeheer)</translation>

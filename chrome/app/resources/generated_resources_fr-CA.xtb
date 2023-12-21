@@ -918,6 +918,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1695510246756136088">Impossible de se connecter à Internet. Réessayez.</translation>
 <translation id="1696555181932908973">Vous pouvez essayer d'autres solutions pour continuer sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Cet appareil est configuré pour un serveur SSH. Ne vous connectez pas avec un compte sensible.</translation>
+<translation id="1697122132646041614">La mention Je n'aime pas ouvre un formulaire permettant de soumettre des commentaires détaillés sur les raisons pour lesquelles vous n'aimez pas ces résultats.</translation>
 <translation id="1697150536837697295">Art</translation>
 <translation id="1697686431566694143">Modifier le fichier</translation>
 <translation id="1698796500103229697">Méthodes de paiement</translation>
@@ -2297,6 +2298,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2731700343119398978">Veuillez patienter...</translation>
 <translation id="2731971182069536520">La prochaine fois que vous redémarrerez votre appareil, l'administrateur effectuera une mise à jour exceptionnelle qui entraînera la suppression de vos données locales.</translation>
 <translation id="2732134891301408122">Contenu supplémentaire <ph name="CURRENT_ELEMENT" /> sur<ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">La mention J'aime indique que vous aimez ces résultats.</translation>
 <translation id="2733992589856193783">Vous avez créé une clé d'accès pour ce site. Vous avez besoin de votre appareil mobile pour vous connecter.</translation>
 <translation id="27349076983469322">Arrière-plan clair</translation>
 <translation id="2735712963799620190">Horaire</translation>
@@ -4196,6 +4198,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4246980464509998944">Autres commentaires :</translation>
 <translation id="424726838611654458">Toujours ouvrir dans Adobe Reader</translation>
 <translation id="4248401726442101648">Aucune caméra connectée</translation>
+<translation id="4249116869350613769">Économiseur de pile</translation>
 <translation id="4249248555939881673">En attente de la connexion réseau...</translation>
 <translation id="4249373718504745892">L'accès à votre caméra et à votre microphone est bloqué pour cette page.</translation>
 <translation id="424963718355121712">Les applications doivent être diffusées de l'hôte sur lequel elles ont un effet</translation>
@@ -5025,6 +5028,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4893522937062257019">À l'écran de verrouillage</translation>
 <translation id="4895799941222633551">Créer un raccourci...</translation>
 <translation id="4898011734382862273">Le certificat « <ph name="CERTIFICATE_NAME" /> » représente une autorité de certification</translation>
+<translation id="4898913189644355814">Un site peut enregistrer votre langue préférée ou les articles que vous souhaitez acheter. Ces renseignements sont accessibles sur le site et ses sous-domaines.</translation>
 <translation id="4899052647152077033">Inverser les couleurs</translation>
 <translation id="4899696330053002588">Contient des annonces</translation>
 <translation id="490031510406860025">Non autorisé sur ce site</translation>
@@ -5664,6 +5668,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5431318178759467895">Couleur</translation>
 <translation id="5432145523462851548">Afficher <ph name="FILE_NAME" /> dans le dossier</translation>
 <translation id="5432223177001837288">Pour partager l'audio, partagez plutôt un onglet</translation>
+<translation id="5432872710261597882">La mention J'aime indique que vous aimez cela.</translation>
 <translation id="543338862236136125">Modifier le mot de passe</translation>
 <translation id="5434065355175441495">Chiffrement RSA PKCS #1</translation>
 <translation id="5435274640623994081">Activer la journalisation d'icône sonore</translation>
@@ -5699,6 +5704,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notes sur l'écran de verrouillage</translation>
 <translation id="5459864179070366255">Poursuivre l'installation</translation>
+<translation id="5460861858595506978">Sources d'inspiration</translation>
 <translation id="5461050611724244538">La connexion avec votre téléphone a été perdue</translation>
 <translation id="5463275305984126951">Index de <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Inscrivez-vous pour recevoir des courriels à propos de <ph name="DEVICE_TYPE" /></translation>
@@ -5918,6 +5924,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5631272057151918206">Cela va retirer jusqu'à <ph name="OFFLINE_STORAGE_SIZE" /> d'espace utilisés par vos fichiers hors ligne. Certains fichiers seront toujours accessibles hors ligne. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Autorisation demandée, appuyez sur Ctrl+Suivant pour répondre</translation>
 <translation id="5632221585574759616">Apprenez-en plus sur les autorisations des extensions</translation>
+<translation id="5632485077360054581">Afficher la marche à suivre</translation>
 <translation id="5632566673632479864">Votre compte <ph name="EMAIL" /> n'est plus autorisé en tant que compte principal. Comme ce compte est géré par <ph name="DOMAIN" />, vos favoris, votre historique, vos mots de passe et d'autres paramètres seront effacés de cet appareil.</translation>
 <translation id="5633149627228920745">En savoir plus sur la configuration système requise</translation>
 <translation id="563371367637259496">Cellulaire</translation>
@@ -8211,7 +8218,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="747114903913869239">Erreur : impossible de décoder l'extension</translation>
 <translation id="7471520329163184433">Plus lente</translation>
 <translation id="747312361841682912">Supprimer les données affichées</translation>
-<translation id="7473891865547856676">Non merci</translation>
+<translation id="7473891865547856676">Non, merci</translation>
 <translation id="747459581954555080">Tout restaurer</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Retour immédiat exigé}one{Retournez l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jour}other{Retournez l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jours}}</translation>
 <translation id="7475671414023905704">URL de mot de passe perdu Netscape</translation>
@@ -8883,6 +8890,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7969046989155602842">Commande</translation>
 <translation id="7970673414865679092">Renseignements sur la connexion Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 avec chiffrement RSA</translation>
+<translation id="7973149423217802477">La mention J'aime indique que vous n'aimez pas cela.</translation>
 <translation id="7973776233567882054">Parmi les descriptions suivantes, laquelle décrit le mieux votre réseau?</translation>
 <translation id="797394244396603170">Sélectionnez l'appareil avec lequel vous souhaitez partager des fichiers</translation>
 <translation id="7974566588408714340">Réessayer à l’aide de <ph name="EXTENSIONNAME" /></translation>

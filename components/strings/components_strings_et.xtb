@@ -1746,6 +1746,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="443673843213245140">Puhverserveri kasutamine on keelatud, kuid määratud on ka konkreetne puhverserveri konfigureerimine.</translation>
 <translation id="4438821706955556403">Tavaline hind</translation>
 <translation id="4441832193888514600">Eiratakse, kuna reegli saab seadistada ainult pilves olev kasutaja.</translation>
+<translation id="4445133368066241428">Populaarsed teemad</translation>
 <translation id="4449116177348980384">Nupp Saidi seadete haldamine, aktiveerige nupp Chrome'i seadetes lubade ja mitmel saidil talletatud andmete haldamiseks</translation>
 <translation id="4451135742916150903">Saab küsida luba HID-seadmetega ühenduse loomiseks</translation>
 <translation id="4451684391620232683">Kasutajale esitatud tekst:</translation>
@@ -2358,7 +2359,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5695542892312572833">Kas kasutada ostu kinnitamiseks ja lõpuleviimiseks funktsiooni Windows Hello?</translation>
 <translation id="5699628521141772782">Piimatooted ja munad</translation>
 <translation id="5700761515355162635">Kolmanda osapoole küpsisefailid on lubatud</translation>
-<translation id="5701023235904684227">Kas juhtida lugejat <ph name="READERNAME" /> ja hankida juurdepääs sellele juurdepääsetavale kiipkaardile?</translation>
 <translation id="5701381305118179107">Keskel</translation>
 <translation id="5707154300732650394">Jätkake oma teekonda</translation>
 <translation id="57094364128775171">Soovita tugevat parooli …</translation>
@@ -2493,6 +2493,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5997247540087773573">Äsja kasutatud parool leiti andmetega seotud rikkumisest. Teie kontode turvalisuse kaitsmiseks soovitab Google'i paroolihaldur teil seda parooli kohe muuta ja kontrollida oma salvestatud paroole.</translation>
 <translation id="5999271311987646952">Chrome'il on sisseehitatud ohutusfunktsioonid, mis kaitsevad teid sirvimise ajal, näiteks Google'i ohutu sirvimine, mis <ph name="BEGIN_LINK" />leidis hiljuti pahavara<ph name="END_LINK" /> saidilt, mida proovite külastada.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> tulemust otsingule „<ph name="SEARCH_TEXT" />”</translation>
+<translation id="6001839398155993679">Alustagem</translation>
 <translation id="6002122790816966947">Teie seadmed</translation>
 <translation id="6005659677094197001">Pidev</translation>
 <translation id="6005765687956866568">Automaatselt sisestatud teave kustutati vormist</translation>

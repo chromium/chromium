@@ -2358,7 +2358,6 @@
 <translation id="5695542892312572833">要使用 Windows Hello 驗證並完成購物嗎？</translation>
 <translation id="5699628521141772782">奶製品與雞蛋</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
-<translation id="5701023235904684227">是否允許控制「<ph name="READERNAME" />」並取得裝置中智慧型卡片的存取權？</translation>
 <translation id="5701381305118179107">置中</translation>
 <translation id="5707154300732650394">繼續瀏覽歷程</translation>
 <translation id="57094364128775171">建議高強度密碼…</translation>
@@ -2493,6 +2492,7 @@
 <translation id="5997247540087773573">你剛才使用的密碼已在資料侵害事件中遭到外洩。為確保帳戶安全，Google 密碼管理員建議你立即變更這組密碼，並檢查已儲存的密碼。</translation>
 <translation id="5999271311987646952">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能<ph name="BEGIN_LINK" />最近曾在你嘗試造訪的網站上發現惡意軟體<ph name="END_LINK" />。</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個與「<ph name="SEARCH_TEXT" />」相符的搜尋結果</translation>
+<translation id="6001839398155993679">立即開始</translation>
 <translation id="6002122790816966947">你的裝置</translation>
 <translation id="6005659677094197001">連續</translation>
 <translation id="6005765687956866568">已清除表單中自動填入的資訊</translation>

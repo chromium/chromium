@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{Mostrando 1 ventana de Chromium}other{Mostrando {count} ventanas de Chromium}}</translation>
 <translation id="3344973607274501920">Chromium no ha podido comprobar tus contraseñas. Revisa tu conexión a Internet.</translation>
 <translation id="3366305173356742781">Datos de Chromium en tu cuenta</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Ocurre cuando Chromium lleva {THRESHOLD} minuto sin usarse. Esto podría incluir el historial y la función Autocompletar.}other{Ocurre cuando Chromium lleva {THRESHOLD} minutos sin usarse. Esto podría incluir el historial y la función Autocompletar.}}</translation>
 <translation id="3472200483164753384">No compatible con Chromium Canary</translation>
 <translation id="3478750326643748149">Ocultar "Sácale el máximo partido a Chromium"</translation>
 <translation id="3512168799938877162">No se ha compartido tu contraseña. Comprueba tu conexión a Internet y asegúrate de haber iniciado sesión en Chromium. Después, inténtalo de nuevo.</translation>
@@ -284,6 +285,7 @@ Notas importantes:
 <translation id="8909995017390087892">Chromium para iOS</translation>
 <translation id="8924617840944134898">Abrir pestaña de Incógnito de Chromium</translation>
 <translation id="894437814105052438">Si cierras sesión, Chromium no sincronizará ningún dato nuevo con tu cuenta de Google. Los datos sincronizados anteriormente permanecerán en la cuenta.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Ocurre cuando Chromium lleva {THRESHOLD} minuto sin usarse}other{Ocurre cuando Chromium lleva {THRESHOLD} minutos sin usarse}}</translation>
 <translation id="8963279154877372067">Permitir notificaciones de Chromium para recibir alertas de bajadas de precio</translation>
 <translation id="900560297598578021">Has iniciado sesión como <ph name="EMAIL" />.
 

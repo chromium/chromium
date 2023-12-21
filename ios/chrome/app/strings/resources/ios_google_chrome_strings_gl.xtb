@@ -63,6 +63,7 @@ Cuestións que debes ter en conta:
 <translation id="2427791862912929107">Chrome inclúe funcións que che axudan a xestionar os teus datos de Internet e a rapidez coa que podes cargar páxinas web.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Usa Chrome para autocompletar facilmente noutras aplicacións os teus contrasinais gardados</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minuto. Eses datos poderían incluír o historial e a función de autocompletar.}other{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minutos. Eses datos poderían incluír o historial e a función de autocompletar.}}</translation>
 <translation id="2561231791489583059">Usa Chrome como navegador predeterminado para protexer a túa seguranza contra sitios perigosos e manter a salvo os teus contrasinais</translation>
 <translation id="2574249610672786438">Para ver as túas pestanas desde calquera dispositivo no que utilices Chrome, inicia sesión en todos eles</translation>
 <translation id="2576431527583832481">Chrome introduciu melloras. Hai dispoñible unha nova versión.</translation>
@@ -91,6 +92,7 @@ Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Goo
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3340938510625667914">Accións de Chrome</translation>
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minuto}other{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minutos}}</translation>
 <translation id="3399930248910934354">Abrir configuración de Chrome</translation>
 <translation id="3472587960215700950">Chrome usa Google Maps para darche indicacións e información local sobre os enderezos detectados.</translation>
 <translation id="3503014945441706099">Activa tamén neste perfil de Chrome a función Navegación segura mellorada</translation>

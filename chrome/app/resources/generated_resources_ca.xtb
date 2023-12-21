@@ -4194,6 +4194,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4246980464509998944">Comentaris addicionals:</translation>
 <translation id="424726838611654458">Obre sempre a Adobe Reader</translation>
 <translation id="4248401726442101648">No hi ha cap càmera connectada</translation>
+<translation id="4249116869350613769">Estalvi de bateria</translation>
 <translation id="4249248555939881673">S'està esperant la connexió a la xarxa...</translation>
 <translation id="4249373718504745892">S'ha bloquejat l'accés d'aquesta pàgina a la càmera i al micròfon</translation>
 <translation id="424963718355121712">Les aplicacions s'han de distribuir des de l'amfitrió que afecten</translation>
@@ -5023,6 +5024,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4893522937062257019">A la pantalla de bloqueig</translation>
 <translation id="4895799941222633551">Crea una &amp;drecera...</translation>
 <translation id="4898011734382862273">El certificat <ph name="CERTIFICATE_NAME" /> representa una entitat emissora de certificats</translation>
+<translation id="4898913189644355814">És possible que un lloc web desi el teu idioma preferit o els articles que vols comprar. Aquesta informació està disponible per al lloc web i per als seus subdominis.</translation>
 <translation id="4899052647152077033">Inverteix els colors</translation>
 <translation id="4899696330053002588">Conté anuncis</translation>
 <translation id="490031510406860025">No es permet en aquest lloc web</translation>
@@ -5918,6 +5920,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5631272057151918206">Això suprimirà espai (fins a <ph name="OFFLINE_STORAGE_SIZE" /> GB) que fan servir els teus fitxers sense connexió. Alguns fitxers continuaran estant disponibles sense connexió. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">S'ha sol·licitat permís, prem Ctrl+Endavant per respondre</translation>
 <translation id="5632221585574759616">Més informació sobre els permisos d'extensions</translation>
+<translation id="5632485077360054581">Mostra'm com</translation>
 <translation id="5632566673632479864">Ja no es permet que <ph name="EMAIL" /> sigui el compte principal. Com que <ph name="DOMAIN" /> gestiona aquest compte, s'esborraran d'aquest dispositiu les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració.</translation>
 <translation id="5633149627228920745">Més informació sobre els requisits del sistema</translation>
 <translation id="563371367637259496">Mòbil</translation>

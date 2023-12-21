@@ -516,6 +516,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1975457531113383421">Bandexa de entrada</translation>
 <translation id="1975584088563498795">Caixa de correo 10</translation>
 <translation id="1978555033938440688">Versión do firmware</translation>
+<translation id="1979156660928743046">Información sobre o contido multimedia</translation>
 <translation id="1988881251331415125">Se está ben escrito, podes <ph name="BEGIN_LINK" />probar a executar diagnósticos de conectividade<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">Escalada e montañismo</translation>
 <translation id="1991830984769263878">Seguros de coches</translation>
@@ -1525,6 +1526,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4050599136622776556">Chromium está tentando editar os métodos de pago.</translation>
 <translation id="405399507749852140">Recibe alertas se baixa o prezo en calquera sitio</translation>
 <translation id="4056223980640387499">Sepia</translation>
+<translation id="4059523390906550209">Máis información sobre a protección de datos confidenciais</translation>
 <translation id="4063063121357725926">Permite que Google te axude a atopar descontos para os teus carros</translation>
 <translation id="406358100705415968">Equipos de protección no traballo</translation>
 <translation id="4063924980214801036">Utiliza o desbloqueo do dispositivo para confirmar as tarxetas máis rápido</translation>
@@ -1683,6 +1685,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
 <translation id="4314815835985389558">Xestionar sincronización</translation>
+<translation id="4316057107946726368">Pon unha mensaxe de xustificación que teña como máximo <ph name="MAX_CHAR_COUNT" /> caracteres. Utilizáronse <ph name="ACTUAL_CHAR_COUNT" /> de <ph name="MAX_CHAR_COUNT" /> caracteres.</translation>
 <translation id="4318213823155573975">Accesorios para a cabeza</translation>
 <translation id="4318312030194671742">Servizo de composición de vista previa da renderización</translation>
 <translation id="4318566738941496689">O nome e o enderezo de rede do teu dispositivo</translation>
@@ -2490,6 +2493,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5997247540087773573">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. Para protexer as túas contas, o xestor de contrasinais de Google recomenda que o cambies de inmediato e que comprobes os contrasinais gardados.</translation>
 <translation id="5999271311987646952">Chrome inclúe funcións de seguranza para protexerte cando navegas, como, por exemplo, Navegación segura de Google, que <ph name="BEGIN_LINK" />detectou hai pouco software malicioso<ph name="END_LINK" /> no sitio ao que tentas acceder.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Vamos aló</translation>
 <translation id="6002122790816966947">Os teus dispositivos</translation>
 <translation id="6005659677094197001">Continuo</translation>
 <translation id="6005765687956866568">Borrouse do formulario a información completada automaticamente</translation>
@@ -2670,6 +2674,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6355392890578844978">Ningunha compañía ou organización xestiona este navegador. A actividade deste dispositivo pódese xestionar fóra de Chromium. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">editar os métodos de pago</translation>
 <translation id="6358450015545214790">Que significan estas seccións?</translation>
+<translation id="6360213755783740931">Máis información sobre a protección contra software malicioso</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Ver os rexistros</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Comprobar o proxy, o firewall e a configuración do DNS seguro<ph name="END_LINK" /></translation>
@@ -2727,6 +2732,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6443406338865242315">As extensións e os complementos que teñas instalados</translation>
 <translation id="6446608382365791566">Engadir máis información</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6448371595882710519">Máis información sobre os controis de datos</translation>
 <translation id="6450077999570164268">Cuartilla</translation>
 <translation id="6450212216969386944">Sobre Chou 40</translation>
 <translation id="6451458296329894277">Confirmar reenvío do formulario</translation>

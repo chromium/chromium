@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{Tagad tiek rādīts viens Chromium logs}zero{Tagad tiek rādīti {count} Chromium logi}one{Tagad tiek rādīts {count} Chromium logs}other{Tagad tiek rādīti {count} Chromium logi}}</translation>
 <translation id="3344973607274501920">Pārlūkprogrammā Chromium nevarēja pārbaudīt jūsu paroles. Pārbaudiet interneta savienojumu.</translation>
 <translation id="3366305173356742781">Chromium dati jūsu kontā</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūti. Var tikt dzēsta arī vēsture un automātiskās aizpildes dati.}zero{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūtes. Var tikt dzēsta arī vēsture un automātiskās aizpildes dati.}one{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūti. Var tikt dzēsta arī vēsture un automātiskās aizpildes dati.}other{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūtes. Var tikt dzēsta arī vēsture un automātiskās aizpildes dati.}}</translation>
 <translation id="3472200483164753384">Netiek atbalstīta pārlūkā Chromium Canary.</translation>
 <translation id="3478750326643748149">Paslēpiet kartīti “Pārlūka Chromium pilnvērtīga izmantošana”.</translation>
 <translation id="3512168799938877162">Parole netika kopīgota. Pārbaudiet interneta savienojumu un pierakstieties pārlūkā Chromium. Pēc tam mēģiniet vēlreiz.</translation>
@@ -284,6 +285,7 @@ Svarīga informācija
 <translation id="8909995017390087892">Chromium operētājsistēmai iOS</translation>
 <translation id="8924617840944134898">Chromium inkognito cilnes atvēršana</translation>
 <translation id="894437814105052438">Ja izrakstīsieties, jaunie dati pārlūkā Chromium netiks sinhronizēti ar jūsu Google kontu. Iepriekš sinhronizētie dati kontā saglabājas.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūti.}zero{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūtes.}one{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūti.}other{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūtes.}}</translation>
 <translation id="8963279154877372067">Atļaujiet Chromium paziņojumus, lai saņemtu brīdinājumus par cenu kritumu</translation>
 <translation id="900560297598578021">Jūs esat pierakstījies kā lietotājs <ph name="EMAIL" />.
 

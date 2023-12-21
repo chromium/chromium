@@ -63,6 +63,7 @@ Co je třeba zvážit:
 <translation id="2427791862912929107">Chrome obsahuje funkce, které pomáhají spravovat přenosy dat z internetu a umožňují zrychlit načítání webových stránek.
 <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Pokud chcete mít uložená hesla snadno k dispozici v jiných aplikacích, používejte Chrome k automatickému vyplňování</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{K tomuto dochází, když Chrome {THRESHOLD} minutu nepoužíváte. Může to zahrnovat historii a automatické vyplňování.}few{K tomuto dochází, když Chrome {THRESHOLD} minuty nepoužíváte. Může to zahrnovat historii a automatické vyplňování.}many{K tomuto dochází, když Chrome {THRESHOLD} minuty nepoužíváte. Může to zahrnovat historii a automatické vyplňování.}other{K tomuto dochází, když Chrome {THRESHOLD} minut nepoužíváte. Může to zahrnovat historii a automatické vyplňování.}}</translation>
 <translation id="2561231791489583059">Používejte Chrome jako výchozí prohlížeč – ochrání vás před nebezpečnými weby a vaše hesla budou v bezpečí</translation>
 <translation id="2574249610672786438">Chcete-li mít své karty k dispozici všude, kde používáte Chrome, na všech zařízeních se přihlaste</translation>
 <translation id="2576431527583832481">Chrome je opět o něco lepší. K dispozici je nová verze.</translation>
@@ -91,6 +92,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3282568296779691940">Přihlásit se do Chromu</translation>
 <translation id="3340938510625667914">Akce v Chromu</translation>
 <translation id="3345341804167540816">Používejte Chrome všude</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{K tomuto dochází, když Chrome {THRESHOLD} minutu nepoužíváte}few{K tomuto dochází, když Chrome {THRESHOLD} minuty nepoužíváte}many{K tomuto dochází, když Chrome {THRESHOLD} minuty nepoužíváte}other{K tomuto dochází, když Chrome {THRESHOLD} minut nepoužíváte}}</translation>
 <translation id="3399930248910934354">Otevřít nastavení Chromu</translation>
 <translation id="3472587960215700950">Chrome používá Mapy Google k poskytování tras a místních informací o zjištěných adresách.</translation>
 <translation id="3503014945441706099">Zapněte pro tento profil prohlížeče Chrome také Vylepšené Bezpečné prohlížení</translation>

@@ -517,6 +517,7 @@
 <translation id="1975457531113383421">ইনপুট ট্রে</translation>
 <translation id="1975584088563498795">মেলবক্স ১০</translation>
 <translation id="1978555033938440688">ফার্মওয়্যার ভার্সন</translation>
+<translation id="1979156660928743046">মিডিয়া সংক্রান্ত তথ্য</translation>
 <translation id="1988881251331415125">বানান সঠিক হলে, <ph name="BEGIN_LINK" />'কানেক্টিভিটি ডায়াগনস্টিক' টুল চালিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="1991453785879639515">আরোহণ এবং পর্বতারোহণ</translation>
 <translation id="1991830984769263878">অটো ইন্স্যুরেন্স</translation>
@@ -633,6 +634,7 @@
 <translation id="219906046732893612">হোম উন্নতি</translation>
 <translation id="2202627062836089804">আপনার কার্ডের পিছনের দিক</translation>
 <translation id="2204482073374652408">আপডেট প্রসেস সম্পূর্ণ হয়েছে!</translation>
+<translation id="2207770355672215546">যেকোনও কার্ডের সাথে, সবসময় অ্যাক্সেস করার অনুমতি দিন</translation>
 <translation id="2208053750671792556">নিজের কোড রিসিভ করেননি? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">ট্রে ৩</translation>
 <translation id="2210794033760923560">রিপোর্ট আপলোড করুন</translation>
@@ -1525,6 +1527,7 @@
 <translation id="4050599136622776556">Chromium পেমেন্ট পদ্ধতি এডিট করার চেষ্টা করছে।</translation>
 <translation id="405399507749852140">কোনও সাইটে দাম কমলে সেই বিষয়ে বিজ্ঞপ্তি পান</translation>
 <translation id="4056223980640387499">সেপিয়া</translation>
+<translation id="4059523390906550209">সংবেদনশীল ডেটা সুরক্ষা সম্পর্কে আরও জানুন</translation>
 <translation id="4063063121357725926">আপনার কার্টের জন্য ডিসকাউন্ট খুঁজে পেতে Google-কে সাহায্য করুন</translation>
 <translation id="406358100705415968">কাজের ক্ষেত্রে সুরক্ষা সম্পর্কিত প্রতিরক্ষামূলক সরঞ্জাম</translation>
 <translation id="4063924980214801036">কার্ড আরও দ্রুত কনফার্ম করতে ডিভাইস আনলক ব্যবহার করুন</translation>
@@ -1683,6 +1686,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">অবরুদ্ধ করুন (ডিফল্ট)</translation>
 <translation id="4314815835985389558">সিঙ্ক ম্যানেজ করুন</translation>
+<translation id="4316057107946726368">যুক্তি সহকারে সর্বাধিক <ph name="MAX_CHAR_COUNT" />টি অক্ষরে মেসেজ লিখুন। <ph name="MAX_CHAR_COUNT" />টি অক্ষরের মধ্যে <ph name="ACTUAL_CHAR_COUNT" />টি ব্যবহার করা হয়েছে।</translation>
 <translation id="4318213823155573975">টুপি</translation>
 <translation id="4318312030194671742">পেইন্ট প্রিভিউ কম্পোজিটর সার্ভিস</translation>
 <translation id="4318566738941496689">আপনার ডিভাইসের নাম এবং নেটওয়ার্ক ঠিকানা</translation>
@@ -1743,6 +1747,7 @@
 <translation id="443673843213245140">প্রক্সির ব্যবহার অক্ষম করা হয়েছে কিন্তু কোনো স্পষ্ট প্রক্সি কনফিগারেশান নির্দিষ্ট করা হয়েছে৷</translation>
 <translation id="4438821706955556403">সাধারণ দাম</translation>
 <translation id="4441832193888514600">উপেক্ষা করা হয়েছে কারণ নীতিটি শুধুমাত্র ক্লাউড ব্যবহারকারী নীতি হিসেবে সেট করা যেতে পারে।</translation>
+<translation id="4445133368066241428">জনপ্রিয় বিষয়</translation>
 <translation id="4449116177348980384">'সাইট সেটিংস ম্যানেজ করুন' বোতাম, Chrome সেটিংসে পুরো সাইট জুড়ে স্টোর থাকা অনুমতি ও ডেটা ম্যানেজ করতে এটি চালু করুন</translation>
 <translation id="4451135742916150903">HID ডিভাইসের সাথে কানেক্ট করার অনুমতি চাইতে পারে</translation>
 <translation id="4451684391620232683">ব্যবহারকারীর কাছে টেক্সট উপস্থাপিত:</translation>
@@ -2489,6 +2494,7 @@
 <translation id="5997247540087773573">আপনি এইমাত্র যে পাসওয়ার্ড ব্যবহার করলেন, সেটি হ্যাক হওয়া কোনও ডেটাবেসে পাওয়া গেছে। আপনার অ্যাকাউন্ট সুরক্ষিত করতে, Google পাসওয়ার্ড ম্যানেজার এখনই এটি পরিবর্তন করতে ও সেভ করা পাসওয়ার্ড চেক করার সাজেশন দিচ্ছে।</translation>
 <translation id="5999271311987646952">আপনি ব্রাউজ করার সময় আপনাকে সুরক্ষিত রাখতে, Chrome-এ বিল্ট-ইন নিরাপত্তা সম্পর্কিত ফিচার আছে, যেমন Google Safe Browsing, যেটি আপনি দেখার চেষ্টা করছেন যে সাইট, তার মধ্যে <ph name="BEGIN_LINK" />সম্প্রতি ম্যালওয়্যার খুঁজে পেয়েছে<ph name="END_LINK" />।</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />'-এর জন্য <ph name="RESULT_COUNT" />টি ফলাফল</translation>
+<translation id="6001839398155993679">শুরু করা যাক</translation>
 <translation id="6002122790816966947">আপনার ডিভাইসগুলি</translation>
 <translation id="6005659677094197001">কন্টিনিউআস</translation>
 <translation id="6005765687956866568">ফর্ম থেকে আপনা-আপনি পূরণ হওয়া তথ্য মুছে ফেলা হয়েছে</translation>
@@ -2668,6 +2674,7 @@
 <translation id="6355392890578844978">কোনও কোম্পানি বা অন্য কোনও সংস্থা এই ব্রাউজার ম্যানেজ করে না। এই ডিভাইসের অ্যাক্টিভিটি Chromium-এর বাইরে থেকে ম্যানেজ করা যেতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">পেমেন্ট পদ্ধতি এডিট করুন</translation>
 <translation id="6358450015545214790">এর অর্থ কী?</translation>
+<translation id="6360213755783740931">ম্যালওয়্যার থেকে সুরক্ষা সম্পর্কে আরও জানুন</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">লগ দেখুন</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />প্রক্সি, ফায়ারওয়াল এবং নিরাপদ DNS কনফিগারেশন পরীক্ষা করে দেখা হচ্ছে<ph name="END_LINK" /></translation>
@@ -2725,6 +2732,7 @@
 <translation id="6443406338865242315">কোন কোন এক্সটেনশন ও প্লাগ-ইন আপনি ইনস্টল করেছেন</translation>
 <translation id="6446608382365791566">আরও তথ্য যোগ করুন</translation>
 <translation id="6447842834002726250">কুকিজ</translation>
+<translation id="6448371595882710519">ডেটা কন্ট্রোল সম্পর্কে আরও জানুন</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">এনভেলপ চৌ ৪০</translation>
 <translation id="6451458296329894277">ফর্ম পুনঃজমা নিশ্চিত করুন</translation>
@@ -3676,7 +3684,7 @@
 <translation id="8279611986089885641">Chrome বিজ্ঞপ্তি চালু রাখতে হবে। আপনি <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> থেকে সেগুলি চালু করতে পারবেন।</translation>
 <translation id="8280630997017109758">ট্রে ১১</translation>
 <translation id="8281730697546299650">এখন অন্যান্য বিজ্ঞাপন সম্পর্কিত গোপনীয়তা ফিচার উপলভ্য</translation>
-<translation id="8281886186245836920">ছেড়ে যান</translation>
+<translation id="8281886186245836920">এড়িয়ে যান</translation>
 <translation id="8282409409360764263">ইয়ার্ড রক্ষণাবেক্ষণ</translation>
 <translation id="8282947398454257691">আপনার অনন্য ডিভাইস সনাক্তকারীকে জানুন</translation>
 <translation id="8284769179630993263">Chrome সেটিংসে আপনার Safe Browsing ও আরও অনেক কিছু ম্যানেজ করুন</translation>

@@ -633,6 +633,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="219906046732893612">Etxeko hobekuntzak</translation>
 <translation id="2202627062836089804">txartelaren atzealdean</translation>
 <translation id="2204482073374652408">Amaitu da eguneratzea!</translation>
+<translation id="2207770355672215546">Eman baimena beti, edozein txartelekin</translation>
 <translation id="2208053750671792556">Ez duzu jaso kodea? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">3. erretilua</translation>
 <translation id="2210794033760923560">Kargatu txostena</translation>
@@ -1741,6 +1742,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="443673843213245140">Proxya erabiltzeko aukera desgaitu da, baina proxy-konfigurazio esplizitua zehaztu da.</translation>
 <translation id="4438821706955556403">Ohiko prezioa</translation>
 <translation id="4441832193888514600">Ez ikusi egin zaio hodeiko erabiltzaile-gidalerro gisa soilik ezar daitekeelako gidalerroa.</translation>
+<translation id="4445133368066241428">Gai ezagunak</translation>
 <translation id="4449116177348980384">Webguneen ezarpenak kudeatzeko botoia: aktiba ezazu Chrome-ren ezarpenetara joan, eta baimenak eta webguneetan gordetako datuak kudeatzeko</translation>
 <translation id="4451135742916150903">HID gailuetara konektatzea eska dezake</translation>
 <translation id="4451684391620232683">Erabiltzaileari aurkeztutako testua:</translation>
@@ -2353,7 +2355,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5695542892312572833">Windows Hello erabili nahi duzu erosketa egiaztatzeko eta osatzeko?</translation>
 <translation id="5699628521141772782">Esnekiak eta arrautzak</translation>
 <translation id="5700761515355162635">Hirugarrenen cookieak erabil daitezke</translation>
-<translation id="5701023235904684227"><ph name="READERNAME" /> kontrolatu nahi duzu, eta hark erabilgarri duen txartel adimendunerako sarbidea lortu?</translation>
 <translation id="5701381305118179107">Erdiratu</translation>
 <translation id="5707154300732650394">Berrekin bilaketa-ibilbideari</translation>
 <translation id="57094364128775171">Iradoki pasahitz konplexu bat…</translation>
@@ -2488,6 +2489,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5997247540087773573">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Kontuak babesteko, Google-ren Pasahitz-kudeatzailea zerbitzuak pasahitza orain aldatzea gomendatzen du, eta gordeta dauzkazun pasahitzak seguruak direla egiaztatzea.</translation>
 <translation id="5999271311987646952">Chrome-k segurtasun-eginbide integratuak ditu, arakatzen duzun bitartean babesten zaituztenak. Google-ren Arakatze segurua eginbide horietako bat da, eta <ph name="BEGIN_LINK" />duela gutxi malwarea aurkitu du<ph name="END_LINK" /> bisitatu nahi duzun webgunean.</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" bilaketak <ph name="RESULT_COUNT" /> emaitza ditu</translation>
+<translation id="6001839398155993679">Has gaitezen</translation>
 <translation id="6002122790816966947">Zure gailuak</translation>
 <translation id="6005659677094197001">Etengabea</translation>
 <translation id="6005765687956866568">Garbitu da inprimakian automatikoki betetako informazioa</translation>

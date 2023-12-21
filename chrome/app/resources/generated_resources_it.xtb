@@ -917,6 +917,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1695510246756136088">Impossibile connettersi a Internet. Riprova.</translation>
 <translation id="1696555181932908973">Puoi provare altri metodi per continuare su <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Sul dispositivo è stato configurato un server SSH. Non accedere con account sensibili.</translation>
+<translation id="1697122132646041614">Non mi piace apre un modulo per inviare un feedback dettagliato sul motivo per cui non ti piacciono questi risultati.</translation>
 <translation id="1697150536837697295">Arte</translation>
 <translation id="1697686431566694143">Modifica file</translation>
 <translation id="1698796500103229697">&amp;Metodi di pagamento</translation>
@@ -2295,6 +2296,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2731700343119398978">Attendi...</translation>
 <translation id="2731971182069536520">La prossima volta che riavvii il dispositivo, il tuo amministratore eseguirà un aggiornamento una tantum che eliminerà i tuoi dati locali.</translation>
 <translation id="2732134891301408122">Contenuti aggiuntivi <ph name="CURRENT_ELEMENT" /> di <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Mi piace invia un feedback negativo relativo a questi risultati.</translation>
 <translation id="2733992589856193783">Hai creato una passkey per questo sito. Ti serve il tuo dispositivo mobile per accedere.</translation>
 <translation id="27349076983469322">Sfondo chiaro</translation>
 <translation id="2735712963799620190">Pianificazione</translation>
@@ -5663,6 +5665,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5431318178759467895">A colori</translation>
 <translation id="5432145523462851548">Mostra <ph name="FILE_NAME" /> nella cartella</translation>
 <translation id="5432223177001837288">Per condividere l'audio, condividi una scheda</translation>
+<translation id="5432872710261597882">Mi piace ti consente di inviare un feedback positivo.</translation>
 <translation id="543338862236136125">Modifica password</translation>
 <translation id="5434065355175441495">PKCS #1 con crittografia RSA</translation>
 <translation id="5435274640623994081">Abilita registrazione earcon</translation>
@@ -5698,6 +5701,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Note sulla schermata di blocco</translation>
 <translation id="5459864179070366255">Installa comunque</translation>
+<translation id="5460861858595506978">Ispirazione</translation>
 <translation id="5461050611724244538">Connessione col telefono persa</translation>
 <translation id="5463275305984126951">Indice di <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Registrati per ricevere email relative a <ph name="DEVICE_TYPE" /></translation>
@@ -5915,6 +5919,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5631272057151918206">Questa azione comporterà la rimozione di massimo <ph name="OFFLINE_STORAGE_SIZE" /> di spazio usato dai tuoi file offline. Alcuni file saranno ancora disponibili offline. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Autorizzazione richiesta, premi Ctrl + Avanti per rispondere</translation>
 <translation id="5632221585574759616">Scopri di più sulle autorizzazioni delle estensioni</translation>
+<translation id="5632485077360054581">Mostrami come fare</translation>
 <translation id="5632566673632479864">Il tuo account <ph name="EMAIL" /> non è più consentito come account principale. Siccome l'account è gestito da <ph name="DOMAIN" />, i preferiti, la cronologia, le password e altre impostazioni verranno cancellati da questo dispositivo.</translation>
 <translation id="5633149627228920745">Scopri di più sui requisiti di sistema</translation>
 <translation id="563371367637259496">Mobile</translation>
@@ -8878,6 +8883,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7969046989155602842">Comando</translation>
 <translation id="7970673414865679092">Dettagli Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 con crittografia RSA</translation>
+<translation id="7973149423217802477">Non mi piace consente di inviare un feedback negativo.</translation>
 <translation id="7973776233567882054">Quale delle seguenti definizioni descrive meglio la tua rete?</translation>
 <translation id="797394244396603170">Seleziona il dispositivo con cui vuoi condividere file</translation>
 <translation id="7974566588408714340">Riprova utilizzando <ph name="EXTENSIONNAME" /></translation>

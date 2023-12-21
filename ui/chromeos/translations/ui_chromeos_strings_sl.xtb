@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Roža</translation>
 <translation id="4943368462779413526">Žoga</translation>
 <translation id="4961158930123534723">1 mapa je deljena s programom Parallels Desktop</translation>
+<translation id="4965874878399872778">Preverjamo, ali so datoteke v skladu z varnostnimi pravilniki organizacije …</translation>
 <translation id="496656650103537022">Datoteka <ph name="FILE_NAME" /> je obnovljena.</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Nastavitve sinhronizacije datotek ni bilo mogoče dokončati</translation>
@@ -710,6 +711,7 @@
 <translation id="6430271654280079150">Imate še 1 poskus.</translation>
 <translation id="643243556292470964">Izbrisane datoteke so zdaj premaknjene v smetnjak.</translation>
 <translation id="6438480100790416671">Preverjanje prostora za shranjevanje …</translation>
+<translation id="6451527188465304418">Preverjamo, ali je datoteka v skladu z varnostnimi pravilniki organizacije …</translation>
 <translation id="6485131920355264772">Podatkov o prostoru ni bilo mogoče prenesti</translation>
 <translation id="6495925982925244349">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, upravlja ga vaš skrbnik, podrobnosti</translation>
 <translation id="649877868557234318">Razširjanje datoteke <ph name="FILE_NAME" /> v mapo <ph name="FOLDER_NAME" /></translation>

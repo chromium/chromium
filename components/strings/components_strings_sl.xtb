@@ -516,6 +516,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1975457531113383421">Podajalni pladenj</translation>
 <translation id="1975584088563498795">Nabiralnik 10</translation>
 <translation id="1978555033938440688">Različica vdelane programske opreme</translation>
+<translation id="1979156660928743046">Podatki o predstavnosti</translation>
 <translation id="1988881251331415125">Če je črkovanje pravilno, <ph name="BEGIN_LINK" />poskušajte zagnati orodje za diagnosticiranje povezav<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">Plezanje in planinarjenje</translation>
 <translation id="1991830984769263878">Avtomobilsko zavarovanje</translation>
@@ -632,6 +633,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="219906046732893612">Prenova doma</translation>
 <translation id="2202627062836089804">hrbtni strani kartice</translation>
 <translation id="2204482073374652408">Posodabljanje je končano.</translation>
+<translation id="2207770355672215546">Vedno dovoli s katero koli kartico</translation>
 <translation id="2208053750671792556">Niste prejeli kode? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Pladenj 3</translation>
 <translation id="2210794033760923560">Naloži poročilo</translation>
@@ -1524,6 +1526,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4050599136622776556">Chromium poskuša urediti plačilna sredstva.</translation>
 <translation id="405399507749852140">Prejmite opozorila, če se cena zniža na katerem koli spletnem mestu.</translation>
 <translation id="4056223980640387499">Sepija</translation>
+<translation id="4059523390906550209">Preberite več o varstvu občutljivih podatkov</translation>
 <translation id="4063063121357725926">Naj vam Google pomaga poiskati popuste za nakupovalne vozičke.</translation>
 <translation id="406358100705415968">Zaščitna oprema za varnost pri delu</translation>
 <translation id="4063924980214801036">Uporabite odklepanje naprave za hitrejše potrjevanje kartic</translation>
@@ -1682,6 +1685,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokira (privzeto)</translation>
 <translation id="4314815835985389558">Upravljanje sinhronizacije</translation>
+<translation id="4316057107946726368">Vnesite utemeljitev, ki ima največ toliko znakov: <ph name="MAX_CHAR_COUNT" />. Uporabljeni znaki: <ph name="ACTUAL_CHAR_COUNT" /> od <ph name="MAX_CHAR_COUNT" />.</translation>
 <translation id="4318213823155573975">Pokrivala</translation>
 <translation id="4318312030194671742">Storitev sestavljalnika predogleda barv</translation>
 <translation id="4318566738941496689">Ime naprave in omrežni naslov</translation>
@@ -2489,6 +2493,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5997247540087773573">Geslo, ki ste ga pravkar uporabili, je bilo najdeno v podatkovni kršitvi. Zaradi zavarovanja računov Google Upravitelj gesel priporoča, da ga spremenite zdaj in preverite shranjena gesla.</translation>
 <translation id="5999271311987646952">Chrome ima vgrajene varnostne funkcije, ki vas ščitijo med brskanjem, na primer Google Varno brskanje, ki je na spletnem mestu, ki ga poskušate obiskati, <ph name="BEGIN_LINK" />nedavno našlo zlonamerno programsko opremo<ph name="END_LINK" />.</translation>
 <translation id="6000758707621254961">Rezultati za »<ph name="SEARCH_TEXT" />« (<ph name="RESULT_COUNT" />)</translation>
+<translation id="6001839398155993679">Pa začnimo</translation>
 <translation id="6002122790816966947">Vaše naprave</translation>
 <translation id="6005659677094197001">Continuous</translation>
 <translation id="6005765687956866568">Samodejno izpolnjeni podatki so bili izbrisani iz obrazca</translation>
@@ -2669,6 +2674,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6355392890578844978">Tega brskalnika ne upravlja podjetje ali druga organizacija. Dejavnost v tej napravi morda upravljajo zunaj Chromiuma. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">urediti plačilna sredstva</translation>
 <translation id="6358450015545214790">Več o teh nastavitvah</translation>
+<translation id="6360213755783740931">Več o zaščiti pred zlonamerno programsko opremo</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Ogled dnevnikov</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Preveriti strežnik proxy, požarni zid in konfiguracijo varnega strežnika DNS<ph name="END_LINK" /></translation>
@@ -2726,6 +2732,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6443406338865242315">Katere razširitve in vtičnike ste namestili</translation>
 <translation id="6446608382365791566">Dodajanje več podatkov</translation>
 <translation id="6447842834002726250">Piškotki</translation>
+<translation id="6448371595882710519">Preberite več o kontrolnikih za podatke</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Kuverta Chou 40</translation>
 <translation id="6451458296329894277">Potrdite ponovno pošiljanje obrazca</translation>

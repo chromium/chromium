@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">Входной лоток</translation>
 <translation id="1975584088563498795">Почтовый ящик 10</translation>
 <translation id="1978555033938440688">Версия ПО</translation>
+<translation id="1979156660928743046">Мультимедийные данные</translation>
 <translation id="1988881251331415125">Если все правильно, <ph name="BEGIN_LINK" />воспользуйтесь инструментом "Диагностика соединений Chrome"<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">Скалолазание и альпинизм</translation>
 <translation id="1991830984769263878">Автострахование</translation>
@@ -632,6 +633,7 @@
 <translation id="219906046732893612">Ремонт дома</translation>
 <translation id="2202627062836089804">на задней стороне карты</translation>
 <translation id="2204482073374652408">Обновлено</translation>
+<translation id="2207770355672215546">Разрешать всегда с любой картой</translation>
 <translation id="2208053750671792556">Не получили код? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Лоток 3</translation>
 <translation id="2210794033760923560">Загрузить отчет</translation>
@@ -1523,6 +1525,7 @@
 <translation id="4050599136622776556">Chromium пытается изменить способы оплаты.</translation>
 <translation id="405399507749852140">Если на одном из сайтов цена снизится, вы получите уведомление.</translation>
 <translation id="4056223980640387499">Сепия</translation>
+<translation id="4059523390906550209">Подробнее о защите конфиденциальных данных</translation>
 <translation id="4063063121357725926">Разрешите Google находить скидки на товары, которые вы добавляете в корзину</translation>
 <translation id="406358100705415968">Средства индивидуальной защиты</translation>
 <translation id="4063924980214801036">Использовать разблокировку устройства для быстрого подтверждения карт</translation>
@@ -1681,6 +1684,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блокировать (по умолчанию)</translation>
 <translation id="4314815835985389558">Настройки синхронизации</translation>
+<translation id="4316057107946726368">Укажите обоснование. Максимальное количество символов – <ph name="MAX_CHAR_COUNT" />. Использовано <ph name="ACTUAL_CHAR_COUNT" /> из <ph name="MAX_CHAR_COUNT" />.</translation>
 <translation id="4318213823155573975">Головные уборы</translation>
 <translation id="4318312030194671742">Сервис для компоновки интерактивных миниатюр</translation>
 <translation id="4318566738941496689">Название вашего устройства и сетевой адрес</translation>
@@ -1741,6 +1745,7 @@
 <translation id="443673843213245140">Прокси-сервер отключен, но при этом его конфигурация задана явным образом.</translation>
 <translation id="4438821706955556403">Средняя цена</translation>
 <translation id="4441832193888514600">Игнорируется, так как правило может быть настроено только на уровне облака.</translation>
+<translation id="4445133368066241428">Популярные темы</translation>
 <translation id="4449116177348980384">Кнопка "Открыть настройки сайтов". Нажмите ее, чтобы задать разрешения для сайтов в настройках Chrome и указать, какие данные сайты могут хранить.</translation>
 <translation id="4451135742916150903">Разрешено отправлять запрос на подключение к HID-устройствам</translation>
 <translation id="4451684391620232683">Показанный пользователю текст:</translation>
@@ -2487,6 +2492,7 @@
 <translation id="5997247540087773573">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, измените его прямо сейчас и проверьте сохраненные пароли в Google Менеджере паролей.</translation>
 <translation id="5999271311987646952">В Chrome есть функции, защищающие вас при работе в браузере. Например, к ним относится сервис "Google Безопасный просмотр". <ph name="BEGIN_LINK" />Недавно он обнаружил вредоносное ПО<ph name="END_LINK" /> на сайте, который вы хотите посетить.</translation>
 <translation id="6000758707621254961">Количество результатов поиска по запросу "<ph name="SEARCH_TEXT" />": <ph name="RESULT_COUNT" /></translation>
+<translation id="6001839398155993679">Создать</translation>
 <translation id="6002122790816966947">Ваши устройства</translation>
 <translation id="6005659677094197001">Непрерывная печать</translation>
 <translation id="6005765687956866568">Автоматически указанные сведения были удалены из формы</translation>
@@ -2667,6 +2673,7 @@
 <translation id="6355392890578844978">Компания или организация не управляет этим браузером. Действиями на этом устройстве можно управлять вне браузера Chromium. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">изменить способы оплаты</translation>
 <translation id="6358450015545214790">Что это значит?</translation>
+<translation id="6360213755783740931">Подробнее о защите от вредоносного ПО</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Посмотреть журналы</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Проверить настройки прокси-сервера, брандмауэра и безопасного DNS-сервера<ph name="END_LINK" /></translation>
@@ -2724,6 +2731,7 @@
 <translation id="6443406338865242315">Установленные расширения и плагины.</translation>
 <translation id="6446608382365791566">Укажите дополнительную информацию</translation>
 <translation id="6447842834002726250">Файлы сookie</translation>
+<translation id="6448371595882710519">Подробнее об элементах управления</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Конверт Chou 40</translation>
 <translation id="6451458296329894277">Подтвердите повторную отправку формы</translation>

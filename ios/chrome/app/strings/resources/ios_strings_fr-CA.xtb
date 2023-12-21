@@ -8,6 +8,7 @@
 <translation id="1035980983510608210">La fermeture de tous les onglets fermera également les onglets épinglés.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Désactiver</translation>
+<translation id="1043592663436934089">Vous serez déconnecté, et les données de navigation seront supprimées</translation>
 <translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1053651653201045802">Déconnecté. Reconnectez-vous pour utiliser les favoris, les mots de passe et plus dans votre compte.</translation>
@@ -86,6 +87,7 @@
 <translation id="138618066238211776">Continuer en tant que <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">4 dernières semaines</translation>
 <translation id="1404330357948037222">Vous êtes déconnecté</translation>
+<translation id="14066361343057390">Vous serez déconnecté</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="1408847409015257906">Touchez « Confidentialité et sécurité ».</translation>
 <translation id="1430915738399379752">Imprimer</translation>
@@ -328,6 +330,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2712127207578915686">Imposs. d'ouvrir fichier</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
 <translation id="2738375676495545665">Masquer les nouveautés</translation>
+<translation id="2740910715135851329">Vous serez déconnecté, les onglets seront fermés et les données de navigation seront supprimées</translation>
 <translation id="2747003861858887689">Champ précédent</translation>
 <translation id="2749231692441336879">Vous suivez <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Comptes sur cet appareil</translation>
@@ -468,6 +471,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3482959374254649722">Synchronisation de vos onglets en cours…</translation>
 <translation id="3484946776651937681">Ouvrir dans le dossier Téléchargement</translation>
 <translation id="3485558910355485767">Nouvelle fenêtre de navigation privée</translation>
+<translation id="3488501490964659223">Les onglets ont été fermés, et les données de navigation ont été supprimées. Vous avez été déconnecté</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur le contenu suggéré</translation>
 <translation id="3494788280727468875">Confirmer l'effacement des données de navigation</translation>
 <translation id="35083190962747987">Ouvrir ${url}</translation>
@@ -702,6 +706,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4808744395915275922">Mises à jour</translation>
 <translation id="4818522717893377262">Ajouter une langue…</translation>
 <translation id="481968316161811770">Témoins, données de sites</translation>
+<translation id="4821595350501541683">Les onglets ont été fermés, et les données de navigation ont été supprimées</translation>
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} et 1 autre}one{{domain} et {count} autre}other{{domain} et {count} autres}}</translation>
 <translation id="4826218269716039351">Bloquer les témoins tiers</translation>
@@ -711,6 +716,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4833686396768033263">Les onglets récents ne sont pas accessibles</translation>
 <translation id="4833786495304741580">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google.</translation>
 <translation id="4840495572919996524">Vos favoris, votre historique, vos mots de passe et d'autres paramètres ne seront plus synchronisés avec votre compte Google.</translation>
+<translation id="484280513275854557">Vous avez été déconnecté, et les données de navigation ont été supprimées</translation>
 <translation id="4844899002472726590">Affichez et modifiez les sujets qui vous intéressent</translation>
 <translation id="4848999860252535517">Supprimer le mot de passe pour <ph name="WEBSITE" />?</translation>
 <translation id="4850886885716139402">Affichage</translation>
@@ -722,6 +728,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4883824756452868502">Détecter les unités</translation>
 <translation id="488785315393301722">Afficher les détails</translation>
 <translation id="4894963374040315706">Cela vous permet d'effectuer des recherches à l'aide de votre voix</translation>
+<translation id="4896467949657706481">Les onglets ont été fermés, et vous avez été déconnecté</translation>
 <translation id="489903206070130262">Votre dernier onglet ouvert</translation>
 <translation id="4901778704868714008">Enregistrer…</translation>
 <translation id="4904877109095351937">Marquer comme lu</translation>
@@ -750,6 +757,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5056446788882570708"><ph name="TIME" /> problèmes trouvés.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installer Google Disque</translation>
+<translation id="5083217068549651688">{TIME,plural, =0{Il reste : {TIME} seconde}=1{Il reste : {TIME} seconde}one{Il reste : {TIME} seconde}other{Il reste : {TIME} secondes}}</translation>
 <translation id="5083464117946352670">Imposs. déterm. taille fichier</translation>
 <translation id="5090832849094901128">Supprimer ce mot de passe ne supprimera pas également votre compte sur <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Gazouillis terminé.</translation>
@@ -946,6 +954,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6103540626693881831">Chiffrement sur l'appareil</translation>
 <translation id="6119050551270742952">La page Web actuelle est ouverte en mode de navigation privée</translation>
 <translation id="6122191549521593678">En ligne</translation>
+<translation id="6123514585040403489">Vos onglets seront fermés</translation>
 <translation id="6127379762771434464">Élément supprimé</translation>
 <translation id="6136914049981179737">Qq sec.</translation>
 <translation id="6144589619057374135">Ouvrir ${url} en mode de navigation privée</translation>
@@ -1086,6 +1095,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6753469262000681876">Mode de verrouillage</translation>
 <translation id="6760509555861141183">Revenir au dernier onglet</translation>
 <translation id="6762812039470893796">Tout désélectionner</translation>
+<translation id="6779455296366983087">Vos données de navigation seront supprimées</translation>
 <translation id="6780034285637185932">Code postal</translation>
 <translation id="6781260999953472352">Activer la synchronisation?</translation>
 <translation id="6781405765516175232">Pour les options d'itinéraire, touchez « Obtenir l'itinéraire ».</translation>
@@ -1151,6 +1161,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7108762695052995889">Visiter le site</translation>
 <translation id="7133798577887235672">Nom et prénom</translation>
 <translation id="7136892417564438900">La caméra est indisponible</translation>
+<translation id="7141960840225504692">Vos onglets seront fermés, et les données de navigation seront supprimées</translation>
 <translation id="7154343200458623869">Terminez votre tâche.</translation>
 <translation id="7161230316646448869">Synchroniser vos favoris, votre historique et plus encore sur tous vos appareils</translation>
 <translation id="7162168282402939716">Déverrouiller les onglets de navigation privée avec <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
@@ -1201,7 +1212,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7459628154744868585">La protection renforcée est activée</translation>
 <translation id="7465351360025415755">Obtenez le contenu qui compte pour vous</translation>
 <translation id="7472734401283673885">Nom d'entreprise</translation>
-<translation id="7473891865547856676">Non merci</translation>
+<translation id="7473891865547856676">Non, merci</translation>
 <translation id="7488874549363591659">Livré</translation>
 <translation id="7491131399623468277">Accédez au menu Paramètres…</translation>
 <translation id="749854780843431406">Vous pouvez ouvrir un nouvel onglet à partir du bouton <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
@@ -1397,6 +1408,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8517375800490286174">Licences de logiciels libres</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} mot de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, {email}}one{{count} mot de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, {email}.}other{{count} mots de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, {email}.}}</translation>
 <translation id="8524799873541103884">Onglets <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> à <ph name="LAST_VISIBLE_TAB" /> sur <ph name="NUMBER_OF_OPEN_TABS" /></translation>
+<translation id="852576975834694248">Vous serez déconnecté, et les onglets seront fermés</translation>
 <translation id="8528009254289981965">Ouvrir des liens d'autres applications en navigation privée</translation>
 <translation id="8529767659511976195">Nouveau</translation>
 <translation id="8532105204136943229">Année d'expir.</translation>
@@ -1432,6 +1444,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8693663554456874301">{count,plural, =1{Fermer l'onglet}one{Fermer l'onglet}other{Fermer les onglets}}</translation>
 <translation id="8703536910991780768">Vos mots de passe semblent forts</translation>
 <translation id="8706253136355675497">Température</translation>
+<translation id="8709409604518538305">Les onglets ont été fermés</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8717864919010420084">Copier le lien</translation>
 <translation id="8721297211384281569">Menu outils</translation>
@@ -1484,6 +1497,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8961757677053809960">Ignorer l'avertissement?</translation>
 <translation id="8971545611707025079">Revérifier</translation>
 <translation id="8974714402877957201">1. Ouvrez Réglages de l'iPad</translation>
+<translation id="8975015774710126284">Les données de navigation ont été supprimées</translation>
 <translation id="8976382372951310360">Aide</translation>
 <translation id="8976414606286374109">Les cartes seront enregistrées dans votre compte Google.</translation>
 <translation id="8981454092730389528">Commandes d'activité Google</translation>
@@ -1494,6 +1508,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9000089900434778519">Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les instructions de celui-ci pour supprimer votre historique de recherche, le cas échéant.</translation>
 <translation id="9008201768610948239">OK</translation>
 <translation id="9012585441087414258">Protège contre les sites, les téléchargements et les extensions qui sont réputés être dangereux. Si une page fait quelque chose de suspect, les URL et les éléments de contenu de la page sont envoyés à la navigation sécurisée Google.</translation>
+<translation id="9029650858822697271">Vous avez été déconnecté</translation>
 <translation id="9034759925968272072">Vous ne serez pas déconnecté de votre compte Google. D'autres formes d'historique de navigation peuvent exister sur votre compte Google. Plus de détails à <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Afficher la version d'origine</translation>
 <translation id="9039373489628511875">Bande passante</translation>

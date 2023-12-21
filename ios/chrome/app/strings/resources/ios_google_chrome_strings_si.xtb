@@ -63,6 +63,7 @@
 <translation id="2427791862912929107">Chrome හට ඔබගේ අන්තර්ජාල දත්ත සහ ඔබට කොතරම් ඉක්මනින් වෙබ් පිටු පූරණය කළ හැකිද යන්න කළමනාකරණය කිරීමට උදවු වන විශේෂාංග ඇත.
 <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">ඔබේ සුරැකි මුරපද ඔබේ අනෙකුත් යෙදුම්වල පහසුවෙන් ලබා ගැනීම සඳහා, ස්වයං පිරවීම සඳහා Chrome භාවිතා කරන්න</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Chrome මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ. මෙයට ඉතිහාසය සහ ස්වයං පිරවීම ඇතුළත් විය හැක.}one{Chrome මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ. මෙයට ඉතිහාසය සහ ස්වයං පිරවීම ඇතුළත් විය හැක.}other{Chrome මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ. මෙයට ඉතිහාසය සහ ස්වයං පිරවීම ඇතුළත් විය හැක.}}</translation>
 <translation id="2561231791489583059">අනතුරුදායක අඩවිවලින් ආරක්ෂා වීමට සහ ඔබගේ මුරපද ආරක්ෂිතව තබා ගැනීමට ඔබගේ පෙරනිමි බ්‍රව්සරය ලෙස Chrome භාවිත කරන්න</translation>
 <translation id="2574249610672786438">ඔබ Chrome භාවිත කරන ඕනෑම ස්ථානයක සිට ඔබේ ටැබ බැලීමට, ඔබේ සියලු උපාංගවල පුරන්න</translation>
 <translation id="2576431527583832481">Chrome දැන් ටිකක් හොඳයි! නව සංස්කරණයක් ඇත.</translation>
@@ -91,6 +92,7 @@
 <translation id="3282568296779691940">Chrome වෙත පුරන්න</translation>
 <translation id="3340938510625667914">Chrome ක්‍රියා</translation>
 <translation id="3345341804167540816">සෑම තැනකම Chrome භාවිතා කරන්න</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ}one{Chrome මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ}other{Chrome මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ}}</translation>
 <translation id="3399930248910934354">Chrome සැකසීම් විවෘත කරන්න</translation>
 <translation id="3472587960215700950">අනාවරණය කරගත් ලිපින පිළිබඳ ඔබට උපදෙස් සහ ස්ථානික තතු ලබා දීමට Chrome Google සිතියම් භාවිත කරයි.</translation>
 <translation id="3503014945441706099">මෙම Chrome පැතිකඩ සඳහා ද ඉහළ නැංවූ සුරක්ෂිත පිරික්සුම ලබා ගන්න</translation>

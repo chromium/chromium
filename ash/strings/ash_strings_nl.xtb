@@ -40,6 +40,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1153356358378277386">Gekoppelde apparaten</translation>
 <translation id="1155734730463845512">Huidig batterijniveau <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">aan en in gebruik</translation>
+<translation id="1163437384438183174">Telefoonhub van plank verwijderen</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Je USB-C-kabel sluit misschien niet goed aan op schermen</translation>
 <translation id="1175572348579024023">Scrollen</translation>
@@ -70,6 +71,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is verbonden.</translation>
 <translation id="1240638468526743569">Een app</translation>
 <translation id="1242883863226959074">apparaat</translation>
+<translation id="1245644940275736236">Naar de Assistent</translation>
 <translation id="124678866338384709">Huidig tabblad sluiten</translation>
 <translation id="1246890715821376239">Niet-ondersteunde apps</translation>
 <translation id="1247372569136754018">Microfoon (intern)</translation>
@@ -692,6 +694,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="383629559565718788">Toetsenbordinstellingen bekijken</translation>
 <translation id="384082539148746321">Template verwijderen?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> en dan <ph name="KEY_ONE" /> of <ph name="KEY_TWO" /> of <ph name="KEY_THREE" /> of <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Geen netwerkinformatie beschikbaar</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="385300504083504382">Begin</translation>
@@ -926,6 +929,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + pijl-omhoog</translation>
 <translation id="4762573482154983647">Apps verbergen</translation>
+<translation id="4762802395013012237">5 voet naar meter</translation>
 <translation id="4763885921995354846">Hiermee geef je alle apps en websites met camerarechten toegang tot de camera. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
 <translation id="4774338217796918551">Kom morgen terug om <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Je wachtwoord kan nog steeds niet worden geverifieerd. Probeer het opnieuw.</translation>
@@ -968,6 +972,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="491504982845934899">Activeren na apparaatinstelling <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4918086044614829423">Accepteren</translation>
+<translation id="491907188205944472">Zoek rechtstreeks in de Launcher naar wat je nodig hebt</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> gebruikt momenteel je camera</translation>
 <translation id="492453977506755176">Toets voor opnamemodus</translation>
 <translation id="4925542575807923399">De beheerder van dit account vereist dat dit account het eerste ingelogde account is in een sessie met toegang tot meerdere accounts.</translation>
@@ -1118,6 +1123,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5518068085000130971">Dat waren de basisprincipes. Ga verder in Ontdekken, onze ingebouwde app voor tips en hulp. Hier vind je tips om aan de slag te gaan, aanbevolen apps, speciale aanbiedingen en de nieuwste Chromebook-functies.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Je beheerder heeft alle e-simkaartprofielen verwijderd. Neem contact op met je beheerder voor meer informatie.</translation>
+<translation id="5520909879404821039">Hoi in het Frans</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> maakt verbinding.</translation>
 <translation id="5529587891732734495">Casten onderbreken</translation>
 <translation id="5532994612895037630">Tik ergens om het hele scherm op te nemen</translation>
@@ -1695,6 +1701,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7886277072580235377">Je internetsessie wordt gewist wanneer je uitlogt. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Stuur een e-mail</translation>
 <translation id="7893503627044934815">Wil niet dat dit bestand wordt getoond</translation>
+<translation id="7893547474469215105">Definieer zenit</translation>
 <translation id="7895348134893321514">Bak</translation>
 <translation id="7897375687985782769">Je hebt op de sneltoets voor schermrotatie gedrukt. Wil je het scherm draaien?</translation>
 <translation id="7897626842031123113">Statusvak, tijd <ph name="TIME" />,
@@ -1710,6 +1717,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7904094684485781019">De beheerder van dit account heeft toegang tot meerdere accounts niet toegestaan.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> verbonden apparaten</translation>
+<translation id="7923534281713082605">Weer</translation>
 <translation id="7926080067315048321">Alle taken in Google Tasks op internet bekijken</translation>
 <translation id="7930731167419639574">Spraak wordt nu lokaal verwerkt en Dicteren werkt offline</translation>
 <translation id="7932451802722951285">Openen in Google Agenda</translation>
@@ -1856,6 +1864,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8555757996376137129">Huidig bureau verwijderen</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> raadt aan dat je je <ph name="DEVICE_TYPE" /> updatet</translation>
 <translation id="8563862697512465947">Meldingsinstellingen</translation>
+<translation id="8569751806372591456">Je kunt de volgende suggesties proberen</translation>
 <translation id="857201607579416096">Menu verplaatst naar rechtsonder in het scherm.</translation>
 <translation id="8581946341807941670">Druk op <ph name="MODIFIER_1" /> + <ph name="MODIFIER_2" /> en klik op een link</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1899,6 +1908,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="875593634123171288">VPN-instellingen bekijken</translation>
 <translation id="8759408218731716181">Kan toegang tot meerdere accounts niet instellen</translation>
 <translation id="8763883995157866248">Slaapmodus aanzetten</translation>
+<translation id="877404052021108314">90 °F naar °C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, geïnstalleerde app, geblokkeerd</translation>
 <translation id="8785070478575117577">Verbinding maken met <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1907,6 +1917,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8806053966018712535">Map <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">'Hulp'</translation>
 <translation id="8814190375133053267">Wifi</translation>
+<translation id="8815390544836110344">Druk op de snelkoppeling voor een screenshot, Ctrl plus Shift plus de toets voor de overzichtsmodus</translation>
 <translation id="881757059229893486">Instellingen voor invoermethoden</translation>
 <translation id="8819728065740986820">Aangepast opladen staat aan</translation>
 <translation id="8825863694328519386">Swipe vanaf de linkerkant om terug te gaan</translation>

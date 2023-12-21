@@ -516,6 +516,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1975457531113383421">Vstupní zásobník</translation>
 <translation id="1975584088563498795">Schránka 10</translation>
 <translation id="1978555033938440688">Verze firmwaru</translation>
+<translation id="1979156660928743046">Informace o médiu</translation>
 <translation id="1988881251331415125">Pokud je adresa zadána správně, <ph name="BEGIN_LINK" />zkuste spustit Diagnostiku připojení<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">Horolezectví a horská turistika</translation>
 <translation id="1991830984769263878">Pojištění automobilů</translation>
@@ -632,6 +633,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="219906046732893612">Vylepšování domácnosti</translation>
 <translation id="2202627062836089804">zadní strana karty</translation>
 <translation id="2204482073374652408">Aktualizace byla dokončena!</translation>
+<translation id="2207770355672215546">Vždy povolit, s každou kartou</translation>
 <translation id="2208053750671792556">Neobdrželi jste kód? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Přihrádka 3</translation>
 <translation id="2210794033760923560">Nahrát přehled</translation>
@@ -1520,6 +1522,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4050599136622776556">Chromium se pokouší upravit platební metody.</translation>
 <translation id="405399507749852140">Pokud cena na některém webu klesne, dostanete upozornění</translation>
 <translation id="4056223980640387499">Sépie</translation>
+<translation id="4059523390906550209">Další informace o ochraně citlivých údajů</translation>
 <translation id="4063063121357725926">Nechte Google hledat slevy pro vaše košíky</translation>
 <translation id="406358100705415968">Ochranné vybavení pro bezpečnost práce</translation>
 <translation id="4063924980214801036">Potvrzovat karty rychleji pomocí odemknutí zařízení</translation>
@@ -1678,6 +1681,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokovat (výchozí)</translation>
 <translation id="4314815835985389558">Správa synchronizace</translation>
+<translation id="4316057107946726368">Zadejte odůvodnění s maximálně <ph name="MAX_CHAR_COUNT" /> znaky. Využito: <ph name="ACTUAL_CHAR_COUNT" /> z <ph name="MAX_CHAR_COUNT" /> znaků.</translation>
 <translation id="4318213823155573975">Pokrývky hlavy</translation>
 <translation id="4318312030194671742">Paint Preview Compositor Service</translation>
 <translation id="4318566738941496689">Název zařízení a síťová adresa</translation>
@@ -1738,6 +1742,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="443673843213245140">Využití proxy serveru je zakázáno, je však určena explicitní konfigurace proxy serveru.</translation>
 <translation id="4438821706955556403">Obvyklá cena</translation>
 <translation id="4441832193888514600">Ignorováno, protože zásadu lze nastavit pouze jako zásadu cloudového uživatele.</translation>
+<translation id="4445133368066241428">Oblíbená témata</translation>
 <translation id="4449116177348980384">Tlačítko správy nastavení webů, aktivací můžete spravovat oprávnění a uložená data webů v nastavení Chromu</translation>
 <translation id="4451135742916150903">Může žádat o připojení k zařízením HID</translation>
 <translation id="4451684391620232683">Text prezentovaný uživateli:</translation>
@@ -2484,6 +2489,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5997247540087773573">Právě použité heslo bylo nalezeno na seznamu hesel uniklých při incidentu porušení zabezpečení údajů. Kvůli zabezpečení vašich účtů Správce hesel Google doporučuje ihned toto heslo změnit a zkontrolovat uložená hesla.</translation>
 <translation id="5999271311987646952">V Chromu jsou vestavěny bezpečnostní funkce, které vás při procházení chrání – například Bezpečné prohlížení Google, které <ph name="BEGIN_LINK" />nedávno nalezlo malware<ph name="END_LINK" /> na webu, který se pokoušíte navštívit.</translation>
 <translation id="6000758707621254961">Výsledky pro dotaz <ph name="SEARCH_TEXT" /> (<ph name="RESULT_COUNT" />)</translation>
+<translation id="6001839398155993679">Jdeme na to</translation>
 <translation id="6002122790816966947">Vaše zařízení</translation>
 <translation id="6005659677094197001">Nepřetržité</translation>
 <translation id="6005765687956866568">Automaticky vyplněné informace byly z formuláře vymazány</translation>
@@ -2663,6 +2669,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6355392890578844978">Tento prohlížeč není spravován administrátorem ani jinou organizací. Aktivita na tomto zařízení může být spravována mimo Chromium. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">upravit platební metody</translation>
 <translation id="6358450015545214790">Nápověda</translation>
+<translation id="6360213755783740931">Další informace o ochraně před malwarem</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Zobrazit protokoly</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Zkontrolovat proxy server, firewall a konfiguraci zabezpečeného DNS<ph name="END_LINK" /></translation>
@@ -2720,6 +2727,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6443406338865242315">Která rozšíření a pluginy máte nainstalované</translation>
 <translation id="6446608382365791566">Přidání dalších informací</translation>
 <translation id="6447842834002726250">Soubory cookie</translation>
+<translation id="6448371595882710519">Další informace o ovládacích prvcích dat</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Obálka Chou 40</translation>
 <translation id="6451458296329894277">Potvrdit nové odeslání formuláře</translation>

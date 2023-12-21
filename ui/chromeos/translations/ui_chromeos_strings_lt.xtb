@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Gėlė</translation>
 <translation id="4943368462779413526">Futbolas</translation>
 <translation id="4961158930123534723">Vienas aplankas bendrinamas su „Parallels Desktop“</translation>
+<translation id="4965874878399872778">Tikrinami failai pagal organizacijos saugos politiką...</translation>
 <translation id="496656650103537022">„<ph name="FILE_NAME" />“ atkurtas</translation>
 <translation id="4969785127455456148">Albumas</translation>
 <translation id="4972330214479971536">Nepavyko užbaigti failų sinchronizavimo sąrankos</translation>
@@ -710,6 +711,7 @@
 <translation id="6430271654280079150">Liko vienas bandymas.</translation>
 <translation id="643243556292470964">Ištrinti failai perkeliami į šiukšliadėžę</translation>
 <translation id="6438480100790416671">Tikrinama saugyklos vieta…</translation>
+<translation id="6451527188465304418">Tikrinamas failas pagal organizacijos saugos politiką...</translation>
 <translation id="6485131920355264772">Nepavyko nuskaityti vietos informacijos</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, tvarko administratorius, išsami informacija</translation>
 <translation id="649877868557234318">Failas <ph name="FILE_NAME" /> išarchyvuojamas į aplanką „<ph name="FOLDER_NAME" />“</translation>

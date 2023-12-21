@@ -2359,7 +2359,6 @@
 <translation id="5695542892312572833">Windows Hello를 사용해 구매를 확인하고 완료하시겠습니까?</translation>
 <translation id="5699628521141772782">유제품 및 계란</translation>
 <translation id="5700761515355162635">서드 파티 쿠키 허용됨</translation>
-<translation id="5701023235904684227"><ph name="READERNAME" />를 제어하고 액세스할 수 있도록 스마트 카드 액세스 권한을 얻으시겠습니까?</translation>
 <translation id="5701381305118179107">가운데</translation>
 <translation id="5707154300732650394">탐색 여정 재개</translation>
 <translation id="57094364128775171">강력한 비밀번호 추천...</translation>
@@ -2494,6 +2493,7 @@
 <translation id="5997247540087773573">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하기 위해 Google 비밀번호 관리자에서 지금 바로 비밀번호를 변경하고 저장된 비밀번호를 확인하시기 바랍니다.</translation>
 <translation id="5999271311987646952">Chrome에는 Google 세이프 브라우징과 같이 인터넷을 사용하는 동안 사용자를 보호해 주는 안전 기능이 내장되어 있으며, 세이프 브라우징에서는 사용자님이 방문하고자 한 사이트에서 <ph name="BEGIN_LINK" />멀웨어를 최근에 발견<ph name="END_LINK" />했습니다.</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' 검색결과 <ph name="RESULT_COUNT" />개</translation>
+<translation id="6001839398155993679">시작</translation>
 <translation id="6002122790816966947">내 기기</translation>
 <translation id="6005659677094197001">연속</translation>
 <translation id="6005765687956866568">양식에서 자동 완성 정보가 삭제되었습니다</translation>

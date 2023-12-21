@@ -516,6 +516,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1975457531113383421">Papirbakke</translation>
 <translation id="1975584088563498795">Postkasse 10</translation>
 <translation id="1978555033938440688">Firmwareversion</translation>
+<translation id="1979156660928743046">Medieoplysninger</translation>
 <translation id="1988881251331415125">Hvis stavningen er korrekt, kan du <ph name="BEGIN_LINK" />prøve at køre Diagnosticering af forbindelse<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">Klatring og bjergbestigning</translation>
 <translation id="1991830984769263878">Bilforsikring</translation>
@@ -1525,6 +1526,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4050599136622776556">Chromium forsøger at redigere betalingsmetoder.</translation>
 <translation id="405399507749852140">Få besked, hvis prisen falder på et website</translation>
 <translation id="4056223980640387499">Sepia</translation>
+<translation id="4059523390906550209">Få flere oplysninger om beskyttelse af følsomme oplysninger</translation>
 <translation id="4063063121357725926">Giv Google tilladelse til at hjælpe dig med at finde rabatter til din kurv</translation>
 <translation id="406358100705415968">Beskyttelsesudstyr til arbejdssikkerhed</translation>
 <translation id="4063924980214801036">Brug enhedsoplåsning til at bekræfte kort hurtigere</translation>
@@ -1683,6 +1685,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloker (standardindstilling)</translation>
 <translation id="4314815835985389558">Administrer synkronisering</translation>
+<translation id="4316057107946726368">Angiv en begrundelsesmeddelelse på højst <ph name="MAX_CHAR_COUNT" /> tegn. Du har angivet <ph name="ACTUAL_CHAR_COUNT" /> ud af <ph name="MAX_CHAR_COUNT" /> tegn.</translation>
 <translation id="4318213823155573975">Hovedbeklædning</translation>
 <translation id="4318312030194671742">Tjeneste til forhåndsvisning af visuelt indhold</translation>
 <translation id="4318566738941496689">Din enheds navn og netværksadresse</translation>
@@ -1743,6 +1746,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="443673843213245140">Brug af en proxy er deaktiveret, men en eksplicit proxykonfiguration er angivet.</translation>
 <translation id="4438821706955556403">Normalpris</translation>
 <translation id="4441832193888514600">Ignoreret, fordi politikken kun kan angives som en skybrugerpolitik.</translation>
+<translation id="4445133368066241428">Populære emner</translation>
 <translation id="4449116177348980384">Knappen Administrer indstillinger for websites, aktivér for at administrere tilladelser og data, der gemmes på websites, i Chrome-indstillingerne</translation>
 <translation id="4451135742916150903">Websitet kan anmode om tilladelse til at oprette forbindelse til HID-enheder</translation>
 <translation id="4451684391620232683">Tekst, der vises til brugeren:</translation>
@@ -2489,6 +2493,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5997247540087773573">Den adgangskode, du lige har brugt, er blevet lækket i forbindelse med et brud på datasikkerheden. For at beskytte dine konti anbefaler Google Adgangskodeadministrator, at du ændrer det nu og tjekker dine gemte adgangskoder.</translation>
 <translation id="5999271311987646952">Chrome har indbyggede sikkerhedsfunktioner, der beskytter dig, når du er på nettet, f.eks. Google Beskyttet browsing. Denne funktion har <ph name="BEGIN_LINK" />for nylig fundet malware<ph name="END_LINK" /> på det website, du forsøger at besøge.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultater for "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Lad os komme i gang</translation>
 <translation id="6002122790816966947">Dine enheder</translation>
 <translation id="6005659677094197001">Kontinuerlig</translation>
 <translation id="6005765687956866568">De automatisk udfyldte oplysninger blev fjernet fra formularen</translation>
@@ -2669,6 +2674,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6355392890578844978">Denne browser administreres ikke af en virksomhed eller en anden organisation. Aktivitet på denne enhed administreres muligvis uden for Chromium. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">redigere betalingsmetoder</translation>
 <translation id="6358450015545214790">Hvad betyder dette?</translation>
+<translation id="6360213755783740931">Få flere oplysninger om beskyttelse mod malware</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Se logfiler</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Tjekker konfigurationen af proxy, firewall og sikker DNS<ph name="END_LINK" /></translation>
@@ -2726,6 +2732,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6443406338865242315">Hvilke udvidelser og plugins, du har installeret</translation>
 <translation id="6446608382365791566">Tilføj flere oplysninger</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6448371595882710519">Få flere oplysninger om datastyring</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Konvolut Chou 40</translation>
 <translation id="6451458296329894277">Bekræft genindsendelse af formular</translation>

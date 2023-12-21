@@ -1124,7 +1124,6 @@ Politika, Devre dışı değerine ayarlanırsa alternatif tarayıcıya son sekme
 
       Bir anahtar/değer yapılandırması olan Managed Configuration API'ye navigator.managed.getManagedConfiguration() javascript çağrısı ile erişilebilir. Bu API, yalnızca <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> aracılığıyla zorunlu yüklenmiş web uygulamalarına karşılık gelen kaynaklar için kullanılabilir.
      </translation>
-<translation id="1918690415433353669">Sekme ayrıntılarını günlüğe kaydetmeden sekme düzenlemeye izin ver</translation>
 <translation id="1919802376548418720">Kimlik bilgilerine yetki vermek için KDC politikasını kullan.</translation>
 <translation id="1920046221095339924">Cihazda yönetilen oturuma izin ver</translation>
 <translation id="1920772397574801429">Politikanın ayarlanması, <ph name="HTTP_NEGOTIATE" /> kimlik doğrulamasını (örneğin, Kerberos kimlik doğrulaması) destekleyen Android kimlik doğrulama uygulamasının sağladığı hesapların türlerini belirtir. Bu bilgi kimlik doğrulama uygulamasının tedarikçisinden edinilebilir. Ayrıntılar için Chromium Projeleri'ne bakın (https://goo.gl/hajyfN)
@@ -1706,7 +1705,6 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 Politika, devre dışı değerine ayarlanırsa uyumluluk sorunları bulunması durumunda kullanıcıların veya <ph name="PRODUCT_NAME" /> varyasyonlarının NewBaseUrlInheritanceBehavior'ı etkinleştirmesi engellenir. Politika, etkin değerine ayarlanır veya ayarlanmadan bırakılırsa NewBaseUrlInheritanceBehavior'ın etkinleştirilmesine izin verilir.</translation>
 <translation id="2362469626417133796">Yeniden başlatma zaman aralığı</translation>
 <translation id="2362539163677485510">Bulut politikasının kayıt jetonu</translation>
-<translation id="2362947328909044249">Sekme düzenlemeye izin ver</translation>
 <translation id="2363928351203698966">Politika geçerli bir değere ayarlanırsa <ph name="PRODUCT_NAME" /> belirtilen sürümden daha eski SSL/TLS sürümlerini kullanmaz. Tanınmayan değerler yok sayılır.
 
       Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" />; TLS 1.0 ve TLS 1.1 için hata gösterir, ancak kullanıcı bunu atlayabilir.
@@ -2051,7 +2049,6 @@ Sistem, AAAA kayıtlarını yalnızca küresel bir IPv6 ana makinesinden cihaza 
 <translation id="2650049181907741121">Kullanıcı kapağı kapattığında yapılacak işlem</translation>
 <translation id="2656559539624760733">Chrome Root Store'u kullanma.</translation>
 <translation id="2658653824183107970">Yeni <ph name="CORS" /> yerine eski <ph name="CORS" /> uygulamasını kullan</translation>
-<translation id="2659064869547694451">Oluşturmaya izin ver</translation>
 <translation id="2660846099862559570">Hiçbir zaman proxy kullanma</translation>
 <translation id="2661628029848851543">Yönetilen hesapların her türlü kullanımına izin verilir</translation>
 <translation id="2664391398878045611">Orta aralık duyurusu mevcut olsa bile yeni sekme sayfasında gösterilmez</translation>
@@ -2829,7 +2826,6 @@ Politika, Devre dışı değerine ayarlanırsa, indirilen dosyalar güvenilir bi
 Bu kısıtlamalar hem web sayfası içeriğinden hem de Bağlantıyı indir menü seçeneğinden tetiklenen indirmeler için geçerlidir. Bu kısıtlamalar, görüntülenmekte olan sayfanın kaydedilmesi veya indirilmesinde ya da yazdırma seçeneklerinden PDF olarak kaydedilmesinde geçerli değildir.
 
 <ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
-<translation id="3300322252167923819">Sekme düzenlemeye izin ver</translation>
 <translation id="3300784749135986828"><ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> özelliğini etkinleştir veya devre dışı bırak.</translation>
 <translation id="3301698868852716692">Analizler uzantısını etkinleştir</translation>
 <translation id="3302829897293005699">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar uygulama kimliği ve sürümü gibi aktif kiosk oturumuyla ilgili bilgileri rapor eder.
@@ -3463,7 +3459,6 @@ Bu politika geçici bir çözümdür ve birkaç kilometre taşından kaldırıla
 <translation id="3799417300383048419">Kullanıcı oturumu sona erdiğinde diskteki profil verilerini koru</translation>
 <translation id="3799436555130241393"><ph name="PRODUCT_OS_NAME" /> Dosya Senkronizasyonu</translation>
 <translation id="3803171355925844705">Hiçbir sitenin engellenebilir karma içerik yüklemesine izin verme</translation>
-<translation id="3806742563417418191">Duvar kağıdı aramaya izin ver</translation>
 <translation id="3808945828600697669">Devre dışı bırakılan eklentilerin listesini belirt</translation>
 <translation id="3810642039169532482">Giriş ekranında dikte erişilebilirlik özelliğini etkinleştirin.
 
@@ -3475,7 +3470,6 @@ Bu politika geçici bir çözümdür ve birkaç kilometre taşından kaldırıla
 
           Bu politika ayarlanmadan bırakılırsa giriş ekranında dikte özelliği başlangıçta devre dışı bırakılır, ancak kullanıcılar istedikleri zaman bunu etkinleştirebilir.</translation>
 <translation id="3811562426301733860">Tüm sitelerde reklamlara izin ver</translation>
-<translation id="3816281648615435872">Sekme düzenlemeyi devre dışı bırak</translation>
 <translation id="3816312845600780067">Otomatik giriş için kurtarma klavye kısayolunu etkinleştir</translation>
 <translation id="3817323252437541502">Gelişmiş Koruma programına kayıtlı kullanıcılar için ek koruma özelliklerini etkinleştir</translation>
 <translation id="3821861026311587684">Hesabının kimlik doğrulaması geçersiz hale geldiğinde kullanıcıyı çıkış yapmaya zorla</translation>
@@ -4033,7 +4027,6 @@ Politika, Devre Dışı değerine ayarlanırsa bunun yerine bir hata mesajı gö
 <translation id="428948795004445932">Ağ verilerinin örneklenme ve toplanma hızı. İzin verilen minimum sıklık 1 dakikadır.
 
       Ayarlamazsa 10 dakikalık varsayılan süre geçerli olur.</translation>
-<translation id="4289628882370719584">Sekme düzenleme özelliği, kullanıcıların sekmeleri düzenlemesine olanak tanır.</translation>
 <translation id="4290231183305601970">Yükleme işleminin engellenmesi halinde Chrome web mağazasında kullanıcıya gösterilecek metin.</translation>
 <translation id="4293187705196369087">Disk alanı azaldığında bir bildirimin etkinleştirilmesini veya devre dışı bırakılmasını sağlar. Bu, bu cihazdaki tüm kullanıcılar için geçerlidir.
 
@@ -4322,7 +4315,6 @@ Etkinleştirilir, boş bırakılır veya ayarlanmazsa bu politikanın hiçbir et
 <translation id="453031441196755904">Bu politika kullanımdan kaldırılmıştır.</translation>
 <translation id="4531706050939927436">Android uygulamaları, Google Play kullanılarak Google Yönetici Konsolu'ndan zorunlu şekilde yüklenebilir. Söz konusu uygulamalar bu politikayı kullanmaz.</translation>
 <translation id="4534500438517478692">Android kısıtlama adı:</translation>
-<translation id="4537645230504195464">Günlüğe kaydetmeden oluşturmaya izin ver</translation>
 <translation id="4541530620466526913">Cihaz-yerel hesaplar</translation>
 <translation id="4542255783284620926">Yönetilen bir hesabın ChromeOS'te ikincil hesap olarak eklenmesini engelle (oturum açıkken)</translation>
 <translation id="4543502256674577024">Cihaz güncelleme ayarları</translation>
@@ -4522,7 +4514,6 @@ Kullanıcılar, ilk kurulumdan sonra Google konum hizmetlerini açabilir veya ka
 <translation id="4674871290487541952">Uzantı güncelleme ve yükleme işlemleriyle ilgili bütünlük kontrollerinde güvenli olmayan algoritmalara izin verme</translation>
 <translation id="4680961954980851756">Otomatik Doldurmayı etkinleştir</translation>
 <translation id="4685721728282448265">CECPQ2 kuantum sonrası anahtar anlaşması, TLS için etkinleştirildi</translation>
-<translation id="4688118315245991650">Oluşturmayı devre dışı bırak</translation>
 <translation id="468822697351680932">Internet Explorer SiteList politikasını kural kaynağı olarak kullan</translation>
 <translation id="4693190628432874457">Cihaz konumu raporlamasını etkinleştir</translation>
 <translation id="4693779768620889402">Uzantı tabanlı hedefler</translation>
@@ -5222,7 +5213,6 @@ Politika, Devre Dışı değerine ayarlanırsa tarayıcı geçmişi ve indirme g
 <translation id="5340008866815063393">Politika verilerinin raporlanmasını etkinleştir</translation>
 <translation id="5345910753471481870">Yeni sekme sayfasındaki arama kutusunda Google Lens düğmesini gösterme.</translation>
 <translation id="5346587320074666194">Bu sitelerde sensörlere erişimi engelle</translation>
-<translation id="5347809796754019202">Oluşturmaya izin ver</translation>
 <translation id="534836255587440809">Giriş ekranında otomatik tıklamayı devre dışı bırak</translation>
 <translation id="5348658899015174540"><ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API, web uygulamalarının tek seferde birden çok yüzeyi yakalamasına izin verir.
       Bu politika, tanımlanan kaynaklardaki web uygulamaları için <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> özelliğinin kilidini açar.
@@ -5751,7 +5741,6 @@ Bu politika devre dışı bırakılır veya ayarlanmazsa <ph name="PRODUCT_OS_NA
 <translation id="5775235485119094648">Pili belirlenmiş bir aralıktayken şarj et.</translation>
 <translation id="5776485039795852974">Bir site, masaüstü bildirimlerini her göstermek istediğinde sor.</translation>
 <translation id="5783009211970309878">Üst Bilgileri ve Alt Bilgileri yazdır</translation>
-<translation id="5786938041290515154">Günlüğe kaydetmeden duvar kağıdı aramaya izin ver</translation>
 <translation id="5790763087505467169">Yönetilen misafir oturumu otomatik başlatma bildirimlerini azaltma</translation>
 <translation id="5800329278018669527">Çevrimdışıyken ağ yapılandırması istemini devre dışı bırak</translation>
 <translation id="5802931736499687181">Şifrelenmiş Raporlama Ardışık Düzeni'ni devre dışı bırak</translation>
@@ -5942,7 +5931,6 @@ Bu politika devre dışı bırakılır veya ayarlanmazsa <ph name="PRODUCT_OS_NA
 <translation id="596523880465577341">Bu politikanın desteği sonlandırıldığı için lütfen bunun yerine "<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />" politikasını kullanın.</translation>
 <translation id="5966615072639944554">Uzaktan doğrulama API'sını kullanmasına izin verilen uzantılar</translation>
 <translation id="596732417280023843">Sertifika profilinin adı.</translation>
-<translation id="597036930083735628">Duvar kağıdı aramayı devre dışı bırak</translation>
 <translation id="5972538402066550344">Ayrıntılı raporlama kontrollerine izin ver</translation>
 <translation id="5975765799383881158">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar Menü &gt; Yardım &gt; Sorun Bildirin adımlarını veya tuş kombinasyonunu kullanarak Google'a geri bildirim gönderebilir.
 

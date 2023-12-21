@@ -2356,7 +2356,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5695542892312572833">Vuoi usare Windows Hello per verificare e completare l'acquisto?</translation>
 <translation id="5699628521141772782">Latticini e uova</translation>
 <translation id="5700761515355162635">Cookie di terze parti consentiti</translation>
-<translation id="5701023235904684227">Controllare <ph name="READERNAME" /> e ottenere l'accesso alla smart card a cui può accedere?</translation>
 <translation id="5701381305118179107">Centra</translation>
 <translation id="5707154300732650394">Riprendi il percorso</translation>
 <translation id="57094364128775171">Suggerisci password efficace…</translation>
@@ -2491,6 +2490,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5997247540087773573">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. Per proteggere i tuoi account, Gestore delle password di Google consiglia di cambiarla subito e poi di controllare le password salvate.</translation>
 <translation id="5999271311987646952">Chrome è dotato di funzionalità di sicurezza integrate che ti proteggono durante la navigazione, come Google Navigazione sicura, che <ph name="BEGIN_LINK" />di recente ha rilevato malware<ph name="END_LINK" /> sul sito che vuoi visitare.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> risultati per "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Inizia</translation>
 <translation id="6002122790816966947">I tuoi dispositivi</translation>
 <translation id="6005659677094197001">Continuo</translation>
 <translation id="6005765687956866568">Le informazioni compilate automaticamente sono state cancellate dal modulo</translation>

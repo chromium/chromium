@@ -632,6 +632,7 @@
 <translation id="219906046732893612">ಗೃಹ ಅಭಿವೃದ್ಧಿ</translation>
 <translation id="2202627062836089804">ನಿಮ್ಮ ಕಾರ್ಡ್‌ನ ಹಿಂಭಾಗ</translation>
 <translation id="2204482073374652408">ಅಪ್‌ಡೇಟ್‌ ಅನ್ನು ಪೂರ್ಣಗೊಳಿಸಲಾಗಿದೆ!</translation>
+<translation id="2207770355672215546">ಯಾವುದೇ ಕಾರ್ಡ್‌ ಮೂಲಕ ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="2208053750671792556">ನಿಮ್ಮ ಕೋಡ್ ಅನ್ನು ಸ್ವೀಕರಿಸಲಿಲ್ಲವೇ? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">ಟ್ರೇ 3</translation>
 <translation id="2210794033760923560">ವರದಿಯನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ</translation>
@@ -2355,7 +2356,6 @@
 <translation id="5695542892312572833">ನಿಮ್ಮ ಖರೀದಿಯನ್ನು ಖಚಿತಪಡಿಸಲು ಮತ್ತು ಪೂರ್ಣಗೊಳಿಸಲು Windows Hello ಬಳಸಬೇಕೆ?</translation>
 <translation id="5699628521141772782">ಡೈರಿ ಮತ್ತು ಮೊಟ್ಟೆಗಳು</translation>
 <translation id="5700761515355162635">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
-<translation id="5701023235904684227"><ph name="READERNAME" /> ಅನ್ನು ನಿಯಂತ್ರಿಸಿ ಅದಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಇರುವ ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್‌ಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಪಡೆಯಬೇಕೇ?</translation>
 <translation id="5701381305118179107">ಮಧ್ಯಕ್ಕೆ</translation>
 <translation id="5707154300732650394">ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="57094364128775171">ಸದೃಢವಾದ ಪಾಸ್‌ವರ್ಡ್ ಸೂಚಿಸಿ…</translation>
@@ -2490,6 +2490,7 @@
 <translation id="5997247540087773573">ನೀವು ಈಗಷ್ಟೇ ಬಳಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಲ್ಲಿ ಕಂಡುಬಂದಿದೆ. ನಿಮ್ಮ ಖಾತೆಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕವು ಅದನ್ನು ಈಗಲೇ ಬದಲಾಯಿಸಲು ಹಾಗೂ ನಿಮ್ಮ ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="5999271311987646952">ನೀವು ಬ್ರೌಸ್ ಮಾಡುತ್ತಿರುವಾಗ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು Chrome ಅಂತರ್ನಿರ್ಮಿತ ಭದ್ರತಾ ಫೀಚರ್‌ಗಳನ್ನು ಹೊಂದಿದೆ — ಉದಾಹರಣೆಗೆ, Google Safe Browsing ಫೀಚರ್, ನೀವು ಭೇಟಿ ನೀಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ <ph name="BEGIN_LINK" />ಇತ್ತೀಚೆಗೆ ಮಾಲ್‌ವೇರ್ ಕಂಡುಬಂದಿದೆ<ph name="END_LINK" />.</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' ಗಾಗಿ <ph name="RESULT_COUNT" /> ಫಲಿತಾಂಶಗಳು</translation>
+<translation id="6001839398155993679">ಪ್ರಾರಂಭಿಸೋಣ</translation>
 <translation id="6002122790816966947">ನಿಮ್ಮ ಸಾಧನಗಳು</translation>
 <translation id="6005659677094197001">ನಿರಂತರ</translation>
 <translation id="6005765687956866568">ಆಟೋಫಿಲ್ ಮಾಡಿದ ಮಾಹಿತಿಯನ್ನು ಫಾರ್ಮ್‌ನಿಂದ ತೆರವುಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -3249,7 +3250,7 @@
 <translation id="7469935732330206581">ಫಾರ್ಮ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
 <translation id="7470854469646445678">ನಕಲಿಸಿದಕ್ಕಾಗಿ ಕಾರಣವನ್ನು ನೀಡಿ (ಅಗತ್ಯವಿದೆ)</translation>
 <translation id="7471007961486718967">ವರ್ಗಾಯಿಸುತ್ತಿರುವುದಕ್ಕಾಗಿ ಕಾರಣವನ್ನು ನೀಡಿ (ಅಗತ್ಯವಿದೆ)</translation>
-<translation id="7473891865547856676">ಇಲ್ಲ, ಧನ್ಯವಾದಗಳು</translation>
+<translation id="7473891865547856676">ಬೇಡ</translation>
 <translation id="7481312909269577407">ಫಾರ್ವರ್ಡ್</translation>
 <translation id="7481603210197454575">ಎನ್ವಲಪ್ ಇಟಾಲಿಯನ್</translation>
 <translation id="7483482939016730822">ಶಾಲಾ ಪೂರೈಕೆಗಳು ಮತ್ತು ತರಗತಿ ಪರಿಕರ</translation>
@@ -3679,7 +3680,7 @@
 <translation id="8279611986089885641">Chrome ಅಧಿಸೂಚನೆಗಳು ಆನ್ ಆಗಿರಬೇಕು. ನೀವು ಅವುಗಳನ್ನು <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> ನಲ್ಲಿ ಆನ್ ಮಾಡಬಹುದು.</translation>
 <translation id="8280630997017109758">ಟ್ರೇ 11</translation>
 <translation id="8281730697546299650">ಇತರ ಆ್ಯಡ್‌ನ ಗೌಪ್ಯತೆ ಫೀಚರ್‌ಗಳು ಈಗ ಲಭ್ಯವಿವೆ</translation>
-<translation id="8281886186245836920">ಸ್ಕಿಪ್‌</translation>
+<translation id="8281886186245836920">ಸ್ಕಿಪ್‌ ಮಾಡಿ</translation>
 <translation id="8282409409360764263">ಅಂಗಳ ನಿರ್ವಹಣೆ</translation>
 <translation id="8282947398454257691">ನಿಮ್ಮ ಅನನ್ಯ ಸಾಧನ ಗುರುತಿಸುವಿಕೆ ತಿಳಿದುಕೊಳ್ಳಿ</translation>
 <translation id="8284769179630993263">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ ಮತ್ತು ಇನ್ನಷ್ಟವುಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>

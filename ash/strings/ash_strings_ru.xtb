@@ -40,6 +40,7 @@
 <translation id="1153356358378277386">Сопряженные устройства</translation>
 <translation id="1155734730463845512">Текущий уровень заряда батареи: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1160215328209699296">включена и используется</translation>
+<translation id="1163437384438183174">Убрать функцию "Управление телефоном" с панели запуска</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Возможно, кабель USB-C неправильно подключен к экрану.</translation>
 <translation id="1175572348579024023">Прокрутка</translation>
@@ -70,6 +71,7 @@
 <translation id="1239161794459865856">Функция "<ph name="FEATURE_NAME" />" подключена.</translation>
 <translation id="1240638468526743569">приложение</translation>
 <translation id="1242883863226959074">устройстве</translation>
+<translation id="1245644940275736236">Перейти к Ассистенту</translation>
 <translation id="124678866338384709">Закрыть вкладку</translation>
 <translation id="1246890715821376239">Неподдерживаемые приложения</translation>
 <translation id="1247372569136754018">Микрофон (встроенный)</translation>
@@ -692,6 +694,7 @@
 <translation id="383629559565718788">Показать настройки клавиатуры</translation>
 <translation id="384082539148746321">Удалить шаблон?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, затем <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> или <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50 + 94 / 5</translation>
 <translation id="3846575436967432996">Информация о сетях недоступна</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">В начало</translation>
@@ -926,6 +929,7 @@
 <translation id="4759238208242260848">Скачанные файлы</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + Стрелка вверх</translation>
 <translation id="4762573482154983647">Скрыть приложения</translation>
+<translation id="4762802395013012237">5 футов в метрах</translation>
 <translation id="4763885921995354846">Доступ к камере получат все приложения и сайты с разрешением "Камера". Возможно, потребуется обновить веб-страницу или перезапустить приложение.</translation>
 <translation id="4774338217796918551">Возвращайтесь завтра в <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Опять введен неверный пароль. Повторите попытку.</translation>
@@ -968,6 +972,7 @@
 <translation id="491504982845934899">Чтобы активировать сеть <ph name="NETWORK_NAME" />, сначала настройте устройство</translation>
 <translation id="4917385247580444890">Сильный</translation>
 <translation id="4918086044614829423">Принять</translation>
+<translation id="491907188205944472">Выполняйте поиск на панели запуска</translation>
 <translation id="4919841137949306064">Сейчас использует камеру: <ph name="APP_NAME" />.</translation>
 <translation id="492453977506755176">Клавиша режима съемки</translation>
 <translation id="4925542575807923399">Чтобы начать сеанс множественного входа, необходимо в первую очередь выполнить вход в этот аккаунт</translation>
@@ -1118,6 +1123,7 @@
 <translation id="5518068085000130971">Это были основные сведения. Ещё больше информации вы найдете во встроенном приложении "Возможности": инструкции по началу работы, рекомендации по приложениям, специальные предложения и новые функции Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Ваш администратор удалил все профили eSIM. Обратитесь к нему за подробной информацией.</translation>
+<translation id="5520909879404821039">"Привет" на французском</translation>
 <translation id="5523434445161341166">Функция "<ph name="FEATURE_NAME" />" выполняет подключение.</translation>
 <translation id="5529587891732734495">Приостановить трансляцию</translation>
 <translation id="5532994612895037630">Нажмите в любом месте, чтобы включить запись видео со всего экрана.</translation>
@@ -1695,6 +1701,7 @@
 <translation id="7886277072580235377">После выхода из аккаунта данные о ваших действиях в Интернете будут удалены. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Отправить письмо</translation>
 <translation id="7893503627044934815">Скрыть файл</translation>
+<translation id="7893547474469215105">Определение слова "зенит"</translation>
 <translation id="7895348134893321514">Быстрый доступ</translation>
 <translation id="7897375687985782769">Вы нажали сочетание клавиш для поворота экрана. Выполнить это действие?</translation>
 <translation id="7897626842031123113">Строка состояния. Время: <ph name="TIME" />.
@@ -1710,6 +1717,7 @@
 <translation id="7904094684485781019">Администратор этого аккаунта запретил множественный вход</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Подключено несколько устройств (<ph name="DEVICECOUNT" />).</translation>
+<translation id="7923534281713082605">Погода</translation>
 <translation id="7926080067315048321">Посмотреть все задачи на сайте "Google Задачи"</translation>
 <translation id="7930731167419639574">Речь теперь обрабатывается на устройстве. Вы можете пользоваться голосовым вводом офлайн.</translation>
 <translation id="7932451802722951285">Открыть в Google Календаре</translation>
@@ -1856,6 +1864,7 @@
 <translation id="8555757996376137129">Удалить текущий рабочий стол</translation>
 <translation id="856298576161209842">Согласно рекомендациям <ph name="MANAGER" /> вам нужно обновить устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8563862697512465947">Настройки оповещений</translation>
+<translation id="8569751806372591456">Вот несколько идей:</translation>
 <translation id="857201607579416096">Меню перемещено в правый нижний угол экрана.</translation>
 <translation id="8581946341807941670">Нажмите на ссылку, удерживая <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /></translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1899,6 +1908,7 @@
 <translation id="875593634123171288">Показать настройки VPN</translation>
 <translation id="8759408218731716181">Не удалось настроить множественный вход</translation>
 <translation id="8763883995157866248">Перевести устройство в спящий режим</translation>
+<translation id="877404052021108314">90 °F в °C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, установленное приложение, заблокировано</translation>
 <translation id="8785070478575117577">Подключиться к сети "<ph name="NETWORK_NAME" />"</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" />.</translation>
@@ -1907,6 +1917,7 @@
 <translation id="8806053966018712535">Папка <ph name="FOLDER_NAME" />.</translation>
 <translation id="880709030178078220">"Справка"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">Нажмите сочетание клавиш для создания скриншота, Ctrl + Shift + Клавиша режима обзора</translation>
 <translation id="881757059229893486">Настройки способов ввода</translation>
 <translation id="8819728065740986820">Адаптивная зарядка включена</translation>
 <translation id="8825863694328519386">Чтобы вернуться, проведите по экрану от левого края</translation>

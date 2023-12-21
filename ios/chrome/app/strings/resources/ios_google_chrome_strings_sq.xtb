@@ -62,6 +62,7 @@ Gjëra për të pasur parasysh:
 <translation id="2427791862912929107">Chrome ka funksione që të ndihmojnë të menaxhosh të dhënat e internetit dhe sa shpejt je në gjendje të ngarkosh faqet e uebit.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Për t'i marrë me lehtësi fjalëkalimet e tua të ruajtura në aplikacionet e tjera, përdor Chrome për AutoFill</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Kjo ndodh kur Chrome nuk përdoret për {THRESHOLD} minutë. Kjo mund të përfshijë historikun dhe plotësimin automatik.}other{Kjo ndodh kur Chrome nuk përdoret për {THRESHOLD} minuta. Kjo mund të përfshijë historikun dhe plotësimin automatik.}}</translation>
 <translation id="2561231791489583059">Përdor Chrome si shfletuesin tënd të parazgjedhur për të qenë i mbrojtur nga sajtet e rrezikshme dhe për t'i mbajtur fjalëkalimet e tua të sigurta</translation>
 <translation id="2574249610672786438">Për të parë skedat e tua nga çdo vend ku përdor Chrome, identifikohu në të gjitha pajisjet e tua</translation>
 <translation id="2576431527583832481">Chrome sapo është përmirësuar! Ofrohet një version i ri.</translation>
@@ -90,6 +91,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3282568296779691940">Identifikohu në Chrome</translation>
 <translation id="3340938510625667914">Veprimet në Chrome</translation>
 <translation id="3345341804167540816">Përdor Chrome kudo</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Kjo ndodh kur Chrome nuk përdoret për {THRESHOLD} minutë}other{Kjo ndodh kur Chrome nuk përdoret për {THRESHOLD} minuta}}</translation>
 <translation id="3399930248910934354">Hap "Cilësimet" e Chrome</translation>
 <translation id="3472587960215700950">Chrome përdor Google Maps për të të dhënë udhëzime dhe informacione lokale në adresat e zbuluara.</translation>
 <translation id="3503014945441706099">Merr gjithashtu "Shfletimin e sigurt të përmirësuar" për këtë profil të Chrome</translation>

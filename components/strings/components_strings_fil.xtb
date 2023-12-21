@@ -633,6 +633,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="219906046732893612">Pagpapaganda ng bahay</translation>
 <translation id="2202627062836089804">likod ng iyong card</translation>
 <translation id="2204482073374652408">Natapos na ang pag-update!</translation>
+<translation id="2207770355672215546">Palaging payagan, gamit ang anumang card</translation>
 <translation id="2208053750671792556">Hindi natanggap ang iyong code? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Tray 3</translation>
 <translation id="2210794033760923560">Mag-upload ng Ulat</translation>
@@ -2358,7 +2359,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5695542892312572833">Gamitin ang Windows Hello para i-verify at kumpletuhin ang iyong pagbili?</translation>
 <translation id="5699628521141772782">Dairy at Mga Itlog</translation>
 <translation id="5700761515355162635">Pinapayagan ang third-party na cookies</translation>
-<translation id="5701023235904684227">Kontrolin ang <ph name="READERNAME" /> at magkaroon ng access sa smart card na naa-access nito?</translation>
 <translation id="5701381305118179107">Gitna</translation>
 <translation id="5707154300732650394">Ipagpatuloy ang iyong journey</translation>
 <translation id="57094364128775171">Magmungkahi ng malakas na password...</translation>
@@ -2493,6 +2493,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5997247540087773573">Nakita sa isang data breach ang password na kakagamit mo lang. Para ma-secure ang iyong mga account, inirerekomenda ng Google Password Manager na palitan na ito ngayon at tingnan ang mga naka-save mong password.</translation>
 <translation id="5999271311987646952">May mga built-in na feature na pangkaligtasan ang Chrome para maprotektahan ka habang nagba-browse ka — tulad ng Ligtas na Pag-browse sa Google na <ph name="BEGIN_LINK" />nakakita kamakailan ng malware<ph name="END_LINK" /> sa site na sinusubukan mong bisitahin.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> (na) resulta para sa '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6001839398155993679">Tara na</translation>
 <translation id="6002122790816966947">Ang iyong mga device</translation>
 <translation id="6005659677094197001">Tuloy-tuloy</translation>
 <translation id="6005765687956866568">Na-clear sa form ang naka-autofill na impormasyon</translation>

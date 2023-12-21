@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Fleur de gazania</translation>
 <translation id="4943368462779413526">Football américain</translation>
 <translation id="4961158930123534723">1 dossier partagé avec Parallels Desktop</translation>
+<translation id="4965874878399872778">Vérification des fichiers par rapport aux règles de sécurité de votre organisation...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> a été restauré</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Impossible de terminer la configuration de la synchronisation des fichiers</translation>
@@ -710,6 +711,7 @@
 <translation id="6430271654280079150">Il vous reste 1 tentative.</translation>
 <translation id="643243556292470964">Les fichiers supprimés sont maintenant placés dans la corbeille</translation>
 <translation id="6438480100790416671">Vérification de l'espace de stockage…</translation>
+<translation id="6451527188465304418">Vérification du fichier par rapport aux règles de sécurité de votre organisation...</translation>
 <translation id="6485131920355264772">Échec de la récupération des informations sur l'espace disponible</translation>
 <translation id="6495925982925244349">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, détails</translation>
 <translation id="649877868557234318">Extraction de <ph name="FILE_NAME" /> vers <ph name="FOLDER_NAME" /></translation>

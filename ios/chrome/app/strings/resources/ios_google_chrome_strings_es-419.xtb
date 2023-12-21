@@ -63,6 +63,7 @@ Aspectos que debes tener en cuenta:
 <translation id="2427791862912929107">Chrome tiene funciones que te ayudan a administrar tus datos de Internet y la rapidez con la que puedes cargar páginas web.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Para obtener fácilmente tus contraseñas guardadas en otras apps, usa la opción para autocompletarlas con Chrome</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Esto sucede cuando no usas Chrome durante {THRESHOLD} minuto. Esto podría incluir el historial y la función Autocompletar.}other{Esto sucede cuando no usas Chrome durante {THRESHOLD} minutos. Esto podría incluir el historial y la función Autocompletar.}}</translation>
 <translation id="2561231791489583059">Usa Chrome como tu navegador predeterminado para protegerte de sitios peligrosos y mantener tus contraseñas seguras</translation>
 <translation id="2574249610672786438">Para ver tus pestañas donde sea que uses Chrome, accede a tu cuenta en todos los dispositivos</translation>
 <translation id="2576431527583832481">¡Chrome mejoró! Hay una nueva versión disponible.</translation>
@@ -91,6 +92,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3282568296779691940">Acceder a Chrome</translation>
 <translation id="3340938510625667914">Acciones de Chrome</translation>
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Esto sucede cuando no usas Chrome durante {THRESHOLD} minuto.}other{Esto sucede cuando no usas Chrome durante {THRESHOLD} minutos.}}</translation>
 <translation id="3399930248910934354">Abrir la configuración de Chrome</translation>
 <translation id="3472587960215700950">Chrome usa Google Maps para brindarte instrucciones sobre cómo llegar, así como información local sobre las direcciones detectadas.</translation>
 <translation id="3503014945441706099">También obtén la Navegación segura mejorada para este perfil de Chrome</translation>

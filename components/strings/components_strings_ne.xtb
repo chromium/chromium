@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">इनपुट ट्रे</translation>
 <translation id="1975584088563498795">मेलबक्स १०</translation>
 <translation id="1978555033938440688">फर्मवेयरको संस्करण</translation>
+<translation id="1979156660928743046">मिडियासम्बन्धी जानकारी</translation>
 <translation id="1988881251331415125">हिज्जे सही छ भने <ph name="BEGIN_LINK" />'कनेक्टिभिटीका निदानहरू' चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="1991453785879639515">पर्वतारोहण तथा चढाइ</translation>
 <translation id="1991830984769263878">कारको बिमा</translation>
@@ -1523,6 +1524,7 @@
 <translation id="4050599136622776556">Chromium ले भुक्तानी विधिहरू सम्पादन गर्ने प्रयास गर्दै छ।</translation>
 <translation id="405399507749852140">कुनै साइटमा मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्</translation>
 <translation id="4056223980640387499">सेपिया</translation>
+<translation id="4059523390906550209">संवेदनशील डेटाको सुरक्षाका बारेमा थप जान्नुहोस्</translation>
 <translation id="4063063121357725926">Google लाई तपाईंका कार्टहरूका हकमा छुट खोज्ने अनुमति दिनुहोस्</translation>
 <translation id="406358100705415968">काम गर्दा सुरक्षाका लागि प्रोटेक्टिभ गियर</translation>
 <translation id="4063924980214801036">आफ्ना कार्डहरू अझ चाँडो पुष्टि गर्न डिभाइस अनलक प्रयोग गर्नुहोस्</translation>
@@ -1681,6 +1683,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">रोक लगाउनुहोस् (डिफल्ट मान)</translation>
 <translation id="4314815835985389558">सिंक व्यवस्थापन गर्नुहोस्</translation>
+<translation id="4316057107946726368">कृपया बढीमा <ph name="MAX_CHAR_COUNT" /> वर्ण प्रयोग गरी कारण हाल्नुहोस्। <ph name="MAX_CHAR_COUNT" /> मध्ये <ph name="ACTUAL_CHAR_COUNT" /> वटा वर्ण प्रयोग गरिएको छ।</translation>
 <translation id="4318213823155573975">टाउकोको पहिरन</translation>
 <translation id="4318312030194671742">पेन्टसम्बन्धी पूर्वावलोकनको कम्पोजिटर सेवा</translation>
 <translation id="4318566738941496689">तपाईंको डिभाइसको नाम र नेटवर्कको ठेगाना</translation>
@@ -2488,6 +2491,7 @@
 <translation id="5997247540087773573">तपाईंले भर्खरै प्रयोग गर्नुभएको पासवर्ड चोरी भएको डेटाको सङ्ग्रहमा भेटिएको छ। Google पासवर्ड म्यानेजरले तपाईंका खाता सुरक्षित राख्ने प्रयोजनका लागि अहिले नै यो पासवर्ड बदल्न र तपाईंले सेभ गरेका पासवर्डहरू सुरक्षित छन् कि छैनन् भनी जाँच्न सिफारिस गर्छ।</translation>
 <translation id="5999271311987646952">तपाईंले ब्राउज गर्दै गर्दा तपाईंलाई सुरक्षित राख्न Chrome मा सुरक्षासम्बन्धी अन्तर्निर्मित सुविधाहरू उपलब्ध छन् — जस्तै, Google सुरक्षित ब्राउजिङ। यो सुविधाले तपाईंले खोल्न प्रयास गरिरहनुभएको साइटमा <ph name="BEGIN_LINK" />भर्खरै मालवेयर भेट्टाएको छ<ph name="END_LINK" />।</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' मध्ये <ph name="RESULT_COUNT" /></translation>
+<translation id="6001839398155993679">जाऔँ</translation>
 <translation id="6002122790816966947">तपाईंका डिभाइसहरू</translation>
 <translation id="6005659677094197001">निरन्तर</translation>
 <translation id="6005765687956866568">फाराममा अटोफिल गरिएको जानकारी हटाइएको छ</translation>
@@ -2668,6 +2672,7 @@
 <translation id="6355392890578844978">कुनै कम्पनी वा अन्य सङ्गठनले यो ब्राउजर व्यवस्थापन गर्दैन। यो डिभाइसमा गरिएका क्रियाकलाप Chromium बाहिरबाट व्यवस्थापन गरिन सक्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">भुक्तानी विधिहरू परिवर्तन गर्नुहोस्</translation>
 <translation id="6358450015545214790">यसको अर्थ के हो?</translation>
+<translation id="6360213755783740931">मालवेयरबाट सुरक्षाका बारेमा थप जान्नुहोस्</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">लगहरू हेर्नुहोस्</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />प्रोक्सी, फायरवाल र सुरक्षित DNS कन्फिगुरेसनको जाँच गर्दै<ph name="END_LINK" /></translation>
@@ -2725,6 +2730,7 @@
 <translation id="6443406338865242315">तपाईंले स्थापना गर्नुभएका विस्तार र प्लगइनहरू</translation>
 <translation id="6446608382365791566">थप जानकारी थप्नुहोस्</translation>
 <translation id="6447842834002726250">कुकीहरू</translation>
+<translation id="6448371595882710519">डेटा कन्ट्रोलहरूका बारेमा थप जान्नुहोस्</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Envelope Chou 40</translation>
 <translation id="6451458296329894277">फाराम पुन: प्रस्तुतीकरण पक्का गर्नुहोस्</translation>
@@ -3676,7 +3682,7 @@
 <translation id="8279611986089885641">Chrome मार्फत सूचना देखाउने सुविधा अन हुनु पर्छ। तपाईं <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> मा गई यो सुविधा अन गर्न सक्नुहुन्छ।</translation>
 <translation id="8280630997017109758">ट्रे ११</translation>
 <translation id="8281730697546299650">विज्ञापनको गोपनीयतासम्बन्धी अन्य सुविधाहरू उपलब्ध भएका छन्</translation>
-<translation id="8281886186245836920">त्याग्नुहोस्</translation>
+<translation id="8281886186245836920">स्किप गर्नुहोस्</translation>
 <translation id="8282409409360764263">आँगन मर्मत गर्ने सेवा</translation>
 <translation id="8282947398454257691">तपाईँको अद्वितीय यन्त्र पहिचानकर्ता जान्नुहोस्</translation>
 <translation id="8284769179630993263">Chrome का सेटिङमा गई Safe Browsing सम्बन्धी सेटिङ तथा सुरक्षासम्बन्धी अन्य सेटिङ मिलाउनुहोस्</translation>

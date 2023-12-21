@@ -2359,7 +2359,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5695542892312572833">¿Usar Windows Hello para verificar y completar la compra?</translation>
 <translation id="5699628521141772782">Lácteos y huevos</translation>
 <translation id="5700761515355162635">Cookies de terceros permitidas</translation>
-<translation id="5701023235904684227">¿Controlar <ph name="READERNAME" /> y obtener acceso a la tarjeta inteligente a la que puede acceder?</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="5707154300732650394">Reanudar recorrido</translation>
 <translation id="57094364128775171">Sugerir contraseña segura…</translation>
@@ -2494,6 +2493,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5997247540087773573">La contraseña que acabas de usar se ha encontrado en una brecha de seguridad de datos. Para proteger tus cuentas, el Gestor de contraseñas de Google te recomienda que cambies esa contraseña ahora y que compruebes las contraseñas que tengas guardadas.</translation>
 <translation id="5999271311987646952">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas (como Navegación segura de Google, la cual <ph name="BEGIN_LINK" />recientemente ha detectado malware<ph name="END_LINK" /> en el sitio al que intentas acceder).</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Empezar</translation>
 <translation id="6002122790816966947">Tus dispositivos</translation>
 <translation id="6005659677094197001">Impresión continua</translation>
 <translation id="6005765687956866568">La información autocompletada se ha borrado del formulario</translation>

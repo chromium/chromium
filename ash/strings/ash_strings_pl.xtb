@@ -40,6 +40,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1153356358378277386">Sparowane urządzenia</translation>
 <translation id="1155734730463845512">Aktualny poziom baterii: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">włączono, w użyciu</translation>
+<translation id="1163437384438183174">Usuń sterowanie telefonem z półki</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Kabel USB-C może nie łączyć się prawidłowo z wyświetlaczami</translation>
 <translation id="1175572348579024023">Przewijanie</translation>
@@ -70,6 +71,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1239161794459865856">Funkcja <ph name="FEATURE_NAME" /> ma połączenie.</translation>
 <translation id="1240638468526743569">Aplikacja</translation>
 <translation id="1242883863226959074">urządzeniu</translation>
+<translation id="1245644940275736236">Otwórz Asystenta</translation>
 <translation id="124678866338384709">Zamknij bieżącą kartę</translation>
 <translation id="1246890715821376239">Nieobsługiwane aplikacje</translation>
 <translation id="1247372569136754018">Mikrofon (wewnętrzny)</translation>
@@ -692,6 +694,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="383629559565718788">Pokaż ustawienia klawiatury</translation>
 <translation id="384082539148746321">Usunąć szablon?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" />, a potem <ph name="KEY_ONE" /> lub <ph name="KEY_TWO" /> lub <ph name="KEY_THREE" /> lub <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Brak informacji o sieciach</translation>
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="385300504083504382">Początek</translation>
@@ -926,6 +929,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4759238208242260848">Pobrane pliki</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + strzałka w górę</translation>
 <translation id="4762573482154983647">Ukrywaj aplikacje</translation>
+<translation id="4762802395013012237">5 stóp w m</translation>
 <translation id="4763885921995354846">Zezwala na dostęp do kamery wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery. Konieczne może być odświeżenie strony lub ponowne uruchomienie aplikacji.</translation>
 <translation id="4774338217796918551">Możesz wrócić jutro o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Nadal nie udało się zweryfikować Twojego hasła. Spróbuj ponownie.</translation>
@@ -968,6 +972,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="491504982845934899">Aktywuj po konfiguracji urządzenia – <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Silny</translation>
 <translation id="4918086044614829423">Akceptuj</translation>
+<translation id="491907188205944472">Wyszukuj potrzebne elementy bezpośrednio w Menu z aplikacjami</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> używa teraz kamery</translation>
 <translation id="492453977506755176">Klawisz trybu przechwytywania</translation>
 <translation id="4925542575807923399">Administrator tego konta wymaga, by w sesji wielokrotnego logowania logować się na nie jako pierwsze.</translation>
@@ -1118,6 +1123,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5518068085000130971">To były podstawy. Jeśli potrzebujesz bardziej szczegółowych wskazówek i instrukcji, skorzystaj z wbudowanej aplikacji Odkrywaj. Znajdziesz w niej porady na początek, listę polecanych aplikacji, oferty specjalne oraz opis najnowszych funkcji Chromebooka.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administrator usunął wszystkie profile eSIM. Aby dowiedzieć się więcej, skontaktuj się z administratorem.</translation>
+<translation id="5520909879404821039">Cześć po francusku</translation>
 <translation id="5523434445161341166">Funkcja <ph name="FEATURE_NAME" /> nawiązuje połączenie.</translation>
 <translation id="5529587891732734495">Wstrzymaj przesyłanie</translation>
 <translation id="5532994612895037630">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
@@ -1694,6 +1700,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7886277072580235377">Twoja sesja internetowa zostanie wyczyszczona, gdy się wylogujesz. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Wyślij e-maila</translation>
 <translation id="7893503627044934815">Nie chcę, żeby ten plik był pokazywany</translation>
+<translation id="7893547474469215105">Definicja zenit</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Naciśnięto skrót klawiszowy obrotu ekranu. Czy chcesz obrócić ekran?</translation>
 <translation id="7897626842031123113">Zasobnik stanu, godzina <ph name="TIME" />,
@@ -1709,6 +1716,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7904094684485781019">Administrator tego konta zablokował możliwość wielokrotnego logowania.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Podłączono <ph name="DEVICECOUNT" /> urządzenia</translation>
+<translation id="7923534281713082605">Pogoda</translation>
 <translation id="7926080067315048321">Zobacz wszystkie zadania na Liście zadań Google na stronie internetowej</translation>
 <translation id="7930731167419639574">Mowa jest teraz przetwarzana lokalnie, a dyktowanie działa offline</translation>
 <translation id="7932451802722951285">Otwórz w Kalendarzu Google</translation>
@@ -1855,6 +1863,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8555757996376137129">Usuń bieżące biurko</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> zaleca aktualizację tego urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Ustawienia powiadomień</translation>
+<translation id="8569751806372591456">Oto kilka sugestii, które możesz wypróbować</translation>
 <translation id="857201607579416096">Menu zostało przeniesione w prawy dolny róg ekranu.</translation>
 <translation id="8581946341807941670">Naciśnij <ph name="MODIFIER_1" /> + <ph name="MODIFIER_2" /> i kliknij link</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
@@ -1898,6 +1907,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="875593634123171288">Pokaż ustawienia VPN</translation>
 <translation id="8759408218731716181">Nie można skonfigurować wielokrotnego logowania</translation>
 <translation id="8763883995157866248">Przełącz urządzenie w tryb uśpienia</translation>
+<translation id="877404052021108314">90°F w C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, zainstalowana aplikacja, zablokowana</translation>
 <translation id="8785070478575117577">Połącz z <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1906,6 +1916,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">„Pomoc”</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">Naciśnij skrót do zrzutu ekranu, Ctrl + Shift + klawisz trybu przeglądu</translation>
 <translation id="881757059229893486">Ustawienia metod wprowadzania</translation>
 <translation id="8819728065740986820">Włączono ładowanie adaptacyjne</translation>
 <translation id="8825863694328519386">Aby wrócić, przesuń palcem od lewej strony</translation>

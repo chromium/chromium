@@ -40,6 +40,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1153356358378277386">Thiết bị đã ghép nối</translation>
 <translation id="1155734730463845512">Mức pin hiện tại: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">đang bật và đang hoạt động</translation>
+<translation id="1163437384438183174">Loại bỏ Trung tâm điều khiển điện thoại khỏi kệ</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Có thể cáp USB-C của bạn chưa kết nối đúng cách với màn hình</translation>
 <translation id="1175572348579024023">Cuộn</translation>
@@ -70,6 +71,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> đã kết nối.</translation>
 <translation id="1240638468526743569">Một ứng dụng</translation>
 <translation id="1242883863226959074">thiết bị</translation>
+<translation id="1245644940275736236">Chuyển đến Trợ lý</translation>
 <translation id="124678866338384709">Đóng thẻ hiện tại</translation>
 <translation id="1246890715821376239">Các ứng dụng không được hỗ trợ</translation>
 <translation id="1247372569136754018">Micrô (bên trong)</translation>
@@ -692,6 +694,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="383629559565718788">Hiển thị các tùy chọn cài đặt bàn phím</translation>
 <translation id="384082539148746321">Bạn muốn xoá mẫu?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> rồi đến <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> hoặc <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Không có thông tin mạng</translation>
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="385300504083504382">Phần đầu</translation>
@@ -926,6 +929,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + mũi tên lên</translation>
 <translation id="4762573482154983647">Ẩn ứng dụng</translation>
+<translation id="4762802395013012237">5 ft sang mét</translation>
 <translation id="4763885921995354846">Nếu bạn bật, tất cả ứng dụng và trang web có quyền truy cập máy ảnh sẽ có thể sử dụng máy ảnh. Bạn có thể cần làm mới trang web hoặc khởi động lại ứng dụng.</translation>
 <translation id="4774338217796918551">Hãy quay lại lúc <ph name="COME_BACK_TIME" /> ngày mai.</translation>
 <translation id="4776584068981882959">Vẫn chưa xác minh được mật khẩu của bạn. Hãy thử lại.</translation>
@@ -968,6 +972,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="491504982845934899">Kích hoạt sau khi thiết lập thiết bị <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Mạnh</translation>
 <translation id="4918086044614829423">Chấp nhận</translation>
+<translation id="491907188205944472">Tìm kiếm nội dung bạn cần ngay trong Trình chạy</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> hiện đang sử dụng máy ảnh của bạn</translation>
 <translation id="492453977506755176">Phím kích hoạt chế độ chụp</translation>
 <translation id="4925542575807923399">Quản trị viên của tài khoản này yêu cầu tài khoản này là tài khoản đăng nhập đầu tiên trong phiên đăng nhập nhiều tài khoản.</translation>
@@ -1118,6 +1123,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5518068085000130971">Đó mới chỉ là thông tin cơ bản! Hãy tiếp tục tìm hiểu trong Khám phá, ứng dụng tích hợp sẵn chuyên cung cấp các mẹo và thông tin trợ giúp của chúng tôi. Trong ứng dụng này, bạn sẽ tìm thấy các mẹo giúp bạn bắt đầu, ứng dụng được đề xuất, ưu đãi đặc biệt và tính năng mới nhất của Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Quản trị viên của bạn đã xóa tất cả hồ sơ eSIM. Hãy liên hệ với quản trị viên của bạn để biết thêm thông tin.</translation>
+<translation id="5520909879404821039">Xin chào bằng tiếng Pháp</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> đang kết nối.</translation>
 <translation id="5529587891732734495">Tạm dừng truyền</translation>
 <translation id="5532994612895037630">Nhấn vào vị trí bất kỳ để ghi toàn màn hình</translation>
@@ -1695,6 +1701,7 @@ Mới cài đặt</translation>
 <translation id="7886277072580235377">Phiên hoạt động trên Internet của bạn sẽ bị xóa khi bạn đăng xuất. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Gửi email</translation>
 <translation id="7893503627044934815">Không muốn hiện tệp này</translation>
+<translation id="7893547474469215105">Định nghĩa thiên đỉnh</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Bạn đã nhấn phím tắt để xoay màn hình. Bạn có muốn xoay màn hình không?</translation>
 <translation id="7897626842031123113">Khay trạng thái, thời gian <ph name="TIME" />,
@@ -1710,6 +1717,7 @@ Mới cài đặt</translation>
 <translation id="7904094684485781019">Quản trị viên của tài khoản này đã không cho phép đăng nhập nhiều tài khoản.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> thiết bị đã kết nối</translation>
+<translation id="7923534281713082605">Thời tiết</translation>
 <translation id="7926080067315048321">Xem tất cả việc cần làm tại Google Tasks trên web</translation>
 <translation id="7930731167419639574">Giọng nói được xử lý cục bộ và tính năng Nhập bằng giọng nói hoạt động ngoại tuyến</translation>
 <translation id="7932451802722951285">Mở trong Lịch Google</translation>
@@ -1856,6 +1864,7 @@ Mới cài đặt</translation>
 <translation id="8555757996376137129">Xoá không gian làm việc hiện tại</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> khuyên bạn nên cập nhật thiết bị <ph name="DEVICE_TYPE" /> của mình</translation>
 <translation id="8563862697512465947">Cài đặt Thông báo</translation>
+<translation id="8569751806372591456">Bạn có thể thử một số gợi ý sau đây</translation>
 <translation id="857201607579416096">Đã di chuyển trình đơn vào góc dưới cùng bên phải màn hình.</translation>
 <translation id="8581946341807941670">Nhấn phím <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> rồi nhấp vào một đường liên kết</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1899,6 +1908,7 @@ Mới cài đặt</translation>
 <translation id="875593634123171288">Hiển thị các tùy chọn cài đặt VPN</translation>
 <translation id="8759408218731716181">Không thể thiết lập đăng nhập nhiều tài khoản</translation>
 <translation id="8763883995157866248">Đặt thiết bị ở chế độ ngủ</translation>
+<translation id="877404052021108314">90°F sang độ C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, ứng dụng đã được cài đặt nhưng đã bị chặn</translation>
 <translation id="8785070478575117577">Kết nối với <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1907,6 +1917,7 @@ Mới cài đặt</translation>
 <translation id="8806053966018712535">Thư mục <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Trợ giúp"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">Nhấn phím tắt chụp ảnh màn hình, Ctrl + Shift + phím chế độ Tổng quan</translation>
 <translation id="881757059229893486">Tùy chọn cài đặt phương thức nhập</translation>
 <translation id="8819728065740986820">Tính năng Sạc thích ứng đang bật</translation>
 <translation id="8825863694328519386">Vuốt từ trái sang để quay lại</translation>

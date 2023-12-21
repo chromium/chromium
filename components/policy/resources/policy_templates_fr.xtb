@@ -1117,7 +1117,6 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ferme l'onglet apr�
 
       L'API Managed Configuration est une configuration de type clé-valeur accessible via un appel JavaScript navigator.managed.getManagedConfiguration(). Cette API est uniquement disponible pour les origines qui correspondent aux appls Web installées d'office via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
      </translation>
-<translation id="1918690415433353669">Autoriser l'organisation des onglets sans journaliser leurs détails</translation>
 <translation id="1919802376548418720">Utiliser la règle KDC pour déléguer les identifiants.</translation>
 <translation id="1920046221095339924">Autoriser une session gérée sur l'appareil</translation>
 <translation id="1920772397574801429">Permet de spécifier le type des comptes fournis par l'application d'authentification Android qui accepte la méthode d'authentification <ph name="HTTP_NEGOTIATE" /> (l'authentification Kerberos, par exemple). Ces informations doivent être disponibles auprès du fournisseur de l'application en question. Pour en savoir plus, consultez le site https://goo.gl/hajyfN (sur les projets Chromium).
@@ -1693,7 +1692,6 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 Si la règle est désactivée, elle empêche les utilisateurs ou les variantes de <ph name="PRODUCT_NAME" /> d'activer NewBaseUrlInheritanceBehavior si des problèmes de compatibilité sont détectés. Si la règle est activée ou n'est pas configurée, NewBaseUrlInheritanceBehavior peut être activée.</translation>
 <translation id="2362469626417133796">Fenêtre de redémarrage</translation>
 <translation id="2362539163677485510">Jeton d'enregistrement des règles relatives au cloud</translation>
-<translation id="2362947328909044249">Autoriser l'organisation des onglets</translation>
 <translation id="2363928351203698966">Si cette règle est définie sur une valeur valide, <ph name="PRODUCT_NAME" /> n'utilise pas de versions SSL/TLS antérieures à celle spécifiée. Les valeurs non reconnues sont ignorées.
 
       Si cette règle n'est pas configurée, un message d'erreur concernant TLS 1.0 et TLS 1.1 s'affiche dans <ph name="PRODUCT_NAME" />. Toutefois, l'utilisateur peut passer outre.
@@ -2027,7 +2025,6 @@ Le système n'interroge les enregistrements AAAA que si un hôte IPv6 global pe
 <translation id="2650049181907741121">Action à effectuer lorsque l'utilisateur ferme le couvercle</translation>
 <translation id="2656559539624760733">Ne pas utiliser pas le Chrome Root Store.</translation>
 <translation id="2658653824183107970">Utiliser l'ancienne mise en œuvre de <ph name="CORS" /> plutôt que la nouvelle mise en œuvre de <ph name="CORS" /></translation>
-<translation id="2659064869547694451">Autoriser Compose</translation>
 <translation id="2660846099862559570">Ne jamais utiliser de proxy</translation>
 <translation id="2661628029848851543">L'utilisation des comptes gérés n'est pas limitée</translation>
 <translation id="2664391398878045611">La page "Nouvel onglet" n'affichera pas l'annonce d'espace intermédiaire, même si elle est disponible</translation>
@@ -2801,7 +2798,6 @@ Si cette règle est désactivée, la fonctionnalité de navigation sécurisée n
 Ces restrictions s'appliquent aux téléchargements déclenchés à partir du contenu d'une page Web et avec l'option de menu "Télécharger le lien". Elles ne s'appliquent pas à l'enregistrement ou au téléchargement de la page actuellement affichée ni à l'enregistrement au format PDF depuis les options d'impression.
 
 Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="3300322252167923819">Autoriser l'organisation des onglets</translation>
 <translation id="3300784749135986828">Activer ou désactiver <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Activer l'extension des insights</translation>
 <translation id="3302829897293005699">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent des informations sur la session kiosque active telles que l'ID et la version de l'application.
@@ -3405,7 +3401,6 @@ Cette règle est une mesure temporaire et sera supprimée dans une future versio
 <translation id="3799417300383048419">Conserver les données de profil sur le disque à la fin de la session utilisateur</translation>
 <translation id="3799436555130241393">Synchronisation des fichiers <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3803171355925844705">Interdire à tous les sites de charger un contenu mixte</translation>
-<translation id="3806742563417418191">Autoriser la recherche de fonds d'écran</translation>
 <translation id="3808945828600697669">Répertorier les plug-ins désactivés</translation>
 <translation id="3810642039169532482">Permet d'activer la fonctionnalité d'accessibilité de dictée sur l'écran de connexion.
 
@@ -3417,7 +3412,6 @@ Cette règle est une mesure temporaire et sera supprimée dans une future versio
 
           Si cette règle n'est pas configurée, la dictée est initialement désactivée sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="3811562426301733860">Autoriser les annonces sur tous les sites</translation>
-<translation id="3816281648615435872">Désactiver l'organisation des onglets</translation>
 <translation id="3816312845600780067">Activer le raccourci clavier permettant d'ignorer le processus de connexion automatique</translation>
 <translation id="3817323252437541502">Activer les protections supplémentaires pour les utilisateurs inscrits au Programme Protection Avancée</translation>
 <translation id="3821861026311587684">Forcer la déconnexion de l'utilisateur lorsque son compte n'est plus authentifié</translation>
@@ -3956,7 +3950,6 @@ Si cette règle est désactivée, un message d'erreur s'affiche à la place.</tr
 <translation id="428948795004445932">Fréquence à laquelle les données du réseau sont échantillonnées et collectées. La valeur minimale autorisée est de 1 minute.
 
       Si la règle n'est pas configurée, la fréquence par défaut (10 minutes) est appliquée.</translation>
-<translation id="4289628882370719584">La fonctionnalité Organisation des onglets permet aux utilisateurs d'organiser les onglets.</translation>
 <translation id="4290231183305601970">Texte visible par l'utilisateur sur le Chrome Web Store si l'installation est bloquée.</translation>
 <translation id="4293187705196369087">Cette règle permet d'activer ou de désactiver une notification lorsque l'espace disque est faible. Elle s'applique à l'ensemble des utilisateurs de l'appareil.
 
@@ -4249,7 +4242,6 @@ Elle n'a aucun effet si elle est activée, laissée vide ou n'est pas définie.<
 <translation id="453031441196755904">Cette règle est obsolète.</translation>
 <translation id="4531706050939927436">L'installation des applications Android peut être forcée depuis la Console d'administration Google via Google Play. Elles n'utilisent pas cette règle.</translation>
 <translation id="4534500438517478692">Nom de la restriction Android :</translation>
-<translation id="4537645230504195464">Autoriser Compose, sans journalisation</translation>
 <translation id="4541530620466526913">Comptes locaux de l'appareil</translation>
 <translation id="4542255783284620926">Bloquer l'ajout d'un compte géré en tant que compte secondaire sur Chrome OS (session ouverte)</translation>
 <translation id="4543502256674577024">Paramètres de mise à jour de l'appareil</translation>
@@ -4448,7 +4440,6 @@ Les utilisateurs peuvent activer ou désactiver les services de localisation Goo
 <translation id="4674871290487541952">Autoriser les algorithmes non sécurisés dans les vérifications de l'intégrité des mises à jour et des installations d'extension</translation>
 <translation id="4680961954980851756">Activer la saisie automatique</translation>
 <translation id="4685721728282448265">Algorithme clé-contrat post-quantique CECPQ2 activé pour TLS</translation>
-<translation id="4688118315245991650">Désactiver Compose</translation>
 <translation id="468822697351680932">Utiliser la règle SiteList d'Internet Explorer comme source des règles</translation>
 <translation id="4693190628432874457">Activer la mise à jour de la position de l'appareil</translation>
 <translation id="4693779768620889402">Destinations basées sur des extensions</translation>
@@ -5091,6 +5082,11 @@ Les caractères génériques d'hôte globaux (par exemple, "*" ou "[*]") ne sont
 Remarque : Cette règle ne s'applique pas aux mises à niveau HSTS.</translation>
 <translation id="5297948043665200363">Autoriser l'utilisateur à rester connecté une fois que son compte n'est plus authentifié</translation>
 <translation id="5298949392804966105">Aucune restriction pour les comptes gérés</translation>
+<translation id="5300770793658186741">Permet d'établir la liste des origines (URL) ou modèles de nom d'hôte non sécurisés (comme *.example.com) pour lesquels des restrictions de sécurité ne s'appliquent pas. Par exemple, les organisations peuvent indiquer des origines pour les anciennes applis qui ne peuvent pas déployer TLS, ou configurer un serveur de préproduction pour les développements Web internes. Les développeurs peuvent ainsi tester des fonctionnalités nécessitant des contextes sécurisés, sans avoir à déployer TLS sur le serveur de préproduction. Cette règle évite également qu'une origine soit accompagnée de la mention "Non sécurisé" dans la barre d'adresse.
+
+La création d'une liste d'URL dans cette règle revient à définir le flag de ligne de commande "--unsafely-treat-insecure-origin-as-secure" avec une liste des URL en question séparées par une virgule. Cette règle remplace le flag de ligne de commande et la règle UnsafelyTreatInsecureOriginAsSecure (s'ils sont disponibles).
+
+Pour en savoir plus sur les contextes sécurisés, consultez https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="530134925949808452">Heure locale à laquelle le quota d'utilisation est renouvelé.</translation>
 <translation id="5303080953475303561">Cette règle permet de contrôler la fréquence à laquelle l'écran de verrouillage exige un mot de passe pour le déverrouillage rapide. Si la dernière saisie du mot de passe est antérieure à la période définie, le déverrouillage rapide n'est pas disponible. Si l'utilisateur reste sur l'écran de verrouillage au-delà de cette période, il devra saisir son mot de passe la prochaine fois qu'il saisira un code erroné ou accédera de nouveau à l'écran de verrouillage, selon la situation qui se présente en premier.
 
@@ -5130,7 +5126,6 @@ Si cette règle est désactivée, ces deux historiques ne peuvent pas être supp
 <translation id="5340008866815063393">Activer les rapports sur les données des règles</translation>
 <translation id="5345910753471481870">Ne pas afficher le bouton Google Lens dans le champ de recherche de la page "Nouvel onglet".</translation>
 <translation id="5346587320074666194">Bloquer l'accès aux capteurs sur ces sites</translation>
-<translation id="5347809796754019202">Autoriser Compose</translation>
 <translation id="534836255587440809">Désactiver les clics automatiques sur l'écran de connexion</translation>
 <translation id="5348658899015174540">L'API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permet aux applications Web de capturer plusieurs surfaces à la fois.
       Cette règle déverrouille la propriété <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> pour les applications Web à des origines définies.
@@ -5304,6 +5299,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="547601067149622666">Ne pas autoriser les annonces sur les sites présentant des annonces intrusives</translation>
 <translation id="5476152378885134514">Bloquer le presse-papiers sur ces sites</translation>
 <translation id="5480380613778757009">Si cette règle est désactivée ou qu'elle n'est pas configurée, tous les paramètres d'affichage définis dans la session Invité gérée sont réinitialisés à la fermeture de la session. Si cette règle est définie sur "True", les propriétés d'affichage sont conservées après la fermeture de la session Invité gérée.</translation>
+<translation id="5483012943408894695">Origines ou modèles de nom d'hôte non soumis aux restrictions applicables aux origines non sécurisées</translation>
 <translation id="5483065054530244863">Autoriser les certificats signés SHA-1 émis par les ancres d'approbation locales</translation>
 <translation id="5487758664517243511">Si ce paramètre est activé, les utilisateurs qui ont déjà activé Phone Hub pourront continuer sur Chrome OS ce qu'ils étaient en train de faire sur leur téléphone, par exemple consulter des pages Web.
 
@@ -5671,7 +5667,6 @@ Si elle est désactivée ou n'est pas configurée, les Glanceables ne sont pas a
 <translation id="5775235485119094648">Recharge de la batterie tant que le niveau de charge défini n'est pas atteint.</translation>
 <translation id="5776485039795852974">Demander confirmation chaque fois qu'un site veut afficher des notifications sur le bureau</translation>
 <translation id="5783009211970309878">Imprimer les en-têtes et les pieds de page</translation>
-<translation id="5786938041290515154">Autoriser la recherche de fonds d'écran sans journalisation</translation>
 <translation id="5790763087505467169">Réduire les notifications de lancement automatique des sessions Invité gérées</translation>
 <translation id="5800329278018669527">Désactiver l'invite de configuration réseau lorsque l'utilisateur n'est pas connecté</translation>
 <translation id="5802931736499687181">Désactiver le pipeline de rapports chiffrés</translation>
@@ -5862,7 +5857,6 @@ Si elle est désactivée ou n'est pas configurée, les Glanceables ne sont pas a
 <translation id="596523880465577341">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" /> à la place.</translation>
 <translation id="5966615072639944554">Extensions autorisées à utiliser l'API d'attestation à distance</translation>
 <translation id="596732417280023843">Nom du profil du certificat.</translation>
-<translation id="597036930083735628">Désactiver la recherche de fonds d'écran</translation>
 <translation id="5972538402066550344">Autoriser les contrôles de rapports précis</translation>
 <translation id="5975765799383881158">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent envoyer des commentaires à Google en sélectionnant Menu &gt; Aide &gt; Signaler un problème, ou via un raccourci clavier.
 
@@ -9681,6 +9675,17 @@ Pour que cette règle soit effective, la règle <ph name="FULL_RESTORE_ENABLED_N
 <translation id="9135095804754272364">Afficher une notification lorsqu'un périphérique USB est détecté</translation>
 <translation id="9136212796239682721">Désactiver l'interface utilisateur de la bulle de téléchargement</translation>
 <translation id="9136399279941091445">Intervalles pendant lesquels les règles spécifiées pour les appareils sont disponibles (lorsque l'appareil est éteint)</translation>
+<translation id="9140064482233876338">Cette règle a été abandonnée dans la version M69. Veuillez utiliser la règle OverrideSecurityRestrictionsOnInsecureOrigin à la place.
+
+Cette règle liste les origines (URL) ou les modèles de nom d'hôte (par exemple, "*.example.com") non soumis aux restrictions de sécurité applicables aux origines non sécurisées.
+
+L'objectif est de permettre aux organisations d'autoriser les origines pour les anciennes applis qui ne peuvent pas déployer TLS, ou de configurer un serveur de préproduction pour les développements Web internes. Cela permet aux développeurs de tester les fonctionnalités nécessitant des contextes sécurisés sans avoir à déployer TLS sur le serveur de préproduction. Cette règle évite également qu'une origine soit accompagnée de la mention "Non sécurisé" dans l'omnibox.
+
+Définir une liste d'URL dans cette règle a le même effet qu'utiliser le flag de ligne de commande "--unsafely-treat-insecure-origin-as-secure" avec une liste des URL en question séparées par une virgule. Si la règle est définie, elle remplace le flag de ligne de commande.
+
+Cette règle a été abandonnée dans la version M69, au profit de la règle OverrideSecurityRestrictionsOnInsecureOrigin. Elle est remplacée par OverrideSecurityRestrictionsOnInsecureOrigin lorsque les deux règles coexistent.
+
+Pour en savoir plus sur les contextes sécurisés, consultez https://www.w3.org/TR/secure-contexts/</translation>
 <translation id="9142561920976791097">Le nouveau comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé.</translation>
 <translation id="91459503271584213">Lancer directement les hôtes de messagerie native exécutables sous Windows</translation>
 <translation id="9148720248753722892">Interdire les certificats signés SHA-1</translation>

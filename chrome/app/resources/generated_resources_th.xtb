@@ -3095,6 +3095,7 @@
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">ตัวแยก</translation>
 <translation id="3387023983419383865">,</translation>
+<translation id="3387588771342841525">เมื่อเปิด ระบบจะบันทึกรหัสผ่านใน <ph name="EMAIL" /> เมื่อปิด ระบบจะบันทึกรหัสผ่านในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="3387614642886316601">ใช้ฟีเจอร์ตรวจตัวสะกดที่ได้รับการปรับปรุง</translation>
 <translation id="3387829698079331264">ไม่อนุญาตให้ทราบเวลาที่คุณใช้งานอุปกรณ์อยู่</translation>
 <translation id="3388094447051599208">ถาดกระดาษออกใกล้เต็มแล้ว</translation>
@@ -3283,6 +3284,7 @@
 <translation id="3532521178906420528">กำลังทำการเชื่อมต่อเครือข่าย...</translation>
 <translation id="3532852121563960103">{NUM_OF_FILES,plural, =1{กําลังย้าย 1 ไฟล์ไปที่ <ph name="CLOUD_PROVIDER" />}other{กําลังย้าย {NUM_OF_FILES} ไฟล์ไปที่ <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - ปิดเสียงอยู่</translation>
+<translation id="3537099313456411235">เชื่อมต่อ <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> เพื่อเข้าถึงไฟล์ในไดรฟ์ในแอป Files</translation>
 <translation id="3537881477201137177">แก้ไขค่านี้ในภายหลังได้ในการตั้งค่า</translation>
 <translation id="3538066758857505094">เกิดข้อผิดพลาดขณะถอนการติดตั้ง Linux โปรดลองอีกครั้ง</translation>
 <translation id="3540173484406326944">ไม่มีเครือข่ายผ่านทาง <ph name="HOST_DEVICE_NAME" /></translation>
@@ -5368,6 +5370,7 @@
 <translation id="5185359571430619712">ตรวจสอบส่วนขยาย</translation>
 <translation id="5185386675596372454">รุ่นใหม่ล่าสุดของ "<ph name="EXTENSION_NAME" />" ถูกปิดใช้งาน เนื่องจากต้องได้รับการอนุญาตมากกว่านี้</translation>
 <translation id="5185500136143151980">ไม่มีอินเทอร์เน็ต</translation>
+<translation id="5186381005592669696">ปรับแต่งภาษาที่แสดงสำหรับแอปที่รองรับ</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869">กำลังใช้ <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">เปิดใช้งานพอร์ต</translation>
@@ -5916,6 +5919,7 @@
 <translation id="5631272057151918206">การดำเนินการนี้จะนำพื้นที่เก็บข้อมูลซึ่งไฟล์ออฟไลน์ใช้อยู่ออกได้สูงสุด <ph name="OFFLINE_STORAGE_SIZE" /> ไฟล์บางรายการจะยังใช้งานแบบออฟไลน์ได้ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">ขอสิทธิ์ กด Ctrl + ไปข้างหน้าเพื่อตอบกลับ</translation>
 <translation id="5632221585574759616">ดูข้อมูลเพิ่มเติมเกี่ยวกับสิทธิ์ของส่วนขยาย</translation>
+<translation id="5632485077360054581">แสดงวิธีการ</translation>
 <translation id="5632566673632479864">บัญชี <ph name="EMAIL" /> ของคุณไม่ได้รับอนุญาตในฐานะบัญชีหลักอีกต่อไป เนื่องจากบัญชีนี้จัดการโดย <ph name="DOMAIN" /> ระบบจะล้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ ของคุณจากอุปกรณ์นี้</translation>
 <translation id="5633149627228920745">ดูข้อมูลเพิ่มเติมเกี่ยวกับข้อกำหนดของระบบ</translation>
 <translation id="563371367637259496">มือถือ</translation>
@@ -6146,6 +6150,7 @@
 <translation id="5828633471261496623">กำลังพิมพ์...</translation>
 <translation id="5830205393314753525">เปิด <ph name="APP_NAME" /> ไม่ได้</translation>
 <translation id="5830720307094128296">บันทึกหน้าเ&amp;ป็น...</translation>
+<translation id="583179300286794292">ลงชื่อเข้าใช้ด้วย <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">ลบข้อมูลเว็บไซต์และสิทธิ์ของ <ph name="SITE_NAME" /> รวมถึงเว็บไซต์ทั้งหมดภายใต้เว็บไซต์นี้ และแอปของเว็บไซต์นี้ที่ติดตั้งไว้ใช่ไหม</translation>
 <translation id="5832813618714645810">โปรไฟล์</translation>
 <translation id="583281660410589416">ไม่รู้จัก</translation>
@@ -6219,6 +6224,7 @@
 <translation id="5883356647197510494">บล็อก<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" />โดยอัตโนมัติ</translation>
 <translation id="5884447826201752041">ปรับแต่งส่วนขยายแต่ละรายการ</translation>
 <translation id="5885314688092915589">องค์กรของคุณจะจัดการโปรไฟล์นี้</translation>
+<translation id="5885470467814103868">เริ่มสแกน</translation>
 <translation id="5885631909150054232">คัดลอกโทเค็น</translation>
 <translation id="5886009770935151472">นิ้วที่ 1</translation>
 <translation id="5886112770923972514">เชื่อมต่อและตั้งค่าอุปกรณ์จับคู่ด่วนที่อยู่ใกล้ๆ ได้อย่างรวดเร็ว</translation>
@@ -6301,7 +6307,7 @@
 <translation id="5948476936444935795">ยกเลิกการนำเข้า</translation>
 <translation id="5948536763493709626">เชื่อมต่อแป้นพิมพ์หรือเมาส์ หรือตั้งค่าต่อโดยใช้หน้าจอสัมผัส หากกำลังใช้อุปกรณ์บลูทูธ ให้ตรวจสอบว่าอุปกรณ์พร้อมที่จะจับคู่</translation>
 <translation id="5949544233750246342">ไม่สามารถแยกวิเคราะห์ไฟล์</translation>
-<translation id="594993197557058302">กดคีย์ตัวปรับแต่ง 1-4 คีย์ (Ctrl, Alt, Shift, ค้นหา หรือ Launcher) และอีก 1 คีย์ หรือเลือกคีย์เดียวก็ได้</translation>
+<translation id="594993197557058302">กดแป้นกดร่วม 1-4 คีย์ (Ctrl, Alt, Shift, ค้นหา หรือ Launcher) และอีก 1 คีย์ หรือเลือกคีย์เดียวก็ได้</translation>
 <translation id="5950762317146173294">ไฟล์นี้อาจเป็นไวรัสหรือมัลแวร์</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> ต้องการใช้แบบอักษรในเครื่อง</translation>
 <translation id="5951624318208955736">จอภาพ</translation>
@@ -6809,6 +6815,7 @@
 <translation id="6348805481186204412">พื้นที่เก็บข้อมูลออฟไลน์</translation>
 <translation id="6349101878882523185">ติดตั้ง <ph name="APP_NAME" /></translation>
 <translation id="6350821834561350243">ระบุคำอธิบายปัญหาอย่างชัดเจนและขั้นตอนการสร้างปัญหาซ้ำ (หากเป็นไปได้)</translation>
+<translation id="6351178441572658285">ภาษาของแอป</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (เรียกอีกอย่างว่า ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">กำลังรับข้อมูลบัญชี Google...</translation>
 <translation id="635609604405270300">โปรดเปิดอุปกรณ์ไว้</translation>
@@ -7414,6 +7421,7 @@
 <translation id="6833479554815567477">แท็บถูกนำออกจากกลุ่ม <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833996806551876956">ช่วงทดลองใช้ Privacy Sandbox</translation>
 <translation id="6835762382653651563">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่ออัปเดต <ph name="DEVICE_TYPE" /></translation>
+<translation id="683630338945552556">ใช้และบันทึกรหัสผ่านในบัญชี Google</translation>
 <translation id="6839225236531462745">ข้อผิดพลาดในการนำออกใบรับรอง</translation>
 <translation id="6839916869147598086">มีการเปลี่ยนแปลงการลงชื่อเข้าใช้</translation>
 <translation id="6840155290835956714">ถามก่อนที่จะส่ง</translation>
@@ -8032,6 +8040,7 @@
 <translation id="7347943691222276892">คลิกเพื่อออกจากหน้า<ph name="SUBPAGE_TITLE" /></translation>
 <translation id="7348093485538360975">แป้นพิมพ์บนหน้าจอ</translation>
 <translation id="7349010927677336670">ความลื่นไหลของวิดีโอ</translation>
+<translation id="7350327333026851413">{COUNT,plural, =1{รหัสผ่าน {COUNT} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}other{รหัสผ่าน {COUNT} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}}</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="7352664183151911163">ในแอปและเบราว์เซอร์ Chrome</translation>
 <translation id="7353261921908507769">รายชื่อติดต่อจะแชร์เนื้อหากับคุณได้เมื่ออยู่ใกล้เคียง การโอนจะไม่เริ่มจนกว่าคุณจะยอมรับ</translation>
@@ -8201,7 +8210,7 @@
 <translation id="747114903913869239">ข้อผิดพลาด: ไม่สามารถถอดรหัสส่วนขยาย</translation>
 <translation id="7471520329163184433">ช้าลง</translation>
 <translation id="747312361841682912">ลบข้อมูลที่แสดง</translation>
-<translation id="7473891865547856676">ไม่ ขอบคุณ</translation>
+<translation id="7473891865547856676">ไม่เป็นไร</translation>
 <translation id="747459581954555080">คืนค่าทั้งหมด</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{ต้องส่งคืนทันที}other{ส่งคืน <ph name="DEVICE_TYPE" /> ภายใน {NUM_DAYS} วัน}}</translation>
 <translation id="7475671414023905704">URL รหัสผ่านสูญหายของ Netscape</translation>
@@ -8271,6 +8280,7 @@
 <translation id="7523117833414447032">เมื่ออ่านอักษรตัวพิมพ์ใหญ่</translation>
 <translation id="7523585675576642403">เปลี่ยนชื่อโปรไฟล์</translation>
 <translation id="7525067979554623046">สร้าง</translation>
+<translation id="7525879597899798851">ตำแหน่งปิดอยู่ในค่ากำหนดของระบบปฏิบัติการ</translation>
 <translation id="7526989658317409655">ตัวยึดตำแหน่ง</translation>
 <translation id="7528224636098571080">ไม่ต้องเปิด</translation>
 <translation id="7529411698175791732">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณ หากปัญหายังคงอยู่ ให้ลองออกจากระบบและลงชื่อเข้าใช้อีกครั้ง</translation>
@@ -8465,6 +8475,7 @@
 <translation id="7670483791111801022">คำบรรยาย</translation>
 <translation id="7671130400130574146">ใช้แถบชื่อและเส้นขอบของระบบ</translation>
 <translation id="767127784612208024">แตะเพื่อยืนยันการรีเซ็ต</translation>
+<translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" ต้องการสแกนจาก "<ph name="SCANNER_NAME" />"</translation>
 <translation id="7672504401554182757">เลือกอุปกรณ์ที่มีพาสคีย์สําหรับ "<ph name="APP_NAME" />"</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> ใน <ph name="PAGE_TITLE" /></translation>
 <translation id="7673313156293624327">บันทึก ChromeOS Shill (โปรแกรมจัดการการเชื่อมต่อ)</translation>

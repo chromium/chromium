@@ -1855,6 +1855,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2408018932941436077">Karte wird gespeichert</translation>
 <translation id="2408955596600435184">PIN eingeben</translation>
 <translation id="2409268599591722235">Los geht's!</translation>
+<translation id="2409378541210421746">Sprachauswahl bearbeiten</translation>
 <translation id="2409709393952490731">Smartphone oder Tablet verwenden</translation>
 <translation id="2410079346590497630">Build-Details</translation>
 <translation id="2410298923485357543">Natürliche Stimme verwenden, wenn das Gerät online ist</translation>
@@ -3819,6 +3820,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="3937640725563832867">Alternativer Name des Zertifikatausstellers</translation>
 <translation id="3937734102568271121"><ph name="LANGUAGE" /> immer übersetzen</translation>
 <translation id="3938128855950761626">Geräte von Anbieter <ph name="VENDOR_ID" /></translation>
+<translation id="3939622756852381766">Erstellt automatisch Untertitel für Audioinhalte und Videos</translation>
 <translation id="3941565636838060942">Der Zugriff auf dieses Programm kann ausgeblendet werden, indem es mithilfe von
 <ph name="CONTROL_PANEL_APPLET_NAME" /> im Steuerfeld deinstalliert wird.
 
@@ -4164,7 +4166,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4218081191298393750">Klicke auf das Lautsprechersymbol, um diesen Tab stummzuschalten</translation>
 <translation id="4220157655212610908">Externen Sicherheitsschlüssel verwenden</translation>
 <translation id="4220648711404560261">Bei der Aktivierung ist ein Fehler aufgetreten.</translation>
-<translation id="4222917615373664617">Preisbeobachtung ist aktiviert. Aktueller Preis: <ph name="CURRENT_PRICE" />.</translation>
+<translation id="4222917615373664617">Preis-Tracking ist aktiviert. Aktueller Preis: <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223845867739585293">Passkey erstellen</translation>
 <translation id="4225397296022057997">Auf allen Websites</translation>
 <translation id="4228071595943929139">E-Mail-Adresse der Organisation verwenden</translation>
@@ -4190,6 +4192,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4246980464509998944">Zusätzliche Kommentare:</translation>
 <translation id="424726838611654458">Immer mit Adobe Reader öffnen</translation>
 <translation id="4248401726442101648">Es besteht keine Verbindung zu einer Kamera</translation>
+<translation id="4249116869350613769">Energiesparmodus</translation>
 <translation id="4249248555939881673">Auf Netzwerkverbindung warten...</translation>
 <translation id="4249373718504745892">Diese Seite darf nicht auf die Kamera und das Mikrofon zugreifen.</translation>
 <translation id="424963718355121712">Apps müssen über den betroffenen Host bereitgestellt werden</translation>
@@ -4327,6 +4330,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="435527878592612277">Foto auswählen</translation>
 <translation id="4356100841225547054">Ton ausschalten</translation>
 <translation id="4358302248024731679">Damit Bluetooth-Probleme besser diagnostiziert werden können, haben Google-Mitarbeiter die Möglichkeit, Feedbackberichte durch zusätzliche Bluetooth-Protokolle zu ergänzen. Wenn diese Option ausgewählt ist, enthält dein Bericht btsnoop- und HCI-Protokolle der aktuellen Sitzung. Personenidentifizierbare Informationen werden dabei so gut wie möglich entfernt. Nur die Administratoren der entsprechenden Chrome OS-Produktgruppe in Listnr haben Zugriff auf die Protokolle. Diese werden nach 90 Tagen dauerhaft gelöscht.</translation>
+<translation id="4358361163731478742">Es sind keine Apps vorhanden, die die Sprachauswahl unterstützen</translation>
 <translation id="4358643842961018282">Dein Gerät ist auf dem neuesten Stand</translation>
 <translation id="4359408040881008151">Wurde aufgrund der abhängigen Erweiterungen installiert</translation>
 <translation id="4359717112757026264">Stadtlandschaft</translation>
@@ -4584,6 +4588,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> hat ein Passwort für <ph name="WEBSITE_NAME" /> freigegeben. Du kannst es im Anmeldeformular verwenden.</translation>
 <translation id="4558426062282641716">Berechtigung zum automatischen Start angefordert</translation>
 <translation id="4558542033859106586">Wird in <ph name="TARGET_APP" /> geöffnet</translation>
+<translation id="4558946868955275132">Hier werden nur Apps angezeigt, die die Sprachauswahl unterstützen</translation>
 <translation id="4559617833001311418">Diese Website greift auf meine Bewegungs- oder Lichtsensoren zu.</translation>
 <translation id="4560728518401799797">Weitere Optionen für das Lesezeichen „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="4561893854334016293">Keine vor Kurzem geänderten Berechtigungen</translation>
@@ -5017,6 +5022,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4893522937062257019">Auf dem Sperrbildschirm</translation>
 <translation id="4895799941222633551">&amp;Verknüpfung erstellen…</translation>
 <translation id="4898011734382862273">Das Zertifikat "<ph name="CERTIFICATE_NAME" />" repräsentiert eine Zertifizierungsstelle</translation>
+<translation id="4898913189644355814">Möglicherweise speichert eine Website deine bevorzugte Sprache oder Artikel, die du kaufen möchtest. Diese Informationen sind für die Website und ihre Subdomains verfügbar.</translation>
 <translation id="4899052647152077033">Farben umkehren</translation>
 <translation id="4899696330053002588">Enthält Werbung</translation>
 <translation id="490031510406860025">Auf dieser Website nicht zugelassen</translation>
@@ -5910,6 +5916,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5631272057151918206">Dadurch werden bis zu <ph name="OFFLINE_STORAGE_SIZE" /> Speicherplatz freigegeben, der von deinen Offlinedateien belegt wird. Einige Dateien werden weiterhin offline verfügbar sein. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Berechtigung angefordert. Drücke „Ctrl + Weiter“, um zu reagieren.</translation>
 <translation id="5632221585574759616">Weitere Informationen zu Erweiterungsberechtigungen</translation>
+<translation id="5632485077360054581">Zeigen</translation>
 <translation id="5632566673632479864">Dein Konto <ph name="EMAIL" /> ist nicht mehr als primäres Konto zugelassen. Da dieses Konto von <ph name="DOMAIN" /> verwaltet wird, werden dein Verlauf sowie deine Lesezeichen, Passwörter und sonstigen Einstellungen von diesem Gerät gelöscht.</translation>
 <translation id="5633149627228920745">Weitere Informationen zu den Systemanforderungen</translation>
 <translation id="563371367637259496">Mobil</translation>
@@ -7022,6 +7029,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6535331821390304775"><ph name="ORIGIN" /> immer erlauben, Links dieses Typs in der zugehörigen App zu öffnen</translation>
 <translation id="653659894138286600">Dokumente und Bilder scannen</translation>
 <translation id="6537613839935722475">Der Name darf aus Buchstaben, Ziffern und Bindestrichen (-) bestehen</translation>
+<translation id="6538036594527795020">Sprache der App „<ph name="APP" />“ ändern. Die aktuelle Sprache ist <ph name="LANGUAGE" />.</translation>
 <translation id="6538098297809675636">Fehler bei Codeerkennung</translation>
 <translation id="653920215766444089">Suche nach Zeigegerät läuft</translation>
 <translation id="6539674013849300372">Mit einem starken Passwort bist du online besser geschützt. Es wird für <ph name="EMAIL" /> im <ph name="GOOGLE_PASSWORD_MANAGER" /> gespeichert.</translation>
@@ -7266,6 +7274,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6737663862851963468">Kerberos-Ticket entfernen</translation>
 <translation id="6738180164164974883">Drittanbieter-Cookies zulassen</translation>
 <translation id="6738430949033571771">Konto wird überprüft…</translation>
+<translation id="6739266861259291931">Auf Gerätesprache zurücksetzen</translation>
 <translation id="6739923123728562974">Desktopverknüpfung einblenden</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> angehalten</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Dein Administrator<ph name="END_LINK" /> hat Safe Browsing deaktiviert</translation>
@@ -8199,7 +8208,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="747114903913869239">Fehler: Erweiterung kann nicht entschlüsselt werden.</translation>
 <translation id="7471520329163184433">Langsamer</translation>
 <translation id="747312361841682912">Angezeigte Daten löschen</translation>
-<translation id="7473891865547856676">Nein, danke</translation>
+<translation id="7473891865547856676">Nein, Danke</translation>
 <translation id="747459581954555080">Alle wiederherstellen</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Sofortige Rückgabe erforderlich}other{<ph name="DEVICE_TYPE" /> innerhalb von {NUM_DAYS} Tagen zurückgeben}}</translation>
 <translation id="7475671414023905704">Netscape-URL für vergessene Passwörter</translation>
@@ -10441,6 +10450,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9186963452600581158">Mit dem Google-Konto eines Kindes anmelden</translation>
 <translation id="9187967020623675250">Die Tasten stimmen nicht überein. Drücke zum <ph name="RESPONSE" /> eine beliebige Taste.</translation>
 <translation id="9188732951356337132">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Dieses Gerät sendet momentan automatisch Diagnose- sowie Geräte- und App-Nutzungsdaten an Google. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Wenn zusätzlich die Einstellung "Web- &amp; App-Aktivitäten" für dein Kind aktiviert ist, werden diese Daten in seinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen<ph name="END_LINK2" /></translation>
+<translation id="9191638749941292185">Sendet Untertitel zur automatischen Übersetzung an Google</translation>
 <translation id="9192019773545828776">Du erhältst gesprochenes Feedback, sodass du dein Gerät nutzen kannst, ohne auf das Display sehen zu müssen. Braille-Feedback ist auf einem verbundenen Gerät verfügbar. Verwende Strg + Alt + Z, um ChromeVox zu aktivieren oder zu deaktivieren. Mit der Suchtaste + Links- oder Rechtspfeil kannst du den Cursor bewegen. Drücke die Suchtaste + Leertaste, um ein Element auszuwählen (zu aktivieren).</translation>
 <translation id="919686179725692564">Weitere Informationen zum Sichern von Apps</translation>
 <translation id="9199503643457729322">Klicke hier, um den Datenschutz-Leitfaden zu verlassen.</translation>
@@ -10551,6 +10561,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="98515147261107953">Querformat</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Allgemein</translation>
+<translation id="987475089238841621">Sprachpakete werden für die Funktion „Automatische Untertitel“ verwendet und auf deinem Gerät gespeichert</translation>
 <translation id="988320949174893488">Gelegentliches Stocken</translation>
 <translation id="988978206646512040">Eine leere Passphrase ist nicht zulässig</translation>
 <translation id="992032470292211616">Erweiterungen, Apps und Designs können Schäden auf deinem Gerät verursachen. Möchtest du wirklich fortfahren?</translation>

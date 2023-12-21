@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{1 fenêtre de Chromium est maintenant affichée}one{{count} fenêtre de Chromium est maintenant affichée}other{{count} fenêtres de Chromium sont maintenant affichées}}</translation>
 <translation id="3344973607274501920">Chromium n'a pas pu vérifier vos mots de passe. Essayez de vérifier votre connexion Internet.</translation>
 <translation id="3366305173356742781">Données Chromium dans votre compte</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute. Les données pourraient inclure celles de l'historique et du Remplissage automatique.}one{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute. Les données pourraient inclure celles de l'historique et du Remplissage automatique.}other{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minutes. Les données pourraient inclure celles de l'historique et du Remplissage automatique.}}</translation>
 <translation id="3472200483164753384">Fonctionnalité non prise en charge par Chromium Canary</translation>
 <translation id="3478750326643748149">Masquez « Tirez le meilleur parti de Chromium »</translation>
 <translation id="3512168799938877162">Votre mot de passe n'a pas été partagé. Vérifiez votre connexion Internet et assurez-vous que vous êtes connecté à Chromium. Ensuite, réessayez.</translation>
@@ -284,6 +285,7 @@ Pour modifier ce réglage, <ph name="BEGIN_LINK" />effacez les données Chromium
 <translation id="8909995017390087892">Chromium pour iOS</translation>
 <translation id="8924617840944134898">Ouvrir un onglet de navigation privée dans Chromium</translation>
 <translation id="894437814105052438">Lorsque vous vous déconnectez, Chromium ne synchronise aucune nouvelle donnée avec votre compte Google. Les données précédemment synchronisées demeurent dans le compte.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute}one{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute}other{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minutes}}</translation>
 <translation id="8963279154877372067">Autoriser les notifications de Chromium à vous envoyer des alertes relatives aux réductions de prix</translation>
 <translation id="900560297598578021">Connecté en tant que <ph name="EMAIL" />.
 

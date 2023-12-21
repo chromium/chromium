@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Gazania</translation>
 <translation id="4943368462779413526">Fútbol americano</translation>
 <translation id="4961158930123534723">Se compartió 1 carpeta con Parallels Desktop</translation>
+<translation id="4965874878399872778">Verificando los archivos según las políticas de seguridad de tu organización…</translation>
 <translation id="496656650103537022">Se restableció <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Álbum</translation>
 <translation id="4972330214479971536">No se pudo completar la configuración de la sincronización de archivos</translation>
@@ -710,6 +711,7 @@
 <translation id="6430271654280079150">Te queda 1 intento.</translation>
 <translation id="643243556292470964">Los archivos borrados ahora se moverán a la papelera</translation>
 <translation id="6438480100790416671">Comprobando el espacio de almacenamiento…</translation>
+<translation id="6451527188465304418">Verificando el archivo según las políticas de seguridad de tu organización…</translation>
 <translation id="6485131920355264772">No se pudo recuperar la información sobre el espacio.</translation>
 <translation id="6495925982925244349">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, administrada por tu administrador, detalles</translation>
 <translation id="649877868557234318">Extrayendo <ph name="FILE_NAME" /> en <ph name="FOLDER_NAME" /></translation>

@@ -2359,7 +2359,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5695542892312572833">Vil du bruke Windows Hello for å verifisere og fullføre kjøpet?</translation>
 <translation id="5699628521141772782">Meierivarer og egg</translation>
 <translation id="5700761515355162635">Informasjonskapsler fra tredjeparter tillates</translation>
-<translation id="5701023235904684227">Vil du la nettstedet styre <ph name="READERNAME" /> og få tilgang til det tilknyttede smartkortet?</translation>
 <translation id="5701381305118179107">Midtstill</translation>
 <translation id="5707154300732650394">Fortsett reisen</translation>
 <translation id="57094364128775171">Foreslå et sterkt passord…</translation>
@@ -2494,6 +2493,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5997247540087773573">Passordet du nettopp brukte, er funnet i et databrudd. For å sikre kontoene dine anbefaler Google Passordlagring at du endrer det nå og sjekker de lagrede passordene dine.</translation>
 <translation id="5999271311987646952">Chrome har innebygde sikkerhetsfunksjoner som beskytter deg når du surfer – for eksempel Google Safe Browsing, som <ph name="BEGIN_LINK" />nylig har funnet skadelig programvare<ph name="END_LINK" /> på nettstedet du prøver å besøke.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultater for «<ph name="SEARCH_TEXT" />»</translation>
+<translation id="6001839398155993679">Sett i gang</translation>
 <translation id="6002122790816966947">Enhetene dine</translation>
 <translation id="6005659677094197001">Kontinuerlig</translation>
 <translation id="6005765687956866568">Den autoutfylte informasjonen ble fjernet fra skjemaet</translation>

@@ -40,6 +40,7 @@
 <translation id="1153356358378277386">যুক্ত করা ডিভাইসগুলি</translation>
 <translation id="1155734730463845512">বর্তমান ব্যাটারি লেভেল <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">চালু এবং ব্যবহার করা হয়</translation>
+<translation id="1163437384438183174">শেল্ফ থেকে 'ফোন হাব' সরান</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">আপনার USB-C কেবলটি ডিসপ্লেতে সঠিকভাবে কানেক্ট নাও করতে পারে</translation>
 <translation id="1175572348579024023">স্ক্রল করুন</translation>
@@ -70,6 +71,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ফিচারটি কানেক্ট করা আছে।</translation>
 <translation id="1240638468526743569">একটি অ্যাপ</translation>
 <translation id="1242883863226959074">ডিভাইস</translation>
+<translation id="1245644940275736236">Assistant-এ যান</translation>
 <translation id="124678866338384709">বর্তমান ট্যাব বন্ধ করুন</translation>
 <translation id="1246890715821376239">কাজ করে না এমন অ্যাপ</translation>
 <translation id="1247372569136754018">মাইক্রোফোন (অভ্যন্তরীণ)</translation>
@@ -692,6 +694,7 @@
 <translation id="383629559565718788">কীবোর্ড সেটিংস দেখান</translation>
 <translation id="384082539148746321">টেমপ্লেট মুছবেন?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> তারপর <ph name="KEY_ONE" /> বা <ph name="KEY_TWO" /> অথবা <ph name="KEY_THREE" /> কিংবা <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">৫০+৯৪/৫</translation>
 <translation id="3846575436967432996">কোনো নেটওয়ার্ক সংক্রান্ত তথ্য উপলব্ধ নেই</translation>
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="385300504083504382">শুরুর দিকে</translation>
@@ -926,6 +929,7 @@
 <translation id="4759238208242260848">ডাউনলোড</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + ঊর্দ্ধমুখী তীরচিহ্ন</translation>
 <translation id="4762573482154983647">অ্যাপ লুকান</translation>
+<translation id="4762802395013012237">৫ ফুটে কত মিটার</translation>
 <translation id="4763885921995354846">এর ফলে এবং ক্যামেরা ও মাইক্রোফোন ব্যবহার করার অনুমতি আছে এমন সমস্ত অ্যাপ ও ওয়েবসাইটে ক্যামেরা অ্যাক্সেস করা যায়। আপনাকে ওয়েব পেজ রিফ্রেশ করতে বা অ্যাপটি রিস্টার্ট করতে হতে পারে।</translation>
 <translation id="4774338217796918551">আগামীকাল <ph name="COME_BACK_TIME" />-এ আবার ব্যবহার করতে পারবেন।</translation>
 <translation id="4776584068981882959">আপনার পাসওয়ার্ড এখনও যাচাই করা যায়নি। আবার চেষ্টা করুন।</translation>
@@ -968,6 +972,7 @@
 <translation id="491504982845934899">ডিভাইস সেট-আপ করার পরে চালু করুন<ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">জোরালো</translation>
 <translation id="4918086044614829423">স্বীকার</translation>
+<translation id="491907188205944472">আপনি যা চান তা সরাসরি লঞ্চারে সার্চ করুন</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> এখন আপনার ক্যামেরা ব্যবহার করছে</translation>
 <translation id="492453977506755176">'ক্যাপচার মোড' কী</translation>
 <translation id="4925542575807923399">এই অ্যাকাউন্টের অ্যাডমিনিস্ট্রেটর অ্যাকাউন্টটিকে একাধিক সাইন-ইন সেশনের প্রথম সাইন-ইন করে থাকা অ্যাকাউন্ট হিসেবে রাখতে চায়৷</translation>
@@ -1118,6 +1123,7 @@
 <translation id="5518068085000130971">এগুলি ছিল প্রাথমিক! 'ঘুরে দেখুন'-এ চালিয়ে যান, পরামর্শ ও সহায়তার জন্য আমাদের বিল্ট-ইন অ্যাপ। আপনি চালু করার জন্য পরামর্শ, সাজেশন দেওয়া অ্যাপ, বিশেষ অফার ও সবচেয়ে নতুন Chromebook ফিচার পাবেন।</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">আপনার অ্যাডমিনিস্ট্রেটর সকল ই-সিম প্রোফাইল সরিয়ে দিয়েছেন। আরও তথ্যের জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
+<translation id="5520909879404821039">ফরাসি ভাষায় 'Hi'</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> কানেক্ট করা হচ্ছে।</translation>
 <translation id="5529587891732734495">কাস্ট করা পজ করুন</translation>
 <translation id="5532994612895037630">ফুল স্ক্রিন ছবি ক্যাপচার করতে, যেকোনও জায়গায় ট্যাপ করুন</translation>
@@ -1696,6 +1702,7 @@
 <translation id="7886277072580235377">আপনি সাইন-আউট করলে আপনার ইন্টারনেট সেশন মুছে ফেলা হবে। <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">একটি ইমেল পাঠান</translation>
 <translation id="7893503627044934815">এই ফাইলটি দেখাতে চাই না</translation>
+<translation id="7893547474469215105">'পরম' শব্দটির সংজ্ঞা কী</translation>
 <translation id="7895348134893321514">টোট</translation>
 <translation id="7897375687985782769">স্ক্রিন ঘোরানোর জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি স্ক্রিন ঘোরাতে চান?</translation>
 <translation id="7897626842031123113">স্ট্যাটাস ট্রে, সময় <ph name="TIME" />,
@@ -1711,6 +1718,7 @@
 <translation id="7904094684485781019">এই অ্যাকাউন্টের অ্যাডমিনিস্ট্রেটর একাধিক সাইন-ইন অননুমোদিত করেছেন৷</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" />টি ডিভাইস কানেক্ট করা হয়েছে</translation>
+<translation id="7923534281713082605">আবহাওয়া</translation>
 <translation id="7926080067315048321">ওয়েব থেকে Google Tasks-এ সব টাস্ক দেখুন</translation>
 <translation id="7930731167419639574">স্পিচ এখন স্থানীয়ভাবে প্রসেস করা হয় এবং ডিকটেশন অফলাইনে কাজ করে</translation>
 <translation id="7932451802722951285">Google Calendar-এ খুলুন</translation>
@@ -1857,6 +1865,7 @@
 <translation id="8555757996376137129">বর্তমান ডেস্ক সরিয়ে দিন</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> আপনার <ph name="DEVICE_TYPE" /> আপডেট করার সাজেশন দিচ্ছে</translation>
 <translation id="8563862697512465947">বিজ্ঞপ্তি সেটিংস</translation>
+<translation id="8569751806372591456">চেষ্টা করে দেখতে পারেন এমন কয়েকটি সাজেশন দেওয়া হল</translation>
 <translation id="857201607579416096">স্ক্রিনের নিচে ডানদিকের কোণায় মেনু সরে গেছে।</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /> <ph name="MODIFIER_2" /> প্রেস করুন এবং একটি লিঙ্কে ক্লিক করুন</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1900,6 +1909,7 @@
 <translation id="875593634123171288">VPN সেটিংস দেখান</translation>
 <translation id="8759408218731716181">একাধিক সাইন-ইন সেট-আপ করা যাবে না</translation>
 <translation id="8763883995157866248">স্লিপ মোডে ডিভাইস রাখুন</translation>
+<translation id="877404052021108314">৯০° ফারেনহাইটে কত সেন্টিগ্রেড</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, ইনস্টল করা অ্যাপ, ব্লক করা হয়েছে</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />-এ কানেক্ট করুন</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1908,6 +1918,7 @@
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> ফোল্ডার</translation>
 <translation id="880709030178078220">"সহায়তা করুন"</translation>
 <translation id="8814190375133053267">ওয়াই-ফাই</translation>
+<translation id="8815390544836110344">স্ক্রিনশট শর্টকাট, Ctrl + Shift + 'ওভারভিউ মোড' কী-তে প্রেস করুন</translation>
 <translation id="881757059229893486">'ইনপুট পদ্ধতি' সেটিংস</translation>
 <translation id="8819728065740986820">'অ্যাডাপ্টিভ চার্জিং' ফিচারটি চালু আছে</translation>
 <translation id="8825863694328519386">ফিরে যেতে আপনার স্ক্রিনের বাম প্রান্ত থেকে সোয়াইপ করুন</translation>

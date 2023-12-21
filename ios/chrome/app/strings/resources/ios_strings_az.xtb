@@ -512,6 +512,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="371398631992790800">Əlfəcinləri gizlədin</translation>
 <translation id="37207012422556617">Aktual Axtarışlar</translation>
 <translation id="3725081662140949903">Digərlərinin paroldan istifadə etməməsi üçün <ph name="APP" /> tətbiqini açın</translation>
+<translation id="3738428049780661523">Yaradılıb: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Endirmələri gizlədin</translation>
 <translation id="3745190878148784130">"Mətn ölçüsünü dəyişin" seçimini gizlədin</translation>
 <translation id="3762232513783804601">iPad'iniz üçün hazırlanıb</translation>
@@ -556,6 +557,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3968505803272650567">Maraqları idarə edin</translation>
 <translation id="3989635538409502728">Çıxış</translation>
 <translation id="3995521777587992544">Səhifənin yüklənmə gedişatını göstərən panel, <ph name="EMAIL" /> yüklənib.</translation>
+<translation id="3997522473364371632">Administrator parol paylaşımını deaktiv edib.</translation>
 <translation id="4002019827078931033">Ünvan panelini yuxarı köçürün</translation>
 <translation id="4002066346123236978">Başlıq</translation>
 <translation id="4004204301268239848">Parollar Google Hesabınızda yadda saxlanılıb. Onları istənilən cihazda istifadə edə bilərsiniz.</translation>
@@ -1202,6 +1204,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7425346204213733349">Əlfəcin, tarixçə, parol və digər ayarlarınızdakı dəyişikliklər artıq Google Hesabınıza sinxronizasiya olunmayacaq. Buna baxmayaraq, mövcud datanız Google hesabınızın yaddaşında qalacaq.</translation>
 <translation id="7431991332293347422">Axtarış tarixçəsinin Axtarış və sairəni necə fərdiləşdirdiyinə nəzarət edin</translation>
 <translation id="7435356471928173109">Administratorunuz tərəfindən deaktiv edilib</translation>
+<translation id="7436239899443308800">{count,plural, =1{1 tab}other{{count} tab}}</translation>
 <translation id="7438481509621345350">İndi yeni tab açdığınız zaman <ph name="CHANNEL_NAME" /> saytından hekayələri görəcəksiniz.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Əlfəcin "{title}" bölməsində saxlandı}other{Əlfəcinlər "{title}" bölməsində saxlandı}}</translation>
 <translation id="7454057999980797137">Ştat/Ölkə</translation>

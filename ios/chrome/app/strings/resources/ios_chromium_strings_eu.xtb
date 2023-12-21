@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{Chromium-eko leiho bat dago ikusgai}other{Chromium-eko {count} leiho daude ikusgai}}</translation>
 <translation id="3344973607274501920">Chromium-ek ezin izan ditu egiaztatu pasahitzak. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="3366305173356742781">Kontuan dauden Chromium-eko datuak</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Baliteke historia eta betetze automatikoa barnean sartzea.}other{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Baliteke historia eta betetze automatikoa barnean sartzea.}}</translation>
 <translation id="3472200483164753384">Ez da bateragarria Chromium Canary-rekin</translation>
 <translation id="3478750326643748149">Ezkutatu "Atera ahalik eta etekin handiena Chromium-i"</translation>
 <translation id="3512168799938877162">Ez da partekatu pasahitza. Egiaztatu Internetera konektatuta zaudela eta ziurtatu Chromium-en saioa hasi duzula. Ondoren, saiatu berriro.</translation>
@@ -282,6 +283,7 @@ Kontuan hartu beharrekoak:
 <translation id="8909995017390087892">iOS-erako Chromium</translation>
 <translation id="8924617840944134898">Ireki Chromium-en ezkutuko moduko fitxa bat</translation>
 <translation id="894437814105052438">Saioa amaitzen duzunean, Chromium-ek ez du datu berririk sinkronizatuko Google-ko kontuarekin. Lehendik sinkronizatuta dauden datuak kontuan geratuko dira.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori}other{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori}}</translation>
 <translation id="8963279154877372067">Prezio-jaitsierei buruzko alertak jasotzeko, eman jakinarazpenak bidaltzeko baimena Chromium-i</translation>
 <translation id="900560297598578021"><ph name="EMAIL" /> gisa hasi duzu saioa.
 

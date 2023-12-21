@@ -2355,7 +2355,6 @@
 <translation id="5695542892312572833">使用 Windows Hello 验证并完成您的购买交易？</translation>
 <translation id="5699628521141772782">乳制品和鸡蛋</translation>
 <translation id="5700761515355162635">已允许使用第三方 Cookie</translation>
-<translation id="5701023235904684227">是否允许操作 <ph name="READERNAME" />，并获得对其可访问智能卡的访问权限？</translation>
 <translation id="5701381305118179107">居中</translation>
 <translation id="5707154300732650394">继续您的历程</translation>
 <translation id="57094364128775171">建议安全系数高的密码…</translation>
@@ -2490,6 +2489,7 @@
 <translation id="5997247540087773573">您刚才使用的密码遭遇了数据泄露。为确保您的账号安全，Google 密码管理工具建议您立即更改此密码并检查您已保存的所有密码。</translation>
 <translation id="5999271311987646952">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能，该功能近期在您尝试访问的网站上<ph name="BEGIN_LINK" />发现了恶意软件<ph name="END_LINK" />。</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
+<translation id="6001839398155993679">开始</translation>
 <translation id="6002122790816966947">您的设备</translation>
 <translation id="6005659677094197001">连续纸</translation>
 <translation id="6005765687956866568">已从此表单中清除自动填充的信息</translation>
@@ -3774,7 +3774,7 @@
 <translation id="8457125768502047971">无限期</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">开启</translation>
-<translation id="8461694314515752532">使用您自己的同步密码加密已同步的数据</translation>
+<translation id="8461694314515752532">使用您自己的同步口令加密已同步的数据</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 张信用卡}other{# 张信用卡}}</translation>
 <translation id="8467494337615822642">前往“设置”中的 Chrome 安全检查页面</translation>
 <translation id="8468358362970107653">C3 信封</translation>

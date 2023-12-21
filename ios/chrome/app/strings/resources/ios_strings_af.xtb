@@ -512,6 +512,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="371398631992790800">Versteek boekmerke</translation>
 <translation id="37207012422556617">Soektogneigings</translation>
 <translation id="3725081662140949903">Maak die <ph name="APP" />-app oop om jou wagwoord te verander om ander te keer om jou wagwoord te gebruik</translation>
+<translation id="3738428049780661523"><ph name="DATE" /> geskep</translation>
 <translation id="374357899112510277">Versteek aflaaie</translation>
 <translation id="3745190878148784130">Versteek zoomteks</translation>
 <translation id="3762232513783804601">Gebou vir jou iPad</translation>
@@ -556,6 +557,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3968505803272650567">Bestuur belangstellings</translation>
 <translation id="3989635538409502728">Meld af</translation>
 <translation id="3995521777587992544">Bladlaaivorderingsbalk, <ph name="EMAIL" /> gelaai.</translation>
+<translation id="3997522473364371632">Wagwoorddeling is deur jou administrateur deaktiveer.</translation>
 <translation id="4002019827078931033">Skuif adresbalk na bo</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4004204301268239848">Wagwoorde word in jou Google-rekening gestoor sodat jy hulle op enige toestel kan gebruik.</translation>
@@ -1202,6 +1204,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7425346204213733349">Veranderinge aan jou boekmerke, geskiedenis, wagwoorde en ander instellings sal nie meer met jou Google-rekening gesinkroniseer word nie. Jou bestaande data sal egter in jou Google-rekening geberg bly.</translation>
 <translation id="7431991332293347422">Beheer hoe jou blaaigeskiedenis gebruik word om Search en meer te personaliseer</translation>
 <translation id="7435356471928173109">Afgeskakel deur jou administrateur</translation>
+<translation id="7436239899443308800">{count,plural, =1{1 oortjie}other{{count} oortjies}}</translation>
 <translation id="7438481509621345350">Jy sal nou stories van <ph name="CHANNEL_NAME" /> af sien wanneer jy 'n nuwe oortjie oopmaak.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Boekmerk is gestoor na “{title}”}other{Boekmerke is gestoor na “{title}”}}</translation>
 <translation id="7454057999980797137">Staat / Distrik</translation>
@@ -1209,7 +1212,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7459628154744868585">Verbeterde Beskerming is aan</translation>
 <translation id="7465351360025415755">Kry inhoud wat vir jou saak maak</translation>
 <translation id="7472734401283673885">Maatskappynaam</translation>
-<translation id="7473891865547856676">Nee, dankie</translation>
+<translation id="7473891865547856676">Nee, Dankie</translation>
 <translation id="7488874549363591659">Afgelewer</translation>
 <translation id="7491131399623468277">Gaan na Instellings …</translation>
 <translation id="749854780843431406">Jy kan ’n nuwe oortjie vanaf die <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />-knoppie oopmaak.</translation>
@@ -1364,7 +1367,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8271720166617117963">Aanvaar en meld aan</translation>
 <translation id="8273982424131314219">Jy sal inligting in <ph name="URL" /> invul</translation>
 <translation id="8281781826761538115">Verstek – <ph name="DEFAULT_LOCALE" /></translation>
-<translation id="8281886186245836920">Slaan oor</translation>
+<translation id="8281886186245836920">Slaan Oor</translation>
 <translation id="8283172974887967105">Stel …</translation>
 <translation id="8286036467436129157">Meld aan</translation>
 <translation id="8299417921174340354">Om wagwoorde te gebruik, moet jy eers 'n wagkode op jou toestel stel.</translation>
@@ -1425,7 +1428,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8613883225817609844">Versteek onlangse oortjies</translation>
 <translation id="8620640915598389714">Redigeer</translation>
 <translation id="8624447588354561276">Pakkienommer</translation>
-<translation id="8624753446837753970">Stel posisie</translation>
+<translation id="8624753446837753970">Stel Posisie</translation>
 <translation id="8626393685701737946">Jy kan die verstekwerfaansig in Instellings &gt; Inhoudinstellings na rekenaar toe verander</translation>
 <translation id="8636825310635137004">Skakel sinkronisering aan om jou oortjies van jou ander toestelle af te kry.</translation>
 <translation id="8637431369725868556">Kry beskerming teen gevaarlike werwe.</translation>

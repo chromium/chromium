@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">Входна тава</translation>
 <translation id="1975584088563498795">Пощенска кутия 10</translation>
 <translation id="1978555033938440688">Версия на фърмуера</translation>
+<translation id="1979156660928743046">Информация за мултимедията</translation>
 <translation id="1988881251331415125">Ако изписването е правилно, <ph name="BEGIN_LINK" />стартирайте диагностика на свързаността<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">Катерене и алпинизъм</translation>
 <translation id="1991830984769263878">Автомобилно застраховане</translation>
@@ -632,6 +633,7 @@
 <translation id="219906046732893612">Подобрение на дома</translation>
 <translation id="2202627062836089804">задната страна на картата ви</translation>
 <translation id="2204482073374652408">Актуализирането завърши!</translation>
+<translation id="2207770355672215546">Разрешаване винаги с която и да е карта</translation>
 <translation id="2208053750671792556">Не получихте кода си? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Тава 3</translation>
 <translation id="2210794033760923560">Качване на отчет</translation>
@@ -1524,6 +1526,7 @@
 <translation id="4050599136622776556">Chromium се опитва да редактира начините на плащане.</translation>
 <translation id="405399507749852140">Получаване на сигнали при понижение на цената в който и да е сайт</translation>
 <translation id="4056223980640387499">Сепия</translation>
+<translation id="4059523390906550209">Научете повече за защитата на чувствителните данни</translation>
 <translation id="4063063121357725926">Позволете на Google да ви помага да намирате отстъпки за кошниците си</translation>
 <translation id="406358100705415968">Защитна екипировка за безопасност на труда</translation>
 <translation id="4063924980214801036">Използвайте функцията за отключване на устройството, за да потвърждавате карти по-бързо</translation>
@@ -1682,6 +1685,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блокиране (по подразбиране)</translation>
 <translation id="4314815835985389558">Управление на синхронизирането</translation>
+<translation id="4316057107946726368">Въведете обосновка с дължина най-много <ph name="MAX_CHAR_COUNT" /> знака. Използвахте <ph name="ACTUAL_CHAR_COUNT" /> от <ph name="MAX_CHAR_COUNT" /> знака.</translation>
 <translation id="4318213823155573975">Шапки</translation>
 <translation id="4318312030194671742">Услуга за създаване на визуализации на изобразяването</translation>
 <translation id="4318566738941496689">Името и мрежовия адрес на устройството ви</translation>
@@ -2489,6 +2493,7 @@
 <translation id="5997247540087773573">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. За да защитите профилите си, Google Мениджър на пароли ви препоръчва да я промените сега и да проверите запазените си пароли.</translation>
 <translation id="5999271311987646952">Chrome има вградени функции за безопасност, които да ви защитават, докато сърфирате. Такава функция е Google Безопасно сърфиране, която <ph name="BEGIN_LINK" />наскоро откри злонамерен софтуер<ph name="END_LINK" /> на сайта, който се опитвате да посетите.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> резултата за „<ph name="SEARCH_TEXT" />“</translation>
+<translation id="6001839398155993679">Начало</translation>
 <translation id="6002122790816966947">Вашите устройства</translation>
 <translation id="6005659677094197001">Непрекъснат носител</translation>
 <translation id="6005765687956866568">Автоматично попълнената информация е изчистена от формуляра</translation>
@@ -2669,6 +2674,7 @@
 <translation id="6355392890578844978">Този браузър не се управлява от дружество или друга организация. Възможно е активността на устройството да се управлява извън Chromium. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">редактира начините на плащане</translation>
 <translation id="6358450015545214790">Какво означават тези неща?</translation>
+<translation id="6360213755783740931">Научете повече за защитата от злонамерен софтуер</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Преглед на регистрационните файлове</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Проверете конфигурацията на прокси сървъра, защитната стена и защитения DNS<ph name="END_LINK" />.</translation>
@@ -2726,6 +2732,7 @@
 <translation id="6443406338865242315">Кои разширения и приставки сте инсталирали</translation>
 <translation id="6446608382365791566">Добавяне на още информация</translation>
 <translation id="6447842834002726250">„Бисквитки“</translation>
+<translation id="6448371595882710519">Научете повече за контролите за данни</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Плик Chou 40</translation>
 <translation id="6451458296329894277">Потвърдете повторното изпращане на формуляра</translation>

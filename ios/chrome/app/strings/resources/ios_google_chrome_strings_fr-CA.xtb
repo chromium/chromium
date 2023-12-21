@@ -63,6 +63,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="2427791862912929107">Chrome comprend des fonctionnalités qui vous aident à gérer vos données Internet et la vitesse de chargement des pages Web.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Pour récupérer facilement vos mots de passe enregistrés dans vos autres applications, utilisez Chrome pour le remplissage automatique</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Cela se produit lorsque Chrome n'est pas utilisé pendant {THRESHOLD} minute. Les données pourraient inclure celles de l'historique et du Remplissage automatique.}one{Cela se produit lorsque Chrome n'est pas utilisé pendant {THRESHOLD} minute. Les données pourraient inclure celles de l'historique et du Remplissage automatique.}other{Cela se produit lorsque Chrome n'est pas utilisé pendant {THRESHOLD} minutes. Les données pourraient inclure celles de l'historique et du Remplissage automatique.}}</translation>
 <translation id="2561231791489583059">Utilisez Chrome comme navigateur par défaut pour vous protéger des sites dangereux et conserver vos mots de passe en sécurité</translation>
 <translation id="2574249610672786438">Pour voir vos onglets partout où vous utilisez Chrome, connectez-vous sur tous vos appareils</translation>
 <translation id="2576431527583832481">Une nouvelle version améliorée de Google Chrome est maintenant offerte.</translation>
@@ -91,6 +92,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3282568296779691940">Connexion à Chrome</translation>
 <translation id="3340938510625667914">Actions de Chrome</translation>
 <translation id="3345341804167540816">Utiliser Chrome sur toutes les plateformes</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Cela se produit lorsque Chrome n'est pas utilisé pendant {THRESHOLD} minute}one{Cela se produit lorsque Chrome n'est pas utilisé pendant {THRESHOLD} minute}other{Cela se produit lorsque Chrome n'est pas utilisé pendant {THRESHOLD} minutes}}</translation>
 <translation id="3399930248910934354">Ouvrir les paramètres de Chrome</translation>
 <translation id="3472587960215700950">Chrome utilise Google Maps pour vous fournir des itinéraires et des informations locales sur les adresses détectées.</translation>
 <translation id="3503014945441706099">Bénéficiez également de la navigation sécurisée améliorée pour ce profil Chrome</translation>

@@ -1115,7 +1115,6 @@ Si se inhabilita, <ph name="PRODUCT_NAME" /> cerrará la pestaña después de ca
 
       La API Managed Configuration es una configuración clave-valor a la que se puede acceder llamando a la función de JavaScript navigator.device.getManagedConfiguration(). Esta API solo está disponible para orígenes que se correspondan con aplicaciones web de instalación forzada mediante <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
      </translation>
-<translation id="1918690415433353669">Permitir Organización de pestañas sin registrar los detalles de la pestaña</translation>
 <translation id="1919802376548418720">Usa la política del centro de distribución de llaves (KDC) para delegar credenciales.</translation>
 <translation id="1920046221095339924">Permitir sesión gestionada en el dispositivo</translation>
 <translation id="1920772397574801429">Si se define esta política, se especificará el tipo de cuentas proporcionadas por la aplicación de autenticación de Android compatible con la autenticación <ph name="HTTP_NEGOTIATE" /> (como la autenticación Kerberos). Esta información debe estar disponible desde el proveedor de la aplicación de autenticación. Para obtener más información, consulta The Chromium Projects (https://goo.gl/hajyfN).
@@ -1692,7 +1691,6 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
 Si se inhabilita esta política, los usuarios o las variaciones de <ph name="PRODUCT_NAME" /> no podrán habilitar NewBaseUrlInheritanceBehavior en caso de que se detecten problemas de compatibilidad. Si la política se habilita o no se establece, se permitirá habilitar NewBaseUrlInheritanceBehavior.</translation>
 <translation id="2362469626417133796">Periodo de reinicio</translation>
 <translation id="2362539163677485510">El token de registro de la política relativa a la nube</translation>
-<translation id="2362947328909044249">Permitir organización de pestañas</translation>
 <translation id="2363928351203698966">Si se le asigna un valor válido a esta política, <ph name="PRODUCT_NAME" /> no podrá usar las versiones de SSL/TLS anteriores a la versión especificada. Los valores que no se reconozcan se ignorarán.
 
       Si no se establece esta política, <ph name="PRODUCT_NAME" /> mostrará un error para las versiones TLS 1.0 y TLS 1.1, pero el usuario podrá evitarlo.
@@ -2026,7 +2024,6 @@ El sistema solo consultará los registros AAAA cuando sea alcanzable para un hos
 <translation id="2650049181907741121">Acción que se realiza cuando el usuario cierra la tapa</translation>
 <translation id="2656559539624760733">No usar Chrome Root Store</translation>
 <translation id="2658653824183107970">Permite usar la implementación antigua de <ph name="CORS" /> en vez de la nueva implementación de <ph name="CORS" />.</translation>
-<translation id="2659064869547694451">Permitir Redactar</translation>
 <translation id="2660846099862559570">No utilizar nunca un proxy</translation>
 <translation id="2661628029848851543">Se permiten todos los usos de las cuentas gestionadas</translation>
 <translation id="2664391398878045611">La página Nueva pestaña no mostrará el anuncio del espacio intermedio aunque esté disponible</translation>
@@ -2802,7 +2799,6 @@ Si la política se inhabilita, Navegación segura no analizará los archivos que
 Estas restricciones se aplican a las descargas activadas desde el contenido de las páginas web o a través de la opción "Descargar enlace" del menú. No se aplican a la opción para guardar o descargar de la página actual ni a la opción para guardar como PDF de las opciones de impresión.
 
 En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="3300322252167923819">Permitir Organización de pestañas</translation>
 <translation id="3300784749135986828">Habilita o inhabilita <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Habilitar extensión de estadísticas</translation>
 <translation id="3302829897293005699">Si se habilita la política o no se establece, los dispositivos registrados enviarán información sobre las sesiones activas del kiosko, como el ID de la aplicación o la versión.
@@ -3413,7 +3409,6 @@ Esta política es una solución temporal y se eliminará gradualmente (está pre
 <translation id="3799417300383048419">Mantener los datos del perfil en el disco cuando finalice la sesión del usuario</translation>
 <translation id="3799436555130241393">Sincronización de archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3803171355925844705">No permitir que los sitios puedan cargar contenido mixto</translation>
-<translation id="3806742563417418191">Permitir búsqueda de fondos de pantalla</translation>
 <translation id="3808945828600697669">Especificar una lista de complementos inhabilitados</translation>
 <translation id="3810642039169532482">Habilita la función de accesibilidad de dictado en la pantalla de inicio de sesión.
 
@@ -3425,7 +3420,6 @@ Esta política es una solución temporal y se eliminará gradualmente (está pre
 
           Si no se le asigna ningún valor, la función de dictado estará inhabilitada inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="3811562426301733860">Permitir anuncios en todos los sitios web</translation>
-<translation id="3816281648615435872">Inhabilitar Organización de pestañas</translation>
 <translation id="3816312845600780067">Habilitar combinación de teclas de rescate para inicio de sesión automático</translation>
 <translation id="3817323252437541502">Permitir que los usuarios registrados en el Programa de Protección Avanzada cuenten con más opciones de protección</translation>
 <translation id="3821861026311587684">Forzar el cierre de la sesión del usuario si su cuenta deja de estar autorizada</translation>
@@ -3967,7 +3961,6 @@ Si se inhabilita, se mostrará un mensaje de error en lugar de la solicitud de c
 <translation id="428948795004445932">Intervalo en el que se muestrean y recogen los datos de red. El valor mínimo permitido es 1 minuto.
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 10 minutos.</translation>
-<translation id="4289628882370719584">La función Organización de pestañas permite a los usuarios organizar las pestañas.</translation>
 <translation id="4290231183305601970">Texto que se mostrará al usuario en Chrome Web Store si se bloquea la instalación.</translation>
 <translation id="4293187705196369087">Permite habilitar o inhabilitar la notificación de poco espacio en disco. Se aplica a todos los usuarios del dispositivo.
 
@@ -4260,7 +4253,6 @@ Esta política no tendrá efecto si se habilita, se deja vacía o no se define.<
 <translation id="453031441196755904">Esta política está obsoleta.</translation>
 <translation id="4531706050939927436">Las aplicaciones para Android se pueden instalar de manera forzada desde la consola de administración de Google usando Google Play. No utilizan esta política.</translation>
 <translation id="4534500438517478692">Nombre de restricción de Android:</translation>
-<translation id="4537645230504195464">Permitir Redactar sin iniciar sesión</translation>
 <translation id="4541530620466526913">Cuentas locales del dispositivo</translation>
 <translation id="4542255783284620926">Bloquear la adición de una cuenta gestionada como cuenta secundaria en ChromeOS (con la sesión iniciada)</translation>
 <translation id="4543502256674577024">Configuración de actualización de dispositivos</translation>
@@ -4459,7 +4451,6 @@ Tras la configuración inicial, los usuarios podrán activar y desactivar los se
 <translation id="4674871290487541952">Permite los algoritmos no seguros en las comprobaciones de integridad de las actualizaciones e instalaciones de extensiones</translation>
 <translation id="4680961954980851756">Habilitar Autocompletar</translation>
 <translation id="4685721728282448265">Acuerdo de claves poscuántico CECPQ2 habilitado para TLS</translation>
-<translation id="4688118315245991650">Inhabilitar Redactar</translation>
 <translation id="468822697351680932">Usar la política de lista de sitios de Internet Explorer como fuente de reglas</translation>
 <translation id="4693190628432874457">Habilitar los informes de ubicación del dispositivo</translation>
 <translation id="4693779768620889402">Destinos basados en extensiones</translation>
@@ -5152,7 +5143,6 @@ Si la política se inhabilita, el historial de navegación y el de descargas no 
 <translation id="5340008866815063393">Habilitar informes de datos sobre políticas</translation>
 <translation id="5345910753471481870">No mostrar el botón de Google Lens en el cuadro de búsqueda de la página Nueva pestaña</translation>
 <translation id="5346587320074666194">Bloquear el acceso a los sensores en estos sitios web</translation>
-<translation id="5347809796754019202">Permitir Redactar</translation>
 <translation id="534836255587440809">Inhabilitar el clic automático en la pantalla de inicio de sesión</translation>
 <translation id="5348658899015174540">La API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permite que las aplicaciones web capturen varias superficies a la vez.
       Esta política desbloquea la propiedad <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> para aplicaciones web en orígenes definidos.
@@ -5693,7 +5683,6 @@ Si esta política se inhabilita o no se define, no se habilitarán los widgets G
 <translation id="5775235485119094648">Carga la batería mientras está dentro de un intervalo determinado.</translation>
 <translation id="5776485039795852974">Preguntar siempre que un sitio quiera mostrar notificaciones de escritorio</translation>
 <translation id="5783009211970309878">Imprimir encabezados y pies de página</translation>
-<translation id="5786938041290515154">Permitir búsqueda de fondos de pantalla sin iniciar sesión</translation>
 <translation id="5790763087505467169">Reducir las notificaciones de inicio automático de las sesiones de invitado administradas</translation>
 <translation id="5800329278018669527">Inhabilitar el mensaje de configuración de red si no hay conexión</translation>
 <translation id="5802931736499687181">Inhabilitar el flujo de procesamiento de informes cifrados</translation>
@@ -5884,7 +5873,6 @@ Si esta política se inhabilita o no se define, no se habilitarán los widgets G
 <translation id="596523880465577341">Esta política está obsoleta y no se admite. Usa la política <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="5966615072639944554">Extensiones con permiso para utilizar la API de confirmación remota</translation>
 <translation id="596732417280023843">El nombre del perfil del certificado.</translation>
-<translation id="597036930083735628">Inhabilitar búsqueda de fondos de pantalla</translation>
 <translation id="5972538402066550344">Permitir los controles de informes granulares</translation>
 <translation id="5975765799383881158">Si se habilita la política o no se establece, los usuarios podrán enviar comentarios a Google usando una combinación de teclas o mediante la opción que está en Menú &gt; Ayuda &gt; Notificar un problema.
 

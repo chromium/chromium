@@ -4213,6 +4213,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4246980464509998944">Sylwadau ychwanegol:</translation>
 <translation id="424726838611654458">Agor yn Adobe Reader bob tro</translation>
 <translation id="4248401726442101648">Dim camera cysylltiedig</translation>
+<translation id="4249116869350613769">Arbedwr batri</translation>
 <translation id="4249248555939881673">Wrthi'n aros am gysylltiad rhwydwaith...</translation>
 <translation id="4249373718504745892">Mae'r dudalen hon wedi'i rhwystro rhag cael mynediad at eich camera a'ch meicroffon.</translation>
 <translation id="424963718355121712">Rhaid cyflwyno apiau gan y gwesteiwr y maent effeithio arno</translation>
@@ -5043,6 +5044,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4893522937062257019">Ar y clo sgrîn</translation>
 <translation id="4895799941222633551">Creu &amp;llwybr byr...</translation>
 <translation id="4898011734382862273">Mae'r dystysgrif "<ph name="CERTIFICATE_NAME" />" yn cynrychioli Awdurdod Ardystio</translation>
+<translation id="4898913189644355814">Mae'n bosib y gall gwefan gadw eich iaith ddewisol neu eitemau rydych eisiau eu prynu. Mae'r wybodaeth hon ar gael i'r wefan a'i his-barthau.</translation>
 <translation id="4899052647152077033">Gwrthdroi lliwiau</translation>
 <translation id="4899696330053002588">Yn cynnwys hysbysebion</translation>
 <translation id="490031510406860025">Ni chaniateir ar y wefan hon</translation>
@@ -5938,6 +5940,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5631272057151918206">Bydd hyn yn dileu hyd at <ph name="OFFLINE_STORAGE_SIZE" /> o le a ddefnyddir gan eich ffeiliau all-lein. Bydd rhai ffeiliau ar gael all-lein o hyd. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Gofynnwyd am ganiatâd, pwyswch Ctrl + Forward i ymateb</translation>
 <translation id="5632221585574759616">Dysgu rhagor am ganiatadau estyniad</translation>
+<translation id="5632485077360054581">Dangoswch i fi sut</translation>
 <translation id="5632566673632479864">Ni chaniateir eich cyfrif <ph name="EMAIL" /> fel y prif gyfrif mwyach. Oherwydd bod y cyfrif hwn yn cael ei reoli gan <ph name="DOMAIN" />, bydd eich nodau tudalen, hanes, cyfrineiriau, a gosodiadau eraill yn cael eu clirio o'r ddyfais hon.</translation>
 <translation id="5633149627228920745">Dysgu rhagor am ofynion system</translation>
 <translation id="563371367637259496">Symudol</translation>

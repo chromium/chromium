@@ -2359,7 +2359,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5695542892312572833">Želite da koristite Windows Hello da biste potvrdili i završili kupovinu?</translation>
 <translation id="5699628521141772782">Mlečni proizvodi i jaja</translation>
 <translation id="5700761515355162635">Kolačići trećih strana su dozvoljeni</translation>
-<translation id="5701023235904684227">Želite li da kontrolišete uređaj <ph name="READERNAME" /> i dobijete pristup pametnoj kartici kojoj pristupa?</translation>
 <translation id="5701381305118179107">Centriraj</translation>
 <translation id="5707154300732650394">Nastavite put</translation>
 <translation id="57094364128775171">Predloži jaku lozinku…</translation>
@@ -2494,6 +2493,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5997247540087773573">Lozinka koju ste upravo koristili je pronađena pri povredi podataka. Da biste zaštitili naloge, Google menadžer lozinki preporučuje da je odmah promenite i proverite sačuvane lozinke.</translation>
 <translation id="5999271311987646952">Chrome ima ugrađene bezbednosne funkcije koje vas štite tokom pregledanja – kao što je Google bezbedno pregledanje, koje je <ph name="BEGIN_LINK" />nedavno pronašlo malver<ph name="END_LINK" /> na sajtu koji pokušavate da posetite.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultata za „<ph name="SEARCH_TEXT" />“</translation>
+<translation id="6001839398155993679">Idemo</translation>
 <translation id="6002122790816966947">Uređaji</translation>
 <translation id="6005659677094197001">Neprekidno</translation>
 <translation id="6005765687956866568">Automatski popunjene informacije su obrisane iz obrasca</translation>

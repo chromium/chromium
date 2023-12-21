@@ -63,6 +63,7 @@ Hafðu í huga:
 <translation id="2427791862912929107">Chrome inniheldur eiginleika sem hjálpa þér að stjórna netgögnunum þínum og hleðsluhraða vefsíðna.
 <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Notaðu Chrome fyrir sjálfvirka útfyllingu til að fá aðgang að vistuðum aðgangsorðum í öðrum forritum á einfaldan hátt</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Þetta gerist þegar Chrome er ekki í notkun í {THRESHOLD} mín. Þetta getur falið í sér feril og sjálfvirka útfyllingu.}one{Þetta gerist þegar Chrome er ekki í notkun í {THRESHOLD} mín. Þetta getur falið í sér feril og sjálfvirka útfyllingu.}other{Þetta gerist þegar Chrome er ekki í notkun í {THRESHOLD} mín. Þetta getur falið í sér feril og sjálfvirka útfyllingu.}}</translation>
 <translation id="2561231791489583059">Notaðu Chrome sem sjálfgefinn vafra til að njóta verndar gegn hættulegum vefsvæðum og tryggja öryggi aðgangsorðanna þinna</translation>
 <translation id="2574249610672786438">Skráðu þig inn í öllum tækjunum þínum til að sjá flipana þína hvar sem þú notar Chrome</translation>
 <translation id="2576431527583832481">Chrome er nú enn betra! Ný útgáfa er í boði.</translation>
@@ -91,6 +92,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3282568296779691940">Skráðu þig inn á Chrome</translation>
 <translation id="3340938510625667914">Chrome-aðgerðir</translation>
 <translation id="3345341804167540816">Notaðu Chrome alls staðar</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Þetta gerist þegar Chrome er ekki í notkun í {THRESHOLD} mín.}one{Þetta gerist þegar Chrome er ekki í notkun í {THRESHOLD} mín.}other{Þetta gerist þegar Chrome er ekki í notkun í {THRESHOLD} mín.}}</translation>
 <translation id="3399930248910934354">Opna stillingar Chrome</translation>
 <translation id="3472587960215700950">Chrome notar Google-kort til að sýna þér leiðarlýsingu og staðbundnar upplýsingar um heimilisföng sem greinast.</translation>
 <translation id="3503014945441706099">Fáðu „Enn öruggari vefskoðun“ fyrir þennan Chrome-prófíl líka</translation>

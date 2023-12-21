@@ -512,6 +512,7 @@
 <translation id="371398631992790800">پنهان کردن نشانک‌ها</translation>
 <translation id="37207012422556617">جستجوهای پرطرفدار</translation>
 <translation id="3725081662140949903">برای اینکه دیگران از گذرواژه‌تان استفاده نکنند، برنامه <ph name="APP" /> را باز کنید و گذرواژه‌تان را تغییر دهید</translation>
+<translation id="3738428049780661523">تاریخ ایجاد: <ph name="DATE" /></translation>
 <translation id="374357899112510277">پنهان کردن بارگیری‌ها</translation>
 <translation id="3745190878148784130">پنهان کردن «بزرگ‌نمایی نوشتار»</translation>
 <translation id="3762232513783804601">‏ساخته‌شده برای iPad شما</translation>
@@ -556,6 +557,7 @@
 <translation id="3968505803272650567">مدیریت علایق</translation>
 <translation id="3989635538409502728">خروج از سیستم</translation>
 <translation id="3995521777587992544">نوار پیشرفت بار کردن صفحه، <ph name="EMAIL" /> بار شد.</translation>
+<translation id="3997522473364371632">سرپرست شما هم‌رسانی گذرواژه را غیرفعال کرده است.</translation>
 <translation id="4002019827078931033">انتقال نوار نشانی به‌بالا</translation>
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4004204301268239848">‏گذرواژه‌ها در حساب Google شما ذخیره می‌شود تا بتوانید در همه دستگاه‌هایتان از آن‌ها استفاده کنید.</translation>
@@ -1202,6 +1204,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7425346204213733349">‏تغییرات در نشانک‌ها، سابقه، گذرواژه و سایر تنظیمات دیگر با حساب Google شما همگام‌سازی نخواهند شد. با این حال، داده‌های موجودتان در حساب Google شما باقی خواهند ماند.</translation>
 <translation id="7431991332293347422">کنترل نحوه استفاده از سابقه مرور برای شخصی‌سازی «جستجو» و موارد دیگر</translation>
 <translation id="7435356471928173109">سرپرستتان آن را خاموش کرده است</translation>
+<translation id="7436239899443308800">{count,plural, =1{۱ برگه}one{{count} برگه}other{{count} برگه}}</translation>
 <translation id="7438481509621345350">اکنون وقتی برگه جدیدی باز می‌کنید، داستان‌هایی از <ph name="CHANNEL_NAME" /> خواهید دید.</translation>
 <translation id="7451023311965289370">{count,plural, =1{نشانک در «{title}» ذخیره شد}one{نشانک در «{title}» ذخیره شد}other{نشانک‌ها در «{title}» ذخیره شد}}</translation>
 <translation id="7454057999980797137">ایالت / استان</translation>

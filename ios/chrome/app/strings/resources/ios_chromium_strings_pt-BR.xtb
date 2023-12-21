@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{Mostrando agora 1 janela do Chromium}one{Mostrando agora {count} janela do Chromium}other{Mostrando agora {count} janelas do Chromium}}</translation>
 <translation id="3344973607274501920">Não foi possível verificar suas senhas com o Chromium. Verifique sua conexão de Internet.</translation>
 <translation id="3366305173356742781">Dados do Chromium na sua conta</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto. Pode incluir o histórico e o preenchimento automático.}one{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto. Pode incluir o histórico e o preenchimento automático.}other{Isso acontece quando o Chromium não é usado por {THRESHOLD} minutos. Pode incluir o histórico e o preenchimento automático.}}</translation>
 <translation id="3472200483164753384">Indisponível no Chromium Canary</translation>
 <translation id="3478750326643748149">Ocultar "Aproveite o Chromium ao máximo"</translation>
 <translation id="3512168799938877162">Sua senha não foi compartilhada. Verifique sua conexão com a Internet e confira se você fez login no Chromium. Em seguida, tente de novo.</translation>
@@ -284,6 +285,7 @@ Considerações:
 <translation id="8909995017390087892">Chromium para iOS</translation>
 <translation id="8924617840944134898">Abrir uma guia anônima no Chromium</translation>
 <translation id="894437814105052438">Quando você se desconecta, o Chromium não sincroniza nenhum dado novo com sua Conta do Google. Os dados sincronizados anteriormente permanecem na conta.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto}one{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto}other{Isso acontece quando o Chromium não é usado por {THRESHOLD} minutos}}</translation>
 <translation id="8963279154877372067">Permitir notificações do Chromium para receber alertas de redução no preço</translation>
 <translation id="900560297598578021">Login feito como <ph name="EMAIL" />.
 

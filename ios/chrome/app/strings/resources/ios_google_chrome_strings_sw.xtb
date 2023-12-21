@@ -63,6 +63,7 @@ Mambo ya kuzingatia:
 <translation id="2427791862912929107">Chrome ina vipengele vinavyokusaidia kudhibiti data yako ya intaneti na kasi ya kupakia kurasa za wavuti.
 <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Ili upate manenosiri uliyohifadhi kwa urahisi katika programu zako zingine, tumia Chrome kwa ajili ya Kujaza Kiotomatiki</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Hali hii hutokea wakati hujatumia Chrome kwa dakika {THRESHOLD}. Data hii inaweza kujumuisha historia na matukio ya kujaza kiotomatiki.}other{Hali hii hutokea wakati hujatumia Chrome kwa dakika {THRESHOLD}. Data hii inaweza kujumuisha historia na matukio ya kujaza kiotomatiki.}}</translation>
 <translation id="2561231791489583059">Tumia Chrome kama kivinjari chako chaguomsingi ili uendelee kulindwa dhidi ya tovuti hatari na uhakikishe manenosiri yako ni salama</translation>
 <translation id="2574249610672786438">Ili uone vichupo vyako kwenye kifaa chochote unakotumia Chrome, ingia katika akaunti ukitumia vifaa vyako vyote</translation>
 <translation id="2576431527583832481">Chrome imekuwa bora! Toleo jipya linapatikana.</translation>
@@ -91,6 +92,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3282568296779691940">Ingia katika Chrome</translation>
 <translation id="3340938510625667914">Vitendo vya Chrome</translation>
 <translation id="3345341804167540816">Tumia Chrome Kila Mahali</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Hali hii hutokea wakati hujatumia Chrome kwa dakika {THRESHOLD}}other{Hali hii hutokea wakati hujatumia Chrome kwa dakika {THRESHOLD}}}</translation>
 <translation id="3399930248910934354">Fungua Mipangilio ya Chrome</translation>
 <translation id="3472587960215700950">Chrome hutumia Ramani za Google kukupatia maelekezo na maelezo ya eneo husika kwenye anwani zilizotambuliwa.</translation>
 <translation id="3503014945441706099">Pia, pata Kipengele cha Kuvinjari Salama Kilichoboreshwa kwenye wasifu huu wa Chrome</translation>

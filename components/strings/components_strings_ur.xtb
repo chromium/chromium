@@ -634,6 +634,7 @@
 <translation id="219906046732893612">گھریلو اصلاحات</translation>
 <translation id="2202627062836089804">آپ کے کارڈ کے پیچھے</translation>
 <translation id="2204482073374652408">اپ ڈیٹ مکمل ہو گئی!</translation>
+<translation id="2207770355672215546">ہمیشہ اجازت دیں، کوئی بھی کارڈ ہو</translation>
 <translation id="2208053750671792556">آپ کا کوڈ موصول نہیں ہوا؟ <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">ٹرے 3</translation>
 <translation id="2210794033760923560">رپورٹ اپ لوڈ کریں</translation>
@@ -1747,6 +1748,7 @@
 <translation id="443673843213245140">پراکسی کا استعمال غیر فعال کر دیا گیا ہے لیکن ایک واضح پراکسی کنفیگریشن متعین کی گئی ہے۔</translation>
 <translation id="4438821706955556403">عمومی قیمت</translation>
 <translation id="4441832193888514600">نظر انداز کر دیا گیا کیونکہ پالیسی صرف کلاؤڈ صارف کی پالیسی کے بطور سیٹ کی جا سکتی ہے۔</translation>
+<translation id="4445133368066241428">مقبول موضوعات</translation>
 <translation id="4449116177348980384">‏سائٹ کی ترتیبات کا نظم کریں بٹن، Chrome کی ترتیبات میں تمام سائٹس پر محفوظ کردہ اجازتوں اور ڈیٹا کا نظم کرنے کے لیے فعال کریں</translation>
 <translation id="4451135742916150903">‏سائٹ HID آلات سے منسلک ہونے کیلئے پوچھ سکتی ہے</translation>
 <translation id="4451684391620232683">صارف کو پیش کردہ ٹیکسٹ:</translation>
@@ -2359,7 +2361,6 @@
 <translation id="5695542892312572833">‏آپ کی خریداری کی توثیق اور اسے مکمل کرنے کیلئے Windows Hello کا استعمال کریں؟</translation>
 <translation id="5699628521141772782">ڈیری اور انڈے</translation>
 <translation id="5700761515355162635">فریق ثالث کوکیز کی اجازت ہے</translation>
-<translation id="5701023235904684227"><ph name="READERNAME" /> کو کنٹرول کر کے قابل رسائی اسمارٹ کارڈ تک رسائی حاصل کریں؟</translation>
 <translation id="5701381305118179107">مرکز</translation>
 <translation id="5707154300732650394">اپنا صارف کا تجربہ دوبارہ شروع کریں</translation>
 <translation id="57094364128775171">مضبوط پاس ورڈ تجویز کریں…</translation>
@@ -2494,6 +2495,7 @@
 <translation id="5997247540087773573">‏آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ اپنے اکاؤنٹس محفوظ کرنے کے لیے، Google پاس ورڈ مینیجر اسے ابھی تبدیل کرنے اور آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="5999271311987646952">‏آپ کے براؤز کرتے وقت، Chrome کے پاس آپ کو تحفظ فراہم کرنے کیلئے پہلے سے شامل حفاظتی خصوصیات ہیں، جیسے Google محفوظ براؤزنگ جسے حال ہی میں اس سائٹ پر <ph name="BEGIN_LINK" />میلویئر کا پتا چلا ہے<ph name="END_LINK" />، جسے آپ ملاحظہ کرنے کی کوشش کر رہے ہیں۔</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' کے <ph name="RESULT_COUNT" /> نتائج</translation>
+<translation id="6001839398155993679">آئیے شروع کریں</translation>
 <translation id="6002122790816966947">آپ کے آلات</translation>
 <translation id="6005659677094197001">مسلسل</translation>
 <translation id="6005765687956866568">فارم سے خود کار طریقے سے پُر کی گئی معلومات کو صاف کر دیا گیا تھا</translation>

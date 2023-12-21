@@ -40,6 +40,7 @@
 <translation id="1153356358378277386">Спалучаныя прылады</translation>
 <translation id="1155734730463845512">Бягучы ўзровень зараду акумулятара: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">уключана і выкарыстоўваецца</translation>
+<translation id="1163437384438183174">Прыбраць Тэлефонны цэнтр з панэлі доступу</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Кабель USB-C можа не падключацца да дысплэяў належным чынам</translation>
 <translation id="1175572348579024023">Прагартаць</translation>
@@ -70,6 +71,7 @@
 <translation id="1239161794459865856">Функцыя "<ph name="FEATURE_NAME" />" падключана.</translation>
 <translation id="1240638468526743569">адна з праграм</translation>
 <translation id="1242883863226959074">прыладзе</translation>
+<translation id="1245644940275736236">Перайсці да Памочніка</translation>
 <translation id="124678866338384709">Закрыць бягучую ўкладку</translation>
 <translation id="1246890715821376239">Праграмы, якія не падтрымліваюцца</translation>
 <translation id="1247372569136754018">Мікрафон (унутраны)</translation>
@@ -692,6 +694,7 @@
 <translation id="383629559565718788">Паказаць налады клавіятуры</translation>
 <translation id="384082539148746321">Выдаліць шаблон?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, затым <ph name="KEY_ONE" />, або <ph name="KEY_TWO" />, або <ph name="KEY_THREE" />, або <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50 + 94 / 5</translation>
 <translation id="3846575436967432996">Няма даступнай інфармацыі пра сетку</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">У пачатак</translation>
@@ -926,6 +929,7 @@
 <translation id="4759238208242260848">Спампоўкі</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + стрэлка ўверх</translation>
 <translation id="4762573482154983647">Схаваць праграмы</translation>
+<translation id="4762802395013012237">5 футаў у метрах</translation>
 <translation id="4763885921995354846">Доступ да камеры атрымаюць усе праграмы і вэб-сайты, якія маюць дазвол выкарыстоўваць камеру. Магчыма, трэба будзе абнавіць вэб-старонку або перазапусціць праграму.</translation>
 <translation id="4774338217796918551">Можна будзе прадоўжыць заўтра ў <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Уведзены пароль зноў аказаўся несапраўдным. Паўтарыце спробу.</translation>
@@ -968,6 +972,7 @@
 <translation id="491504982845934899">Каб актываваць сетку "<ph name="NETWORK_NAME" />", спачатку наладзьце прыладу</translation>
 <translation id="4917385247580444890">Моцны</translation>
 <translation id="4918086044614829423">Прыняць</translation>
+<translation id="491907188205944472">Шукайце патрэбнае непасрэдна на Панэлі запуску</translation>
 <translation id="4919841137949306064">Зараз <ph name="APP_NAME" /> выкарыстоўвае камеру</translation>
 <translation id="492453977506755176">Клавіша пераходу ў рэжым здымання</translation>
 <translation id="4925542575807923399">Адміністратар гэтага ўліковага запісу патрабуе, каб у сеансе з уваходам у некалькі ўліковых запісаў гэты ўліковы запіс быў першым.</translation>
@@ -1118,6 +1123,7 @@
 <translation id="5518068085000130971">З асноўнай інфармацыяй вы азнаёміліся. Карысныя парады і іншую дапамогу вы можаце атрымаць, перайшоўшы ва ўбудаваную праграму "Агляд". Вы знойдзеце інструкцыі па пачатку працы, рэкамендацыі адносна праграм, спецыяльныя прапановы і новыя функцыі Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Адміністратар выдаліў усе профілі eSIM-карт. Па дадатковую інфармацыю звяртайцеся да яго.</translation>
+<translation id="5520909879404821039">"Прывітанне" па-французску</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> падключаецца.</translation>
 <translation id="5529587891732734495">Прыпыніць трансляцыю</translation>
 <translation id="5532994612895037630">Каб запісаць увесь экран, націсніце ў любым яго месцы</translation>
@@ -1695,6 +1701,7 @@
 <translation id="7886277072580235377">Сеанс працы ў інтэрнэце будзе ачышчаны, калі вы выйдзеце. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Адправіць электронны ліст</translation>
 <translation id="7893503627044934815">Не паказваць гэты файл</translation>
+<translation id="7893547474469215105">Значэнне слова "зеніт"</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Вы націснулі спалучэнне клавіш для павароту экрана. Павярнуць экран?</translation>
 <translation id="7897626842031123113">Панэль стану, час <ph name="TIME" />,
@@ -1710,6 +1717,7 @@
 <translation id="7904094684485781019">Адміністратар уліковага запісу забараніў уваход у некалькі ўліковых запісаў.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Падключана прылад: <ph name="DEVICECOUNT" /></translation>
+<translation id="7923534281713082605">Надвор'е</translation>
 <translation id="7926080067315048321">Паглядзець усе задачы ў вэб-версіі Google Задач</translation>
 <translation id="7930731167419639574">Запісы голасу апрацоўваюцца на прыладзе і нікуды не перадаюцца. Галасавы ўвод працуе па-за сеткай.</translation>
 <translation id="7932451802722951285">Адкрыць у Google Календары</translation>
@@ -1856,6 +1864,7 @@
 <translation id="8555757996376137129">Выдаліць бягучы працоўны стол</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> рэкамендуе вам абнавіць прыладу <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Налады апавяшчэнняў</translation>
+<translation id="8569751806372591456">Вось некалькі прапаноў</translation>
 <translation id="857201607579416096">Меню перамешчана ў правы ніжні вугал экрана.</translation>
 <translation id="8581946341807941670">Трымайце <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> і націсніце на спасылку</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
@@ -1899,6 +1908,7 @@
 <translation id="875593634123171288">Паказаць налады VPN</translation>
 <translation id="8759408218731716181">Не ўдалося наладзіць уваход у некалькі ўліковых запісаў</translation>
 <translation id="8763883995157866248">Перавесці прыладу ў рэжым сну</translation>
+<translation id="877404052021108314">90°F у °C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, усталяваная праграма, заблакіравана</translation>
 <translation id="8785070478575117577">Падключыцца да сеткі <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1907,6 +1917,7 @@
 <translation id="8806053966018712535">Папка "<ph name="FOLDER_NAME" />"</translation>
 <translation id="880709030178078220">"Даведка"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">Націсніце спалучэнне клавіш для стварэння здымка экрана, Ctrl + Shift + Клавіша рэжыму агляду</translation>
 <translation id="881757059229893486">Налады метадаў уводу</translation>
 <translation id="8819728065740986820">Адаптыўная зарадка ўключана</translation>
 <translation id="8825863694328519386">Каб вярнуцца назад, правядзіце пальцам з левага краю</translation>

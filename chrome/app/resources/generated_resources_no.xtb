@@ -5924,6 +5924,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5631272057151918206">Dette medfører at opptil <ph name="OFFLINE_STORAGE_SIZE" /> lagringsplass som brukes av filene dine utenfor nettet, blir frigjort. Noen filer kommer fremdeles til å være tilgjengelige uten nett. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Nettstedet ber om tillatelse. Trykk på Ctrl + Frem for å svare</translation>
 <translation id="5632221585574759616">Finn ut mer om utvidelsestillatelser</translation>
+<translation id="5632485077360054581">Vis meg hvordan</translation>
 <translation id="5632566673632479864">Kontoen din (<ph name="EMAIL" />) er ikke tillatt som primærkonto lenger. Siden denne kontoen administreres av <ph name="DOMAIN" />, slettes bokmerkene, loggen, passordene og andre innstillinger du har, fra denne enheten.</translation>
 <translation id="5633149627228920745">Finn ut mer om systemkrav</translation>
 <translation id="563371367637259496">Mobil</translation>

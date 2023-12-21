@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Gazania Flower</translation>
 <translation id="4943368462779413526">Хөл бөмбөг</translation>
 <translation id="4961158930123534723">1 фолдерыг Parallels Desktop-тай хуваалцсан</translation>
+<translation id="4965874878399872778">Файлуудыг танай байгууллагын аюулгүй байдлын бодлогуудад нийцүүлэн шалгаж байна...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" />-г сэргээсэн</translation>
 <translation id="4969785127455456148">Цомог</translation>
 <translation id="4972330214479971536">Файлын синкийг тохируулж дуусгаж чадсангүй</translation>
@@ -708,6 +709,7 @@
 <translation id="6430271654280079150">Танд 1 оролдлого үлдсэн байна.</translation>
 <translation id="643243556292470964">Устгасан файлуудыг одоо хогийн сав руу зөөсөн</translation>
 <translation id="6438480100790416671">Хадгалах сангийн зайг шалгаж байна…</translation>
+<translation id="6451527188465304418">Файлыг танай байгууллагын аюулгүй байдлын бодлогуудад нийцүүлэн шалгаж байна...</translation>
 <translation id="6485131920355264772">Сансрын мэдээллийг сэргээн татаж авч чадсангүй</translation>
 <translation id="6495925982925244349">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, таны администратор удирддаг, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" />-г <ph name="FOLDER_NAME" /> руу татаж авах</translation>

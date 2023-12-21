@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Hoa Gazania</translation>
 <translation id="4943368462779413526">Bóng đá</translation>
 <translation id="4961158930123534723">Đã chia sẻ 1 thư mục với ứng dụng Parallels Desktop</translation>
+<translation id="4965874878399872778">Đang kiểm tra tệp theo các chính sách bảo mật của tổ chức bạn...</translation>
 <translation id="496656650103537022">Đã khôi phục <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Không thể hoàn tất quá trình thiết lập tính năng đồng bộ hoá tệp</translation>
@@ -710,6 +711,7 @@
 <translation id="6430271654280079150">Bạn còn 1 lần nhập.</translation>
 <translation id="643243556292470964">Các tệp đã xoá hiện được chuyển vào thùng rác</translation>
 <translation id="6438480100790416671">Đang kiểm tra không gian lưu trữ…</translation>
+<translation id="6451527188465304418">Đang kiểm tra tệp theo các chính sách bảo mật của tổ chức bạn...</translation>
 <translation id="6485131920355264772">Không thể truy xuất thông tin dung lượng</translation>
 <translation id="6495925982925244349">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Do quản trị viên của bạn quản lý, Thông tin chi tiết</translation>
 <translation id="649877868557234318">Đang giải nén <ph name="FILE_NAME" /> vào <ph name="FOLDER_NAME" /></translation>

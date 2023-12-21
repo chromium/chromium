@@ -40,6 +40,7 @@
 <translation id="1153356358378277386">Підключені пристрої</translation>
 <translation id="1155734730463845512">Поточний рівень заряду акумулятора: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">увімкнена й використовується</translation>
+<translation id="1163437384438183174">Вилучити функцію "Керування телефоном" із панелі запуску</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Ваш кабель USB-C може не підключатися до екранів належним чином</translation>
 <translation id="1175572348579024023">Прокрутити</translation>
@@ -70,6 +71,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> підключено.</translation>
 <translation id="1240638468526743569">Додаток</translation>
 <translation id="1242883863226959074">пристрої</translation>
+<translation id="1245644940275736236">Перейти до Асистента</translation>
 <translation id="124678866338384709">Закрити поточну вкладку</translation>
 <translation id="1246890715821376239">Непідтримувані додатки</translation>
 <translation id="1247372569136754018">Мікрофон (внутрішній)</translation>
@@ -692,6 +694,7 @@
 <translation id="383629559565718788">Показати налаштування клавіатури</translation>
 <translation id="384082539148746321">Видалити шаблон?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, а потім – <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> або <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Інформація про мережу не доступна</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">На початок</translation>
@@ -926,6 +929,7 @@
 <translation id="4759238208242260848">Завантаження</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + стрілка вгору</translation>
 <translation id="4762573482154983647">Приховати додатки</translation>
+<translation id="4762802395013012237">5 футів у метрах</translation>
 <translation id="4763885921995354846">Буде надано доступ до камери для всіх додатків і веб-сайтів, які мають відповідний дозвіл. Можливо, вам також доведеться оновити веб-сторінку або перезапустити додаток.</translation>
 <translation id="4774338217796918551">Поверніться завтра о <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Пароль усе ще не вдається підтвердити. Повторіть спробу.</translation>
@@ -968,6 +972,7 @@
 <translation id="491504982845934899">Щоб активувати мережу <ph name="NETWORK_NAME" />, потрібно налаштувати пристрій</translation>
 <translation id="4917385247580444890">Потужний</translation>
 <translation id="4918086044614829423">Прийняти</translation>
+<translation id="491907188205944472">Шукайте потрібну інформацію безпосередньо в Панелі запуску</translation>
 <translation id="4919841137949306064">Додаток <ph name="APP_NAME" /> використовує вашу камеру</translation>
 <translation id="492453977506755176">Клавіша режиму зйомки</translation>
 <translation id="4925542575807923399">Адміністратору облікового запису потрібно, щоб цей обліковий запис був першим обліковим записом, з якого здійснено вхід під час сеансу паралельного входу.</translation>
@@ -1118,6 +1123,7 @@
 <translation id="5518068085000130971">Ви ознайомилися з основною інформацією. У вбудованому додатку Можливості можна знайти поради щодо початку роботи, рекомендовані додатки, спеціальні пропозиції, а також дізнатися більше про найновіші функції Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Ваш адміністратор вилучив усі профілі eSIM. Щоб дізнатися більше, зверніться до нього.</translation>
+<translation id="5520909879404821039">Як сказати привіт французькою</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> підключається.</translation>
 <translation id="5529587891732734495">Призупинити трансляцію</translation>
 <translation id="5532994612895037630">Натисніть будь-де, щоб записати весь екран</translation>
@@ -1695,6 +1701,7 @@
 <translation id="7886277072580235377">Коли ви вийдете з облікового запису, дані інтернет-сеансу буде стерто. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Надішли електронний лист</translation>
 <translation id="7893503627044934815">Не показувати цей файл</translation>
+<translation id="7893547474469215105">Що таке зеніт</translation>
 <translation id="7895348134893321514">Сховище</translation>
 <translation id="7897375687985782769">Ви натиснули комбінацію клавіш для обертання екрана. Обернути?</translation>
 <translation id="7897626842031123113">Панель статусу, час: <ph name="TIME" />,
@@ -1710,6 +1717,7 @@
 <translation id="7904094684485781019">Адміністратор цього облікового запису заборонив паралельний вхід.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Підключено пристроїв: <ph name="DEVICECOUNT" /></translation>
+<translation id="7923534281713082605">Погода</translation>
 <translation id="7926080067315048321">Переглянути всі завдання на веб-сайті Google Завдання</translation>
 <translation id="7930731167419639574">Мовлення тепер обробляється лише на пристрої, а функція диктування працює в режимі офлайн</translation>
 <translation id="7932451802722951285">Відкрити в Google Календарі</translation>
@@ -1856,6 +1864,7 @@
 <translation id="8555757996376137129">Видалити поточний робочий стіл</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> радить оновити пристрій <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Налаштування сповіщення</translation>
+<translation id="8569751806372591456">Спробуйте ввести наведені нижче запити</translation>
 <translation id="857201607579416096">Меню переміщено в нижній правий кут екрана.</translation>
 <translation id="8581946341807941670">Натисніть <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, а потім – посилання</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1899,6 +1908,7 @@
 <translation id="875593634123171288">Показати налаштування VPN</translation>
 <translation id="8759408218731716181">Не вдається налаштувати паралельний вхід</translation>
 <translation id="8763883995157866248">Перевести пристрій у режим сну</translation>
+<translation id="877404052021108314">90°F у °C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, установлений додаток, заблоковано</translation>
 <translation id="8785070478575117577">Підключитися: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1907,6 +1917,7 @@
 <translation id="8806053966018712535">Папка <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Довідка"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">Натисніть комбінацію клавіш для створення знімка екрана: Ctrl + Shift + клавіша режиму "Огляд"</translation>
 <translation id="881757059229893486">Налаштування методів введення</translation>
 <translation id="8819728065740986820">Адаптивне заряджання ввімкнено</translation>
 <translation id="8825863694328519386">Щоб повернутися, проведіть пальцем від лівого краю</translation>

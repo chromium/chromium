@@ -76,7 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{宜家顯示緊 1 個 Chromium 視窗}other{宜家顯示緊 {count} 個 Chromium 視窗}}</translation>
 <translation id="3344973607274501920">Chromium 無法檢查密碼，請檢查互聯網連線。</translation>
 <translation id="3366305173356742781">帳戶中的 Chromium 資料</translation>
-<translation id="3387107508582892610">{THRESHOLD,plural, =1{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作。影響範圍可能包含歷史記錄和自動填入功能。}other{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作。影響範圍可能包含歷史記錄和自動填入功能。}}</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作，當中可能包括記錄和自動填入資料。}other{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作，當中可能包括記錄和自動填入資料。}}</translation>
 <translation id="3472200483164753384">Chromium Canary 上不支援此功能</translation>
 <translation id="3478750326643748149">隱藏「充分運用 Chromium 的功能」</translation>
 <translation id="3512168799938877162">系統沒有分享你的密碼。請檢查互聯網連線，並確保你已登入 Chromium，然後再試一次。</translation>
@@ -285,7 +285,7 @@
 <translation id="8909995017390087892">Chromium iOS 版</translation>
 <translation id="8924617840944134898">開啟 Chromium 無痕式分頁</translation>
 <translation id="894437814105052438">登出時，Chromium 將不會同步任何新資料至您的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
-<translation id="8950326149985259075">{THRESHOLD,plural, =1{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作}other{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作}}</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作}other{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作}}</translation>
 <translation id="8963279154877372067">允許 Chromium 顯示通知才能接收降價快訊</translation>
 <translation id="900560297598578021">已使用 <ph name="EMAIL" /> 的身分登入。
 

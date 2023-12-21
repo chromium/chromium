@@ -2358,7 +2358,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5695542892312572833">Upotrijebiti značajku Windows Hello za potvrdu i dovršetak kupnje?</translation>
 <translation id="5699628521141772782">Mliječni proizvodi i jaja</translation>
 <translation id="5700761515355162635">Dopušteni su kolačići trećih strana</translation>
-<translation id="5701023235904684227">Želite li kontrolirati uređaj <ph name="READERNAME" /> i dobiti pristup pametnoj kartici kojoj pristupa?</translation>
 <translation id="5701381305118179107">Centriraj</translation>
 <translation id="5707154300732650394">Nastavite putovanje</translation>
 <translation id="57094364128775171">Predloži snažnu zaporku…</translation>
@@ -2493,6 +2492,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5997247540087773573">Zaporka koju ste upravo upotrijebili otkrivena je u povredi podataka. Radi zaštite vaših računa Google upravitelj zaporki preporučuje da je odmah promijenite i provjerite svoje spremljene zaporke.</translation>
 <translation id="5999271311987646952">Chrome ima integrirane sigurnosne značajke koje vas štite dok pregledavate, na primjer Google sigurno pregledavanje koje je <ph name="BEGIN_LINK" />nedavno pronašlo zlonamjerni softver<ph name="END_LINK" /> na web-lokaciji koju pokušavate posjetiti.</translation>
 <translation id="6000758707621254961">Rezultata za upit "<ph name="SEARCH_TEXT" />" ima <ph name="RESULT_COUNT" /></translation>
+<translation id="6001839398155993679">Započnimo</translation>
 <translation id="6002122790816966947">Vaši uređaji</translation>
 <translation id="6005659677094197001">Kontinuirani</translation>
 <translation id="6005765687956866568">Podaci automatskog popunjavanja izbrisani su s obrasca</translation>

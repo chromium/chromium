@@ -633,6 +633,7 @@
 <translation id="219906046732893612">Ev yeniləməsi</translation>
 <translation id="2202627062836089804">kartınızın arxa tərəfi</translation>
 <translation id="2204482073374652408">Güncəllənmə yekunlaşdı!</translation>
+<translation id="2207770355672215546">İstənilən kart ilə həmişə icazə verin</translation>
 <translation id="2208053750671792556">Kodu almadınız? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Qab 3</translation>
 <translation id="2210794033760923560">Hesabatı yükləyin</translation>
@@ -1741,6 +1742,7 @@
 <translation id="443673843213245140">Proksi istifadəsi deaktiv edilib, amma ətraflı proksi konfiqurasiyası müəyyən edilib.</translation>
 <translation id="4438821706955556403">Tipik qiymət</translation>
 <translation id="4441832193888514600">Siyasət yalnız bulud istifadəçisi siyasəti kimi təyin oluna bildiyi üçün nəzərə alınmadı.</translation>
+<translation id="4445133368066241428">Populyar mövzular</translation>
 <translation id="4449116177348980384">"Sayt ayarlarını idarə edin" düyməsi, aktivləşdirərək Chrome ayarlarında icazələri və saytlarda saxlanan datanı idarə edin</translation>
 <translation id="4451135742916150903">Saytlar HID cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="4451684391620232683">İstifadəçiyə təqdim olunan mətn:</translation>
@@ -2353,7 +2355,6 @@
 <translation id="5695542892312572833">Doğrulamaq və alışı tamamlamaq üçün Windows Hello istifadə edilsin?</translation>
 <translation id="5699628521141772782">Süd məhsulları və yumurta</translation>
 <translation id="5700761515355162635">Üçüncü tərəf kukilərinə icazə verildi</translation>
-<translation id="5701023235904684227"><ph name="READERNAME" /> idarə edilməklə əlçatan smart karta giriş əldə edilsin?</translation>
 <translation id="5701381305118179107">Mərkəzi edin</translation>
 <translation id="5707154300732650394">Baxışı davam etdirin</translation>
 <translation id="57094364128775171">Güclü parol təklif edin…</translation>
@@ -2488,6 +2489,7 @@
 <translation id="5997247540087773573">İndicə istifadə etdiyiniz parol bir data pozuntusunda tapılıb. Hesablarınızı qorumaq üçün Google Parol Meneceri onu indi dəyişməyi və sonra yadda saxladığınız parolları yoxlamağı tövsiyə edir.</translation>
 <translation id="5999271311987646952">Chrome axtarış zamanı sizi qoruyan daxili güvənlik funksiyalarına malikdir. Daxil olduğunuz saytda <ph name="BEGIN_LINK" />bu yaxınlarda zərərli proqram tapan<ph name="END_LINK" /> Google güvənli baxış buna misaldır.</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" üçün <ph name="RESULT_COUNT" /> nəticə</translation>
+<translation id="6001839398155993679">Başlayaq</translation>
 <translation id="6002122790816966947">Cihazlarınız</translation>
 <translation id="6005659677094197001">Davamlı</translation>
 <translation id="6005765687956866568">Avtomatik doldurulmuş məlumat formadan silinib</translation>

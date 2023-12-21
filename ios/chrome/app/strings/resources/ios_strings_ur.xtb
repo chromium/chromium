@@ -512,6 +512,7 @@
 <translation id="371398631992790800">‏Bookmarks کو چھپائیں</translation>
 <translation id="37207012422556617">رجحان ساز تلاشیں</translation>
 <translation id="3725081662140949903">دوسروں کو اپنا پاس ورڈ استعمال کرنے سے روکنے کے لیے، اپنا پاس ورڈ تبدیل کرنے کے لیے <ph name="APP" /> کھولیں</translation>
+<translation id="3738428049780661523"><ph name="DATE" /> کو تخلیق کیا گیا</translation>
 <translation id="374357899112510277">ڈاؤن لوڈز کو چھپائیں</translation>
 <translation id="3745190878148784130">ٹیکسٹ زوم کریں کو چھپائیں</translation>
 <translation id="3762232513783804601">‏آپ کے iPad کے لیے بنایا گیا</translation>
@@ -556,6 +557,7 @@
 <translation id="3968505803272650567">دلچسپیوں کا نظم کریں</translation>
 <translation id="3989635538409502728">سائن آؤٹ کریں</translation>
 <translation id="3995521777587992544">صفحہ لوڈ ہونے کا پیش رفت بار، <ph name="EMAIL" /> لوڈ ہوا۔</translation>
+<translation id="3997522473364371632">آپ کے منتظم نے پاس ورڈ کے اشتراک کو غیر فعال کر دیا ہے۔</translation>
 <translation id="4002019827078931033">ایڈریس بار کو اوپر منتقل کریں</translation>
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4004204301268239848">‏پاس ورڈز آپ کے Google اکاؤنٹ میں محفوظ ہو جاتے ہیں لہذا آپ انہیں کسی بھی آلہ پر استعمال کر سکتے ہیں۔</translation>
@@ -1202,6 +1204,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7425346204213733349">‏آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کی تبدیلیوں کی مزید آپ کے Google اکاؤنٹ کے ساتھ مطابقت پذیری نہیں کی جائے گی۔ البتہ آپ کا موجودہ ڈیٹا آپ کے Google اکاؤنٹ میں اسٹور رہے گا۔</translation>
 <translation id="7431991332293347422">تلاش کو ذاتی نوعیت کا بنانے کیلئے آپ کی براؤزنگ کی سرگزشت جس طریقے سے استعمال کی جاتی ہے اسے کنٹرول کریں اور مزید بہت کچھ</translation>
 <translation id="7435356471928173109">آپ کے منتظم کے ذریعے آف کر دیا گیا</translation>
+<translation id="7436239899443308800">{count,plural, =1{1 ٹیب}other{{count} ٹیبز}}</translation>
 <translation id="7438481509621345350">نیا ٹیب کھولنے پر اب آپ کو <ph name="CHANNEL_NAME" /> سے کہانیاں دکھائی دیں گی۔</translation>
 <translation id="7451023311965289370">{count,plural, =1{"{title}" میں بُک مارک کو محفوظ کیا گیا}other{"{title}" میں بُک مارکس کو محفوظ کیا گیا}}</translation>
 <translation id="7454057999980797137">ریاست / ملک</translation>

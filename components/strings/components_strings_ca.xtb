@@ -2359,7 +2359,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5695542892312572833">Vols fer servir Windows Hello per verificar la teva identitat i completar la compra?</translation>
 <translation id="5699628521141772782">Làctics i ous</translation>
 <translation id="5700761515355162635">Galetes de tercers permeses</translation>
-<translation id="5701023235904684227">Vols controlar <ph name="READERNAME" /> i obtenir accés a la targeta intel·ligent a què pot accedir?</translation>
 <translation id="5701381305118179107">Centre</translation>
 <translation id="5707154300732650394">Reprèn el recorregut</translation>
 <translation id="57094364128775171">Suggereix una contrasenya segura…</translation>
@@ -2494,6 +2493,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5997247540087773573">La contrasenya que acabes d'utilitzar s'ha trobat en una violació de les dades. Per protegir els teus comptes, el gestor de contrasenyes de Google recomana que la canviïs ara i que comprovis les contrasenyes desades.</translation>
 <translation id="5999271311987646952">Chrome té funcions de seguretat integrades per protegir-te mentre navegues, com ara Navegació segura de Google, que <ph name="BEGIN_LINK" />recentment ha trobat programari maliciós<ph name="END_LINK" /> al lloc web que proves de visitar.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultats per a "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Som-hi</translation>
 <translation id="6002122790816966947">Els teus dispositius</translation>
 <translation id="6005659677094197001">Continu</translation>
 <translation id="6005765687956866568">La informació emplenada automàticament s'ha esborrat del formulari</translation>

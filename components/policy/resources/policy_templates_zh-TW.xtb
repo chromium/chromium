@@ -1107,7 +1107,6 @@
 
       Managed Configuration API 是一組鍵/值設定，可透過 navigator.managed.getManagedConfiguration() 這個 JavaScript 呼叫存取。這個 API 僅適用於透過 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 強制安裝的網頁應用程式所對應的來源。
      </translation>
-<translation id="1918690415433353669">允許使用「分頁整理」功能，但不記錄分頁詳細資料</translation>
 <translation id="1919802376548418720">使用 KDC 政策來委派憑證。</translation>
 <translation id="1920046221095339924">允許在裝置上進入受管理的工作階段</translation>
 <translation id="1920772397574801429">你可以透過這項政策，指定支援 <ph name="HTTP_NEGOTIATE" /> 驗證 (例如 Kerberos 驗證) 的 Android 驗證應用程式所提供的帳戶類型。驗證應用程式的供應商應可提供這類資訊。詳情請見 Chromium 計畫，網址為 https://goo.gl/hajyfN
@@ -1673,7 +1672,6 @@
 如果將這項政策設為停用，使用者或 <ph name="PRODUCT_NAME" /> 變化版本在系統發現相容性問題時都無法啟用 NewBaseUrlInheritanceBehavior。如果將這項政策設為啟用或未設定，系統就會允許啟用 NewBaseUrlInheritanceBehavior。</translation>
 <translation id="2362469626417133796">重新啟動時間範圍</translation>
 <translation id="2362539163677485510">雲端政策註冊權杖</translation>
-<translation id="2362947328909044249">允許使用「分頁整理」功能</translation>
 <translation id="2363928351203698966">如果將這項政策設為有效值，<ph name="PRODUCT_NAME" /> 只會使用指定版本以上的安全資料傳輸層 (SSL)/傳輸層安全標準 (TLS) 版本。系統會忽略無法辨識的值。
 
       如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會針對 TLS 1.0 和 TLS 1.1 顯示錯誤訊息，但使用者可略過該訊息。
@@ -2004,7 +2002,6 @@
 <translation id="2650049181907741121">使用者蓋上螢幕時所採取的動作</translation>
 <translation id="2656559539624760733">不要使用 Chrome Root Store。</translation>
 <translation id="2658653824183107970">使用舊版 <ph name="CORS" /> 模式，而不使用新版 <ph name="CORS" /></translation>
-<translation id="2659064869547694451">允許使用「撰寫」功能</translation>
 <translation id="2660846099862559570">永不使用 Proxy</translation>
 <translation id="2661628029848851543">允許受管理帳戶的所有使用情況</translation>
 <translation id="2664391398878045611">即使中間版位公告可供存取，新分頁也不會顯示</translation>
@@ -2761,7 +2758,6 @@
 這些限制適用於網頁內容和「下載連結」選單選項觸發的下載作業，但不適用於目前顯示網頁的儲存或下載作業，或透過列印選項另存為 PDF 檔的作業。
 
 在 <ph name="MS_WIN_NAME" /> 上，這項政策適用的執行個體必須加入 <ph name="MS_AD_NAME" /> 網域或 <ph name="MS_AAD_NAME" />，或者註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />。</translation>
-<translation id="3300322252167923819">允許使用「分頁整理」功能</translation>
 <translation id="3300784749135986828">啟用或停用「<ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />」。</translation>
 <translation id="3301698868852716692">啟用深入分析擴充功能</translation>
 <translation id="3302829897293005699">如果將這項政策設為啟用或不設定，已註冊的裝置會回報運作中資訊站工作階段相關資訊，例如應用程式 ID 和版本。
@@ -3349,7 +3345,6 @@
 <translation id="3799417300383048419">在使用者工作階段結束後保留磁碟上的設定檔資料</translation>
 <translation id="3799436555130241393"><ph name="PRODUCT_OS_NAME" /> 同步處理檔案功能</translation>
 <translation id="3803171355925844705">不允許任何網站載入複合型內容</translation>
-<translation id="3806742563417418191">允許使用桌布搜尋功能</translation>
 <translation id="3808945828600697669">指定停用的外掛程式清單</translation>
 <translation id="3810642039169532482">在登入畫面上啟用語音輸入無障礙功能。
 
@@ -3361,7 +3356,6 @@
 
           如果不設定這項政策，系統會在初次顯示登入畫面時停用語音輸入，但使用者隨時可以啟用。</translation>
 <translation id="3811562426301733860">允許所有網站顯示廣告</translation>
-<translation id="3816281648615435872">停用「分頁整理」功能</translation>
 <translation id="3816312845600780067">啟用停止自動登入的鍵盤快速鍵</translation>
 <translation id="3817323252437541502">為加入進階保護計畫的使用者啟用額外防護功能</translation>
 <translation id="3821861026311587684">強制登出帳戶驗證狀態失效的使用者</translation>
@@ -3898,7 +3892,6 @@
 <translation id="428948795004445932">系統取樣和收集網路資料的頻率。下限值是 1 分鐘。
 
       如果未設定，系統會套用 10 分鐘的預設頻率。</translation>
-<translation id="4289628882370719584">「分頁整理」功能可用來整理分頁。</translation>
 <translation id="4290231183305601970">如果安裝作業遭到封鎖，系統會在 Chrome 線上應用程式商店中向使用者顯示的文字。</translation>
 <translation id="4293187705196369087">允許在磁碟空間不足時啟用或停用通知。這項設定會套用至裝置上的所有使用者。
       如將這項政策設為「啟用」，當剩餘磁碟空間不足時，系統會顯示通知。
@@ -4181,7 +4174,6 @@
 <translation id="453031441196755904">這項政策已遭到淘汰。</translation>
 <translation id="4531706050939927436">你可以在 Google 管理控制台中使用 Google Play 強制安裝 Android 應用程式 (不會使用這項政策)。</translation>
 <translation id="4534500438517478692">Android 限制名稱：</translation>
-<translation id="4537645230504195464">允許使用「撰寫」功能，但不記錄</translation>
 <translation id="4541530620466526913">裝置本機帳戶</translation>
 <translation id="4542255783284620926">禁止在 Chrome OS 中將受管理帳戶新增為次要帳戶 (在工作階段中)</translation>
 <translation id="4543502256674577024">裝置更新設定</translation>
@@ -4373,7 +4365,6 @@
 <translation id="4674871290487541952">針對擴充功能更新與安裝作業進行完整性檢查時，允許使用不安全的演算法</translation>
 <translation id="4680961954980851756">啟用自動填入</translation>
 <translation id="4685721728282448265">已啟用傳輸層安全標準 (TLS) 的 CECPQ2 後量子金鑰協議</translation>
-<translation id="4688118315245991650">停用「撰寫」功能</translation>
 <translation id="468822697351680932">使用 Internet Explorer SiteList 政策做為規則來源</translation>
 <translation id="4693190628432874457">啟用裝置位置回報功能</translation>
 <translation id="4693779768620889402">可支援擴充功能的目的地</translation>
@@ -5056,7 +5047,6 @@
 <translation id="5340008866815063393">啟用政策資料報告功能</translation>
 <translation id="5345910753471481870">不要在「新分頁」頁面的搜尋框中顯示 Google 智慧鏡頭按鈕。</translation>
 <translation id="5346587320074666194">禁止在這些網站上存取感應器</translation>
-<translation id="5347809796754019202">允許使用「撰寫」功能</translation>
 <translation id="534836255587440809">在登入畫面上停用自動點選功能</translation>
 <translation id="5348658899015174540"><ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API 允許網頁應用程式一次擷取多個螢幕的畫面。
       在已定義的來源上，這項政策會解除鎖定網頁應用程式的 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 屬性。
@@ -5574,7 +5564,6 @@
 <translation id="5775235485119094648">當電量位於特定範圍內時進行充電。</translation>
 <translation id="5776485039795852974">每當網站要顯示桌面通知時詢問我</translation>
 <translation id="5783009211970309878">列印頁首和頁尾</translation>
-<translation id="5786938041290515154">允許使用桌布搜尋功能，但不記錄</translation>
 <translation id="5790763087505467169">減少顯示受管理訪客工作階段的自動啟動通知</translation>
 <translation id="5800329278018669527">停用離線時的網路設定提示</translation>
 <translation id="5802931736499687181">停用加密報告管道</translation>
@@ -5765,7 +5754,6 @@
 <translation id="596523880465577341">這項政策已淘汰，因此系統不再支援，請改用「<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />」政策。</translation>
 <translation id="5966615072639944554">允許擴充功能使用 Remote Attestation API</translation>
 <translation id="596732417280023843">憑證設定檔的名稱。</translation>
-<translation id="597036930083735628">停用桌布搜尋功能</translation>
 <translation id="5972538402066550344">允許使用精細回報控制項</translation>
 <translation id="5975765799383881158">如果將這項政策設為啟用或不設定，使用者可以將意見回饋傳送給 Google，方法是依序按一下「選單」圖示 &gt; [說明] &gt; [回報問題]，或是按下按鍵組合。
 

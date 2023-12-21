@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{Nu visas 1 Chromium-fönster}other{Nu visas {count} Chromium-fönster}}</translation>
 <translation id="3344973607274501920">Chromium kunde inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
 <translation id="3366305173356742781">Chromium-data i ditt konto</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Detta händer när Chromium inte har använts på {THRESHOLD} minut. Detta kan innefatta historik och autofyll.}other{Detta händer när Chromium inte har använts på {THRESHOLD} minuter. Detta kan innefatta historik och autofyll.}}</translation>
 <translation id="3472200483164753384">Stöds inte på Chromium Canary</translation>
 <translation id="3478750326643748149">Dölj Få ut mesta möjliga av Chromium</translation>
 <translation id="3512168799938877162">Ditt lösenord har inte delats. Kontrollera internetanslutningen och se till att du är inloggad i Chromium. Försök sedan igen.</translation>
@@ -282,6 +283,7 @@ Tänk på detta:
 <translation id="8909995017390087892">Chromium för iOS</translation>
 <translation id="8924617840944134898">Öppna en inkognitoflik i Chromium</translation>
 <translation id="894437814105052438">När du har loggat ut synkroniseras ingen mer data med ditt Google-konto i Chromium. Data som redan har synkroniserats finns kvar i kontot.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Detta händer när Chromium inte har använts på {THRESHOLD} minut}other{Detta händer när Chromium inte har använts på {THRESHOLD} minuter}}</translation>
 <translation id="8963279154877372067">Tillåt Chromium-aviseringar om sänkt pris</translation>
 <translation id="900560297598578021">Inloggad som <ph name="EMAIL" />.
 

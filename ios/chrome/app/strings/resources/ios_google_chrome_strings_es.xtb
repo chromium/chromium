@@ -63,6 +63,7 @@ Notas importantes:
 <translation id="2427791862912929107">Chrome incluye funciones que te permiten administrar tus datos de Internet y la rapidez con la que puedes cargar páginas web.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Para obtener fácilmente tus contraseñas guardadas en tus otras aplicaciones, usa Autocompletar en Chrome</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Ocurre cuando Chrome lleva {THRESHOLD} minuto sin usarse. Esto podría incluir el historial y la función Autocompletar.}other{Ocurre cuando Chrome lleva {THRESHOLD} minutos sin usarse. Esto podría incluir el historial y la función Autocompletar.}}</translation>
 <translation id="2561231791489583059">Usa Chrome como tu navegador predeterminado para protegerte de sitios peligrosos y mantener a salvo tus contraseñas</translation>
 <translation id="2574249610672786438">Inicia sesión en todos tus dispositivos para ver tus pestañas dondequiera que uses Chrome</translation>
 <translation id="2576431527583832481">Chrome sigue mejorando. Hay una nueva versión disponible.</translation>
@@ -91,6 +92,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3340938510625667914">Acciones de Chrome</translation>
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Ocurre cuando Chrome lleva {THRESHOLD} minuto sin usarse}other{Ocurre cuando Chrome lleva {THRESHOLD} minutos sin usarse}}</translation>
 <translation id="3399930248910934354">Abrir configuración de Chrome</translation>
 <translation id="3472587960215700950">Chrome usa Google Maps para ofrecerte indicaciones e información local sobre direcciones detectadas.</translation>
 <translation id="3503014945441706099">Usa Navegación segura mejorada en este perfil de Chrome también</translation>

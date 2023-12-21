@@ -66,6 +66,7 @@
         Почекајте неколку минути пред да се одјавите. Ако се одјавите сега, податоциве ќе се избришат.</translation>
 <translation id="3256316712990552818">Копирано на Chromium</translation>
 <translation id="3344973607274501920">Chromium не може да ги провери вашите лозинки. Проверете ја интернет-врската.</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Ова се случува кога Chromium не се користи {THRESHOLD} минута. Може да ги опфати историјата и автоматското пополнување.}one{Ова се случува кога Chromium не се користи {THRESHOLD} минута. Може да ги опфати историјата и автоматското пополнување.}other{Ова се случува кога Chromium не се користи {THRESHOLD} минути. Може да ги опфати историјата и автоматското пополнување.}}</translation>
 <translation id="3472200483164753384">Не е поддржана на Chromium Canary</translation>
 <translation id="3478750326643748149">Скриј „Извлечете го максимумот од Chromium“</translation>
 <translation id="3554027294407525061">Бришење на податоците од прелистување во Chromium.</translation>
@@ -229,6 +230,7 @@
 <translation id="88376265765385899">Ги отвора обележувачите на Chromium.</translation>
 <translation id="8924617840944134898">Отворете картичка „Инкогнито“ во Chromium</translation>
 <translation id="894437814105052438">Кога ќе се одјавите, Chromium нема да ги синхронизира новите податоци со вашата сметка на Google. Претходно синхронизираните податоци ќе останат во сметката.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Ова се случува кога Chromium не се користи {THRESHOLD} минута}one{Ова се случува кога Chromium не се користи {THRESHOLD} минута}other{Ова се случува кога Chromium не се користи {THRESHOLD} минути}}</translation>
 <translation id="8963279154877372067">Дозволете известувања за Chromium за да добивате известувања за намалувања на цените</translation>
 <translation id="9022552996538154597">Најавете се на Chromium</translation>
 <translation id="9050790730841755540">Користете го Chromium секогаш кога ќе допрете линкови во други апликации.</translation>

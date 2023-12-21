@@ -155,7 +155,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1269516672602708785">Schnell eine neue Website in Google Sites erstellen</translation>
 <translation id="1270328905573953738">Umzüge</translation>
 <translation id="1270502636509132238">Abholoption</translation>
-<translation id="1273592791152866347">Preisbeobachtung deaktiviert</translation>
+<translation id="1273592791152866347">Preis-Tracking deaktiviert</translation>
 <translation id="127777513559587977">Fernseh-Talkshows</translation>
 <translation id="1281476433249504884">Stapelfach 1</translation>
 <translation id="1282358575813748144">Wasserfahrzeuge</translation>
@@ -1744,6 +1744,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="443673843213245140">Die Proxy-Nutzung ist deaktiviert, es ist jedoch eine explizite Proxy-Konfiguration festgelegt.</translation>
 <translation id="4438821706955556403">Normalpreis</translation>
 <translation id="4441832193888514600">Ignoriert, da die Richtlinie nur als Cloud-Nutzerrichtlinie festgelegt werden kann.</translation>
+<translation id="4445133368066241428">Beliebte Themen</translation>
 <translation id="4449116177348980384">Schaltfläche „Website-Einstellungen verwalten“ – aktivieren, um in den Chrome-Einstellungen Berechtigungen und gespeicherte Daten von Websites zu verwalten</translation>
 <translation id="4451135742916150903">Darf nachfragen, wenn sie eine Verbindung mit HID-Geräten herstellen möchte</translation>
 <translation id="4451684391620232683">Text, der dem Nutzer angezeigt wurde:</translation>
@@ -2306,7 +2307,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5595485650161345191">Adresse bearbeiten</translation>
 <translation id="5596939519753369075">2 × 3,5 Zoll</translation>
 <translation id="560412284261940334">Verwaltung wird nicht unterstützt.</translation>
-<translation id="5605249000617390290">Weitere Informationen zur Preisbeobachtung</translation>
+<translation id="5605249000617390290">Weitere Informationen zum Preis-Tracking</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Verbindung prüfen</translation>
 <translation id="5610807607761827392"><ph name="BEGIN_LINK" />Karten und Adressen kannst du in den Einstellungen verwalten.<ph name="END_LINK" /></translation>
@@ -2356,7 +2357,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5695542892312572833">Möchtest du zum Bestätigen und Abschließen deines Kaufs Windows Hello verwenden?</translation>
 <translation id="5699628521141772782">Molkereiprodukte und Eier</translation>
 <translation id="5700761515355162635">Drittanbieter-Cookies zugelassen</translation>
-<translation id="5701023235904684227"><ph name="READERNAME" /> verwalten und Zugriff auf die für den Leser zugängliche Smartcard erhalten?</translation>
 <translation id="5701381305118179107">Zentrieren</translation>
 <translation id="5707154300732650394">Weiter stöbern</translation>
 <translation id="57094364128775171">Starkes Passwort vorschlagen…</translation>
@@ -2491,6 +2491,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5997247540087773573">Das eingegebene Passwort wurde in einer Datenpanne gefunden. Zum besseren Schutz deiner Konten empfiehlt der Google Passwortmanager, das Passwort jetzt zu ändern und deine gespeicherten Passwörter zu prüfen.</translation>
 <translation id="5999271311987646952">Chrome verfügt über integrierte Sicherheitsfunktionen, die dich beim Surfen schützen. Eine dieser Funktionen, Google Safe Browsing, hat auf dieser Website kürzlich <ph name="BEGIN_LINK" />Malware gefunden<ph name="END_LINK" />.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> Ergebnisse für "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Los gehts</translation>
 <translation id="6002122790816966947">Meine Geräte</translation>
 <translation id="6005659677094197001">Endlos</translation>
 <translation id="6005765687956866568">Die automatisch ausgefüllten Informationen wurden aus dem Formular entfernt</translation>
@@ -2641,7 +2642,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6295855836753816081">Wird gespeichert...</translation>
 <translation id="6298456705131259420">Dies betrifft die hier aufgeführten Websites. Wenn du „[*.]“ vor einem Domainnamen einfügst, wird eine Ausnahme für die gesamte Domain erstellt. Wenn du beispielsweise „[*.]google.com“ hinzufügst, können Drittanbieter-Cookies auch für „mail.google.com“ aktiv sein, da diese Subdomain zu „google.com“ gehört.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Dein Gerät startet jetzt neu}=1{Dein Gerät startet in 1 Sekunde neu}other{Dein Gerät startet in # Sekunden neu}}</translation>
-<translation id="6301104306974789820">Benachrichtigungen zur Preisbeobachtung erhalten</translation>
+<translation id="6301104306974789820">Benachrichtigungen zum Preis-Tracking erhalten</translation>
 <translation id="6304398603974202180">Multimedia-Software</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ist nicht erreichbar.</translation>
 <translation id="6306713302480826305">Diese Adresse wird von diesem Gerät und von deinen anderen angemeldeten Geräten gelöscht</translation>
@@ -3251,7 +3252,7 @@ Weitere Details:
 <translation id="7469935732330206581">Dieses Formular ist nicht sicher</translation>
 <translation id="7470854469646445678">Gib den Grund für das Kopieren an (erforderlich)</translation>
 <translation id="7471007961486718967">Gib den Grund für die Übertragung an (erforderlich)</translation>
-<translation id="7473891865547856676">Nein, danke</translation>
+<translation id="7473891865547856676">Nein, Danke</translation>
 <translation id="7481312909269577407">Vorwärts</translation>
 <translation id="7481603210197454575">Umschlag Italienisch</translation>
 <translation id="7483482939016730822">Schul- und Unterrichtsbedarf</translation>

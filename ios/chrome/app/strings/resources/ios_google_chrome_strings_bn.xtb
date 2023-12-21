@@ -63,6 +63,7 @@
 <translation id="2427791862912929107">Chrome-এ এমন কিছু ফিচার রয়েছে যা আপনাকে ইন্টারনেট ডেটা ম্যানেজ করতে এবং অত্যন্ত দ্রুত ওয়েবপেজ লোড করতে সাহায্য করে।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">আপনার অন্যান্য অ্যাপে আপনার সেভ করা পাসওয়ার্ডগুলি সহজেই পেতে, অটোফিলের জন্য Chrome ব্যবহার করুন</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Chrome {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। এর মধ্যে ইতিহাস ও অটোফিল অন্তর্ভুক্ত থাকতে পারে।}one{Chrome {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। এর মধ্যে ইতিহাস ও অটোফিল অন্তর্ভুক্ত থাকতে পারে।}other{Chrome {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। এর মধ্যে ইতিহাস ও অটোফিল অন্তর্ভুক্ত থাকতে পারে।}}</translation>
 <translation id="2561231791489583059">বিপজ্জনক সাইট থেকে নিরাপদে থাকতে এবং আপনার পাসওয়ার্ড সুরক্ষিত রাখতে আপনার ডিফল্ট ব্রাউজার হিসেবে Chrome ব্যবহার করুন</translation>
 <translation id="2574249610672786438">আপনার সমস্ত ডিভাইসে সাইন-ইন করে থাকুন, যাতে আপনি যেখান থেকেই Chrome ব্যবহার করুন না কেন, সেখানেই আপনি নিজের ট্যাবগুলি দেখতে পারেন</translation>
 <translation id="2576431527583832481">Chrome আরও ভাল হয়েছে! একটি নতুন ভার্সন উপলব্ধ আছে৷</translation>
@@ -91,6 +92,7 @@
 <translation id="3282568296779691940">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="3340938510625667914">Chrome অ্যাকশন</translation>
 <translation id="3345341804167540816">Chrome সব জায়গায় ব্যবহার করুন</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়}one{Chrome {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়}other{Chrome {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়}}</translation>
 <translation id="3399930248910934354">Chrome সেটিংস খুলুন</translation>
 <translation id="3472587960215700950">Chrome আপনাকে দিকনির্দেশ এবং শনাক্ত করা ঠিকানায় স্থানীয় তথ্য যাতে দেওয়া যায় তার জন্য Google Maps ব্যবহার করে।</translation>
 <translation id="3503014945441706099">এছাড়াও, এই Chrome প্রোফাইলের জন্য উন্নত Safe Browsing-এর সুবিধা পান</translation>

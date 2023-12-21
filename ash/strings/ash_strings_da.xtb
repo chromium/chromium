@@ -40,6 +40,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1153356358378277386">Parrede enheder</translation>
 <translation id="1155734730463845512">Nuværende batteriniveau <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1160215328209699296">aktiveret og i brug</translation>
+<translation id="1163437384438183174">Fjern Telefonstyring fra hylden</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" /> <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Dit USB-C-kabel kan muligvis ikke sluttes korrekt til skærmene</translation>
 <translation id="1175572348579024023">Rul</translation>
@@ -70,6 +71,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1239161794459865856">Der er forbindelse til <ph name="FEATURE_NAME" />.</translation>
 <translation id="1240638468526743569">En app</translation>
 <translation id="1242883863226959074">enhed</translation>
+<translation id="1245644940275736236">Gå til Assistent</translation>
 <translation id="124678866338384709">Luk aktuel fane</translation>
 <translation id="1246890715821376239">Apps, der ikke understøttes</translation>
 <translation id="1247372569136754018">Mikrofon (indbygget)</translation>
@@ -692,6 +694,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="383629559565718788">Vis tastaturindstillinger</translation>
 <translation id="384082539148746321">Vil du slette skabelonen?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> efterfulgt af <ph name="KEY_ONE" /> eller <ph name="KEY_TWO" /> eller <ph name="KEY_THREE" /> eller <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Der er ingen tilgængelige netværksoplysninger</translation>
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="385300504083504382">Begyndelsen</translation>
@@ -926,6 +929,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + pil op</translation>
 <translation id="4762573482154983647">Skjul apps</translation>
+<translation id="4762802395013012237">5 fod i meter</translation>
 <translation id="4763885921995354846">Dette giver alle apps og websites, der har kameratilladelsen, adgang til kameraet. Du skal muligvis opdatere websiden eller genstarte appen.</translation>
 <translation id="4774338217796918551">Kom tilbage i morgen kl. <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Din adgangskode kan stadig ikke verificeres. Prøv igen.</translation>
@@ -968,6 +972,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="491504982845934899">Aktivér <ph name="NETWORK_NAME" /> efter konfiguration af enheden</translation>
 <translation id="4917385247580444890">Stærk</translation>
 <translation id="4918086044614829423">Accepter</translation>
+<translation id="491907188205944472">Søg efter det, du skal bruge, direkte i applisten</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> anvender i øjeblikket dit kamera</translation>
 <translation id="492453977506755176">Tast til optagelsestilstand</translation>
 <translation id="4925542575807923399">Kontoadministratoren kræver, at denne konto er den første konto, der logges ind på, i en session med samlet login fra flere konti.</translation>
@@ -1118,6 +1123,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5518068085000130971">Nu har du lært det grundlæggende. Du kan få mere at vide i Udforsk, der er vores indbyggede app til tips og hjælp. I appen får du tips til at komme godt i gang, anbefalede apps, særtilbud og de nyeste Chromebook-funktioner.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Din administrator har fjernet alle eSIM-profiler. Kontakt din administrator for at få flere oplysninger.</translation>
+<translation id="5520909879404821039">Hej på fransk</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> opretter forbindelse.</translation>
 <translation id="5529587891732734495">Sæt casting på pause</translation>
 <translation id="5532994612895037630">Tryk et vilkårligt sted for at tage et billede af hele skærmen</translation>
@@ -1695,6 +1701,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7886277072580235377">Din internetsession ryddes, når du logger ud. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Send en mail</translation>
 <translation id="7893503627044934815">Jeg vil ikke have, at denne fil vises</translation>
+<translation id="7893547474469215105">Definer zenit</translation>
 <translation id="7895348134893321514">Transportkasse</translation>
 <translation id="7897375687985782769">Du trykkede på tastaturgenvejen for skærmrotation. Vil du rotere skærmen?</translation>
 <translation id="7897626842031123113">Statusbakke, klokkeslæt <ph name="TIME" />,
@@ -1710,6 +1717,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7904094684485781019">Administratoren for denne konto tillader ikke samlet login fra flere konti.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> enheder er tilsluttet</translation>
+<translation id="7923534281713082605">Vejr</translation>
 <translation id="7926080067315048321">Se alle opgaver i Google Huskeliste på nettet</translation>
 <translation id="7930731167419639574">Tale behandles nu lokalt, og diktering kan bruges offline</translation>
 <translation id="7932451802722951285">Åbn i Google Kalender</translation>
@@ -1856,6 +1864,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8555757996376137129">Fjern det aktuelle skrivebord</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> anbefaler, at du opdaterer din <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Indstillinger for notifikationer</translation>
+<translation id="8569751806372591456">Her er nogle forslag til, hvad du kan prøve</translation>
 <translation id="857201607579416096">Menuen blev flyttet til nederste højre hjørne af skærmen.</translation>
 <translation id="8581946341807941670">Tryk på <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, og klik på et link</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1899,6 +1908,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="875593634123171288">Vis VPN-indstillinger</translation>
 <translation id="8759408218731716181">Samlet login fra flere konti kan ikke konfigureres</translation>
 <translation id="8763883995157866248">Aktivér dvaletilstand på enheden</translation>
+<translation id="877404052021108314">90 °F i C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, installeret app, blokeret</translation>
 <translation id="8785070478575117577">Opret forbindelse til <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1907,6 +1917,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8806053966018712535">Mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Hjælp"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">Tryk på genvejen til screenshot, Ctrl + Shift og tasten Oversigtstilstand</translation>
 <translation id="881757059229893486">Indstillinger for indtastningsmetoder</translation>
 <translation id="8819728065740986820">Adaptiv opladning er aktiveret</translation>
 <translation id="8825863694328519386">Stryg fra venstre for at gå tilbage</translation>

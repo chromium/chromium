@@ -4194,6 +4194,7 @@
 <translation id="4246980464509998944">其他意見：</translation>
 <translation id="424726838611654458">一律在 Adobe Reader 中開啟</translation>
 <translation id="4248401726442101648">未連上任何攝影機</translation>
+<translation id="4249116869350613769">省電模式</translation>
 <translation id="4249248555939881673">正在等待網路連線...</translation>
 <translation id="4249373718504745892">系統已封鎖這個網頁存取你的攝影機和麥克風。</translation>
 <translation id="424963718355121712">應用程式的安裝來源應與應用程式影響所及的主機相同</translation>
@@ -5023,6 +5024,7 @@
 <translation id="4893522937062257019">螢幕鎖定時</translation>
 <translation id="4895799941222633551">建立捷徑(&amp;S)...</translation>
 <translation id="4898011734382862273">憑證「<ph name="CERTIFICATE_NAME" />」代表憑證授權單位</translation>
+<translation id="4898913189644355814">網站可能會儲存你偏好的語言或想購買的商品，而且該網站及其子網域都能存取這類資訊。</translation>
 <translation id="4899052647152077033">反轉顏色</translation>
 <translation id="4899696330053002588">含廣告內容</translation>
 <translation id="490031510406860025">不允許在這個網站執行</translation>
@@ -5916,6 +5918,7 @@
 <translation id="5631272057151918206">這麼做最多可釋出離線檔案占用的 <ph name="OFFLINE_STORAGE_SIZE" /> 空間，部分檔案仍可在離線時存取。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">已要求權限，按下 Ctrl + Forward 鍵即可回覆</translation>
 <translation id="5632221585574759616">進一步瞭解擴充功能權限</translation>
+<translation id="5632485077360054581">顯示操作說明</translation>
 <translation id="5632566673632479864">你已不能再將 <ph name="EMAIL" /> 設為主要帳戶。這個帳戶是由 <ph name="DOMAIN" /> 所管理，因此系統會將您的書籤、歷史記錄、密碼和其他設定從這個裝置上清除。</translation>
 <translation id="5633149627228920745">進一步瞭解系統需求</translation>
 <translation id="563371367637259496">行動網路</translation>

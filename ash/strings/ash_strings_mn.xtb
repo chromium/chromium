@@ -40,6 +40,7 @@
 <translation id="1153356358378277386">Хослуулсан төхөөрөмж</translation>
 <translation id="1155734730463845512">Одоогийн батарейн түвшин <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">асаалттай бөгөөд ашиглагдаж байна</translation>
+<translation id="1163437384438183174">Тавиураас Phone Hub-г хасна уу</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Таны USB-C кабель дэлгэцүүдэд зохих ёсоор холбогдохгүй байж магадгүй</translation>
 <translation id="1175572348579024023">Гүйлгэх</translation>
@@ -70,6 +71,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> холбогдсон.</translation>
 <translation id="1240638468526743569">Апп</translation>
 <translation id="1242883863226959074">төхөөрөмж</translation>
+<translation id="1245644940275736236">Туслах руу очих</translation>
 <translation id="124678866338384709">Үндсэн чихтэй хуудсыг хаах</translation>
 <translation id="1246890715821376239">Дэмжигдээгүй аппууд</translation>
 <translation id="1247372569136754018">Микрофон (дотоод)</translation>
@@ -693,6 +695,7 @@
 <translation id="383629559565718788">Гарын тохиргоог харуулах</translation>
 <translation id="384082539148746321">Загварыг устгах уу?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> дараа нь <ph name="KEY_ONE" /> эсвэл <ph name="KEY_TWO" /> эсвэл <ph name="KEY_THREE" /> эсвэл <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Сүлжээтэй холбоотой мэдээлэл байхгүй байна</translation>
 <translation id="385051799172605136">Буцах</translation>
 <translation id="385300504083504382">Эхлэл</translation>
@@ -927,6 +930,7 @@
 <translation id="4759238208242260848">Таталтууд:</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + дээш сум</translation>
 <translation id="4762573482154983647">Аппуудыг нуух</translation>
+<translation id="4762802395013012237">5 футыг метрээр</translation>
 <translation id="4763885921995354846">Энэ нь камерын зөвшөөрөлтэй бүх апп болон вебсайтын камерын хандалтыг зөвшөөрнө. Та веб хуудсыг сэргээх эсвэл аппыг дахин эхлүүлэх шаардлагатай байж магадгүй.</translation>
 <translation id="4774338217796918551">Маргааш <ph name="COME_BACK_TIME" />-д буцаж ирнэ үү.</translation>
 <translation id="4776584068981882959">Таны нууц үгийг дахиад л баталгаажуулж чадсангүй. Дахин оролдоно уу.</translation>
@@ -969,6 +973,7 @@
 <translation id="491504982845934899">Төхөөрөмжийг тохируулсны дараа <ph name="NETWORK_NAME" />-г идэвхжүүлэх</translation>
 <translation id="4917385247580444890">Хүчтэй</translation>
 <translation id="4918086044614829423">Хүлээн зөвшөөрөх</translation>
+<translation id="491907188205944472">Эхлүүлэгчээс хэрэгтэй зүйлээ шууд хайна уу</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> одоогоор таны камерыг ашиглаж байна</translation>
 <translation id="492453977506755176">Зураг авах горимын товч</translation>
 <translation id="4925542575807923399">Энэ хаягийг хариуцсан ажилтан нь олон хаягаар зэрэг нэвтрэх тохиолдолд зөвхөн энэ хаягаар түрүүлж нэвтэрсний дараагаар бусад хаягт нэвтрэх боломжтой байхаар тохируулсан байна.</translation>
@@ -1119,6 +1124,7 @@
 <translation id="5518068085000130971">Эдгээр нь үндсэн зүйл юм! Манай зөвлөгөө болон тусламжийн бүрэлдэхүүн апп болох Explore-т үргэлжлүүлнэ үү. Та эхлүүлэх зөвлөгөө, санал болгосон апп, тусгай санал болон Chromebook-н шинэ онцлогуудын талаарх зөвлөгөөг олно.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Танай администратор бүх eSIM профайлыг хассан. Нэмэлт мэдээлэл авах бол администратортайгаа холбогдоно уу.</translation>
+<translation id="5520909879404821039">Сайн байна уу? франц хэлээр</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> холбогдож байна.</translation>
 <translation id="5529587891732734495">Дамжуулахыг түр зогсоох</translation>
 <translation id="5532994612895037630">Бүтэн дэлгэцийг бичихийн тулд дурын газар товшино уу</translation>
@@ -1696,6 +1702,7 @@
 <translation id="7886277072580235377">Таныг гарсны дараа таны интернэтийн харилцан үйлдлийг устгана. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Имэйл илгээх</translation>
 <translation id="7893503627044934815">Энэ файлыг харахыг хүсэхгүй байна</translation>
+<translation id="7893547474469215105">Зенитийг тодорхойлно уу</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Та дэлгэц эргүүлэх товчлуурын шууд холбоосыг дарсан байна. Дэлгэцийг эргүүлэх үү?</translation>
 <translation id="7897626842031123113">Статусын мэдээллийн хэсэг, хугацаа <ph name="TIME" />,
@@ -1711,6 +1718,7 @@
 <translation id="7904094684485781019">Энэ бүртгэлийн админ нь олон тооны нэвтрэлтийг хэрэгсэхгүй болгосон байна.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> төхөөрөмж холбогдсон</translation>
+<translation id="7923534281713082605">Цаг агаар</translation>
 <translation id="7926080067315048321">Вебийн Google Tasks-с бүх ажлыг харах</translation>
 <translation id="7930731167419639574">Яриаг одоо дотоодод боловсруулах бөгөөд Дуу хоолойгоор бичих онцлог офлайнаар ажиллана</translation>
 <translation id="7932451802722951285">Google Календарьт нээх</translation>
@@ -1858,6 +1866,7 @@
 <translation id="8555757996376137129">Одоогийн цонхыг хасах</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> танд өөрийн <ph name="DEVICE_TYPE" />-г шинэчлэхийг зөвлөж байна</translation>
 <translation id="8563862697512465947">Мэдэгдлийн тохиргоо</translation>
+<translation id="8569751806372591456">Оролдож үзэх цөөн хэдэн зөвлөмж энд байна</translation>
 <translation id="857201607579416096">Цэсийг дэлгэцийн баруун доод булан руу зөөсөн.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" />-г дараад холбоосыг товшино уу</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1901,6 +1910,7 @@
 <translation id="875593634123171288">VPN тохиргоог харуулах</translation>
 <translation id="8759408218731716181">Олон хэрэглэгчтэй нэвтрэх эрхийг суулгаж чадахгүй байна</translation>
 <translation id="8763883995157866248">Төхөөрөмжийг амраах горимд оруулах</translation>
+<translation id="877404052021108314">90°F C-р</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, Суулгасан апп, Блоклосон</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />-д холбогдох</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1909,6 +1919,7 @@
 <translation id="8806053966018712535">Хавтас <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Тусламж"</translation>
 <translation id="8814190375133053267">Утасгүй интернет</translation>
+<translation id="8815390544836110344">Дэлгэцийн агшны товчлол, Ctrl нэмэх нь Shift нэмэх нь Тойм горимын товчийг дарна уу</translation>
 <translation id="881757059229893486">Оруулах аргын тохиргоо</translation>
 <translation id="8819728065740986820">Орчинтой тохируулан цэнэглэх онцлог асаалттай байна</translation>
 <translation id="8825863694328519386">Буцахын тулд зүүн талаас шударна уу</translation>

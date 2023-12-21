@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{Now showing 1 Chromium window}other{Now showing {count} Chromium windows}}</translation>
 <translation id="3344973607274501920">Chromium couldn't check your passwords. Try checking your Internet connection.</translation>
 <translation id="3366305173356742781">Chromium data in your account</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute. This could include history and autofill.}other{This happens when Chromium isn't used for {THRESHOLD} minutes. This could include history and autofill.}}</translation>
 <translation id="3472200483164753384">Not supported on Chromium Canary</translation>
 <translation id="3478750326643748149">Hide 'Get the most out of Chromium'</translation>
 <translation id="3512168799938877162">Your password wasn't shared. Check your Internet connection and make sure that you're signed in to Chromium. Then try again.</translation>
@@ -284,6 +285,7 @@ Things to consider:
 <translation id="8909995017390087892">Chromium for iOS</translation>
 <translation id="8924617840944134898">Open Chromium Incognito Tab</translation>
 <translation id="894437814105052438">When you sign out, Chromium won't sync any new data to your Google Account. Data previously synced stays in the account.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute}other{This happens when Chromium isn't used for {THRESHOLD} minutes}}</translation>
 <translation id="8963279154877372067">Allow Chromium notifications to get price drop alerts</translation>
 <translation id="900560297598578021">Signed in as <ph name="EMAIL" />.
 

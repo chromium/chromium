@@ -921,6 +921,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1695510246756136088">Ekki er hægt að tengjast internetinu. Reyndu aftur.</translation>
 <translation id="1696555181932908973">Þú getur prófað aðrar leiðir til að halda áfram í <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Tæki er með SSH-þjón stilltan. Ekki skrá þig inn með viðkvæmum reikningum.</translation>
+<translation id="1697122132646041614">Þumall niður opnar eyðublað þar sem hægt er að skrá ítarlegar upplýsingar um það hvers vegna þér líkar ekki við þessar niðurstöður.</translation>
 <translation id="1697150536837697295">List</translation>
 <translation id="1697686431566694143">Breyta skrá</translation>
 <translation id="1698796500103229697">Greiðslumátar</translation>
@@ -2311,6 +2312,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2731700343119398978">Augnablik...</translation>
 <translation id="2731971182069536520">Næst þegar þú endurræsir tækið þitt keyrir kerfisstjóri staka uppfærslu sem eyðir staðbundnu gögnunum þínum.</translation>
 <translation id="2732134891301408122">Aukaefni <ph name="CURRENT_ELEMENT" /> af <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Þumall upp sendir ábendingu um að þér líki við þessar niðurstöður.</translation>
 <translation id="2733992589856193783">Þú bjóst til aðgangslykil fyrir þetta vefsvæði. Þú þarft að nota snjalltækið þitt til að skrá þig inn.</translation>
 <translation id="27349076983469322">Ljós bakgrunnur</translation>
 <translation id="2735712963799620190">Áætlun</translation>
@@ -5678,6 +5680,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5431318178759467895">Í lit</translation>
 <translation id="5432145523462851548">Sýna <ph name="FILE_NAME" /> í möppu</translation>
 <translation id="5432223177001837288">Til að deila hljóði skaltu deila flipa í staðinn</translation>
+<translation id="5432872710261597882">Þumall upp sendir ábendingu um að þér líki við þetta.</translation>
 <translation id="543338862236136125">Breyta aðgangsorði</translation>
 <translation id="5434065355175441495">PKCS #1 RSA-dulkóðun</translation>
 <translation id="5435274640623994081">Kveikja á skráningu hljóðmerkja</translation>
@@ -5713,6 +5716,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Glósur á lásskjá</translation>
 <translation id="5459864179070366255">Halda uppsetningu áfram</translation>
+<translation id="5460861858595506978">Innblástur</translation>
 <translation id="5461050611724244538">Tenging við símann rofnaði</translation>
 <translation id="5463275305984126951">Yfirlit yfir <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Skráðu þig til að fá tölvupóst um <ph name="DEVICE_TYPE" /></translation>
@@ -5932,6 +5936,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5631272057151918206">Þetta fjarlægir allt að <ph name="OFFLINE_STORAGE_SIZE" /> af geymslurými sem þú notar fyrir skrár án nettengingar. Sumar skrár verða áfram tiltækar án nettengingar. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Heimildar óskað, ýttu á Ctrl + Áfram til að svara</translation>
 <translation id="5632221585574759616">Nánar um heimildir viðbóta</translation>
+<translation id="5632485077360054581">Fá leiðbeiningar</translation>
 <translation id="5632566673632479864">Reikningurinn þinn <ph name="EMAIL" /> er ekki lengur leyfður sem aðalreikningur. Þar sem <ph name="DOMAIN" /> stýrir þessum reikningi verða bókamerkin þín, ferillinn, aðgangsorðin og aðrar stillingar hreinsuð úr tækinu.</translation>
 <translation id="5633149627228920745">Nánar um kerfiskröfur</translation>
 <translation id="563371367637259496">Farsímakerfi</translation>
@@ -8897,6 +8902,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7969046989155602842">Skipun</translation>
 <translation id="7970673414865679092">Upplýsingar um ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 með RSA-dulkóðun</translation>
+<translation id="7973149423217802477">Þumall niður sendir ábendingu um að þér líki ekki við þetta.</translation>
 <translation id="7973776233567882054">Hvert af eftirtöldu lýsir netinu þínu best?</translation>
 <translation id="797394244396603170">Veldu tækið sem þú vilt deila skrám með</translation>
 <translation id="7974566588408714340">Reyna aftur með <ph name="EXTENSIONNAME" /></translation>

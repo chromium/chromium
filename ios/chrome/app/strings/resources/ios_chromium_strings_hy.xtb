@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{Այժմ ցուցադրվում է Chromium-ի 1 պատուհան}one{Այժմ ցուցադրվում է Chromium-ի {count} պատուհան}other{Այժմ ցուցադրվում է Chromium-ի {count} պատուհան}}</translation>
 <translation id="3344973607274501920">Chromium-ին չհաջողվեց ստուգել ձեր գաղտնաբառերը։ Ստուգեք ինտերնետ կապը։</translation>
 <translation id="3366305173356742781">Chromium-ի տվյալները ձեր հաշվում</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Սա տեղի է ունենում, երբ Chromium-ը {THRESHOLD} րոպե չի օգտագործվում։ Դա կարող է ներառել պատմությունը և ինքնալրացված տվյալները։}one{Սա տեղի է ունենում, երբ Chromium-ը {THRESHOLD} րոպե չի օգտագործվում։ Դա կարող է ներառել պատմությունը և ինքնալրացված տվյալները։}other{Սա տեղի է ունենում, երբ Chromium-ը {THRESHOLD} րոպե չի օգտագործվում։ Դա կարող է ներառել պատմությունը և ինքնալրացված տվյալները։}}</translation>
 <translation id="3472200483164753384">Չի աջակցվում Chromium Canary-ում</translation>
 <translation id="3478750326643748149">Թաքցնել «Օգտվել Chromium-ի բոլոր հնարավորություններից» կարգավորումը</translation>
 <translation id="3512168799938877162">Ձեր գաղտնաբառը չի փոխանցվել։ Ստուգեք ինտերնետ կապը և համոզվեք, որ մուտք եք գործել Chromium։ Այնուհետև նորից փորձեք։</translation>
@@ -284,6 +285,7 @@
 <translation id="8909995017390087892">Chromium՝ iOS համար</translation>
 <translation id="8924617840944134898">Բացել ինկոգնիտո ներդիր Chromium-ում</translation>
 <translation id="894437814105052438">Երբ դուք դուրս գաք հաշվից, Chromium-ը չի համաժամացնի նոր տվյալները ձեր Google հաշվի հետ։ Նախկինում համաժամացված տվյալները չեն հեռացվի։</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Սա տեղի է ունենում, երբ Chromium-ը {THRESHOLD} րոպե չի օգտագործվում}one{Սա տեղի է ունենում, երբ Chromium-ը {THRESHOLD} րոպե չի օգտագործվում}other{Սա տեղի է ունենում, երբ Chromium-ը {THRESHOLD} րոպե չի օգտագործվում}}</translation>
 <translation id="8963279154877372067">Թույլատրեք Chromium-ին ուղարկել ծանուցումներ, որպեսզի տեղեկանաք գների իջեցման մասին</translation>
 <translation id="900560297598578021">Դուք մուտք եք գործել որպես <ph name="EMAIL" />։
 

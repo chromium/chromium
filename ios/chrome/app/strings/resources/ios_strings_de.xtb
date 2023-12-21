@@ -512,6 +512,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="371398631992790800">Lesezeichen ausblenden</translation>
 <translation id="37207012422556617">Trends bei Suchanfragen</translation>
 <translation id="3725081662140949903">Wenn du verhindern möchtest, dass andere Personen dein Passwort verwenden, öffne die <ph name="APP" /> App und ändere es</translation>
+<translation id="3738428049780661523">Erstellt: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Downloads ausblenden</translation>
 <translation id="3745190878148784130">„Text zoomen“ ausblenden</translation>
 <translation id="3762232513783804601">Für dein iPad entwickelt</translation>
@@ -672,7 +673,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4631335160486397366"><ph name="COUNT" /> wiederverwendete Passwörter</translation>
 <translation id="4634124774493850572">Passwort verwenden</translation>
 <translation id="4636930964841734540">Info</translation>
-<translation id="4642472735733036929">Preisbeobachtung gestoppt</translation>
+<translation id="4642472735733036929">Preis-Tracking gestoppt</translation>
 <translation id="4645575059429386691">Von deinen Eltern verwaltet</translation>
 <translation id="4650125387981512669">Weiter als <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Prüfe, ob deine Passwörter sicher sind, finde heraus, ob sie gehackt wurden, und informiere dich darüber, wie du dich im Internet besser schützen kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -1033,7 +1034,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6464397691496239022">Websites können Cookies verwenden, um dir das Surfen zu erleichtern; zum Beispiel, damit du angemeldet bleibst oder Artikel in deinem Einkaufswagen gespeichert bleiben.
 
 Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen.</translation>
-<translation id="6476253015009698798">Die Preisbeobachtung ist für diese Seite nicht verfügbar.</translation>
+<translation id="6476253015009698798">Preis-Tracking ist für diese Seite nicht verfügbar.</translation>
 <translation id="6476800141292307438">Die Seite wird in die Sprache <ph name="LANGUAGE" /> übersetzt. Optionen sind unten auf dem Bildschirm verfügbar.</translation>
 <translation id="648164694371393720">Authentifizierungsfehler</translation>
 <translation id="6494931198667773526">Ende</translation>
@@ -1203,6 +1204,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7425346204213733349">Änderungen an deinen Lesezeichen, dem Verlauf, deinen Passwörtern und anderen Einstellungen werden nicht mehr mit deinem Google-Konto synchronisiert. Deine vorhandenen Daten bleiben aber in deinem Google-Konto gespeichert.</translation>
 <translation id="7431991332293347422">Lege fest, wie dein Browserverlauf zur Personalisierung der Google Suche verwendet wird</translation>
 <translation id="7435356471928173109">Von deinem Administrator deaktiviert</translation>
+<translation id="7436239899443308800">{count,plural, =1{1 Tab}other{{count} Tabs}}</translation>
 <translation id="7438481509621345350">Ab jetzt wirst du beim Öffnen eines neuen Tabs Artikel von <ph name="CHANNEL_NAME" /> sehen.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Lesezeichen in „{title}“ gespeichert}other{Lesezeichen in „{title}“ gespeichert}}</translation>
 <translation id="7454057999980797137">Bundesl./Landkr.</translation>
@@ -1210,7 +1212,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7459628154744868585">Erweiterter Schutz ist aktiviert</translation>
 <translation id="7465351360025415755">Inhalte erhalten, die dich interessieren</translation>
 <translation id="7472734401283673885">Unternehmensname</translation>
-<translation id="7473891865547856676">Nein, danke</translation>
+<translation id="7473891865547856676">Nein, Danke</translation>
 <translation id="7488874549363591659">Zugestellt</translation>
 <translation id="7491131399623468277">Zu den Einstellungen…</translation>
 <translation id="749854780843431406">Über die Schaltfläche „<ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />“ kannst du einen neuen Tab öffnen.</translation>
@@ -1426,7 +1428,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8613883225817609844">„Letzte Tabs“ ausblenden</translation>
 <translation id="8620640915598389714">Bearbeiten</translation>
 <translation id="8624447588354561276">Sendungsnummer</translation>
-<translation id="8624753446837753970">Position festlegen</translation>
+<translation id="8624753446837753970">Positionieren</translation>
 <translation id="8626393685701737946">Du kannst unter Einstellungen &gt; Inhaltseinstellungen die Desktop-Ansicht als Standardeinstellung festlegen</translation>
 <translation id="8636825310635137004">Aktiviere die Synchronisierung, um Tabs von deinen anderen Geräten abzurufen.</translation>
 <translation id="8637431369725868556">Schütze dich bestmöglich vor gefährlichen Websites.</translation>

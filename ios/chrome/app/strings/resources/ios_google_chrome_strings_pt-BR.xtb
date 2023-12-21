@@ -63,6 +63,7 @@ Considerações:
 <translation id="2427791862912929107">O Chrome tem recursos que ajudam a gerenciar seus dados de Internet e a velocidade de carregamento de páginas da Web.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Para acessar com facilidade suas senhas salvas em outros apps, use o preenchimento automático no Chrome</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Isso acontece quando o Chrome não é usado por {THRESHOLD} minuto. Pode incluir o histórico e o preenchimento automático.}one{Isso acontece quando o Chrome não é usado por {THRESHOLD} minuto. Pode incluir o histórico e o preenchimento automático.}other{Isso acontece quando o Chrome não é usado por {THRESHOLD} minutos. Pode incluir o histórico e o preenchimento automático.}}</translation>
 <translation id="2561231791489583059">Use o Chrome como navegador padrão para ter mais proteção contra sites perigosos e garantir a segurança das suas senhas.</translation>
 <translation id="2574249610672786438">Para acessar suas guias em qualquer lugar onde você usar o Chrome, faça login em todos os seus dispositivos</translation>
 <translation id="2576431527583832481">O Google Chrome ficou ainda melhor! Uma nova versão está disponível.</translation>
@@ -91,6 +92,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="3282568296779691940">Fazer login no Google Chrome</translation>
 <translation id="3340938510625667914">Ações do Chrome</translation>
 <translation id="3345341804167540816">Usar o Chrome em qualquer lugar</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Isso acontece quando o Chrome não é usado por {THRESHOLD} minuto}one{Isso acontece quando o Chrome não é usado por {THRESHOLD} minuto}other{Isso acontece quando o Chrome não é usado por {THRESHOLD} minutos}}</translation>
 <translation id="3399930248910934354">Abrir configurações do Chrome</translation>
 <translation id="3472587960215700950">O Chrome usa o Google Maps para fornecer rotas e informações locais sobre endereços detectados.</translation>
 <translation id="3503014945441706099">Use também o recurso Navegação segura com maior proteção neste perfil do Chrome</translation>

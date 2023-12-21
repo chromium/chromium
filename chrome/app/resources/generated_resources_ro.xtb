@@ -4196,6 +4196,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4246980464509998944">Comentarii suplimentare:</translation>
 <translation id="424726838611654458">Deschide întotdeauna în Adobe Reader</translation>
 <translation id="4248401726442101648">Nicio cameră conectată</translation>
+<translation id="4249116869350613769">Economisirea bateriei</translation>
 <translation id="4249248555939881673">Se așteaptă realizarea conexiunii la rețea...</translation>
 <translation id="4249373718504745892">Accesul acestei pagini la camera și microfonul dvs. a fost blocat.</translation>
 <translation id="424963718355121712">Aplicațiile trebuie să fie difuzate de gazda pe care o afectează</translation>
@@ -5025,6 +5026,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4893522937062257019">Pe ecranul de blocare</translation>
 <translation id="4895799941222633551">Creează o &amp;comandă rapidă...</translation>
 <translation id="4898011734382862273">Certificatul „<ph name="CERTIFICATE_NAME" />” reprezintă o Autoritate de certificare</translation>
+<translation id="4898913189644355814">Este posibil ca un site să-ți salveze limba preferată sau articolele pe care vrei să le cumperi. Aceste informații sunt disponibile pe site și pe subdomeniile acestuia.</translation>
 <translation id="4899052647152077033">Inversează culorile</translation>
 <translation id="4899696330053002588">Conține anunțuri</translation>
 <translation id="490031510406860025">Nepermisă pe acest site</translation>
@@ -5920,6 +5922,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5631272057151918206">Astfel, se va elimina până la <ph name="OFFLINE_STORAGE_SIZE" /> din spațiul folosit de fișierele offline. Unele fișiere vor fi disponibile în continuare offline. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Permisiune necesară, apasă Ctrl + tasta Înainte pentru a răspunde</translation>
 <translation id="5632221585574759616">Află mai multe despre permisiunile pentru extensii</translation>
+<translation id="5632485077360054581">Arată-mi cum</translation>
 <translation id="5632566673632479864">Contul tău <ph name="EMAIL" /> nu mai are permisiunea de a fi contul principal. Deoarece acest cont este gestionat de <ph name="DOMAIN" />, vor fi șterse marcajele, istoricul, parolele și alte setări de pe acest dispozitiv.</translation>
 <translation id="5633149627228920745">Află mai multe despre cerințele de sistem</translation>
 <translation id="563371367637259496">Mobilă</translation>
@@ -8214,7 +8217,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="747114903913869239">Eroare: extensia nu poate fi decodificată</translation>
 <translation id="7471520329163184433">Mai mică</translation>
 <translation id="747312361841682912">Șterge datele afișate</translation>
-<translation id="7473891865547856676">Nu, mulțumesc</translation>
+<translation id="7473891865547856676">Nu, Mulțumesc</translation>
 <translation id="747459581954555080">Restabilește-le pe toate</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Este necesară returnarea imediată}few{Returnează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_DAYS} zile}other{Returnează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_DAYS} de zile}}</translation>
 <translation id="7475671414023905704">Adresă URL pentru parolă pierdută Netscape</translation>

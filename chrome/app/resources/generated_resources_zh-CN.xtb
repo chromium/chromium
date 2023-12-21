@@ -5910,6 +5910,7 @@
 <translation id="5631272057151918206">此操作最多可释放离线文件占用的 <ph name="OFFLINE_STORAGE_SIZE" /> 空间。部分文件仍可离线访问。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">收到了权限请求，按 Ctrl + 前进键即可回复</translation>
 <translation id="5632221585574759616">详细了解扩展程序的权限</translation>
+<translation id="5632485077360054581">操作步骤</translation>
 <translation id="5632566673632479864">您的账号 <ph name="EMAIL" /> 已无法再用作主账号。该账号由 <ph name="DOMAIN" /> 管理，因此您的书签、历史记录、密码及其他设置将从此设备中清除。</translation>
 <translation id="5633149627228920745">详细了解系统要求</translation>
 <translation id="563371367637259496">移动网络</translation>

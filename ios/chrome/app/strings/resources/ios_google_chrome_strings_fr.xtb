@@ -63,6 +63,7 @@ Points à prendre en compte :
 <translation id="2427791862912929107">Chrome dispose de fonctionnalités qui vous permettent de gérer vos données Internet et la vitesse de chargement des pages Web.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Pour récupérer facilement vos mots de passe enregistrés dans vos autres applis, utilisez Chrome pour la saisie automatique</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Cela se produit quand Chrome est inutilisé pendant {THRESHOLD} minute. Il peut s'agir de l'historique et de la saisie automatique.}one{Cela se produit quand Chrome est inutilisé pendant {THRESHOLD} minute. Il peut s'agir de l'historique et de la saisie automatique.}other{Cela se produit quand Chrome est inutilisé pendant {THRESHOLD} minutes. Il peut s'agir de l'historique et de la saisie automatique.}}</translation>
 <translation id="2561231791489583059">Utilisez Chrome comme navigateur par défaut pour rester à l'abri des sites dangereux et protéger vos mots de passe</translation>
 <translation id="2574249610672786438">Pour retrouver vos onglets Chrome quel que soit l'appareil utilisé, connectez-vous à votre compte</translation>
 <translation id="2576431527583832481">Google Chrome s'est amélioré ! Une nouvelle version est désormais disponible.</translation>
@@ -91,6 +92,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3282568296779691940">Connectez-vous à Chrome</translation>
 <translation id="3340938510625667914">Actions Chrome</translation>
 <translation id="3345341804167540816">Utilisez Chrome où que vous soyez</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Cela se produit quand Chrome est inutilisé pendant {THRESHOLD} minute}one{Cela se produit quand Chrome est inutilisé pendant {THRESHOLD} minute}other{Cela se produit quand Chrome est inutilisé pendant {THRESHOLD} minutes}}</translation>
 <translation id="3399930248910934354">Accédez aux paramètres de Chrome</translation>
 <translation id="3472587960215700950">Chrome utilise Google Maps pour vous fournir des itinéraires et des informations locales sur les adresses détectées.</translation>
 <translation id="3503014945441706099">Profitez aussi sous ce profil Chrome de la navigation sécurisée avec protection renforcée</translation>

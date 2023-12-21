@@ -4209,6 +4209,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4246980464509998944">Mga karagdagang komento:</translation>
 <translation id="424726838611654458">Palaging buksan sa Adobe Reader</translation>
 <translation id="4248401726442101648">Walang nakakonektang camera</translation>
+<translation id="4249116869350613769">Pantipid ng baterya</translation>
 <translation id="4249248555939881673">Naghihintay ng koneksyon sa network...</translation>
 <translation id="4249373718504745892">Na-block ang page na ito sa pag-access ng iyong camera at mikropono.</translation>
 <translation id="424963718355121712">Dapat maihatid ang mga app mula sa host na naaapektuhan ng mga ito</translation>
@@ -5039,6 +5040,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4893522937062257019">Sa lock screen</translation>
 <translation id="4895799941222633551">Gumawa ng &amp;shortcut...</translation>
 <translation id="4898011734382862273">Kinakatawan ng certificate na "<ph name="CERTIFICATE_NAME" />" ang isang Certification Authority</translation>
+<translation id="4898913189644355814">Posibleng i-save ng isang site ang iyong gustong wika o ang mga item na gusto mong bilhin. Available ang impormasyong ito sa site at sa mga subdomain nito.</translation>
 <translation id="4899052647152077033">I-invert ang mga kulay</translation>
 <translation id="4899696330053002588">May mga ad</translation>
 <translation id="490031510406860025">Hindi pinapayagan sa site na ito</translation>
@@ -5932,6 +5934,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5631272057151918206">Aalisin nito ang hanggang <ph name="OFFLINE_STORAGE_SIZE" /> ng space na ginagamit ng iyong mga offline na file. Magiging available pa rin offline ang ilang file. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Humiling ng pahintulot, pindutin ang Ctrl + Forward para tumugon</translation>
 <translation id="5632221585574759616">Matuto pa tungkol sa mga pahintulot sa extension</translation>
+<translation id="5632485077360054581">Ipakita sa akin kung paano</translation>
 <translation id="5632566673632479864">Hindi na pinapayagan ang iyong account na <ph name="EMAIL" /> bilang pangunahing account. Dahil pinapamahalaan ng <ph name="DOMAIN" /> ang account na ito, iki-clear ang iyong mga bookmark, history, password, at iba pang setting sa device na ito.</translation>
 <translation id="5633149627228920745">Matuto pa tungkol sa mga requirement ng system</translation>
 <translation id="563371367637259496">Mobile</translation>

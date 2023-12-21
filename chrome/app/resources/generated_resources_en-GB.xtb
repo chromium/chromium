@@ -920,6 +920,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1695510246756136088">Can't connect to the Internet. Try again.</translation>
 <translation id="1696555181932908973">You can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Device has SSH server configured. Do not sign in with sensitive accounts.</translation>
+<translation id="1697122132646041614">Thumbs down opens a form for submitting detailed feedback on why you dislike these results.</translation>
 <translation id="1697150536837697295">Art</translation>
 <translation id="1697686431566694143">Edit file</translation>
 <translation id="1698796500103229697">Payment methods</translation>
@@ -2310,6 +2311,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2731700343119398978">Please wait…</translation>
 <translation id="2731971182069536520">The next time that you restart your device, your administrator will perform a one-off update that will delete your local data.</translation>
 <translation id="2732134891301408122">Extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Thumbs up submits feedback that you like these results.</translation>
 <translation id="2733992589856193783">You created a passkey for this site. You need your mobile device to sign in.</translation>
 <translation id="27349076983469322">Light background</translation>
 <translation id="2735712963799620190">Schedule</translation>
@@ -5677,6 +5679,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5431318178759467895">Colour</translation>
 <translation id="5432145523462851548">Show <ph name="FILE_NAME" /> in folder</translation>
 <translation id="5432223177001837288">To share audio, share a tab instead</translation>
+<translation id="5432872710261597882">Thumbs up submits feedback that you like this.</translation>
 <translation id="543338862236136125">Edit password</translation>
 <translation id="5434065355175441495">PKCS #1 RSA Encryption</translation>
 <translation id="5435274640623994081">Enable earcon logging</translation>
@@ -5712,6 +5715,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Lock screen notes</translation>
 <translation id="5459864179070366255">Continue to install</translation>
+<translation id="5460861858595506978">Inspiration</translation>
 <translation id="5461050611724244538">Connection lost with your phone</translation>
 <translation id="5463275305984126951">Index of <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Sign up for <ph name="DEVICE_TYPE" /> emails</translation>
@@ -5931,6 +5935,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5631272057151918206">This will remove up to <ph name="OFFLINE_STORAGE_SIZE" /> of space used by your offline files. Some files will still be available offline. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Permission requested, press Ctrl + Forward to respond</translation>
 <translation id="5632221585574759616">Learn more about extension permissions</translation>
+<translation id="5632485077360054581">Show me how</translation>
 <translation id="5632566673632479864">Your account <ph name="EMAIL" /> is no longer allowed as the primary account. Because this account is managed by <ph name="DOMAIN" />, your bookmarks, history, passwords and other settings will be cleared from this device.</translation>
 <translation id="5633149627228920745">Learn more about system requirements</translation>
 <translation id="563371367637259496">Mobile</translation>
@@ -8223,7 +8228,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="747114903913869239">Error: Unable to decode extension</translation>
 <translation id="7471520329163184433">Slower</translation>
 <translation id="747312361841682912">Delete displayed data</translation>
-<translation id="7473891865547856676">No, thanks</translation>
+<translation id="7473891865547856676">No Thanks</translation>
 <translation id="747459581954555080">Restore all</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Immediate return required}other{Return <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days}}</translation>
 <translation id="7475671414023905704">Netscape Lost Password URL</translation>
@@ -8895,6 +8900,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Ethernet details</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 With RSA Encryption</translation>
+<translation id="7973149423217802477">Thumbs down submits feedback that you dislike this.</translation>
 <translation id="7973776233567882054">Which of the following best describes your network?</translation>
 <translation id="797394244396603170">Select the device to which you’d like to share files</translation>
 <translation id="7974566588408714340">Retry using <ph name="EXTENSIONNAME" /></translation>

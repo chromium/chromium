@@ -921,6 +921,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1695510246756136088">Não foi possível se conectar à internet. Tente novamente.</translation>
 <translation id="1696555181932908973">Há outras maneiras de continuar no <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">O dispositivo tem um servidor SSH configurado. Não faça login usando contas confidenciais.</translation>
+<translation id="1697122132646041614">O botão "Não gostei" abre um formulário para enviar comentários detalhados sobre o motivo de você não ter gostado desses resultados.</translation>
 <translation id="1697150536837697295">Arte</translation>
 <translation id="1697686431566694143">Editar arquivo</translation>
 <translation id="1698796500103229697">Formas de pagamento</translation>
@@ -1873,6 +1874,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2408018932941436077">Salvando cartão</translation>
 <translation id="2408955596600435184">Informe seu PIN</translation>
 <translation id="2409268599591722235">Vamos lá</translation>
+<translation id="2409378541210421746">Editar a seleção de idioma</translation>
 <translation id="2409709393952490731">Usar um smartphone ou tablet</translation>
 <translation id="2410079346590497630">Detalhes da versão</translation>
 <translation id="2410298923485357543">Usar voz natural quando o dispositivo estiver on-line</translation>
@@ -1936,7 +1938,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2445484935443597917">Criar um novo perfil</translation>
 <translation id="2445726032315793326">Lupa parcial</translation>
 <translation id="244641233057214044">Produto relacionado à sua pesquisa</translation>
-<translation id="2447587550790814052">Agora você pode usar o Steam no Chromebook (Beta)</translation>
+<translation id="2447587550790814052">Agora você pode usar o Steam para Chromebook (Beta)</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2448810255793562605">Leitura automática do acesso com interruptor</translation>
 <translation id="2450021089947420533">Jornadas</translation>
@@ -2310,6 +2312,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2731700343119398978">Aguarde...</translation>
 <translation id="2731971182069536520">Na próxima vez que você reiniciar o dispositivo, o administrador fará uma atualização única que excluirá seus dados locais.</translation>
 <translation id="2732134891301408122">Conteúdo extra <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">O botão "Gostei" envia feedback informando que você gostou desses resultados.</translation>
 <translation id="2733992589856193783">Você criou uma chave de acesso para este site. Você precisa do seu dispositivo móvel para fazer login.</translation>
 <translation id="27349076983469322">Plano de fundo claro</translation>
 <translation id="2735712963799620190">Programar</translation>
@@ -3836,6 +3839,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3937640725563832867">Nome alternativo do emissor do certificado</translation>
 <translation id="3937734102568271121">Sempre traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626">Dispositivos do fornecedor <ph name="VENDOR_ID" /></translation>
+<translation id="3939622756852381766">Cria legendas automaticamente para conteúdo de áudio e vídeo</translation>
 <translation id="3941565636838060942">Para ocultar o acesso a este programa, desinstale-o, usando 
   <ph name="CONTROL_PANEL_APPLET_NAME" /> no Painel de controle.
 
@@ -4344,6 +4348,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="435527878592612277">Selecione sua foto</translation>
 <translation id="4356100841225547054">Desativar o som</translation>
 <translation id="4358302248024731679">Para diagnosticar melhor os problemas de Bluetooth, os Googlers podem incluir outros registros de Bluetooth aos relatórios de feedback deles. Quando essa opção estiver marcada, seu relatório vai incluir registros btsnoop e HCI da sua sessão atual, depois de terem sido corrigidos para remover o máximo de PII possível. O acesso a esses registros será restrito aos gerentes do grupo de produtos do ChromeOS no Listnr. Os registros serão excluídos após 90 dias.</translation>
+<translation id="4358361163731478742">Nenhum app com suporte à seleção de idioma</translation>
 <translation id="4358643842961018282">O dispositivo está atualizado</translation>
 <translation id="4359408040881008151">Instalada devido a extensões dependentes.</translation>
 <translation id="4359717112757026264">Paisagem urbana</translation>
@@ -4602,6 +4607,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> compartilhou uma senha para <ph name="WEBSITE_NAME" /> com você. Você pode usá-la no formulário de login.</translation>
 <translation id="4558426062282641716">Permissão de inicialização automática solicitada</translation>
 <translation id="4558542033859106586">Abrindo no app <ph name="TARGET_APP" />…</translation>
+<translation id="4558946868955275132">Apenas apps que têm suporte à seleção de idioma são mostrados aqui</translation>
 <translation id="4559617833001311418">Este site está acessando os sensores de luz ou movimento.</translation>
 <translation id="4560728518401799797">Mais opções para a pasta <ph name="FOLDER_TITLE" /></translation>
 <translation id="4561893854334016293">Não há permissões com mudanças recentes</translation>
@@ -5674,6 +5680,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5431318178759467895">Colorido</translation>
 <translation id="5432145523462851548">Mostrar <ph name="FILE_NAME" /> na pasta</translation>
 <translation id="5432223177001837288">Para compartilhar áudio, compartilhe uma guia</translation>
+<translation id="5432872710261597882">O botão "Gostei" envia feedback informando que você gostou desse recurso.</translation>
 <translation id="543338862236136125">Editar senha</translation>
 <translation id="5434065355175441495">PKCS #1 Criptografia RSA</translation>
 <translation id="5435274640623994081">Ativar registro de ícone auditivo</translation>
@@ -5709,6 +5716,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Anotações na tela de bloqueio</translation>
 <translation id="5459864179070366255">Continuar instalação</translation>
+<translation id="5460861858595506978">Inspiração</translation>
 <translation id="5461050611724244538">Conexão com o smartphone perdida</translation>
 <translation id="5463275305984126951">Índice de <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Inscreva-se para receber e-mails sobre o <ph name="DEVICE_TYPE" /></translation>
@@ -5929,6 +5937,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5631272057151918206">Essa ação removerá até <ph name="OFFLINE_STORAGE_SIZE" /> do espaço usado pelos seus arquivos off-line. Alguns arquivos ainda vão estar disponíveis off-line. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Permissão solicitada, pressione Ctrl + Avançar para responder</translation>
 <translation id="5632221585574759616">Saiba mais sobre as permissões de extensões</translation>
+<translation id="5632485077360054581">Me ajude a fazer isso</translation>
 <translation id="5632566673632479864">Não é mais permitido usar sua conta <ph name="EMAIL" /> como a principal. Como essa conta é gerenciada por <ph name="DOMAIN" />, seus favoritos, histórico, senhas e outras configurações serão excluídos deste dispositivo.</translation>
 <translation id="5633149627228920745">Saiba mais sobre os requisitos do sistema</translation>
 <translation id="563371367637259496">Celular</translation>
@@ -7042,6 +7051,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6535331821390304775">Sempre permitir que <ph name="ORIGIN" /> abra esse tipo de link no app associado</translation>
 <translation id="653659894138286600">Digitalizar documentos e imagens</translation>
 <translation id="6537613839935722475">O nome pode conter letras, números e hifens (-)</translation>
+<translation id="6538036594527795020">Mudar idioma do app <ph name="APP" />. O idioma atual é o <ph name="LANGUAGE" />.</translation>
 <translation id="6538098297809675636">Erro ao detectar o código</translation>
 <translation id="653920215766444089">Procurando dispositivo apontador</translation>
 <translation id="6539674013849300372">Tenha mais segurança on-line com uma senha forte. Ela vai ficar salva no <ph name="GOOGLE_PASSWORD_MANAGER" /> da conta <ph name="EMAIL" />.</translation>
@@ -7288,6 +7298,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6737663862851963468">Remover tíquete do Kerberos</translation>
 <translation id="6738180164164974883">Permitir a definição de cookies de terceiros</translation>
 <translation id="6738430949033571771">Verificando a conta…</translation>
+<translation id="6739266861259291931">Redefinir para o idioma do dispositivo</translation>
 <translation id="6739923123728562974">Mostrar atalho na área de trabalho</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> pausado</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Seu administrador<ph name="END_LINK" /> desativou o "Navegação segura"</translation>
@@ -8221,7 +8232,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="747114903913869239">Erro: Não foi possível decodificar a extensão</translation>
 <translation id="7471520329163184433">Mais lenta</translation>
 <translation id="747312361841682912">Excluir os dados exibidos</translation>
-<translation id="7473891865547856676">Agora não</translation>
+<translation id="7473891865547856676">Agora Não</translation>
 <translation id="747459581954555080">Restaurar todas</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Devolução imediata necessária}one{Devolva o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dia}other{Devolva o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dias}}</translation>
 <translation id="7475671414023905704">URL da senha perdida do Netscape</translation>
@@ -8893,6 +8904,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Detalhes da Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 com criptografia RSA</translation>
+<translation id="7973149423217802477">O botão "Não gostei" envia feedback informando que você não gostou desse recurso.</translation>
 <translation id="7973776233567882054">Qual das seguintes alternativas melhor descreve sua rede?</translation>
 <translation id="797394244396603170">Selecione o dispositivo com que você quer compartilhar arquivos</translation>
 <translation id="7974566588408714340">Tentar novamente usando <ph name="EXTENSIONNAME" /></translation>
@@ -10295,7 +10307,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9057354806206861646">Atualizar programação</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Cerca de 1 notificação por dia}one{Cerca de {NUM_NOTIFICATION} notificação por dia}other{Cerca de {NUM_NOTIFICATION} notificações por dia}}</translation>
 <translation id="9058760336383947367">Veja o PPD da impressora</translation>
-<translation id="9061694916020926968">Você precisa estar conectado a uma Conta do Google para usar o Steam no Chromebook (Beta). Faça login e tente de novo.</translation>
+<translation id="9061694916020926968">Você precisa estar conectado a uma Conta do Google para usar o Steam para Chromebook (Beta). Faça login e tente de novo.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Erro da linha <ph name="ERROR_LINE_START" /> a <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Ativar o Preenchimento automático e preencher formulários com um clique</translation>
@@ -10463,6 +10475,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9186963452600581158">Fazer login com a Conta do Google de uma criança</translation>
 <translation id="9187967020623675250">As teclas não correspondem. Pressione qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Envie dados de uso e diagnóstico. No momento, este dispositivo está enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles não serão usados para identificar seu filho e ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e os nossos parceiros, como os desenvolvedores Android. Se a configuração "Atividade na Web e de apps adicional" estiver ativada para seu filho, esses dados poderão ser salvos na Conta do Google dele. <ph name="BEGIN_LINK2" />Saiba mais<ph name="END_LINK2" /></translation>
+<translation id="9191638749941292185">Envia legendas ao Google para tradução automática</translation>
 <translation id="9192019773545828776">Ouça uma resposta falada para que você possa usar o dispositivo sem olhar para a tela. O feedback em braille está disponível quando há um dispositivo conectado. Use Ctrl + Alt + Z para ativar e desativar o ChromeVox. Use Pesquisa + seta para a esquerda ou direita para navegar. Use as teclas Pesquisa + espaço para selecionar (ativar).</translation>
 <translation id="919686179725692564">Saiba mais sobre como fazer backup dos seus apps.</translation>
 <translation id="9199503643457729322">Clique para sair do Guia de privacidade.</translation>
@@ -10573,6 +10586,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="98515147261107953">Paisagem</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Geral</translation>
+<translation id="987475089238841621">Pacotes de idiomas são usados para o recurso Legenda instantânea e ficam armazenados no dispositivo</translation>
 <translation id="988320949174893488">Tem falhas intermitentes</translation>
 <translation id="988978206646512040">A senha longa não pode ficar em branco</translation>
 <translation id="992032470292211616">Extensões, aplicativos e temas podem danificar seu dispositivo. Você quer mesmo continuar?</translation>

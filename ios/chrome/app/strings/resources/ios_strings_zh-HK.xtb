@@ -757,7 +757,7 @@
 <translation id="5056446788882570708">發現問題：<ph name="TIME" />。</translation>
 <translation id="5059136629401106827">確定</translation>
 <translation id="5062321486222145940">安裝「Google 雲端硬碟」</translation>
-<translation id="5083217068549651688">{TIME,plural, =0{剩餘時間：{TIME} 秒}=1{剩餘時間：{TIME} 秒}other{剩餘時間：{TIME} 秒}}</translation>
+<translation id="5083217068549651688">{TIME,plural, =0{剩餘時間：{TIME} 秒}=1{尚餘時間：{TIME} 秒}other{剩餘時間：{TIME} 秒}}</translation>
 <translation id="5083464117946352670">無法判斷檔案大小。</translation>
 <translation id="5090832849094901128">刪除此密碼不會刪除您在 <ph name="WEBSITE" /> 的帳戶。</translation>
 <translation id="5094827893301452931">已發佈 Tweet。</translation>

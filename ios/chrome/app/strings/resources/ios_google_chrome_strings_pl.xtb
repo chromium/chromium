@@ -63,6 +63,7 @@ Pamiętaj, że:
 <translation id="2427791862912929107">W Chrome są funkcje, które pomogą Ci zarządzać szybkością wczytywania stron internetowych oraz danymi przesyłanymi przez sieć.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Aby łatwo przywoływać zapisane hasła w innych aplikacjach, użyj autouzupełniania w Chrome</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minutę. Może to obejmować historię i autouzupełnianie.}few{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minuty. Może to obejmować historię i autouzupełnianie.}many{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minut. Może to obejmować historię i autouzupełnianie.}other{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minuty. Może to obejmować historię i autouzupełnianie.}}</translation>
 <translation id="2561231791489583059">Używaj Chrome jako przeglądarki domyślnej, aby korzystać z ochrony przed niebezpiecznymi stronami i bezpiecznie przechowywać swoje hasła</translation>
 <translation id="2574249610672786438">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chrome, zaloguj się na wszystkich urządzeniach</translation>
 <translation id="2576431527583832481">Chrome jest teraz jeszcze lepszy! Dostępna jest nowa wersja.</translation>
@@ -91,6 +92,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="3282568296779691940">Zaloguj się w Chrome</translation>
 <translation id="3340938510625667914">Działania w Chrome</translation>
 <translation id="3345341804167540816">Korzystaj z Chrome w dowolnym miejscu</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minutę}few{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minuty}many{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minut}other{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minuty}}</translation>
 <translation id="3399930248910934354">Otwórz ustawienia Chrome</translation>
 <translation id="3472587960215700950">Chrome używa Map Google, aby podawać wskazówki dojazdu i informacje lokalne o wykrytych adresach.</translation>
 <translation id="3503014945441706099">Włącz też Ulepszone Bezpieczne przeglądanie na tym profilu Chrome</translation>

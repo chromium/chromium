@@ -1138,7 +1138,6 @@ Si la inhabilitas, <ph name="PRODUCT_NAME" /> cerrará la pestaña y, luego, cam
 <translation id="1916266055944569995">Si configuras la política, se definirá el valor que muestra la API Managed Configuration para un origen determinado.
 
       La API Managed Configuration es una configuración de pares clave-valor a la cual se puede acceder mediante la llamada de JavaScript navigator.managed.getManagedConfiguration(). Esta API solo está disponible para los orígenes que corresponden a las aplicaciones web que se instalaron de manera automática mediante <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.</translation>
-<translation id="1918690415433353669">Permitir la organización de pestañas, sin registrar los detalles de la pestaña</translation>
 <translation id="1919802376548418720">Usa la política de KDC para delegar credenciales.</translation>
 <translation id="1920046221095339924">Permitir las sesiones administradas en el dispositivo</translation>
 <translation id="1920772397574801429">Si estableces esta política, se especificará el tipo de cuentas que proporciona la app de autenticación de Android compatible con la autenticación <ph name="HTTP_NEGOTIATE" /> (como la autenticación Kerberos). El proveedor de la app de autenticación debe brindar esta información. Para saber más sobre este procedimiento, consulta The Chromium Projects (https://goo.gl/hajyfN)
@@ -1726,7 +1725,6 @@ política mientras se esté ejecutando el navegador.</translation>
 Si inhabilitas la política, no se permitirá que los usuarios ni las variaciones de <ph name="PRODUCT_NAME" /> habiliten NewBaseUrlInheritanceBehavior en caso de que se detecten problemas de compatibilidad. Si habilitas la política o no la estableces, se permitirá habilitar NewBaseUrlInheritanceBehavior.</translation>
 <translation id="2362469626417133796">Lapso para el reinicio</translation>
 <translation id="2362539163677485510">El token de inscripción de la política de nube</translation>
-<translation id="2362947328909044249">Permitir la organización de pestañas</translation>
 <translation id="2363928351203698966">Si estableces la política en un valor válido, <ph name="PRODUCT_NAME" /> no usará versiones de SSL/TLS anteriores a las especificadas. Se ignorarán los valores que no se reconozcan.
 
       Si no estableces esta política, <ph name="PRODUCT_NAME" /> mostrará un mensaje de error para TLS 1.0 y TLS 1.1, pero el usuario podrá omitirlo.
@@ -2086,7 +2084,6 @@ El sistema solo consulta registros AAAA cuando el dispositivo es accesible para 
 <translation id="2650049181907741121">Medida que se debe tomar cuando el usuario cierra la tapa</translation>
 <translation id="2656559539624760733">No utilizar Chrome Root Store</translation>
 <translation id="2658653824183107970">Utiliza la implementación heredada de <ph name="CORS" /> en lugar de la nueva implementación de <ph name="CORS" /></translation>
-<translation id="2659064869547694451">Permitir la redacción</translation>
 <translation id="2660846099862559570">Nunca usar un proxy</translation>
 <translation id="2661628029848851543">Se permiten todos los usos de cuentas administradas</translation>
 <translation id="2664391398878045611">La página Nueva pestaña no mostrará la notificación del espacio del medio aunque esté disponible</translation>
@@ -2865,7 +2862,6 @@ Si inhabilitas la política, no se enviarán los archivos descargados para que l
 Estas restricciones se aplican a las descargas que se inician desde el contenido de páginas web o mediante la opción de Descarga de vínculo del menú. No se aplican a las acciones de descargar o guardar la página que se muestra actualmente ni a la de guardar como PDF desde las opciones de impresión.
 
 En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="3300322252167923819">Permitir la organización de pestañas</translation>
 <translation id="3300784749135986828">Habilitar o inhabilitar la función <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /></translation>
 <translation id="3301698868852716692">Habilitar la extensión de estadísticas</translation>
 <translation id="3302829897293005699">Si habilitas la política o no la estableces, los dispositivos inscritos informarán sobre la sesión de kiosco activa, como el ID de aplicación y la versión.
@@ -3495,7 +3491,6 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
 <translation id="3799417300383048419">Conservar los datos de perfil en el disco cuando finalice la sesión del usuario</translation>
 <translation id="3799436555130241393">Sincronización de archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3803171355925844705">No permitir que ningún sitio cargue contenido mixto</translation>
-<translation id="3806742563417418191">Permitir la búsqueda de fondos de pantalla</translation>
 <translation id="3808945828600697669">Especificar una lista de complementos inhabilitados</translation>
 <translation id="3810642039169532482">Habilita la función de accesibilidad de dictado en la pantalla de acceso.
 
@@ -3507,7 +3502,6 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
 
           Si no la estableces, el dictado estará inicialmente inhabilitado en la pantalla de acceso, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="3811562426301733860">Permitir anuncios en todos los sitios</translation>
-<translation id="3816281648615435872">Inhabilitar la organización de pestañas</translation>
 <translation id="3816312845600780067">Habilitar combinación de teclas para acceso directo de rescate para el acceso automático</translation>
 <translation id="3817323252437541502">Habilitar protecciones adicionales para los usuarios inscritos en el Programa de Protección Avanzada</translation>
 <translation id="3821861026311587684">Forzar el cierre de sesión del usuario cuando su cuenta pierde la autenticación</translation>
@@ -4076,7 +4070,6 @@ Si inhabilitas la política, se mostrará un mensaje de error en lugar de la sol
 <translation id="428948795004445932">Es la tasa a la que se toman muestras de los datos de red y se los recopila. El mínimo permitido es 1 minuto.
 
       Si no estableces la política, se aplicará la tasa predeterminada de 10 minutos.</translation>
-<translation id="4289628882370719584">La función de organización de pestañas permite a los usuarios organizar las pestañas.</translation>
 <translation id="4290231183305601970">El texto que verá el usuario en Chrome Web Store si se bloquea la instalación.</translation>
 <translation id="4293187705196369087">Permite habilitar o inhabilitar una notificación cuando hay poco espacio disponible en el disco. Esto se aplica a todos los usuarios del dispositivo.
 
@@ -4385,7 +4378,6 @@ No tiene efecto si la habilitas, la dejas vacía o no la configuras.</translatio
 <translation id="453031441196755904">Esta política es obsoleta.</translation>
 <translation id="4531706050939927436">Con Google Play, se puede forzar la instalación de apps de Android desde la Consola del administrador de Google. Estas apps no usan esta política.</translation>
 <translation id="4534500438517478692">Nombre de restricción de Android:</translation>
-<translation id="4537645230504195464">Permitir la redacción sin realizar un registro</translation>
 <translation id="4541530620466526913">Cuentas locales del dispositivo</translation>
 <translation id="4542255783284620926">Bloquear la adición de una cuenta administrada como cuenta secundaria en ChromeOS (cuando se ha iniciado sesión)</translation>
 <translation id="4543502256674577024">Configuración de actualización del dispositivo</translation>
@@ -4596,7 +4588,6 @@ Después de la configuración inicial, los usuarios podrán activar o desactivar
 <translation id="4674871290487541952">Permitir los algoritmos no seguros en las verificaciones de integridad de las instalaciones y actualizaciones de extensiones</translation>
 <translation id="4680961954980851756">Habilitar Autocompletar</translation>
 <translation id="4685721728282448265">Se habilitó el establecimiento de claves poscuántico CECPQ2 para TLS</translation>
-<translation id="4688118315245991650">Inhabilitar la redacción</translation>
 <translation id="468822697351680932">Usar la política SiteList de Internet Explorer como fuente de reglas</translation>
 <translation id="4693190628432874457">Habilitar los informes de ubicación del dispositivo</translation>
 <translation id="4693779768620889402">Destinos basados en extensiones</translation>
@@ -5259,6 +5250,11 @@ políticas específicas.
 Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
 <translation id="5297948043665200363">Permitir que el usuario permanezca conectado después de que se anule la autenticación de su cuenta</translation>
 <translation id="5298949392804966105">No hay restricciones en las cuentas administradas</translation>
+<translation id="5300770793658186741">Si estableces la política, se especificará una lista de orígenes (URLs) o patrones de nombres de host (como *.example.com) para los que no se aplicarán restricciones de seguridad en orígenes inseguros. Las organizaciones pueden especificar orígenes para las apps heredadas que no pueden implementar TLS o configurar un servidor de etapa de pruebas para desarrollos web internos. Así, los desarrolladores pueden probar las funciones que requieren contextos seguros sin tener que implementar TLS en el servidor de pruebas. Esta política también previene que el origen se considere "No seguro" en la barra de direcciones.
+
+Establecer una lista de URLs en esta política equivale a establecer la función experimental de línea de comandos --unsafely-treat-insecure-origin-as-secure en una lista separada por comas de las mismas URLs. La política anulará esta función experimental y también UnsafelyTreatInsecureOriginAsSecure, si se aplica.
+
+Para obtener más información sobre contextos seguros, consulta Secure Contexts (https://www.w3.org/TR/secure-contexts).</translation>
 <translation id="530134925949808452">La hora del día en que se renueva la cuota de uso (en hora local).</translation>
 <translation id="5303080953475303561">Si estableces la política, se controlará la frecuencia con la que la pantalla de bloqueo solicita la contraseña para un desbloqueo rápido. Cada vez que aparezca la pantalla de bloqueo, si se ingresó la contraseña por última vez antes del período que especifica el valor elegido, el desbloqueo rápido no estará disponible. Si el usuario permanece en la pantalla de bloqueo por más tiempo que el especificado, la próxima vez que ingrese el código incorrecto o reingrese la pantalla de bloqueo (lo que ocurra primero), se le solicitará una contraseña.
 
@@ -5298,7 +5294,6 @@ Si inhabilitas la política, no podrán borrarse los historiales de navegación 
 <translation id="5340008866815063393">Habilitar la generación de informes con los datos sobre la política</translation>
 <translation id="5345910753471481870">No mostrar el botón de Google Lens en el cuadro de búsqueda de la página Nueva pestaña</translation>
 <translation id="5346587320074666194">Bloquea el acceso a los sensores en estos sitios</translation>
-<translation id="5347809796754019202">Permitir la redacción</translation>
 <translation id="534836255587440809">Inhabilitar el clic automático en la pantalla de acceso</translation>
 <translation id="5348658899015174540">La API de <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permite a las aplicaciones web capturar varias superficies al mismo tiempo.
       Esta política desbloquea la propiedad <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> para las aplicaciones web en orígenes definidos.
@@ -5469,6 +5464,7 @@ Si la inhabilitas o no la estableces, el restablecimiento completo de la configu
 <translation id="547601067149622666">No permitir anuncios en sitios con anuncios intrusivos</translation>
 <translation id="5476152378885134514">Bloquear el portapapeles en estos sitios</translation>
 <translation id="5480380613778757009">Si inhabilitas o no estableces esta política, apenas finalice la sesión, se restablecerán todas las opciones de configuración de pantalla que se hayan establecido en la sesión de invitado administrada. Si estableces esta política como verdadera, se conservarán las propiedades de pantalla después de salir de la sesión de invitado administrada.</translation>
+<translation id="5483012943408894695">Los orígenes o patrones de nombres de host para los cuales no deben aplicarse restricciones en los orígenes no seguros</translation>
 <translation id="5483065054530244863">Permitir los certificados firmados con SHA-1 y emitidos por los anclajes de confianza locales</translation>
 <translation id="5487758664517243511">Si habilitas la configuración, los usuarios que habilitaron Phone Hub podrán continuar tareas, como ver las páginas web del teléfono, desde ChromeOS.
 
@@ -5836,7 +5832,6 @@ Si la inhabilitas o no la estableces, no se habilitarán los widgets de consulta
 <translation id="5775235485119094648">Cargar la batería mientras está en un rango fijo</translation>
 <translation id="5776485039795852974">Preguntar siempre que un sitio quiera mostrar notificaciones de escritorio.</translation>
 <translation id="5783009211970309878">Imprimir encabezados y pies de página</translation>
-<translation id="5786938041290515154">Permitir la búsqueda de fondos de pantalla sin acceder</translation>
 <translation id="5790763087505467169">Reducir la cantidad de notificaciones de inicio automático de la sesión de invitado administrada</translation>
 <translation id="5800329278018669527">Inhabilitar el mensaje de configuración de red cuando no haya conexión</translation>
 <translation id="5802931736499687181">Inhabilitar la canalización de informes encriptados</translation>
@@ -6027,7 +6022,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="596523880465577341">Esta política dejó de estar disponible y ya no se admite. En su lugar, usa la política "<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />".</translation>
 <translation id="5966615072639944554">Extensiones que tienen permitido utilizar la API de atestación remota</translation>
 <translation id="596732417280023843">El nombre del perfil del certificado.</translation>
-<translation id="597036930083735628">Inhabilitar la búsqueda de fondo de pantalla</translation>
 <translation id="5972538402066550344">Permitir los controles de informes detallados</translation>
 <translation id="5975765799383881158">Si habilitas la política o no la estableces, los usuarios podrán enviar comentarios a Google desde Menú &gt; Ayuda &gt; Informar un problema o la combinación de teclas correspondiente.
 
@@ -10011,6 +10005,17 @@ Esta política solo tendrá efecto si estableces la política <ph name="FULL_RES
 <translation id="9135095804754272364">Mostrar una notificación cuando se detecte un dispositivo USB</translation>
 <translation id="9136212796239682721">Inhabilitar la IU del cuadro de descarga</translation>
 <translation id="9136399279941091445">Intervalos de horas inactivas cuando se ejecutan las políticas de dispositivo especificadas</translation>
+<translation id="9140064482233876338">Dejó de estar disponible en M69. En su lugar, usa OverrideSecurityRestrictionsOnInsecureOrigin.
+
+La política especifica una lista de orígenes (URLs) o patrones de nombres de host (como "*.example.com") para los cuales no se aplicarán restricciones de seguridad en orígenes no seguros.
+
+El objetivo es que las organizaciones puedan permitir orígenes para apps heredadas que no pueden implementar TLS o configurar un servidor de etapa de pruebas para desarrollos web internos con el objeto de que los desarrolladores prueben las funciones que requieren contextos seguros sin tener que implementar TLS en el servidor de etapa de pruebas. Esta política también evitará que el origen se considere "No seguro" en el cuadro multifunción.
+
+Configurar una lista de URLs en esta política tiene el mismo efecto que configurar la función experimental de línea de comandos "--unsafely-treat-insecure-origin-as-secure" en una lista de elementos separados por comas de las mismas URLs. Si se establece la política, se anulará la función experimental de línea de comandos.
+
+Esta política dejó de estar disponible en M69 y se reemplazó por OverrideSecurityRestrictionsOnInsecureOrigin. Si están presentes ambas políticas, OverrideSecurityRestrictionsOnInsecureOrigin anulará esta política.
+
+Para obtener más información sobre contextos seguros, consulta https://www.w3.org/TR/secure-contexts/</translation>
 <translation id="9142561920976791097">Usar el comportamiento nuevo de envío de eventos en los controles de formularios inhabilitados</translation>
 <translation id="91459503271584213">Iniciar directamente los hosts de mensajería nativa ejecutables en Windows</translation>
 <translation id="9148720248753722892">No permitir los certificados firmados por SHA-1</translation>

@@ -914,6 +914,7 @@
 <translation id="1695510246756136088">इन्टरनेटमा कनेक्ट गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1696555181932908973">तपाईं <ph name="SITE_ETLD_PLUS_ONE" /> मा जाने अन्य तरिका अपनाई हेर्न सक्नुहुन्छ।</translation>
 <translation id="169675691788639886">यो डिभाइसमा SSH सर्भर कन्फिगर गरिएको छ। संवेदनशील खाता प्रयोग गरी साइन इन नगर्नुहोस्।</translation>
+<translation id="1697122132646041614">थम्ब्स डाउनले तपाईंलाई यी परिणामहरू मन नपर्नुको कारणसहित विस्तृत प्रतिक्रिया पेस गर्ने फारम खोल्छ।</translation>
 <translation id="1697150536837697295">कला</translation>
 <translation id="1697686431566694143">फाइल सम्पादन गर्नुहोस्</translation>
 <translation id="1698796500103229697">भुक्तानी विधिहरू</translation>
@@ -2292,6 +2293,7 @@
 <translation id="2731700343119398978">कृपया प्रतिक्षा गर्नुहोस्...</translation>
 <translation id="2731971182069536520">तपाईंले अर्को पटक आफ्नो यन्त्र पुनः सुचारु गर्दा तपाईंका प्रशासकले एक पटके अद्यावधिक गर्ने छन् जसका कारण तपाईंको स्थानीय डेटा मेटिने छ।</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" /> वटा थप सामग्रीमध्ये <ph name="CURRENT_ELEMENT" /> औँ सामग्री</translation>
+<translation id="2733248615007838252">थम्ज अपले तपाईंलाई यी परिणामहरू मन पर्छ भन्ने प्रतिक्रिया पेस गर्छ।</translation>
 <translation id="2733992589856193783">तपाईंले यो साइटको पासकी बनाउनुभएको छ। साइन इन गर्न तपाईंको मोबाइल डिभाइस चाहिन्छ।</translation>
 <translation id="27349076983469322">हल्का पृष्ठभूमि</translation>
 <translation id="2735712963799620190">समय तालिका</translation>
@@ -3091,6 +3093,7 @@
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">विभाजक</translation>
 <translation id="3387023983419383865">,</translation>
+<translation id="3387588771342841525">यो सेटिङ अन हुँदा पासवर्डहरू <ph name="EMAIL" /> मा सेभ गरिन्छन्। यो सेटिङ अफ हुँदा पासवर्डहरू यो डिभाइसमा मात्र सेभ गरिन्छन्।</translation>
 <translation id="3387614642886316601">हिज्जे जाँचसम्बन्धी परिष्कृत सुविधा प्रयोग गर्नुहोस्</translation>
 <translation id="3387829698079331264">तपाईं आफ्नो यन्त्र चलाउँदै हुनुहुन्छ कि हुनुहुन्न भन्ने कुरा थाहा पाउन नदिइएका साइटहरू</translation>
 <translation id="3388094447051599208">आउटपुट ट्रे लगभग भरिएको छ</translation>
@@ -3279,6 +3282,7 @@
 <translation id="3532521178906420528">इन्टरनेट कनेक्ट गरिँदै …</translation>
 <translation id="3532852121563960103">{NUM_OF_FILES,plural, =1{एउटा फाइल सारेर <ph name="CLOUD_PROVIDER" /> मा लगिँदै छ}other{{NUM_OF_FILES} वटा फाइल सारेर <ph name="CLOUD_PROVIDER" /> मा लगिँदै छन्}}</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - अडियो म्यूट गरिएको छ</translation>
+<translation id="3537099313456411235">Files एपमार्फत Drive मा भएका आफ्ना फाइलहरू एक्सेस गर्न <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> कनेक्ट गर्नुहोस्</translation>
 <translation id="3537881477201137177">यसलाई पछि सेटिङमा गई परिमार्जन गर्न सकिने छ</translation>
 <translation id="3538066758857505094">Linux को स्थापना गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" /> मार्फत कुनै पनि नेटवर्क कनेक्ट गरिएको छैन</translation>
@@ -4188,6 +4192,7 @@
 <translation id="4246980464509998944">थप टिप्पणीहरू:</translation>
 <translation id="424726838611654458">सँधै Adobe Reader मा खोल्नुहोस्</translation>
 <translation id="4248401726442101648">कुनै पनि क्यामेरा कनेक्ट गरिएको छैन</translation>
+<translation id="4249116869350613769">ब्याट्री सेभर</translation>
 <translation id="4249248555939881673">सञ्जाल जडान लागि पर</translation>
 <translation id="4249373718504745892">यो पाना तपाईंको क्यामेरा र माइक्रोफोन पहुँच गर्नबाट रोकिएको हो ।</translation>
 <translation id="424963718355121712">एपहरू अनिवार्य रूपमा तिनले प्रभाव पार्ने होस्टबाट सञ्चालित हुनु पर्छ</translation>
@@ -5017,6 +5022,7 @@
 <translation id="4893522937062257019">लक स्क्रिनमा</translation>
 <translation id="4895799941222633551">सर्टकट बनाउनुहोस्...</translation>
 <translation id="4898011734382862273">प्रमाणपत्र "<ph name="CERTIFICATE_NAME" />" ले प्रमाणीकरण अधिकारीको प्रतिनिधित्व गर्दछ</translation>
+<translation id="4898913189644355814">तपाईंले हेर्ने साइटले तपाईंको रोजाइको भाषा वा तपाईंले किन्न चाहेका वस्तुहरू सेभ गर्न सक्छ। तपाईंले हेर्ने साइट तथा उक्त साइटका सबडोमेनहरूले यो जानकारी हेर्न तथा प्रयोग गर्न सक्छन्।</translation>
 <translation id="4899052647152077033">रङ उल्टाउनुहोस्</translation>
 <translation id="4899696330053002588">यसमा विज्ञापनहरू समावेश हुन्छन्</translation>
 <translation id="490031510406860025">यो साइटमा अनुमति दिइएको छैन</translation>
@@ -5361,6 +5367,7 @@
 <translation id="5185359571430619712">एक्स्टेन्सनहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" को नयाँ संस्करणलाई अक्षम गरिएको छ किनकी यसलाई धेरै अनुमतिहरूको आवश्यकता पर्छ।</translation>
 <translation id="5185500136143151980">इन्टरनेट छैन</translation>
+<translation id="5186381005592669696">यो सुविधा उपलब्ध भएका एपहरूमा डिस्प्लेको टेक्स्टको भाषा कस्टमाइज गर्नुहोस्</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> प्रयोग गरिँदै छ</translation>
 <translation id="5190926251776387065">पोर्ट अन गर्नुहोस्</translation>
@@ -5655,6 +5662,7 @@
 <translation id="5431318178759467895">रङ्ग</translation>
 <translation id="5432145523462851548">फोल्डरमा <ph name="FILE_NAME" /> देखाइयोस्</translation>
 <translation id="5432223177001837288">अडियो सेयर गर्न यसको साटो ट्याब सेयर गर्नुहोस्</translation>
+<translation id="5432872710261597882">थम्ज अपले तपाईंलाई यो सुविधा मन पर्छ भन्ने प्रतिक्रिया पेस गर्छ।</translation>
 <translation id="543338862236136125">पासवर्ड सम्पादन गर्नुहोस्</translation>
 <translation id="5434065355175441495">PKCS #1 RSA गुप्तलेखन</translation>
 <translation id="5435274640623994081">earcon लगइन सक्षम पार्नुहोस्</translation>
@@ -5690,6 +5698,7 @@
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">लक स्क्रिनसम्बन्धी टिपोटहरू</translation>
 <translation id="5459864179070366255">इन्स्टल गर्नुहोस्</translation>
+<translation id="5460861858595506978">प्रेरणा</translation>
 <translation id="5461050611724244538">तपाईंको फोनसँगको कनेक्सन टुट्यो</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> को सूचकाङ्क</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> का बारेमा इमेलहरू प्राप्त गर्न साइन अप गर्नुहोस्</translation>
@@ -5909,6 +5918,7 @@
 <translation id="5631272057151918206">तपाईंले यसो गर्नुभयो भने तपाईंका अफलाइन फाइलहरूले ओगटेका बढीमा <ph name="OFFLINE_STORAGE_SIZE" /> ठाउँ खाली गरिने छ। केही फाइलहरू भने अझै पनि अफलाइन उपलब्ध हुने छन्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">अनुमति मागियो, यस सम्बन्धमा कारबाही गर्न Ctrl + Forward थिच्नुहोस्</translation>
 <translation id="5632221585574759616">एक्स्टेन्सनसम्बन्धी अनुमतिका बारेमा थप जान्नुहोस्</translation>
+<translation id="5632485077360054581">यसो गर्ने तरिका देखाइयोस्</translation>
 <translation id="5632566673632479864">तपाईंको खाता <ph name="EMAIL" /> लाई अब उप्रान्त प्राथमिक खाताका रूपमा अनुमति दिइँदैन। यो खाताको व्यवस्थापन <ph name="DOMAIN" /> ले गर्ने हुनाले तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरू यस डिभाइसबाट खाली गरिने छ।</translation>
 <translation id="5633149627228920745">सिस्टमसम्बन्धी मापदण्डहरूका बारेमा थप जान्नुहोस्</translation>
 <translation id="563371367637259496">मोबाइल</translation>
@@ -6139,6 +6149,7 @@
 <translation id="5828633471261496623">प्रिन्ट गर्दै...</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> खोल्न सकिएन</translation>
 <translation id="5830720307094128296">पृष्ठलाई यसको &amp;रूपमा बचत गर्नुहोस्...</translation>
+<translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> का रूपमा साइन इन गरिएको छ</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" />, यसअन्तर्गत रहेका सबै साइट र इन्स्टल गरिएको सम्बन्धित वेब एपको साइट डेटा मेटाउनुका साथै ती साइट र एपलाई दिइएका अनुमति रद्द गर्ने हो?</translation>
 <translation id="5832813618714645810">प्रोफाइलहरू</translation>
 <translation id="583281660410589416">अज्ञात</translation>
@@ -6212,6 +6223,7 @@
 <translation id="5883356647197510494"><ph name="PERMISSION_1" /> र <ph name="PERMISSION_2" /> सम्बन्धी अनुमति स्वतः ब्लक गरिएका छन्</translation>
 <translation id="5884447826201752041">हरेक एक्स्टेन्सनका हकमा साइट हेर्ने अनुमतिसम्बन्धी सेटिङ कस्टमाइज गर्नुहोस्</translation>
 <translation id="5885314688092915589">तपाईंको सङ्गठनले यो प्रोफाइल व्यवस्थापन गर्ने छ</translation>
+<translation id="5885470467814103868">स्क्यान गर्न थाल्नुहोस्</translation>
 <translation id="5885631909150054232">टोकन कपी गर्नुहोस्</translation>
 <translation id="5886009770935151472">औँला १</translation>
 <translation id="5886112770923972514">नजिकै रहेका फास्ट पेयर डिभाइसहरू कनेक्ट गर्नुहोस् तथा द्रुत रूपमा सेटअप गर्नुहोस्</translation>
@@ -6802,6 +6814,7 @@
 <translation id="6348805481186204412">अफलाइन भण्डारण</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> स्थापना गर्नुहोस्</translation>
 <translation id="6350821834561350243">समस्याका बारेमा स्पष्ट रूपमा बताउनुहोस् र यो समस्या कसरी सिर्जना भयो भन्ने कुरा (सम्भव भएमा) उपलब्ध गराउनुहोस्</translation>
+<translation id="6351178441572658285">एपका भाषा</translation>
 <translation id="6354918092619878358">SECG अण्डाकार कर्भ secp256r1 (ANSI X9.62 prime256v1, NIST P-256 पनि भनिन्छ)</translation>
 <translation id="6355395056805388423">तपाईंको Google खातासम्बन्धी जानकारी प्राप्त गरिदैँ छ…</translation>
 <translation id="635609604405270300">यन्त्रलाई सक्रिय राख्नुहोस्</translation>
@@ -7407,6 +7420,7 @@
 <translation id="6833479554815567477">यो ट्याब <ph name="GROUP_NAME" /> समूहबाट हटाइयो - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833996806551876956">गोपनीयता स्यान्डबक्सको ट्रायल अवधि</translation>
 <translation id="6835762382653651563">कृपया तपाईँको <ph name="DEVICE_TYPE" /> अद्यावधिक गर्न इन्टरनेटमा कनेक्ट गर्नुहोस्।</translation>
+<translation id="683630338945552556">आफ्नो Google खातामा पासवर्डहरू सेभ गर्नुहोस् र ती पासवर्डहरू प्रयोग गर्नुहोस्</translation>
 <translation id="6839225236531462745">प्रमाणपत्र मेटाइमा त्रुटी</translation>
 <translation id="6839916869147598086">साइन इन परिवर्तन गरिएको छ</translation>
 <translation id="6840155290835956714">पठाउनु अघि सोध्नुहोस्</translation>
@@ -8024,6 +8038,7 @@
 <translation id="7347943691222276892"><ph name="SUBPAGE_TITLE" /> बाट बाहिर निस्केर अघिल्लो पृष्ठमा जान क्लिक गर्नुहोस्।</translation>
 <translation id="7348093485538360975">अन्-स्क्रिन कुञ्जीपाटी</translation>
 <translation id="7349010927677336670">अवरोधविना भिडियो चल्ने गति</translation>
+<translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} वटा पासवर्ड यो डिभाइसमा मात्र सेभ गरिएको छ}other{{COUNT} वटा पासवर्ड यो डिभाइसमा मात्र सेभ गरिएका छन्}}</translation>
 <translation id="7352651011704765696">कुनै त्रुटि भयो</translation>
 <translation id="7352664183151911163">आफ्ना Chrome ब्राउजर र आफ्ना एपहरू प्रयोग गर्नुहोस्</translation>
 <translation id="7353261921908507769">तपाईं वरपर हुँदा तपाईंको कन्ट्याक्टमा भएका व्यक्तिहरू सामग्री सेयर गर्न सक्छन्। तपाईंले सामग्री सार्ने निम्तो स्वीकार नगरेसम्म सामग्री सार्ने काम सुरु हुँदैन।</translation>
@@ -8264,6 +8279,7 @@
 <translation id="7523117833414447032">ठुला अक्षरहरू पढ्दा</translation>
 <translation id="7523585675576642403">प्रोफाइलको नाम बदल्नुहोस्</translation>
 <translation id="7525067979554623046">सिर्जना गर्नुहोस्</translation>
+<translation id="7525879597899798851">OS सम्बन्धी प्राथमिकताहरूमा लोकेसन अफ गरिएको छ</translation>
 <translation id="7526989658317409655">प्लेसहोल्डर</translation>
 <translation id="7528224636098571080">नखोल्नुहोस्</translation>
 <translation id="7529411698175791732">आफ्नो इन्टरनेट जडान जाँच गर्नुहोस्। समस्या यथावत् रहिरहेमा साइन आउट गरेर पुन: साइन इन गरी हेर्नुहोस्।</translation>
@@ -8458,6 +8474,7 @@
 <translation id="7670483791111801022">सबटाइटलहरू</translation>
 <translation id="7671130400130574146">प्रणाली शीर्षक पट्टी तथा किनाराहरू प्रयोग गर्नुहोस्</translation>
 <translation id="767127784612208024">रिसेट गर्ने कार्य पुष्टि गर्न छुनुहोस्</translation>
+<translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" "<ph name="SCANNER_NAME" />" मार्फत स्क्यान गर्न चाहन्छ।</translation>
 <translation id="7672504401554182757"><ph name="APP_NAME" /> को पासकी भएको डिभाइस छनौट गर्नुहोस्</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> मा।</translation>
 <translation id="7673313156293624327">ChromeOS Shill (कनेक्सन म्यानेजर) का लगहरू</translation>
@@ -8864,6 +8881,7 @@
 <translation id="7969046989155602842">आदेश</translation>
 <translation id="7970673414865679092">इथरनेटसम्बन्धी विवरणहरू</translation>
 <translation id="7972714317346275248">RSA गुप्तिकरणको साथमा PKCS #1 SHA-384</translation>
+<translation id="7973149423217802477">थम्ब्स डाउनले तपाईंलाई यो सुविधा मन पर्दैन भन्ने प्रतिक्रिया पेस गर्छ।</translation>
 <translation id="7973776233567882054">निम्नमध्ये कुन विकल्पले तपाईंको नेटवर्कको उत्कृष्ट तरिकाले वर्णन गर्छ?</translation>
 <translation id="797394244396603170">आफूले फाइल सेयर गर्न चाहेको यन्त्र चयन गर्नुहोस्</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> प्रयोग गर्न पुनः प्रयास गर्नुहोस्</translation>
@@ -9261,7 +9279,7 @@
 <translation id="8276560076771292512">क्यास खालि गर्नुहोस् र हार्ड पुन: लोड गर्नुहोस्</translation>
 <translation id="8276850948802942358">साइटलाई तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिने तरिकाका बारेमा थप जान्नुहोस्</translation>
 <translation id="828180235270931531">उपलब्ध अन्य प्रिन्टरहरू</translation>
-<translation id="8281886186245836920">त्याग्नुहोस्</translation>
+<translation id="8281886186245836920">स्किप गर्नुहोस्</translation>
 <translation id="8284279544186306258">सबै <ph name="WEBSITE_1" /> साइटहरू</translation>
 <translation id="8284326494547611709">क्याप्सन</translation>
 <translation id="8286036467436129157">साइन इन गर्नुहोस्</translation>

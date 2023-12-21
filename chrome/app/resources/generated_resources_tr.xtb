@@ -5918,6 +5918,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5631272057151918206">Bu işlem, çevrimdışı dosyalarınızın kullandığı en fazla <ph name="OFFLINE_STORAGE_SIZE" /> alanı kaldıracak. Bazı dosyalar çevrimdışı olarak kullanılmaya devam edecek. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">İzin istendi, yanıtlamak için Ctrl + İleri tuşlarına basın</translation>
 <translation id="5632221585574759616">Uzantı izinleri hakkında daha fazla bilgi</translation>
+<translation id="5632485077360054581">Nasıl yapıldığını göster</translation>
 <translation id="5632566673632479864"><ph name="EMAIL" /> hesabınızın artık birincil hesap olmasına izin verilmiyor. Bu hesap <ph name="DOMAIN" /> tarafından yönetildiğinden yer işaretleri, geçmiş, şifreler ve diğer ayarlarınız bu cihazdan silinecektir.</translation>
 <translation id="5633149627228920745">Sistem gereksinimleri hakkında daha fazla bilgi</translation>
 <translation id="563371367637259496">Mobil</translation>

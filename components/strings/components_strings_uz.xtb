@@ -2354,7 +2354,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5695542892312572833">Xaridingiz Windows Hello orqali tasdiqlansin va bajarilsinmi?</translation>
 <translation id="5699628521141772782">Sut mahsulotlari va tuxumlar</translation>
 <translation id="5700761515355162635">Tashqi cookie fayllarga ruxsat berilgan</translation>
-<translation id="5701023235904684227"><ph name="READERNAME" /> qurilmasini boshqarish va u bilan ishlaydigan smart kartaga ruxsat olish kerakmi?</translation>
 <translation id="5701381305118179107">Markaz bo‘yicha tartiblash</translation>
 <translation id="5707154300732650394">Tarixni qaytarish</translation>
 <translation id="57094364128775171">Ishonchli parol yaratish…</translation>
@@ -2489,6 +2488,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5997247540087773573">Hozirgina siz foydalangan parol oshkor qilingan. Hisoblaringizni himoyalash maqsadida Google Parollar menejeri uni hoziroq almashtirib, saqlangan parollaringizni tekshirishni tavsiya etadi.</translation>
 <translation id="5999271311987646952">Chrome tarkibida Google Saytlarni xavfsiz kezish kabi himoya funksiyalari mavjud va bu funksiya siz ochayotgan saytda <ph name="BEGIN_LINK" />yaqinda zararli dasturni aniqlagan<ph name="END_LINK" />.</translation>
 <translation id="6000758707621254961">“<ph name="SEARCH_TEXT" />” uchun <ph name="RESULT_COUNT" /> ta natija</translation>
+<translation id="6001839398155993679">Boshlash</translation>
 <translation id="6002122790816966947">Qurilmalaringiz</translation>
 <translation id="6005659677094197001">Uzluksiz</translation>
 <translation id="6005765687956866568">Shakldagi avtomatik kiritish axboroti tozalandi</translation>

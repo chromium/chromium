@@ -2359,7 +2359,6 @@
 <translation id="5695542892312572833">ໃຊ້ Windows Hello ເພື່ອຢັ້ງຢືນ ແລະ ເຮັດສຳເລັດການຊື້ຂອງທ່ານບໍ?</translation>
 <translation id="5699628521141772782">ນົມ ແລະ ໄຂ່</translation>
 <translation id="5700761515355162635">ອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມແລ້ວ</translation>
-<translation id="5701023235904684227">ຄວບຄຸມ <ph name="READERNAME" /> ແລະ ໄດ້ສິດເຂົ້າເຖິງຫາສະມາດກາດທີ່ມັນເຂົ້າເຖິງໄດ້ບໍ?</translation>
 <translation id="5701381305118179107">ໃຈກາງ</translation>
 <translation id="5707154300732650394">ສືບຕໍ່ບັນທຶກຂອງທ່ານ</translation>
 <translation id="57094364128775171">ແນະນຳລະຫັດຜ່ານທີ່ເດົາຍາກ…</translation>
@@ -2494,6 +2493,7 @@
 <translation id="5997247540087773573">ພົບລະຫັດຜ່ານທີ່ທ່ານຫາກໍໃຊ້ນັ້ນໃນການຮົ່ວໄຫຼຂໍ້ມູນ. ເພື່ອຮັກສາຄວາມປອດໄພໃຫ້ບັນຊີຂອງທ່ານ, ຕົວຈັດການລະຫັດຜ່ານ Google ແນະນຳໃຫ້ປ່ຽນມັນດຽວນີ້ແລ້ວຈາກນັ້ນກວດສອບລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຂອງທ່ານ.</translation>
 <translation id="5999271311987646952">Chrome ມີຄຸນສົມບັດຄວາມປອດໄພໃນຕົວເພື່ອປົກປ້ອງທ່ານໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ — ເຊັ່ນ: Google Safe Browsing, ເຊິ່ງ <ph name="BEGIN_LINK" />ເມື່ອບໍ່ດົນມານີ້ໄດ້ພົບເມົາແວ<ph name="END_LINK" /> ຢູ່ເວັບໄຊທີ່ທ່ານພະຍາຍາມເຂົ້າເບິ່ງ.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> ຜົນການຊອກຫາສຳລັບ '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6001839398155993679">ເລີ່ມກັນເລີຍ</translation>
 <translation id="6002122790816966947">ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="6005659677094197001">ຕໍ່ເນື່ອງ</translation>
 <translation id="6005765687956866568">ລຶບລ້າງຂໍ້ມູນທີ່ຕື່ມອັດຕະໂນມັດອອກຈາກແບບຟອມແລ້ວ</translation>

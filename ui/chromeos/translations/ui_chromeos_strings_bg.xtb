@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Газания</translation>
 <translation id="4943368462779413526">Футболна топка</translation>
 <translation id="4961158930123534723">1 папка е споделена с Parallels Desktop</translation>
+<translation id="4965874878399872778">Файловете се проверяват за съответствие с правилата за сигурност на организацията ви...</translation>
 <translation id="496656650103537022">Възстановихте „<ph name="FILE_NAME" />“</translation>
 <translation id="4969785127455456148">Албум</translation>
 <translation id="4972330214479971536">Настройването на функцията за синхронизиране на файловете не завърши</translation>
@@ -710,6 +711,7 @@
 <translation id="6430271654280079150">Остава ви 1 опит.</translation>
 <translation id="643243556292470964">Изтритите файлове са преместени в кошчето</translation>
 <translation id="6438480100790416671">Мястото в хранилището се проверява…</translation>
+<translation id="6451527188465304418">Файлът се проверява за съответствие с правилата за сигурност на организацията ви...</translation>
 <translation id="6485131920355264772">Извличането на информацията за мястото не бе успешно</translation>
 <translation id="6495925982925244349">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, управлява се от администратора ви, подробности</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> се извлича в(ъв) „<ph name="FOLDER_NAME" />“</translation>

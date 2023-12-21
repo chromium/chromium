@@ -633,6 +633,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="219906046732893612">Gwelliannau'r cartref</translation>
 <translation id="2202627062836089804">cefn eich cerdyn</translation>
 <translation id="2204482073374652408">Wedi gorffen diweddaru!</translation>
+<translation id="2207770355672215546">Caniatáu bob amser, gydag unrhyw gerdyn</translation>
 <translation id="2208053750671792556">Heb dderbyn eich cod? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Hambwrdd 3</translation>
 <translation id="2210794033760923560">Uwchlwytho Adroddiad</translation>
@@ -2358,7 +2359,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5695542892312572833">Defnyddio Windows Hello i ddilysu a chwblhau eich pryniad?</translation>
 <translation id="5699628521141772782">Llaeth ac Wyau</translation>
 <translation id="5700761515355162635">Caniateir cwcis trydydd parti</translation>
-<translation id="5701023235904684227">Rheoli <ph name="READERNAME" /> a chael mynediad at y cerdyn clyfar sy'n hygyrch iddo?</translation>
 <translation id="5701381305118179107">Canoli</translation>
 <translation id="5707154300732650394">Parhau eich taith</translation>
 <translation id="57094364128775171">Awgrymu cyfrinair cryf…</translation>
@@ -2493,6 +2493,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5997247540087773573">Canfuwyd y cyfrinair rydych newydd ei ddefnyddio mewn achos o dor data. Er mwyn diogelu'ch cyfrifon, mae Rheolwr Cyfrineiriau Google yn argymell eu newid nawr a gwirio'ch cyfrineiriau sydd wedi'u cadw.</translation>
 <translation id="5999271311987646952">Mae gan Chrome nodweddion diogelwch integredig i'ch amddiffyn tra rydych yn pori — megis Pori'n Ddiogel gyda Google, a <ph name="BEGIN_LINK" />ddaeth o hyd i faleiswedd yn ddiweddar<ph name="END_LINK" /> ar wefan rydych yn ceisio ymweld â hi.</translation>
 <translation id="6000758707621254961">Mae <ph name="RESULT_COUNT" /> o ganlyniadau ar gyfer '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6001839398155993679">I ffwrdd â ni</translation>
 <translation id="6002122790816966947">Eich dyfeisiau</translation>
 <translation id="6005659677094197001">Parhaus</translation>
 <translation id="6005765687956866568">Cliriwyd y wybodaeth a gafodd ei hawtolenwi o'r ffurflen</translation>

@@ -63,6 +63,7 @@ Kontuan hartu beharrekoak:
 <translation id="2427791862912929107">Chrome-ren eginbide batzuekin errazagoa da Interneteko datuak eta web-orriak kargatzeko behar den denbora kudeatzea.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Gordetako pasahitzak beste aplikazioetan erraz lortzeko, erabili Chrome betetze automatikorako</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Chrome {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Baliteke historia eta betetze automatikoa barnean sartzea.}other{Chrome {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Baliteke historia eta betetze automatikoa barnean sartzea.}}</translation>
 <translation id="2561231791489583059">Erabili Chrome arakatzaile lehenetsi gisa webgune arriskutsuen aurka babestuta egoteko eta pasahitzak seguru mantentzeko</translation>
 <translation id="2574249610672786438">Chrome erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa gailu guztietan</translation>
 <translation id="2576431527583832481">Chrome hobetu egin dugu! Bertsio berria duzu erabilgarri.</translation>
@@ -91,6 +92,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3282568296779691940">Hasi saioa Chrome-n</translation>
 <translation id="3340938510625667914">Chrome-ren Ekintzak</translation>
 <translation id="3345341804167540816">Erabili Chrome edonon</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori}other{Chrome {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori}}</translation>
 <translation id="3399930248910934354">Ireki Chrome-ren ezarpenak</translation>
 <translation id="3472587960215700950">Chrome-k Google Maps erabiltzen du hautemandako helbideetarako jarraibideak eta haiei buruzko tokiko informazioa eskaintzeko.</translation>
 <translation id="3503014945441706099">Lortu Arakatze seguru hobetua Chrome-ko profil honetan ere</translation>

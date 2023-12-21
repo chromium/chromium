@@ -91,7 +91,7 @@
 <translation id="1407135791313364759">ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ</translation>
 <translation id="1408847409015257906">“ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತೆಯನ್ನು” ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1430915738399379752">ಮುದ್ರಿಸು</translation>
-<translation id="143681031165817424">ವಿಳಾಸವನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಉಳಿಸಲಾಗಿದೆ</translation>
+<translation id="143681031165817424">ವಿಳಾಸವನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1443958768615272145">ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="1449835205994625556">ಪಾಸ್‌ವರ್ಡ್ ಮರೆಮಾಡಿ</translation>
 <translation id="1450170672351507823">ಪ್ರಮಾಣಿತ ಸುರಕ್ಷತೆ ಆನ್ ಆಗಿದೆ. ಇನ್ನೂ ಹೆಚ್ಚಿನ ಸುರಕ್ಷತೆಗಾಗಿ, ವರ್ಧಿತ ರಕ್ಷಣೆಯನ್ನು ಬಳಸಿ.</translation>
@@ -557,6 +557,7 @@
 <translation id="3968505803272650567">ಆಸಕ್ತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="3989635538409502728">ಸೈನ್ ಔಟ್</translation>
 <translation id="3995521777587992544">ಪುಟ ಲೋಡ್ ಪ್ರಗತಿ ಪಟ್ಟಿ, <ph name="EMAIL" /> ಅನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಿದೆ.</translation>
+<translation id="3997522473364371632">ಪಾಸ್‌ವರ್ಡ್ ಹಂಚಿಕೆಯನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
 <translation id="4002019827078931033">ಅಡ್ರೆಸ್ ಬಾರ್ ಅನ್ನು ಮೇಲಕ್ಕೆ ಮೂವ್ ಮಾಡಿ</translation>
 <translation id="4002066346123236978">ಶೀರ್ಷಿಕೆ</translation>
 <translation id="4004204301268239848">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ, ಇದರಿಂದ ನೀವು ಅವುಗಳನ್ನು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಬಳಸಬಹುದು.</translation>
@@ -1211,7 +1212,7 @@
 <translation id="7459628154744868585">ವರ್ಧಿತ ಸುರಕ್ಷತೆ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="7465351360025415755">ನಿಮಗೆ ಮುಖ್ಯವಾದ ಕಂಟೆಂಟ್‌ ಅನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="7472734401283673885">ಕಂಪನಿ ಹೆಸರು</translation>
-<translation id="7473891865547856676">ಇಲ್ಲ, ಧನ್ಯವಾದಗಳು</translation>
+<translation id="7473891865547856676">ಬೇಡ</translation>
 <translation id="7488874549363591659">ಡೆಲಿವರಿ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7491131399623468277">ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ…</translation>
 <translation id="749854780843431406">ನೀವು <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> ಬಟನ್‌ ಮೂಲಕ ಹೊಸ ಟ್ಯಾಬ್ ಅನ್ನು ತೆರೆಯಬಹುದು.</translation>
@@ -1366,7 +1367,7 @@
 <translation id="8271720166617117963">ಸಮ್ಮತಿಸಿ ಮತ್ತು ಸೈನ್‌ ಇನ್‌ ಮಾಡಿ</translation>
 <translation id="8273982424131314219">ನೀವು <ph name="URL" /> ರಲ್ಲಿ ಮಾಹಿತಿಯನ್ನು ಭರ್ತಿ ಮಾಡುತ್ತೀರಿ</translation>
 <translation id="8281781826761538115">ಡಿಫಾಲ್ಟ್ - <ph name="DEFAULT_LOCALE" /></translation>
-<translation id="8281886186245836920">ಸ್ಕಿಪ್‌</translation>
+<translation id="8281886186245836920">ಸ್ಕಿಪ್‌ ಮಾಡಿ</translation>
 <translation id="8283172974887967105">ಸೆಟ್ ಮಾಡಿ…</translation>
 <translation id="8286036467436129157">ಸೈನ್ ಇನ್</translation>
 <translation id="8299417921174340354">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಲು, ನೀವು ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಪಾಸ್‌ಕೋಡ್ ಅನ್ನು ಹೊಂದಿಸಬೇಕು.</translation>

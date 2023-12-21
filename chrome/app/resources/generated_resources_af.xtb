@@ -1873,6 +1873,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2408018932941436077">Stoor tans kaart</translation>
 <translation id="2408955596600435184">Voer jou PIN in</translation>
 <translation id="2409268599591722235">Kom ons begin</translation>
+<translation id="2409378541210421746">Wysig taalkeuse</translation>
 <translation id="2409709393952490731">Gebruik ’n foon of tablet:</translation>
 <translation id="2410079346590497630">Boubesonderhede</translation>
 <translation id="2410298923485357543">Gebruik natuurlike stem wanneer toestel aanlyn is</translation>
@@ -3837,6 +3838,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="3937640725563832867">Sertifikaatuitreiker se alternatiewe naam</translation>
 <translation id="3937734102568271121">Vertaal altyd <ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626">Toestelle van <ph name="VENDOR_ID" /> af</translation>
+<translation id="3939622756852381766">Skep outomaties onderskrifte vir oudio en video</translation>
 <translation id="3941565636838060942">Om toegang tot hierdie program te versteek, moet jy dit met
   <ph name="CONTROL_PANEL_APPLET_NAME" /> in kontroleskerm deïnstalleer.
 
@@ -4345,6 +4347,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="435527878592612277">Kies jou foto</translation>
 <translation id="4356100841225547054">Skakel volume af</translation>
 <translation id="4358302248024731679">Googlers kan bykomende Bluetooth-loglêers by hul terugvoerverslae insluit om Bluetooth-kwessies beter te diagnoseer. Wanneer hierdie opsie gemerk is, sal jou verslag btsnoop- en HCI-loglêers uit jou huidige sessie insluit wat skoongemaak is om soveel persoonlik identifiseerbare inligting moontlik te verwyder. Toegang tot hierdie loglêers sal tot bestuurders van die Chrome-bedryfstelselprodukgroep in Listnr beperk word. Loglêers sal ná 90 dae permanent uitgevee word.</translation>
+<translation id="4358361163731478742">Geen apps steun apptaalkeuse nie</translation>
 <translation id="4358643842961018282">Jou toestel is op datum</translation>
 <translation id="4359408040881008151">Vanweë afhanklike uitbreiding(s) geïnstalleer.</translation>
 <translation id="4359717112757026264">Cityscape</translation>
@@ -4603,6 +4606,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> het ’n wagwoord met jou gedeel vir <ph name="WEBSITE_NAME" />. Jy kan dit in die aanmeldvorm gebruik.</translation>
 <translation id="4558426062282641716">Het toestemming versoek om outomaties te begin</translation>
 <translation id="4558542033859106586">Maak oop in <ph name="TARGET_APP" /></translation>
+<translation id="4558946868955275132">Net apps wat taalkeuses steun, word hier gewys</translation>
 <translation id="4559617833001311418">Hierdie werf het tans toegang tot jou beweging- of ligsensors.</translation>
 <translation id="4560728518401799797">Meer opsies vir <ph name="FOLDER_TITLE" />-boekmerk</translation>
 <translation id="4561893854334016293">Geen toestemmings wat onlangs verander is nie</translation>
@@ -5932,6 +5936,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5631272057151918206">Dit sal tot en met <ph name="OFFLINE_STORAGE_SIZE" /> van die spasie wat deur jou vanlyn lêers gebruik word, verwyder. Sekere lêers sal steeds vanlyn beskikbaar wees. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Toestemming is versoek; druk Ctrl + Forward om te antwoord</translation>
 <translation id="5632221585574759616">Kom meer te wete oor uitbreidingtoestemmings</translation>
+<translation id="5632485077360054581">Wys my hoe</translation>
 <translation id="5632566673632479864">Jou rekening <ph name="EMAIL" /> word nie meer as die primêre rekening toegelaat nie. Omdat hierdie rekening deur <ph name="DOMAIN" /> bestuur word, sal jou boekmerke, geskiedenis, wagwoorde en ander instellings op hierdie toestel uitgevee word.</translation>
 <translation id="5633149627228920745">Kom meer te wete oor stelselvereistes</translation>
 <translation id="563371367637259496">Mobiel</translation>
@@ -7045,6 +7050,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6535331821390304775">Laat <ph name="ORIGIN" /> altyd toe om hierdie soort skakels in die geassosieerde program oop te maak</translation>
 <translation id="653659894138286600">Skandeer dokumente en prente</translation>
 <translation id="6537613839935722475">Naam kan letters, syfers en koppeltekens (-) gebruik</translation>
+<translation id="6538036594527795020">Verander <ph name="APP" />-taal Huidige taal is <ph name="LANGUAGE" />.</translation>
 <translation id="6538098297809675636">Kon nie kode bespeur nie</translation>
 <translation id="653920215766444089">Soek tans vir wysertoestel</translation>
 <translation id="6539674013849300372">Bly veiliger aanlyn met ’n sterk wagwoord. Dit sal in <ph name="GOOGLE_PASSWORD_MANAGER" /> gestoor word vir <ph name="EMAIL" /></translation>
@@ -7289,6 +7295,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6737663862851963468">Verwyder Kerberos-kaartjie</translation>
 <translation id="6738180164164974883">Laat toe dat derdepartywebkoekies gestel word</translation>
 <translation id="6738430949033571771">Verifieer tans rekening …</translation>
+<translation id="6739266861259291931">Stel terug na toesteltaal</translation>
 <translation id="6739923123728562974">Wys werkskermkortpad</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> is laat wag</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Jou administrateur<ph name="END_LINK" /> het Veiligblaai afgeskakel</translation>
@@ -8221,7 +8228,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="747114903913869239">Fout: Kon nie uitbreiding ontsyfer nie</translation>
 <translation id="7471520329163184433">Stadiger</translation>
 <translation id="747312361841682912">Vee vertoonde data uit</translation>
-<translation id="7473891865547856676">Nee, dankie</translation>
+<translation id="7473891865547856676">Nee, Dankie</translation>
 <translation id="747459581954555080">Stel alles terug</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Onmiddellike terugsending word vereis}other{Stuur <ph name="DEVICE_TYPE" /> binne {NUM_DAYS} dae terug}}</translation>
 <translation id="7475671414023905704">Netscape se verlorewagwoord-URL</translation>
@@ -9291,7 +9298,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8276560076771292512">Maak kas leeg en dwing herlaai af</translation>
 <translation id="8276850948802942358">Kom meer te wete oor hoe om ’n werf tydelike toestemming te gee om derdepartywebkoekies te gebruik</translation>
 <translation id="828180235270931531">Ander beskikbare drukkers</translation>
-<translation id="8281886186245836920">Slaan oor</translation>
+<translation id="8281886186245836920">Slaan Oor</translation>
 <translation id="8284279544186306258">alle <ph name="WEBSITE_1" />-werwe</translation>
 <translation id="8284326494547611709">Onderskrifte</translation>
 <translation id="8286036467436129157">Meld aan</translation>
@@ -10462,6 +10469,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="9186963452600581158">Meld met jou kind se Google-rekening aan</translation>
 <translation id="9187967020623675250">Sleutels stem nie ooreen nie. Druk enige sleutel en <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Stuur gebruik- en diagnostiese data. Hierdie toestel stuur tans diagnostiese, toestel- en programgebruikdata outomaties na Google toe. Dit sal nie gebruik word om jou kind te identifiseer nie en sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. As die bykomende Web- en App-aktiwiteit-instelling vir jou kind aangeskakel is, kan hierdie data in hul Google-rekening gestoor word. <ph name="BEGIN_LINK2" />Kom meer te wete<ph name="END_LINK2" /></translation>
+<translation id="9191638749941292185">Stuur onderskrifte na Google om dit outomaties te vertaal</translation>
 <translation id="9192019773545828776">Hoor gesproke terugvoer sodat jy jou toestel kan gebruik sonder om na die skerm te kyk. Braille-terugvoer is beskikbaar met ’n gekoppelde toestel. Gebruik Ctrl + Alt + Z om ChromeVox aan en af te skakel. Gebruik Soek + linkspyl of regspyl om te navigeer. Gebruik Soek + spasiebalk om te kies (aktiveer).</translation>
 <translation id="919686179725692564">Kom meer te wete oor die rugsteun van jou programme</translation>
 <translation id="9199503643457729322">Klik om weg van Privaatheidgids af te navigeer.</translation>
@@ -10572,6 +10580,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="98515147261107953">Landskap</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Algemeen</translation>
+<translation id="987475089238841621">Taalpakkette word vir Intydse Onderskrifte gebruik en word op jou toestel gestoor</translation>
 <translation id="988320949174893488">Stotter soms</translation>
 <translation id="988978206646512040">Leë wagfrase word nie toegelaat nie</translation>
 <translation id="992032470292211616">Uitbreidings, programme en temas kan jou toestel beskadig. Is jy seker jy wil voortgaan?</translation>

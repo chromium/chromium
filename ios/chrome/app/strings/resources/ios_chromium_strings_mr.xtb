@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{आता १ Chromium विंडो दाखवत आहे}other{आता {count} Chromium विंडो दाखवत आहे}}</translation>
 <translation id="3344973607274501920">Chromium ला तुमचे पासवर्ड तपासता आले नाहीत. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
 <translation id="3366305173356742781">तुमच्या खात्यामधील Chromium डेटा</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium {THRESHOLD} मिनिटासाठी वापरले जात नाही, तेव्हा हे होते. यामध्ये इतिहास आणि ऑटोफिलचा समावेश असू शकतो.}other{Chromium {THRESHOLD} मिनिटांसाठी वापरले जात नाही, तेव्हा हे होते. यामध्ये इतिहास आणि ऑटोफिलचा समावेश असू शकतो.}}</translation>
 <translation id="3472200483164753384">Chromium कॅनरी वर सपोर्ट नाही</translation>
 <translation id="3478750326643748149">“Chromium चा पुरेपूर वापर करा” लपवा</translation>
 <translation id="3512168799938877162">तुमचा पासवर्ड शेअर केला नाही. तुमचे इंटरनेट कनेक्शन तपासा आणि तुम्ही Chromium मध्ये साइन इन केले असल्याची खात्री करा. त्यानंतर, पुन्हा प्रयत्न करा.</translation>
@@ -284,6 +285,7 @@
 <translation id="8909995017390087892">iOS साठी Chromium</translation>
 <translation id="8924617840944134898">Chromium गुप्त टॅब उघडा</translation>
 <translation id="894437814105052438">तुम्ही साइन आउट करता तेव्हा, Chromium तुमच्या Google खाते मध्ये कोणताही नवीन डेटा सिंक करणार नाही. याआधी सिंक केलेला डेटा खात्यामध्ये राहील.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium {THRESHOLD} मिनिटासाठी वापरले जात नाही, तेव्हा हे होते}other{Chromium {THRESHOLD} मिनिटांसाठी वापरले जात नाही, तेव्हा हे होते}}</translation>
 <translation id="8963279154877372067">Chromium सूचनांना किंमत कमी होण्याच्या सूचना मिळवण्याची अनुमती द्या</translation>
 <translation id="900560297598578021"><ph name="EMAIL" /> म्हणून साइन इन केले आहे.
 

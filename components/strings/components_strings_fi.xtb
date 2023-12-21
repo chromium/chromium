@@ -633,6 +633,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="219906046732893612">Kodin remontointi</translation>
 <translation id="2202627062836089804">kortin takaosa</translation>
 <translation id="2204482073374652408">Päivitys valmis!</translation>
+<translation id="2207770355672215546">Salli aina, millä tahansa kortilla</translation>
 <translation id="2208053750671792556">Etkö saanut koodia? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Lokero 3</translation>
 <translation id="2210794033760923560">Lataa raportti</translation>
@@ -2359,7 +2360,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5695542892312572833">Todennetaanko ja viimeistelläänkö ostos Windows Hellolla?</translation>
 <translation id="5699628521141772782">Maitotuotteet ja kananmunat</translation>
 <translation id="5700761515355162635">Kolmannen osapuolen evästeet sallittu</translation>
-<translation id="5701023235904684227">Voiko tämä ohjata lukijaa (<ph name="READERNAME" />) ja saada pääsyn älykorttiin, jolla sitä käytetään?</translation>
 <translation id="5701381305118179107">Keskitä</translation>
 <translation id="5707154300732650394">Jatka toimintoa</translation>
 <translation id="57094364128775171">Ehdota vahvaa salasanaa…</translation>
@@ -2494,6 +2494,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5997247540087773573">Juuri käyttämäsi salasana löytyi tietosuojaloukkauksesta. Tiliesi suojaamiseksi Googlen Salasanojen ylläpito suosittelee, että vaihdat salasanan heti ja tarkistat tallennetut salasanasi.</translation>
 <translation id="5999271311987646952">Chromessa on sisäänrakennettuja turvallisuusominaisuuksia, jotka suojaavat sinua selaamisen aikana. Yksi niistä on Googlen selaussuoja. Se <ph name="BEGIN_LINK" />löysi äskettäin haittaohjelmia<ph name="END_LINK" /> sivustolta, jolle yrität siirtyä.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> tulosta: <ph name="SEARCH_TEXT" /></translation>
+<translation id="6001839398155993679">Aloita</translation>
 <translation id="6002122790816966947">Omat laitteet</translation>
 <translation id="6005659677094197001">Jatkuva</translation>
 <translation id="6005765687956866568">Automaattisesti täytetyt tiedot on poistettu lomakkeesta</translation>

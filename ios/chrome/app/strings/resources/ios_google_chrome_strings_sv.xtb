@@ -63,6 +63,7 @@ Tänk på detta:
 <translation id="2427791862912929107">I Chrome finns det funktioner som du kan använda för att hantera din internetdata och inläsningshastigheten för webbsidor.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Använd Chrome för autofyll så att du enkelt får tillgång till dina sparade lösenord i andra appar</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Detta händer när Chrome inte har använts på {THRESHOLD} minut. Detta kan innefatta historik och autofyll.}other{Detta händer när Chrome inte har använts på {THRESHOLD} minuter. Detta kan innefatta historik och autofyll.}}</translation>
 <translation id="2561231791489583059">Använd Chrome som standardwebbläsare med skydd mot skadliga webbplatser och skydd av dina lösenord</translation>
 <translation id="2574249610672786438">Logga in på alla dina enheter om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>
 <translation id="2576431527583832481">Chrome har blivit ännu bättre! En ny version finns tillgänglig.</translation>
@@ -91,6 +92,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3282568296779691940">Logga in i Chrome</translation>
 <translation id="3340938510625667914">Chrome-åtgärder</translation>
 <translation id="3345341804167540816">Använd Chrome överallt</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Detta händer när Chrome inte har använts på {THRESHOLD} minut}other{Detta händer när Chrome inte används på {THRESHOLD} minuter}}</translation>
 <translation id="3399930248910934354">Öppna inställningarna för Chrome</translation>
 <translation id="3472587960215700950">Google Maps används i Chrome för att ge dig vägbeskrivningar och lokal information om identifierade adresser.</translation>
 <translation id="3503014945441706099">Få Förbättrad säker webbsökning även för den här Chromium-profilen</translation>

@@ -8,6 +8,7 @@
 <translation id="1035980983510608210">Եթե փակեք բոլոր ներդիրները, ամրացված ներդիրները նույնպես կփակվեն։</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Անջատել</translation>
+<translation id="1043592663436934089">Դուք դուրս կգաք հաշվից, իսկ այցելությունների պատմությունը կջնջվի</translation>
 <translation id="1044891598689252897">Կայքերը կաշխատեն սովորական ռեժիմով</translation>
 <translation id="1049743911850919806">Ինկոգնիտո</translation>
 <translation id="1053651653201045802">Դուք դուրս եք եկել հաշվից։ Նորից մտեք հաշիվ, որպեսզի կարողանաք օգտագործել էջանիշները, գաղտնաբառերը և ձեր հաշվի մյուս տվյալները։</translation>
@@ -86,6 +87,7 @@
 <translation id="138618066238211776">Շարունակել <ph name="USER_NAME" /> հաշվով</translation>
 <translation id="1400642268715879018">Վերջին 4 շաբաթվա</translation>
 <translation id="1404330357948037222">Դուք դուրս եք եկել հաշվից</translation>
+<translation id="14066361343057390">Դուք դուրս կգաք հաշվից</translation>
 <translation id="1407135791313364759">Բացել բոլորը</translation>
 <translation id="1408847409015257906">Հպեք «Գաղտնիություն և անվտանգություն»։</translation>
 <translation id="1430915738399379752">Տպում</translation>
@@ -328,6 +330,7 @@
 <translation id="2712127207578915686">Հնարավոր չէ բացել ֆայլը</translation>
 <translation id="2718352093833049315">Միայն Wi-Fi-ով</translation>
 <translation id="2738375676495545665">Թաքցնել «Ինչ նոր բան կա» կետը</translation>
+<translation id="2740910715135851329">Դուք դուրս կգաք հաշվից, ներդիրները կփակվեն, այցելությունների պատմությունը կջնջվի</translation>
 <translation id="2747003861858887689">Նախորդ դաշտը</translation>
 <translation id="2749231692441336879">Դուք բաժանորդագրվեցիք «<ph name="CHANNEL_NAME" />» ալիքին</translation>
 <translation id="2754492786623500387">Այս սարքում գրանցված հաշիվներ</translation>
@@ -468,6 +471,7 @@
 <translation id="3482959374254649722">Ներդիրների համաժամացում...</translation>
 <translation id="3484946776651937681">Բացել Ներբեռնումներում</translation>
 <translation id="3485558910355485767">Նոր ինկոգնիտո պատուհան</translation>
+<translation id="3488501490964659223">Ներդիրները փակվեցին, իսկ այցելությունների պատմությունը ջնջվեց։ Դուք դուրս եկաք հաշվից</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Իմացեք ավելին<ph name="END_LINK" /> առաջարկվող բովանդակության վերաբերյալ</translation>
 <translation id="3494788280727468875">Հաստատել այցելությունների պատմության ջնջումը</translation>
 <translation id="35083190962747987">Անցնել ${url}</translation>
@@ -553,6 +557,7 @@
 <translation id="3968505803272650567">Կառավարել հետաքրքրությունները</translation>
 <translation id="3989635538409502728">Դուրս գալ</translation>
 <translation id="3995521777587992544">Էջի բեռնման ընթացագոտի, կատարված է <ph name="EMAIL" />։</translation>
+<translation id="3997522473364371632">Ադմինիստրատորն արգելել է գաղտնաբառերի փոխանցումը</translation>
 <translation id="4002019827078931033">Հասցեագոտին տեղափոխել վերև</translation>
 <translation id="4002066346123236978">Վերնագիր</translation>
 <translation id="4004204301268239848">Գաղտնաբառերը պահվում են ձեր Google հաշվում, որպեսզի կարողանաք օգտագործել դրանք ցանկացած սարքում։</translation>
@@ -701,6 +706,7 @@
 <translation id="4808744395915275922">Թարմացումներ</translation>
 <translation id="4818522717893377262">Ավելացնել լեզու…</translation>
 <translation id="481968316161811770">Cookie ֆայլեր, կայքի տվյալներ</translation>
+<translation id="4821595350501541683">Ներդիրները փակվեցին, իսկ այցելությունների պատմությունը ջնջվեց</translation>
 <translation id="4824480232751123840">Ձայնի ուժգնություն</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ու ևս 1}one{{domain} ու ևս {count}}other{{domain} ու ևս {count}}}</translation>
 <translation id="4826218269716039351">Կողմնակի քուքիներն արգելափակված են</translation>
@@ -710,6 +716,7 @@
 <translation id="4833686396768033263">Վերջին բացված ներդիրները հասանելի չեն</translation>
 <translation id="4833786495304741580">Ավտոմատ ուղարկում է Google-ին օգտագործման վիճակագրությունը և խափանումների մասին հաշվետվությունները:</translation>
 <translation id="4840495572919996524">Ձեր էջանիշները, պատմությունը, գաղտնաբառերն ու այլ կարգավորումներ կհամաժամացվեն ձեր Google հաշվի հետ:</translation>
+<translation id="484280513275854557">Դուք դուրս եկաք հաշվից, այցելությունների պատմությունը ջնջվեց</translation>
 <translation id="4844899002472726590">Դիտեք և փոփոխեք ձեզ հետաքրքրող թեմաները</translation>
 <translation id="4848999860252535517">Ջնջե՞լ <ph name="WEBSITE" /> հաշվի գաղտնաբառը</translation>
 <translation id="4850886885716139402">Տեսք</translation>
@@ -721,6 +728,7 @@
 <translation id="4883824756452868502">Հայտնաբերել չափման միավորներ</translation>
 <translation id="488785315393301722">Ցույց տալ մանրամասները</translation>
 <translation id="4894963374040315706">Սա անհրաժեշտ է ձայնային որոնումն օգտագործելու համար</translation>
+<translation id="4896467949657706481">Ներդիրները փակվեցին, դուք դուրս եկաք հաշվից</translation>
 <translation id="489903206070130262">Ձեր վերջին բաց ներդիրը</translation>
 <translation id="4901778704868714008">Պահել…</translation>
 <translation id="4904877109095351937">Նշել որպես կարդացված</translation>
@@ -749,6 +757,7 @@
 <translation id="5056446788882570708">Խնդիրները հայտնաբերվել են <ph name="TIME" />։</translation>
 <translation id="5059136629401106827">Եղավ</translation>
 <translation id="5062321486222145940">Տեղադրել Google Drive-ը</translation>
+<translation id="5083217068549651688">{TIME,plural, =0{Մնացել է {TIME} վայրկյան}=1{Մնացել է {TIME} վայրկյան}one{Մնացել է {TIME} վայրկյան}other{Մնացել է {TIME} վայրկյան}}</translation>
 <translation id="5083464117946352670">Չհաջողվեց որոշել ֆայլի չափը:</translation>
 <translation id="5090832849094901128">Եթե հեռացնեք այս գաղտնաբառը, ձեր հաշիվը չի ջնջվի <ph name="WEBSITE" /> կայքից։</translation>
 <translation id="5094827893301452931">Twitter-ում տարածումն ավարտվեց:</translation>
@@ -945,6 +954,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6103540626693881831">Գաղտնագրում սարքում</translation>
 <translation id="6119050551270742952">Ընթացիկ կայքէջը ինկոգնիտո ռեժիմում է բացված</translation>
 <translation id="6122191549521593678">Առցանց</translation>
+<translation id="6123514585040403489">Ներդիրները կփակվեն</translation>
 <translation id="6127379762771434464">Տարրը հեռացվեց</translation>
 <translation id="6136914049981179737">Վայրկյաններ առաջ</translation>
 <translation id="6144589619057374135">Բացել ինկոգնիտո ռեժիմում` ${url}</translation>
@@ -1085,6 +1095,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6753469262000681876">Արգելափակման ռեժիմ</translation>
 <translation id="6760509555861141183">Վերադառնալ «Վերջինները» ներդիր</translation>
 <translation id="6762812039470893796">Ապանշել բոլորը</translation>
+<translation id="6779455296366983087">Այցելությունների պատմությունը կջնջվի</translation>
 <translation id="6780034285637185932">Փոստային դասիչ</translation>
 <translation id="6781260999953472352">Միացնե՞լ համաժամացումը</translation>
 <translation id="6781405765516175232">Հնարավոր երթուղիները տեսնելու համար հպեք «Ստանալ երթուղիներ»։</translation>
@@ -1150,6 +1161,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7108762695052995889">Անցեք կայք</translation>
 <translation id="7133798577887235672">Անուն, ազգանուն</translation>
 <translation id="7136892417564438900">Ֆոտոխցիկն անհասանելի է</translation>
+<translation id="7141960840225504692">Ներդիրները կփակվեն, իսկ այցելությունների պատմությունը կջնջվի</translation>
 <translation id="7154343200458623869">Ավարտեք ձեր առաջադրանքը։</translation>
 <translation id="7161230316646448869">Համաժամացրեք ձեր էջանիշները, պատմությունն ու մյուս կարգավորումները բոլոր սարքերում</translation>
 <translation id="7162168282402939716">Ապակողպեք ինկոգնիտո ներդիրները՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
@@ -1396,6 +1408,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8517375800490286174">Բաց կոդով հավելվածների լիցենզիաներ</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} գաղտնաբառ և այլ տարրեր պահվում են միայն այս սարքում։ Այդ գաղտնաբառն ու տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում ({email})։}one{{count} գաղտնաբառ և այլ տարրեր պահվում են միայն այս սարքում։ Այդ գաղտնաբառն ու տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում ({email})։}other{{count} գաղտնաբառ և այլ տարրեր պահվում են միայն այս սարքում։ Այդ գաղտնաբառն ու տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում ({email})։}}</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Ներդիրներ <ph name="FIRST_VISIBLE_TAB" /> – <ph name="LAST_VISIBLE_TAB" />՝ <ph name="NUMBER_OF_OPEN_TABS" />-ից</translation>
+<translation id="852576975834694248">Դուք դուրս կգաք հաշվից, իսկ ներդիրները կփակվեն</translation>
 <translation id="8528009254289981965">Այլ հավելվածներից հղումներ բացեք ինկոգնիտո ռեժիմում</translation>
 <translation id="8529767659511976195">Նոր</translation>
 <translation id="8532105204136943229">Ժամկետի սպառման տարեթիվը</translation>
@@ -1431,6 +1444,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8693663554456874301">{count,plural, =1{Փակել ներդիրը}one{Փակել ներդիրները}other{Փակել ներդիրները}}</translation>
 <translation id="8703536910991780768">Ձեր գաղտնաբառերը հուսալի են</translation>
 <translation id="8706253136355675497">Ջերմաստիճան</translation>
+<translation id="8709409604518538305">Ներդիրները փակվեցին</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8717864919010420084">Պատճենել հղումը</translation>
 <translation id="8721297211384281569">Գործիքների ընտրացանկ</translation>
@@ -1483,6 +1497,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8961757677053809960">Փակե՞լ նախազգուշացումը</translation>
 <translation id="8971545611707025079">Նորից ստուգել</translation>
 <translation id="8974714402877957201">1. Բացեք iPad-ի կարգավորումները։</translation>
+<translation id="8975015774710126284">Այցելությունների պատմությունը ջնջվեց</translation>
 <translation id="8976382372951310360">Օգնություն</translation>
 <translation id="8976414606286374109">Քարտերը պահվում են Google հաշվում։</translation>
 <translation id="8981454092730389528">Google-ի գործունեության կառավարներ</translation>
@@ -1493,6 +1508,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9000089900434778519">Դուք օգտագործում եք <ph name="DSE_NAME" /> որոնողական համակարգը։ Որոնումների պատմությունը ջնջելու համար կարդացեք համապատասխան ցուցումները։</translation>
 <translation id="9008201768610948239">Անտեսել</translation>
 <translation id="9012585441087414258">Պաշտպանում է վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից։ Եթե որևէ էջում որևէ կասկածելի բան է նկատվում, URL-ները և էջի բովանդակության հատվածներ ուղարկվում են «Google Ապահով դիտարկում» ծառայությանը։</translation>
+<translation id="9029650858822697271">Դուք դուրս եկաք հաշվից</translation>
 <translation id="9034759925968272072">Դուք դուրս չեք գա ձեր Google հաշվից: Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս: Դրանք կարող եք գտնել <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> էջում:</translation>
 <translation id="9037965129289936994">Ցույց տալ բնօրինակը</translation>
 <translation id="9039373489628511875">Թողունակություն</translation>

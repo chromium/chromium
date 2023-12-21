@@ -633,6 +633,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="219906046732893612">Ev tadilatı</translation>
 <translation id="2202627062836089804">kartınızın arkasında</translation>
 <translation id="2204482073374652408">Güncelleme tamamlandı!</translation>
+<translation id="2207770355672215546">Her tür kartla her zaman izin ver</translation>
 <translation id="2208053750671792556">Kodunuzu almadınız mı? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Tepsi 3</translation>
 <translation id="2210794033760923560">Rapor yükle</translation>
@@ -2358,7 +2359,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5695542892312572833">Satın alma işleminizi doğrulayıp tamamlamak için Windows Hello kullanılsın mı?</translation>
 <translation id="5699628521141772782">Süt Ürünleri ve Yumurta</translation>
 <translation id="5700761515355162635">Üçüncü taraf çerezlerine izin verildi</translation>
-<translation id="5701023235904684227"><ph name="READERNAME" /> kontrol edilip içindeki akıllı karta erişim elde edilsin mi?</translation>
 <translation id="5701381305118179107">Ortala</translation>
 <translation id="5707154300732650394">Arama yolculuğunuzu devam ettirin</translation>
 <translation id="57094364128775171">Güçlü şifre öner…</translation>
@@ -2493,6 +2493,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5997247540087773573">Az önce kullandığınız şifrenin bir veri ihlali sonucunda açığa çıktığı anlaşıldı. Google Şifre Yöneticisi, hesaplarınızın güvenliğini sağlamak için bu şifreyi hemen değiştirmenizi ve kayıtlı şifrelerinizi kontrol etmenizi öneriyor.</translation>
 <translation id="5999271311987646952">Chrome, internette gezinirken sizi koruyacak yerleşik güvenlik özelliklerine sahiptir. Örneğin Google Güvenli Tarama, ziyaret etmeye çalıştığınız sitede <ph name="BEGIN_LINK" />kısa süre önce kötü amaçlı yazılım tespit etti<ph name="END_LINK" />.</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" için bulunan <ph name="RESULT_COUNT" /> sonuç gösteriliyor</translation>
+<translation id="6001839398155993679">Başlayalım</translation>
 <translation id="6002122790816966947">Cihazlarınız</translation>
 <translation id="6005659677094197001">Sürekli</translation>
 <translation id="6005765687956866568">Otomatik doldurulan bilgiler formdan silindi</translation>

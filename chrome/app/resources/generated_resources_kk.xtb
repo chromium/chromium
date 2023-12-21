@@ -3092,6 +3092,7 @@
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">Бөлгіш</translation>
 <translation id="3387023983419383865">,</translation>
+<translation id="3387588771342841525">Қосылған кезде, құпия сөздер <ph name="EMAIL" /> аккаунтына сақталады. Өшірілген кезде, құпия сөздер тек осы құрылғыға сақталады.</translation>
 <translation id="3387614642886316601">Жетілдірілген емле тексеру құралын пайдалану</translation>
 <translation id="3387829698079331264">Құрылғыңызды белсенді пайдаланатын уақытыңыз туралы білуге рұқсат берілмейтін сайттар</translation>
 <translation id="3388094447051599208">Шығыс науасы толуға жақын.</translation>
@@ -3280,6 +3281,7 @@
 <translation id="3532521178906420528">Желі байланысы орнатылып жатыр...</translation>
 <translation id="3532852121563960103">{NUM_OF_FILES,plural, =1{1 файл <ph name="CLOUD_PROVIDER" /> қызметіне жылжытылып жатыр}other{{NUM_OF_FILES} файл <ph name="CLOUD_PROVIDER" /> қызметіне жылжытылып жатыр}}</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – дыбысы өшірілді</translation>
+<translation id="3537099313456411235">Files қолданбасында Drive файлдарына кіру үшін <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> аккаунтына қосылу</translation>
 <translation id="3537881477201137177">Мұны кейінірек "Параметрлер" бөлімінен өзгертуге болады.</translation>
 <translation id="3538066758857505094">Linux жүйесін орнату кезінде қате шықты. Қайталап көріңіз.</translation>
 <translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" /> құрылғысында желі қосылмаған</translation>
@@ -4190,6 +4192,7 @@
 <translation id="4246980464509998944">Қосымша пікір:</translation>
 <translation id="424726838611654458">Әрқашан Adobe Reader қолданбасында ашу</translation>
 <translation id="4248401726442101648">Ешқандай камера жалғанбады</translation>
+<translation id="4249116869350613769">Батареяны үнемдеу режимі</translation>
 <translation id="4249248555939881673">Желі байланысы күтілуде…</translation>
 <translation id="4249373718504745892">Бұл бетке камераңыз бен микрофоныңызды пайдалануға тыйым салынған.</translation>
 <translation id="424963718355121712">Қолданбаларға олар қолданылатын хостан қызмет көрсетілуі керек</translation>
@@ -5019,6 +5022,7 @@
 <translation id="4893522937062257019">Құлып экранында</translation>
 <translation id="4895799941222633551">&amp;Таңбаша жасау...</translation>
 <translation id="4898011734382862273">"<ph name="CERTIFICATE_NAME" />" сертификаты сертификат беру органын көрсетеді</translation>
+<translation id="4898913189644355814">Сайт сіз қолданатын тіл мен сатып алатын тауарларды сақтай алады. Бұл ақпарат сайтта және оның ішкі домендерінде болады.</translation>
 <translation id="4899052647152077033">Түсін кетіру</translation>
 <translation id="4899696330053002588">Жарнама бар</translation>
 <translation id="490031510406860025">Бұл сайтта рұқсат етілмеген</translation>
@@ -5363,6 +5367,7 @@
 <translation id="5185359571430619712">Кеңейтімдерді қарау</translation>
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" ең жаңа нұсқасы өшірілді, себебі ол қосымша рұқсаттарды талап етеді.</translation>
 <translation id="5185500136143151980">Интернет жоқ</translation>
+<translation id="5186381005592669696">Қолдау көрсетілетін қолданбалардың интерфейс тілін бейімдеу</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> пайдаланылып жатыр</translation>
 <translation id="5190926251776387065">Портты іске қосу</translation>
@@ -5911,6 +5916,7 @@
 <translation id="5631272057151918206">Офлайн файлдарыңызға пайдаланылатын орыннан <ph name="OFFLINE_STORAGE_SIZE" /> дейін өшіріледі. Кейбір файлдар офлайн режимде әлі де қолжетімді болады. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Рұқсат сұралды, жауап беру үшін Ctrl + Forward пернелер тіркесімін басыңыз.</translation>
 <translation id="5632221585574759616">Кеңейтім рұқсаттары туралы толық ақпарат</translation>
+<translation id="5632485077360054581">Орындалуын көру</translation>
 <translation id="5632566673632479864"><ph name="EMAIL" /> енді негізгі аккаунтыңыз емес. Аккаунтыңызды <ph name="DOMAIN" /> домені басқаратындықтан, бетбелгілер, тарих, құпия сөздер және басқа параметрлер құрылғыңыздан өшіріледі.</translation>
 <translation id="5633149627228920745">Жүйе талаптары туралы толық ақпарат алыңыз</translation>
 <translation id="563371367637259496">Мобильдік</translation>
@@ -6141,6 +6147,7 @@
 <translation id="5828633471261496623">Басып шығару…</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> қолданбасын ашу мүмкін емес</translation>
 <translation id="5830720307094128296">Бетті &amp;басқаша сақтау…</translation>
+<translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> аккаунтына кірдіңіз</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" />, оның астындағы барлық сайт және оның орнатылған қолданбасы үшін сайт деректері мен рұқсаттарын жою керек пе?</translation>
 <translation id="5832813618714645810">Профильдер</translation>
 <translation id="583281660410589416">Белгісіз</translation>
@@ -6214,6 +6221,7 @@
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> автоматты түрде бөгелді.</translation>
 <translation id="5884447826201752041">Әр кеңейтім үшін бейімдеу</translation>
 <translation id="5885314688092915589">Бұл профильді ұйымыңыз басқаратын болады</translation>
+<translation id="5885470467814103868">Сканерлеуді бастау</translation>
 <translation id="5885631909150054232">Токенді көшіру</translation>
 <translation id="5886009770935151472">1-ші саусақ</translation>
 <translation id="5886112770923972514">Маңайдағы Fast Pair құрылғыларын қосу және жылдам реттеу</translation>
@@ -6804,6 +6812,7 @@
 <translation id="6348805481186204412">Офлайн жад көлемі</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> қолданбасын орнату</translation>
 <translation id="6350821834561350243">Мәселені және оның пайда болу қадамдарын (мүмкін болса) анық сипаттаңыз.</translation>
+<translation id="6351178441572658285">Қолданба тілдері</translation>
 <translation id="6354918092619878358">SECG эллипстік қисық сызығы secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Google аккаунты туралы ақпарат алынып жатыр...</translation>
 <translation id="635609604405270300">Құрылғыны қосулы күйде ұстаңыз</translation>
@@ -7409,6 +7418,7 @@
 <translation id="6833479554815567477">Қойынды "<ph name="GROUP_NAME" />" тобынан (<ph name="GROUP_CONTENTS" />) өшірілді.</translation>
 <translation id="6833996806551876956">Privacy Sandbox сынақ мерзімі</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> жаңарту үшін, интернетке қосылыңыз.</translation>
+<translation id="683630338945552556">Google аккаунтыңыздағы құпия сөздерді пайдалану және сақтау</translation>
 <translation id="6839225236531462745">Сертификат жою қатесі</translation>
 <translation id="6839916869147598086">Аккаунтқа кіру жолы өзгерді</translation>
 <translation id="6840155290835956714">Жіберу алдында рұқсат сұрау</translation>
@@ -8026,6 +8036,7 @@
 <translation id="7347943691222276892"><ph name="SUBPAGE_TITLE" /> бетінен шығу үшін түртіңіз.</translation>
 <translation id="7348093485538360975">Экрандық пернетақта</translation>
 <translation id="7349010927677336670">Бейненің біркелкілігі</translation>
+<translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} құпия сөз тек осы құрылғыға сақталды}other{{COUNT} құпия сөз тек осы құрылғыға сақталды}}</translation>
 <translation id="7352651011704765696">Бірнәрсе дұрыс емес</translation>
 <translation id="7352664183151911163">Қолданбаларыңыз бен Chrome браузеріңізде</translation>
 <translation id="7353261921908507769">Контактілеріңіз маңайда болса, сізбен бөлісе алады. Сіз қабылдамайынша, тасымалдау басталмайды.</translation>
@@ -8265,6 +8276,7 @@
 <translation id="7523117833414447032">Бас әріптерді оқығанда</translation>
 <translation id="7523585675576642403">Профильдің атын өзгерту</translation>
 <translation id="7525067979554623046">Жасау</translation>
+<translation id="7525879597899798851">Операциялық жүйе параметрлерінде локация өшірулі</translation>
 <translation id="7526989658317409655">Плейсхолдер</translation>
 <translation id="7528224636098571080">Ашылмасын</translation>
 <translation id="7529411698175791732">Интернет байланысын тексеріңіз. Егер мәселе шешілмесе, жүйеден шығып, қайта кіріп көріңіз.</translation>
@@ -8459,6 +8471,7 @@
 <translation id="7670483791111801022">Субтитрлер</translation>
 <translation id="7671130400130574146">Жүйе тақырыбы жолағы мен шекараларын пайдалану</translation>
 <translation id="767127784612208024">Бастапқы күйге қайтару үшін түртіңіз</translation>
+<translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" "<ph name="SCANNER_NAME" />" құрылғысынан сканерлеуге рұқсат сұрайды.</translation>
 <translation id="7672504401554182757">Қандай құрылғыда <ph name="APP_NAME" /> қолданбасына кіру кілті бар екенін таңдаңыз.</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> қызметінде.</translation>
 <translation id="7673313156293624327">ChromeOS Shill (байланыс менеджері) журналдары</translation>

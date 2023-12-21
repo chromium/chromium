@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Гацания</translation>
 <translation id="4943368462779413526">Футбол</translation>
 <translation id="4961158930123534723">Parallels Desktop предоставлен доступ к 1 папке.</translation>
+<translation id="4965874878399872778">Проверка файлов на соответствие правилам безопасности вашей организации…</translation>
 <translation id="496656650103537022">Файл <ph name="FILE_NAME" /> восстановлен</translation>
 <translation id="4969785127455456148">Альбом</translation>
 <translation id="4972330214479971536">Не удалось завершить настройку синхронизации файлов</translation>
@@ -710,6 +711,7 @@
 <translation id="6430271654280079150">Осталась одна попытка.</translation>
 <translation id="643243556292470964">Удаленные файлы теперь перемещаются в корзину</translation>
 <translation id="6438480100790416671">Проверка хранилища…</translation>
+<translation id="6451527188465304418">Проверка файла на соответствие правилам безопасности вашей организации…</translation>
 <translation id="6485131920355264772">Не удалось получить информацию о свободном месте.</translation>
 <translation id="6495925982925244349">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, под управлением администратора, подробная информация</translation>
 <translation id="649877868557234318">Извлечение <ph name="FILE_NAME" /> в папку "<ph name="FOLDER_NAME" />"…</translation>

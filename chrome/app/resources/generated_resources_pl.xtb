@@ -919,6 +919,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1695510246756136088">Nie udało się połączyć z internetem. Spróbuj jeszcze raz.</translation>
 <translation id="1696555181932908973">Możesz wypróbować inne sposoby logowania na konto <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Urządzenie ma skonfigurowany serwer SSH. Nie loguj się za pomocą poufnych kont.</translation>
+<translation id="1697122132646041614">Opcja Nie lubię otwiera formularz, za pomocą którego możesz przesłać szczegółową opinię o tym, dlaczego te wyniki Ci się nie podobają.</translation>
 <translation id="1697150536837697295">Sztuka</translation>
 <translation id="1697686431566694143">Edytuj plik</translation>
 <translation id="1698796500103229697">&amp;Formy płatności</translation>
@@ -2279,6 +2280,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2731700343119398978">Czekaj...</translation>
 <translation id="2731971182069536520">Po następnym uruchomieniu urządzenia administrator wykona jednorazową aktualizację, która usunie Twoje dane lokalne.</translation>
 <translation id="2732134891301408122">Dodatkowy element zawartości (<ph name="CURRENT_ELEMENT" /> z <ph name="TOTAL_ELEMENTS" />)</translation>
+<translation id="2733248615007838252">Opcja Lubię powoduje przesłanie opinii z informacją, że te wyniki Ci się podobają.</translation>
 <translation id="2733992589856193783">Utworzyłeś(-aś) klucz dostępu do tej witryny. Aby się zalogować, potrzebujesz telefonu komórkowego.</translation>
 <translation id="27349076983469322">Jasne tło</translation>
 <translation id="2735712963799620190">Harmonogram</translation>
@@ -3075,6 +3077,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">Separator</translation>
 <translation id="3387023983419383865">,</translation>
+<translation id="3387588771342841525">Gdy to ustawienie jest włączone, hasła są zapisywane na koncie <ph name="EMAIL" />. Gdy jest wyłączone, hasła są zapisywane tylko na tym urządzeniu.</translation>
 <translation id="3387614642886316601">Używaj ulepszonego sprawdzania pisowni</translation>
 <translation id="3387829698079331264">Nie mogą sprawdzić, kiedy używasz urządzenia</translation>
 <translation id="3388094447051599208">Zasobnik wyjściowy jest prawie pełny</translation>
@@ -3263,6 +3266,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3532521178906420528">Nawiązuję połączenie sieciowe…</translation>
 <translation id="3532852121563960103">{NUM_OF_FILES,plural, =1{Przenoszę 1 plik do usługi <ph name="CLOUD_PROVIDER" />}few{Przenoszę {NUM_OF_FILES} pliki do usługi <ph name="CLOUD_PROVIDER" />}many{Przenoszę {NUM_OF_FILES} plików do usługi <ph name="CLOUD_PROVIDER" />}other{Przenoszę {NUM_OF_FILES} pliku do usługi <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – dźwięk wyciszony</translation>
+<translation id="3537099313456411235">Połącz konto <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" />, aby mieć dostęp do swoich plików z Dysku w aplikacji Pliki</translation>
 <translation id="3537881477201137177">Można to później zmienić w Ustawieniach</translation>
 <translation id="3538066758857505094">Błąd podczas odinstalowywania Linuksa. Spróbuj ponownie.</translation>
 <translation id="3540173484406326944">Brak sieci z urządzenia <ph name="HOST_DEVICE_NAME" /></translation>
@@ -5346,6 +5350,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5185359571430619712">Sprawdź rozszerzenia</translation>
 <translation id="5185386675596372454">Najnowsza wersja rozszerzenia „<ph name="EXTENSION_NAME" />” została wyłączona, ponieważ wymaga więcej uprawnień.</translation>
 <translation id="5185500136143151980">Brak internetu</translation>
+<translation id="5186381005592669696">Dostosowywanie języka wyświetlania obsługiwanych aplikacji</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869">Używasz <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Aktywuj port</translation>
@@ -5639,6 +5644,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5431318178759467895">Kolor</translation>
 <translation id="5432145523462851548">Pokaż plik <ph name="FILE_NAME" /> w folderze</translation>
 <translation id="5432223177001837288">Aby udostępnić dźwięk, udostępnij kartę</translation>
+<translation id="5432872710261597882">Opcja Lubię powoduje przesłanie opinii pozytywnej.</translation>
 <translation id="543338862236136125">Edytuj hasło</translation>
 <translation id="5434065355175441495">PKCS #1, szyfrowanie RSA</translation>
 <translation id="5435274640623994081">Włącz rejestrowanie ikony audio</translation>
@@ -5674,6 +5680,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notatki na ekranie blokady</translation>
 <translation id="5459864179070366255">Zainstaluj mimo to</translation>
+<translation id="5460861858595506978">Inspiracja</translation>
 <translation id="5461050611724244538">Utracono połączenie z telefonem</translation>
 <translation id="5463275305984126951">Indeks – <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Zasubskrybuj e-maile na temat urządzenia <ph name="DEVICE_TYPE" /></translation>
@@ -5893,6 +5900,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5631272057151918206">Spowoduje to usunięcie nawet <ph name="OFFLINE_STORAGE_SIZE" /> danych z miejsca zajętego przez pliki offline. Niektóre pliki będą nadal dostępne offline. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Zgłoszono prośbę o uprawnienia. Aby odpowiedzieć, naciśnij Ctrl + Dalej.</translation>
 <translation id="5632221585574759616">Więcej informacji o uprawnieniach rozszerzeń</translation>
+<translation id="5632485077360054581">Pokaż jak</translation>
 <translation id="5632566673632479864">Twoje konto <ph name="EMAIL" /> nie może być już kontem podstawowym. To konto jest zarządzane przez <ph name="DOMAIN" />, dlatego Twoje zakładki, historia, hasła i inne ustawienia zostaną usunięte z tego urządzenia.</translation>
 <translation id="5633149627228920745">Więcej informacji o wymaganiach systemowych</translation>
 <translation id="563371367637259496">Telefony komórkowe</translation>
@@ -6123,6 +6131,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5828633471261496623">Trwa drukowanie...</translation>
 <translation id="5830205393314753525">Nie można otworzyć aplikacji <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">Zapisz stronę &amp;jako...</translation>
+<translation id="583179300286794292">Zalogowano jako <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Czy chcesz usunąć dane i uprawnienia witryny <ph name="SITE_NAME" /> i jej witryn podrzędnych oraz zainstalowanej z niej aplikacji?</translation>
 <translation id="5832813618714645810">Profile</translation>
 <translation id="583281660410589416">Nieznany</translation>
@@ -6196,6 +6205,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5883356647197510494">Automatycznie zablokowano uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Dostosuj dla każdego rozszerzenia</translation>
 <translation id="5885314688092915589">Tym profilem będzie zarządzać Twoja organizacja</translation>
+<translation id="5885470467814103868">Rozpocznij skanowanie</translation>
 <translation id="5885631909150054232">Kopiuj token</translation>
 <translation id="5886009770935151472">Palec 1</translation>
 <translation id="5886112770923972514">Podłącz i szybko skonfiguruj urządzenia w pobliżu, używając funkcji Szybkie parowanie</translation>
@@ -6787,6 +6797,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6348805481186204412">Miejsce na dane offline</translation>
 <translation id="6349101878882523185">Zainstaluj aplikację <ph name="APP_NAME" /></translation>
 <translation id="6350821834561350243">Opisz jasno problem i czynności prowadzące do jego odtworzenia (jeśli to możliwe)</translation>
+<translation id="6351178441572658285">Języki aplikacji</translation>
 <translation id="6354918092619878358">Kryptografia krzywych eliptycznych SECG secp256r1 (inne nazwy: ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Pobieram informacje o koncie Google…</translation>
 <translation id="635609604405270300">Nie wyłączaj urządzenia</translation>
@@ -7396,6 +7407,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6833479554815567477">Karta została usunięta z grupy <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833996806551876956">Okres próbny piaskownicy prywatności</translation>
 <translation id="6835762382653651563">Aby zaktualizować urządzenie <ph name="DEVICE_TYPE" />, połącz się z internetem.</translation>
+<translation id="683630338945552556">Używaj haseł i zapisuj je na swoim koncie Google</translation>
 <translation id="6839225236531462745">Błąd usuwania certyfikatu</translation>
 <translation id="6839916869147598086">Logowanie wygląda teraz inaczej</translation>
 <translation id="6840155290835956714">Pytaj przed wysłaniem</translation>
@@ -8012,6 +8024,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7347943691222276892">Kliknij, by powrócić z podstrony <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Klawiatura ekranowa</translation>
 <translation id="7349010927677336670">Płynność obrazu</translation>
+<translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} hasło zostało zapisane tylko na tym urządzeniu}few{{COUNT} hasła zostały zapisane tylko na tym urządzeniu}many{{COUNT} haseł zostało zapisanych tylko na tym urządzeniu}other{{COUNT} hasła zostało zapisane tylko na tym urządzeniu}}</translation>
 <translation id="7352651011704765696">Coś poszło nie tak</translation>
 <translation id="7352664183151911163">W aplikacjach i przeglądarce Chrome</translation>
 <translation id="7353261921908507769">Twoje kontakty mogą udostępniać Ci dane, gdy znajdują się w pobliżu. Przesyłanie danych nie rozpocznie się bez Twojej zgody.</translation>
@@ -8251,6 +8264,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7523117833414447032">Czytając wielkie litery</translation>
 <translation id="7523585675576642403">Zmień nazwę profilu</translation>
 <translation id="7525067979554623046">Utwórz</translation>
+<translation id="7525879597899798851">Lokalizacja jest wyłączona w ustawieniach systemu operacyjnego</translation>
 <translation id="7526989658317409655">Zmienna</translation>
 <translation id="7528224636098571080">Nie otwieraj</translation>
 <translation id="7529411698175791732">Sprawdź połączenie z internetem. Jeśli problem nie ustąpi, wyloguj się i zaloguj ponownie.</translation>
@@ -8445,6 +8459,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7670483791111801022">Napisy</translation>
 <translation id="7671130400130574146">Użyj systemowego paska tytułu i ramek</translation>
 <translation id="767127784612208024">Dotknij, by potwierdzić resetowanie</translation>
+<translation id="7671472752213333268">„<ph name="EXTENSION_NAME" />” chce skanować za pomocą urządzenia „<ph name="SCANNER_NAME" />”.</translation>
 <translation id="7672504401554182757">Wybierz urządzenie, które ma klucz dla aplikacji <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> na stronie <ph name="PAGE_TITLE" />.</translation>
 <translation id="7673313156293624327">Logi ChromeOS Shill (menedżera połączeń)</translation>
@@ -8851,6 +8866,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Szczegóły sieci Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1, SHA-384 z szyfrowaniem RSA</translation>
+<translation id="7973149423217802477">Opcja Nie lubię powoduje przesłanie opinii negatywnej.</translation>
 <translation id="7973776233567882054">Która z tych opcji najlepiej opisuje Twoją sieć?</translation>
 <translation id="797394244396603170">Wybierz urządzenie, któremu chcesz udostępnić pliki.</translation>
 <translation id="7974566588408714340">Ponów za pomocą rozszerzenia <ph name="EXTENSIONNAME" /></translation>

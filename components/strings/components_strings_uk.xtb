@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">Вхідний лоток</translation>
 <translation id="1975584088563498795">Поштова скринька 10</translation>
 <translation id="1978555033938440688">Версія мікропрограми</translation>
+<translation id="1979156660928743046">Інформація про медіаконтент</translation>
 <translation id="1988881251331415125">Якщо помилок немає, <ph name="BEGIN_LINK" />проведіть діагностику з'єднання<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">Скелелазіння й альпінізм</translation>
 <translation id="1991830984769263878">Автострахування</translation>
@@ -632,6 +633,7 @@
 <translation id="219906046732893612">Облаштування житла</translation>
 <translation id="2202627062836089804">зворотній стороні картки</translation>
 <translation id="2204482073374652408">Оновлення завершено.</translation>
+<translation id="2207770355672215546">Завжди дозволяти, з будь-якою карткою</translation>
 <translation id="2208053750671792556">Не отримали код? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Лоток 3</translation>
 <translation id="2210794033760923560">Завантажити звіт</translation>
@@ -1524,6 +1526,7 @@
 <translation id="4050599136622776556">Chromium намагається змінити способи оплати.</translation>
 <translation id="405399507749852140">Отримувати сповіщення, коли на якомусь сайті знизиться ціна</translation>
 <translation id="4056223980640387499">Сепія</translation>
+<translation id="4059523390906550209">Докладніше про захист конфіденційних даних</translation>
 <translation id="4063063121357725926">Дозвольте Google знаходити знижки на товари у ваших кошиках</translation>
 <translation id="406358100705415968">Засоби захисту на виробництві</translation>
 <translation id="4063924980214801036">Використовувати функцію розблокування пристрою, щоб швидше підтверджувати картки</translation>
@@ -1682,6 +1685,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блокувати (за умовчанням)</translation>
 <translation id="4314815835985389558">Керувати синхронізацією</translation>
+<translation id="4316057107946726368">Укажіть підставу (максимальна кількість символів: <ph name="MAX_CHAR_COUNT" />). Використано символів: <ph name="ACTUAL_CHAR_COUNT" /> з <ph name="MAX_CHAR_COUNT" />.</translation>
 <translation id="4318213823155573975">Головні убори</translation>
 <translation id="4318312030194671742">Сервіс компонування перегляду малюнків</translation>
 <translation id="4318566738941496689">Назва пристрою й адреса мережі</translation>
@@ -1742,6 +1746,7 @@
 <translation id="443673843213245140">Використання проксі-сервера вимкнено, але чітко вказано налаштування проксі-сервера.</translation>
 <translation id="4438821706955556403">Звичайна ціна</translation>
 <translation id="4441832193888514600">Ігнорується, оскільки це правило можна налаштувати лише як хмарне правило для користувачів.</translation>
+<translation id="4445133368066241428">Популярні теми</translation>
 <translation id="4449116177348980384">Кнопка "Керувати налаштуваннями сайтів"; активуйте, щоб керувати в налаштуваннях Chrome дозволами й даними, що зберігаються на сайтах</translation>
 <translation id="4451135742916150903">Може просити дозвіл підключатися до пристроїв HID</translation>
 <translation id="4451684391620232683">Текст, який бачать користувачі:</translation>
@@ -2488,6 +2493,7 @@
 <translation id="5997247540087773573">Введений пароль розкрито через порушення безпеки даних. Щоб захистити ваші облікові записи, Менеджер паролів Google радить негайно його змінити й перевірити збережені паролі.</translation>
 <translation id="5999271311987646952">Chrome має вбудовані функції безпеки, що захищають вас під час веб-перегляду, як-от Безпечний перегляд Google. Зокрема, ця функція <ph name="BEGIN_LINK" />нещодавно виявила зловмисне програмне забезпечення<ph name="END_LINK" /> на сайті, який ви намагалися відвідати.</translation>
 <translation id="6000758707621254961">Результатів для запиту "<ph name="SEARCH_TEXT" />": <ph name="RESULT_COUNT" /></translation>
+<translation id="6001839398155993679">Почати</translation>
 <translation id="6002122790816966947">Ваші пристрої</translation>
 <translation id="6005659677094197001">Безперервний друк</translation>
 <translation id="6005765687956866568">Автоматично заповнену інформацію було вилучено з форми</translation>
@@ -2668,6 +2674,7 @@
 <translation id="6355392890578844978">Цим веб-переглядачем не керує адміністратор компанії чи іншої організації. Діями на цьому пристрої можна керувати за межами Chromium. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">змінити способи оплати</translation>
 <translation id="6358450015545214790">Що це означає?</translation>
+<translation id="6360213755783740931">Докладніше про захист від зловмисного програмного забезпечення</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Переглянути журнали</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />перевірити конфігурацію проксі-сервера, брандмауера та DNS-сервера<ph name="END_LINK" /></translation>
@@ -2725,6 +2732,7 @@
 <translation id="6443406338865242315">встановлені розширення та плагіни;</translation>
 <translation id="6446608382365791566">Додати більше інформації</translation>
 <translation id="6447842834002726250">Файли cookie</translation>
+<translation id="6448371595882710519">Докладніше про елементи керування даними</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Конверт Chou 40</translation>
 <translation id="6451458296329894277">Підтвердити повторне надсилання форми</translation>

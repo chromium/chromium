@@ -633,6 +633,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="219906046732893612">Reforma de casas</translation>
 <translation id="2202627062836089804">parte de trás do cartão</translation>
 <translation id="2204482073374652408">Atualização concluída</translation>
+<translation id="2207770355672215546">Sempre permitido, com qualquer cartão</translation>
 <translation id="2208053750671792556">Não recebeu o código? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Bandeja 3</translation>
 <translation id="2210794033760923560">Fazer upload do relatório</translation>
@@ -1745,6 +1746,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="443673843213245140">O uso de um proxy está desativado, mas uma configuração explícita de proxy é especificada.</translation>
 <translation id="4438821706955556403">Preço normal</translation>
 <translation id="4441832193888514600">Ignorada porque a política só pode ser definida como uma política do usuário em nuvem.</translation>
+<translation id="4445133368066241428">Temas em alta</translation>
 <translation id="4449116177348980384">Botão "Gerenciar as configurações do site". Ative para gerenciar as permissões e os dados armazenados nos sites nas configurações do Chrome.</translation>
 <translation id="4451135742916150903">Pode pedir para se conectar a dispositivos HID</translation>
 <translation id="4451684391620232683">Texto apresentado ao usuário:</translation>
@@ -2357,7 +2359,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5695542892312572833">Usar o Windows Hello para verificar e concluir a compra?</translation>
 <translation id="5699628521141772782">Laticínios e ovos</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidos</translation>
-<translation id="5701023235904684227">Controlar <ph name="READERNAME" /> e ter acesso ao cartão inteligente que pode ser acessado?</translation>
 <translation id="5701381305118179107">Centralizar</translation>
 <translation id="5707154300732650394">Retomar a jornada</translation>
 <translation id="57094364128775171">Sugerir senha forte…</translation>
@@ -2492,6 +2493,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5997247540087773573">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas do Google recomenda que você a mude e revise as senhas salvas.</translation>
 <translation id="5999271311987646952">O Chrome tem recursos de segurança integrados para proteger você durante a navegação, como a Navegação segura do Google, que <ph name="BEGIN_LINK" />encontrou malware recentemente<ph name="END_LINK" /> no site que você está tentando acessar.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Vamos lá</translation>
 <translation id="6002122790816966947">Seus dispositivos</translation>
 <translation id="6005659677094197001">Contínua</translation>
 <translation id="6005765687956866568">As informações preenchidas automaticamente foram removidas do formulário</translation>
@@ -3252,7 +3254,7 @@ Mais detalhes:
 <translation id="7469935732330206581">O formulário não é seguro</translation>
 <translation id="7470854469646445678">Informe o motivo da cópia (obrigatório)</translation>
 <translation id="7471007961486718967">Informe o motivo da transferência (obrigatório)</translation>
-<translation id="7473891865547856676">Agora não</translation>
+<translation id="7473891865547856676">Agora Não</translation>
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7481603210197454575">Envelope italiano</translation>
 <translation id="7483482939016730822">Material escolar e equipamento para salas de aula</translation>

@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{Nyt näkyvissä 1 Chromium-ikkuna}other{Nyt näkyvissä {count} Chromium-ikkunaa}}</translation>
 <translation id="3344973607274501920">Chromium ei voinut tarkistaa salasanojasi. Tarkista internetyhteytesi.</translation>
 <translation id="3366305173356742781">Tilisi Chromium-data</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin. Tämä koskee esimerkiksi historiaa ja automaattista täyttöä.}other{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin. Tämä koskee esimerkiksi historiaa ja automaattista täyttöä.}}</translation>
 <translation id="3472200483164753384">Ei tueta Chromium Canaryssa</translation>
 <translation id="3478750326643748149">Piilota "Näin saat kaiken irti Chromiumista"</translation>
 <translation id="3512168799938877162">Salasanaasi ei jaettu. Tarkista internetyhteytesi ja varmista, että olet kirjautunut Chromiumiin. Yritä sitten uudelleen.</translation>
@@ -282,6 +283,7 @@ Huomioitavaa:
 <translation id="8909995017390087892">Chromium iOS:lle</translation>
 <translation id="8924617840944134898">Avaa incognito-välilehti Chromiumissa</translation>
 <translation id="894437814105052438">Kun kirjaudut ulos, Chromium ei synkronoi uutta dataa Google-tilillesi. Aiemmin synkronoitu data säilytetään tilillä.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin.}other{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin.}}</translation>
 <translation id="8963279154877372067">Salli Chromium-ilmoitusten saada ilmoituksia hinnan laskusta</translation>
 <translation id="900560297598578021">Kirjautuneena käyttäjänä <ph name="EMAIL" />.
 

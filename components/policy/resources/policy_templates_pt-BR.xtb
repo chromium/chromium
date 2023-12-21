@@ -1135,7 +1135,6 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> fechar
 
       A API Managed Configuration é uma configuração de chave-valor que pode ser acessada pela chamada de navigator.managed.getManagedConfiguration() no JavaScript. Ela só está disponível em origens correspondentes a aplicativos da Web de instalação forçada via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
      </translation>
-<translation id="1918690415433353669">Permitir organização de guias, sem registrar os detalhes delas</translation>
 <translation id="1919802376548418720">Usar a política KDC para delegar credenciais.</translation>
 <translation id="1920046221095339924">Permite sessão gerenciada no dispositivo</translation>
 <translation id="1920772397574801429">Definir a política especifica o tipo de conta fornecido pelo app de autenticação do Android compatível com a autenticação <ph name="HTTP_NEGOTIATE" /> (como Kerberos). Essas informações devem estar disponíveis junto ao fornecedor do app de autenticação. Para saber detalhes, consulte a página The Chromium Projects (https://goo.gl/hajyfN)
@@ -1723,7 +1722,6 @@ política enquanto o navegador estiver em execução.</translation>
 Quando a política é desativada, ela impede que usuários ou variações do <ph name="PRODUCT_NAME" /> ativem o recurso NewBaseUrlInheritanceBehavior caso problemas de compatibilidade sejam descobertos. Quando ativada ou deixada sem definição, ela permite a ativação do recurso NewBaseUrlInheritanceBehavior.</translation>
 <translation id="2362469626417133796">Janela de tempo de reinicialização</translation>
 <translation id="2362539163677485510">Token de registro da política de nuvem</translation>
-<translation id="2362947328909044249">Permitir a organização de guias</translation>
 <translation id="2363928351203698966">Se a política for definida com um valor válido, o <ph name="PRODUCT_NAME" /> não usará versões SSL/TLS anteriores à versão especificada. Valores não reconhecidos serão ignorados.
 
       Se esta política não for definida, o <ph name="PRODUCT_NAME" /> mostrará uma mensagem de erro para TLS 1.0 e TLS 1.1, mas o usuário poderá ignorá-la.
@@ -2083,7 +2081,6 @@ O sistema só consulta registros AAAA quando está acessível a um host IPv6 glo
 <translation id="2650049181907741121">Ação a ser realizada quando o usuário fecha a tampa</translation>
 <translation id="2656559539624760733">Não usar a Chrome Root Store.</translation>
 <translation id="2658653824183107970">Usar a implementação legada de <ph name="CORS" /> em vez do novo <ph name="CORS" /></translation>
-<translation id="2659064869547694451">Permitir o Compose</translation>
 <translation id="2660846099862559570">Nunca usar um proxy</translation>
 <translation id="2661628029848851543">Todos os usos de contas gerenciadas são permitidos</translation>
 <translation id="2664391398878045611">A página "Nova guia" não vai mostrar o aviso abaixo da caixa de pesquisa, mesmo se ele estiver disponível</translation>
@@ -2863,7 +2860,6 @@ Se a política for definida como "Desativada", os arquivos transferidos por down
 Essas restrições são aplicadas a downloads acionados em conteúdos de páginas da Web e na opção do menu "Fazer download do link". Essas restrições não se aplicam às opções de salvar ou fazer o download da página atualmente em exibição nem de salvar como PDF nas opções de impressão.
 
 No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="3300322252167923819">Permitir a organização de guias</translation>
 <translation id="3300784749135986828">Ativar ou desativar a <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Ativar extensão de insights</translation>
 <translation id="3302829897293005699">Se a política for definida como "Ativada" ou não for definida, as informações da sessão de quiosque ativa, como versão e ID do aplicativo, serão comunicadas pelos dispositivos registrados.
@@ -3489,7 +3485,6 @@ Esta política é uma solução temporária e vai ser removida em marcos futuros
 <translation id="3799417300383048419">Manter os dados do perfil no disco quando a sessão do usuário terminar</translation>
 <translation id="3799436555130241393">Sincronização de arquivos <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3803171355925844705">Não permitir que nenhum site carregue conteúdo misto</translation>
-<translation id="3806742563417418191">Permitir a pesquisa de plano de fundo</translation>
 <translation id="3808945828600697669">Especificar uma lista de plug-ins desativados</translation>
 <translation id="3810642039169532482">Ativar o recurso de acessibilidade de ditado na tela de login.
 
@@ -3501,7 +3496,6 @@ Esta política é uma solução temporária e vai ser removida em marcos futuros
 
           Se esta política não for definida, o ditado ficará inicialmente desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="3811562426301733860">Permitir anúncios em todos os sites</translation>
-<translation id="3816281648615435872">Desativar a organização de guias</translation>
 <translation id="3816312845600780067">Ativar atalho do teclado dp plano de salvação para login automático</translation>
 <translation id="3817323252437541502">Ativar mais proteções para usuários inscritos no Programa Proteção Avançada</translation>
 <translation id="3821861026311587684">Força a saída do usuário quando a conta perde a autenticação</translation>
@@ -4073,7 +4067,6 @@ A desativação da política faz com que uma mensagem de erro apareça.</transla
 <translation id="428948795004445932">Frequência de amostragem e coleta de dados de rede. O mínimo permitido é de um minuto.
 
       Se deixada sem definição, a frequência padrão de 10 minutos será aplicada.</translation>
-<translation id="4289628882370719584">Esse recurso permite que os usuários organizem as guias.</translation>
 <translation id="4290231183305601970">Texto que será exibido ao usuário na Chrome Web Store se a instalação for bloqueada.</translation>
 <translation id="4293187705196369087">Permite ativar ou desativar uma notificação quando há pouco espaço em disco. Isso é válido para todos os usuários no dispositivo.
 
@@ -4382,7 +4375,6 @@ Esta política não vai ter efeito se for ativada, deixada vazia ou não for def
 <translation id="453031441196755904">Essa política está obsoleta.</translation>
 <translation id="4531706050939927436">Os apps Android podem ser instalados forçadamente a partir do Google Admin Console usando o Google Play. Eles não usam esta política.</translation>
 <translation id="4534500438517478692">Nome de restrição Android:</translation>
-<translation id="4537645230504195464">Permitir o Compose sem gerar registros</translation>
 <translation id="4541530620466526913">Contas locais de dispositivo</translation>
 <translation id="4542255783284620926">Bloqueia a adição de uma conta gerenciada como secundária no ChromeOS (na sessão)</translation>
 <translation id="4543502256674577024">Configurações de atualização do dispositivo</translation>
@@ -4592,7 +4584,6 @@ Após a configuração inicial, os usuários poderão ativar ou desativar os Ser
 <translation id="4674871290487541952">Permite algoritmos inseguros em verificações de integridade nas atualizações e instalações de extensão</translation>
 <translation id="4680961954980851756">Ativar Preenchimento automático</translation>
 <translation id="4685721728282448265">CECPQ2 de acordo de chave pós-quântico ativado para TLS</translation>
-<translation id="4688118315245991650">Desativar o Compose</translation>
 <translation id="468822697351680932">Usar a política de lista de sites do Internet Explorer como fonte de regras</translation>
 <translation id="4693190628432874457">Ativar relatórios de localização do dispositivo</translation>
 <translation id="4693779768620889402">Destinos baseados em extensões</translation>
@@ -5297,7 +5288,6 @@ Se a política for desativada, o histórico de navegação e o de downloads não
 <translation id="5340008866815063393">Ativar relatórios sobre dados de política</translation>
 <translation id="5345910753471481870">Não mostrar o botão do Google Lens na caixa de pesquisa da página "Nova guia".</translation>
 <translation id="5346587320074666194">Bloquear acesso a sensores nesses sites</translation>
-<translation id="5347809796754019202">Permitir o Compose</translation>
 <translation id="534836255587440809">Desativar o clique automático na tela de login</translation>
 <translation id="5348658899015174540">A API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permite que aplicativos da Web capturem várias superfícies ao mesmo tempo.
       Esta política desbloqueia a propriedade <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> para aplicativos da Web em origens definidas.
@@ -5835,7 +5825,6 @@ Quando ela está desativada ou é deixada sem definição, os Glanceables não s
 <translation id="5775235485119094648">Carregar a bateria enquanto ela estiver dentro de um intervalo fixo.</translation>
 <translation id="5776485039795852974">Perguntar cada vez que um site quiser exibir notificações da área de trabalho</translation>
 <translation id="5783009211970309878">Imprimir cabeçalhos e rodapés</translation>
-<translation id="5786938041290515154">Permitir a pesquisa de plano de fundo sem gerar registros</translation>
 <translation id="5790763087505467169">Reduzir notificações de lançamento automático para sessões de visitante gerenciadas</translation>
 <translation id="5800329278018669527">Desativar a solicitação de configuração de rede quando estiver off-line</translation>
 <translation id="5802931736499687181">Desativar o pipeline de geração de relatórios criptografados</translation>
@@ -6026,7 +6015,6 @@ Quando ela está desativada ou é deixada sem definição, os Glanceables não s
 <translation id="596523880465577341">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="5966615072639944554">Extensões que podem usar a API de declaração remota</translation>
 <translation id="596732417280023843">O nome do perfil de certificado.</translation>
-<translation id="597036930083735628">Desativar a pesquisa de plano de fundo</translation>
 <translation id="5972538402066550344">Permitir controles de geração de relatórios granulares</translation>
 <translation id="5975765799383881158">Se a política for definida como "Ativada" ou não for definida, os usuários poderão enviar feedback ao Google em "Menu &gt; Ajuda &gt; Informar um problema" ou usando uma combinação de teclas.
 

@@ -261,6 +261,7 @@
 
 Сайтууд нь, жишээлбэл зарыг хувийн болгохын тулд таны хөтчийн өөр сайт дээрх үйл ажиллагааг харах зорилгоор күүки ашиглах боломжгүй.</translation>
 <translation id="2381405137052800939">Үндэс</translation>
+<translation id="23824747102827308">Та сонирхолдоо тулгуурласан мэдээ, спорт болон бусад зүйлийн мэдээлэлтэй байгаарай</translation>
 <translation id="2386793615875593361">1 сонгогдсон</translation>
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />"-г нуух</translation>
 <translation id="2403129868389095715">Таны илгээмжийг хүргэх боломжгүй</translation>
@@ -301,6 +302,7 @@
 <translation id="2604176749896001318">Веб хөтчөө шинэчлэх</translation>
 <translation id="2609008503159898744">Бүх табыг хаах уу?</translation>
 <translation id="2617210333344098964">Хаягийг Бүртгэл рүү зөөх</translation>
+<translation id="261739049332372104">Танд чухал контентын талаарх шинэчлэлтүүдийг авахын тулд iOS-н тохиргоондоо мэдэгдлийг асаана уу.</translation>
 <translation id="2625189173221582860">Нууц үгийг хуулсан</translation>
 <translation id="2626236249646841566">Холболтоо шалгаад, нэвтрэхээр дахин оролдоно уу.</translation>
 <translation id="2637313651144986786">Табуудыг хайх...</translation>
@@ -565,6 +567,7 @@
 <translation id="4042870976416480368">Хуудаснаас хайх</translation>
 <translation id="4045648459118332842">Дурын аппад хадгалсан нууц үгнүүдээ нэг товшилтоор аваарай</translation>
 <translation id="4049507953662678203">Сүлжээнд холбогдсон эсэхээ шалгаад, дахин оролдоно уу.</translation>
+<translation id="4054572406751135230">Мэдээ, спорт болон бусад зүйлийн мэдээлэлтэй байгаарай.</translation>
 <translation id="4066639687323968621">Хавчуурга, түүх болон бусад зүйлээ синк хийхийн тулд Google Бүртгэлээрээ нэвтэрнэ үү.</translation>
 <translation id="4092655288299341041">Тусламжийг харуулах</translation>
 <translation id="4105841739161771091">{count,plural, =1{Хаягийг устгах}other{Хаягуудыг устгах}}</translation>
@@ -747,6 +750,7 @@
 <translation id="5016420433031926653"><ph name="USER_EMAIL" />-д илгээх</translation>
 <translation id="5017828934289857214">Надад дараа сануулна уу</translation>
 <translation id="5037676449506322593">Бүгдийг сонгох</translation>
+<translation id="5038113048373546701">Та сонирхолдоо тулгуурласан мэдээ, спорт болон бусад зүйлийн мэдэгдлүүдийг хүлээн аваарай</translation>
 <translation id="5039804452771397117">Зөвшөөрөх</translation>
 <translation id="5050294464480863218">Анхаарч үзэх зүйлс</translation>
 <translation id="5050810143224996149">Нууц үг хуваалцах</translation>
@@ -804,6 +808,7 @@
 <translation id="5300589172476337783">Харуулах</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5318298563956633672">Та энэ бүтээгдэхүүнийг аль хэдийн хянаж байна.</translation>
+<translation id="5327753393331509826">Контентын мэдэгдлүүдийг авах</translation>
 <translation id="5329451663851195956">Та одоо сэргээхийн тулд доош татах боломжтой.</translation>
 <translation id="5339316356165661760">Синк хийхийг асаах</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Энэ илгээмжийг хянах уу?}other{{COUNT} илгээмжийг хянах уу?}}</translation>
@@ -1166,6 +1171,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7192050974311852563">Лог хийж эхлэх</translation>
 <translation id="7203585745079012652">Хариултыг буцааж хэлэх</translation>
 <translation id="7207023858769244910">Таны сонирхолд тулгуурласан контент авахын тулд синк хийнэ үү.</translation>
+<translation id="7210568419880432164">Мэдэгдлүүдийг асаах..</translation>
 <translation id="721597782417389033">Картын буруу хоч</translation>
 <translation id="7221173315674413369">"Шинэ юм юу байна" хэсэгт шинэ онцлогууд болон зөвлөгөөнүүдийг судлаарай</translation>
 <translation id="7223102419539744003">Табыг хаах</translation>
@@ -1204,6 +1210,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7454057999980797137">Улс / Муж</translation>
 <translation id="745899714366929493">Бүтэн өдөр</translation>
 <translation id="7459628154744868585">Сайжруулсан хамгаалалт асаалттай байна</translation>
+<translation id="7465351360025415755">Танд чухал контентыг аваарай</translation>
 <translation id="7472734401283673885">Компанийн нэр</translation>
 <translation id="7473891865547856676">Үгүй, баярлалаа</translation>
 <translation id="7488874549363591659">Хүргэсэн</translation>
@@ -1371,6 +1378,8 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8343993175958086504">Зүйлсээ хуулбарлаж, дурын төхөөрөмж дээр ашиглана уу.</translation>
 <translation id="834783239627985533">Хамгийн их зочилсон сайтууд</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" />-д зориулж зургийг Google Зурагт хадгалж байна...</translation>
+<translation id="8370406443343902172">Тохиргоо руу очих...</translation>
+<translation id="8374977641764177587">Мэдэгдлүүдийг асаах уу?</translation>
 <translation id="8378714024927312812">Танай байгууллагаас удирддаг</translation>
 <translation id="8386068868580335421">Шинэчлэх</translation>
 <translation id="838867811594159347">Нэвтрэх үг оруулна уу…</translation>

@@ -2359,7 +2359,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5695542892312572833">Nota Windows Hello til að staðfesta og ljúka kaupunum?</translation>
 <translation id="5699628521141772782">Mjólkurafurðir og egg</translation>
 <translation id="5700761515355162635">Fótspor þriðju aðila leyfð</translation>
-<translation id="5701023235904684227">Stjórna <ph name="READERNAME" /> og fá aðgang að tengdu snjallkorti?</translation>
 <translation id="5701381305118179107">Miðjujafna</translation>
 <translation id="5707154300732650394">Haltu ferðinni áfram</translation>
 <translation id="57094364128775171">Tillaga að traustu aðgangsorði…</translation>
@@ -2494,6 +2493,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5997247540087773573">Aðgangsorðið sem þú varst að nota fannst í öryggisbroti. Aðgangsorðastjórnun Google mælir með að breyta aðgangsorðinu núna og athuga vistuð aðgangsorð til að tryggja öryggi reikninganna þinna.</translation>
 <translation id="5999271311987646952">Chrome er með innbyggða öryggiseiginleika sem vernda þig þegar þú vafrar. Einn þessara eiginleika, örugg vefskoðun Google, <ph name="BEGIN_LINK" />fann nýlega spilliforrit<ph name="END_LINK" /> á vefsvæðinu sem þú ert að reyna að opna.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> niðurstöður fyrir „<ph name="SEARCH_TEXT" />“</translation>
+<translation id="6001839398155993679">Byrjum ballið</translation>
 <translation id="6002122790816966947">Tækin þín</translation>
 <translation id="6005659677094197001">Samfelld prentun</translation>
 <translation id="6005765687956866568">Upplýsingar á eyðublaðinu sem voru fylltar út sjálfkrafa voru hreinsaðar</translation>

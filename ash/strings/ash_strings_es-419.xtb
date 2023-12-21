@@ -40,6 +40,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
 <translation id="1155734730463845512">Nivel de batería actual <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">se activó y está en uso</translation>
+<translation id="1163437384438183174">Quitar Phone Hub de la barra</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Es posible que el cable USB-C no se conecte a las pantallas de manera adecuada</translation>
 <translation id="1175572348579024023">Desplazamiento</translation>
@@ -70,6 +71,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1239161794459865856">Se conectó <ph name="FEATURE_NAME" />.</translation>
 <translation id="1240638468526743569">Una app</translation>
 <translation id="1242883863226959074">dispositivo</translation>
+<translation id="1245644940275736236">Ve a Asistente</translation>
 <translation id="124678866338384709">Cerrar la pestaña actual</translation>
 <translation id="1246890715821376239">Apps no compatibles</translation>
 <translation id="1247372569136754018">Micrófono (interno)</translation>
@@ -693,6 +695,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="383629559565718788">Mostrar la configuración del teclado</translation>
 <translation id="384082539148746321">¿Deseas borrar la plantilla?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, luego, <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> o <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50 + 94/5</translation>
 <translation id="3846575436967432996">No hay información de red disponible.</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="385300504083504382">Inicio</translation>
@@ -927,6 +930,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + flecha hacia arriba</translation>
 <translation id="4762573482154983647">Ocultar apps</translation>
+<translation id="4762802395013012237">5 ft en m</translation>
 <translation id="4763885921995354846">Permite el acceso a la cámara para todas las apps y sitios web con el permiso correspondiente. Es posible que debas actualizar la página web o reiniciar la app.</translation>
 <translation id="4774338217796918551">Regresa mañana a las <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Aún no se pudo verificar tu contraseña. Vuelve a intentarlo.</translation>
@@ -969,6 +973,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="491504982845934899">Activar luego de configurar el dispositivo <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Fuerte</translation>
 <translation id="4918086044614829423">Aceptar</translation>
+<translation id="491907188205944472">Busca lo que necesitas directamente en el Selector</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> está utilizando la cámara</translation>
 <translation id="492453977506755176">Tecla del modo de captura</translation>
 <translation id="4925542575807923399">El administrador de esta cuenta requiere que sea la primera a la que se acceda al crear una sesión de acceso múltiple.</translation>
@@ -1119,6 +1124,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5518068085000130971">Esos fueron los conceptos básicos. Continúa en Explorar, nuestra app integrada para obtener sugerencias y ayuda. Encontrarás sugerencias para comenzar, apps recomendadas, ofertas especiales y las funciones más recientes de Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Tu administrador quitó todos los perfiles de eSIM. Para obtener más información, comunícate con el administrador.</translation>
+<translation id="5520909879404821039">Hola en francés</translation>
 <translation id="5523434445161341166">Se está conectando <ph name="FEATURE_NAME" />.</translation>
 <translation id="5529587891732734495">Pausar transmisión</translation>
 <translation id="5532994612895037630">Presiona en cualquier lugar para grabar la pantalla completa</translation>
@@ -1696,6 +1702,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7886277072580235377">Cuando salgas, se borrarán los datos de tu sesión de Internet. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Enviar un correo electrónico</translation>
 <translation id="7893503627044934815">No quiero ver este archivo</translation>
+<translation id="7893547474469215105">Definir cenit</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Presionaste la combinación de teclas para girar la pantalla. ¿Quieres llevar a cabo esta acción?</translation>
 <translation id="7897626842031123113">Bandeja de estado, hora <ph name="TIME" />,
@@ -1711,6 +1718,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7904094684485781019">El administrador de esta cuenta inhabilitó el acceso múltiple.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivos conectados</translation>
+<translation id="7923534281713082605">Clima</translation>
 <translation id="7926080067315048321">Ver todas las tareas de Google Tasks en la Web</translation>
 <translation id="7930731167419639574">Ahora la voz se procesa de manera local y el dictado funciona sin conexión</translation>
 <translation id="7932451802722951285">Abrir en el Calendario de Google</translation>
@@ -1857,6 +1865,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8555757996376137129">Quitar el escritorio actual</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> te recomienda que actualices tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Configuración de notificación</translation>
+<translation id="8569751806372591456">Estas son algunas sugerencias que puedes probar</translation>
 <translation id="857201607579416096">El menú se movió a la esquina inferior derecha de la pantalla.</translation>
 <translation id="8581946341807941670">Presiona <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> y haz clic en un vínculo</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1900,6 +1909,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="875593634123171288">Mostrar la configuración de la VPN</translation>
 <translation id="8759408218731716181">No se puede configurar el acceso múltiple.</translation>
 <translation id="8763883995157866248">Poner el dispositivo en modo de suspensión</translation>
+<translation id="877404052021108314">90 °F en °C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, app instalada, bloqueada</translation>
 <translation id="8785070478575117577">Conectar a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1908,6 +1918,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8806053966018712535">Carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Ayuda"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">Presiona la combinación de teclas para realizar una captura de pantalla, Ctrl + Mayúsculas + la tecla del modo de vista Recientes</translation>
 <translation id="881757059229893486">Configuración de los métodos de entrada</translation>
 <translation id="8819728065740986820">La carga adaptable está activada</translation>
 <translation id="8825863694328519386">Para volver, desliza el dedo desde la izquierda</translation>

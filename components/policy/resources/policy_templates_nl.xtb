@@ -1117,7 +1117,6 @@ Als je het beleid niet toepast, sluit <ph name="PRODUCT_NAME" /> het tabblad nad
 
       De Managed Configuration API is een sleutel/waarde-configuratie waartoe je toegang hebt via de JavaScript-aanroep navigator.managed.getManagedConfiguration(). Deze API is alleen beschikbaar voor herkomsten die overeenkomen met afgedwongen geïnstalleerde web-apps via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
      </translation>
-<translation id="1918690415433353669">Tabbladindeling toestaan, zonder de tabbladgegevens te registreren</translation>
 <translation id="1919802376548418720">Gebruik KDC-beleid om gegevens te delegeren.</translation>
 <translation id="1920046221095339924">Beheerde sessie op apparaat toestaan</translation>
 <translation id="1920772397574801429">Als je het beleid instelt, wordt het accounttype opgegeven van de accounts die worden geleverd door de Android-verificatie-app die <ph name="HTTP_NEGOTIATE" />-verificatie ondersteunt (zoals Kerberos-verificatie). Deze informatie is beschikbaar via de leverancier van de verificatie-app. Ga naar The Chromium Projects (https://goo.gl/hajyfN) voor meer informatie.
@@ -1690,7 +1689,6 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
 Als je het beleid niet toepast, kunnen gebruikers of <ph name="PRODUCT_NAME" />-varianten NewBaseUrlInheritanceBehavior niet aanzetten als er compatibiliteitsproblemen worden gevonden. Als je het beleid toepast of niet instelt, kan NewBaseUrlInheritanceBehavior worden aangezet.</translation>
 <translation id="2362469626417133796">Tijdvenster voor herstarten</translation>
 <translation id="2362539163677485510">De inschrijvingstoken voor het cloudbeleid</translation>
-<translation id="2362947328909044249">Tabbladindeling toestaan</translation>
 <translation id="2363928351203698966">Als je het beleid instelt op een geldige waarde, gebruikt <ph name="PRODUCT_NAME" /> geen SSL/TLS-versies lager dan de opgegeven versie. Niet-herkende waarden worden genegeerd.
 
       Als dit beleid niet is ingesteld, toont <ph name="PRODUCT_NAME" /> een fout voor TLS 1.0 en TLS 1.1. De gebruiker kan deze fout wel omzeilen.
@@ -2024,7 +2022,6 @@ Het systeem vraagt AAAA-records alleen op indien bereikbaar voor een algemene IP
 <translation id="2650049181907741121">Actie die wordt ondernomen wanneer de gebruiker de klep sluit</translation>
 <translation id="2656559539624760733">De Chrome Root Store niet gebruiken.</translation>
 <translation id="2658653824183107970">De verouderde <ph name="CORS" />-implementatie in plaats van de nieuwe <ph name="CORS" /> gebruiken</translation>
-<translation id="2659064869547694451">Opstellen toestaan</translation>
 <translation id="2660846099862559570">Nooit een proxy gebruiken</translation>
 <translation id="2661628029848851543">Alle typen gebruik van beheerde accounts zijn toegestaan</translation>
 <translation id="2664391398878045611">De pagina Nieuw tabblad toont de aankondiging in de middelste ruimte niet, ook niet als die beschikbaar is</translation>
@@ -2797,7 +2794,6 @@ Als je het beleid uitzet, worden gedownloade bestanden niet voor analyse naar Sa
 Deze beperkingen gelden zowel voor downloads die via de webpaginacontent als voor downloads die via de menuoptie 'Link downloaden' geactiveerd zijn. Deze beperkingen gelden niet voor het opslaan of downloaden van de huidige pagina die wordt getoond of voor de afdrukoptie Opslaan als pdf.
 
 In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="3300322252167923819">Tabbladindeling toestaan</translation>
 <translation id="3300784749135986828">De functie <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> aan- of uitzetten.</translation>
 <translation id="3301698868852716692">Extensie voor inzichten aanzetten</translation>
 <translation id="3302829897293005699">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten informatie over de actieve kiosksessies, zoals de app-ID en -versie.
@@ -3399,7 +3395,6 @@ Dit beleid is een tijdelijke oplossing en wordt na bepaalde tijd verwijderd (de 
 <translation id="3799417300383048419">Profielgegevens op schijf behouden als gebruikerssessie eindigt</translation>
 <translation id="3799436555130241393">Bestandssynchronisatie van <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3803171355925844705">Niet toestaan dat sites gemengde content laden</translation>
-<translation id="3806742563417418191">Achtergrond zoeken toestaan</translation>
 <translation id="3808945828600697669">Lijst met uitgezette plug-ins specificeren</translation>
 <translation id="3810642039169532482">Zet de toegankelijkheidsfunctie voor dicteren op het inlogscherm aan.
 
@@ -3411,7 +3406,6 @@ Dit beleid is een tijdelijke oplossing en wordt na bepaalde tijd verwijderd (de 
 
           Als dit beleid niet is ingesteld, staat dicteren in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
 <translation id="3811562426301733860">Advertenties toestaan op alle sites</translation>
-<translation id="3816281648615435872">Tabbladindeling uitzetten</translation>
 <translation id="3816312845600780067">Sneltoets voor automatisch inloggen aanzetten</translation>
 <translation id="3817323252437541502">Extra beveiligingsfuncties aanzetten voor gebruikers die zijn ingeschreven voor Geavanceerde beveiliging</translation>
 <translation id="3821861026311587684">De gebruiker gedwongen uitloggen als zijn of haar account niet meer geverifieerd is</translation>
@@ -3951,7 +3945,6 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
 <translation id="428948795004445932">Snelheid waarmee netwerkgegevens worden bemonsterd en verzameld. Het toegestane minimum is 1 minuut.
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 10 minuten van toepassing.</translation>
-<translation id="4289628882370719584">Met de functie Tabbladindeling kunnen gebruikers de tabbladen ordenen.</translation>
 <translation id="4290231183305601970">Tekst die de gebruiker te zien krijgt in de Chrome Web Store als de installatie wordt geblokkeerd.</translation>
 <translation id="4293187705196369087">Hiermee kun je meldingen bij weinig schijfruimte aan- of uitzetten. Dit is van toepassing op alle gebruikers op het apparaat.
 
@@ -4240,7 +4233,6 @@ Dit beleid heeft geen effect als je het toepast, leeg laat of niet instelt.</tra
 <translation id="453031441196755904">Dit beleid is beëindigd.</translation>
 <translation id="4531706050939927436">De installatie van Android-apps kan via de Google Admin Console worden afgedwongen door gebruik te maken van Google Play. Deze apps gebruiken dit beleid niet.</translation>
 <translation id="4534500438517478692">Naam Android-beperking:</translation>
-<translation id="4537645230504195464">Opstellen toestaan, zonder registratie</translation>
 <translation id="4541530620466526913">Lokale accounts op apparaat</translation>
 <translation id="4542255783284620926">Toevoeging blokkeren van een beheerd account als secundair account in Chrome OS (in sessie)</translation>
 <translation id="4543502256674577024">Update-instellingen voor apparaat</translation>
@@ -4429,7 +4421,6 @@ Na de eerste configuratie kunnen gebruikers Google-locatieservices aan- of uitze
 <translation id="4674871290487541952">Onbeveiligde algoritmen toestaan in integriteitscontroles bij updates en installaties van extensies</translation>
 <translation id="4680961954980851756">Automatisch invullen aanzetten</translation>
 <translation id="4685721728282448265">CECPQ2 (post-quantum sleutelovereenkomst) staat aan voor TLS</translation>
-<translation id="4688118315245991650">Opstellen uitzetten</translation>
 <translation id="468822697351680932">Het SiteList-beleid van Internet Explorer gebruiken als bron van regels</translation>
 <translation id="4693190628432874457">Rapportage voor locatie van apparaat aanzetten</translation>
 <translation id="4693779768620889402">Op extensies gebaseerde bestemmingen</translation>
@@ -5074,6 +5065,11 @@ Algemene jokertekens (zoals '*' of '[*]') zijn niet toegestaan. In plaats daarva
 Opmerking: Dit beleid is niet van toepassing op HSTS-upgrades.</translation>
 <translation id="5297948043665200363">Toestaan dat de gebruiker ingelogd blijft nadat de verificatie van het account is ingetrokken</translation>
 <translation id="5298949392804966105">Geen beperkingen voor beheerde accounts</translation>
+<translation id="5300770793658186741">Als je dit beleid instelt, wordt een lijst met herkomsten (URL's) of hostnaampatronen (zoals '*.example.com') gedefinieerd waarop beveiligingsbeperkingen voor niet-beveiligde herkomsten niet van toepassing zijn. Organisaties kunnen herkomsten specificeren voor verouderde apps die geen TLS kunnen implementeren, of een staging server voor interne webontwikkelingen instellen, zodat de ontwikkelaars functies die een beveiligde context vereisen, kunnen testen zonder TLS te hoeven implementeren op de staging server. Dit beleid verhindert ook dat de herkomst wordt aangeduid als 'Niet beveiligd' in de adresbalk.
+
+Als je een lijst met URL's instelt in dit beleid, heeft dit hetzelfde effect als wanneer de opdrachtregelmarkering --unsafely-treat-insecure-origin-as-secure wordt ingesteld voor een door komma's gescheiden lijst met dezelfde URL's. Het beleid overschrijft de opdrachtregelmarkering en UnsafelyTreatInsecureOriginAsSecure, indien aanwezig.
+
+Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="530134925949808452">De tijd van de dag in lokale tijd wanneer het gebruiksquotum wordt vernieuwd.</translation>
 <translation id="5303080953475303561">Met dit beleid stel je in hoe vaak het vergrendelscherm om het wachtwoord voor snel ontgrendelen vraagt. Elke keer dat het vergrendelscherm wordt getoond en de laatste wachtwoordinvoer plaatsvond vóór de periode die is gespecificeerd door de gekozen waarde, is snel ontgrendelen niet beschikbaar. Als gebruikers na deze periode op het vergrendelscherm blijven, worden ze de volgende keer dat ze een verkeerde code opgeven of het vergrendelscherm opnieuw openen (afhankelijk van wat als eerste gebeurt) om het wachtwoord gevraagd.
 
@@ -5113,7 +5109,6 @@ Als je dit beleid niet toepast, kunnen de browser- en downloadgeschiedenis niet 
 <translation id="5340008866815063393">Rapportage van beleidsgegevens aanzetten</translation>
 <translation id="5345910753471481870">De Google Lens-knop niet tonen in het zoekvak op de pagina Nieuw tabblad.</translation>
 <translation id="5346587320074666194">Toegang tot sensoren op deze sites blokkeren</translation>
-<translation id="5347809796754019202">Opstellen toestaan</translation>
 <translation id="534836255587440809">Automatisch klikken op het inlogscherm uitzetten</translation>
 <translation id="5348658899015174540">Met de <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API kunnen web-apps meerdere schermen tegelijk vastleggen.
       Dit beleid ontgrendelt de property <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> voor web-apps op gedefinieerde oorsprongen.
@@ -5285,6 +5280,7 @@ Als je het beleid niet toepast of niet instelt, wordt op basis van de instelling
 <translation id="547601067149622666">Geen advertenties toestaan op sites met opdringerige advertenties</translation>
 <translation id="5476152378885134514">Het klembord blokkeren op deze sites</translation>
 <translation id="5480380613778757009">Als je dit beleid uitzet of niet instelt, worden alle weergave-instellingen die zijn ingesteld in de beheerde gastsessie, gereset zodra de sessie wordt beëindigd. Als je dit beleid instelt op True, worden de weergave-eigenschappen bewaard nadat de beheerde gastsessie is beëindigd.</translation>
+<translation id="5483012943408894695">Beginpunten of hostnaampatronen waarvoor geen beperkingen voor niet-beveiligde herkomsten zouden moeten gelden.</translation>
 <translation id="5483065054530244863">Door lokale vertrouwensinstanties verstrekte, met SHA-1 ondertekende certificaten toestaan</translation>
 <translation id="5487758664517243511">Als je deze instelling aanzet, kunnen gebruikers die Telefoonhub al hebben toegestaan, taken voortzetten in Chrome OS, zoals de webpagina's van hun telefoon bekijken.
 
@@ -5640,7 +5636,6 @@ Als je dit beleid niet toepast of niet instelt, staat Glanceables niet aan in <p
 <translation id="5775235485119094648">Laad de batterij op wanneer de lading zich binnen een bepaald bereik bevindt.</translation>
 <translation id="5776485039795852974">Altijd goedkeuring vragen wanneer een site bureaubladmeldingen wil tonen</translation>
 <translation id="5783009211970309878">Kop- en voetteksten afdrukken</translation>
-<translation id="5786938041290515154">Zoeken op de achtergrond toestaan, zonder logboekregistratie</translation>
 <translation id="5790763087505467169">Minder meldingen voor automatisch starten van beheerde gastsessies</translation>
 <translation id="5800329278018669527">Prompt voor netwerkconfiguratie uitzetten als je offline bent</translation>
 <translation id="5802931736499687181">De Encrypted Reporting Pipeline uitzetten</translation>
@@ -5831,7 +5826,6 @@ Als je dit beleid niet toepast of niet instelt, staat Glanceables niet aan in <p
 <translation id="596523880465577341">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan het beleid <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="5966615072639944554">Extensies die toestemming hebben de API voor externe bevestiging te gebruiken</translation>
 <translation id="596732417280023843">De naam van het certificaatprofiel.</translation>
-<translation id="597036930083735628">Achtergrond zoeken uitzetten</translation>
 <translation id="5972538402066550344">Opties voor gedetailleerde rapportage toestaan</translation>
 <translation id="5975765799383881158">Als je het beleid toepast of niet instelt, kunnen gebruikers feedback naar Google sturen via Menu &gt; Hulp &gt; Een probleem melden of via een toetscombinatie.
 
@@ -9629,6 +9623,17 @@ en 6 optionele leden:
 <translation id="9135095804754272364">Een melding tonen als een USB-apparaat wordt gevonden</translation>
 <translation id="9136212796239682721">Ballon-UI voor downloaden uitzetten</translation>
 <translation id="9136399279941091445">Intervallen buiten gebruikstijd wanneer het gespecificeerde apparaatbeleid wordt vrijgegeven</translation>
+<translation id="9140064482233876338">Beëindigd in M69. Gebruik in plaats hiervan OverrideSecurityRestrictionsOnInsecureOrigin.
+
+Dit beleid specificeert een lijst met herkomsten (URL's) of hostnaampatronen (zoals *.example.com) waarop beveiligingsbeperkingen voor niet-beveiligde herkomsten niet van toepassing zijn.
+
+Dit is zodat organisaties herkomsten kunnen toestaan voor verouderde apps die geen TLS kunnen implementeren, of een staging server voor interne webontwikkelingen kunnen instellen, zodat de ontwikkelaars functies die een beveiligde context vereisen, kunnen testen zonder TLS te hoeven implementeren op de staging server. Dit beleid verhindert ook dat de herkomst wordt aangeduid als 'Niet beveiligd' in de omnibox.
+
+Als je een lijst met URL's instelt in dit beleid, heeft dit hetzelfde effect als wanneer de opdrachtregelmarkering --unsafely-treat-insecure-origin-as-secure wordt ingesteld op een door komma's gescheiden lijst met dezelfde URL's. Als het beleid is ingesteld, wordt de opdrachtregelmarkering overschreven.
+
+Dit beleid is beëindigd in M69 en is vervangen door OverrideSecurityRestrictionsOnInsecureOrigin. Als beide beleidsregels aanwezig zijn, overschrijft OverrideSecurityRestrictionsOnInsecureOrigin dit beleid.
+
+Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/TR/secure-contexts/</translation>
 <translation id="9142561920976791097">Het nieuwe gedrag voor de verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren wordt gebruikt.</translation>
 <translation id="91459503271584213">Uitvoerbare hosts voor native berichten rechtstreeks starten in Windows</translation>
 <translation id="9148720248753722892">SHA-1-ondertekende certificaten niet toestaan</translation>

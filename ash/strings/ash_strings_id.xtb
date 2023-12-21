@@ -40,6 +40,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1153356358378277386">Perangkat dihubungkan</translation>
 <translation id="1155734730463845512">Level baterai saat ini <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">aktif dan sedang digunakan</translation>
+<translation id="1163437384438183174">Hapus Phone Hub dari rak</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Kabel USB-C mungkin tidak terhubung dengan benar ke layar</translation>
 <translation id="1175572348579024023">Scroll</translation>
@@ -70,6 +71,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> terhubung.</translation>
 <translation id="1240638468526743569">Aplikasi</translation>
 <translation id="1242883863226959074">perangkat</translation>
+<translation id="1245644940275736236">Buka Asisten</translation>
 <translation id="124678866338384709">Menutup tab aktif</translation>
 <translation id="1246890715821376239">Aplikasi yang tidak didukung</translation>
 <translation id="1247372569136754018">Mikrofon (internal)</translation>
@@ -692,6 +694,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="383629559565718788">Tampilkan setelan keyboard</translation>
 <translation id="384082539148746321">Hapus template?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, lalu <ph name="KEY_ONE" /> atau <ph name="KEY_TWO" /> atau <ph name="KEY_THREE" /> atau <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Tidak tersedia informasi jaringan</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="385300504083504382">Awal</translation>
@@ -926,6 +929,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4759238208242260848">Download</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + panah atas</translation>
 <translation id="4762573482154983647">Sembunyikan aplikasi</translation>
+<translation id="4762802395013012237">5 kaki dalam meter</translation>
 <translation id="4763885921995354846">Tindakan ini akan mengizinkan akses kamera untuk semua aplikasi serta situs yang memiliki izin kamera. Anda mungkin perlu memuat ulang halaman web atau memulai ulang aplikasi.</translation>
 <translation id="4774338217796918551">Gunakan lagi besok pukul <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Sandi Anda masih tidak dapat diverifikasi. Coba lagi.</translation>
@@ -968,6 +972,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="491504982845934899">Aktifkan setelah penyiapan perangkat <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4918086044614829423">Terima</translation>
+<translation id="491907188205944472">Telusuri hal yang Anda butuhkan langsung di Peluncur</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> sedang menggunakan kamera Anda</translation>
 <translation id="492453977506755176">Tombol mode tangkapan layar</translation>
 <translation id="4925542575807923399">Administrator akun ini mewajibkan akun ini untuk menjadi akun masuk pertama dalam sesi fitur masuk banyak akun.</translation>
@@ -1118,6 +1123,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5518068085000130971">Itu adalah dasar-dasarnya. Lanjutkan di Jelajahi, aplikasi bawaan kami untuk mendapatkan tips dan bantuan. Anda akan menemukan tips untuk memulai, aplikasi yang direkomendasikan, penawaran spesial, dan fitur Chromebook terbaru.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administrator Anda telah menghapus semua profil eSIM. Hubungi administrator untuk mendapatkan info selengkapnya.</translation>
+<translation id="5520909879404821039">Hai dalam bahasa Prancis</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> sedang dihubungkan.</translation>
 <translation id="5529587891732734495">Jeda transmisi</translation>
 <translation id="5532994612895037630">Ketuk di mana saja untuk merekam dalam layar penuh</translation>
@@ -1695,6 +1701,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7886277072580235377">Sesi internet Anda akan dihapus saat Anda logout. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Kirim email</translation>
 <translation id="7893503627044934815">Tidak ingin file ini ditampilkan</translation>
+<translation id="7893547474469215105">Jelaskan arti zenit</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Anda menekan pintasan keyboard untuk rotasi layar. Ingin memutar layar?</translation>
 <translation id="7897626842031123113">Menu status, waktu <ph name="TIME" />,
@@ -1710,6 +1717,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7904094684485781019">Administrator untuk akun ini menonaktifkan fitur masuk banyak akun.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> perangkat terhubung</translation>
+<translation id="7923534281713082605">Cuaca</translation>
 <translation id="7926080067315048321">Lihat semua tugas di Google Tasks di web</translation>
 <translation id="7930731167419639574">Ucapan sekarang diproses secara lokal dan Dikte berfungsi secara offline</translation>
 <translation id="7932451802722951285">Buka di Google Kalender</translation>
@@ -1856,6 +1864,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8555757996376137129">Hapus desktop saat ini</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> menyarankan Anda mengupdate <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Setelan Notifikasi</translation>
+<translation id="8569751806372591456">Berikut beberapa saran untuk dicoba</translation>
 <translation id="857201607579416096">Menu dipindahkan ke pojok kanan bawah layar.</translation>
 <translation id="8581946341807941670">Tekan <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, lalu klik link</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1899,6 +1908,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="875593634123171288">Tampilkan setelan VPN</translation>
 <translation id="8759408218731716181">Tidak dapat menyiapkan fitur masuk banyak akun</translation>
 <translation id="8763883995157866248">Setel perangkat ke mode tidur</translation>
+<translation id="877404052021108314">90°F dalam C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, Aplikasi Terinstal, Diblokir</translation>
 <translation id="8785070478575117577">Hubungkan ke <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1907,6 +1917,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Bantuan"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">Tekan pintasan screenshot, Ctrl + Shift + tombol mode Ringkasan</translation>
 <translation id="881757059229893486">Setelan Metode Input</translation>
 <translation id="8819728065740986820">Pengisian daya adaptif aktif</translation>
 <translation id="8825863694328519386">Geser dari kiri untuk kembali</translation>

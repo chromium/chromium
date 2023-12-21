@@ -2359,7 +2359,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5695542892312572833">Quer utilizar o Windows Hello para validar e concluir a sua compra?</translation>
 <translation id="5699628521141772782">Laticínios e ovos</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidos</translation>
-<translation id="5701023235904684227">Controlar o dispositivo <ph name="READERNAME" /> e ter acesso ao respetivo cartão inteligente?</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="5707154300732650394">Retomar percurso</translation>
 <translation id="57094364128775171">Sugerir palavra-passe forte…</translation>
@@ -2494,6 +2493,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5997247540087773573">A palavra-passe que acabou de usar foi encontrada numa violação de dados. Para proteger as suas contas, o Gestor de Palavras-passe da Google recomenda que a altere agora e verifique as suas palavras-passe guardadas.</translation>
 <translation id="5999271311987646952">O Chrome tem funcionalidades de segurança incorporadas para proteger o utilizador enquanto navega, como a Navegação Segura do Google, que <ph name="BEGIN_LINK" />encontrou recentemente software malicioso<ph name="END_LINK" /> no site que está a tentar visitar.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Vamos lá</translation>
 <translation id="6002122790816966947">Os seus dispositivos</translation>
 <translation id="6005659677094197001">Contínuo</translation>
 <translation id="6005765687956866568">As informações preenchidas automaticamente foram limpas do formulário</translation>

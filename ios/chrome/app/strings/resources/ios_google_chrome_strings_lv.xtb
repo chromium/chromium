@@ -63,6 +63,7 @@ Svarīga informācija
 <translation id="2427791862912929107">Pārlūkā Chrome ir funkcijas, ko varat izmantot, lai pārvaldītu savus interneta datus un tīmekļa lapu ielādes ātrumu.
 <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="2444854139071078915">Lai ērti iegūtu savas saglabātās paroles citās lietotnēs, izmantojiet pārlūku Chrome automātiskajai aizpildei.</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Tas notiek, ja pārlūks Chrome nav izmantots {THRESHOLD} minūti. Var tikt dzēsta arī vēsture un automātiskās aizpildes dati.}zero{Tas notiek, ja pārlūks Chrome nav izmantots {THRESHOLD} minūtes. Var tikt dzēsta arī vēsture un automātiskās aizpildes dati.}one{Tas notiek, ja pārlūks Chrome nav izmantots {THRESHOLD} minūti. Var tikt dzēsta arī vēsture un automātiskās aizpildes dati.}other{Tas notiek, ja pārlūks Chrome nav izmantots {THRESHOLD} minūtes. Var tikt dzēsta arī vēsture un automātiskās aizpildes dati.}}</translation>
 <translation id="2561231791489583059">Parūpējieties par aizsardzību no bīstamām vietnēm un savu paroļu drošību, izmantojot pārlūku Chrome kā savu noklusējuma pārlūku</translation>
 <translation id="2574249610672786438">Lai skatītu cilnes no ierīcēm, kurās lietojat pārlūku Chrome, pierakstieties visās savās ierīcēs.</translation>
 <translation id="2576431527583832481">Pārlūkprogramma Chrome ir uzlabota! Ir pieejama jauna versija.</translation>
@@ -91,6 +92,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3282568296779691940">Pierakstīties pārlūkā Chrome</translation>
 <translation id="3340938510625667914">Chrome darbības</translation>
 <translation id="3345341804167540816">Izmantojiet Chrome visur</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Tas notiek, ja pārlūks Chrome nav izmantots {THRESHOLD} minūti.}zero{Tas notiek, ja pārlūks Chrome nav izmantots {THRESHOLD} minūtes.}one{Tas notiek, ja pārlūks Chrome nav izmantots {THRESHOLD} minūti.}other{Tas notiek, ja pārlūks Chrome nav izmantots {THRESHOLD} minūtes.}}</translation>
 <translation id="3399930248910934354">Atvērt Chrome iestatījumus</translation>
 <translation id="3472587960215700950">Chrome izmanto pakalpojumu Google Maps, lai sniegtu jums norādes un vietējo informāciju par noteiktajām adresēm.</translation>
 <translation id="3503014945441706099">Iegūstiet šim Chrome profilam arī drošu pārlūkošanu ar papildu aizsardzību</translation>

@@ -633,6 +633,7 @@
 <translation id="219906046732893612">שיפוץ הבית</translation>
 <translation id="2202627062836089804">גב הכרטיס</translation>
 <translation id="2204482073374652408">העדכון הסתיים.</translation>
+<translation id="2207770355672215546">ללא הגבלה, עם כל כרטיס</translation>
 <translation id="2208053750671792556">לא קיבלת קוד? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">מגש 3</translation>
 <translation id="2210794033760923560">העלאת הדוח</translation>
@@ -1745,6 +1746,7 @@
 <translation id="443673843213245140">‏השימוש בשרת Proxy הושבת, אך צוינה תצורת שרת Proxy מפורשת.</translation>
 <translation id="4438821706955556403">מחיר רגיל</translation>
 <translation id="4441832193888514600">המערכת מתעלמת מהמדיניות כי ניתן להגדיר אותה רק כמדיניות משתמש בענן.</translation>
+<translation id="4445133368066241428">נושאים פופולריים</translation>
 <translation id="4449116177348980384">‏הלחצן לניהול ההגדרות לאתרים, מפעילים אותו כדי לנהל את ההרשאות והנתונים השמורים בכל האתרים בהגדרות Chrome</translation>
 <translation id="4451135742916150903">‏האתר יכול לבקש הרשאה להתחבר למכשירי HID</translation>
 <translation id="4451684391620232683">הטקסט המוצג למשתמש:</translation>
@@ -2362,7 +2364,6 @@ Del</translation>
 <translation id="5695542892312572833">‏להשתמש ב-Windows Hello כדי לאמת ולהשלים את הרכישה?</translation>
 <translation id="5699628521141772782">ביצים ומוצרי חלב</translation>
 <translation id="5700761515355162635">‏יש אישור לקובצי cookie של צד שלישי</translation>
-<translation id="5701023235904684227">רוצה לשלוט בקורא <ph name="READERNAME" /> ולקבל גישה לכרטיס החכם שנמצא בו?</translation>
 <translation id="5701381305118179107">מרכז</translation>
 <translation id="5707154300732650394">להמשך התהליך</translation>
 <translation id="57094364128775171">הצעת סיסמה חזקה…</translation>
@@ -2497,6 +2498,7 @@ Del</translation>
 <translation id="5997247540087773573">‏הסיסמה שבה השתמשת עכשיו אותרה בפרצה באבטחת מידע. כדי להגן על החשבונות שלך, לפי מנהל הסיסמאות של Google, מומלץ לשנות אותה עכשיו ולבדוק את הסיסמאות השמורות שלך.</translation>
 <translation id="5999271311987646952">‏ב-Chrome יש תכונות בטיחות מובנות שנועדו להגן עליך במהלך הגלישה, כמו הגלישה הבטוחה של Google, ש<ph name="BEGIN_LINK" />מצאה לאחרונה תוכנה זדונית<ph name="END_LINK" /> באתר שבו ניסית לבקר.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> תוצאות בשביל '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6001839398155993679">קדימה!</translation>
 <translation id="6002122790816966947">המכשירים שלך</translation>
 <translation id="6005659677094197001">Continuous</translation>
 <translation id="6005765687956866568">הפרטים שמולאו באופן אוטומטי נוקו מהטופס</translation>

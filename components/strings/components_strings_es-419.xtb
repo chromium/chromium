@@ -516,6 +516,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1975457531113383421">Bandeja de entrada</translation>
 <translation id="1975584088563498795">Buzón 10</translation>
 <translation id="1978555033938440688">Versión de firmware</translation>
+<translation id="1979156660928743046">Información multimedia</translation>
 <translation id="1988881251331415125">Si no hay errores, <ph name="BEGIN_LINK" />prueba ejecutar el diagnóstico de conectividad<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">Escalada y montañismo</translation>
 <translation id="1991830984769263878">Seguros de automóvil</translation>
@@ -632,6 +633,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="219906046732893612">Mejora del hogar</translation>
 <translation id="2202627062836089804">dorso de tu tarjeta</translation>
 <translation id="2204482073374652408">Finalizó la actualización.</translation>
+<translation id="2207770355672215546">Permitir siempre con cualquier tarjeta</translation>
 <translation id="2208053750671792556">¿No recibiste el código? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Bandeja 3</translation>
 <translation id="2210794033760923560">Subir informe</translation>
@@ -1525,6 +1527,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4050599136622776556">Chromium está intentando editar formas de pago.</translation>
 <translation id="405399507749852140">Recibe alertas si baja el precio en algún sitio</translation>
 <translation id="4056223980640387499">Sepia</translation>
+<translation id="4059523390906550209">Más información sobre la protección de datos sensibles</translation>
 <translation id="4063063121357725926">Permite que Google te ayude a encontrar descuentos para tus carritos</translation>
 <translation id="406358100705415968">Equipo de protección personal</translation>
 <translation id="4063924980214801036">Usa el desbloqueo del dispositivo para confirmar las tarjetas más rápido.</translation>
@@ -1683,6 +1686,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
 <translation id="4314815835985389558">Administrar sincronización</translation>
+<translation id="4316057107946726368">Ingresa un mensaje de justificación que tenga <ph name="MAX_CHAR_COUNT" /> caracteres como máximo. Usaste <ph name="ACTUAL_CHAR_COUNT" /> de <ph name="MAX_CHAR_COUNT" /> caracteres.</translation>
 <translation id="4318213823155573975">Gorros y sombreros</translation>
 <translation id="4318312030194671742">Servicio para crear vista previa de sitios web</translation>
 <translation id="4318566738941496689">Tu nombre de dispositivo y la dirección de red</translation>
@@ -1743,6 +1747,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="443673843213245140">Se inhabilitó el uso de un proxy, pero se especificó una configuración explícita de proxy.</translation>
 <translation id="4438821706955556403">Precio habitual</translation>
 <translation id="4441832193888514600">Se ignoró porque la política puede establecerse solo como política del usuario basada en la nube.</translation>
+<translation id="4445133368066241428">Temas populares</translation>
 <translation id="4449116177348980384">Botón Administrar la configuración de sitios: actívalo para administrar en la configuración de Chrome los permisos y datos almacenados en los sitios</translation>
 <translation id="4451135742916150903">Puede solicitar permiso para conectarse a dispositivos HID</translation>
 <translation id="4451684391620232683">Texto que se muestra al usuario:</translation>
@@ -2489,6 +2494,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5997247540087773573">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. A fin de proteger tus cuentas, el Administrador de contraseñas de Google te recomienda cambiarla ahora y revisar las contraseñas guardadas.</translation>
 <translation id="5999271311987646952">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas, como la Navegación segura de Google, que <ph name="BEGIN_LINK" />recientemente encontró software malicioso<ph name="END_LINK" /> en el sitio que intentas visitar.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Comenzar</translation>
 <translation id="6002122790816966947">Tus dispositivos</translation>
 <translation id="6005659677094197001">Continuo</translation>
 <translation id="6005765687956866568">Se borró la información autocompletada del formulario</translation>
@@ -2669,6 +2675,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6355392890578844978">Este navegador no es administrado por una empresa ni por otra organización. Es posible que la actividad correspondiente a este dispositivo se administre fuera de Chromium. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">editar formas de pago</translation>
 <translation id="6358450015545214790">¿Qué significa esto?</translation>
+<translation id="6360213755783740931">Más información sobre la protección contra software malicioso</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Ver registros</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Comprobar la configuración del proxy, firewall o DNS seguro<ph name="END_LINK" /></translation>
@@ -2726,6 +2733,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6443406338865242315">Las extensiones y complementos que instalaste</translation>
 <translation id="6446608382365791566">Agregar más información</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6448371595882710519">Más información sobre los controles de datos</translation>
 <translation id="6450077999570164268">Cuarto</translation>
 <translation id="6450212216969386944">Sobre Chou n.º 40</translation>
 <translation id="6451458296329894277">Confirmar reenvío del formulario</translation>

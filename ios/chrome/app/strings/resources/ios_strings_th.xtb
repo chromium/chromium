@@ -261,6 +261,7 @@
 
 เว็บไซต์ไม่อาจใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณในเว็บไซต์และดำเนินการต่างๆ เช่น เพื่อปรับโฆษณาตามโปรไฟล์ของคุณได้อีก</translation>
 <translation id="2381405137052800939">พื้นฐาน</translation>
+<translation id="23824747102827308">ติดตามข่าวสาร กีฬา และอื่นๆ ตามความสนใจของคุณ</translation>
 <translation id="2386793615875593361">เลือก 1 รูป</translation>
 <translation id="2390457533592708044">ซ่อน "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">ไม่สามารถนําส่งพัสดุภัณฑ์ได้</translation>
@@ -301,6 +302,7 @@
 <translation id="2604176749896001318">อัปเดตเบราว์เซอร์ของคุณ</translation>
 <translation id="2609008503159898744">ปิดแท็บทั้งหมดใช่ไหม</translation>
 <translation id="2617210333344098964">ย้ายที่อยู่ไปยังบัญชี</translation>
+<translation id="261739049332372104">หากต้องการรับข้อมูลอัปเดตเกี่ยวกับเนื้อหาที่คุณสนใจ ให้เปิดการแจ้งเตือนในการตั้งค่า iOS</translation>
 <translation id="2625189173221582860">คัดลอกรหัสผ่านแล้ว</translation>
 <translation id="2626236249646841566">ตรวจสอบการเชื่อมต่อและลองลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="2637313651144986786">ค้นหาในแท็บ...</translation>
@@ -565,6 +567,7 @@
 <translation id="4042870976416480368">ค้นหาในหน้าเว็บ</translation>
 <translation id="4045648459118332842">เรียกข้อมูลรหัสผ่านที่บันทึกไว้ในแอปต่างๆ ด้วยการแตะเพียงครั้งเดียว</translation>
 <translation id="4049507953662678203">ตรวจสอบว่าคุณมีการเชื่อมต่อเครือข่าย และลองอีกครั้ง</translation>
+<translation id="4054572406751135230">ติดตามข่าวสาร กีฬา และอื่นๆ</translation>
 <translation id="4066639687323968621">ลงชื่อเข้าใช้ด้วยบัญชี Google เพื่อซิงค์บุ๊กมาร์ก ประวัติการเข้าชม และอื่นๆ</translation>
 <translation id="4092655288299341041">แสดงความช่วยเหลือ</translation>
 <translation id="4105841739161771091">{count,plural, =1{ลบที่อยู่}other{ลบที่อยู่}}</translation>
@@ -747,6 +750,7 @@
 <translation id="5016420433031926653">ส่งไปยัง <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">เตือนฉันภายหลัง</translation>
 <translation id="5037676449506322593">เลือก&amp;ทั้งหมด</translation>
+<translation id="5038113048373546701">รับการแจ้งเตือนเกี่ยวกับข่าวสาร กีฬา และอื่นๆ ตามความสนใจของคุณ</translation>
 <translation id="5039804452771397117">อนุญาต</translation>
 <translation id="5050294464480863218">สิ่งที่ควรพิจารณา</translation>
 <translation id="5050810143224996149">แชร์รหัสผ่าน</translation>
@@ -804,6 +808,7 @@
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5318298563956633672">คุณติดตามผลิตภัณฑ์นี้อยู่แล้ว</translation>
+<translation id="5327753393331509826">รับการแจ้งเตือนเนื้อหา</translation>
 <translation id="5329451663851195956">คุณสามารถดึงลงเพื่อรีเฟรช</translation>
 <translation id="5339316356165661760">เปิดการซิงค์</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{ติดตามพัสดุนี้ไหม}other{ติดตามพัสดุ {COUNT} รายการไหม}}</translation>
@@ -1166,6 +1171,7 @@
 <translation id="7192050974311852563">เริ่มต้นการบันทึก</translation>
 <translation id="7203585745079012652">พูดคำตอบกลับ</translation>
 <translation id="7207023858769244910">ซิงค์เพื่อรับเนื้อหาตามความสนใจของคุณ</translation>
+<translation id="7210568419880432164">เปิดการแจ้งเตือน</translation>
 <translation id="721597782417389033">ชื่อเล่นของบัตรไม่ถูกต้อง</translation>
 <translation id="7221173315674413369">สำรวจฟีเจอร์และเคล็ดลับใหม่ๆ ใน "มีอะไรใหม่"</translation>
 <translation id="7223102419539744003">ปิดแท็บ</translation>
@@ -1204,8 +1210,9 @@
 <translation id="7454057999980797137">เขต/แขวง</translation>
 <translation id="745899714366929493">ตลอดวัน</translation>
 <translation id="7459628154744868585">การปกป้องที่ดียิ่งขึ้นเปิดอยู่</translation>
+<translation id="7465351360025415755">รับเนื้อหาที่คุณสนใจ</translation>
 <translation id="7472734401283673885">ชื่อบริษัท</translation>
-<translation id="7473891865547856676">ไม่ ขอบคุณ</translation>
+<translation id="7473891865547856676">ไม่เป็นไร</translation>
 <translation id="7488874549363591659">นำส่งแล้ว</translation>
 <translation id="7491131399623468277">ไปที่การตั้งค่า…</translation>
 <translation id="749854780843431406">คุณเปิดแท็บใหม่ได้จากปุ่ม "<ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />"</translation>
@@ -1371,6 +1378,8 @@
 <translation id="8343993175958086504">สำรองข้อมูลและใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
 <translation id="834783239627985533">เว็บไซต์ที่เข้าชมบ่อยที่สุด</translation>
 <translation id="8364841868226993049">กำลังบันทึกรูปภาพใน Google Photos สำหรับ <ph name="USER_EMAIL" />...</translation>
+<translation id="8370406443343902172">ไปที่การตั้งค่า...</translation>
+<translation id="8374977641764177587">เปิดการแจ้งเตือนไหม</translation>
 <translation id="8378714024927312812">จัดการโดยองค์กร</translation>
 <translation id="8386068868580335421">รีเซ็ต</translation>
 <translation id="838867811594159347">ป้อนรหัสผ่าน…</translation>

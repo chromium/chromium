@@ -40,6 +40,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1153356358378277386">Appareils associés</translation>
 <translation id="1155734730463845512">Niveau de batterie actuel : <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1160215328209699296">activée et en cours d'utilisation</translation>
+<translation id="1163437384438183174">Supprimer Phone Hub de l'étagère</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Votre câble USB-C n'est peut-être pas connecté correctement à l'écran</translation>
 <translation id="1175572348579024023">Faire défiler</translation>
@@ -70,6 +71,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1239161794459865856">La fonctionnalité <ph name="FEATURE_NAME" /> est connectée.</translation>
 <translation id="1240638468526743569">Une appli</translation>
 <translation id="1242883863226959074">appareil</translation>
+<translation id="1245644940275736236">Accéder à l'Assistant</translation>
 <translation id="124678866338384709">Fermer l'onglet actuel</translation>
 <translation id="1246890715821376239">Applis non compatibles</translation>
 <translation id="1247372569136754018">Micro (interne)</translation>
@@ -354,7 +356,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484513351006226581">Appuyez sur <ph name="KEYBOARD_SHORTCUT" /> pour changer la disposition du clavier.</translation>
 <translation id="2487915095798731898">Rejoindre</translation>
-<translation id="2501920221385095727">Touches persistantes</translation>
+<translation id="2501920221385095727">Touches rémanentes</translation>
 <translation id="2504454902900101003">Ignorer la configuration concernant l'affichage des photos, notifications et contenus multimédias récents de votre téléphone</translation>
 <translation id="2509468283778169019">Touche VERR MAJ activée</translation>
 <translation id="2514415433888497495">Arrêter <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" />.</translation>
@@ -692,6 +694,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="383629559565718788">Afficher les paramètres du clavier</translation>
 <translation id="384082539148746321">Supprimer le modèle ?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, puis <ph name="KEY_ONE" /> ou <ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /> ou <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50 + 94 / 5</translation>
 <translation id="3846575436967432996">Aucune information disponible concernant le réseau</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="385300504083504382">Début</translation>
@@ -926,6 +929,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" />+Flèche vers le haut</translation>
 <translation id="4762573482154983647">Masquer les applis</translation>
+<translation id="4762802395013012237">5 pi en m</translation>
 <translation id="4763885921995354846">L'accès à l'appareil photo est accordé à l'ensemble des applis et sites Web ayant l'autorisation d'y accéder. Vous devrez peut-être actualiser la page Web ou redémarrer l'appli.</translation>
 <translation id="4774338217796918551">Revenez demain à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Impossible de valider votre mot de passe pour la deuxième fois. Réessayez.</translation>
@@ -968,6 +972,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="491504982845934899">Activer <ph name="NETWORK_NAME" /> après la configuration de l'appareil</translation>
 <translation id="4917385247580444890">Très bon</translation>
 <translation id="4918086044614829423">Accepter</translation>
+<translation id="491907188205944472">Recherchez ce dont vous avez besoin directement dans le Lanceur d'applications</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> utilise actuellement votre caméra</translation>
 <translation id="492453977506755176">Touche du mode de capture</translation>
 <translation id="4925542575807923399">L'administrateur de ce compte a configuré ce dernier de sorte qu'il soit le premier compte à être connecté lors de sessions de connexion multicompte.</translation>
@@ -1118,6 +1123,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5518068085000130971">Vous avez vu les bases. Pour obtenir des conseils et de l'aide, continuez dans Explorer, notre appli intégrée. Vous y trouverez des astuces pour démarrer, des recommandations d'applis, des offres spéciales et les dernières fonctionnalités Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Votre administrateur a supprimé tous les profils eSIM. Contactez-le pour en savoir plus.</translation>
+<translation id="5520909879404821039">"Bonjour" en anglais</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> est en train de se connecter.</translation>
 <translation id="5529587891732734495">Suspendre la diffusion</translation>
 <translation id="5532994612895037630">Appuyez n'importe où pour enregistrer tout l'écran</translation>
@@ -1696,6 +1702,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7886277072580235377">Votre session Internet est effacée lorsque vous vous déconnectez. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Envoie un e-mail</translation>
 <translation id="7893503627044934815">Je ne souhaite pas que ce fichier soit affiché</translation>
+<translation id="7893547474469215105">Définir "zénith"</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Vous avez appuyé sur le raccourci clavier de rotation d'écran. Voulez-vous faire pivoter l'écran ?</translation>
 <translation id="7897626842031123113">Barre d'état, il est <ph name="TIME" />,
@@ -1711,6 +1718,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7904094684485781019">L'administrateur de ce compte a désactivé la connexion multicompte.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> appareils connectés</translation>
+<translation id="7923534281713082605">Météo</translation>
 <translation id="7926080067315048321">Voir toutes les tâches Google Tasks sur le Web</translation>
 <translation id="7930731167419639574">Les paroles sont maintenant traitées localement et la dictée fonctionne hors connexion.</translation>
 <translation id="7932451802722951285">Ouvrir dans Google Agenda</translation>
@@ -1857,6 +1865,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8555757996376137129">Supprimer le bureau actuel</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> vous recommande de mettre à jour votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Paramètres de notification</translation>
+<translation id="8569751806372591456">Voici quelques suggestions à tester</translation>
 <translation id="857201607579416096">Le menu a été déplacé dans l'angle inférieur droit de l'écran.</translation>
 <translation id="8581946341807941670">Appuyez sur <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, puis cliquez sur un lien</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1899,6 +1908,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="875593634123171288">Afficher les paramètres de VPN</translation>
 <translation id="8759408218731716181">Impossible de configurer la connexion multicompte.</translation>
 <translation id="8763883995157866248">Mettre l'appareil en mode veille</translation>
+<translation id="877404052021108314">90 °F en °C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, appli installée, bloquée</translation>
 <translation id="8785070478575117577">Se connecter à <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1907,6 +1917,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8806053966018712535">Dossier <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Aide"</translation>
 <translation id="8814190375133053267">Wi-Fi </translation>
+<translation id="8815390544836110344">Appuyez sur le raccourci de capture d'écran, Ctrl+Maj+Touche du mode aperçu</translation>
 <translation id="881757059229893486">Paramètres des modes de saisie</translation>
 <translation id="8819728065740986820">La recharge adaptative est activée</translation>
 <translation id="8825863694328519386">Faites glisser votre doigt de gauche à droite pour revenir en arrière</translation>

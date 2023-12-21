@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">Кіріс науасы</translation>
 <translation id="1975584088563498795">10-шы пошта жәшігі</translation>
 <translation id="1978555033938440688">Микробағдарлама нұсқасы</translation>
+<translation id="1979156660928743046">Meдиа туралы ақпарат</translation>
 <translation id="1988881251331415125">Дұрыс жазылған болса, <ph name="BEGIN_LINK" />Connectivity Diagnostics құралын іске қосып көріңіз<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">Альпинизм</translation>
 <translation id="1991830984769263878">Көлік сақтандыру</translation>
@@ -632,6 +633,7 @@
 <translation id="219906046732893612">Тұрғын үйлерді жақсарту</translation>
 <translation id="2202627062836089804">картаңыздың артқы жағы</translation>
 <translation id="2204482073374652408">Жаңарту аяқталды!</translation>
+<translation id="2207770355672215546">Кез келген картамен үнемі рұқсат беру</translation>
 <translation id="2208053750671792556">Кодыңызды алған жоқсыз ба? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">3-науа</translation>
 <translation id="2210794033760923560">Есепті жүктеп салу</translation>
@@ -1523,6 +1525,7 @@
 <translation id="4050599136622776556">Chromium төлеу әдістерін өзгерткісі келеді.</translation>
 <translation id="405399507749852140">Қандай да бір сайтта баға төмендесе, сізге хабарланады.</translation>
 <translation id="4056223980640387499">Сепия</translation>
+<translation id="4059523390906550209">Құпия деректерді қорғау туралы толық ақпарат</translation>
 <translation id="4063063121357725926">Google-дың себеттеріңізге жеңілдіктер тауып беруіне көмектесіңіз</translation>
 <translation id="406358100705415968">Жұмыс қауіпсіздігін қорғау құралдары</translation>
 <translation id="4063924980214801036">Карталарды жылдамырақ растау үшін құрылғының құлпын ашу функциясын пайдаланыңыз.</translation>
@@ -1681,6 +1684,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блоктау (әдепкі)</translation>
 <translation id="4314815835985389558">Синхрондауды басқару</translation>
+<translation id="4316057107946726368">Ені бойынша туралау хабарын <ph name="MAX_CHAR_COUNT" /> таңбадан асырмай енгізіңіз. <ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /> таңба енгізілді.</translation>
 <translation id="4318213823155573975">Бас киім</translation>
 <translation id="4318312030194671742">Paint Preview шығармашылық қызметі</translation>
 <translation id="4318566738941496689">Құрылғыңыздың атауы және желі мекенжайыңыз</translation>
@@ -2488,6 +2492,7 @@
 <translation id="5997247540087773573">Сіз жаңа ғана қолданған құпия сөз деректердің қолды болуы салдарынан жария етілді. Аккаунттарыңызды қорғау үшін Google Password Manager оны дереу өзгертуді және сақталған құпия сөздеріңізді тексеруді ұсынады.</translation>
 <translation id="5999271311987646952">Chrome-ның браузерді пайдалану кезінде қорғайтын ендірілген қауіпсіздік мүмкіндіктері бар. Солардың бірі — Google Safe Browsing. Ол сіз кіргелі жатқан сайтта <ph name="BEGIN_LINK" />жақында бір зиянды бағдарламаны анықтады<ph name="END_LINK" />.</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" сұрауы бойынша <ph name="RESULT_COUNT" /> нәтиже шықты</translation>
+<translation id="6001839398155993679">Бастау</translation>
 <translation id="6002122790816966947">Құрылғыларыңыз</translation>
 <translation id="6005659677094197001">Үздіксіз</translation>
 <translation id="6005765687956866568">Автоматты толтырылған ақпарат үлгіден өшірілді</translation>
@@ -2668,6 +2673,7 @@
 <translation id="6355392890578844978">Бұл браузер компания немесе басқа ұйым арқылы басқарылмайды. Құрылғыдағы әрекет Chromium браузерінен тыс басқарылуы мүмкін. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">төлеу әдістерін өзгерткісі келеді</translation>
 <translation id="6358450015545214790">Бұл нені білдіреді?</translation>
+<translation id="6360213755783740931">Зиянды бағдарламалардан қорғау туралы толық ақпарат</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Журналдарды көру</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Прокси-серверді, брандмауэрді және қауіпсіз DNS конфигурациясын тексеру<ph name="END_LINK" /></translation>
@@ -2725,6 +2731,7 @@
 <translation id="6443406338865242315">қай кеңейтімдер мен плагиндерді орнатқаныңызды;</translation>
 <translation id="6446608382365791566">Қосымша ақпарат енгізу</translation>
 <translation id="6447842834002726250">Cookie файлдары</translation>
+<translation id="6448371595882710519">Деректерді басқару туралы толық ақпарат</translation>
 <translation id="6450077999570164268">Кварто</translation>
 <translation id="6450212216969386944">Chou 40 хатқалтасы</translation>
 <translation id="6451458296329894277">Нысанның қайта жіберілуін растау</translation>

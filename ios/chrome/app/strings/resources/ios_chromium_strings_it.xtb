@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{Visualizzazione di 1 finestra di Chromium}other{Visualizzazione di {count} finestre di Chromium}}</translation>
 <translation id="3344973607274501920">Chromium non ha potuto controllare le tue password. Verifica la tua connessione a Internet.</translation>
 <translation id="3366305173356742781">Dati di Chromium nel tuo account</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuto. Potrebbero essere inclusi la cronologia e la compilazione automatica.}other{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuti. Potrebbero essere inclusi la cronologia e la compilazione automatica.}}</translation>
 <translation id="3472200483164753384">Non supportata su Chromium Canary</translation>
 <translation id="3478750326643748149">Nascondi "Ottieni il massimo da Chromium"</translation>
 <translation id="3512168799938877162">La tua password non è stata condivisa. Controlla la connessione a internet e assicurati di aver eseguito l'accesso a Chromium. Quindi riprova.</translation>
@@ -284,6 +285,7 @@ Aspetti da considerare:
 <translation id="8909995017390087892">Chromium per iOS</translation>
 <translation id="8924617840944134898">Apri scheda di navigazione in incognito di Chromium</translation>
 <translation id="894437814105052438">Se esci, Chromium non sincronizzerà gli eventuali nuovi dati con il tuo Account Google. I dati sincronizzati in precedenza rimangono memorizzati nell'account.</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuto}other{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuti}}</translation>
 <translation id="8963279154877372067">Consenti le notifiche di Chromium per ricevere avvisi relativi ai cali di prezzo</translation>
 <translation id="900560297598578021">Accesso eseguito come <ph name="EMAIL" />.
 

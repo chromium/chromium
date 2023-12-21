@@ -76,6 +76,7 @@
 <translation id="328933489847748230">{count,plural, =1{ବର୍ତ୍ତମାନ 1 Chromium ୱିଣ୍ଡୋ ଦେଖାଯାଉଛି}other{ବର୍ତ୍ତମାନ {count} Chromium ୱିଣ୍ଡୋ ଦେଖାଯାଉଛି}}</translation>
 <translation id="3344973607274501920">Chromium ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିଲା ନାହିଁ। ଆପଣଙ୍କ ଇଣ୍ଟର୍ନେଟ୍ ସଂଯୋଗ ଯାଞ୍ଚ କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="3366305173356742781">ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chromium ଡାଟା</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromiumକୁ {THRESHOLD} ମିନିଟ ପାଇଁ ବ୍ୟବହାର କରାନଗଲେ ଏହା ହୋଇଥାଏ। ଏଥିରେ ଇତିହାସ ଏବଂ ଅଟୋଫିଲ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।}other{Chromiumକୁ {THRESHOLD} ମିନିଟ ପାଇଁ ବ୍ୟବହାର କରାନଗଲେ ଏହା ହୋଇଥାଏ। ଏଥିରେ ଇତିହାସ ଏବଂ ଅଟୋଫିଲ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।}}</translation>
 <translation id="3472200483164753384">Chromium Canaryରେ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="3478750326643748149">“Chromiumରୁ ସବୁଠୁ ଅଧିକ ସୁବିଧା ପାଆନ୍ତୁ”କୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="3512168799938877162">ଆପଣଙ୍କ ପାସୱାର୍ଡ ସେୟାର କରାଯାଇନାହିଁ। ଆପଣଙ୍କ ଇଣ୍ଟରନେଟ କନେକ୍ସନକୁ ଯାଞ୍ଚ କରି ଆପଣ Chromiumରେ ସାଇନ ଇନ କରିଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ। ତା'ପରେ, ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -284,6 +285,7 @@
 <translation id="8909995017390087892">iOS ପାଇଁ Chromium</translation>
 <translation id="8924617840944134898">Chromium ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲନ୍ତୁ</translation>
 <translation id="894437814105052438">ଆପଣ ସାଇନ୍ ଆଉଟ୍ କଲେ, Chromium ଯେ କୌଣସି ନୂଆ ଡାଟାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହିତ ସିଙ୍କ କରିବ ନାହିଁ। ପୂର୍ବରୁ ସିଙ୍କ କରାଯାଇଥିବା ଡାଟା ଆକାଉଣ୍ଟରେ ରହିଥାଏ।</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromiumକୁ {THRESHOLD} ମିନିଟ ପାଇଁ ବ୍ୟବହାର କରାନଗଲେ ଏହା ହୋଇଥାଏ}other{Chromiumକୁ {THRESHOLD} ମିନିଟ ପାଇଁ ବ୍ୟବହାର କରାନଗଲେ ଏହା ହୋଇଥାଏ}}</translation>
 <translation id="8963279154877372067">ମୂଲ୍ୟ ହ୍ରାସ ଆଲର୍ଟ ପାଇବା ପାଇଁ Chromium ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="900560297598578021"><ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରିଛନ୍ତି।
 

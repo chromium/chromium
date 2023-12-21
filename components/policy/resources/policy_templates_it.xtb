@@ -1112,7 +1112,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> chiude la scheda do
 
       L'API Managed Configuration è una configurazione di coppie chiave-valore accessibile tramite chiamata JavaScript navigator.managed.getManagedConfiguration(). Questa API è disponibile soltanto per le origini che corrispondono ad applicazioni web con installazione forzata tramite <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
      </translation>
-<translation id="1918690415433353669">Consenti Organizzazione schede, senza eseguire il logging dei dettagli della scheda</translation>
 <translation id="1919802376548418720">Utilizza il criterio KDC per delegare credenziali.</translation>
 <translation id="1920046221095339924">Consenti la sessione gestita sul dispositivo</translation>
 <translation id="1920772397574801429">La configurazione del criterio consente di specificare il tipo di account, tra quelli forniti dall'app di autenticazione Android, che supporta l'autenticazione <ph name="HTTP_NEGOTIATE" />, ad esempio Kerberos. Queste informazioni dovrebbero essere messe a disposizione dal fornitore dell'app di autenticazione. Per i dettagli, consulta la pagina I progetti di Chromium ( https://goo.gl/hajyfN )
@@ -1688,7 +1687,6 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
 Se il criterio viene impostato su disabled, gli utenti o le varianti <ph name="PRODUCT_NAME" /> non potranno attivare NewBaseUrlInheritanceBehavior in caso di problemi di compatibilità. Se il criterio viene impostato su enabled o se non viene configurato, consente l'attivazione di NewBaseUrlInheritanceBehavior.</translation>
 <translation id="2362469626417133796">Intervallo di tempo per il riavvio</translation>
 <translation id="2362539163677485510">Il token di registrazione della norma relativa al cloud</translation>
-<translation id="2362947328909044249">Consenti Organizzazione schede</translation>
 <translation id="2363928351203698966">Se per il criterio viene impostato un valore valido, <ph name="PRODUCT_NAME" /> non utilizzerà versioni SSL/TLS precedenti alla versione specificata. I valori non riconosciuti vengono ignorati.
 
       Se il criterio non viene impostato, <ph name="PRODUCT_NAME" /> mostra un errore per TLS 1.0 e TLS 1.1, ma l'utente può ignorarlo.
@@ -2022,7 +2020,6 @@ Il sistema eseguirà una query sui record AAAA soltanto quando può essere conne
 <translation id="2650049181907741121">Azione da compiere quando l'utente chiude lo schermo</translation>
 <translation id="2656559539624760733">Non utilizzare Chrome Root Store.</translation>
 <translation id="2658653824183107970">Usa l'implementazione <ph name="CORS" /> legacy anziché la nuova implementazione <ph name="CORS" /></translation>
-<translation id="2659064869547694451">Consenti Compose</translation>
 <translation id="2660846099862559570">Non utilizzare mai un proxy</translation>
 <translation id="2661628029848851543">Sono consentiti tutti gli utilizzi degli account gestiti</translation>
 <translation id="2664391398878045611">Nella pagina Nuova scheda non verrà mostrata la comunicazione dell'area centrale, anche se è disponibile</translation>
@@ -2801,7 +2798,6 @@ Se il criterio viene disattivato, i file scaricati non vengono inviati per esser
 Queste limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione di menu Link di download. Queste limitazioni non vengono applicate al salvataggio o al download della pagina attualmente visualizzata né alle opzioni di stampa relative al salvataggio come file PDF.
 
 Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="3300322252167923819">Consenti Organizzazione schede</translation>
 <translation id="3300784749135986828">Attiva o disattiva la funzionalità <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Attiva estensione Insights</translation>
 <translation id="3302829897293005699">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano informazioni relative alla sessione kiosk attiva quali ID applicazione e versione.
@@ -3409,7 +3405,6 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
 <translation id="3799417300383048419">Mantieni i dati del profilo su disco al termine della sessione utente</translation>
 <translation id="3799436555130241393">Sincronizzazione file di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3803171355925844705">Non consentire il caricamento di contenuti misti in nessun sito</translation>
-<translation id="3806742563417418191">Consenti la ricerca di sfondi</translation>
 <translation id="3808945828600697669">Specifica un elenco dei plug-in disattivati</translation>
 <translation id="3810642039169532482">Consente di attivare la funzione di accessibilità di dettatura nella schermata di accesso.
 
@@ -3421,7 +3416,6 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
 
           Se questo criterio non viene impostato, inizialmente la dettatura è disattivata nella schermata di accesso, ma l'utente può attivarla in qualsiasi momento.</translation>
 <translation id="3811562426301733860">Consenti annunci su tutti i siti</translation>
-<translation id="3816281648615435872">Disattiva Organizzazione schede</translation>
 <translation id="3816312845600780067">Attivazione scorciatoia da tastiera bailout per accesso automatico</translation>
 <translation id="3817323252437541502">Attiva protezioni aggiuntive per gli utenti iscritti al programma di protezione avanzata</translation>
 <translation id="3821861026311587684">Forza la disconnessione dell'utente quando il suo account non è più autenticato</translation>
@@ -3973,7 +3967,6 @@ Se il criterio viene impostato su Disattivato, viene visualizzato invece un mess
 <translation id="428948795004445932">La velocità di campionamento e raccolta dei dati di rete. Il valore minimo consentito è 1 minuto.
 
       Se il criterio non è impostato, viene applicata la velocità predefinita di 10 minuti.</translation>
-<translation id="4289628882370719584">La funzionalità Organizzazione schede consente agli utenti di organizzare le schede.</translation>
 <translation id="4290231183305601970">Il testo che verrà mostrato all'utente nel Chrome Web Store se l'installazione è bloccata.</translation>
 <translation id="4293187705196369087">Consente di attivare o di disattivare una notifica quando lo spazio sul disco è in esaurimento. La scelta si applica a tutti gli utenti sul dispositivo.
 
@@ -4263,7 +4256,6 @@ Questo criterio non ha effetto se viene attivato, lasciato vuoto o se non viene 
 <translation id="453031441196755904">Questa norma è obsoleta.</translation>
 <translation id="4531706050939927436">L'installazione di app Android può essere imposta dalla Console d'amministrazione Google tramite Google Play. Questa norma non viene utilizzata.</translation>
 <translation id="4534500438517478692">Nome della limitazione di Android:</translation>
-<translation id="4537645230504195464">Consenti Compose, senza eseguire il logging</translation>
 <translation id="4541530620466526913">Account del dispositivo</translation>
 <translation id="4542255783284620926">Blocca l'aggiunta di un account gestito come account secondario su ChromeOS (all'interno della sessione)</translation>
 <translation id="4543502256674577024">Impostazioni di aggiornamento dispositivo
@@ -4460,7 +4452,6 @@ Dopo la configurazione iniziale, gli utenti possono attivare o disattivare i Ser
 <translation id="4674871290487541952">Consente algoritmi non protetti nei controlli dell'integrità durante gli aggiornamenti e le installazioni delle estensioni</translation>
 <translation id="4680961954980851756">Abilita Compilazione automatica</translation>
 <translation id="4685721728282448265">Algoritmo di scambio di chiavi post-quantistico CECPQ2 attivo per TLS</translation>
-<translation id="4688118315245991650">Disattiva Compose</translation>
 <translation id="468822697351680932">Utilizza il criterio SiteList di Internet Explorer come fonte di regole</translation>
 <translation id="4693190628432874457">Attiva i report sulla posizione del dispositivo</translation>
 <translation id="4693779768620889402">Destinazioni basate su estensioni</translation>
@@ -5155,7 +5146,6 @@ Se il criterio viene impostato su Disattivato, la cronologia di navigazione e qu
 <translation id="5340008866815063393">Attiva la generazione di report sui dati dei criteri</translation>
 <translation id="5345910753471481870">Non mostrare il pulsante di Google Lens nella casella di ricerca della pagina Nuova scheda.</translation>
 <translation id="5346587320074666194">Blocca l'accesso ai sensori su questi siti</translation>
-<translation id="5347809796754019202">Consenti Compose</translation>
 <translation id="534836255587440809">Disattiva i clic automatici nella schermata di accesso</translation>
 <translation id="5348658899015174540">L'API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> consente alle applicazioni web di acquisire più schermate contemporaneamente.
       Questo criterio sblocca la proprietà <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> per le applicazioni web di origini definite.
@@ -5683,7 +5673,6 @@ Se questo criterio viene disattivato o se non viene configurato, i Glanceables n
 <translation id="5775235485119094648">Carica la batteria mentre si trova in un intervallo stabilito.</translation>
 <translation id="5776485039795852974">Chiedi ogni volta che un sito desidera mostrare le notifiche desktop</translation>
 <translation id="5783009211970309878">Stampa intestazioni e piè di pagina</translation>
-<translation id="5786938041290515154">Consenti la ricerca di sfondi, senza logging</translation>
 <translation id="5790763087505467169">Riduci notifiche sull'avvio automatico della sessione Ospite gestita</translation>
 <translation id="5800329278018669527">Disattiva la richiesta di configurazione di rete in modalità offline</translation>
 <translation id="5802931736499687181">Disabilita la Pipeline di reporting criptato</translation>
@@ -5874,7 +5863,6 @@ Se questo criterio viene disattivato o se non viene configurato, i Glanceables n
 <translation id="596523880465577341">Questo criterio è stato deprecato e non è supportato. Utilizza il criterio <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="5966615072639944554">Estensioni autorizzate a utilizzare l'API di attestazione da remoto</translation>
 <translation id="596732417280023843">Il nome del profilo di certificato.</translation>
-<translation id="597036930083735628">Disattiva ricerca sfondi</translation>
 <translation id="5972538402066550344">Consenti i controlli di reporting granulare</translation>
 <translation id="5975765799383881158">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono inviare dei feedback a Google tramite una combinazione di tasti o nella sezione Menu &gt; Guida &gt; Segnala un problema.
 

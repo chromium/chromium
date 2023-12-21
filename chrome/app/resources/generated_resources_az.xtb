@@ -1857,6 +1857,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2408018932941436077">Kart yadda saxlanılır</translation>
 <translation id="2408955596600435184">PİN kodunuzu daxil edin</translation>
 <translation id="2409268599591722235">Gedək</translation>
+<translation id="2409378541210421746">Dil seçimini redaktə edin</translation>
 <translation id="2409709393952490731">Telefon və ya planşet istifadə edin</translation>
 <translation id="2410079346590497630">Versiya detalları</translation>
 <translation id="2410298923485357543">Cihazınız onlayn olduqda təbii səsdən istifadə edin</translation>
@@ -3821,6 +3822,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="3937640725563832867">Sertifikat Verənin Alternativ Adı</translation>
 <translation id="3937734102568271121">Həmişə <ph name="LANGUAGE" /> Dilinə Tərcümə Edin</translation>
 <translation id="3938128855950761626"><ph name="VENDOR_ID" /> vendorundan cihazlar</translation>
+<translation id="3939622756852381766">Audio və video üçün avtomatik subtitrlər yaradılır</translation>
 <translation id="3941565636838060942">Bu proqrama girişi gizlətmək üçün Kontrol Panelində
   <ph name="CONTROL_PANEL_APPLET_NAME" /> istifadə etməklə, onu sistemdən silməlisiniz.
 
@@ -4327,6 +4329,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="435527878592612277">Foto seçin</translation>
 <translation id="4356100841225547054">Səs səviyyəsini deaktiv edin</translation>
 <translation id="4358302248024731679">Google istifadəçiləri Bluetooth problemlərini daha yaxşı müəyyən etmək üçün rəy hesabatları ilə birlikdə əlavə Bluetooth girişləri daxil edə bilər. Bu seçim yoxlandıqda hesabata cari sessiyadan btsnoop və HCI girişləri (mümkün qədər çox PII silmək üçün təmizlənmişdir) əlavə ediləcək. Listnr cihazında ChromeOS məhsul qrupunun menecerləri üçün bu girişlər məhdudlaşdırılıb. Girişlər 90 gündən sonra təmizlənəcək.</translation>
+<translation id="4358361163731478742">Tətbiq dili seçimini dəstəkləyən tətbiq yoxdur</translation>
 <translation id="4358643842961018282">Cihazınız güncəldir</translation>
 <translation id="4359408040881008151">Asılı artırmalara görə quraşdırılıb.</translation>
 <translation id="4359717112757026264">Şəhər mənzərəsi</translation>
@@ -4584,6 +4587,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> <ph name="WEBSITE_NAME" /> üçün sizinlə parol paylaşıb. Giriş formasında istifadə edə bilərsiniz.</translation>
 <translation id="4558426062282641716">Avto başlatma icazəsi sorğusu göndərildi</translation>
 <translation id="4558542033859106586"><ph name="TARGET_APP" /> tətbiqində açılır</translation>
+<translation id="4558946868955275132">Burada yalnız dil seçimini dəstəkləyən tətbiqlər göstərilir</translation>
 <translation id="4559617833001311418">Sayt hərəkət və ya zəif sensorlarınıza daxil olur.</translation>
 <translation id="4560728518401799797"><ph name="FOLDER_TITLE" /> əlfəcini üzrə digər seçimlər</translation>
 <translation id="4561893854334016293">Son vaxtlarda dəyişən icazə yoxdur</translation>
@@ -5912,6 +5916,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5631272057151918206">Oflayn faylların tutduğu maksimum <ph name="OFFLINE_STORAGE_SIZE" /> yer təmizlənəcək. Bəzi fayllar oflayn əlçatan qalacaq. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">İcazə tələb edilib, cavablandırmaq üçün Ctrl + İrəli düyməsini basın</translation>
 <translation id="5632221585574759616">Artırma icazələri haqqında ətraflı məlumat əldə edin</translation>
+<translation id="5632485077360054581">İstifadə qaydasını göstərin</translation>
 <translation id="5632566673632479864">Artıq <ph name="EMAIL" /> adlı hesaba əsas hesab kimi icazə verilmir. <ph name="DOMAIN" /> bu hesabı idarə etdiyinə görə əlfəcin, tarixçə, parol və digər ayarlar cihazdan silinəcək.</translation>
 <translation id="5633149627228920745">Sistem tələbləri haqqında ətraflı məlumat</translation>
 <translation id="563371367637259496">Mobil</translation>
@@ -7023,6 +7028,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6535331821390304775"><ph name="ORIGIN" /> saytına həmişə əlaqədar tətbiqdə bu cür keçidləri açmaq icazəsi verin</translation>
 <translation id="653659894138286600">Sənədləri və şəkilləri skan edin</translation>
 <translation id="6537613839935722475">Adda hərflər, rəqəmlər və defis (-) ola bilər</translation>
+<translation id="6538036594527795020"><ph name="APP" /> dilini dəyişin. Cari dil: <ph name="LANGUAGE" />.</translation>
 <translation id="6538098297809675636">Kodu aşkarlayarkən xəta oldu</translation>
 <translation id="653920215766444089">Göstərici cihaz axtarılır</translation>
 <translation id="6539674013849300372">Güclü parol ilə onlayn təhlükəsizliyi artırın. <ph name="EMAIL" /> üçün <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməsində saxlanacaq.</translation>
@@ -7267,6 +7273,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6737663862851963468">Kerberos biletini silin</translation>
 <translation id="6738180164164974883">Üçüncü tərəf kukilərini təyin etməyə icazə verin</translation>
 <translation id="6738430949033571771">Hesab doğrulanır...</translation>
+<translation id="6739266861259291931">Cihaz dilinə sıfırlayın</translation>
 <translation id="6739923123728562974">Masaüstü qısayolunu göstərin</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> durduruldu</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Administrator<ph name="END_LINK" /> Təhlükəsiz Baxışı deaktiv edib</translation>
@@ -10438,6 +10445,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="9186963452600581158">Uşağın Google Hesabı ilə daxil olun</translation>
 <translation id="9187967020623675250">Düymələr uyğun gəlmir. <ph name="RESPONSE" /> üçün istənilən düyməyə basın.</translation>
 <translation id="9188732951356337132">İstifadə və diaqnostika datasını göndərin. Bu cihaz hazırda Google'a diaqnostika, cihaz və tətbiq istifadə datasını avtomatik göndərir. Bu, övladınızı müəyyən etmək üçün istifadə edilməyəcək, eyni zamanda, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Ümumi data, həmçinin, Google tətbiqləri və Android developerləri kimi partnyorlara kömək edəcək. Övladınız üçün əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google Hesabında yadda saxlana bilər. <ph name="BEGIN_LINK2" />Ətraflı Məlumat<ph name="END_LINK2" /></translation>
+<translation id="9191638749941292185">Avtomatik tərcümə üçün subtitrlər Google-a göndərilir</translation>
 <translation id="9192019773545828776">Səsli rəyi dinləyərək ekrana baxmadan cihazınızdan istifadə edə bilərsiniz. Brayl əlifbası qoşulmuş cihaz ilə əlçatandır. ChromeVox'u aktiv və deaktiv etmək üçün Ctrl + Alt + Z istifadə edin. Naviqasiya etmək üçün Axtarış + Sol ox və ya Sağ oxu istifadə edin. Seçmək (aktiv etmək) üçün Axtarış + Boşluq istifadə edin.</translation>
 <translation id="919686179725692564">Tətbiqlərin yedəklənməsi barədə ətraflı məlumat əldə edin</translation>
 <translation id="9199503643457729322">Məxfilik Bələdçisindən uzaqlaşmaq üçün klikləyin.</translation>
@@ -10548,6 +10556,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="98515147261107953">Peyzaj</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Ümumi</translation>
+<translation id="987475089238841621">Dil paketləri Canlı Altyazı üçün istifadə edilir və cihazda saxlanır</translation>
 <translation id="988320949174893488">Arabir Kəsilmə</translation>
 <translation id="988978206646512040">Boş parol sözünə icazə verilmir</translation>
 <translation id="992032470292211616">Artırmalar, tətbiq və temalar cihazınızı zədələyə bilər. Davam etmək istədiyinizə əminsiniz?</translation>

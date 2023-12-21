@@ -512,6 +512,7 @@
 <translation id="371398631992790800">બુકમાર્ક છુપાવો</translation>
 <translation id="37207012422556617">વલણમાં છે એવી શોધો</translation>
 <translation id="3725081662140949903">અન્ય લોકોને તમારા પાસવર્ડનો ઉપયોગ કરતા રોકવા માટે, તમારો પાસવર્ડ બદલવા માટે <ph name="APP" /> ઍપ ખોલો</translation>
+<translation id="3738428049780661523"><ph name="DATE" />ના રોજ બનાવ્યું</translation>
 <translation id="374357899112510277">ડાઉનલોડ છુપાવો</translation>
 <translation id="3745190878148784130">'ટેક્સ્ટ નાની-મોટી કરો' છુપાવો</translation>
 <translation id="3762232513783804601">તમારા iPad માટે બનાવાયેલું</translation>
@@ -546,7 +547,7 @@
 <translation id="3909222758573607742">એકાઉન્ટમાં પાસવર્ડ અને અન્ય આઇટમ સાચવો</translation>
 <translation id="3915450441834151894">સાઇટ માહિતી</translation>
 <translation id="3918585468378680136">પૅકેજનું સ્ટેટસ મેળવી રહ્યાં છીએ</translation>
-<translation id="3921585859122905677">ઍડ્રેસ બારની સ્થિતિ</translation>
+<translation id="3921585859122905677">ઍડ્રેસ બારની જગ્યા</translation>
 <translation id="3922310737605261887">કૉપિ કરેલી ટેક્સ્ટ માટે શોધ કરો</translation>
 <translation id="3928666092801078803">મારા ડેટાને સંયોજિત કરો</translation>
 <translation id="3929457972718048006">સરનામાં</translation>
@@ -1203,6 +1204,7 @@
 <translation id="7425346204213733349">તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગમાં ફેરફારને હવે તમારા Google એકાઉન્ટ પર સિંક કરવામાં આવશે નહીં. જોકે, તમારો હાલનો ડેટા તમારા Google એકાઉન્ટમાં સ્ટોર રહેશે.</translation>
 <translation id="7431991332293347422">શોધ અને અન્ય બાબતોને તમને મનગમતી બનાવવા માટે તમારા બ્રાઉઝિંગ ઇતિહાસનો ઉપયોગ કરવાની રીત નિયંત્રિત કરો</translation>
 <translation id="7435356471928173109">તમારા વ્યવસ્થાપક દ્વારા આ સુવિધા બંધ કરવામાં આવી છે</translation>
+<translation id="7436239899443308800">{count,plural, =1{1 ટૅબ}one{{count} ટૅબ}other{{count} ટૅબ}}</translation>
 <translation id="7438481509621345350">જ્યારે તમે કોઈ નવી ટૅબ ખોલશો, ત્યારે તમને <ph name="CHANNEL_NAME" /> પરથી હવે સ્ટોરી દેખાશે.</translation>
 <translation id="7451023311965289370">{count,plural, =1{બુકમાર્ક "{title}" પર સાચવ્યું}one{બુકમાર્ક "{title}" પર સાચવ્યું}other{બુકમાર્ક "{title}" પર સાચવ્યા}}</translation>
 <translation id="7454057999980797137">રાજ્ય / કાઉન્ટી</translation>
@@ -1210,7 +1212,7 @@
 <translation id="7459628154744868585">વધારેલું સંરક્ષણ ચાલુ છે</translation>
 <translation id="7465351360025415755">તમારા માટે મહત્ત્વપૂર્ણ હોય તે કન્ટેન્ટ મેળવો</translation>
 <translation id="7472734401283673885">કંપનીનું નામ</translation>
-<translation id="7473891865547856676">નહીં આભાર</translation>
+<translation id="7473891865547856676">ના, આભાર</translation>
 <translation id="7488874549363591659">ડિલિવર કર્યું</translation>
 <translation id="7491131399623468277">સેટિંગ પર જાઓ…</translation>
 <translation id="749854780843431406"><ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> બટન વડે તમે કોઈ નવું ટૅબ ખોલી શકો છો.</translation>
@@ -1426,7 +1428,7 @@
 <translation id="8613883225817609844">તાજેતરના ટૅબ છુપાવો</translation>
 <translation id="8620640915598389714">ફેરફાર કરો</translation>
 <translation id="8624447588354561276">પૅકેજ નંબર</translation>
-<translation id="8624753446837753970">સ્થિતિ સેટ કરો</translation>
+<translation id="8624753446837753970">જગ્યા સેટ કરો</translation>
 <translation id="8626393685701737946">તમે સેટિંગ &gt; કન્ટેન્ટ સેટિંગમાં જઈને ડિફૉલ્ટ સાઇટ વ્યૂ બદલીને ડેસ્કટૉપ વ્યૂ મોડ કરી શકો છો</translation>
 <translation id="8636825310635137004">તમારા અન્ય ઉપકરણો પરથી તમારા ટૅબ્સ મેળવવા માટે, સમન્વયન ચાલુ કરો.</translation>
 <translation id="8637431369725868556">જોખમી સાઇટથી સુરક્ષા મેળવો.</translation>

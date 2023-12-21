@@ -633,6 +633,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="219906046732893612">Lakásfelújítás</translation>
 <translation id="2202627062836089804">a kártya hátoldalán</translation>
 <translation id="2204482073374652408">Frissítés befejezve!</translation>
+<translation id="2207770355672215546">Engedélyezés mindig, bármilyen kártyával</translation>
 <translation id="2208053750671792556">Nem kapta meg a kódot? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">3. tálca</translation>
 <translation id="2210794033760923560">Jelentés feltöltése</translation>
@@ -1743,6 +1744,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="443673843213245140">A proxy használata le van tiltva, de kifejezett proxykonfiguráció van megadva.</translation>
 <translation id="4438821706955556403">Átlagos ár</translation>
 <translation id="4441832193888514600">Figyelmen kívül hagyva, mert a szabályzatot csak felhőalapú felhasználói szabályzatként lehet beállítani.</translation>
+<translation id="4445133368066241428">Népszerű témák</translation>
 <translation id="4449116177348980384">Webhelybeállítások kezelése gomb. A gombot megnyomva kezelheti a webhelyeken tárolt engedélyeket és adatokat a Chrome-beállításai között.</translation>
 <translation id="4451135742916150903">Engedélyt kérhet a HID-eszközökhöz való csatlakozásra</translation>
 <translation id="4451684391620232683">A felhasználónak megjelenített szöveg:</translation>
@@ -2355,7 +2357,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5695542892312572833">Szeretné a Windows Hello használatával igazolni és befejezni vásárlását?</translation>
 <translation id="5699628521141772782">Tejtermékek és tojás</translation>
 <translation id="5700761515355162635">Harmadik féltől származó cookie-k engedélyezve</translation>
-<translation id="5701023235904684227">Szeretné irányítani a(z) <ph name="READERNAME" /> eszközt, és szeretne hozzáférni az általa hozzáférhető intelligens kártyához?</translation>
 <translation id="5701381305118179107">Középre</translation>
 <translation id="5707154300732650394">Utazás folytatása</translation>
 <translation id="57094364128775171">Erős jelszó ajánlása…</translation>
@@ -2490,6 +2491,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5997247540087773573">Kiderült, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Fiókjai biztonságának megőrzése érdekében a Google Jelszókezelő a jelszó haladéktalan módosítását, majd a mentett jelszavak ellenőrzését javasolja.</translation>
 <translation id="5999271311987646952">A Chrome beépített biztonsági funkciókkal védi Önt böngészés közben – ilyen például a Google Biztonságos Böngészés, amely <ph name="BEGIN_LINK" />nemrég rosszindulatú programot talált<ph name="END_LINK" /> az Ön által felkeresni kívánt webhelyen.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> találat a következőre: <ph name="SEARCH_TEXT" /></translation>
+<translation id="6001839398155993679">Kezdjük</translation>
 <translation id="6002122790816966947">Saját eszközök</translation>
 <translation id="6005659677094197001">Folyamatos</translation>
 <translation id="6005765687956866568">Az automatikusan kitöltött adatok törölve lettek az űrlapról</translation>

@@ -2359,7 +2359,6 @@
 <translation id="5695542892312572833">Folosești Windows Hello ca să confirmi și finalizezi achiziția?</translation>
 <translation id="5699628521141772782">Lactate și ouă</translation>
 <translation id="5700761515355162635">Sunt permise cookie-urile terță parte</translation>
-<translation id="5701023235904684227">Vrei să controlezi cititorul <ph name="READERNAME" /> și să ai acces la cardul inteligent accesibil pentru acesta?</translation>
 <translation id="5701381305118179107">Pe centru</translation>
 <translation id="5707154300732650394">Continuă-ți parcursul</translation>
 <translation id="57094364128775171">Sugerează o parolă puternică…</translation>
@@ -2494,6 +2493,7 @@
 <translation id="5997247540087773573">Parola pe care tocmai ai folosit-o a fost găsită într-o încălcare a securității datelor. Pentru a-ți proteja conturile, Managerul de parole Google îți recomandă să schimbi parola acum și să verifici parolele salvate.</translation>
 <translation id="5999271311987646952">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google, care <ph name="BEGIN_LINK" />a detectat recent programe malware<ph name="END_LINK" /> pe site-ul pe care încerci să-l accesezi.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultate pentru „<ph name="SEARCH_TEXT" />”</translation>
+<translation id="6001839398155993679">Să începem</translation>
 <translation id="6002122790816966947">Dispozitivele tale</translation>
 <translation id="6005659677094197001">Continuu</translation>
 <translation id="6005765687956866568">Informațiile completate automat au fost șterse din formular</translation>
@@ -3254,7 +3254,7 @@ Detalii suplimentare:
 <translation id="7469935732330206581">Formularul nu este sigur</translation>
 <translation id="7470854469646445678">Specifică motivul copierii (obligatoriu)</translation>
 <translation id="7471007961486718967">Specifică motivul transferului (obligatoriu)</translation>
-<translation id="7473891865547856676">Nu, mulțumesc</translation>
+<translation id="7473891865547856676">Nu, Mulțumesc</translation>
 <translation id="7481312909269577407">Înainte</translation>
 <translation id="7481603210197454575">Plic italienesc</translation>
 <translation id="7483482939016730822">Rechizite și materiale școlare</translation>

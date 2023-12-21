@@ -8,6 +8,7 @@
 <translation id="1035980983510608210">Kufunga vichupo vyote kutafunga vichupo vilivyobandikwa pia.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Zima</translation>
+<translation id="1043592663436934089">Utaondolewa kwenye akaunti na data yako ya kuvinjari itafutwa</translation>
 <translation id="1044891598689252897">Tovuti zitafanya kazi kama kawaida</translation>
 <translation id="1049743911850919806">Kichupo fiche</translation>
 <translation id="1053651653201045802">Umeondoka kwenye akaunti. Ingia tena katika akaunti ili utumie alamisho, manenosiri na zaidi kwenye akaunti yako.</translation>
@@ -86,6 +87,7 @@
 <translation id="138618066238211776">Endelea ukitumia <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Wiki 4 zilizopita</translation>
 <translation id="1404330357948037222">Umeondoka Katika Akaunti</translation>
+<translation id="14066361343057390">Utaondolewa kwenye akaunti</translation>
 <translation id="1407135791313364759">Fungua zote</translation>
 <translation id="1408847409015257906">Gusa "Faragha na Usalama.”</translation>
 <translation id="1430915738399379752">Chapisha</translation>
@@ -259,6 +261,7 @@
 
 Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti mbalimbali, kwa mfano, kukuonyesha matangazo yanayokufaa zaidi.</translation>
 <translation id="2381405137052800939">Mambo ya Msingi</translation>
+<translation id="23824747102827308">Endelea kupata taarifa za habari, michezo na zaidi kulingana na mapendeleo yako</translation>
 <translation id="2386793615875593361">1 iliyochaguliwa</translation>
 <translation id="2390457533592708044">Ficha "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Kifurushi chako hakiwezi kuwasilishwa</translation>
@@ -299,6 +302,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="2604176749896001318">Sasisha Kivinjari Chako</translation>
 <translation id="2609008503159898744">Unataka Kufunga Vichupo Vyote?</translation>
 <translation id="2617210333344098964">Hamisha Anwani kwenye Akaunti</translation>
+<translation id="261739049332372104">Ili upate taarifa kuhusu maudhui yanayokufaa, washa arifa kwenye mipangilio yako ya iOS.</translation>
 <translation id="2625189173221582860">Nenosiri limenakiliwa</translation>
 <translation id="2626236249646841566">Kagua muunganisho wako kisha ujaribu kuingia katika akaunti tena.</translation>
 <translation id="2637313651144986786">Tafuta Vichupo...</translation>
@@ -326,6 +330,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="2712127207578915686">Imeshindwa kufungua faili</translation>
 <translation id="2718352093833049315">Kwenye Wi-Fi pekee</translation>
 <translation id="2738375676495545665">Kuficha Sehemu ya Yapi Mapya</translation>
+<translation id="2740910715135851329">Utaondolewa kwenye akaunti, vuchupo vitafungwa na data ya kuvinjari itafutwa</translation>
 <translation id="2747003861858887689">Sehemu iliyotangulia</translation>
 <translation id="2749231692441336879">Unafuatilia <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Akaunti zilizo katika Kifaa hiki</translation>
@@ -466,6 +471,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3482959374254649722">Inasawazisha vichupo vyako...</translation>
 <translation id="3484946776651937681">Fungua katika Folda ya Vipakuliwa</translation>
 <translation id="3485558910355485767">Dirisha Fiche Jipya</translation>
+<translation id="3488501490964659223">Vichupo vilifungwa na data yako ya kuvinjari ilifutwa. Uliondolewa kwenye akaunti</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /> kuhusu maudhui yaliyopendekezwa</translation>
 <translation id="3494788280727468875">Thibitisha Kufuta Data ya Kuvinjari</translation>
 <translation id="35083190962747987">Fungua ${url}</translation>
@@ -551,6 +557,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3968505803272650567">Dhibiti Mambo Yanayokuvutia</translation>
 <translation id="3989635538409502728">Ondoka</translation>
 <translation id="3995521777587992544">Upau wa shughuli ya upakiaji wa ukurasa, imepakia <ph name="EMAIL" />.</translation>
+<translation id="3997522473364371632">Msimamizi wako amezima kipengele cha kuruhusu kufikia nenosiri.</translation>
 <translation id="4002019827078931033">Sogeza Sehemu ya Anwani Kwenda Juu</translation>
 <translation id="4002066346123236978">Kichwa</translation>
 <translation id="4004204301268239848">Manenosiri yanahifadhiwa kwenye Akaunti yako ya Google ili uweze kuyatumia kwenye kifaa chochote.</translation>
@@ -560,6 +567,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4042870976416480368">Pata katika Ukurasa</translation>
 <translation id="4045648459118332842">Pata manenosiri uliyohifadhi kwenye programu yoyote kwa kugusa mara moja tu</translation>
 <translation id="4049507953662678203">Hakikisha una muunganisho wa mtandao, kisha ujaribu tena.</translation>
+<translation id="4054572406751135230">Pata taarifa za habari, michezo na zaidi.</translation>
 <translation id="4066639687323968621">Ingia ukitumia Akaunti yako ya Google ili usawazishe alamisho, historia yako na mambo yako mengine.</translation>
 <translation id="4092655288299341041">Onyesha Usaidizi</translation>
 <translation id="4105841739161771091">{count,plural, =1{Futa Anwani}other{Futa Anwani}}</translation>
@@ -698,6 +706,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4808744395915275922">Masasisho</translation>
 <translation id="4818522717893377262">Ongeza Lugha...</translation>
 <translation id="481968316161811770">Data ya Vidakuzi na Tovuti</translation>
+<translation id="4821595350501541683">Vichupo vilifungwa na data ya kuvinjari ikafutwa</translation>
 <translation id="4824480232751123840">Kiwango</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} na kingine kimoja}other{{domain} na vingine {count}}}</translation>
 <translation id="4826218269716039351">Zuia vya Wengine</translation>
@@ -707,6 +716,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4833686396768033263">Vichupo vya Hivi Punde Havipatikani</translation>
 <translation id="4833786495304741580">Hutuma kiotomatiki takwimu za matumizi na ripoti za programu kuacha kufanya kazi kwa Google.</translation>
 <translation id="4840495572919996524">Haitasawazisha tena alamisho, historia, manenosiri na vipengee vyako vingine kwenye Akaunti yako ya Google.</translation>
+<translation id="484280513275854557">Uliondolewa kwenye akaunti; data ya kuvinjari ikafutwa</translation>
 <translation id="4844899002472726590">Angalia na ubadilishe mada zinazokuvutia</translation>
 <translation id="4848999860252535517">Ungependa kufuta Nenosiri la <ph name="WEBSITE" />?</translation>
 <translation id="4850886885716139402">Mwonekano</translation>
@@ -718,6 +728,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4883824756452868502">Tambua Vipimo</translation>
 <translation id="488785315393301722">Onyesha Maelezo</translation>
 <translation id="4894963374040315706">Hali hii hukuwezesha kutafuta kwa kutumia sauti yako</translation>
+<translation id="4896467949657706481">Vichupo vilifungwa; uliondolewa kwenye akaunti</translation>
 <translation id="489903206070130262">Kichupo Ulichofungua Mara ya Mwisho</translation>
 <translation id="4901778704868714008">Hifadhi...</translation>
 <translation id="4904877109095351937">Tia Alama Kuwa Umesoma</translation>
@@ -739,12 +750,14 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="5016420433031926653">Tuma kwa <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Nikumbushe Baadaye</translation>
 <translation id="5037676449506322593">Chagua Zote</translation>
+<translation id="5038113048373546701">Pokea arifa za habari, michezo na zaidi kulingana na mapendeleo yako</translation>
 <translation id="5039804452771397117">Ruhusu</translation>
 <translation id="5050294464480863218">Mambo Ya Kuzingatia</translation>
 <translation id="5050810143224996149">Shiriki Nenosiri</translation>
 <translation id="5056446788882570708">Matatizo yalipatikana <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Sawa</translation>
 <translation id="5062321486222145940">Pakua Hifadhi ya Google</translation>
+<translation id="5083217068549651688">{TIME,plural, =0{Muda Uliosalia: Sekunde {TIME}}=1{Muda Uliosalia: Sekunde {TIME}}other{Muda Uliosalia: Sekunde {TIME}}}</translation>
 <translation id="5083464117946352670">Haiwezi kutambua ukubwa wa faili.</translation>
 <translation id="5090832849094901128">Hatua ya kufuta nenosiri hili haitafuta akaunti yako kwenye <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Kutuma ujumbe kwenye Twiter kumekamilika.</translation>
@@ -795,6 +808,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="5300589172476337783">Onyesha</translation>
 <translation id="5317780077021120954">Hifadhi</translation>
 <translation id="5318298563956633672">Tayari unafuatilia bidhaa hii.</translation>
+<translation id="5327753393331509826">Kupata Arifa za Maudhui</translation>
 <translation id="5329451663851195956">Unaweza kuvuta chini ili uonyeshe upya.</translation>
 <translation id="5339316356165661760">Washa Kipengele cha Kusawazisha</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Ungependa Kufuatilia Kifurushi Hiki?}other{Ungependa Kufuatilia Vifurushi {COUNT}?}}</translation>
@@ -940,6 +954,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6103540626693881831">Usimbaji Fiche Kwenye Kifaa</translation>
 <translation id="6119050551270742952">Ukurasa wa sasa wa Wavuti uko katika Hali Fiche</translation>
 <translation id="6122191549521593678">Mtandaoni</translation>
+<translation id="6123514585040403489">Vichupo vyako vitafungwa</translation>
 <translation id="6127379762771434464">Kipengee kimeondolewa</translation>
 <translation id="6136914049981179737">Sekunde chache</translation>
 <translation id="6144589619057374135">Fungua ${url} katika Hali Fiche</translation>
@@ -1080,6 +1095,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="6753469262000681876">Hali ya Kufunga</translation>
 <translation id="6760509555861141183">Rudi kwenye Kichupo cha Hivi Karibuni</translation>
 <translation id="6762812039470893796">Acha Kuchagua Zote</translation>
+<translation id="6779455296366983087">Data yako ya kuvinjari itafutwa</translation>
 <translation id="6780034285637185932">Msimbo wa Eneo</translation>
 <translation id="6781260999953472352">Ungependa Kuwasha Kipengele cha Kusawazisha?</translation>
 <translation id="6781405765516175232">Kwa chaguo za kupata njia, gusa “Pata Maelekezo.”</translation>
@@ -1145,6 +1161,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7108762695052995889">Tembelea Tovuti</translation>
 <translation id="7133798577887235672">Jina Kamili</translation>
 <translation id="7136892417564438900">Kamera haipatikani</translation>
+<translation id="7141960840225504692">Vichupo vyako vitafungwa na data ya kuvinjari itafutwa</translation>
 <translation id="7154343200458623869">Kamilisha jukumu lako.</translation>
 <translation id="7161230316646448869">Sawazisha alamisho, historia na mambo yako mengine kwenye vifaa vyote</translation>
 <translation id="7162168282402939716">Fungua Vichupo Fiche Ukitumia <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
@@ -1154,6 +1171,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7192050974311852563">Anza Kuleta Kumbukumbu</translation>
 <translation id="7203585745079012652">Tamka Majibu</translation>
 <translation id="7207023858769244910">Sawazisha ili upate maudhui kulingana na mambo yanayokuvutia.</translation>
+<translation id="7210568419880432164">Washa Arifa..</translation>
 <translation id="721597782417389033">Jina la Kuwakilisha Kadi si Sahihi</translation>
 <translation id="7221173315674413369">Gundua vipengele na vidokezo vipya kwenye sehemu ya Vipengele Vipya</translation>
 <translation id="7223102419539744003">Funga Kichupo</translation>
@@ -1192,6 +1210,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7454057999980797137">Jimbo / Mkoa</translation>
 <translation id="745899714366929493">Siku nzima</translation>
 <translation id="7459628154744868585">Kipengele cha Ulinzi Ulioboreshwa kimewashwa</translation>
+<translation id="7465351360025415755">Pata maudhui yanayokufaa</translation>
 <translation id="7472734401283673885">Jina la Kampuni</translation>
 <translation id="7473891865547856676">La Asante</translation>
 <translation id="7488874549363591659">Kimefikishwa</translation>
@@ -1359,6 +1378,8 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8343993175958086504">Hifadhi nakala ya maudhui yako ili uyatumie kwenye kifaa chochote.</translation>
 <translation id="834783239627985533">Tovuti Zilizotembelewa Zaidi</translation>
 <translation id="8364841868226993049">Inahifadhi picha katika Picha kwenye Google kwa<ph name="USER_EMAIL" />...</translation>
+<translation id="8370406443343902172">Nenda kwenye Mipangilio...</translation>
+<translation id="8374977641764177587">Je ungependa kuwasha Arifa?</translation>
 <translation id="8378714024927312812">Inasimamiwa na shirika lako</translation>
 <translation id="8386068868580335421">Weka upya</translation>
 <translation id="838867811594159347">Weka Kauli ya siri...</translation>
@@ -1387,6 +1408,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8517375800490286174">Leseni za Programu Huria</translation>
 <translation id="8522147671363140027">{count,plural, =1{Nenosiri {count} na vipengee vingine vimehifadhiwa kwenye kifaa hiki pekee. Ili uvitumie kwenye vifaa vyako vingine, vihifadhi kwenye Akaunti yako ya Google, {email}.}other{Manenosiri {count} na vipengee vingine vimehifadhiwa kwenye kifaa hiki pekee. Ili uvitumie kwenye vifaa vyako vingine, vihifadhi kwenye Akaunti yako ya Google, {email}.}}</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Vichupo <ph name="FIRST_VISIBLE_TAB" /> kupitia <ph name="LAST_VISIBLE_TAB" /> kati ya <ph name="NUMBER_OF_OPEN_TABS" /></translation>
+<translation id="852576975834694248">Utaondolewa kwenye akaunti na vichupo vitafungwa</translation>
 <translation id="8528009254289981965">Fungua viungo kutoka kwenye programu zingine katika Hali Fiche</translation>
 <translation id="8529767659511976195">Mpya</translation>
 <translation id="8532105204136943229">Mwaka wa Muda wa Matumizi Kuisha</translation>
@@ -1422,6 +1444,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8693663554456874301">{count,plural, =1{Funga Kichupo}other{Funga Vichupo}}</translation>
 <translation id="8703536910991780768">Manenosiri yako ni Thabiti</translation>
 <translation id="8706253136355675497">Halijoto</translation>
+<translation id="8709409604518538305">Vichupo vilifungwa</translation>
 <translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="8717864919010420084">Nakili Kiungo</translation>
 <translation id="8721297211384281569">Menyu ya Zana</translation>
@@ -1474,6 +1497,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8961757677053809960">Ungependa Kuondoa Onyo?</translation>
 <translation id="8971545611707025079">Angalia Tena</translation>
 <translation id="8974714402877957201">1. Fungua Mipangilio ya iPad</translation>
+<translation id="8975015774710126284">Data ya kuvinjari ilifutwa</translation>
 <translation id="8976382372951310360">Usaidizi</translation>
 <translation id="8976414606286374109">Kadi huhifadhiwa kwenye Akaunti yako ya Google.</translation>
 <translation id="8981454092730389528">Vidhibiti vya Shughuli za Google</translation>
@@ -1484,6 +1508,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="9000089900434778519">Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta historia ya mambo uliyotafuta.</translation>
 <translation id="9008201768610948239">Puuza</translation>
 <translation id="9012585441087414258">Hukulinda dhidi ya tovuti, vipakuliwa na viendelezi vinavyojulikana kuwa hatari Iwapo ukurasa utafanya kitu chenye kutia mashaka, URL na sehemu za maudhui hutumwa kwenye kipengele cha Kuvinjari Salama na Google.</translation>
+<translation id="9029650858822697271">Uliondolewa kwenye akaunti</translation>
 <translation id="9034759925968272072">Hutaondolewa katika Akaunti yako ya Google. Huenda Akaunti yako ya Google ina aina nyingine za historia ya kuvinjari katika <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Onyesha Asili</translation>
 <translation id="9039373489628511875">Kipimo data</translation>

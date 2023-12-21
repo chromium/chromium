@@ -40,6 +40,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
 <translation id="1155734730463845512">Nivel de batería actual: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1160215328209699296">activada e en uso</translation>
+<translation id="1163437384438183174">Quita O meu teléfono do andel</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">O teu cable USB-C non pode conectarse a pantallas de maneira adecuada</translation>
 <translation id="1175572348579024023">Desprazarse</translation>
@@ -70,6 +71,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1239161794459865856">A función <ph name="FEATURE_NAME" /> está conectada.</translation>
 <translation id="1240638468526743569">Unha aplicación</translation>
 <translation id="1242883863226959074">dispositivo</translation>
+<translation id="1245644940275736236">Ir ao Asistente</translation>
 <translation id="124678866338384709">Pechar a pestana actual</translation>
 <translation id="1246890715821376239">Aplicacións non compatibles</translation>
 <translation id="1247372569136754018">Micrófono (interno)</translation>
@@ -693,6 +695,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="383629559565718788">Mostrar a configuración do teclado</translation>
 <translation id="384082539148746321">Queres eliminar o modelo?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> e despois <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> ou <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50 + 94 / 5</translation>
 <translation id="3846575436967432996">Non hai información de rede dispoñible</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="385300504083504382">Comezo</translation>
@@ -927,6 +930,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + frecha arriba</translation>
 <translation id="4762573482154983647">Ocultar aplicacións</translation>
+<translation id="4762802395013012237">5 pés en metros</translation>
 <translation id="4763885921995354846">Desta forma, todas as aplicacións e sitios web que teñan permiso de cámara poderán acceder a ela. É posible que teñas que actualizar a páxina web ou reiniciar a aplicación.</translation>
 <translation id="4774338217796918551">Volve mañá á seguinte hora: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Aínda non se puido verificar o teu contrasinal. Téntao de novo.</translation>
@@ -969,6 +973,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="491504982845934899">Activar despois da configuración do dispositivo <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Aceptar</translation>
+<translation id="491907188205944472">Busca o que necesites directamente no menú de aplicacións</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> está usando a cámara nestes intres</translation>
 <translation id="492453977506755176">Tecla do modo de captura</translation>
 <translation id="4925542575807923399">O administrador desta conta require que esta conta sexa a primeira na que se inicie sesión cando se cree unha sesión de inicio de sesión múltiple.</translation>
@@ -1119,6 +1124,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5518068085000130971">Eses son os conceptos básicos. Continúa en Explorar, a nosa aplicación integrada, para obter consellos e axuda. Descubrirás ideas sobre como comezar, recomendacións de aplicacións, ofertas especiais e as funcións de Chromebook máis recentes.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">O teu administrador quitou todos os perfís de eSIM. Para obter máis información, ponte en contacto con el.</translation>
+<translation id="5520909879404821039">"Ola" en francés</translation>
 <translation id="5523434445161341166">A función <ph name="FEATURE_NAME" /> estase conectando.</translation>
 <translation id="5529587891732734495">Pór emisión en pausa</translation>
 <translation id="5532994612895037630">Toca calquera parte para realizar unha gravación da pantalla completa</translation>
@@ -1696,6 +1702,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7886277072580235377">Cando saias da conta, borrarase a túa sesión de Internet. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Enviar un correo</translation>
 <translation id="7893503627044934815">Non quero que se mostre este ficheiro</translation>
+<translation id="7893547474469215105">Define "cénit"</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Premiches o atallo de teclado para xirar a pantalla. Queres realizar esta acción?</translation>
 <translation id="7897626842031123113">Bandexa de estado, hora <ph name="TIME" />,
@@ -1711,6 +1718,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7904094684485781019">O administrador desta conta non permitiu o inicio de sesión múltiple.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivos conectados</translation>
+<translation id="7923534281713082605">O tempo</translation>
 <translation id="7926080067315048321">Ver na Web todas as tarefas de Tarefas de Google</translation>
 <translation id="7930731167419639574">O que se diga procésase de xeito local e o ditado funciona sen conexión</translation>
 <translation id="7932451802722951285">Abrir en Google Calendar</translation>
@@ -1857,6 +1865,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8555757996376137129">Quitar escritorio actual</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> recoméndache actualizar o teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="8563862697512465947">Configuración de notificacións</translation>
+<translation id="8569751806372591456">Aquí tes algunhas suxestións que podes probar</translation>
 <translation id="857201607579416096">O menú moveuse á esquina inferior dereita da pantalla.</translation>
 <translation id="8581946341807941670">Preme <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> e fai clic nunha ligazón</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1900,6 +1909,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="875593634123171288">Mostrar a configuración da VPN</translation>
 <translation id="8759408218731716181">Erro ao configurar o inicio de sesión múltiple</translation>
 <translation id="8763883995157866248">Pon o dispositivo no modo de suspensión</translation>
+<translation id="877404052021108314">90 °F en C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, aplicación instalada, bloqueada</translation>
 <translation id="8785070478575117577">Conectar con <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1908,6 +1918,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8806053966018712535">Cartafol <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Axuda"</translation>
 <translation id="8814190375133053267">Wifi</translation>
+<translation id="8815390544836110344">Preme o atallo para facer unha captura de pantalla, Control máis Maiúsculas máis a tecla do modo de visión xeral</translation>
 <translation id="881757059229893486">Configuración dos métodos de introdución de texto</translation>
 <translation id="8819728065740986820">A función Carga intelixente está activada</translation>
 <translation id="8825863694328519386">Pasa o dedo desde a esquerda para volver</translation>

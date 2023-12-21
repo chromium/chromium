@@ -920,6 +920,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1695510246756136088">Internetyhteyttä ei voi muodostaa. Yritä uudelleen.</translation>
 <translation id="1696555181932908973">Voit kokeilla muita tapoja jatkaa tämän käyttöä: <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Laitteelle on määritetty SSH-palvelin. Älä kirjaudu sisään arkaluontoisilla tileillä.</translation>
+<translation id="1697122132646041614">En tykkää ‑painike avaa lomakkeen, jolla voit antaa yksityiskohtaista palautetta siitä, miksi et pidä näistä tuloksista.</translation>
 <translation id="1697150536837697295">Taide</translation>
 <translation id="1697686431566694143">Muokkaa tiedostoa</translation>
 <translation id="1698796500103229697">&amp;Maksutavat</translation>
@@ -2309,6 +2310,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2731700343119398978">Odota...</translation>
 <translation id="2731971182069536520">Seuraavan kerran kun käynnistät laitteen uudelleen, järjestelmänvalvoja tekee kertaluontoisen päivityksen, joka poistaa paikallisen datasi.</translation>
 <translation id="2732134891301408122">Ylimääräinen sisältö: <ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Tykkään-painike lähettää palautetta tuloksista tykkäämisestä.</translation>
 <translation id="2733992589856193783">Olet luonut avainkoodin tälle sivustolle. Tarvitset mobiililaitteen sisäänkirjautumista varten.</translation>
 <translation id="27349076983469322">Vaalea tausta</translation>
 <translation id="2735712963799620190">Aikataulu</translation>
@@ -5673,6 +5675,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5431318178759467895">Väri</translation>
 <translation id="5432145523462851548">Näytä <ph name="FILE_NAME" /> kansiossa</translation>
 <translation id="5432223177001837288">Jos haluat jakaa audiota, jaa välilehti</translation>
+<translation id="5432872710261597882">Tykkään-painike lähettää palautetta tykkäämisestä.</translation>
 <translation id="543338862236136125">Muokkaa salasanaa</translation>
 <translation id="5434065355175441495">PKCS #1 RSA-salaus</translation>
 <translation id="5435274640623994081">Ota earcon-äänimerkkien kirjaaminen käyttöön</translation>
@@ -5708,6 +5711,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Muistiinpanot lukitusnäytöllä</translation>
 <translation id="5459864179070366255">Jatka asennusta</translation>
+<translation id="5460861858595506978">Inspiraatiota</translation>
 <translation id="5461050611724244538">Yhteys puhelimeesi on katkennut</translation>
 <translation id="5463275305984126951">Sijainnin <ph name="LOCATION" /> hakemisto</translation>
 <translation id="5463450804024056231">Tilaa sähköpostit: <ph name="DEVICE_TYPE" /></translation>
@@ -5927,6 +5931,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5631272057151918206">Tämä poistaa enintään <ph name="OFFLINE_STORAGE_SIZE" /> tilaa offline-tiedostoistasi. Osa tiedostoista on edelleen käytettävissä offline-tilassa. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Lupaa pyydetty, vastaa painamalla Ctrl + seuraava</translation>
 <translation id="5632221585574759616">Lue lisää laajennusten luvista</translation>
+<translation id="5632485077360054581">Näytä miten</translation>
 <translation id="5632566673632479864">Tilisi <ph name="EMAIL" /> ei ole enää sallittu ensisijaisena tilinä. Koska <ph name="DOMAIN" /> ylläpitää tätä tiliä, kirjanmerkit, historia, salasanat ja muut asetukset tyhjennetään tältä laitteelta.</translation>
 <translation id="5633149627228920745">Lue lisää järjestelmävaatimuksista</translation>
 <translation id="563371367637259496">Mobiili</translation>
@@ -8890,6 +8895,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7969046989155602842">Komento</translation>
 <translation id="7970673414865679092">Ethernet-tiedot</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 ja RSA-salaus</translation>
+<translation id="7973149423217802477">En tykkää ‑palaute lähettää palautetta ei-tykkäyksestä.</translation>
 <translation id="7973776233567882054">Mikä seuraavista kuvaa parhaiten verkkoasi?</translation>
 <translation id="797394244396603170">Valitse laite, jolle haluat jakaa tiedostoja</translation>
 <translation id="7974566588408714340">Yritä uudelleen laajennuksella <ph name="EXTENSIONNAME" /></translation>

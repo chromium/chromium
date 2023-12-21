@@ -3110,6 +3110,7 @@
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">Διαχωριστικό</translation>
 <translation id="3387023983419383865">,</translation>
+<translation id="3387588771342841525">Όταν είναι ενεργοποιημένη αυτή η ρύθμιση, οι κωδικοί πρόσβασης αποθηκεύονται στον λογαριασμό <ph name="EMAIL" />. Όταν είναι απενεργοποιημένη αυτή η ρύθμιση, οι κωδικοί πρόσβασης αποθηκεύονται μόνο σε αυτή τη συσκευή.</translation>
 <translation id="3387614642886316601">Χρήση βελτιωμένου ορθογραφικού ελέγχου</translation>
 <translation id="3387829698079331264">Να μην επιτρέπεται να γνωρίζει πότε χρησιμοποιείτε ενεργά τη συσκευή σας</translation>
 <translation id="3388094447051599208">Ο δίσκος εξόδου είναι σχεδόν γεμάτος</translation>
@@ -3298,6 +3299,7 @@
 <translation id="3532521178906420528">Δημιουργία σύνδεσης δικτύου…</translation>
 <translation id="3532852121563960103">{NUM_OF_FILES,plural, =1{Μετακίνηση 1 αρχείου στο <ph name="CLOUD_PROVIDER" />}other{Μετακίνηση {NUM_OF_FILES} αρχείων στο <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - Ο ήχος τέθηκε σε σίγαση</translation>
+<translation id="3537099313456411235">Συνδέστε τον λογαριασμό <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" />, για να αποκτήσετε πρόσβαση στα αρχεία του Drive στην εφαρμογή Files</translation>
 <translation id="3537881477201137177">Μπορείτε να το τροποποιήσετε αργότερα από τις Ρυθμίσεις</translation>
 <translation id="3538066758857505094">Σφάλμα απεγκατάστασης Linux. Δοκιμάστε ξανά.</translation>
 <translation id="3540173484406326944">Δεν υπάρχει δίκτυο μέσω <ph name="HOST_DEVICE_NAME" /></translation>
@@ -4208,6 +4210,7 @@
 <translation id="4246980464509998944">Επιπλέον σχόλια:</translation>
 <translation id="424726838611654458">Να είναι πάντα ανοικτό στο Adobe Reader</translation>
 <translation id="4248401726442101648">Δεν υπάρχει συνδεδεμένη κάμερα</translation>
+<translation id="4249116869350613769">Εξοικονόμηση μπαταρίας</translation>
 <translation id="4249248555939881673">Αναμονή για σύνδεση δικτύου…</translation>
 <translation id="4249373718504745892">Αποκλείστηκε η πρόσβαση αυτής της σελίδας στην κάμερα και στο μικρόφωνό σας.</translation>
 <translation id="424963718355121712">Οι εφαρμογές θα πρέπει να προβάλλονται από τον κεντρικό υπολογιστή που επηρεάζουν</translation>
@@ -5038,6 +5041,7 @@
 <translation id="4893522937062257019">Στην οθόνη κλειδώματος</translation>
 <translation id="4895799941222633551">Δημιουργία &amp;συντόμευσης…</translation>
 <translation id="4898011734382862273">Το πιστοποιητικό "<ph name="CERTIFICATE_NAME" />" αντιπροσωπεύει μια Αρχή Πιστοποίησης</translation>
+<translation id="4898913189644355814">Ένας ιστότοπος μπορεί να αποθηκεύσει την προτιμώμενη γλώσσα ή τα στοιχεία που θέλετε να αγοράσετε. Αυτές οι πληροφορίες είναι διαθέσιμες στον ιστότοπο και τους υποτομείς του.</translation>
 <translation id="4899052647152077033">Αντιστροφή χρωμάτων</translation>
 <translation id="4899696330053002588">Περιέχει διαφημίσεις</translation>
 <translation id="490031510406860025">Δεν επιτρέπεται σε αυτόν τον ιστότοπο</translation>
@@ -5382,6 +5386,7 @@
 <translation id="5185359571430619712">Επεκτάσεις κριτικής</translation>
 <translation id="5185386675596372454">Η τελευταία έκδοση του " <ph name="EXTENSION_NAME" /> "έχει απενεργοποιηθεί, επειδή απαιτούνται περισσότερα δικαιώματα.</translation>
 <translation id="5185500136143151980">Χωρίς σύνδεση στο διαδίκτυο</translation>
+<translation id="5186381005592669696">Προσαρμογή γλώσσας εμφάνισης για υποστηριζόμενες εφαρμογές</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869">Χρήση <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Ενεργοποίηση θύρας</translation>
@@ -5933,6 +5938,7 @@
 <translation id="5631272057151918206">Αυτή η ενέργεια θα καταργήσει έως και <ph name="OFFLINE_STORAGE_SIZE" /> του χώρου που χρησιμοποιείται από τα αρχεία σας εκτός σύνδεσης. Ορισμένα αρχεία θα συνεχίσουν να είναι διαθέσιμα εκτός σύνδεσης. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Ζητήθηκε άδεια, πατήστε Ctrl + Εμπρός για απάντηση.</translation>
 <translation id="5632221585574759616">Μάθετε περισσότερα σχετικά με τις άδειες επέκτασης</translation>
+<translation id="5632485077360054581">Οδηγίες</translation>
 <translation id="5632566673632479864">Δεν είναι πλέον δυνατή η χρήση του λογαριασμού σας <ph name="EMAIL" /> ως κύριου λογαριασμού. Επειδή ο λογαριασμός είναι διαχειριζόμενος από τον τομέα <ph name="DOMAIN" />, οι σελιδοδείκτες, το ιστορικό, οι κωδικοί πρόσβασης και άλλες ρυθμίσεις σας θα διαγραφούν από αυτήν τη συσκευή.</translation>
 <translation id="5633149627228920745">Μάθετε περισσότερα σχετικά με τις απαιτήσεις συστήματος</translation>
 <translation id="563371367637259496">Κινητό</translation>
@@ -6163,6 +6169,7 @@
 <translation id="5828633471261496623">Εκτύπωση...</translation>
 <translation id="5830205393314753525">Δεν είναι δυνατό το άνοιγμα της εφαρμογής <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">Αποθήκευση Σελίδας &amp;Ως...</translation>
+<translation id="583179300286794292">Έχετε συνδεθεί ως <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Διαγραφή δεδομένων και αδειών ιστοτόπου για τον ιστότοπο <ph name="SITE_NAME" />, όλους τους ιστοτόπους που περιλαμβάνονται σε αυτόν και την εγκατεστημένη εφαρμογή του;</translation>
 <translation id="5832813618714645810">Προφίλ</translation>
 <translation id="583281660410589416">Άγνωστο</translation>
@@ -6236,6 +6243,7 @@
 <translation id="5883356647197510494">Αποκλείστηκαν αυτόματα οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Προσαρμογή πρόσβασης για κάθε επέκταση</translation>
 <translation id="5885314688092915589">Ο οργανισμός σας θα διαχειρίζεται αυτό το προφίλ</translation>
+<translation id="5885470467814103868">Έναρξη σάρωσης</translation>
 <translation id="5885631909150054232">Αντιγραφή διακριτικού</translation>
 <translation id="5886009770935151472">Δάκτυλο 1</translation>
 <translation id="5886112770923972514">Συνδεθείτε και ρυθμίστε γρήγορα κοντινές συσκευές Γρήγορης σύζευξης</translation>
@@ -6827,6 +6835,7 @@
 <translation id="6348805481186204412">Αποθηκευτικός χώρος εκτός σύνδεσης</translation>
 <translation id="6349101878882523185">Εγκατάσταση εφαρμογής <ph name="APP_NAME" /></translation>
 <translation id="6350821834561350243">Εισαγάγετε μια σαφή περιγραφή του ζητήματος και βήματα για την αναπαραγωγή του (αν είναι εφικτό)</translation>
+<translation id="6351178441572658285">Γλώσσες εφαρμογής</translation>
 <translation id="6354918092619878358">Ελλειπτική καμπύλη SECG secp256r1 (επίσης γνωστή ως ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355395056805388423">Λήψη στοιχείων Λογαριασμού Google…</translation>
 <translation id="635609604405270300">Κρατήστε τη συσκευή ενεργοποιημένη</translation>
@@ -7432,6 +7441,7 @@
 <translation id="6833479554815567477">Η καρτέλα καταργήθηκε από την ομάδα <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833996806551876956">Δοκιμή Privacy Sandbox</translation>
 <translation id="6835762382653651563">Συνδεθείτε στο Διαδίκτυο για να ενημερώσετε τη συσκευή σας <ph name="DEVICE_TYPE" />.</translation>
+<translation id="683630338945552556">Χρήση και αποθήκευση κωδικών πρόσβασης στον Λογαριασμό σας Google</translation>
 <translation id="6839225236531462745">Σφάλμα διαγραφής πιστοποιητικού</translation>
 <translation id="6839916869147598086">Η σύνδεση έχει αλλάξει</translation>
 <translation id="6840155290835956714">Ερώτηση πριν από την αποστολή</translation>
@@ -8050,6 +8060,7 @@
 <translation id="7347943691222276892">Κάντε κλικ για να απομακρυνθείτε από τη σελίδα <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Πληκτρολόγιο οθόνης</translation>
 <translation id="7349010927677336670">Ομαλότητα βίντεο</translation>
+<translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} κωδικός πρόσβασης αποθηκεύεται μόνο σε αυτή τη συσκευή}other{{COUNT} κωδικοί πρόσβασης αποθηκεύονται μόνο σε αυτή τη συσκευή}}</translation>
 <translation id="7352651011704765696">Παρουσιάστηκε κάποιο πρόβλημα</translation>
 <translation id="7352664183151911163">Στις εφαρμογές σας και στο πρόγραμμα περιήγησης Chrome</translation>
 <translation id="7353261921908507769">Οι επαφές σας μπορούν να μοιραστούν περιεχόμενο μαζί σας όταν βρίσκονται κοντά. Οι μεταφορές δεν θα ξεκινήσουν έως ότου αποδεχτείτε.</translation>
@@ -8290,6 +8301,7 @@
 <translation id="7523117833414447032">Κατά την ανάγνωση κεφαλαίων</translation>
 <translation id="7523585675576642403">Μετονομασία προφίλ</translation>
 <translation id="7525067979554623046">Δημιουργία</translation>
+<translation id="7525879597899798851">Η τοποθεσία έχει απενεργοποιηθεί στις προτιμήσεις λειτουργικού συστήματος</translation>
 <translation id="7526989658317409655">Placeholder</translation>
 <translation id="7528224636098571080">Να μην ανοίξει</translation>
 <translation id="7529411698175791732">Ελέγξτε τη σύνδεσή σας στο διαδίκτυο. Εάν το πρόβλημα παραμένει, δοκιμάστε να αποσυνδεθείτε και να συνδεθείτε ξανά.</translation>
@@ -8484,6 +8496,7 @@
 <translation id="7670483791111801022">Υπότιτλοι</translation>
 <translation id="7671130400130574146">Χρήση της γραμμής τίτλου συστήματος και των περιγραμμάτων.</translation>
 <translation id="767127784612208024">Αγγίξτε για να επιβεβαιώσετε την επαναφορά</translation>
+<translation id="7671472752213333268">Η επέκταση <ph name="EXTENSION_NAME" /> θέλει να πραγματοποιήσει σάρωση από το <ph name="SCANNER_NAME" />.</translation>
 <translation id="7672504401554182757">Επιλέξτε ποια συσκευή έχει το κλειδί πρόσβασης για το <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> στη σελίδα <ph name="PAGE_TITLE" />.</translation>
 <translation id="7673313156293624327">Αρχεία καταγραφής ChromeOS Shill (Διαχειριστής σύνδεσης)</translation>

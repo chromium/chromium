@@ -4196,6 +4196,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4246980464509998944">Comentários adicionais:</translation>
 <translation id="424726838611654458">Sempre aberto no Adobe Reader</translation>
 <translation id="4248401726442101648">Nenhuma câmara ligada</translation>
+<translation id="4249116869350613769">Poupança de bateria</translation>
 <translation id="4249248555939881673">A aguardar ligação à rede...</translation>
 <translation id="4249373718504745892">Esta página foi impedida de aceder à sua câmara e microfone.</translation>
 <translation id="424963718355121712">As aplicações têm de ser publicadas a partir do anfitrião que afetam.</translation>
@@ -5025,6 +5026,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4893522937062257019">No ecrã de bloqueio</translation>
 <translation id="4895799941222633551">Criar &amp;atalho…</translation>
 <translation id="4898011734382862273">O certificado "<ph name="CERTIFICATE_NAME" />" representa uma autoridade de certificação</translation>
+<translation id="4898913189644355814">Um site pode guardar o seu idioma preferido ou os artigos que quer comprar. Estas informações estão disponíveis para o site e os respetivos subdomínios.</translation>
 <translation id="4899052647152077033">Inverter cores</translation>
 <translation id="4899696330053002588">Contém anúncios</translation>
 <translation id="490031510406860025">Não permitido neste site</translation>
@@ -5921,6 +5923,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5631272057151918206">Esta ação vai remover até <ph name="OFFLINE_STORAGE_SIZE" /> de espaço usado pelos seus ficheiros offline. Alguns ficheiros continuam disponíveis offline. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Autorização solicitada, prima Ctrl + Avançar para responder</translation>
 <translation id="5632221585574759616">Saiba mais acerca das autorizações de extensões</translation>
+<translation id="5632485077360054581">Mostrar-me como</translation>
 <translation id="5632566673632479864">A sua conta <ph name="EMAIL" /> já não é permitida como a conta principal. Como esta conta é gerida por <ph name="DOMAIN" />, os marcadores, o histórico, as palavras-passe e outras definições serão apagados deste dispositivo.</translation>
 <translation id="5633149627228920745">Saber mais sobre os requisitos do sistema</translation>
 <translation id="563371367637259496">Móvel</translation>

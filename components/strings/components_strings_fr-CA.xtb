@@ -2359,7 +2359,6 @@
 <translation id="5695542892312572833">Utiliser Windows Hello pour vérifier et finaliser votre achat?</translation>
 <translation id="5699628521141772782">Produits laitiers et œufs</translation>
 <translation id="5700761515355162635">Témoins tiers autorisés</translation>
-<translation id="5701023235904684227">Contrôler <ph name="READERNAME" /> et accéder à la carte à puce qui lui est accessible?</translation>
 <translation id="5701381305118179107">Centrer</translation>
 <translation id="5707154300732650394">Reprendre votre exploration</translation>
 <translation id="57094364128775171">Suggérer un mot de passe fort…</translation>
@@ -2494,6 +2493,7 @@
 <translation id="5997247540087773573">Le mot de passe que vous venez d'utiliser a été trouvé dans un cas de violation de données. Pour sécuriser vos comptes, le gestionnaire de mots de passe de Google vous recommande de le changer maintenant et de vérifier vos mots de passe enregistrés.</translation>
 <translation id="5999271311987646952">Chrome est doté de fonctionnalités de sécurité intégrées pour vous protéger pendant votre navigation, comme la Navigation sécurisée Google, qui a <ph name="BEGIN_LINK" />récemment détecté un logiciel malveillant<ph name="END_LINK" /> sur le site que vous essayez de visiter.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> résultats trouvés pour « <ph name="SEARCH_TEXT" /> »</translation>
+<translation id="6001839398155993679">Accéder</translation>
 <translation id="6002122790816966947">Vos appareils</translation>
 <translation id="6005659677094197001">Continu</translation>
 <translation id="6005765687956866568">Les renseignements remplis automatiquement ont été effacés du formulaire</translation>
@@ -3254,7 +3254,7 @@ Détails supplémentaires :
 <translation id="7469935732330206581">Le formulaire n'est pas sécurisé</translation>
 <translation id="7470854469646445678">Fournir la raison de la copie (obligatoire)</translation>
 <translation id="7471007961486718967">Fournir la raison du transfert (obligatoire)</translation>
-<translation id="7473891865547856676">Non merci</translation>
+<translation id="7473891865547856676">Non, merci</translation>
 <translation id="7481312909269577407">Suivant</translation>
 <translation id="7481603210197454575">Enveloppe italienne</translation>
 <translation id="7483482939016730822">Fournitures scolaires et matériel de classe</translation>

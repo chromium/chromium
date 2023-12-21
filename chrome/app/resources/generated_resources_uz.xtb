@@ -5922,6 +5922,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5631272057151918206">Bunda <ph name="OFFLINE_STORAGE_SIZE" /> gacha band qilgan oflayn fayllar olib tashlanadi. Ayrim fayllar oflayn rejimda qoladi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Ruxsat talabi keldi, javob berish uchun Ctrl + Forward tugmalarini bosing</translation>
 <translation id="5632221585574759616">Kengaytma ruxsatlari haqida batafsil</translation>
+<translation id="5632485077360054581">Koʻrsatish</translation>
 <translation id="5632566673632479864"><ph name="EMAIL" /> hisobingiz endi birlamchi emas. Chunki bu hisob <ph name="DOMAIN" /> domenida boshqariladi, bukmarklar, tarix, parollar va boshqa sozlamalar bu qurilmadan tozalanadi.</translation>
 <translation id="5633149627228920745">Tizim talablari haqida batafsil</translation>
 <translation id="563371367637259496">Mobil</translation>

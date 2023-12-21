@@ -63,6 +63,7 @@ Things to consider:
 <translation id="2427791862912929107">Chrome has features that help you manage your Internet data and how quickly you're able to load web pages.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">To get your saved passwords in your other apps easily, use Chrome for auto-fill</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{This happens when Chrome isn't used for {THRESHOLD} minute. This could include history and autofill.}other{This happens when Chrome isn't used for {THRESHOLD} minutes. This could include history and autofill.}}</translation>
 <translation id="2561231791489583059">Use Chrome as your default browser to stay protected from dangerous sites and keep your passwords safe</translation>
 <translation id="2574249610672786438">To see your tabs from wherever you use Chrome, sign in on all of your devices</translation>
 <translation id="2576431527583832481">Chrome just got better! A new version is available.</translation>
@@ -91,6 +92,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3340938510625667914">Chrome Actions</translation>
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{This happens when Chrome isn't used for {THRESHOLD} minute}other{This happens when Chrome isn't used for {THRESHOLD} minutes}}</translation>
 <translation id="3399930248910934354">Open Chrome settings</translation>
 <translation id="3472587960215700950">Chrome uses Google Maps to give you directions and local info on detected addresses.</translation>
 <translation id="3503014945441706099">Get Enhanced Safe Browsing for this Chrome profile, too</translation>

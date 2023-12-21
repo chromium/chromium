@@ -633,6 +633,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="219906046732893612">Awezokuthuthukiswa kwekhaya</translation>
 <translation id="2202627062836089804">ngemuva kwekhadi lakho</translation>
 <translation id="2204482073374652408">Iqedile ukubuyekeza!</translation>
+<translation id="2207770355672215546">Vumela njalo, nganoma yiliphi ikhadi</translation>
 <translation id="2208053750671792556">Awuyitholanga ikhodi yakho? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Ithileyi elingu-3</translation>
 <translation id="2210794033760923560">Layisha Umbiko</translation>
@@ -1742,6 +1743,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="443673843213245140">Ukusetshenziswa ummeleli kukhitshaziwe kodwa ukulungiselelwa okubekelwe obala kommeleli kucacisiwe.</translation>
 <translation id="4438821706955556403">Intengo ejwayelekile</translation>
 <translation id="4441832193888514600">Kuzitshwe ngenxa yokuthi inqubomgomo ikwazi ukusethwa kuphela njengenqubomgomo yomsebenzisi we-cloud.</translation>
+<translation id="4445133368066241428">Izihloko ezidumile</translation>
 <translation id="4449116177348980384">Phatha inkinobho yamasethingi wesayithi, yenza kusebenze ukuze uphathe izimvume nedatha egcinwe kuwo wonke amasayithi kumasethingi we-Chrome</translation>
 <translation id="4451135742916150903">Ingacela ukuxhuma kumadivayisi we-HID</translation>
 <translation id="4451684391620232683">Umbhalo wethulwa kumsebenzisi:</translation>
@@ -2354,7 +2356,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5695542892312572833">Usebenzisa i-Windows Hello ukuze uqinisekise futhi uqede ukuthenga kwakho?</translation>
 <translation id="5699628521141772782">Ubisi Namaqanda</translation>
 <translation id="5700761515355162635">Amakhukhi enkampani engahlangene ngqo avunyelwe</translation>
-<translation id="5701023235904684227">Lawula okuthi <ph name="READERNAME" /> uthi uthole imvume ekhadini elismathi elinemvume kukho?</translation>
 <translation id="5701381305118179107">Maphakathi</translation>
 <translation id="5707154300732650394">Qhubeka nohambo lwakho</translation>
 <translation id="57094364128775171">Iphakamisa iphasiwedi eqinile…</translation>
@@ -2489,6 +2490,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5997247540087773573">Iphasiwedi osanda kuyisebenzisa itholakele ekwephuleni isivumelwano sedatha. Ukuze uvikele ama-akhawunti akho, Umphathi Wephasiwedi Ye-Google uncoma ukuthi uyishintshe manje futhi uhlole amaphasiwedi akho alondoloziwe.</translation>
 <translation id="5999271311987646952">I-Chrome yakhe izici zangaphakathi zokuphepha ukuze ivikele wena ngesikhathi ubhrawuza — Njengokuphequlula Ngokuphephile kwe-Google, <ph name="BEGIN_LINK" />esanda kuthola uhlelo olungayilungele ikhompyutha<ph name="END_LINK" /> esayithini ozama ukuyivakashela.</translation>
 <translation id="6000758707621254961">imiphumela engu-<ph name="RESULT_COUNT" /> ye-'<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6001839398155993679">Masihambe</translation>
 <translation id="6002122790816966947">Amadivayisi akho</translation>
 <translation id="6005659677094197001">Okuqhubekayo</translation>
 <translation id="6005765687956866568">Ulwazi olugcwaliswe ngokuzenzakalela lusuliwe efomini</translation>

@@ -4188,6 +4188,7 @@
 <translation id="4246980464509998944">その他のコメント:</translation>
 <translation id="424726838611654458">常に Adobe Reader で開く</translation>
 <translation id="4248401726442101648">カメラが接続されていません</translation>
+<translation id="4249116869350613769">バッテリー セーバー</translation>
 <translation id="4249248555939881673">ネットワークに接続しています...</translation>
 <translation id="4249373718504745892">このページではカメラとマイクへのアクセスがブロックされています。</translation>
 <translation id="424963718355121712">アプリは関連付けられたホストから配信される必要があります</translation>
@@ -5016,6 +5017,7 @@
 <translation id="4893522937062257019">ロック画面</translation>
 <translation id="4895799941222633551">ショートカットを作成(&amp;S)...</translation>
 <translation id="4898011734382862273">証明書にある「<ph name="CERTIFICATE_NAME" />」は認証局を表しています</translation>
+<translation id="4898913189644355814">使用する言語や購入しようとしている商品がサイトに保存される場合があります。この情報は、該当のサイトとそのサブドメインで使用されます。</translation>
 <translation id="4899052647152077033">色を反転</translation>
 <translation id="4899696330053002588">広告が表示されます</translation>
 <translation id="490031510406860025">このサイトでは許可されていません</translation>
@@ -5909,6 +5911,7 @@
 <translation id="5631272057151918206">オフライン ファイルの使用容量が最大 <ph name="OFFLINE_STORAGE_SIZE" /> 空きます。一部のファイルは引き続きオフラインで使用可能です。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">権限がリクエストされました。対応するには、Ctrl+Forward キーを押してください</translation>
 <translation id="5632221585574759616">拡張機能の権限の詳細</translation>
+<translation id="5632485077360054581">手順を見る</translation>
 <translation id="5632566673632479864">お使いのアカウント <ph name="EMAIL" /> は、メイン アカウントとして使用できなくなりました。このアカウントは <ph name="DOMAIN" /> で管理されているため、ブックマーク、履歴、パスワードなどの設定はこのデバイスから削除されます。</translation>
 <translation id="5633149627228920745">システム要件の詳細</translation>
 <translation id="563371367637259496">モバイル</translation>

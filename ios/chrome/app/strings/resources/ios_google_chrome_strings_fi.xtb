@@ -63,6 +63,7 @@ Huomioitavaa:
 <translation id="2427791862912929107">Chrome sisältää ominaisuuksia, joiden avulla voit hallita datansiirtoa ja verkkosivujen latausnopeutta.
 <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Löydät muiden sovellusten tallennetut salasanat helposti käyttämällä Chromea automaattiseen täyttöön</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Näin käy, kun Chromea ei ole käytetty {THRESHOLD} minuuttiin. Tämä koskee esimerkiksi historiaa ja automaattista täyttöä.}other{Näin käy, kun Chromea ei ole käytetty {THRESHOLD} minuuttiin. Tämä koskee esimerkiksi historiaa ja automaattista täyttöä.}}</translation>
 <translation id="2561231791489583059">Käytä Chromea oletusselaimena, niin pysyt turvassa vaarallisilta sivustoilta ja pidät salasanasi turvassa</translation>
 <translation id="2574249610672786438">Kirjaudu sisään kaikilla laitteillasi, jotta voit nähdä Chrome-välilehtesi missä tahansa</translation>
 <translation id="2576431527583832481">Chromesta tuli juuri entistä parempi! Uusi versio on saatavilla.</translation>
@@ -91,6 +92,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3282568296779691940">Kirjaudu Chromeen</translation>
 <translation id="3340938510625667914">Chrome-pikavalinnat</translation>
 <translation id="3345341804167540816">Käytä Chromea missä tahansa</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Näin käy, kun Chromea ei ole käytetty {THRESHOLD} minuuttiin.}other{Näin käy, kun Chromea ei ole käytetty {THRESHOLD} minuuttiin.}}</translation>
 <translation id="3399930248910934354">Avaa Chromen asetukset</translation>
 <translation id="3472587960215700950">Chrome käyttää Google Mapsia reittiohjeiden ja paikallisten tietojen tarjoamiseen havaituissa osoitteissa.</translation>
 <translation id="3503014945441706099">Lisää Parannettu selaussuoja myös tälle Chrome-profiilille</translation>

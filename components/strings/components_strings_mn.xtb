@@ -516,6 +516,7 @@
 <translation id="1975457531113383421">Орох цаасны тавиур</translation>
 <translation id="1975584088563498795">Шуудангийн хайрцаг 10</translation>
 <translation id="1978555033938440688">Жижиг программын хувилбар</translation>
+<translation id="1979156660928743046">Медиагийн мэдээлэл</translation>
 <translation id="1988881251331415125">Хэрэв алдаагүй, зөв бичсэн бол <ph name="BEGIN_LINK" />Холболтын оношилгоог ажиллуулж үзнэ үү<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">Авиралт, ууланд авиралт</translation>
 <translation id="1991830984769263878">Автомашины даатгал</translation>
@@ -1526,6 +1527,7 @@
 <translation id="4050599136622776556">Chromium төлбөрийн хэрэгслийг засахаар оролдож байна.</translation>
 <translation id="405399507749852140">Аль нэг сайт дээр үнэ буурсан тохиолдолд сэрэмжлүүлэг аваарай</translation>
 <translation id="4056223980640387499">Сепиа</translation>
+<translation id="4059523390906550209">Эмзэг өгөгдөл хамгаалах талаар нэмэлт мэдээлэл авна уу</translation>
 <translation id="4063063121357725926">Сагсанд тань хөнгөлөлт олоход Google-д тусална уу</translation>
 <translation id="406358100705415968">Ажлын аюулгүй байдлын хамгаалалтын хэрэгсэл</translation>
 <translation id="4063924980214801036">Картуудыг илүү хурдан баталгаажуулахын тулд төхөөрөмжийн түгжээг тайлахыг ашиглах</translation>
@@ -1684,6 +1686,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блоклох (өгөгдмөл)</translation>
 <translation id="4314815835985389558">Синк хийхийг удирдах</translation>
+<translation id="4316057107946726368">Хамгийн ихдээ <ph name="MAX_CHAR_COUNT" /> тэмдэгттэй зөвтгөсөн мессеж оруулна уу. <ph name="MAX_CHAR_COUNT" />-с <ph name="ACTUAL_CHAR_COUNT" /> тэмдэгт ашигласан.</translation>
 <translation id="4318213823155573975">Толгойн өмсгөл</translation>
 <translation id="4318312030194671742">Paint Preview нэгтгэгчийн үйлчилгээ</translation>
 <translation id="4318566738941496689">Таны төхөөрөмжийн нэр болон сүлжээний хаяг</translation>
@@ -2491,6 +2494,7 @@
 <translation id="5997247540087773573">Таны дөнгөж сая ашигласан нууц үгийг өгөгдлийн зөрчлөөс оллоо. Таны бүртгэлүүдийг хамгаалахын тулд Google Password Manager үүнийг одоо өөрчлөх болон хадгалсан нууц үгнүүдээ шалгахыг зөвлөж байна.</translation>
 <translation id="5999271311987646952">Chrome-д Google-н аюулгүй хөтөч зэрэг таныг үзэх үед хамгаалах аюулгүй байдлын бүрэлдэхүүн онцлогууд байдаг бөгөөд энэ нь таны зочлохоор оролдож буй сайтаас <ph name="BEGIN_LINK" />саяхан хортой программ олсон<ph name="END_LINK" />.</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />'-н <ph name="RESULT_COUNT" /> илэрц</translation>
+<translation id="6001839398155993679">Эхэлцгээе</translation>
 <translation id="6002122790816966947">Таны төхөөрөмжүүд</translation>
 <translation id="6005659677094197001">Тасралтгүй</translation>
 <translation id="6005765687956866568">Автоматаар бөглөсөн мэдээллийг маягтаас арилгасан</translation>
@@ -2670,6 +2674,7 @@
 <translation id="6355392890578844978">Энэ хөтчийг компани эсвэл бусад байгууллагаас удирддаггүй. Энэ төхөөрөмж дээрх үйл ажиллагааг Chromium-с гадуур удирддаг байж болно. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">төлбөрийн хэрэгслийг засах</translation>
 <translation id="6358450015545214790">Эдгээр нь юу гэсэн үг вэ?</translation>
+<translation id="6360213755783740931">Хортой программаас хамгаалах талаар нэмэлт мэдээлэл авна уу</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Логуудыг харах</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Прокси, галт хана болон Аюулгүй DNS тохируулгыг шалгах<ph name="END_LINK" /></translation>
@@ -2727,6 +2732,7 @@
 <translation id="6443406338865242315">Таны ямар өргөтгөл болон залгаасыг суулгасан болох</translation>
 <translation id="6446608382365791566">Дэлгэрэнгүй мэдээлэл нэмэх</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6448371595882710519">Өгөгдлийн тохиргооны талаар нэмэлт мэдээлэл авна уу</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Чоу дугтуй 40</translation>
 <translation id="6451458296329894277">Маягтын дахин мэдүүлгийг баталгаажуулах</translation>
