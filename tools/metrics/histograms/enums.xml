@@ -46718,16 +46718,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Invalid File"/>
 </enum>
 
-<enum name="SafetyCheckExtensionsStatus">
-  <int value="0" label="CHECKING"/>
-  <int value="1" label="DEPRECATED_ERROR"/>
-  <int value="2" label="NONE_BLOCKLISTED"/>
-  <int value="3" label="BLOCKLISTED_ALL_DISABLED"/>
-  <int value="4" label="BLOCKLISTED_REENABLED_ALL_BY_USER"/>
-  <int value="5" label="BLOCKLISTED_REENABLED_SOME_BY_USER"/>
-  <int value="6" label="BLOCKLISTED_REENABLED_ALL_BY_ADMIN"/>
-</enum>
-
 <enum name="SafetyCheckNotificationsModuleInteractions">
   <int value="0" label="Block"/>
   <int value="1" label="Block all"/>

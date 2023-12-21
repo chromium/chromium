@@ -1401,9 +1401,6 @@ TEST_F(SafetyCheckHandlerTest, CheckExtensions_NoExtensions) {
       kExtensions,
       static_cast<int>(
           SafetyCheckHandler::ExtensionsStatus::kNoneBlocklisted)));
-  histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.ExtensionsResult",
-      SafetyCheckHandler::ExtensionsStatus::kNoneBlocklisted, 1);
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckExtensions_NoneBlocklisted) {
@@ -1423,9 +1420,6 @@ TEST_F(SafetyCheckHandlerTest, CheckExtensions_NoneBlocklisted) {
   EXPECT_TRUE(event);
   VerifyDisplayString(event,
                       "You're protected from potentially harmful extensions");
-  histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.ExtensionsResult",
-      SafetyCheckHandler::ExtensionsStatus::kNoneBlocklisted, 1);
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckExtensions_BlocklistedAllDisabled) {
@@ -1448,9 +1442,6 @@ TEST_F(SafetyCheckHandlerTest, CheckExtensions_BlocklistedAllDisabled) {
   EXPECT_TRUE(event);
   VerifyDisplayString(
       event, "1 potentially harmful extension is off. You can also remove it.");
-  histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.ExtensionsResult",
-      SafetyCheckHandler::ExtensionsStatus::kBlocklistedAllDisabled, 1);
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckExtensions_BlocklistedReenabledAllByUser) {
@@ -1473,9 +1464,6 @@ TEST_F(SafetyCheckHandlerTest, CheckExtensions_BlocklistedReenabledAllByUser) {
   EXPECT_TRUE(event);
   VerifyDisplayString(event,
                       "You turned 1 potentially harmful extension back on");
-  histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.ExtensionsResult",
-      SafetyCheckHandler::ExtensionsStatus::kBlocklistedReenabledAllByUser, 1);
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckExtensions_BlocklistedReenabledAllByAdmin) {
@@ -1498,9 +1486,6 @@ TEST_F(SafetyCheckHandlerTest, CheckExtensions_BlocklistedReenabledAllByAdmin) {
   VerifyDisplayString(event,
                       "Your administrator turned 1 potentially harmful "
                       "extension back on");
-  histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.ExtensionsResult",
-      SafetyCheckHandler::ExtensionsStatus::kBlocklistedReenabledAllByAdmin, 1);
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckExtensions_BlocklistedReenabledSomeByUser) {
@@ -1539,9 +1524,6 @@ TEST_F(SafetyCheckHandlerTest, CheckExtensions_BlocklistedReenabledSomeByUser) {
                       "You turned 1 potentially harmful extension back "
                       "on. Your administrator "
                       "turned 1 potentially harmful extension back on.");
-  histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.ExtensionsResult",
-      SafetyCheckHandler::ExtensionsStatus::kBlocklistedReenabledSomeByUser, 1);
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckParentRanDisplayString) {
