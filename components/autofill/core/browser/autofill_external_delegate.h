@@ -31,6 +31,7 @@ namespace autofill {
 class AutofillDriver;
 class BrowserAutofillManager;
 class CreditCard;
+enum class CreditCardFetchResult;
 
 // TODO(csharp): A lot of the logic in this class is copied from AutofillAgent.
 // Once Autofill is moved out of WebKit this class should be the only home for
@@ -147,11 +148,12 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // to delete is determined by the passed `guid`.
   void ShowDeleteAddressProfileDialog(const std::string& guid);
 
-  // Triggered when user closes the address editor dialog.
+  // Triggered when the user closes the address editor dialog.
   void OnAddressEditorClosed(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
       base::optional_ref<const AutofillProfile> profile);
 
+  // Triggered when the user closes the delete address profile dialog.
   void OnDeleteDialogClosed(const std::string& guid, bool user_accepted_delete);
 
   // Called when a credit card is scanned using device camera.
@@ -201,9 +203,17 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
       const SuggestionPosition& position,
       AutofillSuggestionTriggerSource trigger_source);
 
-  // Fills the main text from the `suggestion`.
+  // Uses the `credit_card` to optionally fetch the credit card number depending
+  // on the `suggestion.field_by_field_filling_type_used`. Fills the fetched
+  // credit card number or the `suggestion::main_text`.
   void FillCreditCardFieldByFieldFillingSuggestion(
+      const CreditCard& credit_card,
       const Suggestion& suggestion);
+
+  // Triggered when the user closes the authentication flow needed to access
+  // the number and cvc of the `credit_card`.
+  void OnCreditCardFetched(CreditCardFetchResult result,
+                           const CreditCard* credit_card);
 
   // Will remove Autofill warnings from |suggestions| if there are also
   // autocomplete entries in the vector. Note: at this point, it is assumed that

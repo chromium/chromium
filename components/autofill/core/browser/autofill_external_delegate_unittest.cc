@@ -124,6 +124,26 @@ auto PopupOpenArgsAre(
                Field(&PopupOpenArgs::trigger_source, trigger_source));
 }
 
+// TODO(crbug.com/1493361): Unify existing `MockCreditCardAccessManager`s in a
+// separate file.
+class MockCreditCardAccessManager : public CreditCardAccessManager {
+ public:
+  MockCreditCardAccessManager(AutofillDriver* driver,
+                              AutofillClient* client,
+                              PersonalDataManager* personal_data_manager,
+                              autofill_metrics::CreditCardFormEventLogger*
+                                  credit_card_form_event_logger)
+      : CreditCardAccessManager(driver,
+                                client,
+                                personal_data_manager,
+                                credit_card_form_event_logger) {}
+  MOCK_METHOD(void,
+              FetchCreditCard,
+              (const CreditCard*,
+               CreditCardAccessManager::OnCreditCardFetchedCallback),
+              (override));
+};
+
 class MockPersonalDataManager : public TestPersonalDataManager {
  public:
   MockPersonalDataManager() = default;
@@ -285,9 +305,16 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
     client().set_personal_data_manager(
         std::make_unique<MockPersonalDataManager>());
     autofill_driver_ = std::make_unique<NiceMock<MockAutofillDriver>>();
-    driver().set_autofill_manager(
+    auto mock_browser_autofill_manager =
         std::make_unique<NiceMock<MockBrowserAutofillManager>>(
-            autofill_driver_.get(), &client()));
+            autofill_driver_.get(), &client());
+    test_api(*mock_browser_autofill_manager)
+        .set_credit_card_access_manager(
+            std::make_unique<NiceMock<MockCreditCardAccessManager>>(
+                autofill_driver_.get(), &client(), &pdm(),
+                test_api(*mock_browser_autofill_manager)
+                    .credit_card_form_event_logger()));
+    driver().set_autofill_manager(std::move(mock_browser_autofill_manager));
   }
 
   // Issue an OnQuery call.
@@ -344,6 +371,10 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   MockPersonalDataManager& pdm() {
     return *static_cast<MockPersonalDataManager*>(
         client().GetPersonalDataManager());
+  }
+  MockCreditCardAccessManager& cc_access_manager() {
+    return static_cast<MockCreditCardAccessManager&>(
+        manager().GetCreditCardAccessManager());
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -1485,13 +1516,15 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().DidSelectSuggestion(suggestion);
 }
 
-TEST_F(AutofillExternalDelegateUnitTest, FieldByFieldFilling_FillCreditCard) {
+TEST_F(AutofillExternalDelegateUnitTest,
+       FieldByFieldFilling_FillCreditCardName) {
   const CreditCard local_card = test::GetCreditCard();
   pdm().AddCreditCard(local_card);
   Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
       local_card.guid(), CREDIT_CARD_NAME_FULL);
   IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
 
+  EXPECT_CALL(cc_access_manager(), FetchCreditCard).Times(0);
   EXPECT_CALL(manager(),
               FillOrPreviewField(mojom::ActionPersistence::kFill,
                                  mojom::TextReplacement::kReplaceAll,
@@ -1499,6 +1532,61 @@ TEST_F(AutofillExternalDelegateUnitTest, FieldByFieldFilling_FillCreditCard) {
                                  suggestion.main_text.value,
                                  PopupItemId::kCreditCardFieldByFieldFilling));
 
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 1});
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       FieldByFieldFilling_FillCreditCardNumber_FetchingFailed) {
+  const CreditCard server_card = test::GetMaskedServerCard();
+  pdm().AddCreditCard(server_card);
+  Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
+      server_card.guid(), CREDIT_CARD_NUMBER);
+  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
+  manager().OnFormsSeen({queried_form_}, {});
+
+  EXPECT_CALL(cc_access_manager(), FetchCreditCard)
+      .WillOnce(
+          [&server_card](
+              const CreditCard* credit_card,
+              CreditCardAccessManager::OnCreditCardFetchedCallback callback) {
+            EXPECT_EQ(*credit_card, server_card);
+            std::move(callback).Run(
+                /*result=*/CreditCardFetchResult::kTransientError,
+                /*credit_card=*/nullptr);
+          });
+  EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 1});
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       FieldByFieldFilling_FillCreditCardNumber_Fetched) {
+  const CreditCard server_card = test::GetMaskedServerCard();
+  pdm().AddCreditCard(server_card);
+  Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
+      server_card.guid(), CREDIT_CARD_NUMBER);
+  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
+  manager().OnFormsSeen({queried_form_}, {});
+
+  const CreditCard unlocked_card = test::GetFullServerCard();
+  EXPECT_CALL(cc_access_manager(), FetchCreditCard)
+      .WillOnce(
+          [&server_card, &unlocked_card](
+              const CreditCard* credit_card,
+              CreditCardAccessManager::OnCreditCardFetchedCallback callback) {
+            EXPECT_EQ(*credit_card, server_card);
+            std::move(callback).Run(
+                /*result=*/CreditCardFetchResult::kSuccess,
+                /*credit_card=*/&unlocked_card);
+          });
+  EXPECT_CALL(
+      manager(),
+      FillOrPreviewField(
+          mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+          HasQueriedFormId(), HasQueriedFieldId(),
+          unlocked_card.GetInfo(CREDIT_CARD_NUMBER, pdm().app_locale()),
+          PopupItemId::kCreditCardFieldByFieldFilling));
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 1});
 }

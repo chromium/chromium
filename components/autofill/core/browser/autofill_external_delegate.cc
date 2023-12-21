@@ -973,9 +973,10 @@ void AutofillExternalDelegate::FillFieldByFieldFillingSuggestion(
           manager_->client().GetPersonalDataManager()->GetProfileByGUID(guid)) {
     FillAddressFieldByFieldFillingSuggestion(*profile, suggestion, position,
                                              trigger_source);
-  } else if (manager_->client().GetPersonalDataManager()->GetCreditCardByGUID(
-                 guid)) {
-    FillCreditCardFieldByFieldFillingSuggestion(suggestion);
+  } else if (const CreditCard* credit_card = manager_->client()
+                                                 .GetPersonalDataManager()
+                                                 ->GetCreditCardByGUID(guid)) {
+    FillCreditCardFieldByFieldFillingSuggestion(*credit_card, suggestion);
   }
 }
 
@@ -1058,13 +1059,37 @@ void AutofillExternalDelegate::PreviewCreditCardFieldByFieldFillingSuggestion(
 }
 
 void AutofillExternalDelegate::FillCreditCardFieldByFieldFillingSuggestion(
+    const CreditCard& credit_card,
     const Suggestion& suggestion) {
-  // TODO(crbug.com/1493361): Trigger card unmask dialog to fetch cc number
-  // depending on the `suggestion.field_by_field_filling_type_used`.
+  if (*suggestion.field_by_field_filling_type_used == CREDIT_CARD_NUMBER) {
+    manager_->GetCreditCardAccessManager().FetchCreditCard(
+        &credit_card,
+        base::BindOnce(&AutofillExternalDelegate::OnCreditCardFetched,
+                       GetWeakPtr()));
+    return;
+  }
   manager_->FillOrPreviewField(mojom::ActionPersistence::kFill,
                                mojom::TextReplacement::kReplaceAll, query_form_,
                                query_field_, suggestion.main_text.value,
                                suggestion.popup_item_id);
+}
+
+void AutofillExternalDelegate::OnCreditCardFetched(
+    CreditCardFetchResult result,
+    const CreditCard* credit_card) {
+  if (result != CreditCardFetchResult::kSuccess) {
+    return;
+  }
+  // In the failure case, `credit_card` can be `nullptr`, but in the success
+  // case it is non-null.
+  CHECK(credit_card);
+
+  manager_->OnCreditCardFetchedSuccessfully(*credit_card);
+  manager_->FillOrPreviewField(
+      mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+      query_form_, query_field_,
+      credit_card->GetInfo(CREDIT_CARD_NUMBER, manager_->app_locale()),
+      PopupItemId::kCreditCardFieldByFieldFilling);
 }
 
 void AutofillExternalDelegate::FillAutofillFormData(
