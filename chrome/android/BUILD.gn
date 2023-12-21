@@ -29,6 +29,7 @@ import("//chrome/browser/share/android/java_sources.gni")
 import("//chrome/chrome_paks.gni")
 import("//chrome/common/features.gni")
 import("//chrome/version.gni")
+import("//components/plus_addresses/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
@@ -232,6 +233,12 @@ if (current_toolchain == default_toolchain) {
       "//third_party/androidx:androidx_gridlayout_gridlayout_java",
       "//third_party/androidx:androidx_preference_preference_java",
     ]
+
+    if (plus_addresses_use_internal_android_resources) {
+      deps += [ "//clank/components/plus_addresses:java_resources" ]
+    } else {
+      deps += [ "//components/plus_addresses/android:java_resources" ]
+    }
   }
 
   android_library("app_hooks_java") {

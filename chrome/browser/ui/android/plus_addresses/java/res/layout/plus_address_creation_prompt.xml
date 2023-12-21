@@ -16,12 +16,14 @@ found in the LICENSE file.
         android:paddingVertical="12dp">
 
   <ImageView
+      android:id="@+id/plus_address_logo"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
       android:layout_marginBottom="@dimen/list_item_default_margin"
       android:importantForAccessibility="no"
-      app:srcCompat="@drawable/chrome_sync_logo" />
+      android:adjustViewBounds="true"
+      android:maxWidth="75dp" />
 
   <TextView
       android:id="@+id/plus_address_notice_title"
