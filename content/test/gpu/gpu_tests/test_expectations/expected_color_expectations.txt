@@ -113,7 +113,8 @@ crbug.com/1302427 [ clang-coverage fuchsia fuchsia-board-qemu-x64 ] ExpectedColo
 
 crbug.com/1469270 [ bigsur nvidia-0xfe9 angle-opengl ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
-crbug.com/1506258 [ mac intel-0x3e9b graphite-enabled ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
+crbug.com/1506258 [ asan graphite-enabled intel-0x3e9b mac no-clang-coverage release ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
+crbug.com/1506258 [ debug graphite-enabled intel-0x3e9b mac no-asan no-clang-coverage ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 
 
 #######################################################################
