@@ -109,7 +109,7 @@ const blink::{{namespace}}QualifiedName& TagToQualifedName(
     {{namespace}}Tag tag) {
   switch (tag) {
 {% for tag in tags|sort(attribute='name', case_sensitive=True) %}
-    case {{namespace}}Tag::{{tag|symbol}}:
+    case {{namespace}}Tag::{{tag|tag_symbol}}:
       return {{tag|symbol}}Tag;
 {% endfor %}
     case {{namespace}}Tag::kUnknown:

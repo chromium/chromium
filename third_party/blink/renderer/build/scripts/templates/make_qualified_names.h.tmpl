@@ -31,7 +31,7 @@ enum class {{namespace}}Tag {
   // lot, and comparing to 0 saves an instruction on some hardware.
   kUnknown = 0,
 {% for tag in tags|sort(attribute='name') %}
-  {{tag|symbol}},
+  {{tag|tag_symbol}},
 {% endfor %}
 };
 {% endif %}

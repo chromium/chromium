@@ -15,7 +15,8 @@
   //   that ensure that the tokenizer produces HTMLTag::kUnknown when the
   //   feature flag is disabled.
   // * make sure that any uses of HTMLTag::kYourElement treat it as
-  //   HTMLTag::kUnknown if the feature flag is disabled.
+  //   HTMLTag::kUnknown if the feature flag is disabled.  The member is
+  //   renamed to HTMLTag::kYourElementOrUnknown to remind you of this.
   // * have a virtual suite testing the feature flag being disabled that
   //   checks that any relevant behaviors (parsing or otherwise) are
   //   unaffected when the feature is disabled.

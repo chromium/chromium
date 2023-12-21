@@ -22,10 +22,10 @@ namespace blink {
       // the appropriate entry in html_tag_names.json5 .  Also
       // see the documentation in html_tag_names.json5 for
       // additional things you should test when doing this.
-      ? {{namespace|lower}}_names::HTMLTag::{{tag|symbol}}
+      ? {{namespace|lower}}_names::HTMLTag::{{tag_symbols[tag]}}
       : {{namespace|lower}}_names::HTMLTag::kUnknown)
 {%- else -%}
-  {{namespace|lower}}_names::HTMLTag::{{tag|symbol}}
+  {{namespace|lower}}_names::HTMLTag::{{tag_symbols[tag]}}
 {%- endif %}
 {%- endmacro %}
 
