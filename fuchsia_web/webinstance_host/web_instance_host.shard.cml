@@ -45,6 +45,11 @@
       availability: "optional",
     },
     {
+      directory: "tzdata-icu",
+      from: "parent",
+      to: "#web_instances",
+    },
+    {
       // Statically offered to all web_instances regardless of whether they were
       // created with `ContextFeatureFlags.NETWORK`.
       directory: "root-ssl-certificates",

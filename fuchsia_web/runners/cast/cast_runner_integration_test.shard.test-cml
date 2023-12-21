@@ -4,7 +4,10 @@
 {
   offer: [
     {
-      directory: "config-data",
+      directory: [
+		"config-data",
+        "tzdata-icu",
+      ],
       from: "parent",
       to: "#realm_builder",
     },

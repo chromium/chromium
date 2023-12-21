@@ -64,6 +64,11 @@
       availability: "optional",
     },
     {
+      directory: "tzdata-icu",
+      rights: [ "r*" ],
+      path: "/config/tzdata",
+    },
+    {
       // Capabilities used by the Runner itself.
       protocol: [
         "chromium.cast.ApplicationConfigManager",

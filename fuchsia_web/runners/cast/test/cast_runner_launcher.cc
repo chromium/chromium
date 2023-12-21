@@ -126,6 +126,7 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
                         .as = "config-data-for-web-instance",
                         .subdir = "web_engine"},
               Directory{.name = "root-ssl-certificates"},
+              Directory{.name = "tzdata-icu"},
 
               // fuchsia.web/Context required and recommended protocols.
               Protocol{fuchsia::buildinfo::Provider::Name_},
