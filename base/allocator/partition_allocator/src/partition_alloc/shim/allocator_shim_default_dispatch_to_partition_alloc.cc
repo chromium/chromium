@@ -588,37 +588,6 @@ void ConfigurePartitions(
   PA_CHECK(!g_roots_finalized.exchange(true));  // Ensure configured once.
 }
 
-// TODO(crbug.com/1137393): Remove this functions once pdfium has switched to
-// the new version.
-PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void ConfigurePartitions(
-    EnableBrp enable_brp,
-    EnableMemoryTagging enable_memory_tagging,
-    SplitMainPartition split_main_partition,
-    UseDedicatedAlignedPartition use_dedicated_aligned_partition,
-    size_t ref_count_size,
-    BucketDistribution distribution) {
-  // Since the only user of this function is a test function, we use synchronous
-  // testing mode.
-  const partition_alloc::TagViolationReportingMode
-      memory_tagging_reporting_mode =
-          enable_memory_tagging
-              ? partition_alloc::TagViolationReportingMode::kSynchronous
-              : partition_alloc::TagViolationReportingMode::kDisabled;
-
-  // We don't use these features in PDFium.
-  auto scheduler_loop_quarantine = SchedulerLoopQuarantine(false);
-  size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
-  size_t scheduler_loop_quarantine_capacity_count = 0;
-  auto zapping_by_free_flags = ZappingByFreeFlags(false);
-
-  ConfigurePartitions(
-      enable_brp, enable_memory_tagging, memory_tagging_reporting_mode,
-      split_main_partition, ref_count_size, distribution,
-      scheduler_loop_quarantine, scheduler_loop_quarantine_capacity_in_bytes,
-      scheduler_loop_quarantine_capacity_count, zapping_by_free_flags);
-}
-
 // No synchronization provided: `PartitionRoot.flags` is only written
 // to in `PartitionRoot::Init()`.
 uint32_t GetMainPartitionRootExtrasSize() {

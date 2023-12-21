@@ -82,13 +82,27 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
 // that we don't have to modify multiple callers. This is particularly important
 // when callers are in a different repo, like PDFium or Dawn.
 PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
-  ConfigurePartitions(allocator_shim::EnableBrp(true),
-                      allocator_shim::EnableMemoryTagging(false),
-                      allocator_shim::SplitMainPartition(true),
-                      allocator_shim::UseDedicatedAlignedPartition(true), 0,
-                      BucketDistribution::kNeutral);
+  auto enable_brp = allocator_shim::EnableBrp(true);
+  auto enable_memory_tagging = allocator_shim::EnableMemoryTagging(false);
+  // Since the only user of this function is a test function, we use
+  // synchronous reporting mode, if MTE is enabled.
+  auto memory_tagging_reporting_mode =
+      enable_memory_tagging
+          ? partition_alloc::TagViolationReportingMode::kSynchronous
+          : partition_alloc::TagViolationReportingMode::kDisabled;
+  auto split_main_partition = SplitMainPartition(true);
+  size_t ref_count_size = 0;  // Means: use sizeof(PartitionRefCount).
+  auto distribution = BucketDistribution::kNeutral;
+  auto scheduler_loop_quarantine = SchedulerLoopQuarantine(false);
+  size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
+  size_t scheduler_loop_quarantine_capacity_count = 0;
+  auto zapping_by_free_flags = ZappingByFreeFlags(false);
 
-  internal::PartitionAllocMalloc::Allocator()->EnableThreadCacheIfSupported();
+  ConfigurePartitions(
+      enable_brp, enable_memory_tagging, memory_tagging_reporting_mode,
+      split_main_partition, ref_count_size, distribution,
+      scheduler_loop_quarantine, scheduler_loop_quarantine_capacity_in_bytes,
+      scheduler_loop_quarantine_capacity_count, zapping_by_free_flags);
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
