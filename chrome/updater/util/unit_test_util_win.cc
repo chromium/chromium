@@ -163,7 +163,7 @@ CSecurityDesc GetEveryoneDaclSecurityDescriptor(ACCESS_MASK accessmask) {
 
 test::EventHolder CreateEveryoneWaitableEventForTest() {
   const std::wstring event_name =
-      base::StrCat({base::UTF8ToWide(test::GetTestName()),
+      base::StrCat({base::UTF8ToWide(test::GetTestName()), L" ",
                     base::NumberToWString(::GetCurrentProcessId())});
   CSecurityAttributes sa(GetEveryoneDaclSecurityDescriptor(GENERIC_ALL));
   return {base::WaitableEvent(base::win::ScopedHandle(

@@ -676,7 +676,17 @@ HRESULT ProgressWnd::LaunchCmdLine(const AppCompletionInfo& app_info) {
                              if (num_args <= 1) {
                                return {};
                              }
-                             return {argv.get() + 1, argv.get() + num_args};
+
+                             std::vector<std::wstring> parameters;
+                             base::ranges::for_each(
+                                 argv.get() + 1, argv.get() + num_args,
+                                 [&](const auto& parameter) {
+                                   parameters.push_back(
+                                       base::CommandLine::
+                                           QuoteForCommandLineToArgvW(
+                                               parameter));
+                                 });
+                             return parameters;
                            }(),
                            L" "));
 }
