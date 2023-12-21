@@ -396,6 +396,10 @@ void ExtensionMenuItemView::Update(
         site_permissions_text));
     site_permissions_button_icon_->SetVisible(
         site_permissions_button_state == SitePermissionsButtonState::kEnabled);
+
+    // Update button size after changing its contents so it fits in the menu
+    // item row.
+    site_permissions_button_->PreferredSizeChanged();
   }
 
   view_controller()->UpdateState();
