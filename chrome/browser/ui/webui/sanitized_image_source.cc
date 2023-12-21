@@ -136,7 +136,7 @@ void SanitizedImageSource::StartDataRequest(
   std::string image_url_or_params = url.query();
   if (url != GURL(base::StrCat(
                  {chrome::kChromeUIImageURL, "?", image_url_or_params}))) {
-    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -149,7 +149,7 @@ void SanitizedImageSource::StartDataRequest(
 
     auto url_it = params.find(kUrlKey);
     if (url_it == params.end()) {
-      std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
+      std::move(callback).Run(nullptr);
       return;
     }
     image_url = GURL(url_it->second);
@@ -289,7 +289,7 @@ void SanitizedImageSource::OnImageLoaded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (loader->NetError() != net::OK || !body) {
-    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -316,7 +316,7 @@ void SanitizedImageSource::OnAnimationDecoded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!mojo_frames.size()) {
-    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
+    std::move(callback).Run(nullptr);
     return;
   }
 

@@ -150,9 +150,7 @@ TEST_F(SanitizedImageSourceTest, FailedLoad) {
               DecodeAnimation(testing::_, testing::_))
       .Times(0);
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
-  EXPECT_CALL(callback,
-              Run(MemoryEq(base::MakeRefCounted<base::RefCountedString>())))
-      .Times(1);
+  EXPECT_CALL(callback, Run(testing::IsNull())).Times(1);
 
   // Issue request.
   sanitized_image_source_->StartDataRequest(
@@ -188,9 +186,7 @@ TEST_F(SanitizedImageSourceTest, WrongUrl) {
               DecodeAnimation(testing::_, testing::_))
       .Times(0);
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
-  EXPECT_CALL(callback,
-              Run(MemoryEq(base::MakeRefCounted<base::RefCountedString>())))
-      .Times(2);
+  EXPECT_CALL(callback, Run(testing::IsNull())).Times(2);
 
   // Issue request.
   sanitized_image_source_->StartDataRequest(
