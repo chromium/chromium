@@ -80,6 +80,7 @@ class Enum(object):
 
     def __init__(self, type_name, keywords, set_type):
         self.type_name = type_name
+        self.keywords = keywords
         self.values = [
             NameStyleConverter(keyword).to_enum_value() for keyword in keywords
         ]

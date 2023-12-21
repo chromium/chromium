@@ -701,6 +701,7 @@ css_properties("make_core_generated_computed_style_base") {
   other_inputs = [
     "../build/scripts/core/style/templates/computed_style_base.cc.tmpl",
     "../build/scripts/core/style/templates/computed_style_base.h.tmpl",
+    "../build/scripts/core/style/templates/computed_style_base_constants.cc.tmpl",
     "../build/scripts/core/style/templates/computed_style_base_constants.h.tmpl",
     "../build/scripts/templates/fields/field.tmpl",
     "../build/scripts/templates/fields/group.tmpl",
@@ -715,6 +716,7 @@ css_properties("make_core_generated_computed_style_base") {
   outputs = [
     "$blink_core_output_dir/style/computed_style_base.cc",
     "$blink_core_output_dir/style/computed_style_base.h",
+    "$blink_core_output_dir/style/computed_style_base_constants.cc",
     "$blink_core_output_dir/style/computed_style_base_constants.h",
   ]
 }
