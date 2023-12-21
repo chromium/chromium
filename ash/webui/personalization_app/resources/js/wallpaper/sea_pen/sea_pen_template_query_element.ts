@@ -188,21 +188,20 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
           translation: selectedOptions.get(templateChip)?.translation || '',
           id: templateChip,
         });
-      } else {
+      } else if (str.trim().length > 0) {
         tokens.push(str);
       }
     });
     return tokens;
   }
 
-  private getChipClassName_(chip: ChipToken, selectedChip: ChipToken|null) {
+  private getChipClassName_(chip: ChipToken, selectedChip: ChipToken|null):
+      'selected'|'unselected' {
     assert(this.isChip_(chip), 'Token must be a chip');
     // If there are no selected chips, then use the 'selected' styling on all
     // chips.
-    const selected = !selectedChip || chip.id === selectedChip.id ?
-        'selected' :
-        'unselected';
-    return `clickable ${selected}`;
+    return !selectedChip || chip.id === selectedChip.id ? 'selected' :
+                                                          'unselected';
   }
 
   private isOptionSelected_(

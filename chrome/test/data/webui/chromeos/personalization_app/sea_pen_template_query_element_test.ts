@@ -27,7 +27,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const chips =
-        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.clickable');
+        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
     const options = seaPenTemplateQueryElement.shadowRoot!.querySelectorAll(
         '#options cr-button');
     const searchButtons =
@@ -73,7 +73,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const chips =
-        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.clickable');
+        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
     const chipToSelect = chips[0] as HTMLElement;
 
     chipToSelect!.click();
@@ -91,7 +91,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         'the selected chip should have an equivalent selected option');
     const selectedTemplate =
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll(
-            '#template .selected');
+            '#template .selected .chip-text');
     assertEquals(
         1, selectedTemplate.length,
         'There should be exactly one template div that is selected.');
@@ -104,7 +104,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         {templateId: SeaPenTemplateId.kFlower.toString()});
     await waitAfterNextRender(seaPenTemplateQueryElement);
     const chips =
-        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.clickable');
+        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
     const chip = chips[0] as HTMLElement;
     chip!.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
@@ -146,7 +146,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
 
     const chips =
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll<HTMLElement>(
-            '.clickable');
+            '.chip-text');
     assertTrue(chips.length >= 2, 'there should be chips to select');
     chips[0]!.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
