@@ -3019,6 +3019,34 @@
             ]
         }
     ],
+    "CSSMPCImprovements": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CSSMPCImprovements"
+                    ]
+                },
+                {
+                    "name": "Holdback",
+                    "disable_features": [
+                        "CSSMPCImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
     "CSSOverflowForReplacedElements": [
         {
             "platforms": [
