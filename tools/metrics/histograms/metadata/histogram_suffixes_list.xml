@@ -2944,7 +2944,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="websame"
       label="Link triggered prerender, rel=prerender, same domain."/>
   <affected-histogram name="Prerender.FinalStatus"/>
-  <affected-histogram name="Prerender.NetworkBytesWasted"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ProcessMemoryAllocator2" separator=".">

@@ -2029,19 +2029,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Prerender.NetworkBytesWasted" units="bytes"
-    expires_after="M77">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Number of bytes transferred on the network for URLRequests (not including
-    HTTP/TLS/TCP/IP overhead) for a prerender that was not used. All
-    nostate-prefetch bytes are currently counted as wasted because it is hard to
-    track byte use in HTTP cache.
-  </summary>
-</histogram>
-
 <histogram name="Prerender.PrerenderLoadComplete" enum="BooleanSuccess"
     expires_after="2024-04-28">
   <owner>gambard@chromium.org</owner>
