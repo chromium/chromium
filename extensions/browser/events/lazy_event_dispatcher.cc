@@ -26,7 +26,7 @@ LazyEventDispatcher::LazyEventDispatcher(BrowserContext* browser_context,
 
 LazyEventDispatcher::~LazyEventDispatcher() = default;
 
-void LazyEventDispatcher::Dispatch(const Event& event,
+void LazyEventDispatcher::Dispatch(Event& event,
                                    const LazyContextId& dispatch_context,
                                    const base::Value::Dict* listener_filter) {
   const Extension* extension = ExtensionRegistry::Get(browser_context_)
@@ -48,7 +48,7 @@ bool LazyEventDispatcher::HasAlreadyDispatched(
 }
 
 bool LazyEventDispatcher::QueueEventDispatch(
-    const Event& event,
+    Event& event,
     const LazyContextId& dispatch_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter) {
@@ -61,6 +61,8 @@ bool LazyEventDispatcher::QueueEventDispatch(
     return false;
 
   LazyContextTaskQueue* queue = dispatch_context.GetTaskQueue();
+  event.lazy_background_active_on_dispatch =
+      queue->IsReadyToRunTasks(dispatch_context.browser_context(), extension);
   if (!queue->ShouldEnqueueTask(dispatch_context.browser_context(),
                                 extension)) {
     return false;

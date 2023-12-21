@@ -484,7 +484,8 @@ class EventRouter : public KeyedService,
                                const std::string& event_name,
                                base::TimeTicks dispatch_start_time,
                                int64_t service_worker_version_id,
-                               EventDispatchSource dispatch_source);
+                               EventDispatchSource dispatch_source,
+                               bool lazy_background_active_on_dispatch);
   void DecrementInFlightEventsForServiceWorker(
       const WorkerId& worker_id,
       int event_id,
@@ -606,6 +607,10 @@ struct Event {
   // Used in UMA histograms.
   base::TimeTicks dispatch_start_time;
 
+  // `true` if the event was dispatched to a active/running lazy background.
+  // Used in UMA histograms.
+  bool lazy_background_active_on_dispatch;
+
   // Whether a user gesture triggered the event.
   EventRouter::UserGestureState user_gesture;
 
@@ -656,6 +661,7 @@ struct Event {
         const GURL& event_url,
         EventRouter::UserGestureState user_gesture,
         mojom::EventFilteringInfoPtr info,
+        bool lazy_background_active_on_dispatch = false,
         base::TimeTicks dispatch_start_time = base::TimeTicks{});
 
   ~Event();

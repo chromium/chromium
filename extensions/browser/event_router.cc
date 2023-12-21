@@ -257,7 +257,9 @@ void EventRouter::DispatchEventToSender(
         // Currently this arg is not used for metrics recording since we do not
         // include events from EventDispatchSource::kDispatchEventToSender.
         /*dispatch_start_time=*/base::TimeTicks::Now(),
-        service_worker_version_id, EventDispatchSource::kDispatchEventToSender);
+        service_worker_version_id, EventDispatchSource::kDispatchEventToSender,
+        // Background script is active/started at this point.
+        /*lazy_background_active_on_dispatch=*/true);
     ReportEvent(histogram_value, extension,
                 /*did_enqueue=*/false);
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
@@ -1220,7 +1222,8 @@ void EventRouter::DispatchEventToProcess(
     IncrementInFlightEvents(listener_context, process, extension, event_id,
                             event.event_name, event.dispatch_start_time,
                             service_worker_version_id,
-                            EventDispatchSource::kDispatchEventToProcess);
+                            EventDispatchSource::kDispatchEventToProcess,
+                            event.lazy_background_active_on_dispatch);
   }
 }
 
@@ -1275,14 +1278,16 @@ void EventRouter::DecrementInFlightEventsForRenderFrameHost(
   }
 }
 
-void EventRouter::IncrementInFlightEvents(BrowserContext* context,
-                                          RenderProcessHost* process,
-                                          const Extension* extension,
-                                          int event_id,
-                                          const std::string& event_name,
-                                          base::TimeTicks dispatch_start_time,
-                                          int64_t service_worker_version_id,
-                                          EventDispatchSource dispatch_source) {
+void EventRouter::IncrementInFlightEvents(
+    BrowserContext* context,
+    RenderProcessHost* process,
+    const Extension* extension,
+    int event_id,
+    const std::string& event_name,
+    base::TimeTicks dispatch_start_time,
+    int64_t service_worker_version_id,
+    EventDispatchSource dispatch_source,
+    bool lazy_background_active_on_dispatch) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Only increment in-flight events if the lazy background page is active,
@@ -1294,7 +1299,8 @@ void EventRouter::IncrementInFlightEvents(BrowserContext* context,
     if (host && host->render_process_host() == process) {
       pm->IncrementLazyKeepaliveCount(extension, Activity::EVENT, event_name);
       host->OnBackgroundEventDispatched(event_name, dispatch_start_time,
-                                        event_id, dispatch_source);
+                                        event_id, dispatch_source,
+                                        lazy_background_active_on_dispatch);
     }
   } else if (service_worker_version_id !=
              blink::mojom::kInvalidServiceWorkerVersionId) {
@@ -1307,7 +1313,8 @@ void EventRouter::IncrementInFlightEvents(BrowserContext* context,
           process->GetStoragePartition()->GetServiceWorkerContext();
       event_ack_data_.IncrementInflightEvent(
           service_worker_context, process->GetID(), service_worker_version_id,
-          event_id, dispatch_start_time, dispatch_source);
+          event_id, dispatch_start_time, dispatch_source,
+          lazy_background_active_on_dispatch);
     }
   }
 }
@@ -1581,6 +1588,7 @@ Event::Event(events::HistogramValue histogram_value,
              const GURL& event_url,
              EventRouter::UserGestureState user_gesture,
              mojom::EventFilteringInfoPtr info,
+             bool lazy_background_active_on_dispatch,
              base::TimeTicks dispatch_start_time)
     : histogram_value(histogram_value),
       event_name(event_name),
@@ -1589,6 +1597,7 @@ Event::Event(events::HistogramValue histogram_value,
       restrict_to_context_type(restrict_to_context_type),
       event_url(event_url),
       dispatch_start_time(dispatch_start_time),
+      lazy_background_active_on_dispatch(lazy_background_active_on_dispatch),
       user_gesture(user_gesture),
       filter_info(std::move(info)) {
   DCHECK_NE(events::UNKNOWN, histogram_value)
@@ -1605,7 +1614,8 @@ std::unique_ptr<Event> Event::DeepCopy() const {
   auto copy = std::make_unique<Event>(
       histogram_value, event_name, event_args.Clone(),
       restrict_to_browser_context, restrict_to_context_type, event_url,
-      user_gesture, filter_info.Clone(), dispatch_start_time);
+      user_gesture, filter_info.Clone(), lazy_background_active_on_dispatch,
+      dispatch_start_time);
   copy->will_dispatch_callback = will_dispatch_callback;
   copy->did_dispatch_callback = did_dispatch_callback;
   copy->cannot_dispatch_callback = cannot_dispatch_callback;

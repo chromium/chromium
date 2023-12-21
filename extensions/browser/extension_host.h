@@ -116,7 +116,8 @@ class ExtensionHost : public DeferredStartRenderHost,
   void OnBackgroundEventDispatched(const std::string& event_name,
                                    base::TimeTicks dispatch_start_time,
                                    int event_id,
-                                   EventDispatchSource dispatch_source);
+                                   EventDispatchSource dispatch_source,
+                                   bool lazy_background_active_on_dispatch);
 
   // Called by the ProcessManager when a network request is started by the
   // extension corresponding to this ExtensionHost.
@@ -205,6 +206,10 @@ class ExtensionHost : public DeferredStartRenderHost,
 
     // The event dispatching processing flow that was followed for this event.
     EventDispatchSource dispatch_source;
+
+    // `true` if the event was dispatched to a active/running lazy background.
+    // Used in UMA histograms.
+    bool lazy_background_active_on_dispatch;
   };
 
   // Emits a stale event ack metric if an event with `event_id` is not present
