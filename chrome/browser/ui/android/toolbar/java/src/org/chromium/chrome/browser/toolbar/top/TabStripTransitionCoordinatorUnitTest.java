@@ -18,7 +18,6 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
-import android.view.ViewParent;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
@@ -256,6 +255,20 @@ public class TabStripTransitionCoordinatorUnitTest {
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
     }
 
+    @Test
+    public void viewStubInflated() {
+        doReturn(mSpyControlContainer.findToolbar)
+                .when(mSpyControlContainer)
+                .findViewById(R.id.find_toolbar);
+        doReturn(mSpyControlContainer.dropTargetView)
+                .when(mSpyControlContainer)
+                .findViewById(R.id.toolbar_drag_drop_target_view);
+
+        setDeviceWidthDp(480);
+        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false);
+        assertTabStripHeightForMargins(0);
+    }
+
     private void setDeviceWidthDp(int widthDp) {
         Configuration configuration = setConfigurationWithNewWidth(widthDp);
         simulateConfigurationChanged(configuration);
@@ -349,18 +362,12 @@ public class TabStripTransitionCoordinatorUnitTest {
             doReturn(controlContainer.toolbarHairline)
                     .when(controlContainer)
                     .findViewById(R.id.toolbar_hairline);
-
-            // Initialize a non-null ViewParent for common use by the following control_container
-            // child views only for the purpose of testing.
-            var viewParent = Mockito.spy(ViewParent.class);
             doReturn(controlContainer.findToolbar)
                     .when(controlContainer)
                     .findViewById(R.id.find_toolbar_stub);
             doReturn(controlContainer.dropTargetView)
                     .when(controlContainer)
                     .findViewById(R.id.target_view_stub);
-            doReturn(viewParent).when(controlContainer.findToolbar).getParent();
-            doReturn(viewParent).when(controlContainer.dropTargetView).getParent();
 
             doAnswer(args -> context.getResources().getDisplayMetrics().widthPixels)
                     .when(controlContainer)
