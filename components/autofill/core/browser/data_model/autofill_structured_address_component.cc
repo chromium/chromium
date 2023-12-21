@@ -977,13 +977,13 @@ bool AddressComponent::IsMergeableWithComponent(
 
   if ((merge_mode_ & (kRecursivelyMergeTokenEquivalentValues |
                       kRecursivelyMergeSingleTokenSubset)) &&
-      token_comparison_result.status == MATCH) {
+      token_comparison_result.status == SortedTokenComparisonStatus::kMatch) {
     return true;
   }
 
   if ((merge_mode_ & (kReplaceSubset | kReplaceSuperset)) &&
       (token_comparison_result.OneIsSubset() ||
-       token_comparison_result.status == MATCH)) {
+       token_comparison_result.status == SortedTokenComparisonStatus::kMatch)) {
     return true;
   }
 
@@ -1084,13 +1084,14 @@ bool AddressComponent::MergeWithComponent(
   // Use the recursive merge strategy for token equivalent values if the
   // corresponding mode is active.
   if ((merge_mode_ & kRecursivelyMergeTokenEquivalentValues) &&
-      (token_comparison_result.status == MATCH)) {
+      (token_comparison_result.status == SortedTokenComparisonStatus::kMatch)) {
     return MergeTokenEquivalentComponent(newer_component);
   }
 
   // Replace the subset with the superset if the corresponding mode is active.
   if ((merge_mode_ & kReplaceSubset) && token_comparison_result.OneIsSubset()) {
-    if (token_comparison_result.status == SUBSET &&
+    if (token_comparison_result.status ==
+            SortedTokenComparisonStatus::kSubset &&
         newer_component_has_better_or_equal_status) {
       CopyFrom(newer_component);
     }
@@ -1100,14 +1101,16 @@ bool AddressComponent::MergeWithComponent(
   // Replace the superset with the subset if the corresponding mode is active.
   if ((merge_mode_ & kReplaceSuperset) &&
       token_comparison_result.OneIsSubset()) {
-    if (token_comparison_result.status == SUPERSET)
+    if (token_comparison_result.status ==
+        SortedTokenComparisonStatus::kSuperset) {
       CopyFrom(newer_component);
+    }
     return true;
   }
 
   // If the tokens are already equivalent, use the more recently used one.
   if ((merge_mode_ & (kReplaceSuperset | kReplaceSubset)) &&
-      token_comparison_result.status == MATCH) {
+      token_comparison_result.status == SortedTokenComparisonStatus::kMatch) {
     if (newer_was_more_recently_used &&
         newer_component_has_better_or_equal_status) {
       CopyFrom(newer_component);
@@ -1448,7 +1451,8 @@ bool AddressComponent::MergeSubsetComponent(
     }
 
     // If the tokens are the equivalent, they can directly be merged.
-    if (subtoken_comparison_result.status == MATCH) {
+    if (subtoken_comparison_result.status ==
+        SortedTokenComparisonStatus::kMatch) {
       subcomponent->MergeTokenEquivalentComponent(*subset_subcomponent);
       continue;
     }

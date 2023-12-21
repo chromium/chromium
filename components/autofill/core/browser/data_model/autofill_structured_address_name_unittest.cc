@@ -1005,7 +1005,8 @@ TEST_F(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
   // Without normalization, the two names should be considered distinct.
   token_comparison_result =
       CompareSortedTokens(name.GetValue(), subset_name.GetValue());
-  EXPECT_TRUE(token_comparison_result.status == DISTINCT);
+  EXPECT_TRUE(token_comparison_result.status ==
+              SortedTokenComparisonStatus::kDistinct);
 
   // Verify that those two names are not considered mergeable.
   EXPECT_FALSE(name.IsMergeableWithComponent(subset_name));

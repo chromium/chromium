@@ -46,15 +46,15 @@ enum MatchQuantifier {
 };
 
 // The result status of comparing two sets of sorted tokens.
-enum SortedTokenComparisonStatus {
+enum class SortedTokenComparisonStatus {
   // The tokens are neither the same nor super/sub sets.
-  DISTINCT,
+  kDistinct,
   // The token exactly match.
-  MATCH,
+  kMatch,
   // The first value is a subset of the second.
-  SUBSET,
+  kSubset,
   // The first value is a superset of the other.
-  SUPERSET
+  kSuperset
 };
 
 // The result from comparing two sets of sorted tokens containing the status and
@@ -67,7 +67,7 @@ struct SortedTokenComparisonResult {
   SortedTokenComparisonResult& operator=(SortedTokenComparisonResult&& other);
   ~SortedTokenComparisonResult();
   // The status of the token comparison.
-  SortedTokenComparisonStatus status = DISTINCT;
+  SortedTokenComparisonStatus status = SortedTokenComparisonStatus::kDistinct;
   // The additional elements in the super/subsets.
   std::vector<AddressToken> additional_tokens{};
   // Returns true if the first is a subset of the second;
