@@ -51,6 +51,13 @@ class MockFeedbackUploader : public FeedbackUploader {
               QueueReport,
               (std::unique_ptr<std::string>, bool),
               (override));
+
+  base::WeakPtr<FeedbackUploader> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockFeedbackUploader> weak_ptr_factory_{this};
 };
 
 class MockFeedbackPrivateDelegate : public ShellFeedbackPrivateDelegate {
@@ -117,10 +124,8 @@ class FeedbackServiceTest : public ApiUnitTest {
     mock_uploader_ = std::make_unique<StrictMock<MockFeedbackUploader>>(
         /*is_off_the_record=*/false, scoped_temp_dir_.GetPath(),
         test_shared_loader_factory_);
-    base::WeakPtr<feedback::FeedbackUploader> wkptr_uploader =
-        base::AsWeakPtr(mock_uploader_.get());
-    feedback_data_ =
-        base::MakeRefCounted<FeedbackData>(std::move(wkptr_uploader), nullptr);
+    feedback_data_ = base::MakeRefCounted<FeedbackData>(
+        mock_uploader_->AsWeakPtr(), nullptr);
   }
 
   ~FeedbackServiceTest() override = default;

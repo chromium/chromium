@@ -32,8 +32,7 @@ class FeedbackReport;
 // FeedbackUploader is used to add a feedback report to the queue of reports
 // being uploaded. In case uploading a report fails, it is written to disk and
 // tried again when it's turn comes up next in the queue.
-class FeedbackUploader : public KeyedService,
-                         public base::SupportsWeakPtr<FeedbackUploader> {
+class FeedbackUploader : public KeyedService {
  public:
   // Some embedders want to delay the creation of the SharedURLLoaderFactory
   // until it is required as the creation could be expensive. In that case,
@@ -78,6 +77,10 @@ class FeedbackUploader : public KeyedService,
   }
 
   base::TimeDelta retry_delay() const { return retry_delay_; }
+
+  // Deriving classes must implement this and return the appropriate
+  // WeakPtr.
+  virtual base::WeakPtr<FeedbackUploader> AsWeakPtr() = 0;
 
  protected:
   // Virtual to give implementers a chance to do work before the report is

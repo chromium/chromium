@@ -223,9 +223,7 @@ class TestTrackerDisplayLockController : public DisplayLockController {
   std::unique_ptr<DisplayLockHandle> next_display_lock_handle_;
 };
 
-class TestTrackerEventExporter
-    : public TrackerEventExporter,
-      public base::SupportsWeakPtr<TestTrackerEventExporter> {
+class TestTrackerEventExporter : public TrackerEventExporter {
  public:
   TestTrackerEventExporter() = default;
 
@@ -240,9 +238,15 @@ class TestTrackerEventExporter
     events_to_export_ = events;
   }
 
+  base::WeakPtr<TestTrackerEventExporter> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // The events to export
   std::vector<EventData> events_to_export_;
+
+  base::WeakPtrFactory<TestTrackerEventExporter> weak_ptr_factory_{this};
 };
 
 class TrackerImplTest : public ::testing::Test {

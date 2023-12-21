@@ -30,6 +30,28 @@ const int kFakeTraceId = 1;
 
 }  // namespace
 
+class TestFeedbackUploader final : public feedback::FeedbackUploader {
+ public:
+  TestFeedbackUploader(
+      bool is_off_the_record,
+      const base::FilePath& state_path,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : FeedbackUploader(is_off_the_record,
+                         state_path,
+                         std::move(url_loader_factory)) {}
+  TestFeedbackUploader(const TestFeedbackUploader&) = delete;
+  TestFeedbackUploader& operator=(const TestFeedbackUploader&) = delete;
+
+  ~TestFeedbackUploader() override = default;
+
+  base::WeakPtr<FeedbackUploader> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<TestFeedbackUploader> weak_ptr_factory_{this};
+};
+
 class ContentTracingManagerBrowserTest : public content::ContentBrowserTest {
  public:
   void SetUpOnMainThread() override {
@@ -49,7 +71,7 @@ class FeedbackDataBrowserTest : public content::ContentBrowserTest {
   void SetUpOnMainThread() override {
     content::ContentBrowserTest::SetUpOnMainThread();
 
-    uploader_ = std::make_unique<feedback::FeedbackUploader>(
+    uploader_ = std::make_unique<TestFeedbackUploader>(
         /*is_of_the_record=*/false, scoped_temp_dir_.GetPath(),
         test_shared_loader_factory_);
   }
@@ -61,16 +83,14 @@ class FeedbackDataBrowserTest : public content::ContentBrowserTest {
 
  protected:
   scoped_refptr<feedback::FeedbackData> CreateFeedbackData() {
-    base::WeakPtr<feedback::FeedbackUploader> wkptr_uploader =
-        base::AsWeakPtr(uploader_.get());
     return base::MakeRefCounted<feedback::FeedbackData>(
-        std::move(wkptr_uploader), ContentTracingManager::Get());
+        uploader_->AsWeakPtr(), ContentTracingManager::Get());
   }
 
   base::ScopedTempDir scoped_temp_dir_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  std::unique_ptr<feedback::FeedbackUploader> uploader_;
+  std::unique_ptr<TestFeedbackUploader> uploader_;
 };
 
 // Test that the trace data is compressed successfully.

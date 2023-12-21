@@ -43,6 +43,9 @@ class MockUploader : public FeedbackUploader {
 
   // feedback::FeedbackUploader:
   void StartDispatchingReport() override { std::move(on_report_sent_).Run(); }
+  base::WeakPtr<FeedbackUploader> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   void QueueReport(std::unique_ptr<std::string> data, bool has_email) override {
     report_had_email_ = has_email;
@@ -57,6 +60,7 @@ class MockUploader : public FeedbackUploader {
   base::OnceClosure on_report_sent_;
   bool called_queue_report_ = false;
   bool report_had_email_ = false;
+  base::WeakPtrFactory<MockUploader> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -73,10 +77,7 @@ class FeedbackDataTest : public testing::Test {
         test_shared_loader_factory_,
         base::BindOnce(&FeedbackDataTest::set_send_report_callback,
                        base::Unretained(this)));
-    base::WeakPtr<feedback::FeedbackUploader> wkptr_uploader =
-        base::AsWeakPtr(uploader_.get());
-    data_ =
-        base::MakeRefCounted<FeedbackData>(std::move(wkptr_uploader), nullptr);
+    data_ = base::MakeRefCounted<FeedbackData>(uploader_->AsWeakPtr(), nullptr);
   }
 
   void Send() {
