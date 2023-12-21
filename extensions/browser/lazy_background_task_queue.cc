@@ -77,6 +77,25 @@ bool LazyBackgroundTaskQueue::ShouldEnqueueTask(
   return false;
 }
 
+// TODO(crbug.com/1467015): Refactor into `ShouldEnqueueTask()` since they are
+// so similar.
+bool LazyBackgroundTaskQueue::IsReadyToRunTasks(
+    content::BrowserContext* browser_context,
+    const Extension* extension) {
+  // Note: browser_context may not be the same as browser_context_ for incognito
+  // extension tasks.
+  CHECK(extension);
+
+  if (!BackgroundInfo::HasBackgroundPage(extension)) {
+    return false;
+  }
+
+  ProcessManager* pm = ProcessManager::Get(browser_context);
+  ExtensionHost* background_host =
+      pm->GetBackgroundHostForExtension(extension->id());
+  return background_host && background_host->has_loaded_once();
+}
+
 void LazyBackgroundTaskQueue::AddPendingTask(const LazyContextId& context_id,
                                              PendingTask task) {
   if (ExtensionsBrowserClient::Get()->IsShuttingDown()) {

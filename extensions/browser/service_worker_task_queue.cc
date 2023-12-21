@@ -360,6 +360,32 @@ bool ServiceWorkerTaskQueue::ShouldEnqueueTask(BrowserContext* context,
   return true;
 }
 
+bool ServiceWorkerTaskQueue::IsReadyToRunTasks(content::BrowserContext* context,
+                                               const Extension* extension) {
+  CHECK(extension);
+  auto activation_token = GetCurrentActivationToken(extension->id());
+
+  if (!activation_token) {
+    // Extension is not active so the worker should not be running.
+    return false;
+  }
+
+  const SequencedContextId context_id(extension->id(), browser_context_,
+                                      *activation_token);
+  WorkerState* worker_state = GetWorkerState(context_id);
+
+  if (!worker_state || !worker_state->worker_id_) {
+    // Assume the worker has not been started (is kRunning). It is likely in
+    // blink::EmbeddedWorkerStatus::(kStarting|kStopped) status.
+    return false;
+  }
+
+  content::ServiceWorkerContext* sw_context =
+      util::GetServiceWorkerContextForExtensionId(extension->id(), context);
+  return sw_context->IsLiveRunningServiceWorker(
+      worker_state->worker_id_->version_id);
+}
+
 void ServiceWorkerTaskQueue::AddPendingTask(
     const LazyContextId& lazy_context_id,
     PendingTask task) {

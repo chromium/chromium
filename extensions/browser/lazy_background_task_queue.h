@@ -60,6 +60,13 @@ class LazyBackgroundTaskQueue : public KeyedService,
   bool ShouldEnqueueTask(content::BrowserContext* context,
                          const Extension* extension) override;
 
+  // Returns true if the lazy background is ready to run tasks. This currently
+  // means this and `ShouldEnqueueTask()` will return true at the same time. But
+  // because of experiments on service workers needs to be separated out into
+  // its own function.
+  bool IsReadyToRunTasks(content::BrowserContext* context,
+                         const Extension* extension) override;
+
   // Adds a task to the queue for a given extension. If this is the first
   // task added for the extension, its lazy background page will be loaded.
   // The task will be called either when the page is loaded, or when the

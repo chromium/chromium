@@ -90,8 +90,17 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // |context|.
   static ServiceWorkerTaskQueue* Get(content::BrowserContext* context);
 
+  // Always returns true since we currently request a worker to start for every
+  // task sent to it.
   bool ShouldEnqueueTask(content::BrowserContext* context,
                          const Extension* extension) override;
+
+  // Returns true if the service worker is blink::EmbeddedWorkerStatus::Running.
+  // This could, once service worker start logic is refactored in
+  // crbug.com/1467015, be refactored into `ShouldEnqueueTask()`.
+  bool IsReadyToRunTasks(content::BrowserContext* context,
+                         const Extension* extension) override;
+
   void AddPendingTask(const LazyContextId& context_id,
                       PendingTask task) override;
 
