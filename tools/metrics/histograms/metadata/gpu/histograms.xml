@@ -1218,6 +1218,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.Sandboxed" units="Boolean" expires_after="2024-12-19">
+  <owner>akhna@google.com</owner>
+  <owner>chromeos-hardening@google.com</owner>
+  <summary>
+    A boolean that indicates whether sandboxing is successfully applied. A value
+    of true means the GPU is sandboxed. A value of false means the GPU is not
+    sandboxed. Recorded once per GPU process start-up in gpu_init.cc.
+  </summary>
+</histogram>
+
 <histogram name="GPU.ShaderLoadPrefixOK" enum="BooleanMatched"
     expires_after="2024-12-01">
   <owner>vikassoni@chromium.org</owner>
