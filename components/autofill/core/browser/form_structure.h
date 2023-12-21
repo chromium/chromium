@@ -388,9 +388,6 @@ class FormStructure {
   // Returns true if the form has no fields, or too many.
   bool IsMalformed() const;
 
-  // Returns true if field should be skipped when talking to Autofill server.
-  bool ShouldSkipField(const FormFieldData& field) const;
-
  private:
   friend class FormStructureTestApi;
 

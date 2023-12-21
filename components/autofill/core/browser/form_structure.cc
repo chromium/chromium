@@ -239,8 +239,9 @@ FormStructure::FormStructure(const FormData& form)
       unique_renderer_id_(form.unique_renderer_id) {
   // Copy the form fields.
   for (const FormFieldData& field : form.fields) {
-    if (!ShouldSkipField(field))
+    if (!IsCheckable(field.check_status)) {
       ++active_field_count_;
+    }
 
     if (field.form_control_type == FormControlType::kInputPassword) {
       has_password_field_ = true;
@@ -1181,8 +1182,9 @@ void FormStructure::EncodeFormForQuery(
     queried_form_signatures->push_back(form);
 
     for (const auto& field : fields_) {
-      if (ShouldSkipField(*field) || !necessary_condition(field))
+      if (IsCheckable(field->check_status) || !necessary_condition(field)) {
         continue;
+      }
 
       AutofillPageQueryRequest::Form::Field* added_field =
           query_form->add_fields();
@@ -1491,10 +1493,6 @@ void FormStructure::IdentifySections(bool ignore_autocomplete) {
       field->section = current_section;
     }
   }
-}
-
-bool FormStructure::ShouldSkipField(const FormFieldData& field) const {
-  return IsCheckable(field.check_status);
 }
 
 void FormStructure::ProcessExtractedFields() {

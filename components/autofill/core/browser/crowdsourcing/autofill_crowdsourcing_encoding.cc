@@ -203,8 +203,8 @@ void EncodeFormFieldsForUpload(const FormStructure& form,
       continue;
     }
 
-    // Add the same field elements as the query and a few more below.
-    if (form.ShouldSkipField(*field)) {
+    //  Add the same field elements as the query and a few more below.
+    if (IsCheckable(field->check_status)) {
       continue;
     }
 
