@@ -578,8 +578,8 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, UseRegistry) {
             identity: {
               providers: [{
                 nonce: "1234",
+                configURL: "any",
                 clientId: "https://rp.example",
-                registered: true,
               }]
             }
           });

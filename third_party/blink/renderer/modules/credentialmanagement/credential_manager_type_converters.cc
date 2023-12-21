@@ -862,11 +862,11 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
     Convert(const blink::IdentityProviderRequestOptions& options) {
   auto mojo_options = IdentityProviderRequestOptions::New();
   mojo_options->config = IdentityProviderConfig::New();
-  if (options.hasRegistered() &&
-      blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled()) {
-    mojo_options->config->use_registered_config_urls = options.registered();
+  CHECK(options.hasConfigURL());
+  if (blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled() &&
+      options.configURL() == "any") {
+    mojo_options->config->use_registered_config_urls = true;
   } else {
-    CHECK(options.hasConfigURL());
     mojo_options->config->config_url = blink::KURL(options.configURL());
   }
   mojo_options->config->client_id = options.clientId();

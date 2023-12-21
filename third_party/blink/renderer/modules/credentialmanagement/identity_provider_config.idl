@@ -23,11 +23,6 @@ dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
   [RuntimeEnabled=FedCmAuthz] record<USVString, USVString> params;
 };
 
-// extends the IdentityProviderConfig for Registered IdPs
-partial dictionary IdentityProviderConfig  {
-  [RuntimeEnabled=FedCmIdPRegistration] boolean registered;
-};
-
 // extends the IdentityProviderConfig with DigitalCredential-specific attributes
 partial dictionary IdentityProviderConfig  {
   [RuntimeEnabled=WebIdentityDigitalCredentials] DigitalCredentialProvider holder;

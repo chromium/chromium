@@ -1544,7 +1544,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       }
 
       if (blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled() &&
-          provider->hasRegistered() && provider->registered()) {
+          provider->hasConfigURL() && provider->configURL() == "any") {
         mojom::blink::IdentityProviderPtr identity_provider =
             blink::mojom::blink::IdentityProvider::From(*provider);
         identity_provider_ptrs.push_back(std::move(identity_provider));
