@@ -6180,9 +6180,6 @@ crbug.com/webrtc/14889 external/wpt/webrtc/simulcast/vp9.https.html [ Skip Timeo
 # Sheriff 2023-03-23
 crbug.com/952717 [ Win10.20h2 ] http/tests/xmlhttprequest/redirect-cross-origin-post.html [ Failure Pass ]
 
-# Re-enable test after adding support for component ads in frame contexts
-crbug.com/1427455 virtual/fenced-frame-mparch/external/wpt/fenced-frame/nested-opaque-ad-sizes.https.html [ Failure Pass Timeout ]
-
 # TODO(crbug.com/1428795): Re-enable this test
 crbug.com/1428795 [ Linux ] external/wpt/dom/events/Event-dispatch-on-disabled-elements.html [ Failure Pass ]
 
