@@ -5114,6 +5114,7 @@ source_set("unit_tests") {
     "app_list/search/local_image_search/local_image_search_test_util.cc",
     "app_list/search/local_image_search/local_image_search_test_util.h",
     "app_list/search/local_image_search/sql_database_unittest.cc",
+    "app_list/search/manatee/manatee_cache_unittest.cc",
     "app_list/search/omnibox/omnibox_answer_result_unittest.cc",
     "app_list/search/omnibox/omnibox_lacros_provider_unittest.cc",
     "app_list/search/omnibox/omnibox_provider_unittest.cc",

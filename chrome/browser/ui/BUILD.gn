@@ -2412,6 +2412,8 @@ static_library("ui") {
       "../ash/app_list/search/local_image_search/search_utils.h",
       "../ash/app_list/search/local_image_search/sql_database.cc",
       "../ash/app_list/search/local_image_search/sql_database.h",
+      "../ash/app_list/search/manatee/manatee_cache.cc",
+      "../ash/app_list/search/manatee/manatee_cache.h",
       "../ash/app_list/search/omnibox/omnibox_answer_result.cc",
       "../ash/app_list/search/omnibox/omnibox_answer_result.h",
       "../ash/app_list/search/omnibox/omnibox_lacros_provider.cc",
