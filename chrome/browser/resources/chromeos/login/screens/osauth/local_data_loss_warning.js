@@ -22,6 +22,8 @@ import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {addSubmitListener} from '../../login_ui_tools.js';
 
+import {getTemplate} from './local_data_loss_warning.html.js';
+
 /**
  * @constructor
  * @extends {PolymerElement}
@@ -41,7 +43,7 @@ class LocalDataLossWarning extends LocalDataLossWarningBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

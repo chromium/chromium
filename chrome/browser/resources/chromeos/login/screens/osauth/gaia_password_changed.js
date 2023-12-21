@@ -27,6 +27,8 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {addSubmitListener} from '../../login_ui_tools.js';
 
+import {getTemplate} from './gaia_password_changed.html.js';
+
 
 /**
  * UI mode for the dialog.
@@ -74,7 +76,7 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

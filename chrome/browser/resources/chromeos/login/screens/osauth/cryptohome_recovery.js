@@ -16,6 +16,8 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 
+import {getTemplate} from './cryptohome_recovery.html.js';
+
 /**
  * UI mode for the dialog.
  * @enum {string}
@@ -46,7 +48,7 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

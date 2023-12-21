@@ -4,7 +4,8 @@
 
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("../../login.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
@@ -189,19 +190,19 @@ js_library("pin_setup") {
   extra_sources = [ "$interfaces_path/quick_unlock_private_interface.js" ]
 }
 
-html_to_js("web_components") {
-  js_files = [
-    "apply_online_password.js",
-    "cryptohome_recovery.js",
-    "cryptohome_recovery_setup.js",
-    "factor_setup_success.js",
-    "fingerprint_setup.js",
-    "gaia_password_changed.js",
-    "local_data_loss_warning.js",
-    "enter_old_password.js",
-    "local_password_setup.js",
-    "osauth_error.js",
-    "password_selection.js",
-    "pin_setup.js",
+group("web_components") {
+  public_deps = [
+    ":copy_js",
+    ":generate_web_component_html_wrapper_files",
   ]
+}
+
+html_to_wrapper("generate_web_component_html_wrapper_files") {
+  in_files = rebase_path(osauth_screens_html_files, "./screens/osauth", ".")
+  use_js = true
+}
+
+copy("copy_js") {
+  sources = rebase_path(osauth_screens_js_files, "./screens/osauth", ".")
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
