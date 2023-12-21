@@ -55,7 +55,6 @@ class TestDialogModelHost final : public DialogModelHost,
  private:
   // DialogModelHost:
   void Close() override;
-  void OnFieldChanged(DialogModelField* field) override;
   void OnDialogButtonChanged() override;
 
   std::unique_ptr<DialogModel> dialog_model_;

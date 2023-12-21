@@ -254,7 +254,7 @@ TEST_F(BubbleDialogModelHostTest, TestFieldVisibility) {
   views::View* const text_field =
       views::ElementTrackerViews::GetInstance()->GetUniqueView(kField, context);
 
-  EXPECT_NE(text_field, nullptr);
+  ASSERT_NE(text_field, nullptr);
   EXPECT_TRUE(text_field->GetVisible());
 
   bubble_widget->CloseNow();

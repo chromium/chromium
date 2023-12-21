@@ -105,6 +105,16 @@ DialogModelField::DialogModelField(Type type,
 
 DialogModelField::~DialogModelField() = default;
 
+base::CallbackListSubscription DialogModelField::AddOnFieldChangedCallback(
+    base::RepeatingClosure on_field_changed) {
+  return on_field_changed_.Add(on_field_changed);
+}
+
+void DialogModelField::SetVisible(bool visible) {
+  is_visible_ = visible;
+  on_field_changed_.Notify();
+}
+
 DialogModelParagraph* DialogModelField::AsParagraph() {
   CHECK_EQ(type_, kParagraph, base::NotFatalUntil::M123);
   return static_cast<DialogModelParagraph*>(this);
@@ -301,6 +311,48 @@ base::CallbackListSubscription DialogModelSection::AddOnFieldAddedCallback(
   return on_field_added_.Add(std::move(on_field_added));
 }
 
+base::CallbackListSubscription DialogModelSection::AddOnFieldChangedCallback(
+    base::RepeatingCallback<void(DialogModelField*)> on_field_changed) {
+  return on_field_changed_.Add(std::move(on_field_changed));
+}
+
+DialogModelField* DialogModelSection::GetFieldByUniqueId(ElementIdentifier id) {
+  // Assert that there are not duplicate fields corresponding to `id`. There
+  // could be no matches in `fields_` if `id` corresponds to a button.
+  CHECK_EQ(static_cast<int>(base::ranges::count_if(
+               fields_,
+               [id](auto& field) {
+                 // TODO(pbos): This does not
+                 // work recursively yet.
+                 CHECK_NE(field->type(), DialogModelField::kSection);
+                 return field->id() == id;
+               })),
+           1);
+
+  for (auto& field : fields_) {
+    if (field->id() == id) {
+      return field.get();
+    }
+  }
+
+  NOTREACHED_NORETURN();
+}
+
+DialogModelCheckbox* DialogModelSection::GetCheckboxByUniqueId(
+    ElementIdentifier id) {
+  return GetFieldByUniqueId(id)->AsCheckbox();
+}
+
+DialogModelCombobox* DialogModelSection::GetComboboxByUniqueId(
+    ElementIdentifier id) {
+  return GetFieldByUniqueId(id)->AsCombobox();
+}
+
+DialogModelTextfield* DialogModelSection::GetTextfieldByUniqueId(
+    ElementIdentifier id) {
+  return GetFieldByUniqueId(id)->AsTextfield();
+}
+
 void DialogModelSection::AddParagraph(const DialogModelLabel& label,
                                       std::u16string header,
                                       ElementIdentifier id) {
@@ -353,13 +405,21 @@ void DialogModelSection::AddCustomField(
 
 void DialogModelSection::AddField(std::unique_ptr<DialogModelField> field) {
   CHECK(field);
+
   // This probably needs to be updated for recursive fields. CHECK that we don't
   // add recursive sections until we've thought through how the updates are
   // communicated.
   CHECK_NE(field->type(), DialogModelField::kSection);
   auto* const field_ptr = field.get();
+  field_subscriptions_.push_back(field->AddOnFieldChangedCallback(
+      base::BindRepeating(&DialogModelSection::OnFieldChanged,
+                          base::Unretained(this), field_ptr)));
   fields_.push_back(std::move(field));
   on_field_added_.Notify(field_ptr);
+}
+
+void DialogModelSection::OnFieldChanged(DialogModelField* field) {
+  on_field_changed_.Notify(field);
 }
 
 }  // namespace ui

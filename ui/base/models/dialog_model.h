@@ -451,9 +451,15 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   // not present in the model is a bug, and the methods will NOTREACHED(). If
   // you have unique fields that are conditionally present, see HasField().
   DialogModelField* GetFieldByUniqueId(ElementIdentifier id);
-  DialogModelCheckbox* GetCheckboxByUniqueId(ElementIdentifier id);
-  DialogModelCombobox* GetComboboxByUniqueId(ElementIdentifier id);
-  DialogModelTextfield* GetTextfieldByUniqueId(ElementIdentifier id);
+  DialogModelCheckbox* GetCheckboxByUniqueId(ElementIdentifier id) {
+    return contents_.GetCheckboxByUniqueId(id);
+  }
+  DialogModelCombobox* GetComboboxByUniqueId(ElementIdentifier id) {
+    return contents_.GetComboboxByUniqueId(id);
+  }
+  DialogModelTextfield* GetTextfieldByUniqueId(ElementIdentifier id) {
+    return contents_.GetTextfieldByUniqueId(id);
+  }
   Button* GetButtonByUniqueId(ElementIdentifier id);
 
   // Methods with base::PassKey<DialogModelHost> are only intended to be called

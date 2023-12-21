@@ -84,7 +84,6 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
 
   // ui::DialogModelHost:
   void Close() override;
-  void OnFieldChanged(ui::DialogModelField* field) override;
   void OnDialogButtonChanged() override;
 
  private:
@@ -109,7 +108,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   [[nodiscard]] BubbleDialogModelHostContentsView* InitContentsView(
       ui::DialogModelSection* contents);
 
-  void OnFieldAdded();
+  void OnContentsViewChanged();
 
   void OnWindowClosing();
 
@@ -122,7 +121,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
 
   std::unique_ptr<ui::DialogModel> model_;
   const raw_ptr<BubbleDialogModelHostContentsView> contents_view_;
-  base::CallbackListSubscription on_field_added_subscription_;
+  base::CallbackListSubscription on_contents_changed_subscription_;
   ThemeChangedObserver theme_observer_;
 };
 

@@ -292,8 +292,6 @@ std::unique_ptr<View> BubbleDialogModelHost::CustomView::TransferView() {
   return std::move(view_);
 }
 
-// TODO(pbos): Migrate most code that calls contents_view_->(some View method)
-// into this class. This was done in steps to limit the size of the diff.
 class BubbleDialogModelHostContentsView final
     : public BoxLayoutView,
       public ui::DialogModelFieldHost {
@@ -310,6 +308,10 @@ class BubbleDialogModelHostContentsView final
         on_field_added_subscription_(
             contents->AddOnFieldAddedCallback(base::BindRepeating(
                 &BubbleDialogModelHostContentsView::OnFieldAdded,
+                base::Unretained(this)))),
+        on_field_changed_subscription_(
+            contents->AddOnFieldChangedCallback(base::BindRepeating(
+                &BubbleDialogModelHostContentsView::OnFieldChanged,
                 base::Unretained(this)))) {
     // Note that between-child spacing is manually handled using kMarginsKey.
     SetOrientation(views::BoxLayout::Orientation::kVertical);
@@ -323,9 +325,9 @@ class BubbleDialogModelHostContentsView final
     }
   }
 
-  [[nodiscard]] base::CallbackListSubscription AddOnFieldAddedCallback(
-      base::RepeatingClosure on_field_added) {
-    return on_field_added_.Add(std::move(on_field_added));
+  [[nodiscard]] base::CallbackListSubscription AddOnContentsChangedCallback(
+      base::RepeatingClosure on_contents_changed) {
+    return on_contents_changed_.Add(std::move(on_contents_changed));
   }
 
   // TODO(pbos): Move (most) of the host's OnFieldAdded stuff into here. If
@@ -364,16 +366,16 @@ class BubbleDialogModelHostContentsView final
         AddDialogModelHostField(std::move(view), info);
         break;
     }
-    UpdateFieldVisibility(field);
-    on_field_added_.Notify();
+    OnFieldChanged(field);
   }
 
-  void UpdateFieldVisibility(ui::DialogModelField* field) {
+  void OnFieldChanged(ui::DialogModelField* field) {
     const DialogModelHostField host_field = FindDialogModelHostField(field);
 
     if (host_field.field_view) {
       host_field.field_view->SetVisible(field->is_visible());
     }
+    on_contents_changed_.Notify();
   }
 
   // TODO(pbos): Remove the need for this method by making sure the host always
@@ -694,11 +696,12 @@ class BubbleDialogModelHostContentsView final
   const ui::ElementIdentifier initially_focused_field_id_;
 
   const base::CallbackListSubscription on_field_added_subscription_;
+  const base::CallbackListSubscription on_field_changed_subscription_;
 
   std::vector<DialogModelHostField> fields_;
-  // TODO(pbos): Try to work away this list (and just have the parent observe
-  // size changes).
-  base::RepeatingClosureList on_field_added_;
+  // TODO(pbos): Try to work away this list if the parent can observe enough
+  // things as a ViewObserver of us.
+  base::RepeatingClosureList on_contents_changed_;
 
   std::vector<base::CallbackListSubscription> property_changed_subscriptions_;
 
@@ -743,9 +746,10 @@ BubbleDialogModelHost::BubbleDialogModelHost(
       // uses IsModalDialog().
       contents_view_(
           (SetModalType(modal_type), InitContentsView(model_->contents()))),
-      on_field_added_subscription_(contents_view_->AddOnFieldAddedCallback(
-          base::BindRepeating(&BubbleDialogModelHost::OnFieldAdded,
-                              base::Unretained(this)))),
+      on_contents_changed_subscription_(
+          contents_view_->AddOnContentsChangedCallback(
+              base::BindRepeating(&BubbleDialogModelHost::OnContentsViewChanged,
+                                  base::Unretained(this)))),
       theme_observer_(this, contents_view_) {
   model_->set_host(DialogModelHost::GetPassKey(), this);
 
@@ -1021,26 +1025,12 @@ BubbleDialogModelHostContentsView* BubbleDialogModelHost::InitContentsView(
   return contents_view;
 }
 
-// TODO(pbos): Try to remove this parameter and have a more-generic
-// OnContentsViewChanged. Maybe this doesn't even need to get communicated from
-// ContentsView but can be a ViewObserver for when the preferred size changes.
-void BubbleDialogModelHost::OnFieldAdded() {
+void BubbleDialogModelHost::OnContentsViewChanged() {
   UpdateSpacingAndMargins();
 
   if (GetBubbleFrameView()) {
     SizeToContents();
   }
-}
-
-void BubbleDialogModelHost::OnFieldChanged(ui::DialogModelField* field) {
-  CHECK(field);
-
-  // TODO(pbos): This should move into BubbleDialogModelHostContentsView.
-  contents_view_->UpdateFieldVisibility(field);
-
-  // If the contents of the dialog change (text, field visitiblity, etc.), the
-  // dialog may need to be resized.
-  SizeToContents();
 }
 
 void BubbleDialogModelHost::OnDialogButtonChanged() {

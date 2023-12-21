@@ -200,39 +200,13 @@ bool DialogModel::HasField(ElementIdentifier id) const {
 }
 
 DialogModelField* DialogModel::GetFieldByUniqueId(ElementIdentifier id) {
-  // Assert that there are not duplicate fields corresponding to `id`. There
-  // could be no matches in `fields_` if `id` corresponds to a button.
-  CHECK_LE(static_cast<int>(base::ranges::count_if(
-               contents_.fields(),
-               [id](auto& field) {
-                 // TODO(pbos): This does not
-                 // work recursively yet.
-                 CHECK_NE(field->type_, DialogModelField::kSection);
-                 return field->id_ == id;
-               })),
-           1);
-
-  for (auto& field : contents_.fields()) {
-    if (field->id_ == id)
-      return field.get();
+  // TODO(pbos): Make sure buttons aren't accessed through GetFieldByUniqueId.
+  // Then make this simply forward to contents_.
+  if (Button* const button = MaybeGetButtonByUniqueId(id)) {
+    return button;
   }
 
-  // Buttons are fields, too.
-  // TODO(pbos): Reconsider whether this needs to be true.
-  return GetButtonByUniqueId(id);
-}
-
-DialogModelCheckbox* DialogModel::GetCheckboxByUniqueId(ElementIdentifier id) {
-  return GetFieldByUniqueId(id)->AsCheckbox();
-}
-
-DialogModelCombobox* DialogModel::GetComboboxByUniqueId(ElementIdentifier id) {
-  return GetFieldByUniqueId(id)->AsCombobox();
-}
-
-DialogModelTextfield* DialogModel::GetTextfieldByUniqueId(
-    ElementIdentifier id) {
-  return GetFieldByUniqueId(id)->AsTextfield();
+  return contents_.GetFieldByUniqueId(id);
 }
 
 DialogModel::Button* DialogModel::GetButtonByUniqueId(ElementIdentifier id) {
@@ -292,21 +266,14 @@ void DialogModel::OnDialogDestroying(base::PassKey<DialogModelHost>) {
 void DialogModel::SetVisible(ElementIdentifier id, bool visible) {
   // TODO(pbos): Consider a different method for dialog buttons vs. contents.
   if (Button* button = MaybeGetButtonByUniqueId(id)) {
-    button->set_visible(visible);
+    button->SetVisible(visible);
     if (host_) {
       host_->OnDialogButtonChanged();
     }
     return;
   }
 
-  DialogModelField* const field = GetFieldByUniqueId(id);
-
-  CHECK(field);
-  field->set_visible(visible);
-
-  if (host_) {
-    host_->OnFieldChanged(field);
-  }
+  GetFieldByUniqueId(id)->SetVisible(visible);
 }
 
 void DialogModel::SetButtonLabel(DialogModel::Button* button,

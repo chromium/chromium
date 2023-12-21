@@ -190,13 +190,19 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   DialogModelField& operator=(const DialogModelField&) = delete;
   virtual ~DialogModelField();
 
+  [[nodiscard]] base::CallbackListSubscription AddOnFieldChangedCallback(
+      base::RepeatingClosure on_field_changed);
+
   Type type() const { return type_; }
+
+  void SetVisible(bool visible);
   bool is_visible() { return is_visible_; }
 
   const base::flat_set<Accelerator>& accelerators() const {
     return accelerators_;
   }
   ElementIdentifier id() const { return id_; }
+
   DialogModelParagraph* AsParagraph();
   DialogModelCheckbox* AsCheckbox();
   DialogModelCombobox* AsCombobox();
@@ -212,8 +218,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
                    base::flat_set<Accelerator> accelerators,
                    const DialogModelField::Params& params);
 
-  void set_visible(bool visible) { is_visible_ = visible; }
-
  private:
   friend class DialogModel;
   FRIEND_TEST_ALL_PREFIXES(DialogModelButtonTest, UsesParamsUniqueId);
@@ -224,6 +228,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   const base::flat_set<Accelerator> accelerators_;
 
   bool is_visible_;
+
+  base::RepeatingClosureList on_field_changed_;
 };
 
 // Field class representing a paragraph.
@@ -512,9 +518,17 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelSection final
   [[nodiscard]] base::CallbackListSubscription AddOnFieldAddedCallback(
       base::RepeatingCallback<void(DialogModelField*)> on_field_added);
 
+  [[nodiscard]] base::CallbackListSubscription AddOnFieldChangedCallback(
+      base::RepeatingCallback<void(DialogModelField*)> on_field_changed);
+
   const std::vector<std::unique_ptr<DialogModelField>>& fields() const {
     return fields_;
   }
+
+  DialogModelField* GetFieldByUniqueId(ElementIdentifier id);
+  DialogModelCheckbox* GetCheckboxByUniqueId(ElementIdentifier id);
+  DialogModelCombobox* GetComboboxByUniqueId(ElementIdentifier id);
+  DialogModelTextfield* GetTextfieldByUniqueId(ElementIdentifier id);
 
   // Adds a paragraph at the end of the section. A paragraph consists of a
   // label and an optional header.
@@ -560,10 +574,14 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelSection final
 
  private:
   void AddField(std::unique_ptr<DialogModelField> field);
+  void OnFieldChanged(DialogModelField* field);
 
   base::RepeatingCallbackList<void(DialogModelField*)> on_field_added_;
+  base::RepeatingCallbackList<void(DialogModelField*)> on_field_changed_;
 
   std::vector<std::unique_ptr<DialogModelField>> fields_;
+
+  std::vector<base::CallbackListSubscription> field_subscriptions_;
 };
 
 }  // namespace ui

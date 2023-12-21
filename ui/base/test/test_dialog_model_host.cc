@@ -104,10 +104,6 @@ void TestDialogModelHost::Close() {
   NOTREACHED_NORETURN();
 }
 
-void TestDialogModelHost::OnFieldChanged(DialogModelField* field) {
-  NOTREACHED_NORETURN();
-}
-
 void TestDialogModelHost::OnDialogButtonChanged() {
   NOTREACHED_NORETURN();
 }
