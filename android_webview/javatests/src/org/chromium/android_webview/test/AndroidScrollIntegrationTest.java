@@ -857,9 +857,10 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
                 testContainerView,
                 contentsClient,
                 null,
-                "<div>"
-                        + "  <div style=\"width:10000px; height: 10000px;\"> force scrolling </div>"
-                        + "</div>");
+                """
+                <div>
+                    <div style="width:10000px; height: 10000px;"> force scrolling </div>
+                </div>""");
 
         InstrumentationRegistry.getInstrumentation()
                 .runOnMainSync(
