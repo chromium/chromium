@@ -822,9 +822,8 @@ void ChromeAutofillClient::ConfirmSaveCreditCardLocally(
 #else
   // Do lazy initialization of SaveCardBubbleControllerImpl.
   SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
-  SaveCardBubbleControllerImpl* controller =
-      SaveCardBubbleControllerImpl::FromWebContents(web_contents());
-  controller->OfferLocalSave(card, options, std::move(callback));
+  SaveCardBubbleControllerImpl::FromWebContents(web_contents())
+      ->OfferLocalSave(card, options, std::move(callback));
 #endif
 }
 
@@ -870,10 +869,9 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
 #else
   // Do lazy initialization of SaveCardBubbleControllerImpl.
   SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
-  SaveCardBubbleControllerImpl* controller =
-      SaveCardBubbleControllerImpl::FromWebContents(web_contents());
-  controller->OfferUploadSave(card, legal_message_lines, options,
-                              std::move(callback));
+  SaveCardBubbleControllerImpl::FromWebContents(web_contents())
+      ->OfferUploadSave(card, legal_message_lines, options,
+                        std::move(callback));
 #endif
 }
 
