@@ -652,6 +652,7 @@ static_library("test_support") {
       "../browser/signin/signin_browser_test_base.h",
       "../browser/themes/test/theme_service_changed_waiter.cc",
       "../browser/themes/test/theme_service_changed_waiter.h",
+      "../browser/ui/performance_controls/test_support/battery_saver_browser_test_mixin.h",
       "../browser/ui/performance_controls/test_support/memory_metrics_refresh_waiter.cc",
       "../browser/ui/performance_controls/test_support/memory_metrics_refresh_waiter.h",
       "../browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h",

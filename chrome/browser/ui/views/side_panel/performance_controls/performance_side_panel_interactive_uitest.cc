@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/performance_controls/test_support/battery_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -39,7 +40,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPerformanceWebContentsElementId);
 }  // namespace
 
 class PerformanceSidePanelInteractiveTest
-    : public MemorySaverBrowserTestMixin<InteractiveBrowserTest> {
+    : public MemorySaverBrowserTestMixin<
+          BatterySaverBrowserTestMixin<InteractiveBrowserTest>> {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
@@ -48,28 +50,13 @@ class PerformanceSidePanelInteractiveTest
         {});
     animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
         gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
-    SetUpFakeBatterySampler();
     set_open_about_blank_on_browser_launch(true);
-    InteractiveBrowserTest::SetUp();
+    MemorySaverBrowserTestMixin::SetUp();
   }
 
   void SetUpOnMainThread() override {
     MemorySaverBrowserTestMixin::SetUpOnMainThread();
     SetMemorySaverModeEnabled(true);
-  }
-
-  void SetUpFakeBatterySampler() {
-    auto test_sampling_event_source =
-        std::make_unique<base::test::TestSamplingEventSource>();
-    auto test_battery_level_provider =
-        std::make_unique<base::test::TestBatteryLevelProvider>();
-    test_battery_level_provider->SetBatteryState(
-        base::test::TestBatteryLevelProvider::CreateBatteryState());
-
-    battery_state_sampler_ =
-        base::BatteryStateSampler::CreateInstanceForTesting(
-            std::move(test_sampling_event_source),
-            std::move(test_battery_level_provider));
   }
 
   auto TryDiscardTab(int tab_index) {
@@ -90,23 +77,14 @@ class PerformanceSidePanelInteractiveTest
   }
 
   auto SetBatterySaverActive(bool active) {
-    return Do(base::BindLambdaForTesting([=] {
-      auto mode = active ? performance_manager::user_tuning::prefs::
-                               BatterySaverModeState::kEnabled
-                         : performance_manager::user_tuning::prefs::
-                               BatterySaverModeState::kDisabled;
-      g_browser_process->local_state()->SetInteger(
-          performance_manager::user_tuning::prefs::kBatterySaverModeState,
-          static_cast<int>(mode));
-    }));
+    return Do(base::BindLambdaForTesting(
+        [=] { SetBatterySaverModeEnabled(active); }));
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
       animation_mode_reset_;
-  // Only used on platforms without a battery level provider implementation.
-  std::unique_ptr<base::BatteryStateSampler> battery_state_sampler_;
 };
 
 IN_PROC_BROWSER_TEST_F(PerformanceSidePanelInteractiveTest,

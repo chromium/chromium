@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/performance_controls/test_support/battery_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -423,13 +424,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsMultiStateModeInteractiveTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-class BatterySettingsInteractiveTest : public InteractiveBrowserTest {
+class BatterySettingsInteractiveTest
+    : public BatterySaverBrowserTestMixin<InteractiveBrowserTest> {
  public:
-  void SetUp() override {
-    SetUpFakeBatterySampler();
-    InteractiveBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -441,21 +438,9 @@ class BatterySettingsInteractiveTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 
-  void SetUpFakeBatterySampler() {
-    auto test_sampling_event_source =
-        std::make_unique<base::test::TestSamplingEventSource>();
-    auto test_battery_level_provider =
-        std::make_unique<base::test::TestBatteryLevelProvider>();
-
-    sampling_source_ = test_sampling_event_source.get();
-    battery_level_provider_ = test_battery_level_provider.get();
-    test_battery_level_provider->SetBatteryState(
-        base::test::TestBatteryLevelProvider::CreateBatteryState(1, true, 100));
-
-    battery_state_sampler_ =
-        base::BatteryStateSampler::CreateInstanceForTesting(
-            std::move(test_sampling_event_source),
-            std::move(test_battery_level_provider));
+  base::BatteryLevelProvider::BatteryState GetFakeBatteryState() override {
+    return base::test::TestBatteryLevelProvider::CreateBatteryState(1, true,
+                                                                    100);
   }
 
   auto ClickElement(const ui::ElementIdentifier& contents_id,
@@ -519,11 +504,6 @@ class BatterySettingsInteractiveTest : public InteractiveBrowserTest {
   }
 
  private:
-  raw_ptr<base::test::TestSamplingEventSource, DanglingUntriaged>
-      sampling_source_;
-  raw_ptr<base::test::TestBatteryLevelProvider, DanglingUntriaged>
-      battery_level_provider_;
-  std::unique_ptr<base::BatteryStateSampler> battery_state_sampler_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
