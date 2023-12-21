@@ -80,12 +80,16 @@ class PersonalizationAppSeaPenProviderImpl
   void OnFetchWallpaperDone(SelectSeaPenThumbnailCallback callback,
                             std::optional<SeaPenImage> image);
 
+  void OnRecentSeaPenImageSelected(bool success);
+
   void OnGetRecentSeaPenImages(GetRecentSeaPenImagesCallback callback,
                                const std::vector<base::FilePath>& images);
 
   void OnGetRecentSeaPenImageThumbnail(
       GetRecentSeaPenImageThumbnailCallback callback,
       const gfx::ImageSkia& image);
+
+  SelectRecentSeaPenImageCallback pending_select_recent_sea_pen_image_callback_;
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   const raw_ptr<Profile> profile_;

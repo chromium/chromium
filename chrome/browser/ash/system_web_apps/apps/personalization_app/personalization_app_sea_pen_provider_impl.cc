@@ -97,11 +97,25 @@ void PersonalizationAppSeaPenProviderImpl::SelectSeaPenThumbnail(
 void PersonalizationAppSeaPenProviderImpl::SelectRecentSeaPenImage(
     const base::FilePath& path,
     SelectRecentSeaPenImageCallback callback) {
-  auto* wallpaper_controller = ash::WallpaperController::Get();
-  DCHECK(wallpaper_controller);
+  if (recent_sea_pen_images_.count(path) == 0) {
+    sea_pen_receiver_.ReportBadMessage("Unknown wallpaper image selected");
+    return;
+  }
 
-  wallpaper_controller->SetSeaPenWallpaperFromFile(GetAccountId(profile_), path,
-                                                   std::move(callback));
+  // Run any pending response callback.
+  if (pending_select_recent_sea_pen_image_callback_) {
+    std::move(pending_select_recent_sea_pen_image_callback_)
+        .Run(/*success=*/false);
+  }
+  pending_select_recent_sea_pen_image_callback_ = std::move(callback);
+
+  ash::WallpaperController* wallpaper_controller = WallpaperController::Get();
+  DCHECK(wallpaper_controller);
+  wallpaper_controller->SetSeaPenWallpaperFromFile(
+      GetAccountId(profile_), path,
+      base::BindOnce(
+          &PersonalizationAppSeaPenProviderImpl::OnRecentSeaPenImageSelected,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PersonalizationAppSeaPenProviderImpl::GetRecentSeaPenImages(
@@ -186,6 +200,12 @@ void PersonalizationAppSeaPenProviderImpl::OnFetchWallpaperDone(
   auto* wallpaper_controller = ash::WallpaperController::Get();
   wallpaper_controller->SetSeaPenWallpaper(GetAccountId(profile_), *image,
                                            std::move(callback));
+}
+
+void PersonalizationAppSeaPenProviderImpl::OnRecentSeaPenImageSelected(
+    bool success) {
+  DCHECK(pending_select_recent_sea_pen_image_callback_);
+  std::move(pending_select_recent_sea_pen_image_callback_).Run(success);
 }
 
 void PersonalizationAppSeaPenProviderImpl::OnGetRecentSeaPenImages(
