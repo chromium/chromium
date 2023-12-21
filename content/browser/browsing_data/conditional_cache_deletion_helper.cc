@@ -84,7 +84,7 @@ void ConditionalCacheDeletionHelper::IterateOverEntries(
     if (previous_entry_) {
       if (condition_.Run(previous_entry_.get()))
         previous_entry_->Doom();
-      previous_entry_->Close();
+      previous_entry_.ExtractAsDangling()->Close();
     }
 
     if (result.net_error() == net::ERR_FAILED) {
