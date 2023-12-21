@@ -16,11 +16,9 @@ namespace {
 
 // The total number of accelerator actions.
 constexpr int kAcceleratorActionsTotalNum = 156;
-// The toal number of debug accelerators, these will not be used for hashing.
-constexpr int kDebugAcceleratorActionsNum = 27;
 // The hash of accelerator actions. Please update this when adding a new
 // accelerator action.
-constexpr char kAcceleratorActionsHash[] = "69ca25642d0ee9a9cf3eee1c3ac14419";
+constexpr char kAcceleratorActionsHash[] = "b2b516c47e84d27b3e45a361f939a423";
 
 // Define the mapping between an AcceleratorAction and its string name.
 // Example:
@@ -66,11 +64,8 @@ TEST_F(AcceleratorActionsTest, CheckHistogramEnum) {
 
 TEST_F(AcceleratorActionsTest, AcceleratorActionsHash) {
   const char kCommonMessage[] =
-      "If you are adding a non-debug accelerator action, please ensure that "
-      "you add the new action to be bottom of the enums but before the"
-      "DEBUG accelerator actions. Please update the values "
-      "`kAcceleratorActionsTotalNum` and `kDebugAcceleratorActionsNum` "
-      "(if applicable)."
+      "If you are adding a new accelerator please update the values "
+      "`kAcceleratorActionsTotalNum`."
       "Please then update `kAcceleratorActionsHash`";
 
   // First check that the size of the enum is correct.
@@ -81,13 +76,8 @@ TEST_F(AcceleratorActionsTest, AcceleratorActionsHash) {
   // Then check that the hash is correct.
   base::MD5Context context;
   base::MD5Init(&context);
-  int iter_count = 0;
   for (const auto iter : kAcceleratorActionToName) {
     base::MD5Update(&context, iter.second);
-    // Only hash up non-debug accelerator actions.
-    if (++iter_count >= current_actions_size - kDebugAcceleratorActionsNum) {
-      break;
-    }
   }
 
   base::MD5Digest digest;
