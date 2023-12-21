@@ -413,6 +413,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/mediarecorder/blob_event_init.idl",
   "//third_party/blink/renderer/modules/mediarecorder/media_recorder.idl",
   "//third_party/blink/renderer/modules/mediarecorder/media_recorder_options.idl",
+  "//third_party/blink/renderer/modules/mediasession/chapter_information.idl",
   "//third_party/blink/renderer/modules/mediasession/media_image.idl",
   "//third_party/blink/renderer/modules/mediasession/media_metadata.idl",
   "//third_party/blink/renderer/modules/mediasession/media_metadata_init.idl",

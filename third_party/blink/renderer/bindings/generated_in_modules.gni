@@ -274,6 +274,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_channel_merger_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_channel_splitter_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_channel_splitter_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_chapter_information.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_chapter_information.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_client_query_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_client_query_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_clipboard_permission_descriptor.cc",

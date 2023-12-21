@@ -6037,11 +6037,13 @@ interface MediaMetadata
     getter album
     getter artist
     getter artwork
+    getter chapterInfo
     getter title
     method constructor
     setter album
     setter artist
     setter artwork
+    setter chapterInfo
     setter title
 interface MediaQueryList : EventTarget
     attribute @@toStringTag

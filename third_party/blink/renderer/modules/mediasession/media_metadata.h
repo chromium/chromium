@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_MEDIA_METADATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_MEDIA_METADATA_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_chapter_information.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_image.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -40,10 +41,12 @@ class MODULES_EXPORT MediaMetadata final : public ScriptWrappable {
   String artist() const;
   String album() const;
   v8::LocalVector<v8::Value> artwork(ScriptState*) const;
+  v8::LocalVector<v8::Value> chapterInfo(ScriptState*) const;
 
   // Internal use only, returns a reference to m_artwork instead of a Frozen
-  // copy of a MediaImage array.
+  // copy of a `MediaImage` array. Same for the `ChapterInformation`.
   const HeapVector<Member<MediaImage>>& artwork() const;
+  const HeapVector<Member<ChapterInformation>>& chapterInfo() const;
 
   void setTitle(const String&);
   void setArtist(const String&);
@@ -51,6 +54,9 @@ class MODULES_EXPORT MediaMetadata final : public ScriptWrappable {
   void setArtwork(ScriptState*,
                   const HeapVector<Member<MediaImage>>&,
                   ExceptionState&);
+  void setChapterInfo(ScriptState*,
+                      const HeapVector<Member<ChapterInformation>>&,
+                      ExceptionState&);
 
   // Called by MediaSession to associate or de-associate itself.
   void SetSession(MediaSession*);
@@ -77,6 +83,7 @@ class MODULES_EXPORT MediaMetadata final : public ScriptWrappable {
   String artist_;
   String album_;
   HeapVector<Member<MediaImage>> artwork_;
+  HeapVector<Member<ChapterInformation>> chapterInfo_;
 
   Member<MediaSession> session_;
   HeapTaskRunnerTimer<MediaMetadata> notify_session_timer_;

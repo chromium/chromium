@@ -2422,6 +2422,10 @@
       base_feature: "none",
     },
     {
+      name: "MediaSessionChapterInformation",
+      status: "test",
+    },
+    {
       name: "MediaSessionEnterPictureInPicture",
       public: true,
       status: "experimental",
