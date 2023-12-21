@@ -43,6 +43,7 @@ class ElementLookupTrieWriter(json5_generator.Writer):
         'noConstructor': {},
         'noTypeHelpers': {},
         'runtimeEnabled': {},
+        'runtimeFlagHasOriginTrial': {},
     }
     default_metadata = {
         'attrsNullNamespace': None,
@@ -62,8 +63,13 @@ class ElementLookupTrieWriter(json5_generator.Writer):
         super(ElementLookupTrieWriter, self).__init__(json5_file_paths,
                                                       output_dir)
         self._tags = {}
+        self._runtimeEnabledWithoutOriginTrial = {}
         for entry in self.json5_file.name_dictionaries:
             self._tags[entry['name'].original] = entry['name'].original
+            if 'runtimeEnabled' in entry and not entry.get(
+                    'runtimeFlagHasOriginTrial', False):
+                self._runtimeEnabledWithoutOriginTrial[
+                    entry['name'].original] = entry['runtimeEnabled']
         self._namespace = self.json5_file.metadata['namespace'].strip('"')
         basename = self._namespace.lower() + '_element_lookup_trie'
         self._outputs = {
@@ -82,9 +88,14 @@ class ElementLookupTrieWriter(json5_generator.Writer):
         'templates/element_lookup_trie.cc.tmpl', filters=filters)
     def generate_implementation(self):
         return {
-            'input_files': self._input_files,
-            'namespace': self._namespace,
-            'length_tries': trie_builder.trie_list_by_str_length(self._tags)
+            'input_files':
+            self._input_files,
+            'namespace':
+            self._namespace,
+            'length_tries':
+            trie_builder.trie_list_by_str_length(self._tags),
+            'runtimeEnabledWithoutOriginTrial':
+            self._runtimeEnabledWithoutOriginTrial
         }
 
 
