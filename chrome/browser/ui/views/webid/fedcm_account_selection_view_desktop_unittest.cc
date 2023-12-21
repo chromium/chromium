@@ -253,7 +253,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
         std::make_optional<std::string>(kIframeEtldPlusOne),
         {{kIdpEtldPlusOne, accounts, content::IdentityProviderMetadata(),
           content::ClientMetadata(GURL(), GURL()),
-          blink::mojom::RpContext::kSignIn, /* request_permission */ true}},
+          blink::mojom::RpContext::kSignIn, /*request_permission=*/true,
+          /*has_login_status_mismatch=*/false}},
         mode, show_auto_reauthn_checkbox);
   }
 

@@ -1355,7 +1355,8 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
       idp_for_display, accounts, idp_info->metadata,
       ClientMetadata{client_metadata.terms_of_service_url,
                      client_metadata.privacy_policy_url},
-      idp_info->rp_context, /* request_permission */ request_permission);
+      idp_info->rp_context, /*request_permission=*/request_permission,
+      /*has_login_status_mismatch=*/false);
   idp_infos_[idp_config_url] = std::move(idp_info);
 
   fetch_data_.pending_idps.erase(idp_config_url);
@@ -1387,10 +1388,9 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpFailed(
 
   metrics_endpoints_.erase(idp_config_url);
 
-  idp_infos_.erase(idp_config_url);
-  // Do not use `idp_config_url` after this line because the reference is no
-  // longer valid.
-
+  // We do not call both OnFetchDataForIdpFailed() after OnFetchDataSucceeded()
+  // for the same IDP.
+  DCHECK(idp_infos_.find(idp_config_url) == idp_infos_.end());
   MaybeShowAccountsDialog();
 }
 
@@ -1648,26 +1648,56 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
     return;
   }
 
-  // By this moment we know that the user has granted permission in the past
-  // for the RP/IdP. Because otherwise we have returned already in
-  // `ShouldFailBeforeFetchingAccounts`. It means that we can do the
-  // following without privacy cost:
-  // 1. Reject the promise immediately without delay
-  // 2. Not to show any UI to respect `mediation: silent`
-  // TODO(crbug.com/1441436): validate the statement above with stakeholders
   if (mediation_requirement_ == MediationRequirement::kSilent) {
-    CompleteRequestWithError(
+    // By this moment we know that the user has granted permission in the past
+    // for the RP/IdP. Because otherwise we have returned already in
+    // `ShouldFailBeforeFetchingAccounts`. It means that we can do the
+    // following without privacy cost:
+    // 1. Reject the promise immediately without delay
+    // 2. Not to show any UI to respect `mediation: silent`
+    // TODO(crbug.com/1441436): validate the statement above with stakeholders
+    OnFetchDataForIdpFailed(
+        std::move(idp_info),
         FederatedAuthRequestResult::kErrorSilentMediationFailure,
         TokenStatus::kSilentMediationFailure,
-        /*token_error=*/absl::nullopt,
         /*should_delay_callback=*/false);
     return;
   }
 
-  // TODO(crbug.com/1357790): we should figure out how to handle multiple IDP
-  // w.r.t. showing a static failure UI. e.g. one IDP is always successful and
-  // one always returns 404.
+  OnIdpMismatch(std::move(idp_info));
+}
 
+void FederatedAuthRequestImpl::OnIdpMismatch(
+    std::unique_ptr<IdentityProviderInfo> idp_info) {
+  const GURL& idp_config_url = idp_info->provider->config->config_url;
+  fetch_data_.pending_idps.erase(idp_config_url);
+
+  const std::string idp_for_display =
+      webid::FormatUrlWithDomain(idp_config_url, /*for_display=*/true);
+  idp_info->data = IdentityProviderData(
+      idp_for_display, std::vector<IdentityRequestAccount>(),
+      idp_info->metadata, ClientMetadata{GURL(), GURL()}, idp_info->rp_context,
+      /*request_permission=*/ShouldMediateAuthz(idp_info->provider->scope),
+      /*has_login_status_mismatch=*/true);
+  idp_infos_[idp_config_url] = std::move(idp_info);
+
+  if (!fetch_data_.pending_idps.empty()) {
+    return;
+  }
+
+  if (fetch_data_.did_succeed_for_at_least_one_idp) {
+    MaybeShowAccountsDialog();
+    return;
+  }
+
+  ShowIdpFailureDialog();
+}
+
+void FederatedAuthRequestImpl::ShowIdpFailureDialog() {
+  // TODO(crbug.com/1513495): handle multiple IDPs.
+  IdentityProviderInfo* idp_info = idp_infos_.begin()->second.get();
+  url::Origin idp_origin =
+      url::Origin::Create(idp_info->provider->config->config_url);
   // RenderFrameHost should be in the primary page (ex not in the BFCache).
   DCHECK(render_frame_host().GetPage().IsPrimary());
   // TODO(crbug.com/1382495): Handle failure UI in the multi IDP case.

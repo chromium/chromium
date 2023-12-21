@@ -1042,7 +1042,11 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     } else {
       int issue_count =
           main_test_rfh()->GetFederatedAuthRequestIssueCount(absl::nullopt);
-      EXPECT_EQ(0, issue_count);
+      if (!expectation.standalone_console_message) {
+        EXPECT_EQ(0, issue_count);
+      } else {
+        EXPECT_GE(1, issue_count);
+      }
     }
     CheckConsoleMessages(expectation.devtools_issue_status,
                          expectation.standalone_console_message);
@@ -4376,6 +4380,84 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
   EXPECT_FALSE(did_show_accounts_dialog());
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+}
+
+// Test that when there are two IDPs with sharing permissions but the account
+// fetch fails for one of them, mediation silent can still succeed.
+TEST_F(FederatedAuthRequestImplTest,
+       MultiIdpWithSilentMediationAndOneIdpFetchFailure) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
+  // Mark both IDPs as logged in.
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderTwoUrlFull)] = true;
+
+  // Pretend the sharing permission has been granted for exactly one account for
+  // the first IdP.
+  EXPECT_CALL(*test_permission_delegate_,
+              HasSharingPermission(
+                  OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                  OriginFromString(kProviderUrlFull), Eq(absl::nullopt)))
+      .WillOnce(Return(true));
+
+  // Pretend the sharing permission has been granted for exactly one account for
+  // the second IdP.
+  EXPECT_CALL(*test_permission_delegate_,
+              HasSharingPermission(
+                  OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                  OriginFromString(kProviderTwoUrlFull), Eq(absl::nullopt)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderTwoUrlFull),
+                           Optional(std::string(kAccountIdPeter))))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderTwoUrlFull),
+                           Optional(std::string(kAccountIdZach))))
+      .WillOnce(Return(false));
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderTwoUrlFull),
+                           Optional(std::string(kAccountIdNicolas))))
+      .WillOnce(Return(false));
+
+  // Ensure auto reauthn is not considered as disabled.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnSettingEnabled())
+      .Times(3)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .Times(3)
+      .WillRepeatedly(Return(false));
+
+  RequestExpectations expectations = kExpectationSuccess;
+  expectations.selected_idp_config_url = kProviderTwoUrlFull;
+  expectations.is_auto_selected = true;
+  expectations.standalone_console_message =
+      "Silent mediation was requested, but the conditions to achieve it were "
+      "not met.";
+
+  MockConfiguration configuration = kConfigurationMultiIdpValid;
+  configuration.mediation_requirement = MediationRequirement::kSilent;
+  // Let the first IDP accounts fetch fail.
+  configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      IdpNetworkRequestManager::ParseStatus::kNoResponseError;
+
+  RunAuthTest(kDefaultMultiIdpRequestParameters, expectations, configuration);
+
+  // Accounts still need to be fetched since there could have been a single
+  // returning account.
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
 }
 
 TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {

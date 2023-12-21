@@ -37,7 +37,8 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
         std::make_optional<std::string>("iframe-example.com"),
         {{"idp-example.com", accounts, content::IdentityProviderMetadata(),
           content::ClientMetadata(GURL::EmptyGURL(), GURL::EmptyGURL()),
-          blink::mojom::RpContext::kSignIn, /*request_permission=*/true}},
+          blink::mojom::RpContext::kSignIn, /*request_permission=*/true,
+          /*has_login_status_mismatch=*/false}},
         Account::SignInMode::kExplicit, /*show_auto_reauthn_checkbox=*/false);
   }
 
