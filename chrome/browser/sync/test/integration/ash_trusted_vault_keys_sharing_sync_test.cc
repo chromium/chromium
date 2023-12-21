@@ -31,6 +31,7 @@
 #include "google_apis/gaia/gaia_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -41,6 +42,20 @@ using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;
 using testing::NotNull;
+
+class WifiConfigurationsSyncActiveChecker
+    : public SingleClientStatusChangeChecker {
+ public:
+  explicit WifiConfigurationsSyncActiveChecker(
+      syncer::SyncServiceImpl* sync_service)
+      : SingleClientStatusChangeChecker(sync_service) {}
+  ~WifiConfigurationsSyncActiveChecker() override = default;
+
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for WIFI_CONFIGURATIONS sync to become active";
+    return service()->GetActiveDataTypes().Has(syncer::WIFI_CONFIGURATIONS);
+  }
+};
 
 class TrustedVaultStateNotifiedToCrosapiObserverChecker
     : public StatusChangeChecker,
@@ -207,6 +222,14 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
     return account_key;
   }
 
+  absl::optional<message_center::Notification> GetSyncNotification() {
+    const std::string notification_id =
+        ash::SyncErrorNotifierFactory::GetForProfile(GetProfile(0))
+            ->GetNotificationIdForTesting();
+    return notification_display_service_tester().GetNotification(
+        notification_id);
+  }
+
   bool WaitForTrustedVaultReauthCompletion() {
     CHECK(trusted_vault_widget_shown_waiter_);
     views::Widget* trusted_vault_widged =
@@ -217,6 +240,11 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
 
   NotificationDisplayServiceTester& notification_display_service_tester() {
     return *notification_display_service_tester_;
+  }
+
+  mojo::Remote<crosapi::mojom::TrustedVaultBackend>&
+  trusted_vault_backend_remote() {
+    return trusted_vault_backend_remote_;
   }
 
  protected:
@@ -257,6 +285,53 @@ IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
+                       ShouldStoreKeysThroughCrosapi) {
+  // Mimic the account being already using a trusted vault passphrase.
+  SetNigoriInFakeServer(
+      syncer::BuildTrustedVaultNigoriSpecifics({kTestTrustedVaultKey}),
+      GetFakeServer());
+
+  ASSERT_TRUE(SetupSyncAndTrustedVaultFakes());
+  SetupCrosapi();
+
+  ASSERT_TRUE(GetSyncService(0)
+                  ->GetUserSettings()
+                  ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::WIFI_CONFIGURATIONS));
+
+  // Key missing notification should be displayed.
+  auto notification = GetSyncNotification();
+  ASSERT_TRUE(notification);
+  ASSERT_THAT(notification->title(),
+              Eq(l10n_util::GetStringUTF16(
+                  IDS_SYNC_ERROR_PASSWORDS_BUBBLE_VIEW_TITLE)));
+  ASSERT_THAT(
+      notification->message(),
+      Eq(l10n_util::GetStringUTF16(
+          IDS_SYNC_NEEDS_KEYS_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE)));
+
+  // Mimic that Lacros provides trusted vault keys through Crosapi (i.e. user
+  // went through key retrieval using Lacros).
+  trusted_vault_backend_remote()->StoreKeys(GetSyncingUserAccountKey(),
+                                            {kTestTrustedVaultKey},
+                                            /*last_key_version=*/1);
+
+  // Key should be (asynchronously) accepted and WIFI_CONFIGURATIONS should
+  // become active.
+  EXPECT_TRUE(TrustedVaultKeyRequiredStateChecker(GetSyncService(0),
+                                                  /*desired_state=*/false)
+                  .Wait());
+  EXPECT_TRUE(WifiConfigurationsSyncActiveChecker(GetSyncService(0)).Wait());
+
+  // Key missing notification should be closed automatically.
+  EXPECT_THAT(GetSyncNotification(), Eq(absl::nullopt));
+
+  // Lacros should be able to fetch stored keys through Crosapi.
+  EXPECT_THAT(FetchKeysThroughCrosapi(), ElementsAre(kTestTrustedVaultKey));
+}
+
+IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
                        ShouldAcceptKeysFromTheWebAndFetchThemThroughCrosapi) {
   // Mimic the account being already using a trusted vault passphrase.
   SetNigoriInFakeServer(
@@ -273,11 +348,7 @@ IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
                   ->GetUserSettings()
                   ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
   // Key missing notification should be displayed.
-  const std::string notification_id =
-      ash::SyncErrorNotifierFactory::GetForProfile(GetProfile(0))
-          ->GetNotificationIdForTesting();
-  absl::optional<message_center::Notification> notification =
-      notification_display_service_tester().GetNotification(notification_id);
+  auto notification = GetSyncNotification();
   ASSERT_TRUE(notification);
   EXPECT_THAT(notification->title(),
               Eq(l10n_util::GetStringUTF16(
@@ -297,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
   // page closes automatically as if user did the reauth).
   // 3. Reauth page supplies Ash with kTestTrustedVaultKey.
   notification_display_service_tester().SimulateClick(
-      NotificationHandler::Type::TRANSIENT, notification_id,
+      NotificationHandler::Type::TRANSIENT, notification->id(),
       /*action_index=*/absl::nullopt,
       /*reply=*/absl::nullopt);
   EXPECT_TRUE(WaitForTrustedVaultReauthCompletion());
