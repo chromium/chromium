@@ -70,6 +70,7 @@ const test::UIPath kUpdateCellularDeclineButton = {"consumer-update",
                                                    "declineButton"};
 const test::UIPath kLowBatteryWarningMessage = {"consumer-update",
                                                 "battery-warning"};
+const test::UIPath kUpdateSkipButton = {"consumer-update", "skipButton"};
 
 OobeUI* GetOobeUI() {
   auto* host = LoginDisplayHost::default_host();
@@ -384,6 +385,53 @@ IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest, LowBatteryStatus) {
 
   // Warning message is shown while not charging and battery is low.
   test::OobeJS().ExpectVisiblePath(kLowBatteryWarningMessage);
+}
+
+IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest, SkipUpdate) {
+  update_engine::StatusResult status;
+  status.set_update_urgency(update_engine::UpdateUrgency::REGULAR);
+
+  // Make the skip button visible
+  consumer_update_screen_->set_delay_for_show_skip_button_for_testing(
+      base::Seconds(0));
+  consumer_update_screen_->set_maximum_time_force_update_for_testing(
+      base::Seconds(0));
+
+  ShowConsumerUpdateScreen();
+
+  status.set_current_operation(update_engine::Operation::CHECKING_FOR_UPDATE);
+  status.set_new_version("latest and greatest");
+  status.set_new_size(1'000'000'000);
+  update_engine_client()->set_default_status(status);
+  update_engine_client()->NotifyObserversThatStatusChanged(status);
+
+  OobeScreenWaiter update_screen_waiter(ConsumerUpdateScreenView::kScreenId);
+  update_screen_waiter.set_assert_next_screen();
+  update_screen_waiter.Wait();
+
+  test::OobeJS().ExpectVisiblePath(kUpdateChekingDialog);
+  test::OobeJS().ExpectHiddenPath(kCellularPermissionDialog);
+  test::OobeJS().ExpectHiddenPath(kUpdateInProgressDialog);
+  test::OobeJS().ExpectHiddenPath(kUpdateRebootDialog);
+
+  SetUpdateEngineStatusWithProgress(update_engine::Operation::UPDATE_AVAILABLE,
+                                    0.0);
+
+  SetUpdateEngineStatusWithProgress(update_engine::Operation::DOWNLOADING, 0.0);
+
+  test::OobeJS().CreateVisibilityWaiter(true, kUpdateInProgressDialog)->Wait();
+  test::OobeJS().ExpectHiddenPath(kUpdateChekingDialog);
+  test::OobeJS().ExpectHiddenPath(kCellularPermissionDialog);
+  test::OobeJS().ExpectHiddenPath(kUpdateRebootDialog);
+
+  SetUpdateEngineStatusWithProgress(update_engine::Operation::DOWNLOADING,
+                                    0.08);
+
+  test::OobeJS().TapOnPath(kUpdateSkipButton);
+
+  ConsumerUpdateScreen::Result result = WaitForScreenExitResult();
+  EXPECT_EQ(result, ConsumerUpdateScreen::Result::SKIPPED);
+  EXPECT_FALSE(update_engine_client()->HasObserver(version_updater_));
 }
 
 }  // namespace

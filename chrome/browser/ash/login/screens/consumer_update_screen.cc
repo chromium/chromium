@@ -208,12 +208,15 @@ void ConsumerUpdateScreen::OnUserAction(const base::Value::List& args) {
     version_updater_->RejectUpdateOverCellular();
     RecordOobeConsumerUpdateScreenSkippedReasonHistogram(
         OobeConsumerUpdateScreenSkippedReason::kDeclineCellular);
+    version_updater_->StopObserving();
     exit_callback_.Run(Result::DECLINE_CELLULAR);
   } else if (action_id == kUserActionSkipUpdate) {
     RecordIsOptionalUpdateSkipped(/*skipped=*/true);
+    version_updater_->StopObserving();
     exit_callback_.Run(Result::SKIPPED);
   } else if (action_id == kUserActionBackButton) {
     version_updater_->RejectUpdateOverCellular();
+    version_updater_->StopObserving();
     exit_callback_.Run(Result::BACK);
   } else {
     BaseScreen::OnUserAction(args);

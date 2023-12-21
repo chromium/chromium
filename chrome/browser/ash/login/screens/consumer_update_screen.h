@@ -96,6 +96,14 @@ class ConsumerUpdateScreen : public BaseScreen,
     exit_delay_ = delay;
   }
 
+  void set_delay_for_show_skip_button_for_testing(base::TimeDelta delay) {
+    delay_skip_button_time_ = delay;
+  }
+
+  void set_maximum_time_force_update_for_testing(base::TimeDelta delay) {
+    maximum_time_force_update_ = delay;
+  }
+
   const ScreenExitCallback& get_exit_callback_for_testing() {
     return exit_callback_;
   }
