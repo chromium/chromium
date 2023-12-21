@@ -12004,6 +12004,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     SitePerProcessBrowserTest,
     MAYBE_RenderFrameProxyNotRecreatedDuringProcessShutdown) {
+  DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
@@ -12039,13 +12041,13 @@ IN_PROC_BROWSER_TEST_P(
       };)",
                                         hung_b_url)));
 
-  // In the popup, install an unload handler to send a lot of postMessages to
+  // In the popup, install a pagehide handler to send a lot of postMessages to
   // the opener.  This keeps the MessageLoop in the b.com process busy after
   // navigating away from the current document.  In https://crbug.com/794625,
   // this was needed so that a subsequent IPC to recreate a proxy arrives
   // before the process fully shuts down.
   EXPECT_TRUE(ExecJs(new_shell, R"(
-      window.onunload = () => {
+      window.onpagehide = () => {
         for (var i=0; i<10000; i++)
           opener.postMessage('hi','*');
       })"));
@@ -12060,8 +12062,8 @@ IN_PROC_BROWSER_TEST_P(
   // At this point, popup's original RFH is pending deletion.
   EXPECT_TRUE(rfh->IsPendingDeletion());
 
-  // When the opener receives a postMessage from the popup's unload handler, it
-  // should start a navigation back to b.com.  Wait for it.  This navigation
+  // When the opener receives a postMessage from the popup's pagehide handler,
+  // it should start a navigation back to b.com.  Wait for it.  This navigation
   // creates a speculative RFH which reuses the proxy that was created as part
   // of navigating from |popup_url| to |another_a_url|.
   EXPECT_TRUE(manager.WaitForRequestStart());
