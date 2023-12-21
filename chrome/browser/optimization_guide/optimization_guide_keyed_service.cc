@@ -472,7 +472,7 @@ void OptimizationGuideKeyedService::Initialize() {
           optimization_guide::features::kModelQualityLogging)) {
     model_quality_logs_uploader_service_ =
         std::make_unique<optimization_guide::ModelQualityLogsUploaderService>(
-            url_loader_factory, profile->GetPrefs());
+            url_loader_factory, g_browser_process->local_state());
   }
 
   // Register for profile initialization event to initialize the model

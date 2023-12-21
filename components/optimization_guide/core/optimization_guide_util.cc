@@ -62,7 +62,8 @@ int64_t GenerateAndStoreClientId(PrefService* pref_service) {
   }
 
   pref_service->SetInt64(
-      optimization_guide::prefs::kModelQualityLogggingClientId, client_id);
+      optimization_guide::prefs::localstate::kModelQualityLogggingClientId,
+      client_id);
   return client_id;
 }
 
@@ -193,11 +194,12 @@ int64_t GetOrCreateModelQualityClientId(proto::ModelExecutionFeature feature,
     return 0;
   }
   int64_t client_id = pref_service->GetInt64(
-      optimization_guide::prefs::kModelQualityLogggingClientId);
+      optimization_guide::prefs::localstate::kModelQualityLogggingClientId);
   if (!client_id) {
     client_id = GenerateAndStoreClientId(pref_service);
     pref_service->SetInt64(
-        optimization_guide::prefs::kModelQualityLogggingClientId, client_id);
+        optimization_guide::prefs::localstate::kModelQualityLogggingClientId,
+        client_id);
   }
 
   // Hash the client id with the date so that it changes everyday for every

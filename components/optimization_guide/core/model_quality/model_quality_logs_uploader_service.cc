@@ -15,8 +15,10 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/prefs/pref_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -120,6 +122,32 @@ void OnURLLoadComplete(
                               ModelQualityLogsUploadStatus::kUploadSuccessful);
 }
 
+proto::PerformanceClass GetPerformanceClass(PrefService* local_state) {
+  int value =
+      local_state->GetInteger(prefs::localstate::kOnDevicePerformanceClass);
+  OnDeviceModelPerformanceClass performance_class =
+      static_cast<OnDeviceModelPerformanceClass>(value);
+  switch (performance_class) {
+    case OnDeviceModelPerformanceClass::kVeryLow:
+      return proto::PERFORMANCE_CLASS_VERY_LOW;
+    case OnDeviceModelPerformanceClass::kLow:
+      return proto::PERFORMANCE_CLASS_LOW;
+    case OnDeviceModelPerformanceClass::kMedium:
+      return proto::PERFORMANCE_CLASS_MEDIUM;
+    case OnDeviceModelPerformanceClass::kHigh:
+      return proto::PERFORMANCE_CLASS_HIGH;
+    case OnDeviceModelPerformanceClass::kVeryHigh:
+      return proto::PERFORMANCE_CLASS_VERY_HIGH;
+    case OnDeviceModelPerformanceClass::kUnknown:
+    case OnDeviceModelPerformanceClass::kError:
+    case OnDeviceModelPerformanceClass::kServiceCrash:
+    case OnDeviceModelPerformanceClass::kGpuBlocked:
+    case OnDeviceModelPerformanceClass::kFailedToLoadLibrary:
+      return proto::PERFORMANCE_CLASS_UNSPECIFIED;
+  }
+  return proto::PERFORMANCE_CLASS_UNSPECIFIED;
+}
+
 }  // namespace
 
 ModelQualityLogsUploaderService::ModelQualityLogsUploaderService(
@@ -175,6 +203,12 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
   int64_t client_id = GetOrCreateModelQualityClientId(feature, pref_service_);
   if (client_id != 0) {
     logging_metadata.set_client_id(client_id);
+  }
+
+  proto::PerformanceClass perf_class = GetPerformanceClass(pref_service_);
+  if (perf_class != proto::PERFORMANCE_CLASS_UNSPECIFIED) {
+    logging_metadata.mutable_on_device_system_profile()->set_performance_class(
+        perf_class);
   }
 
   *(log_ai_data_request->mutable_logging_metadata()) = logging_metadata;

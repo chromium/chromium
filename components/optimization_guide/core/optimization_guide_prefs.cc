@@ -60,10 +60,6 @@ const char kStoreFilePathsToDelete[] =
 const char kModelExecutionMainToggleSettingState[] =
     "optimization_guide.model_execution_main_toggle_setting_state";
 
-// An integer pref that contains the user's client id.
-const char kModelQualityLogggingClientId[] =
-    "optimization_guide.model_quality_logging_client_id";
-
 // A dictionary pref that stores optimization types that had filter associated
 // with this type. The entry is the OptimizationType enum. The value of the
 // key-value pair will not be used.
@@ -152,6 +148,10 @@ const char kLastTimeOnDeviceEligibleFeatureWasUsed[] =
 const char kLastTimeEligibleForOnDeviceModelDownload[] =
     "optimization_guide.on_device.last_time_eligible_for_download";
 
+// An integer pref that contains the user's client id.
+const char kModelQualityLogggingClientId[] =
+    "optimization_guide.model_quality_logging_client_id";
+
 }  // namespace localstate
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
@@ -174,8 +174,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                    PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(kStoreFilePathsToDelete,
                                    PrefRegistry::LOSSY_PREF);
-  registry->RegisterInt64Pref(kModelQualityLogggingClientId, 0,
-                              PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(kPreviousOptimizationTypesWithFilter,
                                    PrefRegistry::LOSSY_PREF);
 
@@ -195,6 +193,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       localstate::kLastTimeOnDeviceEligibleFeatureWasUsed, base::Time::Min());
   registry->RegisterTimePref(
       localstate::kLastTimeEligibleForOnDeviceModelDownload, base::Time::Min());
+  registry->RegisterInt64Pref(localstate::kModelQualityLogggingClientId, 0,
+                              PrefRegistry::LOSSY_PREF);
 }
 
 }  // namespace prefs

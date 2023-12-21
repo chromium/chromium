@@ -11,6 +11,7 @@
 #include "base/hash/hash.h"
 #include "base/i18n/time_formatting.h"
 #include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -85,8 +86,7 @@ void OptimizationGuideInternalsUI::RequestDownloadedModelsInfo(
 
 void OptimizationGuideInternalsUI::RequestLoggedModelQualityClientIds(
     RequestLoggedModelQualityClientIdsCallback callback) {
-  Profile* profile = Profile::FromWebUI(web_ui());
-  PrefService* prefs = profile->GetPrefs();
+  PrefService* local_state = g_browser_process->local_state();
 
   // Get the client ids for the compose and tab organization feature for the
   // past 28 days to show on chrome://optimization-guide-internals.
@@ -94,8 +94,8 @@ void OptimizationGuideInternalsUI::RequestLoggedModelQualityClientIds(
   std::vector<optimization_guide_internals::mojom::LoggedClientIdsPtr>
       logged_client_ids;
 
-  int64_t client_id =
-      prefs->GetInt64(optimization_guide::prefs::kModelQualityLogggingClientId);
+  int64_t client_id = local_state->GetInt64(
+      optimization_guide::prefs::localstate::kModelQualityLogggingClientId);
 
   // If the client id is zero no client id is set, in that case do nothing.
   if (client_id == 0) {

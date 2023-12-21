@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -100,7 +101,7 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
         shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
-    prefs::RegisterProfilePrefs(pref_service_.registry());
+    prefs::RegisterLocalStatePrefs(pref_service_.registry());
     model_quality_logs_uploader_service_ =
         std::make_unique<ModelQualityLogsUploaderService>(
             shared_url_loader_factory_, &pref_service_);
@@ -115,6 +116,12 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
       const ModelQualityLogsUploaderServiceTest&) = delete;
 
   ~ModelQualityLogsUploaderServiceTest() override = default;
+
+  void WritePerformanceClassToPref(OnDeviceModelPerformanceClass perf_class) {
+    pref_service_.SetInteger(
+        prefs::localstate::kOnDevicePerformanceClass,
+        base::to_underlying(OnDeviceModelPerformanceClass::kVeryHigh));
+  }
 
   void UploadModelQualityLogs(
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request) {
@@ -194,6 +201,8 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
 };
 
 TEST_F(ModelQualityLogsUploaderServiceTest, TestSuccessfulResponse) {
+  WritePerformanceClassToPref(OnDeviceModelPerformanceClass::kVeryHigh);
+
   auto ai_data_request = BuildComposeLogAiDataReuqest();
   UploadModelQualityLogs(std::move(ai_data_request));
   VerifyHasPendingLogsUploadRequest();
@@ -201,8 +210,14 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestSuccessfulResponse) {
   proto::LogAiDataResponse response;
   EXPECT_TRUE(SimulateSuccessfulResponse(response));
 
+  auto pending_request = GetPendingLogsUploadRequest();
   EXPECT_EQ(proto::LogAiDataRequest::FeatureCase::kCompose,
-            GetPendingLogsUploadRequest()->feature_case());
+            pending_request->feature_case());
+  // Performance class should be attached.
+  EXPECT_EQ(proto::PERFORMANCE_CLASS_VERY_HIGH,
+            pending_request->logging_metadata()
+                .on_device_system_profile()
+                .performance_class());
 
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelQualityLogsUploaderService.NetErrorCode",

@@ -31,8 +31,6 @@ extern const char kStoreFilePathsToDelete[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kModelExecutionMainToggleSettingState[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kModelQualityLogggingClientId[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kPreviousOptimizationTypesWithFilter[];
 
 // Value stored in the pref.
@@ -73,6 +71,8 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kLastTimeOnDeviceEligibleFeatureWasUsed[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kLastTimeEligibleForOnDeviceModelDownload[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kModelQualityLogggingClientId[];
 
 }  // namespace localstate
 

@@ -17,7 +17,7 @@ namespace optimization_guide {
 class OptimizationGuideUtilTest : public testing::Test {
  public:
   void SetUp() override {
-    prefs::RegisterProfilePrefs(pref_service_.registry());
+    prefs::RegisterLocalStatePrefs(pref_service_.registry());
   }
 
  protected:

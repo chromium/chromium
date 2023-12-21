@@ -959,8 +959,13 @@ constexpr char kIsolatedWebAppsEnabled[] = "ash.isolated_web_apps_enabled";
 const char kPrivacyBudgetReportedReidBlocks[] =
     "privacy_budget.reported_reid_blocks";
 
+// Deprecated from profile prefs 12/2023.
+const char kModelQualityLoggingClientId[] =
+    "optimization_guide.model_quality_logging_client_id";
+
 // Deprecated 12/2023.
 const char kSync_ExplicitBrowserSignin[] = "sync.explicit_browser_signin";
+
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1358,6 +1363,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kDownloadDuplicateFilePromptEnabled, true);
 
   // Deprecated 12/2023.
+  registry->RegisterInt64Pref(kModelQualityLoggingClientId, true);
   registry->RegisterBooleanPref(kSync_ExplicitBrowserSignin, false);
 }
 
@@ -2578,6 +2584,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Deprecated 12/2023.
   profile_prefs->ClearPref(kDownloadDuplicateFilePromptEnabled);
+
+  // Deprecated 12/2023.
+  profile_prefs->ClearPref(kModelQualityLoggingClientId);
 
   // Added 12/2023.
   // Moving the `kExplicitBrowserSignin` from sync/ to signin/.
