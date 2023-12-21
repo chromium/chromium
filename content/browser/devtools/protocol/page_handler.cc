@@ -772,8 +772,12 @@ Response PageHandler::ResetNavigationHistory() {
     return response;
 
   NavigationController& controller = host_->frame_tree()->controller();
-  controller.DeleteNavigationEntries(base::BindRepeating(&ReturnTrue));
-  return Response::Success();
+  if (controller.CanPruneAllButLastCommitted()) {
+    controller.DeleteNavigationEntries(base::BindRepeating(&ReturnTrue));
+    return Response::Success();
+  } else {
+    return Response::ServerError("History cannot be pruned");
+  }
 }
 
 void PageHandler::CaptureSnapshot(

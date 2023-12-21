@@ -760,6 +760,12 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, ParentTargetPermissions) {
   ASSERT_TRUE(RunExtensionTest("parent_target_permissions")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, ReloadAndResetHistory) {
+  // Run test with file access disabled.
+  ASSERT_TRUE(RunExtensionTest("debugger_reload_and_reset_history"))
+      << message_;
+}
+
 // Tests that an extension is not allowed to inspect a worker through the
 // inspectWorker debugger command.
 // Regression test for https://crbug.com/1059577.
