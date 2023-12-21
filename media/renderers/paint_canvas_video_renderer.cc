@@ -2071,13 +2071,18 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
       } else {
         cache_.emplace(video_frame->unique_id());
         auto* sii = raster_context_provider->SharedImageInterface();
-        // TODO(nazabris): Sort out what to do when GLES2 is needed but the
-        // cached shared image is created without it.
-        uint32_t flags = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                         gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-                         gpu::SHARED_IMAGE_USAGE_RASTER;
+
+        // This SI is used to cache the VideoFrame. We will eventually read out
+        // its contents into a destination GL texture via the GLES2 interface.
+        uint32_t flags = gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+        // We copy the contents of the source VideoFrame *into* the
+        // cached SI over the raster interface - the usage bits depend on
+        // whether OOP-Raster is enabled.
+        flags |= gpu::SHARED_IMAGE_USAGE_RASTER;
         if (gpu_rasterization) {
           flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+        } else {
+          flags |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
         }
         client_shared_image = sii->CreateSharedImage(
             SHARED_IMAGE_FORMAT, video_frame->coded_size(),
