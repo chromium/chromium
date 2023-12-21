@@ -635,12 +635,12 @@ TEST_F(PopupViewViewsTest, EscClosesSubPopup) {
 
   view().SetSelectedCell(cell_control, PopupCellSelectionSource::kNonUserInput);
   task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
-  ASSERT_EQ(test_api(view()).GetOpenSubPopupCell(), cell_control);
+  ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), cell_control.first);
 
   SimulateKeyPress(ui::VKEY_ESCAPE);
   EXPECT_EQ(view().GetSelectedCell(), cell_content);
   task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
-  EXPECT_EQ(test_api(view()).GetOpenSubPopupCell(), std::nullopt);
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
 }
 
 class PopupViewViewsTestKeyboard : public PopupViewViewsTest {
@@ -873,16 +873,16 @@ TEST_F(PopupViewViewsTest, CellOpensClosesSubPopupWithDelay) {
   CellIndex cell_0 = CellIndex{0, CellType::kControl};
 
   view().SetSelectedCell(cell_0, PopupCellSelectionSource::kNonUserInput);
-  EXPECT_EQ(test_api(view()).GetOpenSubPopupCell(), std::nullopt)
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt)
       << "Should be no sub-popups initially.";
 
   task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
-  EXPECT_EQ(test_api(view()).GetOpenSubPopupCell(), cell_0)
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), cell_0.first)
       << "Selected cell should have a sub-popup after the delay.";
 
   view().SetSelectedCell(std::nullopt, PopupCellSelectionSource::kNonUserInput);
   task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
-  EXPECT_EQ(test_api(view()).GetOpenSubPopupCell(), cell_0)
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), cell_0.first)
       << "The cell should have no sub-popup by unselecting it.";
 }
 
@@ -896,11 +896,11 @@ TEST_F(PopupViewViewsTest, CellSubPopupResetAfterSuggestionsUpdates) {
   view().SetSelectedCell(CellIndex{0, CellType::kControl},
                          PopupCellSelectionSource::kNonUserInput);
   task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
-  EXPECT_NE(test_api(view()).GetOpenSubPopupCell(), std::nullopt)
+  EXPECT_NE(test_api(view()).GetOpenSubPopupRow(), std::nullopt)
       << "Openning a sub-popup should happen.";
 
   UpdateSuggestions({PopupItemId::kAddressEntry});
-  EXPECT_EQ(test_api(view()).GetOpenSubPopupCell(), std::nullopt)
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt)
       << "The cell's sub-popup should be closed.";
 }
 
@@ -915,7 +915,7 @@ TEST_F(PopupViewViewsTest, NoSubPopupOpenIfNotEligible) {
   view().SetSelectedCell(CellIndex{0, CellType::kControl},
                          PopupCellSelectionSource::kNonUserInput);
   task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
-  EXPECT_EQ(test_api(view()).GetOpenSubPopupCell(), std::nullopt)
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt)
       << "Opening a sub-popup should happen.";
 }
 
@@ -931,14 +931,14 @@ TEST_F(PopupViewViewsTest, SubPopupHidingOnNoSelection) {
 
   view().SetSelectedCell(cell, PopupCellSelectionSource::kNonUserInput);
   task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
-  ASSERT_EQ(test_api(view()).GetOpenSubPopupCell(), cell);
+  ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), cell.first);
 
   auto [sub_controller, sub_view] = OpenSubView(
       view(), {CreateSuggestionWithChildren({Suggestion(u"Sub Child #1")})});
   view().SetSelectedCell(std::nullopt, PopupCellSelectionSource::kNonUserInput);
   sub_view->SetSelectedCell(cell, PopupCellSelectionSource::kNonUserInput);
   task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
-  ASSERT_EQ(test_api(*sub_view).GetOpenSubPopupCell(), cell);
+  ASSERT_EQ(test_api(*sub_view).GetOpenSubPopupRow(), cell.first);
 
   auto [sub_sub_controller, sub_sub_view] = OpenSubView(
       *sub_view,
@@ -953,8 +953,8 @@ TEST_F(PopupViewViewsTest, SubPopupHidingOnNoSelection) {
   task_environment()->FastForwardBy(
       PopupViewViews::kNoSelectionHideSubPopupDelay);
 
-  EXPECT_EQ(test_api(view()).GetOpenSubPopupCell(), std::nullopt);
-  EXPECT_EQ(test_api(*sub_view).GetOpenSubPopupCell(), std::nullopt);
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
+  EXPECT_EQ(test_api(*sub_view).GetOpenSubPopupRow(), std::nullopt);
 }
 
 TEST_F(PopupViewViewsTest, SubPopupOwnSelectionPreventsHiding) {
@@ -969,14 +969,14 @@ TEST_F(PopupViewViewsTest, SubPopupOwnSelectionPreventsHiding) {
 
   view().SetSelectedCell(cell, PopupCellSelectionSource::kNonUserInput);
   task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
-  ASSERT_EQ(test_api(view()).GetOpenSubPopupCell(), cell);
+  ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), cell.first);
 
   auto [sub_controller, sub_view] = OpenSubView(
       view(), {CreateSuggestionWithChildren({Suggestion(u"Sub Child #1")})});
   view().SetSelectedCell(std::nullopt, PopupCellSelectionSource::kNonUserInput);
   sub_view->SetSelectedCell(cell, PopupCellSelectionSource::kNonUserInput);
   task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
-  ASSERT_EQ(test_api(*sub_view).GetOpenSubPopupCell(), cell);
+  ASSERT_EQ(test_api(*sub_view).GetOpenSubPopupRow(), cell.first);
 
   auto [sub_sub_controller, sub_sub_view] = OpenSubView(
       *sub_view,
@@ -996,8 +996,8 @@ TEST_F(PopupViewViewsTest, SubPopupOwnSelectionPreventsHiding) {
   task_environment()->FastForwardBy(
       PopupViewViews::kNoSelectionHideSubPopupDelay);
 
-  EXPECT_NE(test_api(view()).GetOpenSubPopupCell(), std::nullopt);
-  EXPECT_EQ(test_api(*sub_view).GetOpenSubPopupCell(), std::nullopt);
+  EXPECT_NE(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
+  EXPECT_EQ(test_api(*sub_view).GetOpenSubPopupRow(), std::nullopt);
 }
 
 // TODO(crbug.com/1489673): Enable once the view shows itself properly.

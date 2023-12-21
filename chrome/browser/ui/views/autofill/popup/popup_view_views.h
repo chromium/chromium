@@ -179,10 +179,10 @@ class PopupViewViews : public PopupBaseView,
 
   bool CanShowDropdownInBounds(const gfx::Rect& bounds) const;
 
-  // Opens a sub-popup on a new cell (and closes the open one if any), or just
+  // Opens a sub-popup on a new row (and closes the open one if any), or just
   // closes the existing if `std::nullopt` is passed.
-  void SetCellWithOpenSubPopup(std::optional<CellIndex> cell_index,
-                               PopupCellSelectionSource selection_source);
+  void SetRowWithOpenSubPopup(std::optional<size_t> row_index,
+                              PopupCellSelectionSource selection_source);
 
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
@@ -193,9 +193,9 @@ class PopupViewViews : public PopupBaseView,
   // The index of the row with a selected cell.
   std::optional<size_t> row_with_selected_cell_;
 
-  // The latest cell which was set as having a sub-popup open. Storing it
-  // is required to maintain the invariant of at most one such a cell.
-  std::optional<CellIndex> open_sub_popup_cell_;
+  // The latest row which was set as having a sub-popup open. Storing it
+  // is required to maintain the invariant of at most one such a row.
+  std::optional<size_t> row_with_open_sub_popup_;
 
   std::vector<RowPointer> rows_;
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;

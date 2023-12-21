@@ -32,8 +32,8 @@ class PopupViewViewsTestApi {
     return view_->HandleKeyPressEvent(event);
   }
 
-  std::optional<PopupViewViews::CellIndex> GetOpenSubPopupCell() const&& {
-    return view_->open_sub_popup_cell_;
+  std::optional<size_t> GetOpenSubPopupRow() const&& {
+    return view_->row_with_open_sub_popup_;
   }
 
   const std::vector<PopupViewViews::RowPointer>& rows() const&& {
