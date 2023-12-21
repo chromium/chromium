@@ -6,6 +6,8 @@
 
 #include <gtest/gtest.h>
 
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
+
 #define EXPECT_SELECTORS_EQ(a, b)    \
   EXPECT_EQ(a.Type(), b.Type());     \
   EXPECT_EQ(a.Start(), b.Start());   \
@@ -17,6 +19,11 @@ namespace blink {
 
 static const TextFragmentSelector kInvalidSelector(
     TextFragmentSelector::kInvalid);
+
+class TextFragmentSelectorTest : public testing::Test {
+ private:
+  test::TaskEnvironment task_environment;
+};
 
 TEST(TextFragmentSelectorTest, ExactText) {
   TextFragmentSelector selector =

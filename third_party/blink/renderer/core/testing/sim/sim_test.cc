@@ -20,7 +20,12 @@
 
 namespace blink {
 
-SimTest::SimTest() {
+SimTest::SimTest(
+    std::optional<base::test::TaskEnvironment::TimeSource> time_source)
+    : task_environment_(
+          time_source.has_value()
+              ? time_source.value()
+              : base::test::TaskEnvironment::TimeSource::DEFAULT) {
   Document::SetForceSynchronousParsingForTesting(true);
   // Threaded animations are usually enabled for blink. However these tests use
   // synchronous compositing, which can not run threaded animations.

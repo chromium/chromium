@@ -4,6 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,8 +56,13 @@ namespace {
 
 using test::RunPendingTasks;
 
-class TextFragmentAnchorTest : public TextFragmentAnchorTestBase {
+class TextFragmentAnchorTestController : public TextFragmentAnchorTestBase {
  public:
+  explicit TextFragmentAnchorTestController(
+      base::test::TaskEnvironment::TimeSource time_source)
+      : TextFragmentAnchorTestBase(time_source) {}
+  TextFragmentAnchorTestController() = default;
+
   void BeginEmptyFrame() {
     // If a test case doesn't find a match and therefore doesn't schedule the
     // beforematch event, we should still render a second frame as if we did
@@ -160,6 +166,20 @@ class TextFragmentAnchorTest : public TextFragmentAnchorTestBase {
                       "Implement others if new modality is needed.";
     }
   }
+};
+
+// TODO(crbug.com/1315595): Only have one constructor that initializes the
+// MOCK_TIME for blink::test::TaskEnvironment once migration to
+// blink_unittests_v2 completes.
+class TextFragmentAnchorTest : public TextFragmentAnchorTestController {
+ public:
+#if defined(HAS_BLINK_TASK_ENVIRONMENT)
+  TextFragmentAnchorTest()
+      : TextFragmentAnchorTestController(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+#else
+  TextFragmentAnchorTest() = default;
+#endif
 };
 
 // Basic test case, ensure we scroll the matching text into view.
@@ -2547,16 +2567,14 @@ TEST_F(TextFragmentAnchorTest, InitialMatchPendingBecomesCollapsed) {
   EXPECT_TRUE(GetDocument().Markers().Markers().empty());
 }
 
-class TextFragmentAnchorPostLoadTest : public TextFragmentAnchorTest {
+// These tests are specifically testing the post-load timer task so use
+// the real clock to faithfully reproduce real-world behavior.
+class TextFragmentAnchorPostLoadTest : public TextFragmentAnchorTestController {
+ public:
+  TextFragmentAnchorPostLoadTest() = default;
   void SetUp() override {
-    TextFragmentAnchorTest::SetUp();
-
-    // These tests are specifically testing the post-load timer task so use
-    // the real clock to faithfully reproduce real-world behavior.
-    WebView()
-        .Scheduler()
-        ->GetVirtualTimeController()
-        ->DisableVirtualTimeForTesting();
+    TextFragmentAnchorTestController::SetUp();
+    DisableVirtualTimeIfSet();
   }
 };
 

@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,6 +35,16 @@ const char kSourceUkmMetric[] = "Source";
 
 class TextFragmentAnchorMetricsTest : public TextFragmentAnchorTestBase {
  public:
+// TODO(crbug.com/1315595): Only have one constructor that initializes the
+// MOCK_TIME for blink::test::TaskEnvironment once migration to
+// blink_unittests_v2 completes.
+#if defined(HAS_BLINK_TASK_ENVIRONMENT)
+  TextFragmentAnchorMetricsTest()
+      : TextFragmentAnchorTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+#else
+  TextFragmentAnchorMetricsTest() = default;
+#endif
   void SimulateClick(int x, int y) {
     WebMouseEvent event(WebInputEvent::Type::kMouseDown, gfx::PointF(x, y),
                         gfx::PointF(x, y), WebPointerProperties::Button::kLeft,
