@@ -192,6 +192,7 @@ protocol::Response InspectorEmulationAgent::disable() {
   if (emulate_auto_dark_mode_.Get()) {
     setAutoDarkModeOverride(Maybe<bool>());
   }
+  setTimezoneOverride(String());
   setDefaultBackgroundColorOverride(Maybe<protocol::DOM::RGBA>());
   disabled_image_types_.Clear();
   return protocol::Response::Success();
