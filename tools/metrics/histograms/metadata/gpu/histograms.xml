@@ -597,27 +597,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.DirectComposition.DCLayerResult.StreamVideo"
-    enum="DCLayerResult" expires_after="2021-12-12">
-  <owner>sunnyps@chromium.org</owner>
-  <owner>zmo@chromium.org</owner>
-  <summary>
-    Recorded for each stream video quad (on overlay processing) the reason it
-    was or wasn't put in an overlay.
-  </summary>
-</histogram>
-
-<histogram name="GPU.DirectComposition.DCLayerResult.Texture"
-    enum="DCLayerResult" expires_after="2023-08-20">
-  <owner>sunnyps@chromium.org</owner>
-  <owner>zmo@chromium.org</owner>
-  <summary>
-    Recorded for each texture quad (on overlay processing) the reason it was or
-    wasn't put in an overlay. (This metric might be lack of coverage between
-    2022-05-01 and 2022-06-24 due to metric expiration.)
-  </summary>
-</histogram>
-
 <histogram base="true"
     name="GPU.DirectComposition.DCLayerResult.Video.{GPUProtectedVideoType}"
     enum="DCLayerResult" expires_after="2024-04-28">
@@ -629,6 +608,28 @@ chromium-metrics-reviews@google.com.
     reason it was or wasn't put in an overlay.
   </summary>
   <token key="GPUProtectedVideoType" variants="GPUProtectedVideoType"/>
+</histogram>
+
+<histogram
+    name="GPU.DirectComposition.DCLayerResult.{OverlayProcessingQuadType}"
+    enum="DCLayerResult" expires_after="2024-06-30">
+  <owner>sunnyps@chromium.org</owner>
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Recorded for each quad (on overlay processing) the reason it was or wasn't
+    put in an overlay. Reported for {OverlayProcessingQuadType} data may be
+    missing.
+  </summary>
+  <token key="OverlayProcessingQuadType">
+    <variant name="StreamVideo"
+        summary="StreamVideo quad type. Warning: this histogram was expired
+                 from 2021-12-12 to 2023-12-21;"/>
+    <variant name="Texture"
+        summary="Texture quad type. Warning: this histogram was expired from
+                 2022-05-01 to 2022-06-24 and again from 2023-08-20 and
+                 2023-12-21;"/>
+  </token>
 </histogram>
 
 <histogram name="GPU.DirectComposition.DcompDeviceCreateSurface" enum="Hresult"
