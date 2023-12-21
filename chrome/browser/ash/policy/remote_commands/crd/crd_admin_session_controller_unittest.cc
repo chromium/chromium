@@ -449,6 +449,7 @@ class CrdAdminSessionControllerTestWithBoolParams
       public testing::WithParamInterface<bool> {};
 
 TEST_F(CrdAdminSessionControllerTest, ShouldPassOAuthTokenToRemotingService) {
+  InitWithNoReconnectableSession(session_controller());
   session_controller().SetOAuthTokenForTesting("<the-oauth-token>");
 
   SupportSessionParamsPtr actual_parameters;
@@ -464,6 +465,7 @@ TEST_F(CrdAdminSessionControllerTest, ShouldPassOAuthTokenToRemotingService) {
 }
 
 TEST_F(CrdAdminSessionControllerTest, ShouldPassUserNameToRemotingService) {
+  InitWithNoReconnectableSession(session_controller());
   SessionParameters parameters;
   parameters.user_name = "<the-user-name>";
 
@@ -481,6 +483,7 @@ TEST_F(CrdAdminSessionControllerTest, ShouldPassUserNameToRemotingService) {
 
 TEST_P(CrdAdminSessionControllerTestWithBoolParams,
        ShouldPassShowConfirmationDialogToRemotingService) {
+  InitWithNoReconnectableSession(session_controller());
   SessionParameters parameters;
   parameters.show_confirmation_dialog = GetParam();
 
@@ -498,6 +501,7 @@ TEST_P(CrdAdminSessionControllerTestWithBoolParams,
 
 TEST_P(CrdAdminSessionControllerTestWithBoolParams,
        ShouldPassTerminateUponInputToRemotingService) {
+  InitWithNoReconnectableSession(session_controller());
   SessionParameters parameters;
   parameters.terminate_upon_input = GetParam();
 
@@ -513,6 +517,7 @@ TEST_P(CrdAdminSessionControllerTestWithBoolParams,
 }
 
 TEST_F(CrdAdminSessionControllerTest, ShouldPassAdminEmailToRemotingService) {
+  InitWithNoReconnectableSession(session_controller());
   SessionParameters parameters;
   parameters.admin_email = "the.admin@email.com";
 
@@ -529,6 +534,7 @@ TEST_F(CrdAdminSessionControllerTest, ShouldPassAdminEmailToRemotingService) {
 
 TEST_P(CrdAdminSessionControllerTestWithBoolParams,
        ShouldPassCurtainLocalUserSessionToRemotingService) {
+  InitWithNoReconnectableSession(session_controller());
   SessionParameters parameters;
   parameters.curtain_local_user_session = GetParam();
 
@@ -545,6 +551,7 @@ TEST_P(CrdAdminSessionControllerTestWithBoolParams,
 
 TEST_P(CrdAdminSessionControllerTestWithBoolParams,
        ShouldPassAllowTroubleshootingToolsToRemotingService) {
+  InitWithNoReconnectableSession(session_controller());
   SessionParameters parameters;
   parameters.allow_troubleshooting_tools = GetParam();
 
@@ -561,6 +568,7 @@ TEST_P(CrdAdminSessionControllerTestWithBoolParams,
 
 TEST_P(CrdAdminSessionControllerTestWithBoolParams,
        ShouldPassShowTroubleshootingToolsToRemotingService) {
+  InitWithNoReconnectableSession(session_controller());
   SessionParameters parameters;
   parameters.show_troubleshooting_tools = GetParam();
 
@@ -577,6 +585,7 @@ TEST_P(CrdAdminSessionControllerTestWithBoolParams,
 
 TEST_P(CrdAdminSessionControllerTestWithBoolParams,
        ShouldPassAllowFileTransferToRemotingService) {
+  InitWithNoReconnectableSession(session_controller());
   SessionParameters parameters;
   parameters.allow_file_transfer = GetParam();
 
@@ -593,6 +602,7 @@ TEST_P(CrdAdminSessionControllerTestWithBoolParams,
 
 TEST_F(CrdAdminSessionControllerTest,
        ShouldReportErrorIfStartSessionReturnsError) {
+  InitWithNoReconnectableSession(session_controller());
   EXPECT_CALL(remoting_service(), StartSession)
       .WillOnce([](SupportSessionParamsPtr params,
                    const remoting::ChromeOsEnterpriseParams& enterprise_params,
@@ -613,6 +623,7 @@ TEST_F(CrdAdminSessionControllerTest,
 }
 
 TEST_F(CrdAdminSessionControllerTest, ShouldReturnAccessCode) {
+  InitWithNoReconnectableSession(session_controller());
   SupportHostObserver& observer = StartCrdHostAndBindObserver();
 
   observer.OnHostStateReceivedAccessCode("the-access-code", base::Days(1));
@@ -624,6 +635,7 @@ TEST_F(CrdAdminSessionControllerTest, ShouldReturnAccessCode) {
 
 TEST_F(CrdAdminSessionControllerTest,
        ShouldStartSessionIfAccessCodeFetchSucceeds) {
+  InitWithNoReconnectableSession(session_controller());
   session_controller().SetOAuthTokenForTesting("test-oauth-token");
 
   StartCrdHostAndBindObserver();
@@ -632,6 +644,7 @@ TEST_F(CrdAdminSessionControllerTest,
 }
 
 TEST_F(CrdAdminSessionControllerTest, ShouldReportErrorIfAccessCodeFetchFails) {
+  InitWithNoReconnectableSession(session_controller());
   session_controller().FailOAuthTokenFetchForTesting();
 
   EXPECT_NO_CALLS(remoting_service(), StartSession);
@@ -649,6 +662,7 @@ TEST_F(CrdAdminSessionControllerTest, ShouldReportErrorIfAccessCodeFetchFails) {
 }
 
 TEST_F(CrdAdminSessionControllerTest, ShouldReportErrorWhenClientDisconnects) {
+  InitWithNoReconnectableSession(session_controller());
   SupportHostObserver& observer = StartCrdHostAndBindObserver();
 
   observer.OnHostStateDisconnected("the-disconnect-reason");
@@ -662,6 +676,7 @@ TEST_F(CrdAdminSessionControllerTest, ShouldReportErrorWhenClientDisconnects) {
 
 TEST_F(CrdAdminSessionControllerTest,
        ShouldReportErrorWhenRemotingServiceReportsPolicyError) {
+  InitWithNoReconnectableSession(session_controller());
   SupportHostObserver& observer = StartCrdHostAndBindObserver();
 
   observer.OnPolicyError();
@@ -675,6 +690,7 @@ TEST_F(CrdAdminSessionControllerTest,
 
 TEST_F(CrdAdminSessionControllerTest,
        ShouldReportErrorWhenRemotingServiceReportsInvalidDomainError) {
+  InitWithNoReconnectableSession(session_controller());
   SupportHostObserver& observer = StartCrdHostAndBindObserver();
 
   observer.OnInvalidDomainError();
@@ -688,6 +704,7 @@ TEST_F(CrdAdminSessionControllerTest,
 
 TEST_F(CrdAdminSessionControllerTest,
        HasActiveSessionShouldBeTrueWhenASessionIsStarted) {
+  InitWithNoReconnectableSession(session_controller());
   EXPECT_FALSE(delegate().HasActiveSession());
 
   StartCrdHostAndBindObserver();
@@ -696,6 +713,7 @@ TEST_F(CrdAdminSessionControllerTest,
 }
 
 TEST_F(CrdAdminSessionControllerTest, ShouldCleanupSessionWhenHostDisconnects) {
+  InitWithNoReconnectableSession(session_controller());
   SupportHostObserver& observer = StartCrdHostAndBindObserver();
   ASSERT_TRUE(delegate().HasActiveSession());
 
@@ -707,6 +725,7 @@ TEST_F(CrdAdminSessionControllerTest, ShouldCleanupSessionWhenHostDisconnects) {
 
 TEST_F(CrdAdminSessionControllerTest,
        ShouldCleanupSessionWhenHostObserverDisconnectsMojom) {
+  InitWithNoReconnectableSession(session_controller());
   SupportHostObserver& observer = StartCrdHostAndBindObserver();
   ASSERT_TRUE(delegate().HasActiveSession());
 
@@ -721,6 +740,7 @@ TEST_F(CrdAdminSessionControllerTest,
 
 TEST_F(CrdAdminSessionControllerTest,
        ShouldCleanupSessionWhenWeFailToStartTheHost) {
+  InitWithNoReconnectableSession(session_controller());
   EXPECT_CALL(remoting_service(), StartSession)
       .WillOnce([](SupportSessionParamsPtr params,
                    const remoting::ChromeOsEnterpriseParams& enterprise_params,
@@ -741,6 +761,7 @@ TEST_F(CrdAdminSessionControllerTest,
 
 TEST_F(CrdAdminSessionControllerTest,
        ShouldCleanupSessionWhenCallingTerminateSession) {
+  InitWithNoReconnectableSession(session_controller());
   StartCrdHostAndBindObserver();
   EXPECT_TRUE(delegate().HasActiveSession());
 
@@ -751,6 +772,7 @@ TEST_F(CrdAdminSessionControllerTest,
 
 TEST_F(CrdAdminSessionControllerTest,
        ShouldNotCrashIfCrdHostSendsMultipleResponses) {
+  InitWithNoReconnectableSession(session_controller());
   SupportHostObserver& observer = StartCrdHostAndBindObserver();
 
   observer.OnHostStateReceivedAccessCode("access-code", base::Days(1));
@@ -767,6 +789,7 @@ TEST_F(CrdAdminSessionControllerTest,
 
 TEST_F(CrdAdminSessionControllerTest,
        ShouldReportSessionTerminationAfterActiveSessionEnds) {
+  InitWithNoReconnectableSession(session_controller());
   SupportHostObserver& observer = StartCrdHostAndBindObserver();
   constexpr auto duration = base::Seconds(2);
 
@@ -781,6 +804,7 @@ TEST_F(CrdAdminSessionControllerTest,
 TEST_F(
     CrdAdminSessionControllerTest,
     ShouldReportErrorWhenRemotingServiceReportsEnterpriseRemoteSupportDisabledError) {
+  InitWithNoReconnectableSession(session_controller());
   SupportHostObserver& observer = StartCrdHostAndBindObserver();
 
   observer.OnHostStateError(
@@ -795,6 +819,8 @@ TEST_F(
 
 TEST_F(CrdAdminSessionControllerTest,
        ShouldUmaLogErrorWhenRemotingServiceReportsStateError) {
+  InitWithNoReconnectableSession(session_controller());
+
   const std::tuple<ErrorCode, ExtendedStartCrdSessionResultCode> test_cases[] =
       {{ErrorCode::OK, ExtendedStartCrdSessionResultCode::kSuccess},
        {ErrorCode::PEER_IS_OFFLINE,
