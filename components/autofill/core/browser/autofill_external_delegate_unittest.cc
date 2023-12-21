@@ -2205,7 +2205,6 @@ const PopupItemId kRemoveSuggestionTestCases[] = {
     PopupItemId::kAddressFieldByFieldFilling,
     PopupItemId::kCreditCardFieldByFieldFilling,
     PopupItemId::kCreditCardEntry,
-    PopupItemId::kAddressEntryNotSelectable,
     PopupItemId::kAutocompleteEntry,
     PopupItemId::kPasswordEntry,
 };

@@ -559,7 +559,6 @@ int GetMainTextStyleForPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kFillExistingPlusAddress:
     case PopupItemId::kFillFullEmail:
     case PopupItemId::kFillFullPhoneNumber:
-    case PopupItemId::kAddressEntryNotSelectable:
     case PopupItemId::kGeneratePasswordEntry:
     case PopupItemId::kIbanEntry:
     case PopupItemId::kInsecureContextPaymentDisabledMessage:
@@ -610,7 +609,6 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kDatalistEntry:
     case PopupItemId::kDevtoolsTestAddressEntry:
     case PopupItemId::kDevtoolsTestAddresses:
-    case PopupItemId::kAddressEntryNotSelectable:
     case PopupItemId::kFillExistingPlusAddress:
     case PopupItemId::kFillFullAddress:
     case PopupItemId::kFillFullName:
@@ -641,7 +639,6 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kFillFullName:
     case PopupItemId::kFillFullEmail:
     case PopupItemId::kFillFullPhoneNumber:
-    case PopupItemId::kAddressEntryNotSelectable:
     case PopupItemId::kCreditCardEntry:
       return true;
     case PopupItemId::kAccountStoragePasswordEntry:

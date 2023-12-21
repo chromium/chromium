@@ -182,7 +182,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
       // that a merchant has saved. This indicates there could be Autofill
       // suggestions related to standalone CVC fields.
     case PopupItemId::kVirtualCreditCardEntry:
-    case PopupItemId::kAddressEntryNotSelectable:
       return true;
     case PopupItemId::kAccountStoragePasswordEntry:
     case PopupItemId::kAccountStorageUsernameEntry:
@@ -471,8 +470,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
-    case PopupItemId::kAddressEntryNotSelectable:
-      return;
     case PopupItemId::kEditAddressProfile:
     case PopupItemId::kDeleteAddressProfile:
     case PopupItemId::kAutofillOptions:
@@ -700,8 +697,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case PopupItemId::kMixedFormMessage:
       // If the selected element is a warning we don't want to do anything.
       break;
-    case PopupItemId::kAddressEntryNotSelectable:
-      return;
     case PopupItemId::kAddressEntry:
       autofill_metrics::LogAutofillSuggestionAcceptedIndex(
           position.row, popup_type_, manager_->client().IsOffTheRecord());
@@ -799,7 +794,6 @@ bool AutofillExternalDelegate::RemoveSuggestion(
     case PopupItemId::kAddressFieldByFieldFilling:
     case PopupItemId::kCreditCardFieldByFieldFilling:
     case PopupItemId::kCreditCardEntry:
-    case PopupItemId::kAddressEntryNotSelectable:
       return manager_->RemoveAutofillProfileOrCreditCard(backend_id);
     case PopupItemId::kAutocompleteEntry:
       manager_->RemoveCurrentSingleFieldSuggestion(query_field_.name, value,

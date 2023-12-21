@@ -600,10 +600,8 @@ PopupItemId GetProfileSuggestionPopupItemId(
 
   // If a field is not classified as an address, then autofill was triggered
   // from the context menu.
-  if (!IsAddressType(trigger_field_type) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillForUnclassifiedFieldsAvailable)) {
-    return PopupItemId::kAddressEntryNotSelectable;
+  if (!IsAddressType(trigger_field_type)) {
+    return PopupItemId::kAddressEntry;
   }
 
   const FieldTypeGroup trigger_field_type_group =
@@ -1219,6 +1217,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
     suggestions.back().popup_item_id = GetProfileSuggestionPopupItemId(
         last_targeted_fields, trigger_field_type);
+    suggestions.back().is_acceptable = IsAddressType(trigger_field_type);
     suggestions.back().hidden_prior_to_address_rewriter_usage =
         previously_hidden_profiles_guid.contains(profile->guid());
     if (suggestions.back().popup_item_id ==

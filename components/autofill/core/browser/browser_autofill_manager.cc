@@ -295,7 +295,6 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kEditAddressProfile:
     case PopupItemId::kAddressFieldByFieldFilling:
     case PopupItemId::kCreditCardFieldByFieldFilling:
-    case PopupItemId::kAddressEntryNotSelectable:
     case PopupItemId::kFillEverythingFromAddressProfile:
     case PopupItemId::kFillExistingPlusAddress:
     case PopupItemId::kFillFullAddress:

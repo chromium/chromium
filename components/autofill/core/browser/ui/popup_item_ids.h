@@ -40,7 +40,6 @@ enum class PopupItemId : int {
   kAddressFieldByFieldFilling,
   kEditAddressProfile,
   kDeleteAddressProfile,
-  kAddressEntryNotSelectable,
   kAutofillOptions,
 
   // Compose suggestions.

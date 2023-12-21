@@ -21,7 +21,6 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kDeleteAddressProfile:
     case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kDevtoolsTestAddressEntry:
-    case PopupItemId::kAddressEntryNotSelectable:
       return FillingProduct::kAddress;
     case PopupItemId::kCreditCardEntry:
     case PopupItemId::kScanCreditCard:

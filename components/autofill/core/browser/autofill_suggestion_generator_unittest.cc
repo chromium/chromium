@@ -1332,45 +1332,46 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
   ASSERT_EQ(5u, suggestions.size());
   EXPECT_THAT(
       suggestions,
-      ElementsAre(AllOf(Field(&Suggestion::main_text,
-                              Suggestion::Text(
-                                  u"test0", Suggestion::Text::IsPrimary(true))),
-                        Field(&Suggestion::labels,
-                              std::vector<std::vector<Suggestion::Text>>{
-                                  {Suggestion::Text(u"test0_label")}}),
-                        Field(&Suggestion::popup_item_id,
-                              PopupItemId::kAddressEntryNotSelectable)),
-                  AllOf(Field(&Suggestion::main_text,
-                              Suggestion::Text(
-                                  u"test1", Suggestion::Text::IsPrimary(true))),
-                        Field(&Suggestion::labels,
-                              std::vector<std::vector<Suggestion::Text>>{
-                                  {Suggestion::Text(u"test1_label")}}),
-                        Field(&Suggestion::popup_item_id,
-                              PopupItemId::kAddressEntryNotSelectable)),
-                  AllOf(Field(&Suggestion::main_text,
-                              Suggestion::Text(
-                                  u"test2", Suggestion::Text::IsPrimary(true))),
-                        Field(&Suggestion::labels,
-                              std::vector<std::vector<Suggestion::Text>>{
-                                  {Suggestion::Text(u"test2_label")}}),
-                        Field(&Suggestion::popup_item_id,
-                              PopupItemId::kAddressEntryNotSelectable)),
-                  AllOf(Field(&Suggestion::main_text,
-                              Suggestion::Text(
-                                  u"test3", Suggestion::Text::IsPrimary(true))),
-                        Field(&Suggestion::labels,
-                              std::vector<std::vector<Suggestion::Text>>{
-                                  {Suggestion::Text(u"test3_label")}}),
-                        Field(&Suggestion::popup_item_id,
-                              PopupItemId::kAddressEntryNotSelectable)),
-                  AllOf(Field(&Suggestion::main_text,
-                              Suggestion::Text(
-                                  u"test4", Suggestion::Text::IsPrimary(true))),
-                        Field(&Suggestion::labels,
-                              std::vector<std::vector<Suggestion::Text>>{{}}),
-                        Field(&Suggestion::popup_item_id,
-                              PopupItemId::kAddressEntryNotSelectable))));
+      ElementsAre(
+          AllOf(Field(&Suggestion::main_text,
+                      Suggestion::Text(u"test0",
+                                       Suggestion::Text::IsPrimary(true))),
+                Field(&Suggestion::labels,
+                      std::vector<std::vector<Suggestion::Text>>{
+                          {Suggestion::Text(u"test0_label")}}),
+                Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
+                Field(&Suggestion::is_acceptable, false)),
+          AllOf(Field(&Suggestion::main_text,
+                      Suggestion::Text(u"test1",
+                                       Suggestion::Text::IsPrimary(true))),
+                Field(&Suggestion::labels,
+                      std::vector<std::vector<Suggestion::Text>>{
+                          {Suggestion::Text(u"test1_label")}}),
+                Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
+                Field(&Suggestion::is_acceptable, false)),
+          AllOf(Field(&Suggestion::main_text,
+                      Suggestion::Text(u"test2",
+                                       Suggestion::Text::IsPrimary(true))),
+                Field(&Suggestion::labels,
+                      std::vector<std::vector<Suggestion::Text>>{
+                          {Suggestion::Text(u"test2_label")}}),
+                Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
+                Field(&Suggestion::is_acceptable, false)),
+          AllOf(Field(&Suggestion::main_text,
+                      Suggestion::Text(u"test3",
+                                       Suggestion::Text::IsPrimary(true))),
+                Field(&Suggestion::labels,
+                      std::vector<std::vector<Suggestion::Text>>{
+                          {Suggestion::Text(u"test3_label")}}),
+                Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
+                Field(&Suggestion::is_acceptable, false)),
+          AllOf(Field(&Suggestion::main_text,
+                      Suggestion::Text(u"test4",
+                                       Suggestion::Text::IsPrimary(true))),
+                Field(&Suggestion::labels,
+                      std::vector<std::vector<Suggestion::Text>>{{}}),
+                Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
+                Field(&Suggestion::is_acceptable, false))));
 }
 
 // Tests that a non-address field suggestion has all the profile fields as
