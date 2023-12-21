@@ -104,7 +104,7 @@ void PointerArithmeticDisabled() {
 
 void Indexing() {
   raw_ptr<int> ptr = new int(3);
-  [[maybe_unused]] int val = ptr[1];  // expected-error@*:* {{cannot index raw_ptr unless AllowPtrArithmetic trait is present.}}
+  [[maybe_unused]] int val = ptr[1];  // expected-error@*:* {{cannot increment raw_ptr unless AllowPtrArithmetic trait is present.}}
 }
 #endif
 
