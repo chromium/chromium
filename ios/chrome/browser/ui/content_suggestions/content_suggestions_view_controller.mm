@@ -89,10 +89,6 @@ constexpr CGFloat kMagicStackPeekInsetLandscape = kMagicStackSpacing * 2 + 18;
 // The corner radius of the Magic Stack.
 const float kMagicStackCornerRadius = 16.0f;
 
-// The max width of the SetUpList on phone and tablet.
-const CGFloat kSetUpListWidthRegular = 393;
-const CGFloat kSetUpListWidthWide = 418;
-
 // The distance in which a replaced/replacing module will fade out/in of view.
 const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
 
@@ -670,18 +666,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     self.setUpListView = setUpListView;
     [self.verticalStackView insertArrangedSubview:setUpListView atIndex:index];
 
-    // The width of the SetUpList should match the Discover Feed. This seems to
-    // closely match the feed's logic.
-    CGFloat width = kSetUpListWidthRegular;
-    CGSize viewSize = self.view.frame.size;
-    if (MIN(viewSize.width, viewSize.height) >= kSetUpListWidthWide) {
-      width = kSetUpListWidthWide;
-    }
-    // Since this view is put into a StackView, this width constraint acts as
-    // a max width constraint - if the StackView is narrower, it will make the
-    // SetUpListView narrower.
     [NSLayoutConstraint activateConstraints:@[
-      [setUpListView.widthAnchor constraintEqualToConstant:width],
+      [setUpListView.widthAnchor constraintEqualToAnchor:self.view.widthAnchor],
     ]];
   }
 }

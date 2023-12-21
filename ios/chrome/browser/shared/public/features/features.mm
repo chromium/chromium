@@ -783,7 +783,8 @@ bool IsMagicStackEnabled() {
 }
 
 bool IsFeedContainmentEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFeedContainment);
+  return IsMagicStackEnabled() &&
+         base::FeatureList::IsEnabled(kEnableFeedContainment);
 }
 
 int HomeModuleMinimumPadding() {
