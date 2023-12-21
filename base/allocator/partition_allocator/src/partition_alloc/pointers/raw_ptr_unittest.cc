@@ -1857,12 +1857,13 @@ TEST_F(BackupRefPtrTest, GetDeltaElems) {
   char* ptr1 = static_cast<char*>(allocator_.root()->Alloc(requested_size));
   char* ptr2 = static_cast<char*>(allocator_.root()->Alloc(requested_size));
   ASSERT_LT(ptr1, ptr2);  // There should be a ref-count between slots.
-  raw_ptr<char> protected_ptr1 = ptr1;
-  raw_ptr<char> protected_ptr1_2 = ptr1 + 1;
-  raw_ptr<char> protected_ptr1_3 = ptr1 + requested_size - 1;
-  raw_ptr<char> protected_ptr1_4 = ptr1 + requested_size;
-  raw_ptr<char> protected_ptr2 = ptr2;
-  raw_ptr<char> protected_ptr2_2 = ptr2 + 1;
+  raw_ptr<char, AllowPtrArithmetic> protected_ptr1 = ptr1;
+  raw_ptr<char, AllowPtrArithmetic> protected_ptr1_2 = ptr1 + 1;
+  raw_ptr<char, AllowPtrArithmetic> protected_ptr1_3 =
+      ptr1 + requested_size - 1;
+  raw_ptr<char, AllowPtrArithmetic> protected_ptr1_4 = ptr1 + requested_size;
+  raw_ptr<char, AllowPtrArithmetic> protected_ptr2 = ptr2;
+  raw_ptr<char, AllowPtrArithmetic> protected_ptr2_2 = ptr2 + 1;
 
   EXPECT_EQ(protected_ptr1_2 - protected_ptr1, 1);
   EXPECT_EQ(protected_ptr1 - protected_ptr1_2, -1);

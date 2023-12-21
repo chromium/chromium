@@ -100,6 +100,7 @@ void PointerArithmeticDisabled() {
   ptr_a2 = ptr_a1 - 1;                 // expected-error@*:* {{cannot decrement raw_ptr unless AllowPtrArithmetic trait is present.}}
   raw_ptr<TypeB> ptr_b1 = new TypeB();
   raw_ptr<TypeB> ptr_b2 = 1 + ptr_b1;  // expected-error@*:* {{cannot increment raw_ptr unless AllowPtrArithmetic trait is present.}}
+  ptr_b2 - ptr_b1;                     // expected-error@*:* {{cannot subtract raw_ptrs unless AllowPtrArithmetic trait is present.}}
 }
 
 void Indexing() {
