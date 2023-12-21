@@ -237,10 +237,10 @@ void InterestGroupCachingStorage::RecordInterestGroupWin(
 }
 
 void InterestGroupCachingStorage::RecordDebugReportLockout(
-    base::Time last_report_sent_date) {
+    base::Time last_report_sent_time) {
   interest_group_storage_
       .AsyncCall(&InterestGroupStorage::RecordDebugReportLockout)
-      .WithArgs(last_report_sent_date);
+      .WithArgs(last_report_sent_time);
 }
 
 void InterestGroupCachingStorage::RecordDebugReportCooldown(

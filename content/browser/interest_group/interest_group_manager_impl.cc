@@ -354,8 +354,8 @@ void InterestGroupManagerImpl::RecordInterestGroupWin(
 }
 
 void InterestGroupManagerImpl::RecordDebugReportLockout(
-    base::Time last_report_sent_date) {
-  caching_storage_.RecordDebugReportLockout(last_report_sent_date);
+    base::Time last_report_sent_time) {
+  caching_storage_.RecordDebugReportLockout(last_report_sent_time);
 }
 
 void InterestGroupManagerImpl::RecordDebugReportCooldown(

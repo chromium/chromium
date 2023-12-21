@@ -2806,7 +2806,7 @@ bool DoRecordInterestGroupWin(sql::Database& db,
 }
 
 bool DoRecordDebugReportLockout(sql::Database& db,
-                                base::Time last_debug_report_sent_date) {
+                                base::Time last_debug_report_sent_time) {
   sql::Statement debug_lockout(db.GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT OR REPLACE "
@@ -2819,7 +2819,7 @@ bool DoRecordDebugReportLockout(sql::Database& db,
   debug_lockout.Reset(true);
   // Ceil to nearest hour to be stored in DB.
   debug_lockout.BindInt64(0,
-                          last_debug_report_sent_date.ToDeltaSinceWindowsEpoch()
+                          last_debug_report_sent_time.ToDeltaSinceWindowsEpoch()
                               .CeilToMultiple(base::Hours(1))
                               .InMicroseconds());
   return debug_lockout.Run();
@@ -3181,18 +3181,18 @@ bool GetBidCount(sql::Database& db,
 void DoGetDebugReportLockout(
     sql::Database& db,
     DebugReportLockoutAndCooldowns& debug_report_lockout_and_cooldowns) {
-  sql::Statement sent_date(
+  sql::Statement sent_time(
       db.GetCachedStatement(SQL_FROM_HERE,
                             "SELECT last_report_sent_time "
                             "FROM lockout_debugging_only_report"));
-  if (!sent_date.is_valid()) {
+  if (!sent_time.is_valid()) {
     DLOG(ERROR) << "GetLastDebugReportSentDate SQL statement did not compile: "
                 << db.GetErrorMessage();
     return;
   }
-  if (sent_date.Step()) {
+  if (sent_time.Step()) {
     debug_report_lockout_and_cooldowns.last_report_sent_time =
-        sent_date.ColumnTime(0);
+        sent_time.ColumnTime(0);
   }
 }
 
@@ -4327,14 +4327,14 @@ void InterestGroupStorage::RecordInterestGroupWin(
 }
 
 void InterestGroupStorage::RecordDebugReportLockout(
-    base::Time last_report_sent_date) {
+    base::Time last_report_sent_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
     return;
   }
 
-  if (!DoRecordDebugReportLockout(*db_, last_report_sent_date)) {
-    DLOG(ERROR) << "Could not record last debugging only report sent date: "
+  if (!DoRecordDebugReportLockout(*db_, last_report_sent_time)) {
+    DLOG(ERROR) << "Could not record last debugging only report sent time: "
                 << db_->GetErrorMessage();
   }
 }

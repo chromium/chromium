@@ -103,10 +103,11 @@ class CONTENT_EXPORT InterestGroupStorage {
   // piece of opaque data to identify the winning ad.
   void RecordInterestGroupWin(const blink::InterestGroupKey& group_key,
                               const std::string& ad_json);
-  // Adds an entry to debugging only report lockout if the table is empty.
-  void RecordDebugReportLockout(base::Time last_report_sent_date);
-  // Adds an entry to debugging only report cooldown for `origin` if it does
-  // not exist, otherwise replaces the existing entry.
+  // Adds an entry to forDebuggingOnly report lockout table if the table is
+  // empty. Otherwise replaces the existing entry.
+  void RecordDebugReportLockout(base::Time last_report_sent_time);
+  // Adds an entry to forDebuggingOnly report cooldown table for `origin` if it
+  // does not exist, otherwise replaces the existing entry.
   void RecordDebugReportCooldown(const url::Origin& origin,
                                  base::Time cooldown_start,
                                  DebugReportCooldownType cooldown_type);

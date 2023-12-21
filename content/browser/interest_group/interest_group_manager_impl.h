@@ -237,9 +237,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // piece of opaque data to identify the winning ad.
   void RecordInterestGroupWin(const blink::InterestGroupKey& group_key,
                               const std::string& ad_json);
-  // Adds an entry to the lockout of debugging only report.
-  void RecordDebugReportLockout(base::Time last_report_sent_date);
-  // Adds an entry to the cooldown of debugging only report for `origin` if it
+  // Adds an entry to forDebuggingOnly report lockout table if the table is
+  // empty. Otherwise replaces the existing entry.
+  void RecordDebugReportLockout(base::Time last_report_sent_time);
+  // Adds an entry to forDebuggingOnly report cooldown table for `origin` if it
   // does not exist, otherwise replaces the existing entry.
   void RecordDebugReportCooldown(const url::Origin& origin,
                                  base::Time cooldown_start,
