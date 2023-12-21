@@ -147,6 +147,7 @@ void InitVM(JavaVM* vm) {
   DCHECK(!g_jvm || g_jvm == vm);
   g_jvm = vm;
   jni_zero::InitVM(vm);
+  jni_zero::SetExceptionHandler(CheckException);
   JNIEnv* env = base::android::AttachCurrentThread();
   g_out_of_memory_error_class = static_cast<jclass>(
       env->NewGlobalRef(env->FindClass("java/lang/OutOfMemoryError")));

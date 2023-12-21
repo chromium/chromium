@@ -22,6 +22,13 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT void InitVM(JavaVM* vm);
 // https://crbug.com/1484834
 JNI_ZERO_COMPONENT_BUILD_EXPORT void DisableJvmForTesting();
 
+JNI_ZERO_COMPONENT_BUILD_EXPORT void SetExceptionHandler(
+    void (*callback)(JNIEnv*));
+
+// If there's any pending exception, this function will call the set exception
+// handler, or if none are set, it will fatally LOG.
+JNI_ZERO_COMPONENT_BUILD_EXPORT void CheckException(JNIEnv* env);
+
 }  // namespace jni_zero
 
 #endif  // JNI_ZERO_CORE_H_

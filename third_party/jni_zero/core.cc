@@ -13,6 +13,8 @@ namespace {
 // Until we fully migrate base's jni_android, we will maintain a copy of this
 // global here and will have base set this variable when it sets its own.
 JavaVM* g_jvm = nullptr;
+
+void (*g_exception_handler_callback)(JNIEnv*) = nullptr;
 }  // namespace
 
 JNIEnv* AttachCurrentThread() {
@@ -50,5 +52,20 @@ void InitVM(JavaVM* vm) {
 
 void DisableJvmForTesting() {
   g_jvm = nullptr;
+}
+
+void SetExceptionHandler(void (*callback)(JNIEnv*)) {
+  g_exception_handler_callback = callback;
+}
+
+void CheckException(JNIEnv* env) {
+  if (env->ExceptionCheck() == JNI_FALSE) {
+    return;
+  }
+
+  if (g_exception_handler_callback) {
+    return g_exception_handler_callback(env);
+  }
+  JNI_ZERO_FLOG("jni_zero crashing due to uncaught Java exception");
 }
 }  // namespace jni_zero
