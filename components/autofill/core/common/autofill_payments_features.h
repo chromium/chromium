@@ -22,6 +22,11 @@ BASE_DECLARE_FEATURE(kAutofillEnableCvcStorageAndFilling);
 BASE_DECLARE_FEATURE(kAutofillEnableEmailOtpForVcnYellowPath);
 BASE_DECLARE_FEATURE(kAutofillEnableFIDOProgressDialog);
 BASE_DECLARE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kAutofillEnableIbanAndroidBottomSheet);
+#endif
+
 BASE_DECLARE_FEATURE(kAutofillEnableManualFallbackForVirtualCards);
 BASE_DECLARE_FEATURE(kAutofillEnableMerchantDomainInUnmaskCardRequest);
 BASE_DECLARE_FEATURE(kAutofillEnableMerchantOptOutClientSideUrlFiltering);

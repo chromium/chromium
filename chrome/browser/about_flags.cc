@@ -10976,6 +10976,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kSysUiDownloadsIntegrationV2)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"autofill-enable-iban-android-bottom-sheet",
+     flag_descriptions::kAutofillEnableIbanAndroidBottomSheetName,
+     flag_descriptions::kAutofillEnableIbanAndroidBottomSheetDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableIbanAndroidBottomSheet)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

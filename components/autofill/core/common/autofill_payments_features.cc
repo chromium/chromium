@@ -94,6 +94,13 @@ BASE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication,
              "AutofillEnableFpanRiskBasedAuthentication",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, the bottom sheet for IBAN save will be displayed on Android.
+BASE_FEATURE(kAutofillEnableIbanAndroidBottomSheet,
+             "AutofillEnableIbanAndroidBottomSheet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // When enabled, enable manual falling component for virtual cards on Android.
 BASE_FEATURE(kAutofillEnableManualFallbackForVirtualCards,
              "AutofillEnableManualFallbackForVirtualCards",

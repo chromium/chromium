@@ -508,6 +508,11 @@ const char kAutofillEnableEmailOtpForVcnYellowPathDescription[] =
     "for email OTP authentication, email OTP authentication will be offered as "
     "one of the challenge options.";
 
+const char kAutofillEnableIbanAndroidBottomSheetName[] =
+    "Enable Autofill save IBAN bottom sheet";
+const char kAutofillEnableIbanAndroidBottomSheetDescription[] =
+    "When enabled, the bottom sheet for IBAN save will be displayed.";
+
 const char kAutofillEnableNewCardArtAndNetworkImagesName[] =
     "Enable showing new card art and network images";
 const char kAutofillEnableNewCardArtAndNetworkImagesDescription[] =
