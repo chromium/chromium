@@ -2803,20 +2803,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Permissions.Usage.ElapsedTimeSinceGrant"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PlatformEmmcLifeUsed" separator=".">
-  <suffix name="TypeA" label="Memory Type A"/>
-  <suffix name="TypeB" label="Memory Type B"/>
-  <affected-histogram name="Platform.Emmc.LifeUsed"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PlatformFileSystem" separator="_" ordering="prefix,2">
-  <suffix name="EncStateful" label="Encrypted Stateful filesystem"/>
-  <suffix name="Stateful" label="Stateful filesystem /mnt/stateful"/>
-  <affected-histogram name="Platform.FileSystem.ErrorCount"/>
-  <affected-histogram name="Platform.FileSystem.FsckNeeded"/>
-  <affected-histogram name="Platform.FileSystem.RecoveryNeeded"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PlatformMeminfoPercentage" separator="">
   <suffix name="infoActive" label="Active memory."/>
   <suffix name="infoActiveAnon"
@@ -2873,12 +2859,6 @@ chromium-metrics-reviews@google.com.
       name="Net.QuicConnectivityMonitor.PercentageActiveDegradingSessions"/>
   <affected-histogram
       name="Net.QuicConnectivityMonitor.PercentageAllDegradedSessions"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PlatformStorageUfsLifeUsed" separator=".">
-  <suffix name="TypeA" label="Calculation Method A"/>
-  <suffix name="TypeB" label="Calculation Method B"/>
-  <affected-histogram name="Platform.Storage.Ufs.LifeUsed"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PNaClTranslatorTypes" separator=".">

@@ -487,16 +487,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Emmc.LifeUsed" enum="EmmcLifeUsed"
+<histogram name="Platform.Emmc.LifeUsed.{Type}" enum="EmmcLifeUsed"
     expires_after="2024-08-07">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
     eMMC [5.0] Device lifetime estimation for flash. This field provides an
     estimated indication about the device lifetime that is reflected by the
-    averaged wear out of memory of a given type relative to its maximum
-    estimated lifetime.
+    averaged wear out of memory of {Type} relative to its maximum estimated
+    lifetime.
   </summary>
+  <token key="Type">
+    <variant name="TypeA"/>
+    <variant name="TypeB"/>
+  </token>
 </histogram>
 
 <histogram name="Platform.ExternalMetrics.SamplesRead" units="count"
@@ -523,36 +527,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.FileSystem.ErrorCount" units="errors"
+<histogram name="Platform.FileSystem.{Partition}.ErrorCount" units="errors"
     expires_after="2024-08-07">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
-    Number of file system errors, as reported by dumpe2fs &quot;FS Error
-    count&quot; field. Reported once per boot.
+    Number of error in file system {Partition}, as reported by dumpe2fs &quot;FS
+    Error count&quot; field. Reported once per boot.
   </summary>
+  <token key="Partition">
+    <variant name="EncStateful"/>
+    <variant name="Stateful"/>
+  </token>
 </histogram>
 
-<histogram name="Platform.FileSystem.FsckNeeded" enum="Boolean"
+<histogram name="Platform.FileSystem.{Partition}_{MountResult}" enum="Boolean"
     expires_after="2024-08-07">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
-    True when kernel reports that the file system needs deep recovery. File
-    system has corruption the kernel can not fix by itself. Reported once per
-    boot.
+    {MountResult} is true when kernel reports that file system {Partition}
+    is/was needed.
   </summary>
-</histogram>
-
-<histogram name="Platform.FileSystem.RecoveryNeeded" enum="Boolean"
-    expires_after="2024-08-07">
-  <owner>gwendal@google.com</owner>
-  <owner>chromeos-storage@google.com</owner>
-  <summary>
-    True when kernel reports that the file system needed recovery at boot. It
-    indicates the filesytem was not properly unmounted, but was recovered.
-    Reported once per boot.
-  </summary>
+  <token key="Partition">
+    <variant name="EncStateful"/>
+    <variant name="Stateful"/>
+  </token>
+  <token key="MountResult">
+    <variant name="FsckNeeded"/>
+    <variant name="RecoveryNeeded"/>
+  </token>
 </histogram>
 
 <histogram name="Platform.Firmware.Mismatch" enum="BooleanDetected"
@@ -2009,16 +2013,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Storage.Ufs.LifeUsed" enum="EmmcLifeUsed"
+<histogram name="Platform.Storage.Ufs.LifeUsed.{Type}" enum="EmmcLifeUsed"
     expires_after="2024-08-07">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
     UFS Device life time estimation. This field provides an indication of the
-    device life time based on the amount of performed program/erase cycles. The
-    calculation is vendor specific.
+    device life time based on the amount of performed program/erase cycles for
+    memory {Type}. The calculation is vendor specific.
   </summary>
+  <token key="Type">
+    <variant name="TypeA"/>
+    <variant name="TypeB"/>
+  </token>
 </histogram>
 
 <histogram name="Platform.StorageCapabilities"
