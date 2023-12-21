@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
@@ -219,6 +220,15 @@ class TabImpl implements Tab {
      * Tab#getLaunchType()} will be overridden to "FROM_RESTORE" during tab restoration.
      */
     private @Nullable @TabLaunchType Integer mTabLaunchTypeAtCreation;
+
+    /**
+     * Variables used to track native page creation prior to mNativePage assignment. Avoids the case
+     * where native pages can unintentionally re-create themselves by calling {@link
+     * NativePage#onStateChange} during the creation process.
+     */
+    private boolean mIsAlreadyCreatingNativePage;
+
+    private String mPendingNativePageHost;
 
     /**
      * Creates an instance of a {@link TabImpl}. Package-private. Use {@link TabBuilder} to create
@@ -1225,8 +1235,22 @@ class TabImpl implements Tab {
         WebContents webContents = getWebContents();
         assert webContents != null;
         if (webContents == null) return false;
+
+        // We might be in the middle of loading a native page, in that case we should bail to avoid
+        // recreating another instance.
+        String nativePageHost = Uri.parse(url).getHost();
+        if (mIsAlreadyCreatingNativePage
+                && TextUtils.equals(mPendingNativePageHost, nativePageHost)) {
+            return true;
+        }
+
+        mPendingNativePageHost = nativePageHost;
+        mIsAlreadyCreatingNativePage = true;
         NativePage candidateForReuse = forceReload ? null : getNativePage();
         NativePage nativePage = mDelegateFactory.createNativePage(url, candidateForReuse, this);
+        mIsAlreadyCreatingNativePage = false;
+        mPendingNativePageHost = null;
+
         if (nativePage != null) {
             showNativePage(nativePage);
             notifyPageTitleChanged();
